@@ -6,15 +6,16 @@ import aktual.budget.db.dao.SyncDao
 import aktual.budget.model.LocalChange
 import aktual.budget.model.SyncState
 import aktual.budget.model.SyncState.SyncFailed
+import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.Closeable
 import aktual.prefs.AppPreferences
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.ContributesIntoSet
+import dev.zacsweers.metro.ForScope
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
@@ -23,12 +24,12 @@ import logcat.logcat
 
 @SingleIn(BudgetScope::class)
 @ContributesBinding(BudgetScope::class, binding<BudgetSyncController>())
-@ContributesIntoSet(BudgetScope::class, binding<Closeable>())
+@ContributesIntoSet(BudgetScope::class, binding<@ForScope(BudgetScope::class) Closeable>())
 class BudgetSyncControllerImpl
 internal constructor(
   private val syncStateHolder: SyncStateHolder,
   private val syncer: IncrementalSyncer,
-  private val scope: CoroutineScope,
+  private val scope: BudgetCoroutineScope,
   private val prefs: AppPreferences,
   private val syncDao: SyncDao,
 ) : BudgetSyncController, Closeable {

@@ -3,12 +3,12 @@ package aktual.budget.prefs
 import aktual.budget.BudgetFiles
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata
+import aktual.di.AppCoroutineScope
 import aktual.di.BudgetScope
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -20,7 +20,7 @@ import kotlinx.coroutines.sync.withLock
 class BudgetLocalPreferencesImpl
 private constructor(
   private val files: BudgetFiles,
-  private val coroutineScope: CoroutineScope,
+  private val coroutineScope: AppCoroutineScope,
   private val contexts: CoroutineContexts,
   private val delegate: MutableStateFlow<DbMetadata>,
 ) : BudgetLocalPreferences, MutableStateFlow<DbMetadata> by delegate {
@@ -30,7 +30,7 @@ private constructor(
   constructor(
     initial: DbMetadata,
     files: BudgetFiles,
-    coroutineScope: CoroutineScope,
+    coroutineScope: AppCoroutineScope,
     contexts: CoroutineContexts,
   ) : this(files, coroutineScope, contexts, delegate = MutableStateFlow(initial))
 

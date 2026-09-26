@@ -3,10 +3,13 @@ package aktual.di
 import dev.zacsweers.metro.Multibinds
 import dev.zacsweers.metrox.viewmodel.ViewModelGraph
 import kotlin.reflect.KClass
+import kotlinx.coroutines.CoroutineScope
 
 sealed interface AktualGraph : ViewModelGraph, Initializable, Closeable, Comparable<AktualGraph> {
-  @Multibinds(allowEmpty = true) val closeables: Set<Closeable>
-  @Multibinds(allowEmpty = true) val initializables: Set<Initializable>
+  val closeables: Set<Closeable>
+  val initializables: Set<Initializable>
+  val coroutineScope: CoroutineScope
+
   @Multibinds(allowEmpty = true) val accessors: Map<KClass<out Any>, Accessor>
 
   @Suppress("UNCHECKED_CAST")

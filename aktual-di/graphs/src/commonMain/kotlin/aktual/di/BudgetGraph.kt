@@ -7,8 +7,10 @@ import aktual.budget.model.DbMetadata
 import app.cash.sqldelight.db.SqlDriver
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.ForScope
 import dev.zacsweers.metro.GraphExtension
 import dev.zacsweers.metro.IntoSet
+import dev.zacsweers.metro.Multibinds
 import dev.zacsweers.metro.Provides
 
 @GraphExtension(BudgetScope::class)
@@ -16,6 +18,20 @@ interface BudgetGraph : AktualGraph {
   val id: BudgetId
   val syncController: BudgetSyncController
   val localPreferences: BudgetLocalPreferences
+
+  override val coroutineScope: BudgetCoroutineScope
+
+  @Multibinds(allowEmpty = true) @ForScope(BudgetScope::class) val budgetCloseables: Set<Closeable>
+
+  @Multibinds(allowEmpty = true)
+  @ForScope(BudgetScope::class)
+  val budgetInitializables: Set<Initializable>
+
+  override val closeables: Set<Closeable>
+    get() = budgetCloseables
+
+  override val initializables: Set<Initializable>
+    get() = budgetInitializables
 
   @GraphExtension.Factory
   @ContributesTo(LoggedInScope::class)
@@ -31,5 +47,8 @@ interface BudgetGraph : AktualGraph {
 @BindingContainer
 @ContributesTo(BudgetScope::class)
 object BudgetScopeBindings {
-  @Provides @IntoSet fun binds(driver: SqlDriver): Closeable = Closeable { driver.close() }
+  @Provides
+  @IntoSet
+  @ForScope(BudgetScope::class)
+  fun binds(driver: SqlDriver): Closeable = Closeable { driver.close() }
 }

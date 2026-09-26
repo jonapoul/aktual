@@ -4,6 +4,7 @@ plugins { id("aktual.module.di") }
 
 kotlin {
   commonMainDependencies {
+    api(libs.kotlinx.coroutines.core)
     api(libs.metrox.viewmodel)
     api(libs.sqldelight.runtime)
     api(project(":aktual-budget"))
