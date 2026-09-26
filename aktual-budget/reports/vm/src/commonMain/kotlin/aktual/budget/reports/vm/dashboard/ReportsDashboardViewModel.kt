@@ -17,7 +17,6 @@ import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.ReportMeta
 import aktual.budget.reports.vm.SpendingReportMeta
 import aktual.budget.reports.vm.SummaryReportMeta
-import aktual.budget.reports.vm.UnsupportedData
 import aktual.budget.reports.vm.UnsupportedReportMeta
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
@@ -30,7 +29,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -79,7 +77,7 @@ internal constructor(
       is FormulaReportMeta,
       is SpendingReportMeta,
       is SummaryReportMeta,
-      is UnsupportedReportMeta -> flowOf(UnsupportedData(ReportType))
+      is UnsupportedReportMeta -> chartDataLoader.unsupported(meta, ReportType)
     }
 
   private fun dashboardItem(widget: Dashboard): DashboardItem? {

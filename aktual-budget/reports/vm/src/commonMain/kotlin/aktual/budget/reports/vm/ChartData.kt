@@ -2,6 +2,7 @@ package aktual.budget.reports.vm
 
 import aktual.budget.model.Amount
 import aktual.budget.model.DateRangeType
+import aktual.budget.model.WidgetType
 import aktual.core.model.Percent
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
@@ -173,7 +174,12 @@ sealed interface SpendingComparison {
 
 @Immutable data class TextData(val content: String) : ChartData
 
-@Immutable data class UnsupportedData(val reason: UnsupportedReason) : ChartData
+@Immutable
+data class UnsupportedData(
+  val reason: UnsupportedReason,
+  val type: WidgetType,
+  val name: String?,
+) : ChartData
 
 @Immutable
 enum class UnsupportedReason {

@@ -4,6 +4,7 @@ import aktual.budget.db.dao.ReportsDao
 import aktual.budget.db.reports.CashFlowByMonth
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
+import aktual.budget.model.WidgetType
 import aktual.core.Calendar
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.toImmutableMap
@@ -15,6 +16,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minusMonth
 import kotlinx.datetime.yearMonth
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 
 @Inject
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -24,7 +27,7 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
   // packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.tsx
   // cashFlowByDate()
   fun cashFlow(meta: CashFlowReportMeta): Flow<ChartData> {
-    if (meta.conditions.hasFilters()) return flowOf(UnsupportedData(Filters))
+    if (meta.conditions.hasFilters()) return unsupported(meta, Filters)
 
     return dao.observeTransactionDateBounds().flatMapLatest { bounds ->
       val today = calendar.today()
@@ -61,7 +64,7 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
   // packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts
   // createSpreadsheet()
   fun netWorth(meta: NetWorthReportMeta): Flow<ChartData> {
-    if (meta.conditions.hasFilters()) return flowOf(UnsupportedData(Filters))
+    if (meta.conditions.hasFilters()) return unsupported(meta, Filters)
 
     return dao.observeTransactionDateBounds().flatMapLatest { bounds ->
       val today = calendar.today()
@@ -94,6 +97,23 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
         NetWorthData(title = meta.name, items = items.toImmutableMap())
       }
     }
+  }
+
+  fun unsupported(meta: ReportMeta, reason: UnsupportedReason): Flow<ChartData> {
+    val (type, name) =
+      when (meta) {
+        is BudgetAnalysisReportMeta -> WidgetType.BudgetAnalysis to meta.name
+        is CalendarReportMeta -> WidgetType.Calendar to meta.name
+        is CashFlowReportMeta -> WidgetType.CashFlow to meta.name
+        is CustomReportMeta -> WidgetType.Custom to null
+        is FormulaReportMeta -> WidgetType.Formula to meta.name
+        is MarkdownReportMeta -> WidgetType.Markdown to null
+        is NetWorthReportMeta -> WidgetType.NetWorth to meta.name
+        is SpendingReportMeta -> WidgetType.Spending to meta.name
+        is SummaryReportMeta -> WidgetType.Summary to meta.name
+        is UnsupportedReportMeta -> meta.type to (meta.raw["name"] as? JsonPrimitive)?.contentOrNull
+      }
+    return flowOf(UnsupportedData(reason, type, name))
   }
 
   private fun List<Condition>?.hasFilters() = !isNullOrEmpty()
