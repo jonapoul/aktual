@@ -1,5 +1,7 @@
 package aktual.budget.reports.vm
 
+import aktual.budget.model.AccountId
+import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.CustomReportId
@@ -35,11 +37,11 @@ sealed interface ReportMeta {
         Spending -> SpendingReportMeta.serializer()
         Summary -> SummaryReportMeta.serializer()
         Formula -> FormulaReportMeta.serializer()
-        Crossover,
-        Sankey,
-        BalanceForecast,
-        AgeOfMoney,
-        MonteCarlo -> error("https://github.com/jonapoul/aktual/issues/1545")
+        Crossover -> CrossoverReportMeta.serializer()
+        Sankey -> SankeyReportMeta.serializer()
+        BalanceForecast -> BalanceForecastReportMeta.serializer()
+        AgeOfMoney -> AgeOfMoneyReportMeta.serializer()
+        MonteCarlo -> MonteCarloReportMeta.serializer()
         Unknown -> error("Unknown widget type")
       }
   }
@@ -146,6 +148,62 @@ data class FormulaReportMeta(
 
 @Immutable
 @Serializable
+data class CrossoverReportMeta(
+  @SerialName("name") val name: String? = null,
+  @SerialName("expenseCategoryIds") val expenseCategoryIds: List<CategoryId>? = null,
+  @SerialName("incomeAccountIds") val incomeAccountIds: List<AccountId>? = null,
+  @SerialName("timeFrame") val timeFrame: TimeFrame? = null,
+  @SerialName("safeWithdrawalRate") val safeWithdrawalRate: Double? = null,
+  @SerialName("estimatedReturn") val estimatedReturn: Double? = null,
+  @SerialName("expectedContribution") val expectedContribution: Double? = null,
+  @SerialName("projectionType") val projectionType: ProjectionType? = null,
+  @SerialName("showHiddenCategories") val showHiddenCategories: Boolean? = null,
+  @SerialName("expenseAdjustmentFactor") val expenseAdjustmentFactor: Double? = null,
+) : ReportMeta
+
+@Immutable
+@Serializable
+data class SankeyReportMeta(
+  @SerialName("name") val name: String? = null,
+  @SerialName("conditions") val conditions: List<Condition>? = null,
+  @SerialName("conditionsOp") val conditionsOp: ConditionOp? = null,
+  @SerialName("timeFrame") val timeFrame: TimeFrame? = null,
+  @SerialName("mode") val mode: SankeyMode? = null,
+  @SerialName("topNcategories") val topNCategories: Int? = null,
+  @SerialName("categorySort") val categorySort: CategorySort? = null,
+  @SerialName("showPercentages") val showPercentages: Boolean? = null,
+  @SerialName("groupAccounts") val groupAccounts: Boolean? = null,
+  @SerialName("showTransfers") val showTransfers: Boolean? = null,
+  @SerialName("layerFrom") val layerFrom: String? = null,
+  @SerialName("layerTo") val layerTo: String? = null,
+) : ReportMeta
+
+@Immutable
+@Serializable
+data class BalanceForecastReportMeta(
+  @SerialName("name") val name: String? = null,
+  @SerialName("startDate") val startDate: String? = null,
+  @SerialName("endDate") val endDate: String? = null,
+  @SerialName("accounts") val accounts: List<AccountId>? = null,
+  @SerialName("conditions") val conditions: List<Condition>? = null,
+  @SerialName("conditionsOp") val conditionsOp: ConditionOp? = null,
+  @SerialName("timeFrame") val timeFrame: TimeFrame? = null,
+  @SerialName("granularity") val granularity: ForecastGranularity? = null,
+  @SerialName("source") val source: ForecastSource? = null,
+) : ReportMeta
+
+@Immutable
+@Serializable
+data class AgeOfMoneyReportMeta(
+  @SerialName("name") val name: String? = null,
+  @SerialName("conditions") val conditions: List<Condition>? = null,
+  @SerialName("conditionsOp") val conditionsOp: ConditionOp? = null,
+  @SerialName("timeFrame") val timeFrame: TimeFrame? = null,
+  @SerialName("granularity") val granularity: AgeOfMoneyGranularity? = null,
+) : ReportMeta
+
+@Immutable
+@Serializable
 data class FormulaQuery(
   @SerialName("conditions") val conditions: List<Condition>,
   @SerialName("conditionsOp") val conditionsOp: ConditionOp?,
@@ -236,5 +294,50 @@ enum class TextAlign {
 enum class FontSizeMode {
   @SerialName("dynamic") Dynamic,
   @SerialName("static") Static,
+  @Fallback Unknown,
+}
+
+@Serializable
+enum class ProjectionType {
+  @SerialName("hampel") Hampel,
+  @SerialName("median") Median,
+  @SerialName("mean") Mean,
+  @Fallback Unknown,
+}
+
+@Serializable
+enum class SankeyMode {
+  @SerialName("budgeted") Budgeted,
+  @SerialName("spent") Spent,
+  @Fallback Unknown,
+}
+
+@Serializable
+enum class CategorySort {
+  @SerialName("per-group") PerGroup,
+  @SerialName("global") Global,
+  @SerialName("budget-order") BudgetOrder,
+  @Fallback Unknown,
+}
+
+@Serializable
+enum class ForecastGranularity {
+  @SerialName("Daily") Daily,
+  @SerialName("Monthly") Monthly,
+  @Fallback Unknown,
+}
+
+@Serializable
+enum class ForecastSource {
+  @SerialName("schedules") Schedules,
+  @SerialName("tracking-budget") TrackingBudget,
+  @Fallback Unknown,
+}
+
+@Serializable
+enum class AgeOfMoneyGranularity {
+  @SerialName("daily") Daily,
+  @SerialName("weekly") Weekly,
+  @SerialName("monthly") Monthly,
   @Fallback Unknown,
 }

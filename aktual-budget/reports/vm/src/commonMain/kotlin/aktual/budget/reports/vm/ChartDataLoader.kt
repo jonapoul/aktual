@@ -105,13 +105,18 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
   fun unsupported(meta: ReportMeta, reason: UnsupportedReason): Flow<ChartData> {
     val (type, name) =
       when (meta) {
+        is AgeOfMoneyReportMeta -> WidgetType.AgeOfMoney to meta.name
+        is BalanceForecastReportMeta -> WidgetType.BalanceForecast to meta.name
         is BudgetAnalysisReportMeta -> WidgetType.BudgetAnalysis to meta.name
         is CalendarReportMeta -> WidgetType.Calendar to meta.name
         is CashFlowReportMeta -> WidgetType.CashFlow to meta.name
+        is CrossoverReportMeta -> WidgetType.Crossover to meta.name
         is CustomReportMeta -> WidgetType.Custom to null
         is FormulaReportMeta -> WidgetType.Formula to meta.name
         is MarkdownReportMeta -> WidgetType.Markdown to null
+        is MonteCarloReportMeta -> WidgetType.MonteCarlo to meta.name
         is NetWorthReportMeta -> WidgetType.NetWorth to meta.name
+        is SankeyReportMeta -> WidgetType.Sankey to meta.name
         is SpendingReportMeta -> WidgetType.Spending to meta.name
         is SummaryReportMeta -> WidgetType.Summary to meta.name
         is UnsupportedReportMeta -> meta.type to (meta.raw["name"] as? JsonPrimitive)?.contentOrNull
