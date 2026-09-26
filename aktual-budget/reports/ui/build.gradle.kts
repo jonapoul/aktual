@@ -15,6 +15,7 @@ kotlin {
     implementation(libs.kotlinx.datetime)
     implementation(libs.markdown.core)
     implementation(libs.markdown.m3)
+    implementation(libs.shimmer)
     implementation(libs.vico)
     implementation(project(":aktual-core:l10n"))
   }

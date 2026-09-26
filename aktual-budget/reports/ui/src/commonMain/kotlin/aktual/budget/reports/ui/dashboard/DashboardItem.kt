@@ -23,6 +23,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Icon
@@ -33,11 +34,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.flow.flowOf
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 
 @Composable
 internal fun DashboardItem(
@@ -46,10 +49,25 @@ internal fun DashboardItem(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
-  var showContextMenu by remember { mutableStateOf(false) }
-
   val flow = remember(item) { observer(item) }
   val chartData by flow.collectAsStateWithLifecycle(initialValue = null)
+
+  DashboardItem(
+    item = item,
+    chartData = chartData,
+    onAction = onAction,
+    modifier = modifier,
+  )
+}
+
+@Composable
+private fun DashboardItem(
+  item: DashboardItem,
+  chartData: ChartData?,
+  onAction: ActionListener,
+  modifier: Modifier = Modifier,
+) {
+  var showContextMenu by remember { mutableStateOf(false) }
 
   Box(
     modifier =
@@ -62,7 +80,6 @@ internal fun DashboardItem(
           onClick = { onAction(Action.OpenItem(item.id)) },
           onLongClick = { showContextMenu = true },
         )
-        .padding(8.dp)
   ) {
     ReportDropDownMenu(
       item = item,
@@ -71,15 +88,26 @@ internal fun DashboardItem(
       onAction = onAction,
     )
 
-    chartData?.let { data ->
+    if (chartData != null) {
       ReportChart(
-        modifier = Modifier.fillMaxWidth(),
-        data = data,
+        modifier = Modifier.fillMaxWidth().padding(ChartPadding).height(ChartHeight),
+        data = chartData,
         compact = true,
         onAction = onAction,
       )
+    } else {
+      LoadingChart(modifier = Modifier.fillMaxWidth().height(ChartHeight + ChartPadding * 2))
     }
   }
+}
+
+private val ChartHeight = 200.dp
+private val ChartPadding = 8.dp
+
+@Composable
+private fun LoadingChart(modifier: Modifier = Modifier) {
+  val shimmer = rememberShimmer(Window)
+  Box(modifier = modifier.clip(CardShape).shimmer(shimmer).background(colors.tableText))
 }
 
 @Composable
@@ -118,8 +146,8 @@ private fun PreviewReportDashboardItem(
   PreviewWithColoredParams(params) {
     DashboardItem(
       item = item,
+      chartData = chartData,
       onAction = {},
-      observer = { if (chartData == null) flowOf() else flowOf(chartData) },
     )
   }
 
@@ -130,5 +158,5 @@ private class ReportDashboardItemProvider :
     DashboardItemParams(PREVIEW_DASHBOARD_ITEM_1, PREVIEW_CASH_FLOW_DATA),
     DashboardItemParams(PREVIEW_DASHBOARD_ITEM_2, PREVIEW_NET_WORTH_DATA),
     DashboardItemParams(PREVIEW_DASHBOARD_ITEM_3, PER_TRANSACTION_DATA),
-    DashboardItemParams(PREVIEW_DASHBOARD_ITEM_3, null),
+    DashboardItemParams(PREVIEW_DASHBOARD_ITEM_3, chartData = null),
   )
