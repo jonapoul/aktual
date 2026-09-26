@@ -2,7 +2,7 @@
 
 XML string resources + the **Catalog** Gradle plugin for typed codegen.
 
-Strings live in `src/commonMain/composeResources/values/strings-<feature>.xml` (one file per feature area — `core`, `account`, `settings`, `budget-*`, `about`, `metrics`).
+Strings live in `src/commonMain/composeResources/values/strings-<feature>.xml` (one file per feature area - `core`, `account`, `settings`, `budget-*`, `about`, `metrics`).
 
 ## Adding a string
 

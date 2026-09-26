@@ -1,13 +1,13 @@
 ---
 name: new-list-screen
-description: Generate a new UI/VM module pairing with a scrolling list screen — blurred top bar, pull-to-refresh, shimmer loading, and Loading/Empty/Failure/Success states. Uses ListSchedulesScreen as the reference template.
+description: Generate a new UI/VM module pairing with a scrolling list screen - blurred top bar, pull-to-refresh, shimmer loading, and Loading/Empty/Failure/Success states. Uses ListSchedulesScreen as the reference template.
 argument-hint: "<FeatureName> <gradle-module-path>"
 ---
 
 Generate a pair of VM and UI Gradle modules for a new scrolling list screen, following the exact patterns from
 `aktual-budget:schedules`.
 
-## Before starting — ask one question
+## Before starting - ask one question
 
 **Ask the user:** "Is this feature budget-scoped? (i.e. does it live inside an open budget, using `BudgetNavEntryContributor` / `BudgetNavScope` / `BudgetNavKey`?)"
 
@@ -18,8 +18,8 @@ Wait for the answer, then proceed. Use `{budgetScoped}` = `true` or `false` to s
 
 `$ARGUMENTS` contains two space-separated values:
 
-- **FeatureName** — PascalCase singular name for the feature, e.g. `Rules`
-- **GradleModulePath** — colon-separated path **without** a leading colon, e.g. `aktual-budget:rules`
+- **FeatureName** - PascalCase singular name for the feature, e.g. `Rules`
+- **GradleModulePath** - colon-separated path **without** a leading colon, e.g. `aktual-budget:rules`
 
 ## Derived values
 
@@ -39,7 +39,7 @@ The `List{Name}` prefix (e.g. `ListRules`) is used for all list-specific classes
 
 ---
 
-## Step 1 — Create the VM module
+## Step 1 - Create the VM module
 
 ### `{dir}/vm/build.gradle.kts`
 
@@ -58,7 +58,7 @@ kotlin {
 
 ### `{dir}/vm/src/commonMain/kotlin/{pkg}/vm/{Name}.kt`
 
-Placeholder item type — replace with the real model once defined.
+Placeholder item type - replace with the real model once defined.
 
 ```kotlin
 package {pkg}.vm
@@ -118,7 +118,7 @@ class List{Name}ViewModel : ViewModel() {
 }
 ```
 
-## Step 2 — Create the UI module
+## Step 2 - Create the UI module
 
 ### `{dir}/ui/build.gradle.kts`
 
@@ -182,7 +182,7 @@ internal object List{Name}DS {
 
 ### `{dir}/ui/src/commonMain/kotlin/{pkg}/ui/list/List{Name}Item.kt`
 
-Skeleton item + shimmer — replace the body of `List{Name}Item` with real content once the model is defined.
+Skeleton item + shimmer - replace the body of `List{Name}Item` with real content once the model is defined.
 
 ```kotlin
 package {pkg}.ui.list
@@ -504,7 +504,7 @@ class {Name}NavEntryContributor : NavEntryContributor {
 
 ---
 
-## Step 3 — Register in settings.gradle.kts
+## Step 3 - Register in settings.gradle.kts
 
 Open `settings.gradle.kts` and add both new module paths to the `include(...)` block, maintaining alphabetical order:
 
@@ -515,12 +515,12 @@ Open `settings.gradle.kts` and add both new module paths to the `include(...)` b
 
 ---
 
-## Step 4 — Add l10n strings
+## Step 4 - Add l10n strings
 
 Open `aktual-core/l10n/src/commonMain/composeResources/values/strings-{feature-area}.xml`
 (create a new file `strings-{name}.xml` if no appropriate file exists).
 
-Add these strings — adjust wording as needed:
+Add these strings - adjust wording as needed:
 
 ```xml
 <string name="list_{name}_title">{Name}</string>
@@ -540,7 +540,7 @@ and `Strings.list{Name}FailureMessage`. After the catalog runs these will be gen
 
 ---
 
-## Step 5 — Compile both modules
+## Step 5 - Compile both modules
 
 ```bash
 ./gradlew {vmGradle}:compileAll {uiGradle}:compileAll --continue 2>&1 | grep -E "^e: |error:|FAILED|BUILD|Exception" | head -100

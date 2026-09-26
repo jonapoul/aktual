@@ -14,12 +14,12 @@ its contents without leaving the project directory.
 ## Input
 
 Expect coordinates in one of these forms:
-- `group:artifact:version` — extract the main JAR (classes + resources)
-- `group:artifact:version:sources` — extract the sources JAR instead
-- `group:artifact` — look up the version from `gradle/libs.versions.toml` first
-- `group:artifact:sources` — look up the version, then extract the sources JAR
+- `group:artifact:version` - extract the main JAR (classes + resources)
+- `group:artifact:version:sources` - extract the sources JAR instead
+- `group:artifact` - look up the version from `gradle/libs.versions.toml` first
+- `group:artifact:sources` - look up the version, then extract the sources JAR
 
-## Step 0 — Resolve version if omitted
+## Step 0 - Resolve version if omitted
 
 If the version field is missing or the classifier is `sources` in the third position,
 look it up from `gradle/libs.versions.toml` before proceeding.
@@ -60,15 +60,15 @@ build/dependency-browser/<group>/<artifact>/<version>-sources/
 
 ## Steps
 
-### 1 — Check if already extracted
+### 1 - Check if already extracted
 
 ```bash
 ls build/dependency-browser/<group>/<artifact>/<version>[-sources]/ 2>/dev/null
 ```
 
-If files are listed, report the extraction dir and **stop** — do not re-extract.
+If files are listed, report the extraction dir and **stop** - do not re-extract.
 
-### 2 — Locate the JAR in the Gradle cache
+### 2 - Locate the JAR in the Gradle cache
 
 The local Gradle cache lives at `~/.gradle/caches/modules-2/files-2.1/`. Search it:
 
@@ -98,7 +98,7 @@ If still not found, use Gradle to fetch and resolve it first:
 Then advise the caller to ensure the dependency appears in any configuration in
 `build.gradle.kts` so Gradle resolves it.
 
-### 3 — Create the target directory and extract
+### 3 - Create the target directory and extract
 
 ```bash
 mkdir -p build/dependency-browser/<group>/<artifact>/<version>[-sources]
@@ -109,7 +109,7 @@ jar xf /path/to/found.jar \
 
 (`jar xf --dir=` requires JDK 9+; fall back to `cd <target> && jar xf <absolute-path>` if needed.)
 
-### 4 — Report
+### 4 - Report
 
 Print a short summary:
 
@@ -126,9 +126,9 @@ find build/dependency-browser/<group>/<artifact>/<version>[-sources]/ -maxdepth 
 
 ## Rules
 
-1. **Never extract to `/tmp`** — always use `build/dependency-browser/` under the project root
+1. **Never extract to `/tmp`** - always use `build/dependency-browser/` under the project root
 2. **Skip re-extraction** if the target directory already exists and is non-empty
-3. Use **version-specific directories** — never mix versions of the same artifact
+3. Use **version-specific directories** - never mix versions of the same artifact
 4. Do **not** modify any source files in the project
-5. Do **not** run full Gradle builds — only `find` / `jar` / `mkdir` commands are needed in the happy path
+5. Do **not** run full Gradle builds - only `find` / `jar` / `mkdir` commands are needed in the happy path
 6. Report the extraction path clearly so the caller knows where to browse

@@ -331,7 +331,7 @@ private fun TagsList(
   onAction: ListTagsActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  // only one row may be swiped open at a time — opening another closes the previous one
+  // only one row may be swiped open at a time - opening another closes the previous one
   var openTagId by remember { mutableStateOf<TagId?>(null) }
 
   LazyColumn(

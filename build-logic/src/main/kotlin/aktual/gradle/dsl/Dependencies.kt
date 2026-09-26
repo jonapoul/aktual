@@ -13,7 +13,7 @@ fun KMPExtension.androidHostTestDependencies(
 ): NamedDomainObjectProvider<KotlinSourceSet> =
   sourceSets.named("androidHostTest") { ss -> ss.dependencies(handler) }
 
-// Local replacements for blueprint's jvmMain/jvmTest helpers — the JVM target is named
+// Local replacements for blueprint's jvmMain/jvmTest helpers - the JVM target is named
 // "desktop", so its source sets are desktopMain/desktopTest rather than jvmMain/jvmTest
 fun KMPExtension.desktopMainDependencies(
   handler: KotlinDependencyHandler.() -> Unit

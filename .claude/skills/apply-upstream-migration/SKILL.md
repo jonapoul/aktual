@@ -1,12 +1,12 @@
 ---
 name: apply-upstream-migration
-description: Apply a new upstream Actual migration to Aktual — update MigrateDatabase.kt, SQLDelight .sq files, Adapters, model types, and the migration test. Triggered when last-known-migration.txt is updated.
+description: Apply a new upstream Actual migration to Aktual - update MigrateDatabase.kt, SQLDelight .sq files, Adapters, model types, and the migration test. Triggered when last-known-migration.txt is updated.
 argument-hint: "<migration-filename>"
 ---
 
 Apply a new upstream Actual database migration to Aktual's database layer.
 
-Do NOT ask clarifying questions — just execute.
+Do NOT ask clarifying questions - just execute.
 
 ## Arguments
 
@@ -55,7 +55,7 @@ All `.sq` files: `aktual-budget/data/db/src/commonMain/sqldelight/aktual/budget/
 
 Types live in `aktual-budget/model/src/commonMain/kotlin/aktual/budget/model/`.
 
-**New table ID** — add to `Ids.kt`, following the existing value class pattern:
+**New table ID** - add to `Ids.kt`, following the existing value class pattern:
 ```kotlin
 @JvmInline
 @Serializable
@@ -65,7 +65,7 @@ value class FooId(val value: String) : Comparable<FooId> {
 }
 ```
 
-**New JSON column type** — check the upstream TypeScript type at `actual/packages/loot-core/src/types/models/` in the parent repo, then create a new file:
+**New JSON column type** - check the upstream TypeScript type at `actual/packages/loot-core/src/types/models/` in the parent repo, then create a new file:
 - Discriminated union → `sealed interface` + `JsonContentPolymorphicSerializer` (see `CleanupTemplate.kt` as a reference)
 - Plain object → `@Serializable data class`
 - Use typed IDs (e.g. `FooId`) for any ID fields, not raw `String`
@@ -111,10 +111,10 @@ private suspend fun Migrator.migrate1778510362740() =
 ```
 
 Rules:
-- **One String per DDL statement** — `driver.execute()` doesn't support semicolon-separated multi-statement strings
-- **`CREATE TABLE IF NOT EXISTS`** — always emit this form, even when upstream wrote a bare `CREATE TABLE`; fresh databases already have the table from the schema
-- **`ALTER TABLE ... ADD COLUMN`** — use as-is; the `version !in previousMigrations` guard handles idempotency for existing databases
-- Never call `BudgetDatabase.Schema.migrate()` — upstream doesn't use `user_version`
+- **One String per DDL statement** - `driver.execute()` doesn't support semicolon-separated multi-statement strings
+- **`CREATE TABLE IF NOT EXISTS`** - always emit this form, even when upstream wrote a bare `CREATE TABLE`; fresh databases already have the table from the schema
+- **`ALTER TABLE ... ADD COLUMN`** - use as-is; the `version !in previousMigrations` guard handles idempotency for existing databases
+- Never call `BudgetDatabase.Schema.migrate()` - upstream doesn't use `user_version`
 
 ### 8. Update the migration test
 
@@ -128,7 +128,7 @@ checkMigration1778510362740(db)
 
 Add the check function. The query must reference the new column or table so it fails to compile if the schema change wasn't applied.
 
-**New table** — query by ID, expect null:
+**New table** - query by ID, expect null:
 ```kotlin
 // Adds cleanup_groups table
 private suspend fun checkMigration1778510362740(db: BudgetDatabase) {
@@ -137,7 +137,7 @@ private suspend fun checkMigration1778510362740(db: BudgetDatabase) {
 }
 ```
 
-**New column on an existing table** — use (or add) a query that selects that column:
+**New column on an existing table** - use (or add) a query that selects that column:
 ```kotlin
 // Adds custom_upcoming_length column to schedules
 private suspend fun checkMigration1769000000000(db: BudgetDatabase) {
@@ -158,7 +158,7 @@ Fix any adapter or schema errors before declaring done.
 
 ## Important Notes
 
-- Always check the upstream TypeScript types when adding a JSON column — the Kotlin model must match the serialised shape exactly
-- `schemas/1.db` is the SQLDelight schema snapshot used for fresh database creation — it is regenerated automatically when SQLDelight compiles the `.sq` files
+- Always check the upstream TypeScript types when adding a JSON column - the Kotlin model must match the serialised shape exactly
+- `schemas/1.db` is the SQLDelight schema snapshot used for fresh database creation - it is regenerated automatically when SQLDelight compiles the `.sq` files
 - The `__migrations__` table tracks which Aktual migrations have run; upstream Actual's own migration tracking is completely separate
-- The migration SQL runs against **existing** Actual databases opened from file — fresh databases already contain all tables/columns from the schema, hence `CREATE TABLE IF NOT EXISTS`
+- The migration SQL runs against **existing** Actual databases opened from file - fresh databases already contain all tables/columns from the schema, hence `CREATE TABLE IF NOT EXISTS`
