@@ -25,6 +25,25 @@ import kotlinx.serialization.json.contentOrNull
 @Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ChartDataLoader(private val dao: ReportsDao, private val calendar: Calendar) {
+  fun load(meta: ReportMeta): Flow<ChartData> =
+    when (meta) {
+      is AgeOfMoneyReportMeta -> ageOfMoney(meta)
+      is CashFlowReportMeta -> cashFlow(meta)
+      is CrossoverReportMeta -> crossover(meta)
+      is MarkdownReportMeta -> text(meta)
+      is NetWorthReportMeta -> netWorth(meta)
+      is BalanceForecastReportMeta,
+      is BudgetAnalysisReportMeta,
+      is CalendarReportMeta,
+      is CustomReportMeta,
+      is FormulaReportMeta,
+      is MonteCarloReportMeta,
+      is SankeyReportMeta,
+      is SpendingReportMeta,
+      is SummaryReportMeta,
+      is UnsupportedReportMeta -> unsupported(meta, ReportType)
+    }
+
   fun text(meta: MarkdownReportMeta): Flow<ChartData> = flowOf(TextData(meta.content))
 
   // packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.tsx
