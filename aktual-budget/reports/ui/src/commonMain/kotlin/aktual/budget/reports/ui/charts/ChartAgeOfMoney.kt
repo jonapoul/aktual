@@ -121,8 +121,11 @@ private fun Header(
       val age = data.currentAge
       Text(
         text =
-          if (age == null) Strings.reportsAgeOfMoneyNone
-          else Plurals.reportsAgeOfMoneyDays(age, age),
+          if (age == null) {
+            Strings.reportsAgeOfMoneyNone
+          } else {
+            Plurals.reportsAgeOfMoneyDays(age, age)
+          },
         textAlign = End,
         style = typography.bodyLarge,
         color = ageColor(age),
