@@ -43,7 +43,7 @@ internal constructor(
   private val chartDataLoader: ChartDataLoader,
   private val dashboardDao: DashboardDao,
   private val customReportsDao: CustomReportsDao,
-  private val decoder: DashboardItemDecoder,
+  decoder: DashboardItemDecoder,
 ) : ViewModel() {
   val items: StateFlow<ImmutableList<DashboardItem>> =
     dashboardDao
