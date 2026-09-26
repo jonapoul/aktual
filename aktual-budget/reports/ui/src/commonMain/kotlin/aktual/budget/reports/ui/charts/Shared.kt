@@ -22,9 +22,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
@@ -186,6 +188,22 @@ internal fun dateRange(start: YearMonth, end: YearMonth) =
 @Composable
 internal fun dateRange(months: ImmutableCollection<YearMonth>): String =
   dateRange(months.min(), months.max())
+
+// Shared so the subtitle under each chart's title is styled the same across report types
+@Composable
+internal fun DateRangeText(
+  text: String,
+  modifier: Modifier = Modifier,
+  color: Color = colors.pageTextSubdued,
+) =
+  Text(
+    modifier = modifier,
+    text = text,
+    color = color,
+    overflow = Ellipsis,
+    maxLines = 1,
+    style = typography.bodyMedium,
+  )
 
 @Composable
 internal fun Footer(title: String, text: String, modifier: Modifier = Modifier) =
