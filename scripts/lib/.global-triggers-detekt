@@ -1,0 +1,4 @@
+/.editorconfig
+/build-logic/
+/config/detekt*.yml
+/detekt-rules/

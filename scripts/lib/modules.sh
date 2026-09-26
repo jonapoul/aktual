@@ -16,8 +16,13 @@ all_gradle_modules() {
 }
 
 # List of repo-root-relative patterns (in .gitignore syntax) that, when changed, affect
-# every module and so should trigger a run across all of them.
+# every module and so should trigger a run across all of them. Callers can point this at a
+# narrower file after sourcing, e.g. when a task only depends on a few config files.
 GITIGNORE_TRIGGERS="$MODULES_LIB_DIR/.global-triggers"
+
+# Optional regex for changed lines in gradle/libs.versions.toml. When set, a catalog change only
+# triggers a run across all modules if one of its added/removed lines matches.
+CATALOG_TRIGGER_PATTERN=""
 
 # Return 0 if any of the newline-separated paths on stdin match a pattern in
 # .global-triggers. Matching is delegated to `git check-ignore` against a throwaway
@@ -33,6 +38,16 @@ matches_gitignore_triggers() {
   fi
   rm -rf "$tmp"
   return "$rc"
+}
+
+# Return 0 if CATALOG_TRIGGER_PATTERN is set and matches a line of the version catalog that
+# changed since the given ref.
+# Args: $1 = base ref.
+matches_catalog_trigger() {
+  [[ -n "$CATALOG_TRIGGER_PATTERN" ]] || return 1
+  local lines
+  lines=$(git diff -U0 "$1" -- gradle/libs.versions.toml 2>/dev/null | grep -E '^[+-][^+-]' || true)
+  grep -qE "$CATALOG_TRIGGER_PATTERN" <<< "$lines"
 }
 
 # Print the Gradle module paths (e.g. :aktual-core:ui) that own the given changed files.
@@ -99,7 +114,7 @@ run_changed_module_task() {
   fi
 
   local modules
-  if printf '%s\n' "$changed_files" | matches_gitignore_triggers; then
+  if printf '%s\n' "$changed_files" | matches_gitignore_triggers || matches_catalog_trigger "$merge_base"; then
     echo "Build/config files changed since $base_branch ($merge_base_short) - running on all modules."
     modules=$(all_gradle_modules)
   else

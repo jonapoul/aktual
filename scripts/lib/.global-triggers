@@ -1,5 +1,6 @@
 /.editorconfig
-/.github/
+/.github/actions/
+/.github/gradle.properties
 /.java-version
 /build-logic/
 /build.gradle.kts
