@@ -4,14 +4,14 @@ Preferences and settings, split into `vm` (state) and `ui` (Compose).
 
 ## Adding a new setting
 
-1. **Declare it.** Pick the right interface in `aktual-prefs/src/.../` — `AppPreferences`, `CurrencyPreferences`, `FormatPreferences`, `SystemUiPreferences`, or `ThemePreferences` — and add `val myPref: Preference<T>`. Implement in the matching `*PreferencesImpl.kt` using `dataStore.boolean/float/int/string/translated(...).required()`.
+1. **Declare it.** Pick the right interface in `aktual-prefs/src/.../` - `AppPreferences`, `CurrencyPreferences`, `FormatPreferences`, `SystemUiPreferences`, or `ThemePreferences` - and add `val myPref: Preference<T>`. Implement in the matching `*PreferencesImpl.kt` using `dataStore.boolean/float/int/string/translated(...).required()`.
 
 1. **Feed a config (if needed).** If the pref contributes to a config object (e.g. `BlurConfig`, `FormatConfig`), update the corresponding use case in `aktual-app/nav/src/commonMain/.../UseCases.kt`.
 
 1. **Add to state.** In `aktual-prefs/vm/.../SettingsScreenState.kt` add a field to the relevant `*ConfigState` using the appropriate wrapper:
-   - `BooleanPreference` — toggle
-   - `SliderPreference` — float slider (wrap in a factory for range; see `BlurRadiusPreference`)
-   - `ListPreference<T>` — enum dropdown
+   - `BooleanPreference` - toggle
+   - `SliderPreference` - float slider (wrap in a factory for range; see `BlurRadiusPreference`)
+   - `ListPreference<T>` - enum dropdown
 
 1. **Collect in the VM.** In `SettingsViewModel.kt`'s relevant `*State()` composable:
    ```kotlin

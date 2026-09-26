@@ -39,7 +39,7 @@ internal object TagsPreview {
       numTransactions = 10,
     )
 
-  // no explicit color — exercises the theme note-tag fallback
+  // no explicit color - exercises the theme note-tag fallback
   val uncolored =
     TagItem(
       id = TagId("tag-4"),
