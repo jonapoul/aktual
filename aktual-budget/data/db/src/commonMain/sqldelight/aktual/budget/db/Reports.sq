@@ -50,3 +50,37 @@ LEFT JOIN accounts ta ON ta.id = p.transfer_acct
 WHERE t.is_parent = 0 AND a.offbudget = 0 AND t.amount != 0 AND t.date <= :end
   AND (p.transfer_acct IS NULL OR ta.offbudget = 1)
 ORDER BY t.date;
+
+-- packages/desktop-client/src/components/reports/spreadsheets/crossover-spreadsheet.ts createCrossoverSpreadsheet()
+crossoverExpensesByMonth:
+SELECT
+  CAST(t.date / 100 AS INTEGER) AS month,
+  c.id AS category,
+  c.is_income,
+  c.hidden,
+  IFNULL(SUM(t.amount), 0) AS total
+FROM v_transactions_internal_alive t
+JOIN categories c ON c.id = t.category AND c.tombstone = 0
+WHERE t.is_parent = 0 AND t.date >= :start AND t.date <= :end
+GROUP BY month, c.id;
+
+crossoverStartingBalances:
+SELECT
+  a.id AS account,
+  a.tombstone,
+  IFNULL(SUM(t.amount), 0) AS total
+FROM v_transactions_internal_alive t
+JOIN accounts a ON a.id = t.account
+WHERE t.is_parent = 0 AND t.date < :start
+GROUP BY a.id;
+
+crossoverBalancesByMonth:
+SELECT
+  CAST(t.date / 100 AS INTEGER) AS month,
+  a.id AS account,
+  a.tombstone,
+  IFNULL(SUM(t.amount), 0) AS total
+FROM v_transactions_internal_alive t
+JOIN accounts a ON a.id = t.account
+WHERE t.is_parent = 0 AND t.date >= :start AND t.date <= :end
+GROUP BY month, a.id;

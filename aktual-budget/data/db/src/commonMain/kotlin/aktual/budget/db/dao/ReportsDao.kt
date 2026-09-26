@@ -2,6 +2,9 @@ package aktual.budget.db.dao
 
 import aktual.budget.db.AgeOfMoneyTransactions
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.CrossoverBalancesByMonth
+import aktual.budget.db.CrossoverExpensesByMonth
+import aktual.budget.db.CrossoverStartingBalances
 import aktual.budget.db.NetWorthByMonth
 import aktual.budget.db.TransactionDateBounds
 import aktual.budget.db.reports.CashFlowByMonth
@@ -43,4 +46,31 @@ class ReportsDao(database: BudgetDatabase, private val contexts: CoroutineContex
 
   fun observeAgeOfMoneyTransactions(end: LocalDate): Flow<List<AgeOfMoneyTransactions>> =
     queries.ageOfMoneyTransactions(end).asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  fun observeCrossoverExpensesByMonth(
+    start: LocalDate,
+    end: LocalDate,
+  ): Flow<List<CrossoverExpensesByMonth>> =
+    queries
+      .crossoverExpensesByMonth(start, end)
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
+
+  fun observeCrossoverStartingBalances(start: LocalDate): Flow<List<CrossoverStartingBalances>> =
+    queries
+      .crossoverStartingBalances(start)
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
+
+  fun observeCrossoverBalancesByMonth(
+    start: LocalDate,
+    end: LocalDate,
+  ): Flow<List<CrossoverBalancesByMonth>> =
+    queries
+      .crossoverBalancesByMonth(start, end)
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
 }

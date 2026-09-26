@@ -5,6 +5,7 @@ import aktual.budget.reports.ui.charts.JUL_2025
 import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_AGE_OF_MONEY_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
+import aktual.budget.reports.ui.charts.PREVIEW_CROSSOVER_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CUSTOM_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_SHORT_TEXT_DATA
@@ -206,7 +207,7 @@ private fun WidgetType.sampleData(): ChartData =
     WidgetType.Calendar -> THREE_MONTHS
     WidgetType.BudgetAnalysis -> TODO("https://github.com/jonapoul/aktual/issues/839")
     WidgetType.Formula -> TODO("https://github.com/jonapoul/aktual/issues/1054")
-    WidgetType.Crossover -> TODO("https://github.com/jonapoul/aktual/issues/1540")
+    WidgetType.Crossover -> PREVIEW_CROSSOVER_DATA
     WidgetType.Sankey -> TODO("https://github.com/jonapoul/aktual/issues/1541")
     WidgetType.BalanceForecast -> TODO("https://github.com/jonapoul/aktual/issues/1542")
     WidgetType.AgeOfMoney -> PREVIEW_AGE_OF_MONEY_DATA
@@ -220,7 +221,6 @@ private fun WidgetType.isEnabled(): Boolean =
     WidgetType.BudgetAnalysis,
     WidgetType.Formula,
     WidgetType.Custom,
-    WidgetType.Crossover,
     WidgetType.Sankey,
     WidgetType.BalanceForecast,
     WidgetType.MonteCarlo,
@@ -232,13 +232,14 @@ private fun WidgetType.isEnabled(): Boolean =
     WidgetType.Markdown,
     WidgetType.Summary,
     WidgetType.Calendar,
+    WidgetType.Crossover,
     WidgetType.AgeOfMoney -> true
   }
 
 // no sample data for these yet, so don't offer them
 private val ChoosableTypes =
   WidgetType.known
-    .filter { it !in setOf<WidgetType>(Crossover, Sankey, BalanceForecast, MonteCarlo) }
+    .filter { it !in setOf<WidgetType>(Sankey, BalanceForecast, MonteCarlo) }
     .toImmutableList()
 
 private val REPORT_HEIGHT = 250.dp
