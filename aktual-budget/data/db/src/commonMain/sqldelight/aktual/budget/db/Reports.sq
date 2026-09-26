@@ -1,0 +1,40 @@
+-- packages/loot-core/src/server/transactions/app.ts getEarliestTransaction() / getLatestTransaction()
+transactionDateBounds:
+SELECT MIN(date) AS earliest, MAX(date) AS latest
+FROM v_transactions_internal_alive
+WHERE is_child = 0;
+
+-- packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.tsx cashFlowByDate()
+cashFlowStartingBalance:
+SELECT IFNULL(SUM(t.amount), 0) AS total
+FROM v_transactions_internal_alive t
+JOIN accounts a ON a.id = t.account
+WHERE t.is_parent = 0 AND a.offbudget = 0 AND t.date < :start;
+
+cashFlowByMonth:
+SELECT
+  CAST(t.date / 100 AS INTEGER) AS month,
+  p.transfer_acct IS NOT NULL AS is_transfer,
+  t.amount > 0 AS is_income,
+  IFNULL(SUM(t.amount), 0) AS total
+FROM v_transactions_internal_alive t
+JOIN accounts a ON a.id = t.account
+LEFT JOIN payees p ON p.id = t.payee
+WHERE t.is_parent = 0 AND a.offbudget = 0 AND t.amount != 0 AND t.date >= :start AND t.date <= :end
+GROUP BY month, is_transfer, is_income;
+
+-- packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts createSpreadsheet()
+netWorthStartingBalance:
+SELECT IFNULL(SUM(t.amount), 0) AS total
+FROM v_transactions_internal_alive t
+JOIN accounts a ON a.id = t.account AND a.tombstone = 0
+WHERE t.is_parent = 0 AND t.date < :start;
+
+netWorthByMonth:
+SELECT
+  CAST(t.date / 100 AS INTEGER) AS month,
+  IFNULL(SUM(t.amount), 0) AS total
+FROM v_transactions_internal_alive t
+JOIN accounts a ON a.id = t.account AND a.tombstone = 0
+WHERE t.is_parent = 0 AND t.date >= :start AND t.date <= :end
+GROUP BY month;

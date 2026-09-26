@@ -29,7 +29,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -69,16 +68,16 @@ internal constructor(
 
   fun observeChartData(item: DashboardItem): Flow<ChartData> =
     when (val meta = item.meta) {
-      is BudgetAnalysisReportMeta -> flowOf()
-      is CalendarReportMeta -> flowOf()
       is CashFlowReportMeta -> chartDataLoader.cashFlow(meta)
-      is CustomReportMeta -> flowOf()
-      is UnsupportedReportMeta -> flowOf()
-      is FormulaReportMeta -> flowOf()
-      is MarkdownReportMeta -> flowOf()
-      is NetWorthReportMeta -> flowOf()
-      is SpendingReportMeta -> flowOf()
-      is SummaryReportMeta -> flowOf()
+      is MarkdownReportMeta -> chartDataLoader.text(meta)
+      is NetWorthReportMeta -> chartDataLoader.netWorth(meta)
+      is BudgetAnalysisReportMeta,
+      is CalendarReportMeta,
+      is CustomReportMeta,
+      is FormulaReportMeta,
+      is SpendingReportMeta,
+      is SummaryReportMeta,
+      is UnsupportedReportMeta -> chartDataLoader.unsupported(meta, ReportType)
     }
 
   private fun dashboardItem(widget: Dashboard): DashboardItem? {

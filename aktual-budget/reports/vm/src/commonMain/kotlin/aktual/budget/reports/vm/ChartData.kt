@@ -2,6 +2,7 @@ package aktual.budget.reports.vm
 
 import aktual.budget.model.Amount
 import aktual.budget.model.DateRangeType
+import aktual.budget.model.WidgetType
 import aktual.core.model.Percent
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
@@ -13,7 +14,7 @@ import kotlinx.datetime.YearMonthRange
 @Immutable sealed interface ChartData
 
 @Immutable
-data class CashFlowData(val title: String, val items: ImmutableMap<YearMonth, CashFlowDatum>) :
+data class CashFlowData(val title: String?, val items: ImmutableMap<YearMonth, CashFlowDatum>) :
   ChartData
 
 @Immutable
@@ -26,7 +27,7 @@ data class CashFlowDatum(
 )
 
 @Immutable
-data class NetWorthData(val title: String, val items: ImmutableMap<YearMonth, Amount>) : ChartData
+data class NetWorthData(val title: String?, val items: ImmutableMap<YearMonth, Amount>) : ChartData
 
 @Immutable
 sealed interface SummaryData : ChartData, DateRange {
@@ -172,6 +173,19 @@ sealed interface SpendingComparison {
 }
 
 @Immutable data class TextData(val content: String) : ChartData
+
+@Immutable
+data class UnsupportedData(
+  val reason: UnsupportedReason,
+  val type: WidgetType,
+  val name: String?,
+) : ChartData
+
+@Immutable
+enum class UnsupportedReason {
+  Filters,
+  ReportType,
+}
 
 @Immutable
 data class CustomData(val title: String, val mode: DateRangeMode, val range: ReportTimeRange) :

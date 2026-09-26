@@ -9,6 +9,7 @@ import aktual.budget.reports.vm.NetWorthData
 import aktual.budget.reports.vm.SpendingData
 import aktual.budget.reports.vm.SummaryData
 import aktual.budget.reports.vm.TextData
+import aktual.budget.reports.vm.UnsupportedData
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
@@ -28,4 +29,5 @@ internal fun ReportChart(
     is SpendingData -> SpendingChart(data, compact, modifier, includeHeader)
     is TextData -> TextChart(data, compact, onAction, modifier)
     is CustomData -> CustomChart(data, compact, modifier, includeHeader)
+    is UnsupportedData -> UnsupportedChart(data, modifier)
   }
