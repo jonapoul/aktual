@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import atlas.core.LinkStyle.Dashed
 import atlas.core.LinkStyle.Solid
 import atlas.d2.ArrowType.Arrow
@@ -5,6 +7,7 @@ import atlas.d2.Direction.Down
 import atlas.d2.ElkAlgorithm.Layered
 import atlas.d2.FileFormat.Png
 import atlas.d2.Theme.DarkFlagshipTerrastruct
+import com.github.burrunan.s3cache.AwsS3BuildCache
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
@@ -40,6 +43,7 @@ plugins {
   id("org.jetbrains.kotlin.multiplatform") version "2.4.20" apply false
 
   id("com.autonomousapps.build-health") version "3.19.2"
+  id("com.github.burrunan.s3-build-cache") version "1.9.9"
   id("com.gradle.develocity") version "4.5.1"
   id("dev.jonpoulton.atlas") version "0.7.0"
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
@@ -47,6 +51,23 @@ plugins {
 }
 
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
+
+val url = providers.environmentVariable("S3_BUILD_CACHE_ENDPOINT").filter(String::isNotBlank)
+val cacheBucket = providers.environmentVariable("S3_BUILD_CACHE_BUCKET").filter(String::isNotBlank)
+
+if (url.isPresent && cacheBucket.isPresent) {
+  logger.lifecycle("Remote caching enabled")
+  buildCache.remote<AwsS3BuildCache> {
+    endpoint = url.get()
+    bucket = cacheBucket.get()
+    region = "auto"
+    forcePathStyle = true
+    isReducedRedundancy = false
+    isPush = providers.environmentVariable("CI").isPresent
+  }
+} else {
+  logger.warn("Remote caching disabled!")
+}
 
 develocity.buildScan {
   if (!gradle.startParameter.isBuildScan) {
