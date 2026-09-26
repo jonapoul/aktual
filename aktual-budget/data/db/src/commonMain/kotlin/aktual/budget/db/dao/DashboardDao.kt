@@ -15,7 +15,6 @@ import app.cash.sqldelight.coroutines.mapToList
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
@@ -28,7 +27,7 @@ class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineCont
     type: WidgetType,
     x: Long,
     y: Long,
-    meta: JsonObject,
+    meta: JsonObject?,
     width: Long = DEFAULT_WIDTH,
     height: Long = DEFAULT_HEIGHT,
   ) = queries.withoutResult {
@@ -36,7 +35,7 @@ class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineCont
   }
 
   fun observeAll(): Flow<List<Dashboard>> =
-    queries.getAll().asFlow().mapToList(contexts.default).filterNotNull().distinctUntilChanged()
+    queries.getAll().asFlow().mapToList(contexts.default).distinctUntilChanged()
 
   suspend fun deleteById(id: WidgetId): Long = queries.withResult { delete(id) }
 
@@ -47,7 +46,8 @@ class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineCont
   // Patches the stored json rather than re-encoding our model, so values we don't recognise are
   // kept
   suspend fun rename(id: WidgetId, name: String) = queries.withoutResult {
-    val meta = getMeta(id).awaitAsOneOrNull()?.meta ?: return@withoutResult
+    val row = getMeta(id).awaitAsOneOrNull() ?: return@withoutResult
+    val meta = row.meta ?: JsonObject(emptyMap())
     updateMeta(JsonObject(meta + ("name" to JsonPrimitive(name))), id)
   }
 

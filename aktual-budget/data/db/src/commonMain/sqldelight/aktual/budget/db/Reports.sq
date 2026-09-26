@@ -38,3 +38,15 @@ FROM v_transactions_internal_alive t
 JOIN accounts a ON a.id = t.account AND a.tombstone = 0
 WHERE t.is_parent = 0 AND t.date >= :start AND t.date <= :end
 GROUP BY month;
+
+-- packages/desktop-client/src/components/reports/spreadsheets/age-of-money-spreadsheet.ts createAgeOfMoneySpreadsheet()
+-- Transfers between on-budget accounts just move money around the pool, so they're left out
+ageOfMoneyTransactions:
+SELECT t.date, t.amount
+FROM v_transactions_internal_alive t
+JOIN accounts a ON a.id = t.account
+LEFT JOIN payees p ON p.id = t.payee
+LEFT JOIN accounts ta ON ta.id = p.transfer_acct
+WHERE t.is_parent = 0 AND a.offbudget = 0 AND t.amount != 0 AND t.date <= :end
+  AND (p.transfer_acct IS NULL OR ta.offbudget = 1)
+ORDER BY t.date;

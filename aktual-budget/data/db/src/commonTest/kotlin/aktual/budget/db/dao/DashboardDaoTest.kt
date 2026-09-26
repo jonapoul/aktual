@@ -30,6 +30,17 @@ internal class DashboardDaoTest {
     assertThat(meta).isEqualTo(json("""{"name":"new","mode":"new-mode","extra":1}"""))
   }
 
+  @Test
+  fun `Renaming a widget with no meta`() = runDaoTest {
+    val id = WidgetId("abc-123")
+    insert(id, type = AgeOfMoney, x = 0, y = 0, meta = null)
+
+    rename(id, "new")
+
+    val meta = observeAll().first().single().meta
+    assertThat(meta).isEqualTo(json("""{"name":"new"}"""))
+  }
+
   private fun json(string: String): JsonObject = Json.decodeFromString(string)
 
   private fun runDaoTest(action: suspend DashboardDao.(TestScope) -> Unit) =
