@@ -26,11 +26,13 @@ internal class DashboardItemDecoder {
     )
   }
 
-  private fun decodeMeta(type: WidgetType, meta: JsonObject): ReportMeta =
-    try {
+  private fun decodeMeta(type: WidgetType, meta: JsonObject): ReportMeta {
+    if (type == Unknown) return UnsupportedReportMeta(type, meta, reason = "Unknown widget type")
+    return try {
       Json.decodeFromJsonElement(ReportMeta.serializer(type), meta)
     } catch (e: SerializationException) {
       logcat.e(e) { "Failed to deserialize $type report meta: $meta" }
       UnsupportedReportMeta(type, meta, reason = e.message ?: e.toString())
     }
+  }
 }
