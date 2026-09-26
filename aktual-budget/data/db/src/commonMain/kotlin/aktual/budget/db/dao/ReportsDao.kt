@@ -1,5 +1,6 @@
 package aktual.budget.db.dao
 
+import aktual.budget.db.AgeOfMoneyTransactions
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.NetWorthByMonth
 import aktual.budget.db.TransactionDateBounds
@@ -39,4 +40,7 @@ class ReportsDao(database: BudgetDatabase, private val contexts: CoroutineContex
 
   fun observeNetWorthByMonth(start: LocalDate, end: LocalDate): Flow<List<NetWorthByMonth>> =
     queries.netWorthByMonth(start, end).asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  fun observeAgeOfMoneyTransactions(end: LocalDate): Flow<List<AgeOfMoneyTransactions>> =
+    queries.ageOfMoneyTransactions(end).asFlow().mapToList(contexts.default).distinctUntilChanged()
 }

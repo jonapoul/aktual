@@ -88,10 +88,10 @@ internal constructor(
 
   fun observeChartData(item: DashboardItem): Flow<ChartData> =
     when (val meta = item.meta) {
+      is AgeOfMoneyReportMeta -> chartDataLoader.ageOfMoney(meta)
       is CashFlowReportMeta -> chartDataLoader.cashFlow(meta)
       is MarkdownReportMeta -> chartDataLoader.text(meta)
       is NetWorthReportMeta -> chartDataLoader.netWorth(meta)
-      is AgeOfMoneyReportMeta,
       is BalanceForecastReportMeta,
       is BudgetAnalysisReportMeta,
       is CalendarReportMeta,
@@ -107,7 +107,8 @@ internal constructor(
 
   private fun dashboardItem(widget: Dashboard): DashboardItem? {
     val type = widget.type ?: return null
-    val meta = widget.meta ?: return null
+    // Upstream adds widgets with null meta, and each card falls back to its defaults
+    val meta = widget.meta ?: JsonObject(emptyMap())
     return DashboardItem(
       id = widget.id,
       width = widget.width?.toInt() ?: 0,

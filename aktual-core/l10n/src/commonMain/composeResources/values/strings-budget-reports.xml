@@ -48,6 +48,21 @@
   <string name="reports_cash_flow_footer_title">How is cash flow calculated?</string>
   <string name="reports_cash_flow_footer">Cash flow shows the balance of your budgeted accounts over time, and the amount of expenses/income each day or month. Your budgeted accounts are considered to be "cash on hand", so this gives you a picture of how available money fluctuates.</string>
 
+  <plurals name="reports_age_of_money_days">
+    <item quantity="one">%1$d day</item>
+    <item quantity="other">%1$d days</item>
+  </plurals>
+  <string name="reports_age_of_money_none">N/A</string>
+  <string name="reports_age_of_money_improving">↑ Improving</string>
+  <string name="reports_age_of_money_declining">↓ Declining</string>
+  <string name="reports_age_of_money_stable">→ Stable</string>
+  <string name="reports_age_of_money_incomplete">Incomplete data</string>
+  <string name="reports_age_of_money_axis_suffix">d</string>
+  <string name="reports_age_of_money_what_title">What is Age of Money?</string>
+  <string name="reports_age_of_money_what">Age of Money shows how many days, on average, your money sits in your budget before you spend it. A higher Age of Money means you’re spending older money, so you’re living on last month’s income rather than paycheck to paycheck. An age of 30 days or more is considered ideal - it means you’re typically spending money you earned a month ago.</string>
+  <string name="reports_age_of_money_how_title">How is it calculated?</string>
+  <string name="reports_age_of_money_how">When you spend money, it’s considered to come from your oldest income first. The age is the difference in days between when you received that income and when you spent it. The displayed value is the average age of your last 10 expenses.</string>
+
   <string name="reports_net_worth_footer_title">How is net worth calculated?</string>
   <string name="reports_net_worth_footer">Net worth shows the balance of all accounts over time, including all of your investments. Your "net worth" is considered to be the amount you’d have if you sold all your assets and paid off as much debt as possible. If you hover over the graph, you can also see the amount of assets and debt individually.</string>
 

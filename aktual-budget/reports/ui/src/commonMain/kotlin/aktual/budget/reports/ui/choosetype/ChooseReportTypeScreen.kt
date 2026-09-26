@@ -3,6 +3,7 @@ package aktual.budget.reports.ui.choosetype
 import aktual.budget.model.WidgetType
 import aktual.budget.reports.ui.charts.JUL_2025
 import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
+import aktual.budget.reports.ui.charts.PREVIEW_AGE_OF_MONEY_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CUSTOM_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
@@ -208,7 +209,7 @@ private fun WidgetType.sampleData(): ChartData =
     WidgetType.Crossover -> TODO("https://github.com/jonapoul/aktual/issues/1540")
     WidgetType.Sankey -> TODO("https://github.com/jonapoul/aktual/issues/1541")
     WidgetType.BalanceForecast -> TODO("https://github.com/jonapoul/aktual/issues/1542")
-    WidgetType.AgeOfMoney -> TODO("https://github.com/jonapoul/aktual/issues/1543")
+    WidgetType.AgeOfMoney -> PREVIEW_AGE_OF_MONEY_DATA
     WidgetType.MonteCarlo -> TODO("https://github.com/jonapoul/aktual/issues/1544")
     WidgetType.Unknown -> error("No sample data for $this")
   }
@@ -222,7 +223,6 @@ private fun WidgetType.isEnabled(): Boolean =
     WidgetType.Crossover,
     WidgetType.Sankey,
     WidgetType.BalanceForecast,
-    WidgetType.AgeOfMoney,
     WidgetType.MonteCarlo,
     WidgetType.Unknown -> false
 
@@ -231,13 +231,14 @@ private fun WidgetType.isEnabled(): Boolean =
     WidgetType.Spending,
     WidgetType.Markdown,
     WidgetType.Summary,
-    WidgetType.Calendar -> true
+    WidgetType.Calendar,
+    WidgetType.AgeOfMoney -> true
   }
 
 // no sample data for these yet, so don't offer them
 private val ChoosableTypes =
   WidgetType.known
-    .filter { it !in setOf<WidgetType>(Crossover, Sankey, BalanceForecast, AgeOfMoney, MonteCarlo) }
+    .filter { it !in setOf<WidgetType>(Crossover, Sankey, BalanceForecast, MonteCarlo) }
     .toImmutableList()
 
 private val REPORT_HEIGHT = 250.dp

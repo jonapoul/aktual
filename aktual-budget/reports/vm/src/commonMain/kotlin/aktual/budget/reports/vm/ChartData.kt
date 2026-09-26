@@ -30,6 +30,25 @@ data class CashFlowDatum(
 data class NetWorthData(val title: String?, val items: ImmutableMap<YearMonth, Amount>) : ChartData
 
 @Immutable
+data class AgeOfMoneyData(
+  val title: String?,
+  val start: YearMonth,
+  val end: YearMonth,
+  val granularity: AgeOfMoneyGranularity,
+  val items: ImmutableMap<LocalDate, Int>,
+  val currentAge: Int?,
+  val trend: AgeOfMoneyTrend,
+  val insufficientData: Boolean,
+) : ChartData
+
+@Immutable
+enum class AgeOfMoneyTrend {
+  Up,
+  Down,
+  Stable,
+}
+
+@Immutable
 sealed interface SummaryData : ChartData, DateRange {
   val title: String
 

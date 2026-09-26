@@ -1,6 +1,7 @@
 package aktual.budget.reports.ui.charts
 
 import aktual.budget.reports.ui.ActionListener
+import aktual.budget.reports.vm.AgeOfMoneyData
 import aktual.budget.reports.vm.CalendarData
 import aktual.budget.reports.vm.CashFlowData
 import aktual.budget.reports.vm.ChartData
@@ -22,6 +23,7 @@ internal fun ReportChart(
   includeHeader: Boolean = true,
 ) =
   when (data) {
+    is AgeOfMoneyData -> AgeOfMoneyChart(data, compact, modifier, includeHeader)
     is CashFlowData -> CashFlowChart(data, compact, modifier, includeHeader)
     is NetWorthData -> NetWorthChart(data, compact, modifier, includeHeader)
     is SummaryData -> SummaryChart(data, compact, onAction, modifier, includeHeader)
