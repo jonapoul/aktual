@@ -27,6 +27,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
+import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.hazedTopBar
@@ -113,6 +114,7 @@ private fun ListSchedulesScaffold(
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
+        navigationIcon = { NavDrawerIconButton() },
         title = { Title(isSearchActive, successState, onAction) },
         actions = {
           BareIconButton(

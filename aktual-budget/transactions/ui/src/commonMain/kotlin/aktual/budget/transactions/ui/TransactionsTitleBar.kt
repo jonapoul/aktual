@@ -9,8 +9,10 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.HazedTopBarState
+import aktual.core.ui.LocalNavDrawerOpener
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
@@ -31,6 +33,7 @@ internal fun TransactionsTitleBar(
   hazeState: HazedTopBarState,
   listState: LazyListState,
   loadedAccount: LoadedAccount,
+  isRoot: Boolean,
   onAction: ActionListener,
 ) {
   val title =
@@ -45,7 +48,13 @@ internal fun TransactionsTitleBar(
   TopAppBar(
     modifier = Modifier.hazedTopBar(hazeState, listState),
     colors = colors.transparentTopAppBarColors(),
-    navigationIcon = { NavBackIconButton { onAction(Action.NavBack) } },
+    navigationIcon = {
+      if (isRoot && LocalNavDrawerOpener.current != null) {
+        NavDrawerIconButton()
+      } else {
+        NavBackIconButton { onAction(Action.NavBack) }
+      }
+    },
     title = { Text(text = title, maxLines = 1, overflow = Ellipsis) },
     actions = {
       if (LocalPrivacyEnabled.current) {
@@ -73,6 +82,7 @@ private fun PreviewTransactionsTitleBar(
       hazeState = rememberHazedTopBarState(),
       listState = rememberLazyListState(),
       loadedAccount = params.data,
+      isRoot = true,
       onAction = {},
     )
   }

@@ -17,7 +17,7 @@ import dev.zacsweers.metro.ContributesIntoSet
 class TransactionsNavEntryContributor : BudgetNavEntryContributor {
   override fun EntryProviderScope<BudgetNavKey>.contribute(stack: NavStack<BudgetNavKey>) {
     budgetEntry<TransactionsNavRoute> {
-      TransactionsScreen(back = BackNavigator(stack), spec = TransactionsSpec())
+      TransactionsScreen(back = BackNavigator(stack), spec = TransactionsSpec(), isRoot = true)
     }
 
     budgetEntry<TransactionsWithTagNavRoute> { route ->

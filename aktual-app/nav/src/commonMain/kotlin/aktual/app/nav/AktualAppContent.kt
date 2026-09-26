@@ -8,6 +8,8 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.DialogBlurOverlay
 import aktual.core.ui.LocalBottomBarThemeAttrs
 import aktual.core.ui.LocalBottomSpacing
+import aktual.core.ui.LocalRootOverlay
+import aktual.core.ui.RootOverlay
 import aktual.core.ui.WithCompositionLocals
 import aktual.core.ui.hazedBottomBar
 import aktual.core.ui.rememberAppCloser
@@ -68,6 +70,7 @@ fun AktualAppContent(
   val hazeConfig by viewModel.hazeConfig.collectAsStateWithLifecycle()
 
   val hazeState = rememberHazeState()
+  val rootOverlay = remember { RootOverlay() }
 
   WithCompositionLocals(
     isPrivacyEnabled = formatConfig.isPrivacyEnabled,
@@ -84,7 +87,10 @@ fun AktualAppContent(
       Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
         var bottomStatusBarHeight by remember { mutableStateOf(0.dp) }
 
-        CompositionLocalProvider(LocalBottomSpacing provides bottomStatusBarHeight) {
+        CompositionLocalProvider(
+          LocalBottomSpacing provides bottomStatusBarHeight,
+          LocalRootOverlay provides rootOverlay,
+        ) {
           AktualNavHost(
             modifier =
               Modifier.fillMaxSize()
@@ -113,6 +119,8 @@ fun AktualAppContent(
           }
           BottomSpacing()
         }
+
+        rootOverlay.content?.invoke()
       }
     }
   }

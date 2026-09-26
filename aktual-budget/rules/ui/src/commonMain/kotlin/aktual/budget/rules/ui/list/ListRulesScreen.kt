@@ -35,6 +35,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
+import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -145,6 +146,7 @@ private fun ListRulesScaffold(
       ) {
         TopAppBar(
           colors = colors.transparentTopAppBarColors(),
+          navigationIcon = { NavDrawerIconButton() },
           title = { Text(Strings.rulesToolbar) },
           actions = { AppBarButtons(state, checkboxes, onAction) },
         )

@@ -30,6 +30,7 @@ import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LoadingScreen
 import aktual.core.ui.LocalBottomSpacing
+import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
@@ -160,6 +161,7 @@ private fun ListTagsScaffold(
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
+        navigationIcon = { NavDrawerIconButton() },
         title = { Title(isSearchActive, successState, onAction) },
         actions = {
           if (successState != null) {

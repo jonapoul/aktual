@@ -4,7 +4,7 @@ plugins { id("aktual.module.viewmodel") }
 
 kotlin {
   commonMainDependencies {
+    api(project(":aktual-budget"))
     api(project(":aktual-core:nav"))
-    api(project(":aktual-prefs"))
   }
 }

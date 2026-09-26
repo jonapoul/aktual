@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -29,6 +30,18 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
 
 val LocalPrivacyEnabled = compositionLocalOf { false }
+
+// Opens the budget nav drawer, or null when the current layout has no drawer
+val LocalNavDrawerOpener = compositionLocalOf<(() -> Unit)?> { null }
+
+// Content drawn at the app root, above the bottom status bar
+@Stable
+class RootOverlay {
+  var content: (@Composable () -> Unit)? by mutableStateOf(null)
+}
+
+val LocalRootOverlay =
+  staticCompositionLocalOf<RootOverlay> { error("No RootOverlay value provided") }
 
 internal val DefaultBottomBarThemeAttrs =
   BottomBarThemeAttrs(

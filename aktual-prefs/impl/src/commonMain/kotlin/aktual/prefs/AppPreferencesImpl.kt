@@ -39,13 +39,4 @@ class AppPreferencesImpl(dataStore: DataStore<Preferences>) : AppPreferences {
       default = null,
       translator = toStringTranslator(::BudgetId),
     )
-
-  override val navGridOrder: Preference<List<String>> =
-    dataStore
-      .translated(
-        key = stringPreferencesKey("navGridOrder"),
-        default = emptyList(),
-        translator = stringListTranslator(),
-      )
-      .required()
 }

@@ -51,7 +51,6 @@ private val materialIcons =
       Edit,
       Error,
       FilterList,
-      GridOn,
       Info,
       Key,
       LightMode,

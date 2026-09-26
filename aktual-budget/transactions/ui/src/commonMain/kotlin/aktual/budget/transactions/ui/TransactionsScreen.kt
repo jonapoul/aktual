@@ -32,6 +32,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 fun TransactionsScreen(
   back: BackNavigator,
   spec: TransactionsSpec,
+  isRoot: Boolean = false,
   viewModel: TransactionsViewModel = metroViewModel(spec),
 ) {
   val loadedAccount by viewModel.loadedAccount.collectAsStateWithLifecycle()
@@ -43,6 +44,7 @@ fun TransactionsScreen(
     loadedAccount = loadedAccount,
     format = format,
     source = viewModel,
+    isRoot = isRoot,
     onAction = { action ->
       when (action) {
         Action.NavBack -> back()
@@ -66,6 +68,7 @@ internal fun TransactionsScaffold(
   loadedAccount: LoadedAccount,
   format: TransactionsFormat,
   source: TransactionStateSource,
+  isRoot: Boolean,
   onAction: ActionListener,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -77,6 +80,7 @@ internal fun TransactionsScaffold(
         hazeState = hazeState,
         listState = listState,
         loadedAccount = loadedAccount,
+        isRoot = isRoot,
         onAction = onAction,
       )
     }
@@ -116,6 +120,7 @@ private fun PreviewTransactionsScaffold(
           TRANSACTION_2 to true,
           TRANSACTION_3 to false,
         ),
+      isRoot = true,
       onAction = {},
     )
   }

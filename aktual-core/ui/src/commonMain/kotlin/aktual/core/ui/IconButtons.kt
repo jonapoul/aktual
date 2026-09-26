@@ -3,6 +3,7 @@ package aktual.core.ui
 import aktual.core.icons.material.ArrowBack
 import aktual.core.icons.material.Check
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Menu
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import androidx.compose.foundation.background
@@ -143,6 +144,15 @@ fun BasicIconButton(
 fun NavBackIconButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
   IconButton(modifier = modifier, onClick = onClick) {
     Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
+  }
+}
+
+// Only shown when a nav drawer is available to open
+@Composable
+fun NavDrawerIconButton(modifier: Modifier = Modifier) {
+  val openDrawer = LocalNavDrawerOpener.current ?: return
+  IconButton(modifier = modifier, onClick = openDrawer) {
+    Icon(imageVector = MaterialIcons.Menu, contentDescription = Strings.budgetNavMenu)
   }
 }
 

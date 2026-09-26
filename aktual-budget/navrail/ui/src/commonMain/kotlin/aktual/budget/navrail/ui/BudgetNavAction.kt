@@ -12,8 +12,6 @@ internal data object Settings : BudgetNavAction
 
 internal data object About : BudgetNavAction
 
-internal data object EditNavGrid : BudgetNavAction
-
 @Immutable
 internal fun interface BudgetNavActionHandler {
   operator fun invoke(action: BudgetNavAction)

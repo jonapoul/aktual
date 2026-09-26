@@ -30,12 +30,12 @@ suspend fun <T : Any> NullablePreference<T>.delete() = set(null)
 
 fun <T : Any> NullablePreference<T>.asStateFlow(
   scope: CoroutineScope,
-  started: SharingStarted = SharingStarted.Eagerly,
+  started: SharingStarted = Eagerly,
 ): StateFlow<T?> = asFlow().stateIn(scope, started, default)
 
 fun <T : Any> Preference<T>.asStateFlow(
   scope: CoroutineScope,
-  started: SharingStarted = SharingStarted.Eagerly,
+  started: SharingStarted = Eagerly,
 ): StateFlow<T> = asFlow().stateIn(scope, started, default)
 
 fun <T : Any> NullablePreference<T>.required(): Preference<T> {
