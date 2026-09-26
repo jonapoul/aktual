@@ -5,16 +5,21 @@ import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
+import aktual.budget.reports.vm.AgeOfMoneyReportMeta
+import aktual.budget.reports.vm.BalanceForecastReportMeta
 import aktual.budget.reports.vm.BudgetAnalysisReportMeta
 import aktual.budget.reports.vm.CalendarReportMeta
 import aktual.budget.reports.vm.CashFlowReportMeta
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.ChartDataLoader
+import aktual.budget.reports.vm.CrossoverReportMeta
 import aktual.budget.reports.vm.CustomReportMeta
 import aktual.budget.reports.vm.FormulaReportMeta
 import aktual.budget.reports.vm.MarkdownReportMeta
+import aktual.budget.reports.vm.MonteCarloReportMeta
 import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.ReportMeta
+import aktual.budget.reports.vm.SankeyReportMeta
 import aktual.budget.reports.vm.SpendingReportMeta
 import aktual.budget.reports.vm.SummaryReportMeta
 import aktual.budget.reports.vm.UnsupportedReportMeta
@@ -54,11 +59,16 @@ internal constructor(
   fun renameReport(item: DashboardItem, name: String) {
     viewModelScope.launch {
       when (val meta = item.meta) {
+        is AgeOfMoneyReportMeta,
+        is BalanceForecastReportMeta,
         is BudgetAnalysisReportMeta,
         is CalendarReportMeta,
         is CashFlowReportMeta,
+        is CrossoverReportMeta,
         is FormulaReportMeta,
+        is MonteCarloReportMeta,
         is NetWorthReportMeta,
+        is SankeyReportMeta,
         is SpendingReportMeta,
         is SummaryReportMeta -> dashboardDao.rename(item.id, name)
 
@@ -81,10 +91,15 @@ internal constructor(
       is CashFlowReportMeta -> chartDataLoader.cashFlow(meta)
       is MarkdownReportMeta -> chartDataLoader.text(meta)
       is NetWorthReportMeta -> chartDataLoader.netWorth(meta)
+      is AgeOfMoneyReportMeta,
+      is BalanceForecastReportMeta,
       is BudgetAnalysisReportMeta,
       is CalendarReportMeta,
+      is CrossoverReportMeta,
       is CustomReportMeta,
       is FormulaReportMeta,
+      is MonteCarloReportMeta,
+      is SankeyReportMeta,
       is SpendingReportMeta,
       is SummaryReportMeta,
       is UnsupportedReportMeta -> chartDataLoader.unsupported(meta, ReportType)
