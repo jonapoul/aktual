@@ -134,11 +134,7 @@ private fun Header(
 
     data.start?.yearMonth?.let { start ->
       data.end?.yearMonth?.let { end ->
-        Text(
-          text = dateRange(start, end),
-          color = colors.pageTextSubdued,
-          style = typography.bodyMedium,
-        )
+        DateRangeText(dateRange(start, end))
       }
     }
   }

@@ -175,10 +175,10 @@ private fun RegularHeader(
   modifier: Modifier = Modifier,
 ) =
   Row(modifier = modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp).fillMaxWidth()) {
-    Text(
+    DateRangeText(
       modifier = Modifier.weight(1f),
       text = dateRange(data.items.keys),
-      overflow = Ellipsis,
+      color = colors.pageText,
     )
 
     val padding = PaddingValues(horizontal = 2.dp)
@@ -228,12 +228,7 @@ private fun CompactHeader(
         color = colors.pageText,
         overflow = Ellipsis,
       )
-      Text(
-        text = dateRange(data.items.keys),
-        color = colors.pageTextSubdued,
-        overflow = Ellipsis,
-        style = typography.labelMedium,
-      )
+      DateRangeText(dateRange(data.items.keys))
     }
 
     val netFlow = calculateNetFlow(data)

@@ -62,11 +62,7 @@ private fun Header(
       overflow = Ellipsis,
     )
 
-    Text(
-      text = dateRange(data.range),
-      color = colors.pageTextSubdued,
-      overflow = Ellipsis,
-    )
+    DateRangeText(dateRange(data.range))
   }
 
 @Composable
