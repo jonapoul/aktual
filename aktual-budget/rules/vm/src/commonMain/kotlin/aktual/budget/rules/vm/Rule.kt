@@ -23,10 +23,9 @@ val Rule.hasUnknownValues: Boolean
   get() =
     stage == Unknown ||
       conditionsOp == Unknown ||
-      conditions.any { c -> c.field == Unknown || c.type == Unknown || c.conditionsOp == Unknown } ||
+      conditions.any { c ->
+        c.field == Unknown || c.type == Unknown || c.conditionsOp == Unknown
+      } ||
       actions.any { a ->
-        a.op == Unknown ||
-          a.field == Unknown ||
-          a.type == Unknown ||
-          a.options?.method == Unknown
+        a.op == Unknown || a.field == Unknown || a.type == Unknown || a.options?.method == Unknown
       }
