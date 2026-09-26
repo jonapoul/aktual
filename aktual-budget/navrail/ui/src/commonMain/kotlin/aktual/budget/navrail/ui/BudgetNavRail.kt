@@ -25,6 +25,7 @@ import aktual.core.nav.NavStack
 import aktual.core.nav.NavStackImpl
 import aktual.core.nav.ReportsListNavRoute
 import aktual.core.nav.TransactionsNavRoute
+import aktual.core.nav.budgetTabOf
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
@@ -408,7 +409,7 @@ private fun SideNavLayout(
 }
 
 @Composable
-private fun BudgetNavDisplay(
+internal fun BudgetNavDisplay(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   activeStack: NavStack<BudgetNavKey>,
   modifier: Modifier = Modifier,
@@ -418,8 +419,8 @@ private fun BudgetNavDisplay(
     backStack = activeStack,
     onBack = { activeStack.pop() },
     transitionSpec = {
-      val initialTab = initialState.key as BudgetTab
-      val targetTab = targetState.key as BudgetTab
+      val initialTab = budgetTabOf(initialState.key)
+      val targetTab = budgetTabOf(targetState.key)
       val direction = initialTab.ordinal - targetTab.ordinal
       when {
         direction < 0 -> slideIntoContainer(towards = Start) togetherWith fadeOut()

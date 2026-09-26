@@ -20,10 +20,10 @@ To add a screen: create `YourNavigator.kt` (+ `YourNavRoute`) in `aktual-core:na
 
 ### Budget-scoped entries
 
-Budget screens implement `BudgetNavEntryContributor` with `@ContributesIntoSet(BudgetScope::class)`. `aktual-app:ui-budget` aggregates those `:ui` modules. Every `BudgetNavKey` carries a `tab: BudgetTab`, and entries **must** pass it as the content key so the nav rail can track the active tab:
+Budget screens implement `BudgetNavEntryContributor` with `@ContributesIntoSet(BudgetScope::class)`. `aktual-app:ui-budget` aggregates those `:ui` modules. Every `BudgetNavKey` carries a `tab: BudgetTab`. Register entries with `budgetEntry`, which sets a content key that's unique per entry (so each keeps its own saveable state and `ViewModelStore`) but prefixed with the tab, so the nav rail's transitions can recover it via `budgetTabOf`:
 
 ```kotlin
-scope.entry<YourNavRoute>(clazzContentKey = { it.tab }) { route -> ... }
+budgetEntry<YourNavRoute> { route -> ... }
 ```
 
 ## Window insets
