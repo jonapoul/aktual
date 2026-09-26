@@ -28,4 +28,4 @@ scope.entry<YourNavRoute>(clazzContentKey = { it.tab }) { route -> ... }
 
 ## Window insets
 
-Nav bar insets are consumed at the `AktualNavHost` level via `Modifier.consumeWindowInsets(WindowInsets.navigationBars)`, so screen Scaffolds will **not** see them in `innerPadding`. The haze-effect Column in `AktualAppContent` instead renders `BottomSpacing()`, which sums `bottomNavBarPadding()` with whatever height is provided via `LocalBottomSpacing` — screens that render their own bottom status bar publish its height through that composition local so a single spacer covers both.
+Nav bar insets are consumed at the `AktualNavHost` level via `Modifier.consumeWindowInsets(WindowInsets.navigationBars)`, so screen Scaffolds will **not** see them in `innerPadding`. The haze-effect Column in `AktualAppContent` instead renders `BottomSpacing()`, which sums `bottomNavBarPadding()` with whatever height is provided via `LocalBottomSpacing` - screens that render their own bottom status bar publish its height through that composition local so a single spacer covers both.

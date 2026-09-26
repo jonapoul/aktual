@@ -136,7 +136,7 @@ private fun ListRulesScaffold(
     modifier = modifier.fillMaxSize().nestedScroll(headerState.nestedScrollConnection),
     topBar = {
       // The header eats the first slice of scroll as it collapses, so fold its collapse distance
-      // into the offset — otherwise small scrolls leave a dead zone with no haze.
+      // into the offset - otherwise small scrolls leave a dead zone with no haze.
       Column(
         modifier =
           Modifier.hazedTopBar(

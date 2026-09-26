@@ -19,28 +19,28 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
   - typed property/variable assignments, default parameter values and return values of declared-type functions
 
   Qualify only where the name is ambiguous with a type in scope, as `LoginMethod.Password` is with the `Password` class.
-- `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` — add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
+- `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` - add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
 - In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.
 - Wrap comments to the `max_line_length` in `.editorconfig` (currently 120).
 
 ## Build commands
 
 ```bash
-# Compile (including test sources) for one module — default choice for module changes
+# Compile (including test sources) for one module - default choice for module changes
 ./gradlew :[module]:compileAll
 
-# Compile everything — prefer module-specific form where possible
+# Compile everything - prefer module-specific form where possible
 ./gradlew compileAll
 
-# Full build — very slow, don't run without asking
+# Full build - very slow, don't run without asking
 ./gradlew build
 
 # Build and launch apps
 ./gradlew :aktual-app:desktop:run
 ./gradlew :aktual-app:android:installDebug && adb shell am start -n dev.jonpoulton.aktual.app.dev/aktual.app.android.AktualActivity
 
-# Tests — always module-specific. `./gradlew allTests` pegs the machine; don't run it.
-# Never pass a bare `:module:test` — it's ambiguous for KMP modules. Use `testAll` (both
+# Tests - always module-specific. `./gradlew allTests` pegs the machine; don't run it.
+# Never pass a bare `:module:test` - it's ambiguous for KMP modules. Use `testAll` (both
 # targets), `testAndroidHostTest`, or `desktopTest`; run the `run-module-tests` skill to pick.
 ./gradlew :aktual-account:vm:testAll
 
@@ -55,7 +55,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./scripts/lint.sh             # lint on changed modules
 ./scripts/test.sh             # testAll on changed modules
 
-# Dependency graph — rerun only when module deps change
+# Dependency graph - rerun only when module deps change
 ./gradlew atlasGenerate
 
 # Force-refresh git version info (bypasses config cache)
@@ -69,9 +69,9 @@ Don't run detekt locally (user handles it); `./scripts/detekt.sh` covers changed
 Feature-based modular layout. Module list: `settings.gradle.kts` / `ls modules/`. Features split into `domain` / `vm` / `ui` modules. Shared infra lives under `modules/{core,api,prefs,budget,test}`.
 
 ### Layers
-- **Domain** — pure Kotlin, no UI. Depends on core models, API clients, prefs.
-- **VM** — Molecule's `launchMolecule` drives state; exposes `StateFlow`. Registered with `@ViewModelKey` + `@ContributesIntoMap(AppScope::class)`.
-- **UI** — stateless Compose. Retrieves VMs via `metroViewModel()`. Receives navigator instances (e.g. `BackNavigator`) from its `NavEntryContributor`.
+- **Domain** - pure Kotlin, no UI. Depends on core models, API clients, prefs.
+- **VM** - Molecule's `launchMolecule` drives state; exposes `StateFlow`. Registered with `@ViewModelKey` + `@ContributesIntoMap(AppScope::class)`.
+- **UI** - stateless Compose. Retrieves VMs via `metroViewModel()`. Receives navigator instances (e.g. `BackNavigator`) from its `NavEntryContributor`.
 
 ### Metro DI
 
@@ -79,7 +79,7 @@ Scopes: `AppScope` (app singletons), `ServerChosenScope` (after server URL is se
 
 Graphs: All graphs implement `AktualGraph`. Hierarchy: `AppGraph` (root) → `ServerChosenGraph` → `LoggedInGraph` → `BudgetGraph`. Graph types live in `aktual-di:graphs`.
 
-VMs are registered with `@ViewModelKey` + `@ContributesIntoMap(<Scope>::class)` where the scope is the narrowest graph that provides all the VM's dependencies (`AppScope` → `ServerChosenScope` → `LoggedInScope` → `BudgetScope`). Assisted VM factories use `@ManualViewModelAssistedFactoryKey` + `@ContributesIntoMap(<Scope>::class)` — copy the shape from an existing one.
+VMs are registered with `@ViewModelKey` + `@ContributesIntoMap(<Scope>::class)` where the scope is the narrowest graph that provides all the VM's dependencies (`AppScope` → `ServerChosenScope` → `LoggedInScope` → `BudgetScope`). Assisted VM factories use `@ManualViewModelAssistedFactoryKey` + `@ContributesIntoMap(<Scope>::class)` - copy the shape from an existing one.
 
 ### Navigation
 
@@ -88,7 +88,7 @@ See [aktual-app:nav](aktual-app/nav/CLAUDE.md).
 ## Creating a new feature module
 
 1. Add `modules/<feature>/{domain,vm,ui}` and register in `settings.gradle.kts` with `module("<feature>:...")`.
-1. Apply the right module plugin per layer — `aktual.module.kotlin` (domain), `aktual.module.viewmodel` (vm), `aktual.module.compose` (ui). See [build-logic](gradle/build-logic/CLAUDE.md) for what each plugin sets up.
+1. Apply the right module plugin per layer - `aktual.module.kotlin` (domain), `aktual.module.viewmodel` (vm), `aktual.module.compose` (ui). See [build-logic](gradle/build-logic/CLAUDE.md) for what each plugin sets up.
 1. Dependencies: UI → VM (api) → Domain (api) → core models. Any module can depend on core UI / L10n / logging.
 1. Create a navigator + `NavKey` in `aktual-core:nav` (see `aktual-app/nav/CLAUDE.md`).
 1. Implement `NavEntryContributor` in the `:ui` module with `@ContributesIntoSet(AppScope::class)` (or `BudgetNavEntryContributor` with `@ContributesIntoSet(BudgetScope::class)` for budget screens).
@@ -104,20 +104,20 @@ Default new code to `commonMain`; reach for `androidMain` / `desktopMain` only w
 
 ## Gotchas
 
-- **Config cache + git versions**: `gitVersionHash()` / `gitVersionCode()` are cached so builds stay sub-second — they do **not** refresh on commit. Use `./gradlew --rerun-tasks` when you need fresh values.
+- **Config cache + git versions**: `gitVersionHash()` / `gitVersionCode()` are cached so builds stay sub-second - they do **not** refresh on commit. Use `./gradlew --rerun-tasks` when you need fresh values.
 - **Java version**: single source of truth is `.java-version` at repo root (read by `JavaVersionValueSource` and CI's `setup-java`). Don't hardcode it anywhere.
 - **SDK**: min 28, target/compile 37.
-- **Desktop release** goes through Proguard — mapping at `aktual-app/desktop/build/outputs/mapping.txt`. Android goes through R8.
+- **Desktop release** goes through Proguard - mapping at `aktual-app/desktop/build/outputs/mapping.txt`. Android goes through R8.
 - **Android manifest lock**: `aktual-app/android` locks its merged manifest (`AndroidManifest.lock.yaml`) via the manifest-lock plugin with `failOnLockChange = true`, so adding/changing an Android dependency that touches the manifest (permissions, components) fails the build until the lock is regenerated. Run `./gradlew :aktual-app:android:androidManifestLock` to update it, then commit the change.
 
 ## Sub-CLAUDE.mds
 
-- [aktual-app/nav](aktual-app/nav/CLAUDE.md) — navigation architecture
-- [aktual-core/l10n](aktual-core/l10n/CLAUDE.md) — localization
-- [aktual-core/icons](aktual-core/icons/CLAUDE.md) — custom + Material icons
-- [aktual-prefs](aktual-prefs/CLAUDE.md) — adding a new setting
-- [aktual-test/api](aktual-test/api/CLAUDE.md) — test HTTP mocks + generated fixtures
-- [aktual-test/smoke](aktual-test/smoke/CLAUDE.md) — VM DI smoke tests
-- [aktual-budget/data/db](aktual-budget/data/db/CLAUDE.md) — database schema, migrations, adapters
-- [gradle/build-logic](build-logic/CLAUDE.md) — convention plugins
-- [detekt-rules](detekt-rules/CLAUDE.md) — custom detekt rules
+- [aktual-app/nav](aktual-app/nav/CLAUDE.md) - navigation architecture
+- [aktual-core/l10n](aktual-core/l10n/CLAUDE.md) - localization
+- [aktual-core/icons](aktual-core/icons/CLAUDE.md) - custom + Material icons
+- [aktual-prefs](aktual-prefs/CLAUDE.md) - adding a new setting
+- [aktual-test/api](aktual-test/api/CLAUDE.md) - test HTTP mocks + generated fixtures
+- [aktual-test/smoke](aktual-test/smoke/CLAUDE.md) - VM DI smoke tests
+- [aktual-budget/data/db](aktual-budget/data/db/CLAUDE.md) - database schema, migrations, adapters
+- [gradle/build-logic](build-logic/CLAUDE.md) - convention plugins
+- [detekt-rules](detekt-rules/CLAUDE.md) - custom detekt rules

@@ -5,10 +5,10 @@
 # and lists the new migrations in the PR body.
 #
 # Usage:
-#   # Dry run — prints what would happen without touching GitHub
+#   # Dry run - prints what would happen without touching GitHub
 #   DRY_RUN=1 ./check-migrations.sh
 #
-#   # Full run — creates/updates a PR in the given repo (requires gh CLI auth)
+#   # Full run - creates/updates a PR in the given repo (requires gh CLI auth)
 #   GITHUB_REPOSITORY=owner/repo ./check-migrations.sh
 #
 # Environment variables:

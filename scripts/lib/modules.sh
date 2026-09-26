@@ -100,7 +100,7 @@ run_changed_module_task() {
 
   local modules
   if printf '%s\n' "$changed_files" | matches_gitignore_triggers; then
-    echo "Build/config files changed since $base_branch ($merge_base_short) — running on all modules."
+    echo "Build/config files changed since $base_branch ($merge_base_short) - running on all modules."
     modules=$(all_gradle_modules)
   else
     modules=$(changed_gradle_modules "$changed_files")

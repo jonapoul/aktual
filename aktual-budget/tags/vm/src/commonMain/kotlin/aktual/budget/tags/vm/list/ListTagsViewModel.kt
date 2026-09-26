@@ -136,7 +136,7 @@ class ListTagsViewModel(
         mutableTags.update { tags }
         mutableFailure.update { null }
       } catch (e: CancellationException) {
-        // a newer load() cancelled us — leave the flows alone so it can finish
+        // a newer load() cancelled us - leave the flows alone so it can finish
         throw e
       } catch (e: Exception) {
         logcat.e(e) { "Failed loading tags" }

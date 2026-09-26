@@ -52,7 +52,7 @@ class AccountDao(database: BudgetDatabase) {
     getAllActive().awaitAsList()
   }
 
-  // All non-tombstoned accounts (including closed) keyed by ID — schedules may reference closed
+  // All non-tombstoned accounts (including closed) keyed by ID - schedules may reference closed
   // accounts
   suspend fun nameMap(): Map<AccountId, String?> = queries.withResult {
     getAllNames().awaitAsList().associate { it.id to it.name }

@@ -2,14 +2,14 @@
 
 Icon definitions as `ImageVector` properties, split into two families:
 
-- **`AktualIcons`** (package `aktual.core.icons`) — custom SVG icons. Built with `aktualIcon()` + `aktualPath {}`; typical size 20f or 24f.
-- **`MaterialIcons`** (package `aktual.core.icons.material`) — Material Design icons. Built with `materialIcon()` + `materialPath {}`; 24dp, or 960-unit viewport for Material Symbols.
+- **`AktualIcons`** (package `aktual.core.icons`) - custom SVG icons. Built with `aktualIcon()` + `aktualPath {}`; typical size 20f or 24f.
+- **`MaterialIcons`** (package `aktual.core.icons.material`) - Material Design icons. Built with `materialIcon()` + `materialPath {}`; 24dp, or 960-unit viewport for Material Symbols.
 
-Prefer the `/add-svg-icon` and `/add-material-icon` skills — they handle SVG → `ImageVector` conversion. The notes below are for when you need to do it by hand.
+Prefer the `/add-svg-icon` and `/add-material-icon` skills - they handle SVG → `ImageVector` conversion. The notes below are for when you need to do it by hand.
 
 ## File shape
 
-Each icon is its own file. Example — for `AktualIcons`:
+Each icon is its own file. Example - for `AktualIcons`:
 
 ```kotlin
 @file:Suppress("BooleanLiteralArgument", "UnusedReceiverParameter")

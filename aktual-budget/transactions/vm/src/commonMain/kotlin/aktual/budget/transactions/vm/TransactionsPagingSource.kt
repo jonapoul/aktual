@@ -16,7 +16,7 @@ internal class TransactionsPagingSource(
   private val spec: TransactionsSpec,
 ) : PagingSource<Int, TransactionId>() {
   // A #tag match can't be expressed as a SQL offset query, so for tag-filtered specs we resolve the
-  // full ordered id list once and page over it in memory. Cached for this source's lifetime — a new
+  // full ordered id list once and page over it in memory. Cached for this source's lifetime - a new
   // source is created whenever the data is invalidated.
   private var filteredIds: List<TransactionId>? = null
 

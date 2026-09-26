@@ -11,8 +11,8 @@ Convert an SVG file to a Kotlin `ImageVector` and add it to the `aktual-core/ico
 - `$ARGUMENTS` should contain:
   - A **file path or URL** to an SVG file
   - The **icon name** in PascalCase (e.g., `MyIcon`, `BankTransfer`)
-  - `--material` (optional) — generate as a `MaterialIcons` extension instead of `AktualIcons`
-  - `--size <N>` (optional) — override the icon size (default: derived from SVG viewBox)
+  - `--material` (optional) - generate as a `MaterialIcons` extension instead of `AktualIcons`
+  - `--size <N>` (optional) - override the icon size (default: derived from SVG viewBox)
 
 ## Step-by-Step Process
 

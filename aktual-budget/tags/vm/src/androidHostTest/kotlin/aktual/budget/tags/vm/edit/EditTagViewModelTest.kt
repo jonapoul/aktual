@@ -284,7 +284,7 @@ class EditTagViewModelTest {
       val viewModel = createViewModel(scope, id = TagId("food-id"), sync = sync)
       viewModel.awaitLoaded()
 
-      // renaming onto the deleted name must not trip the UNIQUE(tag) constraint — before the fix
+      // renaming onto the deleted name must not trip the UNIQUE(tag) constraint - before the fix
       // this insert threw and save() surfaced an error instead of finishing. FinishedSaving is only
       // emitted on the happy path, so receiving it proves the save succeeded
       viewModel.setTag("groceries")
@@ -303,7 +303,7 @@ class EditTagViewModelTest {
         .containsExactlyInAnyOrder("food-id", "old-id")
       assertThat(sync.changes.filter { it.row == "food-id" }.map(LocalChange::column))
         .containsExactly("tombstone")
-      // the resurrected row gets a full insert — the edits must not be dropped, and tombstone is
+      // the resurrected row gets a full insert - the edits must not be dropped, and tombstone is
       // cleared to bring it back
       assertThat(sync.changes.filter { it.row == "old-id" }.map(LocalChange::column))
         .containsExactlyInAnyOrder("id", "tag", "color", "description", "tombstone")

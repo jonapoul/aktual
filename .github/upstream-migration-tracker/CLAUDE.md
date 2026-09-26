@@ -16,8 +16,8 @@ Automated system that checks daily for new database migrations in [actualbudget/
 
 ## Files
 
-- `last-known-migration.txt` — single-line file containing the filename of the most recent upstream migration that has been implemented in Aktual. Updated automatically by the script.
-- `check-migrations.sh` — core detection and PR logic. Run with `DRY_RUN=1` for local testing.
+- `last-known-migration.txt` - single-line file containing the filename of the most recent upstream migration that has been implemented in Aktual. Updated automatically by the script.
+- `check-migrations.sh` - core detection and PR logic. Run with `DRY_RUN=1` for local testing.
 
 ## Upstream Migrations Location
 

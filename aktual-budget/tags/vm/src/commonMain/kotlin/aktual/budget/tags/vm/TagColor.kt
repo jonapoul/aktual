@@ -28,7 +28,7 @@ fun String.toColorOrNull(): Color? {
   return Color(rgb or 0xFF000000L)
 }
 
-// Inverse of [toColorOrNull] — formats as "#RRGGBB" (uppercase, opaque) for storage and display
+// Inverse of [toColorOrNull] - formats as "#RRGGBB" (uppercase, opaque) for storage and display
 @Suppress("MagicNumber")
 fun Color.toHex(): String {
   fun Float.hex2() =

@@ -8,10 +8,10 @@
 #   - packages/component-library/src/themes/*.css   (dark, light, midnight CSS custom properties)
 #
 # Usage:
-#   # Dry run — prints what would happen without touching GitHub
+#   # Dry run - prints what would happen without touching GitHub
 #   DRY_RUN=1 ./check-theme-attributes.sh
 #
-#   # Full run — creates/updates a PR in the given repo (requires gh CLI auth)
+#   # Full run - creates/updates a PR in the given repo (requires gh CLI auth)
 #   GITHUB_REPOSITORY=owner/repo ./check-theme-attributes.sh
 #
 # Environment variables:

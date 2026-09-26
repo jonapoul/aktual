@@ -150,7 +150,7 @@ class EditTagViewModel(
         }
 
       if (existing == null) {
-        // the tag was requested but doesn't exist — don't pretend it's a new one
+        // the tag was requested but doesn't exist - don't pretend it's a new one
         mutableFailure.update { EditTagState.Failure(cause = null) }
       } else {
         reset(
@@ -208,7 +208,7 @@ class EditTagViewModel(
         val description = mutableDescription.value.trim()
         val color = mutableColor.value?.toHex()
 
-        // another row may already own this name — the tag column is UNIQUE. getTag returns null
+        // another row may already own this name - the tag column is UNIQUE. getTag returns null
         // for tombstoned rows, so a non-null owner that getTag can't see is a deleted tag still
         // squatting on the name. Only the rename path needs the extra lookup, so skip it on create
         val owner = tagsDao.getTagIdByName(tag)
@@ -226,7 +226,7 @@ class EditTagViewModel(
               insertChanges(tombstonedOwner, tag, color, description)
           )
         } else {
-          // creating a tag reuses any existing row with the same name — even a tombstoned one —
+          // creating a tag reuses any existing row with the same name - even a tombstoned one -
           // so the old id is resurrected rather than colliding with the UNIQUE constraint
           // (matches createTag)
           val id = tagId ?: owner ?: uuidGenerator(::TagId)

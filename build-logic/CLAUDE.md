@@ -1,6 +1,6 @@
 # build-logic
 
-Gradle convention plugins that centralize build config. Included build — `settings.gradle.kts` applies `../repositories.gradle.kts` and registers the root version catalog.
+Gradle convention plugins that centralize build config. Included build - `settings.gradle.kts` applies `../repositories.gradle.kts` and registers the root version catalog.
 
 ## Plugin layers
 
@@ -18,36 +18,36 @@ Gradle convention plugins that centralize build config. Included build — `sett
 
 ### Convention plugins (composed by module plugins)
 
-- `ConventionKotlinBase` — warnings-as-errors, free compiler args like `-Xexpect-actual-classes`, `compileAll` task, Metro, buildconfig/lint workaround, sort-dependencies check
-- `ConventionKotlinJvm` — toolchain via `.java-version`
-- `ConventionCompose` — compiler plugin, metrics, stability
-- `ConventionDi` — Metro with full binding-graph validation + hints + shrink unused
-- `ConventionStyle` — detekt + licensee
+- `ConventionKotlinBase` - warnings-as-errors, free compiler args like `-Xexpect-actual-classes`, `compileAll` task, Metro, buildconfig/lint workaround, sort-dependencies check
+- `ConventionKotlinJvm` - toolchain via `.java-version`
+- `ConventionCompose` - compiler plugin, metrics, stability
+- `ConventionDi` - Metro with full binding-graph validation + hints + shrink unused
+- `ConventionStyle` - detekt + licensee
 - `ConventionDetekt`
-- `ConventionLicensee` — Apache-2.0/MIT/BSD/EPL-1.0
-- `ConventionSortDependencies` — checks dependency declarations are in canonical order via square/gradle-dependencies-sorter; run `./gradlew sortDependencies` to fix
-- `ConventionTest` — Burst, `testAll`, Robolectric/MockK JVM args
+- `ConventionLicensee` - Apache-2.0/MIT/BSD/EPL-1.0
+- `ConventionSortDependencies` - checks dependency declarations are in canonical order via square/gradle-dependencies-sorter; run `./gradlew sortDependencies` to fix
+- `ConventionTest` - Burst, `testAll`, Robolectric/MockK JVM args
 - `ConventionTestDependencies`
 - `ConventionIdea`
 
 Helpers live in `aktual.gradle.dsl`:
 
-- `TestLibraries.kt` — `testLibraries`/`androidTestLibraries`
-- `OptIn.kt` — `optIn()`
-- `AndroidCommon.kt` — `Lint.commonConfigure()`, `buildNamespace()` from Gradle path
-- `Dependencies.kt` — `androidHostTestDependencies`, `desktopMainDependencies`/`desktopTestDependencies` (the JVM target is named `desktop`, so use these instead of blueprint's `jvmMain`/`jvmTest` helpers)
+- `TestLibraries.kt` - `testLibraries`/`androidTestLibraries`
+- `OptIn.kt` - `optIn()`
+- `AndroidCommon.kt` - `Lint.commonConfigure()`, `buildNamespace()` from Gradle path
+- `Dependencies.kt` - `androidHostTestDependencies`, `desktopMainDependencies`/`desktopTestDependencies` (the JVM target is named `desktop`, so use these instead of blueprint's `jvmMain`/`jvmTest` helpers)
 
 KClass-friendly wrappers:
 
-- `ExtensionAware.kt` — `kotlin{}`
-- `ExtensionContainer.kt` — `configure()`
-- `PluginManager.kt` — `apply()`
-- `TaskCollection.kt` — `withType()`
+- `ExtensionAware.kt` - `kotlin{}`
+- `ExtensionContainer.kt` - `configure()`
+- `PluginManager.kt` - `apply()`
+- `TaskCollection.kt` - `withType()`
 
 ## Conventions
 
 - Consumer `build.gradle.kts` files apply **module plugins**, never convention plugins directly.
-- Use lazy Gradle APIs (`configureEach`, `named`, `withType`) — eager ones (`all`, `forEach`) break the configuration cache.
+- Use lazy Gradle APIs (`configureEach`, `named`, `withType`) - eager ones (`all`, `forEach`) break the configuration cache.
 - Java version comes from `.java-version` at repo root. Don't hardcode it.
 - Centralize new free compiler args and opt-ins in `ConventionKotlinBase`, not per-module.
 - `compileAll` (registered by `ConventionKotlinBase`) is the preferred compile check.

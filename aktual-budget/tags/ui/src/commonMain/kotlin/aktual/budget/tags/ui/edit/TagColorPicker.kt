@@ -99,7 +99,7 @@ internal fun TagColorPicker(
   }
 
   // when the colour changes from elsewhere (wheel, slider, preset), reflect it in the field.
-  // Skip only when the field already represents this colour — i.e. the user just typed it — so we
+  // Skip only when the field already represents this colour - i.e. the user just typed it - so we
   // don't reformat their input mid-edit. The canonical value is always valid, so clear any error
   SideEffect(color, hexFocused) {
     val fieldAlreadyMatches = hexState.text.toString().trim().toColorOrNull() == color
@@ -171,7 +171,7 @@ internal fun TagColorPicker(
       )
     }
 
-    // the preset swatches — hidden while the advanced wheel/slider is showing
+    // the preset swatches - hidden while the advanced wheel/slider is showing
     AnimatedVisibility(
       visible = !advancedVisible,
       enter = expandVertically() + fadeIn(),

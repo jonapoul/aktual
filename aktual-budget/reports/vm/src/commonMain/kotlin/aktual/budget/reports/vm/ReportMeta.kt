@@ -40,7 +40,7 @@ sealed interface ReportMeta {
   }
 }
 
-// Sentinel for a widget whose stored metadata couldn't be deserialized — corrupt data, or an
+// Sentinel for a widget whose stored metadata couldn't be deserialized - corrupt data, or an
 // upstream schema change we don't model yet. Surfaced instead of crashing the whole dashboard.
 // It's never persisted, so it's intentionally not @Serializable; we keep the raw json around so
 // the original row isn't lost.

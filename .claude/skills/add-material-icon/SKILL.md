@@ -6,7 +6,7 @@ argument-hint: "<icon_name> [--classic]"
 
 Add a Material Design icon to the `aktual-core/icons` module by fetching its SVG source and converting it to a Kotlin `ImageVector`.
 
-Do NOT ask clarifying questions — just execute.
+Do NOT ask clarifying questions - just execute.
 
 ## Arguments
 

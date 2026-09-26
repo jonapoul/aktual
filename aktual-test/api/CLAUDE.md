@@ -2,8 +2,8 @@
 
 Test utilities for HTTP-layer code. Two things:
 
-1. **Generated response constants** — the build script reads files under the top-level [`/api`](../../api/) directory and emits `*Responses` `object`s whose constants are the file contents as strings.
-1. **Mock HTTP helpers** — Ktor `MockEngine` utilities for test clients.
+1. **Generated response constants** - the build script reads files under the top-level [`/api`](../../api/) directory and emits `*Responses` `object`s whose constants are the file contents as strings.
+1. **Mock HTTP helpers** - Ktor `MockEngine` utilities for test clients.
 
 ## Generated responses
 
@@ -16,14 +16,14 @@ The build scans per subdirectory and produces one `*Responses` object per:
 
 Filename → constant: `login-success.200.json` → `LOGIN_SUCCESS_200`. Files with `.rest` extension or `>100KB` are excluded.
 
-**To add a fixture:** drop the file in the right `/api/` subdir — the constant appears on the next build.
+**To add a fixture:** drop the file in the right `/api/` subdir - the constant appears on the next build.
 
 ## Helpers
 
-- `MockEngine.kt` — `respondJson()`, `emptyMockEngine()`, `enqueueResponse()`, `clear()`, `latestRequest*()`.
-- `TestHttpClient.kt` — `testHttpClient(engine)` wraps the real `buildKtorClient` config with a mock engine.
-- `TestHttpContainer.kt` — Metro `@BindingContainer` providing a mock `HttpClientEngine` in test DI.
-- `PrettyJson.kt` — `AktualJson` with pretty-print enabled.
+- `MockEngine.kt` - `respondJson()`, `emptyMockEngine()`, `enqueueResponse()`, `clear()`, `latestRequest*()`.
+- `TestHttpClient.kt` - `testHttpClient(engine)` wraps the real `buildKtorClient` config with a mock engine.
+- `TestHttpContainer.kt` - Metro `@BindingContainer` providing a mock `HttpClientEngine` in test DI.
+- `PrettyJson.kt` - `AktualJson` with pretty-print enabled.
 
 ## Usage
 
