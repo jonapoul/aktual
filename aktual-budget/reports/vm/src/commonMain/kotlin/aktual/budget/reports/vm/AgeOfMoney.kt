@@ -19,8 +19,7 @@ internal data class ExpenseAge(val date: LocalDate, val age: Int)
 
 internal data class ExpenseAges(val ages: List<ExpenseAge>, val insufficientData: Boolean)
 
-@Suppress("UseDataClass")
-private class IncomeBucket(val date: LocalDate, var remaining: Long)
+@Suppress("UseDataClass") private class IncomeBucket(val date: LocalDate, var remaining: Long)
 
 private const val AVERAGE_COUNT = 10
 private const val TREND_THRESHOLD_DAYS = 2
