@@ -95,6 +95,7 @@ private fun DateFormat.label(): String =
     YyyyMmDd -> Strings.settingsDateFormatYyyyMmDd
     MmDdYyyyDot -> Strings.settingsDateFormatMmDdYyyyDot
     DdMmYyyyDot -> Strings.settingsDateFormatDdMmYyyyDot
+    DdMmYyyyDash -> Strings.settingsDateFormatDdMmYyyyDash
   }
 
 @Composable

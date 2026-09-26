@@ -204,11 +204,15 @@ internal fun DateRangeType.string() =
     DateRangeType.LastWeek -> Strings.reportsDateTypeLastWeek
     DateRangeType.ThisMonth -> Strings.reportsDateTypeThisMonth
     DateRangeType.LastMonth -> Strings.reportsDateTypeLastMonth
+    DateRangeType.CurrentQuarter -> Strings.reportsDateTypeCurrentQuarter
+    DateRangeType.PreviousQuarter -> Strings.reportsDateTypePreviousQuarter
+    DateRangeType.Last30Days -> Strings.reportsDateTypeLast30Days
     DateRangeType.Last3Months -> Strings.reportsDateTypeLast3Months
     DateRangeType.Last6Months -> Strings.reportsDateTypeLast6Months
     DateRangeType.Last12Months -> Strings.reportsDateTypeLast12Months
     DateRangeType.YearToDate -> Strings.reportsDateTypeYearToDate
     DateRangeType.LastYear -> Strings.reportsDateTypeLastYear
+    DateRangeType.PriorYearToDate -> Strings.reportsDateTypePriorYearToDate
     DateRangeType.AllTime -> Strings.reportsDateTypeAllTime
     DateRangeType.Unknown -> Strings.reportsDateTypeUnknown
   }

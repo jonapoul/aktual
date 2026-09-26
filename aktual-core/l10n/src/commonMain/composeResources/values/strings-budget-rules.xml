@@ -39,6 +39,7 @@
   <string name="rules_operator_does_not_contain">does not contain</string>
   <string name="rules_operator_greater_than">is greater than</string>
   <string name="rules_operator_greater_than_or_equals">is greater than or equals</string>
+  <string name="rules_operator_has_any_tag">has any tag</string>
   <string name="rules_operator_has_tags">has tags</string>
   <string name="rules_operator_is">is</string>
   <string name="rules_operator_is_approx">is approx</string>

@@ -3,6 +3,7 @@ package aktual.budget.model
 import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 
 @Immutable data class ResolvedDateRange(val start: LocalDate, val end: LocalDate)
 
@@ -27,6 +28,17 @@ fun DateRangeType.resolve(today: LocalDate): ResolvedDateRange {
       val lastMonthStart = firstOfMonth.minus(1, MONTH)
       ResolvedDateRange(lastMonthStart, firstOfMonth.minus(1, DAY))
     }
+    DateRangeType.CurrentQuarter -> {
+      val quarterStart = firstOfMonth.minus(today.month.ordinal % 3, MONTH)
+      ResolvedDateRange(quarterStart, quarterStart.plus(3, MONTH).minus(1, DAY))
+    }
+    DateRangeType.PreviousQuarter -> {
+      val quarterStart = firstOfMonth.minus(today.month.ordinal % 3, MONTH)
+      ResolvedDateRange(quarterStart.minus(3, MONTH), quarterStart.minus(1, DAY))
+    }
+    DateRangeType.Last30Days -> {
+      ResolvedDateRange(today.minus(29, DAY), today)
+    }
     DateRangeType.Last3Months -> {
       ResolvedDateRange(firstOfMonth.minus(2, MONTH), today)
     }
@@ -41,6 +53,9 @@ fun DateRangeType.resolve(today: LocalDate): ResolvedDateRange {
     }
     DateRangeType.LastYear -> {
       ResolvedDateRange(LocalDate(today.year - 1, 1, 1), LocalDate(today.year - 1, 12, 31))
+    }
+    DateRangeType.PriorYearToDate -> {
+      ResolvedDateRange(LocalDate(today.year - 1, 1, 1), today.minus(1, YEAR))
     }
     DateRangeType.AllTime,
     DateRangeType.Unknown -> {

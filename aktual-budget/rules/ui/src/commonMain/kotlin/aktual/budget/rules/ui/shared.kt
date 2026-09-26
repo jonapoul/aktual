@@ -16,6 +16,7 @@ import aktual.budget.model.Operator.Contains
 import aktual.budget.model.Operator.DoesNotContain
 import aktual.budget.model.Operator.GreaterThan
 import aktual.budget.model.Operator.GreaterThanOrEquals
+import aktual.budget.model.Operator.HasAnyTag
 import aktual.budget.model.Operator.HasTags
 import aktual.budget.model.Operator.Is
 import aktual.budget.model.Operator.IsApprox
@@ -76,6 +77,7 @@ internal fun Operator.displayString(): String =
     DoesNotContain -> Strings.rulesOperatorDoesNotContain
     GreaterThan -> Strings.rulesOperatorGreaterThan
     GreaterThanOrEquals -> Strings.rulesOperatorGreaterThanOrEquals
+    HasAnyTag -> Strings.rulesOperatorHasAnyTag
     HasTags -> Strings.rulesOperatorHasTags
     Is -> Strings.rulesOperatorIs
     IsApprox -> Strings.rulesOperatorIsApprox
@@ -96,6 +98,7 @@ private val ALL_OPERATORS =
     DoesNotContain,
     GreaterThan,
     GreaterThanOrEquals,
+    HasAnyTag,
     HasTags,
     Is,
     IsApprox,

@@ -34,6 +34,8 @@ sealed interface Operator {
 
   data object GreaterThanOrEquals : AmountOperator, DateOperator
 
+  data object HasAnyTag : NotesOperator, PayeeNameOperator
+
   data object HasTags : NotesOperator, PayeeNameOperator
 
   data object Is :
@@ -147,6 +149,7 @@ private val OperatorMap: ImmutableSet<Pair<String, Operator>> by lazy {
     "doesNotContain" to DoesNotContain,
     "gt" to GreaterThan,
     "gte" to GreaterThanOrEquals,
+    "hasAnyTag" to HasAnyTag,
     "hasTags" to HasTags,
     "is" to Is,
     "isapprox" to IsApprox,

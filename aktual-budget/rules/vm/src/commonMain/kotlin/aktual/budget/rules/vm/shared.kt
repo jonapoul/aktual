@@ -5,6 +5,7 @@ import aktual.budget.model.Operator.Contains
 import aktual.budget.model.Operator.DoesNotContain
 import aktual.budget.model.Operator.GreaterThan
 import aktual.budget.model.Operator.GreaterThanOrEquals
+import aktual.budget.model.Operator.HasAnyTag
 import aktual.budget.model.Operator.HasTags
 import aktual.budget.model.Operator.Is
 import aktual.budget.model.Operator.IsApprox
@@ -34,6 +35,7 @@ internal fun Operator.score(): Int =
     Contains,
     DoesNotContain,
     Matches,
+    HasAnyTag,
     HasTags,
     OnBudget,
     OffBudget -> 0

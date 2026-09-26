@@ -16,5 +16,10 @@ internal fun WidgetType.string() =
     WidgetType.Calendar -> Strings.reportsChooseTypeCalendar
     WidgetType.BudgetAnalysis -> Strings.reportsChooseTypeBudgetAnalysis
     WidgetType.Formula -> Strings.reportsChooseTypeFormula
+    WidgetType.Crossover -> Strings.reportsChooseTypeCrossover
+    WidgetType.Sankey -> Strings.reportsChooseTypeSankey
+    WidgetType.BalanceForecast -> Strings.reportsChooseTypeBalanceForecast
+    WidgetType.AgeOfMoney -> Strings.reportsChooseTypeAgeOfMoney
+    WidgetType.MonteCarlo -> Strings.reportsChooseTypeMonteCarlo
     WidgetType.Unknown -> Strings.reportsChooseTypeUnknown
   }

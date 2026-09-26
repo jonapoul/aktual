@@ -16,6 +16,11 @@
   <string name="reports_choose_type_budget_analysis">Budget Analysis</string>
   <string name="reports_choose_type_formula">Formula</string>
   <string name="reports_choose_type_custom">Custom</string>
+  <string name="reports_choose_type_crossover">Crossover point</string>
+  <string name="reports_choose_type_sankey">Sankey</string>
+  <string name="reports_choose_type_balance_forecast">Balance forecast</string>
+  <string name="reports_choose_type_age_of_money">Age of Money</string>
+  <string name="reports_choose_type_monte_carlo">Monte Carlo analysis</string>
   <string name="reports_choose_type_unknown">Unknown</string>
   <string name="reports_choose_type_disabled">This report type is not currently supported.</string>
   <string name="reports_choose_type_disabled_dialog_title">Caution</string>
@@ -58,11 +63,15 @@
   <string name="reports_date_type_last_week">Last week</string>
   <string name="reports_date_type_this_month">This month</string>
   <string name="reports_date_type_last_month">Last month</string>
+  <string name="reports_date_type_current_quarter">Current quarter</string>
+  <string name="reports_date_type_previous_quarter">Previous quarter</string>
+  <string name="reports_date_type_last_30_days">Last 30 days</string>
   <string name="reports_date_type_last_3_months">Last 3 months</string>
   <string name="reports_date_type_last_6_months">Last 6 months</string>
   <string name="reports_date_type_last_12_months">Last 12 months</string>
   <string name="reports_date_type_year_to_date">Year to date</string>
   <string name="reports_date_type_last_year">Last year</string>
+  <string name="reports_date_type_prior_year_to_date">Prior year to date</string>
   <string name="reports_date_type_all_time">All time</string>
   <string name="reports_date_type_unknown">Unknown</string>
 
