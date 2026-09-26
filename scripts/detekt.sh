@@ -14,6 +14,10 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=lib/modules.sh
 . "$SCRIPT_DIR/lib/modules.sh"
 
+# Detekt only reads source and its own config, so dependency bumps don't need a full run
+GITIGNORE_TRIGGERS="$SCRIPT_DIR/lib/.global-triggers-detekt"
+CATALOG_TRIGGER_PATTERN='detekt'
+
 DRY_RUN=false
 MAIN_BRANCH="main"
 
