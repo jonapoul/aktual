@@ -6,15 +6,21 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToLong
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.datetime.DateTimeUnit.Companion.MONTH
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.YearMonthRange
+import kotlinx.datetime.minus
+import kotlinx.datetime.minusMonth
 import kotlinx.datetime.monthsUntil
 import kotlinx.datetime.plusMonth
+import kotlinx.datetime.yearMonth
 
 private const val MONTHS_PER_YEAR = 12
 private const val MAX_PROJECTION_MONTHS = 600
 private const val HAMPEL_THRESHOLD = 3
 private const val MAD_SCALE = 1.4826
+private const val DEFAULT_CROSSOVER_MONTHS = 120
 
 internal data class CrossoverParams(
   val safeWithdrawalRate: Double,
@@ -23,6 +29,39 @@ internal data class CrossoverParams(
   val projectionType: ProjectionType,
   val expenseAdjustmentFactor: Double,
 )
+
+// Only whole months up to last month are used, clamped to the months with data
+internal fun crossoverRange(
+  timeFrame: TimeFrame?,
+  today: LocalDate,
+  earliest: LocalDate?,
+): YearMonthRange {
+  val latestMonth = today.yearMonth.minusMonth()
+  val earliestMonth = minOf(earliest?.yearMonth ?: latestMonth, latestMonth)
+  val default =
+    TimeFrame(
+      start = today.yearMonth.minus(DEFAULT_CROSSOVER_MONTHS, MONTH),
+      end = latestMonth,
+      mode = Full,
+    )
+  val range = resolveTimeRange(timeFrame, default, today, latestMonth.firstDay)
+  fun YearMonth.clamp() = coerceIn(earliestMonth, latestMonth)
+
+  val (start, end) =
+    when (timeFrame?.mode ?: Full) {
+      Full -> earliestMonth to latestMonth
+      SlidingWindow,
+      Unknown -> range.start.minusMonth().clamp() to range.endInclusive.minusMonth().clamp()
+      LastMonth,
+      LastYear,
+      YearToDate,
+      PriorYearToDate,
+      CurrentQuarter,
+      PreviousQuarter,
+      Static -> range.start.clamp() to range.endInclusive.clamp()
+    }
+  return start..maxOf(start, end)
+}
 
 // packages/desktop-client/src/components/reports/spreadsheets/crossover-spreadsheet.ts
 // recalculate()

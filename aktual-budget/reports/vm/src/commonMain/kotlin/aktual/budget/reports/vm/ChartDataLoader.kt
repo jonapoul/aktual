@@ -16,11 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.DateTimeUnit.Companion.MONTH
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
-import kotlinx.datetime.YearMonthRange
-import kotlinx.datetime.minus
 import kotlinx.datetime.minusMonth
 import kotlinx.datetime.yearMonth
 import kotlinx.serialization.json.JsonPrimitive
@@ -209,39 +205,6 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
       }
     }
 
-  // Only whole months up to last month are used, clamped to the months with data
-  private fun crossoverRange(
-    timeFrame: TimeFrame?,
-    today: LocalDate,
-    earliest: LocalDate?,
-  ): YearMonthRange {
-    val latestMonth = today.yearMonth.minusMonth()
-    val earliestMonth = minOf(earliest?.yearMonth ?: latestMonth, latestMonth)
-    val default =
-      TimeFrame(
-        start = today.yearMonth.minus(DEFAULT_CROSSOVER_MONTHS, MONTH),
-        end = latestMonth,
-        mode = Full,
-      )
-    val range = resolveTimeRange(timeFrame, default, today, latestMonth.firstDay)
-    fun YearMonth.clamp() = coerceIn(earliestMonth, latestMonth)
-
-    val (start, end) =
-      when (timeFrame?.mode ?: Full) {
-        Full -> earliestMonth to latestMonth
-        SlidingWindow,
-        Unknown -> range.start.minusMonth().clamp() to range.endInclusive.minusMonth().clamp()
-        LastMonth,
-        LastYear,
-        YearToDate,
-        PriorYearToDate,
-        CurrentQuarter,
-        PreviousQuarter,
-        Static -> range.start.clamp() to range.endInclusive.clamp()
-      }
-    return start..maxOf(start, end)
-  }
-
   fun unsupported(meta: ReportMeta, reason: UnsupportedReason): Flow<ChartData> {
     val (type, name) =
       when (meta) {
@@ -274,6 +237,5 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
   private companion object {
     const val YEAR_MONTH_FACTOR = 100L
     const val DEFAULT_SAFE_WITHDRAWAL_RATE = 0.04
-    const val DEFAULT_CROSSOVER_MONTHS = 120
   }
 }
