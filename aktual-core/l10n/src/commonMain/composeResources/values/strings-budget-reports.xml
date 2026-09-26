@@ -4,6 +4,7 @@
   <string name="reports_dashboard_rename">Rename</string>
   <string name="reports_dashboard_delete">Delete</string>
   <string name="reports_dashboard_empty">No reports</string>
+  <string name="reports_not_found">This report doesn't exist</string>
   <string name="reports_dashboard_create">Create new report</string>
 
   <string name="reports_choose_type_title">Choose report type</string>

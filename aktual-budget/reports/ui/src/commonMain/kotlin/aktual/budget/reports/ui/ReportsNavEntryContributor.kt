@@ -2,6 +2,7 @@ package aktual.budget.reports.ui
 
 import aktual.budget.reports.ui.choosetype.ChooseReportTypeScreen
 import aktual.budget.reports.ui.dashboard.ReportsDashboardScreen
+import aktual.budget.reports.ui.report.ReportScreen
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
@@ -27,8 +28,8 @@ class ReportsNavEntryContributor : BudgetNavEntryContributor {
       )
     }
 
-    budgetEntry<ReportNavRoute> {
-      // TBC
+    budgetEntry<ReportNavRoute> { route ->
+      ReportScreen(id = route.id, back = BackNavigator(stack))
     }
 
     budgetEntry<CreateReportNavRoute> {
