@@ -31,17 +31,8 @@ internal fun resolveTimeRange(
   val mode = timeFrame?.mode ?: default?.mode ?: TimeFrameMode.SlidingWindow
 
   return when (mode) {
-    Full -> {
-      val latest = latestTransaction?.yearMonth
-      start..(if (latest != null && latest > current) latest else current)
-    }
-
-    SlidingWindow -> {
-      val offset = start.monthsUntil(end)
-      if (start > end) current..current.plus(offset, MONTH)
-      else current.minus(offset, MONTH)..current
-    }
-
+    Full -> start..maxOf(latestTransaction?.yearMonth ?: current, current)
+    SlidingWindow -> slidingWindow(start, end, current)
     LastMonth -> current.minusMonth().let { it..it }
     LastYear -> YearMonth(current.year - 1, JANUARY)..YearMonth(current.year - 1, DECEMBER)
     YearToDate -> YearMonth(current.year, JANUARY)..current
@@ -49,6 +40,15 @@ internal fun resolveTimeRange(
     CurrentQuarter -> quarter(current)
     PreviousQuarter -> quarter(current.minus(MONTHS_PER_QUARTER, MONTH))
     Static -> start..end
+  }
+}
+
+private fun slidingWindow(start: YearMonth, end: YearMonth, current: YearMonth): YearMonthRange {
+  val offset = start.monthsUntil(end)
+  return if (start > end) {
+    current..current.plus(offset, MONTH)
+  } else {
+    current.minus(offset, MONTH)..current
   }
 }
 

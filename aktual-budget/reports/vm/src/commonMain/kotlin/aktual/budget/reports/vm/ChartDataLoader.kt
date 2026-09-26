@@ -79,8 +79,11 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
       // Go back one month to show the change into the first month, unless there's no data before it
       val earliest = bounds.earliest
       val start =
-        if (earliest != null && earliest >= range.start.firstDay) range.start
-        else range.start.minusMonth()
+        if (earliest != null && earliest >= range.start.firstDay) {
+          range.start
+        } else {
+          range.start.minusMonth()
+        }
       val end = range.endInclusive
 
       combine(
