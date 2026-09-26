@@ -16,6 +16,7 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.messageValue
+import aktual.budget.model.serialName
 import aktual.budget.model.tombstone
 import aktual.budget.rules.vm.EntityListFetcher
 import aktual.budget.rules.vm.NameFetcher
@@ -240,11 +241,11 @@ class EditRuleViewModel(
     return with(rule) {
       listOf(
         change("id", id.toString().messageValue()),
-        change("stage", stage?.value.messageValue()),
+        change("stage", stage?.serialName().messageValue()),
         change("conditions", DbJson.encodeToString(conditions.orEmpty()).messageValue()),
         change("actions", DbJson.encodeToString(actions.orEmpty()).messageValue()),
         change("tombstone", tombstone.messageValue()),
-        change("conditions_op", conditions_op?.value.messageValue()),
+        change("conditions_op", conditions_op?.serialName().messageValue()),
       )
     }
   }

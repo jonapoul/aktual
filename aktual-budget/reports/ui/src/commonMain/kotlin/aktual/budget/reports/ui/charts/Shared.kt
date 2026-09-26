@@ -210,4 +210,5 @@ internal fun DateRangeType.string() =
     DateRangeType.YearToDate -> Strings.reportsDateTypeYearToDate
     DateRangeType.LastYear -> Strings.reportsDateTypeLastYear
     DateRangeType.AllTime -> Strings.reportsDateTypeAllTime
+    DateRangeType.Unknown -> Strings.reportsDateTypeUnknown
   }

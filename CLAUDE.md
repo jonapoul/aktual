@@ -12,7 +12,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 - **IMPORTANT**: After any architectural/structural change, grep `**/CLAUDE.md` for references that need updating (scopes, annotations, module paths, DI patterns). Don't wait to be asked.
 - Prefer `kotlinx.immutable` collections in the UI layer, not plain `List`/`Set`.
 - Prefer `stateFlow.update { x }` over `stateFlow.value = x`.
-- The project compiles with `-Xcontext-sensitive-resolution`, so enum entries and sealed subtypes can be referenced unqualified when the expected type is known. Always do this instead of qualifying (`PossibleRole.Admin`) or importing the entry. The expected type is known in:
+- The project compiles with `-Xcontext-sensitive-resolution` (CSR), so enum entries and sealed subtypes can be referenced unqualified when the expected type is known. Always do this instead of qualifying (`PossibleRole.Admin`) or importing the entry. The expected type is known in:
   - function/constructor arguments, named or positional: `SideNavRail(selectedTab = Transactions)`
   - `when` branches and `==`/`!=` comparisons: `when (method) { Header -> ... }`, `if (tab == Accounts)`
   - assertions: `assertThat(role).isEqualTo(Admin)`

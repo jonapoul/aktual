@@ -60,6 +60,7 @@ internal fun RuleStage.string(): String =
     Pre -> Strings.rulesStagePre
     Default -> Strings.rulesStageNone
     Post -> Strings.rulesStagePost
+    Unknown -> Strings.rulesStageUnknown
   }
 
 @Composable
@@ -200,7 +201,8 @@ private fun fieldNamesFlow(condition: Condition, nameFetcher: NameFetcher): Flow
     PayeeName,
     Reconciled,
     Saved,
-    Transfer -> flowOf(null)
+    Transfer,
+    Unknown -> flowOf(null)
   }
 
 @Composable
@@ -261,7 +263,8 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
           }
           withStyle(styles.highlighted) { append(content) }
         }
-        DeleteTransaction -> {
+        DeleteTransaction,
+        Unknown -> {
           withStyle(styles.default) { append(opText) }
         }
         LinkSchedule -> {
@@ -332,6 +335,7 @@ private fun RuleAction.opString(): String =
     PrependNotes -> Strings.rulesOpPrependNotes
     Set -> Strings.rulesOpSet
     SetSplitAmount -> Strings.rulesOpSetSplitAmount
+    Unknown -> Strings.rulesOpUnknown
   }
 
 // From getRecurringDescription in packages/loot-core/src/shared/schedules.ts
@@ -340,7 +344,8 @@ internal fun RecurConfig.string(dateFormat: DateTimeFormat<LocalDate>): String {
     when (endMode) {
       AfterNOccurrences -> if (endOccurrences == 1) "once" else "$endOccurrences times"
       OnDate -> "until ${endDate?.let(dateFormat::format)}"
-      Never -> null
+      Never,
+      Unknown,
       null -> null
     }
 
@@ -348,6 +353,7 @@ internal fun RecurConfig.string(dateFormat: DateTimeFormat<LocalDate>): String {
     when (weekendSolveMode) {
         After -> "(after weekend)"
         Before -> "(before weekend)"
+        Unknown,
         null -> ""
       }
       .takeIf { skipWeekend == true }
@@ -378,6 +384,9 @@ internal fun RecurConfig.string(dateFormat: DateTimeFormat<LocalDate>): String {
       Yearly -> {
         val dateStr = "${start.month.nice} ${numberSuffix(start.day)}"
         if (dt != 1) "Every $dt years on $dateStr" else "Every year on $dateStr"
+      }
+      Unknown -> {
+        "Unknown frequency"
       }
     }
 
@@ -475,6 +484,7 @@ private fun dayName(type: RecurType): String =
     Friday -> "Friday"
     Saturday -> "Saturday"
     Day -> error("Should never happen")
+    Unknown -> "unknown day"
   }
 
 private val DayOfWeek.nice: String

@@ -72,7 +72,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun EditRuleScreen(
@@ -352,7 +351,7 @@ private fun RuleStage(
       )
     }
 
-    val stages = remember { RuleStage.entries.toImmutableList() }
+    val stages = RuleStage.known
     AktualSlidingToggleButton(
       modifier = Modifier.fillMaxWidth(),
       options = stages,

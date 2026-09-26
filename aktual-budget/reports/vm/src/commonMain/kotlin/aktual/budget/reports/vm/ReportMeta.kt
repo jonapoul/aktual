@@ -5,9 +5,8 @@ import aktual.budget.model.ConditionOp
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.Interval
 import aktual.budget.model.WidgetType
-import alakazam.kotlin.SerializableByString
-import alakazam.kotlin.enumStringSerializer
 import androidx.compose.runtime.Immutable
+import fallback.serializer.Fallback
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.yearMonth
@@ -36,6 +35,7 @@ sealed interface ReportMeta {
         Spending -> SpendingReportMeta.serializer()
         Summary -> SummaryReportMeta.serializer()
         Formula -> FormulaReportMeta.serializer()
+        Unknown -> error("Unknown widget type")
       }
   }
 }
@@ -183,59 +183,53 @@ private fun String.toYearMonthOrNull(): YearMonth? =
     }
   }
 
-@Serializable(TimeFrameMode.Serializer::class)
-enum class TimeFrameMode(override val value: String) : SerializableByString {
-  SlidingWindow("sliding-window"),
-  Static("static"),
-  Full("full"),
-  LastMonth("lastMonth"),
-  LastYear("lastYear"),
-  YearToDate("yearToDate"),
-  PriorYearToDate("priorYearToDate"),
-  CurrentQuarter("currentQuarter"),
-  PreviousQuarter("previousQuarter");
-
-  object Serializer : KSerializer<TimeFrameMode> by enumStringSerializer()
+@Serializable
+enum class TimeFrameMode {
+  @SerialName("sliding-window") SlidingWindow,
+  @SerialName("static") Static,
+  @SerialName("full") Full,
+  @SerialName("lastMonth") LastMonth,
+  @SerialName("lastYear") LastYear,
+  @SerialName("yearToDate") YearToDate,
+  @SerialName("priorYearToDate") PriorYearToDate,
+  @SerialName("currentQuarter") CurrentQuarter,
+  @SerialName("previousQuarter") PreviousQuarter,
+  @Fallback Unknown,
 }
 
-@Serializable(NetWorthMode.Serializer::class)
-enum class NetWorthMode(override val value: String) : SerializableByString {
-  Trend("trend"),
-  Stacked("stacked");
-
-  object Serializer : KSerializer<NetWorthMode> by enumStringSerializer()
+@Serializable
+enum class NetWorthMode {
+  @SerialName("trend") Trend,
+  @SerialName("stacked") Stacked,
+  @Fallback Unknown,
 }
 
-@Serializable(SpendingMode.Serializer::class)
-enum class SpendingMode(override val value: String) : SerializableByString {
-  SingleMonth("single-month"),
-  Budget("budget"),
-  Average("average");
-
-  object Serializer : KSerializer<SpendingMode> by enumStringSerializer()
+@Serializable
+enum class SpendingMode {
+  @SerialName("single-month") SingleMonth,
+  @SerialName("budget") Budget,
+  @SerialName("average") Average,
+  @Fallback Unknown,
 }
 
-@Serializable(GraphType.Serializer::class)
-enum class GraphType(override val value: String) : SerializableByString {
-  Line("Line"),
-  Bar("Bar");
-
-  object Serializer : KSerializer<GraphType> by enumStringSerializer()
+@Serializable
+enum class GraphType {
+  @SerialName("Line") Line,
+  @SerialName("Bar") Bar,
+  @Fallback Unknown,
 }
 
-@Serializable(TextAlign.Serializer::class)
-enum class TextAlign(override val value: String) : SerializableByString {
-  Left("left"),
-  Right("right"),
-  Center("center");
-
-  object Serializer : KSerializer<TextAlign> by enumStringSerializer()
+@Serializable
+enum class TextAlign {
+  @SerialName("left") Left,
+  @SerialName("right") Right,
+  @SerialName("center") Center,
+  @Fallback Unknown,
 }
 
-@Serializable(FontSizeMode.Serializer::class)
-enum class FontSizeMode(override val value: String) : SerializableByString {
-  Dynamic("dynamic"),
-  Static("static");
-
-  object Serializer : KSerializer<FontSizeMode> by enumStringSerializer()
+@Serializable
+enum class FontSizeMode {
+  @SerialName("dynamic") Dynamic,
+  @SerialName("static") Static,
+  @Fallback Unknown,
 }

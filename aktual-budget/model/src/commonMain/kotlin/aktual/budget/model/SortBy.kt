@@ -1,12 +1,14 @@
 package aktual.budget.model
 
-import alakazam.kotlin.SerializableByString
+import fallback.serializer.Fallback
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-enum class SortBy(override val value: String) : SerializableByString {
-  Asc(value = "asc"),
-  Budget(value = "budget"),
-  Desc(value = "desc"),
-  Name(value = "name");
-
-  override fun toString(): String = value
+@Serializable
+enum class SortBy {
+  @SerialName("asc") Asc,
+  @SerialName("budget") Budget,
+  @SerialName("desc") Desc,
+  @SerialName("name") Name,
+  @Fallback Unknown,
 }

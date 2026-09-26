@@ -1,15 +1,14 @@
 package aktual.budget.model
 
-import alakazam.kotlin.SerializableByString
+import fallback.serializer.Fallback
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 
 // packages/loot-core/src/types/models/cleanup-templates.ts
 @Serializable(CleanupTemplateSerializer::class)
@@ -36,23 +35,27 @@ sealed interface CleanupTemplate {
   ) : CleanupTemplate
 
   @Serializable
-  enum class Role(override val value: String) : SerializableByString {
-    Source("source"),
-    Sink("sink"),
-    Overspend("overspend"),
+  enum class Role {
+    @SerialName("source") Source,
+    @SerialName("sink") Sink,
+    @SerialName("overspend") Overspend,
+    @Fallback Unknown,
   }
 }
 
 internal class CleanupTemplateSerializer :
   JsonContentPolymorphicSerializer<CleanupTemplate>(CleanupTemplate::class) {
   override fun selectDeserializer(element: JsonElement): DeserializationStrategy<CleanupTemplate> {
-    val string = element.jsonObject["role"]?.jsonPrimitive?.contentOrNull
-    val role = CleanupTemplate.Role.entries.firstOrNull { it.value == string }
+    val role =
+      element.jsonObject["role"]?.let {
+        Json.decodeFromJsonElement(CleanupTemplate.Role.serializer(), it)
+      }
     return when (role) {
       Source -> CleanupTemplate.Source.serializer()
       Sink -> CleanupTemplate.Sink.serializer()
       Overspend -> CleanupTemplate.Overspend.serializer()
-      null -> throw SerializationException("No role found in $element")
+      Unknown,
+      null -> throw SerializationException("No valid role found in $element")
     }
   }
 }

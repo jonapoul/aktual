@@ -5,22 +5,22 @@ import alakazam.kotlin.SerializableByString
 internal interface Translator<Encoded, Decoded> {
   fun encode(value: Decoded): Encoded
 
-  fun decode(value: Encoded): Decoded
+  // null falls back to the preference's default
+  fun decode(value: Encoded): Decoded?
 }
 
 internal inline fun <reified E : Enum<E>> enumOrdinalTranslator() =
   object : Translator<Int, E> {
     override fun encode(value: E): Int = value.ordinal
 
-    override fun decode(value: Int): E = enumValues<E>()[value]
+    override fun decode(value: Int): E? = enumValues<E>().getOrNull(value)
   }
 
 internal inline fun <reified E> enumStringTranslator() where E : Enum<E>, E : SerializableByString =
   object : Translator<String, E> {
     override fun encode(value: E): String = value.value
 
-    override fun decode(value: String): E =
-      enumValues<E>().firstOrNull { it.value == value } ?: error("No ${E::class} matching '$value'")
+    override fun decode(value: String): E? = enumValues<E>().firstOrNull { it.value == value }
   }
 
 internal inline fun <reified T : Any> toStringTranslator(crossinline constructor: (String) -> T) =

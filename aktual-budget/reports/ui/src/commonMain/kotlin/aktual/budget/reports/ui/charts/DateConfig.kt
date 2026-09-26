@@ -95,7 +95,7 @@ internal fun ChartDateConfig(
       itemVerticalAlignment = CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(SPACING),
     ) {
-      DateRangeType.entries.fastForEach { type ->
+      DateRangeType.known.fastForEach { type ->
         DateRangeTypeButton(type = type, onClick = onDateRangeType)
       }
     }

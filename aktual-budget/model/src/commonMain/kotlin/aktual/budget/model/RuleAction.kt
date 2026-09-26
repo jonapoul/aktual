@@ -1,9 +1,9 @@
 package aktual.budget.model
 
-import alakazam.kotlin.SerializableByString
-import alakazam.kotlin.enumStringSerializer
 import androidx.compose.runtime.Immutable
-import kotlinx.serialization.KSerializer
+import fallback.serializer.Fallback
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonPrimitive
@@ -26,26 +26,24 @@ data class RuleAction(
     @SerialName("splitIndex") val splitIndex: Int? = null,
   )
 
-  @Serializable(Method.Serializer::class)
-  enum class Method(override val value: String) : SerializableByString {
-    FixedAmount("fixed-amount"),
-    FixedPercent("fixed-percent"),
-    Formula("formula"),
-    Remainder("remainder");
-
-    internal object Serializer : KSerializer<Method> by enumStringSerializer()
+  @Serializable
+  enum class Method {
+    @SerialName("fixed-amount") FixedAmount,
+    @SerialName("fixed-percent") FixedPercent,
+    @SerialName("formula") Formula,
+    @SerialName("remainder") Remainder,
+    @Fallback Unknown,
   }
 
-  @Serializable(Op.Serializer::class)
-  enum class Op(override val value: String) : SerializableByString {
-    Set("set"), // value type is dependent on Field
-    SetSplitAmount("set-split-amount"), // value == int
-    LinkSchedule("link-schedule"), // value == ScheduleId
-    PrependNotes("prepend-notes"), // value == string to prepend
-    AppendNotes("append-notes"), // value == string to append
-    DeleteTransaction("delete-transaction"); // value == empty string
-
-    internal object Serializer : KSerializer<Op> by enumStringSerializer()
+  @Serializable
+  enum class Op {
+    @SerialName("set") Set, // value type is dependent on Field
+    @SerialName("set-split-amount") SetSplitAmount, // value == int
+    @SerialName("link-schedule") LinkSchedule, // value == ScheduleId
+    @SerialName("prepend-notes") PrependNotes, // value == string to prepend
+    @SerialName("append-notes") AppendNotes, // value == string to append
+    @SerialName("delete-transaction") DeleteTransaction, // value == empty string
+    @Fallback Unknown;
 
     companion object {
       val Default = Set
@@ -70,16 +68,15 @@ data class RuleAction(
   //  └─────────────────────┴───────────────────────────────────────────┴───────────────────────┘
   // Derived from FIELD_TYPES in packages/loot-core/src/shared/rules.ts; set by the
   // Action constructor in packages/loot-core/src/server/rules/action.ts.
-  @Serializable(Type.Serializer::class)
-  enum class Type(override val value: String) : SerializableByString {
-    Boolean("boolean"),
-    Date("date"),
-    Id("id"),
-    Number("number"),
-    Saved("saved"),
-    String("string");
-
-    internal object Serializer : KSerializer<Type> by enumStringSerializer()
+  @Serializable
+  enum class Type {
+    @SerialName("boolean") Boolean,
+    @SerialName("date") Date,
+    @SerialName("id") Id,
+    @SerialName("number") Number,
+    @SerialName("saved") Saved,
+    @SerialName("string") String,
+    @Fallback Unknown;
 
     companion object {
       val Default = Id
@@ -87,13 +84,14 @@ data class RuleAction(
   }
 }
 
-@Serializable(RuleStage.Serializer::class)
-enum class RuleStage(override val value: String) : SerializableByString {
-  Pre(value = "pre"),
-  Default(value = "default"),
-  Post(value = "post");
+@Serializable
+enum class RuleStage {
+  @SerialName("pre") Pre,
+  @SerialName("default") Default,
+  @SerialName("post") Post,
+  @Fallback Unknown;
 
-  override fun toString(): String = value
-
-  internal object Serializer : KSerializer<RuleStage> by enumStringSerializer()
+  companion object {
+    val known: ImmutableList<RuleStage> = entries.filter { it != Unknown }.toImmutableList()
+  }
 }
