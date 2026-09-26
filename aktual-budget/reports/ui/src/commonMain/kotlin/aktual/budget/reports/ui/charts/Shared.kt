@@ -190,11 +190,11 @@ internal fun dateRange(months: ImmutableCollection<YearMonth>): String =
 @Composable
 internal fun Footer(title: String, text: String, modifier: Modifier = Modifier) =
   Column(modifier = modifier.fillMaxWidth().padding(8.dp)) {
-    Text(text = title, fontWeight = Bold, style = typography.bodyMedium)
+    Text(text = title, fontWeight = Bold, color = colors.pageText, style = typography.bodyMedium)
 
     VerticalSpacer(4.dp)
 
-    Text(text = text, style = typography.bodySmall)
+    Text(text = text, color = colors.pageText, style = typography.bodySmall)
   }
 
 @Composable

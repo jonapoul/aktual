@@ -7,6 +7,8 @@ import aktual.budget.model.Condition
 import aktual.budget.model.WidgetType
 import aktual.core.Calendar
 import dev.zacsweers.metro.Inject
+import kotlin.math.roundToLong
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -141,6 +143,68 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
     }
   }
 
+  // packages/desktop-client/src/components/reports/reports/CrossoverCard.tsx
+  fun crossover(meta: CrossoverReportMeta): Flow<ChartData> =
+    dao.observeTransactionDateBounds().flatMapLatest { bounds ->
+      val today = calendar.today()
+      val range = crossoverRange(meta.timeFrame, today, bounds.earliest)
+      val months = (range.start..range.endInclusive).toList()
+      val categoryIds = meta.expenseCategoryIds?.toSet()
+      val accountIds = meta.incomeAccountIds?.toSet()
+      val showHidden = meta.showHiddenCategories == true
+      val params =
+        CrossoverParams(
+          safeWithdrawalRate = meta.safeWithdrawalRate ?: DEFAULT_SAFE_WITHDRAWAL_RATE,
+          estimatedReturn = meta.estimatedReturn,
+          expectedContribution = meta.expectedContribution?.roundToLong(),
+          projectionType = meta.projectionType ?: Hampel,
+          expenseAdjustmentFactor = meta.expenseAdjustmentFactor ?: 1.0,
+        )
+
+      if (accountIds?.isEmpty() == true) {
+        return@flatMapLatest flowOf(CrossoverData(meta.name, persistentMapOf(), null, null))
+      }
+
+      combine(
+        dao.observeCrossoverExpensesByMonth(range.start.firstDay, range.endInclusive.lastDay),
+        dao.observeCrossoverStartingBalances(range.start.firstDay),
+        dao.observeCrossoverBalancesByMonth(range.start.firstDay, range.endInclusive.lastDay),
+      ) { expenseRows, startingRows, balanceRows ->
+        val expensesByMonth =
+          expenseRows
+            .filter { row ->
+              val included = categoryIds?.contains(row.category) ?: (row.is_income != true)
+              included && (showHidden || !row.hidden)
+            }
+            .groupingBy { it.month }
+            .fold(0L) { total, row -> total - row.total }
+
+        val changesByMonth =
+          balanceRows
+            .filter { row -> accountIds?.contains(row.account) ?: (row.tombstone != true) }
+            .groupingBy { it.month }
+            .fold(0L) { total, row -> total + row.total }
+
+        var balance =
+          startingRows
+            .filter { row -> accountIds?.contains(row.account) ?: (row.tombstone != true) }
+            .sumOf { it.total }
+        val balances = months.map { month ->
+          balance += changesByMonth[month.toLong()] ?: 0L
+          balance
+        }
+
+        calculateCrossover(
+          title = meta.name,
+          months = months,
+          expenses = months.map { expensesByMonth[it.toLong()] ?: 0L },
+          balances = balances,
+          params = params,
+          today = today,
+        )
+      }
+    }
+
   fun unsupported(meta: ReportMeta, reason: UnsupportedReason): Flow<ChartData> {
     val (type, name) =
       when (meta) {
@@ -172,5 +236,6 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
 
   private companion object {
     const val YEAR_MONTH_FACTOR = 100L
+    const val DEFAULT_SAFE_WITHDRAWAL_RATE = 0.04
   }
 }
