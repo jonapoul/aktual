@@ -49,12 +49,7 @@ fun ReportScreen(
 
   ReportScaffold(
     state = state,
-    onAction = { action ->
-      when (action) {
-        @Suppress("UseIfInsteadOfWhen") NavBack -> back()
-        else -> Unit
-      }
-    },
+    onAction = { action -> if (action == NavBack) back() },
   )
 }
 
