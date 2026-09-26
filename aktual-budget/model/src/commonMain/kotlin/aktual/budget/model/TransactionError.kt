@@ -1,8 +1,6 @@
 package aktual.budget.model
 
-import alakazam.kotlin.SerializableByString
-import alakazam.kotlin.enumStringSerializer
-import kotlinx.serialization.KSerializer
+import fallback.serializer.Fallback
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -12,10 +10,9 @@ data class TransactionError(
   @SerialName("type") val type: Type = Type.SplitTransactionError,
   @SerialName("version") val version: Int,
 ) {
-  @Serializable(Type.Serializer::class)
-  enum class Type(override val value: String) : SerializableByString {
-    SplitTransactionError("SplitTransactionError");
-
-    internal object Serializer : KSerializer<Type> by enumStringSerializer()
+  @Serializable
+  enum class Type {
+    @SerialName("SplitTransactionError") SplitTransactionError,
+    @Fallback Unknown,
   }
 }

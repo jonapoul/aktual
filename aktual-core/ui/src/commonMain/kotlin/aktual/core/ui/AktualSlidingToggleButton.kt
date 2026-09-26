@@ -32,7 +32,6 @@ import androidx.compose.ui.util.fastForEachIndexed
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun <T : Any> AktualSlidingToggleButton(
@@ -158,7 +157,7 @@ private fun PreviewEnum(@PreviewParameter(ColoredParameters::class) colors: Colo
     var selected by remember { mutableStateOf(Interval.Weekly) }
     AktualSlidingToggleButton(
       modifier = Modifier.padding(4.dp),
-      options = Interval.entries.toImmutableList(),
+      options = Interval.known,
       selected = selected,
       onSelect = { value -> selected = value },
       string = { interval ->
@@ -167,6 +166,7 @@ private fun PreviewEnum(@PreviewParameter(ColoredParameters::class) colors: Colo
           Weekly -> "Weekly"
           Monthly -> "Monthly"
           Yearly -> "Yearly with loads more text clipped off"
+          Unknown -> "Unknown"
         }
       },
     )

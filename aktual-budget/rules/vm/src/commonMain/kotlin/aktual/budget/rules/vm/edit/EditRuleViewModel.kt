@@ -16,11 +16,13 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.messageValue
+import aktual.budget.model.serialName
 import aktual.budget.model.tombstone
 import aktual.budget.rules.vm.EntityListFetcher
 import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Failure
+import aktual.budget.rules.vm.hasUnknownValues
 import aktual.core.UuidGenerator
 import aktual.di.BudgetScope
 import alakazam.kotlin.requireMessage
@@ -151,6 +153,8 @@ class EditRuleViewModel(
         val model = mutableRule.value
         if (model == null) {
           logcat.w { "Tried to save without a rule?" }
+        } else if (model.hasUnknownValues) {
+          logcat.w { "Not saving $model, it has unknown values" }
         } else {
           val rule =
             with(model) {
@@ -240,11 +244,11 @@ class EditRuleViewModel(
     return with(rule) {
       listOf(
         change("id", id.toString().messageValue()),
-        change("stage", stage?.value.messageValue()),
+        change("stage", stage?.serialName().messageValue()),
         change("conditions", DbJson.encodeToString(conditions.orEmpty()).messageValue()),
         change("actions", DbJson.encodeToString(actions.orEmpty()).messageValue()),
         change("tombstone", tombstone.messageValue()),
-        change("conditions_op", conditions_op?.value.messageValue()),
+        change("conditions_op", conditions_op?.serialName().messageValue()),
       )
     }
   }

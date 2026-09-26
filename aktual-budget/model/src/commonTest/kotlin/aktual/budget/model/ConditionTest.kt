@@ -109,4 +109,23 @@ class ConditionTest {
       PrettyJson.decodeFromString(ListSerializer(Condition.serializer()), serialized)
     assertThat(deserialized).isEqualTo(data)
   }
+
+  @Test
+  fun `Unrecognised enum values decode as Unknown`() {
+    val json =
+      """{"field":"new-field","op":"is","value":"abc","type":"new-type","conditionsOp":"xor"}"""
+
+    val condition = PrettyJson.decodeFromString(Condition.serializer(), json)
+
+    assertThat(condition)
+      .isEqualTo(
+        Condition(
+          field = Unknown,
+          operator = Is,
+          type = Unknown,
+          conditionsOp = Unknown,
+          value = JsonPrimitive("abc"),
+        )
+      )
+  }
 }

@@ -9,6 +9,7 @@ import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import alakazam.kotlin.CoroutineContexts
 import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import dev.zacsweers.metro.Inject
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 @Inject
 class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
@@ -42,8 +44,11 @@ class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineCont
     getPositionAndSize().awaitAsList()
   }
 
-  suspend fun updateMeta(id: WidgetId, meta: JsonObject) = queries.withoutResult {
-    updateMeta(meta, id)
+  // Patches the stored json rather than re-encoding our model, so values we don't recognise are
+  // kept
+  suspend fun rename(id: WidgetId, name: String) = queries.withoutResult {
+    val meta = getMeta(id).awaitAsOneOrNull()?.meta ?: return@withoutResult
+    updateMeta(JsonObject(meta + ("name" to JsonPrimitive(name))), id)
   }
 
   companion object {

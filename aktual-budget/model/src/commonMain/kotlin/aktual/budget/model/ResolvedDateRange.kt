@@ -42,7 +42,8 @@ fun DateRangeType.resolve(today: LocalDate): ResolvedDateRange {
     DateRangeType.LastYear -> {
       ResolvedDateRange(LocalDate(today.year - 1, 1, 1), LocalDate(today.year - 1, 12, 31))
     }
-    DateRangeType.AllTime -> {
+    DateRangeType.AllTime,
+    DateRangeType.Unknown -> {
       ResolvedDateRange(LocalDate(2000, 1, 1), today)
     }
   }

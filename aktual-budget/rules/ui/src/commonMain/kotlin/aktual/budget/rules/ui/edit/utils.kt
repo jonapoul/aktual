@@ -15,6 +15,7 @@ internal fun RuleStage.string(): String =
     RuleStage.Pre -> Strings.rulesStagePre
     RuleStage.Default -> Strings.rulesStageNone
     RuleStage.Post -> Strings.rulesStagePost
+    RuleStage.Unknown -> Strings.rulesStageUnknown
   }
 
 internal enum class Mode {
@@ -27,6 +28,7 @@ internal fun ConditionOp.string(): String =
   when (this) {
     ConditionOp.And -> Strings.editRuleAnd
     ConditionOp.Or -> Strings.editRuleOr
+    ConditionOp.Unknown -> Strings.editRuleUnknown
   }
 
 internal val BUTTON_PADDING = PaddingValues(horizontal = 8.dp, vertical = 8.dp)

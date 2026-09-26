@@ -34,8 +34,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.jsonObject
 import logcat.logcat
 
 @Stable
@@ -55,9 +53,21 @@ internal constructor(
 
   fun renameReport(item: DashboardItem, name: String) {
     viewModelScope.launch {
-      item.meta.renamed(name)?.let { meta ->
-        val jsonObject = Json.encodeToJsonElement<ReportMeta>(meta).jsonObject
-        dashboardDao.updateMeta(item.id, jsonObject)
+      when (val meta = item.meta) {
+        is BudgetAnalysisReportMeta,
+        is CalendarReportMeta,
+        is CashFlowReportMeta,
+        is FormulaReportMeta,
+        is NetWorthReportMeta,
+        is SpendingReportMeta,
+        is SummaryReportMeta -> dashboardDao.rename(item.id, name)
+
+        // Not nameable
+        is MarkdownReportMeta,
+        is UnsupportedReportMeta -> Unit
+
+        // Named, but it's stored in a separate table
+        is CustomReportMeta -> customReportsDao.rename(meta.id, name)
       }
     }
   }
@@ -102,28 +112,5 @@ internal constructor(
     } catch (e: Exception) {
       logcat.e(e) { "Failed to deserialize $type report meta: $meta" }
       UnsupportedReportMeta(type, meta, reason = e.message ?: e.toString())
-    }
-
-  @Suppress("BracesOnWhenStatements")
-  private suspend fun ReportMeta.renamed(name: String): ReportMeta? =
-    when (this) {
-      // Named
-      is BudgetAnalysisReportMeta -> copy(name = name)
-      is CalendarReportMeta -> copy(name = name)
-      is CashFlowReportMeta -> copy(name = name)
-      is FormulaReportMeta -> copy(name = name)
-      is NetWorthReportMeta -> copy(name = name)
-      is SpendingReportMeta -> copy(name = name)
-      is SummaryReportMeta -> copy(name = name)
-
-      // Not nameable
-      is MarkdownReportMeta -> null
-      is UnsupportedReportMeta -> null
-
-      // Named, but it's stored in a separate table
-      is CustomReportMeta -> {
-        customReportsDao.rename(id, name)
-        null
-      }
     }
 }

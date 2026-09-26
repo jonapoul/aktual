@@ -1,14 +1,16 @@
 package aktual.budget.model
 
-import alakazam.kotlin.SerializableByString
+import fallback.serializer.Fallback
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-enum class GraphType(override val value: String) : SerializableByString {
-  AreaGraph(value = "AreaGraph"),
-  BarGraph(value = "BarGraph"),
-  DonutGraph(value = "DonutGraph"),
-  LineGraph(value = "LineGraph"),
-  StackedBarGraph(value = "StackedBarGraph"),
-  TableGraph(value = "TableGraph");
-
-  override fun toString(): String = value
+@Serializable
+enum class GraphType {
+  @SerialName("AreaGraph") AreaGraph,
+  @SerialName("BarGraph") BarGraph,
+  @SerialName("DonutGraph") DonutGraph,
+  @SerialName("LineGraph") LineGraph,
+  @SerialName("StackedBarGraph") StackedBarGraph,
+  @SerialName("TableGraph") TableGraph,
+  @Fallback Unknown,
 }

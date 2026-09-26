@@ -32,7 +32,8 @@ internal fun resolveTimeRange(
 
   return when (mode) {
     Full -> start..maxOf(latestTransaction?.yearMonth ?: current, current)
-    SlidingWindow -> slidingWindow(start, end, current)
+    SlidingWindow,
+    Unknown -> slidingWindow(start, end, current)
     LastMonth -> current.minusMonth().let { it..it }
     LastYear -> YearMonth(current.year - 1, JANUARY)..YearMonth(current.year - 1, DECEMBER)
     YearToDate -> YearMonth(current.year, JANUARY)..current

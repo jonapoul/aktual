@@ -1,14 +1,16 @@
 package aktual.budget.model
 
-import alakazam.kotlin.SerializableByString
+import fallback.serializer.Fallback
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-enum class BalanceType(override val value: String) : SerializableByString {
-  Deposit(value = "Deposit"),
-  Expense(value = "Expense"), // not used anywhere?
-  Net(value = "Net"),
-  NetDeposit(value = "Net Deposit"),
-  NetPayment(value = "Net Payment"),
-  Payment(value = "Payment");
-
-  override fun toString(): String = value
+@Serializable
+enum class BalanceType {
+  @SerialName("Deposit") Deposit,
+  @SerialName("Expense") Expense,
+  @SerialName("Net") Net,
+  @SerialName("Net Deposit") NetDeposit,
+  @SerialName("Net Payment") NetPayment,
+  @SerialName("Payment") Payment,
+  @Fallback Unknown,
 }
