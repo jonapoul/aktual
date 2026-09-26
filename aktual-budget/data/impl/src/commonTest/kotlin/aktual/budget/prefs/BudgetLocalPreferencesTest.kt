@@ -6,6 +6,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.Timestamp
 import aktual.budget.model.cloudFileId
+import aktual.di.AppCoroutineScope
 import aktual.test.CoTemporaryFolder
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.testBudgetFiles
@@ -40,7 +41,7 @@ class BudgetLocalPreferencesTest {
   }
 
   private fun TestScope.buildPreferences(metadata: DbMetadata) {
-    preferences = BudgetLocalPreferencesImpl(metadata, files, this, contexts)
+    preferences = BudgetLocalPreferencesImpl(metadata, files, AppCoroutineScope(this), contexts)
   }
 
   @Test

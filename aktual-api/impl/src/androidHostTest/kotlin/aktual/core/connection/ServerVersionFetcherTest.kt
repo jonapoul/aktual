@@ -7,6 +7,7 @@ import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.PingState
 import aktual.core.model.PingStateHolder
+import aktual.di.ServerChosenCoroutineScope
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.kotlin.LoopController
@@ -58,7 +59,7 @@ class ServerVersionFetcherTest {
         versionsStateHolder = versionsStateHolder,
         pingStateHolder = pingStateHolder,
         loopController = loopController,
-        scope = this,
+        scope = ServerChosenCoroutineScope(this),
       )
   }
 

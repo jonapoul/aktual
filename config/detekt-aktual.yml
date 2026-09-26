@@ -1,5 +1,7 @@
 ---
 aktual:
   active: true
+  InjectedRawCoroutineScope:
+    active: true
   InvalidComposeLazyKey:
     active: true

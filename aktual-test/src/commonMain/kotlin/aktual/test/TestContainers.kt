@@ -2,6 +2,7 @@ package aktual.test
 
 import aktual.budget.BudgetFiles
 import aktual.core.AppDirectory
+import aktual.di.AppCoroutineScope
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
@@ -19,7 +20,7 @@ class TestCoroutineContainer(
   private val scope: CoroutineScope,
   private val contexts: CoroutineContexts,
 ) {
-  @Provides fun scope(): CoroutineScope = scope
+  @Provides fun scope(): AppCoroutineScope = AppCoroutineScope(scope)
 
   @Provides fun contexts(): CoroutineContexts = contexts
 }

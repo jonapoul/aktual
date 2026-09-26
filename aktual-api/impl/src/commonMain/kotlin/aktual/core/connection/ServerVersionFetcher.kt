@@ -6,16 +6,17 @@ import aktual.core.model.PingStateHolder
 import aktual.di.Closeable
 import aktual.di.Initializable
 import aktual.di.ScopeLifecycle
+import aktual.di.ServerChosenCoroutineScope
 import aktual.di.ServerChosenScope
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.LoopController
 import dev.zacsweers.metro.ContributesIntoSet
+import dev.zacsweers.metro.ForScope
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import io.ktor.client.plugins.ResponseException
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -24,10 +25,16 @@ import kotlinx.coroutines.withContext
 import logcat.logcat
 
 @SingleIn(ServerChosenScope::class)
-@ContributesIntoSet(ServerChosenScope::class, binding<Initializable>())
-@ContributesIntoSet(ServerChosenScope::class, binding<Closeable>())
+@ContributesIntoSet(
+  ServerChosenScope::class,
+  binding<@ForScope(ServerChosenScope::class) Initializable>(),
+)
+@ContributesIntoSet(
+  ServerChosenScope::class,
+  binding<@ForScope(ServerChosenScope::class) Closeable>(),
+)
 class ServerVersionFetcher(
-  private val scope: CoroutineScope,
+  private val scope: ServerChosenCoroutineScope,
   private val contexts: CoroutineContexts,
   private val baseApi: BaseApi,
   private val versionsStateHolder: AktualVersionsStateHolder,
