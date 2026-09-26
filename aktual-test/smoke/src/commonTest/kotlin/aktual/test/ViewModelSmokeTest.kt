@@ -7,8 +7,10 @@ import aktual.account.vm.LoginViewModel
 import aktual.account.vm.ServerUrlViewModel
 import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.RuleId
+import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
+import aktual.budget.reports.vm.report.ReportViewModel
 import aktual.budget.rules.vm.edit.EditRuleViewModel
 import aktual.budget.rules.vm.list.ListRulesViewModel
 import aktual.budget.schedules.vm.list.ListSchedulesViewModel
@@ -123,6 +125,10 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test fun url() = testVm<ServerUrlViewModel>()
 
+  @Test
+  fun report() =
+    testAssistedVM<ReportViewModel, ReportViewModel.Factory> { create(WidgetId("widget")) }
+
   @Test fun editTag() = testAssistedVM<EditTagViewModel, EditTagViewModel.Factory> { create(null) }
 
   @Test
@@ -179,12 +185,11 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   }
 
   private class TestSavedStateOwner : SavedStateRegistryOwner, ViewModelStoreOwner {
-    private val lifecycleRegistry = LifecycleRegistry.createUnsafe(this)
+    override val lifecycle: Lifecycle
+      field = LifecycleRegistry.createUnsafe(this)
+
     private val controller =
       SavedStateRegistryController.create(this).apply { performRestore(null) }
-
-    override val lifecycle: Lifecycle
-      get() = lifecycleRegistry
 
     override val savedStateRegistry: SavedStateRegistry
       get() = controller.savedStateRegistry

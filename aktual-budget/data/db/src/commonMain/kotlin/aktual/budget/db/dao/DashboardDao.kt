@@ -12,6 +12,7 @@ import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -36,6 +37,9 @@ class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineCont
 
   fun observeAll(): Flow<List<Dashboard>> =
     queries.getAll().asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  fun observeById(id: WidgetId): Flow<Dashboard?> =
+    queries.getById(id).asFlow().mapToOneOrNull(contexts.default).distinctUntilChanged()
 
   suspend fun deleteById(id: WidgetId): Long = queries.withResult { delete(id) }
 
