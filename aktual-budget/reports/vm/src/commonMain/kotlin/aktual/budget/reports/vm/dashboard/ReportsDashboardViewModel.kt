@@ -90,12 +90,12 @@ internal constructor(
     when (val meta = item.meta) {
       is AgeOfMoneyReportMeta -> chartDataLoader.ageOfMoney(meta)
       is CashFlowReportMeta -> chartDataLoader.cashFlow(meta)
+      is CrossoverReportMeta -> chartDataLoader.crossover(meta)
       is MarkdownReportMeta -> chartDataLoader.text(meta)
       is NetWorthReportMeta -> chartDataLoader.netWorth(meta)
       is BalanceForecastReportMeta,
       is BudgetAnalysisReportMeta,
       is CalendarReportMeta,
-      is CrossoverReportMeta,
       is CustomReportMeta,
       is FormulaReportMeta,
       is MonteCarloReportMeta,

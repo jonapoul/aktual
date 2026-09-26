@@ -63,6 +63,12 @@
   <string name="reports_age_of_money_how_title">How is it calculated?</string>
   <string name="reports_age_of_money_how">When you spend money, it’s considered to come from your oldest income first. The age is the difference in days between when you received that income and when you spent it. The displayed value is the average age of your last 10 expenses.</string>
 
+  <string name="reports_crossover_years">%1$s years</string>
+  <string name="reports_crossover_none">N/A</string>
+  <string name="reports_crossover_years_to_retire">Years to retire</string>
+  <string name="reports_crossover_what_title">What is the crossover point?</string>
+  <string name="reports_crossover_what">The crossover point is when your monthly investment income (from selected accounts using the safe withdrawal rate) meets or exceeds your total monthly expenses (from selected categories). The chart projects into the future using your estimated return until the lines cross.</string>
+
   <string name="reports_net_worth_footer_title">How is net worth calculated?</string>
   <string name="reports_net_worth_footer">Net worth shows the balance of all accounts over time, including all of your investments. Your "net worth" is considered to be the amount you’d have if you sold all your assets and paid off as much debt as possible. If you hover over the graph, you can also see the amount of assets and debt individually.</string>
 

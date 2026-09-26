@@ -49,6 +49,23 @@ enum class AgeOfMoneyTrend {
 }
 
 @Immutable
+data class CrossoverData(
+  val title: String?,
+  val items: ImmutableMap<YearMonth, CrossoverDatum>,
+  val crossover: YearMonth?,
+  val yearsToRetire: Double?,
+) : ChartData
+
+@Immutable
+data class CrossoverDatum(
+  val investmentIncome: Amount,
+  val expenses: Amount,
+  val nestEgg: Amount,
+  // Only set on projected months
+  val adjustedExpenses: Amount? = null,
+)
+
+@Immutable
 sealed interface SummaryData : ChartData, DateRange {
   val title: String
 
