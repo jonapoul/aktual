@@ -41,7 +41,6 @@ import aktual.budget.model.UpcomingLength
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.model.ZeroBudgetMonthId
-import alakazam.kotlin.SerializableByString
 import app.cash.sqldelight.ColumnAdapter
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -55,6 +54,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 
@@ -81,11 +81,11 @@ private fun <T : Any> stringAdapter(
 private fun <T : Any> stringAdapter(decode: (String) -> T): ColumnAdapter<T, String> =
   stringAdapter(decode, encode = { it.toString() })
 
-private inline fun <reified E> enumStringAdapter(): ColumnAdapter<E, String>
-  where E : Enum<E>, E : SerializableByString = stringAdapter { string ->
-  enumValues<E>().firstOrNull { it.value == string }
-    ?: error("No ${E::class.qualifiedName} matching '$string'")
-}
+private fun <E : Enum<E>> enumStringAdapter(serializer: KSerializer<E>): ColumnAdapter<E, String> =
+  stringAdapter(
+    decode = { DbJson.decodeFromJsonElement(serializer, JsonPrimitive(it)) },
+    encode = { serializer.descriptor.getElementName(it.ordinal) },
+  )
 
 val DbJson = Json {
   encodeDefaults = true
@@ -181,16 +181,16 @@ private val uuid = stringAdapter(Uuid::parse)
 private val widgetId = stringAdapter(::WidgetId)
 private val zeroBudgetMonthId = stringAdapter(::ZeroBudgetMonthId)
 
-private val balanceType = enumStringAdapter<BalanceType>()
-private val conditionsOp = enumStringAdapter<ConditionOp>()
-private val customReportMode = enumStringAdapter<CustomReportMode>()
-private val dateRangeType = enumStringAdapter<DateRangeType>()
-private val graphType = enumStringAdapter<GraphType>()
-private val groupBy = enumStringAdapter<GroupBy>()
-private val interval = enumStringAdapter<Interval>()
-private val sortBy = enumStringAdapter<SortBy>()
-private val ruleStage = enumStringAdapter<RuleStage>()
-private val widgetType = enumStringAdapter<WidgetType>()
+private val balanceType = enumStringAdapter(BalanceType.serializer())
+private val conditionsOp = enumStringAdapter(ConditionOp.serializer())
+private val customReportMode = enumStringAdapter(CustomReportMode.serializer())
+private val dateRangeType = enumStringAdapter(DateRangeType.serializer())
+private val graphType = enumStringAdapter(GraphType.serializer())
+private val groupBy = enumStringAdapter(GroupBy.serializer())
+private val interval = enumStringAdapter(Interval.serializer())
+private val sortBy = enumStringAdapter(SortBy.serializer())
+private val ruleStage = enumStringAdapter(RuleStage.serializer())
+private val widgetType = enumStringAdapter(WidgetType.serializer())
 
 internal val AccountGroupsAdapter = Account_groups.Adapter(idAdapter = accountGroupId)
 

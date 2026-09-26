@@ -12,6 +12,7 @@ import aktual.budget.rules.vm.edit.EditRuleState.Failure
 import aktual.budget.rules.vm.edit.EditRuleState.Loading
 import aktual.budget.rules.vm.edit.EditRuleState.Success
 import aktual.budget.rules.vm.edit.EditRuleViewModel
+import aktual.budget.rules.vm.hasUnknownValues
 import aktual.core.icons.material.DeleteForever
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
@@ -72,7 +73,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun EditRuleScreen(
@@ -186,7 +186,7 @@ private fun EditRuleActions(
 
     NormalIconButton(
       onClick = { onAction(Save) },
-      isEnabled = state is Success,
+      isEnabled = state is Success && state.canSave,
       imageVector =
         when (mode) {
           Mode.Create -> MaterialIcons.SaveAs
@@ -311,6 +311,10 @@ private fun LoadedContent(
       contentPadding = contentPadding,
       verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+      if (rule.hasUnknownValues) {
+        item { UnknownValuesWarning() }
+      }
+
       item { RuleStage(rule, isEnabled, onAction) }
 
       item { Conditions(rule, isEnabled, onAction) }
@@ -324,6 +328,17 @@ private fun LoadedContent(
       BottomSpacing()
     }
   }
+}
+
+@Composable
+private fun UnknownValuesWarning(modifier: Modifier = Modifier) {
+  Text(
+    modifier =
+      modifier.fillMaxWidth().background(colors.cardBackground, CardShape).padding(CARD_PADDING),
+    text = Strings.editRuleUnknownValues,
+    color = colors.errorText,
+    style = typography.bodyMedium,
+  )
 }
 
 @Composable
@@ -352,7 +367,7 @@ private fun RuleStage(
       )
     }
 
-    val stages = remember { RuleStage.entries.toImmutableList() }
+    val stages = RuleStage.known
     AktualSlidingToggleButton(
       modifier = Modifier.fillMaxWidth(),
       options = stages,

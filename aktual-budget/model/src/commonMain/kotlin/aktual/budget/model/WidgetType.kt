@@ -1,18 +1,26 @@
 package aktual.budget.model
 
-import alakazam.kotlin.SerializableByString
+import fallback.serializer.Fallback
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /** packages/loot-core/src/server/dashboard/app.ts, exportModel() */
-enum class WidgetType(override val value: String) : SerializableByString {
-  NetWorth("net-worth-card"),
-  CashFlow("cash-flow-card"),
-  Spending("spending-card"),
-  Custom("custom-report"),
-  Markdown("markdown-card"),
-  Summary("summary-card"),
-  Calendar("calendar-card"),
-  BudgetAnalysis("budget-analysis-card"),
-  Formula("formula-card");
+@Serializable
+enum class WidgetType {
+  @SerialName("net-worth-card") NetWorth,
+  @SerialName("cash-flow-card") CashFlow,
+  @SerialName("spending-card") Spending,
+  @SerialName("custom-report") Custom,
+  @SerialName("markdown-card") Markdown,
+  @SerialName("summary-card") Summary,
+  @SerialName("calendar-card") Calendar,
+  @SerialName("budget-analysis-card") BudgetAnalysis,
+  @SerialName("formula-card") Formula,
+  @Fallback Unknown;
 
-  override fun toString(): String = value
+  companion object {
+    val known: ImmutableList<WidgetType> = entries.filter { it != Unknown }.toImmutableList()
+  }
 }

@@ -4,6 +4,7 @@ import blueprint.core.commonTestDependencies
 plugins {
   id("aktual.module.kotlin")
   id("aktual.compiler")
+  alias(libs.plugins.fallbackSerializer)
   alias(libs.plugins.kotlin.serialization)
 }
 

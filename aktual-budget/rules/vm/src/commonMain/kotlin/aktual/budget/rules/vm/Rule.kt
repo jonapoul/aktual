@@ -16,3 +16,16 @@ data class Rule(
   val conditionsOp: ConditionOp,
   val actions: ImmutableList<RuleAction>,
 )
+
+// Saving would overwrite values from a newer client with "Unknown", so these can't be saved as they
+// are
+val Rule.hasUnknownValues: Boolean
+  get() =
+    stage == Unknown ||
+      conditionsOp == Unknown ||
+      conditions.any { c ->
+        c.field == Unknown || c.type == Unknown || c.conditionsOp == Unknown
+      } ||
+      actions.any { a ->
+        a.op == Unknown || a.field == Unknown || a.type == Unknown || a.options?.method == Unknown
+      }

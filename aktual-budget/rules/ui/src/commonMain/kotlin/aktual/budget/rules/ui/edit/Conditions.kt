@@ -64,7 +64,7 @@ internal fun Conditions(
           AktualExposedDropDownMenu(
             value = rule.conditionsOp,
             onValueChange = { op -> onAction(SetConditionOp(op)) },
-            options = ConditionOp.entries.toImmutableList(),
+            options = ConditionOp.known,
             string = { op -> op.string() },
             textStyle = typography.bodySmall,
             isEnabled = isEnabled,

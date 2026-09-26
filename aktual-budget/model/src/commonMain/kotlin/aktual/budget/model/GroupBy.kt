@@ -1,13 +1,15 @@
 package aktual.budget.model
 
-import alakazam.kotlin.SerializableByString
+import fallback.serializer.Fallback
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-enum class GroupBy(override val value: String) : SerializableByString {
-  Account(value = "Account"),
-  Category(value = "Category"),
-  Group(value = "Group"),
-  Interval(value = "Interval"),
-  Payee(value = "Payee");
-
-  override fun toString(): String = value
+@Serializable
+enum class GroupBy {
+  @SerialName("Account") Account,
+  @SerialName("Category") Category,
+  @SerialName("Group") Group,
+  @SerialName("Interval") Interval,
+  @SerialName("Payee") Payee,
+  @Fallback Unknown,
 }

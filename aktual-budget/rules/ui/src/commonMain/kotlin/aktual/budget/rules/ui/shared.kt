@@ -66,6 +66,7 @@ internal fun Field.string(options: ConditionOptions?): String =
     Field.Parent -> Strings.rulesFieldParent
     Field.Cleared -> Strings.rulesFieldCleared
     Field.Reconciled -> Strings.rulesFieldReconciled
+    Field.Unknown -> Strings.rulesFieldUnknown
   }
 
 @Composable
@@ -130,7 +131,8 @@ internal fun filteredOperators(condition: Condition): ImmutableList<Operator> =
     // no operators
     Field.Acct,
     Field.ImportedDescription,
-    Field.Description -> persistentListOf()
+    Field.Description,
+    Field.Unknown -> persistentListOf()
   }
 
 private inline fun <reified O : Operator> operators(): ImmutableList<O> =

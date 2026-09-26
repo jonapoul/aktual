@@ -3,6 +3,10 @@ package aktual.prefs
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
 import alakazam.test.unconfinedDispatcher
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import app.cash.turbine.test
 import kotlin.test.Test
 import kotlinx.coroutines.test.TestScope
@@ -12,10 +16,12 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class TagPreferencesTest {
+  private lateinit var dataStore: DataStore<Preferences>
   private lateinit var preferences: TagPreferences
 
   private fun TestScope.before() {
-    preferences = TagPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    dataStore = buildPreferences(unconfinedDispatcher)
+    preferences = TagPreferencesImpl(dataStore)
   }
 
   @Test
@@ -73,6 +79,25 @@ class TagPreferencesTest {
 
         // Then it round-trips
         assertThatNextEmissionIsEqualTo(Descending)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+  }
+
+  @Test
+  fun `Unknown stored sort field falls back to default`() = runTest {
+    before()
+    with(preferences.sortField) {
+      asFlow().test {
+        assertThatNextEmissionIsEqualTo(Default)
+
+        // When a value this app version doesn't know is stored
+        set(Usage)
+        assertThatNextEmissionIsEqualTo(Usage)
+        dataStore.edit { it[stringPreferencesKey("tagSortField")] = "something-new" }
+
+        // Then it decodes as the default instead of throwing
+        assertThatNextEmissionIsEqualTo(Default)
         cancelAndIgnoreRemainingEvents()
       }
     }
