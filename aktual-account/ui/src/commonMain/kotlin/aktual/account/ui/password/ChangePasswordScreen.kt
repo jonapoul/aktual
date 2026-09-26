@@ -212,7 +212,7 @@ private class ChangePasswordProvider :
   ColoredParameterProvider<ChangePasswordParams>(
     ChangePasswordParams(password1 = Empty, password2 = Empty),
     ChangePasswordParams(showPasswords = true, passwordsMatch = true),
-    ChangePasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),
-    ChangePasswordParams(state = ChangePasswordState.Success, passwordsMatch = true),
-    ChangePasswordParams(state = ChangePasswordState.NetworkFailure, passwordsMatch = true),
+    ChangePasswordParams(state = Loading, passwordsMatch = true),
+    ChangePasswordParams(state = Success, passwordsMatch = true),
+    ChangePasswordParams(state = NetworkFailure, passwordsMatch = true),
   )

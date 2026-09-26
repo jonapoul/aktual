@@ -8,7 +8,6 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Password
 import aktual.core.model.Token
 import aktual.di.LoggedInScope
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,7 +18,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -55,7 +53,7 @@ class ChangePasswordViewModel(
   val passwordsMatch: StateFlow<Boolean> =
     combine(mutablePassword1, mutablePassword2, ::Pair)
       .map { (p1, p2) -> validPasswords(p1, p2) }
-      .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
+      .stateIn(viewModelScope, Eagerly, initialValue = false)
 
   fun setPasswordsVisible(visible: Boolean) = mutableShowPasswords.update { visible }
 
@@ -76,13 +74,13 @@ class ChangePasswordViewModel(
     viewModelScope.launch {
       val changePasswordResult = passwordChanger.submit(password)
       logcat.d { "result = $changePasswordResult" }
-      val newState =
+      val newState: ChangePasswordState =
         when (changePasswordResult) {
-          Success -> ChangePasswordState.Success
-          InvalidPassword -> ChangePasswordState.InvalidPassword
-          NetworkFailure -> ChangePasswordState.NetworkFailure
-          is HttpFailure -> ChangePasswordState.OtherFailure
-          is OtherFailure -> ChangePasswordState.OtherFailure
+          Success -> Success
+          InvalidPassword -> InvalidPassword
+          NetworkFailure -> NetworkFailure
+          is HttpFailure -> OtherFailure
+          is OtherFailure -> OtherFailure
         }
       mutableState.update { newState }
 
@@ -110,21 +108,4 @@ class ChangePasswordViewModel(
   private companion object {
     val SUCCESS_DELAY = 1.seconds
   }
-}
-
-@Immutable
-sealed interface ChangePasswordState {
-  data object Loading : ChangePasswordState
-
-  data object Success : ChangePasswordState
-
-  sealed interface Failure : ChangePasswordState
-
-  data object InvalidPassword : Failure
-
-  data object PasswordsDontMatch : Failure
-
-  data object NetworkFailure : Failure
-
-  data object OtherFailure : Failure
 }
