@@ -171,8 +171,9 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
 
       combine(
         dao.observeCrossoverExpensesByMonth(range.start.firstDay, range.endInclusive.lastDay),
-        dao.observeCrossoverBalancesByMonth(range.endInclusive.lastDay),
-      ) { expenseRows, balanceRows ->
+        dao.observeCrossoverStartingBalances(range.start.firstDay),
+        dao.observeCrossoverBalancesByMonth(range.start.firstDay, range.endInclusive.lastDay),
+      ) { expenseRows, startingRows, balanceRows ->
         val expensesByMonth =
           expenseRows
             .filter { row ->
@@ -188,7 +189,10 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
             .groupingBy { it.month }
             .fold(0L) { total, row -> total + row.total }
 
-        var balance = changesByMonth.filterKeys { it < range.start.toLong() }.values.sum()
+        var balance =
+          startingRows
+            .filter { row -> accountIds?.contains(row.account) ?: (row.tombstone != true) }
+            .sumOf { it.total }
         val balances = months.map { month ->
           balance += changesByMonth[month.toLong()] ?: 0L
           balance

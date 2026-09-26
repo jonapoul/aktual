@@ -97,7 +97,8 @@ internal fun calculateCrossover(
   )
 }
 
-// Monthly CAGR between the first non-zero balance and the last one
+// Monthly CAGR from the first non-zero balance to the last one. Like upstream, it spreads the
+// growth over every month, including any zero months at the start
 private fun historicalMonthlyReturn(balances: List<Long>): Double? {
   if (balances.size < 2) return null
   val first = balances.firstOrNull { it != 0L } ?: 0L

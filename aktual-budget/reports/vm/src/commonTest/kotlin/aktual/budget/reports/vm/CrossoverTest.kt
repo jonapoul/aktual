@@ -98,6 +98,23 @@ class CrossoverTest {
   }
 
   @Test
+  fun `Historical growth is spread over leading zero months, like upstream`() {
+    val data =
+      calculate(
+        months = listOf(JAN, FEB, MAR),
+        expenses = listOf(0, 0, 0),
+        balances = listOf(0, 100_000, 121_000),
+        params = PARAMS.copy(estimatedReturn = null),
+      )
+
+    // 21% over two months is 10% a month
+    assertThat(data.items[YearMonth(2024, APRIL)])
+      .isNotNull()
+      .prop(CrossoverDatum::nestEgg)
+      .isEqualTo(Amount(133_100))
+  }
+
+  @Test
   fun `Nothing to show without months`() {
     val data = calculate(months = emptyList(), expenses = emptyList(), balances = emptyList())
 
