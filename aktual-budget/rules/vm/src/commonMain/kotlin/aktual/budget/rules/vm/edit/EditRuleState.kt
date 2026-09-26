@@ -1,6 +1,7 @@
 package aktual.budget.rules.vm.edit
 
 import aktual.budget.rules.vm.Rule
+import aktual.budget.rules.vm.hasUnknownValues
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 
@@ -8,7 +9,10 @@ import androidx.compose.runtime.Stable
 sealed interface EditRuleState {
   data object Loading : EditRuleState
 
-  data class Success(val rule: Rule, val isWorking: Boolean) : EditRuleState
+  data class Success(val rule: Rule, val isWorking: Boolean) : EditRuleState {
+    val canSave: Boolean
+      get() = !rule.hasUnknownValues
+  }
 
   @Immutable
   sealed interface Failure : EditRuleState {

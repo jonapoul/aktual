@@ -96,6 +96,7 @@
   <string name="edit_rule_and">all</string>
   <string name="edit_rule_or">any</string>
   <string name="edit_rule_unknown">unknown</string>
+  <string name="edit_rule_unknown_values">This rule uses values that this version of the app doesn't recognise. Change them before saving.</string>
   <string name="edit_rule_condition_delete">Delete</string>
   <string name="edit_rule_condition_nothing">nothing</string>
   <string name="edit_rule_amount_clear">Clear</string>
