@@ -63,6 +63,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -132,7 +133,7 @@ private fun ChooseReportTypeContent(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       contentPadding = contentPadding,
     ) {
-      items(WidgetType.known) { type ->
+      items(ChoosableTypes) { type ->
         WidgetType(
           modifier = Modifier.fillMaxWidth(),
           type = type,
@@ -204,6 +205,11 @@ private fun WidgetType.sampleData(): ChartData =
     WidgetType.Calendar -> THREE_MONTHS
     WidgetType.BudgetAnalysis -> TODO("https://github.com/jonapoul/aktual/issues/839")
     WidgetType.Formula -> TODO("https://github.com/jonapoul/aktual/issues/1054")
+    WidgetType.Crossover -> TODO("https://github.com/jonapoul/aktual/issues/1540")
+    WidgetType.Sankey -> TODO("https://github.com/jonapoul/aktual/issues/1541")
+    WidgetType.BalanceForecast -> TODO("https://github.com/jonapoul/aktual/issues/1542")
+    WidgetType.AgeOfMoney -> TODO("https://github.com/jonapoul/aktual/issues/1543")
+    WidgetType.MonteCarlo -> TODO("https://github.com/jonapoul/aktual/issues/1544")
     WidgetType.Unknown -> error("No sample data for $this")
   }
 
@@ -213,6 +219,11 @@ private fun WidgetType.isEnabled(): Boolean =
     WidgetType.BudgetAnalysis,
     WidgetType.Formula,
     WidgetType.Custom,
+    WidgetType.Crossover,
+    WidgetType.Sankey,
+    WidgetType.BalanceForecast,
+    WidgetType.AgeOfMoney,
+    WidgetType.MonteCarlo,
     WidgetType.Unknown -> false
 
     WidgetType.NetWorth,
@@ -222,6 +233,12 @@ private fun WidgetType.isEnabled(): Boolean =
     WidgetType.Summary,
     WidgetType.Calendar -> true
   }
+
+// no sample data for these yet, so don't offer them
+private val ChoosableTypes =
+  WidgetType.known
+    .filter { it !in setOf<WidgetType>(Crossover, Sankey, BalanceForecast, AgeOfMoney, MonteCarlo) }
+    .toImmutableList()
 
 private val REPORT_HEIGHT = 250.dp
 

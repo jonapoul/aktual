@@ -12,11 +12,15 @@ enum class DateRangeType {
   @SerialName("Last week") LastWeek,
   @SerialName("This month") ThisMonth,
   @SerialName("Last month") LastMonth,
+  @SerialName("Current quarter") CurrentQuarter,
+  @SerialName("Previous quarter") PreviousQuarter,
+  @SerialName("Last 30 days") Last30Days,
   @SerialName("Last 3 months") Last3Months,
   @SerialName("Last 6 months") Last6Months,
   @SerialName("Last 12 months") Last12Months,
   @SerialName("Year to date") YearToDate,
   @SerialName("Last year") LastYear,
+  @SerialName("Prior year to date") PriorYearToDate,
   @SerialName("All time") AllTime,
   @Fallback Unknown;
 

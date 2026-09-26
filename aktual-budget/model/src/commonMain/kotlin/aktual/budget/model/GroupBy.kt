@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 enum class GroupBy {
   @SerialName("Account") Account,
   @SerialName("Category") Category,
+  @SerialName("CategoryGroup") CategoryGroup,
   @SerialName("Group") Group,
   @SerialName("Interval") Interval,
   @SerialName("Payee") Payee,

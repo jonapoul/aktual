@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class BalanceType {
+  @SerialName("Budgeted") Budgeted,
   @SerialName("Deposit") Deposit,
   @SerialName("Expense") Expense,
   @SerialName("Net") Net,

@@ -18,6 +18,11 @@ enum class WidgetType {
   @SerialName("calendar-card") Calendar,
   @SerialName("budget-analysis-card") BudgetAnalysis,
   @SerialName("formula-card") Formula,
+  @SerialName("crossover-card") Crossover,
+  @SerialName("sankey-card") Sankey,
+  @SerialName("balance-forecast-card") BalanceForecast,
+  @SerialName("age-of-money-card") AgeOfMoney,
+  @SerialName("monte-carlo-card") MonteCarlo,
   @Fallback Unknown;
 
   companion object {
