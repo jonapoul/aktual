@@ -5,6 +5,7 @@
 # Usage:
 #   ./scripts/detekt.sh              # Run detektCheck on changed modules
 #   ./scripts/detekt.sh --dry-run    # Just print the gradle command
+#   ./scripts/detekt.sh --force      # Run on all modules, not just changed ones
 #   ./scripts/detekt.sh develop      # Compare against a different base branch
 #
 
@@ -19,13 +20,15 @@ GITIGNORE_TRIGGERS="$SCRIPT_DIR/lib/.global-triggers-detekt"
 CATALOG_TRIGGER_PATTERN='detekt'
 
 DRY_RUN=false
+FORCE=false
 MAIN_BRANCH="main"
 
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=true ;;
+    --force) FORCE=true ;;
     *) MAIN_BRANCH="$arg" ;;
   esac
 done
 
-run_changed_module_task detektCheck "$MAIN_BRANCH" "$DRY_RUN"
+run_changed_module_task detektCheck "$MAIN_BRANCH" "$DRY_RUN" "$FORCE"
