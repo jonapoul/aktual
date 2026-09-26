@@ -25,6 +25,8 @@ jobs:
       renovate: ${{ steps.filter.outputs.renovate }}
       wrapper: ${{ steps.filter.outputs.wrapper }}
       shell: ${{ steps.filter.outputs.shell }}
+      kotlin: ${{ steps.filter.outputs.kotlin }}
+      gradle: ${{ steps.gradle-filter.outputs.gradle }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
@@ -42,6 +44,28 @@ jobs:
               - 'gradlew.bat'
             shell:
               - '**/*.sh'
+            kotlin:
+              - '**/*.kt'
+              - '**/*.kts'
+              - '.editorconfig'
+              - 'gradle/libs.versions.toml'
+              - 'scripts/ktfmt.sh'
+      # Separate step because "every" needs all patterns to match, which breaks the filters above
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: gradle-filter
+        with:
+          predicate-quantifier: every
+          filters: |
+            gradle:
+              - '**'
+              - '!**/*.md'
+              - '!.claude/**'
+              - '!.github/CODEOWNERS'
+              - '!.github/renovate.json5'
+              - '!.github/upstream-*/**'
+              - '!.github/workflows/check-upstream-changes.yml'
+              - '!.github/workflows/main.yml'
+              - '!config/betterleaks.toml'
 
   validate-renovate:
     needs: changed-files
@@ -95,6 +119,8 @@ jobs:
           sarif_file: ${{ steps.betterleaks.outputs.sarif-path }}
 
   ktfmt:
+    needs: changed-files
+    if: needs.changed-files.outputs.kotlin == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -106,6 +132,7 @@ jobs:
     needs: [ changed-files, validate-renovate, validate-wrapper, shellcheck, betterleaks, ktfmt ]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - run: |
           if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
@@ -114,8 +141,8 @@ jobs:
           fi
 
   assemble-android:
-    needs: validation
-    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    needs: [ changed-files, validation ]
+    if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -128,8 +155,8 @@ jobs:
         if: ${{ !cancelled() }}
 
   assemble-desktop:
-    needs: validation
-    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    needs: [ changed-files, validation ]
+    if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -142,8 +169,8 @@ jobs:
         if: ${{ !cancelled() }}
 
   detekt:
-    needs: validation
-    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    needs: [ changed-files, validation ]
+    if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -158,8 +185,8 @@ jobs:
         if: ${{ !cancelled() }}
 
   lint:
-    needs: validation
-    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    needs: [ changed-files, validation ]
+    if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -174,8 +201,8 @@ jobs:
         if: ${{ !cancelled() }}
 
   tests:
-    needs: validation
-    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    needs: [ changed-files, validation ]
+    if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -190,8 +217,8 @@ jobs:
         if: ${{ !cancelled() }}
 
   other-checks:
-    needs: validation
-    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    needs: [ changed-files, validation ]
+    if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -213,8 +240,8 @@ jobs:
         if: ${{ !cancelled() }}
 
   atlas:
-    needs: validation
-    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    needs: [ changed-files, validation ]
+    if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -256,6 +283,7 @@ jobs:
       - atlas
       - claude-review
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       result: ${{ steps.check.outputs.result }}
     steps:
@@ -273,6 +301,7 @@ jobs:
     needs: validation
     if: ${{ !cancelled() && needs.validation.result == 'success' && !startsWith(github.head_ref, 'renovate/') }}
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
       pull-requests: write
