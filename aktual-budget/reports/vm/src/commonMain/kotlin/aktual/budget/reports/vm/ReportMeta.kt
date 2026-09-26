@@ -191,7 +191,9 @@ enum class TimeFrameMode(override val value: String) : SerializableByString {
   LastMonth("lastMonth"),
   LastYear("lastYear"),
   YearToDate("yearToDate"),
-  PriorYearToDate("priorYearToDate");
+  PriorYearToDate("priorYearToDate"),
+  CurrentQuarter("currentQuarter"),
+  PreviousQuarter("previousQuarter");
 
   object Serializer : KSerializer<TimeFrameMode> by enumStringSerializer()
 }

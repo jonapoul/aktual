@@ -17,6 +17,7 @@ import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.ReportMeta
 import aktual.budget.reports.vm.SpendingReportMeta
 import aktual.budget.reports.vm.SummaryReportMeta
+import aktual.budget.reports.vm.UnsupportedData
 import aktual.budget.reports.vm.UnsupportedReportMeta
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
@@ -69,16 +70,16 @@ internal constructor(
 
   fun observeChartData(item: DashboardItem): Flow<ChartData> =
     when (val meta = item.meta) {
-      is BudgetAnalysisReportMeta -> flowOf()
-      is CalendarReportMeta -> flowOf()
       is CashFlowReportMeta -> chartDataLoader.cashFlow(meta)
-      is CustomReportMeta -> flowOf()
-      is UnsupportedReportMeta -> flowOf()
-      is FormulaReportMeta -> flowOf()
-      is MarkdownReportMeta -> flowOf()
-      is NetWorthReportMeta -> flowOf()
-      is SpendingReportMeta -> flowOf()
-      is SummaryReportMeta -> flowOf()
+      is MarkdownReportMeta -> chartDataLoader.text(meta)
+      is NetWorthReportMeta -> chartDataLoader.netWorth(meta)
+      is BudgetAnalysisReportMeta,
+      is CalendarReportMeta,
+      is CustomReportMeta,
+      is FormulaReportMeta,
+      is SpendingReportMeta,
+      is SummaryReportMeta,
+      is UnsupportedReportMeta -> flowOf(UnsupportedData(ReportType))
     }
 
   private fun dashboardItem(widget: Dashboard): DashboardItem? {

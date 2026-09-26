@@ -13,7 +13,7 @@ import kotlinx.datetime.YearMonthRange
 @Immutable sealed interface ChartData
 
 @Immutable
-data class CashFlowData(val title: String, val items: ImmutableMap<YearMonth, CashFlowDatum>) :
+data class CashFlowData(val title: String?, val items: ImmutableMap<YearMonth, CashFlowDatum>) :
   ChartData
 
 @Immutable
@@ -26,7 +26,7 @@ data class CashFlowDatum(
 )
 
 @Immutable
-data class NetWorthData(val title: String, val items: ImmutableMap<YearMonth, Amount>) : ChartData
+data class NetWorthData(val title: String?, val items: ImmutableMap<YearMonth, Amount>) : ChartData
 
 @Immutable
 sealed interface SummaryData : ChartData, DateRange {
@@ -172,6 +172,14 @@ sealed interface SpendingComparison {
 }
 
 @Immutable data class TextData(val content: String) : ChartData
+
+@Immutable data class UnsupportedData(val reason: UnsupportedReason) : ChartData
+
+@Immutable
+enum class UnsupportedReason {
+  Filters,
+  ReportType,
+}
 
 @Immutable
 data class CustomData(val title: String, val mode: DateRangeMode, val range: ReportTimeRange) :

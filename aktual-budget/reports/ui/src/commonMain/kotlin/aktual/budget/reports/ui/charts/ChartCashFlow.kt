@@ -223,7 +223,11 @@ private fun CompactHeader(
 ) =
   Row(modifier = modifier.padding(4.dp), verticalAlignment = CenterVertically) {
     Column(modifier = Modifier.weight(1f)) {
-      Text(text = data.title, color = colors.pageText, overflow = Ellipsis)
+      Text(
+        text = data.title ?: Strings.reportsChooseTypeCashFlow,
+        color = colors.pageText,
+        overflow = Ellipsis,
+      )
       Text(
         text = dateRange(data.items.keys),
         color = colors.pageTextSubdued,
