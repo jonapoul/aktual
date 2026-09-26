@@ -254,6 +254,7 @@ jobs:
       - tests
       - other-checks
       - atlas
+      - claude-review
     runs-on: ubuntu-latest
     outputs:
       result: ${{ steps.check.outputs.result }}
