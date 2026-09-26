@@ -7,7 +7,7 @@ Custom detekt rules, loaded as a `detektPlugins` dependency by `ConventionDetekt
 1. Create a class in `aktual.detekt.rules` extending `Rule` (add `RequiresAnalysisApi` if you need type resolution via `analyze {}`).
 2. Register it in `AktualRuleSetProvider.instance()`.
 3. Add an entry to `src/main/resources/config/config.yml` - detekt merges this with its default config at runtime, so rules not listed here are never discovered.
-4. Add tests using `@KotlinCoreEnvironmentTest` + `KotlinAnalysisApiEngine`.
+4. Add tests. PSI-only rules can use `rule.lint(code)`; `RequiresAnalysisApi` rules need `@KotlinCoreEnvironmentTest` + `KotlinAnalysisApiEngine`.
 
 ## How rule discovery works
 

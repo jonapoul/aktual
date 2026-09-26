@@ -56,10 +56,6 @@ class ConventionDetekt : ProjectPlugin {
 
     if (path != ":detekt-rules") {
       dependencies { "detektPlugins"(project(":detekt-rules")) }
-
-      extensions.configure(DetektExtension::class) {
-        config.from(rootProject.isolated.projectDirectory.file("config/detekt-aktual.yml"))
-      }
     }
   }
 }
