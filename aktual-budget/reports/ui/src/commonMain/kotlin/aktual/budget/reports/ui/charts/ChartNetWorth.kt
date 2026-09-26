@@ -103,12 +103,7 @@ private fun Header(
         style = typography.bodyLarge,
       )
 
-      Text(
-        text = dateRange(data.items.keys),
-        overflow = Ellipsis,
-        color = colors.pageTextSubdued,
-        style = typography.bodyMedium,
-      )
+      DateRangeText(dateRange(data.items.keys))
     }
 
     Column(horizontalAlignment = Alignment.End) {

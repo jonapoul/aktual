@@ -232,11 +232,7 @@ internal fun CalendarSummary(
         overflow = Ellipsis,
       )
 
-      Text(
-        text = dateRange(data.start, data.end),
-        color = colors.pageTextSubdued,
-        overflow = Ellipsis,
-      )
+      DateRangeText(dateRange(data.start, data.end))
     }
 
     if (compact) return
