@@ -1,0 +1,62 @@
+package aktual.budget.reports.vm
+
+import kotlinx.datetime.DateTimeUnit.Companion.MONTH
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month
+import kotlinx.datetime.Month.DECEMBER
+import kotlinx.datetime.Month.JANUARY
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.YearMonthRange
+import kotlinx.datetime.minus
+import kotlinx.datetime.minusMonth
+import kotlinx.datetime.minusYear
+import kotlinx.datetime.monthsUntil
+import kotlinx.datetime.number
+import kotlinx.datetime.plus
+import kotlinx.datetime.yearMonth
+
+private const val MONTHS_PER_QUARTER = 3
+private const val DEFAULT_WINDOW_MONTHS = 5
+
+// packages/desktop-client/src/components/reports/reportRanges.ts calculateTimeRange()
+internal fun resolveTimeRange(
+  timeFrame: TimeFrame?,
+  default: TimeFrame?,
+  today: LocalDate,
+  latestTransaction: LocalDate?,
+): YearMonthRange {
+  val current = today.yearMonth
+  val start = timeFrame?.start ?: default?.start ?: current.minus(DEFAULT_WINDOW_MONTHS, MONTH)
+  val end = timeFrame?.end ?: default?.end ?: current
+  val mode = timeFrame?.mode ?: default?.mode ?: TimeFrameMode.SlidingWindow
+
+  return when (mode) {
+    Full -> start..maxOf(latestTransaction?.yearMonth ?: current, current)
+    SlidingWindow -> slidingWindow(start, end, current)
+    LastMonth -> current.minusMonth().let { it..it }
+    LastYear -> YearMonth(current.year - 1, JANUARY)..YearMonth(current.year - 1, DECEMBER)
+    YearToDate -> YearMonth(current.year, JANUARY)..current
+    PriorYearToDate -> YearMonth(current.year - 1, JANUARY)..current.minusYear()
+    CurrentQuarter -> quarter(current)
+    PreviousQuarter -> quarter(current.minus(MONTHS_PER_QUARTER, MONTH))
+    Static -> start..end
+  }
+}
+
+private fun slidingWindow(start: YearMonth, end: YearMonth, current: YearMonth): YearMonthRange {
+  val offset = start.monthsUntil(end)
+  return if (start > end) {
+    current..current.plus(offset, MONTH)
+  } else {
+    current.minus(offset, MONTH)..current
+  }
+}
+
+private fun quarter(month: YearMonth): YearMonthRange {
+  val first =
+    YearMonth(
+      month.year,
+      Month((month.month.number - 1) / MONTHS_PER_QUARTER * MONTHS_PER_QUARTER + 1),
+    )
+  return first..first.plus(MONTHS_PER_QUARTER - 1, MONTH)
+}

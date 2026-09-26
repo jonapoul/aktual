@@ -97,7 +97,7 @@ private fun Header(
   ) {
     Column(modifier = Modifier.weight(1f)) {
       Text(
-        text = data.title,
+        text = data.title ?: Strings.reportsChooseTypeNetWorth,
         overflow = Ellipsis,
         color = colors.pageText,
         style = typography.bodyLarge,
