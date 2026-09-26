@@ -103,7 +103,8 @@ class ReportMetaSerializationTest {
           "projectionType": "hampel",
           "expenseAdjustmentFactor": 1.0
         }
-        """,
+        """
+          .trimIndent(),
       )
 
     assertThat(meta.expenseCategoryIds).isEqualTo(listOf(CategoryId("cat-1")))
@@ -171,7 +172,8 @@ class ReportMetaSerializationTest {
           "targetAge": 95,
           "simulationCount": 1000
         }
-        """,
+        """
+          .trimIndent(),
       )
 
     val pot = meta.pots.orEmpty().single()
