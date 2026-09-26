@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -71,7 +70,7 @@ class LoginViewModel(
 
   val loginFailure: StateFlow<LoginResult.Failure?> =
     combine(mutableLoginFailure, isLoading) { failure, loading -> if (loading) null else failure }
-      .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
+      .stateIn(viewModelScope, Eagerly, initialValue = null)
 
   val token: Flow<Token> = preferences.token.asFlow().filterNotNull()
 

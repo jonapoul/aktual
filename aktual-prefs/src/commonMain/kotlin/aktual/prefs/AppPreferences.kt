@@ -11,7 +11,4 @@ interface AppPreferences {
   val isPrivacyEnabled: Preference<Boolean>
   val mostRecentNumBudgets: Preference<Int>
   val lastOpenedBudgetId: NullablePreference<BudgetId>
-
-  // Ordered BudgetTab names for the nav grid; empty means "not customised"
-  val navGridOrder: Preference<List<String>>
 }

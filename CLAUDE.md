@@ -12,10 +12,13 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 - **IMPORTANT**: After any architectural/structural change, grep `**/CLAUDE.md` for references that need updating (scopes, annotations, module paths, DI patterns). Don't wait to be asked.
 - Prefer `kotlinx.immutable` collections in the UI layer, not plain `List`/`Set`.
 - Prefer `stateFlow.update { x }` over `stateFlow.value = x`.
-- The project compiles with `-Xcontext-sensitive-resolution`, so enum entries and sealed subtypes can be referenced
-  unqualified when the expected type is known, e.g. `assertThat(role).isEqualTo(Admin)` or `when (method) { Header ->
-  ... }`. Prefer this over qualifying (`PossibleRole.Admin`) or importing the entry. Qualify only where the name is
-  ambiguous with a type in scope, as `LoginMethod.Password` is with the `Password` class.
+- The project compiles with `-Xcontext-sensitive-resolution`, so enum entries and sealed subtypes can be referenced unqualified when the expected type is known. Always do this instead of qualifying (`PossibleRole.Admin`) or importing the entry. The expected type is known in:
+  - function/constructor arguments, named or positional: `SideNavRail(selectedTab = Transactions)`
+  - `when` branches and `==`/`!=` comparisons: `when (method) { Header -> ... }`, `if (tab == Accounts)`
+  - assertions: `assertThat(role).isEqualTo(Admin)`
+  - typed property/variable assignments, default parameter values and return values of declared-type functions
+
+  Qualify only where the name is ambiguous with a type in scope, as `LoginMethod.Password` is with the `Password` class.
 - `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` — add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
 - In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.
 - Wrap comments to the `max_line_length` in `.editorconfig` (currently 120).
@@ -32,11 +35,9 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 # Full build — very slow, don't run without asking
 ./gradlew build
 
-# Apps
-./gradlew :aktual-app:android:assemble
-./gradlew :aktual-app:desktop:assemble
-./gradlew :aktual-app:android:installDebug
+# Build and launch apps
 ./gradlew :aktual-app:desktop:run
+./gradlew :aktual-app:android:installDebug && adb shell am start -n dev.jonpoulton.aktual.app.dev/aktual.app.android.AktualActivity
 
 # Tests — always module-specific. `./gradlew allTests` pegs the machine; don't run it.
 # Never pass a bare `:module:test` — it's ambiguous for KMP modules. Use `testAll` (both

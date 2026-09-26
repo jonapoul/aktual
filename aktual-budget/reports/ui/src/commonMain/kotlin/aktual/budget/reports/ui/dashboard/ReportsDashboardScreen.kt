@@ -15,6 +15,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.hazedTopBar
@@ -92,6 +93,7 @@ internal fun ReportsDashboardScaffold(
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
+        navigationIcon = { NavDrawerIconButton() },
         title = { Text(Strings.reportsDashboardTitle) },
         actions = {
           IconButton(onClick = { onAction(CreateNewReport) }) {
