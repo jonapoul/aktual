@@ -1,7 +1,6 @@
 import aktual.gradle.dsl.androidTestLibraries
 import aktual.gradle.dsl.composeLibraries
 import aktual.gradle.dsl.testLibraries
-import atlas.d2.tasks.WriteD2Classes
 import com.autonomousapps.extension.Issue
 
 plugins {
@@ -27,14 +26,7 @@ plugins {
   alias(libs.plugins.straitjacket) apply false
   alias(libs.plugins.wire) apply false
 
-  id("aktual.convention.atlas")
   id("aktual.convention.idea")
-}
-
-val atlasDir = layout.buildDirectory.dir("atlas")
-
-tasks.withType<WriteD2Classes>().configureEach {
-  outputFile = atlasDir.map { it.file("classes.d2") }
 }
 
 dependencyAnalysis {
