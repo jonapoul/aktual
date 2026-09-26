@@ -3,6 +3,8 @@ package aktual.budget.reports.vm
 import kotlinx.datetime.DateTimeUnit.Companion.MONTH
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
+import kotlinx.datetime.Month.DECEMBER
+import kotlinx.datetime.Month.JANUARY
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
 import kotlinx.datetime.minus
@@ -41,10 +43,9 @@ internal fun resolveTimeRange(
     }
 
     LastMonth -> current.minusMonth().let { it..it }
-    LastYear ->
-      YearMonth(current.year - 1, Month.JANUARY)..YearMonth(current.year - 1, Month.DECEMBER)
-    YearToDate -> YearMonth(current.year, Month.JANUARY)..current
-    PriorYearToDate -> YearMonth(current.year - 1, Month.JANUARY)..current.minusYear()
+    LastYear -> YearMonth(current.year - 1, JANUARY)..YearMonth(current.year - 1, DECEMBER)
+    YearToDate -> YearMonth(current.year, JANUARY)..current
+    PriorYearToDate -> YearMonth(current.year - 1, JANUARY)..current.minusYear()
     CurrentQuarter -> quarter(current)
     PreviousQuarter -> quarter(current.minus(MONTHS_PER_QUARTER, MONTH))
     Static -> start..end
