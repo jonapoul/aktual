@@ -144,7 +144,8 @@ internal fun ListRulesItem(
 @Stable
 private fun RuleStage.showBadge() =
   when (this) {
-    RuleStage.Default -> false
+    RuleStage.Default,
+    RuleStage.Unknown -> false
     RuleStage.Pre,
     RuleStage.Post -> true
   }

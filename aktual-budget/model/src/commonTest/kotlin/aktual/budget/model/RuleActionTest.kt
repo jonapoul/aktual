@@ -18,7 +18,9 @@ class RuleActionTest {
   data class TestCase(val expected: List<RuleAction>, @param:Language("JSON") val json: String)
 
   @Test
-  fun `Parse action from JSON`(case: TestCase = burstValues(TEST_CASE_1, TEST_CASE_2)) {
+  fun `Parse action from JSON`(
+    case: TestCase = burstValues(TEST_CASE_1, TEST_CASE_2, UNKNOWN_VALUES)
+  ) {
     assertEquals(
       expected = case.expected,
       actual = Json.decodeFromString(ListSerializer(RuleAction.serializer()), case.json),
@@ -82,6 +84,33 @@ class RuleActionTest {
               {
                   "op": "link-schedule",
                   "value": "b08a2607-399b-4a6b-9a5c-3b2d083fe07f"
+              }
+          ]
+          """
+            .trimIndent(),
+      )
+    // Values a newer server might send
+    val UNKNOWN_VALUES =
+      TestCase(
+        expected =
+          listOf(
+            RuleAction(
+              field = Unknown,
+              type = Unknown,
+              op = Unknown,
+              options = RuleAction.Options(method = Unknown),
+              value = JsonPrimitive("abc"),
+            )
+          ),
+        json =
+          """
+          [
+              {
+                  "field": "new-field",
+                  "type": "new-type",
+                  "op": "new-op",
+                  "options": {"method": "new-method"},
+                  "value": "abc"
               }
           ]
           """

@@ -1,18 +1,20 @@
 package aktual.budget.model
 
-import alakazam.kotlin.SerializableByString
-import alakazam.kotlin.enumStringSerializer
-import kotlinx.serialization.KSerializer
+import fallback.serializer.Fallback
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable(Interval.Serializer::class)
-enum class Interval(override val value: String) : SerializableByString {
-  Daily("Daily"),
-  Weekly("Weekly"),
-  Monthly("Monthly"),
-  Yearly("Yearly");
+@Serializable
+enum class Interval {
+  @SerialName("Daily") Daily,
+  @SerialName("Weekly") Weekly,
+  @SerialName("Monthly") Monthly,
+  @SerialName("Yearly") Yearly,
+  @Fallback Unknown;
 
-  override fun toString(): String = value
-
-  object Serializer : KSerializer<Interval> by enumStringSerializer()
+  companion object {
+    val known: ImmutableList<Interval> = entries.filter { it != Unknown }.toImmutableList()
+  }
 }

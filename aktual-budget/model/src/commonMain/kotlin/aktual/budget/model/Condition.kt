@@ -1,9 +1,9 @@
 package aktual.budget.model
 
-import alakazam.kotlin.SerializableByString
-import alakazam.kotlin.enumStringSerializer
 import androidx.compose.runtime.Immutable
-import kotlinx.serialization.KSerializer
+import fallback.serializer.Fallback
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
@@ -36,26 +36,25 @@ data class ConditionOptions(
   val year: Boolean? = null,
 )
 
-@Serializable(ConditionOp.Serializer::class)
-enum class ConditionOp(override val value: String) : SerializableByString {
-  And("and"),
-  Or("or");
-
-  object Serializer : KSerializer<ConditionOp> by enumStringSerializer()
+@Serializable
+enum class ConditionOp {
+  @SerialName("and") And,
+  @SerialName("or") Or,
+  @Fallback Unknown;
 
   companion object {
     val Default = And
+    val known: ImmutableList<ConditionOp> = entries.filter { it != Unknown }.toImmutableList()
   }
 }
 
-@Serializable(ConditionType.Serializer::class)
-enum class ConditionType(override val value: String) : SerializableByString {
-  Id("id"),
-  Boolean("boolean"),
-  Date("date"),
-  Number("number"),
-  String("string"),
-  ImportedPayee("imported_payee");
-
-  object Serializer : KSerializer<ConditionType> by enumStringSerializer()
+@Serializable
+enum class ConditionType {
+  @SerialName("id") Id,
+  @SerialName("boolean") Boolean,
+  @SerialName("date") Date,
+  @SerialName("number") Number,
+  @SerialName("string") String,
+  @SerialName("imported_payee") ImportedPayee,
+  @Fallback Unknown,
 }

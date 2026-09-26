@@ -63,7 +63,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -133,7 +132,7 @@ private fun ChooseReportTypeContent(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       contentPadding = contentPadding,
     ) {
-      items(WIDGET_TYPES) { type ->
+      items(WidgetType.known) { type ->
         WidgetType(
           modifier = Modifier.fillMaxWidth(),
           type = type,
@@ -203,8 +202,9 @@ private fun WidgetType.sampleData(): ChartData =
     WidgetType.Markdown -> PREVIEW_SHORT_TEXT_DATA
     WidgetType.Summary -> PER_TRANSACTION_DATA
     WidgetType.Calendar -> THREE_MONTHS
-    WidgetType.BudgetAnalysis -> TODO("https://github.com/jonapoul/aktual/issues/1035")
+    WidgetType.BudgetAnalysis -> TODO("https://github.com/jonapoul/aktual/issues/839")
     WidgetType.Formula -> TODO("https://github.com/jonapoul/aktual/issues/1054")
+    WidgetType.Unknown -> error("No sample data for $this")
   }
 
 @Stable
@@ -212,7 +212,8 @@ private fun WidgetType.isEnabled(): Boolean =
   when (this) {
     WidgetType.BudgetAnalysis,
     WidgetType.Formula,
-    WidgetType.Custom -> false
+    WidgetType.Custom,
+    WidgetType.Unknown -> false
 
     WidgetType.NetWorth,
     WidgetType.CashFlow,
@@ -222,7 +223,6 @@ private fun WidgetType.isEnabled(): Boolean =
     WidgetType.Calendar -> true
   }
 
-private val WIDGET_TYPES = WidgetType.entries.toImmutableList()
 private val REPORT_HEIGHT = 250.dp
 
 @PortraitPreview

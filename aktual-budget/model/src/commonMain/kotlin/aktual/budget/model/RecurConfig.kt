@@ -1,9 +1,7 @@
 package aktual.budget.model
 
-import alakazam.kotlin.SerializableByString
-import alakazam.kotlin.enumStringSerializer
+import fallback.serializer.Fallback
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -20,14 +18,13 @@ data class RecurConfig(
   @SerialName("weekendSolveMode") val weekendSolveMode: WeekendSolveMode? = null,
 )
 
-@Serializable(RecurFrequency.Serializer::class)
-enum class RecurFrequency(override val value: String) : SerializableByString {
-  Daily("daily"),
-  Weekly("weekly"),
-  Monthly("monthly"),
-  Yearly("yearly");
-
-  object Serializer : KSerializer<RecurFrequency> by enumStringSerializer()
+@Serializable
+enum class RecurFrequency {
+  @SerialName("daily") Daily,
+  @SerialName("weekly") Weekly,
+  @SerialName("monthly") Monthly,
+  @SerialName("yearly") Yearly,
+  @Fallback Unknown,
 }
 
 @Serializable
@@ -36,33 +33,30 @@ data class RecurPattern(
   @SerialName("type") val type: RecurType,
 )
 
-@Serializable(RecurType.Serializer::class)
-enum class RecurType(override val value: String) : SerializableByString {
-  Sunday("SU"),
-  Monday("MO"),
-  Tuesday("TU"),
-  Wednesday("WE"),
-  Thursday("TH"),
-  Friday("FR"),
-  Saturday("SA"),
-  Day("day");
-
-  object Serializer : KSerializer<RecurType> by enumStringSerializer()
+@Serializable
+enum class RecurType {
+  @SerialName("SU") Sunday,
+  @SerialName("MO") Monday,
+  @SerialName("TU") Tuesday,
+  @SerialName("WE") Wednesday,
+  @SerialName("TH") Thursday,
+  @SerialName("FR") Friday,
+  @SerialName("SA") Saturday,
+  @SerialName("day") Day,
+  @Fallback Unknown,
 }
 
-@Serializable(RecurEndMode.Serializer::class)
-enum class RecurEndMode(override val value: String) : SerializableByString {
-  Never("never"),
-  AfterNOccurrences("after_n_occurrences"),
-  OnDate("on_date");
-
-  object Serializer : KSerializer<RecurEndMode> by enumStringSerializer()
+@Serializable
+enum class RecurEndMode {
+  @SerialName("never") Never,
+  @SerialName("after_n_occurrences") AfterNOccurrences,
+  @SerialName("on_date") OnDate,
+  @Fallback Unknown,
 }
 
-@Serializable(WeekendSolveMode.Serializer::class)
-enum class WeekendSolveMode(override val value: String) : SerializableByString {
-  Before("before"),
-  After("after");
-
-  object Serializer : KSerializer<WeekendSolveMode> by enumStringSerializer()
+@Serializable
+enum class WeekendSolveMode {
+  @SerialName("before") Before,
+  @SerialName("after") After,
+  @Fallback Unknown,
 }

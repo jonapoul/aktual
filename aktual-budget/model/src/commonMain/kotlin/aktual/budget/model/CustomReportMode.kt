@@ -1,10 +1,12 @@
 package aktual.budget.model
 
-import alakazam.kotlin.SerializableByString
+import fallback.serializer.Fallback
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-enum class CustomReportMode(override val value: String) : SerializableByString {
-  Total(value = "total"),
-  Time(value = "time");
-
-  override fun toString(): String = value
+@Serializable
+enum class CustomReportMode {
+  @SerialName("total") Total,
+  @SerialName("time") Time,
+  @Fallback Unknown,
 }

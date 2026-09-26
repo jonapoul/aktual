@@ -93,7 +93,8 @@ internal fun ConditionValueEditor(
     Field.Transfer,
     Field.Parent,
     Field.Cleared,
-    Field.Reconciled ->
+    Field.Reconciled,
+    Field.Unknown ->
       // key(field) resets TextFieldState when switching between text-type fields (e.g. Notes →
       // PayeeName)
       key(field) {

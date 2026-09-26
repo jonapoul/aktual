@@ -1,32 +1,30 @@
 package aktual.budget.model
 
-import alakazam.kotlin.SerializableByString
-import alakazam.kotlin.enumStringSerializer
+import fallback.serializer.Fallback
 import kotlin.contracts.contract
-import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable(Field.Serializer::class)
-enum class Field(override val value: String) : SerializableByString {
-  Acct("acct"), // legacy
-  Account("account"),
-  Amount("amount"),
-  Category("category"),
-  CategoryGroup("category_group"),
-  Date("date"),
-  Description("description"),
-  Notes("notes"),
-  Payee("payee"),
-  PayeeName("payee_name"),
-  ImportedDescription("imported_description"),
-  ImportedPayee("imported_payee"),
-  Saved("saved"),
-  Transfer("transfer"),
-  Parent("parent"),
-  Cleared("cleared"),
-  Reconciled("reconciled");
-
-  object Serializer : KSerializer<Field> by enumStringSerializer()
+@Serializable
+enum class Field {
+  @SerialName("acct") Acct, // legacy
+  @SerialName("account") Account,
+  @SerialName("amount") Amount,
+  @SerialName("category") Category,
+  @SerialName("category_group") CategoryGroup,
+  @SerialName("date") Date,
+  @SerialName("description") Description,
+  @SerialName("notes") Notes,
+  @SerialName("payee") Payee,
+  @SerialName("payee_name") PayeeName,
+  @SerialName("imported_description") ImportedDescription,
+  @SerialName("imported_payee") ImportedPayee,
+  @SerialName("saved") Saved,
+  @SerialName("transfer") Transfer,
+  @SerialName("parent") Parent,
+  @SerialName("cleared") Cleared,
+  @SerialName("reconciled") Reconciled,
+  @Fallback Unknown,
 }
 
 fun Field?.isIdField(): Boolean {

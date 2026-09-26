@@ -65,4 +65,21 @@ class ReportMetaSerializationTest {
     assertThat(formula.queries.getValue("a").timeFrame?.start).isEqualTo(YearMonth(2011, OCTOBER))
     assertThat(formula.queries.getValue("a").conditionsOp).isEqualTo(ConditionOp.And)
   }
+
+  @Test
+  fun `Unrecognised enum values decode as Unknown`() {
+    val timeFrame =
+      json.decodeFromString(
+        TimeFrame.serializer(),
+        """{"start":"2011-10","end":"2025-07","mode":"new-mode"}""",
+      )
+    assertThat(timeFrame.mode).isEqualTo(Unknown)
+
+    val netWorth =
+      json.decodeFromJsonElement(
+        ReportMeta.serializer(NetWorth),
+        json.parseToJsonElement("""{"mode":"new-mode"}"""),
+      )
+    assertThat((netWorth as NetWorthReportMeta).mode).isEqualTo(Unknown)
+  }
 }

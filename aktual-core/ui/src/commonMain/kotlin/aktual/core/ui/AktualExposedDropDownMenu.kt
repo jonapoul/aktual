@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun AktualExposedDropDownMenu(
@@ -224,7 +223,7 @@ private fun PreviewDropDownMenuForcedWidth(
 private fun PreviewDropDownMenuEnum(@PreviewParameter(ColoredParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     var value by remember { mutableStateOf(DateRangeType.YearToDate) }
-    val options = DateRangeType.entries.toImmutableList()
+    val options = DateRangeType.known
     AktualExposedDropDownMenu(
       value = value,
       onValueChange = { newValue -> value = newValue },
