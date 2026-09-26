@@ -50,6 +50,33 @@ matches_catalog_trigger() {
   grep -qE "$CATALOG_TRIGGER_PATTERN" <<< "$lines"
 }
 
+# Print the Gradle module paths whose build files use a version catalog entry that changed since
+# the given ref, or "ALL" if a changed entry is used by build-logic, compiler-plugin or the root
+# build (or the catalog can't be compared). Matching is by prefix, so it errs towards more modules.
+# Args: $1 = base ref.
+catalog_affected_modules() {
+  local terms
+  if ! terms=$(python3 "$MODULES_LIB_DIR/catalog.py" "$1" 2>/dev/null); then
+    echo "ALL"
+    return 0
+  fi
+  [[ -z "$terms" ]] && return 0
+
+  # `apply false` only puts a plugin on the classpath, the modules applying it are matched below
+  local global_uses
+  global_uses=$(git grep -hF -f <(printf '%s\n' "$terms") -- \
+    build-logic compiler-plugin build.gradle.kts settings.gradle.kts 'gradle/*.gradle.kts' \
+    | grep -v 'apply false' || true)
+  if [[ -n "$global_uses" ]]; then
+    echo "ALL"
+    return 0
+  fi
+
+  local files
+  files=$(git grep -lF -f <(printf '%s\n' "$terms") -- 'aktual-*/*.gradle.kts' || true)
+  changed_gradle_modules "$files"
+}
+
 # Print the Gradle module paths (e.g. :aktual-core:ui) that own the given changed files.
 # Reads module paths from settings.gradle.kts in the current working directory.
 # Args: $1 = newline-separated list of changed file paths (relative to repo root).
@@ -113,12 +140,28 @@ run_changed_module_task() {
     return 0
   fi
 
-  local modules
-  if printf '%s\n' "$changed_files" | matches_gitignore_triggers || matches_catalog_trigger "$merge_base"; then
+  # A catalog change is narrowed down to the modules using the changed entries, rather than
+  # counting as a global trigger by itself
+  local catalog="gradle/libs.versions.toml" catalog_changed=false other_files
+  if grep -qxF "$catalog" <<< "$changed_files" && matches_gitignore_triggers <<< "$catalog"; then
+    catalog_changed=true
+  fi
+  other_files=$(grep -vxF "$catalog" <<< "$changed_files" || true)
+
+  local modules catalog_modules=""
+  if [[ "$catalog_changed" == true ]]; then
+    catalog_modules=$(catalog_affected_modules "$merge_base")
+  fi
+  if [[ -n "$other_files" ]] && matches_gitignore_triggers <<< "$other_files" \
+    || matches_catalog_trigger "$merge_base" \
+    || [[ "$catalog_modules" == "ALL" ]]; then
     echo "Build/config files changed since $base_branch ($merge_base_short) - running on all modules."
     modules=$(all_gradle_modules)
   else
-    modules=$(changed_gradle_modules "$changed_files")
+    if [[ "$catalog_changed" == true ]]; then
+      echo "Version catalog changed - $(grep -c . <<< "$catalog_modules" || true) module(s) use the changed entries."
+    fi
+    modules=$(printf '%s\n' "$(changed_gradle_modules "$other_files")" "$catalog_modules" | grep . | sort -u || true)
   fi
   if [[ -z "$modules" ]]; then
     echo "Changed files don't belong to any known module."
