@@ -123,45 +123,53 @@ changed_gradle_modules() {
 # Run a per-module Gradle task on every module with changed files (vs a base branch).
 # Runs with --continue so one failing module doesn't stop the rest, then prints a summary
 # of the tasks that failed.
-# Args: $1 = Gradle task suffix (e.g. detektCheck), $2 = base branch, $3 = dry-run (true/false).
+# Args: $1 = Gradle task suffix (e.g. detektCheck), $2 = base branch, $3 = dry-run (true/false),
+# $4 = force (true/false) to run on all modules regardless of changes.
 run_changed_module_task() {
   local task_suffix="$1"
   local base_branch="$2"
   local dry_run="$3"
+  local force="${4:-false}"
 
-  local merge_base merge_base_short
-  merge_base=$(git_merge_base "$base_branch")
-  merge_base_short=$(git_short_sha "$merge_base")
-
-  local changed_files
-  changed_files=$(git_changed_files "$merge_base")
-  if [[ -z "$changed_files" ]]; then
-    echo "No files changed since $base_branch ($merge_base_short), nothing to do."
-    return 0
-  fi
-
-  # A catalog change is narrowed down to the modules using the changed entries, rather than
-  # counting as a global trigger by itself
-  local catalog="gradle/libs.versions.toml" catalog_changed=false other_files
-  if grep -qxF "$catalog" <<< "$changed_files" && matches_gitignore_triggers <<< "$catalog"; then
-    catalog_changed=true
-  fi
-  other_files=$(grep -vxF "$catalog" <<< "$changed_files" || true)
-
-  local modules catalog_modules=""
-  if [[ "$catalog_changed" == true ]]; then
-    catalog_modules=$(catalog_affected_modules "$merge_base")
-  fi
-  if [[ -n "$other_files" ]] && matches_gitignore_triggers <<< "$other_files" \
-    || matches_catalog_trigger "$merge_base" \
-    || [[ "$catalog_modules" == "ALL" ]]; then
-    echo "Build/config files changed since $base_branch ($merge_base_short) - running on all modules."
+  local modules
+  if [[ "$force" == true ]]; then
+    echo "Forced - running on all modules."
     modules=$(all_gradle_modules)
   else
-    if [[ "$catalog_changed" == true ]]; then
-      echo "Version catalog changed - $(grep -c . <<< "$catalog_modules" || true) module(s) use the changed entries."
+    local merge_base merge_base_short
+    merge_base=$(git_merge_base "$base_branch")
+    merge_base_short=$(git_short_sha "$merge_base")
+
+    local changed_files
+    changed_files=$(git_changed_files "$merge_base")
+    if [[ -z "$changed_files" ]]; then
+      echo "No files changed since $base_branch ($merge_base_short), nothing to do."
+      return 0
     fi
-    modules=$(printf '%s\n' "$(changed_gradle_modules "$other_files")" "$catalog_modules" | grep . | sort -u || true)
+
+    # A catalog change is narrowed down to the modules using the changed entries, rather than
+    # counting as a global trigger by itself
+    local catalog="gradle/libs.versions.toml" catalog_changed=false other_files
+    if grep -qxF "$catalog" <<< "$changed_files" && matches_gitignore_triggers <<< "$catalog"; then
+      catalog_changed=true
+    fi
+    other_files=$(grep -vxF "$catalog" <<< "$changed_files" || true)
+
+    local catalog_modules=""
+    if [[ "$catalog_changed" == true ]]; then
+      catalog_modules=$(catalog_affected_modules "$merge_base")
+    fi
+    if [[ -n "$other_files" ]] && matches_gitignore_triggers <<< "$other_files" \
+      || matches_catalog_trigger "$merge_base" \
+      || [[ "$catalog_modules" == "ALL" ]]; then
+      echo "Build/config files changed since $base_branch ($merge_base_short) - running on all modules."
+      modules=$(all_gradle_modules)
+    else
+      if [[ "$catalog_changed" == true ]]; then
+        echo "Version catalog changed - $(grep -c . <<< "$catalog_modules" || true) module(s) use the changed entries."
+      fi
+      modules=$(printf '%s\n' "$(changed_gradle_modules "$other_files")" "$catalog_modules" | grep . | sort -u || true)
+    fi
   fi
   if [[ -z "$modules" ]]; then
     echo "Changed files don't belong to any known module."
