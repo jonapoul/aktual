@@ -84,7 +84,8 @@ internal constructor(
   ): SearchSchedulesState {
     if (failure != null) return Failure(failure)
     val trimmed = query.trim()
-    if (trimmed.isEmpty() || schedules == null) return NoQuery
+    if (trimmed.isEmpty()) return NoQuery
+    if (schedules == null) return Loading
 
     val matching = schedules.filter { it.matches(trimmed) }
     return if (matching.isEmpty()) {

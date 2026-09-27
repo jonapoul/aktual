@@ -8,6 +8,8 @@ import kotlinx.collections.immutable.ImmutableList
 sealed interface SearchSchedulesState {
   data object NoQuery : SearchSchedulesState
 
+  data object Loading : SearchSchedulesState
+
   data object NoResults : SearchSchedulesState
 
   @JvmInline value class Failure(val cause: String?) : SearchSchedulesState

@@ -18,6 +18,7 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.LoadingScreen
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.ScrollToTopOnNewQuery
@@ -93,6 +94,8 @@ private fun SearchSchedulesScaffold(
       when (animatedState) {
         NoQuery -> SearchMessage(text = Strings.listSchedulesSearchPrompt)
 
+        Loading -> LoadingScreen()
+
         NoResults ->
           SearchMessage(
             icon = MaterialIcons.SearchOff,
@@ -158,6 +161,7 @@ private data class SearchSchedulesParams(val query: String, val state: SearchSch
 private class SearchSchedulesScaffoldProvider :
   ColoredParameterProvider<SearchSchedulesParams>(
     SearchSchedulesParams(query = "", state = NoQuery),
+    SearchSchedulesParams(query = "rent", state = Loading),
     SearchSchedulesParams(query = "xyz", state = NoResults),
     SearchSchedulesParams(query = "rent", state = Failure("Database connection lost")),
     SearchSchedulesParams(
