@@ -1,6 +1,5 @@
 <resources>
   <string name="sync_cancel">Cancel</string>
-  <string name="sync_open">Open</string>
   <string name="sync_retry">Retry</string>
 
   <string name="sync_step_fetching_info">Fetching File Info</string>

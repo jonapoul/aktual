@@ -55,7 +55,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 # runs the modules using the changed entries, unless build-logic uses them. Detekt uses the narrower
 # scripts/lib/.global-triggers-detekt.
 ./scripts/detekt.sh           # detektCheck on changed modules
-./scripts/lint.sh             # lint on changed modules
+./scripts/lint.sh             # lint on changed modules (quite heavy, don't run unless needed)
 ./scripts/compile.sh          # compileAll on changed modules
 ./scripts/test.sh             # testAll on changed modules
 
@@ -70,7 +70,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./gradlew --rerun-tasks
 ```
 
-Don't run detekt locally (user handles it); `./scripts/detekt.sh` covers changed modules if asked. `lint.sh`, `test.sh` and `compile.sh` share the same change-detection logic (extracted into `scripts/lib/`).
+Run `./scripts/detekt.sh` before opening a PR and fix what it reports. `lint.sh`, `test.sh` and `compile.sh` share the same change-detection logic (extracted into `scripts/lib/`).
 
 ## Architecture
 

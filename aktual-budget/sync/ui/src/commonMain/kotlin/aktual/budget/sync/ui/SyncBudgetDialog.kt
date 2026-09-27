@@ -50,6 +50,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -78,6 +79,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.first
 
 @Composable
 fun SyncBudgetDialog(
@@ -96,6 +98,12 @@ fun SyncBudgetDialog(
   val passwordState by viewModel.passwordState.collectAsStateWithLifecycle()
   val overallState by viewModel.overallState.collectAsStateWithLifecycle()
 
+  val currentOnSyncComplete by rememberUpdatedState(onSyncComplete)
+  LaunchedEffect(viewModel) {
+    viewModel.overallState.first { it == Succeeded }
+    currentOnSyncComplete()
+  }
+
   SyncBudgetDialog(
     modifier = modifier,
     overallState = overallState,
@@ -103,7 +111,6 @@ fun SyncBudgetDialog(
     passwordState = passwordState,
     onAction = { action ->
       when (action) {
-        Continue -> onSyncComplete()
         Retry -> viewModel.start()
         ConfirmKeyPassword -> viewModel.confirmKeyPassword()
         is EnterKeyPassword -> viewModel.enterKeyPassword(action.input)
@@ -156,16 +163,6 @@ private fun SyncBudgetDialog(
           }
           overallState == Failed -> {
             TextButton(onClick = { onAction(Retry) }, content = { Text(text = Strings.syncRetry) })
-          }
-          else -> {
-            val enabled = overallState == Succeeded
-            val color =
-              if (enabled) colors.reportsGreen else colors.buttonNormalDisabledText.disabled
-            TextButton(
-              enabled = enabled,
-              onClick = { onAction(Continue) },
-              content = { Text(text = Strings.syncOpen, color = color) },
-            )
           }
         }
       },
