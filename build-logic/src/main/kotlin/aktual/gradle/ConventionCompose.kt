@@ -9,6 +9,7 @@ import aktual.gradle.dsl.desktopMainDependencies
 import aktual.gradle.dsl.invoke
 import aktual.gradle.dsl.kotlin
 import aktual.gradle.dsl.withType
+import blueprint.core.boolProperty
 import blueprint.core.get
 import blueprint.core.libs
 import blueprint.core.withAnyId
@@ -95,7 +96,8 @@ class ConventionCompose : ProjectPlugin {
       tasks.withType(StabilityCheckTask::class).configureEach { it.dependsOn(kotlinCompile) }
 
       traceAll { t ->
-        t.enabled.set(true)
+        // Causes activity leaks on rotation sometimes -> StrictMode violations
+        t.enabled.set(providers.boolProperty("aktual.compose.traceAll"))
         t.threshold.set(2)
         t.variants.set(listOf("debug"))
       }

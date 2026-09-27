@@ -58,6 +58,46 @@ data class CrossoverDatum(
   val adjustedExpenses: Amount? = null,
 )
 
+data class SankeyData(
+  val title: String?,
+  val start: YearMonth,
+  val end: YearMonth,
+  val showPercentages: Boolean,
+  // Within a column, nodes are drawn top to bottom in list order
+  val nodes: ImmutableList<SankeyNode>,
+  val links: ImmutableList<SankeyLink>,
+) : ChartData
+
+data class SankeyNode(
+  val key: String,
+  val label: SankeyLabel,
+  val column: Int,
+  val value: Amount,
+  val percent: Percent,
+  val color: SankeyColor,
+)
+
+// source and target are indices into SankeyData.nodes
+data class SankeyLink(val source: Int, val target: Int, val value: Amount, val color: SankeyColor)
+
+@Immutable
+sealed interface SankeyLabel {
+  data class Text(val value: String) : SankeyLabel
+
+  data object Income : SankeyLabel
+
+  data object Other : SankeyLabel
+}
+
+@Immutable
+sealed interface SankeyColor {
+  data class Palette(val index: Int) : SankeyColor
+
+  data object Primary : SankeyColor
+
+  data object Negative : SankeyColor
+}
+
 @Immutable
 sealed interface SummaryData : ChartData, DateRange {
   val title: String
@@ -202,6 +242,7 @@ data class UnsupportedData(
 enum class UnsupportedReason {
   Filters,
   ReportType,
+  SankeyBudgeted,
 }
 
 data class CustomData(val title: String, val mode: DateRangeMode, val range: ReportTimeRange) :

@@ -523,7 +523,7 @@ private fun BudgetTab.icon(): ImageVector =
 private val TabSaver: Saver<BudgetTab, Int> =
   Saver(save = { it.ordinal }, restore = { BudgetTab.entries[it] })
 
-private fun budgetNavKeyStackSaver() =
+internal fun budgetNavKeyStackSaver() =
   Saver<NavStack<BudgetNavKey>, String>(
     save = { stack -> Json.encodeToString(stack.toList()) },
     restore = { json ->
