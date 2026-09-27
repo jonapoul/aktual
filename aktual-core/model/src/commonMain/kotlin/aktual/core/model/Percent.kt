@@ -1,9 +1,11 @@
 package aktual.core.model
 
+import androidx.compose.runtime.Immutable
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @JvmInline
+@Immutable
 value class Percent(private val value: Double) : Comparable<Percent> {
   val intValue: Int
     get() = value.roundToInt()
