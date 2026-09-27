@@ -9,12 +9,14 @@ import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.budget.reports.vm.report.ReportViewModel
+import aktual.budget.reports.vm.search.SearchReportsViewModel
 import aktual.budget.rules.vm.edit.EditRuleViewModel
 import aktual.budget.rules.vm.list.ListRulesViewModel
 import aktual.budget.schedules.vm.list.ListSchedulesViewModel
 import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.tags.vm.edit.EditTagViewModel
 import aktual.budget.tags.vm.list.ListTagsViewModel
+import aktual.budget.tags.vm.search.SearchTagsViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.theme.DarkColors
 import aktual.metrics.vm.MetricsViewModel
@@ -105,7 +107,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test fun listSchedules() = testSavedStateVM<ListSchedulesViewModel>()
 
-  @Test fun listTags() = testSavedStateVM<ListTagsViewModel>()
+  @Test fun listTags() = testVm<ListTagsViewModel>()
 
   @Test fun login() = testVm<LoginViewModel>()
 
@@ -114,6 +116,10 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun password() = testVm<ChangePasswordViewModel>()
 
   @Test fun reportDashboard() = testVm<ReportsDashboardViewModel>()
+
+  @Test fun searchReports() = testSavedStateVM<SearchReportsViewModel>()
+
+  @Test fun searchTags() = testSavedStateVM<SearchTagsViewModel>()
 
   @Test fun settings() = testVm<SettingsViewModel>()
 

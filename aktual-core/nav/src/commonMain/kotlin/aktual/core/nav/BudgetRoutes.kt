@@ -41,4 +41,6 @@ value class EditScheduleNavRoute(val id: ScheduleId) : BudgetNavKey.Schedules
 
 @Serializable data object CreateTagNavRoute : BudgetNavKey.Tags
 
+@Serializable data object SearchTagsNavRoute : BudgetNavKey.Tags
+
 @JvmInline @Serializable value class EditTagNavRoute(val id: TagId) : BudgetNavKey.Tags

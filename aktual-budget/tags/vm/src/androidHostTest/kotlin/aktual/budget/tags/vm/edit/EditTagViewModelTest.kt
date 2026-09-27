@@ -16,6 +16,8 @@ import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
+import alakazam.test.TestCoroutineContexts
+import alakazam.test.standardDispatcher
 import androidx.compose.ui.graphics.Color
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -360,7 +362,7 @@ class EditTagViewModelTest {
     sync: BudgetSyncController = TestSyncController(),
     preferences: TagPreferences = TagPreferencesImpl(scope.buildPreferences()),
   ): EditTagViewModel {
-    tagsDao = TagsDao(this)
+    tagsDao = TagsDao(this, TestCoroutineContexts(scope.standardDispatcher))
     return EditTagViewModel(
       tagId = id,
       tagsDao = tagsDao,

@@ -15,18 +15,11 @@ import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
 import app.cash.molecule.launchMolecule
-import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactoryKey
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -43,32 +36,19 @@ import kotlinx.coroutines.launch
 import logcat.logcat
 
 @Stable
-@AssistedInject
+@ViewModelKey
+@ContributesIntoMap(BudgetScope::class)
 class ListTagsViewModel(
-  @Assisted private val savedState: SavedStateHandle,
   private val tagsDao: TagsDao,
   private val transactionDao: TransactionDao,
   private val syncController: BudgetSyncController,
   private val preferences: TagPreferences,
 ) : ViewModel() {
-  @AssistedFactory
-  @ViewModelAssistedFactoryKey(ListTagsViewModel::class)
-  @ContributesIntoMap(BudgetScope::class)
-  fun interface Factory : ViewModelAssistedFactory {
-    override fun create(extras: CreationExtras): ListTagsViewModel =
-      create(extras.createSavedStateHandle())
-
-    fun create(@Assisted savedState: SavedStateHandle): ListTagsViewModel
-  }
-
   private val mutableTags = MutableStateFlow<ImmutableList<TagItem>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
   private val mutableIsRefreshing = MutableStateFlow(false)
   private val mutableFailure = MutableStateFlow<String?>(null)
   private var reloadJob: Job? = null
-
-  private val filterText = savedState.getStateFlow(KEY_FILTER_TEXT, initialValue = "")
-  private val isSearchActive = savedState.getStateFlow(KEY_IS_SEARCH_ACTIVE, initialValue = false)
 
   private val mutableEvents =
     MutableSharedFlow<ListTagsEvent>(
@@ -85,8 +65,6 @@ class ListTagsViewModel(
       val tags by mutableTags.collectAsState()
       val isLoading by mutableIsLoading.collectAsState()
       val failure by mutableFailure.collectAsState()
-      val filterText by filterText.collectAsState()
-      val isSearchActive by isSearchActive.collectAsState()
       val sortField by preferences.sortField.asFlow().collectAsState(TagSort.Field.Default)
       val sortDirection by
         preferences.sortDirection.asFlow().collectAsState(TagSort.Direction.Default)
@@ -95,26 +73,12 @@ class ListTagsViewModel(
         isLoading -> Loading
         failure != null -> Failure(failure)
         tags.isEmpty() -> Empty
-        else ->
-          buildSuccessState(isSearchActive, tags, filterText, TagSort(sortField, sortDirection))
+        else -> buildSuccessState(tags, TagSort(sortField, sortDirection))
       }
     }
 
   init {
     reload()
-  }
-
-  fun openSearch() {
-    savedState[KEY_IS_SEARCH_ACTIVE] = true
-  }
-
-  fun setFilterText(text: String) {
-    savedState[KEY_FILTER_TEXT] = text
-  }
-
-  fun clearFilter() {
-    savedState[KEY_FILTER_TEXT] = ""
-    savedState[KEY_IS_SEARCH_ACTIVE] = false
   }
 
   fun reload(showLoading: Boolean = true) = load(loading = showLoading, refreshing = false)
@@ -213,26 +177,8 @@ class ListTagsViewModel(
     }
   }
 
-  private fun buildSuccessState(
-    isSearchActive: Boolean,
-    tags: ImmutableList<TagItem>,
-    filterText: String,
-    sort: TagSort,
-  ): Success {
-    val filtered =
-      if (isSearchActive) {
-        tags.filter { tag -> filterText in tag }
-      } else {
-        tags
-      }
-    val sorted = filtered.sortedWith(sort.comparator()).toImmutableList()
-    return Success(
-      tags = sorted,
-      filterText = filterText,
-      isSearchActive = isSearchActive,
-      sort = sort,
-    )
-  }
+  private fun buildSuccessState(tags: ImmutableList<TagItem>, sort: TagSort) =
+    Success(tags = tags.sortedWith(sort.comparator()).toImmutableList(), sort = sort)
 
   private fun TagSort.comparator(): Comparator<TagItem> {
     val byField =
@@ -244,15 +190,5 @@ class ListTagsViewModel(
       Ascending -> byField
       Descending -> byField.reversed()
     }
-  }
-
-  private operator fun TagItem.contains(query: String): Boolean {
-    val q = query.trim()
-    return tag.contains(q, ignoreCase = true) || description.contains(q, ignoreCase = true)
-  }
-
-  private companion object {
-    const val KEY_FILTER_TEXT = "filter_text"
-    const val KEY_IS_SEARCH_ACTIVE = "is_search_active"
   }
 }

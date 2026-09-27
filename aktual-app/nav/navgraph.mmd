@@ -18,6 +18,8 @@ flowchart TD
     searchReports["Search Reports"]
     listTags["List Tags"]
     createTag["Create Tag"]
+    editTag["Edit Tag"]
+    searchTags["Search Tags"]
   end
 
   app --valid token--> budgetList
@@ -50,3 +52,6 @@ flowchart TD
   searchReports --tap report--> report
 
   listTags --tap add--> createTag
+  listTags --tap tag--> editTag
+  listTags --tap search--> searchTags
+  searchTags --tap tag--> editTag

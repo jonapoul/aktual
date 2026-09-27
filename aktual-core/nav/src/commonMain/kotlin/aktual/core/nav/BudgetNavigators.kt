@@ -69,3 +69,8 @@ class EditTagNavigator(private val stack: NavStack<BudgetNavKey>) {
 
   operator fun invoke(id: TagId) = stack.push(EditTagNavRoute(id))
 }
+
+@Immutable
+class SearchTagsNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke() = stack.push(SearchTagsNavRoute)
+}
