@@ -72,7 +72,7 @@ internal constructor(
           }
         }
       }
-      .stateIn(viewModelScope, Eagerly, initialValue = DashboardContent(null, persistentListOf()))
+      .stateIn(viewModelScope, Eagerly, initialValue = DashboardContent(page = null, items = null))
 
   fun selectPage(id: DashboardPageId) = pages.select(id)
 
