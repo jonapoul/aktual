@@ -2,8 +2,10 @@ package aktual.budget.schedules.vm.search
 
 import aktual.budget.schedules.vm.Schedule
 import aktual.budget.schedules.vm.SchedulesLoader
+import aktual.budget.schedules.vm.search.SearchSchedulesState.Failure
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Results
 import aktual.di.BudgetScope
+import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -31,7 +33,7 @@ import logcat.logcat
 class SearchSchedulesViewModel
 internal constructor(
   @Assisted private val savedState: SavedStateHandle,
-  loader: SchedulesLoader,
+  private val loader: SchedulesLoader,
 ) : ViewModel() {
   @AssistedFactory
   @ViewModelAssistedFactoryKey(SearchSchedulesViewModel::class)
@@ -46,11 +48,18 @@ internal constructor(
   val query: StateFlow<String> = savedState.getStateFlow(KEY_QUERY, initialValue = "")
 
   private val schedules = MutableStateFlow<List<Schedule>?>(null)
+  private val failure = MutableStateFlow<String?>(null)
 
   val state: StateFlow<SearchSchedulesState> =
-    combine(query, schedules, ::search).stateIn(viewModelScope, Eagerly, initialValue = NoQuery)
+    combine(query, schedules, failure, ::search)
+      .stateIn(viewModelScope, Eagerly, initialValue = NoQuery)
 
   init {
+    reload()
+  }
+
+  fun reload() {
+    failure.update { null }
     viewModelScope.launch {
       try {
         val loaded = loader.load()
@@ -59,6 +68,7 @@ internal constructor(
         throw e
       } catch (e: Exception) {
         logcat.e(e) { "Failed loading schedules" }
+        failure.update { e.requireMessage() }
       }
     }
   }
@@ -67,7 +77,12 @@ internal constructor(
     savedState[KEY_QUERY] = query
   }
 
-  private fun search(query: String, schedules: List<Schedule>?): SearchSchedulesState {
+  private fun search(
+    query: String,
+    schedules: List<Schedule>?,
+    failure: String?,
+  ): SearchSchedulesState {
+    if (failure != null) return Failure(failure)
     val trimmed = query.trim()
     if (trimmed.isEmpty() || schedules == null) return NoQuery
 

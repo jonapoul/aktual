@@ -13,6 +13,8 @@
   <string name="list_schedules_status_scheduled">Scheduled</string>
   <string name="list_schedules_empty">No schedules found</string>
   <string name="list_schedules_empty_create">Create new</string>
+  <string name="list_schedules_failure_prefix">Failed loading schedules</string>
+  <string name="list_schedules_failure_default_message">Unknown cause</string>
   <string name="list_schedules_search">Search</string>
   <string name="list_schedules_search_placeholder">Search schedules</string>
   <string name="list_schedules_search_prompt">Enter some text to search schedule names, payees and accounts</string>

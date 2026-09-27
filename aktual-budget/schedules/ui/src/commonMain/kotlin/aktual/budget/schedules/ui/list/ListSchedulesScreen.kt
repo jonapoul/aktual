@@ -169,8 +169,8 @@ private fun ListSchedulesContent(
       }
       is Failure -> {
         FailureScreen(
-          title = Strings.rulesFailurePrefix,
-          reason = state.cause ?: Strings.rulesFailureDefaultMessage,
+          title = Strings.listSchedulesFailurePrefix,
+          reason = state.cause ?: Strings.listSchedulesFailureDefaultMessage,
           background = colors.tableBackground,
           action =
             FailureAction(

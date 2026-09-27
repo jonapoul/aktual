@@ -4,9 +4,11 @@ import aktual.budget.schedules.ui.list.ListSchedulesDS
 import aktual.budget.schedules.ui.list.ListSchedulesItem
 import aktual.budget.schedules.ui.list.ListSchedulesPreview
 import aktual.budget.schedules.vm.search.SearchSchedulesState
+import aktual.budget.schedules.vm.search.SearchSchedulesState.Failure
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Results
 import aktual.budget.schedules.vm.search.SearchSchedulesViewModel
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -14,6 +16,8 @@ import aktual.core.nav.EditScheduleNavigator
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.FailureAction
+import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.ScrollToTopOnNewQuery
@@ -54,6 +58,7 @@ internal fun SearchSchedulesScreen(
     onAction = { action ->
       when (action) {
         NavBack -> back()
+        Reload -> viewModel.reload()
         is SetQuery -> viewModel.setQuery(action.query)
         is OpenSchedule -> editSchedule(action.id)
       }
@@ -92,6 +97,18 @@ private fun SearchSchedulesScaffold(
           SearchMessage(
             icon = MaterialIcons.SearchOff,
             text = Strings.listSchedulesSearchNoResults(query.trim()),
+          )
+
+        is Failure ->
+          FailureScreen(
+            title = Strings.listSchedulesFailurePrefix,
+            reason = animatedState.cause ?: Strings.listSchedulesFailureDefaultMessage,
+            action =
+              FailureAction(
+                text = { Strings.syncRetry },
+                icon = MaterialIcons.Refresh,
+                onClick = { onAction(Reload) },
+              ),
           )
 
         is Results ->
@@ -142,6 +159,7 @@ private class SearchSchedulesScaffoldProvider :
   ColoredParameterProvider<SearchSchedulesParams>(
     SearchSchedulesParams(query = "", state = NoQuery),
     SearchSchedulesParams(query = "xyz", state = NoResults),
+    SearchSchedulesParams(query = "rent", state = Failure("Database connection lost")),
     SearchSchedulesParams(
       query = "check",
       state =

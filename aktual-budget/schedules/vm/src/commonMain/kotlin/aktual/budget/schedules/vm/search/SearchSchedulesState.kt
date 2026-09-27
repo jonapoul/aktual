@@ -10,6 +10,8 @@ sealed interface SearchSchedulesState {
 
   data object NoResults : SearchSchedulesState
 
+  @JvmInline value class Failure(val cause: String?) : SearchSchedulesState
+
   data class Results(val query: String, val schedules: ImmutableList<Schedule>) :
     SearchSchedulesState
 }
