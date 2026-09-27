@@ -21,14 +21,17 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -49,6 +52,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -116,11 +120,13 @@ internal fun ReportsDashboardScaffold(
         navigationIcon = { NavDrawerIconButton() },
         title = { DashboardSelector(pages, selectedPage, onAction) },
         actions = {
-          IconButton(onClick = { onAction(CreateNewReport) }) {
-            Icon(
-              imageVector = MaterialIcons.Add,
-              contentDescription = Strings.reportsDashboardCreate,
-            )
+          if (items.isNotEmpty()) {
+            IconButton(onClick = { onAction(CreateNewReport) }) {
+              Icon(
+                imageVector = MaterialIcons.Add,
+                contentDescription = Strings.reportsDashboardCreate,
+              )
+            }
           }
           DashboardMenu(page = selectedPage, canDelete = pages.size > 1, onAction = onAction)
         },
@@ -174,7 +180,7 @@ private fun ReportsDashboardContent(
   modifier: Modifier = Modifier,
 ) {
   if (items.isEmpty()) {
-    ContentEmpty(modifier)
+    ContentEmpty(onAction, modifier)
   } else {
     ContentList(
       items = items,
@@ -188,9 +194,20 @@ private fun ReportsDashboardContent(
 }
 
 @Composable
-private fun ContentEmpty(modifier: Modifier = Modifier) =
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Center) {
-    Text(text = Strings.reportsDashboardEmpty, color = colors.pageText)
+private fun ContentEmpty(onAction: ActionListener, modifier: Modifier = Modifier) =
+  Column(
+    modifier = modifier.fillMaxSize().padding(40.dp),
+    horizontalAlignment = CenterHorizontally,
+    verticalArrangement = Arrangement.Center,
+  ) {
+    Text(text = Strings.reportsDashboardEmpty, color = colors.pageText, textAlign = Center)
+
+    VerticalSpacer(20.dp)
+
+    PrimaryTextButton(
+      text = Strings.reportsDashboardCreate,
+      onClick = { onAction(CreateNewReport) },
+    )
   }
 
 @Composable
