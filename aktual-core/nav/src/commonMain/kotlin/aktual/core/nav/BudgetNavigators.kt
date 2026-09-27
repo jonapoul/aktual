@@ -30,6 +30,11 @@ class CreateReportNavigator(private val stack: NavStack<BudgetNavKey>) {
 }
 
 @Immutable
+class SearchReportsNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke() = stack.push(SearchReportsNavRoute)
+}
+
+@Immutable
 class ListRulesNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke() = stack.push(ListRulesNavRoute)
 }

@@ -15,6 +15,7 @@ flowchart TD
     reportsDashboard["Reports Dashboard"]
     report["Report"]
     createReport["Create Report"]
+    searchReports["Search Reports"]
     listTags["List Tags"]
     createTag["Create Tag"]
   end
@@ -45,5 +46,7 @@ flowchart TD
 
   reportsDashboard --tap report--> report
   reportsDashboard --tap create--> createReport
+  reportsDashboard --tap search--> searchReports
+  searchReports --tap report--> report
 
   listTags --tap add--> createTag

@@ -65,6 +65,9 @@ class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineCont
   fun observeByPage(page: DashboardPageId): Flow<List<Dashboard>> =
     queries.getByPage(page).asFlow().mapToList(contexts.default).distinctUntilChanged()
 
+  fun observeAll(): Flow<List<Dashboard>> =
+    queries.getAll().asFlow().mapToList(contexts.default).distinctUntilChanged()
+
   fun observeById(id: WidgetId): Flow<Dashboard?> =
     queries.getById(id).asFlow().mapToOneOrNull(contexts.default).distinctUntilChanged()
 

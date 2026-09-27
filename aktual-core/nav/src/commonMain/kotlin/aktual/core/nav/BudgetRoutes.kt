@@ -21,6 +21,8 @@ value class TransactionsWithTagNavRoute(val id: TagId) : BudgetNavKey.Transactio
 @Serializable
 value class CreateReportNavRoute(val page: DashboardPageId) : BudgetNavKey.Reports
 
+@Serializable data object SearchReportsNavRoute : BudgetNavKey.Reports
+
 @Serializable data object ListRulesNavRoute : BudgetNavKey.Rules
 
 @JvmInline @Serializable value class EditRuleNavRoute(val id: RuleId) : BudgetNavKey.Rules
