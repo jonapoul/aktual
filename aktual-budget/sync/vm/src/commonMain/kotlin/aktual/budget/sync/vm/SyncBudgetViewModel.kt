@@ -307,7 +307,7 @@ class SyncBudgetViewModel(
       }
 
       is Success -> {
-        runLevelController.onBudget(result.meta)
+        runLevelController.onBudget(budgetId, result.meta)
         logcat.i { "Built new budget component from $budgetId" }
         setStepState(ValidatingDatabase, SyncStepState.Succeeded)
       }

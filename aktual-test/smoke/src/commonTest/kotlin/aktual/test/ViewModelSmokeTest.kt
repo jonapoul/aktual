@@ -71,7 +71,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
       init(listOf(appGraph))
       onServerChosen(SERVER_URL)
       onLoggedIn(LOGIN_TOKEN)
-      onBudget(DB_METADATA)
+      onBudget(BUDGET_ID, DB_METADATA)
     }
   }
 

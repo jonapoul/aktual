@@ -1,8 +1,8 @@
 package aktual.di
 
 import aktual.budget.db.SqlDriverFactory
+import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
-import aktual.budget.model.cloudFileId
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import alakazam.kotlin.StateHolder
@@ -79,12 +79,9 @@ class RunLevelStateHolder(private val driverFactory: SqlDriverFactory) :
     return loggedInGraph
   }
 
-  override fun onBudget(metadata: DbMetadata): BudgetGraph {
-    val driver = driverFactory.create(metadata.cloudFileId)
-    val budgetGraph =
-      value[LoggedInGraph::class]
-        .budgetGraphFactory
-        .create(id = metadata.cloudFileId, metadata, driver)
+  override fun onBudget(id: BudgetId, metadata: DbMetadata): BudgetGraph {
+    val driver = driverFactory.create(id)
+    val budgetGraph = value[LoggedInGraph::class].budgetGraphFactory.create(id, metadata, driver)
     budgetGraph.initialize()
     // Replace any currently-open budget so switching budgets doesn't stack a second BudgetGraph
     update { levels ->

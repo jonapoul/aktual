@@ -85,7 +85,7 @@ class TransactionsViewModelTest {
       init(listOf(appGraph))
       onServerChosen(ServerUrl.Demo)
       onLoggedIn(TOKEN)
-      val budgetGraph = onBudget(METADATA)
+      val budgetGraph = onBudget(BUDGET_ID, METADATA)
       accounts = budgetGraph[AccountDao::class]
       transactions = budgetGraph[TransactionDao::class]
       payees = budgetGraph[PayeeDao::class]
