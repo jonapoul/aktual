@@ -47,6 +47,7 @@ import kotlin.io.path.createTempDirectory
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -78,7 +79,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   fun after() {
     // cancel viewModelScope before after() deletes the temp dir, to avoid SQLITE_CANTOPEN
     // from background coroutines that outlive the test
-    viewModel?.viewModelScope?.cancel()
+    viewModel?.viewModelScope?.let(::cancelViewModelScope)
 
     LogcatLogger.uninstall()
     appGraph.close()
@@ -92,6 +93,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   protected abstract fun buildGraph(): G
 
   protected open fun afterPlatformCleanup() = Unit
+
+  protected open fun cancelViewModelScope(scope: CoroutineScope) = scope.cancel()
 
   protected open fun optionallySkip() = Unit
 
