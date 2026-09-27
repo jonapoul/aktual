@@ -34,7 +34,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -42,7 +41,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.mapSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -93,23 +95,8 @@ internal fun ReportsDashboardScaffold(
   observer: DashboardItemObserver,
   onAction: ActionListener,
 ) {
-  // Separate scroll state for each page
-  val stateHolder = rememberSaveableStateHolder()
-  stateHolder.SaveableStateProvider(key = selectedPage?.id?.value.orEmpty()) {
-    ReportsDashboardPage(pages, selectedPage, items, observer, onAction)
-  }
-}
-
-@Composable
-private fun ReportsDashboardPage(
-  pages: ImmutableList<DashboardPage>,
-  selectedPage: DashboardPage?,
-  items: ImmutableList<DashboardItem>,
-  observer: DashboardItemObserver,
-  onAction: ActionListener,
-) {
   val hazeState = rememberHazedTopBarState()
-  val listState = rememberLazyListState()
+  val listState = rememberPageListState(selectedPage?.id)
 
   Scaffold(
     modifier = Modifier.fillMaxSize(),
@@ -143,6 +130,29 @@ private fun ReportsDashboardPage(
     }
   }
 }
+
+// Not SaveableStateProvider: its ReusableContent recycles the top bar's dropdown popup between
+// pages and leaks it
+@Composable
+private fun rememberPageListState(page: DashboardPageId?): LazyListState {
+  val states = rememberSaveable(saver = PageListStatesSaver) { mutableMapOf() }
+  return remember(page) { states.getOrPut(page?.value.orEmpty()) { LazyListState() } }
+}
+
+private val PageListStatesSaver: Saver<MutableMap<String, LazyListState>, Any> =
+  mapSaver(
+    save = { states ->
+      states.mapValues { (_, state) ->
+        intArrayOf(state.firstVisibleItemIndex, state.firstVisibleItemScrollOffset)
+      }
+    },
+    restore = { saved ->
+      saved.mapValuesTo(mutableMapOf()) { (_, value) ->
+        val (index, offset) = value as IntArray
+        LazyListState(index, offset)
+      }
+    },
+  )
 
 @Composable
 private fun ReportsDashboardContent(
