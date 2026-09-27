@@ -67,11 +67,14 @@ fun ListBudgetsScreen(
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
 
+  var budgetToSync by remember { mutableStateOf<BudgetId?>(null) }
+
   LaunchedEffect(viewModel.event) {
     viewModel.event.collect { event ->
       when (event) {
         ListBudgetsEvent.NavToBudget -> toBudget()
         ListBudgetsEvent.LogOut -> logOut()
+        is ListBudgetsEvent.ShowSyncDialog -> budgetToSync = event.id
       }
     }
   }
@@ -111,7 +114,6 @@ fun ListBudgetsScreen(
     }
   }
 
-  var budgetToSync by remember { mutableStateOf<BudgetId?>(null) }
   budgetToSync?.let { id ->
     SyncBudgetDialog(
       budgetId = id,
@@ -132,7 +134,7 @@ fun ListBudgetsScreen(
         OpenInBrowser -> viewModel.open(serverUrl)
         Reload -> viewModel.retry()
         is Delete -> budgetToDelete = action.budget
-        is Open -> budgetToSync = action.budget.directoryId
+        is Open -> viewModel.openBudget(action.budget)
       }
     },
   )
