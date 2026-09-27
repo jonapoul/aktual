@@ -8,12 +8,11 @@ import alakazam.kotlin.CoroutineContexts
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToOneOrNull
+import app.cash.sqldelight.coroutines.mapToList
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.JsonObject
 
 @Inject
 class CustomReportsDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
@@ -25,12 +24,12 @@ class CustomReportsDao(database: BudgetDatabase, private val contexts: Coroutine
     getById(id).awaitAsOneOrNull()
   }
 
-  fun observeMetadataById(id: CustomReportId): Flow<JsonObject?> =
+  fun observeNames(): Flow<Map<CustomReportId, String>> =
     queries
-      .getMetadataById(id)
+      .getNames()
       .asFlow()
-      .mapToOneOrNull(contexts.default)
-      .map { it?.metadata }
+      .mapToList(contexts.default)
+      .map { rows -> rows.associate { it.id to it.name } }
       .distinctUntilChanged()
 
   suspend fun getIds(): List<CustomReportId> = queries.withResult { getIds().awaitAsList() }
@@ -38,6 +37,4 @@ class CustomReportsDao(database: BudgetDatabase, private val contexts: Coroutine
   suspend fun getIdByName(name: String): CustomReportId? = queries.withResult {
     getIdByName(name).awaitAsOneOrNull()
   }
-
-  suspend fun deleteById(id: CustomReportId): Long = queries.withResult { delete(id) }
 }

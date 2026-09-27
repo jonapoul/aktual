@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.OutputTransformation
-import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
@@ -24,8 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -44,7 +46,7 @@ fun AktualTextField(
   trailingIcon: (@Composable () -> Unit)? = null,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   outputTransformation: OutputTransformation? = null,
-  keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+  keyboardOptions: KeyboardOptions = Default,
   onKeyboardAction: KeyboardActionHandler? = null,
   colors: TextFieldColors = AktualTheme.colors.textField(),
   clearable: Boolean = false,
@@ -74,12 +76,20 @@ fun AktualTextField(
       Modifier
     }
 
+  val focusRequester = remember { FocusRequester() }
+  val keyboard = LocalSoftwareKeyboardController.current
+
   val clearButton: (@Composable () -> Unit)? =
     if (clearable && state.text.isNotEmpty()) {
       {
         ClearButton(
           tint = colors.focusedTrailingIconColor,
-          onClick = { state.edit { replace(0, length, "") } },
+          onClick = {
+            state.edit { replace(0, length, "") }
+            // The field may still be focused with the keyboard hidden, so show it explicitly
+            focusRequester.requestFocus()
+            keyboard?.show()
+          },
         )
       }
     } else {
@@ -87,7 +97,7 @@ fun AktualTextField(
     }
 
   TextField(
-    modifier = modifier.then(borderModifier).then(shadowModifier),
+    modifier = modifier.then(borderModifier).then(shadowModifier).focusRequester(focusRequester),
     state = state,
     placeholder =
       placeholderText?.let {
@@ -97,7 +107,7 @@ fun AktualTextField(
     colors = colors,
     readOnly = readOnly,
     enabled = isEnabled,
-    lineLimits = if (singleLine) TextFieldLineLimits.SingleLine else TextFieldLineLimits.Default,
+    lineLimits = if (singleLine) SingleLine else Default,
     leadingIcon = leadingIcon,
     trailingIcon = trailingIcon ?: clearButton,
     interactionSource = interactionSource,
