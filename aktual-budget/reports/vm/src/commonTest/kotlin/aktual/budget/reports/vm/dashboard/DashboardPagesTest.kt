@@ -10,6 +10,8 @@ import aktual.test.TestBudgetLocalPreferences
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlin.test.Test
 import kotlinx.coroutines.test.StandardTestDispatcher
 
@@ -64,11 +66,26 @@ class DashboardPagesTest {
     }
   }
 
-  private fun runPagesTest(action: suspend (DashboardPages) -> Unit) =
+  @Test
+  fun `Uses the selected page for a new report`() = runPagesTest { pages ->
+    pages.select(PAGE_2.id)
+    assertThat(pages.selectedOrCreate()).isEqualTo(PAGE_2.id)
+  }
+
+  @Test
+  fun `Creates a page for a new report when there are none`() =
+    runPagesTest(seed = false) { pages ->
+      assertThat(pages.selectedOrCreate()).isEqualTo(NEW_ID)
+      pages.all.test { assertThatNextEmissionIsEqualTo(listOf(DashboardPage(NEW_ID, "Main"))) }
+    }
+
+  private fun runPagesTest(seed: Boolean = true, action: suspend (DashboardPages) -> Unit) =
     runSyncedDatabaseTest { scope, controller ->
-      dashboardPagesQueries.withoutResult {
-        insert(Dashboard_pages(PAGE_1.id, PAGE_1.name, tombstone = false))
-        insert(Dashboard_pages(PAGE_2.id, PAGE_2.name, tombstone = false))
+      if (seed) {
+        dashboardPagesQueries.withoutResult {
+          insert(Dashboard_pages(PAGE_1.id, PAGE_1.name, tombstone = false))
+          insert(Dashboard_pages(PAGE_2.id, PAGE_2.name, tombstone = false))
+        }
       }
       val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
       val dao = DashboardDao(this, contexts)
