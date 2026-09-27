@@ -33,6 +33,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object CreateScheduleNavRoute : BudgetNavKey.Schedules
 
+@Serializable data object SearchSchedulesNavRoute : BudgetNavKey.Schedules
+
 @Serializable data class EditScheduleNavRoute(val id: ScheduleId) : BudgetNavKey.Schedules
 
 @Serializable data object ListTagsNavRoute : BudgetNavKey.Tags

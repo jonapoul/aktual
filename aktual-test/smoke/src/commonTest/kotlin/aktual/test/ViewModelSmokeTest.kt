@@ -13,6 +13,7 @@ import aktual.budget.reports.vm.search.SearchReportsViewModel
 import aktual.budget.rules.vm.edit.EditRuleViewModel
 import aktual.budget.rules.vm.list.ListRulesViewModel
 import aktual.budget.schedules.vm.list.ListSchedulesViewModel
+import aktual.budget.schedules.vm.search.SearchSchedulesViewModel
 import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.tags.vm.edit.EditTagViewModel
 import aktual.budget.tags.vm.list.ListTagsViewModel
@@ -108,7 +109,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test fun listRules() = testSavedStateVM<ListRulesViewModel>()
 
-  @Test fun listSchedules() = testSavedStateVM<ListSchedulesViewModel>()
+  @Test fun listSchedules() = testVm<ListSchedulesViewModel>()
 
   @Test fun listTags() = testVm<ListTagsViewModel>()
 
@@ -121,6 +122,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun reportDashboard() = testVm<ReportsDashboardViewModel>()
 
   @Test fun searchReports() = testSavedStateVM<SearchReportsViewModel>()
+
+  @Test fun searchSchedules() = testSavedStateVM<SearchSchedulesViewModel>()
 
   @Test fun searchTags() = testSavedStateVM<SearchTagsViewModel>()
 

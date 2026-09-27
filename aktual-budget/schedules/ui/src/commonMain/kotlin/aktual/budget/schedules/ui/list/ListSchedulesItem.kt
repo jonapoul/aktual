@@ -16,6 +16,7 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
+import aktual.core.ui.rememberHighlighted
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -45,8 +47,9 @@ import com.valentinilk.shimmer.shimmer
 @Composable
 internal fun ListSchedulesItem(
   schedule: Schedule,
-  onAction: ListSchedulesActionHandler,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  query: String = "",
 ) {
   val amountPrefix =
     when (schedule.amountOp) {
@@ -68,7 +71,7 @@ internal fun ListSchedulesItem(
         .clip(RowShape)
         .background(colors.tableBackground, RowShape)
         .border(Hairline, colors.tableBorder, RowShape)
-        .clickable { onAction(Open(schedule.id)) }
+        .clickable(onClick = onClick)
         .padding(ListSchedulesDS.itemCardPadding),
     horizontalArrangement =
       Arrangement.spacedBy(ListSchedulesDS.itemHorizontalSpacing, Alignment.Start),
@@ -79,7 +82,9 @@ internal fun ListSchedulesItem(
       verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemContentSpacing),
     ) {
       Text(
-        text = schedule.name ?: Strings.listSchedulesUnnamedSchedule,
+        text =
+          schedule.name?.let { rememberHighlighted(it, query) }
+            ?: AnnotatedString(Strings.listSchedulesUnnamedSchedule),
         style = typography.bodyMedium,
         fontWeight = SemiBold,
         color = if (schedule.name != null) colors.pageText else colors.pageTextSubdued,
@@ -91,10 +96,12 @@ internal fun ListSchedulesItem(
         LabelValue(
           label = Strings.listSchedulesLabelPayee,
           value = schedule.payeeName,
+          query = query,
         )
         LabelValue(
           label = Strings.listSchedulesLabelAccount,
           value = schedule.accountName,
+          query = query,
         )
 
         LabelValue(
@@ -125,6 +132,7 @@ private fun LabelValue(
   value: String,
   modifier: Modifier = Modifier,
   valueColor: Color = colors.pageText,
+  query: String = "",
 ) {
   Row(
     modifier = modifier,
@@ -132,7 +140,7 @@ private fun LabelValue(
     verticalAlignment = CenterVertically,
   ) {
     Text(label, style = typography.bodySmall, color = colors.pageTextSubdued)
-    Text(value, style = typography.bodySmall, color = valueColor)
+    Text(rememberHighlighted(value, query), style = typography.bodySmall, color = valueColor)
   }
 }
 
@@ -143,21 +151,21 @@ private fun ScheduleStatusBadge(
 ) {
   val (bgColor, textColor) =
     when (status) {
-      ScheduleStatus.Missed -> colors.errorBackground to colors.errorTextDarker
-      ScheduleStatus.Due -> colors.warningBackground to colors.warningTextDark
-      ScheduleStatus.Upcoming -> colors.upcomingBackground to colors.upcomingText
-      ScheduleStatus.Paid -> colors.noticeBackgroundLight to colors.noticeText
-      ScheduleStatus.Completed -> colors.tableRowHeaderBackground to colors.tableHeaderText
-      ScheduleStatus.Scheduled -> colors.tableRowHeaderBackground to colors.tableRowHeaderText
+      Missed -> colors.errorBackground to colors.errorTextDarker
+      Due -> colors.warningBackground to colors.warningTextDark
+      Upcoming -> colors.upcomingBackground to colors.upcomingText
+      Paid -> colors.noticeBackgroundLight to colors.noticeText
+      Completed -> colors.tableRowHeaderBackground to colors.tableHeaderText
+      Scheduled -> colors.tableRowHeaderBackground to colors.tableRowHeaderText
     }
   val label =
     when (status) {
-      ScheduleStatus.Missed -> Strings.listSchedulesStatusMissed
-      ScheduleStatus.Due -> Strings.listSchedulesStatusDue
-      ScheduleStatus.Upcoming -> Strings.listSchedulesStatusUpcoming
-      ScheduleStatus.Paid -> Strings.listSchedulesStatusPaid
-      ScheduleStatus.Completed -> Strings.listSchedulesStatusCompleted
-      ScheduleStatus.Scheduled -> Strings.listSchedulesStatusScheduled
+      Missed -> Strings.listSchedulesStatusMissed
+      Due -> Strings.listSchedulesStatusDue
+      Upcoming -> Strings.listSchedulesStatusUpcoming
+      Paid -> Strings.listSchedulesStatusPaid
+      Completed -> Strings.listSchedulesStatusCompleted
+      Scheduled -> Strings.listSchedulesStatusScheduled
     }
   Box(
     modifier = modifier.background(bgColor, CardShape).padding(ListSchedulesDS.statusBadgePadding)
@@ -231,7 +239,7 @@ private class ScheduleStatusProvider :
 @Composable
 private fun PreviewListItem(
   @PreviewParameter(SchedulesProvider::class) params: ColoredParams<Schedule>
-) = PreviewWithColoredParams(params) { ListSchedulesItem(schedule = this, onAction = {}) }
+) = PreviewWithColoredParams(params) { ListSchedulesItem(schedule = this, onClick = {}) }
 
 private class SchedulesProvider :
   ColoredParameterProvider<Schedule>(ListSchedulesPreview.scheduleA, ListSchedulesPreview.scheduleB)
