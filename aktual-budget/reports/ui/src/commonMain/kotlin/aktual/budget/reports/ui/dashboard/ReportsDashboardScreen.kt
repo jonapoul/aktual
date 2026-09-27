@@ -82,6 +82,9 @@ fun ReportsDashboardScreen(
         is SaveTextContent -> TODO()
         CreateNewReport -> content.page?.let { page -> toCreateReport(page.id) }
         is SelectPage -> viewModel.selectPage(action.id)
+        is CreatePage -> viewModel.createPage(action.name)
+        is RenamePage -> viewModel.renamePage(action.id, action.name)
+        is DeletePage -> viewModel.deletePage(action.id)
       }
     },
   )
@@ -113,6 +116,7 @@ internal fun ReportsDashboardScaffold(
               contentDescription = Strings.reportsDashboardCreate,
             )
           }
+          DashboardMenu(page = selectedPage, canDelete = pages.size > 1, onAction = onAction)
         },
       )
     },

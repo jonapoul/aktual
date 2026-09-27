@@ -11,6 +11,7 @@ import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import alakazam.kotlin.CoroutineContexts
 import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.async.coroutines.awaitAsOne
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
@@ -19,7 +20,6 @@ import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 
 @Inject
 class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
@@ -51,26 +51,27 @@ class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineCont
   fun observePages(): Flow<List<Dashboard_pages>> =
     pageQueries.getAll().asFlow().mapToList(contexts.default).distinctUntilChanged()
 
+  suspend fun countPages(): Long = pageQueries.withResult { countActive().awaitAsOne() }
+
+  suspend fun widgetIds(page: DashboardPageId): List<WidgetId> = queries.withResult {
+    getIdsByPage(page).awaitAsList()
+  }
+
+  // Null if the widget doesn't exist, empty if it has no meta
+  suspend fun meta(id: WidgetId): JsonObject? = queries.withResult {
+    getMeta(id).awaitAsOneOrNull()?.let { row -> row.meta ?: JsonObject(emptyMap()) }
+  }
+
   fun observeByPage(page: DashboardPageId): Flow<List<Dashboard>> =
     queries.getByPage(page).asFlow().mapToList(contexts.default).distinctUntilChanged()
 
   fun observeById(id: WidgetId): Flow<Dashboard?> =
     queries.getById(id).asFlow().mapToOneOrNull(contexts.default).distinctUntilChanged()
 
-  suspend fun deleteById(id: WidgetId): Long = queries.withResult { delete(id) }
-
   suspend fun getPositionAndSize(page: DashboardPageId): List<GetPositionAndSize> =
     queries.withResult {
       getPositionAndSize(page).awaitAsList()
     }
-
-  // Patches the stored json rather than re-encoding our model, so values we don't recognise are
-  // kept
-  suspend fun rename(id: WidgetId, name: String) = queries.withoutResult {
-    val row = getMeta(id).awaitAsOneOrNull() ?: return@withoutResult
-    val meta = row.meta ?: JsonObject(emptyMap())
-    updateMeta(JsonObject(meta + ("name" to JsonPrimitive(name))), id)
-  }
 
   companion object {
     const val DEFAULT_WIDTH = 4L
