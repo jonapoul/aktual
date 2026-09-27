@@ -25,6 +25,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
@@ -103,11 +104,12 @@ fun Modifier.hazedTopBar(
 
   var barHeightPx by remember { mutableIntStateOf(0) }
   val measured = onSizeChanged { barHeightPx = it.height }
+  val currentScrollOffset by rememberUpdatedState(scrollOffset)
 
   val progress by remember {
     derivedStateOf {
       val height = barHeightPx
-      if (height <= 0) 0f else (scrollOffset() / height).coerceIn(0f, 1f)
+      if (height <= 0) 0f else (currentScrollOffset() / height).coerceIn(0f, 1f)
     }
   }
 

@@ -1,5 +1,6 @@
 package aktual.budget.navrail.ui
 
+import aktual.budget.model.DashboardPageId
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.CreateReportNavRoute
@@ -49,7 +50,7 @@ class BudgetNavDisplayTest {
       onNodeWithText(SCROLLED_ITEM).assertIsDisplayed()
 
       // and another entry in the same tab is opened, then closed
-      runOnIdle { stack.push(CreateReportNavRoute) }
+      runOnIdle { stack.push(CreateReportNavRoute(DashboardPageId("page"))) }
       onNodeWithText(OTHER_SCREEN).assertIsDisplayed()
       runOnIdle { stack.pop() }
 

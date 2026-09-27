@@ -1,5 +1,6 @@
 package aktual.core.nav
 
+import aktual.budget.model.DashboardPageId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
@@ -25,7 +26,7 @@ class ReportNavigator(private val stack: NavStack<BudgetNavKey>) {
 
 @Immutable
 class CreateReportNavigator(private val stack: NavStack<BudgetNavKey>) {
-  operator fun invoke() = stack.push(CreateReportNavRoute)
+  operator fun invoke(page: DashboardPageId) = stack.push(CreateReportNavRoute(page))
 }
 
 @Immutable
