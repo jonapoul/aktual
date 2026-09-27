@@ -1,6 +1,7 @@
 package aktual.budget.reports.ui.dashboard
 
 import aktual.budget.model.DashboardPageId
+import aktual.budget.model.WidgetId
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.vm.ChartData
@@ -42,10 +43,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -199,6 +202,9 @@ private fun ContentList(
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
+  // Only one card can be swiped open at a time
+  var openItemId by remember { mutableStateOf<WidgetId?>(null) }
+
   LazyColumn(
     modifier = modifier.scrollbar(listState).padding(4.dp),
     state = listState,
@@ -210,6 +216,15 @@ private fun ContentList(
         modifier = Modifier.animateItem(),
         item = item,
         observer = observer,
+        isOpen = openItemId == item.id,
+        onOpenChange = { open ->
+          openItemId =
+            when {
+              open -> item.id
+              openItemId == item.id -> null
+              else -> openItemId
+            }
+        },
         onAction = onAction,
       )
     }
