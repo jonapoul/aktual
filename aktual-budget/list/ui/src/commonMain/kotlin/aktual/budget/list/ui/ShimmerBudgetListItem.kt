@@ -96,6 +96,8 @@ private fun PreviewShimmerVsReal() =
       BudgetListItem(
         modifier = Modifier.weight(1f),
         budget = PreviewBudgetSynced,
+        isOpen = false,
+        onOpenChange = {},
         onClickOpen = {},
         onClickDelete = {},
       )
