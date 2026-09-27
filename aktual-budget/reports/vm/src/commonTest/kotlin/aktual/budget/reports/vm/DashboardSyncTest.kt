@@ -1,6 +1,7 @@
 package aktual.budget.reports.vm
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.Dashboard
 import aktual.budget.db.Dashboard_pages
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.db.dao.DatabaseTables.CUSTOM_REPORTS
@@ -15,6 +16,7 @@ import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.extracting
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
@@ -92,7 +94,8 @@ class DashboardSyncTest {
   fun `Insert a page`() = runSyncTest { dao ->
     insertPage(PAGE_3, "Three")
 
-    assertThat(dao.observePages().first().map { row -> row.id })
+    assertThat(dao.observePages().first())
+      .extracting(Dashboard_pages::id)
       .containsExactly(PAGE_1, PAGE_2, PAGE_3)
   }
 
@@ -100,7 +103,9 @@ class DashboardSyncTest {
   fun `Rename a page`() = runSyncTest { dao ->
     renamePage(PAGE_1, "New")
 
-    assertThat(dao.observePages().first().map { row -> row.name }).containsExactly("New", "Two")
+    assertThat(dao.observePages().first())
+      .extracting(Dashboard_pages::name)
+      .containsExactly("New", "Two")
   }
 
   @Test
@@ -110,9 +115,10 @@ class DashboardSyncTest {
 
     assertThat(deletePage(PAGE_1)).isTrue()
 
-    assertThat(dao.observePages().first().map { row -> row.id }).containsExactly(PAGE_2)
+    assertThat(dao.observePages().first()).extracting(Dashboard_pages::id).containsExactly(PAGE_2)
     assertThat(dao.observeByPage(PAGE_1).first()).isEmpty()
-    assertThat(dao.observeByPage(PAGE_2).first().map { row -> row.id })
+    assertThat(dao.observeByPage(PAGE_2).first())
+      .extracting(Dashboard::id)
       .containsExactly(WidgetId("b"))
   }
 
@@ -121,7 +127,7 @@ class DashboardSyncTest {
     assertThat(deletePage(PAGE_1)).isTrue()
     assertThat(deletePage(PAGE_2)).isFalse()
 
-    assertThat(dao.observePages().first().map { row -> row.id }).containsExactly(PAGE_2)
+    assertThat(dao.observePages().first()).extracting(Dashboard_pages::id).containsExactly(PAGE_2)
   }
 
   private fun json(string: String): JsonObject = Json.decodeFromString(string)

@@ -1,6 +1,8 @@
 package aktual.budget.db.dao
 
+import aktual.budget.db.Dashboard
 import aktual.budget.db.Dashboard_pages
+import aktual.budget.db.GetPositionAndSize
 import aktual.budget.db.withoutResult
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
@@ -8,6 +10,7 @@ import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import kotlin.test.Test
@@ -24,15 +27,20 @@ internal class DashboardDaoTest {
     insert(WidgetId("b"), page = PAGE_2, type = CashFlow, x = 0, y = 0, meta = null)
     insert(WidgetId("c"), page = PAGE_1, type = AgeOfMoney, x = 4, y = 0, meta = null)
 
-    assertThat(observeByPage(PAGE_1).first().map { row -> row.id })
+    assertThat(observeByPage(PAGE_1).first())
+      .extracting(Dashboard::id)
       .containsExactly(WidgetId("c"), WidgetId("a"))
-    assertThat(observeByPage(PAGE_2).first().map { row -> row.id }).containsExactly(WidgetId("b"))
-    assertThat(getPositionAndSize(PAGE_2).map { row -> row.x }).containsExactly(0L)
+    assertThat(observeByPage(PAGE_2).first())
+      .extracting(Dashboard::id)
+      .containsExactly(WidgetId("b"))
+    assertThat(getPositionAndSize(PAGE_2)).extracting(GetPositionAndSize::x).containsExactly(0L)
   }
 
   @Test
   fun `Observe pages without tombstones`() = runDaoTest {
-    assertThat(observePages().first().map { row -> row.id }).containsExactly(PAGE_1, PAGE_2)
+    assertThat(observePages().first())
+      .extracting(Dashboard_pages::id)
+      .containsExactly(PAGE_1, PAGE_2)
   }
 
   @Test
