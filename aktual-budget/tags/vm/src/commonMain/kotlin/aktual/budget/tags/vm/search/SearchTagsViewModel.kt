@@ -61,15 +61,17 @@ internal constructor(
     // Tags matching by name come before those only matching by description
     val matching =
       tags
-        .filter {
-          it.tag.contains(trimmed, ignoreCase = true) ||
-            it.description.contains(trimmed, ignoreCase = true)
+        .asSequence()
+        .filter { item ->
+          item.tag.contains(trimmed, ignoreCase = true) ||
+            item.description.contains(trimmed, ignoreCase = true)
         }
         .sortedWith(
           compareBy<TagItem> { !it.tag.contains(trimmed, ignoreCase = true) }
             .thenBy { it.tag.lowercase() }
         )
         .map { it.copy(description = snippet(it.description, trimmed, lead = DESCRIPTION_LEAD)) }
+        .toList()
 
     return if (matching.isEmpty()) {
       NoResults
