@@ -56,8 +56,7 @@ internal fun DashboardSelector(
   Box(modifier = modifier) {
     Row(
       modifier =
-        Modifier
-          .background(colors.pillBackgroundLight, CardShape)
+        Modifier.background(colors.pillBackgroundLight, CardShape)
           .clickable { expanded = true }
           .padding(horizontal = 8.dp, vertical = 4.dp),
       verticalAlignment = CenterVertically,

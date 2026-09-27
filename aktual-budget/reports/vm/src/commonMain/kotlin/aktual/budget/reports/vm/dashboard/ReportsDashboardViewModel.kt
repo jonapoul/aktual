@@ -45,7 +45,7 @@ import logcat.logcat
 class ReportsDashboardViewModel
 internal constructor(
   private val chartDataLoader: ChartDataLoader,
-  private val dashboardDao: DashboardDao,
+  dashboardDao: DashboardDao,
   private val sync: DashboardSync,
   private val pages: DashboardPages,
   decoder: DashboardItemDecoder,

@@ -114,9 +114,7 @@ class SyncDao(
     }
 
     // applyToTable writes raw SQL, which doesn't notify SQLDelight's query flows by itself
-    if (affectedTables.isNotEmpty()) {
-      driver.notifyListeners(*affectedTables.toTypedArray())
-    }
+    affectedTables.forEach(driver::notifyListeners)
 
     return ApplyResult(merkle = merkle, affectedTables = affectedTables)
   }
