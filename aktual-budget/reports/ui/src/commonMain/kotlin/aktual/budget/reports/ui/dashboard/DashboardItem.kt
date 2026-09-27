@@ -14,6 +14,8 @@ import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
@@ -30,6 +32,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,6 +74,7 @@ private fun DashboardItem(
 ) {
   var showContextMenu by remember { mutableStateOf(false) }
   var showRenameDialog by remember { mutableStateOf(false) }
+  var showDeleteDialog by remember { mutableStateOf(false) }
 
   Box(
     modifier =
@@ -78,9 +82,9 @@ private fun DashboardItem(
         .fillMaxWidth()
         .wrapContentHeight()
         .background(colors.tableBackground, CardShape)
+        // Long press still works while loading, so a chart that never loads can be deleted
         .combinedClickable(
-          enabled = chartData != null,
-          onClick = { onAction(Action.OpenItem(item.id)) },
+          onClick = { if (chartData != null) onAction(Action.OpenItem(item.id)) },
           onLongClick = { showContextMenu = true },
         )
   ) {
@@ -89,7 +93,7 @@ private fun DashboardItem(
       expanded = showContextMenu,
       onDismiss = { showContextMenu = false },
       onRename = { showRenameDialog = true },
-      onAction = onAction,
+      onDelete = { showDeleteDialog = true },
     )
 
     if (chartData != null) {
@@ -117,6 +121,19 @@ private fun DashboardItem(
       onDismiss = { showRenameDialog = false },
     )
   }
+
+  if (showDeleteDialog) {
+    AktualAlertDialog(onDismissRequest = { showDeleteDialog = false }) {
+      DeleteReportDialogContent(
+        name = item.name,
+        onConfirm = {
+          showDeleteDialog = false
+          onAction(Action.Delete(item.id))
+        },
+        onDismiss = { showDeleteDialog = false },
+      )
+    }
+  }
 }
 
 private val ChartHeight = 200.dp
@@ -134,7 +151,7 @@ private fun ReportDropDownMenu(
   expanded: Boolean,
   onDismiss: () -> Unit,
   onRename: () -> Unit,
-  onAction: ActionListener,
+  onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   AktualDropdownMenu(modifier = modifier, expanded = expanded, onDismissRequest = onDismiss) {
@@ -148,16 +165,36 @@ private fun ReportDropDownMenu(
         },
       )
     }
+    val deleteText = Strings.reportsDashboardDelete
     AktualDropdownMenuItem(
-      text = { Text(Strings.reportsDashboardDelete) },
-      leadingIcon = { Icon(MaterialIcons.Delete, Strings.reportsDashboardDelete) },
+      text = { Text(deleteText, color = colors.errorText) },
+      leadingIcon = { Icon(MaterialIcons.Delete, deleteText, tint = colors.errorText) },
       onClick = {
         onDismiss()
-        onAction(Action.Delete(item.id))
+        onDelete()
       },
     )
   }
 }
+
+@Composable
+private fun DeleteReportDialogContent(name: String?, onConfirm: () -> Unit, onDismiss: () -> Unit) =
+  AktualAlertDialogContent(
+    title =
+      if (name.isNullOrBlank()) {
+        Strings.reportsDashboardDeleteReportUntitled
+      } else {
+        Strings.reportsDashboardDeleteReportTitle(name)
+      },
+    titleColor = colors.errorText,
+    buttons = {
+      TextButton(onClick = onDismiss) { Text(Strings.reportsDashboardDeleteReportCancel) }
+      TextButton(onClick = onConfirm) {
+        Text(Strings.reportsDashboardDeleteReportConfirm, color = colors.errorText)
+      }
+    },
+    content = {},
+  )
 
 @Preview
 @Composable
@@ -171,6 +208,17 @@ private fun PreviewReportDashboardItem(
       onAction = {},
     )
   }
+
+@Preview
+@Composable
+private fun PreviewDeleteReportDialog(
+  @PreviewParameter(DeleteReportDialogProvider::class) params: ColoredParams<String?>
+) =
+  PreviewWithColoredParams(params) {
+    DeleteReportDialogContent(name = params.data, onConfirm = {}, onDismiss = {})
+  }
+
+private class DeleteReportDialogProvider : ColoredParameterProvider<String?>("Net worth", null)
 
 private data class DashboardItemParams(val item: DashboardItem, val chartData: ChartData?)
 

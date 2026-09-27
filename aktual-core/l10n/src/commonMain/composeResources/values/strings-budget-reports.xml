@@ -17,6 +17,10 @@
   <string name="reports_dashboard_name_create">Create</string>
   <string name="reports_dashboard_name_save">Save</string>
   <string name="reports_dashboard_name_cancel">Cancel</string>
+  <string name="reports_dashboard_delete_report_title">Delete %1$s?</string>
+  <string name="reports_dashboard_delete_report_untitled">Delete this report?</string>
+  <string name="reports_dashboard_delete_report_confirm">Delete</string>
+  <string name="reports_dashboard_delete_report_cancel">Cancel</string>
   <string name="reports_dashboard_delete_page">Delete dashboard</string>
   <string name="reports_dashboard_delete_page_title">Delete %1$s?</string>
   <string name="reports_dashboard_delete_page_message">All reports on this dashboard will be deleted too.</string>
