@@ -129,5 +129,5 @@ private fun SearchReportsItem.matches(query: String): Boolean {
   val typeQuery = query.filterNot { it.isWhitespace() || it == '-' }
   return name?.contains(query, ignoreCase = true) == true ||
     content?.contains(query, ignoreCase = true) == true ||
-    (typeQuery.isNotEmpty() && type.name.contains(typeQuery, ignoreCase = true))
+    typeQuery.isNotEmpty() && type.name.contains(typeQuery, ignoreCase = true)
 }
