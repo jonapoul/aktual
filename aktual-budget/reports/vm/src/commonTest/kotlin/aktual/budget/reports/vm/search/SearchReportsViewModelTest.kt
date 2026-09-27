@@ -23,8 +23,11 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 
@@ -216,7 +219,10 @@ class SearchReportsViewModelTest {
         insert(Dashboard_pages(PAGE_1.id, PAGE_1.name, tombstone = false))
         insert(Dashboard_pages(PAGE_2.id, PAGE_2.name, tombstone = false))
       }
-      val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
+      val dispatcher = StandardTestDispatcher(scope.testScheduler)
+      // Keep viewModelScope on the test scheduler, so its queries can't outlive the database
+      Dispatchers.setMain(dispatcher)
+      val contexts = TestCoroutineContexts(dispatcher)
       val dao = DashboardDao(this, contexts)
       val sync = DashboardSync(dao, controller)
       val viewModel =
@@ -233,9 +239,13 @@ class SearchReportsViewModelTest {
             ),
           decoder = DashboardItemDecoder(),
         )
-      action(viewModel, sync)
-      // Let the VM's eager queries finish before the database closes
-      scope.advanceUntilIdle()
+      try {
+        action(viewModel, sync)
+        // Let the VM's eager queries finish before the database closes
+        scope.advanceUntilIdle()
+      } finally {
+        Dispatchers.resetMain()
+      }
     }
 
   private companion object {
