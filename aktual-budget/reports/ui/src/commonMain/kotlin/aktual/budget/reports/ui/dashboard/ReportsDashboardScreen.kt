@@ -148,7 +148,7 @@ private val PageListStatesSaver: Saver<MutableMap<String, LazyListState>, Any> =
     },
     restore = { saved ->
       saved.mapValuesTo(mutableMapOf()) { (_, value) ->
-        val (index, offset) = value as IntArray
+        val (index, offset) = value as? IntArray ?: return@mapValuesTo LazyListState()
         LazyListState(index, offset)
       }
     },
