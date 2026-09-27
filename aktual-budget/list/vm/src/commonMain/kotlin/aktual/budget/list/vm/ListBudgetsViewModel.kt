@@ -7,7 +7,9 @@ import aktual.budget.BudgetFiles
 import aktual.budget.list.vm.ListBudgetsState.Failure
 import aktual.budget.list.vm.ListBudgetsState.Loading
 import aktual.budget.list.vm.ListBudgetsState.Success
+import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
+import aktual.budget.model.directoryId
 import aktual.core.UrlOpener
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
@@ -89,12 +91,36 @@ class ListBudgetsViewModel(
     fetchState()
   }
 
-  fun onSyncComplete(id: BudgetId) {
+  fun openBudget(budget: Budget) {
+    logcat.d { "openBudget $budget" }
+    val id = budget.directoryId
     viewModelScope.launch {
-      appPreferences.lastOpenedBudgetId.set(id)
-      mutableEvent.emit(NavToBudget)
+      val metadata =
+        if (budget.canOpenLocally()) withContext(contexts.io) { files.readMetadata(id) } else null
+
+      if (metadata == null) {
+        mutableEvent.emit(ListBudgetsEvent.ShowSyncDialog(id))
+        return@launch
+      }
+
+      // Already downloaded, so open it straight away and fetch any changes since the last sync
+      runLevels.onBudget(metadata).syncController.schedule()
+      navToBudget(id)
     }
   }
+
+  fun onSyncComplete(id: BudgetId) {
+    viewModelScope.launch { navToBudget(id) }
+  }
+
+  private suspend fun navToBudget(id: BudgetId) {
+    appPreferences.lastOpenedBudgetId.set(id)
+    mutableEvent.emit(NavToBudget)
+  }
+
+  // Encrypted budgets without a stored key go through the full sync so the user gets asked for it
+  private fun Budget.canOpenLocally(): Boolean =
+    (this is Synced || this is Unknown) && (encryptKeyId == null || hasKey)
 
   fun clearDeletingState() = mutableDeletingState.update { DeletingState.Inactive }
 
