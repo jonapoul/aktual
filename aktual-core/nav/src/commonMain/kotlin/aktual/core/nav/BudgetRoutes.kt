@@ -8,8 +8,8 @@ import aktual.budget.model.WidgetId
 import kotlinx.serialization.Serializable
 
 // Routes with args must be data classes, not value classes. The nav stack is saved as JSON of the
-// sealed BudgetNavKey type, and a value class serializes as its bare value with no type discriminator,
-// so restoring it (e.g. after rotation) crashes
+// sealed BudgetNavKey type, and a value class serializes as its bare value with no type
+// discriminator, so restoring it (e.g. after rotation) crashes
 
 @Serializable data object TransactionsNavRoute : BudgetNavKey.Transactions
 

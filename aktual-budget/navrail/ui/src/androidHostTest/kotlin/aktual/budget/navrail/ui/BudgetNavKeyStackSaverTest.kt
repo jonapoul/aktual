@@ -22,8 +22,8 @@ import aktual.core.nav.SearchReportsNavRoute
 import aktual.core.nav.SearchTagsNavRoute
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.nav.TransactionsWithTagNavRoute
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.SaverScope
+import androidx.compose.runtime.toMutableStateList
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
@@ -51,7 +51,7 @@ class BudgetNavKeyStackSaverTest {
         EditTagNavRoute(TagId("tag")),
       )
     val saver = budgetNavKeyStackSaver()
-    val stack = NavStackImpl(appCloser = null, stack = mutableStateListOf(*keys.toTypedArray()))
+    val stack = NavStackImpl(appCloser = null, stack = keys.toMutableStateList())
 
     val saved = with(saver) { SaverScope { true }.save(stack) }
     val restored = saver.restore(requireNotNull(saved))
