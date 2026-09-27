@@ -8,12 +8,15 @@ import aktual.gradle.dsl.dependencies
 import aktual.gradle.dsl.desktopMainDependencies
 import aktual.gradle.dsl.invoke
 import aktual.gradle.dsl.kotlin
+import aktual.gradle.dsl.withType
 import blueprint.core.get
 import blueprint.core.libs
 import blueprint.core.withAnyId
 import com.android.build.api.dsl.CommonExtension
 import com.skydoves.compose.stability.gradle.StabilityAnalyzerExtension
 import com.skydoves.compose.stability.gradle.StabilityAnalyzerGradlePlugin
+import com.skydoves.compose.stability.gradle.StabilityCheckTask
+import com.skydoves.compose.stability.gradle.StabilityDumpTask
 import org.gradle.api.Project
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ComposePlugin
@@ -21,6 +24,7 @@ import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradleSubplugin
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class ConventionCompose : ProjectPlugin {
   override fun Project.applyTo() {
@@ -74,7 +78,21 @@ class ConventionCompose : ProjectPlugin {
 
     extensions.configure(StabilityAnalyzerExtension::class) {
       stabilityConfigurationFiles.add(stabilityFile)
-      stabilityValidation.enabled.set(false)
+
+      stabilityValidation { v ->
+        v.enabled.set(false)
+        v.ignoreNonRegressiveChanges.set(true)
+        v.unstableOnly.set(true)
+        v.quietCheck.set(true)
+        v.allowMissingBaseline.set(true)
+        v.ignoredPackages.add("aktual.core.l10n")
+      }
+
+      // The plugin only wires up compile tasks with "Kotlin" in the name, which misses
+      // compileAndroidMain
+      val kotlinCompile = tasks.withType(KotlinCompile::class)
+      tasks.withType(StabilityDumpTask::class).configureEach { it.dependsOn(kotlinCompile) }
+      tasks.withType(StabilityCheckTask::class).configureEach { it.dependsOn(kotlinCompile) }
 
       traceAll { t ->
         t.enabled.set(true)
