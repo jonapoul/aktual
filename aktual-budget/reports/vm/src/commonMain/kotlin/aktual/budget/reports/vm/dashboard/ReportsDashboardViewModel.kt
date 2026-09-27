@@ -55,16 +55,19 @@ internal constructor(
       .map { it.toImmutableList() }
       .stateIn(viewModelScope, Eagerly, initialValue = persistentListOf())
 
-  val selectedPage: StateFlow<DashboardPage?> =
-    pages.selected.stateIn(viewModelScope, Eagerly, initialValue = null)
-
-  val items: StateFlow<ImmutableList<DashboardItem>> =
+  // Page and items change together, so the UI never shows one page's items under another's state
+  val content: StateFlow<DashboardContent> =
     pages.selected
       .flatMapLatest { page ->
-        if (page == null) flowOf(emptyList()) else dashboardDao.observeByPage(page.id)
+        if (page == null) {
+          flowOf(DashboardContent(page = null, items = persistentListOf()))
+        } else {
+          dashboardDao.observeByPage(page.id).map { widgets ->
+            DashboardContent(page, widgets.mapNotNull(decoder::decode).toImmutableList())
+          }
+        }
       }
-      .map { widgets -> widgets.mapNotNull(decoder::decode).toImmutableList() }
-      .stateIn(viewModelScope, Eagerly, initialValue = persistentListOf())
+      .stateIn(viewModelScope, Eagerly, initialValue = DashboardContent(null, persistentListOf()))
 
   fun selectPage(id: DashboardPageId) = pages.select(id)
 

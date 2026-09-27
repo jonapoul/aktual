@@ -42,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -59,14 +60,13 @@ fun ReportsDashboardScreen(
   toCreateReport: CreateReportNavigator,
   viewModel: ReportsDashboardViewModel = metroViewModel(),
 ) {
-  val items by viewModel.items.collectAsStateWithLifecycle()
   val pages by viewModel.allPages.collectAsStateWithLifecycle()
-  val selectedPage by viewModel.selectedPage.collectAsStateWithLifecycle()
+  val content by viewModel.content.collectAsStateWithLifecycle()
 
   ReportsDashboardScaffold(
     pages = pages,
-    selectedPage = selectedPage,
-    items = items,
+    selectedPage = content.page,
+    items = content.items,
     observer = viewModel::observeChartData,
     onAction = { action ->
       when (action) {
@@ -78,7 +78,7 @@ fun ReportsDashboardScreen(
         is SetAllTimeDivisor -> TODO()
         is ClickCalendarDay -> TODO()
         is SaveTextContent -> TODO()
-        CreateNewReport -> selectedPage?.let { page -> toCreateReport(page.id) }
+        CreateNewReport -> content.page?.let { page -> toCreateReport(page.id) }
         is SelectPage -> viewModel.selectPage(action.id)
       }
     },
@@ -87,6 +87,21 @@ fun ReportsDashboardScreen(
 
 @Composable
 internal fun ReportsDashboardScaffold(
+  pages: ImmutableList<DashboardPage>,
+  selectedPage: DashboardPage?,
+  items: ImmutableList<DashboardItem>,
+  observer: DashboardItemObserver,
+  onAction: ActionListener,
+) {
+  // Separate scroll state for each page
+  val stateHolder = rememberSaveableStateHolder()
+  stateHolder.SaveableStateProvider(key = selectedPage?.id?.value.orEmpty()) {
+    ReportsDashboardPage(pages, selectedPage, items, observer, onAction)
+  }
+}
+
+@Composable
+private fun ReportsDashboardPage(
   pages: ImmutableList<DashboardPage>,
   selectedPage: DashboardPage?,
   items: ImmutableList<DashboardItem>,
