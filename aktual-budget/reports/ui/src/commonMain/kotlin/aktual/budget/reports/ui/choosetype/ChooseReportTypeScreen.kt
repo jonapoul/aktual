@@ -1,5 +1,6 @@
 package aktual.budget.reports.ui.choosetype
 
+import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetType
 import aktual.budget.reports.ui.charts.JUL_2025
 import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
@@ -64,15 +65,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.zacsweers.metrox.viewmodel.metroViewModel
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ChooseReportTypeScreen(
+  page: DashboardPageId,
   @Suppress("unused") back: BackNavigator,
   toReport: ReportNavigator,
-  viewModel: ChooseReportTypeViewModel = metroViewModel(),
+  viewModel: ChooseReportTypeViewModel = chooseReportTypeViewModel(page),
 ) {
   LaunchedEffect(Unit) {
     viewModel.shouldNavigateEvent.collectLatest { event -> toReport(event.id) }
@@ -91,6 +93,13 @@ fun ChooseReportTypeScreen(
     },
   )
 }
+
+@Composable
+private fun chooseReportTypeViewModel(page: DashboardPageId) =
+  assistedMetroViewModel<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory>(
+    key = page.value,
+    createViewModel = { create(page) },
+  )
 
 @Composable
 internal fun ChooseReportTypeScaffold(

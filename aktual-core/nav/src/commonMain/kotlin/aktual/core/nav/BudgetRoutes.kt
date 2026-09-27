@@ -1,5 +1,6 @@
 package aktual.core.nav
 
+import aktual.budget.model.DashboardPageId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
@@ -21,7 +22,10 @@ value class TransactionsWithTagNavRoute(val id: TagId) : BudgetNavKey.Transactio
 @Serializable
 value class ReportNavRoute(val id: WidgetId) : BudgetNavKey.Reports
 
-@Immutable @Serializable data object CreateReportNavRoute : BudgetNavKey.Reports
+@JvmInline
+@Immutable
+@Serializable
+value class CreateReportNavRoute(val page: DashboardPageId) : BudgetNavKey.Reports
 
 @Immutable @Serializable data object ListRulesNavRoute : BudgetNavKey.Rules
 

@@ -1,5 +1,6 @@
 package aktual.budget.reports.ui
 
+import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.CalendarDay
 import aktual.budget.reports.vm.SummaryChartType
@@ -26,6 +27,8 @@ internal sealed interface Action {
   data class SaveTextContent(val data: TextData, val newContent: String) : Action
 
   data object CreateNewReport : Action
+
+  @JvmInline value class SelectPage(val id: DashboardPageId) : Action
 }
 
 @Immutable

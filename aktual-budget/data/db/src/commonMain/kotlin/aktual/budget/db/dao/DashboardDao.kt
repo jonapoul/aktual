@@ -2,9 +2,11 @@ package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Dashboard
+import aktual.budget.db.Dashboard_pages
 import aktual.budget.db.GetPositionAndSize
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
+import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import alakazam.kotlin.CoroutineContexts
@@ -22,9 +24,11 @@ import kotlinx.serialization.json.JsonPrimitive
 @Inject
 class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
   private val queries = database.dashboardQueries
+  private val pageQueries = database.dashboardPagesQueries
 
   suspend fun insert(
     id: WidgetId,
+    page: DashboardPageId,
     type: WidgetType,
     x: Long,
     y: Long,
@@ -32,20 +36,33 @@ class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineCont
     width: Long = DEFAULT_WIDTH,
     height: Long = DEFAULT_HEIGHT,
   ) = queries.withoutResult {
-    insert(id = id, type = type, width = width, height = height, x = x, y = y, meta = meta)
+    insert(
+      id = id,
+      type = type,
+      width = width,
+      height = height,
+      x = x,
+      y = y,
+      meta = meta,
+      dashboard_page_id = page,
+    )
   }
 
-  fun observeAll(): Flow<List<Dashboard>> =
-    queries.getAll().asFlow().mapToList(contexts.default).distinctUntilChanged()
+  fun observePages(): Flow<List<Dashboard_pages>> =
+    pageQueries.getAll().asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  fun observeByPage(page: DashboardPageId): Flow<List<Dashboard>> =
+    queries.getByPage(page).asFlow().mapToList(contexts.default).distinctUntilChanged()
 
   fun observeById(id: WidgetId): Flow<Dashboard?> =
     queries.getById(id).asFlow().mapToOneOrNull(contexts.default).distinctUntilChanged()
 
   suspend fun deleteById(id: WidgetId): Long = queries.withResult { delete(id) }
 
-  suspend fun getPositionAndSize(): List<GetPositionAndSize> = queries.withResult {
-    getPositionAndSize().awaitAsList()
-  }
+  suspend fun getPositionAndSize(page: DashboardPageId): List<GetPositionAndSize> =
+    queries.withResult {
+      getPositionAndSize(page).awaitAsList()
+    }
 
   // Patches the stored json rather than re-encoding our model, so values we don't recognise are
   // kept

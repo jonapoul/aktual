@@ -1,9 +1,11 @@
 package aktual.budget.reports.ui.dashboard
 
+import aktual.budget.model.DashboardPageId
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.dashboard.DashboardItem
+import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
@@ -32,7 +34,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -40,6 +41,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.mapSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -57,10 +62,13 @@ fun ReportsDashboardScreen(
   toCreateReport: CreateReportNavigator,
   viewModel: ReportsDashboardViewModel = metroViewModel(),
 ) {
-  val items by viewModel.items.collectAsStateWithLifecycle()
+  val pages by viewModel.allPages.collectAsStateWithLifecycle()
+  val content by viewModel.content.collectAsStateWithLifecycle()
 
   ReportsDashboardScaffold(
-    items = items,
+    pages = pages,
+    selectedPage = content.page,
+    items = content.items,
     observer = viewModel::observeChartData,
     onAction = { action ->
       when (action) {
@@ -72,7 +80,8 @@ fun ReportsDashboardScreen(
         is SetAllTimeDivisor -> TODO()
         is ClickCalendarDay -> TODO()
         is SaveTextContent -> TODO()
-        CreateNewReport -> toCreateReport()
+        CreateNewReport -> content.page?.let { page -> toCreateReport(page.id) }
+        is SelectPage -> viewModel.selectPage(action.id)
       }
     },
   )
@@ -80,12 +89,14 @@ fun ReportsDashboardScreen(
 
 @Composable
 internal fun ReportsDashboardScaffold(
+  pages: ImmutableList<DashboardPage>,
+  selectedPage: DashboardPage?,
   items: ImmutableList<DashboardItem>,
   observer: DashboardItemObserver,
   onAction: ActionListener,
 ) {
   val hazeState = rememberHazedTopBarState()
-  val listState = rememberLazyListState()
+  val listState = rememberPageListState(selectedPage?.id)
 
   Scaffold(
     modifier = Modifier.fillMaxSize(),
@@ -94,7 +105,7 @@ internal fun ReportsDashboardScaffold(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavDrawerIconButton() },
-        title = { Text(Strings.reportsDashboardTitle) },
+        title = { DashboardSelector(pages, selectedPage, onAction) },
         actions = {
           IconButton(onClick = { onAction(CreateNewReport) }) {
             Icon(
@@ -119,6 +130,29 @@ internal fun ReportsDashboardScaffold(
     }
   }
 }
+
+// Not SaveableStateProvider: its ReusableContent recycles the top bar's dropdown popup between
+// pages and leaks it
+@Composable
+private fun rememberPageListState(page: DashboardPageId?): LazyListState {
+  val states = rememberSaveable(saver = PageListStatesSaver) { mutableMapOf() }
+  return remember(page) { states.getOrPut(page?.value.orEmpty()) { LazyListState() } }
+}
+
+private val PageListStatesSaver: Saver<MutableMap<String, LazyListState>, Any> =
+  mapSaver(
+    save = { states ->
+      states.mapValues { (_, state) ->
+        intArrayOf(state.firstVisibleItemIndex, state.firstVisibleItemScrollOffset)
+      }
+    },
+    restore = { saved ->
+      saved.mapValuesTo(mutableMapOf()) { (_, value) ->
+        val (index, offset) = value as? IntArray ?: return@mapValuesTo LazyListState()
+        LazyListState(index, offset)
+      }
+    },
+  )
 
 @Composable
 private fun ReportsDashboardContent(
@@ -185,6 +219,8 @@ private fun PreviewReportsDashboardScaffold(
 ) =
   PreviewWithColoredParams(params) {
     ReportsDashboardScaffold(
+      pages = pages,
+      selectedPage = pages.firstOrNull(),
       items = items,
       observer = { if (chartData == null) flowOf() else flowOf(chartData) },
       onAction = {},
@@ -192,6 +228,7 @@ private fun PreviewReportsDashboardScaffold(
   }
 
 private data class ReportsDashboardScaffoldParams(
+  val pages: ImmutableList<DashboardPage>,
   val items: ImmutableList<DashboardItem>,
   val chartData: ChartData?,
 )
@@ -199,6 +236,11 @@ private data class ReportsDashboardScaffoldParams(
 private class ReportsDashboardScaffoldProvider :
   ColoredParameterProvider<ReportsDashboardScaffoldParams>(
     ReportsDashboardScaffoldParams(
+      pages =
+        persistentListOf(
+          DashboardPage(DashboardPageId("a"), "Main"),
+          DashboardPage(DashboardPageId("b"), "Savings"),
+        ),
       items =
         persistentListOf(
           PREVIEW_DASHBOARD_ITEM_1,
@@ -207,5 +249,9 @@ private class ReportsDashboardScaffoldProvider :
         ),
       chartData = PREVIEW_CASH_FLOW_DATA,
     ),
-    ReportsDashboardScaffoldParams(items = persistentListOf(), chartData = null),
+    ReportsDashboardScaffoldParams(
+      pages = persistentListOf(),
+      items = persistentListOf(),
+      chartData = null,
+    ),
   )

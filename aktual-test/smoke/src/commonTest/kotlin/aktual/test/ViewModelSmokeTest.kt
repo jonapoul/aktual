@@ -6,8 +6,6 @@ import aktual.account.vm.ChangePasswordViewModel
 import aktual.account.vm.LoginViewModel
 import aktual.account.vm.ServerUrlViewModel
 import aktual.budget.list.vm.ListBudgetsViewModel
-import aktual.budget.model.RuleId
-import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.budget.reports.vm.report.ReportViewModel
@@ -117,8 +115,6 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test fun reportDashboard() = testVm<ReportsDashboardViewModel>()
 
-  @Test fun reportList() = testVm<ChooseReportTypeViewModel>()
-
   @Test fun settings() = testVm<SettingsViewModel>()
 
   @Test fun themeSettings() = testVm<ThemeSettingsViewModel>()
@@ -126,8 +122,13 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun url() = testVm<ServerUrlViewModel>()
 
   @Test
-  fun report() =
-    testAssistedVM<ReportViewModel, ReportViewModel.Factory> { create(WidgetId("widget")) }
+  fun reportList() =
+    testAssistedVM<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory> {
+      create(DASHBOARD_PAGE_ID)
+    }
+
+  @Test
+  fun report() = testAssistedVM<ReportViewModel, ReportViewModel.Factory> { create(WIDGET_ID) }
 
   @Test fun editTag() = testAssistedVM<EditTagViewModel, EditTagViewModel.Factory> { create(null) }
 
@@ -146,8 +147,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
     testAssistedVM<InspectThemeViewModel, InspectThemeViewModel.Factory> { create(DarkColors.id) }
 
   @Test
-  fun editRule() =
-    testAssistedVM<EditRuleViewModel, EditRuleViewModel.Factory> { create(RuleId("abc-123")) }
+  fun editRule() = testAssistedVM<EditRuleViewModel, EditRuleViewModel.Factory> { create(RULE_ID) }
 
   protected inline fun <reified VM : ViewModel> testVm() = runTest {
     val viewModelFactory = appGraph.runLevelState.viewModelFactory().first()

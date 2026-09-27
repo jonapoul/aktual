@@ -32,8 +32,12 @@ class ReportsNavEntryContributor : BudgetNavEntryContributor {
       ReportScreen(id = route.id, back = BackNavigator(stack))
     }
 
-    budgetEntry<CreateReportNavRoute> {
-      ChooseReportTypeScreen(back = BackNavigator(stack), toReport = ReportNavigator(stack))
+    budgetEntry<CreateReportNavRoute> { route ->
+      ChooseReportTypeScreen(
+        page = route.page,
+        back = BackNavigator(stack),
+        toReport = ReportNavigator(stack),
+      )
     }
   }
 }

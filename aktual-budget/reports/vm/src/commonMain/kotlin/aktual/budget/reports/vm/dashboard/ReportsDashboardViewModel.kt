@@ -2,6 +2,7 @@ package aktual.budget.reports.vm.dashboard
 
 import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
+import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.BalanceForecastReportMeta
@@ -31,9 +32,12 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -43,15 +47,32 @@ internal constructor(
   private val chartDataLoader: ChartDataLoader,
   private val dashboardDao: DashboardDao,
   private val customReportsDao: CustomReportsDao,
+  private val pages: DashboardPages,
   decoder: DashboardItemDecoder,
 ) : ViewModel() {
-  val items: StateFlow<ImmutableList<DashboardItem>> =
-    dashboardDao
-      .observeAll()
-      .map { widgets -> widgets.mapNotNull(decoder::decode).toImmutableList() }
+  val allPages: StateFlow<ImmutableList<DashboardPage>> =
+    pages.all
+      .map { it.toImmutableList() }
       .stateIn(viewModelScope, Eagerly, initialValue = persistentListOf())
 
+  // Page and items change together, so the UI never shows one page's items under another's state
+  val content: StateFlow<DashboardContent> =
+    pages.selected
+      .flatMapLatest { page ->
+        if (page == null) {
+          flowOf(DashboardContent(page = null, items = persistentListOf()))
+        } else {
+          dashboardDao.observeByPage(page.id).map { widgets ->
+            DashboardContent(page, widgets.mapNotNull(decoder::decode).toImmutableList())
+          }
+        }
+      }
+      .stateIn(viewModelScope, Eagerly, initialValue = DashboardContent(null, persistentListOf()))
+
+  fun selectPage(id: DashboardPageId) = pages.select(id)
+
   fun renameReport(item: DashboardItem, name: String) {
+    logcat.d { "Renaming report ${item.id} to $name" }
     viewModelScope.launch {
       when (val meta = item.meta) {
         is AgeOfMoneyReportMeta,
@@ -69,7 +90,7 @@ internal constructor(
 
         // Not nameable
         is MarkdownReportMeta,
-        is UnsupportedReportMeta -> Unit
+        is UnsupportedReportMeta -> logcat.w { "Can't rename ${item.id}: $meta" }
 
         // Named, but it's stored in a separate table
         is CustomReportMeta -> customReportsDao.rename(meta.id, name)
@@ -78,6 +99,7 @@ internal constructor(
   }
 
   fun deleteReport(id: WidgetId) {
+    logcat.d { "Deleting report $id" }
     viewModelScope.launch { dashboardDao.deleteById(id) }
   }
 

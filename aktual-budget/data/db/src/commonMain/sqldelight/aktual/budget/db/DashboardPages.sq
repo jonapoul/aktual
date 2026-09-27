@@ -13,5 +13,8 @@ insert:
 delete:
   DELETE FROM dashboard_pages WHERE id = ?;
 
+getAll:
+  SELECT * FROM dashboard_pages WHERE tombstone = 0 ORDER BY rowid;
+
 getById:
   SELECT * FROM dashboard_pages WHERE id = ?;
