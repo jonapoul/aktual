@@ -8,6 +8,8 @@ import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.dashboard.DashboardItem
+import aktual.budget.reports.vm.dashboard.isRenamable
+import aktual.budget.reports.vm.dashboard.name
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
@@ -68,6 +70,7 @@ private fun DashboardItem(
   modifier: Modifier = Modifier,
 ) {
   var showContextMenu by remember { mutableStateOf(false) }
+  var showRenameDialog by remember { mutableStateOf(false) }
 
   Box(
     modifier =
@@ -85,6 +88,7 @@ private fun DashboardItem(
       item = item,
       expanded = showContextMenu,
       onDismiss = { showContextMenu = false },
+      onRename = { showRenameDialog = true },
       onAction = onAction,
     )
 
@@ -98,6 +102,20 @@ private fun DashboardItem(
     } else {
       LoadingChart(modifier = Modifier.fillMaxWidth().height(ChartHeight + ChartPadding * 2))
     }
+  }
+
+  if (showRenameDialog) {
+    NameDialog(
+      title = Strings.reportsDashboardRenameReport,
+      placeholder = Strings.reportsDashboardReportName,
+      confirmText = Strings.reportsDashboardNameSave,
+      initialName = item.name.orEmpty(),
+      onConfirm = { name ->
+        showRenameDialog = false
+        onAction(Action.Rename(item, name))
+      },
+      onDismiss = { showRenameDialog = false },
+    )
   }
 }
 
@@ -115,18 +133,21 @@ private fun ReportDropDownMenu(
   item: DashboardItem,
   expanded: Boolean,
   onDismiss: () -> Unit,
+  onRename: () -> Unit,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
   AktualDropdownMenu(modifier = modifier, expanded = expanded, onDismissRequest = onDismiss) {
-    AktualDropdownMenuItem(
-      text = { Text(Strings.reportsDashboardRename) },
-      leadingIcon = { Icon(MaterialIcons.Edit, Strings.reportsDashboardRename) },
-      onClick = {
-        onDismiss()
-        onAction(Action.Rename(item, name = "TODO: rename"))
-      },
-    )
+    if (item.isRenamable) {
+      AktualDropdownMenuItem(
+        text = { Text(Strings.reportsDashboardRename) },
+        leadingIcon = { Icon(MaterialIcons.Edit, Strings.reportsDashboardRename) },
+        onClick = {
+          onDismiss()
+          onRename()
+        },
+      )
+    }
     AktualDropdownMenuItem(
       text = { Text(Strings.reportsDashboardDelete) },
       leadingIcon = { Icon(MaterialIcons.Delete, Strings.reportsDashboardDelete) },

@@ -4,6 +4,7 @@ import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
+import aktual.budget.reports.vm.DashboardSync
 import aktual.core.UuidGenerator
 import aktual.core.model.Empty
 import aktual.di.BudgetScope
@@ -30,10 +31,12 @@ import logcat.logcat
 
 @Stable
 @AssistedInject
-class ChooseReportTypeViewModel(
+class ChooseReportTypeViewModel
+internal constructor(
   @Assisted private val page: DashboardPageId,
   private val uuidGenerator: UuidGenerator,
   private val dashboardDao: DashboardDao,
+  private val sync: DashboardSync,
 ) : ViewModel() {
   private var job: Job? = null
   private val shouldNavigateChannel = Channel<ShouldNavigateEvent>()
@@ -65,7 +68,7 @@ class ChooseReportTypeViewModel(
       val widgetId = uuidGenerator(::WidgetId)
       val (x, y) = newWidgetPosition()
       logcat.d { "Creating $type report $widgetId on page $page at ($x, $y)" }
-      dashboardDao.insert(widgetId, page, type, x, y, buildEmptyMetadata(type))
+      sync.insertWidget(widgetId, page, type, x, y, buildEmptyMetadata(type))
       shouldNavigateChannel.send(ShouldNavigateEvent(widgetId))
     }
   }

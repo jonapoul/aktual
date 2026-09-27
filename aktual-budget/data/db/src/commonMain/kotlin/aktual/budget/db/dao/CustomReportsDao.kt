@@ -40,8 +40,4 @@ class CustomReportsDao(database: BudgetDatabase, private val contexts: Coroutine
   }
 
   suspend fun deleteById(id: CustomReportId): Long = queries.withResult { delete(id) }
-
-  suspend fun rename(id: CustomReportId, name: String): Long = queries.withResult {
-    rename(name, id)
-  }
 }

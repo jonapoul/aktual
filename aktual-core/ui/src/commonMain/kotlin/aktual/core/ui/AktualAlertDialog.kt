@@ -4,6 +4,7 @@ package aktual.core.ui
 
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -120,11 +122,16 @@ fun AktualAlertDialogContent(
             modifier = Modifier.padding(vertical = Dimens.Large),
             text = title,
             color = titleColor,
+            style = typography.headlineSmall,
           )
         }
       }
 
-      CompositionLocalProvider(LocalContentColor provides colors.pageText) { content() }
+      CompositionLocalProvider(LocalContentColor provides colors.pageText) {
+        ProvideTextStyle(typography.bodyMedium) {
+          content()
+        }
+      }
 
       if (buttons != null) {
         CompositionLocalProvider(LocalContentColor provides colors.pageTextPositive) {

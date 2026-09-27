@@ -4,6 +4,8 @@ import aktual.budget.BudgetLocalPreferences
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.DbMetadata
+import aktual.budget.reports.vm.DashboardSync
+import aktual.core.UuidGenerator
 import androidx.compose.runtime.Immutable
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +18,12 @@ import logcat.logcat
 @Immutable data class DashboardPage(val id: DashboardPageId, val name: String)
 
 @Inject
-internal class DashboardPages(dao: DashboardDao, private val prefs: BudgetLocalPreferences) {
+internal class DashboardPages(
+  dao: DashboardDao,
+  private val sync: DashboardSync,
+  private val prefs: BudgetLocalPreferences,
+  private val uuidGenerator: UuidGenerator,
+) {
   val all: Flow<List<DashboardPage>> =
     dao.observePages().map { rows -> rows.map { DashboardPage(it.id, it.name.orEmpty()) } }
 
@@ -30,6 +37,24 @@ internal class DashboardPages(dao: DashboardDao, private val prefs: BudgetLocalP
   fun select(id: DashboardPageId) {
     logcat.d { "Selecting dashboard page $id" }
     prefs.update { meta -> meta.set(SelectedPageKey, id.value) }
+  }
+
+  suspend fun create(name: String) {
+    val id = uuidGenerator(::DashboardPageId)
+    logcat.d { "Creating dashboard page $id" }
+    sync.insertPage(id, name)
+    select(id)
+  }
+
+  suspend fun rename(id: DashboardPageId, name: String) {
+    logcat.d { "Renaming dashboard page $id" }
+    sync.renamePage(id, name)
+  }
+
+  suspend fun delete(id: DashboardPageId) {
+    if (!sync.deletePage(id)) {
+      logcat.w { "Can't delete the last dashboard page $id" }
+    }
   }
 
   private companion object {

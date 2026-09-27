@@ -29,6 +29,12 @@ internal sealed interface Action {
   data object CreateNewReport : Action
 
   @JvmInline value class SelectPage(val id: DashboardPageId) : Action
+
+  @JvmInline value class CreatePage(val name: String) : Action
+
+  data class RenamePage(val id: DashboardPageId, val name: String) : Action
+
+  @JvmInline value class DeletePage(val id: DashboardPageId) : Action
 }
 
 @Immutable
