@@ -181,9 +181,6 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
   }
 }
 
-val DbMetadata.cloudFileId: BudgetId
-  get() = get(DbMetadata.CloudFileId) ?: error("No cloudFileId found in $this")
-
 @Suppress("UNCHECKED_CAST")
 private fun DbMetadata.Key<*>.encode(value: Any?): JsonElement? =
   when (this) {

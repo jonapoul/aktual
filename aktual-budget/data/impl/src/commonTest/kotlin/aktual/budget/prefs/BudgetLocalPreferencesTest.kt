@@ -5,7 +5,6 @@ import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.Timestamp
-import aktual.budget.model.cloudFileId
 import aktual.di.AppCoroutineScope
 import aktual.test.CoTemporaryFolder
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -41,15 +40,16 @@ class BudgetLocalPreferencesTest {
   }
 
   private fun TestScope.buildPreferences(metadata: DbMetadata) {
-    preferences = BudgetLocalPreferencesImpl(metadata, files, AppCoroutineScope(this), contexts)
+    preferences =
+      BudgetLocalPreferencesImpl(BUDGET_ID, metadata, files, AppCoroutineScope(this), contexts)
   }
 
   @Test
   fun `Not modifying metadata does nothing`() = runTest {
     // given
     val metadata = TEST_METADATA
-    files.writeMetadata(metadata)
-    val previousWriteTime = fileModificationTime(metadata)
+    files.writeMetadata(BUDGET_ID, metadata)
+    val previousWriteTime = fileModificationTime()
 
     // when
     buildPreferences(metadata)
@@ -60,7 +60,7 @@ class BudgetLocalPreferencesTest {
 
     // then
     advanceUntilIdle()
-    val newWriteTime = fileModificationTime(metadata)
+    val newWriteTime = fileModificationTime()
     assertThat(newWriteTime).isEqualTo(previousWriteTime)
   }
 
@@ -68,8 +68,8 @@ class BudgetLocalPreferencesTest {
   fun `Modifying metadata writes to file`() = runTest {
     // given
     val metadata = TEST_METADATA
-    files.writeMetadata(metadata)
-    val previousWriteTime = fileModificationTime(metadata)
+    files.writeMetadata(BUDGET_ID, metadata)
+    val previousWriteTime = fileModificationTime()
 
     // when
     buildPreferences(metadata)
@@ -80,7 +80,7 @@ class BudgetLocalPreferencesTest {
 
     // then
     advanceUntilIdle()
-    val newWriteTime = fileModificationTime(metadata)
+    val newWriteTime = fileModificationTime()
     assertThat(newWriteTime).isGreaterThan(previousWriteTime)
   }
 
@@ -89,7 +89,7 @@ class BudgetLocalPreferencesTest {
     // given
     val userId = "abc-123"
     val metadata = TEST_METADATA + (DbMetadata.UserId to userId)
-    files.writeMetadata(metadata)
+    files.writeMetadata(BUDGET_ID, metadata)
 
     // when
     buildPreferences(metadata)
@@ -110,8 +110,22 @@ class BudgetLocalPreferencesTest {
     }
   }
 
-  private fun fileModificationTime(metadata: DbMetadata): Long =
-    files.metadata(metadata.cloudFileId).toFile().lastModified()
+  @Test
+  fun `Modifying local-only metadata writes to file`() = runTest {
+    // given
+    val metadata = TEST_METADATA - DbMetadata.CloudFileId
+    files.writeMetadata(BUDGET_ID, metadata)
+
+    // when
+    buildPreferences(metadata)
+    preferences.update { existing -> existing + (DbMetadata.BudgetName to "Hello World") }
+
+    // then
+    advanceUntilIdle()
+    assertThat(files.readMetadata(BUDGET_ID)?.get(DbMetadata.BudgetName)).isEqualTo("Hello World")
+  }
+
+  private fun fileModificationTime(): Long = files.metadata(BUDGET_ID).toFile().lastModified()
 
   private companion object {
     val BUDGET_ID = BudgetId("cf2b43ee-8067-48ed-ab5b-4e4e5531056e")

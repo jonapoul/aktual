@@ -90,7 +90,7 @@ class DatabaseImporter(
         .set(DbMetadata.LastUploaded, calendar.today())
         .set(DbMetadata.EncryptKeyId, userFile.encryptMeta?.keyId?.value)
 
-    budgetFiles.writeMetadata(newMeta)
+    budgetFiles.writeMetadata(userFile.fileId, newMeta)
     return ImportResult.Success(newMeta)
   }
 

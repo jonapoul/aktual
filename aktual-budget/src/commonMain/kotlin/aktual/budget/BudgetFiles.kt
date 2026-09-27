@@ -3,7 +3,6 @@ package aktual.budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.LocalBudget
-import aktual.budget.model.cloudFileId
 import aktual.di.Closeable
 import kotlinx.serialization.json.Json
 import okio.FileSystem
@@ -31,8 +30,8 @@ class BudgetFiles(val fileSystem: FileSystem, val directoryPath: Path) : Closeab
 
   fun decryptedZip(id: BudgetId, mkdirs: Boolean = false): Path = tmp(mkdirs) / "$id-decrypted.zip"
 
-  fun writeMetadata(metadata: DbMetadata) {
-    val path = metadata(metadata.cloudFileId, mkdirs = true)
+  fun writeMetadata(id: BudgetId, metadata: DbMetadata) {
+    val path = metadata(id, mkdirs = true)
     val json = Json.encodeToString(DbMetadata.serializer(), metadata)
     fileSystem.sink(path).buffer().use { sink -> sink.writeUtf8(json) }
   }

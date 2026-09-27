@@ -1,5 +1,6 @@
 package aktual.di
 
+import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
@@ -11,7 +12,7 @@ interface RunLevelController : AutoCloseable {
 
   fun onLoggedIn(token: Token): LoggedInGraph
 
-  fun onBudget(metadata: DbMetadata): BudgetGraph
+  fun onBudget(id: BudgetId, metadata: DbMetadata): BudgetGraph
 
   fun onBudgetClosed()
 

@@ -2,6 +2,7 @@ package aktual.budget.prefs
 
 import aktual.budget.BudgetFiles
 import aktual.budget.BudgetLocalPreferences
+import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.di.AppCoroutineScope
 import aktual.di.BudgetScope
@@ -19,6 +20,7 @@ import kotlinx.coroutines.sync.withLock
 @ContributesBinding(BudgetScope::class, binding<BudgetLocalPreferences>())
 class BudgetLocalPreferencesImpl
 private constructor(
+  private val id: BudgetId,
   private val files: BudgetFiles,
   private val coroutineScope: AppCoroutineScope,
   private val contexts: CoroutineContexts,
@@ -28,16 +30,17 @@ private constructor(
 
   @Inject
   constructor(
+    id: BudgetId,
     initial: DbMetadata,
     files: BudgetFiles,
     coroutineScope: AppCoroutineScope,
     contexts: CoroutineContexts,
-  ) : this(files, coroutineScope, contexts, delegate = MutableStateFlow(initial))
+  ) : this(id, files, coroutineScope, contexts, delegate = MutableStateFlow(initial))
 
   override fun compareAndSet(expect: DbMetadata, update: DbMetadata): Boolean {
     val updated = delegate.compareAndSet(expect, update)
     if (updated && expect != update) {
-      coroutineScope.launch(contexts.io) { writeMutex.withLock { files.writeMetadata(update) } }
+      coroutineScope.launch(contexts.io) { writeMutex.withLock { files.writeMetadata(id, update) } }
     }
     return updated
   }
