@@ -22,6 +22,7 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.contrastingTextColor
+import androidx.compose.animation.core.EaseOutBack
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
@@ -56,6 +57,7 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
@@ -143,6 +145,8 @@ private fun DashboardItem(
     }
   }
 
+  val revealedPx = { swipeState.offset.let { x -> if (x.isNaN()) 0f else -x } }
+
   Box(modifier = modifier.fillMaxWidth().clip(CardShape)) {
     Row(modifier = Modifier.matchParentSize(), horizontalArrangement = Arrangement.End) {
       if (item.isRenamable) {
@@ -151,10 +155,9 @@ private fun DashboardItem(
           icon = MaterialIcons.Edit,
           background = lerp(colors.tableBackground, Black, fraction = 0.1f),
           foreground = colors.tableText,
-          onClick = {
-            onOpenChange(false)
-            showRenameDialog = true
-          },
+          revealedPx = revealedPx,
+          indexFromEnd = 1,
+          onClick = { showRenameDialog = true },
         )
       }
 
@@ -163,10 +166,9 @@ private fun DashboardItem(
         icon = MaterialIcons.Delete,
         background = colors.errorText,
         foreground = colors.errorText.contrastingTextColor(),
-        onClick = {
-          onOpenChange(false)
-          showDeleteDialog = true
-        },
+        revealedPx = revealedPx,
+        indexFromEnd = 0,
+        onClick = { showDeleteDialog = true },
       )
     }
 
@@ -201,6 +203,7 @@ private fun DashboardItem(
       initialName = item.name.orEmpty(),
       onConfirm = { name ->
         showRenameDialog = false
+        onOpenChange(false)
         onAction(Action.Rename(item, name))
       },
       onDismiss = { showRenameDialog = false },
@@ -213,6 +216,7 @@ private fun DashboardItem(
         name = item.name,
         onConfirm = {
           showDeleteDialog = false
+          onOpenChange(false)
           onAction(Action.Delete(item.id))
         },
         onDismiss = { showDeleteDialog = false },
@@ -254,8 +258,15 @@ private fun SwipeButton(
   icon: ImageVector,
   background: Color,
   foreground: Color,
+  revealedPx: () -> Float,
+  indexFromEnd: Int,
   onClick: () -> Unit,
-) =
+) {
+  val widthPx = with(LocalDensity.current) { SwipeButtonWidth.toPx() }
+
+  // 0 while hidden behind the card, 1 once fully uncovered. Buttons nearer the end uncover first
+  fun progress() = ((revealedPx() - indexFromEnd * widthPx) / widthPx).coerceIn(0f, 1f)
+
   Column(
     modifier =
       Modifier.fillMaxHeight()
@@ -265,9 +276,37 @@ private fun SwipeButton(
     horizontalAlignment = CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {
-    Icon(imageVector = icon, contentDescription = null, tint = foreground)
-    Text(text = text, color = foreground)
+    // Pops in with a slight overshoot and a twist as the card slides away
+    Icon(
+      modifier =
+        Modifier.graphicsLayer {
+          val progress = progress()
+          val scale = EaseOutBack.transform(progress)
+          alpha = progress
+          scaleX = scale
+          scaleY = scale
+          rotationZ = (1f - progress) * -ICON_TWIST_DEGREES
+        },
+      imageVector = icon,
+      contentDescription = null,
+      tint = foreground,
+    )
+
+    Text(
+      modifier =
+        Modifier.graphicsLayer {
+          val progress = progress()
+          alpha = progress
+          translationY = (1f - progress) * LabelRise.toPx()
+        },
+      text = text,
+      color = foreground,
+    )
   }
+}
+
+private const val ICON_TWIST_DEGREES = 90f
+private val LabelRise = 8.dp
 
 private val ChartHeight = 200.dp
 private val ChartPadding = 8.dp
