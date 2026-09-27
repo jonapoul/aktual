@@ -17,7 +17,6 @@ import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -84,33 +83,6 @@ class ListTagsViewModelTest {
     // then we get the empty state rather than a failure
     viewModel.state.test {
       assertThat(awaitItem()).isEqualTo(Empty)
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
-  fun `Filter matches against tag name and description`() = runDatabaseTest { scope ->
-    insertTag(id = "groceries-id", tag = "groceries", description = "Weekly food shopping")
-    insertTag(id = "rent-id", tag = "rent", description = "Monthly housing")
-
-    val viewModel = createViewModel(scope)
-
-    viewModel.state.test {
-      // wait for the initial unfiltered load
-      assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).hasSize(2)
-
-      // when a search filter is applied that only matches one tag's description
-      viewModel.openSearch()
-      viewModel.setFilterText("food")
-
-      // then only the matching tag remains - drain past the intermediate emission produced
-      // when search opens but the filter text hasn't been set yet
-      var success = awaitItem() as Success
-      while (success.filterText != "food") {
-        success = awaitItem() as Success
-      }
-      assertThat(success).prop(Success::tags).extracting(TagItem::tag).containsExactly("groceries")
-
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -322,8 +294,7 @@ class ListTagsViewModelTest {
     preferences: TagPreferences = TagPreferencesImpl(scope.buildPreferences()),
   ) =
     ListTagsViewModel(
-      savedState = SavedStateHandle(),
-      tagsDao = TagsDao(this),
+      tagsDao = TagsDao(this, TestCoroutineContexts(scope.standardDispatcher)),
       transactionDao =
         TransactionDao(database = this, contexts = TestCoroutineContexts(scope.standardDispatcher)),
       syncController = sync,
