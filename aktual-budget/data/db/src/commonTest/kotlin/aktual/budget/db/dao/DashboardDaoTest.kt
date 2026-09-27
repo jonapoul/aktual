@@ -9,6 +9,7 @@ import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import kotlin.test.Test
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -17,35 +18,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 
 internal class DashboardDaoTest {
-  @Test
-  fun `Renaming keeps values we don't recognise`() = runDaoTest {
-    val id = WidgetId("abc-123")
-    insert(
-      id,
-      page = PAGE_1,
-      type = NetWorth,
-      x = 0,
-      y = 0,
-      meta = json("""{"name":"old","mode":"new-mode","extra":1}"""),
-    )
-
-    rename(id, "new")
-
-    val meta = observeByPage(PAGE_1).first().single().meta
-    assertThat(meta).isEqualTo(json("""{"name":"new","mode":"new-mode","extra":1}"""))
-  }
-
-  @Test
-  fun `Renaming a widget with no meta`() = runDaoTest {
-    val id = WidgetId("abc-123")
-    insert(id, page = PAGE_1, type = AgeOfMoney, x = 0, y = 0, meta = null)
-
-    rename(id, "new")
-
-    val meta = observeByPage(PAGE_1).first().single().meta
-    assertThat(meta).isEqualTo(json("""{"name":"new"}"""))
-  }
-
   @Test
   fun `Only observe widgets on the requested page`() = runDaoTest {
     insert(WidgetId("a"), page = PAGE_1, type = NetWorth, x = 0, y = 0, meta = null)
@@ -61,6 +33,27 @@ internal class DashboardDaoTest {
   @Test
   fun `Observe pages without tombstones`() = runDaoTest {
     assertThat(observePages().first().map { row -> row.id }).containsExactly(PAGE_1, PAGE_2)
+  }
+
+  @Test
+  fun `Count pages without tombstones`() = runDaoTest { assertThat(countPages()).isEqualTo(2L) }
+
+  @Test
+  fun `Widget IDs on a page`() = runDaoTest {
+    insert(WidgetId("a"), page = PAGE_1, type = NetWorth, x = 0, y = 0, meta = null)
+    insert(WidgetId("b"), page = PAGE_2, type = CashFlow, x = 0, y = 0, meta = null)
+
+    assertThat(widgetIds(PAGE_1)).containsExactly(WidgetId("a"))
+  }
+
+  @Test
+  fun `Meta of a widget`() = runDaoTest {
+    insert(WidgetId("a"), page = PAGE_1, type = NetWorth, x = 0, y = 0, meta = json("""{"a":1}"""))
+    insert(WidgetId("b"), page = PAGE_1, type = CashFlow, x = 0, y = 0, meta = null)
+
+    assertThat(meta(WidgetId("a"))).isEqualTo(json("""{"a":1}"""))
+    assertThat(meta(WidgetId("b"))).isEqualTo(JsonObject(emptyMap()))
+    assertThat(meta(WidgetId("missing"))).isNull()
   }
 
   private fun json(string: String): JsonObject = Json.decodeFromString(string)

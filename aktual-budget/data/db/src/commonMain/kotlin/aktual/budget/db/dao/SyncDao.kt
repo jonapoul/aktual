@@ -113,6 +113,11 @@ class SyncDao(
       saveClock(merkle, updatedClockTimestamp)
     }
 
+    // applyToTable writes raw SQL, which doesn't notify SQLDelight's query flows by itself
+    if (affectedTables.isNotEmpty()) {
+      driver.notifyListeners(*affectedTables.toTypedArray())
+    }
+
     return ApplyResult(merkle = merkle, affectedTables = affectedTables)
   }
 

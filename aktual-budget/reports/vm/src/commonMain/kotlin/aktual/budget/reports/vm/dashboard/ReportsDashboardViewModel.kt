@@ -1,6 +1,5 @@
 package aktual.budget.reports.vm.dashboard
 
-import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
@@ -13,6 +12,7 @@ import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.ChartDataLoader
 import aktual.budget.reports.vm.CrossoverReportMeta
 import aktual.budget.reports.vm.CustomReportMeta
+import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.FormulaReportMeta
 import aktual.budget.reports.vm.MarkdownReportMeta
 import aktual.budget.reports.vm.MonteCarloReportMeta
@@ -46,7 +46,7 @@ class ReportsDashboardViewModel
 internal constructor(
   private val chartDataLoader: ChartDataLoader,
   private val dashboardDao: DashboardDao,
-  private val customReportsDao: CustomReportsDao,
+  private val sync: DashboardSync,
   private val pages: DashboardPages,
   decoder: DashboardItemDecoder,
 ) : ViewModel() {
@@ -71,6 +71,21 @@ internal constructor(
 
   fun selectPage(id: DashboardPageId) = pages.select(id)
 
+  fun createPage(name: String) {
+    logcat.d { "Creating dashboard page $name" }
+    viewModelScope.launch { pages.create(name) }
+  }
+
+  fun renamePage(id: DashboardPageId, name: String) {
+    logcat.d { "Renaming dashboard page $id to $name" }
+    viewModelScope.launch { pages.rename(id, name) }
+  }
+
+  fun deletePage(id: DashboardPageId) {
+    logcat.d { "Deleting dashboard page $id" }
+    viewModelScope.launch { pages.delete(id) }
+  }
+
   fun renameReport(item: DashboardItem, name: String) {
     logcat.d { "Renaming report ${item.id} to $name" }
     viewModelScope.launch {
@@ -86,21 +101,21 @@ internal constructor(
         is NetWorthReportMeta,
         is SankeyReportMeta,
         is SpendingReportMeta,
-        is SummaryReportMeta -> dashboardDao.rename(item.id, name)
+        is SummaryReportMeta -> sync.renameWidget(item.id, name)
 
         // Not nameable
         is MarkdownReportMeta,
         is UnsupportedReportMeta -> logcat.w { "Can't rename ${item.id}: $meta" }
 
         // Named, but it's stored in a separate table
-        is CustomReportMeta -> customReportsDao.rename(meta.id, name)
+        is CustomReportMeta -> sync.renameCustomReport(meta.id, name)
       }
     }
   }
 
   fun deleteReport(id: WidgetId) {
     logcat.d { "Deleting report $id" }
-    viewModelScope.launch { dashboardDao.deleteById(id) }
+    viewModelScope.launch { sync.deleteWidget(id) }
   }
 
   fun observeChartData(item: DashboardItem): Flow<ChartData> = chartDataLoader.load(item.meta)

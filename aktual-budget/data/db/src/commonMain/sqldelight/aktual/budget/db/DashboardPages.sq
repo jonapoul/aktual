@@ -16,5 +16,8 @@ delete:
 getAll:
   SELECT * FROM dashboard_pages WHERE tombstone = 0 ORDER BY rowid;
 
+countActive:
+  SELECT count(*) FROM dashboard_pages WHERE tombstone = 0;
+
 getById:
   SELECT * FROM dashboard_pages WHERE id = ?;

@@ -8,6 +8,20 @@
   <string name="reports_dashboard_create">Create new report</string>
   <string name="reports_dashboard_choose">Choose dashboard</string>
   <string name="reports_dashboard_untitled">Untitled dashboard</string>
+  <string name="reports_dashboard_new_page">New dashboard</string>
+  <string name="reports_dashboard_rename_page">Rename dashboard</string>
+  <string name="reports_dashboard_rename_report">Rename report</string>
+  <string name="reports_dashboard_page_menu">Dashboard options</string>
+  <string name="reports_dashboard_page_name">Dashboard name</string>
+  <string name="reports_dashboard_report_name">Report name</string>
+  <string name="reports_dashboard_name_create">Create</string>
+  <string name="reports_dashboard_name_save">Save</string>
+  <string name="reports_dashboard_name_cancel">Cancel</string>
+  <string name="reports_dashboard_delete_page">Delete dashboard</string>
+  <string name="reports_dashboard_delete_page_title">Delete %1$s?</string>
+  <string name="reports_dashboard_delete_page_message">All reports on this dashboard will be deleted too.</string>
+  <string name="reports_dashboard_delete_page_confirm">Delete</string>
+  <string name="reports_dashboard_delete_page_cancel">Cancel</string>
 
   <string name="reports_choose_type_title">Choose report type</string>
   <string name="reports_choose_type_net_worth">Net Worth</string>
