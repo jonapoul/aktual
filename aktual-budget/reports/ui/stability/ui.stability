@@ -187,7 +187,7 @@ private fun aktual.budget.reports.ui.choosetype.chooseReportTypeViewModel(page: 
     - page: STABLE (marked @Stable or @Immutable)
 
 @Composable
-private fun aktual.budget.reports.ui.dashboard.displayName(): kotlin.String
+internal fun aktual.budget.reports.ui.dashboard.displayName(): kotlin.String
   skippable: false
   restartable: false
   params:

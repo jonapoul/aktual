@@ -30,11 +30,13 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -50,6 +52,9 @@ internal constructor(
   private val pages: DashboardPages,
   decoder: DashboardItemDecoder,
 ) : ViewModel() {
+  private val createReportChannel = Channel<DashboardPageId>()
+  val createReportEvents: Flow<DashboardPageId> = createReportChannel.receiveAsFlow()
+
   val allPages: StateFlow<ImmutableList<DashboardPage>> =
     pages.all
       .map { it.toImmutableList() }
@@ -70,6 +75,10 @@ internal constructor(
       .stateIn(viewModelScope, Eagerly, initialValue = DashboardContent(null, persistentListOf()))
 
   fun selectPage(id: DashboardPageId) = pages.select(id)
+
+  fun createReport() {
+    viewModelScope.launch { createReportChannel.send(pages.selectedOrCreate()) }
+  }
 
   fun createPage(name: String) {
     logcat.d { "Creating dashboard page $name" }
