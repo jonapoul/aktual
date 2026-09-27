@@ -5,8 +5,8 @@
   <string name="list_budgets_change_server">Log out</string>
   <string name="list_budgets_change_password">Change password</string>
   <string name="list_budgets_about">About</string>
-  <string name="list_budgets_encrypted_without_key">This file is encrypted and you have the key to access it.</string>
-  <string name="list_budgets_encrypted_with_key">This file is encrypted and you do not have the key for it.</string>
+  <string name="list_budgets_encrypted_without_key">This file is encrypted and you do not have the key for it.</string>
+  <string name="list_budgets_encrypted_with_key">This file is encrypted and you have the key to access it.</string>
   <string name="list_budgets_offline">This is a cloud-based file but its state is unknown because you are offline.</string>
   <string name="list_budgets_unencrypted">This file is unencrypted.</string>
   <string name="list_budgets_refresh">Refresh</string>
