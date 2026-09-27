@@ -26,6 +26,11 @@
   <string name="reports_dashboard_delete_page_message">All reports on this dashboard will be deleted too.</string>
   <string name="reports_dashboard_delete_page_confirm">Delete</string>
   <string name="reports_dashboard_delete_page_cancel">Cancel</string>
+  <string name="reports_dashboard_search">Search reports</string>
+
+  <string name="reports_search_placeholder">Search reports</string>
+  <string name="reports_search_prompt">Enter some text to search across all dashboards</string>
+  <string name="reports_search_no_results">No reports match “%1$s”</string>
 
   <string name="reports_choose_type_title">Choose report type</string>
   <string name="reports_choose_type_net_worth">Net Worth</string>

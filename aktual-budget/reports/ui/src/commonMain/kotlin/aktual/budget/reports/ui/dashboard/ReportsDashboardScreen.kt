@@ -10,10 +10,12 @@ import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Search
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.CreateReportNavigator
 import aktual.core.nav.ReportNavigator
+import aktual.core.nav.SearchReportsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
@@ -68,6 +70,7 @@ fun ReportsDashboardScreen(
   back: BackNavigator,
   toReport: ReportNavigator,
   toCreateReport: CreateReportNavigator,
+  toSearch: SearchReportsNavigator,
   viewModel: ReportsDashboardViewModel = metroViewModel(),
 ) {
   val pages by viewModel.allPages.collectAsStateWithLifecycle()
@@ -91,6 +94,7 @@ fun ReportsDashboardScreen(
         is ClickCalendarDay -> TODO()
         is SaveTextContent -> TODO()
         CreateNewReport -> viewModel.createReport()
+        OpenSearch -> toSearch()
         is SelectPage -> viewModel.selectPage(action.id)
         is CreatePage -> viewModel.createPage(action.name)
         is RenamePage -> viewModel.renamePage(action.id, action.name)
@@ -120,6 +124,12 @@ internal fun ReportsDashboardScaffold(
         navigationIcon = { NavDrawerIconButton() },
         title = { DashboardSelector(pages, selectedPage, onAction) },
         actions = {
+          IconButton(onClick = { onAction(OpenSearch) }) {
+            Icon(
+              imageVector = MaterialIcons.Search,
+              contentDescription = Strings.reportsDashboardSearch,
+            )
+          }
           if (items.isNotEmpty()) {
             IconButton(onClick = { onAction(CreateNewReport) }) {
               Icon(

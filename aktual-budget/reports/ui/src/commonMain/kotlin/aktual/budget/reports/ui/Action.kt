@@ -28,6 +28,8 @@ internal sealed interface Action {
 
   data object CreateNewReport : Action
 
+  data object OpenSearch : Action
+
   @JvmInline value class SelectPage(val id: DashboardPageId) : Action
 
   @JvmInline value class CreatePage(val name: String) : Action

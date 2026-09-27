@@ -207,6 +207,14 @@ private fun aktual.budget.reports.ui.report.reportViewModel(id: aktual.budget.mo
     - id: STABLE (marked @Stable or @Immutable)
 
 @Composable
+private fun aktual.budget.reports.ui.search.rememberHighlighted(text: kotlin.String, query: kotlin.String): androidx.compose.ui.text.AnnotatedString
+  skippable: false
+  restartable: false
+  params:
+    - text: STABLE (String is immutable)
+    - query: STABLE (String is immutable)
+
+@Composable
 internal fun aktual.budget.reports.ui.string(): kotlin.String
   skippable: false
   restartable: false
