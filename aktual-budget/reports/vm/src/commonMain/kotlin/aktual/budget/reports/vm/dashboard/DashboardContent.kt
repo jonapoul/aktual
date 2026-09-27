@@ -4,4 +4,8 @@ import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
-data class DashboardContent(val page: DashboardPage?, val items: ImmutableList<DashboardItem>)
+data class DashboardContent(
+  val page: DashboardPage?,
+  // Null while loading
+  val items: ImmutableList<DashboardItem>?,
+)
