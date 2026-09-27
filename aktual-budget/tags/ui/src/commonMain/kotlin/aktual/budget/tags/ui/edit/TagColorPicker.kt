@@ -1,6 +1,5 @@
 package aktual.budget.tags.ui.edit
 
-import aktual.budget.tags.ui.contrastingTextColor
 import aktual.budget.tags.vm.toColorOrNull
 import aktual.budget.tags.vm.toHex
 import aktual.core.icons.material.MaterialIcons
@@ -16,6 +15,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.contrastingTextColor
 import aktual.core.ui.textField
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically

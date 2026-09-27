@@ -1,4 +1,4 @@
-package aktual.budget.tags.ui
+package aktual.core.ui
 
 import androidx.compose.ui.graphics.Color
 
@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 // https://www.w3.org/TR/AERT/#color-contrast - adapted from upstream's getTagCSSColors in
 // packages/desktop-client/src/hooks/useTagCSS.ts
 @Suppress("MagicNumber")
-internal fun Color.contrastingTextColor(): Color {
+fun Color.contrastingTextColor(): Color {
   val brightness = (red * 299 + green * 587 + blue * 114) * 255 / 1000
   return if (brightness >= 125) Black else White
 }

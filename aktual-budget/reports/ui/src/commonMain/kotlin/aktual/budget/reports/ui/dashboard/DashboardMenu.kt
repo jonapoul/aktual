@@ -162,7 +162,7 @@ private fun DeletePageDialogContent(
 ) =
   AktualAlertDialogContent(
     title = Strings.reportsDashboardDeletePageTitle(page.displayName()),
-    titleColor = colors.warningText,
+    titleColor = colors.errorText,
     buttons = {
       TextButton(onClick = onDismiss) { Text(Strings.reportsDashboardDeletePageCancel) }
       TextButton(onClick = onConfirm) {
