@@ -125,7 +125,9 @@ internal fun search(query: String, groups: List<SearchReportsGroup>): SearchRepo
   }
 }
 
-private fun SearchReportsItem.matches(query: String): Boolean =
-  name?.contains(query, ignoreCase = true) == true ||
+private fun SearchReportsItem.matches(query: String): Boolean {
+  val typeQuery = query.filterNot { it.isWhitespace() || it == '-' }
+  return name?.contains(query, ignoreCase = true) == true ||
     content?.contains(query, ignoreCase = true) == true ||
-    type.name.contains(query.filterNot { it.isWhitespace() || it == '-' }, ignoreCase = true)
+    (typeQuery.isNotEmpty() && type.name.contains(typeQuery, ignoreCase = true))
+}

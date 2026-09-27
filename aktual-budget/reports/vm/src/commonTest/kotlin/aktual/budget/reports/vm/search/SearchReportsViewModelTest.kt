@@ -169,6 +169,19 @@ class SearchReportsViewModelTest {
   }
 
   @Test
+  fun `Hyphen-only query doesn't match every widget type`() = runSearchTest { viewModel, sync ->
+    sync.insertWidget(CASH_FLOW, PAGE_1.id, CashFlow, x = 0, y = 0, meta = json("{}"))
+
+    viewModel.setQuery("-")
+
+    viewModel.state.test {
+      var state = awaitItem()
+      while (state == NoQuery) state = awaitItem()
+      assertThat(state).isEqualTo(NoResults)
+    }
+  }
+
+  @Test
   fun `Skips reports on deleted pages`() = runSearchTest { viewModel, sync ->
     sync.insertWidget(
       id = NET_WORTH,
