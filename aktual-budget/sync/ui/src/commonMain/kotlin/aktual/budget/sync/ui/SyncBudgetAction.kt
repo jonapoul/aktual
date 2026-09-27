@@ -7,8 +7,6 @@ internal sealed interface SyncBudgetAction
 
 internal data object Retry : SyncBudgetAction
 
-internal data object Continue : SyncBudgetAction
-
 internal data class EnterKeyPassword(val input: Password) : SyncBudgetAction
 
 internal data object ConfirmKeyPassword : SyncBudgetAction
