@@ -16,41 +16,70 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
-import aktual.core.ui.AktualDropdownMenu
-import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.contrastingTextColor
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.animateTo
+import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
+import kotlin.math.roundToInt
+
+// Resting positions of a card: closed, or swiped left to reveal its action buttons
+private enum class SwipeState {
+  Closed,
+  Open,
+}
 
 @Composable
 internal fun DashboardItem(
   item: DashboardItem,
   observer: DashboardItemObserver,
+  isOpen: Boolean,
+  onOpenChange: (Boolean) -> Unit,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
@@ -60,6 +89,8 @@ internal fun DashboardItem(
   DashboardItem(
     item = item,
     chartData = chartData,
+    isOpen = isOpen,
+    onOpenChange = onOpenChange,
     onAction = onAction,
     modifier = modifier,
   )
@@ -69,43 +100,97 @@ internal fun DashboardItem(
 private fun DashboardItem(
   item: DashboardItem,
   chartData: ChartData?,
+  isOpen: Boolean,
+  onOpenChange: (Boolean) -> Unit,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
-  var showContextMenu by remember { mutableStateOf(false) }
   var showRenameDialog by remember { mutableStateOf(false) }
   var showDeleteDialog by remember { mutableStateOf(false) }
 
-  Box(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .wrapContentHeight()
-        .background(colors.tableBackground, CardShape)
-        // Long press still works while loading, so a chart that never loads can be deleted
-        .combinedClickable(
-          onClick = { if (chartData != null) onAction(Action.OpenItem(item.id)) },
-          onLongClick = { showContextMenu = true },
+  val numButtons = if (item.isRenamable) 2 else 1
+  val openOffsetPx = with(LocalDensity.current) { (SwipeButtonWidth * numButtons).toPx() }
+  val swipeState =
+    remember(openOffsetPx) {
+      AnchoredDraggableState(initialValue = SwipeState.Closed).apply {
+        updateAnchors(
+          DraggableAnchors {
+            SwipeState.Closed at 0f
+            SwipeState.Open at -openOffsetPx
+          }
         )
-  ) {
-    ReportDropDownMenu(
-      item = item,
-      expanded = showContextMenu,
-      onDismiss = { showContextMenu = false },
-      onRename = { showRenameDialog = true },
-      onDelete = { showDeleteDialog = true },
-    )
-
-    if (chartData != null) {
-      ReportChart(
-        modifier = Modifier.fillMaxWidth().padding(ChartPadding).height(ChartHeight),
-        data = chartData,
-        compact = true,
-        onAction = onAction,
-      )
-    } else {
-      LoadingChart(modifier = Modifier.fillMaxWidth().height(ChartHeight + ChartPadding * 2))
+      }
     }
+
+  // Tell the parent when this card settles, so it can keep only one card open
+  val currentOnOpenChange by rememberUpdatedState(onOpenChange)
+  LaunchedEffect(swipeState) {
+    snapshotFlow { swipeState.settledValue }
+      .collect { settled -> currentOnOpenChange(settled == Open) }
+  }
+
+  // Claim the open slot as soon as a drag starts, so any other open card closes straight away
+  val interactionSource = remember { MutableInteractionSource() }
+  LaunchedEffect(interactionSource) {
+    interactionSource.interactions.collect { interaction ->
+      if (interaction is DragInteraction.Start) currentOnOpenChange(true)
+    }
+  }
+
+  LaunchedEffect(isOpen) {
+    if (!isOpen && swipeState.currentValue != Closed) {
+      swipeState.animateTo(Closed)
+    }
+  }
+
+  Box(modifier = modifier.fillMaxWidth().clip(CardShape)) {
+    Row(modifier = Modifier.matchParentSize(), horizontalArrangement = Arrangement.End) {
+      if (item.isRenamable) {
+        SwipeButton(
+          text = Strings.reportsDashboardRename,
+          icon = MaterialIcons.Edit,
+          background = lerp(colors.tableBackground, Black, fraction = 0.1f),
+          foreground = colors.tableText,
+          onClick = {
+            onOpenChange(false)
+            showRenameDialog = true
+          },
+        )
+      }
+
+      SwipeButton(
+        text = Strings.reportsDashboardDelete,
+        icon = MaterialIcons.Delete,
+        background = colors.errorText,
+        foreground = colors.errorText.contrastingTextColor(),
+        onClick = {
+          onOpenChange(false)
+          showDeleteDialog = true
+        },
+      )
+    }
+
+    // Swiping still works while loading, so a chart that never loads can be deleted
+    ReportCard(
+      chartData = chartData,
+      onClick = {
+        when {
+          isOpen -> onOpenChange(false)
+          chartData != null -> onAction(Action.OpenItem(item.id))
+        }
+      },
+      onAction = onAction,
+      modifier =
+        Modifier.offset {
+            val x = swipeState.offset
+            IntOffset(x = if (x.isNaN()) 0 else x.roundToInt(), y = 0)
+          }
+          .anchoredDraggable(
+            state = swipeState,
+            orientation = Horizontal,
+            interactionSource = interactionSource,
+          ),
+    )
   }
 
   if (showRenameDialog) {
@@ -136,45 +221,62 @@ private fun DashboardItem(
   }
 }
 
+@Composable
+private fun ReportCard(
+  chartData: ChartData?,
+  onClick: () -> Unit,
+  onAction: ActionListener,
+  modifier: Modifier = Modifier,
+) =
+  Box(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .wrapContentHeight()
+        .background(colors.tableBackground, CardShape)
+        .clickable(onClick = onClick)
+  ) {
+    if (chartData != null) {
+      ReportChart(
+        modifier = Modifier.fillMaxWidth().padding(ChartPadding).height(ChartHeight),
+        data = chartData,
+        compact = true,
+        onAction = onAction,
+      )
+    } else {
+      LoadingChart(modifier = Modifier.fillMaxWidth().height(ChartHeight + ChartPadding * 2))
+    }
+  }
+
+@Composable
+private fun SwipeButton(
+  text: String,
+  icon: ImageVector,
+  background: Color,
+  foreground: Color,
+  onClick: () -> Unit,
+) =
+  Column(
+    modifier =
+      Modifier.fillMaxHeight()
+        .width(SwipeButtonWidth)
+        .background(background)
+        .clickable(onClick = onClick),
+    horizontalAlignment = CenterHorizontally,
+    verticalArrangement = Arrangement.Center,
+  ) {
+    Icon(imageVector = icon, contentDescription = null, tint = foreground)
+    Text(text = text, color = foreground)
+  }
+
 private val ChartHeight = 200.dp
 private val ChartPadding = 8.dp
+private val SwipeButtonWidth = 80.dp
 
 @Composable
 private fun LoadingChart(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(Window)
   Box(modifier = modifier.clip(CardShape).shimmer(shimmer).background(colors.tableText))
-}
-
-@Composable
-private fun ReportDropDownMenu(
-  item: DashboardItem,
-  expanded: Boolean,
-  onDismiss: () -> Unit,
-  onRename: () -> Unit,
-  onDelete: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  AktualDropdownMenu(modifier = modifier, expanded = expanded, onDismissRequest = onDismiss) {
-    if (item.isRenamable) {
-      AktualDropdownMenuItem(
-        text = { Text(Strings.reportsDashboardRename) },
-        leadingIcon = { Icon(MaterialIcons.Edit, Strings.reportsDashboardRename) },
-        onClick = {
-          onDismiss()
-          onRename()
-        },
-      )
-    }
-    val deleteText = Strings.reportsDashboardDelete
-    AktualDropdownMenuItem(
-      text = { Text(deleteText, color = colors.errorText) },
-      leadingIcon = { Icon(MaterialIcons.Delete, deleteText, tint = colors.errorText) },
-      onClick = {
-        onDismiss()
-        onDelete()
-      },
-    )
-  }
 }
 
 @Composable
@@ -205,6 +307,8 @@ private fun PreviewReportDashboardItem(
     DashboardItem(
       item = item,
       chartData = chartData,
+      isOpen = false,
+      onOpenChange = {},
       onAction = {},
     )
   }

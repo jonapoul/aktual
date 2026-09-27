@@ -1,6 +1,5 @@
 package aktual.budget.tags.ui.list
 
-import aktual.budget.tags.ui.contrastingTextColor
 import aktual.budget.tags.vm.list.TagItem
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
@@ -13,6 +12,7 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.RowShape
+import aktual.core.ui.contrastingTextColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
