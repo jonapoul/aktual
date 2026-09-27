@@ -1,11 +1,13 @@
 package aktual.budget.model
 
+import androidx.compose.runtime.Immutable
 import fallback.serializer.Fallback
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Immutable
 data class RecurConfig(
   @SerialName("frequency") val frequency: RecurFrequency,
   @SerialName("start") val start: LocalDate,

@@ -10,7 +10,6 @@ import kotlinx.collections.immutable.ImmutableList
 sealed interface ManageStorageState {
   data object Loading : ManageStorageState
 
-  @Immutable
   data class Loaded(
     val totalSize: Bytes,
     val percentTotalStorage: Percent,

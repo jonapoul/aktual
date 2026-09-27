@@ -14,7 +14,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -25,7 +24,6 @@ import com.valentinilk.shimmer.ShimmerTheme
 import com.valentinilk.shimmer.shimmerSpec
 import kotlinx.collections.immutable.persistentListOf
 
-@Immutable
 object AktualTheme {
   @get:Composable
   @get:ReadOnlyComposable

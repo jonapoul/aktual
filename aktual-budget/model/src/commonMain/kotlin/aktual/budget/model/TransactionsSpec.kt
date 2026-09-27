@@ -8,14 +8,12 @@ data class TransactionsSpec(
   val tagSpec: TagSpec = AllTags,
 )
 
-@Immutable
 sealed interface AccountSpec {
   data object AllAccounts : AccountSpec
 
   data class SpecificAccount(val id: AccountId) : AccountSpec
 }
 
-@Immutable
 sealed interface TagSpec {
   data object AllTags : TagSpec
 

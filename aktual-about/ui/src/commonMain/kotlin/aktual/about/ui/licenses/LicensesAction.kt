@@ -2,7 +2,7 @@ package aktual.about.ui.licenses
 
 import androidx.compose.runtime.Immutable
 
-@Immutable internal sealed interface LicensesAction
+internal sealed interface LicensesAction
 
 internal data object NavBack : LicensesAction
 

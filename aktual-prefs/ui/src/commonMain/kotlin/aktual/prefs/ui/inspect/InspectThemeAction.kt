@@ -2,7 +2,7 @@ package aktual.prefs.ui.inspect
 
 import androidx.compose.runtime.Immutable
 
-@Immutable internal sealed interface InspectThemeAction
+internal sealed interface InspectThemeAction
 
 internal data object NavBack : InspectThemeAction
 

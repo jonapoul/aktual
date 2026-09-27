@@ -14,7 +14,6 @@ data object Loading : ListSchedulesState
 data object Empty : ListSchedulesState
 
 // Can be empty if there are schedules, but no matches with the given filter
-@Immutable
 data class Success(
   val schedules: ImmutableList<Schedule>,
   val filterText: String,

@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -146,7 +145,6 @@ private fun calculateNetFlow(data: CashFlowData): Amount {
   return total
 }
 
-@Immutable
 private data class SummaryData(
   val income: Amount,
   val expenses: Amount,

@@ -3,7 +3,7 @@ package aktual.prefs.ui.theme
 import aktual.core.model.ThemeId
 import androidx.compose.runtime.Immutable
 
-@Immutable internal sealed interface ThemeSettingsAction
+internal sealed interface ThemeSettingsAction
 
 internal data object NavBack : ThemeSettingsAction
 

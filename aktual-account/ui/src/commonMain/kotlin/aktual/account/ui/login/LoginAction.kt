@@ -3,7 +3,7 @@ package aktual.account.ui.login
 import aktual.core.model.LoginMethod
 import androidx.compose.runtime.Immutable
 
-@Immutable internal sealed interface LoginAction
+internal sealed interface LoginAction
 
 internal data object ChangeServer : LoginAction
 

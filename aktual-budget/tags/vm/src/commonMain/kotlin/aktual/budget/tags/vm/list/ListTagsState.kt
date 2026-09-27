@@ -12,7 +12,6 @@ data object Loading : ListTagsState
 
 data object Empty : ListTagsState
 
-@Immutable
 data class Success(
   val tags: ImmutableList<TagItem>,
   val filterText: String,

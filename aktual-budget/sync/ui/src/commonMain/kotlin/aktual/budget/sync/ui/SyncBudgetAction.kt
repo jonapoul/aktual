@@ -3,7 +3,7 @@ package aktual.budget.sync.ui
 import aktual.core.model.Password
 import androidx.compose.runtime.Immutable
 
-@Immutable internal sealed interface SyncBudgetAction
+internal sealed interface SyncBudgetAction
 
 internal data object Retry : SyncBudgetAction
 
