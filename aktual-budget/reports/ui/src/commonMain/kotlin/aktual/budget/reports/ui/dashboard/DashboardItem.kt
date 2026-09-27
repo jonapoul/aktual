@@ -185,6 +185,10 @@ private val ChartHeight = 200.dp
 private val ChartPadding = 8.dp
 
 @Composable
+internal fun ShimmerDashboardItem(modifier: Modifier = Modifier) =
+  LoadingChart(modifier = modifier.fillMaxWidth().height(ChartHeight + ChartPadding * 2))
+
+@Composable
 private fun LoadingChart(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(Window)
   Box(modifier = modifier.clip(CardShape).shimmer(shimmer).background(colors.tableText))

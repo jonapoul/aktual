@@ -108,7 +108,7 @@ fun ReportsDashboardScreen(
 internal fun ReportsDashboardScaffold(
   pages: ImmutableList<DashboardPage>,
   selectedPage: DashboardPage?,
-  items: ImmutableList<DashboardItem>,
+  items: ImmutableList<DashboardItem>?,
   observer: DashboardItemObserver,
   onAction: ActionListener,
 ) {
@@ -130,7 +130,7 @@ internal fun ReportsDashboardScaffold(
               contentDescription = Strings.reportsDashboardSearch,
             )
           }
-          if (items.isNotEmpty()) {
+          if (!items.isNullOrEmpty()) {
             IconButton(onClick = { onAction(CreateNewReport) }) {
               Icon(
                 imageVector = MaterialIcons.Add,
@@ -182,26 +182,36 @@ private val PageListStatesSaver: Saver<MutableMap<String, LazyListState>, Any> =
 
 @Composable
 private fun ReportsDashboardContent(
-  items: ImmutableList<DashboardItem>,
+  items: ImmutableList<DashboardItem>?,
   observer: DashboardItemObserver,
   listState: LazyListState,
   onAction: ActionListener,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
-  if (items.isEmpty()) {
-    ContentEmpty(onAction, modifier)
-  } else {
-    ContentList(
-      items = items,
-      observer = observer,
-      listState = listState,
-      onAction = onAction,
-      contentPadding = contentPadding,
-      modifier = modifier,
-    )
+  when {
+    items == null -> ContentLoading(contentPadding, modifier)
+    items.isEmpty() -> ContentEmpty(onAction, modifier)
+    else ->
+      ContentList(
+        items = items,
+        observer = observer,
+        listState = listState,
+        onAction = onAction,
+        contentPadding = contentPadding,
+        modifier = modifier,
+      )
   }
 }
+
+@Composable
+private fun ContentLoading(contentPadding: PaddingValues, modifier: Modifier = Modifier) =
+  Column(
+    modifier = modifier.padding(4.dp).padding(contentPadding),
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+  ) {
+    repeat(times = 5) { ShimmerDashboardItem() }
+  }
 
 @Composable
 private fun ContentEmpty(onAction: ActionListener, modifier: Modifier = Modifier) =
@@ -278,7 +288,7 @@ private fun PreviewReportsDashboardScaffold(
 
 private data class ReportsDashboardScaffoldParams(
   val pages: ImmutableList<DashboardPage>,
-  val items: ImmutableList<DashboardItem>,
+  val items: ImmutableList<DashboardItem>?,
   val chartData: ChartData?,
 )
 
@@ -303,4 +313,5 @@ private class ReportsDashboardScaffoldProvider :
       items = persistentListOf(),
       chartData = null,
     ),
+    ReportsDashboardScaffoldParams(pages = persistentListOf(), items = null, chartData = null),
   )
