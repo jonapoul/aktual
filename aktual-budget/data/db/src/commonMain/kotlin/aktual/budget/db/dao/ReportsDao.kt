@@ -6,6 +6,8 @@ import aktual.budget.db.CrossoverBalancesByMonth
 import aktual.budget.db.CrossoverExpensesByMonth
 import aktual.budget.db.CrossoverStartingBalances
 import aktual.budget.db.NetWorthByMonth
+import aktual.budget.db.SankeyCategoryTotals
+import aktual.budget.db.SankeyTransfers
 import aktual.budget.db.TransactionDateBounds
 import aktual.budget.db.reports.CashFlowByMonth
 import alakazam.kotlin.CoroutineContexts
@@ -73,4 +75,17 @@ class ReportsDao(database: BudgetDatabase, private val contexts: CoroutineContex
       .asFlow()
       .mapToList(contexts.default)
       .distinctUntilChanged()
+
+  fun observeSankeyCategoryTotals(
+    start: LocalDate,
+    end: LocalDate,
+  ): Flow<List<SankeyCategoryTotals>> =
+    queries
+      .sankeyCategoryTotals(start, end)
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
+
+  fun observeSankeyTransfers(start: LocalDate, end: LocalDate): Flow<List<SankeyTransfers>> =
+    queries.sankeyTransfers(start, end).asFlow().mapToList(contexts.default).distinctUntilChanged()
 }
