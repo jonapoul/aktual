@@ -1,6 +1,7 @@
 package aktual.budget.list.ui
 
 import aktual.budget.model.Budget
+import aktual.budget.model.BudgetId
 import aktual.budget.model.directoryId
 import aktual.core.theme.Colors
 import aktual.core.ui.BottomSpacing
@@ -17,6 +18,10 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import kotlinx.collections.immutable.ImmutableList
@@ -31,6 +36,9 @@ internal fun ContentSuccess(
   contentPadding: PaddingValues = PaddingValues(),
   listState: LazyListState = rememberLazyListState(),
 ) {
+  // Only one row can be swiped open at a time
+  var openBudgetId by remember { mutableStateOf<BudgetId?>(null) }
+
   LazyColumn(
     modifier = modifier.scrollbar(listState),
     state = listState,
@@ -41,6 +49,15 @@ internal fun ContentSuccess(
       BudgetListItem(
         modifier = Modifier.animateItem(),
         budget = budget,
+        isOpen = openBudgetId == budget.directoryId,
+        onOpenChange = { open ->
+          openBudgetId =
+            when {
+              open -> budget.directoryId
+              openBudgetId == budget.directoryId -> null
+              else -> openBudgetId
+            }
+        },
         onClickOpen = { onClickOpen(budget) },
         onClickDelete = { onClickDelete(budget) },
       )
