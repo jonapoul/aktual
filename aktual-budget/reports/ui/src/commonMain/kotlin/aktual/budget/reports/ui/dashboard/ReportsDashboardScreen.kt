@@ -1,9 +1,11 @@
 package aktual.budget.reports.ui.dashboard
 
+import aktual.budget.model.DashboardPageId
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.dashboard.DashboardItem
+import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
@@ -58,8 +60,12 @@ fun ReportsDashboardScreen(
   viewModel: ReportsDashboardViewModel = metroViewModel(),
 ) {
   val items by viewModel.items.collectAsStateWithLifecycle()
+  val pages by viewModel.allPages.collectAsStateWithLifecycle()
+  val selectedPage by viewModel.selectedPage.collectAsStateWithLifecycle()
 
   ReportsDashboardScaffold(
+    pages = pages,
+    selectedPage = selectedPage,
     items = items,
     observer = viewModel::observeChartData,
     onAction = { action ->
@@ -72,7 +78,8 @@ fun ReportsDashboardScreen(
         is SetAllTimeDivisor -> TODO()
         is ClickCalendarDay -> TODO()
         is SaveTextContent -> TODO()
-        CreateNewReport -> toCreateReport()
+        CreateNewReport -> selectedPage?.let { page -> toCreateReport(page.id) }
+        is SelectPage -> viewModel.selectPage(action.id)
       }
     },
   )
@@ -80,6 +87,8 @@ fun ReportsDashboardScreen(
 
 @Composable
 internal fun ReportsDashboardScaffold(
+  pages: ImmutableList<DashboardPage>,
+  selectedPage: DashboardPage?,
   items: ImmutableList<DashboardItem>,
   observer: DashboardItemObserver,
   onAction: ActionListener,
@@ -94,7 +103,7 @@ internal fun ReportsDashboardScaffold(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavDrawerIconButton() },
-        title = { Text(Strings.reportsDashboardTitle) },
+        title = { DashboardSelector(pages, selectedPage, onAction) },
         actions = {
           IconButton(onClick = { onAction(CreateNewReport) }) {
             Icon(
@@ -185,6 +194,8 @@ private fun PreviewReportsDashboardScaffold(
 ) =
   PreviewWithColoredParams(params) {
     ReportsDashboardScaffold(
+      pages = pages,
+      selectedPage = pages.firstOrNull(),
       items = items,
       observer = { if (chartData == null) flowOf() else flowOf(chartData) },
       onAction = {},
@@ -192,6 +203,7 @@ private fun PreviewReportsDashboardScaffold(
   }
 
 private data class ReportsDashboardScaffoldParams(
+  val pages: ImmutableList<DashboardPage>,
   val items: ImmutableList<DashboardItem>,
   val chartData: ChartData?,
 )
@@ -199,6 +211,11 @@ private data class ReportsDashboardScaffoldParams(
 private class ReportsDashboardScaffoldProvider :
   ColoredParameterProvider<ReportsDashboardScaffoldParams>(
     ReportsDashboardScaffoldParams(
+      pages =
+        persistentListOf(
+          DashboardPage(DashboardPageId("a"), "Main"),
+          DashboardPage(DashboardPageId("b"), "Savings"),
+        ),
       items =
         persistentListOf(
           PREVIEW_DASHBOARD_ITEM_1,
@@ -207,5 +224,9 @@ private class ReportsDashboardScaffoldProvider :
         ),
       chartData = PREVIEW_CASH_FLOW_DATA,
     ),
-    ReportsDashboardScaffoldParams(items = persistentListOf(), chartData = null),
+    ReportsDashboardScaffoldParams(
+      pages = persistentListOf(),
+      items = persistentListOf(),
+      chartData = null,
+    ),
   )

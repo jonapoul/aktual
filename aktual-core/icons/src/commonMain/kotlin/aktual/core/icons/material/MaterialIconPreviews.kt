@@ -26,6 +26,7 @@ private val materialIcons =
       Add,
       Apps,
       ArrowBack,
+      ArrowDropDown,
       ArrowRight,
       Badge,
       BarChart,

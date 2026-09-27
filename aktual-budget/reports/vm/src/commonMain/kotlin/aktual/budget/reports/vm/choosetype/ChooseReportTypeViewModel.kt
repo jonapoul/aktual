@@ -1,6 +1,7 @@
 package aktual.budget.reports.vm.choosetype
 
 import aktual.budget.db.dao.DashboardDao
+import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.core.UuidGenerator
@@ -9,8 +10,12 @@ import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -24,9 +29,9 @@ import kotlinx.serialization.json.JsonObject
 import logcat.logcat
 
 @Stable
-@ViewModelKey
-@ContributesIntoMap(BudgetScope::class)
+@AssistedInject
 class ChooseReportTypeViewModel(
+  @Assisted private val page: DashboardPageId,
   private val uuidGenerator: UuidGenerator,
   private val dashboardDao: DashboardDao,
 ) : ViewModel() {
@@ -59,7 +64,8 @@ class ChooseReportTypeViewModel(
     job = viewModelScope.launch {
       val widgetId = uuidGenerator(::WidgetId)
       val (x, y) = newWidgetPosition()
-      dashboardDao.insert(widgetId, type, x, y, buildEmptyMetadata(type))
+      logcat.d { "Creating $type report $widgetId on page $page at ($x, $y)" }
+      dashboardDao.insert(widgetId, page, type, x, y, buildEmptyMetadata(type))
       shouldNavigateChannel.send(ShouldNavigateEvent(widgetId))
     }
   }
@@ -67,7 +73,7 @@ class ChooseReportTypeViewModel(
   private data class Coords(val x: Long = 0, val y: Long = 0)
 
   private suspend fun newWidgetPosition(): Coords {
-    val positions = dashboardDao.getPositionAndSize()
+    val positions = dashboardDao.getPositionAndSize(page)
     if (positions.isEmpty()) return Coords()
 
     val highest = positions.maxWith(compareBy({ it.y }, { it.x }))
@@ -92,4 +98,11 @@ class ChooseReportTypeViewModel(
     }
 
   data class ShouldNavigateEvent(val id: WidgetId)
+
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(BudgetScope::class)
+  interface Factory : ManualViewModelAssistedFactory {
+    fun create(page: DashboardPageId): ChooseReportTypeViewModel
+  }
 }
