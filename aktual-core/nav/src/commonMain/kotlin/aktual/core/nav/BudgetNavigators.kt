@@ -59,6 +59,11 @@ class EditScheduleNavigator(private val stack: NavStack<BudgetNavKey>) {
 }
 
 @Immutable
+class SearchSchedulesNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke() = stack.push(SearchSchedulesNavRoute)
+}
+
+@Immutable
 class ListTagsNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke() = stack.push(ListTagsNavRoute)
 }

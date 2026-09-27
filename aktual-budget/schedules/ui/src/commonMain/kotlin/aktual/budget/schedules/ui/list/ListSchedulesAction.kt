@@ -13,10 +13,6 @@ internal data object CreateNew : ListSchedulesAction
 
 internal data object OpenSearch : ListSchedulesAction
 
-internal data object ClearFilter : ListSchedulesAction
-
-@JvmInline internal value class EditFilterText(val text: String) : ListSchedulesAction
-
 @Immutable
 internal fun interface ListSchedulesActionHandler {
   operator fun invoke(action: ListSchedulesAction)
