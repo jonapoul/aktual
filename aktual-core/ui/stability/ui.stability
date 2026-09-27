@@ -427,6 +427,14 @@ public fun aktual.core.ui.rememberHazedTopBarState(): aktual.core.ui.HazedTopBar
   params:
 
 @Composable
+public fun aktual.core.ui.rememberHighlighted(text: kotlin.String, query: kotlin.String): androidx.compose.ui.text.AnnotatedString
+  skippable: false
+  restartable: false
+  params:
+    - text: STABLE (String is immutable)
+    - query: STABLE (String is immutable)
+
+@Composable
 private fun aktual.core.ui.rememberWindowSize(density: androidx.compose.ui.unit.Density, windowInfo: androidx.compose.ui.platform.WindowInfo): androidx.compose.ui.unit.DpSize
   skippable: false
   restartable: false
@@ -456,6 +464,14 @@ internal fun aktual.core.ui.scrollbar(state: aktual.core.ui.ScrollbarState, auto
   params:
     - state: STABLE (marked @Stable or @Immutable)
     - autoHide: STABLE (primitive type)
+
+@Composable
+public fun aktual.core.ui.searchResultCard(onClick: kotlin.Function0<kotlin.Unit>, padding: androidx.compose.foundation.layout.PaddingValues): androidx.compose.ui.Modifier
+  skippable: false
+  restartable: false
+  params:
+    - onClick: STABLE (function type)
+    - padding: STABLE (marked @Stable or @Immutable)
 
 @Composable
 public fun aktual.core.ui.slider(): androidx.compose.material3.SliderColors

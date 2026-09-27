@@ -13,6 +13,7 @@ import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.dashboard.DashboardPages
 import aktual.budget.reports.vm.dashboard.name
 import aktual.budget.reports.vm.search.SearchReportsState.Results
+import aktual.core.snippet
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
@@ -101,33 +102,33 @@ internal constructor(
     }
   }
 
+  private fun search(query: String, groups: List<SearchReportsGroup>): SearchReportsState {
+    val trimmed = query.trim()
+    if (trimmed.isEmpty()) return NoQuery
+
+    val matching = groups.mapNotNull { group ->
+      val items =
+        group.items
+          .filter { it.matches(trimmed) }
+          .map { item -> item.copy(content = item.content?.let { snippet(it, trimmed) }) }
+      if (items.isEmpty()) null else group.copy(items = items.toImmutableList())
+    }
+
+    return if (matching.isEmpty()) {
+      NoResults
+    } else {
+      Results(trimmed, matching.toImmutableList())
+    }
+  }
+
+  private fun SearchReportsItem.matches(query: String): Boolean {
+    val typeQuery = query.filterNot { it.isWhitespace() || it == '-' }
+    return name?.contains(query, ignoreCase = true) == true ||
+      content?.contains(query, ignoreCase = true) == true ||
+      typeQuery.isNotEmpty() && type.name.contains(typeQuery, ignoreCase = true)
+  }
+
   private companion object {
     const val KEY_QUERY = "query"
   }
-}
-
-internal fun search(query: String, groups: List<SearchReportsGroup>): SearchReportsState {
-  val trimmed = query.trim()
-  if (trimmed.isEmpty()) return NoQuery
-
-  val matching = groups.mapNotNull { group ->
-    val items =
-      group.items
-        .filter { it.matches(trimmed) }
-        .map { item -> item.copy(content = item.content?.let { snippet(it, trimmed) }) }
-    if (items.isEmpty()) null else group.copy(items = items.toImmutableList())
-  }
-
-  return if (matching.isEmpty()) {
-    NoResults
-  } else {
-    Results(trimmed, matching.toImmutableList())
-  }
-}
-
-private fun SearchReportsItem.matches(query: String): Boolean {
-  val typeQuery = query.filterNot { it.isWhitespace() || it == '-' }
-  return name?.contains(query, ignoreCase = true) == true ||
-    content?.contains(query, ignoreCase = true) == true ||
-    typeQuery.isNotEmpty() && type.name.contains(typeQuery, ignoreCase = true)
 }

@@ -12,11 +12,7 @@ internal data object Refresh : ListTagsAction
 
 internal data object OpenSearch : ListTagsAction
 
-internal data object ClearFilter : ListTagsAction
-
 internal data object CreateTag : ListTagsAction
-
-@JvmInline internal value class EditFilterText(val text: String) : ListTagsAction
 
 @JvmInline internal value class EditTag(val id: TagId) : ListTagsAction
 

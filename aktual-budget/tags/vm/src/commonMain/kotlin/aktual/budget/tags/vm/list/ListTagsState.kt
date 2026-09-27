@@ -12,9 +12,4 @@ data object Loading : ListTagsState
 
 data object Empty : ListTagsState
 
-data class Success(
-  val tags: ImmutableList<TagItem>,
-  val filterText: String,
-  val isSearchActive: Boolean,
-  val sort: TagSort,
-) : ListTagsState
+data class Success(val tags: ImmutableList<TagItem>, val sort: TagSort) : ListTagsState

@@ -15,6 +15,7 @@ import aktual.core.ui.RowShape
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.contrastingTextColor
+import aktual.core.ui.rememberHighlighted
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -117,17 +118,18 @@ private fun TagItemRow(
 }
 
 @Composable
-private fun TagChip(
+internal fun TagChip(
   text: String,
   color: Color?,
   modifier: Modifier = Modifier,
+  query: String = "",
 ) {
   // upstream falls back to the theme's note-tag colors when a tag has no explicit color
   val background = color ?: colors.noteTagBackground
   val textColor = color?.contrastingTextColor() ?: colors.noteTagText
 
   Text(
-    text = "#$text",
+    text = rememberHighlighted("#$text", query),
     modifier =
       modifier
         .clip(ListTagsDS.chipShape)
