@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
@@ -65,9 +64,9 @@ fun Modifier.hazedBottomBar(
   return when (config.appBarEffect) {
     // when the effect is off, fall back to a flat fill with the same color, so the bar still
     // matches what the blurred/glass variant would have shown
-    BarEffect.None -> background(color)
-    BarEffect.Blur -> hazeBlur(input = input, style = barBlurStyle(color, config))
-    BarEffect.Glass -> hazeGlass(input = input, style = barGlassStyle(color, config))
+    None -> background(color)
+    Blur -> hazeBlur(input = input, style = barBlurStyle(color, config))
+    Glass -> hazeGlass(input = input, style = barGlassStyle(color, config))
   }
 }
 
@@ -86,7 +85,7 @@ fun rememberHazedTopBarState(): HazedTopBarState {
 @Stable
 data class HazedTopBarState(val hazeState: HazeState, val effect: BarEffect) {
   val enabled: Boolean
-    get() = effect != BarEffect.None
+    get() = effect != None
 }
 
 /**
@@ -118,12 +117,9 @@ fun Modifier.hazedTopBar(
   val color = colors.cardBackground
   val input = HazeInput.Sources(state.hazeState)
   return when (state.effect) {
-    BarEffect.None -> measured
-    BarEffect.Blur ->
-      measured.hazeBlur(input = input, style = barBlurStyle(color, config, progress))
-
-    BarEffect.Glass ->
-      measured.hazeGlass(input = input, style = barGlassStyle(color, config, progress))
+    None -> measured
+    Blur -> measured.hazeBlur(input = input, style = barBlurStyle(color, config, progress))
+    Glass -> measured.hazeGlass(input = input, style = barGlassStyle(color, config, progress))
   }
 }
 
@@ -215,7 +211,6 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
 
 // Shape covering the full composable area minus rectangular holes, used to punch the blur
 // overlay out from behind expanded dropdown anchors so they appear unblurred.
-@Immutable
 private class HoledShape(private val holes: SnapshotStateMap<Any, Rect>) : Shape {
   override fun createOutline(
     size: Size,
@@ -260,9 +255,8 @@ private fun barGlassStyle(color: Color, config: HazeConfig, progress: Float = 1f
     }
   }
 
-@Immutable
 data class HazeConfig(
-  val appBarEffect: BarEffect = BarEffect.Default,
+  val appBarEffect: BarEffect = Default,
   val dialogs: Boolean = true,
   val radius: Dp = 5.dp,
   val alpha: Float = 0.5f,

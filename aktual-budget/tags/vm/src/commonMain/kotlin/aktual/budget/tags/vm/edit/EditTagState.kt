@@ -7,7 +7,6 @@ import androidx.compose.ui.graphics.Color
 sealed interface EditTagState {
   data object Loading : EditTagState
 
-  @Immutable
   data class Editing(
     val initialTag: String = "",
     val initialDescription: String = "",
@@ -15,5 +14,5 @@ sealed interface EditTagState {
     val isNew: Boolean = true,
   ) : EditTagState
 
-  @Immutable @JvmInline value class Failure(val cause: String?) : EditTagState
+  @JvmInline value class Failure(val cause: String?) : EditTagState
 }

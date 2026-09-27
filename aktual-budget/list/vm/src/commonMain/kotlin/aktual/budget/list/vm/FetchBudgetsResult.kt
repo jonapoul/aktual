@@ -2,10 +2,8 @@ package aktual.budget.list.vm
 
 import aktual.api.model.account.FailureReason
 import aktual.api.model.sync.UserFile
-import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 
-@Immutable
 sealed interface FetchBudgetsResult {
   data class Success(val userFiles: ImmutableList<UserFile>) : FetchBudgetsResult
 

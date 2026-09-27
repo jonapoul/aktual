@@ -25,6 +25,7 @@
       <name>java.util.concurrent.Flow</name>
       <name>javax.annotation.concurrent.Immutable</name>
       <name>jdk.internal.org.jline.utils.Colors</name>
+      <name>jdk.internal.vm.annotation.Stable</name>
       <name>kotlin.coroutines.cancellation.CancellationException</name>
       <name>org.gradle.internal.impldep.org.apache.maven.artifact.repository.metadata.Plugin</name>
       <name>org.gradle.internal.impldep.org.apache.maven.model.Plugin</name>

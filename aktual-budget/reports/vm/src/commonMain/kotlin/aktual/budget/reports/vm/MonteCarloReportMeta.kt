@@ -1,14 +1,12 @@
 package aktual.budget.reports.vm
 
 import aktual.budget.model.AccountId
-import androidx.compose.runtime.Immutable
 import fallback.serializer.Fallback
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 // From packages/loot-core/src/types/models/dashboard.ts. Amounts are in minor units, rates and
 // percentages are decimal fractions (0.06 = 6%)
-@Immutable
 @Serializable
 data class MonteCarloReportMeta(
   @SerialName("name") val name: String? = null,
@@ -29,7 +27,6 @@ data class MonteCarloReportMeta(
   @SerialName("simulationCount") val simulationCount: Int? = null,
 ) : ReportMeta
 
-@Immutable
 @Serializable
 data class MonteCarloPot(
   @SerialName("id") val id: String,
@@ -51,7 +48,6 @@ data class MonteCarloPot(
   @SerialName("isSurplus") val isSurplus: Boolean? = null,
 )
 
-@Immutable
 @Serializable
 data class WithdrawalRule(
   @SerialName("type") val type: WithdrawalRuleType,
@@ -70,7 +66,6 @@ data class WithdrawalRule(
   @SerialName("lowerIncreasePct") val lowerIncreasePct: Double? = null,
 )
 
-@Immutable
 @Serializable
 data class SpendingPhase(
   @SerialName("id") val id: String,
@@ -79,7 +74,6 @@ data class SpendingPhase(
   @SerialName("annualWithdrawal") val annualWithdrawal: Long? = null,
 )
 
-@Immutable
 @Serializable
 data class Contribution(
   @SerialName("id") val id: String,
@@ -93,7 +87,6 @@ data class Contribution(
   @SerialName("beforeTax") val beforeTax: Boolean? = null,
 )
 
-@Immutable
 @Serializable
 data class IncomeStream(
   @SerialName("id") val id: String,
@@ -106,7 +99,6 @@ data class IncomeStream(
   @SerialName("taxableFraction") val taxableFraction: Double? = null,
 )
 
-@Immutable
 @Serializable
 data class TaxBand(
   @SerialName("id") val id: String,

@@ -12,6 +12,7 @@ import aktual.budget.model.NumberFormatConfig
 import aktual.core.theme.BottomBarThemeAttrs
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
@@ -80,6 +81,7 @@ val LocalDateFormatter =
 
 @Stable
 @Composable
+@ReadOnlyComposable
 fun LocalDate.formatted(formatter: DateTimeFormat<LocalDate> = LocalDateFormatter.current): String =
   formatter.format(this)
 
@@ -112,6 +114,7 @@ class DialogBlurState {
 }
 
 @Composable
+@ReadOnlyComposable
 fun Amount.formattedString(
   numberFormatConfig: NumberFormatConfig = LocalNumberFormatConfig.current,
   currencyConfig: CurrencyConfig = LocalCurrencyConfig.current,

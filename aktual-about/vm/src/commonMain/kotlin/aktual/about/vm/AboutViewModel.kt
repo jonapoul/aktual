@@ -78,7 +78,7 @@ class AboutViewModel(
       }
 
     return when (restored) {
-      null -> Inactive
+      null,
       is Checking -> Inactive
 
       Inactive,

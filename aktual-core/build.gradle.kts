@@ -8,7 +8,6 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin)
-    api(libs.compose.runtime)
     api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.datetime)
     api(libs.okio)

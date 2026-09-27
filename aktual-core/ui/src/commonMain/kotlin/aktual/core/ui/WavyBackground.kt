@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @Composable
@@ -22,7 +21,7 @@ fun WavyBackground(modifier: Modifier = Modifier) =
     modifier = modifier.fillMaxSize(),
     painter = backgroundImage(colors),
     contentDescription = null,
-    contentScale = ContentScale.Crop,
+    contentScale = Crop,
   )
 
 @Composable

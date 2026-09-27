@@ -129,7 +129,7 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
   fun ageOfMoney(meta: AgeOfMoneyReportMeta): Flow<ChartData> {
     if (meta.conditions.hasFilters()) return unsupported(meta, Filters)
 
-    val granularity = meta.granularity?.takeIf { it != Unknown } ?: AgeOfMoneyGranularity.Monthly
+    val granularity = meta.granularity?.takeIf { it != Unknown } ?: Monthly
     return dao.observeTransactionDateBounds().flatMapLatest { bounds ->
       val today = calendar.today()
       val range =

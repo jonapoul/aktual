@@ -13,11 +13,9 @@ import kotlinx.datetime.YearMonthRange
 
 @Immutable sealed interface ChartData
 
-@Immutable
 data class CashFlowData(val title: String?, val items: ImmutableMap<YearMonth, CashFlowDatum>) :
   ChartData
 
-@Immutable
 data class CashFlowDatum(
   val income: Amount,
   val expenses: Amount,
@@ -26,10 +24,8 @@ data class CashFlowDatum(
   val change: Amount = income + expenses + transfers,
 )
 
-@Immutable
 data class NetWorthData(val title: String?, val items: ImmutableMap<YearMonth, Amount>) : ChartData
 
-@Immutable
 data class AgeOfMoneyData(
   val title: String?,
   val start: YearMonth,
@@ -41,14 +37,12 @@ data class AgeOfMoneyData(
   val insufficientData: Boolean,
 ) : ChartData
 
-@Immutable
 enum class AgeOfMoneyTrend {
   Up,
   Down,
   Stable,
 }
 
-@Immutable
 data class CrossoverData(
   val title: String?,
   val items: ImmutableMap<YearMonth, CrossoverDatum>,
@@ -56,7 +50,6 @@ data class CrossoverData(
   val yearsToRetire: Double?,
 ) : ChartData
 
-@Immutable
 data class CrossoverDatum(
   val investmentIncome: Amount,
   val expenses: Amount,
@@ -69,7 +62,6 @@ data class CrossoverDatum(
 sealed interface SummaryData : ChartData, DateRange {
   val title: String
 
-  @Immutable
   data class Sum(
     override val title: String,
     override val start: LocalDate,
@@ -77,7 +69,6 @@ sealed interface SummaryData : ChartData, DateRange {
     val value: Amount,
   ) : SummaryData
 
-  @Immutable
   data class AveragePerMonth(
     override val title: String,
     override val start: LocalDate,
@@ -87,7 +78,6 @@ sealed interface SummaryData : ChartData, DateRange {
     val average: Amount,
   ) : SummaryData
 
-  @Immutable
   data class AveragePerYear(
     override val title: String,
     override val start: LocalDate,
@@ -97,7 +87,6 @@ sealed interface SummaryData : ChartData, DateRange {
     val average: Amount,
   ) : SummaryData
 
-  @Immutable
   data class AveragePerTransaction(
     override val title: String,
     override val start: LocalDate,
@@ -107,7 +96,6 @@ sealed interface SummaryData : ChartData, DateRange {
     val average: Amount,
   ) : SummaryData
 
-  @Immutable
   data class Percentage(
     override val title: String,
     override val start: LocalDate,
@@ -136,7 +124,6 @@ interface DateRange {
   val end: LocalDate?
 }
 
-@Immutable
 enum class SummaryChartType {
   Sum,
   AveragePerMonth,
@@ -145,7 +132,6 @@ enum class SummaryChartType {
   Percentage,
 }
 
-@Immutable
 data class CalendarData(
   val title: String,
   val start: YearMonth,
@@ -165,7 +151,6 @@ data class CalendarMonth(
 
 @Immutable data class CalendarDay(val day: Int, val income: Amount, val expenses: Amount)
 
-@Immutable
 enum class DateRangeMode {
   Live,
   Static,
@@ -179,7 +164,6 @@ data class ChartDateConfig(
   val range: YearMonthRange,
 )
 
-@Immutable
 data class SpendingData(
   val title: String,
   val mode: DateRangeMode,
@@ -196,7 +180,6 @@ sealed interface SpendingDayNumber {
   data object End : SpendingDayNumber
 }
 
-@Immutable
 data class SpendingDay(val number: SpendingDayNumber, val target: Amount?, val comparison: Amount)
 
 @Immutable
@@ -208,22 +191,19 @@ sealed interface SpendingComparison {
   data object Average : SpendingComparison
 }
 
-@Immutable data class TextData(val content: String) : ChartData
+data class TextData(val content: String) : ChartData
 
-@Immutable
 data class UnsupportedData(
   val reason: UnsupportedReason,
   val type: WidgetType,
   val name: String?,
 ) : ChartData
 
-@Immutable
 enum class UnsupportedReason {
   Filters,
   ReportType,
 }
 
-@Immutable
 data class CustomData(val title: String, val mode: DateRangeMode, val range: ReportTimeRange) :
   ChartData
 

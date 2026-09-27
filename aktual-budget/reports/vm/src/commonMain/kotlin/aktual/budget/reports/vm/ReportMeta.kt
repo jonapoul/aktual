@@ -51,18 +51,14 @@ sealed interface ReportMeta {
 // upstream schema change we don't model yet. Surfaced instead of crashing the whole dashboard.
 // It's never persisted, so it's intentionally not @Serializable; we keep the raw json around so
 // the original row isn't lost.
-@Immutable
 data class UnsupportedReportMeta(
   val type: WidgetType,
   val raw: JsonObject,
   val reason: String,
 ) : ReportMeta
 
-@Immutable
-@Serializable
-data class CustomReportMeta(@SerialName("id") val id: CustomReportId) : ReportMeta
+@Serializable data class CustomReportMeta(@SerialName("id") val id: CustomReportId) : ReportMeta
 
-@Immutable
 @Serializable
 data class NetWorthReportMeta(
   @SerialName("name") val name: String? = null,
@@ -73,7 +69,6 @@ data class NetWorthReportMeta(
   @SerialName("mode") val mode: NetWorthMode? = null,
 ) : ReportMeta
 
-@Immutable
 @Serializable
 data class CashFlowReportMeta(
   @SerialName("name") val name: String? = null,
@@ -83,7 +78,6 @@ data class CashFlowReportMeta(
   @SerialName("showBalance") val showBalance: Boolean? = null,
 ) : ReportMeta
 
-@Immutable
 @Serializable
 data class SpendingReportMeta(
   @SerialName("name") val name: String? = null,
@@ -95,7 +89,6 @@ data class SpendingReportMeta(
   @SerialName("mode") val mode: SpendingMode? = null,
 ) : ReportMeta
 
-@Immutable
 @Serializable
 data class BudgetAnalysisReportMeta(
   @SerialName("name") val name: String? = null,
@@ -107,14 +100,12 @@ data class BudgetAnalysisReportMeta(
   @SerialName("showBalance") val showBalance: Boolean? = null,
 ) : ReportMeta
 
-@Immutable
 @Serializable
 data class MarkdownReportMeta(
   @SerialName("content") val content: String,
   @SerialName("text_align") val textAlign: TextAlign? = null,
 ) : ReportMeta
 
-@Immutable
 @Serializable
 data class SummaryReportMeta(
   @SerialName("name") val name: String? = null,
@@ -124,7 +115,6 @@ data class SummaryReportMeta(
   @SerialName("content") val content: String? = null,
 ) : ReportMeta
 
-@Immutable
 @Serializable
 data class CalendarReportMeta(
   @SerialName("name") val name: String? = null,
@@ -133,7 +123,6 @@ data class CalendarReportMeta(
   @SerialName("timeFrame") val timeFrame: TimeFrame? = null,
 ) : ReportMeta
 
-@Immutable
 @Serializable
 data class FormulaReportMeta(
   @SerialName("name") val name: String? = null,
@@ -147,7 +136,6 @@ data class FormulaReportMeta(
   @SerialName("queries") val queries: Map<String, FormulaQuery> = emptyMap(),
 ) : ReportMeta
 
-@Immutable
 @Serializable
 data class CrossoverReportMeta(
   @SerialName("name") val name: String? = null,
@@ -162,7 +150,6 @@ data class CrossoverReportMeta(
   @SerialName("expenseAdjustmentFactor") val expenseAdjustmentFactor: Double? = null,
 ) : ReportMeta
 
-@Immutable
 @Serializable
 data class SankeyReportMeta(
   @SerialName("name") val name: String? = null,
@@ -179,7 +166,6 @@ data class SankeyReportMeta(
   @SerialName("layerTo") val layerTo: String? = null,
 ) : ReportMeta
 
-@Immutable
 @Serializable
 data class BalanceForecastReportMeta(
   @SerialName("name") val name: String? = null,
@@ -193,7 +179,6 @@ data class BalanceForecastReportMeta(
   @SerialName("source") val source: ForecastSource? = null,
 ) : ReportMeta
 
-@Immutable
 @Serializable
 data class AgeOfMoneyReportMeta(
   @SerialName("name") val name: String? = null,
@@ -203,15 +188,14 @@ data class AgeOfMoneyReportMeta(
   @SerialName("granularity") val granularity: AgeOfMoneyGranularity? = null,
 ) : ReportMeta
 
-@Immutable
 @Serializable
+@Immutable
 data class FormulaQuery(
   @SerialName("conditions") val conditions: List<Condition>,
   @SerialName("conditionsOp") val conditionsOp: ConditionOp?,
   @SerialName("timeFrame") val timeFrame: TimeFrame?,
 )
 
-@Immutable
 @Serializable
 data class TimeFrame(
   @SerialName("start") @Serializable(LenientYearMonthSerializer::class) val start: YearMonth,

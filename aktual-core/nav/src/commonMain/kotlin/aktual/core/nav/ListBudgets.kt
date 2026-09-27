@@ -9,4 +9,4 @@ class ListBudgetsNavigator(private val stack: NavStack<NavKey>) {
   operator fun invoke() = stack.replaceAll(ListBudgetsNavRoute)
 }
 
-@Immutable @Serializable data object ListBudgetsNavRoute : NavKey
+@Serializable data object ListBudgetsNavRoute : NavKey

@@ -4,7 +4,7 @@ import aktual.budget.model.RuleId
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableSet
 
-@Immutable internal sealed interface ListRulesAction
+internal sealed interface ListRulesAction
 
 internal data object Reload : ListRulesAction
 

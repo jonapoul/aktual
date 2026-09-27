@@ -1,7 +1,6 @@
 package aktual.budget.model
 
 import alakazam.kotlin.parse
-import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.minus
 import kotlinx.collections.immutable.persistentMapOf
@@ -24,7 +23,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.jsonPrimitive
 
-@Immutable
 @Serializable(DbMetadata.Serializer::class)
 data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) :
   Iterable<Pair<DbMetadata.Key<*>, Any?>> {

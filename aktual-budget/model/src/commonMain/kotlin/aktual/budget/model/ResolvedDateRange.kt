@@ -1,11 +1,10 @@
 package aktual.budget.model
 
-import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 
-@Immutable data class ResolvedDateRange(val start: LocalDate, val end: LocalDate)
+data class ResolvedDateRange(val start: LocalDate, val end: LocalDate)
 
 @Suppress("MagicNumber")
 fun DateRangeType.resolve(today: LocalDate): ResolvedDateRange {

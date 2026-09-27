@@ -30,7 +30,6 @@ import aktual.prefs.SystemUiPreferences
 import aktual.prefs.asStateFlow
 import aktual.prefs.delete
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -66,7 +65,6 @@ class HazeConfigUseCase(private val preferences: SystemUiPreferences) {
     }
 }
 
-@Immutable
 data class FormatConfig(
   val dateFormat: DateFormat,
   val numberFormat: NumberFormat,

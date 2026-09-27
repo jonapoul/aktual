@@ -1,5 +1,6 @@
 package aktual.prefs
 
+import androidx.compose.runtime.Stable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
+@Stable
 interface NullablePreference<T : Any> {
   val default: T?
 
@@ -18,6 +20,7 @@ interface NullablePreference<T : Any> {
   fun asFlow(): Flow<T?>
 }
 
+@Stable
 interface Preference<T : Any> : NullablePreference<T> {
   override val default: T
 
