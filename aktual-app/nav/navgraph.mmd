@@ -21,6 +21,7 @@ flowchart TD
     editTag["Edit Tag"]
     searchTags["Search Tags"]
     listSchedules["List Schedules"]
+    editSchedule["Edit Schedule"]
     searchSchedules["Search Schedules"]
   end
 
@@ -58,4 +59,6 @@ flowchart TD
   listTags --tap search--> searchTags
   searchTags --tap tag--> editTag
 
+  listSchedules --tap schedule--> editSchedule
   listSchedules --tap search--> searchSchedules
+  searchSchedules --tap schedule--> editSchedule
