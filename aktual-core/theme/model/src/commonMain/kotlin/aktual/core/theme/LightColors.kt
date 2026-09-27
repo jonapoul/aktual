@@ -1,10 +1,8 @@
 package aktual.core.theme
 
 import aktual.core.model.ThemeId
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
-@Immutable
 data object LightColors : DefaultColors {
   override val id = ThemeId("Light")
   override val isLight = true

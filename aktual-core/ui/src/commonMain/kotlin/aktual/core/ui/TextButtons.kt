@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
+@NonRestartableComposable
 fun PrimaryTextButton(
   text: String,
   onClick: () -> Unit,
@@ -118,6 +120,7 @@ fun PrimaryTextButtonWithLoading(
 }
 
 @Composable
+@NonRestartableComposable
 fun NormalTextButton(
   text: String,
   onClick: () -> Unit,
@@ -154,6 +157,7 @@ fun NormalTextButton(
 }
 
 @Composable
+@NonRestartableComposable
 fun BareTextButton(
   text: String,
   onClick: () -> Unit,

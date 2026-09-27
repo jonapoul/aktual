@@ -3,7 +3,7 @@ package aktual.account.ui.password
 import aktual.core.model.Password
 import androidx.compose.runtime.Immutable
 
-@Immutable internal sealed interface PasswordAction
+internal sealed interface PasswordAction
 
 internal data object NavBack : PasswordAction
 

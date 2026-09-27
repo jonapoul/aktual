@@ -4,7 +4,6 @@ import aktual.core.AppCloser
 import android.app.Activity
 import androidx.activity.compose.BackHandler as AndroidBackHandler
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 
@@ -19,7 +18,6 @@ actual fun rememberAppCloser(): AppCloser {
   }
 }
 
-@Immutable
 private class AndroidAppCloser(private val activity: () -> Activity) : AppCloser {
   override operator fun invoke() {
     activity().finish()

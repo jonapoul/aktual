@@ -2,7 +2,7 @@ package aktual.prefs.ui.root
 
 import androidx.compose.runtime.Immutable
 
-@Immutable internal sealed interface SettingsAction
+internal sealed interface SettingsAction
 
 internal data object NavBack : SettingsAction
 

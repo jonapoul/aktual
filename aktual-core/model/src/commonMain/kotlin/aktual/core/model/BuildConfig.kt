@@ -1,7 +1,9 @@
 package aktual.core.model
 
+import androidx.compose.runtime.Immutable
 import kotlin.time.Instant
 
+@Immutable
 data class BuildConfig(
   val isDebug: Boolean,
   val versionCode: Int,

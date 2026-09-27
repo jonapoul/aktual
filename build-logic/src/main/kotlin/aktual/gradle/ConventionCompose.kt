@@ -12,6 +12,8 @@ import blueprint.core.get
 import blueprint.core.libs
 import blueprint.core.withAnyId
 import com.android.build.api.dsl.CommonExtension
+import com.skydoves.compose.stability.gradle.StabilityAnalyzerExtension
+import com.skydoves.compose.stability.gradle.StabilityAnalyzerGradlePlugin
 import org.gradle.api.Project
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ComposePlugin
@@ -26,6 +28,7 @@ class ConventionCompose : ProjectPlugin {
       apply(ConventionKotlinBase::class)
       apply(ComposeCompilerGradleSubplugin::class)
       apply(ComposePlugin::class)
+      apply(StabilityAnalyzerGradlePlugin::class)
     }
 
     pluginManager.withPlugin("com.android.base") {
@@ -66,6 +69,17 @@ class ConventionCompose : ProjectPlugin {
             extensions.getByType(ComposePlugin.Dependencies::class.java).desktop.currentOs
           )
         }
+      }
+    }
+
+    extensions.configure(StabilityAnalyzerExtension::class) {
+      stabilityConfigurationFiles.add(stabilityFile)
+      stabilityValidation.enabled.set(false)
+
+      traceAll { t ->
+        t.enabled.set(true)
+        t.threshold.set(2)
+        t.variants.set(listOf("debug"))
       }
     }
   }

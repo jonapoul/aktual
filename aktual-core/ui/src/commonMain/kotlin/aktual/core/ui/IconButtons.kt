@@ -15,6 +15,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -25,6 +26,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 
 @Composable
+@NonRestartableComposable
 fun PrimaryIconButton(
   imageVector: ImageVector,
   contentDescription: String?,
@@ -54,6 +56,7 @@ fun PrimaryIconButton(
 }
 
 @Composable
+@NonRestartableComposable
 fun NormalIconButton(
   imageVector: ImageVector,
   contentDescription: String?,
@@ -83,6 +86,7 @@ fun NormalIconButton(
 }
 
 @Composable
+@NonRestartableComposable
 fun BareIconButton(
   imageVector: ImageVector,
   contentDescription: String?,

@@ -13,7 +13,7 @@ import aktual.budget.model.Field
 import aktual.budget.model.PayeeId
 import aktual.budget.model.ScheduleId
 import aktual.di.BudgetScope
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import dev.zacsweers.metro.ContributesBinding
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -21,7 +21,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 
-@Immutable
+@Stable
 interface NameFetcher {
   fun name(field: Field, id: String): Flow<String?>
 

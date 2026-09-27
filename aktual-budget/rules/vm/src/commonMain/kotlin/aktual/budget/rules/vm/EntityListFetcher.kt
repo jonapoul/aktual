@@ -6,14 +6,12 @@ import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.CategoryGroupDao
 import aktual.budget.db.dao.PayeeDao
 import aktual.di.BudgetScope
-import androidx.compose.runtime.Immutable
 import dev.zacsweers.metro.ContributesBinding
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
-@Immutable data class EntitySummary(val id: String, val name: String)
+data class EntitySummary(val id: String, val name: String)
 
-@Immutable
 interface EntityListFetcher {
   suspend fun payees(): ImmutableList<EntitySummary>
 

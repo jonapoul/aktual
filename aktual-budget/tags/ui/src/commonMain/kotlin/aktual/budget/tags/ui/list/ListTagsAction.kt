@@ -4,7 +4,7 @@ import aktual.budget.model.TagId
 import aktual.budget.model.TagSort
 import androidx.compose.runtime.Immutable
 
-@Immutable internal sealed interface ListTagsAction
+internal sealed interface ListTagsAction
 
 internal data object Reload : ListTagsAction
 

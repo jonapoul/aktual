@@ -15,7 +15,6 @@ import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.ResettableStateFlow
 import alakazam.kotlin.collectFlow
 import alakazam.kotlin.requireMessage
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -187,14 +186,12 @@ class ServerUrlViewModel(
     }
 }
 
-@Immutable
 internal sealed interface ConfirmResult {
   data class Failed(val reason: String) : ConfirmResult
 
   data class Succeeded(val isBootstrapped: Boolean) : ConfirmResult
 }
 
-@Immutable
 sealed interface NavDestination {
   data object ToBootstrap : NavDestination
 

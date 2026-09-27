@@ -7,7 +7,6 @@ import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -64,7 +63,7 @@ internal fun PieChart(
   }
 }
 
-@Immutable internal data class PieSlice(val value: Float, val color: Color)
+internal data class PieSlice(val value: Float, val color: Color)
 
 @Suppress("MagicNumber")
 private fun DrawScope.drawPie(

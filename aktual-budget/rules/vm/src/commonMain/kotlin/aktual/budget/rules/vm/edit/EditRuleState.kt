@@ -14,7 +14,6 @@ sealed interface EditRuleState {
       get() = !rule.hasUnknownValues
   }
 
-  @Immutable
   sealed interface Failure : EditRuleState {
     data object NoMatch : Failure
 

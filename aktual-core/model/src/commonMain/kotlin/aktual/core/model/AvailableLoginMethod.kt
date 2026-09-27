@@ -1,6 +1,5 @@
 package aktual.core.model
 
-import androidx.compose.runtime.Immutable
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -8,7 +7,6 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-@Immutable
 @Serializable
 data class AvailableLoginMethod(
   @SerialName("method") val method: LoginMethod,

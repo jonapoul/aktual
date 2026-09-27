@@ -9,7 +9,6 @@ import kotlinx.collections.immutable.toImmutableList
 sealed interface LicensesState {
   data object Loading : LicensesState
 
-  @Immutable
   data class Loaded(
     val artifacts: ImmutableList<ArtifactDetail>,
     val filterText: String,

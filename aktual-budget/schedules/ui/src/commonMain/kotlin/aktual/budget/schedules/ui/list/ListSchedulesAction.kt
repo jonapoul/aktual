@@ -3,7 +3,7 @@ package aktual.budget.schedules.ui.list
 import aktual.budget.model.ScheduleId
 import androidx.compose.runtime.Immutable
 
-@Immutable internal sealed interface ListSchedulesAction
+internal sealed interface ListSchedulesAction
 
 internal data object Reload : ListSchedulesAction
 

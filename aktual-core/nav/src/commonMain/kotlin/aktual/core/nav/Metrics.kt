@@ -9,4 +9,4 @@ class MetricsNavigator(private val stack: NavStack<NavKey>) {
   operator fun invoke() = stack.push(MetricsNavRoute)
 }
 
-@Immutable @Serializable data object MetricsNavRoute : NavKey
+@Serializable data object MetricsNavRoute : NavKey

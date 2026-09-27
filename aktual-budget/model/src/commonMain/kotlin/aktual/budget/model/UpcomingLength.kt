@@ -1,5 +1,3 @@
-@file:Suppress("StringLiteralDuplication")
-
 package aktual.budget.model
 
 import kotlinx.datetime.LocalDate
@@ -11,19 +9,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-
-enum class UpcomingLengthOptions(val value: String) {
-  OneDay("1"),
-  OneWeek("7"),
-  TwoWeeks("14"),
-  OneMonth("oneMonth"),
-  CurrentMonth("currentMonth"),
-  Custom("custom");
-
-  companion object {
-    fun from(value: String): UpcomingLengthOptions? = entries.firstOrNull { it.value == value }
-  }
-}
 
 // packages/loot-core/src/shared/schedules.ts
 @Serializable(UpcomingLengthSerializer::class)

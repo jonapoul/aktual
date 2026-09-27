@@ -1,8 +1,10 @@
 package aktual.budget.model
 
 import alakazam.kotlin.SerializableByString
+import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.toImmutableList
 
+@Immutable
 data class TagSort(val field: Field, val direction: Direction) {
   companion object {
     val Default = TagSort(Field.Default, Direction.Default)

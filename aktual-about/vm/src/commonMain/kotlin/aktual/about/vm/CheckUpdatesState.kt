@@ -1,9 +1,7 @@
 package aktual.about.vm
 
-import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
-@Immutable
 @Serializable
 sealed interface CheckUpdatesState {
   @Serializable data object Inactive : CheckUpdatesState

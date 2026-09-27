@@ -87,7 +87,7 @@ fun ChooseReportTypeScreen(
     onAction = { action ->
       when (action) {
         is Create -> viewModel.createReport(action.type)
-        ShowDisabledDialog -> viewModel.show(ChooseReportTypeDialog.UnsupportedType)
+        ShowDisabledDialog -> viewModel.show(UnsupportedType)
         DismissDialog -> viewModel.hideDialogs()
       }
     },
@@ -207,42 +207,42 @@ private fun WidgetType(
 @Suppress("NotImplementedDeclaration")
 private fun WidgetType.sampleData(): ChartData =
   when (this) {
-    WidgetType.NetWorth -> PREVIEW_NET_WORTH_DATA
-    WidgetType.CashFlow -> PREVIEW_CASH_FLOW_DATA
-    WidgetType.Spending -> JUL_2025
-    WidgetType.Custom -> PREVIEW_CUSTOM_DATA
-    WidgetType.Markdown -> PREVIEW_SHORT_TEXT_DATA
-    WidgetType.Summary -> PER_TRANSACTION_DATA
-    WidgetType.Calendar -> THREE_MONTHS
-    WidgetType.BudgetAnalysis -> TODO("https://github.com/jonapoul/aktual/issues/839")
-    WidgetType.Formula -> TODO("https://github.com/jonapoul/aktual/issues/1054")
-    WidgetType.Crossover -> PREVIEW_CROSSOVER_DATA
-    WidgetType.Sankey -> TODO("https://github.com/jonapoul/aktual/issues/1541")
-    WidgetType.BalanceForecast -> TODO("https://github.com/jonapoul/aktual/issues/1542")
-    WidgetType.AgeOfMoney -> PREVIEW_AGE_OF_MONEY_DATA
-    WidgetType.MonteCarlo -> TODO("https://github.com/jonapoul/aktual/issues/1544")
-    WidgetType.Unknown -> error("No sample data for $this")
+    NetWorth -> PREVIEW_NET_WORTH_DATA
+    CashFlow -> PREVIEW_CASH_FLOW_DATA
+    Spending -> JUL_2025
+    Custom -> PREVIEW_CUSTOM_DATA
+    Markdown -> PREVIEW_SHORT_TEXT_DATA
+    Summary -> PER_TRANSACTION_DATA
+    Calendar -> THREE_MONTHS
+    BudgetAnalysis -> TODO("https://github.com/jonapoul/aktual/issues/839")
+    Formula -> TODO("https://github.com/jonapoul/aktual/issues/1054")
+    Crossover -> PREVIEW_CROSSOVER_DATA
+    Sankey -> TODO("https://github.com/jonapoul/aktual/issues/1541")
+    BalanceForecast -> TODO("https://github.com/jonapoul/aktual/issues/1542")
+    AgeOfMoney -> PREVIEW_AGE_OF_MONEY_DATA
+    MonteCarlo -> TODO("https://github.com/jonapoul/aktual/issues/1544")
+    Unknown -> error("No sample data for $this")
   }
 
 @Stable
 private fun WidgetType.isEnabled(): Boolean =
   when (this) {
-    WidgetType.BudgetAnalysis,
-    WidgetType.Formula,
-    WidgetType.Custom,
-    WidgetType.Sankey,
-    WidgetType.BalanceForecast,
-    WidgetType.MonteCarlo,
-    WidgetType.Unknown -> false
+    BudgetAnalysis,
+    Formula,
+    Custom,
+    Sankey,
+    BalanceForecast,
+    MonteCarlo,
+    Unknown -> false
 
-    WidgetType.NetWorth,
-    WidgetType.CashFlow,
-    WidgetType.Spending,
-    WidgetType.Markdown,
-    WidgetType.Summary,
-    WidgetType.Calendar,
-    WidgetType.Crossover,
-    WidgetType.AgeOfMoney -> true
+    NetWorth,
+    CashFlow,
+    Spending,
+    Markdown,
+    Summary,
+    Calendar,
+    Crossover,
+    AgeOfMoney -> true
   }
 
 // no sample data for these yet, so don't offer them
@@ -265,5 +265,5 @@ private data class ChooseReportTypeScaffoldParams(val dialog: ChooseReportTypeDi
 private class ChooseReportTypeScaffoldParameters :
   ColoredParameterProvider<ChooseReportTypeScaffoldParams>(
     ChooseReportTypeScaffoldParams(dialog = null),
-    ChooseReportTypeScaffoldParams(dialog = ChooseReportTypeDialog.UnsupportedType),
+    ChooseReportTypeScaffoldParams(dialog = UnsupportedType),
   )
