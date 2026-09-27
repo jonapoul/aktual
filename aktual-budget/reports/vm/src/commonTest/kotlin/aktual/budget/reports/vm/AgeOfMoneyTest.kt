@@ -2,6 +2,7 @@ package aktual.budget.reports.vm
 
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.extracting
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
@@ -21,7 +22,7 @@ class AgeOfMoneyTest {
   fun `Simple FIFO match`() {
     val result = calculateAges(listOf(income("2024-01-01", 1000), expense("2024-01-15", 500)))
 
-    assertThat(result.ages.map { it.age }).containsExactly(14)
+    assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(14)
     assertThat(result.insufficientData).isFalse()
   }
 
@@ -32,7 +33,7 @@ class AgeOfMoneyTest {
         listOf(income("2024-01-01", 500), income("2024-01-15", 500), expense("2024-02-01", 400))
       )
 
-    assertThat(result.ages.map { it.age }).containsExactly(31)
+    assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(31)
   }
 
   @Test
@@ -42,7 +43,7 @@ class AgeOfMoneyTest {
         listOf(income("2024-01-01", 200), income("2024-01-15", 300), expense("2024-02-01", 400))
       )
 
-    assertThat(result.ages.map { it.age }).containsExactly(17)
+    assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(17)
   }
 
   @Test
@@ -57,7 +58,7 @@ class AgeOfMoneyTest {
         )
       )
 
-    assertThat(result.ages.map { it.age }).containsExactly(9, 19, 29)
+    assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(9, 19, 29)
     assertThat(result.insufficientData).isFalse()
   }
 
@@ -88,7 +89,7 @@ class AgeOfMoneyTest {
   fun `Same day income and expense is zero days old`() {
     val result = calculateAges(listOf(income("2024-01-15", 1000), expense("2024-01-15", 500)))
 
-    assertThat(result.ages.map { it.age }).containsExactly(0)
+    assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(0)
   }
 
   @Test
@@ -201,7 +202,7 @@ class AgeOfMoneyTest {
       )
 
     // The second expense drains the rest of January's income, then dips into February's
-    assertThat(result.ages.map { it.age }).containsExactly(9, 14)
+    assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(9, 14)
     assertThat(result.insufficientData).isFalse()
   }
 
