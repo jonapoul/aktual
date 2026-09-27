@@ -16,8 +16,7 @@ class JvmViewModelSmokeTest : ViewModelSmokeTest<TestJvmAppGraph>() {
     )
 
   // Wait for in-flight DB queries to finish, otherwise they fail once the graph closes and the temp
-  // dir is deleted, and
-  // the exception gets reported against whichever test runs next
+  // dir is deleted, and the exception gets reported against whichever test runs next
   override fun cancelViewModelScope(scope: CoroutineScope) = runBlocking {
     scope.coroutineContext.job.cancelAndJoin()
   }
