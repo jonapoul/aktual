@@ -39,6 +39,7 @@ internal fun UnsupportedChart(data: UnsupportedData, modifier: Modifier = Modifi
           when (data.reason) {
             Filters -> Strings.reportsUnsupportedFilters
             ReportType -> Strings.reportsUnsupportedType
+            SankeyBudgeted -> Strings.reportsUnsupportedSankeyBudgeted
           },
         color = colors.pageTextSubdued,
         textAlign = TextAlign.Center,

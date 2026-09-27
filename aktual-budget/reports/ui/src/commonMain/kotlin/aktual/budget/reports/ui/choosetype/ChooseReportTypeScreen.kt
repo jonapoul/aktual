@@ -9,6 +9,7 @@ import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CROSSOVER_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CUSTOM_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
+import aktual.budget.reports.ui.charts.PREVIEW_SANKEY_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_SHORT_TEXT_DATA
 import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.ui.charts.THREE_MONTHS
@@ -217,7 +218,7 @@ private fun WidgetType.sampleData(): ChartData =
     BudgetAnalysis -> TODO("https://github.com/jonapoul/aktual/issues/839")
     Formula -> TODO("https://github.com/jonapoul/aktual/issues/1054")
     Crossover -> PREVIEW_CROSSOVER_DATA
-    Sankey -> TODO("https://github.com/jonapoul/aktual/issues/1541")
+    Sankey -> PREVIEW_SANKEY_DATA
     BalanceForecast -> TODO("https://github.com/jonapoul/aktual/issues/1542")
     AgeOfMoney -> PREVIEW_AGE_OF_MONEY_DATA
     MonteCarlo -> TODO("https://github.com/jonapoul/aktual/issues/1544")
@@ -230,7 +231,6 @@ private fun WidgetType.isEnabled(): Boolean =
     BudgetAnalysis,
     Formula,
     Custom,
-    Sankey,
     BalanceForecast,
     MonteCarlo,
     Unknown -> false
@@ -242,13 +242,14 @@ private fun WidgetType.isEnabled(): Boolean =
     Summary,
     Calendar,
     Crossover,
+    Sankey,
     AgeOfMoney -> true
   }
 
 // no sample data for these yet, so don't offer them
 private val ChoosableTypes =
   WidgetType.known
-    .filter { it !in setOf<WidgetType>(Sankey, BalanceForecast, MonteCarlo) }
+    .filter { it !in setOf<WidgetType>(BalanceForecast, MonteCarlo) }
     .toImmutableList()
 
 private val REPORT_HEIGHT = 250.dp

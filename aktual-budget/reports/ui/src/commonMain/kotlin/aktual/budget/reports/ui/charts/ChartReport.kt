@@ -8,6 +8,7 @@ import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.CrossoverData
 import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.NetWorthData
+import aktual.budget.reports.vm.SankeyData
 import aktual.budget.reports.vm.SpendingData
 import aktual.budget.reports.vm.SummaryData
 import aktual.budget.reports.vm.TextData
@@ -28,6 +29,7 @@ internal fun ReportChart(
     is CashFlowData -> CashFlowChart(data, compact, modifier, includeHeader)
     is CrossoverData -> CrossoverChart(data, compact, modifier, includeHeader)
     is NetWorthData -> NetWorthChart(data, compact, modifier, includeHeader)
+    is SankeyData -> SankeyChart(data, compact, modifier, includeHeader)
     is SummaryData -> SummaryChart(data, compact, onAction, modifier, includeHeader)
     is CalendarData -> CalendarChart(data, compact, onAction, modifier, includeHeader)
     is SpendingData -> SpendingChart(data, compact, modifier, includeHeader)

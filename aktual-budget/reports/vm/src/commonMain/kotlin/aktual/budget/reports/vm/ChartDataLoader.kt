@@ -1,9 +1,13 @@
 package aktual.budget.reports.vm
 
+import aktual.budget.db.SankeyCategoryTotals
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.db.reports.CashFlowByMonth
+import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
+import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
+import aktual.budget.model.PayeeId
 import aktual.budget.model.WidgetType
 import aktual.core.Calendar
 import dev.zacsweers.metro.Inject
@@ -32,13 +36,13 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
       is CrossoverReportMeta -> crossover(meta)
       is MarkdownReportMeta -> text(meta)
       is NetWorthReportMeta -> netWorth(meta)
+      is SankeyReportMeta -> sankey(meta)
       is BalanceForecastReportMeta,
       is BudgetAnalysisReportMeta,
       is CalendarReportMeta,
       is CustomReportMeta,
       is FormulaReportMeta,
       is MonteCarloReportMeta,
-      is SankeyReportMeta,
       is SpendingReportMeta,
       is SummaryReportMeta,
       is UnsupportedReportMeta -> unsupported(meta, ReportType)
@@ -223,6 +227,103 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
         )
       }
     }
+
+  // packages/desktop-client/src/components/reports/reports/SankeyCard.tsx
+  fun sankey(meta: SankeyReportMeta): Flow<ChartData> {
+    if (meta.conditions.hasFilters()) return unsupported(meta, Filters)
+    if (meta.mode == Budgeted) return unsupported(meta, SankeyBudgeted)
+
+    val params =
+      SankeyParams(
+        topN = meta.topNCategories ?: DEFAULT_TOP_N_CATEGORIES,
+        sort = meta.categorySort ?: PerGroup,
+        layerFrom = SankeyLayer.parse(meta.layerFrom) ?: IncomePayee,
+        layerTo = SankeyLayer.parse(meta.layerTo) ?: Category,
+        groupAccounts = meta.groupAccounts == true,
+        showPercentages = meta.showPercentages == true,
+      )
+    val showTransfers = meta.showTransfers == true && !params.groupAccounts
+
+    return dao.observeTransactionDateBounds().flatMapLatest { bounds ->
+      val today = calendar.today()
+      val range =
+        resolveTimeRange(
+          timeFrame = meta.timeFrame,
+          default = null,
+          today = today,
+          latestTransaction = bounds.latest,
+        )
+      val earliest = bounds.earliest?.yearMonth ?: today.yearMonth
+      val latest = bounds.latest?.yearMonth ?: today.yearMonth
+      val start = range.start.coerceIn(earliest, latest)
+      val end = range.endInclusive.coerceIn(earliest, latest).coerceAtLeast(start)
+
+      val transfers =
+        if (showTransfers) {
+          dao.observeSankeyTransfers(start.firstDay, end.lastDay)
+        } else {
+          flowOf(emptyList())
+        }
+
+      combine(dao.observeSankeyCategoryTotals(start.firstDay, end.lastDay), transfers) {
+        rows,
+        transferRows ->
+        calculateSankey(
+          title = meta.name,
+          start = start,
+          end = end,
+          entries = sankeyEntries(rows),
+          transfers =
+            aggregateTransferPairs(
+              transferRows.mapNotNull { row ->
+                SankeyTransfer(
+                  id = row.id.value,
+                  transferId = row.transfer_id?.value ?: return@mapNotNull null,
+                  amount = row.amount,
+                  accountId = row.account.value,
+                  accountName = row.account_name.orEmpty(),
+                )
+              }
+            ),
+          categoryOrder = budgetOrder(rows),
+          params = params,
+        )
+      }
+    }
+  }
+
+  // Expense totals are split by account, income totals by account and payee
+  private fun sankeyEntries(rows: List<SankeyCategoryTotals>): List<SankeyEntry> {
+    val entries = LinkedHashMap<Triple<CategoryId, AccountId, PayeeId?>, SankeyEntry>()
+    for (row in rows) {
+      val isIncome = row.is_income == true
+      val payee = row.payee.takeIf { isIncome }
+      val key = Triple(row.category, row.account, payee)
+      val existing = entries[key]
+      entries[key] =
+        existing?.copy(total = existing.total + row.total)
+          ?: SankeyEntry(
+            categoryGroupId = row.category_group.value,
+            categoryGroup = row.group_name.orEmpty(),
+            categoryId = row.category.value,
+            category = row.category_name.orEmpty(),
+            isIncome = isIncome,
+            total = row.total,
+            accountId = row.account.value,
+            accountName = row.account_name.orEmpty(),
+            payeeId = payee?.value,
+            payeeName = row.payee_name.takeIf { isIncome },
+          )
+    }
+    return entries.values.toList()
+  }
+
+  private fun budgetOrder(rows: List<SankeyCategoryTotals>): List<String> =
+    rows
+      .distinctBy { it.category }
+      .sortedWith(compareBy({ it.group_sort_order }, { it.category_sort_order }))
+      .groupBy { it.category_group }
+      .flatMap { (group, categories) -> listOf(group.value) + categories.map { it.category.value } }
 
   fun unsupported(meta: ReportMeta, reason: UnsupportedReason): Flow<ChartData> {
     val (type, name) =

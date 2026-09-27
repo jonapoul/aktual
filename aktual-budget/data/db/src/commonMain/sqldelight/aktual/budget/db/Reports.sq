@@ -84,3 +84,33 @@ FROM v_transactions_internal_alive t
 JOIN accounts a ON a.id = t.account
 WHERE t.is_parent = 0 AND t.date >= :start AND t.date <= :end
 GROUP BY month, a.id;
+
+-- packages/desktop-client/src/components/reports/spreadsheets/sankey-spreadsheet.ts fetchCategoryData()
+sankeyCategoryTotals:
+SELECT
+  c.id AS category,
+  c.name AS category_name,
+  c.sort_order AS category_sort_order,
+  g.id AS category_group,
+  g.name AS group_name,
+  g.sort_order AS group_sort_order,
+  g.is_income,
+  a.id AS account,
+  a.name AS account_name,
+  p.id AS payee,
+  p.name AS payee_name,
+  IFNULL(SUM(t.amount), 0) AS total
+FROM v_transactions_internal_alive t
+JOIN categories c ON c.id = t.category AND c.tombstone = 0
+JOIN category_groups g ON g.id = c.cat_group AND g.tombstone = 0
+JOIN accounts a ON a.id = t.account AND a.tombstone = 0
+LEFT JOIN payees p ON p.id = t.payee AND p.tombstone = 0
+WHERE t.is_parent = 0 AND t.date >= :start AND t.date <= :end
+GROUP BY c.id, a.id, p.id;
+
+-- packages/desktop-client/src/components/reports/spreadsheets/sankey-spreadsheet.ts fetchTransferData()
+sankeyTransfers:
+SELECT t.id, t.amount, a.id AS account, a.name AS account_name, t.transfer_id
+FROM v_transactions_internal_alive t
+JOIN accounts a ON a.id = t.account AND a.tombstone = 0 AND a.offbudget = 0
+WHERE t.is_parent = 0 AND t.transfer_id IS NOT NULL AND t.date >= :start AND t.date <= :end;
