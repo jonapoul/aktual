@@ -212,7 +212,7 @@ class BudgetReconcilerTest {
   }
 
   private fun seedLocal(id: BudgetId, groupId: String, name: String) {
-    files.writeMetadata(DbMetadata(cloudFileId = id, groupId = groupId, budgetName = name))
+    files.writeMetadata(id, DbMetadata(cloudFileId = id, groupId = groupId, budgetName = name))
   }
 
   private fun userFile(id: String, groupId: String, name: String, encryptKeyId: KeyId? = null) =

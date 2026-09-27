@@ -104,7 +104,7 @@ class ListBudgetsViewModel(
       }
 
       // Already downloaded, so open it straight away and fetch any changes since the last sync
-      runLevels.onBudget(metadata).syncController.schedule()
+      runLevels.onBudget(id, metadata).syncController.schedule()
       navToBudget(id)
     }
   }
@@ -118,9 +118,17 @@ class ListBudgetsViewModel(
     mutableEvent.emit(NavToBudget)
   }
 
-  // Encrypted budgets without a stored key go through the full sync so the user gets asked for it
+  // Encrypted budgets without a stored key go through the full sync so the user gets asked for it.
+  // Local-only budgets are already decrypted on disk, so they never need the key
   private fun Budget.canOpenLocally(): Boolean =
-    (this is Synced || this is Unknown) && (encryptKeyId == null || hasKey)
+    when (this) {
+      is Local -> true
+      is Synced,
+      is Unknown -> encryptKeyId == null || hasKey
+      is Remote,
+      is Detached,
+      is Broken -> false
+    }
 
   fun clearDeletingState() = mutableDeletingState.update { DeletingState.Inactive }
 

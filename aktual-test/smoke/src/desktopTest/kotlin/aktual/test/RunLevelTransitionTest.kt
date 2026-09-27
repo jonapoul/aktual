@@ -1,5 +1,7 @@
 package aktual.test
 
+import aktual.budget.model.BudgetId
+import aktual.budget.model.DbMetadata
 import aktual.di.BudgetGraph
 import aktual.di.LoggedInGraph
 import aktual.di.ServerChosenGraph
@@ -8,6 +10,7 @@ import assertk.assertThat
 import assertk.assertions.containsNone
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isTrue
@@ -41,7 +44,7 @@ class RunLevelTransitionTest {
       init(listOf(appGraph))
       onServerChosen(SERVER_URL)
       onLoggedIn(LOGIN_TOKEN)
-      onBudget(DB_METADATA)
+      onBudget(BUDGET_ID, DB_METADATA)
     }
   }
 
@@ -59,7 +62,7 @@ class RunLevelTransitionTest {
     appGraph.runLevelState.all().test {
       assertEmissionSize(4) // app, server-chosen, logged-in, budget A
 
-      appGraph.runLevelController.onBudget(SECOND_DB_METADATA)
+      appGraph.runLevelController.onBudget(SECOND_BUDGET_ID, SECOND_DB_METADATA)
 
       val levels = awaitItem()
       assertThat(levels).hasSize(4)
@@ -71,8 +74,18 @@ class RunLevelTransitionTest {
   // Closing a budget graph also ran the parent graphs' closeables, cancelling the app-wide scope
   @Test
   fun switchingBudgetKeepsAppScopeActive() {
-    appGraph.runLevelController.onBudget(SECOND_DB_METADATA)
+    appGraph.runLevelController.onBudget(SECOND_BUDGET_ID, SECOND_DB_METADATA)
     assertThat(appGraph.coroutineScope.isActive).isTrue()
+  }
+
+  // Opening a budget without a cloud file id threw, so local-only budgets couldn't be opened
+  @Test
+  fun openingLocalOnlyBudget() {
+    val id = BudgetId("local-only")
+    val budget = appGraph.runLevelController.onBudget(id, DbMetadata(budgetName = "Local"))
+    budget.syncController.schedule()
+    assertThat(budget.id).isEqualTo(id)
+    assertThat(appGraph.runLevelState[BudgetGraph::class]).isEqualTo(budget)
   }
 
   @Test
@@ -98,7 +111,7 @@ class RunLevelTransitionTest {
   @Test
   fun switchingBudgetCancelsPreviousBudgetScope() {
     val budgetScope = requireNotNull(appGraph.runLevelState[BudgetGraph::class]).coroutineScope
-    appGraph.runLevelController.onBudget(SECOND_DB_METADATA)
+    appGraph.runLevelController.onBudget(SECOND_BUDGET_ID, SECOND_DB_METADATA)
     assertThat(budgetScope.isActive).isFalse()
     val newBudgetScope = requireNotNull(appGraph.runLevelState[BudgetGraph::class]).coroutineScope
     assertThat(newBudgetScope.isActive).isTrue()

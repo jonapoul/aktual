@@ -86,7 +86,6 @@ fun ListBudgetsScreen(
     DeleteBudgetDialog(
       budget = budget,
       deletingState = deletingState,
-      localFileExists = budget !is Remote,
       onAction = { action ->
         when (action) {
           DeleteLocal -> {

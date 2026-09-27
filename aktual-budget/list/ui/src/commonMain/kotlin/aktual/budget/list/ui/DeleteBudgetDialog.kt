@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.sp
 internal fun DeleteBudgetDialog(
   budget: Budget,
   deletingState: DeletingState,
-  localFileExists: Boolean,
   onAction: DeleteDialogActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -61,7 +60,8 @@ internal fun DeleteBudgetDialog(
     content = {
       Content(
         deletingState = deletingState,
-        localFileExists = localFileExists,
+        localFileExists = budget !is Remote,
+        remoteFileExists = budget is Cloud && budget !is Broken,
         onDeleteLocal = { onAction(DeleteLocal) },
         onDeleteRemote = { onAction(DeleteRemote) },
       )
@@ -69,41 +69,43 @@ internal fun DeleteBudgetDialog(
   )
 }
 
-@Stable
 @Composable
-internal fun Content(
+private fun Content(
   deletingState: DeletingState,
   localFileExists: Boolean,
+  remoteFileExists: Boolean,
   onDeleteLocal: () -> Unit,
   onDeleteRemote: () -> Unit,
 ) {
   Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
-    Text(text = annotatedString(), fontSize = 14.sp)
-
     var hasPressedDeleteButton by remember { mutableStateOf(false) }
     val isNotDeleting = deletingState is Inactive
 
-    var firstCheckbox by remember { mutableStateOf(false) }
-    var secondCheckbox by remember { mutableStateOf(false) }
+    if (remoteFileExists) {
+      Text(text = annotatedString(), fontSize = 14.sp)
 
-    Row {
-      Switch(checked = firstCheckbox, onCheckedChange = { firstCheckbox = !firstCheckbox })
+      var firstCheckbox by remember { mutableStateOf(false) }
+      var secondCheckbox by remember { mutableStateOf(false) }
 
-      HorizontalSpacer(20.dp)
+      Row {
+        Switch(checked = firstCheckbox, onCheckedChange = { firstCheckbox = !firstCheckbox })
 
-      Switch(checked = secondCheckbox, onCheckedChange = { secondCheckbox = !secondCheckbox })
+        HorizontalSpacer(20.dp)
+
+        Switch(checked = secondCheckbox, onCheckedChange = { secondCheckbox = !secondCheckbox })
+      }
+
+      LoadableBareTextButton(
+        text = Strings.budgetDeleteDialogHostedButton,
+        colors = { pressed -> colors.errorPrimary(pressed) },
+        isEnabled = isNotDeleting && firstCheckbox && secondCheckbox,
+        isLoading = deletingState is Active && deletingState.deletingRemote,
+        onClick = {
+          hasPressedDeleteButton = true
+          onDeleteRemote()
+        },
+      )
     }
-
-    LoadableBareTextButton(
-      text = Strings.budgetDeleteDialogHostedButton,
-      colors = { pressed -> colors.errorPrimary(pressed) },
-      isEnabled = isNotDeleting && firstCheckbox && secondCheckbox,
-      isLoading = deletingState is Active && deletingState.deletingRemote,
-      onClick = {
-        hasPressedDeleteButton = true
-        onDeleteRemote()
-      },
-    )
 
     if (localFileExists) {
       Text(text = Strings.budgetDeleteDialogLocalTxt, fontSize = 14.sp)
@@ -186,13 +188,18 @@ private fun PreviewDeleteBudgetDialog(
     Content(
       deletingState = state,
       localFileExists = localFileExists,
+      remoteFileExists = remoteFileExists,
       onDeleteLocal = {},
       onDeleteRemote = {},
     )
   }
 }
 
-private data class DeleteBudgetDialogParams(val state: DeletingState, val localFileExists: Boolean)
+private data class DeleteBudgetDialogParams(
+  val state: DeletingState,
+  val localFileExists: Boolean,
+  val remoteFileExists: Boolean = true,
+)
 
 private class DeleteBudgetDialogProvider :
   ColoredParameterProvider<DeleteBudgetDialogParams>(
@@ -209,4 +216,5 @@ private class DeleteBudgetDialogProvider :
       state = DeletingState.Active(deletingRemote = true),
       localFileExists = false,
     ),
+    DeleteBudgetDialogParams(state = Inactive, localFileExists = true, remoteFileExists = false),
   )
