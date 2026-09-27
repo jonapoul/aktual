@@ -11,6 +11,7 @@ import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import logcat.logcat
@@ -39,12 +40,16 @@ internal class DashboardPages(
     prefs.update { meta -> meta.set(SelectedPageKey, id.value) }
   }
 
-  suspend fun create(name: String) {
+  suspend fun create(name: String): DashboardPageId {
     val id = uuidGenerator(::DashboardPageId)
     logcat.d { "Creating dashboard page $id" }
     sync.insertPage(id, name)
     select(id)
+    return id
   }
+
+  // Upstream's migration creates a "Main" page, but a budget can still end up with none
+  suspend fun selectedOrCreate(): DashboardPageId = selected.first()?.id ?: create(DEFAULT_NAME)
 
   suspend fun rename(id: DashboardPageId, name: String) {
     logcat.d { "Renaming dashboard page $id" }
@@ -58,6 +63,7 @@ internal class DashboardPages(
   }
 
   private companion object {
+    const val DEFAULT_NAME = "Main"
     val SelectedPageKey = DbMetadata.StringKey("reports.dashboardPage")
   }
 }

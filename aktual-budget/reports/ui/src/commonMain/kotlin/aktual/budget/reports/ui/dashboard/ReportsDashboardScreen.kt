@@ -40,6 +40,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
@@ -65,6 +66,8 @@ fun ReportsDashboardScreen(
   val pages by viewModel.allPages.collectAsStateWithLifecycle()
   val content by viewModel.content.collectAsStateWithLifecycle()
 
+  LaunchedEffect(viewModel) { viewModel.createReportEvents.collect(toCreateReport::invoke) }
+
   ReportsDashboardScaffold(
     pages = pages,
     selectedPage = content.page,
@@ -80,7 +83,7 @@ fun ReportsDashboardScreen(
         is SetAllTimeDivisor -> TODO()
         is ClickCalendarDay -> TODO()
         is SaveTextContent -> TODO()
-        CreateNewReport -> content.page?.let { page -> toCreateReport(page.id) }
+        CreateNewReport -> viewModel.createReport()
         is SelectPage -> viewModel.selectPage(action.id)
         is CreatePage -> viewModel.createPage(action.name)
         is RenamePage -> viewModel.renamePage(action.id, action.name)
