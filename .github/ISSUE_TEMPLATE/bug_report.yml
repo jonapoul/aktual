@@ -1,0 +1,23 @@
+name: Bug report
+description: Something isn't working
+labels: [bug]
+body:
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: Include steps to reproduce if you can
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: App version
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Platform
+      options:
+        - Android
+        - Desktop
+    validations:
+      required: true
