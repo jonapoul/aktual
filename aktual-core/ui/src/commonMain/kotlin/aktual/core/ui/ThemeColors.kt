@@ -123,6 +123,13 @@ fun Colors.normalButton(
   )
 
 @Composable
+fun Colors.errorButton(isPressed: Boolean): ButtonColors =
+  ButtonDefaults.buttonColors(
+    containerColor = if (isPressed) errorBorder else errorBackground,
+    contentColor = if (isPressed) errorBackground else errorText,
+  )
+
+@Composable
 fun Colors.bareButton(isPressed: Boolean): ButtonColors =
   ButtonDefaults.buttonColors(
     containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,

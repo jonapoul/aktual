@@ -31,6 +31,7 @@ import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.disabled
+import aktual.core.ui.errorButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.isCompactWidth
@@ -53,7 +54,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -64,7 +64,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -258,7 +257,7 @@ private fun ActionButtons(onAction: ManageStorageActionHandler) {
       text = Strings.storageClearAllFiles,
       onClick = { onAction(RequestClearAllFiles) },
       modifier = Modifier.fillMaxWidth(),
-      colors = { pressed -> errorButtonColors(pressed) },
+      colors = { pressed -> colors.errorButton(pressed) },
     )
   }
 }
@@ -509,14 +508,6 @@ private fun percentTotalStorage(state: ManageStorageState.Loaded): String {
     }
   return Strings.storagePercent(percentString)
 }
-
-@Stable
-@Composable
-private fun errorButtonColors(isPressed: Boolean) =
-  ButtonDefaults.buttonColors(
-    containerColor = if (isPressed) colors.buttonPrimaryBackground else colors.errorBackground,
-    contentColor = if (isPressed) colors.buttonPrimaryText else colors.errorText,
-  )
 
 @Suppress("MagicNumber")
 private val PreviewLoadedState =

@@ -13,6 +13,7 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.buttonTextStyle
+import aktual.core.ui.errorButton
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -97,7 +98,7 @@ private fun Content(
 
       LoadableBareTextButton(
         text = Strings.budgetDeleteDialogHostedButton,
-        colors = { pressed -> colors.errorPrimary(pressed) },
+        colors = { pressed -> colors.errorButton(pressed) },
         isEnabled = isNotDeleting && firstCheckbox && secondCheckbox,
         isLoading = deletingState is Active && deletingState.deletingRemote,
         onClick = {
@@ -161,14 +162,6 @@ fun annotatedString() = buildAnnotatedString {
   append(" ")
   append(Strings.budgetDeleteDialogHostedTxt3)
 }
-
-@Stable
-@Composable
-private fun Colors.errorPrimary(isPressed: Boolean) =
-  ButtonDefaults.buttonColors(
-    containerColor = if (isPressed) buttonPrimaryBackground else errorBackground,
-    contentColor = if (isPressed) buttonPrimaryText else errorText,
-  )
 
 @Stable
 @Composable
