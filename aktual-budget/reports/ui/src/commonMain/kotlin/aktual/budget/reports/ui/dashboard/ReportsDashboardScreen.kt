@@ -93,7 +93,7 @@ fun ReportsDashboardScreen(
         is SetAllTimeDivisor -> TODO()
         is ClickCalendarDay -> TODO()
         // Text is only edited from the report screen
-        is SaveTextContent,
+        is SaveText,
         is SetUnsavedText -> Unit
         CreateNewReport -> viewModel.createReport()
         OpenSearch -> toSearch()

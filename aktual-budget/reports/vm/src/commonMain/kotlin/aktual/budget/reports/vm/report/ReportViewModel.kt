@@ -4,6 +4,7 @@ import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.ChartDataLoader
 import aktual.budget.reports.vm.DashboardSync
+import aktual.budget.reports.vm.TextAlign
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
@@ -49,9 +50,9 @@ internal constructor(
       }
       .stateIn(viewModelScope, Eagerly, initialValue = ReportState.Loading)
 
-  fun saveTextContent(content: String) {
-    logcat.d { "Saving text content for $id" }
-    viewModelScope.launch { sync.setWidgetContent(id, content) }
+  fun saveText(content: String, align: TextAlign) {
+    logcat.d { "Saving text for $id" }
+    viewModelScope.launch { sync.setWidgetText(id, content, align) }
   }
 
   @AssistedFactory

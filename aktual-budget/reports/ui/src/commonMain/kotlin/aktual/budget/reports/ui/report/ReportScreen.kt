@@ -64,7 +64,7 @@ fun ReportScreen(
       @Suppress("ElseCaseInsteadOfExhaustiveWhen")
       when (action) {
         NavBack -> if (hasUnsavedText) showDiscardDialog = true else back()
-        is SaveTextContent -> viewModel.saveTextContent(action.content)
+        is SaveText -> viewModel.saveText(action.content, action.align)
         is SetUnsavedText -> hasUnsavedText = action.hasUnsavedText
         else -> Unit
       }

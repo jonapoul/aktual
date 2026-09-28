@@ -140,6 +140,9 @@
   <string name="reports_text_save">Save</string>
   <string name="reports_text_edit">Edit text</string>
   <string name="reports_text_placeholder">Write some markdown</string>
+  <string name="reports_text_align_left">Align left</string>
+  <string name="reports_text_align_center">Align center</string>
+  <string name="reports_text_align_right">Align right</string>
   <string name="reports_text_discard_title">Discard changes?</string>
   <string name="reports_text_discard_message">Your unsaved text will be lost.</string>
   <string name="reports_text_discard_cancel">Keep editing</string>

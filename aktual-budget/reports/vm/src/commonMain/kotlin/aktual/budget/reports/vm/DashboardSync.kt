@@ -15,6 +15,7 @@ import aktual.budget.model.WidgetType
 import aktual.budget.model.messageValue
 import aktual.budget.model.tombstone
 import dev.zacsweers.metro.Inject
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
@@ -48,13 +49,19 @@ internal class DashboardSync(
     )
   }
 
-  suspend fun renameWidget(id: WidgetId, name: String) = patchMeta(id, "name", name)
+  suspend fun renameWidget(id: WidgetId, name: String) =
+    patchMeta(id, "name" to JsonPrimitive(name))
 
-  suspend fun setWidgetContent(id: WidgetId, content: String) = patchMeta(id, "content", content)
+  suspend fun setWidgetText(id: WidgetId, content: String, align: TextAlign) =
+    patchMeta(
+      id,
+      "content" to JsonPrimitive(content),
+      "text_align" to DbJson.encodeToJsonElement(TextAlign.serializer(), align),
+    )
 
-  private suspend fun patchMeta(id: WidgetId, key: String, value: String) {
+  private suspend fun patchMeta(id: WidgetId, vararg values: Pair<String, JsonElement>) {
     val meta = dao.meta(id) ?: return
-    val patched = JsonObject(meta + (key to JsonPrimitive(value)))
+    val patched = JsonObject(meta + values)
     sync.syncChanges(
       LocalChange(DASHBOARD, id.value, "meta", DbJson.encodeToString(patched).messageValue())
     )

@@ -71,20 +71,20 @@ class DashboardSyncTest {
   }
 
   @Test
-  fun `Setting text content keeps other values`() = runSyncTest { dao ->
+  fun `Setting text keeps other values`() = runSyncTest { dao ->
     dao.insert(
       WIDGET,
       page = PAGE_1,
       type = Markdown,
       x = 0,
       y = 0,
-      meta = json("""{"content":"old","text_align":"center"}"""),
+      meta = json("""{"content":"old","text_align":"center","extra":1}"""),
     )
 
-    setWidgetContent(WIDGET, "# New")
+    setWidgetText(WIDGET, "# New", Right)
 
     val meta = dao.observeByPage(PAGE_1).first().single().meta
-    assertThat(meta).isEqualTo(json("""{"content":"# New","text_align":"center"}"""))
+    assertThat(meta).isEqualTo(json("""{"content":"# New","text_align":"right","extra":1}"""))
   }
 
   @Test

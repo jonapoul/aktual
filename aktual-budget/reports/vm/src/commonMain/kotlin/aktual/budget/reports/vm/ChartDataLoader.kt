@@ -48,7 +48,10 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
       is UnsupportedReportMeta -> unsupported(meta, ReportType)
     }
 
-  fun text(meta: MarkdownReportMeta): Flow<ChartData> = flowOf(TextData(meta.content))
+  fun text(meta: MarkdownReportMeta): Flow<ChartData> {
+    val align = meta.textAlign?.takeIf { it != Unknown } ?: TextAlign.Left
+    return flowOf(TextData(meta.content, align))
+  }
 
   // packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.tsx
   // cashFlowByDate()
