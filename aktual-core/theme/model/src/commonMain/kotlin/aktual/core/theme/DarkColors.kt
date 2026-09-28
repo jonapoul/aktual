@@ -93,6 +93,7 @@ data object DarkColors : DefaultColors {
   override val sidebarRedesignHeaderText = sidebarHeaderText
   override val sidebarRedesignTextSubdued = sidebarTextSubdued
   override val sidebarRedesignTextMuted = sidebarTextMuted
+  override val sidebarRedesignRightBorder = sidebarBorder
 
   override val menuBackground = ColorPalette.navy800
   override val menuItemBackground = ColorPalette.navy800
