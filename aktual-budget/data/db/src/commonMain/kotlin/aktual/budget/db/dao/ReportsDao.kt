@@ -5,6 +5,13 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.CrossoverBalancesByMonth
 import aktual.budget.db.CrossoverExpensesByMonth
 import aktual.budget.db.CrossoverStartingBalances
+import aktual.budget.db.ForecastAccounts
+import aktual.budget.db.ForecastDailyTotals
+import aktual.budget.db.ForecastPostedScheduleTransactions
+import aktual.budget.db.ForecastSchedules
+import aktual.budget.db.ForecastStartingBalances
+import aktual.budget.db.ForecastTrackingBudgetTotals
+import aktual.budget.db.ForecastTransferPayees
 import aktual.budget.db.NetWorthByMonth
 import aktual.budget.db.SankeyCategoryTotals
 import aktual.budget.db.SankeyTransfers
@@ -18,6 +25,7 @@ import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
 
 @Inject
 class ReportsDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
@@ -88,4 +96,52 @@ class ReportsDao(database: BudgetDatabase, private val contexts: CoroutineContex
 
   fun observeSankeyTransfers(start: LocalDate, end: LocalDate): Flow<List<SankeyTransfers>> =
     queries.sankeyTransfers(start, end).asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  fun observeForecastAccounts(): Flow<List<ForecastAccounts>> =
+    queries.forecastAccounts().asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  fun observeForecastStartingBalances(start: LocalDate): Flow<List<ForecastStartingBalances>> =
+    queries
+      .forecastStartingBalances(start)
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
+
+  fun observeForecastDailyTotals(
+    start: LocalDate,
+    end: LocalDate,
+  ): Flow<List<ForecastDailyTotals>> =
+    queries
+      .forecastDailyTotals(start, end)
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
+
+  fun observeForecastSchedules(): Flow<List<ForecastSchedules>> =
+    queries.forecastSchedules().asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  fun observePostedScheduleTransactions(
+    start: LocalDate
+  ): Flow<List<ForecastPostedScheduleTransactions>> =
+    queries
+      .forecastPostedScheduleTransactions(start)
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
+
+  fun observeForecastTransferPayees(): Flow<List<ForecastTransferPayees>> =
+    queries.forecastTransferPayees().asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  fun observeForecastOnBudgetBalance(): Flow<Long> =
+    queries.forecastOnBudgetBalance().asFlow().mapToOne(contexts.default).distinctUntilChanged()
+
+  fun observeForecastTrackingBudgetTotals(
+    start: YearMonth,
+    end: YearMonth,
+  ): Flow<List<ForecastTrackingBudgetTotals>> =
+    queries
+      .forecastTrackingBudgetTotals(start, end)
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
 }

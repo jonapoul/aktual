@@ -31,7 +31,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianDrawingContext
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianChartModelProducer
@@ -44,7 +43,6 @@ import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.multiplatform.common.DashedShape
 import com.patrykandpatrick.vico.multiplatform.common.Fill
-import com.patrykandpatrick.vico.multiplatform.common.component.LineComponent
 import com.patrykandpatrick.vico.multiplatform.common.component.rememberLineComponent
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.runBlocking
@@ -199,18 +197,6 @@ private fun rememberCrossoverLine(data: CrossoverData): Decoration? {
     )
   val month = data.crossover ?: return null
   return remember(line, month) { VerticalLine(x = month.monthNumber().toDouble(), line = line) }
-}
-
-private class VerticalLine(private val x: Double, private val line: LineComponent) : Decoration {
-  override fun drawOverLayers(context: CartesianDrawingContext) =
-    with(context) {
-      val start =
-        (if (isLtr) layerBounds.left else layerBounds.right) +
-          layoutDirectionMultiplier * layerDimensions.startPadding - scroll
-      val steps = ((x - ranges.minX) / ranges.xStep).toFloat()
-      val canvasX = start + layoutDirectionMultiplier * layerDimensions.xSpacing * steps
-      line.drawVertical(context, canvasX, layerBounds.top, layerBounds.bottom)
-    }
 }
 
 private suspend fun CartesianChartModelProducer.populate(data: CrossoverData) = runTransaction {
