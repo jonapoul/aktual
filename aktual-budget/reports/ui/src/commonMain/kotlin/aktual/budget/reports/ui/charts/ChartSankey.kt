@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -95,8 +96,8 @@ private fun Header(data: SankeyData, modifier: Modifier = Modifier) =
 private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modifier) {
   val textMeasurer = rememberTextMeasurer()
   val theme = colors
-  val nameStyle = TextStyle(color = theme.pageText, fontSize = if (compact) 10.sp else 12.sp)
-  val valueStyle = TextStyle(color = theme.pageTextSubdued, fontSize = if (compact) 9.sp else 11.sp)
+  val nameStyle = TextStyle(color = theme.pageText, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+  val valueStyle = TextStyle(color = theme.pageText, fontSize = 11.sp)
   val labels = data.nodes.map { it.label.string() }
   val values =
     data.nodes.map { node ->
@@ -126,23 +127,27 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
 
         val paths = layout.links.map { band -> band.path() }
         val texts =
-          data.nodes.indices.map { i ->
-            val name =
-              textMeasurer.measure(
-                text = labels[i],
-                style = nameStyle,
-                overflow = Ellipsis,
-                maxLines = 1,
-                constraints = labelConstraints,
-              )
-            val value =
-              textMeasurer.measure(
-                text = values[i],
-                style = valueStyle,
-                maxLines = 1,
-                constraints = labelConstraints,
-              )
-            name to value
+          if (compact) {
+            emptyList()
+          } else {
+            data.nodes.indices.map { i ->
+              val name =
+                textMeasurer.measure(
+                  text = labels[i],
+                  style = nameStyle,
+                  overflow = Ellipsis,
+                  maxLines = 1,
+                  constraints = labelConstraints,
+                )
+              val value =
+                textMeasurer.measure(
+                  text = values[i],
+                  style = valueStyle,
+                  maxLines = 1,
+                  constraints = labelConstraints,
+                )
+              name to value
+            }
           }
 
         onDrawBehind {
@@ -154,7 +159,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
             val rect = layout.nodes[i]
             drawRect(color = node.color.resolve(theme), topLeft = rect.topLeft, size = rect.size)
 
-            val (name, value) = texts[i]
+            val (name, value) = texts.getOrNull(i) ?: return@forEachIndexed
             val textHeight = name.size.height + value.size.height
             // Skip labels that would overlap their neighbours
             if (rect.height + NODE_PADDING.toPx() < textHeight) return@forEachIndexed
