@@ -91,6 +91,7 @@ data object LightColors : DefaultColors {
   override val sidebarRedesignHeaderText = ColorPalette.gray700
   override val sidebarRedesignTextSubdued = ColorPalette.navy600
   override val sidebarRedesignTextMuted = ColorPalette.navy400
+  override val sidebarRedesignRightBorder = ColorPalette.border
 
   override val menuBackground = ColorPalette.white
   override val menuItemBackground = ColorPalette.navy50

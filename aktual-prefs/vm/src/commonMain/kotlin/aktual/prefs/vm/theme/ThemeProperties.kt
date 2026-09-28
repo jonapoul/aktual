@@ -77,6 +77,7 @@ fun Colors.properties(): ImmutableList<ThemeProperty> =
       "sidebarRedesignHeaderText" to sidebarRedesignHeaderText,
       "sidebarRedesignTextSubdued" to sidebarRedesignTextSubdued,
       "sidebarRedesignTextMuted" to sidebarRedesignTextMuted,
+      "sidebarRedesignRightBorder" to sidebarRedesignRightBorder,
       "menuBackground" to menuBackground,
       "menuItemBackground" to menuItemBackground,
       "menuItemBackgroundHover" to menuItemBackgroundHover,
