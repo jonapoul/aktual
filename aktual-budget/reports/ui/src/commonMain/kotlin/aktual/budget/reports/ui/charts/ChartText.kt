@@ -75,6 +75,7 @@ internal fun TextChart(
     val editState =
       rememberSaveable(data, saver = TextFieldState.Saver) { TextFieldState(data.content) }
     var editAlign by rememberSaveable(data) { mutableStateOf(data.align) }
+    var editorMode by rememberSaveable { mutableStateOf(EditorMode.Write) }
     val keyboard = LocalSoftwareKeyboardController.current
     val hasChanges =
       isEditing && (editState.text.toString() != data.content || editAlign != data.align)
@@ -84,11 +85,17 @@ internal fun TextChart(
     }
 
     if (isEditing) {
-      TextEditorToolbar(align = editAlign, onAlign = { editAlign = it })
+      TextEditorToolbar(
+        mode = editorMode,
+        onMode = { editorMode = it },
+        align = editAlign,
+        onAlign = { editAlign = it },
+      )
     }
 
     Box(modifier = Modifier.weight(1f)) {
       when {
+        isEditing && editorMode == Rendered -> RenderedEditorText(editState, editAlign)
         isEditing -> TextEditor(editState)
         data.content.isBlank() -> EmptyText(compact)
         compact -> CompactMarkdown(data)
@@ -105,6 +112,7 @@ internal fun TextChart(
       onEdit = {
         editState.setTextAndPlaceCursorAtEnd(data.content)
         editAlign = data.align
+        editorMode = Write
         isEditing = true
       },
       onCancel = {
@@ -137,6 +145,12 @@ private fun TextEditor(state: TextFieldState, modifier: Modifier = Modifier) =
         imeAction = None,
       ),
   )
+
+@Composable
+private fun RenderedEditorText(state: TextFieldState, align: TextAlign) {
+  val content = state.text.toString()
+  if (content.isBlank()) EmptyText(compact = false) else FullMarkdown(TextData(content, align))
+}
 
 @Composable
 private fun EmptyText(compact: Boolean, modifier: Modifier = Modifier) =

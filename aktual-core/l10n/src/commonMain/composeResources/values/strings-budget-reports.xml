@@ -140,6 +140,8 @@
   <string name="reports_text_save">Save</string>
   <string name="reports_text_edit">Edit text</string>
   <string name="reports_text_placeholder">Write some markdown</string>
+  <string name="reports_text_write">Write</string>
+  <string name="reports_text_preview">Preview</string>
   <string name="reports_text_empty">No text yet</string>
   <string name="reports_text_empty_compact">No text yet. Tap to add some</string>
   <string name="reports_text_align_left">Align left</string>
