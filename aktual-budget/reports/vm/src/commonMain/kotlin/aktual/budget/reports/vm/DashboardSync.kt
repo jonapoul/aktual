@@ -48,13 +48,15 @@ internal class DashboardSync(
     )
   }
 
-  // Patches the stored json rather than re-encoding our model, so values we don't recognise are
-  // kept
-  suspend fun renameWidget(id: WidgetId, name: String) {
+  suspend fun renameWidget(id: WidgetId, name: String) = patchMeta(id, "name", name)
+
+  suspend fun setWidgetContent(id: WidgetId, content: String) = patchMeta(id, "content", content)
+
+  private suspend fun patchMeta(id: WidgetId, key: String, value: String) {
     val meta = dao.meta(id) ?: return
-    val renamed = JsonObject(meta + ("name" to JsonPrimitive(name)))
+    val patched = JsonObject(meta + (key to JsonPrimitive(value)))
     sync.syncChanges(
-      LocalChange(DASHBOARD, id.value, "meta", DbJson.encodeToString(renamed).messageValue())
+      LocalChange(DASHBOARD, id.value, "meta", DbJson.encodeToString(patched).messageValue())
     )
   }
 

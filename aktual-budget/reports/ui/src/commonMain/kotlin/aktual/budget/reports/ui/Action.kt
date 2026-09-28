@@ -4,7 +4,6 @@ import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.CalendarDay
 import aktual.budget.reports.vm.SummaryChartType
-import aktual.budget.reports.vm.TextData
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import androidx.compose.runtime.Immutable
 
@@ -24,7 +23,7 @@ internal sealed interface Action {
 
   @JvmInline value class ClickCalendarDay(val day: CalendarDay) : Action
 
-  data class SaveTextContent(val data: TextData, val newContent: String) : Action
+  @JvmInline value class SaveTextContent(val content: String) : Action
 
   data object CreateNewReport : Action
 

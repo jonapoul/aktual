@@ -135,9 +135,11 @@
   <string name="reports_spending_footer_title">How are "Average" and "Spent Average MTD" calculated?</string>
   <string name="reports_spending_footer">They are both the average cumulative spending by day for the three months before the selected "compare" month.</string>
 
+  <string name="reports_text_cancel">Cancel</string>
   <string name="reports_text_discard">Discard</string>
   <string name="reports_text_save">Save</string>
-  <string name="reports_text_edit">Edit</string>
+  <string name="reports_text_edit">Edit text</string>
+  <string name="reports_text_placeholder">Write some markdown</string>
 
   <string name="reports_custom_noop">Custom reports aren't supported yet!</string>
 </resources>

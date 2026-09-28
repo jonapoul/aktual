@@ -71,6 +71,23 @@ class DashboardSyncTest {
   }
 
   @Test
+  fun `Setting text content keeps other values`() = runSyncTest { dao ->
+    dao.insert(
+      WIDGET,
+      page = PAGE_1,
+      type = Markdown,
+      x = 0,
+      y = 0,
+      meta = json("""{"content":"old","text_align":"center"}"""),
+    )
+
+    setWidgetContent(WIDGET, "# New")
+
+    val meta = dao.observeByPage(PAGE_1).first().single().meta
+    assertThat(meta).isEqualTo(json("""{"content":"# New","text_align":"center"}"""))
+  }
+
+  @Test
   fun `Delete a widget`() = runSyncTest { dao ->
     dao.insert(WIDGET, page = PAGE_1, type = NetWorth, x = 0, y = 0, meta = null)
 

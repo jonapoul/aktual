@@ -49,7 +49,14 @@ fun ReportScreen(
 
   ReportScaffold(
     state = state,
-    onAction = { action -> if (action == NavBack) back() },
+    onAction = { action ->
+      @Suppress("ElseCaseInsteadOfExhaustiveWhen")
+      when (action) {
+        NavBack -> back()
+        is SaveTextContent -> viewModel.saveTextContent(action.content)
+        else -> Unit
+      }
+    },
   )
 }
 

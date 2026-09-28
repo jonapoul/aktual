@@ -3,14 +3,19 @@ package aktual.budget.reports.ui.charts
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.vm.TextData
+import aktual.core.icons.material.Check
+import aktual.core.icons.material.Edit
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BareTextButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,21 +27,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.m3.markdownColor
+import com.mikepenz.markdown.m3.markdownTypography
 import org.intellij.lang.annotations.Language
 
 @Composable
@@ -46,25 +58,18 @@ internal fun TextChart(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier = modifier) {
+  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
     var isEditing by remember { mutableStateOf(false) }
-    var editingContent by remember(data) { mutableStateOf(data.content) }
+    val editState = remember(data) { TextFieldState(data.content) }
     val keyboard = LocalSoftwareKeyboardController.current
-
-    val onSave = {
-      keyboard?.hide()
-      onAction(Action.SaveTextContent(data, editingContent))
-      isEditing = false
-    }
-
-    val scrollState = rememberScrollState()
 
     Box(modifier = Modifier.weight(1f)) {
       if (isEditing) {
-        BasicTextField(
-          modifier = Modifier.fillMaxSize().padding(4.dp).verticalScrollWithBar(scrollState),
-          value = editingContent,
-          onValueChange = { editingContent = it },
+        AktualTextField(
+          modifier = Modifier.fillMaxSize(),
+          state = editState,
+          placeholderText = Strings.reportsTextPlaceholder,
+          textStyle = LocalTextStyle.current.copy(fontFamily = Monospace),
           keyboardOptions =
             KeyboardOptions(
               autoCorrectEnabled = true,
@@ -75,9 +80,15 @@ internal fun TextChart(
         )
       } else {
         Markdown(
-          modifier = Modifier.fillMaxSize().verticalScrollWithBar(scrollState),
+          modifier =
+            if (compact) {
+              Modifier.fillMaxSize().clipToBounds()
+            } else {
+              Modifier.fillMaxSize().verticalScrollWithBar()
+            },
           content = data.content,
-          colors = markdownColor(colors.pageText),
+          colors = textChartMarkdownColors(),
+          typography = textChartMarkdownTypography(),
         )
       }
     }
@@ -87,26 +98,46 @@ internal fun TextChart(
 
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
       if (isEditing) {
-        BareTextButton(
+        val hasChanges = editState.text.toString() != data.content
+        val onCancel = {
+          keyboard?.hide()
+          editState.setTextAndPlaceCursorAtEnd(data.content)
+          isEditing = false
+        }
+
+        if (hasChanges) {
+          PrimaryTextButton(
+            modifier = Modifier.weight(1f),
+            text = Strings.reportsTextDiscard,
+            colors = { pressed -> colors.errorPrimary(pressed) },
+            onClick = onCancel,
+          )
+        } else {
+          NormalTextButton(
+            modifier = Modifier.weight(1f),
+            text = Strings.reportsTextCancel,
+            onClick = onCancel,
+          )
+        }
+
+        PrimaryTextButton(
           modifier = Modifier.weight(1f),
-          text = Strings.reportsTextDiscard,
+          text = Strings.reportsTextSave,
+          isEnabled = hasChanges,
+          prefix = { Icon(imageVector = MaterialIcons.Check, contentDescription = null) },
           onClick = {
-            editingContent = data.content
+            keyboard?.hide()
+            onAction(Action.SaveTextContent(editState.text.toString()))
             isEditing = false
           },
         )
-
-        NormalTextButton(
-          modifier = Modifier.weight(1f),
-          text = Strings.reportsTextSave,
-          onClick = { onSave() },
-        )
       } else {
-        NormalTextButton(
+        PrimaryTextButton(
           modifier = Modifier.fillMaxWidth(),
           text = Strings.reportsTextEdit,
+          prefix = { Icon(imageVector = MaterialIcons.Edit, contentDescription = null) },
           onClick = {
-            editingContent = data.content
+            editState.setTextAndPlaceCursorAtEnd(data.content)
             isEditing = true
           },
         )
@@ -114,6 +145,29 @@ internal fun TextChart(
     }
   }
 }
+
+@Composable
+private fun Colors.errorPrimary(isPressed: Boolean) =
+  ButtonDefaults.buttonColors(
+    containerColor = if (isPressed) buttonPrimaryBackground else errorBackground,
+    contentColor = if (isPressed) buttonPrimaryText else errorText,
+  )
+
+@Composable
+private fun textChartMarkdownColors() =
+  markdownColor(
+    text = colors.tableText,
+    codeBackground = colors.tableRowBackgroundHover,
+    dividerColor = colors.tableBorder,
+    tableBackground = colors.tableBackground,
+  )
+
+@Composable
+private fun textChartMarkdownTypography() =
+  markdownTypography(
+    textLink =
+      TextLinkStyles(style = SpanStyle(color = colors.pageTextLink, textDecoration = Underline))
+  )
 
 @Preview
 @Composable
@@ -147,85 +201,91 @@ private class TextChartProvider :
 @Language("Markdown")
 private val MARKDOWN_1 =
   """
-  # Title
-  ## Subtitle
-  ### Sub-subtitle
-  Text goes here
-  - Bullet 1
-  - Bullet 2
+    # Title
+    ## Subtitle
+    ### Sub-subtitle
+    Text goes here
+    - Bullet 1
+    - Bullet 2
 
-  More text goes below - *lorem ipsum* blah blah who cares just trying to **split over multiple lines like this**.
+    More text goes below - *lorem ipsum* blah blah who cares just trying to **split over multiple lines like this**.
 
-  ![Image](https://dummyimage.com/600x400/000/fff)
+    ![Image](https://dummyimage.com/600x400/000/fff)
 
-  Here's a [link to Google](https://www.google.com)
+    Here's a [link to Google](https://www.google.com)
 
-  ```
-  import androidx.compose.foundation.background
-  import androidx.compose.foundation.gestures.scrollable
-  import androidx.compose.foundation.layout.*
-  import androidx.compose.foundation.rememberScrollState
-  import androidx.compose.foundation.text.BasicTextField
-  import androidx.compose.foundation.verticalScroll
-  import androidx.compose.material.MaterialTheme
-  import androidx.compose.material.Surface
-  import androidx.compose.material.Text
-  import androidx.compose.runtime.*
-  import androidx.compose.ui.Modifier
-  import androidx.compose.ui.graphics.SolidColor
-  import androidx.compose.ui.text.TextStyle
-  import androidx.compose.ui.unit.dp
-  import androidx.compose.ui.tooling.preview.Preview
+    ```
+    import androidx.compose.foundation.background
+    import androidx.compose.foundation.gestures.scrollable
+    import androidx.compose.foundation.layout.*
+    import androidx.compose.foundation.rememberScrollState
+    import androidx.compose.foundation.text.input.TextFieldState
+    import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+    import androidx.compose.foundation.verticalScroll
+    import androidx.compose.material.MaterialTheme
+    import androidx.compose.material.Surface
+    import androidx.compose.material.Text
+    import androidx.compose.runtime.*
+    import androidx.compose.ui.Modifier
+  import androidx.compose.ui.draw.clipToBounds
+    import androidx.compose.ui.graphics.SolidColor
+    import androidx.compose.ui.text.TextStyle
+    import androidx.compose.ui.unit.dp
+    import androidx.compose.ui.text.SpanStyle
+    import androidx.compose.ui.text.TextLinkStyles
+    import androidx.compose.ui.text.font.FontFamily
+    import androidx.compose.ui.text.style.TextDecoration
+    import androidx.compose.ui.tooling.preview.Preview
 
-  @Composable
-  fun ScrollableBasicTextField() {
-      var text by remember { mutableStateOf("") }
-      val scrollState = rememberScrollState()
+    @Composable
+    fun ScrollableBasicTextField() {
+        var text by remember { mutableStateOf("") }
+        val scrollState = rememberScrollState()
 
-      Box(
-          modifier = Modifier
-              .height(150.dp) // fixed height container
-              .fillMaxWidth()
-              .background(MaterialTheme.colors.surface)
-              .verticalScroll(scrollState) // enables vertical scrolling
-              .padding(8.dp)
-      ) {
-          BasicTextField(
-              value = text,
-              onValueChange = { text = it },
-              modifier = Modifier
-                  .fillMaxWidth(),
-              textStyle = TextStyle.Default.copy(color = MaterialTheme.colors.onSurface),
-              cursorBrush = SolidColor(MaterialTheme.colors.primary),
-              maxLines = Int.MAX_VALUE, // allow unlimited lines
-          )
-      }
-  }
+        Box(
+            modifier = Modifier
+                .height(150.dp) // fixed height container
+                .fillMaxWidth()
+                .background(MaterialTheme.colors.surface)
+                .verticalScroll(scrollState) // enables vertical scrolling
+                .padding(8.dp)
+        ) {
+            BasicTextField(
+                value = text,
+                onValueChange = { text = it },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textStyle = TextStyle.Default.copy(color = MaterialTheme.colors.onSurface),
+                cursorBrush = SolidColor(MaterialTheme.colors.primary),
+                maxLines = Int.MAX_VALUE, // allow unlimited lines
+            )
+        }
+    }
 
-  @Preview(showBackground = true)
-  @Composable
-  fun PreviewScrollableBasicTextField() {
-      MaterialTheme {
-          Surface {
-              ScrollableBasicTextField()
-          }
-      }
-  }
-  ```
+    @Preview(showBackground = true)
+    @Composable
+    fun PreviewScrollableBasicTextField() {
+        MaterialTheme {
+            Surface {
+                ScrollableBasicTextField()
+            }
+        }
+    }
+    ```
 
-  ## Explanation:
+    ## Explanation:
 
-  - Box sets fixed height & fills width.
-  - verticalScroll(scrollState) makes the whole Box scrollable vertically.
-  - BasicTextField inside takes all available width and unlimited lines (maxLines = Int.MAX_VALUE).
-  - When the text is long enough to overflow the height, vertical scroll kicks in.
-  - You can add a placeholder, decorationBox, or other modifiers if you want.
+    - Box sets fixed height & fills width.
+    - verticalScroll(scrollState) makes the whole Box scrollable vertically.
+    - BasicTextField inside takes all available width and unlimited lines (maxLines = Int.MAX_VALUE).
+    - When the text is long enough to overflow the height, vertical scroll kicks in.
+    - You can add a placeholder, decorationBox, or other modifiers if you want.
 
-  ## Bonus: Scroll to cursor as you type (advanced)
+    ## Bonus: Scroll to cursor as you type (advanced)
 
-  If you want the text field to auto-scroll as the user types beyond the visible area, that requires tracking cursor position and syncing scroll. It’s a bit more complex but doable. Want me to prepare that snippet?
+    If you want the text field to auto-scroll as the user types beyond the visible area, that requires tracking cursor position and syncing scroll. It’s a bit more complex but doable. Want me to prepare that snippet?
 
-  Does this solve your scrollable BasicTextField need? Want me to add placeholder support or styling next?
+    Does this solve your scrollable BasicTextField need? Want me to add placeholder support or styling next?
   """
     .trimIndent()
 
