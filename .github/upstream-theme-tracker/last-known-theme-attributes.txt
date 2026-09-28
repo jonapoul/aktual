@@ -203,6 +203,7 @@ sidebarRedesignItemBackgroundHover
 sidebarRedesignItemBackgroundSelected
 sidebarRedesignItemText
 sidebarRedesignItemTextSelected
+sidebarRedesignRightBorder
 sidebarRedesignTextMuted
 sidebarRedesignTextSubdued
 sidebarTextFailed
