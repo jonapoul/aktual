@@ -91,6 +91,7 @@ data object MidnightColors : DefaultColors {
   override val sidebarRedesignHeaderText = sidebarHeaderText
   override val sidebarRedesignTextSubdued = sidebarTextSubdued
   override val sidebarRedesignTextMuted = sidebarTextMuted
+  override val sidebarRedesignRightBorder = sidebarBorder
 
   override val menuBackground = ColorPalette.gray700
   override val menuItemBackground = ColorPalette.gray200

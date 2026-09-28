@@ -242,6 +242,9 @@ data class JsonCustomColors(
   override val sidebarRedesignTextMuted: Color
     get() = navigation.sidebarRedesignTextMuted
 
+  override val sidebarRedesignRightBorder: Color
+    get() = navigation.sidebarRedesignRightBorder
+
   override val menuBackground: Color
     get() = navigation.menuBackground
 
@@ -860,6 +863,7 @@ data class NavigationColors(
   @SerialName("sidebarRedesignHeaderText") val sidebarRedesignHeaderText: Color,
   @SerialName("sidebarRedesignTextSubdued") val sidebarRedesignTextSubdued: Color,
   @SerialName("sidebarRedesignTextMuted") val sidebarRedesignTextMuted: Color,
+  @SerialName("sidebarRedesignRightBorder") val sidebarRedesignRightBorder: Color,
   @SerialName("menuBackground") val menuBackground: Color,
   @SerialName("menuItemBackground") val menuItemBackground: Color,
   @SerialName("menuItemBackgroundHover") val menuItemBackgroundHover: Color,

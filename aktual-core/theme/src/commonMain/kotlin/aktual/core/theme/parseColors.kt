@@ -127,6 +127,8 @@ fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
             sidebarRedesignTextSubdued =
               "sidebarRedesignTextSubdued".attr(sidebarRedesignTextSubdued),
             sidebarRedesignTextMuted = "sidebarRedesignTextMuted".attr(sidebarRedesignTextMuted),
+            sidebarRedesignRightBorder =
+              "sidebarRedesignRightBorder".attr(sidebarRedesignRightBorder),
             menuBackground = "menuBackground".attr(menuBackground),
             menuItemBackground = "menuItemBackground".attr(menuItemBackground),
             menuItemBackgroundHover = "menuItemBackgroundHover".attr(menuItemBackgroundHover),

@@ -104,6 +104,7 @@ internal val ShadesOfCoffeeTheme =
         sidebarRedesignHeaderText = LightColors.sidebarRedesignHeaderText,
         sidebarRedesignTextSubdued = LightColors.sidebarRedesignTextSubdued,
         sidebarRedesignTextMuted = LightColors.sidebarRedesignTextMuted,
+        sidebarRedesignRightBorder = LightColors.sidebarRedesignRightBorder,
         menuBackground = Color(0xFFffffff),
         menuItemBackground = Color(0xFFF7FAFC),
         menuItemBackgroundHover = Color(0xFFe8ecf0),

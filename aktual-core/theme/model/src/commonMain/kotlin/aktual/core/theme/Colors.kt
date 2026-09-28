@@ -94,6 +94,7 @@ sealed interface Colors {
   val sidebarRedesignHeaderText: Color
   val sidebarRedesignTextSubdued: Color
   val sidebarRedesignTextMuted: Color
+  val sidebarRedesignRightBorder: Color
 
   val menuBackground: Color
   val menuItemBackground: Color
