@@ -1,0 +1,23 @@
+name: Feature request
+description: Suggest an idea
+labels: [feature]
+body:
+  - type: textarea
+    attributes:
+      label: What would you like?
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Is this in Actual's web app?
+      options:
+        - Yes, it's missing from Aktual
+        - No, it's new
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Platforms
+      options:
+        - label: Android
+        - label: Desktop
