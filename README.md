@@ -42,6 +42,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
+<!--
 # Star History
 
 [![Star History Chart](https://api.star-history.com/chart?repos=jonapoul/aktual&type=date&legend=top-left)](https://www.star-history.com/?repos=jonapoul%2Faktual&type=date&legend=top-left)
+-->
