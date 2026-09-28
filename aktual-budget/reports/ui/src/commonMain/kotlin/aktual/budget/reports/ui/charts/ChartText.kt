@@ -28,9 +28,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
@@ -42,7 +44,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -83,88 +86,134 @@ internal fun TextChart(
     }
 
     Box(modifier = Modifier.weight(1f)) {
-      if (isEditing) {
-        AktualTextField(
-          modifier = Modifier.fillMaxSize(),
-          state = editState,
-          placeholderText = Strings.reportsTextPlaceholder,
-          textStyle = LocalTextStyle.current.copy(fontFamily = Monospace),
-          keyboardOptions =
-            KeyboardOptions(
-              autoCorrectEnabled = true,
-              capitalization = Sentences,
-              keyboardType = Text,
-              imeAction = None,
-            ),
-        )
-      } else {
-        Markdown(
-          modifier =
-            if (compact) {
-              Modifier.fillMaxSize().clipToBounds()
-            } else {
-              Modifier.fillMaxSize().verticalScrollWithBar()
-            },
-          content = data.content,
-          colors = textChartMarkdownColors(),
-          typography = textChartMarkdownTypography(data.align),
-        )
+      when {
+        isEditing -> TextEditor(editState)
+        compact -> CompactMarkdown(data)
+        else -> FullMarkdown(data)
       }
     }
 
     // No editing in compact mode
     if (compact) return
 
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-      if (isEditing) {
-        val onCancel = {
-          keyboard?.hide()
-          editState.setTextAndPlaceCursorAtEnd(data.content)
-          editAlign = data.align
-          isEditing = false
-        }
-
-        if (hasChanges) {
-          PrimaryTextButton(
-            modifier = Modifier.weight(1f),
-            text = Strings.reportsTextDiscard,
-            colors = { pressed -> colors.errorPrimary(pressed) },
-            onClick = onCancel,
-          )
-        } else {
-          NormalTextButton(
-            modifier = Modifier.weight(1f),
-            text = Strings.reportsTextCancel,
-            onClick = onCancel,
-          )
-        }
-
-        PrimaryTextButton(
-          modifier = Modifier.weight(1f),
-          text = Strings.reportsTextSave,
-          isEnabled = hasChanges,
-          prefix = { Icon(imageVector = MaterialIcons.Check, contentDescription = null) },
-          onClick = {
-            keyboard?.hide()
-            onAction(Action.SaveText(editState.text.toString(), editAlign))
-            isEditing = false
-          },
-        )
-      } else {
-        PrimaryTextButton(
-          modifier = Modifier.fillMaxWidth(),
-          text = Strings.reportsTextEdit,
-          prefix = { Icon(imageVector = MaterialIcons.Edit, contentDescription = null) },
-          onClick = {
-            editState.setTextAndPlaceCursorAtEnd(data.content)
-            editAlign = data.align
-            isEditing = true
-          },
-        )
-      }
-    }
+    TextChartButtons(
+      isEditing = isEditing,
+      hasChanges = hasChanges,
+      onEdit = {
+        editState.setTextAndPlaceCursorAtEnd(data.content)
+        editAlign = data.align
+        isEditing = true
+      },
+      onCancel = {
+        keyboard?.hide()
+        editState.setTextAndPlaceCursorAtEnd(data.content)
+        editAlign = data.align
+        isEditing = false
+      },
+      onSave = {
+        keyboard?.hide()
+        onAction(Action.SaveText(editState.text.toString(), editAlign))
+        isEditing = false
+      },
+    )
   }
 }
+
+@Composable
+private fun TextEditor(state: TextFieldState, modifier: Modifier = Modifier) =
+  AktualTextField(
+    modifier = modifier.fillMaxSize(),
+    state = state,
+    placeholderText = Strings.reportsTextPlaceholder,
+    textStyle = LocalTextStyle.current.copy(fontFamily = Monospace),
+    keyboardOptions =
+      KeyboardOptions(
+        autoCorrectEnabled = true,
+        capitalization = Sentences,
+        keyboardType = Text,
+        imeAction = None,
+      ),
+  )
+
+@Composable
+private fun CompactMarkdown(data: TextData, modifier: Modifier = Modifier) =
+  Box(modifier = modifier.fillMaxSize()) {
+    // Not scrollable, but the state tells us when the text overflows
+    val scrollState = rememberScrollState()
+    Markdown(
+      modifier = Modifier.fillMaxWidth().verticalScroll(scrollState, enabled = false),
+      content = data.content,
+      colors = textChartMarkdownColors(),
+      typography = textChartMarkdownTypography(data.align),
+    )
+
+    if (scrollState.canScrollForward) {
+      Box(
+        modifier =
+          Modifier.align(BottomCenter)
+            .fillMaxWidth()
+            .height(FadeHeight)
+            .background(Brush.verticalGradient(listOf(Transparent, colors.tableBackground)))
+      )
+    }
+  }
+
+@Composable
+private fun FullMarkdown(data: TextData, modifier: Modifier = Modifier) =
+  Markdown(
+    modifier = modifier.fillMaxSize().verticalScrollWithBar(),
+    content = data.content,
+    colors = textChartMarkdownColors(),
+    typography = textChartMarkdownTypography(data.align),
+  )
+
+@Composable
+private fun TextChartButtons(
+  isEditing: Boolean,
+  hasChanges: Boolean,
+  onEdit: () -> Unit,
+  onCancel: () -> Unit,
+  onSave: () -> Unit,
+  modifier: Modifier = Modifier,
+) =
+  Row(
+    modifier = modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    if (isEditing) {
+      if (hasChanges) {
+        PrimaryTextButton(
+          modifier = Modifier.weight(1f),
+          text = Strings.reportsTextDiscard,
+          colors = { pressed -> colors.errorPrimary(pressed) },
+          onClick = onCancel,
+        )
+      } else {
+        NormalTextButton(
+          modifier = Modifier.weight(1f),
+          text = Strings.reportsTextCancel,
+          onClick = onCancel,
+        )
+      }
+
+      PrimaryTextButton(
+        modifier = Modifier.weight(1f),
+        text = Strings.reportsTextSave,
+        isEnabled = hasChanges,
+        prefix = { Icon(imageVector = MaterialIcons.Check, contentDescription = null) },
+        onClick = onSave,
+      )
+    } else {
+      PrimaryTextButton(
+        modifier = Modifier.fillMaxWidth(),
+        text = Strings.reportsTextEdit,
+        prefix = { Icon(imageVector = MaterialIcons.Edit, contentDescription = null) },
+        onClick = onEdit,
+      )
+    }
+  }
+
+private val FadeHeight = 40.dp
 
 @Composable
 private fun Colors.errorPrimary(isPressed: Boolean) =
@@ -269,7 +318,7 @@ private val MARKDOWN_1 =
       import androidx.compose.material.Text
       import androidx.compose.runtime.*
       import androidx.compose.ui.Modifier
-    import androidx.compose.ui.draw.clipToBounds
+    import androidx.compose.ui.graphics.Brush
       import androidx.compose.ui.graphics.SolidColor
       import androidx.compose.ui.text.TextStyle
       import androidx.compose.ui.unit.dp
