@@ -231,7 +231,7 @@ sealed interface SpendingComparison {
   data object Average : SpendingComparison
 }
 
-data class TextData(val content: String) : ChartData
+data class TextData(val content: String, val align: TextAlign = Left) : ChartData
 
 data class UnsupportedData(
   val reason: UnsupportedReason,
