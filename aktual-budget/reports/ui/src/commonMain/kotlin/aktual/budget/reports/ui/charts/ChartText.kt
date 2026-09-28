@@ -37,7 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -60,8 +60,9 @@ internal fun TextChart(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-    var isEditing by remember { mutableStateOf(false) }
-    val editState = remember(data) { TextFieldState(data.content) }
+    var isEditing by rememberSaveable { mutableStateOf(false) }
+    val editState =
+      rememberSaveable(data, saver = TextFieldState.Saver) { TextFieldState(data.content) }
     val keyboard = LocalSoftwareKeyboardController.current
     val hasChanges = isEditing && editState.text.toString() != data.content
 
