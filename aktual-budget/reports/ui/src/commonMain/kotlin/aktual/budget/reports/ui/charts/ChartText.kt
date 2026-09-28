@@ -8,7 +8,6 @@ import aktual.core.icons.material.Check
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
@@ -17,6 +16,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButton
+import aktual.core.ui.errorButton
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +33,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -215,7 +214,7 @@ private fun TextChartButtons(
         PrimaryTextButton(
           modifier = Modifier.weight(1f),
           text = Strings.reportsTextDiscard,
-          colors = { pressed -> colors.errorPrimary(pressed) },
+          colors = { pressed -> colors.errorButton(pressed) },
           onClick = onCancel,
         )
       } else {
@@ -244,13 +243,6 @@ private fun TextChartButtons(
   }
 
 private val FadeHeight = 40.dp
-
-@Composable
-private fun Colors.errorPrimary(isPressed: Boolean) =
-  ButtonDefaults.buttonColors(
-    containerColor = if (isPressed) errorBorder else errorBackground,
-    contentColor = if (isPressed) errorBackground else errorText,
-  )
 
 @Composable
 private fun textChartMarkdownColors() =
