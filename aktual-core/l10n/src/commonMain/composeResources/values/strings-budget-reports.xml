@@ -140,6 +140,10 @@
   <string name="reports_text_save">Save</string>
   <string name="reports_text_edit">Edit text</string>
   <string name="reports_text_placeholder">Write some markdown</string>
+  <string name="reports_text_discard_title">Discard changes?</string>
+  <string name="reports_text_discard_message">Your unsaved text will be lost.</string>
+  <string name="reports_text_discard_cancel">Keep editing</string>
+  <string name="reports_text_discard_confirm">Discard</string>
 
   <string name="reports_custom_noop">Custom reports aren't supported yet!</string>
 </resources>

@@ -11,7 +11,9 @@ import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.report.ReportViewModel
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
@@ -30,9 +32,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -46,19 +53,48 @@ fun ReportScreen(
   viewModel: ReportViewModel = reportViewModel(id),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  var hasUnsavedText by rememberSaveable { mutableStateOf(false) }
+  var showDiscardDialog by remember { mutableStateOf(false) }
+
+  BackHandler(enabled = hasUnsavedText) { showDiscardDialog = true }
 
   ReportScaffold(
     state = state,
     onAction = { action ->
       @Suppress("ElseCaseInsteadOfExhaustiveWhen")
       when (action) {
-        NavBack -> back()
+        NavBack -> if (hasUnsavedText) showDiscardDialog = true else back()
         is SaveTextContent -> viewModel.saveTextContent(action.content)
+        is SetUnsavedText -> hasUnsavedText = action.hasUnsavedText
         else -> Unit
       }
     },
   )
+
+  if (showDiscardDialog) {
+    DiscardTextDialog(
+      onDiscard = {
+        showDiscardDialog = false
+        back()
+      },
+      onCancel = { showDiscardDialog = false },
+    )
+  }
 }
+
+@Composable
+private fun DiscardTextDialog(onDiscard: () -> Unit, onCancel: () -> Unit) =
+  AktualAlertDialog(
+    title = Strings.reportsTextDiscardTitle,
+    onDismissRequest = onCancel,
+    buttons = {
+      TextButton(onClick = onCancel) { Text(Strings.reportsTextDiscardCancel) }
+      TextButton(onClick = onDiscard) {
+        Text(Strings.reportsTextDiscardConfirm, color = colors.errorText)
+      }
+    },
+    content = { Text(Strings.reportsTextDiscardMessage) },
+  )
 
 @Composable
 private fun reportViewModel(id: WidgetId) =

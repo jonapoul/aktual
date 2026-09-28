@@ -25,6 +25,8 @@ internal sealed interface Action {
 
   @JvmInline value class SaveTextContent(val content: String) : Action
 
+  @JvmInline value class SetUnsavedText(val hasUnsavedText: Boolean) : Action
+
   data object CreateNewReport : Action
 
   data object OpenSearch : Action

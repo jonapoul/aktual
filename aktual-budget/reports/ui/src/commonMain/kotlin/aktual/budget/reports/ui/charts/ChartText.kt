@@ -34,6 +34,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,6 +63,11 @@ internal fun TextChart(
     var isEditing by remember { mutableStateOf(false) }
     val editState = remember(data) { TextFieldState(data.content) }
     val keyboard = LocalSoftwareKeyboardController.current
+    val hasChanges = isEditing && editState.text.toString() != data.content
+
+    if (!compact) {
+      SideEffect(hasChanges) { onAction(Action.SetUnsavedText(hasChanges)) }
+    }
 
     Box(modifier = Modifier.weight(1f)) {
       if (isEditing) {
@@ -98,7 +104,6 @@ internal fun TextChart(
 
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
       if (isEditing) {
-        val hasChanges = editState.text.toString() != data.content
         val onCancel = {
           keyboard?.hide()
           editState.setTextAndPlaceCursorAtEnd(data.content)
