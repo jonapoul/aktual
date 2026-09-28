@@ -37,6 +37,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -51,6 +52,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign as ComposeTextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -88,6 +90,7 @@ internal fun TextChart(
     Box(modifier = Modifier.weight(1f)) {
       when {
         isEditing -> TextEditor(editState)
+        data.content.isBlank() -> EmptyText(compact)
         compact -> CompactMarkdown(data)
         else -> FullMarkdown(data)
       }
@@ -130,10 +133,20 @@ private fun TextEditor(state: TextFieldState, modifier: Modifier = Modifier) =
       KeyboardOptions(
         autoCorrectEnabled = true,
         capitalization = Sentences,
-        keyboardType = Text,
+        keyboardType = KeyboardType.Text,
         imeAction = None,
       ),
   )
+
+@Composable
+private fun EmptyText(compact: Boolean, modifier: Modifier = Modifier) =
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Center) {
+    Text(
+      text = if (compact) Strings.reportsTextEmptyCompact else Strings.reportsTextEmpty,
+      color = colors.tableTextSubdued,
+      textAlign = Center,
+    )
+  }
 
 @Composable
 private fun CompactMarkdown(data: TextData, modifier: Modifier = Modifier) =
@@ -282,7 +295,7 @@ private data class TextChartParams(val data: TextData, val compact: Boolean, val
 
 private class TextChartProvider :
   ColoredParameterProvider<TextChartParams>(
-    listOf(PREVIEW_TEXT_DATA, PREVIEW_SHORT_TEXT_DATA).flatMap { data ->
+    listOf(PREVIEW_TEXT_DATA, PREVIEW_SHORT_TEXT_DATA, TextData(content = "")).flatMap { data ->
       listOf(true, false).flatMap { compact ->
         listOf(true, false).map { private -> TextChartParams(data, compact, private) }
       }
