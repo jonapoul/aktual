@@ -49,7 +49,7 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
     }
 
   fun text(meta: MarkdownReportMeta): Flow<ChartData> {
-    val align = meta.textAlign?.takeIf { it != Unknown } ?: TextAlign.Left
+    val align: TextAlign = meta.textAlign?.takeIf { it != Unknown } ?: Left
     return flowOf(TextData(meta.content, align))
   }
 

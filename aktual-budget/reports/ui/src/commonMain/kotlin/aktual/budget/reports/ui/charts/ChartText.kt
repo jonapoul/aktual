@@ -173,6 +173,7 @@ private fun CompactMarkdown(data: TextData, modifier: Modifier = Modifier) =
       content = data.content,
       colors = textChartMarkdownColors(),
       typography = textChartMarkdownTypography(data.align),
+      components = alignedMarkdownComponents(data.align),
     )
 
     if (scrollState.canScrollForward) {
@@ -193,6 +194,7 @@ private fun FullMarkdown(data: TextData, modifier: Modifier = Modifier) =
     content = data.content,
     colors = textChartMarkdownColors(),
     typography = textChartMarkdownTypography(data.align),
+    components = alignedMarkdownComponents(data.align),
   )
 
 @Composable
