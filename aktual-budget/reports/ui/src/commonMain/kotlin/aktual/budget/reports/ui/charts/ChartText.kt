@@ -90,6 +90,7 @@ internal fun TextChart(
         onMode = { editorMode = it },
         align = editAlign,
         onAlign = { editAlign = it },
+        onFormat = { editState.applyFormat(it) },
       )
     }
 

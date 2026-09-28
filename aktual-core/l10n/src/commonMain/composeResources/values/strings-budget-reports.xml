@@ -142,6 +142,11 @@
   <string name="reports_text_placeholder">Write some markdown</string>
   <string name="reports_text_write">Write</string>
   <string name="reports_text_preview">Preview</string>
+  <string name="reports_text_format_bold">Bold</string>
+  <string name="reports_text_format_italic">Italic</string>
+  <string name="reports_text_format_heading">Heading</string>
+  <string name="reports_text_format_bullet">Bullet list</string>
+  <string name="reports_text_format_link">Link</string>
   <string name="reports_text_empty">No text yet</string>
   <string name="reports_text_empty_compact">No text yet. Tap to add some</string>
   <string name="reports_text_align_left">Align left</string>
