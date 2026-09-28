@@ -248,8 +248,8 @@ private val FadeHeight = 40.dp
 @Composable
 private fun Colors.errorPrimary(isPressed: Boolean) =
   ButtonDefaults.buttonColors(
-    containerColor = if (isPressed) buttonPrimaryBackground else errorBackground,
-    contentColor = if (isPressed) buttonPrimaryText else errorText,
+    containerColor = if (isPressed) errorBorder else errorBackground,
+    contentColor = if (isPressed) errorBackground else errorText,
   )
 
 @Composable
