@@ -15,13 +15,6 @@ private fun aktual.about.ui.licenses.estimateTextWidth(text: kotlin.String, dens
     - style: STABLE (marked @Stable or @Immutable)
 
 @Composable
-private fun aktual.about.ui.storage.errorButtonColors(isPressed: kotlin.Boolean): androidx.compose.material3.ButtonColors
-  skippable: false
-  restartable: false
-  params:
-    - isPressed: STABLE (primitive type)
-
-@Composable
 private fun aktual.about.ui.storage.percentTotalStorage(state: aktual.about.vm.ManageStorageState.Loaded): kotlin.String
   skippable: false
   restartable: false

@@ -5,11 +5,34 @@
 //   ./gradlew :ui:stabilityDump
 
 @Composable
+private fun aktual.budget.reports.ui.charts.FormatButton(icon: androidx.compose.ui.graphics.vector.ImageVector, description: kotlin.String, onClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: false
+  restartable: false
+  params:
+    - icon: STABLE (marked @Stable or @Immutable)
+    - description: STABLE (String is immutable)
+    - onClick: STABLE (function type)
+
+@Composable
 private fun aktual.budget.reports.ui.charts.ageColor(age: kotlin.Int?): androidx.compose.ui.graphics.Color
   skippable: false
   restartable: false
   params:
     - age: STABLE (class with no mutable properties)
+
+@Composable
+private fun aktual.budget.reports.ui.charts.ageItemPlacer(data: aktual.budget.reports.vm.MonteCarloData): com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis.ItemPlacer
+  skippable: false
+  restartable: false
+  params:
+    - data: STABLE (marked @Stable or @Immutable)
+
+@Composable
+internal fun aktual.budget.reports.ui.charts.alignedMarkdownComponents(align: aktual.budget.reports.vm.TextAlign): com.mikepenz.markdown.compose.components.MarkdownComponents
+  skippable: false
+  restartable: false
+  params:
+    - align: STABLE (class with no mutable properties)
 
 @Composable
 internal fun aktual.budget.reports.ui.charts.amountYAxisFormatter(numberFormatConfig: aktual.budget.model.NumberFormatConfig, currencyConfig: aktual.budget.model.CurrencyConfig, isPrivacyEnabled: kotlin.Boolean): com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianValueFormatter
@@ -91,6 +114,12 @@ private fun aktual.budget.reports.ui.charts.forecastXAxisFormatter(data: aktual.
     - data: STABLE (marked @Stable or @Immutable)
 
 @Composable
+private fun aktual.budget.reports.ui.charts.formatted(): kotlin.String
+  skippable: false
+  restartable: false
+  params:
+
+@Composable
 internal fun aktual.budget.reports.ui.charts.hItemPlacer(compact: kotlin.Boolean): com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis.ItemPlacer
   skippable: false
   restartable: false
@@ -163,6 +192,12 @@ private fun aktual.budget.reports.ui.charts.string(): kotlin.String
   params:
 
 @Composable
+private fun aktual.budget.reports.ui.charts.string(): kotlin.String
+  skippable: false
+  restartable: false
+  params:
+
+@Composable
 private fun aktual.budget.reports.ui.charts.string(date: kotlinx.datetime.LocalDate): kotlin.String
   skippable: false
   restartable: false
@@ -189,6 +224,19 @@ internal fun aktual.budget.reports.ui.charts.string(): kotlin.String
   params:
 
 @Composable
+private fun aktual.budget.reports.ui.charts.string(): kotlin.String
+  skippable: false
+  restartable: false
+  params:
+
+@Composable
+private fun aktual.budget.reports.ui.charts.successColor(data: aktual.budget.reports.vm.MonteCarloData): androidx.compose.ui.graphics.Color
+  skippable: false
+  restartable: false
+  params:
+    - data: STABLE (marked @Stable or @Immutable)
+
+@Composable
 private fun aktual.budget.reports.ui.charts.summary(): kotlin.String
   skippable: false
   restartable: false
@@ -200,6 +248,19 @@ private fun aktual.budget.reports.ui.charts.summaryTextStyle(style: androidx.com
   restartable: false
   params:
     - style: STABLE (marked @Stable or @Immutable)
+
+@Composable
+private fun aktual.budget.reports.ui.charts.textChartMarkdownColors(): com.mikepenz.markdown.model.MarkdownColors
+  skippable: false
+  restartable: false
+  params:
+
+@Composable
+private fun aktual.budget.reports.ui.charts.textChartMarkdownTypography(align: aktual.budget.reports.vm.TextAlign): com.mikepenz.markdown.model.MarkdownTypography
+  skippable: false
+  restartable: false
+  params:
+    - align: STABLE (class with no mutable properties)
 
 @Composable
 private fun aktual.budget.reports.ui.charts.xAxisFormatter(): com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianValueFormatter

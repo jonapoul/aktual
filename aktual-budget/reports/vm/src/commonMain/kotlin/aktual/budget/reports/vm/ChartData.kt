@@ -71,6 +71,29 @@ data class BalanceForecastData(
   val scheduledCount: Int,
 ) : ChartData
 
+data class MonteCarloData(
+  val title: String?,
+  // Share of simulations that last until targetAge
+  val successRate: Percent,
+  val currentAge: Int,
+  val targetAge: Int,
+  // One band per age, from currentAge to targetAge, in today's money
+  val bands: ImmutableList<MonteCarloBand>,
+  val medianEndingBalance: Amount,
+  // Median age the money runs out among failed simulations
+  val medianDepletionAge: Int?,
+  val simulationCount: Int,
+) : ChartData
+
+data class MonteCarloBand(
+  val age: Int,
+  val p10: Amount,
+  val p25: Amount,
+  val p50: Amount,
+  val p75: Amount,
+  val p90: Amount,
+)
+
 data class SankeyData(
   val title: String?,
   val start: YearMonth,

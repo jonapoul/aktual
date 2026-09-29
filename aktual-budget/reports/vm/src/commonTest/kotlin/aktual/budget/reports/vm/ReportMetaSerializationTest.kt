@@ -186,6 +186,19 @@ class ReportMetaSerializationTest {
     assertThat(meta.taxModel).isEqualTo(Bands)
     assertThat(meta.taxBands.orEmpty().single().from).isEqualTo(1257000L)
     assertThat(meta.targetAge).isEqualTo(95)
+    assertThat(meta.inflationMean).isNull()
+  }
+
+  @Test
+  fun `Monte Carlo inflation defaults when missing`() {
+    val meta = decode<MonteCarloReportMeta>(MonteCarlo, "{}")
+    assertThat(meta.inflationMean).isEqualTo(0.025)
+  }
+
+  @Test
+  fun `Monte Carlo legacy minimumWithdrawal feeds minimum spending`() {
+    val meta = decode<MonteCarloReportMeta>(MonteCarlo, """{"minimumWithdrawal": 100000}""")
+    assertThat(meta.toConfig().minimumSpending).isEqualTo(100_000.0)
   }
 
   private inline fun <reified T : ReportMeta> decode(type: WidgetType, string: String): T =

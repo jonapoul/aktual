@@ -260,6 +260,13 @@ public fun aktual.core.ui.checkbox(): androidx.compose.material3.CheckboxColors
   params:
 
 @Composable
+public fun aktual.core.ui.errorButton(isPressed: kotlin.Boolean): androidx.compose.material3.ButtonColors
+  skippable: false
+  restartable: false
+  params:
+    - isPressed: STABLE (primitive type)
+
+@Composable
 public fun aktual.core.ui.exposedDropDownMenu(): androidx.compose.material3.TextFieldColors
   skippable: false
   restartable: false
@@ -464,14 +471,6 @@ internal fun aktual.core.ui.scrollbar(state: aktual.core.ui.ScrollbarState, auto
   params:
     - state: STABLE (marked @Stable or @Immutable)
     - autoHide: STABLE (primitive type)
-
-@Composable
-public fun aktual.core.ui.searchResultCard(onClick: kotlin.Function0<kotlin.Unit>, padding: androidx.compose.foundation.layout.PaddingValues): androidx.compose.ui.Modifier
-  skippable: false
-  restartable: false
-  params:
-    - onClick: STABLE (function type)
-    - padding: STABLE (marked @Stable or @Immutable)
 
 @Composable
 public fun aktual.core.ui.slider(): androidx.compose.material3.SliderColors

@@ -11,6 +11,7 @@ import aktual.budget.db.ForecastSchedules
 import aktual.budget.db.ForecastStartingBalances
 import aktual.budget.db.ForecastTrackingBudgetTotals
 import aktual.budget.db.ForecastTransferPayees
+import aktual.budget.db.MonteCarloAccountBalances
 import aktual.budget.db.NetWorthByMonth
 import aktual.budget.db.SankeyCategoryTotals
 import aktual.budget.db.SankeyTransfers
@@ -141,6 +142,15 @@ class ReportsDao(database: BudgetDatabase, private val contexts: CoroutineContex
   ): Flow<List<ForecastTrackingBudgetTotals>> =
     queries
       .forecastTrackingBudgetTotals(start, end)
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
+
+  fun observeMonteCarloAccountBalances(
+    accounts: Collection<AccountId>
+  ): Flow<List<MonteCarloAccountBalances>> =
+    queries
+      .monteCarloAccountBalances(accounts)
       .asFlow()
       .mapToList(contexts.default)
       .distinctUntilChanged()
