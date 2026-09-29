@@ -5,6 +5,8 @@ import aktual.budget.reports.vm.SankeyColor.Palette
 import aktual.core.model.Percent
 import kotlin.math.abs
 import kotlin.math.max
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.YearMonth
 
@@ -78,6 +80,9 @@ private data class GraphNode(
 
 private typealias Graph = LinkedHashMap<String, GraphNode>
 
+// Names and values of the nodes merged into each link, keyed by the link's source and target
+private typealias GroupedItems = HashMap<Pair<String, String>, LinkedHashMap<String, Long>>
+
 // packages/desktop-client/src/components/reports/spreadsheets/sankey-spreadsheet.ts
 // createTransactionsGraph() and buildSankeyData()
 // categoryOrder lists category group and category IDs in budget order, for CategorySort.BudgetOrder
@@ -91,11 +96,11 @@ internal fun calculateSankey(
   params: SankeyParams,
 ): SankeyData {
   val graph = transactionsGraph(entries, transfers, params.groupAccounts)
-  groupOtherNodes(graph, params.topN, global = params.sort == Global)
+  val grouped = groupOtherNodes(graph, params.topN, global = params.sort == Global)
   val sorted = sortGraph(graph, params.sort, categoryOrder)
   filterLayers(sorted, params.layerFrom, params.layerTo)
   cleanUpNodes(sorted)
-  return toSankeyData(title, start, end, sorted, params.showPercentages)
+  return toSankeyData(title, start, end, sorted, grouped, params.showPercentages)
 }
 
 // Merges each pair of transfer transactions into one net flow between two accounts
@@ -217,7 +222,8 @@ private fun Graph.nodeValue(key: String): Long {
 private fun String.isOther() = endsWith(OTHER_SUFFIX)
 
 // Keeps at most topN nodes in each layer, moving the smallest into an "Other" node
-private fun groupOtherNodes(graph: Graph, topN: Int, global: Boolean) {
+private fun groupOtherNodes(graph: Graph, topN: Int, global: Boolean): GroupedItems {
+  val grouped = GroupedItems()
   for (layer in SankeyLayer.entries) {
     val smallestFirst =
       graph
@@ -229,13 +235,20 @@ private fun groupOtherNodes(graph: Graph, topN: Int, global: Boolean) {
         .toMutableList()
     fun others() = graph.count { (key, node) -> node.layer == layer && key.isOther() }
     while (smallestFirst.isNotEmpty() && smallestFirst.size + others() > topN) {
-      moveToOther(graph, smallestFirst.removeAt(0), global)
+      moveToOther(graph, smallestFirst.removeAt(0), global, grouped)
     }
   }
+  return grouped
 }
 
-private fun moveToOther(graph: Graph, key: String, global: Boolean) {
+private fun moveToOther(graph: Graph, key: String, global: Boolean, grouped: GroupedItems) {
   val node = graph[key] ?: return
+  val name = (node.label as? SankeyLabel.Text)?.value ?: key
+  fun addGrouped(from: String, to: String, value: Long) {
+    val items = grouped.getOrPut(from to to) { LinkedHashMap() }
+    items[name] = (items[name] ?: 0L) + value
+  }
+
   val parentKey =
     when {
       global -> null
@@ -249,10 +262,16 @@ private fun moveToOther(graph: Graph, key: String, global: Boolean) {
 
   for ((fromKey, from) in graph.entries.toList()) {
     val value = from.to.remove(key) ?: continue
-    if (fromKey != otherKey) graph.addLink(fromKey, otherKey, value)
+    if (fromKey != otherKey) {
+      graph.addLink(fromKey, otherKey, value)
+      addGrouped(fromKey, otherKey, value)
+    }
   }
   for ((toKey, value) in node.to) {
-    if (toKey != otherKey) graph.addLink(otherKey, toKey, value)
+    if (toKey != otherKey) {
+      graph.addLink(otherKey, toKey, value)
+      addGrouped(otherKey, toKey, value)
+    }
   }
   graph.remove(key)
 }
@@ -373,6 +392,7 @@ private fun toSankeyData(
   start: YearMonth,
   end: YearMonth,
   graph: Graph,
+  grouped: GroupedItems,
   showPercentages: Boolean,
 ): SankeyData {
   val columns = columns(graph)
@@ -411,6 +431,7 @@ private fun toSankeyData(
         target = indices.getValue(targetKey),
         value = Amount(value),
         color = colors.getValue(colorKey),
+        grouped = grouped.itemsFor(sourceKey, targetKey),
       )
     }
   }
@@ -423,6 +444,17 @@ private fun toSankeyData(
     nodes = nodes.toImmutableList(),
     links = links.toImmutableList(),
   )
+}
+
+private fun GroupedItems.itemsFor(
+  source: String,
+  target: String,
+): ImmutableList<SankeyGroupedItem> {
+  val items = get(source to target) ?: return persistentListOf()
+  return items.entries
+    .sortedByDescending { it.value }
+    .map { (name, value) -> SankeyGroupedItem(name, Amount(value)) }
+    .toImmutableList()
 }
 
 private val SOURCE_COLORED =
