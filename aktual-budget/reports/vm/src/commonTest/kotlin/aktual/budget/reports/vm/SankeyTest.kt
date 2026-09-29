@@ -5,6 +5,7 @@ import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
+import assertk.assertions.each
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.single
@@ -85,6 +86,46 @@ class SankeyTest {
       .containsExactly("big", "bills__OTHER_BUCKET")
     assertThat(data.node("bills__OTHER_BUCKET").label).isEqualTo(Other)
     assertThat(data.node("bills__OTHER_BUCKET").value).isEqualTo(Amount(150))
+  }
+
+  @Test
+  fun `Links into Other nodes list the grouped categories, biggest first`() {
+    val data =
+      calculate(
+        expense(total = -500, categoryId = "big", category = "Big"),
+        expense(total = -50, categoryId = "small1", category = "Small 1"),
+        expense(total = -100, categoryId = "small2", category = "Small 2"),
+        params = SankeyParams(topN = 1),
+      )
+
+    val link = data.links.single { data.nodes[it.target].key == "bills__OTHER_BUCKET" }
+    assertThat(link.grouped)
+      .containsExactly(
+        SankeyGroupedItem("Big", Amount(500)),
+        SankeyGroupedItem("Small 2", Amount(100)),
+        SankeyGroupedItem("Small 1", Amount(50)),
+      )
+    assertThat(data.links.filter { data.nodes[it.target].key != "bills__OTHER_BUCKET" }).each {
+      it.transform { link -> link.grouped }.isEmpty()
+    }
+  }
+
+  @Test
+  fun `Grouped categories with the same name are summed`() {
+    val data =
+      calculate(
+        expense(total = -500, categoryId = "big"),
+        expense(total = -100, categoryId = "misc1", category = "Misc"),
+        expense(total = -50, categoryId = "misc2", category = "Misc"),
+        params = SankeyParams(topN = 1),
+      )
+
+    val link = data.links.single { data.nodes[it.target].key == "bills__OTHER_BUCKET" }
+    assertThat(link.grouped)
+      .containsExactly(
+        SankeyGroupedItem("big", Amount(500)),
+        SankeyGroupedItem("Misc", Amount(150)),
+      )
   }
 
   @Test

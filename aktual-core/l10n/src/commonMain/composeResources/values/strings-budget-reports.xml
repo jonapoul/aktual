@@ -99,6 +99,7 @@
   <string name="reports_sankey_income">Income</string>
   <string name="reports_sankey_other">Other</string>
   <string name="reports_sankey_empty">No transactions in this period</string>
+  <string name="reports_sankey_link">%1$s → %2$s</string>
 
   <string name="reports_balance_forecast_ending">Ending balance</string>
   <string name="reports_balance_forecast_low">Low: %1$s</string>

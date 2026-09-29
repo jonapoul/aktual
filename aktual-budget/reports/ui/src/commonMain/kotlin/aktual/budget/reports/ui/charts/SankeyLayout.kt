@@ -1,7 +1,10 @@
 package aktual.budget.reports.ui.charts
 
 import aktual.budget.reports.vm.SankeyData
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import kotlin.jvm.JvmInline
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -9,6 +12,8 @@ import kotlin.math.pow
 private const val RELAX_ITERATIONS = 32
 private const val RELAX_DECAY = 0.99f
 private const val MAX_PADDING_FRACTION = 0.4f
+private const val BEZIER_SEARCH_STEPS = 24
+private const val CUBIC_COEFFICIENT = 3
 
 internal data class SankeyLayout(val nodes: List<Rect>, val links: List<LinkBand>)
 
@@ -20,6 +25,60 @@ internal data class LinkBand(
   val y1: Float,
   val thickness: Float,
 )
+
+internal sealed interface SankeyHit {
+  @JvmInline value class Node(val index: Int) : SankeyHit
+
+  @JvmInline value class Link(val index: Int) : SankeyHit
+}
+
+// Nodes and their labels take priority over links. When several links are in reach, the one whose
+// centre is closest wins
+internal fun SankeyLayout.hitTest(
+  point: Offset,
+  slop: Float,
+  labels: List<Rect?> = emptyList(),
+): SankeyHit? {
+  val node =
+    nodes.indices.indexOfFirst { i ->
+      nodes[i].inflate(slop).contains(point) || labels.getOrNull(i)?.contains(point) == true
+    }
+  if (node >= 0) return SankeyHit.Node(node)
+
+  val link =
+    links.indices
+      .mapNotNull { i ->
+        val distance = links[i].distanceFromCentre(point) ?: return@mapNotNull null
+        if (distance <= links[i].thickness / 2 + slop) i to distance else null
+      }
+      .minByOrNull { it.second }
+  return link?.let { SankeyHit.Link(it.first) }
+}
+
+// Vertical distance from the point to the band's centre line, or null if it's outside the band's x
+// range
+private fun LinkBand.distanceFromCentre(point: Offset): Float? {
+  if (point.x < x0 || point.x > x1) return null
+  val mid = (x0 + x1) / 2
+
+  // x only ever increases along the curve, so binary search for where it reaches the point
+  var low = 0f
+  var high = 1f
+  repeat(BEZIER_SEARCH_STEPS) {
+    val t = (low + high) / 2
+    if (cubic(t, x0, mid, mid, x1) < point.x) low = t else high = t
+  }
+  val t = (low + high) / 2
+  return abs(point.y - cubic(t, y0, y0, y1, y1))
+}
+
+private fun cubic(t: Float, p0: Float, p1: Float, p2: Float, p3: Float): Float {
+  val u = 1 - t
+  return u * u * u * p0 +
+    CUBIC_COEFFICIENT * u * u * t * p1 +
+    CUBIC_COEFFICIENT * u * t * t * p2 +
+    t * t * t * p3
+}
 
 // Node order within each column is kept as given, and nodes are only nudged up or down to line up
 // with the nodes they're linked to
