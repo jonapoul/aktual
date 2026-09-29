@@ -283,10 +283,12 @@ data class UnsupportedData(
   val reason: UnsupportedReason,
   val type: WidgetType,
   val name: String?,
+  val stackTrace: String? = null,
 ) : ChartData
 
 enum class UnsupportedReason {
   Filters,
+  InvalidMeta,
   ReportType,
   SankeyBudgeted,
 }
