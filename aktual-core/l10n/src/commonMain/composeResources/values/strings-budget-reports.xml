@@ -114,6 +114,16 @@
   <string name="reports_balance_forecast_how">This forecast shows your running balance from posted transactions, plus upcoming scheduled transactions in the future. Recurring schedules are repeated up to the end of the range, and transfer schedules move money between both accounts. The forecast is only as accurate as your schedules.</string>
   <string name="reports_balance_forecast_tracking_how">The tracking budget forecast starts from your on-budget balance, then adds each month’s budgeted income and subtracts its budgeted expenses. It doesn’t use schedules or account filters.</string>
 
+  <string name="reports_monte_carlo_success_to_age">Success rate to age %1$d</string>
+  <string name="reports_monte_carlo_median_ending">Median ending balance: %1$s</string>
+  <string name="reports_monte_carlo_runs_out">Typical failure runs out at age %1$d</string>
+  <plurals name="reports_monte_carlo_simulations">
+    <item quantity="one">%1$d simulation, in today’s money</item>
+    <item quantity="other">%1$d simulations, in today’s money</item>
+  </plurals>
+  <string name="reports_monte_carlo_how_title">How does this simulation work?</string>
+  <string name="reports_monte_carlo_how">Each scenario replays your retirement with a different sequence of yearly investment returns. Every year, any income and contributions arrive first, the income pays for spending and withdrawals from your pots cover the rest, then each pot grows or shrinks with that year’s return. Pots with an access age can’t fund withdrawals until you reach it. The darker band covers the middle half of scenarios, and the lighter band covers four in five of them. Treat the results as a rough guide, not a guarantee.</string>
+
   <string name="reports_net_worth_footer_title">How is net worth calculated?</string>
   <string name="reports_net_worth_footer">Net worth shows the balance of all accounts over time, including all of your investments. Your "net worth" is considered to be the amount you’d have if you sold all your assets and paid off as much debt as possible. If you hover over the graph, you can also see the amount of assets and debt individually.</string>
 

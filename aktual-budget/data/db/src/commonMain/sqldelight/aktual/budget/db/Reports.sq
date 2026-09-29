@@ -169,3 +169,11 @@ JOIN categories c ON c.id = b.category AND c.tombstone = 0 AND c.hidden = 0
 JOIN category_groups g ON g.id = c.cat_group AND g.tombstone = 0
 WHERE b.month >= :start AND b.month <= :end AND (g.is_income = 1 OR g.hidden = 0)
 GROUP BY b.month, g.is_income;
+
+-- packages/desktop-client/src/spreadsheet/bindings.ts accountBalance()
+monteCarloAccountBalances:
+SELECT a.id AS account, CAST(IFNULL(SUM(t.amount), 0) AS INTEGER) AS total
+FROM accounts a
+LEFT JOIN v_transactions_internal_alive t ON t.account = a.id AND t.is_parent = 0
+WHERE a.tombstone = 0 AND a.id IN :accounts
+GROUP BY a.id;

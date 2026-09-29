@@ -85,6 +85,7 @@ class ReportsDashboardViewModelTest {
             ReportsDao(this, contexts),
             PreferencesDao(this, contexts),
             calendar = { LocalDate(2026, 1, 1) },
+            contexts = contexts,
           ),
         dashboardDao = dao,
         sync = sync,
