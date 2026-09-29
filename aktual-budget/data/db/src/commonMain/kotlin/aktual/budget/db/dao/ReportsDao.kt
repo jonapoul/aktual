@@ -5,7 +5,6 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.CrossoverBalancesByMonth
 import aktual.budget.db.CrossoverExpensesByMonth
 import aktual.budget.db.CrossoverStartingBalances
-import aktual.budget.db.ForecastAccounts
 import aktual.budget.db.ForecastDailyTotals
 import aktual.budget.db.ForecastPostedScheduleTransactions
 import aktual.budget.db.ForecastSchedules
@@ -17,6 +16,7 @@ import aktual.budget.db.SankeyCategoryTotals
 import aktual.budget.db.SankeyTransfers
 import aktual.budget.db.TransactionDateBounds
 import aktual.budget.db.reports.CashFlowByMonth
+import aktual.budget.model.AccountId
 import alakazam.kotlin.CoroutineContexts
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
@@ -97,7 +97,7 @@ class ReportsDao(database: BudgetDatabase, private val contexts: CoroutineContex
   fun observeSankeyTransfers(start: LocalDate, end: LocalDate): Flow<List<SankeyTransfers>> =
     queries.sankeyTransfers(start, end).asFlow().mapToList(contexts.default).distinctUntilChanged()
 
-  fun observeForecastAccounts(): Flow<List<ForecastAccounts>> =
+  fun observeForecastAccounts(): Flow<List<AccountId>> =
     queries.forecastAccounts().asFlow().mapToList(contexts.default).distinctUntilChanged()
 
   fun observeForecastStartingBalances(start: LocalDate): Flow<List<ForecastStartingBalances>> =

@@ -117,7 +117,7 @@ WHERE t.is_parent = 0 AND t.transfer_id IS NOT NULL AND t.date >= :start AND t.d
 
 -- packages/loot-core/src/server/forecast/forecast-accounts.ts getAccounts()
 forecastAccounts:
-SELECT id, offbudget
+SELECT id
 FROM accounts
 WHERE tombstone = 0;
 

@@ -1,6 +1,5 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.db.ForecastAccounts
 import aktual.budget.db.ForecastPostedScheduleTransactions
 import aktual.budget.db.ForecastSchedules
 import aktual.budget.db.ForecastTrackingBudgetTotals
@@ -403,7 +402,7 @@ internal class ChartDataLoader(
       dao.observeForecastStartingBalances(start),
       dao.observeForecastDailyTotals(start, end),
     ) { inputs, startingRows, dailyRows ->
-      val live = inputs.accounts.map { it.id }
+      val live = inputs.accounts
       val selected = (accountFilter?.let { ids -> live.filter { it in ids } } ?: live).toSet()
       val accounts: Set<AccountId?> =
         when {
@@ -506,7 +505,7 @@ internal class ChartDataLoader(
 }
 
 private data class ScheduleInputs(
-  val accounts: List<ForecastAccounts>,
+  val accounts: List<AccountId>,
   val schedules: List<ForecastSchedules>,
   val posted: List<ForecastPostedScheduleTransactions>,
   val transferPayees: List<ForecastTransferPayees>,
