@@ -21,7 +21,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
   Qualify only where the name is ambiguous with a type in scope, as `LoginMethod.Password` is with the `Password` class.
 - `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` - add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
 - In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.
-- Wrap comments to the `max_line_length` in `.editorconfig` (currently 120).
+- Wrap comments at 100 columns. That is where `ktfmt --google-style` wraps them, not the `max_line_length` of 120 in `.editorconfig`.
 
 ## Build commands
 
