@@ -25,7 +25,7 @@ import kotlinx.serialization.json.long
 
 private const val MAX_OCCURRENCE_ITERATIONS = 10_000
 private const val MAX_RECUR_PERIODS = 100_000
-private const val POSTED_LOOKBACK_DAYS = 2
+internal const val POSTED_LOOKBACK_DAYS = 2
 private const val HALF = 0.5
 
 // A skipped weekend can pull an occurrence back by up to two days, so expand a little past the end

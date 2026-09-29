@@ -393,7 +393,7 @@ internal class ChartDataLoader(
       combine(
         dao.observeForecastAccounts(),
         dao.observeForecastSchedules(),
-        dao.observePostedScheduleTransactions(firstForecastDate.minus(2, DAY)),
+        dao.observePostedScheduleTransactions(firstForecastDate.minus(POSTED_LOOKBACK_DAYS, DAY)),
         dao.observeForecastTransferPayees(),
         ::ScheduleInputs,
       )
