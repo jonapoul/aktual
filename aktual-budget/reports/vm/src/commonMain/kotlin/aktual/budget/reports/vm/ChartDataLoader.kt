@@ -1,13 +1,22 @@
 package aktual.budget.reports.vm
 
+import aktual.budget.db.ForecastPostedScheduleTransactions
+import aktual.budget.db.ForecastSchedules
+import aktual.budget.db.ForecastTrackingBudgetTotals
+import aktual.budget.db.ForecastTransferPayees
 import aktual.budget.db.SankeyCategoryTotals
+import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.db.reports.CashFlowByMonth
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
+import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
+import aktual.budget.model.Field
+import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
+import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.WidgetType
 import aktual.core.Calendar
 import dev.zacsweers.metro.Inject
@@ -20,24 +29,32 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.DateTimeUnit.Companion.DAY
+import kotlinx.datetime.DateTimeUnit.Companion.MONTH
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.minus
 import kotlinx.datetime.minusMonth
+import kotlinx.datetime.plus
 import kotlinx.datetime.yearMonth
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 
 @Inject
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class ChartDataLoader(private val dao: ReportsDao, private val calendar: Calendar) {
+internal class ChartDataLoader(
+  private val dao: ReportsDao,
+  private val preferences: PreferencesDao,
+  private val calendar: Calendar,
+) {
   fun load(meta: ReportMeta): Flow<ChartData> =
     when (meta) {
       is AgeOfMoneyReportMeta -> ageOfMoney(meta)
+      is BalanceForecastReportMeta -> balanceForecast(meta)
       is CashFlowReportMeta -> cashFlow(meta)
       is CrossoverReportMeta -> crossover(meta)
       is MarkdownReportMeta -> text(meta)
       is NetWorthReportMeta -> netWorth(meta)
       is SankeyReportMeta -> sankey(meta)
-      is BalanceForecastReportMeta,
       is BudgetAnalysisReportMeta,
       is CalendarReportMeta,
       is CustomReportMeta,
@@ -328,6 +345,129 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
       .groupBy { it.category_group }
       .flatMap { (group, categories) -> listOf(group.value) + categories.map { it.category.value } }
 
+  // packages/desktop-client/src/components/reports/reports/BalanceForecastCard.tsx
+  fun balanceForecast(meta: BalanceForecastReportMeta): Flow<ChartData> =
+    preferences.observe(SyncedPrefKey.Global.BudgetType).flatMapLatest { budgetType ->
+      val today = calendar.today()
+      val range =
+        resolveTimeRange(
+          timeFrame = meta.timeFrame,
+          default =
+            TimeFrame(
+              start = today.yearMonth,
+              end = today.yearMonth.plus(DEFAULT_FORECAST_MONTHS - 1, MONTH),
+              mode = Static,
+            ),
+          today = today,
+          latestTransaction = null,
+        )
+      val isTracking = meta.source == TrackingBudget && BudgetType.from(budgetType) == Tracking
+      val params =
+        ForecastParams(
+          title = meta.name,
+          start = range.start,
+          end = range.endInclusive,
+          granularity = meta.granularity?.takeIf { it != Unknown && !isTracking } ?: Monthly,
+          today = today,
+        )
+
+      when {
+        isTracking -> trackingBudgetForecast(params)
+        meta.conditions.hasFilters() -> unsupported(meta, Filters)
+        else -> scheduleForecast(params, meta.accounts?.toSet())
+      }
+    }
+
+  // packages/loot-core/src/server/forecast/app.ts generateForecast(). Without an account filter,
+  // schedules that have no account are included too.
+  private fun scheduleForecast(
+    params: ForecastParams,
+    accountFilter: Set<AccountId>?,
+  ): Flow<ChartData> {
+    val start = params.start.firstDay
+    val end = params.end.lastDay
+    val firstForecastDate = if (end < params.today) start else maxOf(start, params.today)
+
+    val scheduleInputs =
+      combine(
+        dao.observeForecastAccounts(),
+        dao.observeForecastSchedules(),
+        dao.observePostedScheduleTransactions(firstForecastDate.minus(POSTED_LOOKBACK_DAYS, DAY)),
+        dao.observeForecastTransferPayees(),
+        ::ScheduleInputs,
+      )
+
+    return combine(
+      scheduleInputs,
+      dao.observeForecastStartingBalances(start),
+      dao.observeForecastDailyTotals(start, end),
+    ) { inputs, startingRows, dailyRows ->
+      val live = inputs.accounts
+      val selected = (accountFilter?.let { ids -> live.filter { it in ids } } ?: live).toSet()
+      val accounts: Set<AccountId?> =
+        when {
+          selected.isEmpty() -> emptySet()
+          accountFilter == null -> selected + null
+          else -> selected
+        }
+
+      val postedDates =
+        inputs.posted.filter { it.account in selected }.groupBy({ it.schedule }, { it.date })
+
+      calculateBalanceForecast(
+        params = params,
+        accounts = accounts,
+        startingBalances = startingRows.associate { it.account to it.total },
+        dailyTotals =
+          dailyRows
+            .filter { it.account in selected }
+            .groupingBy { it.date }
+            .fold(0L) { total, row -> total + row.total },
+        occurrences =
+          buildScheduleOccurrences(
+            schedules = inputs.schedules.mapNotNull(::forecastSchedule),
+            end = end,
+            transferAccounts = inputs.transferPayees.associate { it.id to it.transfer_acct },
+            postedDates = postedDates,
+          ),
+      )
+    }
+  }
+
+  // packages/loot-core/src/server/forecast/forecast-schedules.ts normalizeSchedule()
+  private fun forecastSchedule(row: ForecastSchedules): ForecastSchedule? {
+    val amount = parseScheduleAmount(row._amount) ?: return null
+    val date = parseScheduleDate(row._date) ?: return null
+    val dateCondition = row._conditions?.firstOrNull { it.field == Field.Date }
+    return ForecastSchedule(
+      id = row.id,
+      nextDate = row.next_date,
+      date = date,
+      account = row._account?.let(::AccountId),
+      payee = row._payee,
+      amount = amount,
+      exactDate = dateCondition?.operator == Operator.Is || row.posts_transaction == true,
+    )
+  }
+
+  private fun trackingBudgetForecast(params: ForecastParams): Flow<ChartData> =
+    combine(
+      dao.observeForecastOnBudgetBalance(),
+      dao.observeForecastTrackingBudgetTotals(params.start, params.end),
+    ) { balance, rows ->
+      val (income, expenses) = rows.partition { it.is_income == true }
+      fun List<ForecastTrackingBudgetTotals>.byMonth() = mapNotNull { row ->
+        row.month?.let { it to row.total }
+      }
+        .toMap()
+      calculateTrackingBudgetForecast(
+        params = params,
+        onBudgetBalance = balance,
+        budgetedIncome = income.byMonth(),
+        budgetedExpenses = expenses.byMonth(),
+      )
+    }
+
   fun unsupported(meta: ReportMeta, reason: UnsupportedReason): Flow<ChartData> {
     val (type, name) =
       when (meta) {
@@ -360,5 +500,13 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
   private companion object {
     const val YEAR_MONTH_FACTOR = 100L
     const val DEFAULT_SAFE_WITHDRAWAL_RATE = 0.04
+    const val DEFAULT_FORECAST_MONTHS = 12
   }
 }
+
+private data class ScheduleInputs(
+  val accounts: List<AccountId>,
+  val schedules: List<ForecastSchedules>,
+  val posted: List<ForecastPostedScheduleTransactions>,
+  val transferPayees: List<ForecastTransferPayees>,
+)

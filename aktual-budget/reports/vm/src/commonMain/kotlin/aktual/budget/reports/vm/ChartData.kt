@@ -58,6 +58,18 @@ data class CrossoverDatum(
   val adjustedExpenses: Amount? = null,
 )
 
+data class BalanceForecastData(
+  val title: String?,
+  val start: YearMonth,
+  val end: YearMonth,
+  val granularity: ForecastGranularity,
+  val source: ForecastSource,
+  // Monthly points are keyed by the first day of the month, with the balance at its end
+  val items: ImmutableMap<LocalDate, Amount>,
+  val today: LocalDate,
+  val scheduledCount: Int,
+) : ChartData
+
 data class SankeyData(
   val title: String?,
   val start: YearMonth,

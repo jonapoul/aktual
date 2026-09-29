@@ -28,18 +28,21 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianDrawingContext
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.rememberAxisGuidelineComponent
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.rememberAxisLabelComponent
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.rememberAxisLineComponent
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.rememberAxisTickComponent
 import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianValueFormatter
+import com.patrykandpatrick.vico.multiplatform.cartesian.decoration.Decoration
 import com.patrykandpatrick.vico.multiplatform.cartesian.marker.CartesianMarker
 import com.patrykandpatrick.vico.multiplatform.cartesian.marker.DefaultCartesianMarker
 import com.patrykandpatrick.vico.multiplatform.cartesian.marker.rememberDefaultCartesianMarker
 import com.patrykandpatrick.vico.multiplatform.common.Fill
 import com.patrykandpatrick.vico.multiplatform.common.Insets
 import com.patrykandpatrick.vico.multiplatform.common.LayeredComponent
+import com.patrykandpatrick.vico.multiplatform.common.component.LineComponent
 import com.patrykandpatrick.vico.multiplatform.common.component.ShapeComponent
 import com.patrykandpatrick.vico.multiplatform.common.component.TextComponent
 import com.patrykandpatrick.vico.multiplatform.common.component.rememberShapeComponent
@@ -233,3 +236,16 @@ internal fun DateRangeType.string() =
     DateRangeType.AllTime -> Strings.reportsDateTypeAllTime
     DateRangeType.Unknown -> Strings.reportsDateTypeUnknown
   }
+
+// Vertical line at an x value, drawn over the chart's layers
+internal class VerticalLine(private val x: Double, private val line: LineComponent) : Decoration {
+  override fun drawOverLayers(context: CartesianDrawingContext) =
+    with(context) {
+      val start =
+        (if (isLtr) layerBounds.left else layerBounds.right) +
+          layoutDirectionMultiplier * layerDimensions.startPadding - scroll
+      val steps = ((x - ranges.minX) / ranges.xStep).toFloat()
+      val canvasX = start + layoutDirectionMultiplier * layerDimensions.xSpacing * steps
+      line.drawVertical(context, canvasX, layerBounds.top, layerBounds.bottom)
+    }
+}

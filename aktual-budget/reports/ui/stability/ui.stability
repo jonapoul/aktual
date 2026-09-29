@@ -77,6 +77,20 @@ private fun aktual.budget.reports.ui.charts.dayYAxisFormatter(): com.patrykandpa
   params:
 
 @Composable
+private fun aktual.budget.reports.ui.charts.forecastItemPlacer(data: aktual.budget.reports.vm.BalanceForecastData): com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis.ItemPlacer
+  skippable: false
+  restartable: false
+  params:
+    - data: STABLE (marked @Stable or @Immutable)
+
+@Composable
+private fun aktual.budget.reports.ui.charts.forecastXAxisFormatter(data: aktual.budget.reports.vm.BalanceForecastData): com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianValueFormatter
+  skippable: false
+  restartable: false
+  params:
+    - data: STABLE (marked @Stable or @Immutable)
+
+@Composable
 internal fun aktual.budget.reports.ui.charts.hItemPlacer(compact: kotlin.Boolean): com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis.ItemPlacer
   skippable: false
   restartable: false
@@ -123,6 +137,20 @@ private fun aktual.budget.reports.ui.charts.rememberTargetLine(): com.patrykandp
   params:
 
 @Composable
+private fun aktual.budget.reports.ui.charts.rememberTodayLine(data: aktual.budget.reports.vm.BalanceForecastData): com.patrykandpatrick.vico.multiplatform.cartesian.decoration.Decoration?
+  skippable: false
+  restartable: false
+  params:
+    - data: STABLE (marked @Stable or @Immutable)
+
+@Composable
+private fun aktual.budget.reports.ui.charts.rememberZeroLine(data: aktual.budget.reports.vm.BalanceForecastData): com.patrykandpatrick.vico.multiplatform.cartesian.decoration.Decoration?
+  skippable: false
+  restartable: false
+  params:
+    - data: STABLE (marked @Stable or @Immutable)
+
+@Composable
 private fun aktual.budget.reports.ui.charts.string(): kotlin.String
   skippable: false
   restartable: false
@@ -156,6 +184,12 @@ private fun aktual.budget.reports.ui.charts.string(): kotlin.String
 
 @Composable
 internal fun aktual.budget.reports.ui.charts.string(): kotlin.String
+  skippable: false
+  restartable: false
+  params:
+
+@Composable
+private fun aktual.budget.reports.ui.charts.summary(): kotlin.String
   skippable: false
   restartable: false
   params:
