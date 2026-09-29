@@ -64,6 +64,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
@@ -153,6 +154,16 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
           )
         }
       }
+    val nodeLabels =
+      remember(layout, labels, values, nameStyle, valueStyle, textMeasurer, compact) {
+        if (compact) {
+          emptyList()
+        } else {
+          with(density) {
+            nodeLabels(data, layout, width, textMeasurer, labels, values, nameStyle, valueStyle)
+          }
+        }
+      }
     var selection by remember(data) { mutableStateOf<Selection?>(null) }
     val haptics = LocalHapticFeedback.current
 
@@ -160,7 +171,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
       if (compact) {
         Modifier
       } else {
-        Modifier.onTap(layout) { tapped ->
+        Modifier.onTap(layout, nodeLabels.map { it?.bounds }) { tapped ->
           selection = if (tapped?.hit == selection?.hit) null else tapped
           if (selection != null) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
         }
@@ -169,27 +180,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
     Box(
       modifier =
         Modifier.fillMaxSize().then(tapModifier).drawWithCache {
-          val nodeWidth = NODE_WIDTH.toPx()
-          val labelGap = LABEL_GAP.toPx()
-          val lastColumn = data.nodes.maxOf { it.column }
-          val columnSpacing =
-            if (lastColumn == 0) size.width else (size.width - nodeWidth) / lastColumn
-          val labelConstraints =
-            Constraints(
-              maxWidth = (columnSpacing - nodeWidth - labelGap * 2).toInt().coerceAtLeast(0)
-            )
-
           val paths = layout.links.map { band -> band.path() }
-          val texts =
-            if (compact) {
-              emptyList()
-            } else {
-              data.nodes.indices.map { i ->
-                val name = textMeasurer.measureLabel(labels[i], nameStyle, labelConstraints)
-                val value = textMeasurer.measureLabel(values[i], valueStyle, labelConstraints)
-                name to value
-              }
-            }
 
           onDrawBehind {
             val hit = selection?.hit
@@ -207,9 +198,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
               val rect = layout.nodes.getOrNull(i) ?: return@forEachIndexed
               drawRect(color = node.color.resolve(theme), topLeft = rect.topLeft, size = rect.size)
 
-              val (name, value) = texts.getOrNull(i) ?: return@forEachIndexed
-              val onLeft = node.column == lastColumn && lastColumn > 0
-              drawNodeLabel(rect, name, value, onLeft, labelGap)
+              nodeLabels.getOrNull(i)?.let { label -> drawNodeLabel(label) }
             }
           }
         }
@@ -240,12 +229,57 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
     }
   }
 
-private fun Modifier.onTap(layout: SankeyLayout, onSelect: (Selection?) -> Unit): Modifier =
-  pointerInput(layout) {
+private fun Modifier.onTap(
+  layout: SankeyLayout,
+  labelBounds: List<Rect?>,
+  onSelect: (Selection?) -> Unit,
+): Modifier =
+  pointerInput(layout, labelBounds) {
     detectTapGestures { offset ->
-      onSelect(layout.hitTest(offset, TAP_SLOP.toPx())?.let { hit -> Selection(hit, offset) })
+      val hit = layout.hitTest(offset, TAP_SLOP.toPx(), labelBounds)
+      onSelect(hit?.let { Selection(it, offset) })
     }
   }
+
+private data class NodeLabel(
+  val name: TextLayoutResult,
+  val value: TextLayoutResult,
+  val bounds: Rect,
+  val onLeft: Boolean,
+)
+
+// Null for nodes whose label would overlap its neighbours
+private fun Density.nodeLabels(
+  data: SankeyData,
+  layout: SankeyLayout,
+  width: Float,
+  textMeasurer: TextMeasurer,
+  labels: List<String>,
+  values: List<String>,
+  nameStyle: TextStyle,
+  valueStyle: TextStyle,
+): List<NodeLabel?> {
+  val nodeWidth = NODE_WIDTH.toPx()
+  val labelGap = LABEL_GAP.toPx()
+  val lastColumn = data.nodes.maxOf { it.column }
+  val columnSpacing = if (lastColumn == 0) width else (width - nodeWidth) / lastColumn
+  val constraints =
+    Constraints(maxWidth = (columnSpacing - nodeWidth - labelGap * 2).toInt().coerceAtLeast(0))
+
+  return data.nodes.mapIndexed { i, node ->
+    val rect = layout.nodes.getOrNull(i) ?: return@mapIndexed null
+    val name = textMeasurer.measureLabel(labels[i], nameStyle, constraints)
+    val value = textMeasurer.measureLabel(values[i], valueStyle, constraints)
+    val textHeight = name.size.height + value.size.height
+    if (rect.height + NODE_PADDING.toPx() < textHeight) return@mapIndexed null
+
+    val textWidth = max(name.size.width, value.size.width)
+    val onLeft = node.column == lastColumn && lastColumn > 0
+    val left = if (onLeft) rect.left - labelGap - textWidth else rect.right + labelGap
+    val top = rect.center.y - textHeight / 2
+    NodeLabel(name, value, Rect(left, top, left + textWidth, top + textHeight), onLeft)
+  }
+}
 
 private fun TextMeasurer.measureLabel(
   text: String,
@@ -260,21 +294,14 @@ private fun TextMeasurer.measureLabel(
     constraints = constraints,
   )
 
-private fun DrawScope.drawNodeLabel(
-  rect: Rect,
-  name: TextLayoutResult,
-  value: TextLayoutResult,
-  onLeft: Boolean,
-  labelGap: Float,
-) {
-  val textHeight = name.size.height + value.size.height
-  // Skip labels that would overlap their neighbours
-  if (rect.height + NODE_PADDING.toPx() < textHeight) return
-
-  val top = rect.center.y - textHeight / 2
-  fun x(width: Int) = if (onLeft) rect.left - labelGap - width else rect.right + labelGap
-  drawText(name, topLeft = Offset(x(name.size.width), top))
-  drawText(value, topLeft = Offset(x(value.size.width), top + name.size.height))
+private fun DrawScope.drawNodeLabel(label: NodeLabel) {
+  val bounds = label.bounds
+  fun x(width: Int) = if (label.onLeft) bounds.right - width else bounds.left
+  drawText(label.name, topLeft = Offset(x(label.name.size.width), bounds.top))
+  drawText(
+    label.value,
+    topLeft = Offset(x(label.value.size.width), bounds.top + label.name.size.height),
+  )
 }
 
 private data class Selection(val hit: SankeyHit, val position: Offset)

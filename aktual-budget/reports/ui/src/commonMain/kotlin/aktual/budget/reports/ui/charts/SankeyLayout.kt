@@ -32,10 +32,17 @@ internal sealed interface SankeyHit {
   @JvmInline value class Link(val index: Int) : SankeyHit
 }
 
-// Nodes take priority over links. When several links are in reach, the one whose centre is closest
-// wins
-internal fun SankeyLayout.hitTest(point: Offset, slop: Float): SankeyHit? {
-  val node = nodes.indexOfFirst { it.inflate(slop).contains(point) }
+// Nodes and their labels take priority over links. When several links are in reach, the one whose
+// centre is closest wins
+internal fun SankeyLayout.hitTest(
+  point: Offset,
+  slop: Float,
+  labels: List<Rect?> = emptyList(),
+): SankeyHit? {
+  val node =
+    nodes.indices.indexOfFirst { i ->
+      nodes[i].inflate(slop).contains(point) || labels.getOrNull(i)?.contains(point) == true
+    }
   if (node >= 0) return SankeyHit.Node(node)
 
   val link =

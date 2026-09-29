@@ -8,6 +8,7 @@ import aktual.budget.reports.vm.SankeyLink
 import aktual.budget.reports.vm.SankeyNode
 import aktual.core.model.Percent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.each
@@ -146,6 +147,15 @@ class SankeyLayoutTest {
 
     val point = Offset(node.right + 4f, node.center.y)
     assertThat(layout.hitTest(point, slop = 8f)).isEqualTo(SankeyHit.Node(0))
+  }
+
+  @Test
+  fun `Tapping a node's label hits the node`() {
+    val layout = layout(SIMPLE)
+    val label = Rect(left = 20f, top = 100f, right = 80f, bottom = 130f)
+
+    val hit = layout.hitTest(label.center, slop = 0f, labels = listOf(label, null, null, null))
+    assertThat(hit).isEqualTo(SankeyHit.Node(0))
   }
 
   @Test
