@@ -89,7 +89,7 @@ data class SankeyLink(
   val grouped: ImmutableList<SankeyGroupedItem> = persistentListOf(),
 )
 
-data class SankeyGroupedItem(val name: String, val value: Amount)
+@Immutable data class SankeyGroupedItem(val name: String, val value: Amount)
 
 @Immutable
 sealed interface SankeyLabel {

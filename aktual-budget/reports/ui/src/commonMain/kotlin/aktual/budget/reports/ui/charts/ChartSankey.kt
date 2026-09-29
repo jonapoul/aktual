@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,7 +60,6 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -126,8 +126,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
   BoxWithConstraints(modifier = modifier.fillMaxSize()) {
     val textMeasurer = rememberTextMeasurer()
     val theme = colors
-    val nameStyle =
-      TextStyle(color = theme.pageText, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+    val nameStyle = TextStyle(color = theme.pageText, fontSize = 12.sp, fontWeight = Bold)
     val valueStyle = TextStyle(color = theme.pageText, fontSize = 11.sp)
     val labels = data.nodes.map { it.label.string() }
     val values =
@@ -207,7 +206,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
     selection?.let { (hit, position) ->
       val tooltipModifier = Modifier.tooltipPosition(position)
       when (hit) {
-        is SankeyHit.Node -> {
+        is Node -> {
           Tooltip(
             title = labels[hit.index],
             value = data.nodes[hit.index].value,
@@ -216,7 +215,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
           )
         }
 
-        is SankeyHit.Link -> {
+        is Link -> {
           val link = data.links[hit.index]
           Tooltip(
             title = Strings.reportsSankeyLink(labels[link.source], labels[link.target]),
@@ -308,8 +307,8 @@ private data class Selection(val hit: SankeyHit, val position: Offset)
 
 private fun SankeyHit.highlights(index: Int, link: SankeyLink): Boolean =
   when (this) {
-    is SankeyHit.Link -> this.index == index
-    is SankeyHit.Node -> this.index == link.source || this.index == link.target
+    is Link -> this.index == index
+    is Node -> this.index == link.source || this.index == link.target
   }
 
 @Composable
@@ -334,7 +333,7 @@ private fun Tooltip(
         text = value.formatted(),
         color = colors.menuItemText,
         style = typography.bodyMedium,
-        fontWeight = FontWeight.Bold,
+        fontWeight = Bold,
       )
 
       if (percent != null) {
@@ -435,6 +434,7 @@ private fun SankeyLabel.string(): String =
   }
 
 @Composable
+@ReadOnlyComposable
 private fun Amount.formatted(): String =
   toString(
     numberFormatConfig = LocalNumberFormatConfig.current,

@@ -111,6 +111,24 @@ class SankeyTest {
   }
 
   @Test
+  fun `Grouped categories with the same name are summed`() {
+    val data =
+      calculate(
+        expense(total = -500, categoryId = "big"),
+        expense(total = -100, categoryId = "misc1", category = "Misc"),
+        expense(total = -50, categoryId = "misc2", category = "Misc"),
+        params = SankeyParams(topN = 1),
+      )
+
+    val link = data.links.single { data.nodes[it.target].key == "bills__OTHER_BUCKET" }
+    assertThat(link.grouped)
+      .containsExactly(
+        SankeyGroupedItem("big", Amount(500)),
+        SankeyGroupedItem("Misc", Amount(150)),
+      )
+  }
+
+  @Test
   fun `Global sorting groups small categories into one Other node`() {
     val data =
       calculate(
