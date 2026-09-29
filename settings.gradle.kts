@@ -176,6 +176,7 @@ include(
   ":aktual-budget:data:encryption",
   ":aktual-budget:data:impl",
   ":aktual-budget:data:proto",
+  ":aktual-budget:demo",
   ":aktual-budget:list:ui",
   ":aktual-budget:list:vm",
   ":aktual-budget:model",

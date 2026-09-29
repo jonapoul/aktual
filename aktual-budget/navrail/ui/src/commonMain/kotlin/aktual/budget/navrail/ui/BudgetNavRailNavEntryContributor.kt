@@ -1,5 +1,6 @@
 package aktual.budget.navrail.ui
 
+import aktual.budget.demo.DemoBudget
 import aktual.core.nav.BudgetNavRailNavRoute
 import aktual.core.nav.InfoNavRoute
 import aktual.core.nav.ListBudgetsNavRoute
@@ -18,8 +19,10 @@ import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(AppScope::class)
-class BudgetNavRailNavEntryContributor(private val runLevelState: RunLevelState) :
-  NavEntryContributor {
+class BudgetNavRailNavEntryContributor(
+  private val runLevelState: RunLevelState,
+  private val demoBudget: DemoBudget,
+) : NavEntryContributor {
   override fun EntryProviderScope<NavKey>.contribute(stack: NavStack<NavKey>) {
     entry<BudgetNavRailNavRoute> {
       val budgetGraph by remember { runLevelState.budget() }.collectAsState(initial = null)
@@ -30,6 +33,7 @@ class BudgetNavRailNavEntryContributor(private val runLevelState: RunLevelState)
             when (action) {
               LogOut -> stack.replaceAll(ServerUrlNavRoute)
               SwitchFile -> stack.replaceAll(ListBudgetsNavRoute)
+              ExitDemo -> exitDemo(stack)
               Settings -> stack.push(SettingsNavRoute)
               About -> stack.push(InfoNavRoute)
             }
@@ -37,5 +41,10 @@ class BudgetNavRailNavEntryContributor(private val runLevelState: RunLevelState)
         )
       }
     }
+  }
+
+  private fun exitDemo(stack: NavStack<NavKey>) {
+    demoBudget.close()
+    stack.replaceAll(ServerUrlNavRoute)
   }
 }

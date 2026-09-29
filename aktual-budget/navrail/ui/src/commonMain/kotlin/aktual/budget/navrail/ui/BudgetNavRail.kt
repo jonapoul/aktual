@@ -164,6 +164,7 @@ internal fun BudgetNavRail(
   } else {
     SideNavLayout(
       contributors = contributors,
+      isDemo = headerState.isDemo,
       activeStack = activeStack,
       selectedTab = selectedTab,
       onSelectTab = onSelectTab,
@@ -303,16 +304,24 @@ private fun BudgetDrawerSheet(
         color = colors.sidebarItemText.disabled,
       )
 
-      DrawerItem(
-        icon = MaterialIcons.SwapHoriz,
-        label = Strings.budgetNavMenuSwitchBudget,
-        onClick = { onAction(SwitchFile) },
-      )
-      DrawerItem(
-        icon = MaterialIcons.Logout,
-        label = Strings.budgetNavMenuLogOut,
-        onClick = { onAction(LogOut) },
-      )
+      if (headerState.isDemo) {
+        DrawerItem(
+          icon = MaterialIcons.Logout,
+          label = Strings.budgetNavMenuExitDemo,
+          onClick = { onAction(ExitDemo) },
+        )
+      } else {
+        DrawerItem(
+          icon = MaterialIcons.SwapHoriz,
+          label = Strings.budgetNavMenuSwitchBudget,
+          onClick = { onAction(SwitchFile) },
+        )
+        DrawerItem(
+          icon = MaterialIcons.Logout,
+          label = Strings.budgetNavMenuLogOut,
+          onClick = { onAction(LogOut) },
+        )
+      }
       DrawerItem(
         icon = MaterialIcons.Settings,
         label = Strings.budgetNavMenuSettings,
@@ -349,7 +358,7 @@ private fun DrawerHeader(
       overflow = Ellipsis,
     )
     Text(
-      text = state.serverHost,
+      text = state.serverHost ?: Strings.budgetNavDemo,
       style = typography.bodySmall,
       color = colors.sidebarTextSubdued,
       maxLines = 1,
@@ -379,6 +388,7 @@ private fun DrawerItem(
 @Composable
 private fun SideNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
+  isDemo: Boolean,
   activeStack: NavStack<BudgetNavKey>,
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
@@ -391,6 +401,7 @@ private fun SideNavLayout(
       SideNavRail(selectedTab, onSelectTab, onMenuClick = { showMenu = true })
       BudgetMenu(
         expanded = showMenu,
+        isDemo = isDemo,
         onAction = onAction,
         onDismissRequest = { showMenu = false },
         modifier = Modifier.align(TopEnd),
@@ -537,28 +548,40 @@ internal fun budgetNavKeyStackSaver() =
 @Composable
 private fun BudgetMenu(
   expanded: Boolean,
+  isDemo: Boolean,
   onDismissRequest: () -> Unit,
   onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
   Box(modifier = modifier) {
     AktualDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
-      AktualDropdownMenuItem(
-        text = Strings.budgetNavMenuSwitchBudget,
-        leadingIcon = MaterialIcons.SwapHoriz,
-        onClick = {
-          onDismissRequest()
-          onAction(SwitchFile)
-        },
-      )
-      AktualDropdownMenuItem(
-        text = Strings.budgetNavMenuLogOut,
-        leadingIcon = MaterialIcons.Logout,
-        onClick = {
-          onDismissRequest()
-          onAction(LogOut)
-        },
-      )
+      if (isDemo) {
+        AktualDropdownMenuItem(
+          text = Strings.budgetNavMenuExitDemo,
+          leadingIcon = MaterialIcons.Logout,
+          onClick = {
+            onDismissRequest()
+            onAction(ExitDemo)
+          },
+        )
+      } else {
+        AktualDropdownMenuItem(
+          text = Strings.budgetNavMenuSwitchBudget,
+          leadingIcon = MaterialIcons.SwapHoriz,
+          onClick = {
+            onDismissRequest()
+            onAction(SwitchFile)
+          },
+        )
+        AktualDropdownMenuItem(
+          text = Strings.budgetNavMenuLogOut,
+          leadingIcon = MaterialIcons.Logout,
+          onClick = {
+            onDismissRequest()
+            onAction(LogOut)
+          },
+        )
+      }
       AktualDropdownMenuItem(
         text = Strings.budgetNavMenuSettings,
         leadingIcon = MaterialIcons.Settings,

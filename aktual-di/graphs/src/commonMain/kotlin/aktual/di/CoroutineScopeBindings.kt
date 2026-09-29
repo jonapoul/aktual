@@ -60,7 +60,7 @@ object LoggedInCoroutineBindings {
 object BudgetCoroutineBindings {
   @Provides
   @SingleIn(BudgetScope::class)
-  fun scope(parent: LoggedInCoroutineScope): BudgetCoroutineScope =
+  fun scope(parent: AppCoroutineScope): BudgetCoroutineScope =
     BudgetCoroutineScope(parent.childScope())
 
   @Provides

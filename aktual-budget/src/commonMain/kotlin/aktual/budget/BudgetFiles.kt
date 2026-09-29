@@ -47,11 +47,15 @@ class BudgetFiles(val fileSystem: FileSystem, val directoryPath: Path) : Closeab
     if (!fileSystem.exists(directoryPath)) return emptyList()
     return fileSystem
       .list(directoryPath)
-      .filter { it.name != "tmp" && fileSystem.metadataOrNull(it)?.isDirectory == true }
+      .filter { it.name !in HIDDEN_DIRS && fileSystem.metadataOrNull(it)?.isDirectory == true }
       .map { dir ->
         val id = BudgetId(dir.name)
         val metadata = readMetadata(id)
         LocalBudget(id = id, metadata = metadata)
       }
+  }
+
+  private companion object {
+    val HIDDEN_DIRS = setOf("tmp", BudgetId.Demo.value)
   }
 }

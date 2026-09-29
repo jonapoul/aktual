@@ -4,6 +4,7 @@ import aktual.account.ui.login.LoginScreen
 import aktual.account.ui.password.ChangePasswordScreen
 import aktual.account.ui.url.ServerUrlScreen
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.BudgetNavRailNavigator
 import aktual.core.nav.ChangePasswordNavRoute
 import aktual.core.nav.InfoNavigator
 import aktual.core.nav.ListBudgetsNavigator
@@ -49,7 +50,11 @@ class AccountNavEntryContributor(private val runLevelState: RunLevelState) : Nav
     }
 
     entry<ServerUrlNavRoute> {
-      ServerUrlScreen(toLogin = LoginNavigator(stack), toInfo = InfoNavigator(stack))
+      ServerUrlScreen(
+        toLogin = LoginNavigator(stack),
+        toInfo = InfoNavigator(stack),
+        toBudget = BudgetNavRailNavigator(stack),
+      )
     }
   }
 }

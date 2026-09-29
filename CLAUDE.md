@@ -85,13 +85,13 @@ Feature-based modular layout. Module list: `settings.gradle.kts` / `ls modules/`
 
 Scopes: `AppScope` (app singletons), `ServerChosenScope` (after server URL is set), `LoggedInScope` (after authentication), `BudgetScope` (per-budget). All defined in `aktual-di:scopes`.
 
-Graphs: All graphs implement `AktualGraph`. Hierarchy: `AppGraph` (root) → `ServerChosenGraph` → `LoggedInGraph` → `BudgetGraph`. Graph types live in `aktual-di:graphs`.
+Graphs: All graphs implement `AktualGraph`. Hierarchy: `AppGraph` (root) → `ServerChosenGraph` → `LoggedInGraph`, plus `AppGraph` → `BudgetGraph`. `BudgetGraph` hangs off the app graph so budgets can open without a server (the demo budget), so it can't see server-chosen/logged-in bindings - server details come through the `BudgetServer` it's created with (`Remote(url, token)` or `None`). Open run levels are still ordered app → server-chosen → logged-in → budget, and the VM factory merges every open level's VMs. Graph types live in `aktual-di:graphs`.
 
 Graph lifecycle hooks (`Closeable` / `Initializable` set contributions) must be qualified with the contributing scope, e.g. `binding<@ForScope(BudgetScope::class) Closeable>()`. Unqualified, child graphs inherit parent contributions, so closing a child would close its parents' resources too.
 
 Each scope has its own `CoroutineScope`, cancelled when its graph closes. Inject `AppCoroutineScope` / `ServerChosenCoroutineScope` / `LoggedInCoroutineScope` / `BudgetCoroutineScope`, matching the lifetime the work should have. A plain `CoroutineScope` isn't bound, and the `InjectedRawCoroutineScope` detekt rule flags injecting one.
 
-VMs are registered with `@ViewModelKey` + `@ContributesIntoMap(<Scope>::class)` where the scope is the narrowest graph that provides all the VM's dependencies (`AppScope` → `ServerChosenScope` → `LoggedInScope` → `BudgetScope`). Assisted VM factories use `@ManualViewModelAssistedFactoryKey` + `@ContributesIntoMap(<Scope>::class)` - copy the shape from an existing one.
+VMs are registered with `@ViewModelKey` + `@ContributesIntoMap(<Scope>::class)` where the scope is the narrowest graph that provides all the VM's dependencies (`AppScope` → `ServerChosenScope` → `LoggedInScope`, or `BudgetScope` for anything needing the open budget). Assisted VM factories use `@ManualViewModelAssistedFactoryKey` + `@ContributesIntoMap(<Scope>::class)` - copy the shape from an existing one.
 
 ### Navigation
 

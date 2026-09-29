@@ -9,6 +9,7 @@ import dev.zacsweers.metro.Provides
 
 @GraphExtension(ServerChosenScope::class)
 interface ServerChosenGraph : AktualGraph {
+  val url: ServerUrl
   val loggedInGraphFactory: LoggedInGraph.Factory
 
   @Multibinds(allowEmpty = true)

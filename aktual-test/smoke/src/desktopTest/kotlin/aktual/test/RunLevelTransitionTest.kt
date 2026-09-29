@@ -2,17 +2,21 @@ package aktual.test
 
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
+import aktual.core.model.BudgetServer
 import aktual.di.BudgetGraph
 import aktual.di.LoggedInGraph
 import aktual.di.ServerChosenGraph
 import app.cash.turbine.test
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.containsNone
+import assertk.assertions.doesNotContain
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNotEmpty
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import dev.zacsweers.metro.createDynamicGraph
 import kotlin.io.path.createTempDirectory
@@ -181,5 +185,53 @@ class RunLevelTransitionTest {
       assertThat(levels.filterIsInstance<BudgetGraph>()).isEmpty()
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  @Test
+  fun budgetOpenedWhileLoggedInSyncsWithThatServer() {
+    val budget = requireNotNull(appGraph.runLevelState[BudgetGraph::class])
+    assertThat(budget.server).isEqualTo(BudgetServer.Remote(SERVER_URL, LOGIN_TOKEN))
+  }
+
+  @Test
+  fun openingOfflineBudgetDropsServerLevels() = runTest {
+    appGraph.runLevelState.all().test {
+      assertEmissionSize(4) // app, server-chosen, logged-in, budget
+
+      val budget = appGraph.runLevelController.onOfflineBudget(SECOND_BUDGET_ID, SECOND_DB_METADATA)
+
+      assertThat(awaitItem()).containsExactly(appGraph, budget)
+      assertThat(budget.server).isEqualTo(BudgetServer.None)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun closingOfflineBudgetLeavesAppLevel() = runTest {
+    appGraph.runLevelController.onOfflineBudget(SECOND_BUDGET_ID, SECOND_DB_METADATA)
+    appGraph.runLevelState.all().test {
+      assertEmissionSize(2) // app, budget
+
+      appGraph.runLevelController.onBudgetClosed()
+
+      assertThat(awaitItem()).containsExactly(appGraph)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun openingAndClosingDemoBudget() = runTest {
+    val demoDir = appGraph.budgetFiles.directory(BudgetId.Demo)
+
+    val budget = appGraph.demoBudget.open()
+    assertThat(appGraph.runLevelState[BudgetGraph::class]).isEqualTo(budget)
+    assertThat(budget.id).isEqualTo(BudgetId.Demo)
+    assertThat(budget.server).isEqualTo(BudgetServer.None)
+    assertThat(FileSystem.SYSTEM.exists(demoDir)).isTrue()
+    assertThat(appGraph.budgetFiles.listLocal().map { it.id }).doesNotContain(BudgetId.Demo)
+
+    appGraph.demoBudget.close()
+    assertThat(appGraph.runLevelState[BudgetGraph::class]).isNull()
+    assertThat(FileSystem.SYSTEM.exists(demoDir)).isFalse()
   }
 }

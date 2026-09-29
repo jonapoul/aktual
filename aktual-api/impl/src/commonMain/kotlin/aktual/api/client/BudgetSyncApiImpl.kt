@@ -3,8 +3,7 @@ package aktual.api.client
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.SyncResponse
 import aktual.budget.proto.SyncResponseDecoder
-import aktual.core.model.ServerUrl
-import aktual.core.model.Token
+import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding
 import io.ktor.client.HttpClient
@@ -23,21 +22,19 @@ import okio.source
 @ContributesBinding(BudgetScope::class)
 class BudgetSyncApiImpl(
   @param:AktualClient private val client: HttpClient,
-  private val serverUrl: ServerUrl,
-  private val token: Token,
+  private val server: BudgetServer,
   private val prefs: BudgetLocalPreferences,
   private val decoder: SyncResponseDecoder,
 ) : BudgetSyncApi {
-  private val urlProtocol = serverUrl.protocol()
-
   override suspend fun syncBudget(requestBody: ByteString): SyncResponse {
+    val remote = checkNotNull(server as? BudgetServer.Remote) { "No server to sync with" }
     val response = client.post {
       url {
-        protocol = urlProtocol
-        host = serverUrl.baseUrl
+        protocol = remote.url.protocol()
+        host = remote.url.baseUrl
         path("/sync/sync")
       }
-      header(AktualHeaders.TOKEN, token)
+      header(AktualHeaders.TOKEN, remote.token)
       setBody(requestBody.toByteArray())
 
       // Required by the Actual sync server's express.raw() middleware.

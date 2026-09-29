@@ -10,6 +10,7 @@ kotlin {
   commonMainDependencies {
     api(libs.compose.animation)
     api(libs.compose.foundation)
+    api(project(":aktual-budget:demo"))
     api(project(":aktual-budget:navrail:vm"))
     api(project(":aktual-di:runlevel"))
     implementation(libs.androidx.navigation3.runtime)
