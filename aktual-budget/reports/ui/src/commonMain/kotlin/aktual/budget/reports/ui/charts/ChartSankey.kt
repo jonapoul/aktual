@@ -41,6 +41,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -166,14 +167,16 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
     var selection by remember(data) { mutableStateOf<Selection?>(null) }
     val haptics = LocalHapticFeedback.current
 
+    val onSelect by
+      rememberUpdatedState<(Selection?) -> Unit> { tapped ->
+        selection = if (tapped?.hit == selection?.hit) null else tapped
+        if (selection != null) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+      }
     val tapModifier =
       if (compact) {
         Modifier
       } else {
-        Modifier.onTap(layout, nodeLabels.map { it?.bounds }) { tapped ->
-          selection = if (tapped?.hit == selection?.hit) null else tapped
-          if (selection != null) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
-        }
+        Modifier.onTap(layout, nodeLabels.map { it?.bounds }) { onSelect(it) }
       }
 
     Box(
