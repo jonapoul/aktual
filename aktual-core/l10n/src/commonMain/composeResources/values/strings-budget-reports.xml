@@ -102,7 +102,6 @@
 
   <string name="reports_balance_forecast_ending">Ending balance</string>
   <string name="reports_balance_forecast_low">Low: %1$s</string>
-  <string name="reports_balance_forecast_today">Today</string>
   <string name="reports_balance_forecast_empty">No accounts are included in this report. Adjust the accounts or date range to see a balance projection.</string>
   <plurals name="reports_balance_forecast_scheduled">
     <item quantity="one">%1$d scheduled transaction included</item>
