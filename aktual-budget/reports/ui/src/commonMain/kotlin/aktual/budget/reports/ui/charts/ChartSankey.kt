@@ -218,6 +218,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
           Tooltip(
             title = labels[hit.index],
             value = data.nodes[hit.index].value,
+            percent = data.nodes[hit.index].percent,
             modifier = tooltipModifier,
           )
         }
@@ -285,6 +286,7 @@ private fun Tooltip(
   title: String,
   value: Amount,
   modifier: Modifier = Modifier,
+  percent: Percent? = null,
   grouped: ImmutableList<SankeyGroupedItem> = persistentListOf(),
 ) =
   Column(
@@ -296,12 +298,23 @@ private fun Tooltip(
         .padding(10.dp)
   ) {
     Text(text = title, color = colors.menuItemText, style = typography.bodyMedium)
-    Text(
-      text = value.formatted(),
-      color = colors.menuItemText,
-      style = typography.bodyMedium,
-      fontWeight = FontWeight.Bold,
-    )
+    Row {
+      Text(
+        text = value.formatted(),
+        color = colors.menuItemText,
+        style = typography.bodyMedium,
+        fontWeight = FontWeight.Bold,
+      )
+
+      if (percent != null) {
+        HorizontalSpacer(6.dp)
+        Text(
+          text = percent.toString(PERCENT_DECIMALS),
+          color = colors.menuItemText.copy(alpha = GROUPED_ALPHA),
+          style = typography.bodyMedium,
+        )
+      }
+    }
 
     if (grouped.isNotEmpty()) {
       VerticalSpacer(6.dp)
