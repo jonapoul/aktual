@@ -25,13 +25,6 @@ private fun aktual.budget.list.ui.errorBare(isPressed: kotlin.Boolean): androidx
     - isPressed: STABLE (primitive type)
 
 @Composable
-private fun aktual.budget.list.ui.errorPrimary(isPressed: kotlin.Boolean): androidx.compose.material3.ButtonColors
-  skippable: false
-  restartable: false
-  params:
-    - isPressed: STABLE (primitive type)
-
-@Composable
 private fun aktual.budget.list.ui.text(): kotlin.String
   skippable: false
   restartable: false

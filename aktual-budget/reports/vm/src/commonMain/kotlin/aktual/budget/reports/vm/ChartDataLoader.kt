@@ -19,15 +19,20 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.WidgetType
 import aktual.core.Calendar
+import aktual.core.model.Percent
+import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
+import kotlin.math.max
 import kotlin.math.roundToLong
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.DateTimeUnit.Companion.DAY
 import kotlinx.datetime.DateTimeUnit.Companion.MONTH
@@ -45,6 +50,7 @@ internal class ChartDataLoader(
   private val dao: ReportsDao,
   private val preferences: PreferencesDao,
   private val calendar: Calendar,
+  private val contexts: CoroutineContexts,
 ) {
   fun load(meta: ReportMeta): Flow<ChartData> =
     when (meta) {
@@ -53,13 +59,13 @@ internal class ChartDataLoader(
       is CashFlowReportMeta -> cashFlow(meta)
       is CrossoverReportMeta -> crossover(meta)
       is MarkdownReportMeta -> text(meta)
+      is MonteCarloReportMeta -> monteCarlo(meta)
       is NetWorthReportMeta -> netWorth(meta)
       is SankeyReportMeta -> sankey(meta)
       is BudgetAnalysisReportMeta,
       is CalendarReportMeta,
       is CustomReportMeta,
       is FormulaReportMeta,
-      is MonteCarloReportMeta,
       is SpendingReportMeta,
       is SummaryReportMeta,
       is UnsupportedReportMeta -> unsupported(meta, ReportType)
@@ -468,6 +474,54 @@ internal class ChartDataLoader(
       )
     }
 
+  // packages/desktop-client/src/components/reports/reports/monte-carlo/MonteCarloCard.tsx
+  fun monteCarlo(meta: MonteCarloReportMeta): Flow<ChartData> {
+    val config = meta.toConfig()
+    val linked = config.pots.mapNotNull { it.accountId }.toSet()
+    val balances =
+      if (linked.isEmpty()) {
+        flowOf(emptyMap())
+      } else {
+        dao.observeMonteCarloAccountBalances(linked).map { rows ->
+          rows.associate { it.account to it.total }
+        }
+      }
+
+    return balances
+      .map { byAccount ->
+        // A linked pot takes its account's live balance, falling back to the stored balance
+        val pots =
+          config.pots.map { pot ->
+            val balance = pot.accountId?.let(byAccount::get)
+            if (balance == null) pot else pot.copy(startingBalance = max(0L, balance).toDouble())
+          }
+        val result = runMonteCarlo(config.copy(pots = pots))
+        MonteCarloData(
+          title = meta.name,
+          successRate = Percent((result.successRate * PERCENT_TENTHS).roundToLong() / TENTHS),
+          currentAge = config.currentAge,
+          targetAge = config.currentAge + result.horizonYears,
+          bands =
+            result.percentileBands
+              .map { band ->
+                MonteCarloBand(
+                  age = config.currentAge + band.year,
+                  p10 = Amount(band.p10),
+                  p25 = Amount(band.p25),
+                  p50 = Amount(band.p50),
+                  p75 = Amount(band.p75),
+                  p90 = Amount(band.p90),
+                )
+              }
+              .toImmutableList(),
+          medianEndingBalance = Amount(result.medianEndingBalance),
+          medianDepletionAge = result.medianDepletionYear?.let { config.currentAge + it - 1 },
+          simulationCount = result.simulationCount,
+        )
+      }
+      .flowOn(contexts.default)
+  }
+
   fun unsupported(meta: ReportMeta, reason: UnsupportedReason): Flow<ChartData> {
     val (type, name) =
       when (meta) {
@@ -501,6 +555,8 @@ internal class ChartDataLoader(
     const val YEAR_MONTH_FACTOR = 100L
     const val DEFAULT_SAFE_WITHDRAWAL_RATE = 0.04
     const val DEFAULT_FORECAST_MONTHS = 12
+    const val PERCENT_TENTHS = 1000.0
+    const val TENTHS = 10.0
   }
 }
 

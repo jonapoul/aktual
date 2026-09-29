@@ -15,16 +15,20 @@ data class MonteCarloReportMeta(
   @SerialName("returnModel") val returnModel: ReturnModel? = null,
   @SerialName("withdrawalRule") val withdrawalRule: WithdrawalRule? = null,
   @SerialName("minimumSpending") val minimumSpending: Long? = null,
+  // Renamed to minimumSpending upstream in 26.10.0
+  @SerialName("minimumWithdrawal") val minimumWithdrawal: Long? = null,
   @SerialName("spendingPhases") val spendingPhases: List<SpendingPhase>? = null,
   @SerialName("contributions") val contributions: List<Contribution>? = null,
   @SerialName("incomeStreams") val incomeStreams: List<IncomeStream>? = null,
-  @SerialName("inflationMean") val inflationMean: Double? = null,
+  // Upstream's default, so an explicit null can mean inflation is off
+  @SerialName("inflationMean") val inflationMean: Double? = DEFAULT_INFLATION_MEAN,
   @SerialName("inflationStdDev") val inflationStdDev: Double? = null,
   @SerialName("taxModel") val taxModel: TaxModel? = null,
   @SerialName("taxBands") val taxBands: List<TaxBand>? = null,
   @SerialName("currentAge") val currentAge: Int? = null,
   @SerialName("targetAge") val targetAge: Int? = null,
   @SerialName("simulationCount") val simulationCount: Int? = null,
+  @SerialName("showTransfers") val showTransfers: Boolean? = null,
 ) : ReportMeta
 
 @Serializable

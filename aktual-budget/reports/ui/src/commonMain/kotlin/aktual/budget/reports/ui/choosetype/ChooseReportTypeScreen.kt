@@ -9,6 +9,7 @@ import aktual.budget.reports.ui.charts.PREVIEW_BALANCE_FORECAST_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CROSSOVER_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CUSTOM_DATA
+import aktual.budget.reports.ui.charts.PREVIEW_MONTE_CARLO_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_SANKEY_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_SHORT_TEXT_DATA
@@ -68,7 +69,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -146,7 +146,7 @@ private fun ChooseReportTypeContent(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       contentPadding = contentPadding,
     ) {
-      items(ChoosableTypes) { type ->
+      items(WidgetType.known) { type ->
         WidgetType(
           modifier = Modifier.fillMaxWidth(),
           type = type,
@@ -222,7 +222,7 @@ private fun WidgetType.sampleData(): ChartData =
     Sankey -> PREVIEW_SANKEY_DATA
     BalanceForecast -> PREVIEW_BALANCE_FORECAST_DATA
     AgeOfMoney -> PREVIEW_AGE_OF_MONEY_DATA
-    MonteCarlo -> TODO("https://github.com/jonapoul/aktual/issues/1544")
+    MonteCarlo -> PREVIEW_MONTE_CARLO_DATA
     Unknown -> error("No sample data for $this")
   }
 
@@ -232,7 +232,6 @@ private fun WidgetType.isEnabled(): Boolean =
     BudgetAnalysis,
     Formula,
     Custom,
-    MonteCarlo,
     Unknown -> false
 
     NetWorth,
@@ -244,11 +243,9 @@ private fun WidgetType.isEnabled(): Boolean =
     Crossover,
     Sankey,
     BalanceForecast,
+    MonteCarlo,
     AgeOfMoney -> true
   }
-
-// no sample data for these yet, so don't offer them
-private val ChoosableTypes = WidgetType.known.filter { it != MonteCarlo }.toImmutableList()
 
 private val REPORT_HEIGHT = 250.dp
 
