@@ -172,8 +172,8 @@ GROUP BY b.month, g.is_income;
 
 -- packages/desktop-client/src/spreadsheet/bindings.ts accountBalance()
 monteCarloAccountBalances:
-SELECT a.id AS account, IFNULL(SUM(t.amount), 0) AS total
-FROM v_transactions_internal_alive t
-JOIN accounts a ON a.id = t.account AND a.tombstone = 0
-WHERE t.is_parent = 0 AND a.id IN :accounts
+SELECT a.id AS account, CAST(IFNULL(SUM(t.amount), 0) AS INTEGER) AS total
+FROM accounts a
+LEFT JOIN v_transactions_internal_alive t ON t.account = a.id AND t.is_parent = 0
+WHERE a.tombstone = 0 AND a.id IN :accounts
 GROUP BY a.id;
