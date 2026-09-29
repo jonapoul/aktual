@@ -54,7 +54,7 @@ sealed interface ReportMeta {
 data class UnsupportedReportMeta(
   val type: WidgetType,
   val raw: JsonObject,
-  val reason: String,
+  val stackTrace: String? = null,
 ) : ReportMeta
 
 @Serializable data class CustomReportMeta(@SerialName("id") val id: CustomReportId) : ReportMeta
