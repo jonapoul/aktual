@@ -19,7 +19,6 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.yearMonth
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
@@ -88,7 +87,7 @@ internal fun parseScheduleAmount(raw: String?): Long? {
     return it
   }
   return runCatching {
-    val obj: JsonObject = lenientJson.parseToJsonElement(raw).jsonObject
+    val obj = lenientJson.parseToJsonElement(raw).jsonObject
     val num1 = obj.getValue("num1").jsonPrimitive.long
     val num2 = obj.getValue("num2").jsonPrimitive.long
     // Math.round() rounds halves up
@@ -204,21 +203,21 @@ private fun nthWeekday(month: YearMonth, pattern: RecurPattern): List<LocalDate>
 
 private fun RecurType.dayOfWeek(): DayOfWeek? =
   when (this) {
-    Sunday -> DayOfWeek.SUNDAY
-    Monday -> DayOfWeek.MONDAY
-    Tuesday -> DayOfWeek.TUESDAY
-    Wednesday -> DayOfWeek.WEDNESDAY
-    Thursday -> DayOfWeek.THURSDAY
-    Friday -> DayOfWeek.FRIDAY
-    Saturday -> DayOfWeek.SATURDAY
+    Sunday -> SUNDAY
+    Monday -> MONDAY
+    Tuesday -> TUESDAY
+    Wednesday -> WEDNESDAY
+    Thursday -> THURSDAY
+    Friday -> FRIDAY
+    Saturday -> SATURDAY
     Day,
     Unknown -> null
   }
 
 // packages/loot-core/src/shared/schedules.ts getDateWithSkippedWeekend()
 private fun RecurConfig.skipWeekend(date: LocalDate): LocalDate {
-  val saturday = date.dayOfWeek == DayOfWeek.SATURDAY
-  val sunday = date.dayOfWeek == DayOfWeek.SUNDAY
+  val saturday = date.dayOfWeek == SATURDAY
+  val sunday = date.dayOfWeek == SUNDAY
   return when {
     skipWeekend != true || !(saturday || sunday) -> date
     weekendSolveMode == Before -> date.minus(if (saturday) 1 else 2, DAY)
@@ -229,9 +228,8 @@ private fun RecurConfig.skipWeekend(date: LocalDate): LocalDate {
 // packages/loot-core/src/server/forecast/forecast-schedules.ts getFutureOccurrenceDates()
 internal fun futureOccurrenceDates(schedule: ForecastSchedule, end: LocalDate): List<LocalDate> =
   when (val date = schedule.date) {
-    is ScheduleDate.Single -> if (date.date <= end) listOf(date.date) else emptyList()
-    is ScheduleDate.Recurring ->
-      schedule.nextDate?.let { recurringDates(date.config, it, end) }.orEmpty()
+    is Single -> if (date.date <= end) listOf(date.date) else emptyList()
+    is Recurring -> schedule.nextDate?.let { recurringDates(date.config, it, end) }.orEmpty()
   }
 
 private fun recurringDates(
