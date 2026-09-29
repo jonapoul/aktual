@@ -5,6 +5,7 @@ import aktual.budget.model.WidgetType
 import aktual.budget.reports.ui.charts.JUL_2025
 import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_AGE_OF_MONEY_DATA
+import aktual.budget.reports.ui.charts.PREVIEW_BALANCE_FORECAST_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CROSSOVER_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CUSTOM_DATA
@@ -219,7 +220,7 @@ private fun WidgetType.sampleData(): ChartData =
     Formula -> TODO("https://github.com/jonapoul/aktual/issues/1054")
     Crossover -> PREVIEW_CROSSOVER_DATA
     Sankey -> PREVIEW_SANKEY_DATA
-    BalanceForecast -> TODO("https://github.com/jonapoul/aktual/issues/1542")
+    BalanceForecast -> PREVIEW_BALANCE_FORECAST_DATA
     AgeOfMoney -> PREVIEW_AGE_OF_MONEY_DATA
     MonteCarlo -> TODO("https://github.com/jonapoul/aktual/issues/1544")
     Unknown -> error("No sample data for $this")
@@ -231,7 +232,6 @@ private fun WidgetType.isEnabled(): Boolean =
     BudgetAnalysis,
     Formula,
     Custom,
-    BalanceForecast,
     MonteCarlo,
     Unknown -> false
 
@@ -243,14 +243,12 @@ private fun WidgetType.isEnabled(): Boolean =
     Calendar,
     Crossover,
     Sankey,
+    BalanceForecast,
     AgeOfMoney -> true
   }
 
 // no sample data for these yet, so don't offer them
-private val ChoosableTypes =
-  WidgetType.known
-    .filter { it !in setOf<WidgetType>(BalanceForecast, MonteCarlo) }
-    .toImmutableList()
+private val ChoosableTypes = WidgetType.known.filter { it != MonteCarlo }.toImmutableList()
 
 private val REPORT_HEIGHT = 250.dp
 

@@ -114,3 +114,58 @@ SELECT t.id, t.amount, a.id AS account, a.name AS account_name, t.transfer_id
 FROM v_transactions_internal_alive t
 JOIN accounts a ON a.id = t.account AND a.tombstone = 0 AND a.offbudget = 0
 WHERE t.is_parent = 0 AND t.transfer_id IS NOT NULL AND t.date >= :start AND t.date <= :end;
+
+-- packages/loot-core/src/server/forecast/forecast-accounts.ts getAccounts()
+forecastAccounts:
+SELECT id
+FROM accounts
+WHERE tombstone = 0;
+
+-- packages/loot-core/src/server/forecast/forecast-projection.ts summarizePostedTransactions()
+forecastStartingBalances:
+SELECT a.id AS account, IFNULL(SUM(t.amount), 0) AS total
+FROM v_transactions_internal_alive t
+JOIN accounts a ON a.id = t.account AND a.tombstone = 0
+WHERE t.is_parent = 0 AND t.date < :start
+GROUP BY a.id;
+
+forecastDailyTotals:
+SELECT a.id AS account, t.date, IFNULL(SUM(t.amount), 0) AS total
+FROM v_transactions_internal_alive t
+JOIN accounts a ON a.id = t.account AND a.tombstone = 0
+WHERE t.is_parent = 0 AND t.date >= :start AND t.date <= :end
+GROUP BY a.id, t.date;
+
+-- packages/loot-core/src/server/forecast/forecast-schedules.ts getSchedules()
+forecastSchedules:
+SELECT id, name, next_date, posts_transaction, _payee, _account, _amount, _date, _conditions
+FROM v_schedules
+WHERE tombstone = 0 AND completed = 0;
+
+-- packages/loot-core/src/shared/schedules.ts isScheduleOccurrencePosted()
+-- Split parents are kept too, so a posted split is found whichever row links the schedule
+forecastPostedScheduleTransactions:
+SELECT t.schedule, t.account, t.date
+FROM v_transactions_internal_alive t
+WHERE t.schedule IS NOT NULL AND t.date >= :start;
+
+forecastTransferPayees:
+SELECT id, transfer_acct
+FROM payees
+WHERE transfer_acct IS NOT NULL;
+
+-- packages/loot-core/src/server/forecast/forecast-tracking-budget.ts projectTrackingBudgetForecast()
+forecastOnBudgetBalance:
+SELECT IFNULL(SUM(t.amount), 0) AS total
+FROM v_transactions_internal_alive t
+JOIN accounts a ON a.id = t.account AND a.tombstone = 0 AND a.offbudget = 0
+WHERE t.is_parent = 0;
+
+-- packages/loot-core/src/server/budget/tracking.ts createSummary() total-budget-income and total-budgeted
+forecastTrackingBudgetTotals:
+SELECT b.month, g.is_income, CAST(IFNULL(SUM(b.amount), 0) AS INTEGER) AS total
+FROM reflect_budgets b
+JOIN categories c ON c.id = b.category AND c.tombstone = 0 AND c.hidden = 0
+JOIN category_groups g ON g.id = c.cat_group AND g.tombstone = 0
+WHERE b.month >= :start AND b.month <= :end AND (g.is_income = 1 OR g.hidden = 0)
+GROUP BY b.month, g.is_income;

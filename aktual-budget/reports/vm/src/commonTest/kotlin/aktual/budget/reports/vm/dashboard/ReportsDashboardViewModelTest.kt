@@ -2,6 +2,7 @@ package aktual.budget.reports.vm.dashboard
 
 import aktual.budget.db.Dashboard_pages
 import aktual.budget.db.dao.DashboardDao
+import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.db.withoutResult
 import aktual.budget.model.DashboardPageId
@@ -80,7 +81,11 @@ class ReportsDashboardViewModelTest {
     val viewModel =
       ReportsDashboardViewModel(
         chartDataLoader =
-          ChartDataLoader(ReportsDao(this, contexts), calendar = { LocalDate(2026, 1, 1) }),
+          ChartDataLoader(
+            ReportsDao(this, contexts),
+            PreferencesDao(this, contexts),
+            calendar = { LocalDate(2026, 1, 1) },
+          ),
         dashboardDao = dao,
         sync = sync,
         pages =
