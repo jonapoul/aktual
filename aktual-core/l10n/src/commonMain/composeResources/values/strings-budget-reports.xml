@@ -129,6 +129,11 @@
 
   <string name="reports_unsupported_filters">Reports with filters aren't supported yet</string>
   <string name="reports_unsupported_type">This report type isn't supported yet</string>
+  <string name="reports_unsupported_invalid_meta">This report's settings couldn't be read</string>
+  <string name="reports_unsupported_show_error">Show error</string>
+  <string name="reports_unsupported_error_title">Error details</string>
+  <string name="reports_unsupported_error_copy">Copy</string>
+  <string name="reports_unsupported_error_close">Close</string>
   <string name="reports_unsupported_sankey_budgeted">Budgeted Sankey reports aren't supported yet</string>
 
   <string name="reports_date_config_live">Live</string>

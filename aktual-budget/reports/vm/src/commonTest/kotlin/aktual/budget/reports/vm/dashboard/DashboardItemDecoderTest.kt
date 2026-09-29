@@ -5,6 +5,7 @@ import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.reports.vm.UnsupportedReportMeta
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
@@ -23,7 +24,7 @@ class DashboardItemDecoderTest {
     assertThat(item)
       .isNotNull()
       .prop(DashboardItem::meta)
-      .isEqualTo(UnsupportedReportMeta(Unknown, meta, reason = "Unknown widget type"))
+      .isEqualTo(UnsupportedReportMeta(Unknown, meta))
   }
 
   @Test
@@ -32,7 +33,13 @@ class DashboardItemDecoderTest {
       JsonObject(mapOf("timeFrame" to JsonObject(mapOf("start" to JsonObject(emptyMap())))))
     val item = decoder.decode(widget(CashFlow, meta))
 
-    assertThat(item).isNotNull().prop(DashboardItem::meta).isInstanceOf<UnsupportedReportMeta>()
+    assertThat(item)
+      .isNotNull()
+      .prop(DashboardItem::meta)
+      .isInstanceOf<UnsupportedReportMeta>()
+      .prop(UnsupportedReportMeta::stackTrace)
+      .isNotNull()
+      .contains("JsonDecodingException")
   }
 
   private fun widget(type: WidgetType, meta: JsonObject) =

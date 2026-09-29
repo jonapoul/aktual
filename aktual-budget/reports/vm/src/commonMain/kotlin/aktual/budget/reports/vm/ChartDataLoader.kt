@@ -67,8 +67,9 @@ internal class ChartDataLoader(
       is CustomReportMeta,
       is FormulaReportMeta,
       is SpendingReportMeta,
-      is SummaryReportMeta,
-      is UnsupportedReportMeta -> unsupported(meta, ReportType)
+      is SummaryReportMeta -> unsupported(meta, ReportType)
+      is UnsupportedReportMeta ->
+        unsupported(meta, if (meta.type == Unknown) ReportType else InvalidMeta)
     }
 
   fun text(meta: MarkdownReportMeta): Flow<ChartData> {
@@ -541,7 +542,8 @@ internal class ChartDataLoader(
         is SummaryReportMeta -> WidgetType.Summary to meta.name
         is UnsupportedReportMeta -> meta.type to (meta.raw["name"] as? JsonPrimitive)?.contentOrNull
       }
-    return flowOf(UnsupportedData(reason, type, name))
+    val stackTrace = (meta as? UnsupportedReportMeta)?.stackTrace
+    return flowOf(UnsupportedData(reason, type, name, stackTrace))
   }
 
   private fun List<Condition>?.hasFilters() = !isNullOrEmpty()
