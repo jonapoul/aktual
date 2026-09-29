@@ -153,7 +153,14 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
       }
     var selection by remember(data) { mutableStateOf<Selection?>(null) }
 
-    val tapModifier = if (compact) Modifier else Modifier.onTap(layout) { selection = it }
+    val tapModifier =
+      if (compact) {
+        Modifier
+      } else {
+        Modifier.onTap(layout) { tapped ->
+          selection = if (tapped?.hit == selection?.hit) null else tapped
+        }
+      }
 
     Box(
       modifier =
