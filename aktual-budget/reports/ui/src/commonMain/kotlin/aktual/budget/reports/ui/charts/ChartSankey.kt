@@ -73,6 +73,7 @@ import kotlinx.datetime.Month.JANUARY
 import kotlinx.datetime.Month.MARCH
 
 private const val LINK_ALPHA = 0.6f
+private const val DIMMED_LINK_ALPHA = 0.2f
 private const val PERCENT_DECIMALS = 1
 private const val GROUPED_ALPHA = 0.7f
 
@@ -182,7 +183,12 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
           onDrawBehind {
             val hit = selection?.hit
             data.links.forEachIndexed { i, link ->
-              val alpha = if (hit.highlights(i, link)) 1f else LINK_ALPHA
+              val alpha =
+                when {
+                  hit == null -> LINK_ALPHA
+                  hit.highlights(i, link) -> 1f
+                  else -> DIMMED_LINK_ALPHA
+                }
               drawPath(paths[i], color = link.color.resolve(theme), alpha = alpha)
             }
 
@@ -261,11 +267,10 @@ private fun DrawScope.drawNodeLabel(
 
 private data class Selection(val hit: SankeyHit, val position: Offset)
 
-private fun SankeyHit?.highlights(index: Int, link: SankeyLink): Boolean =
+private fun SankeyHit.highlights(index: Int, link: SankeyLink): Boolean =
   when (this) {
     is SankeyHit.Link -> this.index == index
     is SankeyHit.Node -> this.index == link.source || this.index == link.target
-    null -> false
   }
 
 @Composable
