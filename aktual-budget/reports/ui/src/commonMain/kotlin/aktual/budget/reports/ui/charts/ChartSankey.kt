@@ -3,6 +3,7 @@ package aktual.budget.reports.ui.charts
 import aktual.budget.model.Amount
 import aktual.budget.reports.vm.SankeyColor
 import aktual.budget.reports.vm.SankeyData
+import aktual.budget.reports.vm.SankeyGroupedItem
 import aktual.budget.reports.vm.SankeyLabel
 import aktual.budget.reports.vm.SankeyLink
 import aktual.budget.reports.vm.SankeyNode
@@ -19,22 +20,41 @@ import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.stringShort
+import alakazam.compose.HorizontalSpacer
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
@@ -44,12 +64,17 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastForEach
+import kotlin.math.max
+import kotlin.math.roundToInt
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.Month.JANUARY
 import kotlinx.datetime.Month.MARCH
 
 private const val LINK_ALPHA = 0.6f
 private const val PERCENT_DECIMALS = 1
+private const val GROUPED_ALPHA = 0.7f
 
 @Composable
 internal fun SankeyChart(
@@ -93,87 +118,224 @@ private fun Header(data: SankeyData, modifier: Modifier = Modifier) =
   }
 
 @Composable
-private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modifier) {
-  val textMeasurer = rememberTextMeasurer()
-  val theme = colors
-  val nameStyle = TextStyle(color = theme.pageText, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-  val valueStyle = TextStyle(color = theme.pageText, fontSize = 11.sp)
-  val labels = data.nodes.map { it.label.string() }
-  val values =
-    data.nodes.map { node ->
-      if (data.showPercentages) node.percent.toString(PERCENT_DECIMALS) else node.value.formatted()
-    }
-
-  Box(
-    modifier =
-      modifier.fillMaxSize().drawWithCache {
-        val nodeWidth = NODE_WIDTH.toPx()
-        val labelGap = LABEL_GAP.toPx()
-        val layout =
-          layoutSankey(
-            data = data,
-            width = size.width,
-            height = size.height,
-            nodeWidth = nodeWidth,
-            nodePadding = NODE_PADDING.toPx(),
-          )
-        val lastColumn = data.nodes.maxOf { it.column }
-        val columnSpacing =
-          if (lastColumn == 0) size.width else (size.width - nodeWidth) / lastColumn
-        val labelConstraints =
-          Constraints(
-            maxWidth = (columnSpacing - nodeWidth - labelGap * 2).toInt().coerceAtLeast(0)
-          )
-
-        val paths = layout.links.map { band -> band.path() }
-        val texts =
-          if (compact) {
-            emptyList()
-          } else {
-            data.nodes.indices.map { i ->
-              val name =
-                textMeasurer.measure(
-                  text = labels[i],
-                  style = nameStyle,
-                  overflow = Ellipsis,
-                  maxLines = 1,
-                  constraints = labelConstraints,
-                )
-              val value =
-                textMeasurer.measure(
-                  text = values[i],
-                  style = valueStyle,
-                  maxLines = 1,
-                  constraints = labelConstraints,
-                )
-              name to value
-            }
-          }
-
-        onDrawBehind {
-          data.links.forEachIndexed { i, link ->
-            drawPath(paths[i], color = link.color.resolve(theme), alpha = LINK_ALPHA)
-          }
-
-          data.nodes.forEachIndexed { i, node ->
-            val rect = layout.nodes[i]
-            drawRect(color = node.color.resolve(theme), topLeft = rect.topLeft, size = rect.size)
-
-            val (name, value) = texts.getOrNull(i) ?: return@forEachIndexed
-            val textHeight = name.size.height + value.size.height
-            // Skip labels that would overlap their neighbours
-            if (rect.height + NODE_PADDING.toPx() < textHeight) return@forEachIndexed
-
-            val onLeft = node.column == lastColumn && lastColumn > 0
-            val top = rect.center.y - textHeight / 2
-            fun x(width: Int) = if (onLeft) rect.left - labelGap - width else rect.right + labelGap
-            drawText(name, topLeft = Offset(x(name.size.width), top))
-            drawText(value, topLeft = Offset(x(value.size.width), top + name.size.height))
-          }
+private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modifier) =
+  BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    val textMeasurer = rememberTextMeasurer()
+    val theme = colors
+    val nameStyle =
+      TextStyle(color = theme.pageText, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+    val valueStyle = TextStyle(color = theme.pageText, fontSize = 11.sp)
+    val labels = data.nodes.map { it.label.string() }
+    val values =
+      data.nodes.map { node ->
+        if (data.showPercentages) {
+          node.percent.toString(PERCENT_DECIMALS)
+        } else {
+          node.value.formatted()
         }
       }
+
+    val density = LocalDensity.current
+    val width = constraints.maxWidth.toFloat()
+    val height = constraints.maxHeight.toFloat()
+    val layout =
+      remember(data, width, height, density) {
+        with(density) {
+          layoutSankey(
+            data = data,
+            width = width,
+            height = height,
+            nodeWidth = NODE_WIDTH.toPx(),
+            nodePadding = NODE_PADDING.toPx(),
+          )
+        }
+      }
+    var selection by remember(data) { mutableStateOf<Selection?>(null) }
+
+    val tapModifier = if (compact) Modifier else Modifier.onTap(layout) { selection = it }
+
+    Box(
+      modifier =
+        Modifier.fillMaxSize().then(tapModifier).drawWithCache {
+          val nodeWidth = NODE_WIDTH.toPx()
+          val labelGap = LABEL_GAP.toPx()
+          val lastColumn = data.nodes.maxOf { it.column }
+          val columnSpacing =
+            if (lastColumn == 0) size.width else (size.width - nodeWidth) / lastColumn
+          val labelConstraints =
+            Constraints(
+              maxWidth = (columnSpacing - nodeWidth - labelGap * 2).toInt().coerceAtLeast(0)
+            )
+
+          val paths = layout.links.map { band -> band.path() }
+          val texts =
+            if (compact) {
+              emptyList()
+            } else {
+              data.nodes.indices.map { i ->
+                val name = textMeasurer.measureLabel(labels[i], nameStyle, labelConstraints)
+                val value = textMeasurer.measureLabel(values[i], valueStyle, labelConstraints)
+                name to value
+              }
+            }
+
+          onDrawBehind {
+            val hit = selection?.hit
+            data.links.forEachIndexed { i, link ->
+              val alpha = if (hit.highlights(i, link)) 1f else LINK_ALPHA
+              drawPath(paths[i], color = link.color.resolve(theme), alpha = alpha)
+            }
+
+            data.nodes.forEachIndexed { i, node ->
+              val rect = layout.nodes.getOrNull(i) ?: return@forEachIndexed
+              drawRect(color = node.color.resolve(theme), topLeft = rect.topLeft, size = rect.size)
+
+              val (name, value) = texts.getOrNull(i) ?: return@forEachIndexed
+              val onLeft = node.column == lastColumn && lastColumn > 0
+              drawNodeLabel(rect, name, value, onLeft, labelGap)
+            }
+          }
+        }
+    )
+
+    selection?.let { (hit, position) ->
+      val tooltipModifier = Modifier.tooltipPosition(position)
+      when (hit) {
+        is SankeyHit.Node -> {
+          Tooltip(
+            title = labels[hit.index],
+            value = data.nodes[hit.index].value,
+            modifier = tooltipModifier,
+          )
+        }
+
+        is SankeyHit.Link -> {
+          val link = data.links[hit.index]
+          Tooltip(
+            title = Strings.reportsSankeyLink(labels[link.source], labels[link.target]),
+            value = link.value,
+            grouped = link.grouped,
+            modifier = tooltipModifier,
+          )
+        }
+      }
+    }
+  }
+
+private fun Modifier.onTap(layout: SankeyLayout, onSelect: (Selection?) -> Unit): Modifier =
+  pointerInput(layout) {
+    detectTapGestures { offset ->
+      onSelect(layout.hitTest(offset, TAP_SLOP.toPx())?.let { hit -> Selection(hit, offset) })
+    }
+  }
+
+private fun TextMeasurer.measureLabel(
+  text: String,
+  style: TextStyle,
+  constraints: Constraints,
+): TextLayoutResult =
+  measure(
+    text = text,
+    style = style,
+    overflow = Ellipsis,
+    maxLines = 1,
+    constraints = constraints,
   )
+
+private fun DrawScope.drawNodeLabel(
+  rect: Rect,
+  name: TextLayoutResult,
+  value: TextLayoutResult,
+  onLeft: Boolean,
+  labelGap: Float,
+) {
+  val textHeight = name.size.height + value.size.height
+  // Skip labels that would overlap their neighbours
+  if (rect.height + NODE_PADDING.toPx() < textHeight) return
+
+  val top = rect.center.y - textHeight / 2
+  fun x(width: Int) = if (onLeft) rect.left - labelGap - width else rect.right + labelGap
+  drawText(name, topLeft = Offset(x(name.size.width), top))
+  drawText(value, topLeft = Offset(x(value.size.width), top + name.size.height))
 }
+
+private data class Selection(val hit: SankeyHit, val position: Offset)
+
+private fun SankeyHit?.highlights(index: Int, link: SankeyLink): Boolean =
+  when (this) {
+    is SankeyHit.Link -> this.index == index
+    is SankeyHit.Node -> this.index == link.source || this.index == link.target
+    null -> false
+  }
+
+@Composable
+private fun Tooltip(
+  title: String,
+  value: Amount,
+  modifier: Modifier = Modifier,
+  grouped: ImmutableList<SankeyGroupedItem> = persistentListOf(),
+) =
+  Column(
+    modifier =
+      modifier
+        .widthIn(max = TOOLTIP_MAX_WIDTH)
+        .shadow(TOOLTIP_ELEVATION, TOOLTIP_SHAPE)
+        .background(colors.menuBackground, TOOLTIP_SHAPE)
+        .padding(10.dp)
+  ) {
+    Text(text = title, color = colors.menuItemText, style = typography.bodyMedium)
+    Text(
+      text = value.formatted(),
+      color = colors.menuItemText,
+      style = typography.bodyMedium,
+      fontWeight = FontWeight.Bold,
+    )
+
+    if (grouped.isNotEmpty()) {
+      VerticalSpacer(6.dp)
+      grouped.fastForEach { item -> GroupedItemRow(item) }
+    }
+  }
+
+@Composable
+private fun GroupedItemRow(item: SankeyGroupedItem, modifier: Modifier = Modifier) =
+  Row(modifier = modifier) {
+    val style = typography.bodySmall
+    Text(
+      modifier = Modifier.weight(1f, fill = false),
+      text = item.name,
+      color = colors.menuItemText.copy(alpha = GROUPED_ALPHA),
+      style = style,
+      maxLines = 1,
+      overflow = Ellipsis,
+    )
+    HorizontalSpacer(8.dp)
+    Text(
+      text = item.value.formatted(),
+      color = colors.menuItemText.copy(alpha = GROUPED_ALPHA),
+      style = style,
+    )
+  }
+
+// Puts the tooltip beside the tapped point, flipping to the left when it would run off the right
+// edge,
+// and keeps it inside the chart
+private fun Modifier.tooltipPosition(position: Offset): Modifier =
+  layout { measurable, constraints ->
+    val placeable = measurable.measure(constraints.copy(minWidth = 0, minHeight = 0))
+    layout(placeable.width, placeable.height) {
+      val gap = TOOLTIP_GAP.roundToPx()
+      val tapX = position.x.roundToInt()
+      val right = tapX + gap
+      val x =
+        if (right + placeable.width <= constraints.maxWidth) right else tapX - gap - placeable.width
+      val y = position.y.roundToInt() - placeable.height / 2
+      placeable.place(
+        x = x.coerceIn(0, max(0, constraints.maxWidth - placeable.width)),
+        y = y.coerceIn(0, max(0, constraints.maxHeight - placeable.height)),
+      )
+    }
+  }
 
 private fun LinkBand.path(): Path {
   val mid = (x0 + x1) / 2
@@ -228,6 +390,11 @@ private fun Amount.formatted(): String =
 private val NODE_WIDTH = 8.dp
 private val NODE_PADDING = 16.dp
 private val LABEL_GAP = 4.dp
+private val TAP_SLOP = 8.dp
+private val TOOLTIP_GAP = 12.dp
+private val TOOLTIP_MAX_WIDTH = 240.dp
+private val TOOLTIP_ELEVATION = 4.dp
+private val TOOLTIP_SHAPE = RoundedCornerShape(4.dp)
 
 @Preview
 @Composable

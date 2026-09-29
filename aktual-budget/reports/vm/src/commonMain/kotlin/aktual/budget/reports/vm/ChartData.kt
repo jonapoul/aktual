@@ -7,6 +7,7 @@ import aktual.core.model.Percent
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
@@ -77,8 +78,18 @@ data class SankeyNode(
   val color: SankeyColor,
 )
 
-// source and target are indices into SankeyData.nodes
-data class SankeyLink(val source: Int, val target: Int, val value: Amount, val color: SankeyColor)
+// source and target are indices into SankeyData.nodes. grouped lists the nodes merged into an
+// "Other"
+// node at either end, biggest first
+data class SankeyLink(
+  val source: Int,
+  val target: Int,
+  val value: Amount,
+  val color: SankeyColor,
+  val grouped: ImmutableList<SankeyGroupedItem> = persistentListOf(),
+)
+
+data class SankeyGroupedItem(val name: String, val value: Amount)
 
 @Immutable
 sealed interface SankeyLabel {

@@ -7,6 +7,7 @@ import aktual.budget.reports.vm.SankeyLabel
 import aktual.budget.reports.vm.SankeyLink
 import aktual.budget.reports.vm.SankeyNode
 import aktual.core.model.Percent
+import androidx.compose.ui.geometry.Offset
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.each
@@ -15,6 +16,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThanOrEqualTo
 import assertk.assertions.isLessThanOrEqualTo
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.collections.immutable.toImmutableList
@@ -127,6 +129,40 @@ class SankeyLayoutTest {
     assertThat(first.y0 - first.thickness / 2).isCloseTo(layout.nodes[0].top, TOLERANCE)
     assertThat(second.y0 - second.thickness / 2)
       .isCloseTo(first.y0 + first.thickness / 2, TOLERANCE)
+  }
+
+  @Test
+  fun `Tapping a node hits it`() {
+    val layout = layout(SIMPLE)
+
+    val hit = layout.hitTest(layout.nodes[3].center, slop = 0f)
+    assertThat(hit).isEqualTo(SankeyHit.Node(3))
+  }
+
+  @Test
+  fun `Tapping just beside a thin node hits it within the slop`() {
+    val layout = layout(SIMPLE)
+    val node = layout.nodes[0]
+
+    val point = Offset(node.right + 4f, node.center.y)
+    assertThat(layout.hitTest(point, slop = 8f)).isEqualTo(SankeyHit.Node(0))
+  }
+
+  @Test
+  fun `Tapping the middle of a link hits it`() {
+    val layout = layout(SIMPLE)
+
+    layout.links.forEachIndexed { i, band ->
+      val point = Offset((band.x0 + band.x1) / 2, (band.y0 + band.y1) / 2)
+      assertThat(layout.hitTest(point, slop = 0f)).isEqualTo(SankeyHit.Link(i))
+    }
+  }
+
+  @Test
+  fun `Tapping empty space hits nothing`() {
+    val layout = layout(SIMPLE)
+
+    assertThat(layout.hitTest(Offset(WIDTH / 2, -100f), slop = 8f)).isNull()
   }
 
   private fun layout(
