@@ -50,9 +50,11 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
@@ -152,6 +154,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
         }
       }
     var selection by remember(data) { mutableStateOf<Selection?>(null) }
+    val haptics = LocalHapticFeedback.current
 
     val tapModifier =
       if (compact) {
@@ -159,6 +162,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
       } else {
         Modifier.onTap(layout) { tapped ->
           selection = if (tapped?.hit == selection?.hit) null else tapped
+          if (selection != null) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
         }
       }
 
