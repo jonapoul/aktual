@@ -20,7 +20,7 @@ Gradle convention plugins that centralize build config. Included build - `settin
 
 - `ConventionKotlinBase` - warnings-as-errors, free compiler args like `-Xexpect-actual-classes`, `compileAll` task, Metro, buildconfig/lint workaround, sort-dependencies check
 - `ConventionKotlinJvm` - toolchain via `.java-version`
-- `ConventionCompose` - compiler plugin, metrics, stability. Stability validation (skydoves analyzer) keeps per-module `stability/*.stability` baselines; `stabilityCheck` only fails on new unstable params or regressions, so value-returning/non-restartable composables with stable params never trip it
+- `ConventionCompose` - compiler plugin, metrics, stability
 - `ConventionDi` - Metro with full binding-graph validation + hints + shrink unused
 - `ConventionStyle` - detekt + licensee
 - `ConventionDetekt`

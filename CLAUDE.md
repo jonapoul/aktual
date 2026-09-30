@@ -59,10 +59,6 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./scripts/compile.sh          # compileAll on changed modules
 ./scripts/test.sh             # testAll on changed modules
 
-# Compose stability - check fails on new unstable composable params; run stabilityDump to accept them
-./gradlew stabilityCheck
-./gradlew :[module]:stabilityDump
-
 # Dependency graph - rerun only when module deps change
 ./gradlew atlasGenerate
 
