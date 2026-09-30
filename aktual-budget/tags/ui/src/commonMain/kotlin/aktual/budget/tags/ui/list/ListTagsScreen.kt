@@ -20,6 +20,7 @@ import aktual.core.nav.SearchTagsNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
@@ -277,6 +278,8 @@ private fun TagsList(
         onAction = onAction,
       )
     }
+
+    item { BottomSpacing() }
   }
 }
 
