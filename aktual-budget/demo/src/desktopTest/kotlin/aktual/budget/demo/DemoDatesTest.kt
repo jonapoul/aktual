@@ -64,8 +64,7 @@ class DemoDatesTest {
   }
 
   // Upstream generates transactions up to the current day, so this catches DEMO_GENERATED_ON not
-  // being
-  // updated alongside the database
+  // being updated alongside the database
   @Test
   fun `Transactions end on the generation date`() = runTest {
     assertThat(queryLong("SELECT max(date) FROM transactions"))

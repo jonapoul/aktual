@@ -16,7 +16,6 @@ import kotlinx.serialization.MetaSerializable
 @IdType
 value class BudgetId(val value: String) {
   companion object {
-    // Where the bundled demo budget gets unpacked. Kept out of the local budget list
     val Demo = BudgetId("_demo-budget")
   }
 }

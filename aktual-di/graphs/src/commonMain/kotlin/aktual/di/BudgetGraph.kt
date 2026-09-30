@@ -35,8 +35,6 @@ interface BudgetGraph : AktualGraph {
   override val initializables: Set<Initializable>
     get() = budgetInitializables
 
-  // Contributed to AppScope rather than LoggedInScope so budgets can open without a server, like the
-  // demo budget. Anything server-related comes through BudgetServer instead
   @GraphExtension.Factory
   @ContributesTo(AppScope::class)
   fun interface Factory {

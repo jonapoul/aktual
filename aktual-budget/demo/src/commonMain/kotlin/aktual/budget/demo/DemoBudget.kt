@@ -18,10 +18,6 @@ import dev.zacsweers.metro.binding
 import kotlinx.coroutines.withContext
 import logcat.logcat
 
-/**
- * Upstream's demo budget, bundled as a database file. Each open unpacks a fresh copy with its dates
- * moved up to today, and closing deletes it again.
- */
 @Inject
 @SingleIn(AppScope::class)
 @ContributesIntoSet(AppScope::class, binding<@ForScope(AppScope::class) Initializable>())
@@ -32,8 +28,10 @@ class DemoBudget(
   private val calendar: Calendar,
   private val contexts: CoroutineContexts,
 ) : Initializable {
-  // Clears out anything left behind if the app was killed with the demo open
-  override fun initialize() = delete()
+  override fun initialize() {
+    // Clear out anything left behind if the app was killed with the demo open
+    delete()
+  }
 
   suspend fun open(): BudgetGraph {
     val metadata = DbMetadata(budgetName = DEMO_BUDGET_NAME, id = ID.value)
