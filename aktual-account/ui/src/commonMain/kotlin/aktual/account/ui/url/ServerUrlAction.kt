@@ -7,7 +7,7 @@ import androidx.compose.runtime.Immutable
 
 internal data object ConfirmUrl : ServerUrlAction
 
-internal data object UseDemoServer : ServerUrlAction
+internal data object TryDemo : ServerUrlAction
 
 internal data object OpenAbout : ServerUrlAction
 

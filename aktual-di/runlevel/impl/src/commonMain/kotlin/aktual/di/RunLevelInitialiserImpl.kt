@@ -2,6 +2,7 @@ package aktual.di
 
 import aktual.budget.BudgetFiles
 import aktual.budget.db.SqlDriverFactory
+import aktual.core.model.BudgetServer
 import aktual.prefs.AppPreferences
 import dev.zacsweers.metro.ContributesBinding
 
@@ -18,33 +19,21 @@ class RunLevelInitialiserImpl(
     runLevelController.init(graphs)
   }
 
-  private suspend fun MutableList<AktualGraph>.addFrom(graph: AppGraph) {
-    val url = preferences.serverUrl.get()
-    if (url != null) {
-      val serverChosenGraph = graph.serverChosenGraphFactory.create(url)
-      add(serverChosenGraph)
-      addFrom(serverChosenGraph)
-    }
-  }
+  private suspend fun MutableList<AktualGraph>.addFrom(appGraph: AppGraph) {
+    val url = preferences.serverUrl.get() ?: return
+    val serverChosenGraph = appGraph.serverChosenGraphFactory.create(url)
+    add(serverChosenGraph)
 
-  private suspend fun MutableList<AktualGraph>.addFrom(graph: ServerChosenGraph) {
-    val token = preferences.token.get()
-    if (token != null) {
-      val loggedInGraph = graph.loggedInGraphFactory.create(token)
-      add(loggedInGraph)
-      addFrom(loggedInGraph)
-    }
-  }
+    val token = preferences.token.get() ?: return
+    val loggedInGraph = serverChosenGraph.loggedInGraphFactory.create(token)
+    add(loggedInGraph)
 
-  private suspend fun MutableList<AktualGraph>.addFrom(graph: LoggedInGraph) {
-    val budgetId = preferences.lastOpenedBudgetId.get()
-    if (budgetId != null) {
-      files.readMetadata(budgetId)?.let { metadata ->
-        // only open the driver once we know the metadata exists, otherwise it would leak
-        val driver = driverFactory.create(budgetId)
-        val budgetGraph = graph.budgetGraphFactory.create(budgetId, metadata, driver)
-        add(budgetGraph)
-      }
+    val budgetId = preferences.lastOpenedBudgetId.get() ?: return
+    files.readMetadata(budgetId)?.let { metadata ->
+      // only open the driver once we know the metadata exists, otherwise it would leak
+      val driver = driverFactory.create(budgetId)
+      val server = BudgetServer.Remote(url, token)
+      add(appGraph.budgetGraphFactory.create(budgetId, server, metadata, driver))
     }
   }
 }

@@ -6,6 +6,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Protocol
+import aktual.core.nav.BudgetNavRailNavigator
 import aktual.core.nav.InfoNavigator
 import aktual.core.nav.LoginNavigator
 import aktual.core.ui.AktualTheme.colors
@@ -14,6 +15,7 @@ import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButtonWithLoading
@@ -49,6 +51,7 @@ import logcat.logcat
 fun ServerUrlScreen(
   toLogin: LoginNavigator,
   toInfo: InfoNavigator,
+  toBudget: BudgetNavRailNavigator,
   viewModel: ServerUrlViewModel = metroViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
@@ -67,6 +70,7 @@ fun ServerUrlScreen(
         ToBootstrap -> logcat.w { "Not implemented bootstrap yet!" }
         ToLogin -> toLogin()
         ToAbout -> toInfo()
+        ToDemo -> toBudget()
       }
     }
   }
@@ -84,7 +88,7 @@ fun ServerUrlScreen(
         OpenAbout -> viewModel.onClickAbout()
         is EnterUrl -> viewModel.onEnterUrl(action.url)
         is SelectProtocol -> viewModel.onSelectProtocol(action.protocol)
-        is UseDemoServer -> viewModel.onUseDemoServer()
+        TryDemo -> viewModel.onClickTryDemo()
       }
     },
   )
@@ -173,6 +177,13 @@ private fun ServerUrlContent(
         isLoading = isLoading,
         isEnabled = isEnabled,
         onClick = { onAction(ConfirmUrl) },
+      )
+
+      NormalTextButton(
+        modifier = Modifier.padding(5.dp).fillMaxWidth(),
+        text = Strings.serverUrlTryDemo,
+        isEnabled = !isLoading,
+        onClick = { onAction(TryDemo) },
       )
 
       if (errorMessage != null) {

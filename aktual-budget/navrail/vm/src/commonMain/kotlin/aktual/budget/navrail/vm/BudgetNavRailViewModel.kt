@@ -2,7 +2,7 @@ package aktual.budget.navrail.vm
 
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata
-import aktual.core.model.ServerUrl
+import aktual.core.model.BudgetServer
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 class BudgetNavRailViewModel(
   contributors: Set<BudgetNavEntryContributor>,
   localPreferences: BudgetLocalPreferences,
-  serverUrl: ServerUrl,
+  server: BudgetServer,
 ) : ViewModel() {
   val budgetNavEntryContributors: ImmutableSet<BudgetNavEntryContributor> =
     contributors.toImmutableSet()
@@ -34,6 +34,7 @@ class BudgetNavRailViewModel(
       val budgetNameFlow = remember { localPreferences.observe(DbMetadata.BudgetName) }
       val budgetName by
         budgetNameFlow.collectAsState(initial = localPreferences[DbMetadata.BudgetName])
-      DrawerHeaderState(budgetName = budgetName, serverHost = serverUrl.baseUrl)
+      val serverHost = (server as? BudgetServer.Remote)?.url?.baseUrl
+      DrawerHeaderState(budgetName = budgetName, serverHost = serverHost)
     }
 }

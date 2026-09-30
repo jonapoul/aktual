@@ -5,6 +5,7 @@ import dev.zacsweers.metro.Multibinds
 
 interface AppGraph : AktualGraph {
   val serverChosenGraphFactory: ServerChosenGraph.Factory
+  val budgetGraphFactory: BudgetGraph.Factory
 
   override val coroutineScope: AppCoroutineScope
 

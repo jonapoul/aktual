@@ -4,6 +4,7 @@ import aktual.budget.BudgetLocalPreferences
 import aktual.budget.BudgetSyncController
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
+import aktual.core.model.BudgetServer
 import app.cash.sqldelight.db.SqlDriver
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
@@ -16,6 +17,7 @@ import dev.zacsweers.metro.Provides
 @GraphExtension(BudgetScope::class)
 interface BudgetGraph : AktualGraph {
   val id: BudgetId
+  val server: BudgetServer
   val syncController: BudgetSyncController
   val localPreferences: BudgetLocalPreferences
 
@@ -34,10 +36,11 @@ interface BudgetGraph : AktualGraph {
     get() = budgetInitializables
 
   @GraphExtension.Factory
-  @ContributesTo(LoggedInScope::class)
+  @ContributesTo(AppScope::class)
   fun interface Factory {
     fun create(
       @Provides id: BudgetId,
+      @Provides server: BudgetServer,
       @Provides metadata: DbMetadata,
       @Provides driver: SqlDriver,
     ): BudgetGraph

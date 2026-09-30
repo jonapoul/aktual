@@ -12,7 +12,13 @@ import kotlinx.serialization.MetaSerializable
 
 @JvmInline @IdType value class BankId(val value: String)
 
-@JvmInline @IdType value class BudgetId(val value: String)
+@JvmInline
+@IdType
+value class BudgetId(val value: String) {
+  companion object {
+    val Demo = BudgetId("_demo-budget")
+  }
+}
 
 @JvmInline @IdType value class CategoryId(val value: String)
 
