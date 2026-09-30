@@ -13,9 +13,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonPrimitive
 
-// The day scripts/generate-demo-budget.sh last generated the bundled database
-internal val DEMO_GENERATED_ON = LocalDate(2026, 9, 29)
-
 private const val MILLIS_PER_DAY = 86_400_000L
 private const val MONTHS_PER_YEAR = 12
 
@@ -50,6 +47,26 @@ internal suspend fun SqlDriver.shiftDemoDates(from: LocalDate, to: LocalDate) {
   // No transaction needed: this runs on a throwaway copy, which gets replaced on the next open
   statements.forEach { sql -> execute(identifier = null, sql = sql, parameters = 0).await() }
   shiftRuleDates(DatePeriod(days = days))
+}
+
+// Upstream generates transactions up to the current day, so the latest one marks when it ran
+internal suspend fun SqlDriver.demoGeneratedOn(): LocalDate {
+  val date =
+    executeQuery(
+        identifier = null,
+        sql = "SELECT max(date) FROM transactions",
+        mapper = { cursor ->
+          QueryResult.AsyncValue {
+            cursor.next().await()
+            cursor.getLong(0)
+          }
+        },
+        parameters = 0,
+      )
+      .await()
+  return LocalDate.Formats.ISO_BASIC.parse(
+    requireNotNull(date) { "No demo transactions" }.toString()
+  )
 }
 
 private fun LocalDate.monthIndex(): Int = year * MONTHS_PER_YEAR + month.ordinal

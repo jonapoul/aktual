@@ -28,6 +28,7 @@ import okio.Path.Companion.toOkioPath
 class DemoDatesTest {
   private lateinit var dir: Path
   private lateinit var driver: SqlDriver
+  private lateinit var generatedOn: LocalDate
 
   // Same driver setup as the app, on a copy of the bundled database
   @BeforeTest
@@ -37,6 +38,7 @@ class DemoDatesTest {
     val bytes = Res.readBytes("files/demo-budget.sqlite")
     FileSystem.SYSTEM.write(files.database(BudgetId.Demo, mkdirs = true)) { write(bytes) }
     driver = AndroidxSqlDriverFactory(files).create(BudgetId.Demo)
+    generatedOn = driver.demoGeneratedOn()
   }
 
   @AfterTest
@@ -49,8 +51,8 @@ class DemoDatesTest {
   @Test
   fun `Loads as an aktual budget`() = runTest {
     driver.shiftDemoDates(
-      from = DEMO_GENERATED_ON,
-      to = DEMO_GENERATED_ON.plus(DatePeriod(days = 5)),
+      from = generatedOn,
+      to = generatedOn.plus(DatePeriod(days = 5)),
     )
     val db = buildDatabase(driver)
     migrateDatabase(driver, db)
@@ -63,18 +65,10 @@ class DemoDatesTest {
     assertThat(db.schedulesQueries.getFromVSchedules().awaitAsList()).isNotEmpty()
   }
 
-  // Upstream generates transactions up to the current day, so this catches DEMO_GENERATED_ON not
-  // being updated alongside the database
-  @Test
-  fun `Transactions end on the generation date`() = runTest {
-    assertThat(queryLong("SELECT max(date) FROM transactions"))
-      .isEqualTo(DEMO_GENERATED_ON.toBasicIso())
-  }
-
   @Test
   fun `Nothing changes when opened on the generation date`() = runTest {
     val before = queryStrings("SELECT date FROM transactions ORDER BY id")
-    driver.shiftDemoDates(from = DEMO_GENERATED_ON, to = DEMO_GENERATED_ON)
+    driver.shiftDemoDates(from = generatedOn, to = generatedOn)
     assertThat(queryStrings("SELECT date FROM transactions ORDER BY id")).isEqualTo(before)
   }
 
@@ -86,7 +80,7 @@ class DemoDatesTest {
     val timestampsBefore =
       queryLongs("SELECT base_next_date_ts FROM schedules_next_date ORDER BY id")
 
-    driver.shiftDemoDates(from = DEMO_GENERATED_ON, to = DEMO_GENERATED_ON.plus(period))
+    driver.shiftDemoDates(from = generatedOn, to = generatedOn.plus(period))
 
     assertThat(queryDates("SELECT date FROM transactions ORDER BY id"))
       .isEqualTo(datesBefore.map { it.plus(period) })
@@ -116,7 +110,7 @@ class DemoDatesTest {
     val period = DatePeriod(days = 3)
     val before = ruleDates()
 
-    driver.shiftDemoDates(from = DEMO_GENERATED_ON, to = DEMO_GENERATED_ON.plus(period))
+    driver.shiftDemoDates(from = generatedOn, to = generatedOn.plus(period))
 
     assertThat(before).isNotEmpty()
     assertThat(ruleDates()).isEqualTo(before.map { it.plus(period) })
@@ -145,8 +139,6 @@ class DemoDatesTest {
     queryStrings("SELECT conditions FROM rules ORDER BY id").flatMap { conditions ->
       DATE_REGEX.findAll(conditions).map { LocalDate.parse(it.value) }
     }
-
-  private fun LocalDate.toBasicIso(): Long = LocalDate.Formats.ISO_BASIC.format(this).toLong()
 
   // "YYYY-MM"
   private fun String.plusMonths(months: Int): String {

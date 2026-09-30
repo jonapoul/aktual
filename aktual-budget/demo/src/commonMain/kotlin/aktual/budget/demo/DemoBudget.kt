@@ -41,7 +41,7 @@ class DemoBudget(
       files.fileSystem.write(files.database(ID, mkdirs = true)) { write(bytes) }
       files.writeMetadata(ID, metadata)
       driverFactory.create(ID).use { driver ->
-        driver.shiftDemoDates(from = DEMO_GENERATED_ON, to = calendar.today())
+        driver.shiftDemoDates(from = driver.demoGeneratedOn(), to = calendar.today())
       }
     }
     logcat.i { "Opening demo budget" }
