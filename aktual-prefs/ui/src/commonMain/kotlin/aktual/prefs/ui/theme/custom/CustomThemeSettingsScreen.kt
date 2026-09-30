@@ -26,13 +26,11 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
@@ -57,7 +55,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -272,7 +269,7 @@ private fun FailedContent(
 @Composable
 private fun LoadingContent(contentPadding: PaddingValues, modifier: Modifier = Modifier) {
   LazyColumn(
-    modifier = modifier.padding(Dimens.Large),
+    modifier = modifier,
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(ITEM_SPACING),
   ) {
@@ -289,8 +286,8 @@ private fun LoadingItem(modifier: Modifier = Modifier) {
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.cardBackground, RowShape)
-        .border(Hairline, colors.pillBorderDark, RowShape)
+        .background(colors.tableBackground, RowShape)
+        .border(Hairline, colors.tableBorder, RowShape)
         .padding(ITEM_PADDING)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
@@ -349,7 +346,7 @@ private fun SuccessContent(
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
-    modifier = modifier.scrollbar(listState).padding(Dimens.Large),
+    modifier = modifier.scrollbar(listState),
     state = listState,
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(ITEM_SPACING),
@@ -374,8 +371,8 @@ internal fun CustomThemeItem(
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.cardBackground, RowShape)
-        .border(Hairline, colors.pillBorderDark, RowShape)
+        .background(colors.tableBackground, RowShape)
+        .border(Hairline, colors.tableBorder, RowShape)
         .clickable(enabled) { onAction(SelectTheme(item.summary)) }
         .padding(ITEM_PADDING),
     horizontalArrangement = Arrangement.Start,
@@ -397,15 +394,18 @@ internal fun CustomThemeItem(
         Column(modifier = Modifier.weight(1f)) {
           Text(
             text = item.summary.name,
-            style = typography.bodyLarge,
-            color = colors.buttonNormalText.disabledIf(!enabled),
+            style = typography.bodyMedium,
+            fontWeight = SemiBold,
+            color = colors.pageText.disabledIf(!enabled),
+            maxLines = 1,
             overflow = Ellipsis,
           )
 
           Text(
             text = item.summary.repo.toString(),
-            style = typography.labelMedium,
+            style = typography.bodySmall,
             color = colors.pageTextSubdued.disabledIf(!enabled),
+            maxLines = 1,
             overflow = Ellipsis,
           )
         }
@@ -438,10 +438,9 @@ internal fun CustomThemeItem(
       }
     }
 
-    NormalIconButton(
-      modifier = Modifier.clip(CardShape).fillMaxHeight(),
+    BareIconButton(
       imageVector = MaterialIcons.ArrowRight,
-      isEnabled = enabled,
+      enabled = enabled,
       onClick = { onAction(InspectTheme(item.summary)) },
       contentDescription = Strings.settingsThemePreview(item.summary.name),
     )
