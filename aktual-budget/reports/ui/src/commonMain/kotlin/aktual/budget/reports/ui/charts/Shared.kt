@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -178,10 +177,10 @@ internal fun rememberMarkerHaptics(): CartesianMarkerVisibilityListener {
   return remember(haptics) {
     object : CartesianMarkerVisibilityListener {
       override fun onShown(marker: CartesianMarker, targets: List<CartesianMarker.Target>) =
-        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+        haptics.performHapticFeedback(SegmentTick)
 
       override fun onUpdated(marker: CartesianMarker, targets: List<CartesianMarker.Target>) =
-        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+        haptics.performHapticFeedback(SegmentTick)
     }
   }
 }
