@@ -12,6 +12,8 @@ import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.stringShort
 import alakazam.compose.VerticalSpacer
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -98,6 +100,12 @@ internal fun hItemPlacer(compact: Boolean) =
   } else {
     remember { HorizontalAxis.ItemPlacer.aligned(offset = { 0 }, spacing = { 1 }) }
   }
+
+// Compact charts skip animating for smoother list scrolling. 500ms tween mirrors vico's default
+internal fun chartAnimationSpec(compact: Boolean): AnimationSpec<Float>? =
+  if (compact) null else DiffAnimationSpec
+
+private val DiffAnimationSpec: AnimationSpec<Float> = tween(durationMillis = 500)
 
 @Composable
 internal fun yearMonthXAxisFormatter(): CartesianValueFormatter {
