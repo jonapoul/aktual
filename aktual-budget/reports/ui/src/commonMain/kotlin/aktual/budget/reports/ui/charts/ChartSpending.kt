@@ -160,7 +160,7 @@ private fun Chart(
             itemPlacer = remember { HorizontalAxis.ItemPlacer.segmented() },
           ),
         marker = if (compact) null else rememberMarker(),
-        markerVisibilityListener = rememberMarkerHaptics(),
+        markerVisibilityListener = rememberMarkerHaptics(compact),
       ),
   )
 }

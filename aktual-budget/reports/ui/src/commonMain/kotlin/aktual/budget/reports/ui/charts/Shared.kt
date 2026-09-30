@@ -172,15 +172,19 @@ internal fun rememberMarker(
 }
 
 @Composable
-internal fun rememberMarkerHaptics(): CartesianMarkerVisibilityListener {
+internal fun rememberMarkerHaptics(compact: Boolean): CartesianMarkerVisibilityListener? {
   val haptics = LocalHapticFeedback.current
-  return remember(haptics) {
-    object : CartesianMarkerVisibilityListener {
-      override fun onShown(marker: CartesianMarker, targets: List<CartesianMarker.Target>) =
-        haptics.performHapticFeedback(SegmentTick)
+  return remember(haptics, compact) {
+    if (compact) {
+      null
+    } else {
+      object : CartesianMarkerVisibilityListener {
+        override fun onShown(marker: CartesianMarker, targets: List<CartesianMarker.Target>) =
+          haptics.performHapticFeedback(SegmentTick)
 
-      override fun onUpdated(marker: CartesianMarker, targets: List<CartesianMarker.Target>) =
-        haptics.performHapticFeedback(SegmentTick)
+        override fun onUpdated(marker: CartesianMarker, targets: List<CartesianMarker.Target>) =
+          haptics.performHapticFeedback(SegmentTick)
+      }
     }
   }
 }
