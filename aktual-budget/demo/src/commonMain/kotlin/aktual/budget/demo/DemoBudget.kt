@@ -48,10 +48,10 @@ class DemoBudget(
     return runLevelController.onOfflineBudget(ID, metadata)
   }
 
-  fun close() {
+  suspend fun close() {
     logcat.i { "Closing demo budget" }
     runLevelController.onBudgetClosed()
-    delete()
+    withContext(contexts.io) { delete() }
   }
 
   private fun delete() = files.fileSystem.deleteRecursively(files.directory(ID))

@@ -9,6 +9,7 @@ import aktual.core.nav.NavStack
 import aktual.core.nav.ServerUrlNavRoute
 import aktual.core.nav.SettingsNavRoute
 import aktual.core.ui.LoadingScreenIfNotNull
+import aktual.di.AppCoroutineScope
 import aktual.di.AppScope
 import aktual.di.RunLevelState
 import androidx.compose.runtime.collectAsState
@@ -17,11 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
+import kotlinx.coroutines.launch
 
 @ContributesIntoSet(AppScope::class)
 class BudgetNavRailNavEntryContributor(
   private val runLevelState: RunLevelState,
   private val demoBudget: DemoBudget,
+  private val scope: AppCoroutineScope,
 ) : NavEntryContributor {
   override fun EntryProviderScope<NavKey>.contribute(stack: NavStack<NavKey>) {
     entry<BudgetNavRailNavRoute> {
@@ -44,7 +47,7 @@ class BudgetNavRailNavEntryContributor(
   }
 
   private fun exitDemo(stack: NavStack<NavKey>) {
-    demoBudget.close()
+    scope.launch { demoBudget.close() }
     stack.replaceAll(ServerUrlNavRoute)
   }
 }
