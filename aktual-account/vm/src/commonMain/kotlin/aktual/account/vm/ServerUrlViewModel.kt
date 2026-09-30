@@ -2,6 +2,7 @@ package aktual.account.vm
 
 import aktual.api.client.AccountApi
 import aktual.api.model.account.NeedsBootstrapResponse
+import aktual.budget.demo.DemoBudget
 import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
@@ -45,6 +46,7 @@ class ServerUrlViewModel(
   private val contexts: CoroutineContexts,
   private val preferences: AppPreferences,
   private val runLevelController: RunLevelController,
+  private val demoBudget: DemoBudget,
   versionsStateHolder: AktualVersionsStateHolder,
   buildConfig: BuildConfig,
 ) : ViewModel() {
@@ -110,12 +112,23 @@ class ServerUrlViewModel(
     mutableConfirmResult.update { null }
   }
 
-  fun onUseDemoServer() {
-    logcat.v { "onUseDemoServer" }
-    val demo = ServerUrl.Demo
-    mutableBaseUrl.update { demo.baseUrl }
-    mutableProtocol.update { demo.protocol }
-    mutableConfirmResult.update { null }
+  fun onClickTryDemo() {
+    logcat.v { "onClickTryDemo" }
+    mutableConfirmResult.reset()
+    mutableIsLoading.update { true }
+    viewModelScope.launch {
+      try {
+        demoBudget.open()
+        mutableNavDestination.send(ToDemo)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed opening demo budget" }
+        mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
+      } finally {
+        mutableIsLoading.update { false }
+      }
+    }
   }
 
   fun onSelectProtocol(protocol: Protocol) {
@@ -198,4 +211,6 @@ sealed interface NavDestination {
   data object ToLogin : NavDestination
 
   data object ToAbout : NavDestination
+
+  data object ToDemo : NavDestination
 }

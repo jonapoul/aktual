@@ -3,6 +3,7 @@ package aktual.di
 import aktual.budget.db.SqlDriverFactory
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
+import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import alakazam.kotlin.StateHolder
@@ -25,8 +26,8 @@ class RunLevelStateHolder(private val driverFactory: SqlDriverFactory) :
   Closeable,
   RunLevelState,
   RunLevelController {
-  override fun viewModelFactory(): Flow<MetroViewModelFactory> = mapNotNull {
-    it.lastOrNull()?.let(::AktualViewModelFactory)
+  override fun viewModelFactory(): Flow<MetroViewModelFactory> = mapNotNull { levels ->
+    levels.takeIf { it.isNotEmpty() }?.let(::RunLevelViewModelFactory)
   }
     .distinctUntilChanged()
 
@@ -80,17 +81,35 @@ class RunLevelStateHolder(private val driverFactory: SqlDriverFactory) :
   }
 
   override fun onBudget(id: BudgetId, metadata: DbMetadata): BudgetGraph {
-    val driver = driverFactory.create(id)
-    val budgetGraph = value[LoggedInGraph::class].budgetGraphFactory.create(id, metadata, driver)
-    budgetGraph.initialize()
+    val server =
+      BudgetServer.Remote(
+        url = value[ServerChosenGraph::class].url,
+        token = value[LoggedInGraph::class].token,
+      )
     // Replace any currently-open budget so switching budgets doesn't stack a second BudgetGraph
-    update { levels ->
-      (levels.popTo<LoggedInGraph>() + budgetGraph).also(::assertAllDistinct).sorted()
-    }
+    return openBudget(id, metadata, server) { levels -> levels.popTo<LoggedInGraph>() }
+  }
+
+  override fun onOfflineBudget(id: BudgetId, metadata: DbMetadata): BudgetGraph =
+    openBudget(id, metadata, BudgetServer.None) { levels -> levels.popTo<AppGraph>() }
+
+  private inline fun openBudget(
+    id: BudgetId,
+    metadata: DbMetadata,
+    server: BudgetServer,
+    crossinline parents: (List<AktualGraph>) -> List<AktualGraph>,
+  ): BudgetGraph {
+    val driver = driverFactory.create(id)
+    val budgetGraph = value[AppGraph::class].budgetGraphFactory.create(id, server, metadata, driver)
+    budgetGraph.initialize()
+    update { levels -> (parents(levels) + budgetGraph).also(::assertAllDistinct).sorted() }
     return budgetGraph
   }
 
-  override fun onBudgetClosed() = update { levels -> levels.popTo<LoggedInGraph>().sorted() }
+  override fun onBudgetClosed() = update { levels ->
+    closeAll(levels.filterIsInstance<BudgetGraph>())
+    levels.filterNot { it is BudgetGraph }.sorted()
+  }
 
   override fun onLoggedOut() = update { levels -> levels.popTo<ServerChosenGraph>().sorted() }
 

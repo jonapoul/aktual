@@ -8,6 +8,8 @@ internal data object SwitchFile : BudgetNavAction
 
 internal data object LogOut : BudgetNavAction
 
+internal data object ExitDemo : BudgetNavAction
+
 internal data object Settings : BudgetNavAction
 
 internal data object About : BudgetNavAction

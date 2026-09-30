@@ -46,7 +46,10 @@ flowchart TD
   login --tap about--> info
   login --tap change url--> url
 
+  url --tap try demo--> budgetNavRail
+
   budgetNavRail --back--> budgetList
+  budgetNavRail --tap exit demo--> url
   budgetNavRail --tap about--> info
 
   reportsDashboard --tap report--> report

@@ -9,7 +9,7 @@ import dev.zacsweers.metro.Provides
 
 @GraphExtension(LoggedInScope::class)
 interface LoggedInGraph : AktualGraph {
-  val budgetGraphFactory: BudgetGraph.Factory
+  val token: Token
 
   @Multibinds(allowEmpty = true)
   @ForScope(LoggedInScope::class)

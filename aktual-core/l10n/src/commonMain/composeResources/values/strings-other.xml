@@ -5,4 +5,6 @@
   <string name="budget_nav_menu_settings">Settings</string>
   <string name="budget_nav_menu_switch_budget">Switch budget</string>
   <string name="budget_nav_menu_log_out">Log out</string>
+  <string name="budget_nav_menu_exit_demo">Exit demo</string>
+  <string name="budget_nav_demo">Demo mode</string>
 </resources>
