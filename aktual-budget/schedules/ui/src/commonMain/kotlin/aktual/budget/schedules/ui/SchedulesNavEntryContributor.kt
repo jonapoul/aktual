@@ -1,10 +1,13 @@
 package aktual.budget.schedules.ui
 
+import aktual.budget.schedules.ui.edit.EditScheduleScreen
 import aktual.budget.schedules.ui.list.ListSchedulesScreen
 import aktual.budget.schedules.ui.search.SearchSchedulesScreen
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
+import aktual.core.nav.CreateScheduleNavRoute
+import aktual.core.nav.EditScheduleNavRoute
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.nav.ListSchedulesNavRoute
 import aktual.core.nav.NavStack
@@ -30,6 +33,14 @@ class SchedulesNavEntryContributor : BudgetNavEntryContributor {
         back = BackNavigator(stack),
         editSchedule = EditScheduleNavigator(stack),
       )
+    }
+
+    budgetEntry<EditScheduleNavRoute> { route ->
+      EditScheduleScreen(id = route.id, back = BackNavigator(stack))
+    }
+
+    budgetEntry<CreateScheduleNavRoute> {
+      EditScheduleScreen(id = null, back = BackNavigator(stack))
     }
   }
 }

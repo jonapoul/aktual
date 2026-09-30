@@ -19,4 +19,6 @@
   <string name="list_schedules_search_placeholder">Search schedules</string>
   <string name="list_schedules_search_prompt">Enter some text to search schedule names, payees and accounts</string>
   <string name="list_schedules_search_no_results">No schedules match “%1$s”</string>
+  <string name="edit_schedule_toolbar_edit">Edit Schedule</string>
+  <string name="edit_schedule_toolbar_create">Create Schedule</string>
 </resources>
