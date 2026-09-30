@@ -19,6 +19,7 @@ object DatabaseTables {
   const val REFLECT_BUDGETS = "reflect_budgets"
   const val RULES = "rules"
   const val SCHEDULES = "schedules"
+  const val SCHEDULES_NEXT_DATE = "schedules_next_date"
   const val TAGS = "tags"
   const val TRANSACTIONS = "transactions"
   const val TRANSACTION_FILTERS = "transaction_filters"

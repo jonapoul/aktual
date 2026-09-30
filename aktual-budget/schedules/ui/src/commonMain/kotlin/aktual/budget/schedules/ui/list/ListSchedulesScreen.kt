@@ -75,6 +75,7 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -101,6 +102,13 @@ internal fun ListSchedulesScreen(
         is RestoreFailed -> snackbar.showRestoreFailed(event)
       }
     }
+  }
+
+  // refresh on return (e.g. after creating or editing a schedule) so the list reflects the changes
+  @Suppress("ComposeViewModelForwarding")
+  LifecycleResumeEffect(viewModel) {
+    viewModel.reload(showLoading = false)
+    onPauseOrDispose {}
   }
 
   ListSchedulesScaffold(
@@ -147,6 +155,11 @@ private fun ListSchedulesScaffold(
               onClick = { onAction(OpenSearch) },
             )
           }
+          BareIconButton(
+            imageVector = MaterialIcons.Add,
+            contentDescription = Strings.listSchedulesCreate,
+            onClick = { onAction(CreateNew) },
+          )
           ListSchedulesMenu(onAction = onAction)
         },
       )

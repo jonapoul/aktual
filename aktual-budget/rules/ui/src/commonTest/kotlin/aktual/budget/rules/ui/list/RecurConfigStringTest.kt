@@ -15,6 +15,7 @@ import aktual.budget.model.RecurType.Day
 import aktual.budget.model.RecurType.Friday
 import aktual.budget.model.RecurType.Saturday
 import aktual.budget.model.WeekendSolveMode.Before
+import aktual.budget.model.description
 import aktual.core.ui.formatter
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
@@ -60,7 +61,10 @@ class RecurConfigStringTest {
         MONTHLY_END_DATE,
       )
   ) {
-    assertEquals(expected = test.expected, actual = test.config.string(YyyyMmDd.formatter()))
+    assertEquals(
+      expected = test.expected,
+      actual = test.config.description(YyyyMmDd.formatter()),
+    )
   }
 
   companion object {

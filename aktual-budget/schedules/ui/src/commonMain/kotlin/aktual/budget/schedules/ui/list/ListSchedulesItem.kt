@@ -149,7 +149,7 @@ private fun LabelValue(
 }
 
 @Composable
-private fun ScheduleStatusBadge(
+internal fun ScheduleStatusBadge(
   status: ScheduleStatus,
   modifier: Modifier = Modifier,
 ) {
