@@ -48,6 +48,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -82,6 +83,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
@@ -467,24 +469,30 @@ private fun SideNavRail(
     containerColor = colors.sidebarBackground,
     contentColor = colors.sidebarItemText,
   ) {
-    for (tab in BudgetTab.entries) {
+    Column(
+      modifier = Modifier.verticalScrollWithBar(),
+      horizontalAlignment = CenterHorizontally,
+      verticalArrangement = spacedBy(4.dp),
+    ) {
+      for (tab in BudgetTab.entries) {
+        NavigationRailItem(
+          icon = { Icon(tab.icon(), contentDescription = tab.label()) },
+          label = { Text(text = tab.label(), color = LocalContentColor.current) },
+          alwaysShowLabel = true,
+          selected = selectedTab == tab,
+          onClick = { onSelectTab(tab) },
+          colors = colors.navRailItem(),
+        )
+      }
       NavigationRailItem(
-        icon = { Icon(tab.icon(), contentDescription = tab.label()) },
-        label = { Text(text = tab.label(), color = LocalContentColor.current) },
+        icon = { Icon(MaterialIcons.Menu, contentDescription = Strings.budgetNavMenu) },
+        label = { Text(text = Strings.budgetNavMenu, color = LocalContentColor.current) },
         alwaysShowLabel = true,
-        selected = selectedTab == tab,
-        onClick = { onSelectTab(tab) },
+        selected = false,
+        onClick = onMenuClick,
         colors = colors.navRailItem(),
       )
     }
-    NavigationRailItem(
-      icon = { Icon(MaterialIcons.Menu, contentDescription = Strings.budgetNavMenu) },
-      label = { Text(text = Strings.budgetNavMenu, color = LocalContentColor.current) },
-      alwaysShowLabel = true,
-      selected = false,
-      onClick = onMenuClick,
-      colors = colors.navRailItem(),
-    )
   }
 }
 
