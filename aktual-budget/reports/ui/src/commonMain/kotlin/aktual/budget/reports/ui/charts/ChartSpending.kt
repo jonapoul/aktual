@@ -114,6 +114,7 @@ private fun Chart(
     modifier = modifier.fillMaxHeight(),
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
+    animationSpec = chartAnimationSpec(compact),
     chart =
       rememberCartesianChart(
         rememberLineCartesianLayer(

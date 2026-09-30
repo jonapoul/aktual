@@ -197,6 +197,7 @@ private fun Chart(
     modifier = modifier,
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
+    animationSpec = chartAnimationSpec(compact),
     chart =
       rememberCartesianChart(
         rememberLineCartesianLayer(

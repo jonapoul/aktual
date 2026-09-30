@@ -88,6 +88,7 @@ internal fun CashFlowChart(
       modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
       modelProducer = modelProducer,
       scrollState = rememberVicoScrollState(scrollEnabled = false),
+      animationSpec = chartAnimationSpec(compact),
       chart =
         rememberCartesianChart(
           rememberColumnCartesianLayer(
