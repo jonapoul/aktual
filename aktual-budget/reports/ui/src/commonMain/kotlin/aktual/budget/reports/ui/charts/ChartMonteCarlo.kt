@@ -209,6 +209,7 @@ private fun Chart(
             itemPlacer = ageItemPlacer(data),
           ),
         marker = if (compact) null else rememberMarker(),
+        markerVisibilityListener = rememberMarkerHaptics(),
         decorations =
           remember(data, fill) {
             listOf(

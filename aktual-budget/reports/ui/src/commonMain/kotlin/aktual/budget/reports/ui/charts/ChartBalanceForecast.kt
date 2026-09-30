@@ -236,6 +236,7 @@ private fun Chart(
             itemPlacer = forecastItemPlacer(data),
           ),
         marker = if (compact) null else rememberMarker(),
+        markerVisibilityListener = rememberMarkerHaptics(),
         decorations = listOfNotNull(rememberTodayLine(data), rememberZeroLine(data)),
       ),
   )

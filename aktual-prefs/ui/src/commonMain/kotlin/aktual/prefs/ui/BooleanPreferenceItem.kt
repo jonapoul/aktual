@@ -14,6 +14,8 @@ import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -54,6 +56,7 @@ internal fun BooleanPreferenceItem(
   includeBackground: Boolean = true,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
+  val haptics = LocalHapticFeedback.current
   BasicPreferenceItem(
     modifier = modifier,
     title = title,
@@ -61,7 +64,12 @@ internal fun BooleanPreferenceItem(
     icon = icon,
     enabled = enabled,
     includeBackground = includeBackground,
-    onClick = { onValueChange(!value) },
+    onClick = {
+      haptics.performHapticFeedback(
+        if (value) HapticFeedbackType.ToggleOff else HapticFeedbackType.ToggleOn
+      )
+      onValueChange(!value)
+    },
     bottomContent = bottomContent,
     rightContent = {
       Switch(

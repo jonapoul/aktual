@@ -25,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +39,7 @@ import com.patrykandpatrick.vico.multiplatform.cartesian.axis.rememberAxisTickCo
 import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.multiplatform.cartesian.decoration.Decoration
 import com.patrykandpatrick.vico.multiplatform.cartesian.marker.CartesianMarker
+import com.patrykandpatrick.vico.multiplatform.cartesian.marker.CartesianMarkerVisibilityListener
 import com.patrykandpatrick.vico.multiplatform.cartesian.marker.DefaultCartesianMarker
 import com.patrykandpatrick.vico.multiplatform.cartesian.marker.rememberDefaultCartesianMarker
 import com.patrykandpatrick.vico.multiplatform.common.Fill
@@ -167,6 +170,20 @@ internal fun rememberMarker(
     indicatorSize = 36.dp,
     guideline = guideline,
   )
+}
+
+@Composable
+internal fun rememberMarkerHaptics(): CartesianMarkerVisibilityListener {
+  val haptics = LocalHapticFeedback.current
+  return remember(haptics) {
+    object : CartesianMarkerVisibilityListener {
+      override fun onShown(marker: CartesianMarker, targets: List<CartesianMarker.Target>) =
+        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+
+      override fun onUpdated(marker: CartesianMarker, targets: List<CartesianMarker.Target>) =
+        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+    }
+  }
 }
 
 private const val MONTHS_PER_YEAR = 12L

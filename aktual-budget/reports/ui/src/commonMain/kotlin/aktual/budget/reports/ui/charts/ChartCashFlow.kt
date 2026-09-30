@@ -128,6 +128,7 @@ internal fun CashFlowChart(
               itemPlacer = hItemPlacer(compact),
             ),
           marker = if (compact) null else rememberMarker(),
+          markerVisibilityListener = rememberMarkerHaptics(),
         ),
     )
 

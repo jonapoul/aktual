@@ -182,6 +182,7 @@ private fun Chart(
             itemPlacer = hItemPlacer(compact),
           ),
         marker = if (compact) null else rememberMarker(),
+        markerVisibilityListener = rememberMarkerHaptics(),
         decorations = listOfNotNull(crossoverLine),
       ),
   )
