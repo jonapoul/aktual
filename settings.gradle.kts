@@ -45,7 +45,7 @@ plugins {
   id("com.autonomousapps.build-health") version "3.19.2"
   id("com.github.burrunan.s3-build-cache") version "1.9.9"
   id("com.gradle.develocity") version "4.6.0"
-  id("dev.jonpoulton.atlas") version "0.7.0"
+  id("dev.jonpoulton.atlas") version "0.7.1"
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
   id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.9"
 }
