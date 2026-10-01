@@ -61,6 +61,7 @@ internal fun CashFlowChart(
   compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
+  zoom: ChartZoomState = rememberChartZoomState(data),
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {
@@ -72,8 +73,6 @@ internal fun CashFlowChart(
     }
 
     val modelProducer = remember { CartesianChartModelProducer() }
-    val zoom = rememberChartZoomState(data)
-
     if (isInPreview()) {
       runBlocking { modelProducer.populate(data, zoom.range) }
     } else {
