@@ -52,7 +52,6 @@ dependencies {
   compileOnlyPlugin(libs.plugins.licensee)
   compileOnlyPlugin(libs.plugins.metro)
   compileOnlyPlugin(libs.plugins.sortDependencies)
-  compileOnlyPlugin(libs.plugins.stabilityAnalyzer)
   compileOnlyPlugin(libs.plugins.straitjacket)
 
   detektPlugins(libs.detektGradle)
