@@ -2,18 +2,24 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.ui.ActionListener
+import aktual.budget.reports.ui.Tags
+import aktual.budget.reports.ui.charts.ChartZoomState
 import aktual.budget.reports.ui.charts.PREVIEW_AGE_OF_MONEY_DATA
 import aktual.budget.reports.ui.charts.ReportChart
+import aktual.budget.reports.ui.charts.rememberChartZoomState
 import aktual.budget.reports.ui.string
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.report.ReportViewModel
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.ZoomOut
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
@@ -41,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -101,11 +108,13 @@ private fun reportViewModel(id: WidgetId) =
   assistedMetroViewModel<ReportViewModel, ReportViewModel.Factory>(key = id.value) { create(id) }
 
 @Composable
-private fun ReportScaffold(
+internal fun ReportScaffold(
   state: ReportState,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
+  val zoom = rememberChartZoomState((state as? Loaded)?.data)
+
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
@@ -122,6 +131,16 @@ private fun ReportScaffold(
               }
           )
         },
+        actions = {
+          if (zoom.range != null) {
+            BareIconButton(
+              modifier = Modifier.testTag(Tags.ResetZoom),
+              imageVector = MaterialIcons.ZoomOut,
+              contentDescription = Strings.reportsResetZoom,
+              onClick = zoom::reset,
+            )
+          }
+        },
       )
     },
   ) { innerPadding ->
@@ -131,6 +150,7 @@ private fun ReportScaffold(
         ReportContent(
           modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).fillMaxWidth().weight(1f),
           state = state,
+          zoom = zoom,
           onAction = onAction,
         )
         BottomSpacing()
@@ -142,6 +162,7 @@ private fun ReportScaffold(
 @Composable
 private fun ReportContent(
   state: ReportState,
+  zoom: ChartZoomState,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) =
@@ -162,6 +183,7 @@ private fun ReportContent(
         data = state.data,
         compact = false,
         onAction = onAction,
+        zoom = zoom,
       )
   }
 
