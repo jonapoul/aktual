@@ -63,8 +63,11 @@ internal constructor(
       val failure by mutableFailure.collectAsState()
       val includeCompleted by showCompleted.collectAsState()
       val visible =
-        if (includeCompleted) schedules
-        else schedules.filterNot { it.isCompleted }.toImmutableList()
+        if (includeCompleted) {
+          schedules
+        } else {
+          schedules.filterNot { it.isCompleted }.toImmutableList()
+        }
       when {
         isLoading -> Loading
         failure != null -> Failure(failure)
