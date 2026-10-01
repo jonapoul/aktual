@@ -294,7 +294,13 @@ private fun ListSchedulesMenu(
     )
 
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-      ListSchedulesMenuItems(showCompleted = showCompleted, onAction = onAction)
+      ListSchedulesMenuItems(
+        showCompleted = showCompleted,
+        onAction = { action ->
+          expanded = false
+          onAction(action)
+        },
+      )
     }
   }
 }
