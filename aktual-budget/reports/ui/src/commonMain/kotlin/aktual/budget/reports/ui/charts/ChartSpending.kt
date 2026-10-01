@@ -98,11 +98,12 @@ private fun Chart(
   modifier: Modifier = Modifier,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
+  val zoom = rememberChartZoomState(data)
 
   if (isInPreview()) {
-    runBlocking { modelProducer.populate(data) }
+    runBlocking { modelProducer.populate(data, zoom.range) }
   } else {
-    LaunchedEffect(data) { modelProducer.populate(data) }
+    LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
   }
 
   val label = axisLabelComponent(compact)
@@ -110,60 +111,66 @@ private fun Chart(
   val guideline = axisGuidelineComponent(compact)
   val line = axisLineComponent(compact)
 
-  CartesianChartHost(
-    modifier = modifier.fillMaxHeight(),
-    modelProducer = modelProducer,
-    scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact),
-    chart =
-      rememberCartesianChart(
-        rememberLineCartesianLayer(
-          lineProvider =
-            LineCartesianLayer.LineProvider.series(
-              LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsGreen)),
-                areaFill =
-                  LineCartesianLayer.AreaFill.single(
-                    fill = Fill(colors.reportsGreen.copy(alpha = 0.2f))
-                  ),
-              )
-            )
-        ),
-        rememberLineCartesianLayer(
-          lineProvider =
-            LineCartesianLayer.LineProvider.series(
-              LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsGray)),
-                stroke = LineCartesianLayer.LineStroke.Dashed(thickness = 1.dp),
-                areaFill =
-                  LineCartesianLayer.AreaFill.single(
-                    fill = Fill(colors.reportsGray.copy(alpha = 0.2f))
-                  ),
-              )
-            )
-        ),
-        startAxis =
-          VerticalAxis.rememberStart(
-            line = line,
-            guideline = guideline,
-            label = label,
-            tick = tick,
-            valueFormatter = amountYAxisFormatter(),
-            itemPlacer = remember { VerticalAxis.ItemPlacer.step() },
+  ZoomableChart(modifier = modifier.fillMaxHeight(), state = zoom, enabled = !compact) {
+    chartModifier ->
+    CartesianChartHost(
+      modifier = chartModifier,
+      modelProducer = modelProducer,
+      scrollState = rememberVicoScrollState(scrollEnabled = false),
+      animationSpec = chartAnimationSpec(compact),
+      chart =
+        rememberCartesianChart(
+          rememberLineCartesianLayer(
+            rangeProvider = remember { ZoomRangeProvider() },
+            lineProvider =
+              LineCartesianLayer.LineProvider.series(
+                LineCartesianLayer.rememberLine(
+                  fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsGreen)),
+                  areaFill =
+                    LineCartesianLayer.AreaFill.single(
+                      fill = Fill(colors.reportsGreen.copy(alpha = 0.2f))
+                    ),
+                )
+              ),
           ),
-        bottomAxis =
-          HorizontalAxis.rememberBottom(
-            line = line,
-            guideline = guideline,
-            label = label,
-            tick = tick,
-            valueFormatter = xAxisFormatter(),
-            itemPlacer = remember { HorizontalAxis.ItemPlacer.segmented() },
+          rememberLineCartesianLayer(
+            rangeProvider = remember { ZoomRangeProvider() },
+            lineProvider =
+              LineCartesianLayer.LineProvider.series(
+                LineCartesianLayer.rememberLine(
+                  fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsGray)),
+                  stroke = LineCartesianLayer.LineStroke.Dashed(thickness = 1.dp),
+                  areaFill =
+                    LineCartesianLayer.AreaFill.single(
+                      fill = Fill(colors.reportsGray.copy(alpha = 0.2f))
+                    ),
+                )
+              ),
           ),
-        marker = if (compact) null else rememberMarker(),
-        markerVisibilityListener = rememberMarkerHaptics(compact),
-      ),
-  )
+          startAxis =
+            VerticalAxis.rememberStart(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter = amountYAxisFormatter(),
+              itemPlacer = remember { VerticalAxis.ItemPlacer.step() },
+            ),
+          bottomAxis =
+            HorizontalAxis.rememberBottom(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter = xAxisFormatter(),
+              itemPlacer = remember { HorizontalAxis.ItemPlacer.segmented() },
+            ),
+          marker = if (compact) null else rememberMarker(),
+          markerVisibilityListener = rememberMarkerHaptics(compact),
+          decorations = listOf(rememberChartZoomDecoration(zoom)),
+        ),
+    )
+  }
 }
 
 @Composable
@@ -253,7 +260,7 @@ private fun SpendingComparison.string() =
 private const val END_DAY = 28
 private val HEADER_PADDING = 8.dp
 
-private suspend fun CartesianChartModelProducer.populate(data: SpendingData) =
+private suspend fun CartesianChartModelProducer.populate(data: SpendingData, zoom: XRange?) =
   with(data) {
     val xValues = days.map { day ->
       when (val number = day.number) {
@@ -266,9 +273,12 @@ private suspend fun CartesianChartModelProducer.populate(data: SpendingData) =
     val comparisonAmounts = days.map { it.comparison.toDouble() }
 
     runTransaction {
-      lineSeries { series(x = xValues.take(targetAmounts.size), y = targetAmounts) }
+      zoomTo(zoom)
+      lineSeries { series(x = xValues.take(targetAmounts.size), y = targetAmounts, zoom = zoom) }
 
-      lineSeries { series(x = xValues.take(comparisonAmounts.size), y = comparisonAmounts) }
+      lineSeries {
+        series(x = xValues.take(comparisonAmounts.size), y = comparisonAmounts, zoom = zoom)
+      }
     }
   }
 

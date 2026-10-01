@@ -265,10 +265,11 @@ internal fun DateRangeType.string() =
     DateRangeType.Unknown -> Strings.reportsDateTypeUnknown
   }
 
-// Vertical line at an x value, drawn over the chart's layers
+// Vertical line at an x value, drawn over the chart's layers. Hidden when zoomed out of range
 internal class VerticalLine(private val x: Double, private val line: LineComponent) : Decoration {
   override fun drawOverLayers(context: CartesianDrawingContext) =
     with(context) {
+      if (x < ranges.minX || x > ranges.maxX) return@with
       val start =
         (if (isLtr) layerBounds.left else layerBounds.right) +
           layoutDirectionMultiplier * layerDimensions.startPadding - scroll
