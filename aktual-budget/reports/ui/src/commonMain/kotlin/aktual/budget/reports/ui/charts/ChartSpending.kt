@@ -66,6 +66,7 @@ internal fun SpendingChart(
   compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
+  zoom: ChartZoomState = rememberChartZoomState(data),
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {
@@ -84,6 +85,7 @@ internal fun SpendingChart(
       modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
       data = data,
       compact = compact,
+      zoom = zoom,
     )
 
     if (!compact) {
@@ -95,10 +97,10 @@ internal fun SpendingChart(
 private fun Chart(
   data: SpendingData,
   compact: Boolean,
+  zoom: ChartZoomState,
   modifier: Modifier = Modifier,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
-  val zoom = rememberChartZoomState(data)
 
   if (isInPreview()) {
     runBlocking { modelProducer.populate(data, zoom.range) }

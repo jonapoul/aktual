@@ -25,18 +25,19 @@ internal fun ReportChart(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
+  zoom: ChartZoomState = rememberChartZoomState(data),
 ) =
   when (data) {
-    is AgeOfMoneyData -> AgeOfMoneyChart(data, compact, modifier, includeHeader)
-    is BalanceForecastData -> BalanceForecastChart(data, compact, modifier, includeHeader)
-    is CashFlowData -> CashFlowChart(data, compact, modifier, includeHeader)
-    is CrossoverData -> CrossoverChart(data, compact, modifier, includeHeader)
-    is MonteCarloData -> MonteCarloChart(data, compact, modifier, includeHeader)
-    is NetWorthData -> NetWorthChart(data, compact, modifier, includeHeader)
+    is AgeOfMoneyData -> AgeOfMoneyChart(data, compact, modifier, includeHeader, zoom)
+    is BalanceForecastData -> BalanceForecastChart(data, compact, modifier, includeHeader, zoom)
+    is CashFlowData -> CashFlowChart(data, compact, modifier, includeHeader, zoom)
+    is CrossoverData -> CrossoverChart(data, compact, modifier, includeHeader, zoom)
+    is MonteCarloData -> MonteCarloChart(data, compact, modifier, includeHeader, zoom)
+    is NetWorthData -> NetWorthChart(data, compact, modifier, includeHeader, zoom)
     is SankeyData -> SankeyChart(data, compact, modifier, includeHeader)
     is SummaryData -> SummaryChart(data, compact, onAction, modifier, includeHeader)
     is CalendarData -> CalendarChart(data, compact, onAction, modifier, includeHeader)
-    is SpendingData -> SpendingChart(data, compact, modifier, includeHeader)
+    is SpendingData -> SpendingChart(data, compact, modifier, includeHeader, zoom)
     is TextData -> TextChart(data, compact, onAction, modifier)
     is CustomData -> CustomChart(data, compact, modifier, includeHeader)
     is UnsupportedData -> UnsupportedChart(data, modifier)

@@ -66,6 +66,7 @@ internal fun BalanceForecastChart(
   compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
+  zoom: ChartZoomState = rememberChartZoomState(data),
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {
@@ -76,7 +77,7 @@ internal fun BalanceForecastChart(
     if (data.items.isEmpty()) {
       Empty(modifier = chartModifier)
     } else {
-      Chart(modifier = chartModifier, data = data, compact = compact)
+      Chart(modifier = chartModifier, data = data, compact = compact, zoom = zoom)
     }
 
     if (!compact) {
@@ -178,10 +179,10 @@ private fun BalanceForecastData.summary(): String =
 private fun Chart(
   data: BalanceForecastData,
   compact: Boolean,
+  zoom: ChartZoomState,
   modifier: Modifier = Modifier,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
-  val zoom = rememberChartZoomState(data)
 
   if (isInPreview()) {
     runBlocking { modelProducer.populate(data, zoom.range) }

@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
@@ -28,7 +27,7 @@ class ChartZoomGestureTest {
   private val zoom = ChartZoomState()
 
   @Test
-  fun `Long press then drag zooms and the reset button unzooms`() = runComposeUiTest {
+  fun `Long press then drag zooms`() = runComposeUiTest {
     // given
     setChart()
 
@@ -42,13 +41,6 @@ class ChartZoomGestureTest {
 
     // then it's zoomed to the snapped x values under the pointer
     assertThat(zoom.range).isEqualTo(3.0..6.0)
-
-    // when resetting
-    onNodeWithTag(Tags.ResetZoom).performClick()
-
-    // then it isn't zoomed
-    assertThat(zoom.range).isNull()
-    onNodeWithTag(Tags.ResetZoom).assertDoesNotExist()
   }
 
   @Test
@@ -62,7 +54,6 @@ class ChartZoomGestureTest {
     }
 
     assertThat(zoom.range).isNull()
-    onNodeWithTag(Tags.ResetZoom).assertDoesNotExist()
   }
 
   @Test

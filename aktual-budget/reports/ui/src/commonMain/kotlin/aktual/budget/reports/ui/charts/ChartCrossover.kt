@@ -62,6 +62,7 @@ internal fun CrossoverChart(
   compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
+  zoom: ChartZoomState = rememberChartZoomState(data),
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {
@@ -72,6 +73,7 @@ internal fun CrossoverChart(
       modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
       data = data,
       compact = compact,
+      zoom = zoom,
     )
 
     if (!compact) {
@@ -125,10 +127,10 @@ private fun Header(
 private fun Chart(
   data: CrossoverData,
   compact: Boolean,
+  zoom: ChartZoomState,
   modifier: Modifier = Modifier,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
-  val zoom = rememberChartZoomState(data)
 
   if (isInPreview()) {
     runBlocking { modelProducer.populate(data, zoom.range) }

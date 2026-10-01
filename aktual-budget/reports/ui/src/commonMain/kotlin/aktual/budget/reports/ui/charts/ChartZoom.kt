@@ -1,22 +1,18 @@
 package aktual.budget.reports.ui.charts
 
 import aktual.budget.reports.ui.Tags
-import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.NormalTextButton
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -27,7 +23,6 @@ import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianDrawingContext
 import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianLayerRangeProvider
@@ -132,7 +127,8 @@ internal class ZoomGeometry(
 }
 
 @Composable
-internal fun rememberChartZoomState(data: Any): ChartZoomState = remember(data) { ChartZoomState() }
+internal fun rememberChartZoomState(data: Any?): ChartZoomState =
+  remember(data) { ChartZoomState() }
 
 @Composable
 internal fun rememberChartZoomDecoration(state: ChartZoomState): Decoration {
@@ -141,8 +137,8 @@ internal fun rememberChartZoomDecoration(state: ChartZoomState): Decoration {
 }
 
 /**
- * Hosts a chart with zoom gestures and a reset button. [content] should apply the passed modifier
- * to its CartesianChartHost, so pointer positions line up with the chart canvas.
+ * Hosts a chart with zoom gestures. [content] should apply the passed modifier to its
+ * CartesianChartHost, so pointer positions line up with the chart canvas.
  */
 @Composable
 internal fun ZoomableChart(
@@ -156,14 +152,6 @@ internal fun ZoomableChart(
     content(
       if (enabled) Modifier.fillMaxSize().zoomGestures(state, haptics) else Modifier.fillMaxSize()
     )
-
-    if (enabled && state.range != null) {
-      NormalTextButton(
-        modifier = Modifier.align(Alignment.TopEnd).padding(4.dp).testTag(Tags.ResetZoom),
-        text = Strings.reportsResetZoom,
-        onClick = state::reset,
-      )
-    }
   }
 
 private fun Modifier.zoomGestures(state: ChartZoomState, haptics: HapticFeedback): Modifier =

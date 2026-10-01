@@ -93,5 +93,6 @@ private val materialIcons =
       Visibility,
       VisibilityOff,
       Warning,
+      ZoomOut,
     )
   }
