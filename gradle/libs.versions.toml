@@ -80,7 +80,7 @@ detekt-api = { module = "dev.detekt:detekt-api", version.ref = "detekt" }
 detekt-test = { module = "dev.detekt:detekt-test", version.ref = "detekt" }
 detekt-testJunit = { module = "dev.detekt:detekt-test-junit", version.ref = "detekt" }
 detekt-testUtils = { module = "dev.detekt:detekt-test-utils", version.ref = "detekt" }
-detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.6.6" }
+detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.6.7" }
 detektGradle = { module = "dev.jonpoulton.blueprint:detekt-rules", version.ref = "blueprint" }
 haze-blur = { module = "dev.chrisbanes.haze:haze-blur", version.ref = "haze" }
 haze-glass = { module = "dev.chrisbanes.haze:haze-glass", version.ref = "haze" }
