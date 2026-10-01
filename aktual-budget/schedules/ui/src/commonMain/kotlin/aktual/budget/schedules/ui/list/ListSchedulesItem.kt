@@ -63,6 +63,7 @@ internal fun ListSchedulesItem(
       Operator.LessThanOrEquals -> ""
     }
   val amountStr = amountPrefix + schedule.amount.formattedString(includeSign = true)
+  val textColor = if (schedule.isCompleted) colors.pageTextSubdued else colors.pageText
 
   Row(
     modifier =
@@ -87,7 +88,7 @@ internal fun ListSchedulesItem(
             ?: AnnotatedString(Strings.listSchedulesUnnamedSchedule),
         style = typography.bodyMedium,
         fontWeight = SemiBold,
-        color = if (schedule.name != null) colors.pageText else colors.pageTextSubdued,
+        color = if (schedule.name != null) textColor else colors.pageTextSubdued,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -96,11 +97,13 @@ internal fun ListSchedulesItem(
         LabelValue(
           label = Strings.listSchedulesLabelPayee,
           value = schedule.payeeName,
+          valueColor = textColor,
           query = query,
         )
         LabelValue(
           label = Strings.listSchedulesLabelAccount,
           value = schedule.accountName,
+          valueColor = textColor,
           query = query,
         )
 
@@ -108,16 +111,17 @@ internal fun ListSchedulesItem(
           label = Strings.listSchedulesLabelAmount,
           value = amountStr,
           valueColor =
-            if (schedule.amount.isPositive()) {
-              colors.budgetNumberPositive
-            } else {
-              colors.budgetNumberNegative
+            when {
+              schedule.isCompleted -> textColor
+              schedule.amount.isPositive() -> colors.budgetNumberPositive
+              else -> colors.budgetNumberNegative
             },
         )
 
         LabelValue(
           label = Strings.listSchedulesLabelNext,
           value = schedule.nextDate.formatted(),
+          valueColor = textColor,
         )
       }
     }
@@ -242,7 +246,11 @@ private fun PreviewListItem(
 ) = PreviewWithColoredParams(params) { ListSchedulesItem(schedule = this, onClick = {}) }
 
 private class SchedulesProvider :
-  ColoredParameterProvider<Schedule>(ListSchedulesPreview.scheduleA, ListSchedulesPreview.scheduleB)
+  ColoredParameterProvider<Schedule>(
+    ListSchedulesPreview.scheduleA,
+    ListSchedulesPreview.scheduleB,
+    ListSchedulesPreview.scheduleCompleted,
+  )
 
 @Preview
 @Composable

@@ -48,4 +48,12 @@ internal object ListSchedulesPreview {
       date = LocalDate(2026, 4, 15),
       status = ScheduleStatus.Missed,
     )
+
+  val scheduleCompleted =
+    scheduleA.copy(
+      id = ScheduleId("ghi-789"),
+      name = "Old gym membership",
+      isCompleted = true,
+      status = ScheduleStatus.Completed,
+    )
 }
