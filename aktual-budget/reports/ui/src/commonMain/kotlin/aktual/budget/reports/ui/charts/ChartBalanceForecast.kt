@@ -181,11 +181,12 @@ private fun Chart(
   modifier: Modifier = Modifier,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
+  val zoom = rememberChartZoomState(data)
 
   if (isInPreview()) {
-    runBlocking { modelProducer.populate(data) }
+    runBlocking { modelProducer.populate(data, zoom.range) }
   } else {
-    LaunchedEffect(data) { modelProducer.populate(data) }
+    LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
   }
 
   val label = axisLabelComponent(compact)
@@ -193,54 +194,62 @@ private fun Chart(
   val guideline = axisGuidelineComponent(compact)
   val line = axisLineComponent(compact)
 
-  CartesianChartHost(
-    modifier = modifier,
-    modelProducer = modelProducer,
-    scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact),
-    chart =
-      rememberCartesianChart(
-        rememberLineCartesianLayer(
-          lineProvider =
-            LineCartesianLayer.LineProvider.series(
-              LineCartesianLayer.rememberLine(
-                // Upstream turns the line red below zero
-                fill =
-                  LineCartesianLayer.LineFill.double(
-                    topFill = Fill(colors.reportsChartFill),
-                    bottomFill = Fill(colors.reportsNumberNegative),
-                  ),
-                areaFill =
-                  LineCartesianLayer.AreaFill.double(
-                    topFill = Fill(colors.reportsChartFill.copy(alpha = 0.2f)),
-                    bottomFill = Fill(colors.reportsNumberNegative.copy(alpha = 0.2f)),
-                  ),
-              )
-            )
+  ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
+    CartesianChartHost(
+      modifier = chartModifier,
+      modelProducer = modelProducer,
+      scrollState = rememberVicoScrollState(scrollEnabled = false),
+      animationSpec = chartAnimationSpec(compact),
+      chart =
+        rememberCartesianChart(
+          rememberLineCartesianLayer(
+            rangeProvider = remember { ZoomRangeProvider() },
+            lineProvider =
+              LineCartesianLayer.LineProvider.series(
+                LineCartesianLayer.rememberLine(
+                  // Upstream turns the line red below zero
+                  fill =
+                    LineCartesianLayer.LineFill.double(
+                      topFill = Fill(colors.reportsChartFill),
+                      bottomFill = Fill(colors.reportsNumberNegative),
+                    ),
+                  areaFill =
+                    LineCartesianLayer.AreaFill.double(
+                      topFill = Fill(colors.reportsChartFill.copy(alpha = 0.2f)),
+                      bottomFill = Fill(colors.reportsNumberNegative.copy(alpha = 0.2f)),
+                    ),
+                )
+              ),
+          ),
+          startAxis =
+            VerticalAxis.rememberStart(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter = amountYAxisFormatter(),
+              itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { 8 }) },
+            ),
+          bottomAxis =
+            HorizontalAxis.rememberBottom(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter = forecastXAxisFormatter(data),
+              itemPlacer = forecastItemPlacer(data),
+            ),
+          marker = if (compact) null else rememberMarker(),
+          markerVisibilityListener = rememberMarkerHaptics(compact),
+          decorations =
+            listOfNotNull(
+              rememberTodayLine(data),
+              rememberZeroLine(data),
+              rememberChartZoomDecoration(zoom),
+            ),
         ),
-        startAxis =
-          VerticalAxis.rememberStart(
-            line = line,
-            guideline = guideline,
-            label = label,
-            tick = tick,
-            valueFormatter = amountYAxisFormatter(),
-            itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { 8 }) },
-          ),
-        bottomAxis =
-          HorizontalAxis.rememberBottom(
-            line = line,
-            guideline = guideline,
-            label = label,
-            tick = tick,
-            valueFormatter = forecastXAxisFormatter(data),
-            itemPlacer = forecastItemPlacer(data),
-          ),
-        marker = if (compact) null else rememberMarker(),
-        markerVisibilityListener = rememberMarkerHaptics(compact),
-        decorations = listOfNotNull(rememberTodayLine(data), rememberZeroLine(data)),
-      ),
-  )
+    )
+  }
 }
 
 // Daily ranges have too many points to label them all
@@ -305,11 +314,16 @@ private fun rememberZeroLine(data: BalanceForecastData): Decoration? {
   return remember(line) { HorizontalLine(y = { 0.0 }, line = line) }
 }
 
-private suspend fun CartesianChartModelProducer.populate(data: BalanceForecastData) =
+private suspend fun CartesianChartModelProducer.populate(data: BalanceForecastData, zoom: XRange?) =
   runTransaction {
+    zoomTo(zoom)
     if (data.items.isEmpty()) return@runTransaction
     lineSeries {
-      series(x = data.items.keys.indices.toList(), y = data.items.values.map { it.toDouble() })
+      series(
+        x = data.items.keys.indices.toList(),
+        y = data.items.values.map { it.toDouble() },
+        zoom = zoom,
+      )
     }
   }
 

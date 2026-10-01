@@ -128,11 +128,12 @@ private fun Chart(
   modifier: Modifier = Modifier,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
+  val zoom = rememberChartZoomState(data)
 
   if (isInPreview()) {
-    runBlocking { modelProducer.populate(data) }
+    runBlocking { modelProducer.populate(data, zoom.range) }
   } else {
-    LaunchedEffect(data) { modelProducer.populate(data) }
+    LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
   }
 
   val label = axisLabelComponent(compact)
@@ -141,51 +142,55 @@ private fun Chart(
   val line = axisLineComponent(compact)
   val crossoverLine = rememberCrossoverLine(data)
 
-  CartesianChartHost(
-    modifier = modifier,
-    modelProducer = modelProducer,
-    scrollState = rememberVicoScrollState(scrollEnabled = false),
-    chart =
-      rememberCartesianChart(
-        rememberLineCartesianLayer(
-          lineProvider =
-            LineCartesianLayer.LineProvider.series(
-              LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberPositive)),
-                pointConnector = LineCartesianLayer.PointConnector.cubic(),
+  ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
+    CartesianChartHost(
+      modifier = chartModifier,
+      modelProducer = modelProducer,
+      scrollState = rememberVicoScrollState(scrollEnabled = false),
+      chart =
+        rememberCartesianChart(
+          rememberLineCartesianLayer(
+            rangeProvider = remember { ZoomRangeProvider() },
+            lineProvider =
+              LineCartesianLayer.LineProvider.series(
+                LineCartesianLayer.rememberLine(
+                  fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberPositive)),
+                  pointConnector = LineCartesianLayer.PointConnector.cubic(),
+                ),
+                LineCartesianLayer.rememberLine(
+                  fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberNegative)),
+                  pointConnector = LineCartesianLayer.PointConnector.cubic(),
+                ),
+                LineCartesianLayer.rememberLine(
+                  fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberNegative)),
+                  stroke =
+                    LineCartesianLayer.LineStroke.Dashed(dashLength = 5.dp, gapLength = 5.dp),
+                ),
               ),
-              LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberNegative)),
-                pointConnector = LineCartesianLayer.PointConnector.cubic(),
-              ),
-              LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberNegative)),
-                stroke = LineCartesianLayer.LineStroke.Dashed(dashLength = 5.dp, gapLength = 5.dp),
-              ),
-            )
+          ),
+          startAxis =
+            VerticalAxis.rememberStart(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter = amountYAxisFormatter(),
+            ),
+          bottomAxis =
+            HorizontalAxis.rememberBottom(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter = yearMonthXAxisFormatter(),
+              itemPlacer = hItemPlacer(compact),
+            ),
+          marker = if (compact) null else rememberMarker(),
+          markerVisibilityListener = rememberMarkerHaptics(compact),
+          decorations = listOfNotNull(crossoverLine, rememberChartZoomDecoration(zoom)),
         ),
-        startAxis =
-          VerticalAxis.rememberStart(
-            line = line,
-            guideline = guideline,
-            label = label,
-            tick = tick,
-            valueFormatter = amountYAxisFormatter(),
-          ),
-        bottomAxis =
-          HorizontalAxis.rememberBottom(
-            line = line,
-            guideline = guideline,
-            label = label,
-            tick = tick,
-            valueFormatter = yearMonthXAxisFormatter(),
-            itemPlacer = hItemPlacer(compact),
-          ),
-        marker = if (compact) null else rememberMarker(),
-        markerVisibilityListener = rememberMarkerHaptics(compact),
-        decorations = listOfNotNull(crossoverLine),
-      ),
-  )
+    )
+  }
 }
 
 @Composable
@@ -200,21 +205,23 @@ private fun rememberCrossoverLine(data: CrossoverData): Decoration? {
   return remember(line, month) { VerticalLine(x = month.monthNumber().toDouble(), line = line) }
 }
 
-private suspend fun CartesianChartModelProducer.populate(data: CrossoverData) = runTransaction {
-  if (data.items.isEmpty()) return@runTransaction
-  val months = data.items.keys.map { it.monthNumber() }
-  val adjusted =
-    data.items.mapNotNull { (month, datum) ->
-      datum.adjustedExpenses?.let { month.monthNumber() to it.toDouble() }
-    }
-  lineSeries {
-    series(x = months, y = data.items.values.map { it.investmentIncome.toDouble() })
-    series(x = months, y = data.items.values.map { it.expenses.toDouble() })
-    if (adjusted.isNotEmpty()) {
-      series(x = adjusted.map { it.first }, y = adjusted.map { it.second })
+private suspend fun CartesianChartModelProducer.populate(data: CrossoverData, zoom: XRange?) =
+  runTransaction {
+    zoomTo(zoom)
+    if (data.items.isEmpty()) return@runTransaction
+    val months = data.items.keys.map { it.monthNumber() }
+    val adjusted =
+      data.items.mapNotNull { (month, datum) ->
+        datum.adjustedExpenses?.let { month.monthNumber() to it.toDouble() }
+      }
+    lineSeries {
+      series(x = months, y = data.items.values.map { it.investmentIncome.toDouble() }, zoom = zoom)
+      series(x = months, y = data.items.values.map { it.expenses.toDouble() }, zoom = zoom)
+      if (adjusted.isNotEmpty()) {
+        series(x = adjusted.map { it.first }, y = adjusted.map { it.second }, zoom = zoom)
+      }
     }
   }
-}
 
 @Preview
 @Composable

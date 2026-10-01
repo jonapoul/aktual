@@ -5,6 +5,7 @@
   <string name="reports_dashboard_delete">Delete</string>
   <string name="reports_dashboard_empty">No reports on this dashboard</string>
   <string name="reports_not_found">This report doesn't exist</string>
+  <string name="reports_reset_zoom">Reset zoom</string>
   <string name="reports_dashboard_create">Create new report</string>
   <string name="reports_dashboard_choose">Choose dashboard</string>
   <string name="reports_dashboard_untitled">Untitled dashboard</string>
