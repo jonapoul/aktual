@@ -9,6 +9,8 @@ import aktual.budget.model.untombstone
 import aktual.budget.schedules.vm.Schedule
 import aktual.budget.schedules.vm.SchedulesLoader
 import aktual.di.BudgetScope
+import aktual.prefs.SchedulePreferences
+import aktual.prefs.asStateFlow
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -38,6 +40,7 @@ class ListSchedulesViewModel
 internal constructor(
   private val loader: SchedulesLoader,
   private val syncController: BudgetSyncController,
+  private val preferences: SchedulePreferences,
 ) : ViewModel() {
   private val mutableSchedules = MutableStateFlow<ImmutableList<Schedule>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
@@ -51,16 +54,22 @@ internal constructor(
     )
   val events: SharedFlow<ListSchedulesEvent> = mutableEvents.asSharedFlow()
 
+  val showCompleted: StateFlow<Boolean> = preferences.showCompleted.asStateFlow(viewModelScope)
+
   val state: StateFlow<ListSchedulesState> =
     viewModelScope.launchMolecule(Immediate) {
       val schedules by mutableSchedules.collectAsState()
       val isLoading by mutableIsLoading.collectAsState()
       val failure by mutableFailure.collectAsState()
+      val includeCompleted by showCompleted.collectAsState()
+      val visible =
+        if (includeCompleted) schedules
+        else schedules.filterNot { it.isCompleted }.toImmutableList()
       when {
         isLoading -> Loading
         failure != null -> Failure(failure)
-        schedules.isEmpty() -> Empty
-        else -> Success(schedules)
+        visible.isEmpty() -> Empty
+        else -> Success(visible)
       }
     }
 
@@ -125,6 +134,10 @@ internal constructor(
         mutableEvents.tryEmit(ListSchedulesEvent.RestoreFailed(schedule))
       }
     }
+  }
+
+  fun setShowCompleted(show: Boolean) {
+    viewModelScope.launch { preferences.showCompleted.set(show) }
   }
 }
 

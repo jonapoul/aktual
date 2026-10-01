@@ -26,6 +26,8 @@
   <string name="list_schedules_deleted_undo">Undo</string>
   <string name="list_schedules_delete_failed">Couldn\'t delete %1$s</string>
   <string name="list_schedules_restore_failed">Couldn\'t restore %1$s</string>
+  <string name="list_schedules_menu">Menu</string>
+  <string name="list_schedules_show_completed">Show completed schedules</string>
   <string name="edit_schedule_toolbar_edit">Edit Schedule</string>
   <string name="edit_schedule_toolbar_create">Create Schedule</string>
 </resources>

@@ -15,11 +15,14 @@ import aktual.budget.schedules.vm.list.Loading
 import aktual.budget.schedules.vm.list.Success
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.nav.SearchSchedulesNavigator
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
@@ -33,21 +36,26 @@ import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.bottomNavBarPadding
+import aktual.core.ui.checkbox
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -90,11 +98,13 @@ internal fun ListSchedulesScreen(
       }
     }
   }
+  val showCompleted by viewModel.showCompleted.collectAsStateWithLifecycle()
 
   ListSchedulesScaffold(
     modifier = modifier,
     state = state,
     snackbarHostState = snackbar,
+    showCompleted = showCompleted,
     onAction = { action ->
       when (action) {
         Reload -> viewModel.reload()
@@ -103,6 +113,7 @@ internal fun ListSchedulesScreen(
         OpenSearch -> toSearch()
         is Delete -> viewModel.delete(action.schedule)
         is Post -> scope.launch { snackbar.showPostUnsupported() }
+        is ShowCompleted -> viewModel.setShowCompleted(action.show)
       }
     },
   )
@@ -111,6 +122,7 @@ internal fun ListSchedulesScreen(
 @Composable
 private fun ListSchedulesScaffold(
   state: ListSchedulesState,
+  showCompleted: Boolean,
   onAction: ListSchedulesActionHandler,
   modifier: Modifier = Modifier,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -134,6 +146,7 @@ private fun ListSchedulesScaffold(
               onClick = { onAction(OpenSearch) },
             )
           }
+          ListSchedulesMenu(showCompleted = showCompleted, onAction = onAction)
         },
       )
     },
@@ -265,11 +278,63 @@ private fun ContentSuccess(
   }
 }
 
+@Composable
+private fun ListSchedulesMenu(
+  showCompleted: Boolean,
+  onAction: ListSchedulesActionHandler,
+  modifier: Modifier = Modifier,
+) {
+  var expanded by remember { mutableStateOf(false) }
+
+  Box(modifier = modifier) {
+    BareIconButton(
+      imageVector = MaterialIcons.MoreVert,
+      contentDescription = Strings.listSchedulesMenu,
+      onClick = { expanded = true },
+    )
+
+    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      ListSchedulesMenuItems(showCompleted = showCompleted, onAction = onAction)
+    }
+  }
+}
+
+@Composable
+private fun ListSchedulesMenuItems(showCompleted: Boolean, onAction: ListSchedulesActionHandler) {
+  AktualDropdownMenuItem(
+    text = { Text(Strings.listSchedulesShowCompleted) },
+    leadingIcon = {
+      Checkbox(
+        checked = showCompleted,
+        onCheckedChange = null,
+        colors = colors.checkbox(),
+      )
+    },
+    onClick = { onAction(ShowCompleted(!showCompleted)) },
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewListSchedulesMenuItems(
+  @PreviewParameter(ShowCompletedProvider::class) params: ColoredParams<Boolean>
+) =
+  PreviewWithColoredParams(params) {
+    Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {
+      ListSchedulesMenuItems(showCompleted = params.data, onAction = {})
+    }
+  }
+
+private class ShowCompletedProvider : ColoredParameterProvider<Boolean>(true, false)
+
 @Preview
 @Composable
 private fun PreviewListSchedulesScaffold(
   @PreviewParameter(ListSchedulesProvider::class) params: ColoredParams<ListSchedulesState>
-) = PreviewWithColoredParams(params) { ListSchedulesScaffold(state = this, onAction = {}) }
+) =
+  PreviewWithColoredParams(params) {
+    ListSchedulesScaffold(state = this, showCompleted = false, onAction = {})
+  }
 
 private class ListSchedulesProvider :
   ColoredParameterProvider<ListSchedulesState>(
