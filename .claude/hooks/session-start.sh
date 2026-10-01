@@ -17,7 +17,7 @@ beforeSettings {
 }
 EOF
 
-# Android SDK for the Android targets, lint and stabilityCheck. AGP downloads the platform itself
+# Android SDK for the Android targets and lint. AGP downloads the platform itself
 # once the licences are accepted. Needs dl.google.com in the environment's allowed domains.
 SDK_DIR="$HOME/android-sdk"
 SDKMANAGER="$SDK_DIR/cmdline-tools/latest/bin/sdkmanager"

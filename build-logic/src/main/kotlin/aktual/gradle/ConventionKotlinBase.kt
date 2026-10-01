@@ -7,6 +7,7 @@ import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
 import com.android.build.gradle.internal.lint.LintModelWriterTask
 import com.github.gmazzo.buildconfig.BuildConfigTask
 import org.gradle.api.Project
+import org.gradle.api.tasks.PathSensitivity
 import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -28,6 +29,16 @@ class ConventionKotlinBase : ProjectPlugin {
 
     val compileTasks = tasks.withType(KotlinCompile::class)
     tasks.register("compileAll") { t -> t.dependsOn(compileTasks) }
+
+    // Lint's partial results hold offsets into the version catalog without tracking it as an input,
+    // so a stale cached analysis crashes the report task once the catalog changes
+    val versionCatalog = rootProject.isolated.projectDirectory.file("gradle/libs.versions.toml")
+    tasks.withType(AndroidLintAnalysisTask::class).configureEach { t ->
+      t.inputs
+        .file(versionCatalog)
+        .withPropertyName("versionCatalog")
+        .withPathSensitivity(PathSensitivity.NONE)
+    }
 
     pluginManager.withPlugin("com.github.gmazzo.buildconfig") {
       // Needed because of awkwardness with buildconfig in combo with android lint, see:
