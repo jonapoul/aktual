@@ -31,8 +31,8 @@ private class JdbcSqlDriverFactory(private val url: String) : SqlDriverFactory {
   constructor(file: File) : this(url = "jdbc:sqlite:${file.absolutePath}")
 
   override fun create(budgetId: BudgetId): SqlDriver {
-    // A Robolectric test registers the driver from its sandbox classloader, which DriverManager then
-    // hides from plain JVM tests in the same process. Loading it here registers it for our classloader
+    // A Robolectric test registers the driver from its sandbox classloader, which DriverManager
+    // then hides from plain JVM tests in the same process. Loading it here registers it for ours
     Class.forName("org.sqlite.JDBC")
     return JdbcSqliteDriver(
       url = url,
