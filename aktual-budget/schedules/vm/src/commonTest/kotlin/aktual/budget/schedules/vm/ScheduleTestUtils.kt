@@ -23,6 +23,7 @@ internal suspend fun BudgetDatabase.insertSchedule(
   nextDate: LocalDate = LocalDate(2026, 5, 1),
   amount: Long = -1000,
   dateConditionIndex: Int = 2,
+  completed: Boolean = false,
 ) {
   val payeeId = PayeeId("$id-payee")
   val accountId = AccountId("$id-account")
@@ -88,7 +89,7 @@ internal suspend fun BudgetDatabase.insertSchedule(
     id = scheduleId,
     rule = ruleId,
     active = true,
-    completed = false,
+    completed = completed,
     posts_transaction = false,
     tombstone = false,
     name = name,
