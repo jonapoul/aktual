@@ -71,6 +71,7 @@ private val materialIcons =
       Numbers,
       OfflinePin,
       OpenInNew,
+      PostAdd,
       Refresh,
       Save,
       SaveAs,
