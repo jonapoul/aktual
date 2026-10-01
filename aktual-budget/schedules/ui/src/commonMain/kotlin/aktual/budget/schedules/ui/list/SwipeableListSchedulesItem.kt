@@ -38,14 +38,20 @@ internal fun SwipeableListSchedulesItem(
           icon = MaterialIcons.PostAdd,
           background = lerp(colors.tableBackground, Black, fraction = 0.1f),
           foreground = colors.tableText,
-          onClick = { onAction(Post(schedule)) },
+          onClick = {
+            onOpenChange(false)
+            onAction(Post(schedule))
+          },
         ),
         SwipeAction(
           text = Strings.listSchedulesDelete,
           icon = MaterialIcons.Delete,
           background = deleteBackground,
           foreground = deleteBackground.contrastingTextColor(),
-          onClick = { onAction(Delete(schedule)) },
+          onClick = {
+            onOpenChange(false)
+            onAction(Delete(schedule))
+          },
         ),
       ),
     isOpen = isOpen,
