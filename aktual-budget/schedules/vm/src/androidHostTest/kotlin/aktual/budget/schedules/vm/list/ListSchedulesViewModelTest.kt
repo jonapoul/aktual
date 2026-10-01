@@ -14,7 +14,9 @@ import aktual.budget.schedules.vm.Schedule
 import aktual.budget.schedules.vm.SchedulesLoader
 import aktual.budget.schedules.vm.insertSchedule
 import aktual.core.Calendar
+import aktual.prefs.SchedulePreferencesImpl
 import aktual.test.TestSyncController
+import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -110,6 +112,50 @@ class ListSchedulesViewModelTest {
     assertThat(viewModel.state.awaitSchedules()).extracting(Schedule::name).containsExactly("Rent")
   }
 
+  @Test
+  fun `Completed schedules are hidden by default`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
+    insertSchedule(id = "b", name = "Old", payee = "Gym", account = "Checking", completed = true)
+    val viewModel = createViewModel(scope, TestSyncController())
+
+    assertThat(viewModel.state.awaitSchedules()).extracting(Schedule::name).containsExactly("Rent")
+  }
+
+  @Test
+  fun `Showing completed schedules includes them`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
+    insertSchedule(
+      id = "b",
+      name = "Old",
+      payee = "Gym",
+      account = "Checking",
+      nextDate = LocalDate(2026, 5, 2),
+      completed = true,
+    )
+    val viewModel = createViewModel(scope, TestSyncController())
+    assertThat(viewModel.state.awaitSchedules()).extracting(Schedule::name).containsExactly("Rent")
+
+    viewModel.setShowCompleted(true)
+    scope.advanceUntilIdle()
+
+    assertThat(viewModel.state.awaitSchedules())
+      .extracting(Schedule::name)
+      .containsExactly("Rent", "Old")
+  }
+
+  @Test
+  fun `Only completed schedules shows empty when hidden`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Old", payee = "Gym", account = "Checking", completed = true)
+    val viewModel = createViewModel(scope, TestSyncController())
+
+    viewModel.state.test {
+      var state = awaitItem()
+      while (state == Loading) state = awaitItem()
+      assertThat(state).isEqualTo(Empty)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private suspend fun StateFlow<ListSchedulesState>.awaitSchedules(): List<Schedule> {
     var schedules: List<Schedule> = emptyList()
     test { schedules = awaitSuccess().schedules }
@@ -135,7 +181,11 @@ class ListSchedulesViewModelTest {
         payeeDao = PayeeDao(this),
         calendar = Calendar { LocalDate(2026, 4, 1) },
       )
-    return ListSchedulesViewModel(loader = loader, syncController = sync)
+    return ListSchedulesViewModel(
+      loader = loader,
+      syncController = sync,
+      preferences = SchedulePreferencesImpl(scope.buildPreferences()),
+    )
   }
 
   private object FailingSyncController : BudgetSyncController {
