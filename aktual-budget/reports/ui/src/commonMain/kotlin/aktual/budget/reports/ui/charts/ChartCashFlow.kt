@@ -72,11 +72,12 @@ internal fun CashFlowChart(
     }
 
     val modelProducer = remember { CartesianChartModelProducer() }
+    val zoom = rememberChartZoomState(data)
 
     if (isInPreview()) {
-      runBlocking { modelProducer.populate(data) }
+      runBlocking { modelProducer.populate(data, zoom.range) }
     } else {
-      LaunchedEffect(data) { modelProducer.populate(data) }
+      LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
     }
 
     val label = axisLabelComponent(compact)
@@ -84,54 +85,64 @@ internal fun CashFlowChart(
     val guideline = axisGuidelineComponent(compact)
     val line = axisLineComponent(compact)
 
-    CartesianChartHost(
+    ZoomableChart(
       modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
-      modelProducer = modelProducer,
-      scrollState = rememberVicoScrollState(scrollEnabled = false),
-      animationSpec = chartAnimationSpec(compact),
-      chart =
-        rememberCartesianChart(
-          rememberColumnCartesianLayer(
-            ColumnCartesianLayer.ColumnProvider.series(
-              rememberLineComponent(fill = Fill(colors.reportsBlue), thickness = 16.dp)
-            )
-          ),
-          rememberColumnCartesianLayer(
-            ColumnCartesianLayer.ColumnProvider.series(
-              rememberLineComponent(fill = Fill(colors.reportsRed), thickness = 16.dp)
-            )
-          ),
-          rememberLineCartesianLayer(
-            lineProvider =
-              LineCartesianLayer.LineProvider.series(
-                LineCartesianLayer.rememberLine(
-                  fill = LineCartesianLayer.LineFill.single(Fill(colors.pageTextLight)),
-                  stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 3.dp),
-                )
-              )
-          ),
-          startAxis =
-            VerticalAxis.rememberStart(
-              line = line,
-              guideline = guideline,
-              label = label,
-              tick = tick,
-              valueFormatter = amountYAxisFormatter(),
-              itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { 8 }) },
+      state = zoom,
+      enabled = !compact,
+    ) { chartModifier ->
+      CartesianChartHost(
+        modifier = chartModifier,
+        modelProducer = modelProducer,
+        scrollState = rememberVicoScrollState(scrollEnabled = false),
+        animationSpec = chartAnimationSpec(compact),
+        chart =
+          rememberCartesianChart(
+            rememberColumnCartesianLayer(
+              ColumnCartesianLayer.ColumnProvider.series(
+                rememberLineComponent(fill = Fill(colors.reportsBlue), thickness = 16.dp)
+              ),
+              rangeProvider = remember { ZoomRangeProvider() },
             ),
-          bottomAxis =
-            HorizontalAxis.rememberBottom(
-              line = line,
-              guideline = guideline,
-              label = label,
-              tick = tick,
-              valueFormatter = yearMonthXAxisFormatter(),
-              itemPlacer = hItemPlacer(compact),
+            rememberColumnCartesianLayer(
+              ColumnCartesianLayer.ColumnProvider.series(
+                rememberLineComponent(fill = Fill(colors.reportsRed), thickness = 16.dp)
+              ),
+              rangeProvider = remember { ZoomRangeProvider() },
             ),
-          marker = if (compact) null else rememberMarker(),
-          markerVisibilityListener = rememberMarkerHaptics(compact),
-        ),
-    )
+            rememberLineCartesianLayer(
+              lineProvider =
+                LineCartesianLayer.LineProvider.series(
+                  LineCartesianLayer.rememberLine(
+                    fill = LineCartesianLayer.LineFill.single(Fill(colors.pageTextLight)),
+                    stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 3.dp),
+                  )
+                ),
+              rangeProvider = remember { ZoomRangeProvider() },
+            ),
+            startAxis =
+              VerticalAxis.rememberStart(
+                line = line,
+                guideline = guideline,
+                label = label,
+                tick = tick,
+                valueFormatter = amountYAxisFormatter(),
+                itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { 8 }) },
+              ),
+            bottomAxis =
+              HorizontalAxis.rememberBottom(
+                line = line,
+                guideline = guideline,
+                label = label,
+                tick = tick,
+                valueFormatter = yearMonthXAxisFormatter(),
+                itemPlacer = hItemPlacer(compact),
+              ),
+            marker = if (compact) null else rememberMarker(),
+            markerVisibilityListener = rememberMarkerHaptics(compact),
+            decorations = listOf(rememberChartZoomDecoration(zoom)),
+          ),
+      )
+    }
 
     if (!compact) {
       Footer(title = Strings.reportsCashFlowFooterTitle, text = Strings.reportsCashFlowFooter)
@@ -239,20 +250,17 @@ private fun CompactHeader(
     )
   }
 
-private suspend fun CartesianChartModelProducer.populate(data: CashFlowData) =
+private suspend fun CartesianChartModelProducer.populate(data: CashFlowData, zoom: XRange?) =
   with(data.items) {
+    val months = keys.map { it.monthNumber() }
     runTransaction {
-      columnSeries {
-        series(x = keys.map { it.monthNumber() }, y = values.map { it.income.toDouble() })
-      }
+      zoomTo(zoom)
 
-      columnSeries {
-        series(x = keys.map { it.monthNumber() }, y = values.map { it.expenses.toDouble() })
-      }
+      columnSeries { series(x = months, y = values.map { it.income.toDouble() }, zoom = zoom) }
 
-      lineSeries {
-        series(x = keys.map { it.monthNumber() }, y = values.map { it.balance.toDouble() })
-      }
+      columnSeries { series(x = months, y = values.map { it.expenses.toDouble() }, zoom = zoom) }
+
+      lineSeries { series(x = months, y = values.map { it.balance.toDouble() }, zoom = zoom) }
     }
   }
 

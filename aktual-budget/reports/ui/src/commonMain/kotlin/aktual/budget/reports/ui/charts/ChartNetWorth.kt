@@ -138,11 +138,12 @@ private fun Chart(
   modifier: Modifier = Modifier,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
+  val zoom = rememberChartZoomState(data)
 
   if (isInPreview()) {
-    runBlocking { modelProducer.populate(data) }
+    runBlocking { modelProducer.populate(data, zoom.range) }
   } else {
-    LaunchedEffect(data) { modelProducer.populate(data) }
+    LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
   }
 
   val label = axisLabelComponent(compact)
@@ -150,54 +151,61 @@ private fun Chart(
   val guideline = axisGuidelineComponent(compact)
   val line = axisLineComponent(compact)
 
-  CartesianChartHost(
-    modifier = modifier,
-    modelProducer = modelProducer,
-    scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact),
-    chart =
-      rememberCartesianChart(
-        rememberLineCartesianLayer(
-          lineProvider =
-            LineCartesianLayer.LineProvider.series(
-              LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsChartFill)),
-                areaFill =
-                  LineCartesianLayer.AreaFill.double(
-                    topFill = Fill(colors.reportsNumberPositive.copy(alpha = 0.2f)),
-                    bottomFill = Fill(colors.reportsRed.copy(alpha = 0.2f)),
-                  ),
-              )
-            )
+  ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
+    CartesianChartHost(
+      modifier = chartModifier,
+      modelProducer = modelProducer,
+      scrollState = rememberVicoScrollState(scrollEnabled = false),
+      animationSpec = chartAnimationSpec(compact),
+      chart =
+        rememberCartesianChart(
+          rememberLineCartesianLayer(
+            rangeProvider = remember { ZoomRangeProvider() },
+            lineProvider =
+              LineCartesianLayer.LineProvider.series(
+                LineCartesianLayer.rememberLine(
+                  fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsChartFill)),
+                  areaFill =
+                    LineCartesianLayer.AreaFill.double(
+                      topFill = Fill(colors.reportsNumberPositive.copy(alpha = 0.2f)),
+                      bottomFill = Fill(colors.reportsRed.copy(alpha = 0.2f)),
+                    ),
+                )
+              ),
+          ),
+          startAxis =
+            VerticalAxis.rememberStart(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter = amountYAxisFormatter(),
+              itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { 8 }) },
+            ),
+          bottomAxis =
+            HorizontalAxis.rememberBottom(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter = yearMonthXAxisFormatter(),
+              itemPlacer = hItemPlacer(compact),
+            ),
+          marker = if (compact) null else rememberMarker(),
+          markerVisibilityListener = rememberMarkerHaptics(compact),
+          decorations = listOf(rememberChartZoomDecoration(zoom)),
         ),
-        startAxis =
-          VerticalAxis.rememberStart(
-            line = line,
-            guideline = guideline,
-            label = label,
-            tick = tick,
-            valueFormatter = amountYAxisFormatter(),
-            itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { 8 }) },
-          ),
-        bottomAxis =
-          HorizontalAxis.rememberBottom(
-            line = line,
-            guideline = guideline,
-            label = label,
-            tick = tick,
-            valueFormatter = yearMonthXAxisFormatter(),
-            itemPlacer = hItemPlacer(compact),
-          ),
-        marker = if (compact) null else rememberMarker(),
-        markerVisibilityListener = rememberMarkerHaptics(compact),
-      ),
-  )
+    )
+  }
 }
 
-private suspend fun CartesianChartModelProducer.populate(data: NetWorthData) =
+private suspend fun CartesianChartModelProducer.populate(data: NetWorthData, zoom: XRange?) =
   with(data.items) {
     runTransaction {
-      lineSeries { series(x = keys.map { it.monthNumber() }, y = values.map { it.toDouble() }) }
+      zoomTo(zoom)
+      lineSeries {
+        series(x = keys.map { it.monthNumber() }, y = values.map { it.toDouble() }, zoom = zoom)
+      }
     }
   }
 

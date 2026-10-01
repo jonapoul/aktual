@@ -174,11 +174,12 @@ private fun Chart(
   modifier: Modifier = Modifier,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
+  val zoom = rememberChartZoomState(data)
 
   if (isInPreview()) {
-    runBlocking { modelProducer.populate(data) }
+    runBlocking { modelProducer.populate(data, zoom.range) }
   } else {
-    LaunchedEffect(data) { modelProducer.populate(data) }
+    LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
   }
 
   val label = axisLabelComponent(compact)
@@ -187,57 +188,64 @@ private fun Chart(
   val line = axisLineComponent(compact)
   val dayFormatter = dayYAxisFormatter()
 
-  CartesianChartHost(
-    modifier = modifier,
-    modelProducer = modelProducer,
-    scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact),
-    chart =
-      rememberCartesianChart(
-        rememberLineCartesianLayer(
-          rangeProvider = remember { IncludeTargetAge },
-          lineProvider =
-            LineCartesianLayer.LineProvider.series(
-              LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsChartFill)),
-                areaFill =
-                  LineCartesianLayer.AreaFill.single(
-                    Fill(
-                      Brush.verticalGradient(
-                        listOf(
-                          colors.reportsChartFill.copy(alpha = 0.3f),
-                          colors.reportsChartFill.copy(alpha = 0.05f),
+  ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
+    CartesianChartHost(
+      modifier = chartModifier,
+      modelProducer = modelProducer,
+      scrollState = rememberVicoScrollState(scrollEnabled = false),
+      animationSpec = chartAnimationSpec(compact),
+      chart =
+        rememberCartesianChart(
+          rememberLineCartesianLayer(
+            rangeProvider = remember { ZoomRangeProvider(IncludeTargetAge) },
+            lineProvider =
+              LineCartesianLayer.LineProvider.series(
+                LineCartesianLayer.rememberLine(
+                  fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsChartFill)),
+                  areaFill =
+                    LineCartesianLayer.AreaFill.single(
+                      Fill(
+                        Brush.verticalGradient(
+                          listOf(
+                            colors.reportsChartFill.copy(alpha = 0.3f),
+                            colors.reportsChartFill.copy(alpha = 0.05f),
+                          )
                         )
                       )
-                    )
-                  ),
-                pointProvider = if (compact) null else rememberPointProvider(),
-                pointConnector = LineCartesianLayer.PointConnector.cubic(),
-              )
+                    ),
+                  pointProvider = if (compact) null else rememberPointProvider(),
+                  pointConnector = LineCartesianLayer.PointConnector.cubic(),
+                )
+              ),
+          ),
+          startAxis =
+            VerticalAxis.rememberStart(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter = dayFormatter,
             ),
+          bottomAxis =
+            HorizontalAxis.rememberBottom(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter = periodXAxisFormatter(data),
+              itemPlacer = hItemPlacer(compact),
+            ),
+          marker = if (compact) null else rememberMarker(),
+          markerVisibilityListener = rememberMarkerHaptics(compact),
+          decorations =
+            if (compact) {
+              emptyList()
+            } else {
+              listOf(rememberTargetLine(), rememberChartZoomDecoration(zoom))
+            },
         ),
-        startAxis =
-          VerticalAxis.rememberStart(
-            line = line,
-            guideline = guideline,
-            label = label,
-            tick = tick,
-            valueFormatter = dayFormatter,
-          ),
-        bottomAxis =
-          HorizontalAxis.rememberBottom(
-            line = line,
-            guideline = guideline,
-            label = label,
-            tick = tick,
-            valueFormatter = periodXAxisFormatter(data),
-            itemPlacer = hItemPlacer(compact),
-          ),
-        marker = if (compact) null else rememberMarker(),
-        markerVisibilityListener = rememberMarkerHaptics(compact),
-        decorations = if (compact) emptyList() else listOf(rememberTargetLine()),
-      ),
-  )
+    )
+  }
 }
 
 // Keep the target line in view even when every age is below it
@@ -304,10 +312,14 @@ private fun periodXAxisFormatter(data: AgeOfMoneyData): CartesianValueFormatter 
   }
 }
 
-private suspend fun CartesianChartModelProducer.populate(data: AgeOfMoneyData) = runTransaction {
-  if (data.items.isEmpty()) return@runTransaction
-  lineSeries { series(x = data.items.keys.indices.toList(), y = data.items.values.toList()) }
-}
+private suspend fun CartesianChartModelProducer.populate(data: AgeOfMoneyData, zoom: XRange?) =
+  runTransaction {
+    zoomTo(zoom)
+    if (data.items.isEmpty()) return@runTransaction
+    lineSeries {
+      series(x = data.items.keys.indices.toList(), y = data.items.values.toList(), zoom = zoom)
+    }
+  }
 
 @Preview
 @Composable

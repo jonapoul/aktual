@@ -152,11 +152,12 @@ private fun Chart(
   modifier: Modifier = Modifier,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
+  val zoom = rememberChartZoomState(data)
 
   if (isInPreview()) {
-    runBlocking { modelProducer.populate(data) }
+    runBlocking { modelProducer.populate(data, zoom.range) }
   } else {
-    LaunchedEffect(data) { modelProducer.populate(data) }
+    LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
   }
 
   val label = axisLabelComponent(compact)
@@ -166,70 +167,73 @@ private fun Chart(
   val fill = colors.reportsChartFill
   val edge = Fill(fill.copy(alpha = EDGE_ALPHA))
 
-  CartesianChartHost(
-    modifier = modifier,
-    modelProducer = modelProducer,
-    scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact),
-    chart =
-      rememberCartesianChart(
-        rememberLineCartesianLayer(
-          lineProvider =
-            LineCartesianLayer.LineProvider.series(
-              LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(edge),
-                stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 1.dp),
+  ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
+    CartesianChartHost(
+      modifier = chartModifier,
+      modelProducer = modelProducer,
+      scrollState = rememberVicoScrollState(scrollEnabled = false),
+      animationSpec = chartAnimationSpec(compact),
+      chart =
+        rememberCartesianChart(
+          rememberLineCartesianLayer(
+            rangeProvider = remember { ZoomRangeProvider() },
+            lineProvider =
+              LineCartesianLayer.LineProvider.series(
+                LineCartesianLayer.rememberLine(
+                  fill = LineCartesianLayer.LineFill.single(edge),
+                  stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 1.dp),
+                ),
+                LineCartesianLayer.rememberLine(
+                  fill = LineCartesianLayer.LineFill.single(Fill(fill)),
+                  stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 2.dp),
+                ),
+                LineCartesianLayer.rememberLine(
+                  fill = LineCartesianLayer.LineFill.single(edge),
+                  stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 1.dp),
+                ),
               ),
-              LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(Fill(fill)),
-                stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 2.dp),
-              ),
-              LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(edge),
-                stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 1.dp),
-              ),
-            )
+          ),
+          startAxis =
+            VerticalAxis.rememberStart(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter = amountYAxisFormatter(),
+              itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { 8 }) },
+            ),
+          bottomAxis =
+            HorizontalAxis.rememberBottom(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter =
+                remember { CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}" } },
+              itemPlacer = ageItemPlacer(data),
+            ),
+          marker = if (compact) null else rememberMarker(),
+          markerVisibilityListener = rememberMarkerHaptics(compact),
+          decorations =
+            remember(data, fill) {
+              listOf(
+                PercentileBand(
+                  data.bands,
+                  fill.copy(alpha = OUTER_ALPHA),
+                  MonteCarloBand::p10,
+                  MonteCarloBand::p90,
+                ),
+                PercentileBand(
+                  data.bands,
+                  fill.copy(alpha = INNER_ALPHA),
+                  MonteCarloBand::p25,
+                  MonteCarloBand::p75,
+                ),
+              )
+            } + rememberChartZoomDecoration(zoom),
         ),
-        startAxis =
-          VerticalAxis.rememberStart(
-            line = line,
-            guideline = guideline,
-            label = label,
-            tick = tick,
-            valueFormatter = amountYAxisFormatter(),
-            itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { 8 }) },
-          ),
-        bottomAxis =
-          HorizontalAxis.rememberBottom(
-            line = line,
-            guideline = guideline,
-            label = label,
-            tick = tick,
-            valueFormatter =
-              remember { CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}" } },
-            itemPlacer = ageItemPlacer(data),
-          ),
-        marker = if (compact) null else rememberMarker(),
-        markerVisibilityListener = rememberMarkerHaptics(compact),
-        decorations =
-          remember(data, fill) {
-            listOf(
-              PercentileBand(
-                data.bands,
-                fill.copy(alpha = OUTER_ALPHA),
-                MonteCarloBand::p10,
-                MonteCarloBand::p90,
-              ),
-              PercentileBand(
-                data.bands,
-                fill.copy(alpha = INNER_ALPHA),
-                MonteCarloBand::p25,
-                MonteCarloBand::p75,
-              ),
-            )
-          },
-      ),
-  )
+    )
+  }
 }
 
 @Composable
@@ -278,18 +282,24 @@ private class PercentileBand(
       }
       path.close()
       paint.color = color
+      // Layers are clipped to their bounds but decorations aren't, so clip to hide zoomed out bands
+      canvas.save()
+      canvas.clipRect(layerBounds)
       canvas.drawPath(path, paint)
+      canvas.restore()
     }
 }
 
-private suspend fun CartesianChartModelProducer.populate(data: MonteCarloData) = runTransaction {
-  val ages = data.bands.map { it.age }
-  lineSeries {
-    series(x = ages, y = data.bands.map { it.p90.toDouble() })
-    series(x = ages, y = data.bands.map { it.p50.toDouble() })
-    series(x = ages, y = data.bands.map { it.p10.toDouble() })
+private suspend fun CartesianChartModelProducer.populate(data: MonteCarloData, zoom: XRange?) =
+  runTransaction {
+    zoomTo(zoom)
+    val ages = data.bands.map { it.age }
+    lineSeries {
+      series(x = ages, y = data.bands.map { it.p90.toDouble() }, zoom = zoom)
+      series(x = ages, y = data.bands.map { it.p50.toDouble() }, zoom = zoom)
+      series(x = ages, y = data.bands.map { it.p10.toDouble() }, zoom = zoom)
+    }
   }
-}
 
 private const val GOOD_SUCCESS = 75.0
 private const val OK_SUCCESS = 50.0
