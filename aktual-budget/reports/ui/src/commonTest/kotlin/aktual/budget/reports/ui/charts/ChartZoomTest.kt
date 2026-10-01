@@ -32,10 +32,10 @@ class ChartZoomTest {
   }
 
   @Test
-  fun `Series outside the range keep their closest point`() {
+  fun `Series outside the range keep their closest point, zeroed to not affect the y range`() {
     val points = points(1 to 10, 2 to 20, 3 to 30)
-    assertThat(zoomedLine(points, zoom = 5.0..8.0)).isEqualTo(points(3 to 30))
-    assertThat(zoomedColumns(points, zoom = 5.0..8.0)).isEqualTo(points(3 to 30))
+    assertThat(zoomedLine(points, zoom = 5.0..8.0)).isEqualTo(points(3 to 0))
+    assertThat(zoomedColumns(points, zoom = 5.0..8.0)).isEqualTo(points(3 to 0))
   }
 
   @Test

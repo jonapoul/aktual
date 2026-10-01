@@ -278,10 +278,13 @@ private fun interpolate(points: List<ZoomPoint>, x: Double): ZoomPoint? {
 }
 
 // Vico rejects empty series, so a series with nothing in range keeps its closest point for
-// ZoomRangeProvider to clip off
+// ZoomRangeProvider to clip off. It's never drawn, so its y is zeroed to keep it out of the y range
+// (every range provider used here already includes zero)
 private fun nearest(points: List<ZoomPoint>, zoom: XRange): List<ZoomPoint> =
   listOfNotNull(
-    points.minByOrNull { if (it.x < zoom.start) zoom.start - it.x else it.x - zoom.endInclusive }
+    points
+      .minByOrNull { if (it.x < zoom.start) zoom.start - it.x else it.x - zoom.endInclusive }
+      ?.copy(y = 0.0)
   )
 
 private const val SELECTION_ALPHA = 0.2f
