@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -136,6 +137,7 @@ private fun Summary(data: MonteCarloData, modifier: Modifier = Modifier) =
 
 // Upstream's thresholds
 @Composable
+@ReadOnlyComposable
 private fun successColor(data: MonteCarloData): Color {
   val percent = data.successRate.doubleValue
   return when {
