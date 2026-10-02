@@ -43,8 +43,7 @@ import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.isMobileLandscape
 import aktual.core.ui.verticalScrollWithBar
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
@@ -441,13 +440,10 @@ internal fun BudgetNavDisplay(
     backStack = activeStack,
     onBack = { activeStack.pop() },
     transitionSpec = {
-      val initialTab = budgetTabOf(initialState.key)
-      val targetTab = budgetTabOf(targetState.key)
-      val direction = initialTab.ordinal - targetTab.ordinal
-      when {
-        direction < 0 -> slideIntoContainer(towards = Start) togetherWith fadeOut()
-        direction > 0 -> slideIntoContainer(towards = End) togetherWith fadeOut()
-        else -> EnterTransition.None togetherWith ExitTransition.None
+      if (budgetTabOf(initialState.key) == budgetTabOf(targetState.key)) {
+        slideIntoContainer(towards = Start) togetherWith fadeOut()
+      } else {
+        ContentTransform(targetContentEnter = None, initialContentExit = None)
       }
     },
     popTransitionSpec = { slideIntoContainer(towards = End) togetherWith fadeOut() },
