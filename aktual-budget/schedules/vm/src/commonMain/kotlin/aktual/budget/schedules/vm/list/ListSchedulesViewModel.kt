@@ -40,7 +40,7 @@ class ListSchedulesViewModel
 internal constructor(
   private val loader: SchedulesLoader,
   private val syncController: BudgetSyncController,
-  private val preferences: SchedulePreferences,
+  preferences: SchedulePreferences,
 ) : ViewModel() {
   private val mutableSchedules = MutableStateFlow<ImmutableList<Schedule>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
@@ -54,7 +54,7 @@ internal constructor(
     )
   val events: SharedFlow<ListSchedulesEvent> = mutableEvents.asSharedFlow()
 
-  val showCompleted: StateFlow<Boolean> = preferences.showCompleted.asStateFlow(viewModelScope)
+  private val showCompleted = preferences.showCompleted.asStateFlow(viewModelScope)
 
   val state: StateFlow<ListSchedulesState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -137,10 +137,6 @@ internal constructor(
         mutableEvents.tryEmit(ListSchedulesEvent.RestoreFailed(schedule))
       }
     }
-  }
-
-  fun setShowCompleted(show: Boolean) {
-    viewModelScope.launch { preferences.showCompleted.set(show) }
   }
 }
 

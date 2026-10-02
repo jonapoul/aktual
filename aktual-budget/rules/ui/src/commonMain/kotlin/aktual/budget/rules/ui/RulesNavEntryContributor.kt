@@ -13,11 +13,15 @@ import aktual.core.nav.NavStack
 import aktual.core.nav.budgetEntry
 import aktual.di.BudgetScope
 import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(BudgetScope::class)
 class RulesNavEntryContributor : BudgetNavEntryContributor {
-  override fun EntryProviderScope<BudgetNavKey>.contribute(stack: NavStack<BudgetNavKey>) {
+  override fun EntryProviderScope<BudgetNavKey>.contribute(
+    stack: NavStack<BudgetNavKey>,
+    appStack: NavStack<NavKey>,
+  ) {
     budgetEntry<ListRulesNavRoute> { ListRulesScreen(EditRuleNavigator(stack)) }
 
     budgetEntry<EditRuleNavRoute> { route ->

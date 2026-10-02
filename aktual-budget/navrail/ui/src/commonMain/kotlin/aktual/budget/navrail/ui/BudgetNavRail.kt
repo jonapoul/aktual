@@ -99,6 +99,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
@@ -110,6 +111,7 @@ import kotlinx.serialization.json.Json
 
 @Composable
 internal fun BudgetNavRail(
+  appStack: NavStack<NavKey>,
   onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
   viewModel: BudgetNavRailViewModel = metroViewModel(),
@@ -157,6 +159,7 @@ internal fun BudgetNavRail(
     DrawerNavLayout(
       contributors = contributors,
       headerState = headerState,
+      appStack = appStack,
       activeStack = activeStack,
       selectedTab = selectedTab,
       onSelectTab = onSelectTab,
@@ -167,6 +170,7 @@ internal fun BudgetNavRail(
     SideNavLayout(
       contributors = contributors,
       isDemo = headerState.isDemo,
+      appStack = appStack,
       activeStack = activeStack,
       selectedTab = selectedTab,
       onSelectTab = onSelectTab,
@@ -186,6 +190,7 @@ private fun stackWithDefault(default: BudgetNavKey): NavStack<BudgetNavKey> =
 private fun DrawerNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   headerState: DrawerHeaderState,
+  appStack: NavStack<NavKey>,
   activeStack: NavStack<BudgetNavKey>,
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
@@ -238,6 +243,7 @@ private fun DrawerNavLayout(
   CompositionLocalProvider(LocalNavDrawerOpener provides openDrawer) {
     BudgetNavDisplay(
       contributors = contributors,
+      appStack = appStack,
       activeStack = activeStack,
       modifier = modifier.fillMaxSize(),
     )
@@ -391,6 +397,7 @@ private fun DrawerItem(
 private fun SideNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   isDemo: Boolean,
+  appStack: NavStack<NavKey>,
   activeStack: NavStack<BudgetNavKey>,
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
@@ -411,6 +418,7 @@ private fun SideNavLayout(
     }
     BudgetNavDisplay(
       contributors = contributors,
+      appStack = appStack,
       activeStack = activeStack,
       modifier = Modifier.weight(1f),
     )
@@ -424,6 +432,7 @@ private fun SideNavLayout(
 @Composable
 internal fun BudgetNavDisplay(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
+  appStack: NavStack<NavKey>,
   activeStack: NavStack<BudgetNavKey>,
   modifier: Modifier = Modifier,
 ) {
@@ -451,7 +460,7 @@ internal fun BudgetNavDisplay(
     entryProvider =
       entryProvider {
         for (contributor in contributors) {
-          with(contributor) { contribute(activeStack) }
+          with(contributor) { contribute(activeStack, appStack) }
         }
       },
   )

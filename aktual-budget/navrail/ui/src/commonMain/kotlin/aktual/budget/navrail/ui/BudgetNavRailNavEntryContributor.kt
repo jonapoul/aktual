@@ -32,6 +32,7 @@ class BudgetNavRailNavEntryContributor(
 
       LoadingScreenIfNotNull(budgetGraph) {
         BudgetNavRail(
+          appStack = stack,
           onAction = { action ->
             when (action) {
               LogOut -> stack.replaceAll(ServerUrlNavRoute)
@@ -40,7 +41,7 @@ class BudgetNavRailNavEntryContributor(
               Settings -> stack.push(SettingsNavRoute)
               About -> stack.push(InfoNavRoute)
             }
-          }
+          },
         )
       }
     }

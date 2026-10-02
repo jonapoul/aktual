@@ -11,11 +11,15 @@ import aktual.core.nav.TransactionsWithTagNavRoute
 import aktual.core.nav.budgetEntry
 import aktual.di.BudgetScope
 import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(BudgetScope::class)
 class TransactionsNavEntryContributor : BudgetNavEntryContributor {
-  override fun EntryProviderScope<BudgetNavKey>.contribute(stack: NavStack<BudgetNavKey>) {
+  override fun EntryProviderScope<BudgetNavKey>.contribute(
+    stack: NavStack<BudgetNavKey>,
+    appStack: NavStack<NavKey>,
+  ) {
     budgetEntry<TransactionsNavRoute> {
       TransactionsScreen(back = BackNavigator(stack), spec = TransactionsSpec(), isRoot = true)
     }
