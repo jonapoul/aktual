@@ -35,6 +35,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
@@ -42,6 +45,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
@@ -106,6 +110,8 @@ fun SwipeToReveal(
           action = action,
           revealedPx = revealedPx,
           indexFromEnd = actions.lastIndex - index,
+          // The content's trailing corners are rounded, so bleed the first button under them
+          bleed = if (index == 0) SwipeButtonBleed else 0.dp,
         )
       }
     }
@@ -146,6 +152,7 @@ private fun SwipeButton(
   action: SwipeAction,
   revealedPx: () -> Float,
   indexFromEnd: Int,
+  bleed: Dp,
 ) {
   val widthPx = with(LocalDensity.current) { SwipeButtonWidth.toPx() }
 
@@ -156,7 +163,14 @@ private fun SwipeButton(
     modifier =
       Modifier.fillMaxHeight()
         .width(SwipeButtonWidth)
-        .background(action.background)
+        .drawBehind {
+          val bleedPx = bleed.toPx()
+          drawRect(
+            color = action.background,
+            topLeft = Offset(x = -bleedPx, y = 0f),
+            size = Size(width = size.width + bleedPx, height = size.height),
+          )
+        }
         .clickable(onClick = action.onClick),
     horizontalAlignment = CenterHorizontally,
     verticalArrangement = Arrangement.Center,
@@ -193,6 +207,7 @@ private fun SwipeButton(
 private const val ICON_TWIST_DEGREES = 90f
 private val LabelRise = 8.dp
 private val SwipeButtonWidth = 80.dp
+private val SwipeButtonBleed = 24.dp
 
 @Preview
 @Composable
