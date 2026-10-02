@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
-internal enum class AmountOp {
+private enum class AmountOp {
   Exactly,
   Approximately,
   Between,
@@ -168,6 +168,6 @@ private val ScheduleAmount.first: Amount
 private val ScheduleAmount.second: Amount?
   get() = (this as? Between)?.let { maxOf(it.from.abs(), it.to.abs()) }
 
-private fun Amount.abs(): Amount = if (this < Amount.Zero) -this else this
+private fun Amount.abs(): Amount = if (this < Zero) -this else this
 
 private const val ZERO_PLACEHOLDER = "0.00"

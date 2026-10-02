@@ -4,10 +4,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RecurConfig
-import aktual.budget.model.RecurEndMode
-import aktual.budget.model.RecurFrequency
 import aktual.budget.model.ScheduleId
-import aktual.budget.model.WeekendSolveMode
 import aktual.budget.schedules.ui.list.ScheduleStatusBadge
 import aktual.budget.schedules.vm.ScheduleStatus
 import aktual.budget.schedules.vm.edit.EditScheduleError
@@ -80,6 +77,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -146,13 +144,6 @@ private fun editScheduleViewModel(id: ScheduleId?) =
     create(id)
   }
 
-private enum class Sheet {
-  Amount,
-  Payee,
-  Account,
-  When,
-}
-
 private enum class Dialog {
   Delete,
   Discard,
@@ -172,7 +163,7 @@ private fun EditScheduleScaffold(
   // any changes
   fun onBack() {
     if (loaded != null && loaded.isEditing && loaded.hasChanges) {
-      dialog = Dialog.Discard
+      dialog = Discard
     } else if (loaded != null && loaded.isEditing && !loaded.isNew) {
       onAction(StopEditing)
     } else {
@@ -203,14 +194,7 @@ private fun EditScheduleScaffold(
           }
         },
         title = {
-          Text(
-            text =
-              when {
-                loaded?.isNew == true -> Strings.editScheduleToolbarCreate
-                loaded?.isEditing == true -> Strings.editScheduleToolbarEdit
-                else -> Strings.editScheduleToolbarView
-              }
-          )
+          Text(text = toolbarTitle(loaded))
         },
         actions = {
           if (loaded != null) {
@@ -228,16 +212,16 @@ private fun EditScheduleScaffold(
       PageBackground()
 
       when (state) {
-        EditScheduleState.Loading -> LoadingScreen(modifier = Modifier.padding(innerPadding))
+        Loading -> LoadingScreen(modifier = Modifier.padding(innerPadding))
 
-        is EditScheduleState.Failure ->
+        is Failure ->
           FailureScreen(
             modifier = Modifier.padding(innerPadding),
             title = Strings.editScheduleFailureTitle,
             reason =
               when (state) {
-                EditScheduleState.Failure.NotFound -> Strings.editScheduleFailureNotFound
-                is EditScheduleState.Failure.Other -> state.reason
+                NotFound -> Strings.editScheduleFailureNotFound
+                is Other -> state.reason
               },
             action =
               FailureAction(
@@ -247,7 +231,7 @@ private fun EditScheduleScaffold(
               ),
           )
 
-        is EditScheduleState.Loaded ->
+        is Loaded ->
           EditScheduleContent(
             modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
             state = state,
@@ -257,40 +241,63 @@ private fun EditScheduleScaffold(
           )
       }
 
-      when (dialog) {
-        Dialog.Delete ->
-          ConfirmDialog(
-            title = Strings.editScheduleDeleteTitle,
-            message = Strings.editScheduleDeleteMessage,
-            confirm = Strings.editScheduleDeleteConfirm,
-            cancel = Strings.editScheduleDeleteCancel,
-            onConfirm = {
-              dialog = null
-              onAction(DeleteSchedule)
-            },
-            onCancel = { dialog = null },
-          )
-
-        Dialog.Discard ->
-          ConfirmDialog(
-            title = Strings.editScheduleDiscardTitle,
-            message = Strings.editScheduleDiscardMessage,
-            confirm = Strings.editScheduleDiscardConfirm,
-            cancel = Strings.editScheduleDiscardCancel,
-            onConfirm = {
-              dialog = null
-              onAction(if (loaded?.isNew == true) NavigateBack else StopEditing)
-            },
-            onCancel = { dialog = null },
-          )
-
-        null -> Unit
-      }
+      EditScheduleDialog(
+        dialog = dialog,
+        isNew = loaded?.isNew == true,
+        onAction = onAction,
+        onDismiss = { dialog = null },
+      )
 
       if (error != null) {
         ErrorDialog(error = error, onDismiss = { onAction(DismissError) })
       }
     }
+  }
+}
+
+@Composable
+private fun toolbarTitle(loaded: EditScheduleState.Loaded?): String =
+  when {
+    loaded?.isNew == true -> Strings.editScheduleToolbarCreate
+    loaded?.isEditing == true -> Strings.editScheduleToolbarEdit
+    else -> Strings.editScheduleToolbarView
+  }
+
+@Composable
+private fun EditScheduleDialog(
+  dialog: Dialog?,
+  isNew: Boolean,
+  onAction: EditScheduleActionHandler,
+  onDismiss: () -> Unit,
+) {
+  when (dialog) {
+    Delete ->
+      ConfirmDialog(
+        title = Strings.editScheduleDeleteTitle,
+        message = Strings.editScheduleDeleteMessage,
+        confirm = Strings.editScheduleDeleteConfirm,
+        cancel = Strings.editScheduleDeleteCancel,
+        onConfirm = {
+          onDismiss()
+          onAction(DeleteSchedule)
+        },
+        onCancel = onDismiss,
+      )
+
+    Discard ->
+      ConfirmDialog(
+        title = Strings.editScheduleDiscardTitle,
+        message = Strings.editScheduleDiscardMessage,
+        confirm = Strings.editScheduleDiscardConfirm,
+        cancel = Strings.editScheduleDiscardCancel,
+        onConfirm = {
+          onDismiss()
+          onAction(if (isNew) NavigateBack else StopEditing)
+        },
+        onCancel = onDismiss,
+      )
+
+    null -> Unit
   }
 }
 
@@ -335,7 +342,7 @@ private fun EditScheduleContent(
   onAction: EditScheduleActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  var sheet by remember { mutableStateOf<Sheet?>(null) }
+  var sheet by remember { mutableStateOf<SentencePart?>(null) }
 
   Column(
     modifier =
@@ -354,8 +361,8 @@ private fun EditScheduleContent(
 
     ScheduleSentence(
       state = state,
-      activePart = SentencePart.entries.firstOrNull { it.sheet == sheet },
-      onClick = { part -> sheet = part.sheet },
+      activePart = sheet,
+      onClick = { part -> sheet = part },
     )
 
     if (state.isEditing) {
@@ -392,27 +399,27 @@ private fun EditScheduleContent(
 
 @Composable
 private fun EditScheduleSheet(
-  sheet: Sheet?,
+  sheet: SentencePart?,
   state: EditScheduleState.Loaded,
   onAction: EditScheduleActionHandler,
   onDismiss: () -> Unit,
 ) {
   when (sheet) {
-    Sheet.Amount ->
+    SentencePart.Amount ->
       AmountSheet(
         amount = state.form.amount,
         onDismiss = onDismiss,
         onConfirm = { onAction(SetAmount(it)) },
       )
 
-    Sheet.When ->
+    When ->
       WhenSheet(
         date = state.form.date,
         onDismiss = onDismiss,
         onConfirm = { onAction(SetDate(it)) },
       )
 
-    Sheet.Payee ->
+    Payee ->
       EntitySheet(
         selected = state.form.payee ?: PayeeId(""),
         options = state.payees,
@@ -420,7 +427,7 @@ private fun EditScheduleSheet(
         onSelect = { onAction(SetPayee(it)) },
       )
 
-    Sheet.Account ->
+    Account ->
       EntitySheet(
         selected = state.form.account ?: AccountId(""),
         options = state.accounts,
@@ -479,7 +486,7 @@ private fun NameField(name: String, onNameChange: (String) -> Unit, modifier: Mo
   val latestOnNameChange by rememberUpdatedState(onNameChange)
 
   // The view model owns the name, so follow it if it changes from elsewhere (e.g. a discard)
-  LaunchedEffect(name) {
+  SideEffect {
     if (textState.text.toString() != name) textState.setTextAndPlaceCursorAtEnd(name)
   }
   LaunchedEffect(textState) {
@@ -588,9 +595,10 @@ private fun ConfirmDialog(
 private fun ErrorDialog(error: EditScheduleError, onDismiss: () -> Unit) {
   AktualAlertDialog(
     title =
-      when (error) {
-        is EditScheduleError.Deleting -> Strings.editScheduleErrorDeleting
-        else -> Strings.editScheduleErrorSaving
+      if (error is EditScheduleError.Deleting) {
+        Strings.editScheduleErrorDeleting
+      } else {
+        Strings.editScheduleErrorSaving
       },
     onDismissRequest = onDismiss,
     buttons = { TextButton(onClick = onDismiss) { Text(Strings.editScheduleErrorDismiss) } },
@@ -605,15 +613,6 @@ private fun ErrorDialog(error: EditScheduleError, onDismiss: () -> Unit) {
     },
   )
 }
-
-private val SentencePart.sheet: Sheet
-  get() =
-    when (this) {
-      SentencePart.Amount -> Sheet.Amount
-      SentencePart.Payee -> Sheet.Payee
-      SentencePart.Account -> Sheet.Account
-      SentencePart.When -> Sheet.When
-    }
 
 @PortraitPreview
 @Composable
@@ -638,12 +637,12 @@ internal val PreviewLoaded =
         date =
           ScheduleDate.Recurring(
             RecurConfig(
-              frequency = RecurFrequency.Monthly,
+              frequency = Monthly,
               start = LocalDate(2025, 1, 1),
               interval = 1,
               skipWeekend = true,
-              weekendSolveMode = WeekendSolveMode.Before,
-              endMode = RecurEndMode.Never,
+              weekendSolveMode = Before,
+              endMode = Never,
             )
           ),
         postsTransaction = false,
@@ -652,7 +651,7 @@ internal val PreviewLoaded =
     isEditing = false,
     hasChanges = false,
     isWorking = false,
-    status = ScheduleStatus.Due,
+    status = Due,
     payeeName = PreviewPayee.name,
     accountName = PreviewAccount.name,
     payees = persistentListOf(PreviewPayee),
@@ -663,22 +662,27 @@ internal val PreviewLoaded =
 
 private class EditScheduleStateProvider :
   ColoredParameterProvider<EditScheduleState>(
-    EditScheduleState.Loading,
+    Loading,
     EditScheduleState.Failure.NotFound,
     PreviewLoaded,
     PreviewLoaded.copy(isEditing = true, hasChanges = true),
-    PreviewLoaded.copy(
-      form =
-        PreviewLoaded.form.copy(
-          name = "",
-          payee = null,
-          amount = ScheduleAmount.Between(Amount(4_000L), Amount(6_000L)),
-          date = ScheduleDate.Once(LocalDate(2026, 11, 5)),
-        ),
-      isNew = true,
-      isEditing = true,
-      status = null,
-      payeeName = null,
-      upcomingDates = persistentListOf(LocalDate(2026, 11, 5)),
-    ),
+    PreviewNew,
+  )
+
+private val PreviewOnceDate = LocalDate(2026, 11, 5)
+
+private val PreviewNew =
+  PreviewLoaded.copy(
+    form =
+      PreviewLoaded.form.copy(
+        name = "",
+        payee = null,
+        amount = ScheduleAmount.Between(Amount(4_000L), Amount(6_000L)),
+        date = ScheduleDate.Once(PreviewOnceDate),
+      ),
+    isNew = true,
+    isEditing = true,
+    status = null,
+    payeeName = null,
+    upcomingDates = persistentListOf(PreviewOnceDate),
   )

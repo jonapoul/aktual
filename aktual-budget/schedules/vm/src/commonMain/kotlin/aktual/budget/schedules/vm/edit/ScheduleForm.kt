@@ -40,7 +40,7 @@ val ScheduleAmount.isDeposit: Boolean
 
 // Flips the sign of every amount so it reads as a payment or a deposit
 fun ScheduleAmount.withDeposit(deposit: Boolean): ScheduleAmount {
-  fun Amount.signed(): Amount = if ((this > Amount.Zero) == deposit || this == Zero) this else -this
+  fun Amount.signed(): Amount = if (this > Zero == deposit || this == Zero) this else -this
   return when (this) {
     is Exactly -> ScheduleAmount.Exactly(amount.signed())
     is Approximately -> ScheduleAmount.Approximately(amount.signed())

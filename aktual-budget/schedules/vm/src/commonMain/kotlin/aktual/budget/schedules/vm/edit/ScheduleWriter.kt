@@ -65,14 +65,14 @@ internal class ScheduleWriter(
       add(LocalChange(RULES, rule, "conditions", conditions.encode().messageValue()))
       add(LocalChange(RULES, rule, "actions", actions.encode().messageValue()))
       add(LocalChange(RULES, rule, "conditions_op", ConditionOp.And.serialName().messageValue()))
-      add(LocalChange(RULES, rule, "tombstone", false.messageValue()))
+      add(LocalChange(RULES, rule, TOMBSTONE, false.messageValue()))
 
       add(LocalChange(SCHEDULES_NEXT_DATE, next, "schedule_id", schedule.messageValue()))
       add(LocalChange(SCHEDULES_NEXT_DATE, next, "local_next_date", nextDate.dateValue()))
       add(LocalChange(SCHEDULES_NEXT_DATE, next, "local_next_date_ts", MessageValue.Number(now)))
       add(LocalChange(SCHEDULES_NEXT_DATE, next, "base_next_date", nextDate.dateValue()))
       add(LocalChange(SCHEDULES_NEXT_DATE, next, "base_next_date_ts", MessageValue.Number(now)))
-      add(LocalChange(SCHEDULES_NEXT_DATE, next, "tombstone", false.messageValue()))
+      add(LocalChange(SCHEDULES_NEXT_DATE, next, TOMBSTONE, false.messageValue()))
 
       add(LocalChange(SCHEDULES, schedule, "rule", rule.messageValue()))
       add(LocalChange(SCHEDULES, schedule, "name", name.messageValue()))
@@ -80,7 +80,7 @@ internal class ScheduleWriter(
         LocalChange(SCHEDULES, schedule, "posts_transaction", form.postsTransaction.messageValue())
       )
       add(LocalChange(SCHEDULES, schedule, "completed", false.messageValue()))
-      add(LocalChange(SCHEDULES, schedule, "tombstone", false.messageValue()))
+      add(LocalChange(SCHEDULES, schedule, TOMBSTONE, false.messageValue()))
     }
 
     syncController.syncChanges(changes)
@@ -150,7 +150,7 @@ internal class ScheduleWriter(
         add(LocalChange(SCHEDULES_NEXT_DATE, row, "schedule_id", id.toString().messageValue()))
         add(LocalChange(SCHEDULES_NEXT_DATE, row, "local_next_date", nextDate.dateValue()))
         add(LocalChange(SCHEDULES_NEXT_DATE, row, "local_next_date_ts", MessageValue.Number(now)))
-        add(LocalChange(SCHEDULES_NEXT_DATE, row, "tombstone", false.messageValue()))
+        add(LocalChange(SCHEDULES_NEXT_DATE, row, TOMBSTONE, false.messageValue()))
       }
       add(LocalChange(SCHEDULES_NEXT_DATE, row, "base_next_date", nextDate.dateValue()))
       add(LocalChange(SCHEDULES_NEXT_DATE, row, "base_next_date_ts", MessageValue.Number(now)))
@@ -200,3 +200,5 @@ internal fun ScheduleDate.nextDate(today: LocalDate): LocalDate? =
     is ScheduleDate.Once -> date
     is ScheduleDate.Recurring -> config.nextDate(from = today)
   }
+
+private const val TOMBSTONE = "tombstone"

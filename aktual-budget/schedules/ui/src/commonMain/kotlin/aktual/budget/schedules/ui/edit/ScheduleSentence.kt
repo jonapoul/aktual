@@ -49,15 +49,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastForEach
 import kotlinx.datetime.LocalDate
-
-/** The parts of the sentence that open an editor when tapped */
-internal enum class SentencePart {
-  Amount,
-  Payee,
-  Account,
-  When,
-}
 
 @Immutable private data class Token(val text: String, val part: SentencePart, val color: Color)
 
@@ -88,7 +81,7 @@ internal fun ScheduleSentence(
       modifier.drawBehind {
         val result = layout ?: return@drawBehind
         val laidOut = result.layoutInput.text
-        laidOut.getLinkAnnotations(0, laidOut.length).forEach { range ->
+        laidOut.getLinkAnnotations(0, laidOut.length).fastForEach { range ->
           val isActive = (range.item as? LinkAnnotation.Clickable)?.tag == activePart?.name
           drawChip(result, range.start, range.end, isActive, chipColors)
         }
@@ -261,7 +254,7 @@ private fun rememberScheduleSentence(
   }
 }
 
-private class SentenceStyles(
+private data class SentenceStyles(
   val isEditing: Boolean,
   val activePart: SentencePart?,
   val plainColor: Color,
@@ -336,8 +329,14 @@ private fun RecurConfig.repeatText(): String {
         val count = endOccurrences ?: 1
         Plurals.editScheduleSentenceTimes(count, count)
       }
-      OnDate -> endDate?.let { Strings.editScheduleSentenceUntil(it.formatted()) }
-      else -> null
+      OnDate -> {
+        endDate?.let { Strings.editScheduleSentenceUntil(it.formatted()) }
+      }
+      Never,
+      Unknown,
+      null -> {
+        null
+      }
     }
   return if (end == null) frequency else Strings.recurWithEnd(frequency, end)
 }

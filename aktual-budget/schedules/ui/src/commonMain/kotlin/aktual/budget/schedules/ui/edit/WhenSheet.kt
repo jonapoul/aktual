@@ -175,7 +175,9 @@ private fun EndFields(
       when (config.endMode) {
         AfterNOccurrences -> AfterNOccurrences
         OnDate -> OnDate
-        else -> Never
+        Never,
+        Unknown,
+        null -> Never
       }
 
     AktualSlidingToggleButton(
@@ -197,14 +199,16 @@ private fun EndFields(
         )
       }
 
-      OnDate ->
+      OnDate -> {
         DateField(
           label = Strings.editScheduleEndsDate,
           date = config.endDate ?: config.start,
           onDateChange = { onConfigChange(config.copy(endDate = it)) },
         )
+      }
 
-      else -> Unit
+      Never,
+      Unknown -> {}
     }
   }
 
@@ -306,7 +310,8 @@ private fun RecurFrequency.string(): String =
     Daily -> Strings.editScheduleFrequencyDaily
     Weekly -> Strings.editScheduleFrequencyWeekly
     Yearly -> Strings.editScheduleFrequencyYearly
-    else -> Strings.editScheduleFrequencyMonthly
+    Monthly,
+    Unknown -> Strings.editScheduleFrequencyMonthly
   }
 
 @Composable
@@ -315,7 +320,8 @@ private fun RecurFrequency.intervalText(interval: Int): String =
     Daily -> Plurals.editScheduleIntervalDays(interval, interval)
     Weekly -> Plurals.editScheduleIntervalWeeks(interval, interval)
     Yearly -> Plurals.editScheduleIntervalYears(interval, interval)
-    else -> Plurals.editScheduleIntervalMonths(interval, interval)
+    Monthly,
+    Unknown -> Plurals.editScheduleIntervalMonths(interval, interval)
   }
 
 @Composable
@@ -323,7 +329,8 @@ private fun RecurEndMode.string(): String =
   when (this) {
     AfterNOccurrences -> Strings.editScheduleEndsAfter
     OnDate -> Strings.editScheduleEndsOnDate
-    else -> Strings.editScheduleEndsNever
+    Never,
+    Unknown -> Strings.editScheduleEndsNever
   }
 
 private val FREQUENCIES: PersistentList<RecurFrequency> =

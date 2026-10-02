@@ -5,7 +5,6 @@ import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.RulesDao
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.model.AccountId
-import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction
@@ -174,7 +173,7 @@ internal constructor(
           name = "",
           payee = null,
           account = mutableEntities.value?.accounts?.singleOrNull()?.id,
-          amount = ScheduleAmount.Approximately(Amount.Zero),
+          amount = ScheduleAmount.Approximately(Zero),
           date = ScheduleDate.Recurring(defaultRecurConfig(start = today)),
           postsTransaction = false,
         )

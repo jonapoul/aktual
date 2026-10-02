@@ -13,6 +13,7 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.ScheduleJsonPathIndex
 import kotlin.math.roundToLong
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
@@ -28,9 +29,9 @@ internal data class ScheduleConditions(
   val account: Condition?,
   val amount: Condition?,
   val date: Condition?,
-) {
-  fun asList(): List<Condition?> = listOf(payee, account, amount, date)
-}
+)
+
+private fun ScheduleConditions.asList(): List<Condition?> = listOf(payee, account, amount, date)
 
 // packages/loot-core/src/shared/schedules.ts extractScheduleConds()
 internal fun List<Condition>.scheduleConditions(): ScheduleConditions =
@@ -131,14 +132,7 @@ internal fun syncAmountActions(
 
   var changed = false
   val updated = actions.map { action ->
-    val options = action.options
-    if (
-      action.op == RuleAction.Op.Set &&
-        action.field == Field.Amount &&
-        options?.template == null &&
-        options?.formula == null &&
-        action.value?.longOrNull != amount
-    ) {
+    if (action.isPlainAmountSet() && action.value?.longOrNull != amount) {
       changed = true
       action.copy(value = JsonPrimitive(amount))
     } else {
@@ -148,17 +142,27 @@ internal fun syncAmountActions(
   return if (changed) updated else null
 }
 
+private fun RuleAction.isPlainAmountSet(): Boolean =
+  op == RuleAction.Op.Set &&
+    field == Field.Amount &&
+    options?.template == null &&
+    options?.formula == null
+
 // packages/loot-core/src/shared/schedules.ts getScheduledAmount(), where "is between" amounts
 // use the average
 private fun scheduledAmount(value: JsonElement): Long =
   when (value) {
-    is JsonPrimitive -> value.longOrNull ?: 0L
+    is JsonPrimitive -> {
+      value.longOrNull ?: 0L
+    }
     is JsonObject -> {
       val num1 = value["num1"]?.jsonPrimitive?.longOrNull ?: 0L
       val num2 = value["num2"]?.jsonPrimitive?.longOrNull ?: 0L
       ((num1 + num2) / 2.0).roundToLong()
     }
-    else -> 0L
+    is JsonArray -> {
+      0L
+    }
   }
 
 internal data class JsonPaths(
@@ -207,17 +211,19 @@ private fun JsonElement.stringOrNull(): String? =
 
 private fun Condition?.toScheduleAmount(): ScheduleAmount {
   val value = this?.value
-  return when (this?.operator) {
-    IsBetween -> {
-      val obj = value as? JsonObject
-      val num1 = obj?.get("num1")?.jsonPrimitive?.longOrNull ?: 0L
-      val num2 = obj?.get("num2")?.jsonPrimitive?.longOrNull ?: 0L
-      ScheduleAmount.Between(Amount(num1), Amount(num2))
-    }
+  val operator = this?.operator
+  if (operator == IsBetween) {
+    val obj = value as? JsonObject
+    val num1 = obj?.get("num1")?.jsonPrimitive?.longOrNull ?: 0L
+    val num2 = obj?.get("num2")?.jsonPrimitive?.longOrNull ?: 0L
+    return ScheduleAmount.Between(Amount(num1), Amount(num2))
+  }
 
-    Is -> ScheduleAmount.Exactly(Amount(value.longOrZero()))
-
-    else -> ScheduleAmount.Approximately(Amount(value.longOrZero()))
+  val amount = Amount(value.longOrZero())
+  return if (operator == Is) {
+    ScheduleAmount.Exactly(amount)
+  } else {
+    ScheduleAmount.Approximately(amount)
   }
 }
 
@@ -228,5 +234,5 @@ private fun JsonElement.toScheduleDate(): ScheduleDate? =
     is JsonObject ->
       ScheduleDate.Recurring(DbJson.decodeFromJsonElement(RecurConfig.serializer(), this))
     is JsonPrimitive -> stringOrNull()?.let { ScheduleDate.Once(LocalDate.parse(it)) }
-    else -> null
+    is JsonArray -> null
   }
