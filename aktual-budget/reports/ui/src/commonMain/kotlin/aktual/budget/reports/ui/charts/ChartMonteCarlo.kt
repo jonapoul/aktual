@@ -5,6 +5,7 @@ import aktual.budget.reports.vm.MonteCarloBand
 import aktual.budget.reports.vm.MonteCarloData
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
+import aktual.core.model.Percent
 import aktual.core.model.percent
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -100,7 +101,7 @@ private fun Header(
         text = data.successRate.toString(decimalPlaces = 1),
         textAlign = End,
         style = typography.bodyLarge,
-        color = successColor(data),
+        color = successColor(data.successRate),
       )
 
       VerticalSpacer(4.dp)
@@ -139,8 +140,8 @@ private fun Summary(data: MonteCarloData, modifier: Modifier = Modifier) =
 // Upstream's thresholds
 @Composable
 @ReadOnlyComposable
-private fun successColor(data: MonteCarloData): Color {
-  val percent = data.successRate.doubleValue
+internal fun successColor(successRate: Percent): Color {
+  val percent = successRate.doubleValue
   return when {
     percent >= GOOD_SUCCESS -> colors.reportsNumberPositive
     percent >= OK_SUCCESS -> colors.warningText
@@ -213,7 +214,7 @@ private fun Chart(
               tick = tick,
               valueFormatter =
                 remember { CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}" } },
-              itemPlacer = ageItemPlacer(data),
+              itemPlacer = ageItemPlacer(data.bands.size),
             ),
           marker = if (compact) null else rememberMarker(),
           markerVisibilityListener = rememberMarkerHaptics(compact),
@@ -223,12 +224,14 @@ private fun Chart(
                 PercentileBand(
                   data.bands,
                   fill.copy(alpha = OUTER_ALPHA),
+                  MonteCarloBand::age,
                   MonteCarloBand::p10,
                   MonteCarloBand::p90,
                 ),
                 PercentileBand(
                   data.bands,
                   fill.copy(alpha = INNER_ALPHA),
+                  MonteCarloBand::age,
                   MonteCarloBand::p25,
                   MonteCarloBand::p75,
                 ),
@@ -240,19 +243,20 @@ private fun Chart(
 }
 
 @Composable
-private fun ageItemPlacer(data: MonteCarloData): HorizontalAxis.ItemPlacer {
-  val spacing = (data.bands.size / AGE_LABELS).coerceAtLeast(1)
+internal fun ageItemPlacer(ageCount: Int): HorizontalAxis.ItemPlacer {
+  val spacing = (ageCount / AGE_LABELS).coerceAtLeast(1)
   return remember(spacing) {
     HorizontalAxis.ItemPlacer.aligned(offset = { 0 }, spacing = { spacing })
   }
 }
 
 // Fills the area between two percentiles, since vico's area fills only run down to a fixed y
-private class PercentileBand(
-  private val bands: List<MonteCarloBand>,
+internal class PercentileBand<T>(
+  private val bands: List<T>,
   private val color: Color,
-  private val lower: (MonteCarloBand) -> Amount,
-  private val upper: (MonteCarloBand) -> Amount,
+  private val age: (T) -> Int,
+  private val lower: (T) -> Amount,
+  private val upper: (T) -> Amount,
 ) : Decoration {
   private val path = Path()
   private val paint = Paint()
@@ -276,12 +280,12 @@ private class PercentileBand(
 
       path.rewind()
       bands.forEachIndexed { i, band ->
-        val x = canvasX(band.age)
+        val x = canvasX(age(band))
         val y = canvasY(upper(band))
         if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
       }
       for (i in bands.indices.reversed()) {
-        path.lineTo(canvasX(bands[i].age), canvasY(lower(bands[i])))
+        path.lineTo(canvasX(age(bands[i])), canvasY(lower(bands[i])))
       }
       path.close()
       paint.color = color
@@ -306,9 +310,9 @@ private suspend fun CartesianChartModelProducer.populate(data: MonteCarloData, z
 
 private const val GOOD_SUCCESS = 75.0
 private const val OK_SUCCESS = 50.0
-private const val EDGE_ALPHA = 0.4f
-private const val OUTER_ALPHA = 0.15f
-private const val INNER_ALPHA = 0.3f
+internal const val EDGE_ALPHA = 0.4f
+internal const val OUTER_ALPHA = 0.15f
+internal const val INNER_ALPHA = 0.3f
 private const val AGE_LABELS = 6
 
 @Preview

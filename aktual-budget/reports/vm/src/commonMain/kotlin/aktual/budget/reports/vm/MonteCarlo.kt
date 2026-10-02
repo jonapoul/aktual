@@ -118,7 +118,7 @@ private fun percentileOfSorted(sorted: DoubleArray, percentile: Double): Double 
   return sorted[lower] * (1 - weight) + sorted[upper] * weight
 }
 
-private fun roundJs(value: Double): Long = floor(value + HALF).toLong()
+internal fun roundJs(value: Double): Long = floor(value + HALF).toLong()
 
 // rankSimulationsWorstFirst(): by ending balance, using the depletion year to order the failed runs
 // (which all end at zero) among themselves. Survivors rank after any depleted run

@@ -8,6 +8,7 @@ import aktual.account.vm.ServerUrlViewModel
 import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
+import aktual.budget.reports.vm.montecarlo.MonteCarloViewModel
 import aktual.budget.reports.vm.report.ReportViewModel
 import aktual.budget.reports.vm.search.SearchReportsViewModel
 import aktual.budget.rules.vm.edit.EditRuleViewModel
@@ -144,6 +145,10 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test
   fun report() = testAssistedVM<ReportViewModel, ReportViewModel.Factory> { create(WIDGET_ID) }
+
+  @Test
+  fun monteCarlo() =
+    testAssistedVM<MonteCarloViewModel, MonteCarloViewModel.Factory> { create(WIDGET_ID) }
 
   @Test fun editTag() = testAssistedVM<EditTagViewModel, EditTagViewModel.Factory> { create(null) }
 

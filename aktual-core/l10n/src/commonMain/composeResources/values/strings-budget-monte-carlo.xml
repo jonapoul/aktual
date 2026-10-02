@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Page -->
+  <string name="monte_carlo_save">Save</string>
+  <string name="monte_carlo_discard_title">Discard changes?</string>
+  <string name="monte_carlo_discard_message">Your changes to this plan haven’t been saved.</string>
+  <string name="monte_carlo_discard_confirm">Discard</string>
+  <string name="monte_carlo_discard_cancel">Keep editing</string>
+  <string name="monte_carlo_configuration">Configuration</string>
+  <string name="monte_carlo_results">Results</string>
+  <string name="monte_carlo_todays_money">Show values in today’s money</string>
+  <string name="monte_carlo_simulating">Running simulations…</string>
+  <string name="monte_carlo_age">Age %1$d</string>
+
+  <!-- Headline stats -->
+  <string name="monte_carlo_stat_success">Success rate</string>
+  <string name="monte_carlo_stat_median_ending">Median ending balance</string>
+  <string name="monte_carlo_stat_median_withdrawn">Median total withdrawn</string>
+  <string name="monte_carlo_stat_depletion_chance">Chance of running out of money</string>
+  <string name="monte_carlo_stat_typical_failure">Typical failure runs out at</string>
+  <string name="monte_carlo_summary_title">Summary</string>
+  <string name="monte_carlo_summary">In %1$s of %2$d simulated scenarios, your pot lasted until age %3$d.</string>
+
+  <!-- Results views -->
+  <string name="monte_carlo_view_chart">Chart</string>
+  <string name="monte_carlo_view_cashflow">Cashflow</string>
+  <string name="monte_carlo_view_runs">Runs</string>
+  <string name="monte_carlo_heading_performance">Portfolio performance</string>
+  <string name="monte_carlo_heading_cashflow">Cashflow</string>
+  <string name="monte_carlo_heading_runs">Simulation runs</string>
+
+  <!-- Fan chart -->
+  <string name="monte_carlo_graph_all">All scenarios</string>
+  <string name="monte_carlo_graph_single_worst">Single worst run</string>
+  <string name="monte_carlo_graph_worst_case">Worst-case scenario (5th percentile)</string>
+  <string name="monte_carlo_graph_pessimistic">Pessimistic scenario (30th percentile)</string>
+  <string name="monte_carlo_graph_median">Median scenario (50th percentile)</string>
+  <string name="monte_carlo_graph_optimistic">Optimistic scenario (70th percentile)</string>
+  <string name="monte_carlo_graph_desc_single_worst">The unluckiest of all %1$d simulated runs - the one that ran out of money earliest.</string>
+  <string name="monte_carlo_graph_desc_share">%1$s of scenarios stayed above this line.</string>
+  <string name="monte_carlo_graph_desc_median">Half of scenarios stayed above this line.</string>
+
+  <!-- Run percentiles -->
+  <string name="monte_carlo_percentile_worst">Worst run</string>
+  <string name="monte_carlo_percentile_25">25th percentile</string>
+  <string name="monte_carlo_percentile_median">Median run</string>
+  <string name="monte_carlo_percentile_75">75th percentile</string>
+  <string name="monte_carlo_percentile_best">Best run</string>
+
+  <!-- Cashflow chart -->
+  <string name="monte_carlo_cashflow_desc">Money flowing in and out each year of this simulated run: withdrawals and income above zero; planned spending, tax, contributions and money saved into the surplus pot below. Tap a year for its breakdown.</string>
+  <string name="monte_carlo_cashflow_money_in">Money in</string>
+  <string name="monte_carlo_cashflow_money_out">Money out</string>
+  <string name="monte_carlo_cashflow_tax">Tax</string>
+  <string name="monte_carlo_cashflow_saved_into">Saved into %1$s</string>
+  <string name="monte_carlo_cashflow_withdrawals">Withdrawals</string>
+  <string name="monte_carlo_cashflow_income">Income</string>
+  <string name="monte_carlo_cashflow_spending">Spending</string>
+  <string name="monte_carlo_cashflow_contributions">Contributions</string>
+  <string name="monte_carlo_cashflow_saved">Saved</string>
+  <string name="monte_carlo_cashflow_after_depletion">The pots had already run out - this spending went unfunded.</string>
+  <string name="monte_carlo_cashflow_unspent">Unspent income: %1$s - it leaves the plan.</string>
+
+  <!-- Labels -->
+  <string name="monte_carlo_pot_surplus">Surplus cash</string>
+  <string name="monte_carlo_pot_numbered">Pot %1$d</string>
+  <string name="monte_carlo_income_numbered">Income %1$d</string>
+  <string name="monte_carlo_phase_numbered">Phase %1$d</string>
+  <string name="monte_carlo_contribution_numbered">Contribution %1$d</string>
+
+  <!-- Runs table -->
+  <string name="monte_carlo_runs_showing">Showing %1$d-%2$d of %3$d runs</string>
+  <string name="monte_carlo_runs_worst_first">Worst outcomes first</string>
+  <string name="monte_carlo_runs_best_first">Best outcomes first</string>
+  <string name="monte_carlo_runs_rank">Rank</string>
+  <string name="monte_carlo_runs_outcome">Outcome</string>
+  <string name="monte_carlo_runs_ending">Ending balance</string>
+  <string name="monte_carlo_runs_withdrawn">Total withdrawn</string>
+  <string name="monte_carlo_runs_survived">Survived</string>
+  <string name="monte_carlo_runs_ran_out">Ran out at age %1$d</string>
+  <string name="monte_carlo_runs_jump">Jump to…</string>
+  <string name="monte_carlo_runs_previous">Previous</string>
+  <string name="monte_carlo_runs_next">Next</string>
+
+  <!-- Run detail -->
+  <string name="monte_carlo_detail_back">Back to all runs</string>
+  <string name="monte_carlo_detail_survived">Run %1$d of %2$d - survived to age %3$d</string>
+  <string name="monte_carlo_detail_ran_out">Run %1$d of %2$d - ran out at age %3$d</string>
+  <string name="monte_carlo_detail_expand_all">Expand all years</string>
+  <string name="monte_carlo_detail_collapse_all">Collapse all years</string>
+  <string name="monte_carlo_detail_show_breakdown">Show this year’s breakdown</string>
+  <string name="monte_carlo_detail_hide_breakdown">Hide this year’s breakdown</string>
+  <string name="monte_carlo_detail_totals_tax_fees">Total withdrawn over this run: %1$s, of which %2$s tax, plus %3$s paid in fees.</string>
+  <string name="monte_carlo_detail_totals_tax">Total withdrawn over this run: %1$s, of which %2$s tax.</string>
+  <string name="monte_carlo_detail_totals_fees">Total withdrawn over this run: %1$s, plus %2$s paid in fees.</string>
+  <string name="monte_carlo_detail_totals">Total withdrawn over this run: %1$s.</string>
+  <string name="monte_carlo_detail_income_totals_tax">Income received over this run: %1$s, of which %2$s tax.</string>
+  <string name="monte_carlo_detail_income_totals">Income received over this run: %1$s.</string>
+  <string name="monte_carlo_detail_age">Age</string>
+  <string name="monte_carlo_detail_start">Starting balance</string>
+  <string name="monte_carlo_detail_contributions">Contributions</string>
+  <string name="monte_carlo_detail_income">Income (net)</string>
+  <string name="monte_carlo_detail_withdrawal">Withdrawal</string>
+  <string name="monte_carlo_detail_spent">Spent</string>
+  <string name="monte_carlo_detail_growth">Investment growth</string>
+  <string name="monte_carlo_detail_return">Return (%)</string>
+  <string name="monte_carlo_detail_inflation">Inflation (%)</string>
+  <string name="monte_carlo_detail_end">Ending balance</string>
+  <string name="monte_carlo_detail_show_working">Show the working</string>
+  <string name="monte_carlo_detail_hide_working">Hide the working</string>
+  <string name="monte_carlo_detail_failed_locked">The plan failed at age %1$d with %2$s still locked in pots that had not reached their access age.</string>
+  <string name="monte_carlo_detail_pot">Pot</string>
+  <string name="monte_carlo_detail_pot_start">Start balance</string>
+  <string name="monte_carlo_detail_pot_contributed">Contributed</string>
+  <string name="monte_carlo_detail_pot_withdrawn">Withdrawn</string>
+  <string name="monte_carlo_detail_pot_taxable">Taxable</string>
+  <string name="monte_carlo_detail_pot_tax_paid">Tax paid</string>
+  <string name="monte_carlo_detail_pot_fees">Fees</string>
+  <string name="monte_carlo_detail_pot_end">End balance</string>
+  <string name="monte_carlo_detail_help_contributed">For the %1$s pot this is the money the plan didn’t spend that year, saved into it before growth.</string>
+  <string name="monte_carlo_detail_help_tax_paid">With tax bands, the year’s tax is worked out on all pots’ taxable income together, then shared here in proportion to each pot’s taxable income - so every taxable pound bears the year’s average rate, even from a small pot. With a flat rate per pot, each pot’s tax is exact.</string>
+  <string name="monte_carlo_detail_help_fees">Charged at the end of the year, on the pot’s balance after that year’s growth but before the fee itself is deducted - so the end balance is the post-growth balance minus this fee.</string>
+
+  <!-- The working behind a year -->
+  <string name="monte_carlo_working_anchor">Floor &amp; ceiling: the first spending year takes the planned amount and sets the rule’s rate at %1$s of the accessible balance; future years stay within %2$s below and %3$s above the planned amount.</string>
+  <string name="monte_carlo_working_floor">Floor &amp; ceiling: %1$s of the accessible balance = %2$s, below the floor (%3$s under the planned amount: %4$s) - the floor applied.</string>
+  <string name="monte_carlo_working_ceiling">Floor &amp; ceiling: %1$s of the accessible balance = %2$s, above the ceiling (%3$s over the planned amount: %4$s) - the ceiling applied.</string>
+  <string name="monte_carlo_working_within">Floor &amp; ceiling: %1$s of the accessible balance = %2$s, within %3$s below (%4$s) and %5$s above (%6$s) the planned amount.</string>
+  <string name="monte_carlo_working_guardrails_cut">Guardrails: the withdrawal rate (%1$s) rose more than %2$s above the planned rate (%3$s), so withdrawals were cut by %4$s: %5$s instead of the planned %6$s.</string>
+  <string name="monte_carlo_working_guardrails_raise">Guardrails: the withdrawal rate (%1$s) fell more than %2$s below the planned rate (%3$s), so withdrawals were raised by %4$s: %5$s instead of the planned %6$s.</string>
+  <string name="monte_carlo_working_guardrails_hold_earlier">Guardrails: the withdrawal rate (%1$s) stayed close to the planned rate (%2$s) - no new change, but earlier adjustments still apply: %3$s instead of the planned %4$s.</string>
+  <string name="monte_carlo_working_guardrails_hold">Guardrails: the withdrawal rate (%1$s) stayed close to the planned rate (%2$s) - no change, taking the planned %3$s.</string>
+  <string name="monte_carlo_working_ratchet_raise">Ratcheting: the accessible balance stayed above %1$s its starting level for %2$d years in a row, so withdrawals were raised by %3$s: %4$s instead of the planned %5$s.</string>
+  <string name="monte_carlo_working_ratchet_streak_earlier">Ratcheting: balance above %1$s its starting level for %2$d of %3$d years - no raise yet, but earlier raises still apply: %4$s instead of the planned %5$s.</string>
+  <string name="monte_carlo_working_ratchet_streak">Ratcheting: balance above %1$s its starting level for %2$d of %3$d years - no raise yet, taking the planned %4$s.</string>
+  <string name="monte_carlo_working_ratchet_reset_earlier">Ratcheting: balance below %1$s its starting level - the streak reset, but earlier raises still apply: %2$s instead of the planned %3$s.</string>
+  <string name="monte_carlo_working_ratchet_reset">Ratcheting: balance below %1$s its starting level - the streak reset, taking the planned %2$s.</string>
+  <string name="monte_carlo_working_boundaries_cut">Boundaries: the withdrawal rate (%1$s) rose above %2$s, so withdrawals were cut by %3$s: %4$s instead of the planned %5$s.</string>
+  <string name="monte_carlo_working_boundaries_raise">Boundaries: the withdrawal rate (%1$s) fell below %2$s, so withdrawals were raised by %3$s: %4$s instead of the planned %5$s.</string>
+  <string name="monte_carlo_working_boundaries_hold_earlier">Boundaries: the withdrawal rate (%1$s) stayed between %2$s and %3$s - no new change, but earlier adjustments still apply: %4$s instead of the planned %5$s.</string>
+  <string name="monte_carlo_working_boundaries_hold">Boundaries: the withdrawal rate (%1$s) stayed between %2$s and %3$s - no change, taking the planned %4$s.</string>
+  <string name="monte_carlo_working_minimum">Raised to the minimum spending: %1$s.</string>
+  <string name="monte_carlo_working_income_taxed">Income: %1$s gross − %2$s tax = %3$s received.</string>
+  <string name="monte_carlo_working_income_untaxed">Income: %1$s, untaxed.</string>
+  <string name="monte_carlo_working_income_stream">%1$s: %2$s</string>
+  <string name="monte_carlo_working_withdrawal_taxed">Withdrawal: %1$s gross − %2$s tax = %3$s to spend.</string>
+  <string name="monte_carlo_working_withdrawal_untaxed">Withdrawal: %1$s, untaxed.</string>
+  <string name="monte_carlo_working_spent_short">Spent: %1$s of the %2$s planned - %3$s short.</string>
+  <string name="monte_carlo_working_spent_extra">Spent: %1$s - %2$s more than the %3$s planned.</string>
+  <string name="monte_carlo_working_spent">Spent: %1$s, as planned.</string>
+  <string name="monte_carlo_working_saved">Saved into %1$s: %2$s - income beyond what the plan spends.</string>
+  <string name="monte_carlo_working_unspent">Unspent income: %1$s - more came in than the plan spends, and it leaves the plan.</string>
+  <string name="monte_carlo_working_contributions">Contributions: %1$s, added at the start of the year.</string>
+  <string name="monte_carlo_working_fees">Fees paid: %1$s, charged at the end of the year.</string>
+  <string name="monte_carlo_working_locked">%1$s remained locked in pots that had not reached their access age.</string>
+
+  <!-- The plain-language story of a year -->
+  <string name="monte_carlo_rule_guardrails">Guardrails</string>
+  <string name="monte_carlo_rule_ratcheting">Ratcheting</string>
+  <string name="monte_carlo_rule_boundaries">Boundaries</string>
+  <string name="monte_carlo_story_anchor">This is the first spending year, so the plan’s withdrawal rate was set here.</string>
+  <string name="monte_carlo_story_floor">Floor &amp; ceiling held spending at %1$s - the rate-based amount (%2$s) fell below the floor.</string>
+  <string name="monte_carlo_story_ceiling">Floor &amp; ceiling held spending at %1$s - the rate-based amount (%2$s) rose above the ceiling.</string>
+  <string name="monte_carlo_story_cut_boundaries">%1$s cut this year’s spending from %2$s to %3$s because the withdrawal rate rose above %4$s.</string>
+  <string name="monte_carlo_story_cut">%1$s cut this year’s spending from %2$s to %3$s because the withdrawal rate had climbed too far above the plan.</string>
+  <string name="monte_carlo_story_raise_boundaries">%1$s raised this year’s spending from %2$s to %3$s because the withdrawal rate fell below %4$s.</string>
+  <string name="monte_carlo_story_raise_ratcheting">%1$s raised this year’s spending from %2$s to %3$s because the balance had stayed above %4$s its starting level for %5$d years.</string>
+  <string name="monte_carlo_story_raise">%1$s raised this year’s spending from %2$s to %3$s because the withdrawal rate had fallen well below the plan.</string>
+  <string name="monte_carlo_story_earlier">Earlier %1$s changes still applied, so this year’s spending was %2$s instead of the %3$s planned.</string>
+  <string name="monte_carlo_story_minimum_then">The minimum spending floor then lifted it to %1$s.</string>
+  <string name="monte_carlo_story_minimum">The minimum spending floor set this year’s spending at %1$s.</string>
+  <string name="monte_carlo_story_shortfall">Only %1$s of the %2$s planned could be funded - the plan ran out of accessible money here.</string>
+  <string name="monte_carlo_story_locked">%1$s was still locked in pots that had not reached their access age.</string>
+  <string name="monte_carlo_story_income_all">Income covered all of the %1$s spent, so nothing had to come from the pots.</string>
+  <string name="monte_carlo_story_income_to_contributions">The %1$s income all went into contributions, so the %2$s spent came from the pots.</string>
+  <string name="monte_carlo_story_income_partial_contributions">Income covered %1$s of the %2$s spent, with another %3$s of it going into contributions; withdrawals covered the rest.</string>
+  <string name="monte_carlo_story_income_partial">Income covered %1$s of the %2$s spent; withdrawals covered the rest.</string>
+  <string name="monte_carlo_story_from_pots">Spent %1$s as planned, funded from the pots.</string>
+  <string name="monte_carlo_story_surplus_saved">%1$s of income beyond the plan was saved into %2$s.</string>
+  <string name="monte_carlo_story_unspent">%1$s of income beyond the plan went unspent and left the plan.</string>
+
+  <!-- Depletion histogram -->
+  <string name="monte_carlo_histogram_title">When did the pot run out?</string>
+  <string name="monte_carlo_histogram_failures">Only the %1$d of %2$d scenarios that ran out of money are shown here - the other %3$d kept a positive balance for the full horizon.</string>
+  <string name="monte_carlo_histogram_summary">Worst case: money ran out at age %1$d. Among failures, the typical depletion age was %2$d; the luckiest failure lasted until age %3$d.</string>
+  <string name="monte_carlo_histogram_none">The pot survived the full time horizon in every simulated scenario.</string>
+  <string name="monte_carlo_histogram_selected">%1$d of %2$d scenarios ran out of money at age %3$d</string>
+
+  <!-- Description -->
+  <string name="monte_carlo_how">Each scenario replays your retirement with a different sequence of yearly investment returns. Every year, any income arrives and any contributions are paid in at the start - some of them out of that income; the income then pays for the year’s spending first and the withdrawal covers the rest; anything left unspent is saved into the Surplus cash pot for later years when the plan keeps one, and otherwise leaves the plan; and then each pot grows or shrinks with that year’s return. Pots with an access age stay invested but can’t fund withdrawals until you reach it - if the accessible pots can’t cover what a year’s spending still needs, the plan counts as having run out, even if locked pots still hold money. The shaded bands show the range of outcomes across all scenarios: the darker band covers the middle half, and the lighter band covers four in five of them.</string>
+  <string name="monte_carlo_how_normal">Keep in mind this is a simplified model: returns are drawn independently each year from a normal distribution, which ignores sequence-of-returns clustering and fat tails, and fees and taxes are modeled only as accurately as the rates you enter. Treat the results as a rough guide, not a guarantee.</string>
+  <string name="monte_carlo_how_bootstrap">Returns are actual US market years (%1$d–%2$d, S&amp;P 500 / 10-year Treasuries / T-bills, Damodaran data) drawn in random order for each pot’s allocation mix. Each sampled year brings its own actual US inflation with it, so high-inflation markets stay high-inflation. Real crash years are included, but multi-year momentum is lost by shuffling, fees and taxes are only as accurate as the rates you enter, and US history has been unusually good, so results may be optimistic for globally diversified portfolios.</string>
+  <string name="monte_carlo_how_sequence">Each scenario replays actual US market history (%1$d–%2$d, S&amp;P 500 / 10-year Treasuries / T-bills, Damodaran data) starting from a different year, wrapping around the end of the data. Each replayed year brings its own actual US inflation with it. This preserves real crashes and recoveries, but there are only as many scenarios as start years, fees and taxes are only as accurate as the rates you enter, and US history may be optimistic for globally diversified portfolios.</string>
+</resources>
