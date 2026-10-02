@@ -23,3 +23,8 @@ class ThemeSettingsNavigator(private val stack: NavStack<NavKey>) {
 class CustomThemesNavigator(private val stack: NavStack<NavKey>) {
   operator fun invoke() = stack.push(CustomThemeSettingsNavRoute)
 }
+
+@Immutable
+class ScheduleSettingsNavigator(private val stack: NavStack<NavKey>) {
+  operator fun invoke() = stack.push(ScheduleSettingsNavRoute)
+}

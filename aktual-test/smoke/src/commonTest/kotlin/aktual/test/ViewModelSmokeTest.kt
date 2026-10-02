@@ -23,6 +23,7 @@ import aktual.core.theme.DarkColors
 import aktual.metrics.vm.MetricsViewModel
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.root.SettingsViewModel
+import aktual.prefs.vm.schedules.ScheduleSettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
 import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
 import androidx.lifecycle.Lifecycle
@@ -120,6 +121,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun password() = testVm<ChangePasswordViewModel>()
 
   @Test fun reportDashboard() = testVm<ReportsDashboardViewModel>()
+
+  @Test fun scheduleSettings() = testVm<ScheduleSettingsViewModel>()
 
   @Test fun searchReports() = testSavedStateVM<SearchReportsViewModel>()
 

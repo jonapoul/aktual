@@ -14,6 +14,7 @@ import aktual.budget.schedules.vm.Schedule
 import aktual.budget.schedules.vm.SchedulesLoader
 import aktual.budget.schedules.vm.insertSchedule
 import aktual.core.Calendar
+import aktual.prefs.SchedulePreferences
 import aktual.prefs.SchedulePreferencesImpl
 import aktual.test.TestSyncController
 import aktual.test.buildPreferences
@@ -132,10 +133,11 @@ class ListSchedulesViewModelTest {
       nextDate = LocalDate(2026, 5, 2),
       completed = true,
     )
-    val viewModel = createViewModel(scope, TestSyncController())
+    val preferences = SchedulePreferencesImpl(scope.buildPreferences())
+    val viewModel = createViewModel(scope, TestSyncController(), preferences)
     assertThat(viewModel.state.awaitSchedules()).extracting(Schedule::name).containsExactly("Rent")
 
-    viewModel.setShowCompleted(true)
+    preferences.showCompleted.set(true)
     scope.advanceUntilIdle()
 
     assertThat(viewModel.state.awaitSchedules())
@@ -172,6 +174,7 @@ class ListSchedulesViewModelTest {
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
     sync: BudgetSyncController,
+    preferences: SchedulePreferences = SchedulePreferencesImpl(scope.buildPreferences()),
   ): ListSchedulesViewModel {
     Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     val loader =
@@ -184,7 +187,7 @@ class ListSchedulesViewModelTest {
     return ListSchedulesViewModel(
       loader = loader,
       syncController = sync,
-      preferences = SchedulePreferencesImpl(scope.buildPreferences()),
+      preferences = preferences,
     )
   }
 

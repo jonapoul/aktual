@@ -18,15 +18,19 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
+import aktual.core.icons.material.Settings
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditScheduleNavigator
+import aktual.core.nav.ScheduleSettingsNavigator
 import aktual.core.nav.SearchSchedulesNavigator
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -35,8 +39,8 @@ import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.bottomNavBarPadding
-import aktual.core.ui.checkbox
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
@@ -55,7 +59,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -82,6 +85,7 @@ import kotlinx.coroutines.launch
 internal fun ListSchedulesScreen(
   editSchedule: EditScheduleNavigator,
   toSearch: SearchSchedulesNavigator,
+  toSettings: ScheduleSettingsNavigator,
   modifier: Modifier = Modifier,
   viewModel: ListSchedulesViewModel = metroViewModel(),
 ) {
@@ -98,13 +102,11 @@ internal fun ListSchedulesScreen(
       }
     }
   }
-  val showCompleted by viewModel.showCompleted.collectAsStateWithLifecycle()
 
   ListSchedulesScaffold(
     modifier = modifier,
     state = state,
     snackbarHostState = snackbar,
-    showCompleted = showCompleted,
     onAction = { action ->
       when (action) {
         Reload -> viewModel.reload()
@@ -113,7 +115,7 @@ internal fun ListSchedulesScreen(
         OpenSearch -> toSearch()
         is Delete -> viewModel.delete(action.schedule)
         is Post -> scope.launch { snackbar.showPostUnsupported() }
-        is ShowCompleted -> viewModel.setShowCompleted(action.show)
+        OpenSettings -> toSettings()
       }
     },
   )
@@ -122,7 +124,6 @@ internal fun ListSchedulesScreen(
 @Composable
 private fun ListSchedulesScaffold(
   state: ListSchedulesState,
-  showCompleted: Boolean,
   onAction: ListSchedulesActionHandler,
   modifier: Modifier = Modifier,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -146,7 +147,7 @@ private fun ListSchedulesScaffold(
               onClick = { onAction(OpenSearch) },
             )
           }
-          ListSchedulesMenu(showCompleted = showCompleted, onAction = onAction)
+          ListSchedulesMenu(onAction = onAction)
         },
       )
     },
@@ -280,7 +281,6 @@ private fun ContentSuccess(
 
 @Composable
 private fun ListSchedulesMenu(
-  showCompleted: Boolean,
   onAction: ListSchedulesActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -295,43 +295,34 @@ private fun ListSchedulesMenu(
 
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
       ListSchedulesMenuItems(
-        showCompleted = showCompleted,
         onAction = { action ->
           expanded = false
           onAction(action)
-        },
+        }
       )
     }
   }
 }
 
 @Composable
-private fun ListSchedulesMenuItems(showCompleted: Boolean, onAction: ListSchedulesActionHandler) {
+private fun ListSchedulesMenuItems(onAction: ListSchedulesActionHandler) {
   AktualDropdownMenuItem(
-    text = { Text(Strings.listSchedulesShowCompleted) },
-    leadingIcon = {
-      Checkbox(
-        checked = showCompleted,
-        onCheckedChange = null,
-        colors = colors.checkbox(),
-      )
-    },
-    onClick = { onAction(ShowCompleted(!showCompleted)) },
+    text = Strings.listSchedulesSettings,
+    leadingIcon = MaterialIcons.Settings,
+    onClick = { onAction(OpenSettings) },
   )
 }
 
 @Preview
 @Composable
 private fun PreviewListSchedulesMenuItems(
-  @PreviewParameter(ShowCompletedProvider::class) params: ColoredParams<Boolean>
+  @PreviewParameter(ColoredParameters::class) theme: Colors
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColors(theme) {
     Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {
-      ListSchedulesMenuItems(showCompleted = params.data, onAction = {})
+      ListSchedulesMenuItems(onAction = {})
     }
   }
-
-private class ShowCompletedProvider : ColoredParameterProvider<Boolean>(true, false)
 
 @Preview
 @Composable
@@ -339,7 +330,7 @@ private fun PreviewListSchedulesScaffold(
   @PreviewParameter(ListSchedulesProvider::class) params: ColoredParams<ListSchedulesState>
 ) =
   PreviewWithColoredParams(params) {
-    ListSchedulesScaffold(state = this, showCompleted = false, onAction = {})
+    ListSchedulesScaffold(state = this, onAction = {})
   }
 
 private class ListSchedulesProvider :

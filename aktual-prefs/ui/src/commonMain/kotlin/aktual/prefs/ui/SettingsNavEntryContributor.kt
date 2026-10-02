@@ -7,12 +7,15 @@ import aktual.core.nav.InspectThemeNavRoute
 import aktual.core.nav.InspectThemeNavigator
 import aktual.core.nav.NavEntryContributor
 import aktual.core.nav.NavStack
+import aktual.core.nav.ScheduleSettingsNavRoute
+import aktual.core.nav.ScheduleSettingsNavigator
 import aktual.core.nav.SettingsNavRoute
 import aktual.core.nav.ThemeSettingsNavRoute
 import aktual.core.nav.ThemeSettingsNavigator
 import aktual.di.AppScope
 import aktual.prefs.ui.inspect.InspectThemeScreen
 import aktual.prefs.ui.root.SettingsScreen
+import aktual.prefs.ui.schedules.ScheduleSettingsScreen
 import aktual.prefs.ui.theme.ThemeSettingsScreen
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsScreen
 import androidx.navigation3.runtime.EntryProviderScope
@@ -23,8 +26,14 @@ import dev.zacsweers.metro.ContributesIntoSet
 class SettingsNavEntryContributor : NavEntryContributor {
   override fun EntryProviderScope<NavKey>.contribute(stack: NavStack<NavKey>) {
     entry<SettingsNavRoute> {
-      SettingsScreen(BackNavigator(stack), ThemeSettingsNavigator(stack))
+      SettingsScreen(
+        back = BackNavigator(stack),
+        toThemeSettings = ThemeSettingsNavigator(stack),
+        toScheduleSettings = ScheduleSettingsNavigator(stack),
+      )
     }
+
+    entry<ScheduleSettingsNavRoute> { ScheduleSettingsScreen(BackNavigator(stack)) }
 
     entry<ThemeSettingsNavRoute> {
       ThemeSettingsScreen(

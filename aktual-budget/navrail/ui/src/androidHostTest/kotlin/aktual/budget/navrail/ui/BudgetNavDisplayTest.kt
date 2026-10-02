@@ -22,6 +22,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentSetOf
@@ -42,7 +43,11 @@ class BudgetNavDisplayTest {
           stack = mutableStateListOf(ReportsListNavRoute),
         )
       setAndroidThemedContent {
-        BudgetNavDisplay(contributors = persistentSetOf(TestContributor()), activeStack = stack)
+        BudgetNavDisplay(
+          contributors = persistentSetOf(TestContributor()),
+          appStack = NavStackImpl(appCloser = null, stack = mutableStateListOf()),
+          activeStack = stack,
+        )
       }
 
       // when the list is scrolled down
@@ -59,7 +64,10 @@ class BudgetNavDisplayTest {
     }
 
   private class TestContributor : BudgetNavEntryContributor {
-    override fun EntryProviderScope<BudgetNavKey>.contribute(stack: NavStack<BudgetNavKey>) {
+    override fun EntryProviderScope<BudgetNavKey>.contribute(
+      stack: NavStack<BudgetNavKey>,
+      appStack: NavStack<NavKey>,
+    ) {
       budgetEntry<ReportsListNavRoute> {
         LazyColumn(modifier = Modifier.testTag(LIST_TAG), state = rememberLazyListState()) {
           items(count = 100) { i -> Text("Item $i") }
