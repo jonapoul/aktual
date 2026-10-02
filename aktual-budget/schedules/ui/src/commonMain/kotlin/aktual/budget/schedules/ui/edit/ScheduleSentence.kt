@@ -2,7 +2,6 @@ package aktual.budget.schedules.ui.edit
 
 import aktual.budget.model.Amount
 import aktual.budget.model.RecurConfig
-import aktual.budget.model.frequencyDescription
 import aktual.budget.schedules.vm.edit.EditScheduleState
 import aktual.budget.schedules.vm.edit.ScheduleAmount
 import aktual.budget.schedules.vm.edit.ScheduleDate
@@ -12,6 +11,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
+import aktual.core.ui.frequencyDescription
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -193,7 +193,7 @@ private fun RecurConfig.repeatText(): String {
       OnDate -> endDate?.let { Strings.editScheduleSentenceUntil(it.formatted()) }
       else -> null
     }
-  return if (end == null) frequency else "$frequency, $end"
+  return if (end == null) frequency else Strings.recurWithEnd(frequency, end)
 }
 
 // Placeholders for the tokens, swapped out after the localised sentence is formatted. They're

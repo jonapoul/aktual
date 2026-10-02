@@ -4,7 +4,6 @@ import aktual.budget.model.RecurConfig
 import aktual.budget.model.RecurEndMode
 import aktual.budget.model.RecurFrequency
 import aktual.budget.model.WeekendSolveMode
-import aktual.budget.model.frequencyDescription
 import aktual.budget.schedules.vm.edit.ScheduleDate
 import aktual.budget.schedules.vm.edit.defaultRecurConfig
 import aktual.core.icons.Add
@@ -20,6 +19,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.formatted
+import aktual.core.ui.frequencyDescription
 import aktual.core.ui.switch
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

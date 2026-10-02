@@ -38,6 +38,18 @@ fun DayOfWeek.stringShort() =
   }
 
 @Composable
+fun DayOfWeek.stringLong() =
+  when (this) {
+    MONDAY -> Strings.weekMonday
+    TUESDAY -> Strings.weekTuesday
+    WEDNESDAY -> Strings.weekWednesday
+    THURSDAY -> Strings.weekThursday
+    FRIDAY -> Strings.weekFriday
+    SATURDAY -> Strings.weekSaturday
+    SUNDAY -> Strings.weekSunday
+  }
+
+@Composable
 fun Month.stringShort() =
   when (this) {
     JANUARY -> Strings.monthJanShort

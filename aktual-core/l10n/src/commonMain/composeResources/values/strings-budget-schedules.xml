@@ -127,4 +127,46 @@
   <string name="edit_schedule_failure_title">Couldn’t load schedule</string>
   <string name="edit_schedule_failure_not_found">This schedule doesn’t exist any more.</string>
   <string name="list_schedules_create">Create schedule</string>
+  <string name="recur_every_day">Every day</string>
+  <plurals name="recur_every_n_days">
+    <item quantity="one">Every %1$d day</item>
+    <item quantity="other">Every %1$d days</item>
+  </plurals>
+  <string name="recur_every_week">Every week on %1$s</string>
+  <plurals name="recur_every_n_weeks">
+    <item quantity="one">Every %1$d week on %2$s</item>
+    <item quantity="other">Every %1$d weeks on %2$s</item>
+  </plurals>
+  <string name="recur_every_month">Every month on the %1$s</string>
+  <plurals name="recur_every_n_months">
+    <item quantity="one">Every %1$d month on the %2$s</item>
+    <item quantity="other">Every %1$d months on the %2$s</item>
+  </plurals>
+  <string name="recur_every_year">Every year on %1$s</string>
+  <plurals name="recur_every_n_years">
+    <item quantity="one">Every %1$d year on %2$s</item>
+    <item quantity="other">Every %1$d years on %2$s</item>
+  </plurals>
+  <string name="recur_unknown_frequency">Unknown frequency</string>
+  <string name="recur_month_day">%1$s %2$s</string>
+  <string name="recur_ordinal_st">%1$dst</string>
+  <string name="recur_ordinal_nd">%1$dnd</string>
+  <string name="recur_ordinal_rd">%1$drd</string>
+  <string name="recur_ordinal_th">%1$dth</string>
+  <string name="recur_last_day">last day</string>
+  <string name="recur_last">last</string>
+  <string name="recur_weekday">%1$s %2$s</string>
+  <string name="recur_unknown_day">unknown day</string>
+  <string name="recur_list_two">%1$s and %2$s</string>
+  <string name="recur_list_middle">%1$s, %2$s</string>
+  <string name="recur_list_end">%1$s, and %2$s</string>
+  <string name="recur_end_once">once</string>
+  <plurals name="recur_end_times">
+    <item quantity="one">%1$d time</item>
+    <item quantity="other">%1$d times</item>
+  </plurals>
+  <string name="recur_end_until">until %1$s</string>
+  <string name="recur_with_end">%1$s, %2$s</string>
+  <string name="recur_weekend_after">%1$s (after weekend)</string>
+  <string name="recur_weekend_before">%1$s (before weekend)</string>
 </resources>

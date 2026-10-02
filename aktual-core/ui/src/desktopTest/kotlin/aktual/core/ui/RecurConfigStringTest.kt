@@ -1,6 +1,6 @@
 @file:Suppress("JUnitMalformedDeclaration")
 
-package aktual.budget.rules.ui.list
+package aktual.core.ui
 
 import aktual.budget.model.DateFormat.YyyyMmDd
 import aktual.budget.model.RecurConfig
@@ -14,9 +14,10 @@ import aktual.budget.model.RecurPattern
 import aktual.budget.model.RecurType.Day
 import aktual.budget.model.RecurType.Friday
 import aktual.budget.model.RecurType.Saturday
+import aktual.budget.model.WeekendSolveMode.After
 import aktual.budget.model.WeekendSolveMode.Before
-import aktual.budget.model.description
-import aktual.core.ui.formatter
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.v2.runComposeUiTest
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
 import kotlin.test.Test
@@ -29,6 +30,7 @@ import kotlinx.datetime.Month.SEPTEMBER
 
 // From packages/loot-core/src/shared/schedules.test.ts
 @Burst
+@OptIn(ExperimentalTestApi::class)
 class RecurConfigStringTest {
   data class TestCase(val expected: String, val config: RecurConfig)
 
@@ -59,12 +61,14 @@ class RecurConfigStringTest {
         YEARLY_OCCURRENCES,
         WEEKLY_END_DATE,
         MONTHLY_END_DATE,
+        WEEKLY_SKIP_WEEKEND,
+        MONTHLY_END_DATE_SKIP_WEEKEND,
       )
-  ) {
-    assertEquals(
-      expected = test.expected,
-      actual = test.config.description(YyyyMmDd.formatter()),
-    )
+  ) = runComposeUiTest {
+    var actual: String? = null
+    setContent { actual = test.config.description(YyyyMmDd.formatter()) }
+    waitForIdle()
+    assertEquals(expected = test.expected, actual = actual)
   }
 
   companion object {
@@ -337,6 +341,33 @@ class RecurConfigStringTest {
             interval = 2,
             endMode = OnDate,
             endDate = LocalDate(2021, JUNE, 1),
+          ),
+      )
+
+    // Weekend handling
+    val WEEKLY_SKIP_WEEKEND =
+      TestCase(
+        expected = "Every week on Monday (after weekend)",
+        config =
+          RecurConfig(
+            frequency = Weekly,
+            start = LocalDate(2021, MAY, 17),
+            skipWeekend = true,
+            weekendSolveMode = After,
+          ),
+      )
+
+    val MONTHLY_END_DATE_SKIP_WEEKEND =
+      TestCase(
+        expected = "Every month on the 17th, until 2021-06-01 (before weekend)",
+        config =
+          RecurConfig(
+            frequency = Monthly,
+            start = LocalDate(2021, MAY, 17),
+            endMode = OnDate,
+            endDate = LocalDate(2021, JUNE, 1),
+            skipWeekend = true,
+            weekendSolveMode = Before,
           ),
       )
   }

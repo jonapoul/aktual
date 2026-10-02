@@ -12,7 +12,6 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
-import aktual.budget.model.description
 import aktual.budget.model.isIdField
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.displayString
@@ -25,6 +24,7 @@ import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
+import aktual.core.ui.description
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -86,6 +86,11 @@ private const val LEARN_MORE_URL = "https://actualbudget.org/docs/budgeting/rule
 
 private fun JsonArray.toList(): List<String> = map { it.jsonPrimitive.content }
 
+private fun Condition.recurConfig(): RecurConfig? =
+  (value as? JsonObject)
+    ?.takeIf { field == Date }
+    ?.let { Json.decodeFromJsonElement(RecurConfig.serializer(), it) }
+
 @Composable
 internal fun rememberConditionText(
   prefix: String,
@@ -103,6 +108,8 @@ internal fun rememberConditionText(
   val nameFetcher = LocalNameFetcher.current
   val fieldNamesFlow = remember(nameFetcher, condition) { fieldNamesFlow(condition, nameFetcher) }
   val fieldNames by fieldNamesFlow.collectAsStateWithLifecycle(initialValue = null)
+  val recurConfig = remember(condition) { condition.recurConfig() }
+  val recurText = recurConfig?.description(dateFormat)
 
   return remember(
     condition,
@@ -110,7 +117,7 @@ internal fun rememberConditionText(
     opText,
     fieldText,
     fieldNames,
-    dateFormat,
+    recurText,
     numberFormat,
     currency,
     privacy,
@@ -158,11 +165,10 @@ internal fun rememberConditionText(
         }
 
         is JsonObject -> {
-          if (condition.field != Date) {
+          if (condition.field != Date || recurText == null) {
             error("Should only see a JSON object in a condition value for a date: $condition")
           }
-          val recurConfig = Json.decodeFromJsonElement(RecurConfig.serializer(), value)
-          withStyle(styles.highlighted) { append(recurConfig.description(dateFormat)) }
+          withStyle(styles.highlighted) { append(recurText) }
         }
       }
     }
