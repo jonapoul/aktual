@@ -87,9 +87,11 @@ fun defaultRecurConfig(start: LocalDate): RecurConfig =
 
 /**
  * Reads a typed, unsigned amount like "1,200.50" or "1.200,50". The last separator counts as the
- * decimal point when one or two digits follow it, otherwise separators are ignored.
+ * decimal point when one or two digits follow it, otherwise separators are ignored. Blank input is
+ * zero.
  */
 fun parseAmountInput(text: String): Amount? {
+  if (text.isBlank()) return Zero
   val cleaned = text.filter { it.isDigit() || it == '.' || it == ',' }
   if (cleaned.none { it.isDigit() }) return null
 
