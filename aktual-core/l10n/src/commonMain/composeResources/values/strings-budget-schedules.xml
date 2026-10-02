@@ -35,7 +35,6 @@
   <string name="edit_schedule_save">Save</string>
   <string name="edit_schedule_create">Create</string>
   <string name="edit_schedule_delete">Delete</string>
-  <string name="edit_schedule_more">More options</string>
   <string name="edit_schedule_stop_editing">Stop editing</string>
   <string name="edit_schedule_name_label">Name</string>
   <string name="edit_schedule_name_placeholder">Name (optional)</string>
@@ -74,8 +73,6 @@
   <string name="edit_schedule_amount_from">From</string>
   <string name="edit_schedule_amount_to">To</string>
   <string name="edit_schedule_done">Done</string>
-  <string name="edit_schedule_payee_title">Payee</string>
-  <string name="edit_schedule_account_title">Account</string>
   <string name="edit_schedule_when_title">When</string>
   <string name="edit_schedule_when_repeats">Repeats</string>
   <string name="edit_schedule_when_date">Date</string>
@@ -108,7 +105,6 @@
   <string name="edit_schedule_ends_never">Never</string>
   <string name="edit_schedule_ends_after">After</string>
   <string name="edit_schedule_ends_on_date">On date</string>
-  <string name="edit_schedule_ends_occurrences">Occurrences</string>
   <string name="edit_schedule_ends_date">End date</string>
   <string name="edit_schedule_date_picker_ok">OK</string>
   <string name="edit_schedule_date_picker_cancel">Cancel</string>
