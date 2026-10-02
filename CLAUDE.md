@@ -18,7 +18,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
   - assertions: `assertThat(role).isEqualTo(Admin)`
   - typed property/variable assignments, default parameter values and return values of declared-type functions
 
-  Qualify only where the name is ambiguous with a type in scope, as `LoginMethod.Password` is with the `Password` class.
+  Qualify only where the name is ambiguous with a type in scope, as `LoginMethod.Password` is with the `Password` class. Constructor calls of sealed subtypes don't resolve through CSR either, so write `ScheduleDate.Once(date)`, not `Once(date)`.
 - `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` - add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
 - In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.
 - Wrap comments at 100 columns. That is where `ktfmt --google-style` wraps them, not the `max_line_length` of 120 in `.editorconfig`.

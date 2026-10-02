@@ -80,8 +80,8 @@ internal constructor(
     reload()
   }
 
-  fun reload() {
-    mutableIsLoading.update { true }
+  fun reload(showLoading: Boolean = true) {
+    if (showLoading) mutableIsLoading.update { true }
     viewModelScope.launch {
       try {
         val schedules = loader.load()

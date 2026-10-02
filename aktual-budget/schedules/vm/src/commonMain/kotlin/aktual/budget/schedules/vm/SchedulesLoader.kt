@@ -53,6 +53,16 @@ internal class SchedulesLoader(
       .toImmutableList()
   }
 
+  suspend fun load(id: ScheduleId): Schedule? {
+    val today = calendar.today()
+    val row = scheduleDao[id] ?: return null
+    val payeeNames = payeeDao.getAllActive().associate { it.id to it.name }
+    val accountNames = accountDao.nameMap()
+    val fromDate = row.next_date?.minus(value = 2, unit = DAY) ?: today
+    val latestTxDates = scheduleDao.latestTransactionDates(fromDate)
+    return toSchedule(row, today, payeeNames, accountNames, latestTxDates)
+  }
+
   @Suppress("ReturnCount")
   private fun toSchedule(
     row: GetAllActive,

@@ -10,6 +10,7 @@ import aktual.budget.model.RecurPattern
 import aktual.budget.model.RecurType
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.WeekendSolveMode
+import aktual.budget.model.occurrences
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
