@@ -41,7 +41,7 @@ internal fun UpdateCheckFailedDialogContent(
     modifier = modifier,
     title = Strings.infoCheckFailedTitle,
     icon = MaterialIcons.Warning,
-    titleColor = colors.errorText,
+    highlight = colors.errorText,
     content = { Text(cause) },
     buttons = {
       TextButton(onClick = onDismiss) {
