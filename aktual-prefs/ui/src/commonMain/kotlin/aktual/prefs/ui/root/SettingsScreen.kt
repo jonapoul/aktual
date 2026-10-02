@@ -6,8 +6,13 @@ import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Calendar3
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.ScheduleSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavigator
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
@@ -56,6 +61,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 fun SettingsScreen(
   back: BackNavigator,
   toThemeSettings: ThemeSettingsNavigator,
+  toScheduleSettings: ScheduleSettingsNavigator,
   viewModel: SettingsViewModel = metroViewModel<SettingsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -66,6 +72,7 @@ fun SettingsScreen(
       when (action) {
         NavBack -> back()
         NavToThemeSettings -> toThemeSettings()
+        NavToScheduleSettings -> toScheduleSettings()
       }
     },
   )
@@ -113,7 +120,20 @@ private fun SettingsContent(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
-    item { ThemeSettingsItem(onClick = { onAction(NavToThemeSettings) }) }
+    item {
+      SubSettingsItem(
+        title = Strings.settingsTheme,
+        icon = MaterialIcons.ThemeRoutine,
+        onClick = { onAction(NavToThemeSettings) },
+      )
+    }
+    item {
+      SubSettingsItem(
+        title = Strings.settingsSchedules,
+        icon = AktualIcons.Calendar3,
+        onClick = { onAction(NavToScheduleSettings) },
+      )
+    }
     item { SystemUiGroup(state.systemUi) }
     item { FormattingGroup(state.format) }
     item { CurrencyGroup(state.currency) }

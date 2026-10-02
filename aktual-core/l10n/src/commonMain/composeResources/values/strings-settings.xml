@@ -3,6 +3,10 @@
 
   <string name="settings_theme">App theme</string>
   <string name="settings_dark_theme">Dark theme</string>
+  <string name="settings_schedules">Schedules</string>
+
+  <string name="settings_schedules_toolbar">Schedule Settings</string>
+  <string name="settings_schedules_show_completed">Show completed schedules</string>
 
   <string name="settings_theme_toolbar">Theme</string>
   <string name="settings_theme_use_system">Use System Default</string>

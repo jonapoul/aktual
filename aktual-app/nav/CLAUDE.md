@@ -26,6 +26,8 @@ Budget screens implement `BudgetNavEntryContributor` with `@ContributesIntoSet(B
 budgetEntry<YourNavRoute> { route -> ... }
 ```
 
+`contribute` also receives `appStack`, the app-level stack, for budget screens that push an app route (e.g. `ScheduleSettingsNavigator(appStack)` from the schedules list).
+
 ## Window insets
 
 Nav bar insets are consumed at the `AktualNavHost` level via `Modifier.consumeWindowInsets(WindowInsets.navigationBars)`, so screen Scaffolds will **not** see them in `innerPadding`. The haze-effect Column in `AktualAppContent` instead renders `BottomSpacing()`, which sums `bottomNavBarPadding()` with whatever height is provided via `LocalBottomSpacing` - screens that render their own bottom status bar publish its height through that composition local so a single spacer covers both.

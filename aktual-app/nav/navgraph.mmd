@@ -8,6 +8,7 @@ flowchart TD
   manageStorage["Manage Storage"]
   password["Change Password"]
   settings["Settings"]
+  scheduleSettings["Schedule Settings"]
   url["Server URL"]
 
   subgraph budgetNavRail["Budget Nav Rail"]
@@ -37,6 +38,8 @@ flowchart TD
   budgetList --tap change url--> url
   budgetList --tap about--> info
 
+  settings --tap schedules--> scheduleSettings
+
   budgetSync --budget synced--> budgetNavRail
 
   info --tap licenses--> licenses
@@ -64,4 +67,5 @@ flowchart TD
 
   listSchedules --tap schedule--> editSchedule
   listSchedules --tap search--> searchSchedules
+  listSchedules --tap settings--> scheduleSettings
   searchSchedules --tap schedule--> editSchedule
