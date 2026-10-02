@@ -25,7 +25,9 @@ class ScheduleDao(database: BudgetDatabase) {
 
   suspend fun getAll(): List<GetAllActive> = schedules.withResult { getAllActive().awaitAsList() }
 
-  suspend operator fun get(id: ScheduleId): GetAllActive? = getAll().firstOrNull { it.id == id }
+  suspend operator fun get(id: ScheduleId): GetAllActive? = schedules.withResult {
+    getActive(id, ::GetAllActive).awaitAsOneOrNull()
+  }
 
   // The active schedule already using this name, if any
   suspend fun idByName(name: String): ScheduleId? = schedules.withResult {
