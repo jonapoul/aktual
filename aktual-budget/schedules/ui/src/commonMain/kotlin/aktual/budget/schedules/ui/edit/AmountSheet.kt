@@ -44,8 +44,10 @@ internal fun AmountSheet(
 ) {
   var isDeposit by remember { mutableStateOf(amount.isDeposit) }
   var op by remember { mutableStateOf(amount.op) }
-  val first = rememberTextFieldState(initialText = amount.first.toInputText())
-  val second = rememberTextFieldState(initialText = amount.second?.toInputText().orEmpty())
+  val firstText = amount.first.toInputText()
+  val secondText = amount.second?.toInputText().orEmpty()
+  val first = rememberTextFieldState(initialText = firstText)
+  val second = rememberTextFieldState(initialText = secondText)
 
   // Typed amounts are unsigned, and pick up their sign from the payment/deposit toggle
   val firstAmount = parseAmountInput(first.text.toString())
@@ -62,12 +64,20 @@ internal fun AmountSheet(
         }
     }?.withDeposit(isDeposit)
 
+  // The sheet can't show a range that crosses zero, so an untouched amount is kept exactly as it
+  // was
+  val isUnchanged =
+    op == amount.op &&
+      isDeposit == amount.isDeposit &&
+      first.text.toString() == firstText &&
+      second.text.toString() == secondText
+
   EditorSheet(
     modifier = modifier,
     title = Strings.editScheduleAmountTitle,
-    canConfirm = result != null,
+    canConfirm = isUnchanged || result != null,
     onDismiss = onDismiss,
-    onConfirm = { result?.let(onConfirm) },
+    onConfirm = { (if (isUnchanged) amount else result)?.let(onConfirm) },
   ) {
     AktualSlidingToggleButton(
       modifier = Modifier.fillMaxWidth(),
