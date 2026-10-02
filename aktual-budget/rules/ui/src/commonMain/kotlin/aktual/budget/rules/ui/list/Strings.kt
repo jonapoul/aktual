@@ -8,8 +8,6 @@ import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.Field.Amount
 import aktual.budget.model.NumberFormatConfig
 import aktual.budget.model.RecurConfig
-import aktual.budget.model.RecurPattern
-import aktual.budget.model.RecurType
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.RuleStage
@@ -26,6 +24,7 @@ import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
+import aktual.core.ui.description
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -35,16 +34,11 @@ import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.Month
-import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -92,6 +86,11 @@ private const val LEARN_MORE_URL = "https://actualbudget.org/docs/budgeting/rule
 
 private fun JsonArray.toList(): List<String> = map { it.jsonPrimitive.content }
 
+private fun Condition.recurConfig(): RecurConfig? =
+  (value as? JsonObject)
+    ?.takeIf { field == Date }
+    ?.let { Json.decodeFromJsonElement(RecurConfig.serializer(), it) }
+
 @Composable
 internal fun rememberConditionText(
   prefix: String,
@@ -109,6 +108,8 @@ internal fun rememberConditionText(
   val nameFetcher = LocalNameFetcher.current
   val fieldNamesFlow = remember(nameFetcher, condition) { fieldNamesFlow(condition, nameFetcher) }
   val fieldNames by fieldNamesFlow.collectAsStateWithLifecycle(initialValue = null)
+  val recurConfig = remember(condition) { condition.recurConfig() }
+  val recurText = recurConfig?.description(dateFormat)
 
   return remember(
     condition,
@@ -116,7 +117,7 @@ internal fun rememberConditionText(
     opText,
     fieldText,
     fieldNames,
-    dateFormat,
+    recurText,
     numberFormat,
     currency,
     privacy,
@@ -164,11 +165,10 @@ internal fun rememberConditionText(
         }
 
         is JsonObject -> {
-          if (condition.field != Date) {
+          if (condition.field != Date || recurText == null) {
             error("Should only see a JSON object in a condition value for a date: $condition")
           }
-          val recurConfig = Json.decodeFromJsonElement(RecurConfig.serializer(), value)
-          withStyle(styles.highlighted) { append(recurConfig.string(dateFormat)) }
+          withStyle(styles.highlighted) { append(recurText) }
         }
       }
     }
@@ -337,181 +337,3 @@ private fun RuleAction.opString(): String =
     SetSplitAmount -> Strings.rulesOpSetSplitAmount
     Unknown -> Strings.rulesOpUnknown
   }
-
-// From getRecurringDescription in packages/loot-core/src/shared/schedules.ts
-internal fun RecurConfig.string(dateFormat: DateTimeFormat<LocalDate>): String {
-  val endModeSuffix =
-    when (endMode) {
-      AfterNOccurrences -> if (endOccurrences == 1) "once" else "$endOccurrences times"
-      OnDate -> "until ${endDate?.let(dateFormat::format)}"
-      Never,
-      Unknown,
-      null -> null
-    }
-
-  val weekendSolveSuffix =
-    when (weekendSolveMode) {
-        After -> "(after weekend)"
-        Before -> "(before weekend)"
-        Unknown,
-        null -> ""
-      }
-      .takeIf { skipWeekend == true }
-      .orEmpty()
-
-  val suffix = endModeSuffix?.let { ", $it $weekendSolveSuffix" } ?: weekendSolveSuffix
-
-  val dt = interval ?: 1
-  val desc =
-    when (frequency) {
-      Daily -> {
-        if (dt != 1) {
-          "Every $dt days"
-        } else {
-          "Every day"
-        }
-      }
-      Weekly -> {
-        if (dt != 1) {
-          "Every $dt weeks on ${start.dayOfWeek.nice}"
-        } else {
-          "Every week on ${start.dayOfWeek.nice}"
-        }
-      }
-      Monthly -> {
-        monthlyRecurConfigDesc()
-      }
-      Yearly -> {
-        val dateStr = "${start.month.nice} ${numberSuffix(start.day)}"
-        if (dt != 1) "Every $dt years on $dateStr" else "Every year on $dateStr"
-      }
-      Unknown -> {
-        "Unknown frequency"
-      }
-    }
-
-  return "$desc$suffix".trim()
-}
-
-private fun RecurConfig.monthlyRecurConfigDesc(): String {
-  val patterns = patterns
-  val interval = interval ?: 1
-  return if (!patterns.isNullOrEmpty()) {
-    // Sort the days ascending. We filter out -1 because that represents "last days" and should
-    // always be last, but this sort would put them first
-    val sortedPatterns =
-      patterns
-        .asSequence()
-        .sortedWith(RecurPatternComparator)
-        .filter { it.value != -1 }
-        .plus(patterns.filter { it.value == -1 }) // Add on all -1 values to the end
-        .toList()
-
-    val strings = mutableListOf<String>()
-    val uniqueDays = sortedPatterns.fastMap { it.type }.distinct()
-    val isSameDay = uniqueDays.size == 1 && Day !in uniqueDays
-    sortedPatterns.forEach { p ->
-      strings +=
-        if (p.type == Day) {
-          if (p.value == -1) "last day" else numberSuffix(p.value)
-        } else if (isSameDay) {
-          if (p.value == -1) "last" else numberSuffix(p.value)
-        } else {
-          if (p.value == -1) {
-            "last " + dayName(p.type)
-          } else {
-            numberSuffix(p.value) + " " + dayName(p.type)
-          }
-        }
-    }
-
-    var range = ""
-    if (strings.size > 2) {
-      range += strings.slice(0..<strings.size - 1).joinToString(separator = ", ")
-      range += ", and "
-      range += strings.last()
-    } else {
-      range += strings.joinToString(separator = " and ")
-    }
-
-    if (isSameDay) {
-      range += " " + dayName(sortedPatterns[0].type)
-    }
-
-    if (interval != 1) {
-      "Every $interval months on the $range"
-    } else {
-      "Every month on the $range"
-    }
-  } else {
-    val day = numberSuffix(start.day)
-    if (interval != 1) {
-      "Every $interval months on the $day"
-    } else {
-      "Every month on the $day"
-    }
-  }
-}
-
-private object RecurPatternComparator : Comparator<RecurPattern> {
-  private val RecurType.sortValue
-    get() = if (this == Day) 1 else 0
-
-  override fun compare(p1: RecurPattern, p2: RecurPattern): Int {
-    val typeOrder = p1.type.sortValue - p2.type.sortValue
-    val valueOrder = p1.value - p2.value
-    return if (typeOrder == 0) valueOrder else typeOrder
-  }
-}
-
-private fun numberSuffix(number: Int): String {
-  if (number in 10..19) return "${number}th"
-  return when (number % 10) {
-    1 -> "${number}st"
-    2 -> "${number}nd"
-    3 -> "${number}rd"
-    else -> "${number}th"
-  }
-}
-
-private fun dayName(type: RecurType): String =
-  when (type) {
-    Sunday -> "Sunday"
-    Monday -> "Monday"
-    Tuesday -> "Tuesday"
-    Wednesday -> "Wednesday"
-    Thursday -> "Thursday"
-    Friday -> "Friday"
-    Saturday -> "Saturday"
-    Day -> error("Should never happen")
-    Unknown -> "unknown day"
-  }
-
-private val DayOfWeek.nice: String
-  get() =
-    when (this) {
-      SUNDAY -> "Sunday"
-      MONDAY -> "Monday"
-      TUESDAY -> "Tuesday"
-      WEDNESDAY -> "Wednesday"
-      THURSDAY -> "Thursday"
-      FRIDAY -> "Friday"
-      SATURDAY -> "Saturday"
-    }
-
-private val Month.nice: String
-  get() =
-    when (this) {
-      JANUARY -> "January"
-      FEBRUARY -> "February"
-      MARCH -> "March"
-      APRIL -> "April"
-      MAY -> "May"
-      JUNE -> "June"
-      JULY -> "July"
-      AUGUST -> "August"
-      SEPTEMBER -> "September"
-      OCTOBER -> "October"
-      NOVEMBER -> "November"
-      DECEMBER -> "December"
-    }

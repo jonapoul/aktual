@@ -4,15 +4,13 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RecurConfig
-import aktual.budget.model.RecurPattern
-import aktual.budget.model.RecurType
 import aktual.budget.model.ScheduleId
+import aktual.budget.model.adjustForWeekend
+import aktual.budget.model.occurrences
 import kotlin.math.floor
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.DateTimeUnit.Companion.DAY
-import kotlinx.datetime.DateTimeUnit.Companion.MONTH
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
@@ -24,7 +22,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 
 private const val MAX_OCCURRENCE_ITERATIONS = 10_000
-private const val MAX_RECUR_PERIODS = 100_000
 internal const val POSTED_LOOKBACK_DAYS = 2
 private const val HALF = 0.5
 
@@ -96,135 +93,6 @@ internal fun parseScheduleAmount(raw: String?): Long? {
     .getOrNull()
 }
 
-internal data class RecurOccurrences(val dates: List<LocalDate>, val exhausted: Boolean)
-
-// packages/loot-core/src/shared/schedules.ts recurConfigToRSchedule(), expanded the way rSchedule
-// does: occurrences on or after the start date, dates that don't exist in a period are skipped,
-// and the end date is inclusive. Monthly configs with both day and weekday patterns are two rules,
-// each with its own count.
-internal fun RecurConfig.occurrences(until: LocalDate): RecurOccurrences {
-  val interval = (interval ?: 1).coerceAtLeast(1)
-  val rules: List<PeriodRule> =
-    when (frequency) {
-      Daily -> listOf(PeriodRule { k -> listOf(start.plus(k * interval, DAY)) })
-      Weekly -> listOf(PeriodRule { k -> listOf(start.plus(k * interval * DAYS_PER_WEEK, DAY)) })
-      Yearly ->
-        listOf(PeriodRule { k -> listOfNotNull(dateOrNull(start.year + k * interval, start)) })
-      Monthly -> monthlyRules(interval)
-      Unknown -> emptyList()
-    }
-
-  var exhausted = true
-  val dates = mutableSetOf<LocalDate>()
-  for (rule in rules) {
-    val (ruleDates, ruleExhausted) = expand(rule, until)
-    dates.addAll(ruleDates)
-    exhausted = exhausted && ruleExhausted
-  }
-  return RecurOccurrences(dates.sorted(), exhausted)
-}
-
-// The dates of the kth period of a rule, in order
-private fun interface PeriodRule {
-  fun dates(k: Int): List<LocalDate>
-}
-
-private fun RecurConfig.monthlyRules(interval: Int): List<PeriodRule> {
-  val startMonth = start.yearMonth
-  fun month(k: Int) = startMonth.plus(k * interval, MONTH)
-
-  val patterns = patterns.orEmpty()
-  if (patterns.isEmpty()) {
-    return listOf(PeriodRule { k -> listOfNotNull(dateOrNull(month(k), start.day)) })
-  }
-
-  val days = patterns.filter { it.type == Day }
-  val weekdays = patterns.filter { it.type != Day && it.type != Unknown }
-  val dayRule = PeriodRule { k -> days.mapNotNull { dayOfMonth(month(k), it.value) }.sorted() }
-  val weekdayRule = PeriodRule { k ->
-    buildSet { weekdays.forEach { addAll(nthWeekday(month(k), it)) } }.sorted()
-  }
-  return listOfNotNull(
-    dayRule.takeIf { days.isNotEmpty() },
-    weekdayRule.takeIf { weekdays.isNotEmpty() },
-  )
-}
-
-private fun RecurConfig.expand(
-  rule: PeriodRule,
-  until: LocalDate,
-): Pair<List<LocalDate>, Boolean> {
-  val count = endOccurrences?.takeIf { endMode == AfterNOccurrences }
-  val last = endDate?.takeIf { endMode == OnDate }
-  val dates = mutableListOf<LocalDate>()
-  for (k in 0 until MAX_RECUR_PERIODS) {
-    for (date in rule.dates(k).filter { it >= start }) {
-      val exhausted =
-        when {
-          last != null && date > last -> true
-          count != null && dates.size >= count -> true
-          date > until -> false
-          else -> null
-        }
-      if (exhausted != null) return dates to exhausted
-      dates += date
-    }
-  }
-  return dates to false
-}
-
-private fun dateOrNull(year: Int, start: LocalDate): LocalDate? = runCatching {
-  LocalDate(year, start.month, start.day)
-}
-  .getOrNull()
-
-private fun dateOrNull(month: YearMonth, day: Int): LocalDate? =
-  if (day in 1..month.numberOfDays) LocalDate(month.year, month.month, day) else null
-
-// Negative values count back from the end of the month, so -1 is the last day
-private fun dayOfMonth(month: YearMonth, value: Int): LocalDate? =
-  when {
-    value > 0 -> dateOrNull(month, value)
-    value < 0 -> dateOrNull(month, month.numberOfDays + value + 1)
-    else -> null
-  }
-
-// "2nd Monday" or "last Friday" (-1) of the month. Zero means every one of those weekdays.
-private fun nthWeekday(month: YearMonth, pattern: RecurPattern): List<LocalDate> {
-  val weekday = pattern.type.dayOfWeek() ?: return emptyList()
-  val all = (month.firstDay..month.lastDay).filter { it.dayOfWeek == weekday }
-  val n = pattern.value
-  return when {
-    n > 0 -> listOfNotNull(all.getOrNull(n - 1))
-    n < 0 -> listOfNotNull(all.getOrNull(all.size + n))
-    else -> all
-  }
-}
-
-private fun RecurType.dayOfWeek(): DayOfWeek? =
-  when (this) {
-    Sunday -> SUNDAY
-    Monday -> MONDAY
-    Tuesday -> TUESDAY
-    Wednesday -> WEDNESDAY
-    Thursday -> THURSDAY
-    Friday -> FRIDAY
-    Saturday -> SATURDAY
-    Day,
-    Unknown -> null
-  }
-
-// packages/loot-core/src/shared/schedules.ts getDateWithSkippedWeekend()
-private fun RecurConfig.skipWeekend(date: LocalDate): LocalDate {
-  val saturday = date.dayOfWeek == SATURDAY
-  val sunday = date.dayOfWeek == SUNDAY
-  return when {
-    skipWeekend != true || !(saturday || sunday) -> date
-    weekendSolveMode == Before -> date.minus(if (saturday) 1 else 2, DAY)
-    else -> date.plus(if (saturday) 2 else 1, DAY)
-  }
-}
-
 // packages/loot-core/src/server/forecast/forecast-schedules.ts getFutureOccurrenceDates()
 internal fun futureOccurrenceDates(schedule: ForecastSchedule, end: LocalDate): List<LocalDate> =
   when (val date = schedule.date) {
@@ -244,7 +112,7 @@ private fun recurringDates(
   fun nextOnOrAfter(day: LocalDate): LocalDate? {
     val index = raw.dates.binarySearch(day).let { if (it < 0) -it - 1 else it }
     val occurrence = raw.dates.getOrNull(index) ?: raw.dates.lastOrNull()?.takeIf { raw.exhausted }
-    return occurrence?.let(config::skipWeekend)
+    return occurrence?.let(config::adjustForWeekend)
   }
 
   val dates = mutableListOf(nextDate)
@@ -377,5 +245,3 @@ private fun Map<LocalDate, Amount>.byGranularity(granularity: ForecastGranularit
         .associate { (month, days) -> month.firstDay to days.maxBy { it.key }.value }
         .toImmutableMap()
   }
-
-private const val DAYS_PER_WEEK = 7

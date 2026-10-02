@@ -4,7 +4,6 @@ import aktual.core.icons.material.Check
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -41,7 +40,7 @@ fun <T : Any> ListBottomSheet(
   isEnabled: (T) -> Boolean = { true },
 ) {
   ModalBottomSheet(
-    modifier = modifier.border(Hairline, colors.modalBorder),
+    modifier = modifier,
     onDismissRequest = onDismiss,
     sheetState = sheetState,
     containerColor = colors.modalBackground,
