@@ -600,6 +600,7 @@ private fun ErrorDialog(error: EditScheduleError, onDismiss: () -> Unit) {
       } else {
         Strings.editScheduleErrorSaving
       },
+    highlight = colors.errorText,
     onDismissRequest = onDismiss,
     buttons = { TextButton(onClick = onDismiss) { Text(Strings.editScheduleErrorDismiss) } },
     content = {

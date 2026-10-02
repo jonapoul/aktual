@@ -53,7 +53,7 @@ internal fun UpdateFoundDialogContent(
   AktualAlertDialogContent(
     modifier = modifier,
     title = Strings.infoUpdateFoundTitle,
-    titleColor = colors.noticeText,
+    highlight = colors.noticeText,
     content = {
       TextContent(
         Strings.infoUpdateFoundInstalled,

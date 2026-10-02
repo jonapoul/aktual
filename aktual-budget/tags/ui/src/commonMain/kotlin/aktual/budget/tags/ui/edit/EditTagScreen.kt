@@ -279,6 +279,7 @@ private fun DiscardChangesDialog(onDiscard: () -> Unit, onCancel: () -> Unit) {
 private fun SaveErrorDialog(message: String, onDismiss: () -> Unit) {
   AktualAlertDialog(
     title = Strings.tagsSaveFailureTitle,
+    highlight = colors.errorText,
     onDismissRequest = onDismiss,
     buttons = { TextButton(onClick = onDismiss) { Text(Strings.tagsSaveFailureDismiss) } },
     content = { Text(message) },
