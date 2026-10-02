@@ -38,13 +38,21 @@ val ScheduleAmount.isDeposit: Boolean
       is Between -> from > Zero || to > Zero
     }
 
-// Flips the sign of every amount so it reads as a payment or a deposit
+// Flips the sign of every amount so it reads as a payment or a deposit, keeping a range ascending
 fun ScheduleAmount.withDeposit(deposit: Boolean): ScheduleAmount {
   fun Amount.signed(): Amount = if (this > Zero == deposit || this == Zero) this else -this
   return when (this) {
-    is Exactly -> ScheduleAmount.Exactly(amount.signed())
-    is Approximately -> ScheduleAmount.Approximately(amount.signed())
-    is Between -> ScheduleAmount.Between(from.signed(), to.signed())
+    is Exactly -> {
+      ScheduleAmount.Exactly(amount.signed())
+    }
+    is Approximately -> {
+      ScheduleAmount.Approximately(amount.signed())
+    }
+    is Between -> {
+      val a = from.signed()
+      val b = to.signed()
+      ScheduleAmount.Between(minOf(a, b), maxOf(a, b))
+    }
   }
 }
 
