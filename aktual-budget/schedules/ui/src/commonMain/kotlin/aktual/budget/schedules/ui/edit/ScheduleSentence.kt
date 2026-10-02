@@ -356,7 +356,7 @@ private const val CHIP_PADDING = " "
 
 private const val CHIP_BACKGROUND_ALPHA = 0.35f
 private val ChipRadius = 6.dp
-private val ChipGap = 4.dp
+private val ChipGap = 5.dp
 private val BorderWidth = 1.dp
 private val ActiveBorderWidth = 2.dp
 private val DashLength = 4.dp

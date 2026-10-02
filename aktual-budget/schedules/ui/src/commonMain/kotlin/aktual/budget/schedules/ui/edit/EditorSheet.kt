@@ -5,7 +5,6 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PrimaryTextButton
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -38,7 +37,7 @@ internal fun EditorSheet(
   }
 
   ModalBottomSheet(
-    modifier = modifier.border(EditScheduleDS.hairline, colors.modalBorder),
+    modifier = modifier,
     onDismissRequest = onDismiss,
     sheetState = sheetState,
     containerColor = colors.modalBackground,
