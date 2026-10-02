@@ -184,7 +184,16 @@ private fun EndFields(
       modifier = Modifier.fillMaxWidth(),
       selected = endMode,
       options = END_MODES,
-      onSelect = { onConfigChange(config.copy(endMode = it)) },
+      // Saves the count and date shown below, so a limited schedule never ends up unlimited
+      onSelect = { mode ->
+        onConfigChange(
+          config.copy(
+            endMode = mode,
+            endOccurrences = (config.endOccurrences ?: 1).coerceAtLeast(1),
+            endDate = config.endDate ?: config.start,
+          )
+        )
+      },
       string = { it.string() },
     )
 
