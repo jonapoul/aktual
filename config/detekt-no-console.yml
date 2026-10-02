@@ -1,0 +1,4 @@
+---
+# Only applied to modules, whose detektCheck prints the issues once after deduplicating them
+console-reports:
+  active: false
