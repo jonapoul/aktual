@@ -30,7 +30,12 @@ internal fun EditorSheet(
   modifier: Modifier = Modifier,
   content: @Composable ColumnScope.() -> Unit,
 ) {
-  val sheetState = rememberBottomSheetState(initialValue = Hidden)
+  // No half-open state, so the whole sheet stays above the keyboard as it grows to fit it
+  val sheetState =
+    rememberBottomSheetState(
+      initialValue = Hidden,
+      enabledValues = setOf(Hidden, Expanded),
+    )
   val scope = rememberCoroutineScope()
   fun hide(then: () -> Unit) {
     scope.launch { sheetState.hide() }.invokeOnCompletion { then() }
