@@ -90,7 +90,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -353,8 +352,11 @@ private fun EditScheduleContent(
       Header(name = state.form.name, status = state.status)
     }
 
-    val sentence = rememberScheduleSentence(state) { part -> sheet = part.sheet }
-    Text(text = sentence, style = typography.titleSmall.copy(lineHeight = SentenceLineHeight))
+    ScheduleSentence(
+      state = state,
+      activePart = SentencePart.entries.firstOrNull { it.sheet == sheet },
+      onClick = { part -> sheet = part.sheet },
+    )
 
     if (state.isEditing) {
       Text(
@@ -613,8 +615,6 @@ private val SentencePart.sheet: Sheet
       SentencePart.When -> Sheet.When
     }
 
-private val SentenceLineHeight = 34.sp
-
 @PortraitPreview
 @Composable
 private fun PreviewEditScheduleScaffold(
@@ -627,7 +627,7 @@ private fun PreviewEditScheduleScaffold(
 private val PreviewPayee = NamedEntity(PayeeId("landlord"), "Landlord Ltd")
 private val PreviewAccount = NamedEntity(AccountId("current"), "Current account")
 
-private val PreviewLoaded =
+internal val PreviewLoaded =
   EditScheduleState.Loaded(
     form =
       ScheduleForm(
