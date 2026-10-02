@@ -6,6 +6,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp.Companion.Hairline
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 
@@ -67,7 +69,7 @@ fun AktualAlertDialog(
   modifier: Modifier = Modifier,
   buttons: (@Composable RowScope.() -> Unit)? = null,
   icon: ImageVector? = null,
-  titleColor: Color = colors.pageTextPositive,
+  highlight: Color? = null,
   properties: DialogProperties = DialogProperties(),
   content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -80,7 +82,7 @@ fun AktualAlertDialog(
       title = title,
       buttons = buttons,
       icon = icon,
-      titleColor = titleColor,
+      highlight = highlight,
       content = content,
     )
   }
@@ -92,11 +94,11 @@ fun AktualAlertDialogContent(
   buttons: (@Composable RowScope.() -> Unit)?,
   modifier: Modifier = Modifier,
   icon: ImageVector? = null,
-  titleColor: Color = colors.pageTextPositive,
+  highlight: Color? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Surface(
-    modifier = modifier,
+    modifier = modifier.border(Hairline, highlight ?: colors.modalBorder, DialogShape),
     shape = DialogShape,
     color = colors.modalBackground,
     tonalElevation = AlertDialogDefaults.TonalElevation,
@@ -114,14 +116,18 @@ fun AktualAlertDialogContent(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
       ) {
         if (icon != null) {
-          Icon(imageVector = icon, contentDescription = null, tint = titleColor)
+          Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = highlight ?: colors.pageTextPositive,
+          )
         }
 
         if (title != null) {
           Text(
             modifier = Modifier.padding(vertical = Dimens.Large),
             text = title,
-            color = titleColor,
+            color = highlight ?: colors.pageTextPositive,
             style = typography.headlineSmall,
           )
         }
@@ -149,6 +155,7 @@ private fun PreviewExampleContentWithButtons(
 ) =
   PreviewWithColors(colors) {
     AktualAlertDialogContent(
+      modifier = Modifier.padding(4.dp),
       title = "Hello world",
       buttons = {
         TextButton(onClick = {}) { Text("Delete", color = colors.errorText) }
@@ -172,8 +179,10 @@ private fun PreviewExampleContentWithoutButtons(
 ) =
   PreviewWithColors(colors) {
     AktualAlertDialogContent(
+      modifier = Modifier.padding(4.dp),
       title = "Hello world",
       buttons = null,
+      highlight = colors.noticeText,
       content = {
         Column(horizontalAlignment = CenterHorizontally) {
           Text("This is some text")

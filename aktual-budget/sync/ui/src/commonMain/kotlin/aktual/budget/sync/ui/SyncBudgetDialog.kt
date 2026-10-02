@@ -141,6 +141,7 @@ private fun SyncBudgetDialog(
   ) {
     AktualAlertDialogContent(
       title = null,
+      highlight = if (overallState == Failed) colors.errorText else null,
       content = {
         SyncBudgetDialogContent(
           stepStates = stepStates,

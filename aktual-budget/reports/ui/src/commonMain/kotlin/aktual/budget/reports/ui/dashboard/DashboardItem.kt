@@ -203,7 +203,7 @@ private fun DeleteReportDialogContent(name: String?, onConfirm: () -> Unit, onDi
       } else {
         Strings.reportsDashboardDeleteReportTitle(name)
       },
-    titleColor = colors.errorText,
+    highlight = colors.errorText,
     buttons = {
       TextButton(onClick = onDismiss) { Text(Strings.reportsDashboardDeleteReportCancel) }
       TextButton(onClick = onConfirm) {

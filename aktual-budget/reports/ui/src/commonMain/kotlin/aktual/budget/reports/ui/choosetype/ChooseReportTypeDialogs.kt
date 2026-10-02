@@ -23,7 +23,7 @@ internal fun ChooseReportTypeDialogs(
 private fun UnsupportedTypeDialog(onAction: ChooseReportTypeActionHandler) {
   AktualAlertDialog(
     title = Strings.reportsChooseTypeDisabledDialogTitle,
-    titleColor = colors.warningText,
+    highlight = colors.warningText,
     onDismissRequest = { onAction(DismissDialog) },
     buttons = {
       TextButton(onClick = { onAction(DismissDialog) }) {
