@@ -3,6 +3,7 @@ package aktual.budget.db.dao
 import aktual.budget.db.Accounts
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.GetAllWithStatus
+import aktual.budget.db.GetBankSyncAccounts
 import aktual.budget.db.accounts.GetAllActive
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
@@ -56,6 +57,11 @@ class AccountDao(database: BudgetDatabase) {
   // All non-tombstoned accounts, including closed ones
   suspend fun getAllWithStatus(): List<GetAllWithStatus> = queries.withResult {
     getAllWithStatus().awaitAsList()
+  }
+
+  // Open accounts with their bank's name, linked or not
+  suspend fun getBankSyncAccounts(): List<GetBankSyncAccounts> = queries.withResult {
+    getBankSyncAccounts().awaitAsList()
   }
 
   // All non-tombstoned accounts (including closed) keyed by ID - schedules may reference closed

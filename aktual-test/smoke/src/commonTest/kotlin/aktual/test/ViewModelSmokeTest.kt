@@ -5,6 +5,7 @@ import aktual.about.vm.LicensesViewModel
 import aktual.account.vm.ChangePasswordViewModel
 import aktual.account.vm.LoginViewModel
 import aktual.account.vm.ServerUrlViewModel
+import aktual.budget.banksync.vm.BankSyncViewModel
 import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
@@ -102,6 +103,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   protected open fun optionallySkip() = Unit
 
   @Test fun about() = testSavedStateVM<AboutViewModel>()
+
+  @Test fun bankSync() = testVm<BankSyncViewModel>()
 
   @Test fun budgetList() = testVm<ListBudgetsViewModel>()
 

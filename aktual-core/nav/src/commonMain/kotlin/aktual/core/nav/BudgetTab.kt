@@ -6,4 +6,5 @@ enum class BudgetTab {
   Schedules,
   Rules,
   Tags,
+  BankSync,
 }

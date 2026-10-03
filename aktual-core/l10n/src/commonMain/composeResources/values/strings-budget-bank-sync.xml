@@ -1,0 +1,52 @@
+<resources>
+  <string name="bank_sync_title">Bank sync</string>
+  <string name="bank_sync_read_only">Bank sync is read-only for now. You can see how your accounts are linked to your bank, but syncing and linking aren’t supported yet.</string>
+  <string name="bank_sync_empty">No open accounts</string>
+  <string name="bank_sync_failure_title">Couldn’t load bank sync accounts</string>
+  <string name="bank_sync_failure_message">An unexpected error occurred</string>
+
+  <string name="bank_sync_unnamed_account">Unnamed account</string>
+  <string name="bank_sync_unknown_bank">Unknown bank</string>
+  <string name="bank_sync_last_sync">Last bank sync: %1$s</string>
+  <string name="bank_sync_never_synced">Never synced with your bank</string>
+  <string name="bank_sync_just_now">just now</string>
+  <plurals name="bank_sync_minutes_ago">
+    <item quantity="one">%1$d minute ago</item>
+    <item quantity="other">%1$d minutes ago</item>
+  </plurals>
+  <plurals name="bank_sync_hours_ago">
+    <item quantity="one">%1$d hour ago</item>
+    <item quantity="other">%1$d hours ago</item>
+  </plurals>
+  <plurals name="bank_sync_days_ago">
+    <item quantity="one">%1$d day ago</item>
+    <item quantity="other">%1$d days ago</item>
+  </plurals>
+
+  <string name="bank_sync_unlinked_title">Unlinked accounts</string>
+  <string name="bank_sync_unlinked_message">Linking not supported yet</string>
+
+  <!-- Provider brand names - packages/desktop-client/src/components/banksync/bankSyncUtils.ts -->
+  <string name="bank_sync_provider_gocardless">GoCardless</string>
+  <string name="bank_sync_provider_simplefin">SimpleFIN</string>
+  <string name="bank_sync_provider_pluggyai">Pluggy.ai</string>
+  <string name="bank_sync_provider_enable_banking">Enable Banking</string>
+  <string name="bank_sync_provider_akahu">Akahu</string>
+
+  <string name="bank_sync_provider_checking">Checking…</string>
+  <string name="bank_sync_provider_configured">Configured</string>
+  <string name="bank_sync_provider_not_configured">Not configured</string>
+  <string name="bank_sync_provider_failed">Status unavailable</string>
+  <string name="bank_sync_provider_no_server">No server</string>
+
+  <string name="bank_sync_status_ok">OK</string>
+  <string name="bank_sync_status_pending">Pending</string>
+  <string name="bank_sync_status_sync_requested">Sync requested</string>
+  <string name="bank_sync_status_failed">Failed</string>
+  <string name="bank_sync_status_reauth_required">Re-auth required</string>
+  <string name="bank_sync_status_attention_required">Attention required</string>
+  <string name="bank_sync_status_rate_limited">Rate limited</string>
+  <string name="bank_sync_status_timed_out">Timed out</string>
+  <string name="bank_sync_status_account_missing">Account missing</string>
+  <string name="bank_sync_status_unknown">Unknown</string>
+</resources>

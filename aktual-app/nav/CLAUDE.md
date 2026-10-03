@@ -26,6 +26,8 @@ Budget screens implement `BudgetNavEntryContributor` with `@ContributesIntoSet(B
 budgetEntry<YourNavRoute> { route -> ... }
 ```
 
+Each `BudgetTab` gets its own stack in `BudgetNavRail`. Less frequently used tabs (e.g. `BankSync`) are listed in its `SecondaryTabs`, which puts them below the drawer's divider and in the side rail's menu instead of in the main tab list.
+
 `contribute` also receives `appStack`, the app-level stack, for budget screens that push an app route (e.g. `ScheduleSettingsNavigator(appStack)` from the schedules list).
 
 ## Window insets
