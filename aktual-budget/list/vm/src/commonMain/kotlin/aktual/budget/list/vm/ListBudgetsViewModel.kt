@@ -103,8 +103,8 @@ class ListBudgetsViewModel(
         return@launch
       }
 
-      // Already downloaded, so open it straight away and fetch any changes since the last sync
-      runLevels.onBudget(id, metadata).syncController.schedule()
+      // Already downloaded, so open it straight away. Opening it syncs any changes since last time
+      runLevels.onBudget(id, metadata)
       navToBudget(id)
     }
   }
