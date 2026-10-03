@@ -43,7 +43,7 @@ class MetricsApiTest {
     // then the right request was sent
     assertThat(mockEngine.latestRequestUrl()).isEqualTo("https://test.server.com/metrics")
     val headers = mockEngine.latestRequestHeaders()
-    assertThat(headers["Accept"]).isEqualTo(listOf("application/json"))
+    assertThat(headers["Accept"]).isEqualTo(["application/json"])
     // and the response was parsed properly
     assertThat(response)
       .isEqualTo(

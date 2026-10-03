@@ -222,8 +222,9 @@ class EditTagViewModel(
           // deleted row, resurrecting it under its original id
           tagsDao.insert(id = tombstonedOwner, tag = tag, color = color, description = description)
           syncController.syncChanges(
-            listOf(tombstone(dataset = TAGS, row = tagId.toString())) +
-              insertChanges(tombstonedOwner, tag, color, description)
+            changes =
+              [tombstone(dataset = TAGS, row = tagId.toString())] +
+                insertChanges(tombstonedOwner, tag, color, description)
           )
         } else {
           // creating a tag reuses any existing row with the same name - even a tombstoned one -
@@ -254,13 +255,13 @@ class EditTagViewModel(
     fun change(column: String, value: MessageValue) =
       LocalChange(TAGS, id.toString(), column, value)
 
-    return listOf(
+    return [
       change("id", id.toString().messageValue()),
       change("tag", tag.messageValue()),
       change("color", color.messageValue()),
       change("description", description.messageValue()),
       change("tombstone", false.messageValue()),
-    )
+    ]
   }
 
   private data class Loaded(

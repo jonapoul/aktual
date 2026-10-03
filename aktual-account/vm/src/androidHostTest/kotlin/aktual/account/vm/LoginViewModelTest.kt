@@ -153,10 +153,10 @@ internal class LoginViewModelTest {
   fun `Unknown login methods are filtered out`() = runTest {
     before()
     coEvery { loginRequester.fetchLoginMethods() } returns
-      listOf(
+      [
         AvailableLoginMethod(method = Unknown, displayName = "SAML", isActive = true),
         AvailableLoginMethod(method = Header, displayName = "Header", isActive = true),
-      )
+      ]
 
     viewModel.loginMethods.test {
       assertThat(awaitItem()).isEmpty()

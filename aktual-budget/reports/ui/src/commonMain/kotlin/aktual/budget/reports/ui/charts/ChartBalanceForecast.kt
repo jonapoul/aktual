@@ -369,7 +369,7 @@ internal val PREVIEW_BALANCE_FORECAST_DATA =
     granularity = Monthly,
     source = Schedules,
     items =
-      listOf(
+      [
           2400.0,
           1850.0,
           1200.0,
@@ -382,7 +382,7 @@ internal val PREVIEW_BALANCE_FORECAST_DATA =
           2350.0,
           3100.0,
           3900.0,
-        )
+        ]
         .mapIndexed { i, balance -> LocalDate(2026, i + 1, 1) to Amount(balance) }
         .toMap()
         .toImmutableMap(),

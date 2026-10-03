@@ -20,7 +20,7 @@ import kotlinx.datetime.YearMonth
 class AgeOfMoneyTest {
   @Test
   fun `Simple FIFO match`() {
-    val result = calculateAges(listOf(income("2024-01-01", 1000), expense("2024-01-15", 500)))
+    val result = calculateAges([income("2024-01-01", 1000), expense("2024-01-15", 500)])
 
     assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(14)
     assertThat(result.insufficientData).isFalse()
@@ -30,7 +30,7 @@ class AgeOfMoneyTest {
   fun `Oldest income is used first`() {
     val result =
       calculateAges(
-        listOf(income("2024-01-01", 500), income("2024-01-15", 500), expense("2024-02-01", 400))
+        [income("2024-01-01", 500), income("2024-01-15", 500), expense("2024-02-01", 400)]
       )
 
     assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(31)
@@ -40,7 +40,7 @@ class AgeOfMoneyTest {
   fun `Large expense spans buckets and uses the last one`() {
     val result =
       calculateAges(
-        listOf(income("2024-01-01", 200), income("2024-01-15", 300), expense("2024-02-01", 400))
+        [income("2024-01-01", 200), income("2024-01-15", 300), expense("2024-02-01", 400)]
       )
 
     assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(17)
@@ -50,12 +50,12 @@ class AgeOfMoneyTest {
   fun `Expenses consume buckets in order`() {
     val result =
       calculateAges(
-        listOf(
+        [
           income("2024-01-01", 1000),
           expense("2024-01-10", 300),
           expense("2024-01-20", 300),
           expense("2024-01-30", 300),
-        )
+        ]
       )
 
     assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(9, 19, 29)
@@ -64,14 +64,14 @@ class AgeOfMoneyTest {
 
   @Test
   fun `Expenses beyond income are flagged`() {
-    val result = calculateAges(listOf(income("2024-01-01", 100), expense("2024-01-15", 500)))
+    val result = calculateAges([income("2024-01-01", 100), expense("2024-01-15", 500)])
 
     assertThat(result.insufficientData).isTrue()
   }
 
   @Test
   fun `No income gives no ages`() {
-    val result = calculateAges(listOf(expense("2024-01-15", 500)))
+    val result = calculateAges([expense("2024-01-15", 500)])
 
     assertThat(result.ages).isEmpty()
     assertThat(result.insufficientData).isTrue()
@@ -79,7 +79,7 @@ class AgeOfMoneyTest {
 
   @Test
   fun `No expenses gives no ages`() {
-    val result = calculateAges(listOf(income("2024-01-01", 1000)))
+    val result = calculateAges([income("2024-01-01", 1000)])
 
     assertThat(result.ages).isEmpty()
     assertThat(result.insufficientData).isFalse()
@@ -87,7 +87,7 @@ class AgeOfMoneyTest {
 
   @Test
   fun `Same day income and expense is zero days old`() {
-    val result = calculateAges(listOf(income("2024-01-15", 1000), expense("2024-01-15", 500)))
+    val result = calculateAges([income("2024-01-15", 1000), expense("2024-01-15", 500)])
 
     assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(0)
   }
@@ -96,12 +96,12 @@ class AgeOfMoneyTest {
   fun `Transactions are sorted by date`() {
     val result =
       calculateAges(
-        listOf(
+        [
           income("2024-01-15", 500),
           income("2024-01-01", 500),
           expense("2024-02-15", 200),
           expense("2024-02-01", 200),
-        )
+        ]
       )
 
     assertThat(result.ages)
@@ -113,29 +113,29 @@ class AgeOfMoneyTest {
 
   @Test
   fun `Average of nothing is null`() {
-    assertThat(averageAge(emptyList())).isNull()
+    assertThat(averageAge([])).isNull()
   }
 
   @Test
   fun `Average uses the last ten ages and rounds`() {
-    assertThat(averageAge(listOf(10, 20, 30))).isEqualTo(20)
-    assertThat(averageAge(listOf(1, 2))).isEqualTo(2)
-    assertThat(averageAge(listOf(100) + List(10) { 5 })).isEqualTo(5)
+    assertThat(averageAge([10, 20, 30])).isEqualTo(20)
+    assertThat(averageAge([1, 2])).isEqualTo(2)
+    assertThat(averageAge([100] + List(10) { 5 })).isEqualTo(5)
   }
 
   @Test
   fun `Trend compares the last two values`() {
-    assertThat(calculateTrend(emptyList())).isEqualTo(Stable)
-    assertThat(calculateTrend(listOf(10))).isEqualTo(Stable)
-    assertThat(calculateTrend(listOf(10, 15))).isEqualTo(Up)
-    assertThat(calculateTrend(listOf(15, 10))).isEqualTo(Down)
-    assertThat(calculateTrend(listOf(10, 12))).isEqualTo(Stable)
-    assertThat(calculateTrend(listOf(50, 10, 20))).isEqualTo(Up)
+    assertThat(calculateTrend([])).isEqualTo(Stable)
+    assertThat(calculateTrend([10])).isEqualTo(Stable)
+    assertThat(calculateTrend([10, 15])).isEqualTo(Up)
+    assertThat(calculateTrend([15, 10])).isEqualTo(Down)
+    assertThat(calculateTrend([10, 12])).isEqualTo(Stable)
+    assertThat(calculateTrend([50, 10, 20])).isEqualTo(Up)
   }
 
   @Test
   fun `Daily periods stop at today`() {
-    val ages = listOf(age("2016-12-15", 5), age("2016-12-31", 10), age("2017-01-01", 12))
+    val ages = [age("2016-12-15", 5), age("2016-12-31", 10), age("2017-01-01", 12)]
 
     val data =
       calculateGraphData(
@@ -153,7 +153,7 @@ class AgeOfMoneyTest {
 
   @Test
   fun `Weekly periods stop at the week containing today`() {
-    val ages = listOf(age("2016-12-15", 5), age("2017-01-01", 12))
+    val ages = [age("2016-12-15", 5), age("2017-01-01", 12)]
 
     val data =
       calculateGraphData(
@@ -174,7 +174,7 @@ class AgeOfMoneyTest {
 
   @Test
   fun `Monthly periods include the current month`() {
-    val ages = listOf(age("2016-12-15", 8), age("2017-01-01", 10))
+    val ages = [age("2016-12-15", 8), age("2017-01-01", 10)]
 
     val data =
       calculateGraphData(
@@ -193,12 +193,12 @@ class AgeOfMoneyTest {
   fun `Money sent off budget is spent and money coming back is new income`() {
     val result =
       calculateAges(
-        listOf(
+        [
           income("2024-01-01", 1000),
           expense("2024-01-10", 600),
           income("2024-02-01", 600),
           expense("2024-02-15", 700),
-        )
+        ]
       )
 
     // The second expense drains the rest of January's income, then dips into February's

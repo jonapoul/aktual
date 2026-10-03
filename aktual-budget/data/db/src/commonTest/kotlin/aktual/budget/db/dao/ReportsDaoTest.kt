@@ -28,12 +28,12 @@ internal class ReportsDaoTest {
       transactions.insert("t3", "c", "cat", "payee", LocalDate(2026, 2, 1), amount = 20.0)
 
       // then
-      reports.observeMonteCarloAccountBalances(listOf(AccountId("a"), AccountId("b"))).test {
+      reports.observeMonteCarloAccountBalances([AccountId("a"), AccountId("b")]).test {
         assertThatNextEmissionIsEqualTo(
-          listOf(
+          [
             MonteCarloAccountBalances(account = AccountId("a"), total = 15_000),
             MonteCarloAccountBalances(account = AccountId("b"), total = 0),
-          )
+          ]
         )
       }
     }

@@ -21,7 +21,7 @@ private class AktualIconsProvider : CollectionPreviewParameterProvider<ImageVect
 
 private val aktualIcons =
   with(AktualIcons) {
-    listOf(
+    [
       Add,
       ArrowThickDown,
       ArrowThickUp,
@@ -43,5 +43,5 @@ private val aktualIcons =
       Sum,
       Tag,
       Tuning,
-    )
+    ]
   }

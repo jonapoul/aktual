@@ -14,6 +14,7 @@ kotlin {
   compilerOptions {
     allWarningsAsErrors.set(true)
     freeCompilerArgs.add("-opt-in=org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi")
+    freeCompilerArgs.add("-Xcollection-literals")
   }
 }
 

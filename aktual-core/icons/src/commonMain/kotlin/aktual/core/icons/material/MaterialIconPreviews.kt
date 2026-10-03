@@ -22,7 +22,7 @@ private class MaterialIconsProvider :
 
 private val materialIcons =
   with(MaterialIcons) {
-    listOf(
+    [
       AccountBalance,
       Add,
       Apps,
@@ -96,5 +96,5 @@ private val materialIcons =
       VisibilityOff,
       Warning,
       ZoomOut,
-    )
+    ]
   }

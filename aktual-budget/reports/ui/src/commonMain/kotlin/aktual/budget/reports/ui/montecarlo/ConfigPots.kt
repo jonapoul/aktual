@@ -335,7 +335,7 @@ private fun LinkedAccountPicker(
           .map { it.id }
           .toList()
       val missing = listOfNotNull(pot.accountId?.takeIf { it !in open })
-      (listOf<AccountId?>(null) + missing + open).toImmutableList()
+      ([null] + missing + open).toImmutableList()
     }
 
   AktualExposedDropDownMenu(

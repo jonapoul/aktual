@@ -96,7 +96,7 @@ internal fun parseScheduleAmount(raw: String?): Long? {
 // packages/loot-core/src/server/forecast/forecast-schedules.ts getFutureOccurrenceDates()
 internal fun futureOccurrenceDates(schedule: ForecastSchedule, end: LocalDate): List<LocalDate> =
   when (val date = schedule.date) {
-    is Single -> if (date.date <= end) listOf(date.date) else emptyList()
+    is Single -> if (date.date <= end) [date.date] else []
     is Recurring -> schedule.nextDate?.let { recurringDates(date.config, it, end) }.orEmpty()
   }
 

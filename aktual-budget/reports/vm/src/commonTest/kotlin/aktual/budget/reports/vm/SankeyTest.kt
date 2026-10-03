@@ -165,7 +165,7 @@ class SankeyTest {
         expense(total = -400, categoryId = "b1", groupId = "b"),
         expense(total = -300, categoryId = "a2", groupId = "a"),
         params = SankeyParams(sort = BudgetOrder),
-        categoryOrder = listOf("a", "a1", "a2", "b", "b1"),
+        categoryOrder = ["a", "a1", "a2", "b", "b1"],
       )
 
     assertThat(data.nodes.filter { it.column == 2 }.map { it.key })
@@ -205,10 +205,10 @@ class SankeyTest {
         expense(total = -300, categoryId = "food", accountId = "savings"),
         transfers =
           aggregateTransferPairs(
-            listOf(
+            [
               SankeyTransfer("t1", "t2", -400, "checking", "Checking"),
               SankeyTransfer("t2", "t1", 400, "savings", "Savings"),
-            )
+            ]
           ),
       )
 
@@ -222,12 +222,12 @@ class SankeyTest {
   fun `Transfer pairs net out between two accounts`() {
     val pairs =
       aggregateTransferPairs(
-        listOf(
+        [
           SankeyTransfer("t1", "t2", -400, "a", "A"),
           SankeyTransfer("t2", "t1", 400, "b", "B"),
           SankeyTransfer("t3", "t4", 100, "a", "A"),
           SankeyTransfer("t4", "t3", -100, "b", "B"),
-        )
+        ]
       )
 
     assertThat(pairs).single().isEqualTo(SankeyTransferPair("a", "A", "b", "B", 300))
@@ -248,8 +248,8 @@ class SankeyTest {
 
   private fun calculate(
     vararg entries: SankeyEntry,
-    transfers: List<SankeyTransferPair> = emptyList(),
-    categoryOrder: List<String> = emptyList(),
+    transfers: List<SankeyTransferPair> = [],
+    categoryOrder: List<String> = [],
     params: SankeyParams = SankeyParams(),
   ) =
     calculateSankey(

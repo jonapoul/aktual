@@ -57,7 +57,7 @@ class CustomThemeCacheImpl(
   override suspend fun summaries(): List<CustomThemeSummary> {
     val exists = withContext(contexts.io) { fileSystem.exists(summariesFile) }
     if (!exists) {
-      return emptyList()
+      return []
     }
 
     return try {
@@ -65,10 +65,10 @@ class CustomThemeCacheImpl(
       decode(json, SUMMARIES_SERIALIZER)
     } catch (e: IOException) {
       logcat.e(e) { "Failed reading summaries from $summariesFile" }
-      emptyList()
+      []
     } catch (e: SerializationException) {
       logcat.e(e) { "Failed decoding summaries from $summariesFile" }
-      emptyList()
+      []
     }
   }
 

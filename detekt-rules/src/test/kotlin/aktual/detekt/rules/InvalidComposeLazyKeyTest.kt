@@ -192,7 +192,7 @@ internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentConta
         val enumVal: Status,
       )
 
-      val list = listOf(Item(1, 1L, "a", Tag("x"), ItemId("id"), MarkerImpl(), Singleton, Status.ACTIVE))
+      val list = [Item(1, 1L, "a", Tag("x"), ItemId("id"), MarkerImpl(), Singleton, Status.ACTIVE)]
       """
         .trimIndent()
   }

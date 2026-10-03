@@ -79,7 +79,7 @@ class CashflowChartTest {
       )
 
     val ROWS =
-      listOf(
+      [
         row(year = 1)
           .copy(
             potWithdrawals = persistentListOf(0, 1_000),
@@ -92,7 +92,7 @@ class CashflowChartTest {
             unspentIncome = 200,
           ),
         row(year = 6).copy(plannedSpending = 3_000, afterDepletion = true),
-      )
+      ]
 
     fun row(year: Int) =
       McRunDetailRow(

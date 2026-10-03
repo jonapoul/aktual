@@ -31,7 +31,7 @@ internal class InjectedRawCoroutineScope(config: Config) :
       } else if (klass.isInjected()) {
         klass.primaryConstructorParameters
       } else {
-        emptyList()
+        []
       }
 
     params.forEach(::check)
@@ -58,16 +58,16 @@ internal class InjectedRawCoroutineScope(config: Config) :
     const val INJECT = "Inject"
     const val PROVIDES = "Provides"
 
-    val CLASS_ANNOTATIONS =
-      setOf(
+    val CLASS_ANNOTATIONS: Set<String> =
+      [
         INJECT,
         "AssistedInject",
         "ContributesBinding",
         "ContributesIntoMap",
         "ContributesIntoSet",
         "SingleIn",
-      )
+      ]
 
-    val RAW_TYPES = setOf("CoroutineScope", "kotlinx.coroutines.CoroutineScope")
+    val RAW_TYPES: Set<String> = ["CoroutineScope", "kotlinx.coroutines.CoroutineScope"]
   }
 }

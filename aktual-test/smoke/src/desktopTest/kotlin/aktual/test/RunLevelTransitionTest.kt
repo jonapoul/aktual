@@ -45,7 +45,7 @@ class RunLevelTransitionTest {
         TestBudgetFilesContainer(rootDir),
       )
     with(appGraph.runLevelController) {
-      init(listOf(appGraph))
+      init([appGraph])
       onServerChosen(SERVER_URL)
       onLoggedIn(LOGIN_TOKEN)
       onBudget(BUDGET_ID, DB_METADATA)
@@ -146,7 +146,7 @@ class RunLevelTransitionTest {
     assertThat(parentCloseables).isNotEmpty()
     assertThat(parentInitializables).isNotEmpty()
 
-    for (child in listOf(loggedIn, budget)) {
+    for (child in [loggedIn, budget]) {
       assertThat(child.closeables).containsNone(*parentCloseables)
       assertThat(child.initializables).containsNone(*parentInitializables)
     }

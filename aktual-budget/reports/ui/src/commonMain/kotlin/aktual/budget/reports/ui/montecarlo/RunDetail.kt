@@ -102,8 +102,8 @@ internal fun RunDetailView(
           },
         onClick = {
           if (allExpanded) {
-            expanded = emptySet()
-            working = emptySet()
+            expanded = []
+            working = []
           } else {
             expanded = rows.map { it.year }.toSet()
           }
@@ -396,7 +396,7 @@ private fun workingLines(row: McRunDetailRow, config: McConfig, surplusPotName: 
             }
           }
         } else {
-          emptyList()
+          []
         }
       add(if (streams.isEmpty()) income else "$income (${streams.joinToString("; ")})")
     }

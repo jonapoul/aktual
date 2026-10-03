@@ -52,8 +52,8 @@ internal class ScheduleWriter(
     val scheduleId = uuidGenerator(::ScheduleId)
     val ruleId = uuidGenerator(::RuleId)
     val nextDateId = uuidGenerator(::ScheduleNextDateId)
-    val conditions = form.toConditions(existing = emptyList())
-    val actions = listOf(RuleAction(value = JsonPrimitive(scheduleId.value), op = LinkSchedule))
+    val conditions = form.toConditions(existing = [])
+    val actions = [RuleAction(value = JsonPrimitive(scheduleId.value), op = LinkSchedule)]
     val nextDate = form.date.nextDate(calendar.today())
     val now = clock.now().toEpochMilliseconds()
 

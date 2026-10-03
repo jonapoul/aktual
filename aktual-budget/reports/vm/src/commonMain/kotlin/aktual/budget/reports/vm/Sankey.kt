@@ -457,13 +457,13 @@ private fun GroupedItems.itemsFor(
     .toImmutableList()
 }
 
-private val SOURCE_COLORED =
-  setOf(
-    SankeyLayer.IncomePayee,
-    SankeyLayer.IncomeCategory,
-    SankeyLayer.Account,
-    SankeyLayer.CategoryGroup,
-  )
+private val SOURCE_COLORED: Set<SankeyLayer> =
+  [
+    IncomePayee,
+    IncomeCategory,
+    Account,
+    CategoryGroup,
+  ]
 
 private fun nodeColor(key: String, node: GraphNode): SankeyColor =
   when {

@@ -131,7 +131,7 @@ class EditRuleViewModel(
     mutableIsWorking.update { true }
     viewModelScope.launch {
       try {
-        rulesDao.tombstone(setOf(id))
+        rulesDao.tombstone([id])
         mutableEvents.tryEmit(DeletedRule)
         val change = tombstone(dataset = RULES, row = id.toString())
         syncController.syncChanges(change)
@@ -242,14 +242,14 @@ class EditRuleViewModel(
       LocalChange(RULES, rule.id.toString(), column, value)
 
     return with(rule) {
-      listOf(
+      [
         change("id", id.toString().messageValue()),
         change("stage", stage?.serialName().messageValue()),
         change("conditions", DbJson.encodeToString(conditions.orEmpty()).messageValue()),
         change("actions", DbJson.encodeToString(actions.orEmpty()).messageValue()),
         change("tombstone", tombstone.messageValue()),
         change("conditions_op", conditions_op?.serialName().messageValue()),
-      )
+      ]
     }
   }
 

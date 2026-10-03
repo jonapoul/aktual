@@ -7,7 +7,7 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Suppress("LongMethod")
 fun Colors.properties(): ImmutableList<ThemeProperty> =
-  listOf(
+  [
       "pageBackground" to pageBackground,
       "pageBackgroundModalActive" to pageBackgroundModalActive,
       "pageBackgroundTopLeft" to pageBackgroundTopLeft,
@@ -245,6 +245,6 @@ fun Colors.properties(): ImmutableList<ThemeProperty> =
       "tooltipBackground" to tooltipBackground,
       "tooltipBorder" to tooltipBorder,
       "overlayBackground" to overlayBackground,
-    )
+    ]
     .map { (name, color) -> ThemeProperty(name = name, color = color) }
     .toImmutableList()

@@ -181,7 +181,7 @@ private fun CompactMarkdown(data: TextData, modifier: Modifier = Modifier) =
           Modifier.align(BottomCenter)
             .fillMaxWidth()
             .height(FadeHeight)
-            .background(Brush.verticalGradient(listOf(Transparent, colors.tableBackground)))
+            .background(Brush.verticalGradient([Transparent, colors.tableBackground]))
       )
     }
   }
@@ -304,9 +304,11 @@ private data class TextChartParams(val data: TextData, val compact: Boolean, val
 
 private class TextChartProvider :
   ColoredParameterProvider<TextChartParams>(
-    listOf(PREVIEW_TEXT_DATA, PREVIEW_SHORT_TEXT_DATA, TextData(content = "")).flatMap { data ->
-      listOf(true, false).flatMap { compact ->
-        listOf(true, false).map { private -> TextChartParams(data, compact, private) }
+    [PREVIEW_TEXT_DATA, PREVIEW_SHORT_TEXT_DATA, TextData(content = "")].flatMap { data ->
+      [true, false].flatMap { compact ->
+        [true, false].map { private ->
+          TextChartParams(data, compact, private)
+        }
       }
     }
   )
