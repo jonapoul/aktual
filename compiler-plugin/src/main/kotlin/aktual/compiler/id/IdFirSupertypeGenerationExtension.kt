@@ -31,6 +31,6 @@ internal class IdFirSupertypeGenerationExtension(session: FirSession) :
   ): List<ConeKotlinType> {
     val selfType = classLikeDeclaration.symbol.constructType()
     val comparableType = Comparable.createConeType(session, arrayOf(selfType))
-    return listOf(comparableType)
+    return [comparableType]
   }
 }

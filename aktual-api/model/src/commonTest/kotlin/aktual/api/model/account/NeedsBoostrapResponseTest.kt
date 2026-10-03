@@ -17,9 +17,9 @@ class NeedsBoostrapResponseTest {
               bootstrapped = true,
               loginMethod = Password,
               availableLoginMethods =
-                listOf(
+                [
                   AvailableLoginMethod(method = Password, isActive = true, displayName = "Password")
-                ),
+                ],
               isMultiUser = false,
             )
         ),

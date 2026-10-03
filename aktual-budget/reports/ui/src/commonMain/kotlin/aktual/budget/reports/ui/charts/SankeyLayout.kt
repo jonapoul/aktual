@@ -37,7 +37,7 @@ internal sealed interface SankeyHit {
 internal fun SankeyLayout.hitTest(
   point: Offset,
   slop: Float,
-  labels: List<Rect?> = emptyList(),
+  labels: List<Rect?> = [],
 ): SankeyHit? {
   val node =
     nodes.indices.indexOfFirst { i ->
@@ -90,7 +90,7 @@ internal fun layoutSankey(
   nodePadding: Float,
 ): SankeyLayout {
   val nodes = data.nodes
-  if (nodes.isEmpty() || width <= 0f || height <= 0f) return SankeyLayout(emptyList(), emptyList())
+  if (nodes.isEmpty() || width <= 0f || height <= 0f) return SankeyLayout([], [])
 
   val values = nodes.map { it.value.toLong().toFloat() }
   val columns = nodes.indices.groupBy { nodes[it].column }.toSortedMap().values.toList()

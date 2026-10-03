@@ -22,10 +22,7 @@ import kotlinx.coroutines.flow.update
 @ContributesBinding(AppScope::class, binding<RunLevelController>())
 @ContributesBinding(AppScope::class, binding<RunLevelState>())
 class RunLevelStateHolder(private val driverFactory: SqlDriverFactory) :
-  StateHolder<List<AktualGraph>>(initialState = emptyList()),
-  Closeable,
-  RunLevelState,
-  RunLevelController {
+  StateHolder<List<AktualGraph>>(initialState = []), Closeable, RunLevelState, RunLevelController {
   override fun viewModelFactory(): Flow<MetroViewModelFactory> = mapNotNull { levels ->
     levels.takeIf { it.isNotEmpty() }?.let(::RunLevelViewModelFactory)
   }
@@ -118,7 +115,7 @@ class RunLevelStateHolder(private val driverFactory: SqlDriverFactory) :
   override fun close() {
     update { levels ->
       closeAll(levels.asReversed())
-      emptyList()
+      []
     }
   }
 

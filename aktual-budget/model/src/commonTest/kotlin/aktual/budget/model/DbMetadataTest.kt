@@ -34,7 +34,7 @@ class DbMetadataTest {
       DbMetadata(
         id = "My-Finances-e742ff8",
         budgetName = "Test Budget",
-        budgetCollapsed = listOf("2E1F5BDB-209B-43F9-AF2C-3CE28E380C00"),
+        budgetCollapsed = ["2E1F5BDB-209B-43F9-AF2C-3CE28E380C00"],
         cloudFileId = BudgetId("cf2b43ee-8067-48ed-ab5b-4e4e5531056e"),
         groupId = "ee90358a-f73e-4aa5-a922-653190fd31b7",
         encryptKeyId = null,

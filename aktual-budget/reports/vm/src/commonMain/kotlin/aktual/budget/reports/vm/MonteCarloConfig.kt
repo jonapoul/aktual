@@ -205,7 +205,7 @@ private const val MIX_TOLERANCE = 1e-9
 
 // resolveSpendingPhases(): sorted by starting age, with a default phase when none are set
 fun List<McSpendingPhase>.resolve(): List<McSpendingPhase> = ifEmpty {
-  listOf(McSpendingPhase())
+  [McSpendingPhase()]
 }
   .sortedBy { it.fromAge ?: Int.MIN_VALUE }
 

@@ -41,10 +41,10 @@ class TimestampedPrintStreamLoggerTest {
     byteArrayOutputStream.flush()
     assertThat(contents)
       .isEqualTo(
-        listOf(
+        [
           "2025-05-24T07:53:33.000Z I/TimestampedPrintStreamLoggerTest: Hello world",
           "2025-05-24T07:53:33.000Z D/TAGGED: This one has a tag",
-        )
+        ]
       )
   }
 }

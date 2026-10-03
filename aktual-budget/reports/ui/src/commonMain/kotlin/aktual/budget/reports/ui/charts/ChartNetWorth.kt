@@ -195,7 +195,7 @@ private fun Chart(
             ),
           marker = if (compact) null else rememberMarker(),
           markerVisibilityListener = rememberMarkerHaptics(compact),
-          decorations = listOf(rememberChartZoomDecoration(zoom)),
+          decorations = [rememberChartZoomDecoration(zoom)],
         ),
     )
   }
@@ -246,20 +246,20 @@ internal val PREVIEW_NET_WORTH_META =
   NetWorthReportMeta(
     name = "My Net Worth",
     conditions =
-      listOf(
+      [
         Condition(
           field = Transfer,
           operator = Is,
           value =
             JsonArray(
-              listOf(
+              [
                 JsonPrimitive("13a3d249-1bda-4e72-8ab1-eddae21fc795"),
                 JsonPrimitive("7d7c7459-59bf-4158-ae33-116c2e841020"),
-              )
+              ]
             ),
           type = Boolean,
         )
-      ),
+      ],
     conditionsOp = null,
     timeFrame =
       TimeFrame(

@@ -14,9 +14,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
-@OptIn(ExperimentalKotlinGradlePluginApi::class)
 class ConventionTest : ProjectPlugin {
   override fun Project.applyTo() {
     with(pluginManager) {

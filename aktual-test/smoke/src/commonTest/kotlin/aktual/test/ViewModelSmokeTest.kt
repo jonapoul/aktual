@@ -72,7 +72,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
     rootDir = createTempDirectory().toOkioPath()
     appGraph = buildGraph()
     with(appGraph.runLevelController) {
-      init(listOf(appGraph))
+      init([appGraph])
       onServerChosen(SERVER_URL)
       onLoggedIn(LOGIN_TOKEN)
       onBudget(BUDGET_ID, DB_METADATA)

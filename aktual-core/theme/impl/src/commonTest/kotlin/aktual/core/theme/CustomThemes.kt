@@ -8,14 +8,14 @@ internal val ShadesOfCoffeeThemeSummary =
     name = "Shades of Coffee",
     repo = CustomThemeRepo(userName = "Juulz", repoName = "shades-of-coffee"),
     colors =
-      listOf(
+      [
         Color(0xFFe2d8cf),
         Color(0xFF1a0c00),
         Color(0xFFcfb3ff),
         Color(0xFFf5f2ef),
         Color(0xFF604b39),
         Color(0xFFc29670),
-      ),
+      ],
     mode = ThemeMode.Light,
   )
 

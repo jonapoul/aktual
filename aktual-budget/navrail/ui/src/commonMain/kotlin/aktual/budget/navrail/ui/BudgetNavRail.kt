@@ -473,10 +473,10 @@ internal fun BudgetNavDisplay(
     popTransitionSpec = { slideIntoContainer(towards = End) togetherWith fadeOut() },
     predictivePopTransitionSpec = { slideIntoContainer(towards = End) togetherWith fadeOut() },
     entryDecorators =
-      listOf(
+      [
         rememberSaveableStateHolderNavEntryDecorator(),
         rememberViewModelStoreNavEntryDecorator(),
-      ),
+      ],
     entryProvider =
       entryProvider {
         for (contributor in contributors) {

@@ -31,7 +31,7 @@ class RuleActionTest {
     val TEST_CASE_1 =
       TestCase(
         expected =
-          listOf(
+          [
             RuleAction(
               field = Description,
               type = RuleAction.Type.Id,
@@ -45,7 +45,7 @@ class RuleActionTest {
               options = RuleAction.Options(splitIndex = 0),
               value = JsonPrimitive("51ad3781-25af-4b79-b69c-4e6e62fffabb"),
             ),
-          ),
+          ],
         json =
           """
           [
@@ -72,12 +72,12 @@ class RuleActionTest {
     val TEST_CASE_2 =
       TestCase(
         expected =
-          listOf(
+          [
             RuleAction(
               op = RuleAction.Op.LinkSchedule,
               value = JsonPrimitive("b08a2607-399b-4a6b-9a5c-3b2d083fe07f"),
             )
-          ),
+          ],
         json =
           """
           [
@@ -93,7 +93,7 @@ class RuleActionTest {
     val UNKNOWN_VALUES =
       TestCase(
         expected =
-          listOf(
+          [
             RuleAction(
               field = Unknown,
               type = Unknown,
@@ -101,7 +101,7 @@ class RuleActionTest {
               options = RuleAction.Options(method = Unknown),
               value = JsonPrimitive("abc"),
             )
-          ),
+          ],
         json =
           """
           [

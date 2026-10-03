@@ -28,14 +28,13 @@ suspend fun migrateDatabase(driver: SqlDriver, db: BudgetDatabase) {
 // SqlDriverFactory.onCreate to seed __migrations__ on fresh installs, so that migrateDatabase skips
 // columns/tables that the schema already created.
 internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
-  listOf(
+  [
     // packages/loot-core/migrations/1769000000000_add_custom_upcoming_length.sql
-    1769000000000L to
-      listOf("ALTER TABLE schedules ADD COLUMN custom_upcoming_length TEXT DEFAULT NULL"),
+    1769000000000L to ["ALTER TABLE schedules ADD COLUMN custom_upcoming_length TEXT DEFAULT NULL"],
 
     // packages/loot-core/migrations/1778510362740_add_cleanup_groups_and_def.sql
     1778510362740L to
-      listOf(
+      [
         "ALTER TABLE categories ADD COLUMN cleanup_def TEXT DEFAULT NULL",
         """
         CREATE TABLE IF NOT EXISTS cleanup_groups(
@@ -45,31 +44,30 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
         )
         """
           .trimIndent(),
-      ),
+      ],
 
     // packages/loot-core/migrations/1780099200000_add_show_trend_lines_report_setting.sql
-    1780099200000L to
-      listOf("ALTER TABLE custom_reports ADD COLUMN show_trend_lines INTEGER DEFAULT 0"),
+    1780099200000L to ["ALTER TABLE custom_reports ADD COLUMN show_trend_lines INTEGER DEFAULT 0"],
 
     // packages/loot-core/migrations/1780327681000_add_tags_hidden.sql
-    1780327681000L to listOf("ALTER TABLE tags ADD COLUMN hidden INTEGER DEFAULT 0"),
+    1780327681000L to ["ALTER TABLE tags ADD COLUMN hidden INTEGER DEFAULT 0"],
 
     // packages/loot-core/migrations/1780606215000_add_bank_sync_status.sql
-    1780606215000L to listOf("ALTER TABLE accounts ADD COLUMN bank_sync_status TEXT DEFAULT NULL"),
+    1780606215000L to ["ALTER TABLE accounts ADD COLUMN bank_sync_status TEXT DEFAULT NULL"],
 
     // packages/loot-core/migrations/1780606215001_add_performance_indexes.sql
     1780606215001L to
-      listOf(
+      [
         "CREATE INDEX IF NOT EXISTS idx_transactions_acct_tombstone ON transactions(acct, tombstone)",
         "CREATE INDEX IF NOT EXISTS idx_transactions_schedule ON transactions(schedule)",
-      ),
+      ],
 
     // packages/loot-core/migrations/1783004650757_schedule_sort_order.sql
-    1783004650757L to listOf("ALTER TABLE schedules ADD COLUMN sort_order REAL DEFAULT 0"),
+    1783004650757L to ["ALTER TABLE schedules ADD COLUMN sort_order REAL DEFAULT 0"],
 
     // packages/loot-core/migrations/1787013118115_add_account_groups.sql
     1787013118115L to
-      listOf(
+      [
         """
         CREATE TABLE IF NOT EXISTS account_groups(
           id TEXT PRIMARY KEY,
@@ -80,11 +78,11 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
         """
           .trimIndent(),
         "ALTER TABLE accounts ADD COLUMN account_group_id TEXT DEFAULT NULL",
-      ),
+      ],
 
     // packages/loot-core/migrations/1788468782000_add_messages_pending.js
     1788468782000L to
-      listOf(
+      [
         """
         CREATE TABLE IF NOT EXISTS messages_pending(
           dataset TEXT NOT NULL,
@@ -96,8 +94,8 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
         )
         """
           .trimIndent()
-      ),
-  )
+      ],
+  ]
 
 private const val TAG = "MigrateDatabase"
 

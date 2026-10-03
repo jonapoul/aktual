@@ -31,7 +31,7 @@ class ConditionTest {
         .trimIndent()
 
     val data =
-      listOf(
+      [
         Condition(
           field = Account,
           operator = Is,
@@ -44,7 +44,7 @@ class ConditionTest {
           type = Id,
           value = JsonPrimitive("92ac5221-2605-419d-821a-6ec04ea38b57"),
         ),
-      )
+      ]
 
     val serialized = PrettyJson.encodeToString(data)
     assertThat(serialized).isEqualTo(json)
@@ -79,7 +79,7 @@ class ConditionTest {
         .trimIndent()
 
     val data =
-      listOf(
+      [
         Condition(
           field = Category,
           operator = OneOf,
@@ -87,7 +87,7 @@ class ConditionTest {
           value =
             JsonArray(
               content =
-                listOf(
+                [
                     "e9e1e6e6-6c1b-44c3-9392-8e435ae662f3",
                     "711b4c36-86f5-4206-a815-01bfa83cc5b0",
                     "69779c92-2c05-44d3-8b7d-1f4be08ac423",
@@ -96,11 +96,11 @@ class ConditionTest {
                     "8114e829-af7c-4488-ad74-783bd91a9718",
                     "9dfb243f-9ab8-4b7d-9411-a79f78f23125",
                     "474c707c-fab7-490d-9b33-ea8912c6fe9b",
-                  )
+                  ]
                   .map(::JsonPrimitive)
             ),
         )
-      )
+      ]
 
     val serialized = PrettyJson.encodeToString(data)
     assertThat(serialized).isEqualTo(json)

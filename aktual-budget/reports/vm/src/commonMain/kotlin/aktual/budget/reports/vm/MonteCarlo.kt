@@ -161,7 +161,7 @@ private fun emit(value: Double, deflator: Double): Long =
 // part, then hand the leftover cents to the parts that lost the most in flooring (largest
 // remainder, ties to the lower index)
 private fun emitParts(values: DoubleArray?, deflator: Double, target: Long): List<Long> {
-  if (values == null) return emptyList()
+  if (values == null) return []
   val scaled = DoubleArray(values.size) { values[it] * deflator }
   val parts = DoubleArray(values.size) { floor(scaled[it]) }
   val shortfall = target - parts.sum()

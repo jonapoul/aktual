@@ -31,7 +31,7 @@ internal data class ScheduleConditions(
   val date: Condition?,
 )
 
-private fun ScheduleConditions.asList(): List<Condition?> = listOf(payee, account, amount, date)
+private fun ScheduleConditions.asList(): List<Condition?> = [payee, account, amount, date]
 
 // packages/loot-core/src/shared/schedules.ts extractScheduleConds()
 internal fun List<Condition>.scheduleConditions(): ScheduleConditions =

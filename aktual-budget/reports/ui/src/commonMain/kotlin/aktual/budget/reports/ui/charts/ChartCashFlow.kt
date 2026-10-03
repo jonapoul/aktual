@@ -138,7 +138,7 @@ internal fun CashFlowChart(
               ),
             marker = if (compact) null else rememberMarker(),
             markerVisibilityListener = rememberMarkerHaptics(compact),
-            decorations = listOf(rememberChartZoomDecoration(zoom)),
+            decorations = [rememberChartZoomDecoration(zoom)],
           ),
       )
     }

@@ -10,8 +10,7 @@ private class ConcatSource(sources: Iterable<Source>) : Source {
   private val iterator = sources.iterator()
   private var current: Source? = iterator.nextOrNull()
 
-  @Deprecated("Not supported", level = DeprecationLevel.ERROR)
-  constructor() : this(listOf(error("")))
+  @Deprecated("Not supported", level = DeprecationLevel.ERROR) constructor() : this([error("")])
 
   constructor(vararg sources: Source) : this(sources.toList())
 

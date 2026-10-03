@@ -273,7 +273,7 @@ private data class AmountTextFieldParams(
 @Suppress("MagicNumber")
 private class AmountTextFieldProvider :
   CollectionPreviewParameterProvider<AmountTextFieldParams>(
-    listOf(
+    [
       AmountTextFieldParams(value = JsonNull),
       AmountTextFieldParams(value = JsonPrimitive(5)),
       AmountTextFieldParams(value = JsonPrimitive(12345)),
@@ -282,5 +282,5 @@ private class AmountTextFieldProvider :
       AmountTextFieldParams(value = JsonPrimitive(12345), position = AfterAmount),
       AmountTextFieldParams(value = JsonPrimitive(12345), includeSpace = false),
       AmountTextFieldParams(value = JsonPrimitive(12345), currency = Currency.SwedishKrona),
-    )
+    ]
   )

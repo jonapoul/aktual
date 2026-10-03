@@ -136,18 +136,18 @@ private fun fundingSentences(row: McRunDetailRow): List<String> {
       row.inaccessibleBalance?.let { Strings.monteCarloStoryLocked(it.money()) },
     )
   }
-  if (row.income <= 0) return listOf(Strings.monteCarloStoryFromPots(spent))
+  if (row.income <= 0) return [Strings.monteCarloStoryFromPots(spent)]
 
   // What the pots put towards spending: the withdrawal net of tax
   val netFromPots = row.withdrawal - row.taxPaid
-  if (netFromPots <= 0) return listOf(Strings.monteCarloStoryIncomeAll(spent))
+  if (netFromPots <= 0) return [Strings.monteCarloStoryIncomeAll(spent)]
 
   val fromIncome = row.spent - netFromPots
   // Net income that neither went to spending nor was left over was paid into pots by contributions
   // sourced from the income
   val netIncome = row.income - row.incomeTax
   val toContributions = netIncome - row.unspentIncome - fromIncome
-  return listOf(
+  return [
     when {
       fromIncome <= 0 -> Strings.monteCarloStoryIncomeToContributions(netIncome.money(), spent)
       toContributions > 0 ->
@@ -158,7 +158,7 @@ private fun fundingSentences(row: McRunDetailRow): List<String> {
         )
       else -> Strings.monteCarloStoryIncomePartial(fromIncome.money(), spent)
     }
-  )
+  ]
 }
 
 // One sentence per rule outcome, phrased with the configured numbers so each year's working reads

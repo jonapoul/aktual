@@ -17,6 +17,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
   - `when` branches and `==`/`!=` comparisons: `when (method) { Header -> ... }`, `if (tab == Accounts)`
   - assertions: `assertThat(role).isEqualTo(Admin)`
   - typed property/variable assignments, default parameter values and return values of declared-type functions
+- The project compiles with `-Xcollection-literals`, so instead of writing `listOf(a, b, c)` you can write `[a, b, c]`
 
   Qualify only where the name is ambiguous with a type in scope, as `LoginMethod.Password` is with the `Password` class. Constructor calls of sealed subtypes don't resolve through CSR either, so write `ScheduleDate.Once(date)`, not `Once(date)`.
 - `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` - add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).

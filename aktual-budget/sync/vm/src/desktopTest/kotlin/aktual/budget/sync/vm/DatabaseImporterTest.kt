@@ -106,14 +106,14 @@ class DatabaseImporterTest {
         groupId = "ee90358a-f73e-4aa5-a922-653190fd31b7",
         name = "Test Budget",
         usersWithAccess =
-          listOf(
+          [
             UserWithAccess(
               userId = "354d0cfe-cd36-44eb-a404-5990a3ab5c39",
               userName = "",
               displayName = "",
               isOwner = true,
             )
-          ),
+          ],
       )
 
     val DB_METADATA =

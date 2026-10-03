@@ -96,7 +96,7 @@ class TransactionsViewModelTest {
       )
 
     with(appGraph.runLevelController) {
-      init(listOf(appGraph))
+      init([appGraph])
       onServerChosen(ServerUrl.Demo)
       onLoggedIn(TOKEN)
       val budgetGraph = onBudget(BUDGET_ID, METADATA)
@@ -390,7 +390,7 @@ class TransactionsViewModelTest {
 
     // when
     val edit = LocalChange("transactions", row = "a", column = "notes", MessageValue.String("New"))
-    sync.sendMessages(listOf(edit))
+    sync.sendMessages([edit])
     advanceUntilIdle()
 
     // then

@@ -80,7 +80,7 @@ internal class TransactionWriterTest {
     }
 
     // The view resolves the payee through payee_mapping
-    val view = database.transactionsQueries.getByIds(listOf(id)).awaitAsList().single()
+    val view = database.transactionsQueries.getByIds([id]).awaitAsList().single()
     assertThat(view.accountName).isEqualTo(ACCOUNT.value)
     assertThat(view.payeeName).isEqualTo("Tesco")
     assertThat(view.categoryName).isEqualTo("Groceries")
@@ -142,7 +142,7 @@ internal class TransactionWriterTest {
               parentId = parent,
             )
           )
-        parent to listOf(child1, child2)
+        parent to [child1, child2]
       }
 
     // Parents never have a category
@@ -160,7 +160,7 @@ internal class TransactionWriterTest {
       }
     }
     assertThat(transactionDao.row(children[1])?.category).isEqualTo(HOUSEHOLD)
-    assertThat(transactionDao.childIds(listOf(parent)))
+    assertThat(transactionDao.childIds([parent]))
       .containsExactlyInAnyOrder(*children.toTypedArray())
 
     val parentMessages = messages().filter { it.row == parent.value }.map { it.column }
@@ -388,7 +388,7 @@ internal class TransactionWriterTest {
       prop("isChild") { it.isChild }.isEqualTo(true)
       prop("parent_id") { it.parent_id }.isEqualTo(parent)
     }
-    assertThat(transactionDao.childIds(listOf(parent))).containsOnly(child)
+    assertThat(transactionDao.childIds([parent])).containsOnly(child)
 
     writer.write { update(TransactionUpdate(id = child, parentId = Patch.To(null))) }
     assertThat(transactionDao.row(child)).isNotNull().all {
