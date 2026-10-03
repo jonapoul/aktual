@@ -14,6 +14,9 @@ value class BankSyncStatus private constructor(val value: String) {
     val Failed = BankSyncStatus(value = "failed")
     val ReauthRequired = BankSyncStatus(value = "reauth-required")
     val AttentionRequired = BankSyncStatus(value = "attention-required")
+    val RateLimitExceeded = BankSyncStatus(value = "rate-limit-exceeded")
+    val TimedOut = BankSyncStatus(value = "timed-out")
+    val AccountMissing = BankSyncStatus(value = "account-missing")
 
     fun Other(value: String) = BankSyncStatus(value)
 
@@ -25,6 +28,9 @@ value class BankSyncStatus private constructor(val value: String) {
         Failed.value -> Failed
         ReauthRequired.value -> ReauthRequired
         AttentionRequired.value -> AttentionRequired
+        RateLimitExceeded.value -> RateLimitExceeded
+        TimedOut.value -> TimedOut
+        AccountMissing.value -> AccountMissing
         else -> Other(string)
       }
   }

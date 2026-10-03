@@ -1,0 +1,86 @@
+{
+  "status": "ok",
+  "data": {
+    "balances": [
+      {
+        "balanceAmount": {
+          "amount": "1234.56",
+          "currency": "USD"
+        },
+        "balanceType": "expected",
+        "referenceDate": "2026-09-30"
+      },
+      {
+        "balanceAmount": {
+          "amount": "1234.56",
+          "currency": "USD"
+        },
+        "balanceType": "interimAvailable",
+        "referenceDate": "2026-09-30"
+      }
+    ],
+    "startingBalance": 123456,
+    "transactions": {
+      "all": [
+        {
+          "booked": false,
+          "sortOrder": 1759190400,
+          "date": "2026-09-30",
+          "payeeName": "Coffee Shop",
+          "notes": "COFFEE SHOP 1234",
+          "transactionAmount": {
+            "amount": "-4.50",
+            "currency": "USD"
+          },
+          "transactionId": "TRN-pending-1",
+          "transactedDate": "2026-09-30"
+        },
+        {
+          "booked": true,
+          "sortOrder": 1759017600,
+          "date": "2026-09-28",
+          "payeeName": "Employer Inc",
+          "notes": "PAYROLL",
+          "transactionAmount": {
+            "amount": "2500.00",
+            "currency": "USD"
+          },
+          "transactionId": "TRN-booked-1",
+          "transactedDate": "2026-09-27",
+          "postedDate": "2026-09-28"
+        }
+      ],
+      "booked": [
+        {
+          "booked": true,
+          "sortOrder": 1759017600,
+          "date": "2026-09-28",
+          "payeeName": "Employer Inc",
+          "notes": "PAYROLL",
+          "transactionAmount": {
+            "amount": "2500.00",
+            "currency": "USD"
+          },
+          "transactionId": "TRN-booked-1",
+          "transactedDate": "2026-09-27",
+          "postedDate": "2026-09-28"
+        }
+      ],
+      "pending": [
+        {
+          "booked": false,
+          "sortOrder": 1759190400,
+          "date": "2026-09-30",
+          "payeeName": "Coffee Shop",
+          "notes": "COFFEE SHOP 1234",
+          "transactionAmount": {
+            "amount": "-4.50",
+            "currency": "USD"
+          },
+          "transactionId": "TRN-pending-1",
+          "transactedDate": "2026-09-30"
+        }
+      ]
+    }
+  }
+}

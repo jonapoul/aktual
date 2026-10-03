@@ -1,0 +1,14 @@
+{
+  "status": "ok",
+  "data": {
+    "error_type": "RATE_LIMIT_EXCEEDED",
+    "error_code": "NORDIGEN_ERROR",
+    "status": "rejected",
+    "reason": "Rate limit exceeded",
+    "rateLimitHeaders": {
+      "http_x_ratelimit_account_success_limit": "4",
+      "http_x_ratelimit_account_success_remaining": "0",
+      "http_x_ratelimit_account_success_reset": "86400"
+    }
+  }
+}

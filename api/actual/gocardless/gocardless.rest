@@ -1,0 +1,14 @@
+###
+# @name gocardless/transactions
+POST {{ACTUAL_BASE_URL}}/gocardless/transactions
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{
+    "requisitionId": "{{ACTUAL_GOCARDLESS_REQUISITION_ID}}",
+    "accountId": "{{ACTUAL_GOCARDLESS_ACCOUNT_ID}}",
+    "startDate": "2026-07-01",
+    "includeBalance": true
+}
+
+<> transactions-rate-limit.200.json

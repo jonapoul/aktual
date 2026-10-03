@@ -15,6 +15,8 @@ class AccountSyncSourceTest {
         AccountSyncSource.SimpleFin,
         AccountSyncSource.GoCardless,
         AccountSyncSource.PluggyAi,
+        AccountSyncSource.Akahu,
+        AccountSyncSource.EnableBanking,
         AccountSyncSource.Other("something-else"),
       )
   ) {

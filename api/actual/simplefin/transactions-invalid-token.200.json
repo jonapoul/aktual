@@ -1,0 +1,9 @@
+{
+  "status": "ok",
+  "data": {
+    "error_type": "INVALID_ACCESS_TOKEN",
+    "error_code": "INVALID_ACCESS_TOKEN",
+    "status": "rejected",
+    "reason": "Invalid SimpleFIN access token.  Reset the token and re-link any broken accounts."
+  }
+}

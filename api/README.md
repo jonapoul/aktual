@@ -12,12 +12,16 @@ Create a file at `api/http-client.private.env.json` looking like below:
     "ACTUAL_TOKEN": "cd0892fb-063e-4cce-ab4a-a3c85fc3280c",
     "ACTUAL_PASSWORD": "P@ssw0rd",
     "ACTUAL_MAIN_FILE_ID": "6b76ed8e-88f7-4d09-bff3-1a20e62218dc",
-    "ACTUAL_TEST_FILE_ID": "df27643d-5fcf-4a3a-a535-6feaaa1bf592"
+    "ACTUAL_TEST_FILE_ID": "df27643d-5fcf-4a3a-a535-6feaaa1bf592",
+    "ACTUAL_SIMPLEFIN_ACCOUNT_ID": "ACT-00000000-0000-0000-0000-000000000000",
+    "ACTUAL_GOCARDLESS_REQUISITION_ID": "00000000-0000-0000-0000-000000000000",
+    "ACTUAL_GOCARDLESS_ACCOUNT_ID": "00000000-0000-0000-0000-000000000000",
+    "ACTUAL_PLUGGYAI_ACCOUNT_ID": "00000000-0000-0000-0000-000000000000"
   }
 }
 ```
 
-and enter your server's info. You can get `ACTUAL_TOKEN` from the response to the `account/login` request, and the two `*_FILE_ID` values from `sync/list-user-files`.
+and enter your server's info. You can get `ACTUAL_TOKEN` from the response to the `account/login` request, and the two `*_FILE_ID` values from `sync/list-user-files`. The bank sync account IDs are `accounts.account_id` of a linked account, and the GoCardless requisition ID is its bank's `banks.bank_id`.
 
 # Running
 
