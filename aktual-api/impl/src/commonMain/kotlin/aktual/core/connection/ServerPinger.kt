@@ -5,7 +5,6 @@ import aktual.core.model.PingState
 import aktual.core.model.PingStateHolder
 import aktual.di.Closeable
 import aktual.di.Initializable
-import aktual.di.ScopeLifecycle
 import aktual.di.ServerChosenCoroutineScope
 import aktual.di.ServerChosenScope
 import alakazam.kotlin.LoopController
@@ -35,7 +34,7 @@ class ServerPinger(
   private val healthApi: HealthApi,
   private val pingStateHolder: PingStateHolder,
   private val loopController: LoopController,
-) : ScopeLifecycle {
+) : Initializable, Closeable {
   private var job: Job? = null
 
   override fun initialize() {
