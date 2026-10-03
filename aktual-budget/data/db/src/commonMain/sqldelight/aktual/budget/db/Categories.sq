@@ -36,6 +36,15 @@ getById: SELECT * FROM categories WHERE id = ?;
 
 getName: SELECT name FROM categories WHERE id = ?;
 
+-- packages/loot-core/src/server/accounts/payees.ts getStartingBalancePayee()
+getStartingBalancesCategory:
+SELECT id FROM categories
+  WHERE is_income = 1 AND LOWER(name) = 'starting balances' AND tombstone = 0
+  LIMIT 1;
+
+getFirstIncomeCategory:
+SELECT id FROM categories WHERE is_income = 1 AND tombstone = 0 LIMIT 1;
+
 getNames: SELECT name FROM categories WHERE id IN ?;
 
 getAllActive: SELECT id, name FROM categories WHERE tombstone = 0 AND hidden = 0 ORDER BY sort_order, name;
