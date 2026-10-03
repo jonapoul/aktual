@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -284,7 +285,7 @@ private fun PreviewLicenses(
 private val LOADED_STATE =
   LicensesState.Loaded(
     artifacts =
-      List(size = 5) { listOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi) }
+      List(size = 5) { [AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi] }
         .flatten()
         .toImmutableList(),
     filterText = "",
@@ -299,7 +300,7 @@ private class LicensesParamsProvider :
     LOADED_STATE,
     LOADED_STATE.copy(isSearchActive = true),
     LOADED_STATE.copy(
-      artifacts = emptyList<ArtifactDetail>().toImmutableList(),
+      artifacts = persistentListOf(),
       isSearchActive = true,
     ),
   )

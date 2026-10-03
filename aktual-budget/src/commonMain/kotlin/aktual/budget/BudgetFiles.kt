@@ -44,7 +44,7 @@ class BudgetFiles(val fileSystem: FileSystem, val directoryPath: Path) : Closeab
   }
 
   fun listLocal(): List<LocalBudget> {
-    if (!fileSystem.exists(directoryPath)) return emptyList()
+    if (!fileSystem.exists(directoryPath)) return []
     return fileSystem
       .list(directoryPath)
       .filter { it.name !in HIDDEN_DIRS && fileSystem.metadataOrNull(it)?.isDirectory == true }
@@ -56,6 +56,6 @@ class BudgetFiles(val fileSystem: FileSystem, val directoryPath: Path) : Closeab
   }
 
   private companion object {
-    val HIDDEN_DIRS = setOf("tmp", BudgetId.Demo.value)
+    val HIDDEN_DIRS = ["tmp", BudgetId.Demo.value]
   }
 }

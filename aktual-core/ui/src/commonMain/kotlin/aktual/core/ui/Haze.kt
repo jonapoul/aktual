@@ -238,7 +238,7 @@ private fun barBlurStyle(color: Color, config: HazeConfig, progress: Float = 1f)
     HazeBlurStyle {
       blurRadius(config.radius * progress)
       backgroundColor(color.copy(alpha = color.alpha * progress))
-      colorEffects(listOf(HazeColorEffect.tint(color.copy(alpha = config.alpha * progress))))
+      colorEffects([HazeColorEffect.tint(color.copy(alpha = config.alpha * progress))])
     }
   }
 

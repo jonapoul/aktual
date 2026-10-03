@@ -288,7 +288,7 @@ internal class ChartDataLoader(
         if (showTransfers) {
           dao.observeSankeyTransfers(start.firstDay, end.lastDay)
         } else {
-          flowOf(emptyList())
+          flowOf([])
         }
 
       combine(dao.observeSankeyCategoryTotals(start.firstDay, end.lastDay), transfers) {
@@ -349,7 +349,7 @@ internal class ChartDataLoader(
       .distinctBy { it.category }
       .sortedWith(compareBy({ it.group_sort_order }, { it.category_sort_order }))
       .groupBy { it.category_group }
-      .flatMap { (group, categories) -> listOf(group.value) + categories.map { it.category.value } }
+      .flatMap { (group, categories) -> [group.value] + categories.map { it.category.value } }
 
   // packages/desktop-client/src/components/reports/reports/BalanceForecastCard.tsx
   fun balanceForecast(meta: BalanceForecastReportMeta): Flow<ChartData> =
@@ -412,7 +412,7 @@ internal class ChartDataLoader(
       val selected = (accountFilter?.let { ids -> live.filter { it in ids } } ?: live).toSet()
       val accounts: Set<AccountId?> =
         when {
-          selected.isEmpty() -> emptySet()
+          selected.isEmpty() -> []
           accountFilter == null -> selected + null
           else -> selected
         }

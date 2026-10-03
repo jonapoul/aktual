@@ -31,7 +31,7 @@ class LoginRequester(
       throw e
     } catch (e: Exception) {
       logcat.w(e) { "Failed to fetch login methods" }
-      emptyList()
+      []
     }
 
   suspend fun logIn(

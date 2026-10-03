@@ -14,7 +14,7 @@ internal data class HistoricalReturn(
 )
 
 internal val HISTORICAL_RETURNS: List<HistoricalReturn> =
-  listOf(
+  [
     HistoricalReturn(1928, 0.4381, 0.0084, 0.0308, -0.017),
     HistoricalReturn(1929, -0.083, 0.042, 0.0316, 0.0),
     HistoricalReturn(1930, -0.2512, 0.0454, 0.0455, -0.023),
@@ -113,4 +113,4 @@ internal val HISTORICAL_RETURNS: List<HistoricalReturn> =
     HistoricalReturn(2023, 0.2606, 0.0388, 0.0528, 0.041),
     HistoricalReturn(2024, 0.2488, -0.0164, 0.0518, 0.029),
     HistoricalReturn(2025, 0.1778, 0.078, 0.0421, 0.026),
-  )
+  ]

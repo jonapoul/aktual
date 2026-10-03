@@ -162,7 +162,7 @@ internal class VSchedulesTest {
       )
 
     assertThat(schedulesQueries.getFromVSchedules().awaitAsList())
-      .isEqualTo(listOf(expected1, expected2, expected3))
+      .isEqualTo([expected1, expected2, expected3])
   }
 }
 

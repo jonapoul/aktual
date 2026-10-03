@@ -101,7 +101,7 @@ internal class DashboardSync(
   suspend fun deletePage(id: DashboardPageId): Boolean {
     if (dao.countPages() <= 1) return false
     val widgets = dao.widgetIds(id).map { widget -> tombstone(DASHBOARD, widget.value) }
-    sync.syncChanges(listOf(tombstone(DASHBOARD_PAGES, id.value)) + widgets)
+    sync.syncChanges([tombstone(DASHBOARD_PAGES, id.value)] + widgets)
     return true
   }
 
@@ -115,8 +115,8 @@ internal class DashboardSync(
     }
 
     // The meta keys the Monte Carlo configuration owns, leaving the name and anything unmodelled
-    val MONTE_CARLO_CONFIG_KEYS =
-      setOf(
+    val MONTE_CARLO_CONFIG_KEYS: Set<String> =
+      [
         "pots",
         "withdrawalStrategy",
         "returnModel",
@@ -132,6 +132,6 @@ internal class DashboardSync(
         "currentAge",
         "targetAge",
         "simulationCount",
-      )
+      ]
   }
 }

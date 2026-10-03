@@ -287,6 +287,6 @@ sealed interface Colors {
 
   companion object {
     val Fallback = LightColors
-    val Defaults = setOf(LightColors, DarkColors, MidnightColors)
+    val Defaults: Set<DefaultColors> = [LightColors, DarkColors, MidnightColors]
   }
 }

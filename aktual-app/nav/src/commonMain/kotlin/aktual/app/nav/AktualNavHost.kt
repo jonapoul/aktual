@@ -40,10 +40,10 @@ fun AktualNavHost(
         slideOutHorizontally(targetOffsetX = { width -> width })
     },
     entryDecorators =
-      listOf(
+      [
         rememberSaveableStateHolderNavEntryDecorator(),
         rememberViewModelStoreNavEntryDecorator(),
-      ),
+      ],
     entryProvider =
       entryProvider {
         for (contributor in contributors) {

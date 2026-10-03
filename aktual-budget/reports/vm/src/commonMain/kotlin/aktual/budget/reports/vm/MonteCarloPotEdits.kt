@@ -24,12 +24,12 @@ fun McConfig.withSurplusKept(keep: Boolean, newId: () -> String): McConfig =
     }
 
     keep -> {
-      copy(pots = (listOf(surplusPot(newId())) + pots).toImmutableList())
+      copy(pots = ([surplusPot(newId())] + pots).toImmutableList())
     }
 
     else -> {
       val surplusIds = pots.filter { it.isSurplus }.map { it.id }.toSet()
-      val remaining = pots.filterNot { it.isSurplus }.ifEmpty { listOf(McPot(id = newId())) }
+      val remaining = pots.filterNot { it.isSurplus }.ifEmpty { [McPot(id = newId())] }
       copy(
         pots = remaining.toImmutableList(),
         contributions = contributions.filterNot { it.potId in surplusIds }.toImmutableList(),

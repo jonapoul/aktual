@@ -76,8 +76,8 @@ internal suspend fun BudgetDatabase.insertMeta(key: String, value: String) =
 internal suspend fun BudgetDatabase.insertRule(
   id: String,
   stage: RuleStage? = null,
-  conditions: List<Condition>? = emptyList(),
-  actions: List<RuleAction>? = emptyList(),
+  conditions: List<Condition>? = [],
+  actions: List<RuleAction>? = [],
   tombstone: Boolean? = false,
   conditionsOp: ConditionOp? = ConditionOp.And,
 ) = rulesQueries.withResult {

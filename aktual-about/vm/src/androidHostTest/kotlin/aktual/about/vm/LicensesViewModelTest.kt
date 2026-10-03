@@ -53,7 +53,7 @@ class LicensesViewModelTest {
       assertThatNextEmissionIsEqualTo(Error(message))
 
       // Given the repo now fetches successfully
-      coEvery { repository.loadLicenses() } returns Success(listOf(EXAMPLE_MODEL))
+      coEvery { repository.loadLicenses() } returns Success([EXAMPLE_MODEL])
 
       // When
       viewModel.load()
@@ -69,7 +69,7 @@ class LicensesViewModelTest {
   @Test
   fun `Handle empty licenses list`() = runTest {
     // Given the repo now fetches successfully, but nothing is in the list
-    coEvery { repository.loadLicenses() } returns Success(emptyList())
+    coEvery { repository.loadLicenses() } returns Success([])
 
     // When
     buildViewModel()
@@ -97,7 +97,7 @@ class LicensesViewModelTest {
   @Test
   fun `Open and close search`() = runTest {
     // Given the repo fetches a library successfully
-    val models = listOf(EXAMPLE_MODEL)
+    val models = [EXAMPLE_MODEL]
     coEvery { repository.loadLicenses() } returns Success(models)
 
     // When
@@ -123,8 +123,8 @@ class LicensesViewModelTest {
     val projectLib = EXAMPLE_MODEL.copy(name = "my project")
     val versionLib = EXAMPLE_MODEL.copy(version = "7.8.9")
     val urlLib = EXAMPLE_MODEL.copy(scm = ArtifactScm("www.url.com"))
-    val licenseLib = EXAMPLE_MODEL.copy(spdxLicenses = setOf(Apache2.copy(identifier = "MIT")))
-    val allLibraries = listOf(basicLib, projectLib, versionLib, urlLib, licenseLib)
+    val licenseLib = EXAMPLE_MODEL.copy(spdxLicenses = [Apache2.copy(identifier = "MIT")])
+    val allLibraries = [basicLib, projectLib, versionLib, urlLib, licenseLib]
     coEvery { repository.loadLicenses() } returns Success(allLibraries)
 
     buildViewModel()
@@ -139,13 +139,13 @@ class LicensesViewModelTest {
 
       // Apply filters
       viewModel.setFilterText(text = "my project")
-      assertLoaded(listOf(projectLib), filterText = "my project", isSearchActive = true)
+      assertLoaded([projectLib], filterText = "my project", isSearchActive = true)
 
       viewModel.setFilterText(text = "url")
-      assertLoaded(listOf(urlLib), filterText = "url", isSearchActive = true)
+      assertLoaded([urlLib], filterText = "url", isSearchActive = true)
 
       viewModel.setFilterText(text = "MIT")
-      assertLoaded(listOf(licenseLib), filterText = "MIT", isSearchActive = true)
+      assertLoaded([licenseLib], filterText = "MIT", isSearchActive = true)
 
       viewModel.setFilterText(text = "")
       assertLoaded(allLibraries, filterText = "", isSearchActive = true)
@@ -189,7 +189,7 @@ class LicensesViewModelTest {
         groupId = "com.website",
         artifactId = "something",
         name = "Something",
-        spdxLicenses = setOf(Apache2),
+        spdxLicenses = [Apache2],
         scm = ArtifactScm("www.website.com"),
         version = "1.2.3",
       )

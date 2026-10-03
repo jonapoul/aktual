@@ -89,7 +89,7 @@ class BudgetInfoFetcherTest {
         name = "Main Budget",
         encryptKeyId = null,
         owner = null,
-        usersWithAccess = emptyList(),
+        usersWithAccess = [],
         encryptMeta =
           EncryptMeta(
             keyId = KeyId("2a66f5de-c530-4c06-8103-a48f26a0ce44"),

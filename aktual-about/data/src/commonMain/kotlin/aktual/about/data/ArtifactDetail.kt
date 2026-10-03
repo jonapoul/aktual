@@ -14,8 +14,8 @@ data class ArtifactDetail(
   val artifactId: String,
   val version: String,
   val name: String? = null,
-  val spdxLicenses: Set<SpdxLicense> = emptySet(),
-  val unknownLicenses: Set<UnknownLicense> = emptySet(),
+  val spdxLicenses: Set<SpdxLicense> = [],
+  val unknownLicenses: Set<UnknownLicense> = [],
   val scm: ArtifactScm? = null,
 ) {
   val id: String

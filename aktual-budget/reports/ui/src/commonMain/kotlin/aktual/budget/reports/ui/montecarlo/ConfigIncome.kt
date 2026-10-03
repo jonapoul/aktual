@@ -165,7 +165,7 @@ private fun ContributionCard(
     LabeledField(Strings.monteCarloFieldPaidFrom) {
       val sources =
         remember(config.incomeStreams) {
-          (listOf<String?>(null) + config.incomeStreams.map { it.id }).toImmutableList()
+          ([null] + config.incomeStreams.map { it.id }).toImmutableList()
         }
       AktualExposedDropDownMenu(
         value = contribution.sourceIncomeStreamId,

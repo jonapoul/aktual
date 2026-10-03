@@ -141,4 +141,4 @@ internal constructor(
 }
 
 private fun Schedule.tombstones(change: (String, String) -> LocalChange): List<LocalChange> =
-  listOf(change(RULES, ruleId.value), change(SCHEDULES, id.value))
+  [change(RULES, ruleId.value), change(SCHEDULES, id.value)]

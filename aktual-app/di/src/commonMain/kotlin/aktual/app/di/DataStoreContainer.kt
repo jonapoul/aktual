@@ -28,7 +28,7 @@ object DataStoreContainer {
     return PreferenceDataStoreFactory.create(
       produceFile = { dir.resolve("settings.preferences_pb") },
       scope = scope + contexts.io,
-      migrations = emptyList(),
+      migrations = [],
     )
   }
 }

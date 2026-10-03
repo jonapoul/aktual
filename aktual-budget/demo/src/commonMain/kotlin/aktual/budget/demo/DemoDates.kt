@@ -26,7 +26,7 @@ internal suspend fun SqlDriver.shiftDemoDates(from: LocalDate, to: LocalDate) {
   if (days == 0 && months == 0) return
 
   val statements =
-    listOf(
+    [
       "UPDATE transactions SET date = ${shiftDay("date", days)} WHERE date IS NOT NULL",
       """
       UPDATE schedules_next_date SET
@@ -36,7 +36,7 @@ internal suspend fun SqlDriver.shiftDemoDates(from: LocalDate, to: LocalDate) {
         base_next_date_ts = base_next_date_ts + ${days * MILLIS_PER_DAY}
       """
         .trimIndent(),
-    ) +
+    ] +
       shiftBudgetMonths(table = "zero_budgets", months) +
       shiftBudgetMonths(table = "reflect_budgets", months) +
       shiftIds(
@@ -81,16 +81,16 @@ private fun shiftDay(column: String, days: Int): String {
 private fun shiftBudgetMonths(table: String, months: Int): List<String> {
   val newMonth =
     "strftime('%Y%m', printf('%04d-%02d-01', month / 100, month % 100), '$months months')"
-  return listOf("UPDATE $table SET month = CAST($newMonth AS INTEGER)") +
+  return ["UPDATE $table SET month = CAST($newMonth AS INTEGER)"] +
     shiftIds(table, newId = "month || substr(id, 7)")
 }
 
 // Two passes via a temporary prefix, so a shifted ID never collides with one not yet shifted
 private fun shiftIds(table: String, newId: String): List<String> =
-  listOf(
+  [
     "UPDATE $table SET id = '$TMP_PREFIX' || $newId",
     "UPDATE $table SET id = substr(id, ${TMP_PREFIX.length + 1})",
-  )
+  ]
 
 private const val TMP_PREFIX = "shift:"
 
@@ -154,7 +154,7 @@ private fun JsonElement.shiftDateCondition(period: DatePeriod): JsonElement {
   return JsonObject(this + ("value" to shiftedValue))
 }
 
-private val RECUR_DATE_KEYS = setOf("start", "endDate")
+private val RECUR_DATE_KEYS = ["start", "endDate"]
 
 private fun JsonPrimitive.shiftDate(period: DatePeriod): JsonPrimitive {
   if (!isString) return this

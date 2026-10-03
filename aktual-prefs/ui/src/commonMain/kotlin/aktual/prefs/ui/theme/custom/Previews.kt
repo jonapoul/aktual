@@ -13,14 +13,14 @@ internal val PREVIEW_SUMMARY =
     name = "My theme",
     repo = CustomThemeRepo(userName = "username", repoName = "repo_name"),
     colors =
-      listOf(
+      [
         Color(0xFFff3456),
         Color(0xFF4561ff),
         Color(0xFFff2356),
         Color(0xFF45ff36),
         Color(0xFFf214f6),
         Color(0xFF2156ff),
-      ),
+      ],
     mode = ThemeMode.Light,
   )
 

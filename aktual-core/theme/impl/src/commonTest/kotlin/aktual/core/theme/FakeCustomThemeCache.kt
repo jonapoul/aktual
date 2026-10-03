@@ -2,7 +2,7 @@ package aktual.core.theme
 
 class FakeCustomThemeCache : CustomThemeCache {
   private val storedThemes = mutableMapOf<CustomThemeRepo, CustomColors>()
-  private var storedSummaries: List<CustomThemeSummary> = emptyList()
+  private var storedSummaries: List<CustomThemeSummary> = []
   val savedThemes = mutableListOf<CustomColors>()
 
   fun putTheme(theme: CustomColors) {
@@ -31,6 +31,6 @@ class FakeCustomThemeCache : CustomThemeCache {
   override suspend fun clear() {
     storedThemes.clear()
     savedThemes.clear()
-    storedSummaries = emptyList()
+    storedSummaries = []
   }
 }

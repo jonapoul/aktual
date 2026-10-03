@@ -208,10 +208,10 @@ private fun Chart(
                     LineCartesianLayer.AreaFill.single(
                       Fill(
                         Brush.verticalGradient(
-                          listOf(
+                          [
                             colors.reportsChartFill.copy(alpha = 0.3f),
                             colors.reportsChartFill.copy(alpha = 0.05f),
-                          )
+                          ]
                         )
                       )
                     ),
@@ -241,9 +241,9 @@ private fun Chart(
           markerVisibilityListener = rememberMarkerHaptics(compact),
           decorations =
             if (compact) {
-              emptyList()
+              []
             } else {
-              listOf(rememberTargetLine(), rememberChartZoomDecoration(zoom))
+              [rememberTargetLine(), rememberChartZoomDecoration(zoom)]
             },
         ),
     )
