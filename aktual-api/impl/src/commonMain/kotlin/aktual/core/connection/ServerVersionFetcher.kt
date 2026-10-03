@@ -5,7 +5,6 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.PingStateHolder
 import aktual.di.Closeable
 import aktual.di.Initializable
-import aktual.di.ScopeLifecycle
 import aktual.di.ServerChosenCoroutineScope
 import aktual.di.ServerChosenScope
 import alakazam.kotlin.CoroutineContexts
@@ -40,7 +39,7 @@ class ServerVersionFetcher(
   private val versionsStateHolder: AktualVersionsStateHolder,
   private val loopController: LoopController,
   private val pingStateHolder: PingStateHolder,
-) : ScopeLifecycle {
+) : Initializable, Closeable {
   private var job: Job? = null
 
   override fun initialize() {
