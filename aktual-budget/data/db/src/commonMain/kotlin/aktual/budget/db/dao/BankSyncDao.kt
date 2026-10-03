@@ -117,6 +117,12 @@ class BankSyncDao(database: BudgetDatabase) {
     bankSyncOldestDate(account, today).awaitAsOneOrNull()
   }
 
+  // The raw_synced_data of the account's newest synced deposit, or payment if not [deposit]
+  suspend fun exampleData(account: AccountId, deposit: Boolean): String? = queries.withResult {
+    val query = if (deposit) bankSyncDepositExample(account) else bankSyncPaymentExample(account)
+    query.awaitAsOneOrNull()
+  }
+
   // Every category that isn't deleted
   suspend fun categoryIds(): Set<CategoryId> = queries.withResult {
     bankSyncCategoryIds().awaitAsList().toSet()

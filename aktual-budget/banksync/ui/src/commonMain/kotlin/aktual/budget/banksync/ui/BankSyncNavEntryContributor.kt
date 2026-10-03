@@ -1,6 +1,9 @@
 package aktual.budget.banksync.ui
 
+import aktual.core.nav.BackNavigator
 import aktual.core.nav.BankSyncNavRoute
+import aktual.core.nav.BankSyncSettingsNavRoute
+import aktual.core.nav.BankSyncSettingsNavigator
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.NavStack
@@ -16,6 +19,9 @@ class BankSyncNavEntryContributor : BudgetNavEntryContributor {
     stack: NavStack<BudgetNavKey>,
     appStack: NavStack<NavKey>,
   ) {
-    budgetEntry<BankSyncNavRoute> { BankSyncScreen() }
+    budgetEntry<BankSyncNavRoute> { BankSyncScreen(settings = BankSyncSettingsNavigator(stack)) }
+    budgetEntry<BankSyncSettingsNavRoute> { route ->
+      BankSyncSettingsScreen(id = route.id, back = BackNavigator(stack))
+    }
   }
 }
