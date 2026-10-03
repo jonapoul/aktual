@@ -11,6 +11,8 @@ import aktual.budget.model.SyncState.SyncFailed
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.Closeable
+import aktual.di.Initializable
+import aktual.di.ScopeLifecycle
 import aktual.prefs.AppPreferences
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.ContributesIntoSet
@@ -26,6 +28,7 @@ import logcat.logcat
 
 @SingleIn(BudgetScope::class)
 @ContributesBinding(BudgetScope::class, binding<BudgetSyncController>())
+@ContributesIntoSet(BudgetScope::class, binding<@ForScope(BudgetScope::class) Initializable>())
 @ContributesIntoSet(BudgetScope::class, binding<@ForScope(BudgetScope::class) Closeable>())
 class BudgetSyncControllerImpl
 internal constructor(
@@ -35,9 +38,12 @@ internal constructor(
   private val prefs: AppPreferences,
   private val syncDao: SyncDao,
   private val budgetMetadata: BudgetLocalPreferences,
-) : BudgetSyncController, Closeable {
+) : BudgetSyncController, ScopeLifecycle {
   private var syncJob: Job? = null
   private var inactiveJob: Job? = null
+
+  // Fetch anything that changed on the server since the budget was last open
+  override fun initialize() = schedule()
 
   override suspend fun syncChanges(changes: List<LocalChange>) {
     syncDao.sendMessages(changes)
@@ -75,6 +81,7 @@ internal constructor(
       return
     }
 
+    logcat.i { "Sync started" }
     update(Syncing)
     when (val result = syncer.sync()) {
       is SyncResult.Success -> update(Inactive)
