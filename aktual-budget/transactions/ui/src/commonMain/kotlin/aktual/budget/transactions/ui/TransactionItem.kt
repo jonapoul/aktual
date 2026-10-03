@@ -1,454 +1,281 @@
 package aktual.budget.transactions.ui
 
-import aktual.budget.model.TransactionId
-import aktual.budget.model.TransactionsFormat
-import aktual.budget.model.TransactionsFormat.List
-import aktual.budget.model.TransactionsFormat.Table
+import aktual.budget.model.Amount
+import aktual.budget.model.TransactionsDensity
 import aktual.budget.transactions.vm.Transaction
-import aktual.budget.transactions.vm.TransactionState
-import aktual.budget.transactions.vm.TransactionStateSource
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.TabletPreview
-import aktual.core.ui.checkbox
 import aktual.core.ui.formattedString
-import alakazam.compose.HorizontalSpacer
-import alakazam.compose.VerticalSpacer
+import aktual.core.ui.stringLong
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.LocalMinimumInteractiveComponentSize
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
+// Comfortable and Compact
 @Composable
-internal fun TransactionItem(
-  id: TransactionId,
-  format: TransactionsFormat,
-  source: TransactionStateSource,
-  onAction: ActionListener,
+internal fun LedgerRow(
+  transaction: Transaction,
+  showDate: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  val transactionState = remember(source, id) { source.transactionState(id) }
-  val state by transactionState.collectAsStateWithLifecycle(TransactionState.Loading(id))
-
-  TransactionItem(
-    state = state,
-    format = format,
-    source = source,
-    onAction = onAction,
-    modifier = modifier,
-  )
-}
-
-@Composable
-private fun TransactionItem(
-  state: TransactionState,
-  format: TransactionsFormat,
-  source: TransactionStateSource,
-  onAction: ActionListener,
-  modifier: Modifier = Modifier,
-) =
-  when (state) {
-    is TransactionState.Loading -> LoadingItem(format, modifier)
-    is TransactionState.Loaded -> LoadedItem(state.transaction, format, source, onAction, modifier)
-    is TransactionState.DoesntExist -> FailedItem(state.id, modifier)
-  }
-
-private val ShimmerRowHeight = 16.dp
-
-@Composable
-private fun LoadingItem(
-  format: TransactionsFormat,
-  modifier: Modifier = Modifier,
-) {
-  val dimens = LocalTableDimens.current
-  val shimmer = rememberShimmer(Window)
-
+  val dimens = LocalLedgerDimens.current
   Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .height(LocalMinimumInteractiveComponentSize.current)
-        .clip(CardShape)
-        .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal)
-        .shimmer(shimmer),
+    modifier = modifier.fillMaxWidth().heightIn(min = dimens.rowHeight),
     verticalAlignment = CenterVertically,
   ) {
-    when (format) {
-      List -> LoadingTransactionListItem(dimens)
-      Table -> LoadingTransactionTableItem(dimens)
+    Box(
+      modifier =
+        Modifier.align(Alignment.Top).width(dimens.railWidth).padding(top = dimens.railTop),
+      contentAlignment = TopCenter,
+    ) {
+      if (showDate) DateRail(transaction.date, dimens)
+    }
+
+    Column(modifier = Modifier.weight(1f).padding(vertical = dimens.rowVertical)) {
+      Text(
+        text = transaction.payee.orEmpty(),
+        fontSize = dimens.payeeSize,
+        fontWeight = dimens.payeeWeight,
+        color = colors.pageTextDark,
+        overflow = Ellipsis,
+        maxLines = 1,
+      )
+
+      SecondLine(transaction, dimens)
+    }
+
+    Column(
+      modifier = Modifier.padding(start = dimens.contentGap, end = dimens.rowEnd),
+      horizontalAlignment = Alignment.End,
+    ) {
+      AmountText(transaction.amount, dimens)
+      BalanceText(transaction.balance, dimens)
     }
   }
 }
 
 @Composable
-@Suppress("MagicNumber")
-private fun RowScope.LoadingTransactionListItem(dimens: TransactionSpacings) {
-  // Checkbox placeholder
-  Box(modifier = Modifier.minimumInteractiveComponentSize())
-
-  HorizontalSpacer(dimens.interColumn)
-
-  // Main content placeholder
-  Column(modifier = Modifier.weight(1f)) {
-    Box(
-      modifier =
-        Modifier.fillMaxWidth(0.6f).height(ShimmerRowHeight).background(colors.tableText, CardShape)
-    )
-
-    VerticalSpacer(4.dp)
-
-    Box(
-      modifier =
-        Modifier.fillMaxWidth(0.8f).height(ShimmerRowHeight).background(colors.tableText, CardShape)
-    )
-  }
-
-  HorizontalSpacer(dimens.interColumn)
-
-  // Amount placeholder
-  Box(
-    modifier =
-      Modifier.width(80.dp).height(ShimmerRowHeight).background(colors.tableText, CardShape)
-  )
-
-  HorizontalSpacer(dimens.interColumn)
-
-  // Menu button placeholder
-  Box(modifier = Modifier.minimumInteractiveComponentSize())
-}
-
-@Stable
-@Suppress("MagicNumber")
-private val TransactionSpacings.loadingInterColumn: Dp
-  get() = interColumn * 10
-
-@Composable
-private fun LoadingTransactionTableItem(dimens: TransactionSpacings) {
-  Row(horizontalArrangement = Arrangement.spacedBy(dimens.loadingInterColumn)) {
-    val shimmerModifier =
-      Modifier.weight(1f).height(ShimmerRowHeight).background(colors.tableText, CardShape)
-
-    Box(modifier = Modifier.minimumInteractiveComponentSize()) // Checkbox placeholder
-    Box(modifier = shimmerModifier)
-    Box(modifier = shimmerModifier)
-    Box(modifier = shimmerModifier)
-    Box(modifier = shimmerModifier)
-    Box(modifier = shimmerModifier)
-    Box(modifier = shimmerModifier)
-    Box(modifier = Modifier.minimumInteractiveComponentSize()) // Menu button placeholder
-  }
-}
-
-@Composable
-private fun FailedItem(
-  id: TransactionId,
-  modifier: Modifier = Modifier,
-) {
-  val dimens = LocalTableDimens.current
-  Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .height(LocalMinimumInteractiveComponentSize.current)
-        .clip(CardShape)
-        .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
-    verticalAlignment = CenterVertically,
-  ) {
-    // Checkbox placeholder
-    Box(modifier = Modifier.minimumInteractiveComponentSize())
-
+private fun DateRail(date: LocalDate, dimens: LedgerDimens) =
+  Column(horizontalAlignment = Alignment.CenterHorizontally) {
     Text(
-      modifier = Modifier.weight(1f),
-      text = Strings.transactionsItemNotFound(id.toString()),
-      color = colors.errorText,
-      maxLines = 3,
-    )
-
-    // Button placeholder
-    Box(modifier = Modifier.minimumInteractiveComponentSize())
-  }
-}
-
-@Composable
-private fun LoadedItem(
-  transaction: Transaction,
-  format: TransactionsFormat,
-  source: TransactionStateSource,
-  onAction: ActionListener,
-  modifier: Modifier = Modifier,
-) {
-  val dimens = LocalTableDimens.current
-  Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .height(Min)
-        .clip(CardShape)
-        .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
-    verticalAlignment = CenterVertically,
-  ) {
-    when (format) {
-      List ->
-        TransactionListItem(
-          transaction = transaction,
-          source = source,
-          onAction = onAction,
-          dimens = dimens,
-        )
-
-      Table ->
-        TransactionTableItem(
-          transaction = transaction,
-          source = source,
-          onAction = onAction,
-          dimens = dimens,
-        )
-    }
-  }
-}
-
-@Composable
-private fun RowScope.TransactionListItem(
-  transaction: Transaction,
-  source: TransactionStateSource,
-  onAction: ActionListener,
-  dimens: TransactionSpacings,
-) {
-  val isChecked by
-    source.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
-  Checkbox(
-    modifier = Modifier.minimumInteractiveComponentSize(),
-    checked = isChecked,
-    onCheckedChange = { newValue -> onAction(Action.CheckItem(transaction.id, newValue)) },
-    colors = colors.checkbox(),
-  )
-
-  HorizontalSpacer(dimens.interColumn)
-
-  Column(modifier = Modifier.weight(1f)) {
-    Text(
-      text = transaction.account.orEmpty(),
-      overflow = Ellipsis,
+      text = date.day.toString(),
+      fontSize = dimens.dayNumberSize,
+      lineHeight = dimens.dayNumberSize * DAY_NUMBER_LINE_HEIGHT,
+      fontWeight = Bold,
+      color = colors.pageTextDark,
       maxLines = 1,
-      textAlign = Start,
-      fontSize = dimens.textSize,
-      color = colors.tableText,
     )
 
     Text(
+      text = date.dayOfWeek.stringLong().take(WEEKDAY_LENGTH).uppercase(),
+      fontSize = dimens.weekdaySize,
+      fontWeight = SemiBold,
+      color = colors.pageTextLight,
+      maxLines = 1,
+    )
+  }
+
+@Composable
+private fun SecondLine(transaction: Transaction, dimens: LedgerDimens) {
+  val needsCategory = Strings.transactionsNeedsCategory
+  val warning = SpanStyle(color = colors.warningText, fontWeight = SemiBold)
+  val text = buildAnnotatedString {
+    val category = transaction.category
+    if (category == null) withStyle(warning) { append(needsCategory) } else append(category)
+
+    val account = transaction.account
+    if (dimens.showAccount && account != null) append(" · $account")
+  }
+
+  Text(
+    text = text,
+    fontSize = dimens.secondLineSize,
+    color = colors.pageTextLight,
+    overflow = Ellipsis,
+    maxLines = 1,
+  )
+}
+
+// Dense
+@Composable
+internal fun LedgerTableRow(transaction: Transaction, modifier: Modifier = Modifier) {
+  val dimens = LocalLedgerDimens.current
+  Row(
+    modifier = modifier.fillMaxWidth().height(dimens.rowHeight).padding(horizontal = dimens.rowEnd),
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(dimens.contentGap),
+  ) {
+    Text(
+      modifier = Modifier.width(DenseColumns.date),
+      text = transaction.date.dayAndMonth(),
+      fontSize = dimens.secondLineSize,
+      color = colors.pageTextLight,
+      style = tabularFigures(),
+      maxLines = 1,
+    )
+
+    Text(
+      modifier = Modifier.weight(DenseColumns.PAYEE_WEIGHT),
       text = transaction.payee.orEmpty(),
+      fontSize = dimens.payeeSize,
+      fontWeight = dimens.payeeWeight,
+      color = colors.pageTextDark,
       overflow = Ellipsis,
       maxLines = 1,
-      textAlign = Start,
-      fontSize = dimens.textSize,
-      color = colors.tableText,
     )
 
+    val category = transaction.category
     Text(
-      text = transaction.notes.orEmpty(),
+      modifier = Modifier.weight(DenseColumns.CATEGORY_WEIGHT),
+      text = category ?: Strings.transactionsNoCategory,
+      fontSize = dimens.secondLineSize,
+      fontWeight = if (category == null) SemiBold else null,
+      color = if (category == null) colors.warningText else colors.pageTextLight,
       overflow = Ellipsis,
       maxLines = 1,
-      textAlign = Start,
-      fontSize = dimens.textSize,
-      color = colors.tableText,
     )
 
-    Text(
-      text = transaction.category.orEmpty(),
-      overflow = Ellipsis,
-      maxLines = 1,
-      textAlign = Start,
-      fontSize = dimens.textSize,
-      color = colors.tableText,
-    )
+    AmountText(transaction.amount, dimens, Modifier.width(DenseColumns.amount))
+    BalanceText(transaction.balance, dimens, Modifier.width(DenseColumns.balance))
   }
-
-  Text(
-    text = transaction.amount.formattedString(),
-    overflow = Ellipsis,
-    maxLines = 1,
-    textAlign = End,
-    fontSize = dimens.textSize,
-    color = colors.tableText,
-  )
-
-  HorizontalSpacer(dimens.interColumn)
-
-  BareIconButton(
-    modifier = Modifier.minimumInteractiveComponentSize(),
-    imageVector = MaterialIcons.MoreVert,
-    contentDescription = "",
-    onClick = {},
-  )
 }
 
 @Composable
-private fun RowScope.TransactionTableItem(
-  transaction: Transaction,
-  source: TransactionStateSource,
-  onAction: ActionListener,
-  dimens: TransactionSpacings,
-) {
-  val isChecked by
-    source.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
-  Checkbox(
-    modifier = Modifier.minimumInteractiveComponentSize(),
-    checked = isChecked,
-    onCheckedChange = { newValue -> onAction(Action.CheckItem(transaction.id, newValue)) },
-    colors = colors.checkbox(),
-  )
-
-  HorizontalSpacer(dimens.interColumn)
-
+private fun AmountText(amount: Amount, dimens: LedgerDimens, modifier: Modifier = Modifier) =
   Text(
-    modifier = Modifier.weight(1f),
-    text = transaction.date.toString(),
-    overflow = Ellipsis,
-    maxLines = 1,
-    textAlign = Start,
-    fontSize = dimens.textSize,
-    color = colors.tableText,
-  )
-
-  HorizontalSpacer(dimens.interColumn)
-
-  Text(
-    modifier = Modifier.weight(1f),
-    text = transaction.account.orEmpty(),
-    overflow = Ellipsis,
-    maxLines = 1,
-    textAlign = Start,
-    fontSize = dimens.textSize,
-    color = colors.tableText,
-  )
-
-  HorizontalSpacer(dimens.interColumn)
-
-  Text(
-    modifier = Modifier.weight(1f),
-    text = transaction.payee.orEmpty(),
-    overflow = Ellipsis,
-    maxLines = 1,
-    textAlign = Start,
-    fontSize = dimens.textSize,
-    color = colors.tableText,
-  )
-
-  HorizontalSpacer(dimens.interColumn)
-
-  Text(
-    modifier = Modifier.weight(1f),
-    text = transaction.notes.orEmpty(),
-    overflow = Ellipsis,
-    maxLines = 1,
-    textAlign = Start,
-    fontSize = dimens.textSize,
-    color = colors.tableText,
-  )
-
-  HorizontalSpacer(dimens.interColumn)
-
-  Text(
-    modifier = Modifier.weight(1f),
-    text = transaction.category.orEmpty(),
-    overflow = Ellipsis,
-    maxLines = 1,
-    textAlign = Start,
-    fontSize = dimens.textSize,
-    color = colors.tableText,
-  )
-
-  HorizontalSpacer(dimens.interColumn)
-
-  Text(
-    modifier = Modifier.weight(1f),
-    text = transaction.amount.formattedString(),
-    overflow = Ellipsis,
-    maxLines = 1,
+    modifier = modifier,
+    text = amount.formattedString(includeSign = true),
+    fontSize = dimens.amountSize,
+    fontWeight = dimens.amountWeight,
+    color = amount.color(),
     textAlign = End,
-    fontSize = dimens.textSize,
-    color = colors.tableText,
+    style = tabularFigures(),
+    overflow = Ellipsis,
+    maxLines = 1,
   )
 
-  HorizontalSpacer(dimens.interColumn)
-
-  BareIconButton(
-    modifier = Modifier.minimumInteractiveComponentSize(),
-    imageVector = MaterialIcons.MoreVert,
-    contentDescription = "",
-    onClick = {},
+@Composable
+private fun BalanceText(balance: Amount?, dimens: LedgerDimens, modifier: Modifier = Modifier) =
+  Text(
+    modifier = modifier,
+    text = balance?.formattedString().orEmpty(),
+    fontSize = dimens.balanceSize,
+    color = colors.pageTextSubdued,
+    textAlign = End,
+    style = tabularFigures(),
+    overflow = Ellipsis,
+    maxLines = 1,
   )
+
+@Composable
+@ReadOnlyComposable
+private fun Amount.color(): Color =
+  if (this > Zero) colors.numberPositive else colors.tableText
+
+@Composable
+@ReadOnlyComposable
+internal fun tabularFigures(style: TextStyle = LocalTextStyle.current): TextStyle =
+  style.copy(fontFeatureSettings = "tnum")
+
+private fun LocalDate.dayAndMonth(): String {
+  val day = day.toString().padStart(length = 2, padChar = '0')
+  val month = month.number.toString().padStart(length = 2, padChar = '0')
+  return "$day/$month"
 }
+
+@Composable
+internal fun LedgerShimmerRow(modifier: Modifier = Modifier) {
+  val dimens = LocalLedgerDimens.current
+  val barHeight = dimens.rowHeight / SHIMMER_BAR_FRACTION
+  val bar = Modifier.height(barHeight).background(colors.tableText, CardShape)
+
+  Row(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .height(dimens.rowHeight)
+        .padding(horizontal = dimens.rowEnd)
+        .shimmer(rememberShimmer(Window)),
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(dimens.contentGap),
+  ) {
+    Box(modifier = bar.width(dimens.railWidth - dimens.rowEnd))
+    Box(modifier = bar.weight(1f))
+    Box(modifier = bar.width(DenseColumns.amount))
+  }
+}
+
+private const val DAY_NUMBER_LINE_HEIGHT = 1.1f
+private const val WEEKDAY_LENGTH = 3
+private const val SHIMMER_BAR_FRACTION = 3
 
 @Preview
 @Composable
-private fun PreviewListFormat(
-  @PreviewParameter(TransactionItemProvider::class) params: ColoredParams<TransactionItemParams>
+private fun PreviewLedgerRow(
+  @PreviewParameter(LedgerRowProvider::class) params: ColoredParams<LedgerRowParams>
 ) =
   PreviewWithColors(params.colors) {
-    TransactionItem(
-      state = params.data.state,
-      format = List,
-      source = PreviewTransactionStateSource(params.data.state to params.data.isChecked),
-      onAction = {},
-    )
+    WithLedgerDimens(params.data.density) {
+      when (params.data.density) {
+        Comfortable,
+        Compact -> LedgerRow(params.data.transaction, showDate = params.data.showDate)
+        Dense -> LedgerTableRow(params.data.transaction)
+      }
+    }
   }
 
-@TabletPreview
+@Preview
 @Composable
-private fun PreviewTableFormat(
-  @PreviewParameter(TransactionItemProvider::class) params: ColoredParams<TransactionItemParams>
-) =
-  PreviewWithColors(params.colors) {
-    TransactionItem(
-      state = params.data.state,
-      format = Table,
-      source = PreviewTransactionStateSource(params.data.state to params.data.isChecked),
-      onAction = {},
-    )
-  }
+private fun PreviewLedgerShimmerRow(
+  @PreviewParameter(DensityProvider::class) params: ColoredParams<TransactionsDensity>
+) = PreviewWithColors(params.colors) { WithLedgerDimens(params.data) { LedgerShimmerRow() } }
 
-private data class TransactionItemParams(val state: TransactionState, val isChecked: Boolean)
+private data class LedgerRowParams(
+  val density: TransactionsDensity,
+  val transaction: Transaction,
+  val showDate: Boolean = true,
+)
 
-private class TransactionItemProvider :
-  ColoredParameterProvider<TransactionItemParams>(
-    TransactionItemParams(TransactionState.Loaded(TRANSACTION_1), isChecked = false),
-    TransactionItemParams(TransactionState.Loaded(TRANSACTION_1), isChecked = true),
-    TransactionItemParams(TransactionState.Loading(id = TransactionId("abc")), isChecked = false),
-    TransactionItemParams(
-      TransactionState.DoesntExist(id = TransactionId("abc")),
-      isChecked = false,
-    ),
+private class LedgerRowProvider :
+  ColoredParameterProvider<LedgerRowParams>(
+    LedgerRowParams(Comfortable, TRANSACTION_1),
+    LedgerRowParams(Comfortable, TRANSACTION_2, showDate = false),
+    LedgerRowParams(Comfortable, TRANSACTION_3),
+    LedgerRowParams(Comfortable, TRANSACTION_UNCATEGORISED),
+    LedgerRowParams(Compact, TRANSACTION_1),
+    LedgerRowParams(Compact, TRANSACTION_2, showDate = false),
+    LedgerRowParams(Compact, TRANSACTION_3),
+    LedgerRowParams(Compact, TRANSACTION_UNCATEGORISED),
+    LedgerRowParams(Dense, TRANSACTION_1),
+    LedgerRowParams(Dense, TRANSACTION_3),
+    LedgerRowParams(Dense, TRANSACTION_UNCATEGORISED),
   )

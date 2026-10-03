@@ -5,6 +5,7 @@ import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
+import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.DbMetadata
@@ -22,13 +23,6 @@ internal val DATE_3 = LocalDate(2025, Month.JUNE, 3)
 internal val TOKEN = Token("abc-123")
 internal val BUDGET_ID = BudgetId("xyz-789")
 internal val METADATA = DbMetadata(data = persistentMapOf(DbMetadata.CloudFileId to BUDGET_ID))
-
-internal val ID_A = TransactionId("a")
-internal val ID_B = TransactionId("b")
-internal val ID_C = TransactionId("c")
-internal val ID_D = TransactionId("d")
-internal val ID_E = TransactionId("e")
-internal val ID_F = TransactionId("f")
 
 internal suspend fun AccountDao.insertAccount(id: AccountId, name: String) {
   insert(id = id, accountId = id.toString(), name = name, officialName = name)
@@ -55,4 +49,29 @@ internal suspend fun TransactionDao.insertTransaction(
     notes = notes,
     date = date,
     amount = amount,
+  )
+
+private val ACCOUNTS = mapOf("a" to "Amex", "b" to "Barclays", "c" to "Chase")
+private val PAYEES = mapOf("a" to "Argos", "b" to "B&Q", "c" to "Co-op")
+private val CATEGORIES = mapOf("a" to "Additional", "b" to "Building", "c" to "Car")
+
+// What the paging source should emit for a row added with insertTransaction
+internal fun transaction(
+  id: String,
+  account: String,
+  category: String,
+  payee: String,
+  notes: String? = null,
+  date: LocalDate = DATE_1,
+  amount: Double = 123.45,
+) =
+  Transaction(
+    id = TransactionId(id),
+    date = date,
+    account = ACCOUNTS.getValue(account),
+    payee = PAYEES.getValue(payee),
+    notes = notes,
+    category = CATEGORIES.getValue(category),
+    amount = Amount(amount),
+    balance = DummyBalance,
   )

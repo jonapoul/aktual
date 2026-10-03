@@ -3,7 +3,6 @@ package aktual.budget.db.dao
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.NotesContainingHash
 import aktual.budget.db.Transactions
-import aktual.budget.db.transactions.GetById
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
 import aktual.budget.model.AccountId
@@ -11,36 +10,46 @@ import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
-import alakazam.kotlin.CoroutineContexts
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToOne
-import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.zacsweers.metro.Inject
 import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 
 data class TransactionNotes(val id: TransactionId, val notes: String?)
 
+data class TransactionRow(
+  val id: TransactionId,
+  val date: LocalDate,
+  val accountName: String?,
+  val payeeName: String?,
+  val notes: String?,
+  val categoryName: String?,
+  val amount: Long,
+)
+
 @Inject
-class TransactionDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
+class TransactionDao(database: BudgetDatabase) {
   private val queries = database.transactionsQueries
 
-  fun observeById(id: TransactionId): Flow<GetById?> =
-    queries.getById(id).asFlow().mapToOneOrNull(contexts.default).distinctUntilChanged()
-
-  suspend fun getIdsPaged(limit: Long, offset: Long): List<TransactionId> = queries.withResult {
-    getIdsPaged(limit, offset).awaitAsList()
+  suspend fun getPaged(limit: Long, offset: Long): List<TransactionRow> = queries.withResult {
+    getPaged(limit, offset, ::TransactionRow).awaitAsList()
   }
 
-  suspend fun getIdsByAccountPaged(
+  suspend fun getByAccountPaged(
     account: AccountId,
     limit: Long,
     offset: Long,
-  ): List<TransactionId> = queries.withResult {
-    getIdsByAccountPaged(account, limit, offset).awaitAsList()
+  ): List<TransactionRow> = queries.withResult {
+    getByAccountPaged(account, limit, offset, ::TransactionRow).awaitAsList()
+  }
+
+  // Rows come back in the order of the given IDs
+  suspend fun getByIds(ids: List<TransactionId>): List<TransactionRow> = queries.withResult {
+    val rows = getByIds(ids, ::TransactionRow).awaitAsList().associateBy { it.id }
+    ids.mapNotNull(rows::get)
   }
 
   suspend fun getIdsAndNotes(): List<TransactionNotes> = queries.withResult {
@@ -56,11 +65,8 @@ class TransactionDao(database: BudgetDatabase, private val contexts: CoroutineCo
     notesContainingHash().awaitAsList().mapNotNull(NotesContainingHash::notes)
   }
 
-  fun observeCount(): Flow<Long> =
-    queries.getIdsCount().asFlow().mapToOne(contexts.default).distinctUntilChanged()
-
-  fun observeCountByAccount(account: AccountId): Flow<Long> =
-    queries.getIdsByAccountCount(account).asFlow().mapToOne(contexts.default).distinctUntilChanged()
+  // Emits whenever a table behind the transactions view is written to
+  fun observeChanges(): Flow<Unit> = queries.getIdsCount().asFlow().map {}
 
   suspend fun insert(
     id: String,

@@ -26,6 +26,7 @@ kotlin {
   }
 
   androidHostTestDependencies {
+    implementation(libs.androidx.paging.testing)
     implementation(project(":aktual-app:di"))
     implementation(project(":aktual-di:runlevel"))
     implementation(project(":aktual-test"))
