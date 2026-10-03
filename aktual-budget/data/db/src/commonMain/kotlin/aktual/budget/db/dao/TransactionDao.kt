@@ -11,6 +11,7 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.coroutines.asFlow
 import dev.zacsweers.metro.Inject
 import kotlin.time.Duration.Companion.days
@@ -65,6 +66,16 @@ class TransactionDao(database: BudgetDatabase) {
     notesContainingHash().awaitAsList().mapNotNull(NotesContainingHash::notes)
   }
 
+  suspend fun row(id: TransactionId): Transactions? = queries.withResult {
+    getRowById(id).awaitAsOneOrNull()
+  }
+
+  // Every child of these split parents, deleted or not, as upstream's idsWithChildren()
+  suspend fun childIds(parents: Collection<TransactionId>): List<TransactionId> =
+    queries.withResult {
+      parents.chunked(MAX_BIND_ARGS).flatMap { chunk -> getChildIds(chunk).awaitAsList() }
+    }
+
   // Emits whenever a table behind the transactions view is written to
   fun observeChanges(): Flow<Unit> = queries.getIdsCount().asFlow().map {}
 
@@ -107,3 +118,6 @@ class TransactionDao(database: BudgetDatabase) {
     )
   }
 }
+
+// Under SQLite's limit on bound parameters in one statement
+private const val MAX_BIND_ARGS = 900

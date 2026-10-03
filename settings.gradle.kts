@@ -195,6 +195,7 @@ include(
   ":aktual-budget:sync:vm",
   ":aktual-budget:tags:ui",
   ":aktual-budget:tags:vm",
+  ":aktual-budget:transactions:domain",
   ":aktual-budget:transactions:ui",
   ":aktual-budget:transactions:vm",
   ":aktual-core",

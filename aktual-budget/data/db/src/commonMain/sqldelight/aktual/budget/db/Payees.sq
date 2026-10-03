@@ -33,6 +33,10 @@ deleteById: DELETE FROM payees WHERE id = ?;
 
 getById: SELECT * FROM payees WHERE id = ? LIMIT 1;
 
+-- packages/loot-core/src/server/accounts/payees.ts createPayee(). Upstream compares with
+-- UNICODE_LOWER, which SQLite doesn't have, so callers compare the names themselves
+getAliveIdsAndNames: SELECT id, name FROM payees WHERE tombstone = 0;
+
 getName:
   SELECT name
     FROM v_payees

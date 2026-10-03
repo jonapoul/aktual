@@ -33,6 +33,12 @@ class CategoryDao(database: BudgetDatabase) {
     mappings.insert(id = id, transferId = id)
   }
 
+  // getStartingBalancePayee(): the income category named "Starting Balances", or else any income
+  // category
+  suspend fun startingBalanceCategory(): CategoryId? = queries.withResult {
+    getStartingBalancesCategory().awaitAsOneOrNull() ?: getFirstIncomeCategory().awaitAsOneOrNull()
+  }
+
   suspend fun name(id: CategoryId): String? = queries.withResult {
     getName(id).awaitAsOneOrNull()?.name
   }

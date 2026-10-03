@@ -140,6 +140,19 @@ SELECT id FROM v_transactions WHERE account = ? ORDER BY date DESC;
 getIds:
 SELECT id FROM v_transactions ORDER BY date DESC;
 
+-- Raw row, for the write path to inspect the stored columns
+getRowById:
+SELECT * FROM transactions WHERE id = ?;
+
+-- packages/loot-core/src/server/transactions/index.ts idsWithChildren(). Upstream reads
+-- v_transactions_internal, whose computed parent_id SQLDelight can't type, so this inlines its filters
+getChildIds:
+SELECT id FROM transactions
+  WHERE parent_id IN ? AND
+    (isChild IS NULL OR isChild != 0) AND
+    date IS NOT NULL AND
+    acct IS NOT NULL;
+
 -- Paginated queries for Paging 3
 getPaged:
 SELECT

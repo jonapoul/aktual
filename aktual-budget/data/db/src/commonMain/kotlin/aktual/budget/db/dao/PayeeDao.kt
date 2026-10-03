@@ -1,6 +1,7 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.Payees
 import aktual.budget.db.payees.GetAllActive
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
@@ -25,6 +26,15 @@ class PayeeDao(database: BudgetDatabase) {
       learn_categories = null,
     )
     mappings.insert(id = id, targetId = id)
+  }
+
+  suspend operator fun get(id: PayeeId): Payees? = queries.withResult {
+    getById(id).awaitAsOneOrNull()
+  }
+
+  // Every payee that isn't deleted, transfer payees included
+  suspend fun aliveNames(): Map<PayeeId, String?> = queries.withResult {
+    getAliveIdsAndNames().awaitAsList().associate { it.id to it.name }
   }
 
   suspend fun name(id: PayeeId): String? = queries.withResult {
