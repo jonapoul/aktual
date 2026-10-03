@@ -1,10 +1,8 @@
 package aktual.budget.reports.ui.montecarlo
 
-import aktual.budget.reports.vm.FloorCeilingBound
 import aktual.budget.reports.vm.McRuleExplanation
 import aktual.budget.reports.vm.McRunDetailRow
 import aktual.budget.reports.vm.McWithdrawalRule
-import aktual.budget.reports.vm.RuleAction
 import aktual.budget.reports.vm.WithdrawalRuleType
 import aktual.core.l10n.Strings
 import androidx.compose.runtime.Composable
@@ -61,21 +59,19 @@ private fun ruleName(rule: WithdrawalRuleType): String =
 @Composable
 private fun ruleDecisionSentence(explanation: McRuleExplanation, rule: McWithdrawalRule): String? =
   when (explanation) {
-    is McRuleExplanation.Anchor -> {
+    is Anchor -> {
       Strings.monteCarloStoryAnchor
     }
 
-    is McRuleExplanation.FloorCeiling -> {
+    is FloorCeiling -> {
       val unclamped = explanation.unclamped.money()
       when (explanation.applied) {
-        FloorCeilingBound.Floor ->
-          Strings.monteCarloStoryFloor(explanation.floor.money(), unclamped)
-        FloorCeilingBound.Ceiling ->
-          Strings.monteCarloStoryCeiling(explanation.ceiling.money(), unclamped)
-        FloorCeilingBound.Rate -> null
+        Floor -> Strings.monteCarloStoryFloor(explanation.floor.money(), unclamped)
+        Ceiling -> Strings.monteCarloStoryCeiling(explanation.ceiling.money(), unclamped)
+        Rate -> null
       }
     }
-    is McRuleExplanation.Factor -> {
+    is Factor -> {
       factorSentence(explanation, rule)
     }
   }
@@ -86,7 +82,7 @@ private fun factorSentence(explanation: McRuleExplanation.Factor, rule: McWithdr
   val planned = explanation.planned.money()
   val adjusted = explanation.adjusted.money()
   return when (explanation.action) {
-    RuleAction.Cut ->
+    Cut ->
       if (explanation.rule == Boundaries) {
         Strings.monteCarloStoryCutBoundaries(
           name,
@@ -98,7 +94,7 @@ private fun factorSentence(explanation: McRuleExplanation.Factor, rule: McWithdr
         Strings.monteCarloStoryCut(name, planned, adjusted)
       }
 
-    RuleAction.Raise ->
+    Raise ->
       when (explanation.rule) {
         Boundaries ->
           Strings.monteCarloStoryRaiseBoundaries(
@@ -121,7 +117,7 @@ private fun factorSentence(explanation: McRuleExplanation.Factor, rule: McWithdr
         Unknown -> Strings.monteCarloStoryRaise(name, planned, adjusted)
       }
 
-    RuleAction.None ->
+    None ->
       if (explanation.factor != 1.0) {
         Strings.monteCarloStoryEarlier(name, adjusted, planned)
       } else {
@@ -170,7 +166,7 @@ private fun fundingSentences(row: McRunDetailRow): List<String> {
 @Composable
 internal fun ruleWorking(explanation: McRuleExplanation, rule: McWithdrawalRule): String =
   when (explanation) {
-    is McRuleExplanation.Anchor -> {
+    is Anchor -> {
       Strings.monteCarloWorkingAnchor(
         formatRuleRate(explanation.rate),
         formatRuleRate(rule.floorPct),
@@ -178,25 +174,25 @@ internal fun ruleWorking(explanation: McRuleExplanation, rule: McWithdrawalRule)
       )
     }
 
-    is McRuleExplanation.FloorCeiling -> {
+    is FloorCeiling -> {
       val rate = formatRuleRate(explanation.rate)
       val amount = explanation.unclamped.money()
       when (explanation.applied) {
-        FloorCeilingBound.Floor ->
+        Floor ->
           Strings.monteCarloWorkingFloor(
             rate,
             amount,
             formatRuleRate(rule.floorPct),
             explanation.floor.money(),
           )
-        FloorCeilingBound.Ceiling ->
+        Ceiling ->
           Strings.monteCarloWorkingCeiling(
             rate,
             amount,
             formatRuleRate(rule.ceilingPct),
             explanation.ceiling.money(),
           )
-        FloorCeilingBound.Rate ->
+        Rate ->
           Strings.monteCarloWorkingWithin(
             rate,
             amount,
@@ -208,7 +204,7 @@ internal fun ruleWorking(explanation: McRuleExplanation, rule: McWithdrawalRule)
       }
     }
 
-    is McRuleExplanation.Factor -> {
+    is Factor -> {
       when (explanation.rule) {
         Ratcheting -> ratchetingWorking(explanation, rule)
         Boundaries -> boundariesWorking(explanation, rule)
@@ -230,7 +226,7 @@ private fun guardrailsWorking(
   val planned = explanation.planned.money()
   val adjusted = explanation.adjusted.money()
   return when (explanation.action) {
-    RuleAction.Cut ->
+    Cut ->
       Strings.monteCarloWorkingGuardrailsCut(
         current,
         formatRuleRate(rule.preservationTriggerPct),
@@ -239,7 +235,7 @@ private fun guardrailsWorking(
         adjusted,
         planned,
       )
-    RuleAction.Raise ->
+    Raise ->
       Strings.monteCarloWorkingGuardrailsRaise(
         current,
         formatRuleRate(rule.prosperityTriggerPct),
@@ -248,7 +244,7 @@ private fun guardrailsWorking(
         adjusted,
         planned,
       )
-    RuleAction.None ->
+    None ->
       if (explanation.factor != 1.0) {
         Strings.monteCarloWorkingGuardrailsHoldEarlier(current, reference, adjusted, planned)
       } else {
@@ -269,7 +265,7 @@ private fun ratchetingWorking(
   val hasEarlierAdjustments = explanation.factor != 1.0
   val streak = explanation.ratchetStreak ?: 0
   return when {
-    explanation.action == RuleAction.Raise ->
+    explanation.action == Raise ->
       Strings.monteCarloWorkingRatchetRaise(
         multiple,
         years,
@@ -297,7 +293,7 @@ private fun boundariesWorking(
   val planned = explanation.planned.money()
   val adjusted = explanation.adjusted.money()
   return when (explanation.action) {
-    RuleAction.Cut ->
+    Cut ->
       Strings.monteCarloWorkingBoundariesCut(
         current,
         upper,
@@ -305,7 +301,7 @@ private fun boundariesWorking(
         adjusted,
         planned,
       )
-    RuleAction.Raise ->
+    Raise ->
       Strings.monteCarloWorkingBoundariesRaise(
         current,
         lower,
@@ -313,7 +309,7 @@ private fun boundariesWorking(
         adjusted,
         planned,
       )
-    RuleAction.None ->
+    None ->
       if (explanation.factor != 1.0) {
         Strings.monteCarloWorkingBoundariesHoldEarlier(current, lower, upper, adjusted, planned)
       } else {

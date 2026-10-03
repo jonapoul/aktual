@@ -145,15 +145,15 @@ internal constructor(
       val selectedRun by mutableSelectedRun.collectAsState()
 
       when (val s = saved) {
-        SavedMeta.Loading -> {
+        Loading -> {
           MonteCarloState.Loading
         }
 
-        SavedMeta.NotFound -> {
+        NotFound -> {
           MonteCarloState.NotFound
         }
 
-        is SavedMeta.Found -> {
+        is Found -> {
           val current = config
           if (current == null) {
             MonteCarloState.Loading
@@ -178,7 +178,7 @@ internal constructor(
 
   init {
     viewModelScope.launch {
-      val found = saved.first { it != SavedMeta.Loading } as? SavedMeta.Found ?: return@launch
+      val found = saved.first { it != Loading } as? SavedMeta.Found ?: return@launch
       mutableConfig.update { found.meta.toConfig() }
     }
   }
@@ -229,9 +229,9 @@ internal constructor(
     if (simulation == null) return null
     val index =
       when (view) {
-        MonteCarloResultsView.Cashflow -> simulation.runAt(percentile)
-        MonteCarloResultsView.Runs -> selectedRun
-        MonteCarloResultsView.Chart -> null
+        Cashflow -> simulation.runAt(percentile)
+        Runs -> selectedRun
+        Chart -> null
       }
     return index?.let { simulation to it }
   }

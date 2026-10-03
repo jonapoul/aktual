@@ -712,9 +712,9 @@ internal fun runMonteCarlo(
                   ceiling = emit(ceilingAmount, startDeflator),
                   applied =
                     when {
-                      unclamped < floorAmount -> FloorCeilingBound.Floor
-                      unclamped > ceilingAmount -> FloorCeilingBound.Ceiling
-                      else -> FloorCeilingBound.Rate
+                      unclamped < floorAmount -> Floor
+                      unclamped > ceilingAmount -> Ceiling
+                      else -> Rate
                     },
                 )
             }
@@ -726,17 +726,17 @@ internal fun runMonteCarlo(
           val hasAccessible = accessibleTotal > 0 && accessibleStartByYear[year] > 0
           if (isSpending && hasAccessible && rule.type != None) {
             val currentRate = planned * adjustmentFactor / accessibleTotal
-            var action = RuleAction.None
+            var action: RuleAction = None
             when (rule.type) {
               Guardrails -> {
                 // Measured against the planned path, so a phase change doesn't read as drift
                 val referenceRate = potFundedPlannedTodayByYear[year] / accessibleStartByYear[year]
                 if (currentRate > referenceRate * (1 + rule.preservationTriggerPct)) {
                   adjustmentFactor *= 1 - rule.preservationCutPct
-                  action = RuleAction.Cut
+                  action = Cut
                 } else if (currentRate < referenceRate * (1 - rule.prosperityTriggerPct)) {
                   adjustmentFactor *= 1 + rule.prosperityIncreasePct
-                  action = RuleAction.Raise
+                  action = Raise
                 }
               }
 
@@ -746,7 +746,7 @@ internal fun runMonteCarlo(
                   if (ratchetStreak >= rule.consecutiveYears) {
                     adjustmentFactor *= 1 + rule.ratchetIncreasePct
                     ratchetStreak = 0
-                    action = RuleAction.Raise
+                    action = Raise
                   }
                 } else {
                   ratchetStreak = 0
@@ -756,10 +756,10 @@ internal fun runMonteCarlo(
               Boundaries -> {
                 if (currentRate > rule.upperRateThreshold) {
                   adjustmentFactor *= 1 - rule.upperCutPct
-                  action = RuleAction.Cut
+                  action = Cut
                 } else if (currentRate < rule.lowerRateThreshold) {
                   adjustmentFactor *= 1 + rule.lowerIncreasePct
-                  action = RuleAction.Raise
+                  action = Raise
                 }
               }
 
@@ -785,7 +785,7 @@ internal fun runMonteCarlo(
                       rule.type == Guardrails
                     },
                   ratchetStreak =
-                    ratchetStreak.takeIf { rule.type == Ratcheting && action == RuleAction.None },
+                    ratchetStreak.takeIf { rule.type == Ratcheting && action == None },
                 )
             }
           }

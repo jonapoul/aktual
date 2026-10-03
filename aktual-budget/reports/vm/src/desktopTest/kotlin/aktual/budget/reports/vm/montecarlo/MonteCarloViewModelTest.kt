@@ -57,8 +57,8 @@ class MonteCarloViewModelTest {
     runMonteCarloTest(insert = false) { viewModel, _, _ ->
       viewModel.state.test {
         var state = awaitItem()
-        while (state == MonteCarloState.Loading) state = awaitItem()
-        assertThat(state).isEqualTo(MonteCarloState.NotFound)
+        while (state == Loading) state = awaitItem()
+        assertThat(state).isEqualTo(NotFound)
       }
     }
 
@@ -89,7 +89,7 @@ class MonteCarloViewModelTest {
   fun `A selected run expires when the plan changes`() = runMonteCarloTest { viewModel, _, _ ->
     viewModel.state.test {
       val loaded = awaitLoaded { it.results != null }
-      viewModel.setResultsView(MonteCarloResultsView.Runs)
+      viewModel.setResultsView(Runs)
       viewModel.selectRun(3)
       val selected = awaitLoaded { it.runDetail != null }
       assertThat(selected).all {

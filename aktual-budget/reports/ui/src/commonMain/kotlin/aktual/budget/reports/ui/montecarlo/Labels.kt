@@ -47,12 +47,12 @@ internal fun CashflowSeries.label(config: McConfig): String =
 @Composable
 internal fun CashflowGroupKind.string(): String =
   when (this) {
-    CashflowGroupKind.Withdrawals -> Strings.monteCarloCashflowWithdrawals
-    CashflowGroupKind.Income -> Strings.monteCarloCashflowIncome
-    CashflowGroupKind.Tax -> Strings.monteCarloCashflowTax
-    CashflowGroupKind.Spending -> Strings.monteCarloCashflowSpending
-    CashflowGroupKind.Contributions -> Strings.monteCarloCashflowContributions
-    CashflowGroupKind.Saved -> Strings.monteCarloCashflowSaved
+    Withdrawals -> Strings.monteCarloCashflowWithdrawals
+    Income -> Strings.monteCarloCashflowIncome
+    Tax -> Strings.monteCarloCashflowTax
+    Spending -> Strings.monteCarloCashflowSpending
+    Contributions -> Strings.monteCarloCashflowContributions
+    Saved -> Strings.monteCarloCashflowSaved
   }
 
 @Composable
@@ -60,7 +60,7 @@ internal fun RunPercentile.string(): String =
   when (this) {
     Worst -> Strings.monteCarloPercentileWorst
     P25 -> Strings.monteCarloPercentile25
-    RunPercentile.Median -> Strings.monteCarloPercentileMedian
+    Median -> Strings.monteCarloPercentileMedian
     P75 -> Strings.monteCarloPercentile75
     Best -> Strings.monteCarloPercentileBest
   }
@@ -72,7 +72,7 @@ internal fun MonteCarloGraphView.string(): String =
     SingleWorst -> Strings.monteCarloGraphSingleWorst
     WorstCase -> Strings.monteCarloGraphWorstCase
     Pessimistic -> Strings.monteCarloGraphPessimistic
-    MonteCarloGraphView.Median -> Strings.monteCarloGraphMedian
+    Median -> Strings.monteCarloGraphMedian
     Optimistic -> Strings.monteCarloGraphOptimistic
   }
 

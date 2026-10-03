@@ -1,7 +1,6 @@
 package aktual.budget.reports.ui.montecarlo
 
 import aktual.budget.model.WidgetId
-import aktual.budget.reports.vm.montecarlo.MonteCarloResultsView
 import aktual.budget.reports.vm.montecarlo.MonteCarloState
 import aktual.budget.reports.vm.montecarlo.MonteCarloViewModel
 import aktual.budget.reports.vm.montecarlo.previewMonteCarloState
@@ -59,15 +58,14 @@ fun MonteCarloReportScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        MonteCarloAction.NavBack -> if (hasChanges) showDiscardDialog = true else back()
-        MonteCarloAction.Save -> viewModel.save()
-        is MonteCarloAction.SetConfig -> viewModel.setConfig(action.config)
-        is MonteCarloAction.SetShowTodaysMoney -> viewModel.setShowTodaysMoney(action.show)
-        is MonteCarloAction.SetResultsView -> viewModel.setResultsView(action.view)
-        is MonteCarloAction.SetGraphView -> viewModel.setGraphView(action.view)
-        is MonteCarloAction.SetCashflowPercentile ->
-          viewModel.setCashflowPercentile(action.percentile)
-        is MonteCarloAction.SelectRun -> viewModel.selectRun(action.index)
+        NavBack -> if (hasChanges) showDiscardDialog = true else back()
+        Save -> viewModel.save()
+        is SetConfig -> viewModel.setConfig(action.config)
+        is SetShowTodaysMoney -> viewModel.setShowTodaysMoney(action.show)
+        is SetResultsView -> viewModel.setResultsView(action.view)
+        is SetGraphView -> viewModel.setGraphView(action.view)
+        is SetCashflowPercentile -> viewModel.setCashflowPercentile(action.percentile)
+        is SelectRun -> viewModel.selectRun(action.index)
       }
     },
   )
@@ -112,7 +110,7 @@ internal fun MonteCarloScaffold(
     topBar = {
       TopAppBar(
         colors = colors.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton(onClick = { onAction(MonteCarloAction.NavBack) }) },
+        navigationIcon = { NavBackIconButton(onClick = { onAction(NavBack) }) },
         title = {
           Text(
             text =
@@ -122,7 +120,7 @@ internal fun MonteCarloScaffold(
         },
         actions = {
           if (state is MonteCarloState.Loaded && state.hasChanges) {
-            TextButton(onClick = { onAction(MonteCarloAction.Save) }) {
+            TextButton(onClick = { onAction(Save) }) {
               Text(Strings.monteCarloSave, color = colors.pageTextPositive)
             }
           }
@@ -133,17 +131,17 @@ internal fun MonteCarloScaffold(
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()
       when (state) {
-        MonteCarloState.Loading ->
+        Loading ->
           Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
             CircularProgressIndicator(color = colors.pageText)
           }
 
-        MonteCarloState.NotFound ->
+        NotFound ->
           Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
             Text(text = Strings.reportsNotFound, color = colors.pageText)
           }
 
-        is MonteCarloState.Loaded ->
+        is Loaded ->
           Column(
             modifier =
               Modifier.padding(innerPadding)
@@ -167,7 +165,7 @@ private fun PreviewMonteCarloScaffold(
 private class MonteCarloScaffoldProvider :
   ColoredParameterProvider<MonteCarloState>(
     previewMonteCarloState(),
-    previewMonteCarloState(resultsView = MonteCarloResultsView.Cashflow),
-    previewMonteCarloState(resultsView = MonteCarloResultsView.Runs),
-    MonteCarloState.Loading,
+    previewMonteCarloState(resultsView = Cashflow),
+    previewMonteCarloState(resultsView = Runs),
+    Loading,
   )

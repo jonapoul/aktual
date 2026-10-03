@@ -6,16 +6,16 @@ import kotlinx.collections.immutable.persistentListOf
 // Simulates the plan synchronously, for UI previews and tests
 fun previewMonteCarloState(
   config: McConfig = McConfig(),
-  resultsView: MonteCarloResultsView = MonteCarloResultsView.Chart,
-  graphView: MonteCarloGraphView = MonteCarloGraphView.All,
+  resultsView: MonteCarloResultsView = Chart,
+  graphView: MonteCarloGraphView = All,
   selectedRun: RunPercentile? = null,
 ): MonteCarloState.Loaded {
   val simulation = simulate(config, deflate = true)
   val detailRun =
     when (resultsView) {
-      MonteCarloResultsView.Cashflow -> simulation.runAt(RunPercentile.Median)
-      MonteCarloResultsView.Runs -> selectedRun?.let(simulation::runAt)
-      MonteCarloResultsView.Chart -> null
+      Cashflow -> simulation.runAt(Median)
+      Runs -> selectedRun?.let(simulation::runAt)
+      Chart -> null
     }
   return MonteCarloState.Loaded(
     title = null,
@@ -25,9 +25,9 @@ fun previewMonteCarloState(
     showTodaysMoney = true,
     resultsView = resultsView,
     graphView = graphView,
-    cashflowPercentile = RunPercentile.Median,
+    cashflowPercentile = Median,
     results = simulation.results,
-    selectedRun = if (resultsView == MonteCarloResultsView.Runs) detailRun else null,
+    selectedRun = if (resultsView == Runs) detailRun else null,
     runDetail = detailRun?.let { capture(simulation, it) },
   )
 }

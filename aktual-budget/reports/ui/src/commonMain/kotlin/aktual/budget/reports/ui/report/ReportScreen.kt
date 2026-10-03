@@ -61,7 +61,7 @@ fun ReportScreen(
   viewModel: ReportViewModel = reportViewModel(id),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  if (state == ReportState.MonteCarlo) {
+  if (state == MonteCarlo) {
     MonteCarloReportScreen(id = id, back = back)
     return
   }
@@ -184,7 +184,7 @@ private fun ReportContent(
       }
 
     // Shown by MonteCarloReportScreen instead
-    ReportState.MonteCarlo -> Box(modifier = modifier)
+    MonteCarlo -> Box(modifier = modifier)
 
     is ReportState.Loaded ->
       ReportChart(

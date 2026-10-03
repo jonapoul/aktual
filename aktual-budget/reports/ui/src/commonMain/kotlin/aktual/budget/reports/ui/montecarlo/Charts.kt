@@ -75,7 +75,7 @@ internal fun FanChart(
   val fill = colors.reportsChartFill
   val edge = Fill(fill.copy(alpha = EDGE_ALPHA))
   val lines =
-    if (view == MonteCarloGraphView.All) {
+    if (view == All) {
       listOf(
         LineCartesianLayer.rememberLine(
           fill = LineCartesianLayer.LineFill.single(edge),
@@ -102,7 +102,7 @@ internal fun FanChart(
 
   val decorations =
     remember(bands, view, fill) {
-      if (view == MonteCarloGraphView.All) {
+      if (view == All) {
         listOf(
           PercentileBand(
             bands,
@@ -147,7 +147,7 @@ private suspend fun CartesianChartModelProducer.populateFan(
 ) = runTransaction {
   val ages = bands.map { it.age }
   lineSeries {
-    if (view == MonteCarloGraphView.All) {
+    if (view == All) {
       series(x = ages, y = bands.map { it.p90.toDouble() })
       series(x = ages, y = bands.map { it.p50.toDouble() })
       series(x = ages, y = bands.map { it.p10.toDouble() })
@@ -163,7 +163,7 @@ private fun MonteCarloGraphView.value(band: MonteCarloFanBand): Amount =
     SingleWorst -> band.worstRun
     WorstCase -> band.p5
     Pessimistic -> band.p30
-    MonteCarloGraphView.Median -> band.p50
+    Median -> band.p50
     Optimistic -> band.p70
     All -> band.p50
   }

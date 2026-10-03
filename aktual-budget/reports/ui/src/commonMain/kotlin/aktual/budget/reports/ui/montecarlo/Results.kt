@@ -202,7 +202,7 @@ private fun PerformanceChart(
       SingleWorst -> Strings.monteCarloGraphDescSingleWorst(results.simulationCount)
       WorstCase -> Strings.monteCarloGraphDescShare(SHARE_ABOVE_P5.percent.toString())
       Pessimistic -> Strings.monteCarloGraphDescShare(SHARE_ABOVE_P30.percent.toString())
-      MonteCarloGraphView.Median -> Strings.monteCarloGraphDescMedian
+      Median -> Strings.monteCarloGraphDescMedian
       Optimistic -> Strings.monteCarloGraphDescShare(SHARE_ABOVE_P70.percent.toString())
     }
   description?.let { BodyText(it) }

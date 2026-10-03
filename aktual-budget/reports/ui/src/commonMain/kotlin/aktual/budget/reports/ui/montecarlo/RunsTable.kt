@@ -60,7 +60,7 @@ internal fun RunsTable(
     val pageSize = minOf(PAGE_SIZE, count - pageStart).coerceAtLeast(0)
 
     // Best-first reads the same ranking from the other end
-    fun runAt(rank: Int) = runs[if (sortOrder == SortOrder.BestFirst) count - 1 - rank else rank]
+    fun runAt(rank: Int) = runs[if (sortOrder == BestFirst) count - 1 - rank else rank]
 
     FlowRow(
       modifier = Modifier.fillMaxWidth(),
@@ -79,8 +79,8 @@ internal fun RunsTable(
         options = SortOrder.entries.toImmutableList(),
         string = { order ->
           when (order) {
-            SortOrder.WorstFirst -> Strings.monteCarloRunsWorstFirst
-            SortOrder.BestFirst -> Strings.monteCarloRunsBestFirst
+            WorstFirst -> Strings.monteCarloRunsWorstFirst
+            BestFirst -> Strings.monteCarloRunsBestFirst
           }
         },
       )
@@ -122,8 +122,7 @@ internal fun RunsTable(
         onValueChange = { percentile: RunPercentile? ->
           if (percentile != null) {
             val worstFirstRank = (percentile.fraction * (count - 1)).roundToInt()
-            val rank =
-              if (sortOrder == SortOrder.WorstFirst) worstFirstRank else count - 1 - worstFirstRank
+            val rank = if (sortOrder == WorstFirst) worstFirstRank else count - 1 - worstFirstRank
             page = rank / PAGE_SIZE
             highlightedRank = rank
           }

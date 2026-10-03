@@ -6,7 +6,6 @@
   <string name="monte_carlo_discard_message">Your changes to this plan haven’t been saved.</string>
   <string name="monte_carlo_discard_confirm">Discard</string>
   <string name="monte_carlo_discard_cancel">Keep editing</string>
-  <string name="monte_carlo_configuration">Configuration</string>
   <string name="monte_carlo_results">Results</string>
   <string name="monte_carlo_todays_money">Show values in today’s money</string>
   <string name="monte_carlo_simulating">Running simulations…</string>
