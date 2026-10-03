@@ -76,7 +76,7 @@ fun <T> AktualExposedDropDownMenu(
   contentPadding: PaddingValues = DROPDOWN_CONTENT_PADDING,
 ) {
   var isExpanded by remember { mutableStateOf(false) }
-  var selectedOption by remember { mutableStateOf(value) }
+  var selectedOption by remember(value) { mutableStateOf(value) }
 
   val selectedString = string(selectedOption)
 

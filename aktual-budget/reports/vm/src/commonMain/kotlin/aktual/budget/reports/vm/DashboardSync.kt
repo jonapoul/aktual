@@ -15,6 +15,7 @@ import aktual.budget.model.WidgetType
 import aktual.budget.model.messageValue
 import aktual.budget.model.tombstone
 import dev.zacsweers.metro.Inject
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -59,7 +60,17 @@ internal class DashboardSync(
       "text_align" to DbJson.encodeToJsonElement(TextAlign.serializer(), align),
     )
 
-  private suspend fun patchMeta(id: WidgetId, vararg values: Pair<String, JsonElement>) {
+  // Writes the plan's settings over the stored meta, like upstream's save. Nulls are written out,
+  // since a missing inflationMean means upstream's default rather than no inflation
+  suspend fun setMonteCarloConfig(id: WidgetId, meta: MonteCarloReportMeta) {
+    val encoded = ExplicitNullsJson.encodeToJsonElement(MonteCarloReportMeta.serializer(), meta)
+    patchMeta(id, (encoded as JsonObject).filterKeys { it in MONTE_CARLO_CONFIG_KEYS })
+  }
+
+  private suspend fun patchMeta(id: WidgetId, vararg values: Pair<String, JsonElement>) =
+    patchMeta(id, values.toMap())
+
+  private suspend fun patchMeta(id: WidgetId, values: Map<String, JsonElement>) {
     val meta = dao.meta(id) ?: return
     val patched = JsonObject(meta + values)
     sync.syncChanges(
@@ -96,4 +107,31 @@ internal class DashboardSync(
 
   private fun WidgetType.serialName(): String =
     WidgetType.serializer().descriptor.getElementName(ordinal)
+
+  private companion object {
+    val ExplicitNullsJson = Json {
+      encodeDefaults = true
+      explicitNulls = true
+    }
+
+    // The meta keys the Monte Carlo configuration owns, leaving the name and anything unmodelled
+    val MONTE_CARLO_CONFIG_KEYS =
+      setOf(
+        "pots",
+        "withdrawalStrategy",
+        "returnModel",
+        "withdrawalRule",
+        "minimumSpending",
+        "spendingPhases",
+        "contributions",
+        "incomeStreams",
+        "inflationMean",
+        "inflationStdDev",
+        "taxModel",
+        "taxBands",
+        "currentAge",
+        "targetAge",
+        "simulationCount",
+      )
+  }
 }

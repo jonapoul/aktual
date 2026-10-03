@@ -7,6 +7,7 @@ import aktual.budget.reports.ui.charts.ChartZoomState
 import aktual.budget.reports.ui.charts.PREVIEW_AGE_OF_MONEY_DATA
 import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.ui.charts.rememberChartZoomState
+import aktual.budget.reports.ui.montecarlo.MonteCarloReportScreen
 import aktual.budget.reports.ui.string
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.dashboard.DashboardItem
@@ -60,6 +61,11 @@ fun ReportScreen(
   viewModel: ReportViewModel = reportViewModel(id),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  if (state == MonteCarlo) {
+    MonteCarloReportScreen(id = id, back = back)
+    return
+  }
+
   var hasUnsavedText by rememberSaveable { mutableStateOf(false) }
   var showDiscardDialog by remember { mutableStateOf(false) }
 
@@ -176,6 +182,9 @@ private fun ReportContent(
       Box(modifier = modifier, contentAlignment = Center) {
         Text(text = Strings.reportsNotFound, color = colors.pageText)
       }
+
+    // Shown by MonteCarloReportScreen instead
+    MonteCarlo -> Box(modifier = modifier)
 
     is ReportState.Loaded ->
       ReportChart(
