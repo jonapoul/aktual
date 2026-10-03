@@ -46,6 +46,9 @@ internal constructor(
   private val offBudget = mutableMapOf<AccountId, Boolean>()
   // The parent each transaction was given in this batch, null if it was detached
   private val batchParents = mutableMapOf<TransactionId, TransactionId?>()
+  // The account and isParent flag each transaction was given in this batch
+  private val batchAccounts = mutableMapOf<TransactionId, AccountId>()
+  private val batchIsParent = mutableMapOf<TransactionId, Boolean>()
   private val deleted = mutableSetOf<TransactionId>()
   private val newPayees = mutableMapOf<String, PayeeId>()
   private var existingPayees: Map<String, PayeeId>? = null
@@ -85,18 +88,21 @@ internal constructor(
       )
     addAll(TRANSACTIONS, id.value, columns)
     if (t.parentId != null) batchParents[id] = t.parentId
+    batchAccounts[id] = t.account
+    batchIsParent[id] = t.isParent
     return id
   }
 
   /**
    * db.updateTransaction(), plus batchUpdateTransactions() clearing the category when the
-   * transaction moves to an off-budget account or is made a split parent.
+   * transaction moves to an off-budget account or is made a split parent. Upstream's callers pass
+   * the whole transaction, so setting a category here is also checked against the account and
+   * isParent flag the transaction already has.
    */
   suspend fun update(update: TransactionUpdate) {
     val u = update
     u.date?.let(::checkDate)
-    val clearCategory = u.isParent == true || u.account != null && isOffBudget(u.account)
-    val category = if (clearCategory) Patch.To(null) else u.category
+    val category = if (clearsCategory(u)) Patch.To(null) else u.category
     // As insert() does, isChild follows parentId unless the caller sets it
     val isChild = u.isChild ?: (u.parentId as? Patch.To)?.let { it.value != null }
     val columns =
@@ -123,6 +129,8 @@ internal constructor(
       )
     addAll(TRANSACTIONS, u.id.value, columns)
     if (u.parentId is Patch.To) batchParents[u.id] = u.parentId.value
+    if (u.account != null) batchAccounts[u.id] = u.account
+    if (u.isParent != null) batchIsParent[u.id] = u.isParent
   }
 
   suspend fun delete(id: TransactionId) = delete(listOf(id))
@@ -210,6 +218,15 @@ internal constructor(
     for ((column, value) in columns) {
       if (value != null) changes += LocalChange(dataset, row, column, value)
     }
+  }
+
+  private suspend fun clearsCategory(u: TransactionUpdate): Boolean {
+    if (u.isParent == true || (u.account != null && isOffBudget(u.account))) return true
+    if ((u.category as? Patch.To)?.value == null) return false
+    val stored = transactionDao.row(u.id)
+    val isParent = u.isParent ?: batchIsParent[u.id] ?: stored?.isParent ?: false
+    val account = u.account ?: batchAccounts[u.id] ?: stored?.acct
+    return isParent || (account != null && isOffBudget(account))
   }
 
   private suspend fun isOffBudget(account: AccountId): Boolean =

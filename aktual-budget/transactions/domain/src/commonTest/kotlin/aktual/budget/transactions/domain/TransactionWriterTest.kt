@@ -245,6 +245,32 @@ internal class TransactionWriterTest {
   }
 
   @Test
+  fun `Setting a category on an off-budget transaction or split parent sends none`() =
+    runWriterTest {
+      insertAccount(ACCOUNT)
+      insertAccount(OFF_BUDGET, offBudget = true)
+      insertCategory(GROCERIES, name = "Groceries")
+      val (offBudget, parent) =
+        writer.write {
+          val offBudget = insert(NewTransaction(account = OFF_BUDGET, date = DATE))
+          val parent = insert(NewTransaction(account = ACCOUNT, date = DATE, isParent = true))
+          offBudget to parent
+        }
+
+      val sameBatch = writer.write {
+        update(TransactionUpdate(id = offBudget, category = Patch.To(GROCERIES)))
+        update(TransactionUpdate(id = parent, category = Patch.To(GROCERIES)))
+        val sameBatch = insert(NewTransaction(account = OFF_BUDGET, date = DATE))
+        update(TransactionUpdate(id = sameBatch, category = Patch.To(GROCERIES)))
+        sameBatch
+      }
+
+      assertThat(transactionDao.row(offBudget)?.category).isNull()
+      assertThat(transactionDao.row(parent)?.category).isNull()
+      assertThat(transactionDao.row(sameBatch)?.category).isNull()
+    }
+
+  @Test
   fun `Making a transaction a split parent clears its category`() = runWriterTest {
     insertAccount(ACCOUNT)
     insertCategory(GROCERIES, name = "Groceries")
