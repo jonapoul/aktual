@@ -48,6 +48,8 @@ naming:
   FunctionNameMaxLength:
     excludes: [ "**/test/**", "**/*Test/**" ]
     maximumFunctionNameLength: 40
+  FunctionNameMinLength:
+    active: false
   FunctionNaming:
     excludeClassPattern: ".*Test$"
     functionPattern: "[a-zA-Z][a-zA-Z0-9]*"

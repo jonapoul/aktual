@@ -1,0 +1,24 @@
+-- Lookups for running rules against transactions, see aktual-budget:rules:domain
+
+-- packages/loot-core/src/server/db/index.ts getPayee() / getPayeeByName()
+rulePayees:
+SELECT id, name, tombstone FROM payees;
+
+-- packages/loot-core/src/server/db/index.ts getAccounts()
+ruleAccounts:
+SELECT id, offbudget FROM accounts WHERE tombstone = 0;
+
+-- packages/loot-core/src/server/db/index.ts getCategory()
+ruleCategoryGroups:
+SELECT id, cat_group FROM categories;
+
+-- packages/loot-core/src/server/db/mappings.ts loadMappings()
+rulePayeeMappings:
+SELECT id, targetId FROM payee_mapping;
+
+ruleCategoryMappings:
+SELECT id, transferId FROM category_mapping;
+
+-- packages/loot-core/src/server/transactions/transaction-rules.ts getAllRuleIdsFromSchedules()
+ruleScheduleRules:
+SELECT id, rule FROM schedules WHERE rule IS NOT NULL;
