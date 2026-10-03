@@ -221,12 +221,13 @@ internal constructor(
   }
 
   private suspend fun clearsCategory(u: TransactionUpdate): Boolean {
-    if (u.isParent == true || (u.account != null && isOffBudget(u.account))) return true
+    if (u.isParent == true || u.account != null && isOffBudget(u.account)) return true
     if ((u.category as? Patch.To)?.value == null) return false
     val stored = transactionDao.row(u.id)
-    val isParent = u.isParent ?: batchIsParent[u.id] ?: stored?.isParent ?: false
+    val isParent = u.isParent ?: batchIsParent[u.id] ?: stored?.isParent
     val account = u.account ?: batchAccounts[u.id] ?: stored?.acct
-    return isParent || (account != null && isOffBudget(account))
+    val isOffBudget = account != null && isOffBudget(account)
+    return isParent == true || isOffBudget
   }
 
   private suspend fun isOffBudget(account: AccountId): Boolean =
