@@ -18,6 +18,9 @@ class BankSyncStatusTest {
         BankSyncStatus.Failed,
         BankSyncStatus.ReauthRequired,
         BankSyncStatus.AttentionRequired,
+        BankSyncStatus.RateLimitExceeded,
+        BankSyncStatus.TimedOut,
+        BankSyncStatus.AccountMissing,
         BankSyncStatus.Other("something-else"),
       )
   ) {
