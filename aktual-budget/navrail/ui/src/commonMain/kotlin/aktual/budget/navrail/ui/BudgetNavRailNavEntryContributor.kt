@@ -8,7 +8,7 @@ import aktual.core.nav.NavEntryContributor
 import aktual.core.nav.NavStack
 import aktual.core.nav.ServerUrlNavRoute
 import aktual.core.nav.SettingsNavRoute
-import aktual.core.ui.LoadingScreenIfNotNull
+import aktual.core.ui.LoadingScreenIfNull
 import aktual.di.AppCoroutineScope
 import aktual.di.AppScope
 import aktual.di.RunLevelState
@@ -30,7 +30,7 @@ class BudgetNavRailNavEntryContributor(
     entry<BudgetNavRailNavRoute> {
       val budgetGraph by remember { runLevelState.budget() }.collectAsState(initial = null)
 
-      LoadingScreenIfNotNull(budgetGraph) {
+      LoadingScreenIfNull(budgetGraph) {
         BudgetNavRail(
           appStack = stack,
           onAction = { action ->

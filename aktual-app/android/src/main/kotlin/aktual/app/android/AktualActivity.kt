@@ -2,7 +2,7 @@ package aktual.app.android
 
 import aktual.app.nav.AktualAppContent
 import aktual.app.nav.rememberBackStack
-import aktual.core.ui.LoadingScreenIfNotNull
+import aktual.core.ui.LoadingScreenIfNull
 import aktual.di.AppScope
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -78,7 +78,7 @@ private fun Content(viewModel: AktualActivityViewModel) {
   }
     .collectAsState(initial = null)
 
-  LoadingScreenIfNotNull(viewModelFactory) { vmf ->
+  LoadingScreenIfNull(viewModelFactory) { vmf ->
     CompositionLocalProvider(LocalMetroViewModelFactory provides vmf) {
       val backStack = rememberBackStack(viewModel) ?: return@CompositionLocalProvider
       AktualAppContent(viewModel, backStack)
