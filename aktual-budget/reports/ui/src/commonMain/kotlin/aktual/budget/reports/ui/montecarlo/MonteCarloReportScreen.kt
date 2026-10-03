@@ -1,6 +1,7 @@
 package aktual.budget.reports.ui.montecarlo
 
 import aktual.budget.model.WidgetId
+import aktual.budget.reports.ui.dashboard.NameDialog
 import aktual.budget.reports.vm.montecarlo.MonteCarloState
 import aktual.budget.reports.vm.montecarlo.MonteCarloViewModel
 import aktual.budget.reports.vm.montecarlo.previewMonteCarloState
@@ -23,6 +24,7 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.checkbox
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,12 +42,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun MonteCarloReportScreen(
@@ -57,6 +64,17 @@ fun MonteCarloReportScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   var showDiscardDialog by remember { mutableStateOf(false) }
   val hasChanges = (state as? MonteCarloState.Loaded)?.hasChanges == true
+  val focusManager = LocalFocusManager.current
+  val scope = rememberCoroutineScope()
+
+  // A field being edited commits its text when it loses focus, which can land a frame later
+  val afterCommit: (() -> Unit) -> Unit = { block ->
+    focusManager.clearFocus()
+    scope.launch {
+      withFrameNanos {}
+      block()
+    }
+  }
 
   BackHandler(enabled = hasChanges) { showDiscardDialog = true }
 
@@ -65,9 +83,19 @@ fun MonteCarloReportScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        NavBack -> if (hasChanges) showDiscardDialog = true else back()
-        Save -> viewModel.save()
-        is SetConfig -> viewModel.setConfig(action.config)
+        NavBack ->
+          afterCommit {
+            if (viewModel.hasUnsavedChanges()) showDiscardDialog = true else back()
+          }
+        Save -> afterCommit { viewModel.save() }
+        is Rename -> viewModel.rename(action.name)
+        is Edit -> viewModel.edit(action.transform)
+        AddPot -> viewModel.addPot()
+        AddIncomeStream -> viewModel.addIncomeStream()
+        AddContribution -> viewModel.addContribution()
+        AddSpendingPhase -> viewModel.addSpendingPhase()
+        AddTaxBand -> viewModel.addTaxBand()
+        is SetKeepSurplus -> viewModel.setKeepSurplus(action.keep)
         is SetShowTodaysMoney -> viewModel.setShowTodaysMoney(action.show)
         is SetResultsView -> viewModel.setResultsView(action.view)
         is SetGraphView -> viewModel.setGraphView(action.view)
@@ -111,7 +139,8 @@ internal fun MonteCarloScaffold(
   state: MonteCarloState,
   onAction: MonteCarloActionHandler,
   modifier: Modifier = Modifier,
-) =
+) {
+  val focusManager = LocalFocusManager.current
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
@@ -132,7 +161,11 @@ internal fun MonteCarloScaffold(
                 Text(Strings.monteCarloSave, color = colors.pageTextPositive)
               }
             }
-            MonteCarloMenu(showTodaysMoney = state.showTodaysMoney, onAction = onAction)
+            MonteCarloMenu(
+              title = state.title.orEmpty(),
+              showTodaysMoney = state.showTodaysMoney,
+              onAction = onAction,
+            )
           }
         },
       )
@@ -156,23 +189,43 @@ internal fun MonteCarloScaffold(
             modifier =
               Modifier.padding(innerPadding)
                 .verticalScroll(rememberScrollState())
+                // Tapping away from a field ends its edit
+                .pointerInput(Unit) { detectTapGestures { focusManager.clearFocus() } }
                 .padding(horizontal = 8.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
           ) {
+            MonteCarloConfiguration(state = state, onAction = onAction)
             MonteCarloResults(state = state, onAction = onAction)
             BottomSpacing()
           }
       }
     }
   }
+}
 
 @Composable
 private fun MonteCarloMenu(
+  title: String,
   showTodaysMoney: Boolean,
   onAction: MonteCarloActionHandler,
   modifier: Modifier = Modifier,
 ) {
   var expanded by remember { mutableStateOf(false) }
+  var showRenameDialog by remember { mutableStateOf(false) }
+
+  if (showRenameDialog) {
+    NameDialog(
+      title = Strings.reportsDashboardRenameReport,
+      placeholder = Strings.reportsDashboardReportName,
+      confirmText = Strings.reportsDashboardNameSave,
+      initialName = title,
+      onConfirm = { name ->
+        showRenameDialog = false
+        onAction(MonteCarloAction.Rename(name))
+      },
+      onDismiss = { showRenameDialog = false },
+    )
+  }
 
   Box(modifier = modifier) {
     BareIconButton(
@@ -182,6 +235,13 @@ private fun MonteCarloMenu(
     )
 
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      AktualDropdownMenuItem(
+        text = { Text(Strings.reportsDashboardRename) },
+        onClick = {
+          expanded = false
+          showRenameDialog = true
+        },
+      )
       AktualDropdownMenuItem(
         text = { Text(Strings.monteCarloTodaysMoney) },
         leadingIcon = {

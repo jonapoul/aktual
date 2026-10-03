@@ -21,11 +21,11 @@ const val MC_MAX_TAX_BAND_RATE = 0.99
 const val MC_MAX_ANNUAL_FEE_RATE = 0.1
 private const val MIN_HORIZON_YEARS = 1
 private const val MAX_HORIZON_YEARS = 100
-internal const val DEFAULT_INFLATION_MEAN = 0.025
+const val DEFAULT_INFLATION_MEAN = 0.025
 
 data class AssetWeights(val stocks: Double, val bonds: Double, val cash: Double)
 
-data class ReturnStats(val mean: Double, val stdDev: Double)
+@Immutable data class ReturnStats(val mean: Double, val stdDev: Double)
 
 // ALLOCATION_PRESETS: the mean and volatility each preset fills in
 val AllocationPreset.presetStats: ReturnStats?
@@ -55,6 +55,7 @@ val AllocationPreset.presetWeights: AssetWeights?
       Unknown -> null
     }
 
+@Immutable
 data class McPot(
   val id: String,
   val name: String = "",
@@ -93,6 +94,7 @@ fun surplusPot(id: String, name: String = "") =
     isSurplus = true,
   )
 
+@Immutable
 data class McSpendingPhase(
   val id: String = "phase-1",
   val name: String = "",
@@ -101,6 +103,7 @@ data class McSpendingPhase(
   val annualWithdrawal: Double = 2_000_000.0,
 )
 
+@Immutable
 data class McContribution(
   val id: String = "",
   val name: String = "",
@@ -115,6 +118,7 @@ data class McContribution(
   val beforeTax: Boolean = false,
 )
 
+@Immutable
 data class McIncomeStream(
   val id: String,
   val name: String = "",
@@ -126,8 +130,10 @@ data class McIncomeStream(
   val taxableFraction: Double = 1.0,
 )
 
+@Immutable
 data class McTaxBand(val id: String = "band-1", val from: Double = 0.0, val rate: Double = 0.0)
 
+@Immutable
 data class McWithdrawalRule(
   val type: WithdrawalRuleType = None,
   val prosperityTriggerPct: Double = 0.2,

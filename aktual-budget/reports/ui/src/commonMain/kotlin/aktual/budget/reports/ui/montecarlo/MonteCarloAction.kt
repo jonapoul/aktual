@@ -11,7 +11,21 @@ internal sealed interface MonteCarloAction {
 
   data object Save : MonteCarloAction
 
-  data class SetConfig(val config: McConfig) : MonteCarloAction
+  data class Rename(val name: String) : MonteCarloAction
+
+  data class Edit(val transform: (McConfig) -> McConfig) : MonteCarloAction
+
+  data object AddPot : MonteCarloAction
+
+  data object AddIncomeStream : MonteCarloAction
+
+  data object AddContribution : MonteCarloAction
+
+  data object AddSpendingPhase : MonteCarloAction
+
+  data object AddTaxBand : MonteCarloAction
+
+  data class SetKeepSurplus(val keep: Boolean) : MonteCarloAction
 
   data class SetShowTodaysMoney(val show: Boolean) : MonteCarloAction
 
@@ -28,3 +42,6 @@ internal sealed interface MonteCarloAction {
 internal fun interface MonteCarloActionHandler {
   operator fun invoke(action: MonteCarloAction)
 }
+
+internal fun MonteCarloActionHandler.edit(transform: (McConfig) -> McConfig) =
+  invoke(MonteCarloAction.Edit(transform))

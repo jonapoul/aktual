@@ -1,10 +1,10 @@
 package aktual.budget.schedules.ui.edit
 
 import aktual.budget.model.Amount
+import aktual.budget.model.parseAmountInput
+import aktual.budget.model.toInputText
 import aktual.budget.schedules.vm.edit.ScheduleAmount
 import aktual.budget.schedules.vm.edit.isDeposit
-import aktual.budget.schedules.vm.edit.parseAmountInput
-import aktual.budget.schedules.vm.edit.toInputText
 import aktual.budget.schedules.vm.edit.withDeposit
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton

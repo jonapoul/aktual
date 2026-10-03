@@ -19,16 +19,4 @@ class ScheduleFormTest {
     assertThat(range.withDeposit(true))
       .isEqualTo(ScheduleAmount.Between(Amount(1_000L), Amount(5_000L)))
   }
-
-  @Test
-  fun `Blank input is zero`() {
-    assertThat(parseAmountInput("")).isEqualTo(Amount(0L))
-    assertThat(parseAmountInput("  ")).isEqualTo(Amount(0L))
-  }
-
-  @Test
-  fun `Input reads the last separator as the decimal point`() {
-    assertThat(parseAmountInput("1,200.50")).isEqualTo(Amount(120_050L))
-    assertThat(parseAmountInput("1.200,50")).isEqualTo(Amount(120_050L))
-  }
 }
