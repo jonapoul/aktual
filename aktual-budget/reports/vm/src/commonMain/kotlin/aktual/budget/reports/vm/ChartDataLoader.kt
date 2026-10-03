@@ -22,7 +22,6 @@ import aktual.core.Calendar
 import aktual.core.model.Percent
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
-import kotlin.math.max
 import kotlin.math.roundToLong
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
@@ -491,12 +490,7 @@ internal class ChartDataLoader(
     return balances
       .map { byAccount ->
         // A linked pot takes its account's live balance, falling back to the stored balance
-        val pots =
-          config.pots.map { pot ->
-            val balance = pot.accountId?.let(byAccount::get)
-            if (balance == null) pot else pot.copy(startingBalance = max(0L, balance).toDouble())
-          }
-        val result = runMonteCarlo(config.copy(pots = pots))
+        val result = runMonteCarlo(config.withLiveBalances(byAccount))
         MonteCarloData(
           title = meta.name,
           successRate = Percent((result.successRate * PERCENT_TENTHS).roundToLong() / TENTHS),

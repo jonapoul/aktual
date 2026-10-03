@@ -4,6 +4,7 @@ import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.ChartDataLoader
 import aktual.budget.reports.vm.DashboardSync
+import aktual.budget.reports.vm.MonteCarloReportMeta
 import aktual.budget.reports.vm.TextAlign
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.di.BudgetScope
@@ -44,6 +45,8 @@ internal constructor(
         val item = widget?.let(decoder::decode)
         if (type == null || item == null) {
           flowOf(ReportState.NotFound)
+        } else if (item.meta is MonteCarloReportMeta) {
+          flowOf(ReportState.MonteCarlo)
         } else {
           chartDataLoader.load(item.meta).map { data -> ReportState.Loaded(type, item, data) }
         }
