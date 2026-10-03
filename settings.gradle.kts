@@ -186,6 +186,7 @@ include(
   ":aktual-budget:navrail:vm",
   ":aktual-budget:reports:ui",
   ":aktual-budget:reports:vm",
+  ":aktual-budget:rules:domain",
   ":aktual-budget:rules:ui",
   ":aktual-budget:rules:vm",
   ":aktual-budget:schedules:ui",

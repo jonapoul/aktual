@@ -1,4 +1,4 @@
-@file:Suppress("ClassName", "MatchingDeclarationName", "DEPRECATION", "FunctionNameMinLength")
+@file:Suppress("ClassName", "MatchingDeclarationName", "DEPRECATION")
 
 package logcat
 
