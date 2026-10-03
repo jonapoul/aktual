@@ -33,6 +33,7 @@ sealed interface MonteCarloState {
   ) : MonteCarloState
 }
 
+@Immutable
 data class MonteCarloAccount(
   val id: AccountId,
   val name: String,

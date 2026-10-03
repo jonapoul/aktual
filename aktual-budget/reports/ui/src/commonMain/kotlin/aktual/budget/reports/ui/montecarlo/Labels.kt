@@ -1,8 +1,14 @@
 package aktual.budget.reports.ui.montecarlo
 
 import aktual.budget.model.Amount
+import aktual.budget.reports.vm.AllocationPreset
 import aktual.budget.reports.vm.McConfig
+import aktual.budget.reports.vm.McIncomeStream
 import aktual.budget.reports.vm.McPot
+import aktual.budget.reports.vm.ReturnModel
+import aktual.budget.reports.vm.TaxModel
+import aktual.budget.reports.vm.WithdrawalRuleType
+import aktual.budget.reports.vm.WithdrawalStrategy
 import aktual.budget.reports.vm.montecarlo.CashflowGroupKind
 import aktual.budget.reports.vm.montecarlo.CashflowSeries
 import aktual.budget.reports.vm.montecarlo.MonteCarloGraphView
@@ -84,11 +90,70 @@ internal fun MonteCarloResultsView.string(): String =
     Runs -> Strings.monteCarloViewRuns
   }
 
+// As the Paid from dropdown lists them
+@Composable
+internal fun incomeLabel(streams: ImmutableList<McIncomeStream>, index: Int): String =
+  streams[index].name.ifEmpty { Strings.monteCarloIncomeNumbered(index + 1) }
+
+@Composable
+internal fun ReturnModel.string(): String =
+  when (this) {
+    Normal,
+    Unknown -> Strings.monteCarloReturnModelNormal
+    HistoricalBootstrap -> Strings.monteCarloReturnModelBootstrap
+    HistoricalSequence -> Strings.monteCarloReturnModelSequence
+  }
+
+@Composable
+internal fun AllocationPreset.string(): String =
+  when (this) {
+    Equity100 -> Strings.monteCarloPresetEquity100
+    Equity80 -> Strings.monteCarloPresetEquity80
+    Equity60 -> Strings.monteCarloPresetEquity60
+    Equity40 -> Strings.monteCarloPresetEquity40
+    Cash -> Strings.monteCarloPresetCash
+    CustomMix -> Strings.monteCarloPresetCustomMix
+    Custom,
+    Unknown -> Strings.monteCarloPresetCustom
+  }
+
+@Composable
+internal fun WithdrawalStrategy.string(): String =
+  when (this) {
+    Proportional,
+    Unknown -> Strings.monteCarloStrategyProportional
+    Sequential -> Strings.monteCarloStrategySequential
+    BestPerformer -> Strings.monteCarloStrategyBestPerformer
+    TargetMix -> Strings.monteCarloStrategyTargetMix
+  }
+
+@Composable
+internal fun WithdrawalRuleType.string(): String =
+  when (this) {
+    None,
+    Unknown -> Strings.monteCarloRuleOptionNone
+    Guardrails -> Strings.monteCarloRuleOptionGuardrails
+    Ratcheting -> Strings.monteCarloRuleOptionRatcheting
+    FloorCeiling -> Strings.monteCarloRuleOptionFloorCeiling
+    Boundaries -> Strings.monteCarloRuleOptionBoundaries
+  }
+
+@Composable
+internal fun TaxModel.string(): String =
+  when (this) {
+    Flat,
+    Unknown -> Strings.monteCarloTaxModelFlat
+    Bands -> Strings.monteCarloTaxModelBands
+  }
+
 @Composable @ReadOnlyComposable internal fun Long.money(): String = Amount(this).formattedString()
 
 // formatRuleRate(): enough precision that the displayed rate reproduces the displayed amounts, with
 // trailing zeros trimmed so simple rates read cleanly
-internal fun formatRuleRate(rate: Double): String = "${trimmed(rate * PERCENT, places = 4)}%"
+internal fun formatRuleRate(rate: Double): String = formatTrimmedPercent(rate, places = 4)
+
+internal fun formatTrimmedPercent(rate: Double, places: Int): String =
+  "${trimmed(rate * PERCENT, places)}%"
 
 internal fun formatMultiple(multiple: Double): String = "${trimmed(multiple, places = 2)}×"
 
