@@ -9,7 +9,7 @@ import aktual.core.nav.NavEntryContributor
 import aktual.core.nav.NavStack
 import aktual.core.nav.ServerUrlNavigator
 import aktual.core.nav.SettingsNavigator
-import aktual.core.ui.LoadingScreenIfNotNull
+import aktual.core.ui.LoadingScreenIfNull
 import aktual.di.AppScope
 import aktual.di.RunLevelState
 import androidx.compose.runtime.collectAsState
@@ -26,7 +26,7 @@ class BudgetListNavEntryContributor(private val runLevelState: RunLevelState) :
     entry<ListBudgetsNavRoute> {
       val loggedInGraph by remember { runLevelState.loggedIn() }.collectAsState(initial = null)
 
-      LoadingScreenIfNotNull(loggedInGraph) {
+      LoadingScreenIfNull(loggedInGraph) {
         ListBudgetsScreen(
           toInfo = InfoNavigator(stack),
           toChangePassword = ChangePasswordNavigator(stack),

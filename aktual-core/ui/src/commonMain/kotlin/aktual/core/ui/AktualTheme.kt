@@ -39,7 +39,7 @@ object AktualTheme {
 @Composable
 @Suppress("ModifierMissing")
 fun AktualTheme(colors: Colors?, content: @Composable () -> Unit) {
-  LoadingScreenIfNotNull(colors) { c ->
+  LoadingScreenIfNull(colors) { c ->
     CompositionLocalProvider(
       LocalColors provides c,
       LocalIndication provides ripple(),

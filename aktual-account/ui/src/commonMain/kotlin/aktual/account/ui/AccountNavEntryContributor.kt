@@ -14,7 +14,7 @@ import aktual.core.nav.NavEntryContributor
 import aktual.core.nav.NavStack
 import aktual.core.nav.ServerUrlNavRoute
 import aktual.core.nav.ServerUrlNavigator
-import aktual.core.ui.LoadingScreenIfNotNull
+import aktual.core.ui.LoadingScreenIfNull
 import aktual.di.AppScope
 import aktual.di.RunLevelState
 import androidx.compose.runtime.collectAsState
@@ -40,7 +40,7 @@ class AccountNavEntryContributor(private val runLevelState: RunLevelState) : Nav
       }
         .collectAsState(initial = null)
 
-      LoadingScreenIfNotNull(serverChosenGraph) {
+      LoadingScreenIfNull(serverChosenGraph) {
         LoginScreen(
           back = BackNavigator(stack),
           toServerUrl = ServerUrlNavigator(stack),

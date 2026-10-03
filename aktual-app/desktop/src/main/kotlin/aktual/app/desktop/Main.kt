@@ -7,7 +7,7 @@ import aktual.core.l10n.Strings
 import aktual.core.logging.JvmLogStorage
 import aktual.core.logging.KermitFileLogger
 import aktual.core.logging.TimestampedPrintStreamLogger
-import aktual.core.ui.LoadingScreenIfNotNull
+import aktual.core.ui.LoadingScreenIfNull
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -98,7 +98,7 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
           exitApplication()
         },
       ) {
-        LoadingScreenIfNotNull(viewModelFactory) { vmf ->
+        LoadingScreenIfNull(viewModelFactory) { vmf ->
           CompositionLocalProvider(
             LocalViewModelStoreOwner provides viewModelStoreOwner,
             LocalMetroViewModelFactory provides vmf,
