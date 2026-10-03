@@ -7,6 +7,7 @@ import aktual.budget.reports.vm.McRunDetailRow
 import aktual.core.model.Percent
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 
 @Immutable
 sealed interface MonteCarloState {
@@ -21,6 +22,7 @@ sealed interface MonteCarloState {
     val accounts: ImmutableList<MonteCarloAccount>,
     val hasChanges: Boolean,
     val showTodaysMoney: Boolean,
+    val collapsedSections: ImmutableSet<MonteCarloSection>,
     val resultsView: MonteCarloResultsView,
     val graphView: MonteCarloGraphView,
     val cashflowPercentile: RunPercentile,
@@ -40,6 +42,14 @@ data class MonteCarloAccount(
   val isClosed: Boolean,
   val isOffBudget: Boolean,
 )
+
+enum class MonteCarloSection {
+  Configuration,
+  Headline,
+  Results,
+  Depletion,
+  HowItWorks,
+}
 
 enum class MonteCarloResultsView {
   Chart,

@@ -3,10 +3,10 @@ package aktual.budget.reports.ui.montecarlo
 import aktual.budget.reports.ui.charts.successColor
 import aktual.budget.reports.vm.HISTORICAL_FIRST_YEAR
 import aktual.budget.reports.vm.HISTORICAL_LAST_YEAR
-import aktual.budget.reports.vm.ReturnModel
 import aktual.budget.reports.vm.montecarlo.MonteCarloGraphView
 import aktual.budget.reports.vm.montecarlo.MonteCarloResults
 import aktual.budget.reports.vm.montecarlo.MonteCarloResultsView
+import aktual.budget.reports.vm.montecarlo.MonteCarloSection
 import aktual.budget.reports.vm.montecarlo.MonteCarloState
 import aktual.budget.reports.vm.montecarlo.RunPercentile
 import aktual.core.l10n.Strings
@@ -56,17 +56,28 @@ internal fun MonteCarloResults(
         }
       }
     } else {
-      HeadlineStats(results)
+      HeadlineStats(state, results, onAction)
       ResultsViews(state, results, onAction)
-      DepletionCard(results)
+      DepletionCard(state, results, onAction)
     }
 
-    HowItWorks(state.config.returnModel)
+    HowItWorks(state, onAction)
   }
 
 @Composable
-private fun HeadlineStats(results: MonteCarloResults, modifier: Modifier = Modifier) =
-  SectionCard(modifier = modifier) {
+private fun HeadlineStats(
+  state: MonteCarloState.Loaded,
+  results: MonteCarloResults,
+  onAction: MonteCarloActionHandler,
+  modifier: Modifier = Modifier,
+) =
+  CollapsibleSectionCard(
+    modifier = modifier,
+    title = Strings.monteCarloHeadlineTitle,
+    section = Headline,
+    collapsed = state.collapsedSections,
+    onAction = onAction,
+  ) {
     FlowRow(
       horizontalArrangement = Arrangement.spacedBy(32.dp),
       verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -125,15 +136,18 @@ private fun ResultsViews(
   onAction: MonteCarloActionHandler,
   modifier: Modifier = Modifier,
 ) =
-  SectionCard(modifier = modifier) {
-    SectionTitle(
+  CollapsibleSectionCard(
+    modifier = modifier,
+    title =
       when (state.resultsView) {
         Chart -> Strings.monteCarloHeadingPerformance
         Cashflow -> Strings.monteCarloHeadingCashflow
         Runs -> Strings.monteCarloHeadingRuns
-      }
-    )
-
+      },
+    section = Results,
+    collapsed = state.collapsedSections,
+    onAction = onAction,
+  ) {
     AktualSlidingToggleButton(
       selected = state.resultsView,
       options = MonteCarloResultsView.entries.toImmutableList(),
@@ -216,13 +230,22 @@ internal fun RunPercentilePicker(
   )
 
 @Composable
-private fun DepletionCard(results: MonteCarloResults, modifier: Modifier = Modifier) =
-  SectionCard(modifier = modifier) {
-    SectionTitle(Strings.monteCarloHistogramTitle)
-
+private fun DepletionCard(
+  state: MonteCarloState.Loaded,
+  results: MonteCarloResults,
+  onAction: MonteCarloActionHandler,
+  modifier: Modifier = Modifier,
+) =
+  CollapsibleSectionCard(
+    modifier = modifier,
+    title = Strings.monteCarloHistogramTitle,
+    section = Depletion,
+    collapsed = state.collapsedSections,
+    onAction = onAction,
+  ) {
     if (results.failedCount == 0) {
       BodyText(Strings.monteCarloHistogramNone)
-      return@SectionCard
+      return@CollapsibleSectionCard
     }
 
     BodyText(
@@ -269,14 +292,20 @@ private fun DepletionCard(results: MonteCarloResults, modifier: Modifier = Modif
 
 @Composable
 private fun HowItWorks(
-  returnModel: ReturnModel,
+  state: MonteCarloState.Loaded,
+  onAction: MonteCarloActionHandler,
   modifier: Modifier = Modifier,
 ) =
-  SectionCard(modifier = modifier) {
-    SectionTitle(Strings.reportsMonteCarloHowTitle)
+  CollapsibleSectionCard(
+    modifier = modifier,
+    title = Strings.reportsMonteCarloHowTitle,
+    section = MonteCarloSection.HowItWorks,
+    collapsed = state.collapsedSections,
+    onAction = onAction,
+  ) {
     BodyText(Strings.monteCarloHow)
     BodyText(
-      when (returnModel) {
+      when (state.config.returnModel) {
         HistoricalBootstrap ->
           Strings.monteCarloHowBootstrap(HISTORICAL_FIRST_YEAR, HISTORICAL_LAST_YEAR)
         HistoricalSequence ->

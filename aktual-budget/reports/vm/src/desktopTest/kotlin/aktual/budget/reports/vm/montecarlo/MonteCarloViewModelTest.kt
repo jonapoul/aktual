@@ -19,6 +19,8 @@ import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.containsOnly
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
@@ -125,6 +127,25 @@ class MonteCarloViewModelTest {
         transform { it["currentAge"] }.isEqualTo(JsonPrimitive(60))
       }
     }
+
+  @Test
+  fun `Sections collapse and expand`() = runMonteCarloTest { viewModel, _, _ ->
+    viewModel.state.test {
+      val loaded = awaitLoaded { it.results != null }
+      assertThat(loaded.collapsedSections).isEmpty()
+
+      viewModel.toggleSection(Configuration)
+      viewModel.toggleSection(HowItWorks)
+      val collapsed = awaitLoaded { it.collapsedSections.size == 2 }
+      assertThat(collapsed.collapsedSections)
+        .containsOnly(MonteCarloSection.Configuration, MonteCarloSection.HowItWorks)
+
+      viewModel.toggleSection(Configuration)
+      val expanded = awaitLoaded { it.collapsedSections.size == 1 }
+      assertThat(expanded.collapsedSections).containsOnly(MonteCarloSection.HowItWorks)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
 
   @Test
   fun `A selected run expires when the plan changes`() = runMonteCarloTest { viewModel, _, _ ->

@@ -3,6 +3,7 @@ package aktual.budget.reports.ui.montecarlo
 import aktual.budget.reports.vm.McConfig
 import aktual.budget.reports.vm.montecarlo.MonteCarloGraphView
 import aktual.budget.reports.vm.montecarlo.MonteCarloResultsView
+import aktual.budget.reports.vm.montecarlo.MonteCarloSection
 import aktual.budget.reports.vm.montecarlo.RunPercentile
 import androidx.compose.runtime.Immutable
 
@@ -28,6 +29,8 @@ internal sealed interface MonteCarloAction {
   data class SetKeepSurplus(val keep: Boolean) : MonteCarloAction
 
   data class SetShowTodaysMoney(val show: Boolean) : MonteCarloAction
+
+  data class ToggleSection(val section: MonteCarloSection) : MonteCarloAction
 
   data class SetResultsView(val view: MonteCarloResultsView) : MonteCarloAction
 

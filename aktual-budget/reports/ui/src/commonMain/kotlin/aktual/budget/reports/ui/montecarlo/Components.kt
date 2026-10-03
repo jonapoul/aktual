@@ -1,7 +1,11 @@
 package aktual.budget.reports.ui.montecarlo
 
+import aktual.budget.reports.vm.montecarlo.MonteCarloSection
+import aktual.core.icons.material.ArrowDropDown
+import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
@@ -10,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,11 +27,15 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.launch
 
 // One section of the page on its own card
@@ -40,6 +49,41 @@ internal fun SectionCard(
     verticalArrangement = Arrangement.spacedBy(10.dp),
     content = content,
   )
+
+// A SectionCard that expands and collapses from its title
+@Composable
+internal fun CollapsibleSectionCard(
+  title: String,
+  section: MonteCarloSection,
+  collapsed: ImmutableSet<MonteCarloSection>,
+  onAction: MonteCarloActionHandler,
+  modifier: Modifier = Modifier,
+  content: @Composable ColumnScope.() -> Unit,
+) =
+  SectionCard(modifier = modifier) {
+    val isExpanded = section !in collapsed
+    val toggleLabel =
+      if (isExpanded) Strings.monteCarloSectionCollapse else Strings.monteCarloSectionExpand
+    Row(
+      modifier =
+        Modifier.fillMaxWidth()
+          .clip(CardShape)
+          .clickable(
+            onClickLabel = toggleLabel,
+            role = Button,
+            onClick = { onAction(MonteCarloAction.ToggleSection(section)) },
+          ),
+      verticalAlignment = CenterVertically,
+    ) {
+      Icon(
+        imageVector = if (isExpanded) MaterialIcons.ArrowDropDown else MaterialIcons.ArrowRight,
+        contentDescription = null,
+        tint = colors.pageText,
+      )
+      SectionTitle(modifier = Modifier.weight(1f), text = title)
+    }
+    if (isExpanded) content()
+  }
 
 @Composable
 internal fun SectionTitle(text: String, modifier: Modifier = Modifier) =

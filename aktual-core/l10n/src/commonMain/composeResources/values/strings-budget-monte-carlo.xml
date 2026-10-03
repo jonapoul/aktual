@@ -178,6 +178,11 @@
   <string name="monte_carlo_story_surplus_saved">%1$s of income beyond the plan was saved into %2$s.</string>
   <string name="monte_carlo_story_unspent">%1$s of income beyond the plan went unspent and left the plan.</string>
 
+  <!-- Collapsible sections -->
+  <string name="monte_carlo_headline_title">Headline stats</string>
+  <string name="monte_carlo_section_expand">Expand section</string>
+  <string name="monte_carlo_section_collapse">Collapse section</string>
+
   <!-- Depletion histogram -->
   <string name="monte_carlo_histogram_title">When did the pot run out?</string>
   <string name="monte_carlo_histogram_failures">Only the %1$d of %2$d scenarios that ran out of money are shown here - the other %3$d kept a positive balance for the full horizon.</string>

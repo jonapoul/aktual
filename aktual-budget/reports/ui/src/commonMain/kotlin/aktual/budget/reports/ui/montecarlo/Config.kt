@@ -50,12 +50,16 @@ internal fun MonteCarloConfiguration(
   modifier: Modifier = Modifier,
   initialTab: ConfigTab = Plan,
 ) =
-  SectionCard(modifier = modifier) {
+  CollapsibleSectionCard(
+    modifier = modifier,
+    title = Strings.monteCarloConfigTitle,
+    section = Configuration,
+    collapsed = state.collapsedSections,
+    onAction = onAction,
+  ) {
     var tab by rememberSaveable { mutableStateOf(initialTab) }
     val focusManager = LocalFocusManager.current
     val config = state.config
-
-    SectionTitle(Strings.monteCarloConfigTitle)
 
     FlowRow(
       horizontalArrangement = Arrangement.spacedBy(TAB_SPACING),

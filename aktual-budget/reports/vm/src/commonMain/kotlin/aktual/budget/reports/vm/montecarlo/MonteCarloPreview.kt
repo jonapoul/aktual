@@ -1,7 +1,9 @@
 package aktual.budget.reports.vm.montecarlo
 
 import aktual.budget.reports.vm.McConfig
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 
 // Simulates the plan synchronously, for UI previews and tests
 fun previewMonteCarloState(
@@ -9,6 +11,7 @@ fun previewMonteCarloState(
   resultsView: MonteCarloResultsView = Chart,
   graphView: MonteCarloGraphView = All,
   selectedRun: RunPercentile? = null,
+  collapsedSections: ImmutableSet<MonteCarloSection> = persistentSetOf(),
 ): MonteCarloState.Loaded {
   val simulation = simulate(config, deflate = true)
   val detailRun =
@@ -23,6 +26,7 @@ fun previewMonteCarloState(
     accounts = persistentListOf(),
     hasChanges = false,
     showTodaysMoney = true,
+    collapsedSections = collapsedSections,
     resultsView = resultsView,
     graphView = graphView,
     cashflowPercentile = Median,
