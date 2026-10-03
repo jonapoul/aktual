@@ -12,7 +12,6 @@ import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.Closeable
 import aktual.di.Initializable
-import aktual.di.ScopeLifecycle
 import aktual.prefs.AppPreferences
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.ContributesIntoSet
@@ -38,7 +37,7 @@ internal constructor(
   private val prefs: AppPreferences,
   private val syncDao: SyncDao,
   private val budgetMetadata: BudgetLocalPreferences,
-) : BudgetSyncController, ScopeLifecycle {
+) : BudgetSyncController, Initializable, Closeable {
   private var syncJob: Job? = null
   private var inactiveJob: Job? = null
 
