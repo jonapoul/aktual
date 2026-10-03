@@ -45,4 +45,10 @@ class LoadedRules(val engine: RulesEngine, private val context: SnapshotRuleCont
     get() = context.createdPayees
 
   fun run(transaction: RuleTransaction): RuleTransaction = engine.run(transaction, context)
+
+  /**
+   * The live payee with this name, ignoring case, or a new one that's added to [createdPayees], as
+   * a "set payee_name" action does.
+   */
+  fun resolvePayee(name: String): PayeeId = context.resolvePayee(name)
 }

@@ -50,6 +50,28 @@ sealed interface SyncedPrefKey {
     data class OfxFallbackMissingPayee(override val id: AccountId) :
       PerAccount("ofx-fallback-missing-payee")
 
+    /** [Boolean], true when unset */
+    data class SyncImportNotes(override val id: AccountId) : PerAccount("sync-import-notes")
+
+    /** [Boolean], true when unset */
+    data class SyncImportPending(override val id: AccountId) : PerAccount("sync-import-pending")
+
+    /** [Boolean], true when unset */
+    data class SyncImportTransactions(override val id: AccountId) :
+      PerAccount("sync-import-transactions")
+
+    /** [Boolean], true when unset */
+    data class SyncReimportDeleted(override val id: AccountId) : PerAccount("sync-reimport-deleted")
+
+    /** [Boolean], false when unset */
+    data class SyncUpdateDates(override val id: AccountId) : PerAccount("sync-update-dates")
+
+    /**
+     * Bank sync field mappings as JSON, see
+     * packages/loot-core/src/server/util/custom-sync-mapping.ts
+     */
+    data class CustomSyncMappings(override val id: AccountId) : PerAccount("custom-sync-mappings")
+
     /** [Boolean] */
     data class ShowBalances(override val id: AccountId) : PerAccount("show-balances")
 
@@ -78,6 +100,12 @@ sealed interface SyncedPrefKey {
         ?: fromId(key, "hide-cleared", PerAccount::HideCleared)
         ?: fromId(key, "ofx-fallback-missing-payee", PerAccount::OfxFallbackMissingPayee)
         ?: fromId(key, "show-balances", PerAccount::ShowBalances)
+        ?: fromId(key, "sync-import-notes", PerAccount::SyncImportNotes)
+        ?: fromId(key, "sync-import-pending", PerAccount::SyncImportPending)
+        ?: fromId(key, "sync-import-transactions", PerAccount::SyncImportTransactions)
+        ?: fromId(key, "sync-reimport-deleted", PerAccount::SyncReimportDeleted)
+        ?: fromId(key, "sync-update-dates", PerAccount::SyncUpdateDates)
+        ?: fromId(key, "custom-sync-mappings", PerAccount::CustomSyncMappings)
         ?: fromId(key, "show-extra-balances", PerAccount::ShowExtraBalances)
         ?: fromIdAndType(key, "parse-date", PerAccount::ParseDate)
         ?: fromIdAndType(key, "flip-amount", PerAccount::FlipAmount)

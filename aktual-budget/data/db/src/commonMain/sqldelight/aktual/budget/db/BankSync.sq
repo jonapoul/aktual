@@ -1,0 +1,58 @@
+-- Lookups for reconciling bank sync downloads, see aktual-budget:banksync:domain. The views don't
+-- carry raw_synced_data, and SQLDelight can't type the computed parent_id of
+-- v_transactions_internal, so both come from the joined transactions row
+
+-- packages/loot-core/src/server/accounts/sync.ts matchTransactions(), when deleted transactions
+-- are reimported
+bankSyncMatchAlive:
+SELECT v.id, v.is_parent, v.date, v.payee, v.category, v.notes, v.imported_id, v.imported_payee,
+  v.cleared, v.reconciled, t.raw_synced_data
+FROM v_transactions v
+JOIN transactions t ON t.id = v.id
+WHERE v.imported_id = :importedId AND v.account = :account
+ORDER BY v.date DESC, v.starting_balance_flag, v.sort_order DESC, v.id
+LIMIT 1;
+
+-- As above, but deleted transactions match too and so aren't reimported. SQLDelight can't type the
+-- view's computed category either, so it's mapped here and cleared for split parents by the caller
+bankSyncMatchAny:
+SELECT v.id, v.is_parent, v.date, v.payee, cm.transferId AS category, v.notes, v.imported_id,
+  v.imported_payee, v.cleared, v.reconciled, t.raw_synced_data
+FROM v_transactions_internal v
+JOIN transactions t ON t.id = v.id
+LEFT JOIN category_mapping cm ON cm.id = t.category
+WHERE v.imported_id = :importedId AND v.account = :account
+LIMIT 1;
+
+-- The fuzzy match candidates of matchTransactions(), with strictIdChecking. Transactions that
+-- already have an imported_id only match one that doesn't. As upstream, raw_synced_data isn't read
+bankSyncFuzzyCandidatesStrict:
+SELECT v.id, v.is_parent, t.isChild, t.parent_id, v.date, v.payee, v.category, v.notes,
+  v.imported_id, v.imported_payee, v.cleared, v.reconciled
+FROM v_transactions v
+JOIN transactions t ON t.id = v.id
+WHERE
+  v.imported_id IS NULL
+  AND v.date >= :from AND v.date <= :to AND v.amount = :amount
+  AND v.account = :account
+ORDER BY v.date DESC, v.starting_balance_flag, v.sort_order DESC, v.id;
+
+-- As above, without strictIdChecking
+bankSyncFuzzyCandidates:
+SELECT v.id, v.is_parent, t.isChild, t.parent_id, v.date, v.payee, v.category, v.notes,
+  v.imported_id, v.imported_payee, v.cleared, v.reconciled
+FROM v_transactions v
+JOIN transactions t ON t.id = v.id
+WHERE v.date >= :from AND v.date <= :to AND v.amount = :amount AND v.account = :account
+ORDER BY v.date DESC, v.starting_balance_flag, v.sort_order DESC, v.id;
+
+-- reconcileTransactions(): SELECT id FROM v_transactions WHERE parent_id = ?
+bankSyncChildIds:
+SELECT v.id
+FROM v_transactions v
+JOIN transactions t ON t.id = v.id
+WHERE v.is_child = 1 AND t.parent_id = :parent;
+
+-- packages/loot-core/src/server/db/index.ts getCategories()
+bankSyncCategoryIds:
+SELECT id FROM categories WHERE tombstone = 0;
