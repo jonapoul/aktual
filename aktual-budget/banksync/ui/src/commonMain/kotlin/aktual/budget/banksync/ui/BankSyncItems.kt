@@ -5,11 +5,14 @@ import aktual.budget.banksync.vm.BankSyncAccountStatus
 import aktual.budget.banksync.vm.BankSyncProviderStatus
 import aktual.budget.banksync.vm.LastBankSync
 import aktual.budget.model.AccountSyncSource
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Sync
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
@@ -26,13 +29,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.valentinilk.shimmer.rememberShimmer
@@ -44,6 +51,7 @@ internal fun BankSyncAccountItem(
   account: BankSyncAccount,
   isLinked: Boolean,
   modifier: Modifier = Modifier,
+  sync: AccountSync? = null,
 ) {
   Row(
     modifier =
@@ -89,7 +97,33 @@ internal fun BankSyncAccountItem(
     }
 
     account.status?.let { AccountStatusChip(it) }
+
+    when {
+      account.isSyncing -> {
+        SyncingIndicator()
+      }
+      sync != null -> {
+        BareIconButton(
+          imageVector = MaterialIcons.Sync,
+          contentDescription =
+            Strings.bankSyncSyncAccount(account.name ?: Strings.bankSyncUnnamedAccount),
+          enabled = sync.enabled,
+          onClick = sync.onClick,
+        )
+      }
+    }
   }
+}
+
+@Composable
+internal fun SyncingIndicator(modifier: Modifier = Modifier) {
+  val description = Strings.bankSyncSyncing
+  CircularProgressIndicator(
+    modifier =
+      modifier.size(BankSyncDS.progressSize).semantics { contentDescription = description },
+    color = colors.pageTextSubdued,
+    strokeWidth = BankSyncDS.progressStroke,
+  )
 }
 
 @Composable
@@ -289,6 +323,15 @@ private class AccountProvider :
     BankSyncPreview.savings,
     BankSyncPreview.creditCard,
   )
+
+@Preview
+@Composable
+private fun PreviewSyncableAccountItem(
+  @PreviewParameter(AccountProvider::class) params: ColoredParams<BankSyncAccount>
+) =
+  PreviewWithColoredParams(params) {
+    BankSyncAccountItem(account = this, isLinked = true, sync = AccountSync(enabled = true) {})
+  }
 
 @Preview
 @Composable

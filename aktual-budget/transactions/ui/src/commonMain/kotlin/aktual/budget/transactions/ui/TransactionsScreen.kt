@@ -1,5 +1,6 @@
 package aktual.budget.transactions.ui
 
+import aktual.budget.banksync.ui.showBankSyncSummary
 import aktual.budget.model.Amount
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
@@ -9,19 +10,25 @@ import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.DesktopPreview
+import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LandscapePreview
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.TabletPreview
-import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +51,13 @@ fun TransactionsScreen(
   val loadedAccount by viewModel.loadedAccount.collectAsStateWithLifecycle()
   val density by viewModel.density.collectAsStateWithLifecycle()
   val balance by viewModel.balance.collectAsStateWithLifecycle()
+  val canBankSync by viewModel.canBankSync.collectAsStateWithLifecycle()
+  val isBankSyncing by viewModel.isBankSyncing.collectAsStateWithLifecycle()
+  val snackbar = remember { SnackbarHostState() }
+
+  LaunchedEffect(viewModel) {
+    viewModel.bankSyncFinished.collect { summary -> snackbar.showBankSyncSummary(summary) }
+  }
 
   TransactionsScaffold(
     pagingData = viewModel.pagingData,
@@ -51,9 +65,13 @@ fun TransactionsScreen(
     density = density,
     balance = balance,
     isRoot = isRoot,
+    canBankSync = canBankSync,
+    isBankSyncing = isBankSyncing,
+    snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         NavBack -> back()
+        BankSync -> viewModel.bankSync()
         is SetPrivacyMode -> viewModel.setPrivacyMode(action.isPrivacyEnabled)
         is SetDensity -> viewModel.setDensity(action.density)
       }
@@ -76,6 +94,9 @@ internal fun TransactionsScaffold(
   balance: Amount?,
   isRoot: Boolean,
   onAction: ActionListener,
+  canBankSync: Boolean = false,
+  isBankSyncing: Boolean = false,
+  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -97,18 +118,33 @@ internal fun TransactionsScaffold(
 
           if (density != Dense) BalanceStrip(balance)
         }
-      }
+      },
+      snackbarHost = {
+        SnackbarHost(
+          hostState = snackbarHostState,
+          modifier = Modifier.padding(bottom = LocalBottomSpacing.current + bottomNavBarPadding()),
+        )
+      },
     ) { innerPadding ->
       Box {
         PageBackground()
-        Transactions(
-          modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
-          contentPadding = hazedTopBarContentPadding(hazeState, innerPadding = Zero),
-          listState = listState,
-          pagingItems = pagingItems,
-          density = density,
+
+        // Pulling down downloads the account's transactions from its bank
+        HazedPullToRefreshBox(
+          hazeState = hazeState,
           innerPadding = innerPadding,
-        )
+          isRefreshing = isBankSyncing,
+          onRefresh = { onAction(BankSync) },
+          enabled = canBankSync,
+        ) {
+          Transactions(
+            contentPadding = hazedTopBarContentPadding(hazeState, innerPadding = Zero),
+            listState = listState,
+            pagingItems = pagingItems,
+            density = density,
+            innerPadding = innerPadding,
+          )
+        }
       }
     }
   }

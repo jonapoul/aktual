@@ -7,6 +7,7 @@ import aktual.budget.banksync.vm.LastBankSync
 import aktual.budget.banksync.vm.Success
 import aktual.budget.model.AccountId
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 internal object BankSyncPreview {
   val checking =
@@ -70,6 +71,18 @@ internal object BankSyncPreview {
           ),
         ),
       unlinked = persistentListOf(cash),
+      canSync = true,
+    )
+
+  val syncing =
+    success.copy(
+      providers =
+        success.providers
+          .map { p ->
+            p.copy(accounts = p.accounts.map { it.copy(isSyncing = true) }.toPersistentList())
+          }
+          .toPersistentList(),
+      isSyncing = true,
     )
 
   val unlinkedOnly = Success(providers = persistentListOf(), unlinked = persistentListOf(cash))

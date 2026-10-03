@@ -14,9 +14,15 @@ data object Loading : BankSyncState
 /** No open accounts at all, linked or not */
 data object Empty : BankSyncState
 
+/**
+ * @property canSync There's a server to sync through, which a local-only budget doesn't have.
+ * @property isSyncing A bank sync is running, from this screen or another.
+ */
 data class Success(
   val providers: ImmutableList<BankSyncProvider>,
   val unlinked: ImmutableList<BankSyncAccount>,
+  val canSync: Boolean = false,
+  val isSyncing: Boolean = false,
 ) : BankSyncState
 
 /** One bank sync provider (GoCardless, SimpleFIN etc.) and the open accounts linked through it */
@@ -38,6 +44,7 @@ enum class BankSyncProviderStatus {
   NoServer,
 }
 
+/** @property isSyncing This account is waiting for or in the middle of a running bank sync. */
 @Immutable
 data class BankSyncAccount(
   val id: AccountId,
@@ -45,6 +52,7 @@ data class BankSyncAccount(
   val bankName: String?,
   val lastSync: LastBankSync,
   val status: BankSyncAccountStatus?,
+  val isSyncing: Boolean = false,
 )
 
 /** accounts.bank_sync_status, see packages/loot-core/src/types/models/account.ts */

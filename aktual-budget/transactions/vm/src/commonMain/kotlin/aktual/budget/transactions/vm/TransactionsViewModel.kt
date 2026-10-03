@@ -1,6 +1,9 @@
 package aktual.budget.transactions.vm
 
 import aktual.budget.BudgetLocalPreferences
+import aktual.budget.banksync.domain.BankSyncController
+import aktual.budget.banksync.domain.BankSyncSummary
+import aktual.budget.db.Accounts
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.TagsDao
@@ -16,6 +19,7 @@ import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
 import aktual.budget.transactions.vm.LoadedAccount.SpecificTag
+import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -37,6 +41,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -51,6 +56,8 @@ class TransactionsViewModel(
   private val transactionDao: TransactionDao,
   private val tagsDao: TagsDao,
   private val preferencesDao: PreferencesDao,
+  private val bankSyncController: BankSyncController,
+  server: BudgetServer,
 ) : ViewModel() {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
@@ -60,6 +67,8 @@ class TransactionsViewModel(
   }
 
   private val mutableLoadedAccount = MutableStateFlow<LoadedAccount>(Loading)
+  private val bankSyncAccount = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id
+  private val isRemote = server is BudgetServer.Remote
   private var currentPagingSource: PagingSource<Int, Transaction>? = null
 
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
@@ -68,6 +77,24 @@ class TransactionsViewModel(
     prefs
       .map { meta -> meta[TransactionDensityKey] ?: Default }
       .stateIn(viewModelScope, Eagerly, initialValue = prefs[TransactionDensityKey] ?: Default)
+
+  /** Pulling to refresh syncs the account with its bank, if it's linked to one. */
+  val canBankSync: StateFlow<Boolean> =
+    mutableLoadedAccount
+      .map { it is SpecificAccount && it.account.isLinked() && isRemote }
+      .stateIn(viewModelScope, Eagerly, initialValue = false)
+
+  /** This account is waiting for or in the middle of a bank sync, from this screen or another. */
+  val isBankSyncing: StateFlow<Boolean> =
+    bankSyncController.progress
+      .map { it.isRunning && bankSyncAccount in it.pending }
+      .stateIn(viewModelScope, Eagerly, initialValue = false)
+
+  /** What each bank sync of this account did, once it's finished. */
+  val bankSyncFinished: Flow<BankSyncSummary> =
+    bankSyncController.finished.mapNotNull { results ->
+      BankSyncSummary.of(results.filter { it.account == bankSyncAccount })
+    }
 
   // Dummy value until #1675 computes the real one
   val balance: StateFlow<Amount?> = MutableStateFlow(DummyBalance).asStateFlow()
@@ -115,6 +142,11 @@ class TransactionsViewModel(
     prefs.update { meta -> meta.set(TransactionDensityKey, density) }
   }
 
+  fun bankSync() {
+    val account = bankSyncAccount ?: return
+    if (!bankSyncController.start(setOf(account))) logcat.d { "Bank sync already running" }
+  }
+
   fun setPrivacyMode(privacyMode: Boolean) {
     viewModelScope.launch {
       preferencesDao[SyncedPrefKey.Global.IsPrivacyEnabled] = privacyMode.toString()
@@ -128,3 +160,6 @@ class TransactionsViewModel(
     val TransactionDensityKey = DbMetadata.enumKey<TransactionsDensity>("transactionDensity")
   }
 }
+
+// As the bank sync screen decides it
+private fun Accounts.isLinked() = account_sync_source != null && account_id != null
