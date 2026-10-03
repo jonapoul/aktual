@@ -9,6 +9,7 @@ import aktual.di.BudgetScope
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 @OptIn(ExperimentalForInheritanceCoroutinesApi::class)
+@SingleIn(BudgetScope::class)
 @ContributesBinding(BudgetScope::class, binding<BudgetLocalPreferences>())
 class BudgetLocalPreferencesImpl
 private constructor(
@@ -40,7 +42,11 @@ private constructor(
   override fun compareAndSet(expect: DbMetadata, update: DbMetadata): Boolean {
     val updated = delegate.compareAndSet(expect, update)
     if (updated && expect != update) {
-      coroutineScope.launch(contexts.io) { writeMutex.withLock { files.writeMetadata(id, update) } }
+      coroutineScope.launch(contexts.io) {
+        writeMutex.withLock {
+          files.writeMetadata(id, update)
+        }
+      }
     }
     return updated
   }

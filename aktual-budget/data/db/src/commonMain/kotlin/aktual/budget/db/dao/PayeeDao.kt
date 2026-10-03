@@ -12,6 +12,7 @@ import dev.zacsweers.metro.Inject
 @Inject
 class PayeeDao(database: BudgetDatabase) {
   private val queries = database.payeesQueries
+  private val mappings = database.payeeMappingQueries
 
   suspend fun insert(id: PayeeId, name: String) = queries.withoutResult {
     insert(
@@ -23,6 +24,7 @@ class PayeeDao(database: BudgetDatabase) {
       favorite = false,
       learn_categories = null,
     )
+    mappings.insert(id = id, targetId = id)
   }
 
   suspend fun name(id: PayeeId): String? = queries.withResult {
