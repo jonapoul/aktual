@@ -2,6 +2,8 @@ package aktual.account.ui.password
 
 import aktual.account.vm.ChangePasswordState
 import aktual.account.vm.ChangePasswordViewModel
+import aktual.core.icons.material.Check
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Password
@@ -12,8 +14,10 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.ErrorBanner
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.NoticeBanner
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.VersionsText
@@ -160,8 +164,8 @@ private fun ChangePasswordContent(
       when (state) {
         Loading,
         null -> Unit
-        is Failure -> Text(text = state.errorMessage(), color = colors.errorText)
-        Success -> Text(text = Strings.passwordSuccess, color = colors.noticeText)
+        is Failure -> ErrorBanner(text = state.errorMessage())
+        Success -> NoticeBanner(text = Strings.passwordSuccess, icon = MaterialIcons.Check)
       }
     }
 
