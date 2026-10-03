@@ -25,16 +25,26 @@ sealed interface BankSyncTransactionsResponse {
     )
   }
 
+  /** Anything but a [Success]. */
+  sealed interface Failure : BankSyncTransactionsResponse
+
   /** The server reached the provider, but the provider refused or failed the request. */
   @Serializable
   data class ProviderError(
     @SerialName("error_type") val errorType: String,
     @SerialName("error_code") val errorCode: String,
     @SerialName("reason") val reason: String? = null,
-  ) : BankSyncTransactionsResponse
+  ) : Failure {
+    companion object {
+      // Upstream's codes for failures that don't come from the provider
+      const val ACCOUNT_MISSING = "ACCOUNT_MISSING"
+      const val NO_DATA = "NO_DATA"
+      const val TIMED_OUT = "TIMED_OUT"
+    }
+  }
 
   /** The server refused the request itself, e.g. the provider isn't configured. */
-  data class Rejected(val reason: String?, val details: String?) : BankSyncTransactionsResponse
+  data class Rejected(val reason: String?, val details: String?) : Failure
 }
 
 @Serializable

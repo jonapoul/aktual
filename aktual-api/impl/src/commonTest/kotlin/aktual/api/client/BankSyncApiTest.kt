@@ -3,6 +3,9 @@ package aktual.api.client
 import aktual.api.model.banksync.BankSyncStatusResponse
 import aktual.api.model.banksync.BankSyncTransactionsRequest
 import aktual.api.model.banksync.BankSyncTransactionsResponse
+import aktual.api.model.banksync.BankSyncTransactionsResponse.ProviderError
+import aktual.api.model.banksync.SimpleFinBatchRequest
+import aktual.api.model.banksync.SimpleFinBatchResponse
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.DbMetadata
 import aktual.core.model.AktualJson
@@ -20,6 +23,7 @@ import aktual.test.testHttpClient
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.containsOnly
 import assertk.assertions.doesNotContainKey
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
@@ -187,7 +191,84 @@ class BankSyncApiTest {
       )
   }
 
+  @Test
+  fun `Batch request`() = runTest {
+    mockEngine += { respondJson(SimplefinResponses.TRANSACTIONS_BATCH_200) }
+
+    bankSyncApi.simpleFinBatch(BATCH_REQUEST)
+
+    assertThat(mockEngine.latestRequestUrl())
+      .isEqualTo("https://test.server.com/simplefin/transactions")
+    assertThat(mockEngine.latestRequest().body).isInstanceOf<TextContent>().all {
+      prop(TextContent::text)
+        .isEqualTo(
+          """{"accountId":["ACT-1","ACT-2","ACT-missing"],"startDate":["2026-07-01","2026-07-02","2026-07-03"]}"""
+        )
+    }
+  }
+
+  @Test
+  fun `Parse batch response`() = runTest {
+    mockEngine += { respondJson(SimplefinResponses.TRANSACTIONS_BATCH_200) }
+
+    val response = bankSyncApi.simpleFinBatch(BATCH_REQUEST)
+
+    assertThat(response).isInstanceOf<SimpleFinBatchResponse.Success>().all {
+      transform { it.accounts.keys }.containsOnly("ACT-1", "ACT-2", "ACT-missing")
+      transform { it.accounts }
+        .key("ACT-1")
+        .isInstanceOf<BankSyncTransactionsResponse.Success>()
+        .all {
+          prop(BankSyncTransactionsResponse.Success::startingBalance).isEqualTo(123456L)
+          transform { it.transactions.all.map { t -> t.transactionId } }
+            .containsExactly("TRN-booked-1")
+        }
+      // An account's error wins over its download
+      transform { it.accounts }
+        .key("ACT-2")
+        .isInstanceOf<ProviderError>()
+        .prop(ProviderError::errorCode)
+        .isEqualTo("ACCOUNT_NEEDS_ATTENTION")
+      transform { it.accounts }
+        .key("ACT-missing")
+        .isInstanceOf<ProviderError>()
+        .prop(ProviderError::errorCode)
+        .isEqualTo("ACCOUNT_MISSING")
+    }
+  }
+
+  @Test
+  fun `Parse batch provider error`() = runTest {
+    mockEngine += { respondJson(SimplefinResponses.TRANSACTIONS_INVALID_TOKEN_200) }
+
+    val response = bankSyncApi.simpleFinBatch(BATCH_REQUEST)
+
+    assertThat(response)
+      .isInstanceOf<SimpleFinBatchResponse.Failed>()
+      .prop(SimpleFinBatchResponse.Failed::error)
+      .isInstanceOf<ProviderError>()
+      .prop(ProviderError::errorCode)
+      .isEqualTo("INVALID_ACCESS_TOKEN")
+  }
+
+  @Test
+  fun `Empty batch response has no data`() = runTest {
+    mockEngine += { respondJson("""{"status":"ok","data":{}}""") }
+
+    val response = bankSyncApi.simpleFinBatch(BATCH_REQUEST)
+
+    assertThat(response)
+      .isEqualTo(
+        SimpleFinBatchResponse.Failed(ProviderError(ProviderError.NO_DATA, ProviderError.NO_DATA))
+      )
+  }
+
   private companion object {
+    val BATCH_REQUEST =
+      SimpleFinBatchRequest(
+        accountIds = listOf("ACT-1", "ACT-2", "ACT-missing"),
+        startDates = listOf(LocalDate(2026, 7, 1), LocalDate(2026, 7, 2), LocalDate(2026, 7, 3)),
+      )
     val REQUEST = BankSyncTransactionsRequest(accountId = "abc", startDate = LocalDate(2026, 7, 1))
   }
 }

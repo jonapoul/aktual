@@ -21,3 +21,16 @@ Content-Type: application/json
 
 <> transactions-success.200.json
 <> transactions-invalid-token.200.json
+
+###
+# @name simplefin/transactions (batch)
+POST {{ACTUAL_BASE_URL}}/simplefin/transactions
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{
+    "accountId": ["{{ACTUAL_SIMPLEFIN_ACCOUNT_ID}}", "ACT-missing"],
+    "startDate": ["2026-07-01", "2026-08-01"]
+}
+
+<> transactions-batch.200.json
