@@ -8,13 +8,17 @@ import aktual.budget.db.withoutResult
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.DashboardSync
+import aktual.budget.reports.vm.McIncomeStream
+import aktual.budget.reports.vm.McPot
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
+import aktual.budget.reports.vm.keepsSurplus
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
@@ -86,6 +90,43 @@ class MonteCarloViewModelTest {
   }
 
   @Test
+  fun `Added items take generated ids`() = runMonteCarloTest { viewModel, _, _ ->
+    viewModel.state.test {
+      awaitLoaded { it.results != null }
+      viewModel.addPot()
+      viewModel.addIncomeStream()
+      viewModel.setKeepSurplus(false)
+
+      val edited = awaitLoaded { it.config.incomeStreams.isNotEmpty() && !it.config.keepsSurplus }
+      assertThat(edited).all {
+        prop(MonteCarloState.Loaded::hasChanges).isTrue()
+        transform { it.config.pots.map(McPot::id) }.containsExactly("pot-1", "new-id")
+        transform { it.config.incomeStreams.map(McIncomeStream::id) }.containsExactly("new-id")
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Renaming writes the name without touching the plan`() =
+    runMonteCarloTest { viewModel, dao, scope ->
+      viewModel.state.test {
+        awaitLoaded { it.results != null }
+        viewModel.rename("Retirement")
+        scope.advanceUntilIdle()
+
+        val renamed = awaitLoaded { it.title == "Retirement" }
+        assertThat(renamed.hasChanges).isFalse()
+        cancelAndIgnoreRemainingEvents()
+      }
+
+      assertThat(dao.meta(ID)).isNotNull().all {
+        transform { it["name"] }.isEqualTo(JsonPrimitive("Retirement"))
+        transform { it["currentAge"] }.isEqualTo(JsonPrimitive(60))
+      }
+    }
+
+  @Test
   fun `A selected run expires when the plan changes`() = runMonteCarloTest { viewModel, _, _ ->
     viewModel.state.test {
       val loaded = awaitLoaded { it.results != null }
@@ -143,6 +184,7 @@ class MonteCarloViewModelTest {
         reportsDao = ReportsDao(this, contexts),
         decoder = DashboardItemDecoder(),
         sync = sync,
+        uuidGenerator = { "new-id" },
         contexts = contexts,
       )
     try {

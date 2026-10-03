@@ -8,11 +8,18 @@ import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.McConfig
 import aktual.budget.reports.vm.MonteCarloReportMeta
+import aktual.budget.reports.vm.addContribution
+import aktual.budget.reports.vm.addIncomeStream
+import aktual.budget.reports.vm.addPot
+import aktual.budget.reports.vm.addSpendingPhase
+import aktual.budget.reports.vm.addTaxBand
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.runMonteCarlo
 import aktual.budget.reports.vm.toConfig
 import aktual.budget.reports.vm.toMeta
 import aktual.budget.reports.vm.withLiveBalances
+import aktual.budget.reports.vm.withSurplusKept
+import aktual.core.UuidGenerator
 import aktual.di.BudgetScope
 import alakazam.kotlin.CoroutineContexts
 import androidx.compose.runtime.Stable
@@ -58,9 +65,10 @@ internal constructor(
   @Assisted private val id: WidgetId,
   dashboardDao: DashboardDao,
   accountDao: AccountDao,
-  reportsDao: ReportsDao,
+  private val reportsDao: ReportsDao,
   decoder: DashboardItemDecoder,
   private val sync: DashboardSync,
+  private val uuidGenerator: UuidGenerator,
   contexts: CoroutineContexts,
 ) : ViewModel() {
   private val saved: StateFlow<SavedMeta> =
@@ -86,7 +94,7 @@ internal constructor(
         if (config == null) {
           flowOf(null)
         } else {
-          liveBalances(reportsDao, config).map(config::withLiveBalances)
+          liveBalances(config).map(config::withLiveBalances)
         }
       }
       .stateIn(viewModelScope, Eagerly, initialValue = null)
@@ -185,6 +193,26 @@ internal constructor(
 
   fun setConfig(config: McConfig) = mutableConfig.update { config }
 
+  // Applied to the plan as it is now, so edits made in quick succession don't overwrite each other
+  fun edit(transform: (McConfig) -> McConfig) = mutableConfig.update { it?.let(transform) }
+
+  fun addPot() = edit { it.addPot(uuidGenerator()) }
+
+  fun addIncomeStream() = edit { it.addIncomeStream(uuidGenerator()) }
+
+  fun addContribution() = edit { it.addContribution(uuidGenerator()) }
+
+  fun addSpendingPhase() = edit { it.addSpendingPhase(uuidGenerator()) }
+
+  fun addTaxBand() = edit { it.addTaxBand(uuidGenerator()) }
+
+  fun setKeepSurplus(keep: Boolean) = edit { it.withSurplusKept(keep) { uuidGenerator() } }
+
+  fun rename(name: String) {
+    logcat.d { "Renaming Monte Carlo widget $id to $name" }
+    viewModelScope.launch { sync.renameWidget(id, name) }
+  }
+
   fun setShowTodaysMoney(show: Boolean) = mutableShowTodaysMoney.update { show }
 
   fun setResultsView(view: MonteCarloResultsView) = mutableResultsView.update { view }
@@ -202,11 +230,22 @@ internal constructor(
 
   fun save() {
     val meta = (saved.value as? SavedMeta.Found)?.meta ?: return
-    val config = resolvedConfig.value ?: return
+    val edited = mutableConfig.value ?: return
     logcat.d { "Saving Monte Carlo config for $id" }
-    // Saving the resolved plan keeps linked pots' stored balances fresh as a fallback
-    mutableConfig.update { config }
-    viewModelScope.launch { sync.setMonteCarloConfig(id, config.toMeta(meta)) }
+    viewModelScope.launch {
+      // Saving the resolved plan keeps linked pots' stored balances fresh as a fallback. It's
+      // resolved here because resolvedConfig can lag behind an edit made just before saving
+      val config = edited.withLiveBalances(liveBalances(edited).first())
+      mutableConfig.update { if (it == edited) config else it }
+      sync.setMonteCarloConfig(id, config.toMeta(meta))
+    }
+  }
+
+  // Read straight from the plan, since the state can lag behind an edit made just before leaving
+  fun hasUnsavedChanges(): Boolean {
+    val meta = (saved.value as? SavedMeta.Found)?.meta ?: return false
+    val edited = mutableConfig.value ?: return false
+    return edited != meta.toConfig()
   }
 
   // Throws away unsaved edits
@@ -236,10 +275,10 @@ internal constructor(
     return index?.let { simulation to it }
   }
 
-  private fun liveBalances(dao: ReportsDao, config: McConfig): Flow<Map<AccountId, Long>> {
+  private fun liveBalances(config: McConfig): Flow<Map<AccountId, Long>> {
     val linked = config.pots.mapNotNull { it.accountId }.toSet()
     if (linked.isEmpty()) return flowOf(emptyMap())
-    return dao.observeMonteCarloAccountBalances(linked).map { rows ->
+    return reportsDao.observeMonteCarloAccountBalances(linked).map { rows ->
       rows.associate { it.account to it.total }
     }
   }
