@@ -3,6 +3,7 @@ package aktual.budget.transactions.vm
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.SyncDao
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
@@ -10,6 +11,8 @@ import aktual.budget.model.AccountSpec
 import aktual.budget.model.AccountSpec.AllAccounts
 import aktual.budget.model.AccountSpec.SpecificAccount
 import aktual.budget.model.CategoryId
+import aktual.budget.model.LocalChange
+import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TagId
 import aktual.budget.model.TagSpec
@@ -22,23 +25,30 @@ import aktual.di.RunLevelState
 import aktual.test.TestAppDirectoryContainer
 import aktual.test.TestBudgetFilesContainer
 import aktual.test.TestCoroutineContainer
+import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
 import android.os.Looper
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingSource.LoadParams
+import androidx.paging.testing.asSnapshot
+import app.cash.turbine.test
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.createDynamicGraph
 import kotlin.io.path.createTempDirectory
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
@@ -56,6 +66,8 @@ class TransactionsViewModelTest {
   private lateinit var payees: PayeeDao
   private lateinit var categories: CategoryDao
   private lateinit var tags: TagsDao
+  private lateinit var sync: SyncDao
+  private lateinit var factory: TransactionsViewModel.Factory
 
   // fake
   private lateinit var appGraph: TestAppGraph
@@ -68,12 +80,14 @@ class TransactionsViewModelTest {
     if (::viewModel.isInitialized) viewModel.viewModelScope.cancel()
     Shadows.shadowOf(Looper.getMainLooper()).idle()
     appGraph.close()
+    Dispatchers.resetMain()
     FileSystem.SYSTEM.deleteRecursively(rootDir)
   }
 
   private suspend fun TestScope.buildViewModel(spec: AccountSpec) {
     rootDir = createTempDirectory().toOkioPath()
     contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
+    Dispatchers.setMain(StandardTestDispatcher(testScheduler))
     appGraph =
       createDynamicGraph<TestAppGraph>(
         TestCoroutineContainer(backgroundScope, contexts),
@@ -91,6 +105,7 @@ class TransactionsViewModelTest {
       payees = budgetGraph[PayeeDao::class]
       categories = budgetGraph[CategoryDao::class]
       tags = budgetGraph[TagsDao::class]
+      sync = budgetGraph[SyncDao::class]
     }
 
     // add some utility entities
@@ -107,11 +122,9 @@ class TransactionsViewModelTest {
     categories.insertCategory(CategoryId("c"), "Car")
 
     val viewModelFactory = appGraph.runLevelState.viewModelFactory().first()
-    viewModel =
-      viewModelFactory
-        .createManuallyAssistedFactory(TransactionsViewModel.Factory::class)
-        .invoke()
-        .create(TransactionsSpec(spec))
+    factory =
+      viewModelFactory.createManuallyAssistedFactory(TransactionsViewModel.Factory::class).invoke()
+    viewModel = factory.create(TransactionsSpec(spec))
   }
 
   @Test
@@ -158,7 +171,7 @@ class TransactionsViewModelTest {
     // then
     assertThat(result)
       .isPage()
-      .withData(ID_C, ID_B, ID_A) // Returned in reverse insertion order
+      .withData(TRANSACTION_C, TRANSACTION_B, TRANSACTION_A) // Returned in reverse insertion order
       .withPrevKey(null)
       .withNextKey(null) // No more pages since we loaded fewer items than page size
   }
@@ -188,7 +201,7 @@ class TransactionsViewModelTest {
     // then
     assertThat(result)
       .isPage()
-      .withData(ID_A)
+      .withData(TRANSACTION_A)
       .withPrevKey(null)
       .withNextKey(null) // No more pages since we loaded fewer items than page size
   }
@@ -220,7 +233,10 @@ class TransactionsViewModelTest {
     // then - only the two exact, case-insensitive #food matches; #foodie is excluded
     assertThat(result)
       .isPage()
-      .withData(ID_D, ID_A)
+      .withData(
+        transaction(id = "d", account = "c", category = "c", payee = "c", notes = "#FOOD again"),
+        transaction(id = "a", account = "a", category = "a", payee = "a", notes = "lunch #food"),
+      )
       .withPrevKey(expected = null)
       .withNextKey(expected = null)
   }
@@ -253,7 +269,7 @@ class TransactionsViewModelTest {
     // then
     assertThat(result)
       .isPage()
-      .withData(ID_F, ID_E, ID_D, ID_C, ID_B, ID_A)
+      .withData(DATED_F, DATED_E, DATED_D, DATED_C, DATED_B, DATED_A)
       .withPrevKey(null)
       .withNextKey(null) // No more pages since we loaded fewer items than page size
   }
@@ -284,14 +300,14 @@ class TransactionsViewModelTest {
       source.load(LoadParams.Refresh(key = null, loadSize = 2, placeholdersEnabled = false))
 
     // then - first page contains first 2 items (in reverse order)
-    assertThat(firstPage).isPage().withData(ID_F, ID_E).withPrevKey(null).withNextKey(1)
+    assertThat(firstPage).isPage().withData(DATED_F, DATED_E).withPrevKey(null).withNextKey(1)
 
     // when - load second page
     val secondPage =
       source.load(LoadParams.Append(key = 1, loadSize = 2, placeholdersEnabled = false))
 
     // then - second page contains next 2 items
-    assertThat(secondPage).isPage().withData(ID_D, ID_C).withPrevKey(0).withNextKey(2)
+    assertThat(secondPage).isPage().withData(DATED_D, DATED_C).withPrevKey(0).withNextKey(2)
 
     // when - load third page
     val thirdPage =
@@ -300,9 +316,119 @@ class TransactionsViewModelTest {
     // then - third page contains remaining items
     assertThat(thirdPage)
       .isPage()
-      .withData(ID_B, ID_A)
+      .withData(DATED_B, DATED_A)
       .withPrevKey(1)
       .withNextKey(3) // More pages possible since we loaded exactly the page size
+  }
+
+  @Test
+  fun `Tag-filtered transactions are paged`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    tags.insert(id = TagId("food"), tag = "food", color = null, description = null)
+    with(transactions) {
+      insertTransaction("a", "a", "a", "a", notes = "#food 1", date = DATE_1)
+      insertTransaction("b", "b", "b", "b", notes = "untagged", date = DATE_1)
+      insertTransaction("c", "c", "c", "c", notes = "#food 2", date = DATE_2)
+      insertTransaction("d", "c", "c", "c", notes = "#food 3", date = DATE_3)
+    }
+    advanceUntilIdle()
+
+    val source =
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        tagsDao = tags,
+        spec = TransactionsSpec(tagSpec = TagSpec.SpecificTag(TagId("food"))),
+      )
+
+    // when
+    val firstPage =
+      source.load(LoadParams.Refresh(key = null, loadSize = 2, placeholdersEnabled = false))
+    val secondPage =
+      source.load(LoadParams.Append(key = 1, loadSize = 2, placeholdersEnabled = false))
+
+    // then
+    assertThat(firstPage)
+      .isPage()
+      .withData(
+        transaction("d", "c", "c", "c", notes = "#food 3", date = DATE_3),
+        transaction("c", "c", "c", "c", notes = "#food 2", date = DATE_2),
+      )
+      .withPrevKey(null)
+      .withNextKey(1)
+    assertThat(secondPage)
+      .isPage()
+      .withData(transaction("a", "a", "a", "a", notes = "#food 1", date = DATE_1))
+      .withPrevKey(0)
+      .withNextKey(null)
+  }
+
+  @Test
+  fun `View model pages whole transactions`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
+      insertTransaction(id = "d", account = "c", category = "c", payee = "c", date = DATE_2)
+    }
+    advanceUntilIdle()
+
+    // when
+    val snapshot = viewModel.pagingData.asSnapshot()
+
+    // then
+    assertThat(snapshot).containsExactly(DATED_D, DATED_A)
+  }
+
+  @Test
+  fun `Editing an existing transaction refreshes the list`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    transactions.insertTransaction(id = "a", account = "a", category = "a", payee = "a")
+    advanceUntilIdle()
+    assertThat(viewModel.pagingData.asSnapshot()).containsExactly(TRANSACTION_A)
+
+    // when
+    val edit = LocalChange("transactions", row = "a", column = "notes", MessageValue.String("New"))
+    sync.sendMessages(listOf(edit))
+    advanceUntilIdle()
+
+    // then
+    assertThat(viewModel.pagingData.asSnapshot()).containsExactly(TRANSACTION_A.copy(notes = "New"))
+  }
+
+  @Test
+  fun `Density defaults to compact and is remembered`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+
+    viewModel.density.test {
+      assertThatNextEmissionIsEqualTo(Compact)
+
+      // when
+      viewModel.setDensity(Dense)
+
+      // then
+      assertThatNextEmissionIsEqualTo(Dense)
+    }
+
+    // and a new view model picks it up
+    val other = factory.create(TransactionsSpec(AllAccounts))
+    other.density.test { assertThatNextEmissionIsEqualTo(Dense) }
+    other.viewModelScope.cancel()
+  }
+
+  private companion object {
+    val TRANSACTION_A = transaction(id = "a", account = "a", category = "a", payee = "a")
+    val TRANSACTION_B = transaction(id = "b", account = "b", category = "b", payee = "b")
+    val TRANSACTION_C = transaction(id = "c", account = "c", category = "c", payee = "c")
+
+    val DATED_A = TRANSACTION_A.copy(date = DATE_1)
+    val DATED_B = TRANSACTION_B.copy(date = DATE_1)
+    val DATED_C = TRANSACTION_C.copy(date = DATE_1)
+    val DATED_D = transaction(id = "d", account = "c", category = "c", payee = "c", date = DATE_2)
+    val DATED_E = transaction(id = "e", account = "c", category = "c", payee = "c", date = DATE_2)
+    val DATED_F = transaction(id = "f", account = "c", category = "c", payee = "c", date = DATE_3)
   }
 
   @DependencyGraph(AppScope::class)

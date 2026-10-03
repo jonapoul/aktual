@@ -3,6 +3,7 @@ package aktual.budget.transactions.vm
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.SyncDao
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.di.Accessor
@@ -34,4 +35,6 @@ internal object TestDatabaseBindings {
   fun categories(dao: CategoryDao): Accessor = { dao }
 
   @Provides @IntoMap @AccessorKey(TagsDao::class) fun tags(dao: TagsDao): Accessor = { dao }
+
+  @Provides @IntoMap @AccessorKey(SyncDao::class) fun sync(dao: SyncDao): Accessor = { dao }
 }

@@ -5,14 +5,12 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
-import aktual.budget.db.transactions.GetById
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.TagSpec
-import aktual.budget.model.TransactionId
-import aktual.budget.model.TransactionsFormat
+import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
@@ -33,12 +31,10 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
-import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -55,7 +51,7 @@ class TransactionsViewModel(
   private val transactionDao: TransactionDao,
   private val tagsDao: TagsDao,
   private val preferencesDao: PreferencesDao,
-) : ViewModel(), TransactionStateSource, TransactionIdSource {
+) : ViewModel() {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)
@@ -64,17 +60,19 @@ class TransactionsViewModel(
   }
 
   private val mutableLoadedAccount = MutableStateFlow<LoadedAccount>(Loading)
-  private val checkedTransactionIds = MutableStateFlow(persistentMapOf<TransactionId, Boolean>())
-  private var currentPagingSource: PagingSource<Int, TransactionId>? = null
+  private var currentPagingSource: PagingSource<Int, Transaction>? = null
 
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
 
-  val format: StateFlow<TransactionsFormat> =
+  val density: StateFlow<TransactionsDensity> =
     prefs
-      .map { meta -> meta[TransactionFormatKey] ?: Default }
-      .stateIn(viewModelScope, Eagerly, initialValue = Default)
+      .map { meta -> meta[TransactionDensityKey] ?: Default }
+      .stateIn(viewModelScope, Eagerly, initialValue = prefs[TransactionDensityKey] ?: Default)
 
-  override val pagingData: Flow<PagingData<TransactionId>> =
+  // Dummy value until #1675 computes the real one
+  val balance: StateFlow<Amount?> = MutableStateFlow(DummyBalance).asStateFlow()
+
+  val pagingData: Flow<PagingData<Transaction>> =
     Pager(
         config = PagingConfig(pageSize = PAGING_SIZE, enablePlaceholders = false),
         pagingSourceFactory = ::buildPagingSource,
@@ -106,29 +104,15 @@ class TransactionsViewModel(
     // Invalidate PagingSource when transaction data changes.
     // Ignore the first item from the flow, that'll be the initial table state.
     viewModelScope.launch {
-      val countFlow =
-        when (val s = spec.accountSpec) {
-          AccountSpec.AllAccounts -> transactionDao.observeCount()
-          is AccountSpec.SpecificAccount -> transactionDao.observeCountByAccount(s.id)
-        }
-      countFlow.drop(count = 1).collect {
+      transactionDao.observeChanges().drop(count = 1).collect {
         logcat.d { "Transactions table updated, invalidating paging source..." }
         currentPagingSource?.invalidate()
       }
     }
   }
 
-  fun setFormat(format: TransactionsFormat) {
-    prefs.update { meta -> meta.set(TransactionFormatKey, format) }
-  }
-
-  override fun isChecked(id: TransactionId): Flow<Boolean> = checkedTransactionIds.map {
-    it.getOrDefault(id, false)
-  }
-
-  @Suppress("ExplicitCollectionElementAccessMethod")
-  fun setChecked(id: TransactionId, isChecked: Boolean) = checkedTransactionIds.update { map ->
-    map.putting(id, isChecked)
+  fun setDensity(density: TransactionsDensity) {
+    prefs.update { meta -> meta.set(TransactionDensityKey, density) }
   }
 
   fun setPrivacyMode(privacyMode: Boolean) {
@@ -137,34 +121,10 @@ class TransactionsViewModel(
     }
   }
 
-  override fun transactionState(id: TransactionId) =
-    transactionDao
-      .observeById(id)
-      .also { logcat.d { "Observing transaction with ID $id" } }
-      .distinctUntilChanged()
-      .map { toTransactionState(it, id) }
-
-  private fun toTransactionState(data: GetById?, id: TransactionId): TransactionState {
-    if (data == null) return TransactionState.DoesntExist(id)
-    val transaction =
-      with(data) {
-        Transaction(
-          id = id,
-          date = date,
-          account = accountName,
-          payee = payeeName,
-          notes = notes,
-          category = categoryName,
-          amount = Amount(amount),
-        )
-      }
-    return TransactionState.Loaded(transaction)
-  }
-
   private fun buildPagingSource() =
     TransactionsPagingSource(transactionDao, tagsDao, spec).also { currentPagingSource = it }
 
   private companion object {
-    val TransactionFormatKey = DbMetadata.enumKey<TransactionsFormat>("transactionFormat")
+    val TransactionDensityKey = DbMetadata.enumKey<TransactionsDensity>("transactionDensity")
   }
 }

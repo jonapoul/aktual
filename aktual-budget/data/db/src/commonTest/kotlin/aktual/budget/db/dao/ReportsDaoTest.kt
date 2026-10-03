@@ -41,6 +41,6 @@ internal class ReportsDaoTest {
   private fun runDaoTest(action: suspend BudgetDatabase.(ReportsDao, TransactionDao) -> Unit) =
     runDatabaseTest { scope ->
       val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
-      action(ReportsDao(this, contexts), TransactionDao(this, contexts))
+      action(ReportsDao(this, contexts), TransactionDao(this))
     }
 }

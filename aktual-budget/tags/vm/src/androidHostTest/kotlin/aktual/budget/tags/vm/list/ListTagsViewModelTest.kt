@@ -295,8 +295,7 @@ class ListTagsViewModelTest {
   ) =
     ListTagsViewModel(
       tagsDao = TagsDao(this, TestCoroutineContexts(scope.standardDispatcher)),
-      transactionDao =
-        TransactionDao(database = this, contexts = TestCoroutineContexts(scope.standardDispatcher)),
+      transactionDao = TransactionDao(database = this),
       syncController = sync,
       preferences = preferences,
     )

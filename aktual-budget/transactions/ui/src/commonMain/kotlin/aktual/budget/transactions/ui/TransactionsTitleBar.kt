@@ -2,6 +2,7 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.transactions.vm.LoadedAccount
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Tune
 import aktual.core.icons.material.Visibility
 import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
@@ -35,6 +36,7 @@ internal fun TransactionsTitleBar(
   loadedAccount: LoadedAccount,
   isRoot: Boolean,
   onAction: ActionListener,
+  onOpenViewOptions: () -> Unit,
 ) {
   val title =
     when (loadedAccount) {
@@ -68,6 +70,11 @@ internal fun TransactionsTitleBar(
           content = { Icon(MaterialIcons.Visibility, Strings.transactionsHeaderPrivacyOn) },
         )
       }
+
+      IconButton(
+        onClick = onOpenViewOptions,
+        content = { Icon(MaterialIcons.Tune, Strings.transactionsViewOptions) },
+      )
     },
   )
 }
@@ -84,6 +91,7 @@ private fun PreviewTransactionsTitleBar(
       loadedAccount = params.data,
       isRoot = true,
       onAction = {},
+      onOpenViewOptions = {},
     )
   }
 
