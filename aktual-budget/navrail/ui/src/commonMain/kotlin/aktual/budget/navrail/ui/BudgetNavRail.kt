@@ -7,6 +7,7 @@ import aktual.core.icons.Calendar3
 import aktual.core.icons.Reports
 import aktual.core.icons.Tag
 import aktual.core.icons.Tuning
+import aktual.core.icons.material.AccountBalance
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.LinearScale
 import aktual.core.icons.material.Logout
@@ -15,6 +16,7 @@ import aktual.core.icons.material.Menu
 import aktual.core.icons.material.Settings
 import aktual.core.icons.material.SwapHoriz
 import aktual.core.l10n.Strings
+import aktual.core.nav.BankSyncNavRoute
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.BudgetTab
@@ -103,8 +105,11 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
@@ -123,15 +128,24 @@ internal fun BudgetNavRail(
   val schedulesStack = stackWithDefault(ListSchedulesNavRoute)
   val rulesStack = stackWithDefault(ListRulesNavRoute)
   val tagsStack = stackWithDefault(ListTagsNavRoute)
+  val bankSyncStack = stackWithDefault(BankSyncNavRoute)
 
   val tabStacks =
-    remember(transactionsStack, reportsStack, schedulesStack, rulesStack, tagsStack) {
+    remember(
+      transactionsStack,
+      reportsStack,
+      schedulesStack,
+      rulesStack,
+      tagsStack,
+      bankSyncStack,
+    ) {
       persistentMapOf(
         BudgetTab.Transactions to transactionsStack,
         BudgetTab.Reports to reportsStack,
         BudgetTab.Schedules to schedulesStack,
         BudgetTab.Rules to rulesStack,
         BudgetTab.Tags to tagsStack,
+        BudgetTab.BankSync to bankSyncStack,
       )
     }
 
@@ -297,7 +311,7 @@ private fun BudgetDrawerSheet(
         modifier = Modifier.padding(bottom = 12.dp),
       )
 
-      for (tab in BudgetTab.entries) {
+      for (tab in PrimaryTabs) {
         DrawerItem(
           icon = tab.icon(),
           label = tab.label(),
@@ -310,6 +324,15 @@ private fun BudgetDrawerSheet(
         modifier = Modifier.padding(vertical = 8.dp),
         color = colors.sidebarItemText.disabled,
       )
+
+      for (tab in SecondaryTabs) {
+        DrawerItem(
+          icon = tab.icon(),
+          label = tab.label(),
+          selected = tab == selectedTab,
+          onClick = { onSelectTab(tab) },
+        )
+      }
 
       if (headerState.isDemo) {
         DrawerItem(
@@ -410,6 +433,7 @@ private fun SideNavLayout(
       BudgetMenu(
         expanded = showMenu,
         isDemo = isDemo,
+        onSelectTab = onSelectTab,
         onAction = onAction,
         onDismissRequest = { showMenu = false },
         modifier = Modifier.align(TopEnd),
@@ -479,7 +503,7 @@ private fun SideNavRail(
       horizontalAlignment = CenterHorizontally,
       verticalArrangement = spacedBy(4.dp),
     ) {
-      for (tab in BudgetTab.entries) {
+      for (tab in PrimaryTabs) {
         NavigationRailItem(
           icon = { Icon(tab.icon(), contentDescription = tab.label()) },
           label = { Text(text = tab.label(), color = LocalContentColor.current) },
@@ -493,7 +517,8 @@ private fun SideNavRail(
         icon = { Icon(MaterialIcons.Menu, contentDescription = Strings.budgetNavMenu) },
         label = { Text(text = Strings.budgetNavMenu, color = LocalContentColor.current) },
         alwaysShowLabel = true,
-        selected = false,
+        // secondary tabs are opened from the menu, so highlight it while one of those is showing
+        selected = selectedTab in SecondaryTabs,
         onClick = onMenuClick,
         colors = colors.navRailItem(),
       )
@@ -532,6 +557,7 @@ private fun BudgetTab.label(): String =
     Schedules -> Strings.listSchedulesTitle
     Rules -> Strings.rulesTitle
     Tags -> Strings.tagsTitle
+    BankSync -> Strings.bankSyncTitle
   }
 
 @Stable
@@ -542,7 +568,14 @@ private fun BudgetTab.icon(): ImageVector =
     Schedules -> AktualIcons.Calendar3
     Rules -> AktualIcons.Tuning
     Tags -> AktualIcons.Tag
+    BankSync -> MaterialIcons.AccountBalance
   }
+
+// Less frequently used tabs, listed below the divider in the drawer and in the side rail's menu
+private val SecondaryTabs: ImmutableList<BudgetTab> = persistentListOf(BankSync)
+
+private val PrimaryTabs: ImmutableList<BudgetTab> =
+  BudgetTab.entries.filterNot { it in SecondaryTabs }.toImmutableList()
 
 private val TabSaver: Saver<BudgetTab, Int> =
   Saver(save = { it.ordinal }, restore = { BudgetTab.entries[it] })
@@ -563,11 +596,22 @@ private fun BudgetMenu(
   expanded: Boolean,
   isDemo: Boolean,
   onDismissRequest: () -> Unit,
+  onSelectTab: (BudgetTab) -> Unit,
   onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
   Box(modifier = modifier) {
     AktualDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
+      for (tab in SecondaryTabs) {
+        AktualDropdownMenuItem(
+          text = tab.label(),
+          leadingIcon = tab.icon(),
+          onClick = {
+            onDismissRequest()
+            onSelectTab(tab)
+          },
+        )
+      }
       if (isDemo) {
         AktualDropdownMenuItem(
           text = Strings.budgetNavMenuExitDemo,

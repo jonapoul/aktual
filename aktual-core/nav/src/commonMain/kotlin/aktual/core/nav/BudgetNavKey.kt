@@ -33,4 +33,9 @@ sealed interface BudgetNavKey : NavKey {
     override val tab: BudgetTab
       get() = BudgetTab.Tags
   }
+
+  sealed interface BankSync : BudgetNavKey {
+    override val tab: BudgetTab
+      get() = BudgetTab.BankSync
+  }
 }
