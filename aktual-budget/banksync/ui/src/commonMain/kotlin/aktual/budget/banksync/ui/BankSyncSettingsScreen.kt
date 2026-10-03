@@ -14,6 +14,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Save
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
@@ -27,6 +28,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
@@ -54,11 +56,14 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -83,6 +88,8 @@ internal fun BankSyncSettingsScreen(
       when (event) {
         BankSyncSettingsEvent.Saved -> back()
         is BankSyncSettingsEvent.SaveFailed -> snackbar.showSettingsSaveFailed(event.cause)
+        BankSyncSettingsEvent.Unlinked -> back()
+        is BankSyncSettingsEvent.UnlinkFailed -> snackbar.showUnlinkFailed(event.cause)
       }
     }
   }
@@ -95,6 +102,7 @@ internal fun BankSyncSettingsScreen(
       when (action) {
         NavigateBack -> back()
         SaveSettings -> viewModel.save()
+        UnlinkAccount -> viewModel.unlink()
         is SetToggle -> viewModel.set(action.toggle, action.value)
         is SetDirection -> viewModel.setDirection(action.direction)
         is SetMapping -> viewModel.setMapping(action.field, action.value)
@@ -218,7 +226,49 @@ private fun BankSyncSettingsContent(
 
     OptionsSection(state = state, onAction = onAction)
 
+    UnlinkButton(accountName = state.accountName, onConfirm = { onAction(UnlinkAccount) })
+
     BottomSpacing()
+  }
+}
+
+@Composable
+private fun UnlinkButton(
+  accountName: String?,
+  onConfirm: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  var showConfirm by remember { mutableStateOf(false) }
+
+  NormalTextButton(
+    modifier = modifier.fillMaxWidth(),
+    text = Strings.bankSyncSettingsUnlink,
+    onClick = { showConfirm = true },
+  )
+
+  if (showConfirm) {
+    AktualAlertDialog(
+      title = Strings.bankSyncSettingsUnlinkTitle,
+      onDismissRequest = { showConfirm = false },
+      buttons = {
+        TextButton(onClick = { showConfirm = false }) {
+          Text(Strings.bankSyncSettingsUnlinkCancel)
+        }
+        TextButton(
+          onClick = {
+            showConfirm = false
+            onConfirm()
+          }
+        ) {
+          Text(Strings.bankSyncSettingsUnlinkConfirm, color = colors.errorText)
+        }
+      },
+    ) {
+      Column(verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsLabelSpacing)) {
+        Text(Strings.bankSyncSettingsUnlinkMessage(accountName ?: Strings.bankSyncUnnamedAccount))
+        Text(Strings.bankSyncSettingsUnlinkDetail)
+      }
+    }
   }
 }
 

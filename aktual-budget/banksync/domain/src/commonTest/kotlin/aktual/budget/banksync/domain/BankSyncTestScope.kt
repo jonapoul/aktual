@@ -41,6 +41,8 @@ import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonObject
@@ -65,8 +67,10 @@ internal class BankSyncTestScope(
   val database: BudgetDatabase,
   private val driver: SqlDriver,
   private val syncDao: SyncDao,
-  private val backgroundScope: CoroutineScope,
+  private val testScope: TestScope,
 ) : BudgetSyncController {
+  private val backgroundScope: CoroutineScope = testScope.backgroundScope
+
   val syncCalls = mutableListOf<List<LocalChange>>()
   val transactionDao = TransactionDao(database)
   val payeeDao = PayeeDao(database)
@@ -116,6 +120,21 @@ internal class BankSyncTestScope(
       clock = TestClock(NOW),
       scope = BudgetCoroutineScope(backgroundScope),
     )
+
+  // Bank ids are read back as UUIDs, so they can't be [uuid]s
+  fun linker(api: FakeBankSyncApi) =
+    BankAccountLinker(
+      api = api,
+      accountDao = accountDao,
+      dao = BankSyncDao(database),
+      syncController = this,
+      bankSync = controller(api),
+      uuidGenerator = { Uuid.random().toString() },
+      scope = BudgetCoroutineScope(backgroundScope),
+    )
+
+  // Runs whatever's been launched in the background
+  fun runBackground() = testScope.runCurrent()
 
   override suspend fun syncChanges(changes: List<LocalChange>) {
     syncCalls.add(changes)
@@ -244,7 +263,7 @@ internal fun runBankSyncTest(action: suspend BankSyncTestScope.() -> Unit) = run
   driver.use {
     val database = buildDatabase(driver)
     val syncDao = SyncDao(database, driver, Clock.System)
-    val scope = BankSyncTestScope(database, driver, syncDao, backgroundScope)
+    val scope = BankSyncTestScope(database, driver, syncDao, this)
     scope.insertAccount()
     scope.action()
   }

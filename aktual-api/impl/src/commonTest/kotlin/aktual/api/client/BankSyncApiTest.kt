@@ -1,12 +1,15 @@
 package aktual.api.client
 
+import aktual.api.model.banksync.BankSyncAccountsResponse
 import aktual.api.model.banksync.BankSyncStatusResponse
 import aktual.api.model.banksync.BankSyncTransactionsRequest
 import aktual.api.model.banksync.BankSyncTransactionsResponse
 import aktual.api.model.banksync.BankSyncTransactionsResponse.ProviderError
+import aktual.api.model.banksync.ExternalBankAccount
 import aktual.api.model.banksync.SimpleFinBatchRequest
 import aktual.api.model.banksync.SimpleFinBatchResponse
 import aktual.budget.model.AccountSyncSource
+import aktual.budget.model.Amount
 import aktual.budget.model.DbMetadata
 import aktual.core.model.AktualJson
 import aktual.core.model.BudgetServer
@@ -26,7 +29,9 @@ import assertk.assertions.containsExactly
 import assertk.assertions.containsOnly
 import assertk.assertions.doesNotContainKey
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isTrue
 import assertk.assertions.key
 import assertk.assertions.prop
 import io.ktor.client.engine.mock.MockEngine
@@ -261,6 +266,157 @@ class BankSyncApiTest {
       .isEqualTo(
         SimpleFinBatchResponse.Failed(ProviderError(ProviderError.NO_DATA, ProviderError.NO_DATA))
       )
+  }
+
+  @Test
+  fun `Parse SimpleFIN accounts`() = runTest {
+    mockEngine += { respondJson(SimplefinResponses.ACCOUNTS_SUCCESS_200) }
+
+    val response = bankSyncApi.accounts(AccountSyncSource.SimpleFin)
+
+    assertThat(mockEngine.latestRequestUrl())
+      .isEqualTo("https://test.server.com/simplefin/accounts")
+    assertThat(response)
+      .isEqualTo(
+        BankSyncAccountsResponse.Success(
+          listOf(
+            ExternalBankAccount(
+              accountId = "ACT-1",
+              name = "Checking",
+              institution = "My Bank",
+              orgId = "ORG-1",
+              orgDomain = "mybank.example.com",
+              balance = Amount(123456),
+            ),
+            ExternalBankAccount(
+              accountId = "ACT-2",
+              name = "Credit Card",
+              institution = "Other Bank",
+              orgId = null,
+              orgDomain = null,
+              balance = Amount(-5678),
+            ),
+          )
+        )
+      )
+  }
+
+  @Test
+  fun `Parse Pluggy accounts`() = runTest {
+    mockEngine += { respondJson(PluggyaiResponses.ACCOUNTS_SUCCESS_200) }
+
+    val response = bankSyncApi.accounts(AccountSyncSource.PluggyAi)
+
+    assertThat(mockEngine.latestRequestHeaders()).key("X-ACTUAL-FILE-ID").containsExactly("xyz-789")
+    assertThat(response)
+      .isEqualTo(
+        BankSyncAccountsResponse.Success(
+          listOf(
+            // Bank accounts are named after their tax number, with invested money in the balance
+            ExternalBankAccount(
+              accountId = "pluggy-1",
+              name = "Conta Corrente - 123.456.789-00",
+              institution = "Conta Corrente",
+              orgId = "pluggy-1",
+              orgDomain = null,
+              balance = Amount(12075),
+            ),
+            ExternalBankAccount(
+              accountId = "pluggy-2",
+              name = "Cartão - Jane Doe",
+              institution = "Cartão",
+              orgId = "pluggy-2",
+              orgDomain = null,
+              balance = Amount(30010),
+            ),
+          )
+        )
+      )
+  }
+
+  @Test
+  fun `Parse Akahu accounts`() = runTest {
+    mockEngine += {
+      respondJson(
+        """
+        {"status":"ok","data":{"accounts":[{"_id":"acc_1","name":"Everyday",
+        "connection":{"_id":"conn_1","name":"ANZ"},"balance":{"current":42.5}}]}}
+        """
+          .trimIndent()
+      )
+    }
+
+    val response = bankSyncApi.accounts(AccountSyncSource.Akahu)
+
+    assertThat(mockEngine.latestRequestUrl()).isEqualTo("https://test.server.com/akahu/accounts")
+    assertThat(response)
+      .isEqualTo(
+        BankSyncAccountsResponse.Success(
+          listOf(
+            ExternalBankAccount(
+              accountId = "acc_1",
+              name = "Everyday",
+              institution = "ANZ",
+              orgId = "conn_1",
+              orgDomain = "ANZ",
+              balance = Amount(4250),
+            )
+          )
+        )
+      )
+  }
+
+  @Test
+  fun `Parse accounts provider error`() = runTest {
+    mockEngine += { respondJson(SimplefinResponses.TRANSACTIONS_INVALID_TOKEN_200) }
+
+    val response = bankSyncApi.accounts(AccountSyncSource.SimpleFin)
+
+    assertThat(response)
+      .isInstanceOf<BankSyncAccountsResponse.Failed>()
+      .prop(BankSyncAccountsResponse.Failed::error)
+      .isInstanceOf<ProviderError>()
+      .prop(ProviderError::errorCode)
+      .isEqualTo("INVALID_ACCESS_TOKEN")
+  }
+
+  @Test
+  fun `Parse accounts error message`() = runTest {
+    mockEngine += {
+      respondJson("""{"status":"ok","data":{"error":"Missing user or app token"}}""")
+    }
+
+    val response = bankSyncApi.accounts(AccountSyncSource.Akahu)
+
+    assertThat(response)
+      .isEqualTo(
+        BankSyncAccountsResponse.Failed(
+          BankSyncTransactionsResponse.Rejected("Missing user or app token", details = null)
+        )
+      )
+  }
+
+  @Test
+  fun `Remove GoCardless requisition`() = runTest {
+    mockEngine += { respondJson("""{"status":"ok","data":{"summary":"Requisition deleted"}}""") }
+
+    val removed = bankSyncApi.removeGoCardlessRequisition("req-1")
+
+    assertThat(removed).isTrue()
+    assertThat(mockEngine.latestRequestUrl())
+      .isEqualTo("https://test.server.com/gocardless/remove-account")
+    assertThat(mockEngine.latestRequest().body).isInstanceOf<TextContent>().all {
+      prop(TextContent::text).isEqualTo("""{"requisitionId":"req-1"}""")
+    }
+  }
+
+  @Test
+  fun `Failed GoCardless requisition removal`() = runTest {
+    mockEngine += {
+      respondJson("""{"status":"error","data":{"reason":"Can not delete requisition"}}""")
+    }
+
+    assertThat(bankSyncApi.removeGoCardlessRequisition("req-1")).isFalse()
   }
 
   private companion object {
