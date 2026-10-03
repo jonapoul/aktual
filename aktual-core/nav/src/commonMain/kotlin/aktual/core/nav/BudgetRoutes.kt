@@ -44,3 +44,5 @@ import kotlinx.serialization.Serializable
 @Serializable data object SearchTagsNavRoute : BudgetNavKey.Tags
 
 @Serializable data class EditTagNavRoute(val id: TagId) : BudgetNavKey.Tags
+
+@Serializable data object BankSyncNavRoute : BudgetNavKey.BankSync

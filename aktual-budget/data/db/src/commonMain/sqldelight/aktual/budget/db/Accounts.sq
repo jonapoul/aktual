@@ -60,6 +60,16 @@ getAllNames: SELECT id, name FROM accounts WHERE tombstone = 0;
 getAllWithStatus:
 SELECT id, name, closed, offbudget FROM accounts WHERE tombstone = 0 ORDER BY sort_order, name;
 
+-- Open accounts with their linked bank's name, for the bank sync screen
+-- packages/desktop-client/src/components/mobile/banksync/MobileBankSyncPage.tsx
+getBankSyncAccounts:
+SELECT a.id, a.name, a.account_id, a.account_sync_source, a.last_sync, a.bank_sync_status,
+    b.name AS bank_name
+  FROM accounts a
+  LEFT JOIN banks b ON a.bank = b.id AND b.tombstone = 0
+  WHERE a.tombstone = 0 AND a.closed = 0
+  ORDER BY a.sort_order, a.name;
+
 insert:
 INSERT INTO accounts(id, account_id, name, official_name, bank, offbudget, account_sync_source)
   VALUES (?, ?, ?, ?, ?, ?, ?);
