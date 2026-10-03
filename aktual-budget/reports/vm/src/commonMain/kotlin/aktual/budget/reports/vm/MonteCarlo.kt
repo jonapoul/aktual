@@ -624,8 +624,8 @@ internal fun runMonteCarlo(
   val depletionYearBySimulation = IntArray(simulationCount) { -1 }
 
   val captureIndex = captureRunDetail ?: -1
-  val runDetail: MutableList<McRunDetailRow>? =
-    if (captureIndex in 0 until simulationCount) mutableListOf() else null
+  val runDetail =
+    if (captureIndex in 0 until simulationCount) mutableListOf<McRunDetailRow>() else null
 
   for (simulationIndex in 0 until simulationCount) {
     potStartBalances.copyInto(potBalances)

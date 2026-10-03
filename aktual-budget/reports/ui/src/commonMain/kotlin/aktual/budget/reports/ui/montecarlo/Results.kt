@@ -40,23 +40,10 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 internal fun MonteCarloResults(
   state: MonteCarloState.Loaded,
-  onAction: MonteCarloActionListener,
+  onAction: MonteCarloActionHandler,
   modifier: Modifier = Modifier,
 ) =
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-    FlowRow(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.SpaceBetween,
-      itemVerticalAlignment = CenterVertically,
-    ) {
-      SectionTitle(Strings.monteCarloResults)
-      LabeledCheckbox(
-        text = Strings.monteCarloTodaysMoney,
-        checked = state.showTodaysMoney,
-        onCheckedChange = { onAction(MonteCarloAction.SetShowTodaysMoney(it)) },
-      )
-    }
-
     val results = state.results
     if (results == null) {
       SectionCard {
@@ -135,7 +122,7 @@ private fun Stat(
 private fun ResultsViews(
   state: MonteCarloState.Loaded,
   results: MonteCarloResults,
-  onAction: MonteCarloActionListener,
+  onAction: MonteCarloActionHandler,
   modifier: Modifier = Modifier,
 ) =
   SectionCard(modifier = modifier) {
@@ -187,7 +174,7 @@ private fun ResultsViews(
 private fun PerformanceChart(
   view: MonteCarloGraphView,
   results: MonteCarloResults,
-  onAction: MonteCarloActionListener,
+  onAction: MonteCarloActionHandler,
 ) {
   AktualExposedDropDownMenu(
     value = view,

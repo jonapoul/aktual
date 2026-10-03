@@ -28,6 +28,6 @@ fun previewMonteCarloState(
     cashflowPercentile = Median,
     results = simulation.results,
     selectedRun = if (resultsView == Runs) detailRun else null,
-    runDetail = detailRun?.let { capture(simulation, it) },
+    runDetail = detailRun?.let { MonteCarloViewModel.capture(simulation, it) },
   )
 }

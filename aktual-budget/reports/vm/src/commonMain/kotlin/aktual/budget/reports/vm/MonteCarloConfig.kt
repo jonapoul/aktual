@@ -1,6 +1,7 @@
 package aktual.budget.reports.vm
 
 import aktual.budget.model.AccountId
+import androidx.compose.runtime.Immutable
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.roundToLong
@@ -144,6 +145,7 @@ data class McWithdrawalRule(
   val lowerIncreasePct: Double = 0.05,
 )
 
+@Immutable
 data class McConfig(
   val pots: ImmutableList<McPot> = persistentListOf(surplusPot("surplus-pot"), McPot(id = "pot-1")),
   val withdrawalStrategy: WithdrawalStrategy = Proportional,

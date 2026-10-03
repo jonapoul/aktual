@@ -5,28 +5,23 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.checkbox
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition.Companion.Above
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -76,28 +71,6 @@ internal fun GroupHeading(
 @Composable
 internal fun BodyText(text: String, modifier: Modifier = Modifier) =
   Text(modifier = modifier, text = text, style = typography.bodyMedium, color = colors.pageText)
-
-@Composable
-internal fun LabeledCheckbox(
-  text: String,
-  checked: Boolean,
-  onCheckedChange: (Boolean) -> Unit,
-  modifier: Modifier = Modifier,
-  isEnabled: Boolean = true,
-) =
-  Row(
-    modifier = modifier.clickable(enabled = isEnabled) { onCheckedChange(!checked) },
-    verticalAlignment = CenterVertically,
-  ) {
-    Checkbox(
-      modifier = Modifier.minimumInteractiveComponentSize(),
-      checked = checked,
-      onCheckedChange = null,
-      enabled = isEnabled,
-      colors = colors.checkbox(),
-    )
-    Text(text = text, style = typography.bodyMedium, color = colors.pageText)
-  }
 
 // MonteCarloHelpTooltip: a small info icon that shows its text when tapped
 @Composable

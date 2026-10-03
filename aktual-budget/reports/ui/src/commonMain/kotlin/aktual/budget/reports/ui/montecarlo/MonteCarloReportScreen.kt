@@ -4,11 +4,16 @@ import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.montecarlo.MonteCarloState
 import aktual.budget.reports.vm.montecarlo.MonteCarloViewModel
 import aktual.budget.reports.vm.montecarlo.previewMonteCarloState
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.MoreVert
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -16,6 +21,7 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.checkbox
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +30,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -102,7 +109,7 @@ private fun monteCarloViewModel(id: WidgetId) =
 @Composable
 internal fun MonteCarloScaffold(
   state: MonteCarloState,
-  onAction: MonteCarloActionListener,
+  onAction: MonteCarloActionHandler,
   modifier: Modifier = Modifier,
 ) =
   Scaffold(
@@ -119,10 +126,13 @@ internal fun MonteCarloScaffold(
           )
         },
         actions = {
-          if (state is MonteCarloState.Loaded && state.hasChanges) {
-            TextButton(onClick = { onAction(Save) }) {
-              Text(Strings.monteCarloSave, color = colors.pageTextPositive)
+          if (state is MonteCarloState.Loaded) {
+            if (state.hasChanges) {
+              TextButton(onClick = { onAction(Save) }) {
+                Text(Strings.monteCarloSave, color = colors.pageTextPositive)
+              }
             }
+            MonteCarloMenu(showTodaysMoney = state.showTodaysMoney, onAction = onAction)
           }
         },
       )
@@ -155,6 +165,36 @@ internal fun MonteCarloScaffold(
       }
     }
   }
+
+@Composable
+private fun MonteCarloMenu(
+  showTodaysMoney: Boolean,
+  onAction: MonteCarloActionHandler,
+  modifier: Modifier = Modifier,
+) {
+  var expanded by remember { mutableStateOf(false) }
+
+  Box(modifier = modifier) {
+    BareIconButton(
+      imageVector = MaterialIcons.MoreVert,
+      contentDescription = Strings.monteCarloMenu,
+      onClick = { expanded = true },
+    )
+
+    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      AktualDropdownMenuItem(
+        text = { Text(Strings.monteCarloTodaysMoney) },
+        leadingIcon = {
+          Checkbox(checked = showTodaysMoney, onCheckedChange = null, colors = colors.checkbox())
+        },
+        onClick = {
+          expanded = false
+          onAction(MonteCarloAction.SetShowTodaysMoney(!showTodaysMoney))
+        },
+      )
+    }
+  }
+}
 
 @PortraitPreview
 @Composable

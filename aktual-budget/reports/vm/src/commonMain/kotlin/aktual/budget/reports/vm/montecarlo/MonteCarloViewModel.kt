@@ -236,43 +236,45 @@ internal constructor(
     return index?.let { simulation to it }
   }
 
+  private fun liveBalances(dao: ReportsDao, config: McConfig): Flow<Map<AccountId, Long>> {
+    val linked = config.pots.mapNotNull { it.accountId }.toSet()
+    if (linked.isEmpty()) return flowOf(emptyMap())
+    return dao.observeMonteCarloAccountBalances(linked).map { rows ->
+      rows.associate { it.account to it.total }
+    }
+  }
+
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)
   interface Factory : ManualViewModelAssistedFactory {
     fun create(id: WidgetId): MonteCarloViewModel
   }
-}
 
-private sealed interface SavedMeta {
-  data object Loading : SavedMeta
+  private sealed interface SavedMeta {
+    data object Loading : SavedMeta
 
-  data object NotFound : SavedMeta
+    data object NotFound : SavedMeta
 
-  data class Found(val meta: MonteCarloReportMeta) : SavedMeta
-}
+    data class Found(val meta: MonteCarloReportMeta) : SavedMeta
+  }
 
-private data class SelectedRun(val config: McConfig?, val index: Int)
+  private data class SelectedRun(val config: McConfig?, val index: Int)
 
-private fun liveBalances(dao: ReportsDao, config: McConfig): Flow<Map<AccountId, Long>> {
-  val linked = config.pots.mapNotNull { it.accountId }.toSet()
-  if (linked.isEmpty()) return flowOf(emptyMap())
-  return dao.observeMonteCarloAccountBalances(linked).map { rows ->
-    rows.associate { it.account to it.total }
+  internal companion object {
+    // The size of the theme's qualitative chart palette
+    private const val CHART_PALETTE_SIZE = 9
+
+    internal fun capture(simulation: Simulation, index: Int): MonteCarloRunDetail {
+      val rows =
+        runMonteCarlo(simulation.config, deflate = simulation.deflate, captureRunDetail = index)
+          .runDetail
+          .orEmpty()
+      return MonteCarloRunDetail(
+        index = index,
+        rows = rows.toImmutableList(),
+        cashflow = buildCashflowChart(rows, simulation.config, CHART_PALETTE_SIZE),
+      )
+    }
   }
 }
-
-internal fun capture(simulation: Simulation, index: Int): MonteCarloRunDetail {
-  val rows =
-    runMonteCarlo(simulation.config, deflate = simulation.deflate, captureRunDetail = index)
-      .runDetail
-      .orEmpty()
-  return MonteCarloRunDetail(
-    index = index,
-    rows = rows.toImmutableList(),
-    cashflow = buildCashflowChart(rows, simulation.config, CHART_PALETTE_SIZE),
-  )
-}
-
-// The size of the theme's qualitative chart palette
-private const val CHART_PALETTE_SIZE = 9

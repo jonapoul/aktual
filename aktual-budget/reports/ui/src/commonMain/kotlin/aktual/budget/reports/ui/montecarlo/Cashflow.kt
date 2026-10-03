@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-internal fun CashflowView(state: MonteCarloState.Loaded, onAction: MonteCarloActionListener) {
+internal fun CashflowView(state: MonteCarloState.Loaded, onAction: MonteCarloActionHandler) {
   RunPercentilePicker(
     value = state.cashflowPercentile,
     onValueChange = { onAction(MonteCarloAction.SetCashflowPercentile(it)) },

@@ -4,6 +4,7 @@ import aktual.budget.reports.vm.McConfig
 import aktual.budget.reports.vm.McRunDetailRow
 import aktual.budget.reports.vm.activeAt
 import aktual.budget.reports.vm.resolve
+import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -28,6 +29,7 @@ data class CashflowSeries(
   val colorIndex: Int,
 )
 
+@Immutable
 data class CashflowYear(
   val year: Int,
   val age: Int,
@@ -56,6 +58,7 @@ data class CashflowGroup(
   val listMembers: Boolean,
 )
 
+@Immutable
 data class CashflowChart(
   // Stacked above zero: pot withdrawals, then income streams
   val inflows: ImmutableList<CashflowSeries>,

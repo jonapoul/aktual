@@ -65,6 +65,7 @@ enum class RunPercentile(val fraction: Double) {
   Best(fraction = 1.0),
 }
 
+@Immutable
 data class MonteCarloResults(
   val successRate: Percent,
   val depletionChance: Percent,
