@@ -3,11 +3,9 @@ package aktual.budget.banksync.ui
 import aktual.budget.banksync.vm.BankSyncAccount
 import aktual.budget.banksync.vm.BankSyncAccountStatus
 import aktual.budget.banksync.vm.BankSyncProvider
-import aktual.budget.banksync.vm.BankSyncProviderStatus
 import aktual.budget.banksync.vm.LastBankSync
 import aktual.budget.banksync.vm.Success
 import aktual.budget.model.AccountId
-import aktual.budget.model.AccountSyncSource
 import kotlinx.collections.immutable.persistentListOf
 
 internal object BankSyncPreview {
@@ -34,7 +32,7 @@ internal object BankSyncPreview {
       id = AccountId("credit"),
       name = "Credit card with a very long name that doesn't fit",
       bankName = null,
-      lastSync = LastBankSync.Never,
+      lastSync = Never,
       status = null,
     )
 
@@ -43,7 +41,7 @@ internal object BankSyncPreview {
       id = AccountId("cash"),
       name = "Cash",
       bankName = null,
-      lastSync = LastBankSync.Never,
+      lastSync = Never,
       status = null,
     )
 
@@ -52,13 +50,13 @@ internal object BankSyncPreview {
       providers =
         persistentListOf(
           BankSyncProvider(
-            source = AccountSyncSource.GoCardless,
-            status = BankSyncProviderStatus.Configured,
+            source = GoCardless,
+            status = Configured,
             accounts = persistentListOf(checking, savings),
           ),
           BankSyncProvider(
-            source = AccountSyncSource.SimpleFin,
-            status = BankSyncProviderStatus.NotConfigured,
+            source = SimpleFin,
+            status = NotConfigured,
             accounts =
               persistentListOf(
                 creditCard,
@@ -66,7 +64,7 @@ internal object BankSyncPreview {
                   id = AccountId("other"),
                   name = "Joint",
                   lastSync = LastBankSync.HoursAgo(hours = 1),
-                  status = BankSyncAccountStatus.RateLimited,
+                  status = RateLimited,
                 ),
               ),
           ),

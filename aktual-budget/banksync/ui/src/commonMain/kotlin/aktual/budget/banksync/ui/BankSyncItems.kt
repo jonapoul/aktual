@@ -99,14 +99,13 @@ internal fun BankSyncAccountItem(
 @Composable
 private fun lastSyncText(lastSync: LastBankSync): String =
   when (lastSync) {
-    LastBankSync.Never -> Strings.bankSyncNeverSynced
-    LastBankSync.JustNow -> Strings.bankSyncLastSync(Strings.bankSyncJustNow)
-    is LastBankSync.MinutesAgo ->
+    Never -> Strings.bankSyncNeverSynced
+    JustNow -> Strings.bankSyncLastSync(Strings.bankSyncJustNow)
+    is MinutesAgo ->
       Strings.bankSyncLastSync(Plurals.bankSyncMinutesAgo(lastSync.minutes, lastSync.minutes))
-    is LastBankSync.HoursAgo ->
+    is HoursAgo ->
       Strings.bankSyncLastSync(Plurals.bankSyncHoursAgo(lastSync.hours, lastSync.hours))
-    is LastBankSync.DaysAgo ->
-      Strings.bankSyncLastSync(Plurals.bankSyncDaysAgo(lastSync.days, lastSync.days))
+    is DaysAgo -> Strings.bankSyncLastSync(Plurals.bankSyncDaysAgo(lastSync.days, lastSync.days))
   }
 
 @Composable
@@ -140,7 +139,7 @@ internal fun AccountStatusChip(
       AccountMissing -> Strings.bankSyncStatusAccountMissing
       Unknown -> Strings.bankSyncStatusUnknown
     }
-  Chip(label, background, text, modifier)
+  Chip(label = label, background = background, text = text, modifier = modifier)
 }
 
 @Composable
@@ -250,11 +249,11 @@ internal fun ReadOnlyNotice(modifier: Modifier = Modifier) {
 @Composable
 private fun providerName(source: AccountSyncSource): String =
   when (source) {
-    AccountSyncSource.GoCardless -> Strings.bankSyncProviderGocardless
-    AccountSyncSource.SimpleFin -> Strings.bankSyncProviderSimplefin
-    AccountSyncSource.PluggyAi -> Strings.bankSyncProviderPluggyai
-    AccountSyncSource.EnableBanking -> Strings.bankSyncProviderEnableBanking
-    AccountSyncSource.Akahu -> Strings.bankSyncProviderAkahu
+    GoCardless -> Strings.bankSyncProviderGocardless
+    SimpleFin -> Strings.bankSyncProviderSimplefin
+    PluggyAi -> Strings.bankSyncProviderPluggyai
+    EnableBanking -> Strings.bankSyncProviderEnableBanking
+    Akahu -> Strings.bankSyncProviderAkahu
     else -> source.value
   }
 
@@ -342,7 +341,7 @@ private fun PreviewProviderHeader(
   @PreviewParameter(ProviderStatusProvider::class) params: ColoredParams<BankSyncProviderStatus>
 ) =
   PreviewWithColoredParams(params) {
-    ProviderHeader(source = AccountSyncSource.GoCardless, status = this)
+    ProviderHeader(source = GoCardless, status = this)
   }
 
 private class ProviderStatusProvider :

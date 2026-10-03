@@ -82,7 +82,6 @@ class BankSyncViewModel(
           mutableFailure.update { null }
           accounts.linked.keys
         } catch (e: CancellationException) {
-          // a newer reload() cancelled us - leave the flows alone so it can finish
           throw e
         } catch (e: Exception) {
           logcat.e(e) { "Failed loading bank sync accounts" }
@@ -120,7 +119,7 @@ class BankSyncViewModel(
 
     // keep any status we already know, so a silent reload doesn't flash back to "checking"
     mutableStatuses.update { current ->
-      sources.associateWith { current[it] ?: BankSyncProviderStatus.Checking }.toPersistentMap()
+      sources.associateWith { current[it] ?: Checking }.toPersistentMap()
     }
 
     coroutineScope {
@@ -139,7 +138,7 @@ class BankSyncViewModel(
         is BankSyncStatusResponse.Success -> {
           if (response.configured) Configured else NotConfigured
         }
-        is BankSyncStatusResponse.Rejected -> {
+        is Rejected -> {
           logcat.w { "Bank sync status for $source rejected: $response" }
           Failed
         }

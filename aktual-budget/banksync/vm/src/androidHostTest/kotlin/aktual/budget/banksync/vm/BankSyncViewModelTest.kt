@@ -15,6 +15,7 @@ import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.test.inMemoryDriverFactory
+import alakazam.test.TestClock
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -23,7 +24,6 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import kotlin.test.AfterTest
-import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
@@ -107,7 +107,7 @@ class BankSyncViewModelTest {
     insertAccount("a", "A", GoCardless)
     insertAccount("b", "B", SimpleFin)
     insertAccount("c", "C", PluggyAi)
-    insertAccount("d", "D", AccountSyncSource.Akahu)
+    insertAccount("d", "D", Akahu)
     val api =
       FakeBankSyncApi(
         GoCardless to configured(),
@@ -136,11 +136,10 @@ class BankSyncViewModelTest {
     insertAccount("a", "A", GoCardless)
     val api = FakeBankSyncApi()
 
-    val viewModel = createViewModel(api, server = BudgetServer.None)
+    val viewModel = createViewModel(api, server = None)
 
     viewModel.state.test {
-      assertThat(awaitSuccess().providers.single().status)
-        .isEqualTo(BankSyncProviderStatus.NoServer)
+      assertThat(awaitSuccess().providers.single().status).isEqualTo(NoServer)
     }
     assertThat(api.requested).isEmpty()
   }
@@ -173,9 +172,9 @@ class BankSyncViewModelTest {
   @Test
   fun `Last sync is relative to now`() {
     fun ago(duration: Duration) = lastBankSync(NOW - duration, NOW)
-    assertThat(lastBankSync(null, NOW)).isEqualTo(LastBankSync.Never)
-    assertThat(lastBankSync(NOW + 5.minutes, NOW)).isEqualTo(LastBankSync.JustNow)
-    assertThat(ago(30.seconds)).isEqualTo(LastBankSync.JustNow)
+    assertThat(lastBankSync(null, NOW)).isEqualTo(Never)
+    assertThat(lastBankSync(NOW + 5.minutes, NOW)).isEqualTo(JustNow)
+    assertThat(ago(30.seconds)).isEqualTo(JustNow)
     assertThat(ago(59.minutes)).isEqualTo(LastBankSync.MinutesAgo(minutes = 59))
     assertThat(ago(3.hours)).isEqualTo(LastBankSync.HoursAgo(hours = 3))
     assertThat(ago(40.days)).isEqualTo(LastBankSync.DaysAgo(days = 40))
@@ -201,7 +200,7 @@ class BankSyncViewModelTest {
       accountDao = AccountDao(database),
       api = api,
       server = server,
-      clock = FixedClock,
+      clock = TestClock(NOW),
     )
   }
 
@@ -250,7 +249,7 @@ class BankSyncViewModelTest {
     id: String,
     name: String,
     bank: String? = null,
-    lastSync: LastBankSync = LastBankSync.Never,
+    lastSync: LastBankSync = Never,
     status: BankSyncAccountStatus? = null,
   ) = BankSyncAccount(AccountId(id), name, bank, lastSync, status)
 
@@ -287,10 +286,6 @@ class BankSyncViewModelTest {
       source: AccountSyncSource,
       request: BankSyncTransactionsRequest,
     ): BankSyncTransactionsResponse = error("Not used")
-  }
-
-  private object FixedClock : Clock {
-    override fun now(): Instant = NOW
   }
 
   private companion object {
