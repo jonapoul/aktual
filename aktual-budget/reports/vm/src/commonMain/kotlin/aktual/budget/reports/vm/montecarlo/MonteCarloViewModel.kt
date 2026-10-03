@@ -36,6 +36,7 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -83,6 +84,7 @@ internal constructor(
   // The plan being edited, taken from the saved meta once and only changed by the user from then on
   private val mutableConfig = MutableStateFlow<McConfig?>(null)
   private val mutableShowTodaysMoney = MutableStateFlow(true)
+  private val mutableCollapsedSections = MutableStateFlow(persistentSetOf<MonteCarloSection>())
   private val mutableResultsView = MutableStateFlow(MonteCarloResultsView.Chart)
   private val mutableGraphView = MutableStateFlow(MonteCarloGraphView.All)
   private val mutableCashflowPercentile = MutableStateFlow(RunPercentile.Median)
@@ -147,6 +149,7 @@ internal constructor(
       val runDetail by runDetail.collectAsState()
       val accounts by accounts.collectAsState()
       val showTodaysMoney by mutableShowTodaysMoney.collectAsState()
+      val collapsedSections by mutableCollapsedSections.collectAsState()
       val resultsView by mutableResultsView.collectAsState()
       val graphView by mutableGraphView.collectAsState()
       val cashflowPercentile by mutableCashflowPercentile.collectAsState()
@@ -172,6 +175,7 @@ internal constructor(
               accounts = accounts,
               hasChanges = edited != s.meta.toConfig(),
               showTodaysMoney = showTodaysMoney,
+              collapsedSections = collapsedSections,
               resultsView = resultsView,
               graphView = graphView,
               cashflowPercentile = cashflowPercentile,
@@ -214,6 +218,10 @@ internal constructor(
   }
 
   fun setShowTodaysMoney(show: Boolean) = mutableShowTodaysMoney.update { show }
+
+  fun toggleSection(section: MonteCarloSection) = mutableCollapsedSections.update {
+    if (section in it) it.removing(section) else it.adding(section)
+  }
 
   fun setResultsView(view: MonteCarloResultsView) = mutableResultsView.update { view }
 

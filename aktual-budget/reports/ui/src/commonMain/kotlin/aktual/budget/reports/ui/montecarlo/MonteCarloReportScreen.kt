@@ -2,6 +2,7 @@ package aktual.budget.reports.ui.montecarlo
 
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.ui.dashboard.NameDialog
+import aktual.budget.reports.vm.montecarlo.MonteCarloSection
 import aktual.budget.reports.vm.montecarlo.MonteCarloState
 import aktual.budget.reports.vm.montecarlo.MonteCarloViewModel
 import aktual.budget.reports.vm.montecarlo.previewMonteCarloState
@@ -24,14 +25,13 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.checkbox
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -52,6 +52,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -97,6 +98,7 @@ fun MonteCarloReportScreen(
         AddTaxBand -> viewModel.addTaxBand()
         is SetKeepSurplus -> viewModel.setKeepSurplus(action.keep)
         is SetShowTodaysMoney -> viewModel.setShowTodaysMoney(action.show)
+        is ToggleSection -> afterCommit { viewModel.toggleSection(action.section) }
         is SetResultsView -> viewModel.setResultsView(action.view)
         is SetGraphView -> viewModel.setGraphView(action.view)
         is SetCashflowPercentile -> viewModel.setCashflowPercentile(action.percentile)
@@ -188,7 +190,7 @@ internal fun MonteCarloScaffold(
           Column(
             modifier =
               Modifier.padding(innerPadding)
-                .verticalScroll(rememberScrollState())
+                .verticalScrollWithBar()
                 // Tapping away from a field ends its edit
                 .pointerInput(Unit) { detectTapGestures { focusManager.clearFocus() } }
                 .padding(horizontal = 8.dp),
@@ -267,5 +269,9 @@ private class MonteCarloScaffoldProvider :
     previewMonteCarloState(),
     previewMonteCarloState(resultsView = Cashflow),
     previewMonteCarloState(resultsView = Runs),
+    previewMonteCarloState(
+      collapsedSections =
+        persistentSetOf<MonteCarloSection>(Configuration, Depletion, MonteCarloSection.HowItWorks)
+    ),
     Loading,
   )
