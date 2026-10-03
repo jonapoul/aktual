@@ -44,7 +44,8 @@ internal constructor(
 ) {
   private val changes = mutableListOf<LocalChange>()
   private val offBudget = mutableMapOf<AccountId, Boolean>()
-  private val newChildren = mutableMapOf<TransactionId, MutableList<TransactionId>>()
+  // The parent each transaction was given in this batch, null if it was detached
+  private val batchParents = mutableMapOf<TransactionId, TransactionId?>()
   private val deleted = mutableSetOf<TransactionId>()
   private val newPayees = mutableMapOf<String, PayeeId>()
   private var existingPayees: Map<String, PayeeId>? = null
@@ -83,7 +84,7 @@ internal constructor(
         "parent_id" to t.parentId?.value.orSkip(),
       )
     addAll(TRANSACTIONS, id.value, columns)
-    if (t.parentId != null) newChildren.getOrPut(t.parentId) { mutableListOf() } += id
+    if (t.parentId != null) batchParents[id] = t.parentId
     return id
   }
 
@@ -121,8 +122,7 @@ internal constructor(
         "parent_id" to u.parentId.messageValue { it.value.messageValue() },
       )
     addAll(TRANSACTIONS, u.id.value, columns)
-    val parent = (u.parentId as? Patch.To)?.value
-    if (parent != null) newChildren.getOrPut(parent) { mutableListOf() } += u.id
+    if (u.parentId is Patch.To) batchParents[u.id] = u.parentId.value
   }
 
   suspend fun delete(id: TransactionId) = delete(listOf(id))
@@ -132,9 +132,11 @@ internal constructor(
    * of a split parent among them.
    */
   suspend fun delete(ids: Collection<TransactionId>) {
+    val parents = ids.toSet()
     val withChildren = LinkedHashSet(ids)
-    withChildren += transactionDao.childIds(ids)
-    ids.forEach { id -> withChildren += newChildren[id].orEmpty() }
+    // Stored children, unless this batch already moved them elsewhere
+    withChildren += transactionDao.childIds(ids).filterNot { it in batchParents }
+    withChildren += batchParents.filterValues { it != null && it in parents }.keys
     for (id in withChildren) {
       if (deleted.add(id)) changes += tombstone(TRANSACTIONS, id.value)
     }

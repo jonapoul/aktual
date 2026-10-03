@@ -320,6 +320,34 @@ internal class TransactionWriterTest {
   }
 
   @Test
+  fun `Deleting a split parent keeps children detached in the same batch`() = runWriterTest {
+    insertAccount(ACCOUNT)
+    val (parent, stored) =
+      writer.write {
+        val parent = insert(NewTransaction(account = ACCOUNT, date = DATE, isParent = true))
+        val stored = insert(NewTransaction(account = ACCOUNT, date = DATE, parentId = parent))
+        parent to stored
+      }
+
+    val (detached, moved) =
+      writer.write {
+        val other = insert(NewTransaction(account = ACCOUNT, date = DATE, isParent = true))
+        val detached = insert(NewTransaction(account = ACCOUNT, date = DATE, parentId = parent))
+        val moved = insert(NewTransaction(account = ACCOUNT, date = DATE, parentId = parent))
+        update(TransactionUpdate(id = stored, parentId = Patch.To(null)))
+        update(TransactionUpdate(id = detached, parentId = Patch.To(null)))
+        update(TransactionUpdate(id = moved, parentId = Patch.To(other)))
+        delete(parent)
+        detached to moved
+      }
+
+    assertThat(transactionDao.row(parent)?.tombstone).isEqualTo(true)
+    assertThat(transactionDao.row(stored)?.tombstone).isEqualTo(false)
+    assertThat(transactionDao.row(detached)?.tombstone).isEqualTo(false)
+    assertThat(transactionDao.row(moved)?.tombstone).isEqualTo(false)
+  }
+
+  @Test
   fun `Changing the parent of a transaction updates isChild`() = runWriterTest {
     insertAccount(ACCOUNT)
     val (parent, child) =
