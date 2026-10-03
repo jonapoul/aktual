@@ -15,7 +15,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun <T : Any> LoadingScreenIfNotNull(value: T?, content: @Composable (T) -> Unit) {
+fun <T : Any> LoadingScreenIfNull(value: T?, content: @Composable (T) -> Unit) {
   contract { returns() implies (value != null) }
   if (value == null) LoadingScreen() else content(value)
 }
