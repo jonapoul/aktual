@@ -67,7 +67,7 @@ class TransactionsViewModel(
   val density: StateFlow<TransactionsDensity> =
     prefs
       .map { meta -> meta[TransactionDensityKey] ?: Default }
-      .stateIn(viewModelScope, Eagerly, initialValue = Default)
+      .stateIn(viewModelScope, Eagerly, initialValue = prefs[TransactionDensityKey] ?: Default)
 
   // Dummy value until #1675 computes the real one
   val balance: StateFlow<Amount?> = MutableStateFlow(DummyBalance).asStateFlow()

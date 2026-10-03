@@ -40,12 +40,15 @@ import dev.zacsweers.metro.createDynamicGraph
 import kotlin.io.path.createTempDirectory
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
@@ -77,12 +80,14 @@ class TransactionsViewModelTest {
     if (::viewModel.isInitialized) viewModel.viewModelScope.cancel()
     Shadows.shadowOf(Looper.getMainLooper()).idle()
     appGraph.close()
+    Dispatchers.resetMain()
     FileSystem.SYSTEM.deleteRecursively(rootDir)
   }
 
   private suspend fun TestScope.buildViewModel(spec: AccountSpec) {
     rootDir = createTempDirectory().toOkioPath()
     contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
+    Dispatchers.setMain(StandardTestDispatcher(testScheduler))
     appGraph =
       createDynamicGraph<TestAppGraph>(
         TestCoroutineContainer(backgroundScope, contexts),

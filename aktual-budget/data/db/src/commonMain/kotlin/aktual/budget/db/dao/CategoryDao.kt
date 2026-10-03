@@ -13,6 +13,7 @@ import dev.zacsweers.metro.Inject
 @Inject
 class CategoryDao(database: BudgetDatabase) {
   private val queries = database.categoriesQueries
+  private val mappings = database.categoryMappingQueries
 
   suspend fun insert(id: CategoryId, name: String) = queries.withoutResult {
     insert(
@@ -29,6 +30,7 @@ class CategoryDao(database: BudgetDatabase) {
         cleanup_def = null,
       )
     )
+    mappings.insert(id = id, transferId = id)
   }
 
   suspend fun name(id: CategoryId): String? = queries.withResult {
