@@ -1,0 +1,13 @@
+###
+# @name pluggyai/transactions
+POST {{ACTUAL_BASE_URL}}/pluggyai/transactions
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+X-ACTUAL-FILE-ID: {{ACTUAL_MAIN_FILE_ID}}
+Content-Type: application/json
+
+{
+    "accountId": "{{ACTUAL_PLUGGYAI_ACCOUNT_ID}}",
+    "startDate": "2026-07-01"
+}
+
+<> transactions-not-configured.400.json

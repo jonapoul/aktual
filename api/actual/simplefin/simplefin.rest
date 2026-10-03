@@ -1,0 +1,23 @@
+###
+# @name simplefin/status
+POST {{ACTUAL_BASE_URL}}/simplefin/status
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{}
+
+<> status-success.200.json
+
+###
+# @name simplefin/transactions
+POST {{ACTUAL_BASE_URL}}/simplefin/transactions
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{
+    "accountId": "{{ACTUAL_SIMPLEFIN_ACCOUNT_ID}}",
+    "startDate": "2026-07-01"
+}
+
+<> transactions-success.200.json
+<> transactions-invalid-token.200.json

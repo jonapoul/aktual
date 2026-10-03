@@ -1,0 +1,5 @@
+{
+  "status": "error",
+  "reason": "not-configured",
+  "details": "Pluggy credentials are not configured"
+}
