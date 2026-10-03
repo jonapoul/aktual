@@ -2,11 +2,10 @@ package aktual.account.ui.login
 
 import aktual.account.domain.LoginResult
 import aktual.core.l10n.Strings
-import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.ErrorBanner
 import aktual.core.ui.PreviewWithColors
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
@@ -29,12 +28,7 @@ internal fun LoginFailureText(
       is OtherFailure -> Strings.loginFailureOther(result.reason)
     }
 
-  Text(
-    modifier = modifier.testTag(Tags.LoginFailureText),
-    text = errorMessage,
-    color = colors.errorText,
-    textAlign = Center,
-  )
+  ErrorBanner(modifier = modifier.testTag(Tags.LoginFailureText), text = errorMessage)
 }
 
 @Preview

@@ -10,10 +10,6 @@ internal object BankSyncDS {
   val headerPadding = PaddingValues(start = 4.dp, end = 4.dp, top = 12.dp, bottom = 4.dp)
   val headerSpacing = 8.dp
 
-  val noticePadding = 12.dp
-  val noticeSpacing = 12.dp
-  val noticeIconSize = 24.dp
-
   val itemHorizontalSpacing = 8.dp
   val itemCardPadding = 12.dp
   val itemContentSpacing = 2.dp

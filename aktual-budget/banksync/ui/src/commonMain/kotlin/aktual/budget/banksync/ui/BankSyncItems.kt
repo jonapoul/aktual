@@ -5,8 +5,6 @@ import aktual.budget.banksync.vm.BankSyncAccountStatus
 import aktual.budget.banksync.vm.BankSyncProviderStatus
 import aktual.budget.banksync.vm.LastBankSync
 import aktual.budget.model.AccountSyncSource
-import aktual.core.icons.material.AccountBalance
-import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
@@ -28,9 +26,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -219,31 +215,6 @@ internal fun UnlinkedHeader(modifier: Modifier = Modifier) {
   }
 }
 
-@Composable
-internal fun ReadOnlyNotice(modifier: Modifier = Modifier) {
-  Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .background(colors.noticeBackgroundLight, RowShape)
-        .padding(BankSyncDS.noticePadding),
-    horizontalArrangement = Arrangement.spacedBy(BankSyncDS.noticeSpacing),
-    verticalAlignment = CenterVertically,
-  ) {
-    Icon(
-      modifier = Modifier.size(BankSyncDS.noticeIconSize),
-      imageVector = MaterialIcons.AccountBalance,
-      contentDescription = null,
-      tint = colors.noticeText,
-    )
-    Text(
-      text = Strings.bankSyncReadOnly,
-      style = typography.bodySmall,
-      color = colors.noticeText,
-    )
-  }
-}
-
 // Brand names, see getSyncSourceReadable() in
 // packages/desktop-client/src/components/banksync/bankSyncUtils.ts
 @Composable
@@ -346,11 +317,6 @@ private fun PreviewProviderHeader(
 
 private class ProviderStatusProvider :
   ColoredParameterProvider<BankSyncProviderStatus>(BankSyncProviderStatus.entries)
-
-@Preview
-@Composable
-private fun PreviewReadOnlyNotice(@PreviewParameter(ColoredParameters::class) colors: Colors) =
-  PreviewWithColors(colors) { ReadOnlyNotice() }
 
 @Preview
 @Composable

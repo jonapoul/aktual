@@ -6,7 +6,6 @@ import aktual.budget.rules.ui.LocalEntityListFetcher
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.vm.Rule
-import aktual.budget.rules.vm.edit.EditRuleEvent
 import aktual.budget.rules.vm.edit.EditRuleState
 import aktual.budget.rules.vm.edit.EditRuleState.Failure
 import aktual.budget.rules.vm.edit.EditRuleState.Loading
@@ -37,6 +36,7 @@ import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.WarningBanner
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -86,7 +86,7 @@ internal fun EditRuleScreen(
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        EditRuleEvent.DeletedRule -> back()
+        DeletedRule -> back()
       }
     }
   }
@@ -312,7 +312,7 @@ private fun LoadedContent(
       verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
       if (rule.hasUnknownValues) {
-        item { UnknownValuesWarning() }
+        item { WarningBanner(text = Strings.editRuleUnknownValues) }
       }
 
       item { RuleStage(rule, isEnabled, onAction) }
@@ -328,17 +328,6 @@ private fun LoadedContent(
       BottomSpacing()
     }
   }
-}
-
-@Composable
-private fun UnknownValuesWarning(modifier: Modifier = Modifier) {
-  Text(
-    modifier =
-      modifier.fillMaxWidth().background(colors.cardBackground, CardShape).padding(CARD_PADDING),
-    text = Strings.editRuleUnknownValues,
-    color = colors.errorText,
-    style = typography.bodyMedium,
-  )
 }
 
 @Composable
