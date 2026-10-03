@@ -60,7 +60,7 @@ class DemoDatesTest {
     val ids = db.transactionsQueries.getIds().awaitAsList()
     assertThat(ids).isNotEmpty()
     ids.forEach { id ->
-      assertThat(db.transactionsQueries.getById(id).awaitAsOneOrNull()).isNotNull()
+      assertThat(db.transactionsQueries.getByIds(listOf(id)).awaitAsOneOrNull()).isNotNull()
     }
     assertThat(db.schedulesQueries.getFromVSchedules().awaitAsList()).isNotEmpty()
   }
