@@ -198,8 +198,7 @@ private fun BalanceText(balance: Amount?, dimens: LedgerDimens, modifier: Modifi
 
 @Composable
 @ReadOnlyComposable
-private fun Amount.color(): Color =
-  if (this > Zero) colors.numberPositive else colors.tableText
+private fun Amount.color(): Color = if (this > Zero) colors.numberPositive else colors.tableText
 
 @Composable
 @ReadOnlyComposable
