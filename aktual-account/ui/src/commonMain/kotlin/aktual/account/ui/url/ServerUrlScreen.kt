@@ -15,6 +15,7 @@ import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.ErrorBanner
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
@@ -187,12 +188,7 @@ private fun ServerUrlContent(
       )
 
       if (errorMessage != null) {
-        Text(
-          modifier = Modifier.fillMaxWidth(),
-          text = errorMessage,
-          color = colors.errorText,
-          textAlign = Center,
-        )
+        ErrorBanner(text = errorMessage)
       }
     }
 

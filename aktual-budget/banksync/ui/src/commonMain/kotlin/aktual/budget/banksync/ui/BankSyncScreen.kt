@@ -18,6 +18,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.NavDrawerIconButton
+import aktual.core.ui.NoticeBanner
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.hazedTopBar
@@ -179,13 +180,15 @@ private fun ContentSuccess(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(BankSyncDS.listItemSpacing),
   ) {
-    item(key = "notice") { ReadOnlyNotice() }
+    item(key = "notice") {
+      NoticeBanner(text = Strings.bankSyncReadOnly, icon = MaterialIcons.AccountBalance)
+    }
 
-    for (provider in state.providers) {
-      item(key = "provider-${provider.source.value}") {
-        ProviderHeader(source = provider.source, status = provider.status)
+    for ((source, status, accounts) in state.providers) {
+      item(key = "provider-${source.value}") {
+        ProviderHeader(source = source, status = status)
       }
-      items(provider.accounts, key = { it.id.value }) { account ->
+      items(accounts, key = { it.id.value }) { account ->
         BankSyncAccountItem(account = account, isLinked = true)
       }
     }
