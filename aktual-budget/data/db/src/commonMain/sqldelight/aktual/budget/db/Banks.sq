@@ -14,11 +14,6 @@ SELECT bank_id
   FROM banks
   WHERE id = ?;
 
-getByBankId:
-SELECT id, bank_id, name
-  FROM banks
-  WHERE bank_id = ?;
-
 insert:
 INSERT INTO banks(id, bank_id, name)
   VALUES (?, ?, ?);

@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS dashboard(
   dashboard_page_id TEXT AS DashboardPageId
 );
 
-delete: DELETE FROM dashboard WHERE id = ?;
 getIdsByPage: SELECT id FROM dashboard WHERE dashboard_page_id = ? AND tombstone = 0;
 getByPage: SELECT * FROM dashboard WHERE dashboard_page_id = ? AND tombstone = 0 ORDER BY y DESC, x DESC;
 getPositionAndSize: SELECT x, y, width, height FROM dashboard WHERE dashboard_page_id = ? AND tombstone = 0 ORDER BY y DESC, x DESC;
@@ -24,5 +23,3 @@ insert: INSERT INTO dashboard(id, type, width, height, x, y, meta, dashboard_pag
 getById: SELECT * FROM dashboard WHERE id = ? AND tombstone = 0;
 getAll: SELECT * FROM dashboard WHERE tombstone = 0 ORDER BY y DESC, x DESC;
 getMeta: SELECT meta FROM dashboard WHERE id = ?;
-
-updateMeta: UPDATE dashboard SET meta = ? WHERE id = ?;

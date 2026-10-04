@@ -46,8 +46,6 @@ insert:
     INTO schedules(id, rule, active, completed, posts_transaction, tombstone, name)
     VALUES(?,?,?,?,?,?,?);
 
-setRule: UPDATE schedules SET rule = ? WHERE id = ?;
-
 getIdByName: SELECT id FROM schedules WHERE tombstone = 0 AND name = ?;
 
 delete: DELETE FROM schedules WHERE id = ?;

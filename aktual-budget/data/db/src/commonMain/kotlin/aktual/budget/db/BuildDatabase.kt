@@ -18,7 +18,6 @@ fun buildDatabase(driver: SqlDriver): BudgetDatabase =
     messages_clockAdapter = MessagesClockAdapter,
     messages_crdtAdapter = MessagesCrdtAdapter,
     messages_pendingAdapter = MessagesPendingAdapter,
-    payee_locationsAdapter = PayeeLocationsAdapter,
     payee_mappingAdapter = PayeeMappingAdapter,
     payeesAdapter = PayeesAdapter,
     preferencesAdapter = PreferencesAdapter,
@@ -28,8 +27,5 @@ fun buildDatabase(driver: SqlDriver): BudgetDatabase =
     schedulesAdapter = SchedulesAdapter,
     schedules_json_pathsAdapter = SchedulesJsonPathsAdapter,
     schedules_next_dateAdapter = SchedulesNextDateAdapter,
-    transaction_filtersAdapter = TransactionFiltersAdapter,
     transactionsAdapter = TransactionsAdapter,
-    zero_budget_monthsAdapter = ZeroBudgetMonthsAdapter,
-    zero_budgetsAdapter = ZeroBudgetsAdapter,
   )

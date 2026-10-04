@@ -7,6 +7,4 @@ CREATE TABLE IF NOT EXISTS cleanup_groups(
   tombstone INTEGER AS Boolean DEFAULT 0
 );
 
-insert: INSERT OR REPLACE INTO cleanup_groups(id, name) VALUES (?, ?);
-
 getById: SELECT * FROM cleanup_groups WHERE id = ?;

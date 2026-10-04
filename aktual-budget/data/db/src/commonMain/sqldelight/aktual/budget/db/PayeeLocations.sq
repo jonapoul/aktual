@@ -17,12 +17,3 @@ CREATE INDEX IF NOT EXISTS idx_payee_locations_payee_id ON payee_locations (paye
 CREATE INDEX IF NOT EXISTS idx_payee_locations_tombstone_payee_created ON payee_locations (tombstone, payee_id, created_at);
 
 CREATE INDEX IF NOT EXISTS idx_payee_locations_geo_tombstone ON payee_locations (tombstone, latitude, longitude);
-
-insert:
-  INSERT INTO payee_locations VALUES ?;
-
-delete:
-  DELETE FROM payee_locations WHERE id = ?;
-
-getById:
-  SELECT * FROM payee_locations WHERE id = ?;
