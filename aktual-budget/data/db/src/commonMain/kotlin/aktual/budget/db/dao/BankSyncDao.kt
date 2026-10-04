@@ -89,6 +89,11 @@ class BankSyncDao(database: BudgetDatabase) {
     bankSyncOldestDate(account, today).awaitAsOneOrNull()
   }
 
+  suspend fun exampleData(account: AccountId, deposit: Boolean): String? = queries.withResult {
+    val query = if (deposit) bankSyncDepositExample(account) else bankSyncPaymentExample(account)
+    query.awaitAsOneOrNull()
+  }
+
   suspend fun categoryIds(): Set<CategoryId> = queries.withResult {
     bankSyncCategoryIds().awaitAsList().toSet()
   }

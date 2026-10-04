@@ -16,7 +16,7 @@ import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.disabledIf
 import aktual.core.ui.radioButton
-import aktual.prefs.ui.BasicPreferenceItem
+import aktual.prefs.ui.core.BasicPreferenceItem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

@@ -15,7 +15,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColors
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.ListPreferenceItem
-import aktual.prefs.ui.PreferenceGroup
+import aktual.prefs.ui.core.PreferenceGroup
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.root.FormatConfigState

@@ -73,3 +73,22 @@ ORDER BY a.offbudget, a.sort_order;
 -- packages/loot-core/src/server/accounts/sync.ts getAccountOldestTransaction()
 bankSyncOldestDate:
 SELECT date FROM v_transactions WHERE account = :account AND date <= :today ORDER BY date LIMIT 1;
+
+-- useBankSyncAccountSettings(): the downloaded data of the account's newest synced payment, which
+-- offers the fields its payments can be mapped from
+bankSyncPaymentExample:
+SELECT t.raw_synced_data
+FROM v_transactions v
+JOIN transactions t ON t.id = v.id
+WHERE v.account = :account AND v.amount <= 0 AND t.raw_synced_data IS NOT NULL
+ORDER BY v.date DESC, v.starting_balance_flag, v.sort_order DESC, v.id
+LIMIT 1;
+
+-- As above, for deposits
+bankSyncDepositExample:
+SELECT t.raw_synced_data
+FROM v_transactions v
+JOIN transactions t ON t.id = v.id
+WHERE v.account = :account AND v.amount > 0 AND t.raw_synced_data IS NOT NULL
+ORDER BY v.date DESC, v.starting_balance_flag, v.sort_order DESC, v.id
+LIMIT 1;

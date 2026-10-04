@@ -9,7 +9,7 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.prefs.ui.BasicPreferenceItem
+import aktual.prefs.ui.core.BasicPreferenceItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector

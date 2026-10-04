@@ -1,7 +1,11 @@
 package aktual.budget.banksync.domain
 
+import aktual.budget.BudgetSyncController
+import aktual.budget.db.dao.DatabaseTables.PREFERENCES
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.AccountId
+import aktual.budget.model.LocalChange
+import aktual.budget.model.MessageValue
 import aktual.budget.model.SyncedPrefKey.PerAccount
 import aktual.budget.model.SyncedPrefKey.PerAccount.CustomSyncMappings
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportNotes
@@ -41,4 +45,24 @@ class BankSyncSettingsLoader(private val preferences: PreferencesDao) {
   // String(value ?? default) === 'true'
   private suspend fun flag(key: PerAccount, default: Boolean): Boolean =
     preferences[key]?.let { it == "true" } ?: default
+}
+
+@Inject
+class BankSyncSettingsWriter(private val syncController: BudgetSyncController) {
+  suspend fun save(account: AccountId, settings: BankSyncSettings) =
+    syncController.syncChanges(
+      listOf(
+        change(CustomSyncMappings(account), settings.mappings.encode()),
+        change(SyncImportPending(account), settings.importPending),
+        change(SyncImportNotes(account), settings.importNotes),
+        change(SyncReimportDeleted(account), settings.reimportDeleted),
+        change(SyncImportTransactions(account), settings.importTransactions),
+        change(SyncUpdateDates(account), settings.updateDates),
+      )
+    )
+
+  private fun change(key: PerAccount, value: Boolean) = change(key, value.toString())
+
+  private fun change(key: PerAccount, value: String) =
+    LocalChange(PREFERENCES, key.key, column = "value", MessageValue.String(value))
 }
