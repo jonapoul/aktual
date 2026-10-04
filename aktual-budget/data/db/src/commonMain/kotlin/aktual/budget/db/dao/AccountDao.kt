@@ -2,6 +2,7 @@ package aktual.budget.db.dao
 
 import aktual.budget.db.Accounts
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.GetAllWithBalances
 import aktual.budget.db.GetAllWithStatus
 import aktual.budget.db.GetBankSyncAccounts
 import aktual.budget.db.accounts.GetAllActive
@@ -11,8 +12,12 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
+import app.cash.sqldelight.coroutines.asFlow
 import dev.zacsweers.metro.Inject
 import kotlin.uuid.Uuid
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 @Inject
 class AccountDao(database: BudgetDatabase) {
@@ -63,6 +68,10 @@ class AccountDao(database: BudgetDatabase) {
   suspend fun getBankSyncAccounts(): List<GetBankSyncAccounts> = queries.withResult {
     getBankSyncAccounts().awaitAsList()
   }
+
+  // Every non-tombstoned account with its current balance, re-emitted as transactions change
+  fun observeAllWithBalances(): Flow<List<GetAllWithBalances>> =
+    queries.getAllWithBalances().asFlow().map { it.awaitAsList() }.distinctUntilChanged()
 
   // The highest sort order among on or off budget accounts, null if there are none
   suspend fun maxSortOrder(offBudget: Boolean): Double? = queries.withResult {
