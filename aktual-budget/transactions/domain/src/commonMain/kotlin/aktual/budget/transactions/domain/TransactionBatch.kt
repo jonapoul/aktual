@@ -150,9 +150,15 @@ internal constructor(
     }
   }
 
-  /** db.insertPayee(): the payee plus a payee_mapping row pointing at itself. */
-  fun insertPayee(name: String, transferAccount: AccountId? = null): PayeeId {
-    val id = uuidGenerator(::PayeeId)
+  /**
+   * db.insertPayee(): the payee plus a payee_mapping row pointing at itself. [id] is for payees
+   * that were given one before being saved, like those rules create.
+   */
+  fun insertPayee(
+    name: String,
+    transferAccount: AccountId? = null,
+    id: PayeeId = uuidGenerator(::PayeeId),
+  ): PayeeId {
     val row = id.value
     changes += LocalChange(PAYEES, row, "name", name.messageValue())
     if (transferAccount != null) {

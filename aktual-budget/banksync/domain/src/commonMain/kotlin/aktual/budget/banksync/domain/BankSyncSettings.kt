@@ -1,0 +1,44 @@
+package aktual.budget.banksync.domain
+
+import aktual.budget.db.dao.PreferencesDao
+import aktual.budget.model.AccountId
+import aktual.budget.model.SyncedPrefKey.PerAccount
+import aktual.budget.model.SyncedPrefKey.PerAccount.CustomSyncMappings
+import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportNotes
+import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportPending
+import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportTransactions
+import aktual.budget.model.SyncedPrefKey.PerAccount.SyncReimportDeleted
+import aktual.budget.model.SyncedPrefKey.PerAccount.SyncUpdateDates
+import dev.zacsweers.metro.Inject
+
+/**
+ * An account's bank sync preferences, as packages/loot-core/src/server/accounts/sync.ts reads them.
+ */
+data class BankSyncSettings(
+  val importNotes: Boolean = true,
+  val importPending: Boolean = true,
+  val importTransactions: Boolean = true,
+  val reimportDeleted: Boolean = true,
+  val updateDates: Boolean = false,
+  val mappings: SyncMappings = Default,
+)
+
+@Inject
+class BankSyncSettingsLoader(private val preferences: PreferencesDao) {
+  suspend fun load(account: AccountId): BankSyncSettings =
+    BankSyncSettings(
+      importNotes = flag(SyncImportNotes(account), default = true),
+      importPending = flag(SyncImportPending(account), default = true),
+      importTransactions = flag(SyncImportTransactions(account), default = true),
+      reimportDeleted = flag(SyncReimportDeleted(account), default = true),
+      updateDates = flag(SyncUpdateDates(account), default = false),
+      mappings =
+        preferences[CustomSyncMappings(account)]
+          ?.takeIf { it.isNotEmpty() }
+          ?.let(SyncMappings::parse) ?: Default,
+    )
+
+  // String(value ?? default) === 'true'
+  private suspend fun flag(key: PerAccount, default: Boolean): Boolean =
+    preferences[key]?.let { it == "true" } ?: default
+}
