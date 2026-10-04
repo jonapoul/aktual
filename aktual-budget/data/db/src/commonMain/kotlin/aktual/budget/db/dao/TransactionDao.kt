@@ -9,6 +9,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOne
@@ -130,6 +131,7 @@ class TransactionDao(database: BudgetDatabase) {
     amount: Double = 0.0,
     isParent: Boolean = false,
     parent: String? = null,
+    schedule: String? = null,
   ) = queries.withoutResult {
     insert(
       Transactions(
@@ -154,7 +156,7 @@ class TransactionDao(database: BudgetDatabase) {
         cleared = null,
         pending = null,
         parent_id = parent?.let(::TransactionId),
-        schedule = null,
+        schedule = schedule?.let(::ScheduleId),
         reconciled = null,
         raw_synced_data = null,
       )

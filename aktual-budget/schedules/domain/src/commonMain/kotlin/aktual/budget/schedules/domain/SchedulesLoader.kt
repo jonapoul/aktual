@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -60,6 +61,12 @@ class SchedulesLoader(
           toSchedules(rows, latestTxDates, globalLength.toUpcomingLength())
         }
       }
+      .distinctUntilChanged()
+
+  fun observeUpcomingLength(): Flow<UpcomingLength> =
+    preferencesDao
+      .observe(UpcomingScheduledTransactionLength)
+      .map { it.toUpcomingLength() ?: DefaultUpcomingLength }
       .distinctUntilChanged()
 
   suspend fun load(id: ScheduleId): Schedule? {
