@@ -1,0 +1,47 @@
+-- packages/loot-core/src/server/budget/base.ts createAllBudgets()
+-- Deleted transactions count too, as upstream
+budgetEarliestTransactionDate:
+SELECT MIN(date) AS date FROM transactions WHERE isChild = 0 AND date IS NOT NULL;
+
+-- packages/loot-core/src/server/budget/base.ts createBudget()
+budgetCategories:
+SELECT
+  c.id,
+  c.name,
+  c.is_income,
+  c.hidden,
+  g.id AS group_id,
+  g.is_income AS group_is_income,
+  g.hidden AS group_hidden
+FROM categories c
+JOIN category_groups g ON g.id = c.cat_group AND g.tombstone = 0
+WHERE c.tombstone = 0
+ORDER BY g.is_income, g.sort_order, g.id, c.sort_order, c.id;
+
+-- packages/loot-core/src/server/budget/base.ts getSumAmountsByMonth()
+budgetSpentByMonth:
+SELECT
+  c.id AS category,
+  CAST(t.date / 100 AS INTEGER) AS month,
+  CAST(IFNULL(SUM(t.amount), 0) AS INTEGER) AS total
+FROM v_transactions_internal_alive t
+JOIN accounts a ON a.id = t.account
+JOIN categories c ON c.id = t.category
+WHERE t.date >= :start AND t.date <= :end AND a.offbudget = 0
+GROUP BY c.id, month;
+
+-- packages/loot-core/src/server/sheet.ts loadUserBudgets()
+zeroBudgets:
+SELECT b.month, c.id AS category, b.amount, IFNULL(b.carryover, 0) = 1 AS carryover
+FROM zero_budgets b
+JOIN categories c ON c.id = b.category AND c.tombstone = 0
+WHERE b.month >= :start AND b.month <= :end;
+
+reflectBudgets:
+SELECT b.month, c.id AS category, b.amount, IFNULL(b.carryover, 0) = 1 AS carryover
+FROM reflect_budgets b
+JOIN categories c ON c.id = b.category AND c.tombstone = 0
+WHERE b.month >= :start AND b.month <= :end;
+
+zeroBudgetMonths:
+SELECT id, buffered FROM zero_budget_months;

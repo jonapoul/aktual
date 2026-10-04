@@ -28,4 +28,6 @@ fun buildDatabase(driver: SqlDriver): BudgetDatabase =
     schedules_json_pathsAdapter = SchedulesJsonPathsAdapter,
     schedules_next_dateAdapter = SchedulesNextDateAdapter,
     transactionsAdapter = TransactionsAdapter,
+    zero_budget_monthsAdapter = ZeroBudgetMonthsAdapter,
+    zero_budgetsAdapter = ZeroBudgetsAdapter,
   )

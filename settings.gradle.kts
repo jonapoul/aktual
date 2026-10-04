@@ -175,6 +175,7 @@ include(
   ":aktual-budget:banksync:domain",
   ":aktual-budget:banksync:ui",
   ":aktual-budget:banksync:vm",
+  ":aktual-budget:budgeting:domain",
   ":aktual-budget:data:db",
   ":aktual-budget:data:encryption",
   ":aktual-budget:data:impl",
