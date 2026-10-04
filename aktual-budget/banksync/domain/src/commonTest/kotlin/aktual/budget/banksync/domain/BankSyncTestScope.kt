@@ -17,6 +17,7 @@ import aktual.budget.db.dao.SyncDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
+import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
@@ -28,6 +29,7 @@ import aktual.budget.model.Timestamp
 import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.di.BudgetCoroutineScope
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestClock
 import alakazam.test.TestCoroutineContexts
@@ -36,6 +38,8 @@ import app.cash.sqldelight.db.SqlDriver
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonObject
@@ -55,18 +59,18 @@ internal data class Change(
   val value: MessageValue,
 )
 
-// Changes sent to the controller are applied to the database, as BudgetSyncControllerImpl does
 internal class BankSyncTestScope(
   val database: BudgetDatabase,
   private val driver: SqlDriver,
   private val syncDao: SyncDao,
+  private val backgroundScope: CoroutineScope,
 ) : BudgetSyncController {
   val syncCalls = mutableListOf<List<LocalChange>>()
   val transactionDao = TransactionDao(database)
   val payeeDao = PayeeDao(database)
   val preferences = PreferencesDao(database, TestCoroutineContexts(EmptyCoroutineContext))
 
-  private val accountDao = AccountDao(database)
+  val accountDao = AccountDao(database)
   private var nextId = 1
 
   val writer =
@@ -97,6 +101,17 @@ internal class BankSyncTestScope(
     )
 
   private fun uuid() = "id-${nextId++}"
+
+  fun controller(api: FakeBankSyncApi) =
+    BankSyncController(
+      api = api,
+      importer = importer,
+      writer = writer,
+      dao = BankSyncDao(database),
+      calendar = { TODAY },
+      clock = TestClock(NOW),
+      scope = BudgetCoroutineScope(backgroundScope),
+    )
 
   override suspend fun syncChanges(changes: List<LocalChange>) {
     syncCalls.add(changes)
@@ -130,7 +145,29 @@ internal class BankSyncTestScope(
   suspend fun insertAccount(id: AccountId = ACCOUNT, offBudget: Boolean = false) =
     accountDao.insert(id = id, name = id.value, offBudget = offBudget)
 
-  // With its category_mapping row, which the transaction views resolve categories through
+  @Suppress("LongParameterList")
+  suspend fun insertLinkedAccount(
+    id: AccountId,
+    accountId: String = "provider-${id.value}",
+    source: AccountSyncSource? = AccountSyncSource.GoCardless,
+    bankId: String = "bank-${id.value}",
+    bankName: String? = "Bank ${id.value}",
+    offBudget: Boolean = false,
+  ) {
+    val bank = Uuid.random()
+    database.banksQueries.insert(bank, BankId(bankId), bankName)
+    accountDao.insert(
+      id = id,
+      accountId = accountId,
+      name = id.value,
+      bank = bank,
+      offBudget = offBudget,
+      accountSyncSource = source,
+    )
+  }
+
+  suspend fun account(id: AccountId) = checkNotNull(accountDao[id]) { "No $id" }
+
   suspend fun insertCategory(id: CategoryId) {
     database.categoryMappingQueries.insert(id, id)
     database.categoriesQueries.insert(
@@ -200,7 +237,8 @@ internal fun runBankSyncTest(action: suspend BankSyncTestScope.() -> Unit) = run
   val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
   driver.use {
     val database = buildDatabase(driver)
-    val scope = BankSyncTestScope(database, driver, SyncDao(database, driver, Clock.System))
+    val syncDao = SyncDao(database, driver, Clock.System)
+    val scope = BankSyncTestScope(database, driver, syncDao, backgroundScope)
     scope.insertAccount()
     scope.action()
   }

@@ -2,8 +2,12 @@ package aktual.api.client
 
 import aktual.api.model.banksync.BankSyncStatusResponse
 import aktual.api.model.banksync.BankSyncTransactionsRequest
-import aktual.api.model.banksync.BankSyncTransactionsResponse
-import aktual.budget.model.AccountSyncSource
+import aktual.api.model.banksync.BankSyncTransactionsResponse.ProviderError
+import aktual.api.model.banksync.BankSyncTransactionsResponse.Rejected
+import aktual.api.model.banksync.BankSyncTransactionsResponse.Success
+import aktual.api.model.banksync.SimpleFinBatchRequest
+import aktual.api.model.banksync.SimpleFinBatchResponse
+import aktual.api.model.banksync.SimpleFinBatchResponse.Failed
 import aktual.budget.model.DbMetadata
 import aktual.core.model.AktualJson
 import aktual.core.model.BudgetServer
@@ -20,13 +24,13 @@ import aktual.test.testHttpClient
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.containsOnly
 import assertk.assertions.doesNotContainKey
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.key
 import assertk.assertions.prop
 import io.ktor.client.engine.mock.MockEngine
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -58,7 +62,7 @@ class BankSyncApiTest {
   fun `Status request`() = runTest {
     mockEngine += { respondJson(SimplefinResponses.STATUS_SUCCESS_200) }
 
-    val response = bankSyncApi.status(AccountSyncSource.SimpleFin)
+    val response = bankSyncApi.status(SimpleFin)
 
     assertThat(mockEngine.latestRequestUrl()).isEqualTo("https://test.server.com/simplefin/status")
     assertThat(mockEngine.latestRequestHeaders()).all {
@@ -73,7 +77,7 @@ class BankSyncApiTest {
     mockEngine += { respondJson(SimplefinResponses.TRANSACTIONS_SUCCESS_200) }
 
     bankSyncApi.transactions(
-      AccountSyncSource.GoCardless,
+      GoCardless,
       BankSyncTransactionsRequest(
         accountId = "account-1",
         startDate = LocalDate(2026, 7, 1),
@@ -97,7 +101,7 @@ class BankSyncApiTest {
     mockEngine += { respondJson(SimplefinResponses.TRANSACTIONS_SUCCESS_200) }
 
     bankSyncApi.transactions(
-      AccountSyncSource.PluggyAi,
+      PluggyAi,
       BankSyncTransactionsRequest(accountId = "account-1", startDate = LocalDate(2026, 7, 1)),
     )
 
@@ -116,10 +120,10 @@ class BankSyncApiTest {
   fun `Parse successful transactions`() = runTest {
     mockEngine += { respondJson(SimplefinResponses.TRANSACTIONS_SUCCESS_200) }
 
-    val response = bankSyncApi.transactions(AccountSyncSource.SimpleFin, REQUEST)
+    val response = bankSyncApi.transactions(SimpleFin, REQUEST)
 
-    assertThat(response).isInstanceOf<BankSyncTransactionsResponse.Success>().all {
-      prop(BankSyncTransactionsResponse.Success::startingBalance).isEqualTo(123456L)
+    assertThat(response).isInstanceOf<Success>().all {
+      prop(Success::startingBalance).isEqualTo(123456L)
       transform { it.balances.map { b -> b.balanceType to b.balanceAmount.amount } }
         .containsExactly("expected" to "1234.56", "interimAvailable" to "1234.56")
       transform { it.transactions.all.map { t -> t.transactionId } }
@@ -141,11 +145,11 @@ class BankSyncApiTest {
   fun `Parse provider error`() = runTest {
     mockEngine += { respondJson(SimplefinResponses.TRANSACTIONS_INVALID_TOKEN_200) }
 
-    val response = bankSyncApi.transactions(AccountSyncSource.SimpleFin, REQUEST)
+    val response = bankSyncApi.transactions(SimpleFin, REQUEST)
 
     assertThat(response)
       .isEqualTo(
-        BankSyncTransactionsResponse.ProviderError(
+        ProviderError(
           errorType = "INVALID_ACCESS_TOKEN",
           errorCode = "INVALID_ACCESS_TOKEN",
           reason =
@@ -158,11 +162,11 @@ class BankSyncApiTest {
   fun `Parse rate limit error`() = runTest {
     mockEngine += { respondJson(GocardlessResponses.TRANSACTIONS_RATE_LIMIT_200) }
 
-    val response = bankSyncApi.transactions(AccountSyncSource.GoCardless, REQUEST)
+    val response = bankSyncApi.transactions(GoCardless, REQUEST)
 
     assertThat(response)
       .isEqualTo(
-        BankSyncTransactionsResponse.ProviderError(
+        ProviderError(
           errorType = "RATE_LIMIT_EXCEEDED",
           errorCode = "NORDIGEN_ERROR",
           reason = "Rate limit exceeded",
@@ -173,21 +177,96 @@ class BankSyncApiTest {
   @Test
   fun `Parse rejected request`() = runTest {
     mockEngine += {
-      respondJson(PluggyaiResponses.TRANSACTIONS_NOT_CONFIGURED_400, HttpStatusCode.BadRequest)
+      respondJson(PluggyaiResponses.TRANSACTIONS_NOT_CONFIGURED_400, BadRequest)
     }
 
-    val response = bankSyncApi.transactions(AccountSyncSource.PluggyAi, REQUEST)
+    val response = bankSyncApi.transactions(PluggyAi, REQUEST)
 
     assertThat(response)
       .isEqualTo(
-        BankSyncTransactionsResponse.Rejected(
+        Rejected(
           reason = "not-configured",
           details = "Pluggy credentials are not configured",
         )
       )
   }
 
+  @Test
+  fun `Batch request`() = runTest {
+    mockEngine += { respondJson(SimplefinResponses.TRANSACTIONS_BATCH_200) }
+
+    bankSyncApi.simpleFinBatch(BATCH_REQUEST)
+
+    assertThat(mockEngine.latestRequestUrl())
+      .isEqualTo("https://test.server.com/simplefin/transactions")
+    assertThat(mockEngine.latestRequest().body).isInstanceOf<TextContent>().all {
+      prop(TextContent::text)
+        .isEqualTo(
+          """{"accountId":["ACT-1","ACT-2","ACT-missing"],"startDate":["2026-07-01","2026-07-02","2026-07-03"]}"""
+        )
+    }
+  }
+
+  @Test
+  fun `Parse batch response`() = runTest {
+    mockEngine += { respondJson(SimplefinResponses.TRANSACTIONS_BATCH_200) }
+
+    val response = bankSyncApi.simpleFinBatch(BATCH_REQUEST)
+
+    assertThat(response).isInstanceOf<SimpleFinBatchResponse.Success>().all {
+      transform { it.accounts.keys }.containsOnly("ACT-1", "ACT-2", "ACT-missing")
+      transform { it.accounts }
+        .key("ACT-1")
+        .isInstanceOf<Success>()
+        .all {
+          prop(Success::startingBalance).isEqualTo(123456L)
+          transform { it.transactions.all.map { t -> t.transactionId } }
+            .containsExactly("TRN-booked-1")
+        }
+      // An account's error wins over its download
+      transform { it.accounts }
+        .key("ACT-2")
+        .isInstanceOf<ProviderError>()
+        .prop(ProviderError::errorCode)
+        .isEqualTo("ACCOUNT_NEEDS_ATTENTION")
+      transform { it.accounts }
+        .key("ACT-missing")
+        .isInstanceOf<ProviderError>()
+        .prop(ProviderError::errorCode)
+        .isEqualTo("ACCOUNT_MISSING")
+    }
+  }
+
+  @Test
+  fun `Parse batch provider error`() = runTest {
+    mockEngine += { respondJson(SimplefinResponses.TRANSACTIONS_INVALID_TOKEN_200) }
+
+    val response = bankSyncApi.simpleFinBatch(BATCH_REQUEST)
+
+    assertThat(response)
+      .isInstanceOf<Failed>()
+      .prop(Failed::error)
+      .isInstanceOf<ProviderError>()
+      .prop(ProviderError::errorCode)
+      .isEqualTo("INVALID_ACCESS_TOKEN")
+  }
+
+  @Test
+  fun `Empty batch response has no data`() = runTest {
+    mockEngine += { respondJson("""{"status":"ok","data":{}}""") }
+
+    val response = bankSyncApi.simpleFinBatch(BATCH_REQUEST)
+
+    assertThat(response)
+      .isEqualTo(Failed(ProviderError(ProviderError.NO_DATA, ProviderError.NO_DATA)))
+  }
+
   private companion object {
+    val BATCH_REQUEST =
+      SimpleFinBatchRequest(
+        accountIds = listOf("ACT-1", "ACT-2", "ACT-missing"),
+        startDates = listOf(LocalDate(2026, 7, 1), LocalDate(2026, 7, 2), LocalDate(2026, 7, 3)),
+      )
     val REQUEST = BankSyncTransactionsRequest(accountId = "abc", startDate = LocalDate(2026, 7, 1))
   }
 }

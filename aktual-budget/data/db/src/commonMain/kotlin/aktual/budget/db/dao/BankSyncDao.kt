@@ -3,6 +3,8 @@ package aktual.budget.db.dao
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.withResult
 import aktual.budget.model.AccountId
+import aktual.budget.model.AccountSyncSource
+import aktual.budget.model.BankId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
@@ -11,10 +13,6 @@ import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import dev.zacsweers.metro.Inject
 import kotlinx.datetime.LocalDate
 
-/**
- * An existing transaction that a downloaded one could match, with the v_transactions fields that
- * reconciling reads. Payee and category are resolved through their mappings.
- */
 data class BankSyncCandidate(
   val id: TransactionId,
   val date: LocalDate,
@@ -30,15 +28,19 @@ data class BankSyncCandidate(
   val rawSyncedData: String? = null,
 )
 
-/** The lookups of packages/loot-core/src/server/accounts/sync.ts matchTransactions(). */
+data class BankSyncAccount(
+  val id: AccountId,
+  val name: String?,
+  val accountId: String,
+  val source: AccountSyncSource?,
+  val bankId: BankId,
+  val bankName: String?,
+)
+
 @Inject
 class BankSyncDao(database: BudgetDatabase) {
   private val queries = database.bankSyncQueries
 
-  /**
-   * The transaction in [account] with this imported_id. Deleted ones only match when
-   * [includeDeleted] is set, so that they aren't imported again.
-   */
   suspend fun matchByImportedId(
     importedId: String,
     account: AccountId,
@@ -51,11 +53,6 @@ class BankSyncDao(database: BudgetDatabase) {
     }
   }
 
-  /**
-   * Live transactions in [account] with this amount, dated between [from] and [to] inclusive, in
-   * v_transactions order. With [onlyWithoutImportedId], those that already have an imported_id are
-   * left out.
-   */
   suspend fun fuzzyCandidates(
     account: AccountId,
     amount: Long,
@@ -70,12 +67,28 @@ class BankSyncDao(database: BudgetDatabase) {
     }
   }
 
-  // The live children of a split parent
   suspend fun childIds(parent: TransactionId): List<TransactionId> = queries.withResult {
     bankSyncChildIds(parent).awaitAsList()
   }
 
-  // Every category that isn't deleted
+  suspend fun accounts(): List<BankSyncAccount> = queries.withResult {
+    bankSyncAccounts { id, name, accountId, source, bankId, bankName ->
+      BankSyncAccount(
+        id = id,
+        name = name,
+        accountId = accountId,
+        source = source,
+        bankId = bankId,
+        bankName = bankName,
+      )
+    }
+      .awaitAsList()
+  }
+
+  suspend fun oldestDate(account: AccountId, today: LocalDate): LocalDate? = queries.withResult {
+    bankSyncOldestDate(account, today).awaitAsOneOrNull()
+  }
+
   suspend fun categoryIds(): Set<CategoryId> = queries.withResult {
     bankSyncCategoryIds().awaitAsList().toSet()
   }
