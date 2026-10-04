@@ -59,7 +59,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./scripts/compile.sh          # compileAll on changed modules
 ./scripts/test.sh             # testAll on changed modules
 
-# Dependency graph - rerun only when module deps change
+# Dependency graph - rerun only when module deps change, then run the `redundant-module-links` skill
 ./gradlew atlasGenerate
 
 # Force-refresh git version info (bypasses config cache)

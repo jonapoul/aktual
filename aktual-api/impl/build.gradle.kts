@@ -11,7 +11,6 @@ kotlin {
     api(project(":aktual-budget"))
     api(project(":aktual-budget:data:proto"))
     api(project(":aktual-core:theme"))
-    api(project(":aktual-di:core"))
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.ktor.contentNegotiation)
     implementation(libs.ktor.logging)

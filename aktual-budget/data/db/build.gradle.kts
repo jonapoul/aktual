@@ -32,7 +32,6 @@ kotlin {
     api(libs.kotlinx.serialization.json)
     api(libs.okio)
     api(project(":aktual-budget"))
-    api(project(":aktual-di:core"))
     implementation(libs.androidx.sqliteBundled)
     implementation(libs.sqldelight.coroutines)
     implementation(libs.sqldelight.driver.androidx)
