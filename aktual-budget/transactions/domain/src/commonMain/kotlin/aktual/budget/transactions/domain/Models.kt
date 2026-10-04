@@ -18,10 +18,6 @@ import kotlinx.serialization.json.JsonObject
  *
  * A split is a parent with [isParent] set, plus one child per line with [parentId] pointing at it.
  * Children carry the parent's [account] and [date].
- *
- * @property id Generated when null.
- * @property importedPayee The payee text as the bank sent it, not a payee ID.
- * @property sortOrder The current time in milliseconds when null.
  */
 data class NewTransaction(
   val account: AccountId,

@@ -17,11 +17,6 @@ import logcat.logcat
  *
  * Rules that fail upstream's validation are skipped, as upstream skips them when loading, and
  * listed in [invalidRules].
- *
- * @param scheduleRules each schedule's rule, so a transaction linked to a schedule runs that
- *   schedule's rule whatever its conditions, and skips rules belonging to other schedules
- * @param idMappings merged payees and categories, from the `payee_mapping` and `category_mapping`
- *   tables. Ids in rules are swapped for the ids they were merged into
  */
 class RulesEngine(
   rules: List<TransactionRule>,
