@@ -14,6 +14,8 @@ flowchart TD
   subgraph budgetNavRail["Budget Nav Rail"]
     home["Home"]
     transactions["Transactions"]
+    accountTransactions["Account Transactions"]
+    tagTransactions["Tag Transactions"]
     reportsDashboard["Reports Dashboard"]
     report["Report"]
     createReport["Create Report"]
@@ -61,12 +63,15 @@ flowchart TD
   budgetNavRail --tap exit demo--> url
   budgetNavRail --tap about--> info
 
+  home --tap account--> accountTransactions
+
   reportsDashboard --tap report--> report
   reportsDashboard --tap create--> createReport
   reportsDashboard --tap search--> searchReports
   searchReports --tap report--> report
 
   listTags --tap add--> createTag
+  listTags --tap view transactions--> tagTransactions
   listTags --tap tag--> editTag
   listTags --tap search--> searchTags
   searchTags --tap tag--> editTag

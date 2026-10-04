@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 @Immutable
 @Serializable
 sealed interface BudgetNavKey : NavKey {
+  // The tab this route's screen belongs to. It can still be pushed onto another tab's stack
   val tab: BudgetTab
 
   sealed interface Home : BudgetNavKey {

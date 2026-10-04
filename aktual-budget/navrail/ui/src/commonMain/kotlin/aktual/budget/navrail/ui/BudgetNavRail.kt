@@ -18,6 +18,7 @@ import aktual.core.icons.material.Settings
 import aktual.core.icons.material.SwapHoriz
 import aktual.core.l10n.Strings
 import aktual.core.nav.BankSyncNavRoute
+import aktual.core.nav.BudgetEntryScope
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.BudgetTab
@@ -262,6 +263,7 @@ private fun DrawerNavLayout(
       contributors = contributors,
       appStack = appStack,
       activeStack = activeStack,
+      selectedTab = selectedTab,
       modifier = modifier.fillMaxSize(),
     )
   }
@@ -447,6 +449,7 @@ private fun SideNavLayout(
       contributors = contributors,
       appStack = appStack,
       activeStack = activeStack,
+      selectedTab = selectedTab,
       modifier = Modifier.weight(1f),
     )
 
@@ -461,6 +464,7 @@ internal fun BudgetNavDisplay(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   appStack: NavStack<NavKey>,
   activeStack: NavStack<BudgetNavKey>,
+  selectedTab: BudgetTab,
   modifier: Modifier = Modifier,
 ) {
   NavDisplay(
@@ -483,8 +487,9 @@ internal fun BudgetNavDisplay(
       ),
     entryProvider =
       entryProvider {
+        val scope = BudgetEntryScope(selectedTab, this)
         for (contributor in contributors) {
-          with(contributor) { contribute(activeStack, appStack) }
+          with(contributor) { scope.contribute(activeStack, appStack) }
         }
       },
   )
