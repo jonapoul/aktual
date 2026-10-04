@@ -14,6 +14,14 @@ internal value class SelectProvider(val source: AccountSyncSource) : LinkBankAcc
 
 @JvmInline internal value class LinkTo(val accountId: String) : LinkBankAccountAction
 
+@JvmInline internal value class SelectCountry(val country: String) : LinkBankAccountAction
+
+@JvmInline internal value class LogIn(val bankId: String) : LinkBankAccountAction
+
+internal data object ReopenLogin : LinkBankAccountAction
+
+internal data object CancelLogin : LinkBankAccountAction
+
 @Immutable
 internal fun interface LinkBankAccountActionHandler {
   operator fun invoke(action: LinkBankAccountAction)

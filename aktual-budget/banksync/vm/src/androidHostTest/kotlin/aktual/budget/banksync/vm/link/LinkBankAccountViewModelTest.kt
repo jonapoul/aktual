@@ -4,10 +4,16 @@ import aktual.api.model.banksync.BankSyncAccountsResponse
 import aktual.api.model.banksync.BankSyncStatusResponse
 import aktual.api.model.banksync.BankSyncTransactionsResponse.Rejected
 import aktual.api.model.banksync.ExternalBankAccount
+import aktual.api.model.banksync.GoCardlessAccountsResponse
+import aktual.api.model.banksync.GoCardlessBank
+import aktual.api.model.banksync.GoCardlessBanksResponse
+import aktual.api.model.banksync.GoCardlessLoginResponse
 import aktual.budget.BudgetSyncController
 import aktual.budget.banksync.domain.BankAccountLinker
+import aktual.budget.banksync.domain.GoCardlessLoginWaiter
 import aktual.budget.banksync.vm.FakeBankSyncApi
 import aktual.budget.banksync.vm.FakeBankSyncController
+import aktual.budget.banksync.vm.link.ExternalAccounts.NeedsLogin
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
@@ -16,12 +22,14 @@ import aktual.budget.db.dao.SyncDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
+import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.di.BudgetCoroutineScope
+import aktual.test.TestBuildConfig
 import aktual.test.inMemoryDriverFactory
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.ReceiveTurbine
@@ -33,6 +41,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import kotlin.test.AfterTest
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
@@ -156,16 +165,119 @@ class LinkBankAccountViewModelTest {
     assertThat(controller.synced).containsExactly(setOf(ACCOUNT))
   }
 
+  @Test
+  fun `GoCardless lists the banks to log in to`() =
+    runLinkTest(goCardless = true) {
+      api.banks["GB"] = GoCardlessBanksResponse.Success(listOf(MONZO))
+      api.banks["IE"] = GoCardlessBanksResponse.Failed(Rejected("Bad secret", null))
+      val viewModel = createViewModel()
+
+      viewModel.state.test {
+        val login = awaitLogin()
+        assertThat(login)
+          .isEqualTo(
+            GoCardlessLogin(
+              countries = login.countries,
+              country = "GB",
+              banks =
+                GoCardlessBanks.Loaded(persistentListOf(GoCardlessBankItem(MONZO.id, "Monzo"))),
+            )
+          )
+
+        viewModel.selectCountry("IE")
+        assertThat(awaitLogin().banks).isEqualTo(GoCardlessBanks.Failure("Bad secret"))
+        cancelAndIgnoreRemainingEvents()
+      }
+      assertThat(api.bankRequests).containsExactly("GB", "IE")
+    }
+
+  @Test
+  fun `Logging in through GoCardless lists the shared accounts to link`() =
+    runLinkTest(goCardless = true) {
+      api.banks["GB"] = GoCardlessBanksResponse.Success(listOf(MONZO))
+      api.login = GoCardlessLoginResponse.Success(LINK, REQUISITION)
+      api.polls += GoCardlessAccountsResponse.Pending
+      api.polls += GoCardlessAccountsResponse.Success(listOf(SHARED))
+      val viewModel = createViewModel()
+
+      viewModel.state.test {
+        awaitLogin()
+        viewModel.events.test {
+          viewModel.logIn(MONZO.id)
+          assertThat(awaitItem()).isEqualTo(LinkBankAccountEvent.OpenBrowser(LINK))
+
+          var accounts = awaitChoosing().accounts
+          while (accounts is NeedsLogin) accounts = awaitChoosing().accounts
+          assertThat(accounts)
+            .isEqualTo(
+              ExternalAccounts.Loaded(
+                persistentListOf(ExternalAccountItem("GC-1", "Current", "Monzo", null))
+              )
+            )
+          viewModel.link("GC-1")
+          assertThat(awaitItem()).isEqualTo(LinkBankAccountEvent.Linked)
+        }
+        cancelAndIgnoreRemainingEvents()
+      }
+      scope.testScheduler.runCurrent()
+
+      val row = AccountDao(database)[ACCOUNT]
+      assertThat(row?.account_id).isEqualTo("GC-1")
+      assertThat(row?.account_sync_source).isEqualTo(GoCardless)
+      assertThat(BankSyncDao(database).bankId(checkNotNull(row?.bank)))
+        .isEqualTo(BankId(REQUISITION))
+      assertThat(api.logins).containsExactly(MONZO.id)
+    }
+
+  @Test
+  fun `GoCardless logins time out`() =
+    runLinkTest(goCardless = true) {
+      api.banks["GB"] = GoCardlessBanksResponse.Success(listOf(MONZO))
+      api.login = GoCardlessLoginResponse.Success(LINK, REQUISITION)
+      val viewModel = createViewModel()
+
+      viewModel.state.test {
+        awaitLogin()
+        viewModel.logIn(MONZO.id)
+        var status = awaitLogin().status
+        while (status !is Failed) status = awaitLogin().status
+        assertThat(status).isEqualTo(GoCardlessLoginStatus.Failed(cause = null, isTimeout = true))
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `Cancelling a GoCardless login stops waiting`() =
+    runLinkTest(goCardless = true) {
+      api.banks["GB"] = GoCardlessBanksResponse.Success(listOf(MONZO))
+      api.login = GoCardlessLoginResponse.Success(LINK, REQUISITION)
+      val viewModel = createViewModel()
+
+      viewModel.state.test {
+        awaitLogin()
+        viewModel.logIn(MONZO.id)
+        var status = awaitLogin().status
+        while (status != GoCardlessLoginStatus.Waiting("Monzo", LINK)) status = awaitLogin().status
+
+        viewModel.cancelLogin()
+        assertThat(awaitLogin().status).isEqualTo(Idle)
+        scope.testScheduler.advanceTimeBy(1.minutes)
+        expectNoEvents()
+      }
+    }
+
   private class TestContext(
     val scope: TestScope,
     val database: BudgetDatabase,
     driver: SqlDriver,
+    goCardless: Boolean,
   ) : BudgetSyncController {
     val api =
       FakeBankSyncApi(
         AccountSyncSource.SimpleFin to BankSyncStatusResponse.Success(configured = false),
         PluggyAi to BankSyncStatusResponse.Success(configured = true),
         Akahu to BankSyncStatusResponse.Success(configured = true),
+        GoCardless to BankSyncStatusResponse.Success(configured = goCardless),
       )
     val controller = FakeBankSyncController()
     private val syncDao = SyncDao(database, driver, Clock.System)
@@ -177,14 +289,16 @@ class LinkBankAccountViewModelTest {
     override fun schedule() = Unit
   }
 
-  private fun runLinkTest(action: suspend TestContext.() -> Unit) = runTest {
-    val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
-    driver.use { d ->
-      val context = TestContext(this, buildDatabase(d), d)
-      AccountDao(context.database).insert(id = ACCOUNT, name = "Cash")
-      action(context)
+  // GoCardless comes first when it's configured, so tests of the other providers leave it out
+  private fun runLinkTest(goCardless: Boolean = false, action: suspend TestContext.() -> Unit) =
+    runTest {
+      val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
+      driver.use { d ->
+        val context = TestContext(this, buildDatabase(d), d, goCardless)
+        AccountDao(context.database).insert(id = ACCOUNT, name = "Cash")
+        action(context)
+      }
     }
-  }
 
   private fun TestContext.createViewModel(
     account: AccountId = ACCOUNT,
@@ -206,6 +320,8 @@ class LinkBankAccountViewModelTest {
           scope = BudgetCoroutineScope(scope.backgroundScope),
         ),
       server = server,
+      waiter = GoCardlessLoginWaiter(api),
+      buildConfig = TestBuildConfig,
     )
   }
 
@@ -230,11 +346,24 @@ class LinkBankAccountViewModelTest {
     return item
   }
 
+  // Skips past the banks loading
+  private suspend fun ReceiveTurbine<LinkBankAccountState>.awaitLogin(): GoCardlessLogin {
+    while (true) {
+      val login = ((awaitItem() as? LinkBankAccountState.Choosing)?.accounts as? NeedsLogin)?.login
+      if (login != null && login.banks != Loading) return login
+    }
+  }
+
   private companion object {
     val ACCOUNT = AccountId("account-1")
     val REMOTE = BudgetServer.Remote(ServerUrl("https://actual.example.com"), Token("token"))
     val PluggyAi = AccountSyncSource.PluggyAi
     val Akahu = AccountSyncSource.Akahu
+    val GoCardless = AccountSyncSource.GoCardless
+    val MONZO = GoCardlessBank("MONZO_MONZGB2L", "Monzo")
+    const val LINK = "https://ob.gocardless.com/start/requisition-1"
+    const val REQUISITION = "requisition-1"
+    val SHARED = ExternalBankAccount("GC-1", "Current", "Monzo", REQUISITION, null, null)
     val CHECKING = ExternalBankAccount("ACT-1", "Checking", "My Bank", "ORG-1", null, Amount(12.34))
     val CARD = ExternalBankAccount("ACT-2", "Card", null, null, null, null)
   }

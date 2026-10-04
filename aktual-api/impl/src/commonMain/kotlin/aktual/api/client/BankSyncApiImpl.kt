@@ -6,6 +6,9 @@ import aktual.api.model.banksync.BankSyncStatusResponse
 import aktual.api.model.banksync.BankSyncTransactionsRequest
 import aktual.api.model.banksync.BankSyncTransactionsResponse
 import aktual.api.model.banksync.BankSyncTransactionsResponse.ProviderError
+import aktual.api.model.banksync.GoCardlessAccountsResponse
+import aktual.api.model.banksync.GoCardlessBanksResponse
+import aktual.api.model.banksync.GoCardlessLoginResponse
 import aktual.api.model.banksync.SimpleFinBatchRequest
 import aktual.api.model.banksync.SimpleFinBatchResponse
 import aktual.budget.BudgetLocalPreferences
@@ -27,11 +30,13 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.path
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -127,13 +132,92 @@ class BankSyncApiImpl(
     }
   }
 
+  override suspend fun goCardlessBanks(
+    country: String,
+    showDemo: Boolean,
+  ): GoCardlessBanksResponse {
+    val body = buildJsonObject {
+      put("country", country)
+      put("showDemo", showDemo)
+    }
+    val envelope = goCardless("get-banks", body)
+    val data = envelope.data
+    return when {
+      data is JsonObject && ERROR_CODE in data ->
+        GoCardlessBanksResponse.Failed(AktualJson.decodeFromJsonElement<ProviderError>(data))
+      !envelope.isOk || data !is JsonArray -> GoCardlessBanksResponse.Failed(envelope.rejected())
+      else -> GoCardlessBanksResponse.Success(AktualJson.decodeFromJsonElement(data))
+    }
+  }
+
+  override suspend fun goCardlessLogin(bankId: String): GoCardlessLoginResponse {
+    // The server sends the browser back to the Origin once the user's logged in. It needs to be
+    // the server itself, whose /gocardless/link page closes the browser tab
+    val origin = remote().url.toString()
+    val body = buildJsonObject {
+      put("institutionId", bankId)
+      put("accessValidForDays", ACCESS_VALID_DAYS)
+    }
+    val envelope = goCardless("create-web-token", body) { header(HttpHeaders.Origin, origin) }
+    val data = envelope.data as? JsonObject
+    return when {
+      data != null && ERROR_CODE in data ->
+        GoCardlessLoginResponse.Failed(AktualJson.decodeFromJsonElement<ProviderError>(data))
+      !envelope.isOk || data == null -> GoCardlessLoginResponse.Failed(envelope.rejected())
+      else -> AktualJson.decodeFromJsonElement<GoCardlessLoginResponse.Success>(data)
+    }
+  }
+
+  override suspend fun goCardlessAccounts(requisitionId: String): GoCardlessAccountsResponse {
+    val body = buildJsonObject { put(REQUISITION_ID, requisitionId) }
+    val envelope = goCardless("get-accounts", body)
+    val data = envelope.data as? JsonObject
+    val accounts = data?.get(ACCOUNTS) as? JsonArray
+    val requisition = (data?.get("id") as? JsonPrimitive)?.contentOrNull
+    return when {
+      data != null && ERROR_CODE in data ->
+        GoCardlessAccountsResponse.Failed(AktualJson.decodeFromJsonElement<ProviderError>(data))
+      !envelope.isOk -> GoCardlessAccountsResponse.Failed(envelope.rejected())
+      // Sent without data until the requisition's linked
+      data == null -> Pending
+      accounts == null || requisition == null ->
+        GoCardlessAccountsResponse.Failed(envelope.rejected())
+      else -> GoCardlessAccountsResponse.Success(goCardlessAccounts(requisition, accounts))
+    }
+  }
+
   override suspend fun removeGoCardlessRequisition(requisitionId: String): Boolean {
-    val body = buildJsonObject { put("requisitionId", requisitionId) }
+    val body = buildJsonObject { put(REQUISITION_ID, requisitionId) }
     return client
-      .post { request(AccountSyncSource.GoCardless, "remove-account", body) }
+      .post { request(GoCardless, "remove-account", body) }
       .body<BankSyncEnvelope<JsonObject>>()
       .isOk
   }
+
+  private suspend fun goCardless(
+    endpoint: String,
+    body: JsonObject,
+    block: HttpRequestBuilder.() -> Unit = {},
+  ): BankSyncEnvelope<JsonElement> =
+    timingOut {
+      client
+        .post {
+          request(GoCardless, endpoint, body, timeout = ACCOUNT_TIMEOUT)
+          block()
+        }
+        .body<BankSyncEnvelope<JsonElement>>()
+    }
+      ?: BankSyncEnvelope(
+        status = "ok",
+        data =
+          buildJsonObject {
+            put(ERROR_TYPE, ProviderError.TIMED_OUT)
+            put(ERROR_CODE, ProviderError.TIMED_OUT)
+          },
+      )
+
+  private fun BankSyncEnvelope<*>.rejected() =
+    BankSyncTransactionsResponse.Rejected(reason, details)
 
   // An account's first error wins over its download, as upstream. Accounts with neither, or a
   // download without transactions, are left out
@@ -166,13 +250,15 @@ class BankSyncApiImpl(
       null
     }
 
+  private fun remote() = checkNotNull(server as? BudgetServer.Remote) { "No server for bank sync" }
+
   private inline fun <reified T : Any> HttpRequestBuilder.request(
     source: AccountSyncSource,
     endpoint: String,
     body: T,
     timeout: Duration? = null,
   ) {
-    val remote = checkNotNull(server as? BudgetServer.Remote) { "No server for bank sync" }
+    val remote = remote()
     url {
       protocol = remote.url.protocol()
       host = remote.url.baseUrl
@@ -214,10 +300,14 @@ class BankSyncApiImpl(
     val ACCOUNT_TIMEOUT = 1.minutes
     val BATCH_TIMEOUT = 5.minutes
 
+    // packages/desktop-client/src/gocardless.ts
+    const val ACCESS_VALID_DAYS = 90
     const val ACCOUNTS = "accounts"
     const val ERROR = "error"
     const val ERROR_CODE = "error_code"
     const val ERRORS = "errors"
+    const val ERROR_TYPE = "error_type"
+    const val REQUISITION_ID = "requisitionId"
     const val TRANSACTIONS = "transactions"
   }
 }
