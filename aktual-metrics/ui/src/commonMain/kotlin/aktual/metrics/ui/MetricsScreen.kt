@@ -22,7 +22,7 @@ import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarSpacing
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.hazedTopBar
@@ -352,7 +352,7 @@ private fun SuccessContentRow(title: String, value: String, modifier: Modifier =
 @Composable
 private fun PreviewMetricsScaffold(
   @PreviewParameter(MetricsStateProvider::class) params: ColoredParams<MetricsState>
-) = PreviewWithColors(params.colors) { MetricsScaffold(state = params.data, onAction = {}) }
+) = PreviewWithColoredParams(params) { MetricsScaffold(state = this, onAction = {}) }
 
 @Suppress("MagicNumber")
 private class MetricsStateProvider :

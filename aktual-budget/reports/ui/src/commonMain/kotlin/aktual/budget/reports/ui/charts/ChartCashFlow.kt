@@ -11,7 +11,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.WrapWidthTable
 import aktual.core.ui.formattedString
 import aktual.core.ui.isInPreview
@@ -53,7 +53,6 @@ import com.patrykandpatrick.vico.multiplatform.common.component.rememberLineComp
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Month
 
 @Composable
 internal fun CashFlowChart(
@@ -268,15 +267,15 @@ private suspend fun CartesianChartModelProducer.populate(data: CashFlowData, zoo
 private fun PreviewCashFlowChart(
   @PreviewParameter(CashFlowChartProvider::class) params: ColoredParams<CashFlowChartParams>
 ) =
-  PreviewWithColors(params.colors, isPrivacyEnabled = params.data.isPrivacyEnabled) {
+  PreviewWithColoredParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CashFlowChart(
       modifier =
         Modifier.background(colors.tableBackground, CardShape)
-          .let { m -> if (params.data.compact) m.height(300.dp) else m }
+          .let { m -> if (compact) m.height(300.dp) else m }
           .width(WIDTH.dp)
           .padding(5.dp),
-      data = params.data.data,
-      compact = params.data.compact,
+      data = data,
+      compact = compact,
     )
   }
 
@@ -300,30 +299,29 @@ internal val PREVIEW_CASH_FLOW_DATA =
     title = "My Cash Flow",
     items =
       persistentMapOf(
-        date(2024, Month.JULY) to
+        date(2024, JULY) to
           datum(income = 6683, expenses = -4695, transfers = -1779, balance = 4781),
-        date(2024, Month.AUGUST) to
+        date(2024, AUGUST) to
           datum(income = 6071, expenses = -4111, transfers = -729, balance = 6012),
-        date(2024, Month.SEPTEMBER) to
+        date(2024, SEPTEMBER) to
           datum(income = 6041, expenses = -4233, transfers = -779, balance = 7041),
-        date(2024, Month.OCTOBER) to
+        date(2024, OCTOBER) to
           datum(income = 6041, expenses = -3602, transfers = -3819, balance = 5662),
-        date(2024, Month.NOVEMBER) to
+        date(2024, NOVEMBER) to
           datum(income = 9200, expenses = -5191, transfers = -1111, balance = 8560),
-        date(2024, Month.DECEMBER) to
+        date(2024, DECEMBER) to
           datum(income = 27, expenses = -4536, transfers = -4508, balance = 2389),
-        date(2025, Month.JANUARY) to
+        date(2025, JANUARY) to
           datum(income = 34551, expenses = -17336, transfers = -3477, balance = 15403),
-        date(2025, Month.FEBRUARY) to
+        date(2025, FEBRUARY) to
           datum(income = 9913, expenses = -12977, transfers = -834, balance = 11505),
-        date(2025, Month.MARCH) to
+        date(2025, MARCH) to
           datum(income = 9850, expenses = -7413, transfers = -4146, balance = 9796),
-        date(2025, Month.APRIL) to
+        date(2025, APRIL) to
           datum(income = 10218, expenses = -6161, transfers = -4990, balance = 8862),
-        date(2025, Month.MAY) to
+        date(2025, MAY) to
           datum(income = 9791, expenses = -5751, transfers = -2422, balance = 10480),
-        date(2025, Month.JUNE) to
-          datum(income = 143, expenses = -745, transfers = -4041, balance = 5836),
+        date(2025, JUNE) to datum(income = 143, expenses = -745, transfers = -4041, balance = 5836),
       ),
   )
 

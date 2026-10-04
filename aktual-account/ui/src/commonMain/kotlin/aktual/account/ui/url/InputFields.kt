@@ -5,7 +5,7 @@ import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.keyboardFocusRequester
 import alakazam.kotlin.parse
 import androidx.compose.foundation.layout.Arrangement
@@ -87,14 +87,14 @@ private const val EXAMPLE_URL = "example.com"
 private fun PreviewInputFields(
   @PreviewParameter(InputFieldsProvider::class) params: ColoredParams<InputFieldsParams>
 ) =
-  PreviewWithColors(params.colors) {
-    InputFields(url = params.data.url, protocol = params.data.protocol, onAction = {})
+  PreviewWithColoredParams(params) {
+    InputFields(url = url, protocol = protocol, onAction = {})
   }
 
 private data class InputFieldsParams(val url: String, val protocol: Protocol)
 
 private class InputFieldsProvider :
   ColoredParameterProvider<InputFieldsParams>(
-    InputFieldsParams(url = "", protocol = Protocol.Http),
-    InputFieldsParams(url = "my.server.com:1234/path", protocol = Protocol.Https),
+    InputFieldsParams(url = "", protocol = Http),
+    InputFieldsParams(url = "my.server.com:1234/path", protocol = Https),
   )

@@ -9,7 +9,7 @@ import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.isCompactWidth
 import aktual.prefs.ui.core.BasicPreferenceItem
 import aktual.prefs.vm.ListPreference
@@ -77,14 +77,14 @@ private fun PreviewDarkColorsPreference(
   @PreviewParameter(DarkThemePreferenceProvider::class)
   params: ColoredParams<DarkThemePreferenceParams>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     DarkThemePreference(
       onAction = {},
       preference =
         ListPreference(
-          value = params.data.selected,
+          value = selected,
           options = persistentListOf(DarkColors.id, MidnightColors.id),
-          enabled = params.data.enabled,
+          enabled = enabled,
         ),
     )
   }

@@ -7,7 +7,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -80,7 +80,7 @@ private fun TransactionsDensity.string(): String =
 @Composable
 private fun PreviewViewOptions(
   @PreviewParameter(ViewOptionsProvider::class) params: ColoredParams<TransactionsDensity>
-) = PreviewWithColors(params.colors) { ViewOptionsContent(density = params.data, onAction = {}) }
+) = PreviewWithColoredParams(params) { ViewOptionsContent(density = this, onAction = {}) }
 
 private class ViewOptionsProvider :
   ColoredParameterProvider<TransactionsDensity>(Comfortable, Compact, Dense)

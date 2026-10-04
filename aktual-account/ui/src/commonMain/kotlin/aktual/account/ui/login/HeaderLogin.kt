@@ -7,7 +7,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.NormalTextButton
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.RounderCardShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -68,9 +68,8 @@ internal fun HeaderLogin(
 private fun PreviewHeaderLogin(
   @PreviewParameter(HeaderLoginProvider::class) params: ColoredParams<HeaderLoginParams>
 ) =
-  PreviewWithColors(params.colors) {
-    val data = params.data
-    HeaderLogin(isLoading = data.isLoading, hasFailure = data.hasFailure, onAction = {})
+  PreviewWithColoredParams(params) {
+    HeaderLogin(isLoading = isLoading, hasFailure = hasFailure, onAction = {})
   }
 
 private data class HeaderLoginParams(

@@ -19,7 +19,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -231,7 +231,7 @@ private fun Color.toHexString(): String {
 @Composable
 private fun PreviewInspectColors(
   @PreviewParameter(InspectThemePreviewProvider::class) params: ColoredParams<InspectThemeState>
-) = PreviewWithColors(params.colors) { InspectThemeScaffold(state = params.data, onAction = {}) }
+) = PreviewWithColoredParams(params) { InspectThemeScaffold(state = this, onAction = {}) }
 
 private class InspectThemePreviewProvider :
   ColoredParameterProvider<InspectThemeState>(

@@ -8,7 +8,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.background
@@ -244,12 +244,12 @@ private const val SHIMMER_BAR_FRACTION = 3
 private fun PreviewLedgerRow(
   @PreviewParameter(LedgerRowProvider::class) params: ColoredParams<LedgerRowParams>
 ) =
-  PreviewWithColors(params.colors) {
-    WithLedgerDimens(params.data.density) {
-      when (params.data.density) {
+  PreviewWithColoredParams(params) {
+    WithLedgerDimens(density) {
+      when (density) {
         Comfortable,
-        Compact -> LedgerRow(params.data.transaction, showDate = params.data.showDate)
-        Dense -> LedgerTableRow(params.data.transaction)
+        Compact -> LedgerRow(transaction, showDate = showDate)
+        Dense -> LedgerTableRow(transaction)
       }
     }
   }
@@ -258,7 +258,7 @@ private fun PreviewLedgerRow(
 @Composable
 private fun PreviewLedgerShimmerRow(
   @PreviewParameter(DensityProvider::class) params: ColoredParams<TransactionsDensity>
-) = PreviewWithColors(params.colors) { WithLedgerDimens(params.data) { LedgerShimmerRow() } }
+) = PreviewWithColoredParams(params) { WithLedgerDimens(this) { LedgerShimmerRow() } }
 
 private data class LedgerRowParams(
   val density: TransactionsDensity,

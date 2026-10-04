@@ -15,7 +15,7 @@ import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBarContentPadding
@@ -168,11 +168,11 @@ internal fun TransactionsScaffold(
 private fun PreviewTransactionsScaffold(
   @PreviewParameter(DensityProvider::class) params: ColoredParams<TransactionsDensity>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     TransactionsScaffold(
       pagingData = previewPagingData(PREVIEW_TRANSACTIONS),
-      loadedAccount = LoadedAccount.AllAccounts,
-      density = params.data,
+      loadedAccount = AllAccounts,
+      density = this,
       balance = PREVIEW_BALANCE,
       isRoot = true,
       onAction = {},

@@ -24,7 +24,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.checkbox
 import aktual.core.ui.formattedString
@@ -608,15 +608,15 @@ private fun string(type: SummaryChartType): String =
 private fun PreviewSummaryChart(
   @PreviewParameter(SummaryChartProvider::class) params: ColoredParams<SummaryChartParams>
 ) =
-  PreviewWithColors(colors = params.colors, isPrivacyEnabled = params.data.private) {
+  PreviewWithColoredParams(params, isPrivacyEnabled = params.data.private) {
     SummaryChart(
       modifier =
         Modifier.background(colors.tableBackground, CardShape)
           .width(WIDTH.dp)
-          .let { m -> if (params.data.compact) m.height(300.dp) else m }
+          .let { m -> if (compact) m.height(300.dp) else m }
           .padding(5.dp),
-      data = params.data.data,
-      compact = params.data.compact,
+      data = data,
+      compact = compact,
       onAction = {},
     )
   }

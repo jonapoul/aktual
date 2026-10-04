@@ -6,7 +6,7 @@ import aktual.core.model.Password
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.checkbox
 import aktual.core.ui.keyboardFocusRequester
@@ -112,13 +112,13 @@ internal fun ConfirmPasswordForm(
 private fun PreviewConfirmPassword(
   @PreviewParameter(ConfirmPasswordProvider::class) params: ColoredParams<ConfirmPasswordParams>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     ConfirmPasswordForm(
-      inputPassword1 = params.data.password1,
-      inputPassword2 = params.data.password2,
-      showPasswords = params.data.showPasswords,
-      state = params.data.state,
-      passwordsMatch = params.data.passwordsMatch,
+      inputPassword1 = password1,
+      inputPassword2 = password2,
+      showPasswords = showPasswords,
+      state = state,
+      passwordsMatch = passwordsMatch,
       onAction = {},
     )
   }
