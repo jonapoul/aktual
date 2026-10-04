@@ -115,28 +115,6 @@ ORDER BY
 insert:
 INSERT INTO transactions VALUES ?;
 
-earliestDate:
-SELECT *
-  FROM v_transactions t
-  LEFT JOIN accounts a
-  ON t.account = a.id
-  WHERE a.offbudget = 0 AND t.is_child = 0
-  ORDER BY date ASC
-  LIMIT 1;
-
-earliestPrimaryDate:
-SELECT *
-  FROM v_transactions t
-  LEFT JOIN accounts a
-  ON t.account = a.id
-  WHERE a.id = ? AND a.offbudget = 0 AND t.is_child = 0
-  ORDER BY date ASC
-  LIMIT 1;
-
--- packages/loot-core/src/server/accounts/app.ts closeAccount()
-getIdsByAccount:
-SELECT id FROM v_transactions WHERE account = ? ORDER BY date DESC;
-
 getIds:
 SELECT id FROM v_transactions ORDER BY date DESC;
 
@@ -243,72 +221,9 @@ SELECT notes FROM v_transactions WHERE notes LIKE '%#%';
 getIdsCount:
 SELECT COUNT(*) FROM v_transactions;
 
--- Mirrors getHasTransactionsQuery in packages/loot-core/src/shared/schedules.ts.
--- fromDate is next_date (fixed schedule) or next_date - 2 days (recurring) - callers decide.
-hasTransactionForSchedule:
-SELECT EXISTS(
-  SELECT 1 FROM transactions
-  WHERE schedule = ? AND date >= ? AND tombstone = 0
-);
-
 -- Bulk variant: fetches all (schedule, date) pairs on or after fromDate.
 -- Callers group by schedule and take max(date) to check per-schedule thresholds in Kotlin.
 transactionDatesFromDate:
 SELECT schedule, date
 FROM transactions
 WHERE schedule IS NOT NULL AND tombstone = 0 AND date >= :fromDate;
-
--- Chart data queries for dashboard widgets
-
-cashFlowByMonth:
-SELECT
-  (t.date / 100) AS yearMonth,
-  SUM(CASE WHEN t.amount > 0 AND t.transferred_id IS NULL THEN t.amount ELSE 0 END) AS income,
-  SUM(CASE WHEN t.amount < 0 AND t.transferred_id IS NULL THEN t.amount ELSE 0 END) AS expenses,
-  SUM(CASE WHEN t.transferred_id IS NOT NULL THEN t.amount ELSE 0 END) AS transfers
-FROM transactions t
-INNER JOIN accounts a ON a.id = t.acct
-WHERE t.isParent = 0 AND t.tombstone = 0 AND a.offbudget = 0 AND a.tombstone = 0
-  AND t.date >= :startDate AND t.date <= :endDate
-GROUP BY (t.date / 100)
-ORDER BY yearMonth ASC;
-
-netWorthChangesByMonth:
-SELECT
-  (t.date / 100) AS yearMonth,
-  SUM(t.amount) AS change
-FROM transactions t
-INNER JOIN accounts a ON a.id = t.acct
-WHERE t.isParent = 0 AND t.tombstone = 0 AND a.tombstone = 0
-  AND t.date >= :startDate AND t.date <= :endDate
-GROUP BY (t.date / 100)
-ORDER BY yearMonth ASC;
-
-netWorthBalanceBefore:
-SELECT SUM(t.amount) AS balance
-FROM transactions t
-INNER JOIN accounts a ON a.id = t.acct
-WHERE t.isParent = 0 AND t.tombstone = 0 AND a.tombstone = 0 AND t.date < :startDate;
-
-calendarByDay:
-SELECT
-  t.date,
-  SUM(CASE WHEN t.amount > 0 THEN t.amount ELSE 0 END) AS income,
-  SUM(CASE WHEN t.amount < 0 THEN t.amount ELSE 0 END) AS expenses
-FROM transactions t
-INNER JOIN accounts a ON a.id = t.acct
-WHERE t.isParent = 0 AND t.tombstone = 0 AND a.offbudget = 0 AND a.tombstone = 0
-  AND t.transferred_id IS NULL
-  AND t.date >= :startDate AND t.date <= :endDate
-GROUP BY t.date
-ORDER BY t.date ASC;
-
-summaryInRange:
-SELECT
-  SUM(t.amount) AS total,
-  COUNT(*) AS transactionCount
-FROM transactions t
-INNER JOIN accounts a ON a.id = t.acct
-WHERE t.isParent = 0 AND t.tombstone = 0 AND a.offbudget = 0 AND a.tombstone = 0
-  AND t.transferred_id IS NULL
-  AND t.date >= :startDate AND t.date <= :endDate;

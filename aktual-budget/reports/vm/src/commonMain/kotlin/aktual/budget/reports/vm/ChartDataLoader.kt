@@ -1,5 +1,6 @@
 package aktual.budget.reports.vm
 
+import aktual.budget.db.CashFlowByMonth
 import aktual.budget.db.ForecastPostedScheduleTransactions
 import aktual.budget.db.ForecastSchedules
 import aktual.budget.db.ForecastTrackingBudgetTotals
@@ -7,7 +8,6 @@ import aktual.budget.db.ForecastTransferPayees
 import aktual.budget.db.SankeyCategoryTotals
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ReportsDao
-import aktual.budget.db.reports.CashFlowByMonth
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType

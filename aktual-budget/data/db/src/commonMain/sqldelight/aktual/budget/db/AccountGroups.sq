@@ -8,9 +8,4 @@ CREATE TABLE IF NOT EXISTS account_groups(
   tombstone INTEGER AS Boolean DEFAULT 0
 );
 
-insert:
-  INSERT OR REPLACE
-    INTO account_groups(id, name, sort_order, tombstone)
-    VALUES (?, ?, ?, ?);
-
 getById: SELECT * FROM account_groups WHERE id = ?;

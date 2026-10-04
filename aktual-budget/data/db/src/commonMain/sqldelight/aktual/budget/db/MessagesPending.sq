@@ -9,11 +9,6 @@ CREATE TABLE IF NOT EXISTS messages_pending(
   PRIMARY KEY (dataset, row, column)
 );
 
-insert:
-  INSERT OR REPLACE
-    INTO messages_pending(dataset, row, column, timestamp, value)
-    VALUES (?, ?, ?, ?, ?);
-
 get:
   SELECT *
     FROM messages_pending

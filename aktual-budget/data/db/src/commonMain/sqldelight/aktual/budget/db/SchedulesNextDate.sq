@@ -19,11 +19,6 @@ getBaseNextDate:
     FROM schedules_next_date
     WHERE schedule_id = ?;
 
-updateBaseDates:
-  UPDATE schedules_next_date
-    SET base_next_date = ?, base_next_date_ts = ?
-    WHERE id = ?;
-
 updateLocalDates:
   UPDATE schedules_next_date
     SET local_next_date = ?, local_next_date_ts = ?

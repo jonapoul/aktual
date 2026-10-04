@@ -2,6 +2,7 @@ package aktual.budget.db.dao
 
 import aktual.budget.db.AgeOfMoneyTransactions
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.CashFlowByMonth
 import aktual.budget.db.CrossoverBalancesByMonth
 import aktual.budget.db.CrossoverExpensesByMonth
 import aktual.budget.db.CrossoverStartingBalances
@@ -16,7 +17,6 @@ import aktual.budget.db.NetWorthByMonth
 import aktual.budget.db.SankeyCategoryTotals
 import aktual.budget.db.SankeyTransfers
 import aktual.budget.db.TransactionDateBounds
-import aktual.budget.db.reports.CashFlowByMonth
 import aktual.budget.model.AccountId
 import alakazam.kotlin.CoroutineContexts
 import app.cash.sqldelight.coroutines.asFlow

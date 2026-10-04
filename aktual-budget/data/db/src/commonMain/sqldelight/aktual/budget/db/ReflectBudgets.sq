@@ -11,9 +11,3 @@ CREATE TABLE IF NOT EXISTS reflect_budgets(
   goal INTEGER DEFAULT NULL,
   long_goal INTEGER DEFAULT NULL
 );
-
-getWithCategory:
-  SELECT *
-    FROM reflect_budgets b
-    LEFT JOIN categories c ON c.id = b.category
-    WHERE c.tombstone = 0;
