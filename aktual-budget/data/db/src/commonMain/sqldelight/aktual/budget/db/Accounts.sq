@@ -70,6 +70,11 @@ SELECT a.id, a.name, a.account_id, a.account_sync_source, a.last_sync, a.bank_sy
   WHERE a.tombstone = 0 AND a.closed = 0
   ORDER BY a.sort_order, a.name;
 
+-- packages/loot-core/src/server/db/index.ts insertAccount(), which appends to its on/off budget list.
+-- Upstream counts deleted accounts too
+getMaxSortOrder:
+SELECT MAX(sort_order) AS sort_order FROM accounts WHERE offbudget = ? AND tombstone = 0;
+
 insert:
 INSERT INTO accounts(id, account_id, name, official_name, bank, offbudget, account_sync_source)
   VALUES (?, ?, ?, ?, ?, ?, ?);

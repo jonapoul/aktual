@@ -15,12 +15,19 @@ sealed interface LinkBankAccountState {
 
   @Immutable
   data class Choosing(
-    val accountName: String?,
+    val target: LinkTarget,
     val providers: ImmutableList<AccountSyncSource>,
     val selected: AccountSyncSource,
     val accounts: ExternalAccounts,
     val isLinking: Boolean = false,
   ) : LinkBankAccountState
+}
+
+@Immutable
+sealed interface LinkTarget {
+  @JvmInline value class Existing(val name: String?) : LinkTarget
+
+  @JvmInline value class New(val offBudget: Boolean = false) : LinkTarget
 }
 
 @Immutable

@@ -46,16 +46,16 @@ import kotlinx.coroutines.launch
 import logcat.logcat
 
 /**
- * Links an unlinked account to one that a configured provider lists, then syncs it. SimpleFIN,
- * Pluggy.ai and Akahu list accounts up front, while GoCardless and Enable Banking need the user to
- * log in to their bank first.
+ * Links an unlinked account, or a new one if there's no [account], to one that a configured
+ * provider lists, then syncs it. SimpleFIN, Pluggy.ai and Akahu list accounts up front, while
+ * GoCardless and Enable Banking need the user to log in to their bank first.
  *
  * See packages/desktop-client/src/components/modals/SelectLinkedAccountsModal.tsx
  */
 @Stable
 @AssistedInject
 class LinkBankAccountViewModel(
-  @Assisted private val account: AccountId,
+  @Assisted private val account: AccountId?,
   private val accountDao: AccountDao,
   private val api: BankSyncApi,
   private val linker: BankAccountLinker,
@@ -68,11 +68,11 @@ class LinkBankAccountViewModel(
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(@Assisted account: AccountId): LinkBankAccountViewModel
+    fun create(@Assisted account: AccountId?): LinkBankAccountViewModel
   }
 
   private val mutableFailure = MutableStateFlow<LinkBankAccountState.Failure?>(null)
-  private val mutableName = MutableStateFlow<String?>(null)
+  private val mutableTarget = MutableStateFlow<LinkTarget>(LinkTarget.New())
   private val mutableProviders = MutableStateFlow<ImmutableList<AccountSyncSource>?>(null)
   private val mutableSelected = MutableStateFlow<AccountSyncSource?>(null)
   private val mutableAccounts = MutableStateFlow<Map<AccountSyncSource, Listed>>(emptyMap())
@@ -96,7 +96,7 @@ class LinkBankAccountViewModel(
   val state: StateFlow<LinkBankAccountState> =
     viewModelScope.launchMolecule(Immediate) {
       val failure by mutableFailure.collectAsState()
-      val name by mutableName.collectAsState()
+      val target by mutableTarget.collectAsState()
       val providers by mutableProviders.collectAsState()
       val selected by mutableSelected.collectAsState()
       val accounts by mutableAccounts.collectAsState()
@@ -112,7 +112,7 @@ class LinkBankAccountViewModel(
         loaded.isEmpty() || source == null -> LinkBankAccountState.NoProviders
         else ->
           LinkBankAccountState.Choosing(
-            accountName = name,
+            target = target,
             providers = loaded,
             selected = source,
             accounts =
@@ -126,21 +126,7 @@ class LinkBankAccountViewModel(
 
   init {
     viewModelScope.launch {
-      try {
-        val row = accountDao[account]
-        if (row == null) {
-          mutableFailure.update { LinkBankAccountState.Failure(cause = null) }
-          return@launch
-        }
-        mutableName.update { row.name }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed loading $account" }
-        mutableFailure.update { LinkBankAccountState.Failure(e.requireMessage()) }
-        return@launch
-      }
-
+      if (account != null && !loadAccount(account)) return@launch
       val providers = configuredProviders()
       mutableProviders.update { providers }
       providers.firstOrNull()?.let(::select)
@@ -189,26 +175,55 @@ class LinkBankAccountViewModel(
     selectedLogin()?.cancel()
   }
 
-  /** Links the account to [accountId] from the selected provider's list. */
+  /** Whether a new account goes off budget, when there's no account to link. */
+  fun setOffBudget(offBudget: Boolean) {
+    mutableTarget.update { target ->
+      if (target is New) LinkTarget.New(offBudget) else target
+    }
+  }
+
+  /** Links the account, or a new one, to [accountId] from the selected provider's list. */
   fun link(accountId: String) {
     val source = mutableSelected.value ?: return
     val external =
       mutableAccounts.value[source]?.accounts?.firstOrNull { it.accountId == accountId }
     if (external == null || !mutableIsLinking.compareAndSet(expect = false, update = true)) return
+    val target = mutableTarget.value
     viewModelScope.launch {
       try {
-        linker.link(account, source, external)
+        when {
+          account != null -> linker.link(account, source, external)
+          target is New -> linker.create(source, external, target.offBudget)
+        }
         mutableEvents.emit(Linked)
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {
-        logcat.e(e) { "Failed linking $account to $accountId" }
+        logcat.e(e) { "Failed linking ${account ?: "a new account"} to $accountId" }
         mutableEvents.emit(LinkBankAccountEvent.LinkFailed(e.requireMessage()))
       } finally {
         mutableIsLinking.update { false }
       }
     }
   }
+
+  // Whether [id] exists, after which its name is shown
+  private suspend fun loadAccount(id: AccountId): Boolean =
+    try {
+      val row = accountDao[id]
+      if (row == null) {
+        mutableFailure.update { LinkBankAccountState.Failure(cause = null) }
+      } else {
+        mutableTarget.update { LinkTarget.Existing(row.name) }
+      }
+      row != null
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      logcat.e(e) { "Failed loading $id" }
+      mutableFailure.update { LinkBankAccountState.Failure(e.requireMessage()) }
+      false
+    }
 
   private fun selectedLogin(): BankLoginModel? = mutableSelected.value?.let(logins::get)
 
