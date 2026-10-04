@@ -6,6 +6,10 @@ import aktual.api.model.banksync.BankSyncTransactionsRequest
 import aktual.api.model.banksync.BankSyncTransactionsResponse
 import aktual.api.model.banksync.BankSyncTransactionsResponse.ProviderError
 import aktual.api.model.banksync.ExternalBankAccount
+import aktual.api.model.banksync.GoCardlessAccountsResponse
+import aktual.api.model.banksync.GoCardlessBank
+import aktual.api.model.banksync.GoCardlessBanksResponse
+import aktual.api.model.banksync.GoCardlessLoginResponse
 import aktual.api.model.banksync.SimpleFinBatchRequest
 import aktual.api.model.banksync.SimpleFinBatchResponse
 import aktual.budget.model.AccountSyncSource
@@ -397,6 +401,146 @@ class BankSyncApiTest {
   }
 
   @Test
+  fun `GoCardless banks request`() = runTest {
+    mockEngine += { respondJson(GocardlessResponses.GET_BANKS_SUCCESS_200) }
+
+    val response = bankSyncApi.goCardlessBanks("GB")
+
+    assertThat(mockEngine.latestRequestUrl())
+      .isEqualTo("https://test.server.com/gocardless/get-banks")
+    assertThat(mockEngine.latestRequest().body)
+      .isInstanceOf<TextContent>()
+      .prop(TextContent::text)
+      .isEqualTo("""{"country":"GB","showDemo":false}""")
+    assertThat(response)
+      .isEqualTo(
+        GoCardlessBanksResponse.Success(
+          listOf(
+            GoCardlessBank(
+              id = "SANDBOXFINANCE_SFIN0000",
+              name = "Sandbox Finance",
+              logo = "https://cdn.nordigen.com/ais/SANDBOXFINANCE_SFIN0000.png",
+            ),
+            GoCardlessBank(
+              id = "MONZO_MONZGB2L",
+              name = "Monzo",
+              logo = "https://cdn.nordigen.com/ais/MONZO_MONZGB2L.png",
+            ),
+          )
+        )
+      )
+  }
+
+  @Test
+  fun `Parse GoCardless banks error`() = runTest {
+    mockEngine += { respondJson(GocardlessResponses.CREATE_WEB_TOKEN_INVALID_ORIGIN_200) }
+
+    val response = bankSyncApi.goCardlessBanks("GB")
+
+    assertThat(response)
+      .isEqualTo(
+        GoCardlessBanksResponse.Failed(
+          ProviderError(errorType = "Invalid Origin header", errorCode = "INTERNAL_ERROR")
+        )
+      )
+  }
+
+  @Test
+  fun `GoCardless login sends the server as the origin`() = runTest {
+    mockEngine += { respondJson(GocardlessResponses.CREATE_WEB_TOKEN_SUCCESS_200) }
+
+    val response = bankSyncApi.goCardlessLogin("SANDBOXFINANCE_SFIN0000")
+
+    assertThat(mockEngine.latestRequestUrl())
+      .isEqualTo("https://test.server.com/gocardless/create-web-token")
+    assertThat(mockEngine.latestRequestHeaders())
+      .key("Origin")
+      .containsExactly("https://test.server.com")
+    assertThat(mockEngine.latestRequest().body)
+      .isInstanceOf<TextContent>()
+      .prop(TextContent::text)
+      .isEqualTo("""{"institutionId":"SANDBOXFINANCE_SFIN0000"}""")
+    assertThat(response)
+      .isEqualTo(
+        GoCardlessLoginResponse.Success(
+          link =
+            "https://ob.gocardless.com/ob-psd2/start/3fa85f64-5717-4562-b3fc-2c963f66afa6/" +
+              "SANDBOXFINANCE_SFIN0000",
+          requisitionId = "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        )
+      )
+  }
+
+  @Test
+  fun `Parse GoCardless login error`() = runTest {
+    mockEngine += { respondJson(GocardlessResponses.CREATE_WEB_TOKEN_INVALID_ORIGIN_200) }
+
+    val response = bankSyncApi.goCardlessLogin("SANDBOXFINANCE_SFIN0000")
+
+    assertThat(response)
+      .isInstanceOf<GoCardlessLoginResponse.Failed>()
+      .prop(GoCardlessLoginResponse.Failed::error)
+      .isInstanceOf<ProviderError>()
+      .prop(ProviderError::errorType)
+      .isEqualTo("Invalid Origin header")
+  }
+
+  @Test
+  fun `GoCardless accounts are pending until the login finishes`() = runTest {
+    mockEngine += { respondJson(GocardlessResponses.GET_ACCOUNTS_PENDING_200) }
+
+    val response = bankSyncApi.goCardlessAccounts(REQUISITION)
+
+    assertThat(mockEngine.latestRequestUrl())
+      .isEqualTo("https://test.server.com/gocardless/get-accounts")
+    assertThat(mockEngine.latestRequest().body)
+      .isInstanceOf<TextContent>()
+      .prop(TextContent::text)
+      .isEqualTo("""{"requisitionId":"$REQUISITION"}""")
+    assertThat(response).isEqualTo(GoCardlessAccountsResponse.Pending)
+  }
+
+  @Test
+  fun `Parse GoCardless accounts`() = runTest {
+    mockEngine += { respondJson(GocardlessResponses.GET_ACCOUNTS_SUCCESS_200) }
+
+    val response = bankSyncApi.goCardlessAccounts(REQUISITION)
+
+    assertThat(response)
+      .isEqualTo(
+        GoCardlessAccountsResponse.Success(
+          listOf(
+            ExternalBankAccount(
+              accountId = "7e57ac6b-0f61-4a2d-9a0d-1c2b3d4e5f60",
+              name = "Main Account (XXX 4321) EUR",
+              institution = "Sandbox Finance",
+              orgId = REQUISITION,
+              orgDomain = null,
+              balance = null,
+            ),
+            ExternalBankAccount(
+              accountId = "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+              name = "Savings",
+              institution = "Sandbox Finance",
+              orgId = REQUISITION,
+              orgDomain = null,
+              balance = null,
+            ),
+          )
+        )
+      )
+  }
+
+  @Test
+  fun `Parse GoCardless accounts error`() = runTest {
+    mockEngine += { respondJson(GocardlessResponses.TRANSACTIONS_RATE_LIMIT_200) }
+
+    val response = bankSyncApi.goCardlessAccounts(REQUISITION)
+
+    assertThat(response).isInstanceOf<GoCardlessAccountsResponse.Failed>()
+  }
+
+  @Test
   fun `Remove GoCardless requisition`() = runTest {
     mockEngine += { respondJson("""{"status":"ok","data":{"summary":"Requisition deleted"}}""") }
 
@@ -425,6 +569,7 @@ class BankSyncApiTest {
         accountIds = listOf("ACT-1", "ACT-2", "ACT-missing"),
         startDates = listOf(LocalDate(2026, 7, 1), LocalDate(2026, 7, 2), LocalDate(2026, 7, 3)),
       )
+    const val REQUISITION = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     val REQUEST = BankSyncTransactionsRequest(accountId = "abc", startDate = LocalDate(2026, 7, 1))
   }
 }
