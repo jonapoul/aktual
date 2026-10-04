@@ -4,6 +4,8 @@ import aktual.api.client.BankSyncApi
 import aktual.api.model.banksync.BankSyncStatusResponse
 import aktual.api.model.banksync.BankSyncTransactionsRequest
 import aktual.api.model.banksync.BankSyncTransactionsResponse
+import aktual.api.model.banksync.SimpleFinBatchRequest
+import aktual.api.model.banksync.SimpleFinBatchResponse
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
@@ -286,6 +288,9 @@ class BankSyncViewModelTest {
       source: AccountSyncSource,
       request: BankSyncTransactionsRequest,
     ): BankSyncTransactionsResponse = error("Not used")
+
+    override suspend fun simpleFinBatch(request: SimpleFinBatchRequest): SimpleFinBatchResponse =
+      error("Not used")
   }
 
   private companion object {
