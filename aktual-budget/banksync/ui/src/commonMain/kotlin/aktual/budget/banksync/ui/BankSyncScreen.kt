@@ -7,6 +7,7 @@ import aktual.budget.banksync.vm.Failure
 import aktual.budget.banksync.vm.Loading
 import aktual.budget.banksync.vm.Success
 import aktual.core.icons.material.AccountBalance
+import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Sync
@@ -91,6 +92,7 @@ internal fun BankSyncScreen(
       when (action) {
         Reload -> viewModel.reload()
         SyncAll -> viewModel.syncAll()
+        AddAccount -> link.addAccount()
         is SyncAccount -> viewModel.sync(action.id)
         is OpenSettings -> settings(action.id)
         is OpenLink -> link(action.id)
@@ -118,8 +120,15 @@ private fun BankSyncScaffold(
         navigationIcon = { NavDrawerIconButton() },
         title = { Text(text = Strings.bankSyncTitle) },
         actions = {
-          if (state is Success && state.canSync && state.providers.isNotEmpty()) {
-            SyncAllButton(isSyncing = state.isSyncing, onClick = { onAction(SyncAll) })
+          if (state is Success && state.canSync) {
+            BareIconButton(
+              imageVector = MaterialIcons.Add,
+              contentDescription = Strings.bankSyncAddAccount,
+              onClick = { onAction(AddAccount) },
+            )
+            if (state.providers.isNotEmpty()) {
+              SyncAllButton(isSyncing = state.isSyncing, onClick = { onAction(SyncAll) })
+            }
           }
         },
       )
@@ -176,13 +185,19 @@ private fun BankSyncContent(
           BottomSpacing()
         }
       }
-      Empty -> {
+      is Empty -> {
         FailureScreen(
           title = Strings.bankSyncEmpty,
           reason = Strings.bankSyncNotice,
           icon = MaterialIcons.AccountBalance,
           background = colors.tableBackground,
-          action = null,
+          action =
+            FailureAction(
+                text = { Strings.bankSyncAddAccount },
+                icon = MaterialIcons.Add,
+                onClick = { onAction(AddAccount) },
+              )
+              .takeIf { state.canSync },
         )
       }
       is Failure -> {
@@ -290,7 +305,8 @@ private class BankSyncStateProvider :
     BankSyncPreview.success,
     BankSyncPreview.syncing,
     BankSyncPreview.unlinkedOnly,
-    Empty,
+    Empty(canSync = true),
+    Empty(),
     Loading,
     Failure("Some problem happened"),
   )

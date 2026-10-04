@@ -77,7 +77,7 @@ class LinkBankAccountViewModelTest {
       assertThat(awaitChoosing())
         .isEqualTo(
           LinkBankAccountState.Choosing(
-            accountName = "Cash",
+            target = LinkTarget.Existing("Cash"),
             providers = persistentListOf(PluggyAi, Akahu),
             selected = PluggyAi,
             accounts =
@@ -170,6 +170,31 @@ class LinkBankAccountViewModelTest {
     assertThat(row?.account_sync_source).isEqualTo(PluggyAi)
     assertThat(row?.bank).isNotNull()
     assertThat(controller.synced).containsExactly(setOf(ACCOUNT))
+  }
+
+  @Test
+  fun `Without an account, linking adds a new one`() = runLinkTest {
+    api.accounts[PluggyAi] = BankSyncAccountsResponse.Success(listOf(CHECKING))
+    val viewModel = createViewModel(account = null)
+
+    viewModel.state.test {
+      assertThat(awaitChoosing().target).isEqualTo(LinkTarget.New(offBudget = false))
+      viewModel.setOffBudget(true)
+      assertThat(awaitChoosing().target).isEqualTo(LinkTarget.New(offBudget = true))
+      viewModel.events.test {
+        viewModel.link("ACT-1")
+        assertThat(awaitItem()).isEqualTo(LinkBankAccountEvent.Linked)
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+    scope.testScheduler.runCurrent()
+
+    val created = AccountDao(database).getBankSyncAccounts().single { it.id != ACCOUNT }
+    assertThat(created.name).isEqualTo("Checking")
+    assertThat(created.account_id).isEqualTo("ACT-1")
+    assertThat(created.account_sync_source).isEqualTo(PluggyAi)
+    assertThat(AccountDao(database)[created.id]?.offbudget).isEqualTo(true)
+    assertThat(controller.synced).containsExactly(setOf(created.id))
   }
 
   @Test
@@ -406,7 +431,7 @@ class LinkBankAccountViewModelTest {
   }
 
   private fun TestContext.createViewModel(
-    account: AccountId = ACCOUNT,
+    account: AccountId? = ACCOUNT,
     server: BudgetServer = REMOTE,
   ): LinkBankAccountViewModel {
     Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))

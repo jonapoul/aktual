@@ -6,6 +6,7 @@ import aktual.budget.banksync.vm.link.ExternalAccountItem
 import aktual.budget.banksync.vm.link.ExternalAccounts
 import aktual.budget.banksync.vm.link.LinkBankAccountState
 import aktual.budget.banksync.vm.link.LinkBankAccountViewModel
+import aktual.budget.banksync.vm.link.LinkTarget
 import aktual.budget.banksync.vm.link.LoginAccountType
 import aktual.budget.banksync.vm.link.LoginBankItem
 import aktual.budget.banksync.vm.link.LoginBanks
@@ -77,7 +78,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun LinkBankAccountScreen(
-  id: AccountId,
+  id: AccountId?,
   back: BackNavigator,
   modifier: Modifier = Modifier,
   viewModel: LinkBankAccountViewModel = linkBankAccountViewModel(id),
@@ -106,6 +107,7 @@ internal fun LinkBankAccountScreen(
         RetryListing -> viewModel.reload()
         is SelectProvider -> viewModel.select(action.source)
         is LinkTo -> viewModel.link(action.accountId)
+        is SetOffBudget -> viewModel.setOffBudget(action.offBudget)
         is SelectCountry -> viewModel.selectCountry(action.country)
         is SelectAccountType -> viewModel.selectAccountType(action.type)
         is LogIn -> viewModel.logIn(action.bankId)
@@ -117,9 +119,9 @@ internal fun LinkBankAccountScreen(
 }
 
 @Composable
-private fun linkBankAccountViewModel(id: AccountId) =
+private fun linkBankAccountViewModel(id: AccountId?) =
   assistedMetroViewModel<LinkBankAccountViewModel, LinkBankAccountViewModel.Factory>(
-    key = id.value
+    key = id?.value ?: NEW_ACCOUNT_KEY
   ) {
     create(id)
   }
@@ -142,7 +144,10 @@ private fun LinkBankAccountScaffold(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton(onClick = { onAction(CloseLink) }) },
-        title = { Text(text = Strings.bankSyncLinkTitle) },
+        title = {
+          val isNew = state is Choosing && state.target is New
+          Text(text = if (isNew) Strings.bankSyncLinkNewTitle else Strings.bankSyncLinkTitle)
+        },
         actions = {
           if (state is Choosing && state.isLinking) {
             SyncingIndicator()
@@ -194,6 +199,11 @@ private fun LinkBankAccountScaffold(
   }
 }
 
+private const val NEW_ACCOUNT_KEY = "new"
+
+// Whether the new account goes off budget
+private val BudgetOptions = persistentListOf(false, true)
+
 private fun backAction(onAction: LinkBankAccountActionHandler) =
   FailureAction(
     text = { Strings.navBack },
@@ -212,11 +222,32 @@ private fun LazyListScope.choosing(
       modifier = Modifier.fillMaxWidth().padding(BankSyncDS.headerPadding),
       verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsItemSpacing),
     ) {
-      Text(
-        text = Strings.bankSyncLinkChoose(state.accountName ?: Strings.bankSyncUnnamedAccount),
-        style = typography.bodyMedium,
-        color = colors.pageText,
-      )
+      when (val target = state.target) {
+        is Existing -> {
+          Text(
+            text = Strings.bankSyncLinkChoose(target.name ?: Strings.bankSyncUnnamedAccount),
+            style = typography.bodyMedium,
+            color = colors.pageText,
+          )
+        }
+        is New -> {
+          Text(
+            text = Strings.bankSyncLinkNewChoose,
+            style = typography.bodyMedium,
+            color = colors.pageText,
+          )
+          AktualSlidingToggleButton(
+            modifier = Modifier.fillMaxWidth(),
+            selected = target.offBudget,
+            options = BudgetOptions,
+            onSelect = { onAction(SetOffBudget(it)) },
+            string = {
+              if (it) Strings.bankSyncLinkNewOffBudget else Strings.bankSyncLinkNewOnBudget
+            },
+            isEnabled = !state.isLinking,
+          )
+        }
+      }
 
       if (state.providers.size > 1) {
         AktualSlidingToggleButton(
@@ -404,9 +435,10 @@ private fun previewChoosing(
   accounts: ExternalAccounts,
   isLinking: Boolean = false,
   selected: AccountSyncSource = SimpleFin,
+  target: LinkTarget = LinkTarget.Existing("Cash"),
 ) =
   LinkBankAccountState.Choosing(
-    accountName = "Cash",
+    target = target,
     providers = persistentListOf(GoCardless, EnableBanking, SimpleFin),
     selected = selected,
     accounts = accounts,
@@ -417,6 +449,7 @@ private class LinkBankAccountStateProvider :
   ColoredParameterProvider<LinkBankAccountState>(
     previewChoosing(ExternalAccounts.Loaded(PreviewAccounts)),
     previewChoosing(ExternalAccounts.Loaded(PreviewAccounts), isLinking = true),
+    previewChoosing(ExternalAccounts.Loaded(PreviewAccounts), target = LinkTarget.New()),
     previewChoosing(Loading),
     previewChoosing(ExternalAccounts.Failure("Invalid access token")),
     previewLogin(),

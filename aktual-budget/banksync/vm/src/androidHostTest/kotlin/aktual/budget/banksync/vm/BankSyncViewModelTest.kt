@@ -172,7 +172,7 @@ class BankSyncViewModelTest {
     viewModel.state.test {
       var state = awaitItem()
       while (state == Loading) state = awaitItem()
-      assertThat(state).isEqualTo(Empty)
+      assertThat(state).isEqualTo(Empty(canSync = true))
     }
   }
 

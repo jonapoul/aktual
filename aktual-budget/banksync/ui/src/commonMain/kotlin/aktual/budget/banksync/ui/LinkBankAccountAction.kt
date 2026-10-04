@@ -15,6 +15,8 @@ internal value class SelectProvider(val source: AccountSyncSource) : LinkBankAcc
 
 @JvmInline internal value class LinkTo(val accountId: String) : LinkBankAccountAction
 
+@JvmInline internal value class SetOffBudget(val offBudget: Boolean) : LinkBankAccountAction
+
 @JvmInline internal value class SelectCountry(val country: String) : LinkBankAccountAction
 
 @JvmInline

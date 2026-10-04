@@ -11,7 +11,7 @@ data object Loading : BankSyncState
 
 @JvmInline value class Failure(val cause: String?) : BankSyncState
 
-data object Empty : BankSyncState
+@JvmInline value class Empty(val canSync: Boolean = false) : BankSyncState
 
 data class Success(
   val providers: ImmutableList<BankSyncProvider>,
