@@ -34,7 +34,6 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -75,27 +74,30 @@ internal fun Transactions(
     }
 
     refresh is LoadState.Loading -> {
-      TransactionsLoading(density, modifier.padding(contentPadding))
+      TransactionsLoading(innerPadding, modifier.padding(contentPadding))
     }
 
     else -> {
-      TransactionsEmpty(density, modifier.padding(contentPadding))
+      TransactionsEmpty(innerPadding, modifier.padding(contentPadding))
     }
   }
 }
 
 @Composable
-private fun TransactionsLoading(density: TransactionsDensity, modifier: Modifier = Modifier) {
+private fun TransactionsLoading(innerPadding: PaddingValues, modifier: Modifier = Modifier) {
   Column(modifier = modifier.fillMaxSize()) {
-    if (density == Dense) LedgerHeader()
+    VerticalSpacer(innerPadding.calculateTopPadding())
+
     repeat(times = NUM_SHIMMER_ROWS) { LedgerShimmerRow() }
+
+    BottomSpacing()
   }
 }
 
 @Composable
-private fun TransactionsEmpty(density: TransactionsDensity, modifier: Modifier = Modifier) {
+private fun TransactionsEmpty(innerPadding: PaddingValues, modifier: Modifier = Modifier) {
   Column(modifier = modifier.fillMaxSize()) {
-    if (density == Dense) LedgerHeader()
+    VerticalSpacer(innerPadding.calculateTopPadding())
 
     Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Center) {
       Text(
@@ -105,6 +107,8 @@ private fun TransactionsEmpty(density: TransactionsDensity, modifier: Modifier =
         color = colors.tableText,
       )
     }
+
+    BottomSpacing()
   }
 }
 
@@ -122,14 +126,6 @@ private fun TransactionsFilled(
     state = listState,
     contentPadding = contentPadding,
   ) {
-    if (density == Dense) {
-      stickyHeader {
-        // Keep the sticky header below the top bar, but let transactions go underneath
-        VerticalSpacer(innerPadding.calculateTopPadding())
-        LedgerHeader()
-      }
-    }
-
     item { VerticalSpacer(innerPadding.calculateTopPadding()) }
 
     items(count = pagingItems.itemCount, key = pagingItems.itemKey { it.id.toString() }) { index ->
@@ -185,8 +181,9 @@ private class TransactionsProvider :
     TransactionsParams(Comfortable),
     TransactionsParams(Compact),
     TransactionsParams(Dense),
-    TransactionsParams(Compact, previewPagingData(persistentListOf())),
-    TransactionsParams(Dense, previewPagingData(persistentListOf())),
-    TransactionsParams(Compact, previewLoadingPagingData()),
-    TransactionsParams(Dense, previewLoadingPagingData()),
+    TransactionsParams(Comfortable, emptyPreviewPagingData(loading = true)),
+    TransactionsParams(Compact, emptyPreviewPagingData(loading = true)),
+    TransactionsParams(Dense, emptyPreviewPagingData(loading = true)),
+    TransactionsParams(Compact, emptyPreviewPagingData(loading = false)),
+    TransactionsParams(Dense, emptyPreviewPagingData(loading = false)),
   )
