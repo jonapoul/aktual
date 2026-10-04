@@ -6,6 +6,8 @@ import aktual.core.nav.BankSyncSettingsNavRoute
 import aktual.core.nav.BankSyncSettingsNavigator
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
+import aktual.core.nav.LinkBankAccountNavRoute
+import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.nav.NavStack
 import aktual.core.nav.budgetEntry
 import aktual.di.BudgetScope
@@ -19,9 +21,17 @@ class BankSyncNavEntryContributor : BudgetNavEntryContributor {
     stack: NavStack<BudgetNavKey>,
     appStack: NavStack<NavKey>,
   ) {
-    budgetEntry<BankSyncNavRoute> { BankSyncScreen(settings = BankSyncSettingsNavigator(stack)) }
+    budgetEntry<BankSyncNavRoute> {
+      BankSyncScreen(
+        settings = BankSyncSettingsNavigator(stack),
+        link = LinkBankAccountNavigator(stack),
+      )
+    }
     budgetEntry<BankSyncSettingsNavRoute> { route ->
       BankSyncSettingsScreen(id = route.id, back = BackNavigator(stack))
+    }
+    budgetEntry<LinkBankAccountNavRoute> { route ->
+      LinkBankAccountScreen(id = route.id, back = BackNavigator(stack))
     }
   }
 }

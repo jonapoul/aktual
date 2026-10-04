@@ -9,6 +9,16 @@ Content-Type: application/json
 <> status-success.200.json
 
 ###
+# @name simplefin/accounts
+POST {{ACTUAL_BASE_URL}}/simplefin/accounts
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{}
+
+<> accounts-success.200.json
+
+###
 # @name simplefin/transactions
 POST {{ACTUAL_BASE_URL}}/simplefin/transactions
 X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}

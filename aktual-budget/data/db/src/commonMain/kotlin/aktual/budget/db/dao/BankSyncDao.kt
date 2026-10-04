@@ -9,8 +9,10 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.async.coroutines.awaitAsOne
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import dev.zacsweers.metro.Inject
+import kotlin.uuid.Uuid
 import kotlinx.datetime.LocalDate
 
 /**
@@ -56,6 +58,7 @@ data class BankSyncAccount(
 @Inject
 class BankSyncDao(database: BudgetDatabase) {
   private val queries = database.bankSyncQueries
+  private val banks = database.banksQueries
 
   /**
    * The transaction in [account] with this imported_id. Deleted ones only match when
@@ -121,6 +124,21 @@ class BankSyncDao(database: BudgetDatabase) {
   suspend fun exampleData(account: AccountId, deposit: Boolean): String? = queries.withResult {
     val query = if (deposit) bankSyncDepositExample(account) else bankSyncPaymentExample(account)
     query.awaitAsOneOrNull()
+  }
+
+  // The banks row with this bank_id and name, if one exists
+  suspend fun findBank(bankId: BankId?, name: String?): Uuid? = queries.withResult {
+    bankSyncFindBank(bankId, name).awaitAsOneOrNull()
+  }
+
+  // The provider's ID for [bank], e.g. GoCardless' requisition ID
+  suspend fun bankId(bank: Uuid): BankId? = banks.withResult {
+    getBankId(bank).awaitAsOneOrNull()?.bank_id
+  }
+
+  // How many accounts are linked through [bank], deleted ones included
+  suspend fun bankUsers(bank: Uuid): Long = queries.withResult {
+    bankSyncBankUsers(bank).awaitAsOne()
   }
 
   // Every category that isn't deleted

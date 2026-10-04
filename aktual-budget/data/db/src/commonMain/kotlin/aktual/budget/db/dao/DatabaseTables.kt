@@ -5,6 +5,7 @@ package aktual.budget.db.dao
  */
 object DatabaseTables {
   const val ACCOUNTS = "accounts"
+  const val BANKS = "banks"
   const val CATEGORIES = "categories"
   const val CATEGORY_GROUPS = "category_groups"
   const val CATEGORY_MAPPING = "category_mapping"

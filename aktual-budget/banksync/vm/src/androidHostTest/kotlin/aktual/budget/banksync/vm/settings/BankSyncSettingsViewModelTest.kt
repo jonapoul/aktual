@@ -1,10 +1,13 @@
 package aktual.budget.banksync.vm.settings
 
 import aktual.budget.BudgetSyncController
+import aktual.budget.banksync.domain.BankAccountLinker
 import aktual.budget.banksync.domain.BankSyncSettingsLoader
 import aktual.budget.banksync.domain.BankSyncSettingsWriter
 import aktual.budget.banksync.domain.MappableFieldsLoader
 import aktual.budget.banksync.domain.MappedField
+import aktual.budget.banksync.vm.FakeBankSyncApi
+import aktual.budget.banksync.vm.FakeBankSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
@@ -12,12 +15,14 @@ import aktual.budget.db.dao.BankSyncDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.SyncDao
 import aktual.budget.model.AccountId
+import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.SyncedPrefKey.PerAccount.CustomSyncMappings
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportNotes
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportTransactions
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncUpdateDates
+import aktual.di.BudgetCoroutineScope
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.db.SqlDriver
@@ -32,6 +37,7 @@ import assertk.assertions.isTrue
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.time.Clock
+import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -178,12 +184,51 @@ class BankSyncSettingsViewModelTest {
     }
   }
 
+  @Test
+  fun `Unlinking clears the link and announces it`() = runSettingsTest {
+    database.accountsQueries.insert(
+      id = LINKED,
+      account_id = "remote-1",
+      name = "Linked",
+      official_name = null,
+      bank = BANK,
+      offbudget = false,
+      account_sync_source = AccountSyncSource.SimpleFin,
+    )
+    val viewModel = createViewModel(LINKED)
+
+    viewModel.state.test {
+      awaitEditing()
+      viewModel.events.test {
+        viewModel.unlink()
+        assertThat(awaitItem()).isEqualTo(BankSyncSettingsEvent.Unlinked)
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    val row = AccountDao(database)[LINKED]
+    assertThat(row?.account_id).isNull()
+    assertThat(row?.bank).isNull()
+    assertThat(row?.account_sync_source).isNull()
+  }
+
+  @Test
+  fun `Failing to unlink announces it`() = runSettingsTest {
+    val viewModel = createViewModel(AccountId("missing"))
+
+    viewModel.events.test {
+      viewModel.unlink()
+      assertThat(awaitItem()).isInstanceOf<BankSyncSettingsEvent.UnlinkFailed>()
+    }
+  }
+
   private class TestContext(
     val scope: TestScope,
     val database: BudgetDatabase,
     val driver: SqlDriver,
   ) : BudgetSyncController {
     val syncCalls = mutableListOf<List<LocalChange>>()
+    val api = FakeBankSyncApi()
     val preferences = PreferencesDao(database, TestCoroutineContexts(EmptyCoroutineContext))
     private val syncDao = SyncDao(database, driver, Clock.System)
 
@@ -212,6 +257,16 @@ class BankSyncSettingsViewModelTest {
       loader = BankSyncSettingsLoader(preferences),
       writer = BankSyncSettingsWriter(this),
       fieldsLoader = MappableFieldsLoader(BankSyncDao(database)),
+      linker =
+        BankAccountLinker(
+          api = api,
+          accountDao = AccountDao(database),
+          dao = BankSyncDao(database),
+          syncController = this,
+          bankSync = FakeBankSyncController(),
+          uuidGenerator = { Uuid.random().toString() },
+          scope = BudgetCoroutineScope(scope.backgroundScope),
+        ),
     )
   }
 
@@ -240,5 +295,7 @@ class BankSyncSettingsViewModelTest {
 
   private companion object {
     val ACCOUNT = AccountId("account-1")
+    val LINKED = AccountId("account-2")
+    val BANK: Uuid = Uuid.parse("9707afb0-dd6a-4623-aab2-922f8e4ab38d")
   }
 }

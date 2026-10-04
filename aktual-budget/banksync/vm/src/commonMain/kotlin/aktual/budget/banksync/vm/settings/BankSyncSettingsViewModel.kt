@@ -1,5 +1,6 @@
 package aktual.budget.banksync.vm.settings
 
+import aktual.budget.banksync.domain.BankAccountLinker
 import aktual.budget.banksync.domain.BankSyncSettings
 import aktual.budget.banksync.domain.BankSyncSettingsLoader
 import aktual.budget.banksync.domain.BankSyncSettingsWriter
@@ -49,6 +50,7 @@ class BankSyncSettingsViewModel(
   private val loader: BankSyncSettingsLoader,
   private val writer: BankSyncSettingsWriter,
   private val fieldsLoader: MappableFieldsLoader,
+  private val linker: BankAccountLinker,
 ) : ViewModel() {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
@@ -131,6 +133,21 @@ class BankSyncSettingsViewModel(
       } catch (e: Exception) {
         logcat.e(e) { "Failed saving bank sync settings for $account" }
         mutableEvents.emit(BankSyncSettingsEvent.SaveFailed(e.requireMessage()))
+      }
+    }
+  }
+
+  /** Stops syncing the account, after which its settings no longer apply. */
+  fun unlink() {
+    viewModelScope.launch {
+      try {
+        linker.unlink(account)
+        mutableEvents.emit(BankSyncSettingsEvent.Unlinked)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed unlinking $account" }
+        mutableEvents.emit(BankSyncSettingsEvent.UnlinkFailed(e.requireMessage()))
       }
     }
   }

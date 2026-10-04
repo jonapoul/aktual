@@ -1,0 +1,35 @@
+{
+  "status": "ok",
+  "data": {
+    "accounts": [
+      {
+        "org": {
+          "domain": "mybank.example.com",
+          "sfin-url": "https://beta-bridge.simplefin.org/simplefin",
+          "name": "My Bank",
+          "id": "ORG-1"
+        },
+        "id": "ACT-1",
+        "name": "Checking",
+        "currency": "USD",
+        "balance": "1234.56",
+        "available-balance": "1200.00",
+        "balance-date": 1759190400,
+        "transactions": []
+      },
+      {
+        "org": {
+          "sfin-url": "https://beta-bridge.simplefin.org/simplefin",
+          "name": "Other Bank"
+        },
+        "id": "ACT-2",
+        "name": "Credit Card",
+        "currency": "USD",
+        "balance": "-56.78",
+        "available-balance": "943.22",
+        "balance-date": 1759190400,
+        "transactions": []
+      }
+    ]
+  }
+}

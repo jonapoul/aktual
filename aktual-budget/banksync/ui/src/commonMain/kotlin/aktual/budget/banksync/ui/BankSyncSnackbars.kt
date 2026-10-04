@@ -3,11 +3,13 @@ package aktual.budget.banksync.ui
 import aktual.budget.banksync.domain.BankSyncSummary
 import aktual.core.l10n.Res
 import aktual.core.l10n.bank_sync_failure_message
+import aktual.core.l10n.bank_sync_link_failed
 import aktual.core.l10n.bank_sync_result_failed
 import aktual.core.l10n.bank_sync_result_several
 import aktual.core.l10n.bank_sync_result_several_failed
 import aktual.core.l10n.bank_sync_result_synced
 import aktual.core.l10n.bank_sync_settings_save_failed
+import aktual.core.l10n.bank_sync_settings_unlink_failed
 import aktual.core.l10n.bank_sync_unnamed_account
 import androidx.compose.material3.SnackbarHostState
 import org.jetbrains.compose.resources.getString
@@ -52,6 +54,24 @@ internal suspend fun SnackbarHostState.showSettingsSaveFailed(cause: String?) =
   showSnackbar(
     getString(
       Res.string.bank_sync_settings_save_failed,
+      cause ?: getString(Res.string.bank_sync_failure_message),
+    )
+  )
+
+/** Why the account couldn't be unlinked */
+internal suspend fun SnackbarHostState.showUnlinkFailed(cause: String?) =
+  showSnackbar(
+    getString(
+      Res.string.bank_sync_settings_unlink_failed,
+      cause ?: getString(Res.string.bank_sync_failure_message),
+    )
+  )
+
+/** Why the account couldn't be linked */
+internal suspend fun SnackbarHostState.showLinkFailed(cause: String?) =
+  showSnackbar(
+    getString(
+      Res.string.bank_sync_link_failed,
       cause ?: getString(Res.string.bank_sync_failure_message),
     )
   )

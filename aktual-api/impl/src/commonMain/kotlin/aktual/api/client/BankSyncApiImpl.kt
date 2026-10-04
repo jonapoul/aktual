@@ -1,5 +1,6 @@
 package aktual.api.client
 
+import aktual.api.model.banksync.BankSyncAccountsResponse
 import aktual.api.model.banksync.BankSyncEnvelope
 import aktual.api.model.banksync.BankSyncStatusResponse
 import aktual.api.model.banksync.BankSyncTransactionsRequest
@@ -32,7 +33,11 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.put
 
 @ContributesBinding(BudgetScope::class)
 class BankSyncApiImpl(
@@ -95,6 +100,39 @@ class BankSyncApiImpl(
         SimpleFinBatchResponse.Failed(AktualJson.decodeFromJsonElement<ProviderError>(data))
       else -> SimpleFinBatchResponse.Success(batchAccounts(data))
     }
+  }
+
+  override suspend fun accounts(source: AccountSyncSource): BankSyncAccountsResponse {
+    val envelope =
+      timingOut {
+        client
+          .post { request(source, ACCOUNTS, JsonObject(emptyMap()), timeout = ACCOUNT_TIMEOUT) }
+          .body<BankSyncEnvelope<JsonObject>>()
+      }
+        ?: return BankSyncAccountsResponse.Failed(
+          ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT)
+        )
+    val data = envelope.data
+    // Pluggy.ai and Akahu send failures as a bare message
+    val error = (data?.get(ERROR) as? JsonPrimitive)?.contentOrNull
+    val accounts = data?.get(ACCOUNTS) as? JsonArray
+    return when {
+      data != null && ERROR_CODE in data ->
+        BankSyncAccountsResponse.Failed(AktualJson.decodeFromJsonElement<ProviderError>(data))
+      !envelope.isOk || error != null || accounts == null ->
+        BankSyncAccountsResponse.Failed(
+          BankSyncTransactionsResponse.Rejected(envelope.reason ?: error, envelope.details)
+        )
+      else -> BankSyncAccountsResponse.Success(externalAccounts(source, accounts))
+    }
+  }
+
+  override suspend fun removeGoCardlessRequisition(requisitionId: String): Boolean {
+    val body = buildJsonObject { put("requisitionId", requisitionId) }
+    return client
+      .post { request(AccountSyncSource.GoCardless, "remove-account", body) }
+      .body<BankSyncEnvelope<JsonObject>>()
+      .isOk
   }
 
   // An account's first error wins over its download, as upstream. Accounts with neither, or a
@@ -176,6 +214,8 @@ class BankSyncApiImpl(
     val ACCOUNT_TIMEOUT = 1.minutes
     val BATCH_TIMEOUT = 5.minutes
 
+    const val ACCOUNTS = "accounts"
+    const val ERROR = "error"
     const val ERROR_CODE = "error_code"
     const val ERRORS = "errors"
     const val TRANSACTIONS = "transactions"

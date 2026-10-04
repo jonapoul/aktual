@@ -11,6 +11,8 @@ internal data object NavigateBack : BankSyncSettingsAction
 
 internal data object SaveSettings : BankSyncSettingsAction
 
+internal data object UnlinkAccount : BankSyncSettingsAction
+
 internal data class SetToggle(val toggle: BankSyncToggle, val value: Boolean) :
   BankSyncSettingsAction
 

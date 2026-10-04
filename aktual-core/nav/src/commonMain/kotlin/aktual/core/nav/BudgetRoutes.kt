@@ -49,3 +49,5 @@ import kotlinx.serialization.Serializable
 @Serializable data object BankSyncNavRoute : BudgetNavKey.BankSync
 
 @Serializable data class BankSyncSettingsNavRoute(val id: AccountId) : BudgetNavKey.BankSync
+
+@Serializable data class LinkBankAccountNavRoute(val id: AccountId) : BudgetNavKey.BankSync
