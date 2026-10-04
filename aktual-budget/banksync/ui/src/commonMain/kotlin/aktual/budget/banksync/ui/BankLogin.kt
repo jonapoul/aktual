@@ -1,10 +1,13 @@
 package aktual.budget.banksync.ui
 
-import aktual.budget.banksync.vm.link.GoCardlessBankItem
-import aktual.budget.banksync.vm.link.GoCardlessLogin
-import aktual.budget.banksync.vm.link.GoCardlessLoginStatus
+import aktual.budget.banksync.vm.link.BankLogin
+import aktual.budget.banksync.vm.link.BankLoginStatus
+import aktual.budget.banksync.vm.link.LoginAccountType
+import aktual.budget.banksync.vm.link.LoginBankItem
+import aktual.budget.model.AccountSyncSource
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -32,20 +35,23 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import java.util.Locale
+import kotlinx.collections.immutable.toImmutableList
 
 /**
- * GoCardless lists accounts only after the user logs in to their bank, so this picks the bank, then
- * waits on the login. Banks are filtered by [query].
+ * GoCardless and Enable Banking list accounts only after the user logs in to their bank, so this
+ * picks the bank, then waits on the login. Banks are filtered by [query].
  */
-internal fun LazyListScope.goCardlessLogin(
-  login: GoCardlessLogin,
+internal fun LazyListScope.bankLogin(
+  source: AccountSyncSource,
+  login: BankLogin,
   query: String,
   onQuery: (String) -> Unit,
   onAction: LinkBankAccountActionHandler,
 ) {
   val status = login.status
-  item(key = "gocardless-header") {
-    GoCardlessHeader(
+  item(key = "login-header") {
+    LoginHeader(
+      source = source,
       login = login,
       query = query,
       onQuery = onQuery,
@@ -56,11 +62,11 @@ internal fun LazyListScope.goCardlessLogin(
 
   when (status) {
     is Waiting -> {
-      item(key = "gocardless-waiting") { LoginWaiting(status, onAction) }
+      item(key = "login-waiting") { LoginWaiting(status, onAction) }
       return
     }
     is Failed -> {
-      item(key = "gocardless-failed") { LoginFailed(status) }
+      item(key = "login-failed") { LoginFailed(status) }
     }
     Idle -> {
       // Just the banks
@@ -72,9 +78,9 @@ internal fun LazyListScope.goCardlessLogin(
       items(count = 5, key = { "bank-shimmer-$it" }) { ShimmerBankSyncAccountItem() }
     }
     is Failure -> {
-      item(key = "gocardless-banks-failure") {
+      item(key = "login-banks-failure") {
         ListingFailure(
-          title = Strings.bankSyncLinkGocardlessBanksFailed,
+          title = Strings.bankSyncLinkLoginBanksFailed,
           cause = banks.cause,
           onAction = onAction,
         )
@@ -83,10 +89,10 @@ internal fun LazyListScope.goCardlessLogin(
     is Loaded -> {
       val filtered = banks.items.filter { it.name.contains(query.trim(), ignoreCase = true) }
       if (filtered.isEmpty()) {
-        item(key = "gocardless-no-banks") {
+        item(key = "login-no-banks") {
           Text(
             modifier = Modifier.padding(BankSyncDS.headerPadding),
-            text = Strings.bankSyncLinkGocardlessNoBanks,
+            text = Strings.bankSyncLinkLoginNoBanks,
             style = typography.bodyMedium,
             color = colors.pageTextSubdued,
           )
@@ -100,8 +106,9 @@ internal fun LazyListScope.goCardlessLogin(
 }
 
 @Composable
-private fun GoCardlessHeader(
-  login: GoCardlessLogin,
+private fun LoginHeader(
+  source: AccountSyncSource,
+  login: BankLogin,
   query: String,
   onQuery: (String) -> Unit,
   isEnabled: Boolean,
@@ -113,14 +120,19 @@ private fun GoCardlessHeader(
     verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsFieldSpacing),
   ) {
     Text(
-      text = Strings.bankSyncLinkGocardlessIntro,
+      text =
+        if (source == EnableBanking) {
+          Strings.bankSyncLinkEnableBankingIntro
+        } else {
+          Strings.bankSyncLinkGocardlessIntro
+        },
       style = typography.bodySmall,
       color = colors.pageTextSubdued,
     )
 
     Column(verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsLabelSpacing)) {
       Text(
-        text = Strings.bankSyncLinkGocardlessCountry,
+        text = Strings.bankSyncLinkLoginCountry,
         style = typography.titleSmall,
         color = colors.pageTextLight,
       )
@@ -132,6 +144,24 @@ private fun GoCardlessHeader(
         string = { countryName(it) },
         isEnabled = isEnabled,
       )
+    }
+
+    login.accountType?.let { type ->
+      Column(verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsLabelSpacing)) {
+        Text(
+          text = Strings.bankSyncLinkLoginAccountType,
+          style = typography.titleSmall,
+          color = colors.pageTextLight,
+        )
+        AktualSlidingToggleButton(
+          modifier = Modifier.fillMaxWidth(),
+          selected = type,
+          options = LoginAccountTypes,
+          onSelect = { onAction(SelectAccountType(it)) },
+          isEnabled = isEnabled,
+          string = { it.string() },
+        )
+      }
     }
 
     BankSearchField(query = query, onQuery = onQuery, isEnabled = isEnabled)
@@ -154,13 +184,13 @@ private fun BankSearchField(
     state = state,
     singleLine = true,
     isEnabled = isEnabled,
-    placeholderText = Strings.bankSyncLinkGocardlessSearch,
+    placeholderText = Strings.bankSyncLinkLoginSearch,
   )
 }
 
 @Composable
 private fun LoginWaiting(
-  status: GoCardlessLoginStatus.Waiting,
+  status: BankLoginStatus.Waiting,
   onAction: LinkBankAccountActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -179,7 +209,7 @@ private fun LoginWaiting(
       )
       Text(
         modifier = Modifier.weight(1f),
-        text = Strings.bankSyncLinkGocardlessWaiting(status.bank),
+        text = Strings.bankSyncLinkLoginWaiting(status.bank),
         style = typography.bodyMedium,
         color = colors.pageText,
       )
@@ -187,12 +217,12 @@ private fun LoginWaiting(
 
     Row(horizontalArrangement = Arrangement.spacedBy(BankSyncDS.itemHorizontalSpacing)) {
       PrimaryTextButton(
-        text = Strings.bankSyncLinkGocardlessReopen,
+        text = Strings.bankSyncLinkLoginReopen,
         onClick = { onAction(ReopenLogin) },
         isEnabled = status.link != null,
       )
       NormalTextButton(
-        text = Strings.bankSyncLinkGocardlessCancel,
+        text = Strings.bankSyncLinkLoginCancel,
         onClick = { onAction(CancelLogin) },
       )
     }
@@ -200,20 +230,20 @@ private fun LoginWaiting(
 }
 
 @Composable
-private fun LoginFailed(status: GoCardlessLoginStatus.Failed, modifier: Modifier = Modifier) {
+private fun LoginFailed(status: BankLoginStatus.Failed, modifier: Modifier = Modifier) {
   Column(
     modifier = modifier.fillMaxWidth().padding(BankSyncDS.headerPadding),
     verticalArrangement = Arrangement.spacedBy(BankSyncDS.itemContentSpacing),
   ) {
     Text(
-      text = Strings.bankSyncLinkGocardlessFailed,
+      text = Strings.bankSyncLinkLoginFailed,
       style = typography.titleSmall,
       color = colors.errorText,
     )
     Text(
       text =
         if (status.isTimeout) {
-          Strings.bankSyncLinkGocardlessTimeout
+          Strings.bankSyncLinkLoginTimeout
         } else {
           status.cause ?: Strings.bankSyncFailureMessage
         },
@@ -224,7 +254,7 @@ private fun LoginFailed(status: GoCardlessLoginStatus.Failed, modifier: Modifier
 }
 
 @Composable
-private fun BankRow(bank: GoCardlessBankItem, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun BankRow(bank: LoginBankItem, onClick: () -> Unit, modifier: Modifier = Modifier) {
   Text(
     modifier =
       modifier
@@ -234,7 +264,7 @@ private fun BankRow(bank: GoCardlessBankItem, onClick: () -> Unit, modifier: Mod
         .border(Hairline, colors.tableBorder, RowShape)
         .clickable(onClick = onClick)
         .padding(BankSyncDS.itemCardPadding),
-    text = bank.name,
+    text = if (bank.isBeta) Strings.bankSyncLinkLoginBeta(bank.name) else bank.name,
     style = typography.bodyMedium,
     color = colors.tableText,
     maxLines = 1,
@@ -245,3 +275,12 @@ private fun BankRow(bank: GoCardlessBankItem, onClick: () -> Unit, modifier: Mod
 // Named in the user's language, falling back to the ISO code
 private fun countryName(code: String): String =
   Locale.Builder().setRegion(code).build().displayCountry.ifEmpty { code }
+
+private val LoginAccountTypes = LoginAccountType.entries.toImmutableList()
+
+@Composable
+private fun LoginAccountType.string(): String =
+  when (this) {
+    Personal -> Strings.bankSyncLinkLoginPersonal
+    Business -> Strings.bankSyncLinkLoginBusiness
+  }

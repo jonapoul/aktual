@@ -1,6 +1,7 @@
 package aktual.budget.banksync.vm.link
 
 import aktual.api.client.BankSyncApi
+import aktual.api.client.EnableBankingApi
 import aktual.api.model.banksync.BankSyncAccountsResponse
 import aktual.api.model.banksync.BankSyncStatusResponse
 import aktual.api.model.banksync.BankSyncTransactionsResponse.Failure
@@ -46,8 +47,8 @@ import logcat.logcat
 
 /**
  * Links an unlinked account to one that a configured provider lists, then syncs it. SimpleFIN,
- * Pluggy.ai and Akahu list accounts up front, while GoCardless needs the user to log in to their
- * bank first.
+ * Pluggy.ai and Akahu list accounts up front, while GoCardless and Enable Banking need the user to
+ * log in to their bank first.
  *
  * See packages/desktop-client/src/components/modals/SelectLinkedAccountsModal.tsx
  */
@@ -60,6 +61,7 @@ class LinkBankAccountViewModel(
   private val linker: BankAccountLinker,
   private val server: BudgetServer,
   waiter: GoCardlessLoginWaiter,
+  enableBanking: EnableBankingApi,
   buildConfig: BuildConfig,
 ) : ViewModel() {
   @AssistedFactory
@@ -83,18 +85,13 @@ class LinkBankAccountViewModel(
     )
   val events: SharedFlow<LinkBankAccountEvent> = mutableEvents.asSharedFlow()
 
-  private val goCardless =
-    GoCardlessLoginModel(
-      api = api,
-      waiter = waiter,
-      scope = viewModelScope,
-      showDemo = buildConfig.isDebug,
-      openBrowser = { mutableEvents.emit(LinkBankAccountEvent.OpenBrowser(it)) },
-      onAccounts = { accounts ->
-        val listed = Listed(ExternalAccounts.Loaded(items(accounts)), accounts)
-        mutableAccounts.update { it + (AccountSyncSource.GoCardless to listed) }
-      },
-    )
+  private val logins: Map<AccountSyncSource, BankLoginModel> =
+    mapOf(
+        AccountSyncSource.GoCardless to
+          GoCardlessLoginProvider(api, waiter, showDemo = buildConfig.isDebug),
+        AccountSyncSource.EnableBanking to EnableBankingLoginProvider(enableBanking),
+      )
+      .mapValues { (source, provider) -> loginModel(source, provider) }
 
   val state: StateFlow<LinkBankAccountState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -104,7 +101,7 @@ class LinkBankAccountViewModel(
       val selected by mutableSelected.collectAsState()
       val accounts by mutableAccounts.collectAsState()
       val isLinking by mutableIsLinking.collectAsState()
-      val login by goCardless.state.collectAsState()
+      val login = selected?.let(logins::get)?.state?.collectAsState()?.value
       failure?.let {
         return@launchMolecule it
       }
@@ -120,11 +117,8 @@ class LinkBankAccountViewModel(
             selected = source,
             accounts =
               accounts[source]?.state
-                ?: if (source == GoCardless) {
-                  ExternalAccounts.NeedsLogin(login)
-                } else {
-                  ExternalAccounts.Loading
-                },
+                ?: login?.let(ExternalAccounts::NeedsLogin)
+                ?: ExternalAccounts.Loading,
             isLinking = isLinking,
           )
       }
@@ -156,30 +150,44 @@ class LinkBankAccountViewModel(
   fun select(source: AccountSyncSource) {
     mutableSelected.update { source }
     val state = mutableAccounts.value[source]?.state
+    val login = logins[source]
     when {
-      source == GoCardless -> if (state == null) goCardless.start()
+      login != null -> if (state == null) login.start()
       state == null || state is ExternalAccounts.Failure -> load(source)
     }
   }
 
-  /** Lists the selected provider's accounts, or GoCardless's banks, again if they failed. */
+  /** Lists the selected provider's accounts, or its banks to log in to, again if they failed. */
   fun reload() {
     val source = mutableSelected.value ?: return
+    val login = logins[source]
     when {
-      source == GoCardless -> goCardless.start()
+      login != null -> login.start()
       mutableAccounts.value[source]?.state != Loading -> load(source)
     }
   }
 
-  /** Lists GoCardless's banks in [country], an ISO 3166 code. */
-  fun selectCountry(country: String) = goCardless.selectCountry(country)
+  /** Lists the selected provider's banks in [country], an ISO 3166 code. */
+  fun selectCountry(country: String) {
+    selectedLogin()?.selectCountry(country)
+  }
 
-  /** Starts logging in to [bankId] through GoCardless, opening the bank's page in a browser. */
-  fun logIn(bankId: String) = goCardless.logIn(bankId)
+  fun selectAccountType(type: LoginAccountType) {
+    selectedLogin()?.selectAccountType(type)
+  }
 
-  fun reopenLogin() = goCardless.reopen()
+  /** Starts logging in to [bankId] through the selected provider, opening its page in a browser. */
+  fun logIn(bankId: String) {
+    selectedLogin()?.logIn(bankId)
+  }
 
-  fun cancelLogin() = goCardless.cancel()
+  fun reopenLogin() {
+    selectedLogin()?.reopen()
+  }
+
+  fun cancelLogin() {
+    selectedLogin()?.cancel()
+  }
 
   /** Links the account to [accountId] from the selected provider's list. */
   fun link(accountId: String) {
@@ -201,6 +209,19 @@ class LinkBankAccountViewModel(
       }
     }
   }
+
+  private fun selectedLogin(): BankLoginModel? = mutableSelected.value?.let(logins::get)
+
+  private fun loginModel(source: AccountSyncSource, provider: BankLoginProvider) =
+    BankLoginModel(
+      provider = provider,
+      scope = viewModelScope,
+      openBrowser = { mutableEvents.emit(LinkBankAccountEvent.OpenBrowser(it)) },
+      onAccounts = { accounts ->
+        val listed = Listed(ExternalAccounts.Loaded(items(accounts)), accounts)
+        mutableAccounts.update { it + (source to listed) }
+      },
+    )
 
   private fun load(source: AccountSyncSource) {
     mutableAccounts.update { it + (source to Listed(Loading)) }
@@ -276,7 +297,8 @@ class LinkBankAccountViewModel(
   )
 
   private companion object {
-    val PROVIDERS: List<AccountSyncSource> = listOf(GoCardless, SimpleFin, PluggyAi, Akahu)
+    val PROVIDERS: List<AccountSyncSource> =
+      listOf(GoCardless, EnableBanking, SimpleFin, PluggyAi, Akahu)
   }
 }
 

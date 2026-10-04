@@ -2,7 +2,13 @@ package aktual.budget.banksync.vm.link
 
 import aktual.api.model.banksync.BankSyncAccountsResponse
 import aktual.api.model.banksync.BankSyncStatusResponse
+import aktual.api.model.banksync.BankSyncTransactionsResponse.ProviderError
 import aktual.api.model.banksync.BankSyncTransactionsResponse.Rejected
+import aktual.api.model.banksync.EnableBankingAccountType
+import aktual.api.model.banksync.EnableBankingAccountsResponse
+import aktual.api.model.banksync.EnableBankingBank
+import aktual.api.model.banksync.EnableBankingBanksResponse
+import aktual.api.model.banksync.EnableBankingLoginResponse
 import aktual.api.model.banksync.ExternalBankAccount
 import aktual.api.model.banksync.GoCardlessAccountsResponse
 import aktual.api.model.banksync.GoCardlessBank
@@ -13,6 +19,7 @@ import aktual.budget.banksync.domain.BankAccountLinker
 import aktual.budget.banksync.domain.GoCardlessLoginWaiter
 import aktual.budget.banksync.vm.FakeBankSyncApi
 import aktual.budget.banksync.vm.FakeBankSyncController
+import aktual.budget.banksync.vm.FakeEnableBankingApi
 import aktual.budget.banksync.vm.link.ExternalAccounts.NeedsLogin
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
@@ -176,16 +183,15 @@ class LinkBankAccountViewModelTest {
         val login = awaitLogin()
         assertThat(login)
           .isEqualTo(
-            GoCardlessLogin(
+            BankLogin(
               countries = login.countries,
               country = "GB",
-              banks =
-                GoCardlessBanks.Loaded(persistentListOf(GoCardlessBankItem(MONZO.id, "Monzo"))),
+              banks = LoginBanks.Loaded(persistentListOf(LoginBankItem(MONZO.id, "Monzo"))),
             )
           )
 
         viewModel.selectCountry("IE")
-        assertThat(awaitLogin().banks).isEqualTo(GoCardlessBanks.Failure("Bad secret"))
+        assertThat(awaitLogin().banks).isEqualTo(LoginBanks.Failure("Bad secret"))
         cancelAndIgnoreRemainingEvents()
       }
       assertThat(api.bankRequests).containsExactly("GB", "IE")
@@ -241,7 +247,7 @@ class LinkBankAccountViewModelTest {
         viewModel.logIn(MONZO.id)
         var status = awaitLogin().status
         while (status !is Failed) status = awaitLogin().status
-        assertThat(status).isEqualTo(GoCardlessLoginStatus.Failed(cause = null, isTimeout = true))
+        assertThat(status).isEqualTo(BankLoginStatus.Failed(cause = null, isTimeout = true))
         cancelAndIgnoreRemainingEvents()
       }
     }
@@ -257,7 +263,7 @@ class LinkBankAccountViewModelTest {
         awaitLogin()
         viewModel.logIn(MONZO.id)
         var status = awaitLogin().status
-        while (status != GoCardlessLoginStatus.Waiting("Monzo", LINK)) status = awaitLogin().status
+        while (status != BankLoginStatus.Waiting("Monzo", LINK)) status = awaitLogin().status
 
         viewModel.cancelLogin()
         assertThat(awaitLogin().status).isEqualTo(Idle)
@@ -266,11 +272,104 @@ class LinkBankAccountViewModelTest {
       }
     }
 
+  @Test
+  fun `Enable Banking logs in to the chosen bank as a business`() =
+    runLinkTest(enableBanking = true) {
+      enableBankingApi.banks["GB"] = EnableBankingBanksResponse.Success(listOf(NORDEA))
+      enableBankingApi.login = EnableBankingLoginResponse.Success(EB_LINK, EB_STATE)
+      enableBankingApi.polls += EnableBankingAccountsResponse.Success(listOf(EB_SHARED))
+      val viewModel = createViewModel()
+
+      viewModel.state.test {
+        val login = awaitLogin()
+        assertThat(login)
+          .isEqualTo(
+            BankLogin(
+              countries = login.countries,
+              country = "GB",
+              banks =
+                LoginBanks.Loaded(
+                  persistentListOf(LoginBankItem("GB:Nordea", "Nordea", isBeta = true))
+                ),
+              accountType = Personal,
+            )
+          )
+
+        viewModel.selectAccountType(Business)
+        assertThat(awaitLogin().accountType).isEqualTo(Business)
+
+        viewModel.events.test {
+          viewModel.logIn("GB:Nordea")
+          assertThat(awaitItem()).isEqualTo(LinkBankAccountEvent.OpenBrowser(EB_LINK))
+
+          var accounts = awaitChoosing().accounts
+          while (accounts is NeedsLogin) accounts = awaitChoosing().accounts
+          assertThat(accounts)
+            .isEqualTo(
+              ExternalAccounts.Loaded(
+                persistentListOf(ExternalAccountItem("EB-1", "Current", "Nordea", Amount(1234L)))
+              )
+            )
+          viewModel.link("EB-1")
+          assertThat(awaitItem()).isEqualTo(LinkBankAccountEvent.Linked)
+        }
+        cancelAndIgnoreRemainingEvents()
+      }
+      scope.testScheduler.runCurrent()
+
+      val row = AccountDao(database)[ACCOUNT]
+      assertThat(row?.account_id).isEqualTo("EB-1")
+      assertThat(row?.account_sync_source).isEqualTo(AccountSyncSource.EnableBanking)
+      assertThat(BankSyncDao(database).bankId(checkNotNull(row?.bank))).isEqualTo(BankId("EB-1"))
+      assertThat(enableBankingApi.logins)
+        .containsExactly(NORDEA to EnableBankingAccountType.Business)
+    }
+
+  @Test
+  fun `Enable Banking logins time out`() =
+    runLinkTest(enableBanking = true) {
+      enableBankingApi.banks["GB"] = EnableBankingBanksResponse.Success(listOf(NORDEA))
+      enableBankingApi.login = EnableBankingLoginResponse.Success(EB_LINK, EB_STATE)
+      enableBankingApi.polls +=
+        EnableBankingAccountsResponse.Failed(
+          ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT)
+        )
+      val viewModel = createViewModel()
+
+      viewModel.state.test {
+        awaitLogin()
+        viewModel.logIn("GB:Nordea")
+        var status = awaitLogin().status
+        while (status !is Failed) status = awaitLogin().status
+        assertThat(status).isEqualTo(BankLoginStatus.Failed(cause = null, isTimeout = true))
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `Failed Enable Banking login shows why`() =
+    runLinkTest(enableBanking = true) {
+      enableBankingApi.banks["GB"] = EnableBankingBanksResponse.Success(listOf(NORDEA))
+      enableBankingApi.login =
+        EnableBankingLoginResponse.Failed(Rejected("Redirect URL not allowed", null))
+      val viewModel = createViewModel()
+
+      viewModel.state.test {
+        awaitLogin()
+        viewModel.logIn("GB:Nordea")
+        var status = awaitLogin().status
+        while (status !is Failed) status = awaitLogin().status
+        assertThat(status).isEqualTo(BankLoginStatus.Failed("Redirect URL not allowed"))
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
   private class TestContext(
     val scope: TestScope,
     val database: BudgetDatabase,
     driver: SqlDriver,
     goCardless: Boolean,
+    enableBanking: Boolean,
   ) : BudgetSyncController {
     val api =
       FakeBankSyncApi(
@@ -278,8 +377,11 @@ class LinkBankAccountViewModelTest {
         PluggyAi to BankSyncStatusResponse.Success(configured = true),
         Akahu to BankSyncStatusResponse.Success(configured = true),
         GoCardless to BankSyncStatusResponse.Success(configured = goCardless),
+        AccountSyncSource.EnableBanking to
+          BankSyncStatusResponse.Success(configured = enableBanking),
       )
     val controller = FakeBankSyncController()
+    val enableBankingApi = FakeEnableBankingApi()
     private val syncDao = SyncDao(database, driver, Clock.System)
 
     override suspend fun syncChanges(changes: List<LocalChange>) {
@@ -289,16 +391,19 @@ class LinkBankAccountViewModelTest {
     override fun schedule() = Unit
   }
 
-  // GoCardless comes first when it's configured, so tests of the other providers leave it out
-  private fun runLinkTest(goCardless: Boolean = false, action: suspend TestContext.() -> Unit) =
-    runTest {
-      val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
-      driver.use { d ->
-        val context = TestContext(this, buildDatabase(d), d, goCardless)
-        AccountDao(context.database).insert(id = ACCOUNT, name = "Cash")
-        action(context)
-      }
+  // GoCardless then Enable Banking come first when configured, so other tests leave them out
+  private fun runLinkTest(
+    goCardless: Boolean = false,
+    enableBanking: Boolean = false,
+    action: suspend TestContext.() -> Unit,
+  ) = runTest {
+    val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
+    driver.use { d ->
+      val context = TestContext(this, buildDatabase(d), d, goCardless, enableBanking)
+      AccountDao(context.database).insert(id = ACCOUNT, name = "Cash")
+      action(context)
     }
+  }
 
   private fun TestContext.createViewModel(
     account: AccountId = ACCOUNT,
@@ -321,6 +426,7 @@ class LinkBankAccountViewModelTest {
         ),
       server = server,
       waiter = GoCardlessLoginWaiter(api),
+      enableBanking = enableBankingApi,
       buildConfig = TestBuildConfig,
     )
   }
@@ -347,7 +453,7 @@ class LinkBankAccountViewModelTest {
   }
 
   // Skips past the banks loading
-  private suspend fun ReceiveTurbine<LinkBankAccountState>.awaitLogin(): GoCardlessLogin {
+  private suspend fun ReceiveTurbine<LinkBankAccountState>.awaitLogin(): BankLogin {
     while (true) {
       val login = ((awaitItem() as? LinkBankAccountState.Choosing)?.accounts as? NeedsLogin)?.login
       if (login != null && login.banks != Loading) return login
@@ -364,6 +470,10 @@ class LinkBankAccountViewModelTest {
     const val LINK = "https://ob.gocardless.com/start/requisition-1"
     const val REQUISITION = "requisition-1"
     val SHARED = ExternalBankAccount("GC-1", "Current", "Monzo", REQUISITION, null, null)
+    val NORDEA = EnableBankingBank("Nordea", "GB", isBeta = true)
+    const val EB_LINK = "https://tilisy.enablebanking.com/welcome?sessionid=session-1"
+    const val EB_STATE = "state-1"
+    val EB_SHARED = ExternalBankAccount("EB-1", "Current", "Nordea", "EB-1", null, Amount(1234L))
     val CHECKING = ExternalBankAccount("ACT-1", "Checking", "My Bank", "ORG-1", null, Amount(12.34))
     val CARD = ExternalBankAccount("ACT-2", "Card", null, null, null, null)
   }

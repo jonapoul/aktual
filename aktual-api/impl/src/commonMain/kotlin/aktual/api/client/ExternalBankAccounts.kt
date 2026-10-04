@@ -3,6 +3,7 @@ package aktual.api.client
 import aktual.api.model.banksync.ExternalBankAccount
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
+import kotlin.math.roundToLong
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -45,6 +46,23 @@ internal fun goCardlessAccounts(
     balance = null,
   )
 }
+
+// The accounts shared through an Enable Banking login, normalised by the server. Each is its own
+// bank, as linkEnableBankingAccount() in packages/loot-core/src/server/accounts/app.ts stores
+// them, and their balances are in cents
+internal fun enableBankingAccounts(accounts: JsonArray): List<ExternalBankAccount> =
+  accounts.mapNotNull { element ->
+    val json = element as? JsonObject ?: return@mapNotNull null
+    val id = json.string("account_id") ?: return@mapNotNull null
+    ExternalBankAccount(
+      accountId = id,
+      name = json.string(NAME).orEmpty(),
+      institution = json.string("institution"),
+      orgId = id,
+      orgDomain = null,
+      balance = json.number(BALANCE)?.roundToLong()?.let(::Amount),
+    )
+  }
 
 private fun simpleFin(json: JsonObject): ExternalBankAccount? {
   val org = json["org"] as? JsonObject
