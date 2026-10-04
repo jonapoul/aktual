@@ -78,7 +78,7 @@ internal fun LedgerRow(
       horizontalAlignment = Alignment.End,
     ) {
       AmountText(transaction.amount, dimens)
-      BalanceText(transaction.balance, dimens)
+      if (dimens.showBalance) BalanceText(transaction.balance, dimens)
     }
   }
 }
@@ -165,7 +165,9 @@ internal fun LedgerTableRow(transaction: Transaction, modifier: Modifier = Modif
     )
 
     AmountText(transaction.amount, dimens, Modifier.width(DenseColumns.amount))
-    BalanceText(transaction.balance, dimens, Modifier.width(DenseColumns.balance))
+    if (dimens.showBalance) {
+      BalanceText(transaction.balance, dimens, Modifier.width(DenseColumns.balance))
+    }
   }
 }
 

@@ -153,7 +153,8 @@ SELECT id FROM transactions
     date IS NOT NULL AND
     acct IS NOT NULL;
 
--- Paginated queries for Paging 3
+-- Paginated queries for Paging 3. Sorted as upstream's v_transactions, so ties within a day keep a
+-- stable order across pages
 getPaged:
 SELECT
   vt.id,
@@ -162,12 +163,13 @@ SELECT
   p.name AS payeeName,
   vt.notes,
   c.name AS categoryName,
-  vt.amount
+  vt.amount,
+  vt.is_child AS isChild
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
-  ORDER BY vt.date DESC
+  ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
   LIMIT :limit OFFSET :offset;
 
 getByAccountPaged:
@@ -178,13 +180,14 @@ SELECT
   p.name AS payeeName,
   vt.notes,
   c.name AS categoryName,
-  vt.amount
+  vt.amount,
+  vt.is_child AS isChild
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
   WHERE a.id = :account
-  ORDER BY vt.date DESC
+  ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
   LIMIT :limit OFFSET :offset;
 
 getByIds:
@@ -195,19 +198,43 @@ SELECT
   p.name AS payeeName,
   vt.notes,
   c.name AS categoryName,
-  vt.amount
+  vt.amount,
+  vt.is_child AS isChild
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
   WHERE vt.id IN :ids;
 
+-- Balance after the transaction at :offset in getPaged's order, i.e. the sum of it and everything
+-- older. Split children are skipped since their parent's amount already covers them, as upstream's
+-- balance queries do with splits: 'none'
+balanceFromOffset:
+SELECT IFNULL(SUM(amount), 0) FROM (
+  SELECT vt.amount, vt.is_child
+  FROM v_transactions_internal_alive AS vt
+  ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
+  LIMIT -1 OFFSET :offset
+) WHERE IFNULL(is_child, 0) = 0;
+
+balanceFromOffsetByAccount:
+SELECT IFNULL(SUM(amount), 0) FROM (
+  SELECT vt.amount, vt.is_child
+  FROM v_transactions_internal_alive AS vt
+  LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
+  WHERE a.id = :account
+  ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
+  LIMIT -1 OFFSET :offset
+) WHERE IFNULL(is_child, 0) = 0;
+
 -- id + notes for every live transaction, for in-memory #tag filtering (no SQL regex available)
 getIdsAndNotes:
-SELECT id, notes FROM v_transactions ORDER BY date DESC;
+SELECT id, notes FROM v_transactions
+  ORDER BY date DESC, starting_balance_flag, sort_order DESC, id;
 
 getIdsAndNotesByAccount:
-SELECT id, notes FROM v_transactions WHERE account = :account ORDER BY date DESC;
+SELECT id, notes FROM v_transactions WHERE account = :account
+  ORDER BY date DESC, starting_balance_flag, sort_order DESC, id;
 
 -- notes of every live transaction containing a '#', for aggregating per-tag transaction counts
 notesContainingHash:

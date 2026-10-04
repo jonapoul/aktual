@@ -11,11 +11,13 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.async.coroutines.awaitAsOne
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.coroutines.asFlow
 import dev.zacsweers.metro.Inject
 import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 
@@ -29,22 +31,40 @@ data class TransactionRow(
   val notes: String?,
   val categoryName: String?,
   val amount: Long,
+  val isChild: Boolean?,
 )
+
+// One page of the list, with the balance after its first (newest) row
+data class TransactionPage(val rows: List<TransactionRow>, val topBalance: Long)
 
 @Inject
 class TransactionDao(database: BudgetDatabase) {
   private val queries = database.transactionsQueries
 
-  suspend fun getPaged(limit: Long, offset: Long): List<TransactionRow> = queries.withResult {
-    getPaged(limit, offset, ::TransactionRow).awaitAsList()
+  suspend fun getPaged(limit: Long, offset: Long): TransactionPage = queries.withResult {
+    TransactionPage(
+      rows = getPaged(limit, offset, ::TransactionRow).awaitAsList(),
+      topBalance = balanceFromOffset(offset).awaitAsOne(),
+    )
   }
 
   suspend fun getByAccountPaged(
     account: AccountId,
     limit: Long,
     offset: Long,
-  ): List<TransactionRow> = queries.withResult {
-    getByAccountPaged(account, limit, offset, ::TransactionRow).awaitAsList()
+  ): TransactionPage = queries.withResult {
+    TransactionPage(
+      rows = getByAccountPaged(account, limit, offset, ::TransactionRow).awaitAsList(),
+      topBalance = balanceFromOffsetByAccount(account, offset).awaitAsOne(),
+    )
+  }
+
+  // Current balance of every transaction, or of one account's
+  fun observeBalance(account: AccountId? = null): Flow<Long> {
+    val query =
+      if (account == null) queries.balanceFromOffset(offset = 0)
+      else queries.balanceFromOffsetByAccount(account, offset = 0)
+    return query.asFlow().map { it.awaitAsOne() }.distinctUntilChanged()
   }
 
   // Rows come back in the order of the given IDs
@@ -87,12 +107,14 @@ class TransactionDao(database: BudgetDatabase) {
     date: LocalDate,
     notes: String? = null,
     amount: Double = 0.0,
+    isParent: Boolean = false,
+    parent: String? = null,
   ) = queries.withoutResult {
     insert(
       Transactions(
         id = TransactionId(id),
-        isParent = false,
-        isChild = false,
+        isParent = isParent,
+        isChild = parent != null,
         acct = AccountId(account),
         category = CategoryId(category),
         amount = Amount(amount),
@@ -110,7 +132,7 @@ class TransactionDao(database: BudgetDatabase) {
         tombstone = null,
         cleared = null,
         pending = null,
-        parent_id = null,
+        parent_id = parent?.let(::TransactionId),
         schedule = null,
         reconciled = null,
         raw_synced_data = null,

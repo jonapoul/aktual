@@ -2,7 +2,7 @@ package aktual.budget.transactions.vm
 
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
-import aktual.budget.db.dao.TransactionRow
+import aktual.budget.db.dao.TransactionPage
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
@@ -28,24 +28,25 @@ internal class TransactionsPagingSource(
       val offset = (page * params.loadSize).toLong()
       val limit = params.loadSize.toLong()
 
-      val rows =
+      val transactions =
         when (val tagSpec = spec.tagSpec) {
           AllTags -> {
-            loadPage(limit, offset)
+            loadPage(limit, offset).toTransactions()
           }
 
+          // A running balance means little over a subset of the account, so tag lists have none
           is SpecificTag -> {
             val ids = filteredIds ?: loadFilteredIds(tagSpec.id).also { filteredIds = it }
             val from = offset.toInt().coerceIn(0, ids.size)
             val to = (from + limit.toInt()).coerceAtMost(ids.size)
-            transactionDao.getByIds(ids.subList(from, to))
+            transactionDao.getByIds(ids.subList(from, to)).map { it.toTransaction(balance = null) }
           }
         }
 
       LoadResult.Page(
-        data = rows.map { it.toTransaction() },
+        data = transactions,
         prevKey = if (page > 0) page - 1 else null,
-        nextKey = if (rows.size < params.loadSize) null else page + 1,
+        nextKey = if (transactions.size < params.loadSize) null else page + 1,
       )
     } catch (e: CancellationException) {
       throw e
@@ -53,7 +54,7 @@ internal class TransactionsPagingSource(
       LoadResult.Error(e)
     }
 
-  private suspend fun loadPage(limit: Long, offset: Long): List<TransactionRow> =
+  private suspend fun loadPage(limit: Long, offset: Long): TransactionPage =
     when (val accountSpec = spec.accountSpec) {
       AllAccounts -> transactionDao.getPaged(limit, offset)
       is SpecificAccount -> transactionDao.getByAccountPaged(accountSpec.id, limit, offset)

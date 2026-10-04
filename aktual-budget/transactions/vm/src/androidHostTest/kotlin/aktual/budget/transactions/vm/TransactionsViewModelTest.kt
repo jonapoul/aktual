@@ -14,6 +14,7 @@ import aktual.budget.model.AccountSpec
 import aktual.budget.model.AccountSpec.AllAccounts
 import aktual.budget.model.AccountSpec.SpecificAccount
 import aktual.budget.model.AccountSyncSource
+import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
@@ -41,6 +42,7 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
+import assertk.assertions.isFalse
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.createDynamicGraph
 import kotlin.io.path.createTempDirectory
@@ -185,7 +187,11 @@ class TransactionsViewModelTest {
     // then
     assertThat(result)
       .isPage()
-      .withData(TRANSACTION_C, TRANSACTION_B, TRANSACTION_A) // Returned in reverse insertion order
+      .withData( // Same-day ties are broken by id, each with the balance after it
+        TRANSACTION_A.withBalance(370.35),
+        TRANSACTION_B.withBalance(246.90),
+        TRANSACTION_C.withBalance(123.45),
+      )
       .withPrevKey(null)
       .withNextKey(null) // No more pages since we loaded fewer items than page size
   }
@@ -215,7 +221,7 @@ class TransactionsViewModelTest {
     // then
     assertThat(result)
       .isPage()
-      .withData(TRANSACTION_A)
+      .withData(TRANSACTION_A.withBalance(123.45))
       .withPrevKey(null)
       .withNextKey(null) // No more pages since we loaded fewer items than page size
   }
@@ -283,7 +289,14 @@ class TransactionsViewModelTest {
     // then
     assertThat(result)
       .isPage()
-      .withData(DATED_F, DATED_E, DATED_D, DATED_C, DATED_B, DATED_A)
+      .withData(
+        DATED_F.withBalance(740.70),
+        DATED_D.withBalance(617.25),
+        DATED_E.withBalance(493.80),
+        DATED_A.withBalance(370.35),
+        DATED_B.withBalance(246.90),
+        DATED_C.withBalance(123.45),
+      )
       .withPrevKey(null)
       .withNextKey(null) // No more pages since we loaded fewer items than page size
   }
@@ -313,15 +326,23 @@ class TransactionsViewModelTest {
     val firstPage =
       source.load(LoadParams.Refresh(key = null, loadSize = 2, placeholdersEnabled = false))
 
-    // then - first page contains first 2 items (in reverse order)
-    assertThat(firstPage).isPage().withData(DATED_F, DATED_E).withPrevKey(null).withNextKey(1)
+    // then - first page contains first 2 items, newest first
+    assertThat(firstPage)
+      .isPage()
+      .withData(DATED_F.withBalance(740.70), DATED_D.withBalance(617.25))
+      .withPrevKey(null)
+      .withNextKey(1)
 
     // when - load second page
     val secondPage =
       source.load(LoadParams.Append(key = 1, loadSize = 2, placeholdersEnabled = false))
 
-    // then - second page contains next 2 items
-    assertThat(secondPage).isPage().withData(DATED_D, DATED_C).withPrevKey(0).withNextKey(2)
+    // then - second page contains next 2 items, its balances carrying on from the first page
+    assertThat(secondPage)
+      .isPage()
+      .withData(DATED_E.withBalance(493.80), DATED_A.withBalance(370.35))
+      .withPrevKey(0)
+      .withNextKey(2)
 
     // when - load third page
     val thirdPage =
@@ -330,7 +351,7 @@ class TransactionsViewModelTest {
     // then - third page contains remaining items
     assertThat(thirdPage)
       .isPage()
-      .withData(DATED_B, DATED_A)
+      .withData(DATED_B.withBalance(246.90), DATED_C.withBalance(123.45))
       .withPrevKey(1)
       .withNextKey(3) // More pages possible since we loaded exactly the page size
   }
@@ -391,7 +412,71 @@ class TransactionsViewModelTest {
     val snapshot = viewModel.pagingData.asSnapshot()
 
     // then
-    assertThat(snapshot).containsExactly(DATED_D, DATED_A)
+    assertThat(snapshot).containsExactly(DATED_D.withBalance(246.90), DATED_A.withBalance(123.45))
+  }
+
+  @Test
+  fun `Split children have no balance and aren't counted twice`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("a", "a", "a", "a", date = DATE_1)
+      insertTransaction("p", "a", "a", "a", date = DATE_2, amount = 100.0, isParent = true)
+      insertTransaction("p1", "a", "b", "a", date = DATE_2, amount = 60.0, parent = "p")
+      insertTransaction("p2", "a", "c", "a", date = DATE_2, amount = 40.0, parent = "p")
+    }
+    advanceUntilIdle()
+
+    // when
+    val snapshot = viewModel.pagingData.asSnapshot()
+
+    // then
+    assertThat(snapshot)
+      .containsExactly(
+        transaction("p", "a", "a", "a", date = DATE_2, amount = 100.0, balance = 223.45)
+          .copy(category = null),
+        transaction("p1", "a", "b", "a", date = DATE_2, amount = 60.0),
+        transaction("p2", "a", "c", "a", date = DATE_2, amount = 40.0),
+        TRANSACTION_A.withBalance(123.45),
+      )
+    viewModel.balance.test { assertThatNextEmissionIsEqualTo(Amount(223.45)) }
+  }
+
+  @Test
+  fun `Balance follows the transactions in view`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(AccountId("a")))
+    with(transactions) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a")
+      insertTransaction(id = "b", account = "b", category = "b", payee = "b")
+    }
+    advanceUntilIdle()
+
+    viewModel.balance.test {
+      assertThatNextEmissionIsEqualTo(Amount(123.45))
+
+      // when
+      transactions.insertTransaction("c", "a", "c", "c", date = DATE_2, amount = -23.45)
+
+      // then
+      assertThatNextEmissionIsEqualTo(Amount(100.0))
+    }
+  }
+
+  @Test
+  fun `Tag-filtered lists show no balance`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    transactions.insertTransaction(id = "a", account = "a", category = "a", payee = "a")
+    advanceUntilIdle()
+
+    // when
+    val tagged = factory.create(TransactionsSpec(tagSpec = TagSpec.SpecificTag(TagId("food"))))
+
+    // then
+    assertThat(tagged.showBalance).isFalse()
+    tagged.balance.test { assertThatNextEmissionIsEqualTo(null) }
+    tagged.viewModelScope.cancel()
   }
 
   @Test
@@ -400,7 +485,7 @@ class TransactionsViewModelTest {
     buildViewModel(AllAccounts)
     transactions.insertTransaction(id = "a", account = "a", category = "a", payee = "a")
     advanceUntilIdle()
-    assertThat(viewModel.pagingData.asSnapshot()).containsExactly(TRANSACTION_A)
+    assertThat(viewModel.pagingData.asSnapshot()).containsExactly(TRANSACTION_A.withBalance(123.45))
 
     // when
     val edit = LocalChange("transactions", row = "a", column = "notes", MessageValue.String("New"))
@@ -408,7 +493,8 @@ class TransactionsViewModelTest {
     advanceUntilIdle()
 
     // then
-    assertThat(viewModel.pagingData.asSnapshot()).containsExactly(TRANSACTION_A.copy(notes = "New"))
+    assertThat(viewModel.pagingData.asSnapshot())
+      .containsExactly(TRANSACTION_A.copy(notes = "New").withBalance(123.45))
   }
 
   @Test

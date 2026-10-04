@@ -1,5 +1,6 @@
 package aktual.budget.transactions.vm
 
+import aktual.budget.db.dao.TransactionPage
 import aktual.budget.db.dao.TransactionRow
 import aktual.budget.model.Amount
 import aktual.budget.model.TransactionId
@@ -20,10 +21,20 @@ data class Transaction(
   override fun compareTo(other: Transaction) = date.compareTo(other.date)
 }
 
-// Dummy running balance until #1675 computes the real one
-internal val DummyBalance = Amount(3412.60)
+// Walks down the page from the balance after its first row. Split children show none, since their
+// parent's amount already covers theirs.
+internal fun TransactionPage.toTransactions(): List<Transaction> {
+  var balance = topBalance
+  return rows.map { row ->
+    if (row.isChild == true) {
+      row.toTransaction(balance = null)
+    } else {
+      row.toTransaction(Amount(balance)).also { balance -= row.amount }
+    }
+  }
+}
 
-internal fun TransactionRow.toTransaction() =
+internal fun TransactionRow.toTransaction(balance: Amount?) =
   Transaction(
     id = id,
     date = date,
@@ -32,5 +43,5 @@ internal fun TransactionRow.toTransaction() =
     notes = notes,
     category = categoryName,
     amount = Amount(amount),
-    balance = DummyBalance,
+    balance = balance,
   )
