@@ -7,6 +7,8 @@ import androidx.compose.runtime.Immutable
 internal sealed interface Action {
   data object NavBack : Action
 
+  data object BankSync : Action
+
   data class SetPrivacyMode(val isPrivacyEnabled: Boolean) : Action
 
   data class SetDensity(val density: TransactionsDensity) : Action

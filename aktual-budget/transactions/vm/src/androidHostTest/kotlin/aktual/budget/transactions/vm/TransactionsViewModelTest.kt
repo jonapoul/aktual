@@ -1,5 +1,8 @@
 package aktual.budget.transactions.vm
 
+import aktual.budget.banksync.domain.BankSyncError
+import aktual.budget.banksync.domain.BankSyncResult
+import aktual.budget.banksync.domain.BankSyncSummary
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
@@ -10,12 +13,14 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.AccountSpec.AllAccounts
 import aktual.budget.model.AccountSpec.SpecificAccount
+import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.CategoryId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TagId
 import aktual.budget.model.TagSpec
+import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
 import aktual.core.model.ServerUrl
 import aktual.di.AppGraph
@@ -35,6 +40,7 @@ import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.createDynamicGraph
 import kotlin.io.path.createTempDirectory
@@ -67,6 +73,7 @@ class TransactionsViewModelTest {
   private lateinit var categories: CategoryDao
   private lateinit var tags: TagsDao
   private lateinit var sync: SyncDao
+  private lateinit var bankSync: FakeBankSyncController
   private lateinit var factory: TransactionsViewModel.Factory
 
   // fake
@@ -106,12 +113,19 @@ class TransactionsViewModelTest {
       categories = budgetGraph[CategoryDao::class]
       tags = budgetGraph[TagsDao::class]
       sync = budgetGraph[SyncDao::class]
+      bankSync = budgetGraph[FakeBankSyncController::class]
     }
 
     // add some utility entities
     accounts.insertAccount(AccountId("a"), "Amex")
     accounts.insertAccount(AccountId("b"), "Barclays")
     accounts.insertAccount(AccountId("c"), "Chase")
+    accounts.insert(
+      id = LINKED,
+      accountId = "remote",
+      name = "Linked",
+      accountSyncSource = AccountSyncSource.SimpleFin,
+    )
 
     payees.insertPayee(PayeeId("a"), "Argos")
     payees.insertPayee(PayeeId("b"), "B&Q")
@@ -418,7 +432,92 @@ class TransactionsViewModelTest {
     other.viewModelScope.cancel()
   }
 
+  @Test
+  fun `Only a linked account can bank sync`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(LINKED))
+    val unlinked = factory.create(TransactionsSpec(SpecificAccount(AccountId("a"))))
+    val all = factory.create(TransactionsSpec(AllAccounts))
+    advanceUntilIdle()
+
+    // then
+    viewModel.canBankSync.test { assertThatNextEmissionIsEqualTo(true) }
+    unlinked.canBankSync.test { assertThatNextEmissionIsEqualTo(false) }
+    all.canBankSync.test { assertThatNextEmissionIsEqualTo(false) }
+
+    unlinked.viewModelScope.cancel()
+    all.viewModelScope.cancel()
+  }
+
+  @Test
+  fun `Bank sync starts the controller for this account only`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(LINKED))
+    val all = factory.create(TransactionsSpec(AllAccounts))
+
+    // when
+    all.bankSync()
+
+    // then
+    assertThat(bankSync.started).isEmpty()
+
+    // when
+    viewModel.bankSync()
+
+    // then
+    assertThat(bankSync.started).containsExactly(setOf(LINKED))
+
+    all.viewModelScope.cancel()
+  }
+
+  @Test
+  fun `Is syncing while this account is pending`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(LINKED))
+
+    viewModel.isBankSyncing.test {
+      assertThatNextEmissionIsEqualTo(false)
+
+      // when
+      bankSync.running(pending = listOf(AccountId("a"), LINKED))
+
+      // then
+      assertThatNextEmissionIsEqualTo(true)
+
+      // when
+      bankSync.running(pending = listOf(AccountId("a")))
+
+      // then
+      assertThatNextEmissionIsEqualTo(false)
+    }
+  }
+
+  @Test
+  fun `A finished sync only announces this account's results`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(LINKED))
+    val other = BankSyncResult.Failed(AccountId("a"), "Amex", BankSyncError.Internal(null))
+    val synced =
+      BankSyncResult.Synced(
+        LINKED,
+        "Linked",
+        added = listOf(TransactionId("t")),
+        updated = emptyList(),
+      )
+
+    viewModel.bankSyncFinished.test {
+      // when
+      bankSync.finish(other)
+      bankSync.finish(other, synced)
+
+      // then
+      assertThatNextEmissionIsEqualTo(BankSyncSummary.Synced("Linked", added = 1, updated = 0))
+    }
+  }
+
   private companion object {
+    val LINKED = AccountId("linked")
+
     val TRANSACTION_A = transaction(id = "a", account = "a", category = "a", payee = "a")
     val TRANSACTION_B = transaction(id = "b", account = "b", category = "b", payee = "b")
     val TRANSACTION_C = transaction(id = "c", account = "c", category = "c", payee = "c")

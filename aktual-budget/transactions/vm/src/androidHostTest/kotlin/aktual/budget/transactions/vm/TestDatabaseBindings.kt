@@ -37,4 +37,9 @@ internal object TestDatabaseBindings {
   @Provides @IntoMap @AccessorKey(TagsDao::class) fun tags(dao: TagsDao): Accessor = { dao }
 
   @Provides @IntoMap @AccessorKey(SyncDao::class) fun sync(dao: SyncDao): Accessor = { dao }
+
+  @Provides
+  @IntoMap
+  @AccessorKey(FakeBankSyncController::class)
+  fun bankSync(controller: FakeBankSyncController): Accessor = { controller }
 }
