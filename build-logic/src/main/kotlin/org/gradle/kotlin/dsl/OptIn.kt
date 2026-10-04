@@ -1,5 +1,6 @@
-package aktual.gradle.dsl
+package org.gradle.kotlin.dsl
 
+import aktual.gradle.dsl.kotlin
 import org.gradle.api.Project
 
 const val EXPERIMENTAL_MATERIAL_3 = "androidx.compose.material3.ExperimentalMaterial3Api"

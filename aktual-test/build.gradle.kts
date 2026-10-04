@@ -1,6 +1,3 @@
-import blueprint.core.androidMainDependencies
-import blueprint.core.commonMainDependencies
-
 plugins { id("aktual.module.kotlin") }
 
 kotlin {

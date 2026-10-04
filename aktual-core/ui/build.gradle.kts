@@ -1,8 +1,3 @@
-import aktual.gradle.dsl.EXPERIMENTAL_MATERIAL_3
-import aktual.gradle.dsl.optIn
-import blueprint.core.androidMainDependencies
-import blueprint.core.commonMainDependencies
-
 plugins { id("aktual.module.compose") }
 
 optIn(EXPERIMENTAL_MATERIAL_3, "dev.chrisbanes.haze.ExperimentalHazeApi")

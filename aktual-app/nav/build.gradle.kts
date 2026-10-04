@@ -1,5 +1,3 @@
-import blueprint.core.commonMainDependencies
-
 plugins {
   id("aktual.module.compose")
   alias(libs.plugins.kotlin.serialization)

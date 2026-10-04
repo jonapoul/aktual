@@ -44,7 +44,6 @@ The `List{Name}` prefix (e.g. `ListRules`) is used for all list-specific classes
 ### `{dir}/vm/build.gradle.kts`
 
 ```kotlin
-import blueprint.core.commonMainDependencies
 
 plugins { id("aktual.module.viewmodel") }
 
@@ -125,7 +124,6 @@ class List{Name}ViewModel : ViewModel() {
 ```kotlin
 import aktual.gradle.dsl.EXPERIMENTAL_MATERIAL_3
 import aktual.gradle.dsl.optIn
-import blueprint.core.commonMainDependencies
 
 plugins { id("aktual.module.compose") }
 

@@ -1,18 +1,15 @@
-@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
-
 package aktual.gradle
 
-import aktual.gradle.dsl.androidHostTestDependencies
 import aktual.gradle.dsl.apply
 import aktual.gradle.dsl.composeLibraries
 import aktual.gradle.dsl.kotlin
-import blueprint.core.androidMainDependencies
-import blueprint.core.commonMainDependencies
-import blueprint.core.commonTestDependencies
 import blueprint.core.get
 import blueprint.core.libs
 import org.gradle.api.Project
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.gradle.kotlin.dsl.androidHostTestDependencies
+import org.gradle.kotlin.dsl.androidMainDependencies
+import org.gradle.kotlin.dsl.commonMainDependencies
+import org.gradle.kotlin.dsl.commonTestDependencies
 
 class ModuleCompose : ProjectPlugin {
   override fun Project.applyTo() {

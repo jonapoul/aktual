@@ -3,13 +3,13 @@ package aktual.gradle
 import aktual.gradle.dsl.apply
 import aktual.gradle.dsl.configure
 import aktual.gradle.dsl.kotlin
-import blueprint.core.commonMainDependencies
 import blueprint.core.get
 import blueprint.core.libs
 import dev.zacsweers.metro.gradle.MetroGradleSubplugin
 import dev.zacsweers.metro.gradle.MetroPluginExtension
 import dev.zacsweers.metro.gradle.RequiresIdeSupport
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.commonMainDependencies
 
 class ConventionDi : ProjectPlugin {
   override fun Project.applyTo() {
