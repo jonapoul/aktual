@@ -5,11 +5,8 @@ kotlin {
     api(libs.alakazam.kotlin)
     api(project(":aktual-account:domain"))
     api(project(":aktual-budget:demo"))
-    api(project(":aktual-di:runlevel"))
-    api(project(":aktual-prefs"))
     implementation(libs.androidx.datastore.core)
     implementation(libs.ktor.core)
-    implementation(project(":aktual-api"))
   }
 
   commonTestDependencies {

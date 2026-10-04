@@ -6,7 +6,6 @@ kotlin {
     api(libs.okio)
     api(project(":aktual-budget:model"))
     api(project(":aktual-core"))
-    api(project(":aktual-core:model"))
     compileOnly(libs.androidx.compose.annotation)
   }
 

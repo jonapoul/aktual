@@ -9,7 +9,6 @@ kotlin {
   android { androidResources.enable = true }
 
   commonMainDependencies {
-    api(project(":aktual-budget"))
     api(project(":aktual-di:runlevel"))
     implementation(libs.compose.resources)
     implementation(libs.kotlinx.serialization.json)
