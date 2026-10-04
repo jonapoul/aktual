@@ -1,0 +1,4 @@
+---
+# Only for modules, where detektCheck prints the issues once after merging them
+console-reports:
+  active: false
