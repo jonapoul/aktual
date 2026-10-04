@@ -1,13 +1,16 @@
 package aktual.budget.home.vm
 
+import aktual.budget.budgeting.domain.BudgetMonthCalculatorImpl
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.BudgetDao
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.withoutResult
 import aktual.budget.home.domain.AccountsSummaryLoader
+import aktual.budget.home.domain.ThisMonthLoader
 import aktual.budget.home.domain.UpcomingSchedulesLoader
 import aktual.budget.home.vm.AccountsCardState.Loaded
 import aktual.budget.model.AccountId
@@ -184,10 +187,12 @@ class HomeViewModelTest {
       transform { it.netWorth }.isEqualTo(Amount(netWorth))
     }
 
-  // Waits for both cards, so a late first load of one isn't mistaken for a change to the other
+  // Waits for every card, so a late first load of one isn't mistaken for a change to the other
   private suspend fun ReceiveTurbine<HomeState>.awaitSettled(): HomeState {
     var state = awaitItem()
-    while (state.accounts == Loading || state.upcoming == Loading) state = awaitItem()
+    while (state.thisMonth == Loading || state.accounts == Loading || state.upcoming == Loading) {
+      state = awaitItem()
+    }
     return state
   }
 
@@ -200,6 +205,14 @@ class HomeViewModelTest {
     prefs: TestBudgetLocalPreferences = TestBudgetLocalPreferences(DbMetadata()),
   ): HomeViewModel {
     Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
+    val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
+    val calculator =
+      BudgetMonthCalculatorImpl(
+        budgetDao = BudgetDao(this, contexts),
+        preferencesDao = preferences(scope),
+        calendar = CALENDAR,
+        contexts = contexts,
+      )
     val schedulesLoader =
       SchedulesLoader(
         scheduleDao = ScheduleDao(this),
@@ -210,6 +223,7 @@ class HomeViewModelTest {
       )
     return HomeViewModel(
       localPreferences = prefs,
+      thisMonthLoader = ThisMonthLoader(calculator, CALENDAR),
       accountsSummaryLoader = AccountsSummaryLoader(AccountDao(this)),
       upcomingSchedulesLoader = UpcomingSchedulesLoader(schedulesLoader, CALENDAR),
     )

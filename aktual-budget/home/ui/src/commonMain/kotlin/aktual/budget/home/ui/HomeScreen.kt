@@ -18,13 +18,12 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -83,11 +82,13 @@ private fun HomeScaffold(
       Column(
         modifier =
           Modifier.fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScrollWithBar()
             .padding(innerPadding)
-            .padding(Dimens.Huge),
-        verticalArrangement = Arrangement.spacedBy(Dimens.Huge),
+            .padding(Dimens.VeryLarge),
+        verticalArrangement = Arrangement.spacedBy(Dimens.VeryLarge),
       ) {
+        ThisMonthCard(state = state.thisMonth)
+
         UpcomingCard(state = state.upcoming, onAction = onAction)
 
         AccountsCard(state = state.accounts, onAction = onAction)
@@ -118,6 +119,7 @@ private class HomeStateProvider :
   ColoredParameterProvider<HomeState>(
     HomeState(
       budgetName = "Household budget",
+      thisMonth = PREVIEW_THIS_MONTH,
       upcoming = PREVIEW_UPCOMING,
       accounts = AccountsCardState.Loaded(PREVIEW_ACCOUNTS),
     ),

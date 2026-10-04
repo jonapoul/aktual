@@ -3,6 +3,8 @@ package aktual.budget.home.vm
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.home.domain.AccountsSummary
 import aktual.budget.home.domain.AccountsSummaryLoader
+import aktual.budget.home.domain.ThisMonth
+import aktual.budget.home.domain.ThisMonthLoader
 import aktual.budget.home.domain.UpcomingSchedules
 import aktual.budget.home.domain.UpcomingSchedulesLoader
 import aktual.budget.model.DbMetadata
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.map
 @ContributesIntoMap(BudgetScope::class)
 class HomeViewModel(
   localPreferences: BudgetLocalPreferences,
+  thisMonthLoader: ThisMonthLoader,
   accountsSummaryLoader: AccountsSummaryLoader,
   upcomingSchedulesLoader: UpcomingSchedulesLoader,
 ) : ViewModel() {
@@ -34,13 +37,43 @@ class HomeViewModel(
       val budgetName by
         budgetNameFlow.collectAsState(initial = localPreferences[DbMetadata.BudgetName])
 
+      val thisMonthFlow = remember { thisMonthLoader.observe().map { it.toCardState() } }
+      val thisMonth by thisMonthFlow.collectAsState(initial = Loading)
+
       val accountsFlow = remember { accountsSummaryLoader.observe().map { it.toCardState() } }
       val accounts by accountsFlow.collectAsState(initial = Loading)
 
       val upcomingFlow = remember { upcomingSchedulesLoader.observe().map { it.toCardState() } }
       val upcoming by upcomingFlow.collectAsState(initial = Loading)
 
-      HomeState(budgetName = budgetName, upcoming = upcoming, accounts = accounts)
+      HomeState(
+        budgetName = budgetName,
+        thisMonth = thisMonth,
+        upcoming = upcoming,
+        accounts = accounts,
+      )
+    }
+
+  private fun ThisMonth.toCardState(): ThisMonthCardState =
+    when (val budget = budget) {
+      is Envelope ->
+        ThisMonthCardState.Envelope(
+          month = budget.month,
+          daysLeft = daysLeft,
+          spent = -budget.spent,
+          budgeted = budget.budgeted,
+          toBudget = budget.toBudget,
+        )
+
+      is Tracking ->
+        ThisMonthCardState.Tracking(
+          month = budget.month,
+          daysLeft = daysLeft,
+          spent = -budget.spent,
+          budgeted = budget.budgeted,
+          income = budget.income,
+          incomeBudgeted = budget.incomeBudgeted,
+        )
     }
 
   private fun UpcomingSchedules.toCardState(): UpcomingCardState =

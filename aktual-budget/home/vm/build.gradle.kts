@@ -6,6 +6,7 @@ kotlin {
   }
 
   androidHostTestDependencies {
+    implementation(libs.sqldelight.runtime)
     implementation(project(":aktual-test"))
   }
 }
