@@ -19,8 +19,8 @@ import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncedPrefKey.Global.UpcomingScheduledTransactionLength
 import aktual.budget.model.UpcomingLength
 import aktual.budget.schedules.domain.SchedulesLoader
-import aktual.core.Calendar
 import aktual.test.TestBudgetLocalPreferences
+import aktual.test.TestCalendar
 import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
@@ -246,7 +246,7 @@ class HomeViewModelTest {
     val DATE = LocalDate(2026, 1, 1)
     val TODAY = LocalDate(2026, 4, 1)
     val MISSED = LocalDate(2026, 3, 20)
-    val CALENDAR = Calendar { TODAY }
+    val CALENDAR = TestCalendar(TODAY)
 
     fun date(day: Int) = LocalDate(2026, 4, day)
   }

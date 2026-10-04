@@ -2,7 +2,6 @@ package aktual.budget.home.domain
 
 import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.core.Calendar
-import aktual.core.observeToday
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest

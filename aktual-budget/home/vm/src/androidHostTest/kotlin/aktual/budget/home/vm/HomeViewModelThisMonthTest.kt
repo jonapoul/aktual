@@ -16,8 +16,8 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.schedules.domain.SchedulesLoader
-import aktual.core.Calendar
 import aktual.test.TestBudgetLocalPreferences
+import aktual.test.TestCalendar
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.db.SqlDriver
@@ -40,7 +40,7 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class HomeViewModelThisMonthTest {
-  private var today = LocalDate(2026, 4, 15)
+  private val calendar = TestCalendar(LocalDate(2026, 4, 15))
 
   @AfterTest
   fun after() {
@@ -99,13 +99,13 @@ class HomeViewModelThisMonthTest {
 
   @Test
   fun `Rolls over to the next month at midnight`() {
-    today = LocalDate(2026, 4, 30)
+    calendar.set(LocalDate(2026, 4, 30))
     runThisMonthTest(envelopeBudget(30_000)) { viewModel, _ ->
       viewModel.state.test {
         assertThat(awaitThisMonth())
           .isEqualTo(envelope(budgeted = 30_000L, toBudget = 270_000L, daysLeft = 0))
 
-        today = LocalDate(2026, 5, 1)
+        calendar.set(LocalDate(2026, 5, 1))
         var state = awaitThisMonth()
         while (state.month != YearMonth(2026, 5)) state = awaitThisMonth()
         assertThat(state)
@@ -153,7 +153,6 @@ class HomeViewModelThisMonthTest {
 
   private fun BudgetDatabase.createViewModel(scope: TestScope): HomeViewModel {
     Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
-    val calendar = Calendar { today }
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val calculator =
       BudgetMonthCalculatorImpl(
