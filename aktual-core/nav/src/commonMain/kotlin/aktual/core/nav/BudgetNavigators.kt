@@ -1,5 +1,6 @@
 package aktual.core.nav
 
+import aktual.budget.model.AccountId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
@@ -83,4 +84,9 @@ class SearchTagsNavigator(private val stack: NavStack<BudgetNavKey>) {
 @Immutable
 class BankSyncNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke() = stack.push(BankSyncNavRoute)
+}
+
+@Immutable
+class BankSyncSettingsNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke(id: AccountId) = stack.push(BankSyncSettingsNavRoute(id))
 }

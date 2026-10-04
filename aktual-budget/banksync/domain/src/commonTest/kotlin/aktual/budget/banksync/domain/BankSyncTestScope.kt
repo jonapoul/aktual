@@ -73,6 +73,7 @@ internal class BankSyncTestScope(
   val preferences = PreferencesDao(database, TestCoroutineContexts(EmptyCoroutineContext))
 
   val accountDao = AccountDao(database)
+  val dao = BankSyncDao(database)
   private var nextId = 1
 
   val writer =

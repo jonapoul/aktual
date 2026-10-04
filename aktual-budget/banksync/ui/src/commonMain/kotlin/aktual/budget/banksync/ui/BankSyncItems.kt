@@ -22,6 +22,7 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,13 +52,22 @@ internal fun BankSyncAccountItem(
   account: BankSyncAccount,
   isLinked: Boolean,
   modifier: Modifier = Modifier,
+  onClick: (() -> Unit)? = null,
   sync: AccountSync? = null,
 ) {
+  val clickLabel = Strings.bankSyncSettingsOpen(account.name ?: Strings.bankSyncUnnamedAccount)
   Row(
     modifier =
       modifier
         .fillMaxWidth()
         .clip(RowShape)
+        .then(
+          if (onClick != null) {
+            Modifier.clickable(onClickLabel = clickLabel, onClick = onClick)
+          } else {
+            Modifier
+          }
+        )
         .background(colors.tableBackground, RowShape)
         .border(Hairline, colors.tableBorder, RowShape)
         .padding(BankSyncDS.itemCardPadding),

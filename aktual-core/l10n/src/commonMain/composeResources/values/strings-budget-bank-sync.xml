@@ -57,4 +57,30 @@
   <string name="bank_sync_status_timed_out">Timed out</string>
   <string name="bank_sync_status_account_missing">Account missing</string>
   <string name="bank_sync_status_unknown">Unknown</string>
+
+  <!-- Account settings - packages/desktop-client/src/components/banksync/EditSyncAccount.tsx -->
+  <string name="bank_sync_settings_title">Bank sync settings</string>
+  <string name="bank_sync_settings_open">Open %1$s’s bank sync settings</string>
+  <string name="bank_sync_settings_save">Save</string>
+  <string name="bank_sync_settings_save_failed">Couldn’t save settings: %1$s</string>
+  <string name="bank_sync_settings_failure_title">Couldn’t load bank sync settings</string>
+  <string name="bank_sync_settings_failure_missing">This account doesn’t exist</string>
+  <string name="bank_sync_settings_mapping">Field mapping</string>
+  <string name="bank_sync_settings_payment">Payment</string>
+  <string name="bank_sync_settings_deposit">Deposit</string>
+  <string name="bank_sync_settings_field_date">Date</string>
+  <string name="bank_sync_settings_field_payee">Payee</string>
+  <string name="bank_sync_settings_field_notes">Notes</string>
+  <string name="bank_sync_settings_unmapped">None</string>
+  <string name="bank_sync_settings_example">Example: %1$s</string>
+  <string name="bank_sync_settings_no_fields">No transactions found with mappable fields, accounts must have been synced at least once for this function to be available.</string>
+  <string name="bank_sync_settings_options">Options</string>
+  <string name="bank_sync_settings_import_pending">Import pending transactions</string>
+  <string name="bank_sync_settings_import_notes">Import transaction notes</string>
+  <string name="bank_sync_settings_reimport_deleted">Reimport deleted transactions</string>
+  <string name="bank_sync_settings_reimport_deleted_hint">By default imported transactions that you delete will be re-imported with the next bank sync operation. To disable this behaviour - untick this box.</string>
+  <string name="bank_sync_settings_update_dates">Update dates</string>
+  <string name="bank_sync_settings_update_dates_hint">By enabling this, the transaction date will be overwritten by the one provided by the bank.</string>
+  <string name="bank_sync_settings_investment">Investment account</string>
+  <string name="bank_sync_settings_investment_hint">Selecting this option will disable importing transactions and only import the account balance for use in reconciliation</string>
 </resources>

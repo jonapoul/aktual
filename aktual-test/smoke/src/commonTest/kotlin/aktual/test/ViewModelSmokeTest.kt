@@ -6,7 +6,9 @@ import aktual.account.vm.ChangePasswordViewModel
 import aktual.account.vm.LoginViewModel
 import aktual.account.vm.ServerUrlViewModel
 import aktual.budget.banksync.vm.BankSyncViewModel
+import aktual.budget.banksync.vm.settings.BankSyncSettingsViewModel
 import aktual.budget.list.vm.ListBudgetsViewModel
+import aktual.budget.model.AccountId
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.budget.reports.vm.montecarlo.MonteCarloViewModel
@@ -105,6 +107,12 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun about() = testSavedStateVM<AboutViewModel>()
 
   @Test fun bankSync() = testVm<BankSyncViewModel>()
+
+  @Test
+  fun bankSyncSettings() =
+    testAssistedVM<BankSyncSettingsViewModel, BankSyncSettingsViewModel.Factory> {
+      create(AccountId("abc-123"))
+    }
 
   @Test fun budgetList() = testVm<ListBudgetsViewModel>()
 
