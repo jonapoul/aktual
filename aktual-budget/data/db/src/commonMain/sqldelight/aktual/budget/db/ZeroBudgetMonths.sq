@@ -1,7 +1,7 @@
+import aktual.budget.model.Amount;
 import aktual.budget.model.ZeroBudgetMonthId;
-import kotlin.Boolean;
 
 CREATE TABLE IF NOT EXISTS zero_budget_months(
   id TEXT AS ZeroBudgetMonthId PRIMARY KEY,
-  buffered INTEGER AS Boolean DEFAULT 0
+  buffered INTEGER AS Amount DEFAULT 0
 );

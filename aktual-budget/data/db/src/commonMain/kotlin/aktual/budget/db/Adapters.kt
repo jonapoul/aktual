@@ -340,7 +340,8 @@ internal val TransactionFiltersAdapter =
     conditions_opAdapter = operator,
   )
 
-internal val ZeroBudgetMonthsAdapter = Zero_budget_months.Adapter(idAdapter = zeroBudgetMonthId)
+internal val ZeroBudgetMonthsAdapter =
+  Zero_budget_months.Adapter(idAdapter = zeroBudgetMonthId, bufferedAdapter = amount)
 
 internal val ZeroBudgetsAdapter =
   Zero_budgets.Adapter(
