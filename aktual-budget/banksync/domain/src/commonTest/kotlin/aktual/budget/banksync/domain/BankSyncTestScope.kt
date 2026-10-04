@@ -104,7 +104,7 @@ internal class BankSyncTestScope(
   private fun uuid() = "id-${nextId++}"
 
   fun controller(api: FakeBankSyncApi) =
-    BankSyncController(
+    BankSyncControllerImpl(
       api = api,
       importer = importer,
       writer = writer,

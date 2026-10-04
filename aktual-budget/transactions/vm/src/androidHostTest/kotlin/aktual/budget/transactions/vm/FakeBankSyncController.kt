@@ -1,0 +1,40 @@
+package aktual.budget.transactions.vm
+
+import aktual.budget.banksync.domain.BankSyncController
+import aktual.budget.banksync.domain.BankSyncControllerImpl
+import aktual.budget.banksync.domain.BankSyncProgress
+import aktual.budget.banksync.domain.BankSyncResult
+import aktual.budget.model.AccountId
+import aktual.di.BudgetScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+
+// Records what it's asked to sync, and reports whatever progress the test gives it
+@Inject
+@SingleIn(BudgetScope::class)
+@ContributesBinding(BudgetScope::class, replaces = [BankSyncControllerImpl::class])
+internal class FakeBankSyncController : BankSyncController {
+  override val progress = MutableStateFlow(BankSyncProgress())
+  override val finished = MutableSharedFlow<List<BankSyncResult>>(extraBufferCapacity = 1)
+  val started = mutableListOf<Set<AccountId>>()
+
+  override fun start(accounts: Set<AccountId>): Boolean {
+    started += accounts
+    return true
+  }
+
+  override suspend fun sync(accounts: Set<AccountId>) = error("Not used")
+
+  fun running(pending: List<AccountId>) = progress.update {
+    BankSyncProgress(isRunning = true, pending = pending)
+  }
+
+  suspend fun finish(vararg results: BankSyncResult) {
+    progress.update { BankSyncProgress(results = results.toList()) }
+    finished.emit(results.toList())
+  }
+}

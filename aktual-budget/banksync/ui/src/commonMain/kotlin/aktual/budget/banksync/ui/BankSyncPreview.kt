@@ -1,12 +1,14 @@
 package aktual.budget.banksync.ui
 
 import aktual.budget.banksync.vm.BankSyncAccount
-import aktual.budget.banksync.vm.BankSyncAccountStatus
 import aktual.budget.banksync.vm.BankSyncProvider
 import aktual.budget.banksync.vm.LastBankSync
+import aktual.budget.banksync.vm.LastBankSync.DaysAgo
+import aktual.budget.banksync.vm.LastBankSync.MinutesAgo
 import aktual.budget.banksync.vm.Success
 import aktual.budget.model.AccountId
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 internal object BankSyncPreview {
   val checking =
@@ -14,8 +16,8 @@ internal object BankSyncPreview {
       id = AccountId("checking"),
       name = "Checking",
       bankName = "Bankity Bank",
-      lastSync = LastBankSync.MinutesAgo(minutes = 5),
-      status = BankSyncAccountStatus.Ok,
+      lastSync = MinutesAgo(minutes = 5),
+      status = Ok,
     )
 
   val savings =
@@ -23,8 +25,8 @@ internal object BankSyncPreview {
       id = AccountId("savings"),
       name = "Savings",
       bankName = "Bankity Bank",
-      lastSync = LastBankSync.DaysAgo(days = 3),
-      status = BankSyncAccountStatus.ReauthRequired,
+      lastSync = DaysAgo(days = 3),
+      status = ReauthRequired,
     )
 
   val creditCard =
@@ -70,6 +72,18 @@ internal object BankSyncPreview {
           ),
         ),
       unlinked = persistentListOf(cash),
+      canSync = true,
+    )
+
+  val syncing =
+    success.copy(
+      providers =
+        success.providers
+          .map { p ->
+            p.copy(accounts = p.accounts.map { it.copy(isSyncing = true) }.toPersistentList())
+          }
+          .toPersistentList(),
+      isSyncing = true,
     )
 
   val unlinkedOnly = Success(providers = persistentListOf(), unlinked = persistentListOf(cash))

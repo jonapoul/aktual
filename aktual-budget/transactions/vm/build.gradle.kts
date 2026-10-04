@@ -22,7 +22,7 @@ kotlin {
     api(libs.alakazam.kotlin)
     api(libs.androidx.paging.common)
     api(libs.kotlinx.datetime)
-    api(project(":aktual-budget:data:db"))
+    api(project(":aktual-budget:banksync:domain"))
   }
 
   androidHostTestDependencies {

@@ -30,7 +30,7 @@ import kotlin.test.Test
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonNull
 
-internal class BankSyncControllerTest {
+internal class BankSyncControllerImplTest {
   private val api = FakeBankSyncApi()
 
   @Test
@@ -322,6 +322,21 @@ internal class BankSyncControllerTest {
       assertThat(progress.results.map { it.account }).containsExactly(A, B)
     }
     assertThat(controller.start()).isTrue()
+  }
+
+  @Test
+  fun `Finished syncs are announced`() = runBankSyncTest {
+    insertLinkedAccount(A)
+    api.responses["provider-a"] = success()
+    val controller = controller(api)
+
+    controller.finished.test {
+      assertThat(controller.start()).isTrue()
+      assertThat(awaitItem().map { it.account }).containsExactly(A)
+
+      controller.sync()
+      assertThat(awaitItem().map { it.account }).containsExactly(A)
+    }
   }
 
   @Test
