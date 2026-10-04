@@ -2,6 +2,10 @@ package aktual.budget.banksync.ui
 
 import aktual.budget.banksync.vm.link.ExternalAccountItem
 import aktual.budget.banksync.vm.link.ExternalAccounts
+import aktual.budget.banksync.vm.link.GoCardlessBankItem
+import aktual.budget.banksync.vm.link.GoCardlessBanks
+import aktual.budget.banksync.vm.link.GoCardlessLogin
+import aktual.budget.banksync.vm.link.GoCardlessLoginStatus
 import aktual.budget.banksync.vm.link.LinkBankAccountEvent
 import aktual.budget.banksync.vm.link.LinkBankAccountState
 import aktual.budget.banksync.vm.link.LinkBankAccountViewModel
@@ -57,10 +61,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -75,12 +83,14 @@ internal fun LinkBankAccountScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val snackbar = remember { SnackbarHostState() }
+  val uriHandler = LocalUriHandler.current
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
         LinkBankAccountEvent.Linked -> back()
         is LinkBankAccountEvent.LinkFailed -> snackbar.showLinkFailed(event.cause)
+        is LinkBankAccountEvent.OpenBrowser -> uriHandler.openUri(event.url)
       }
     }
   }
@@ -95,6 +105,10 @@ internal fun LinkBankAccountScreen(
         RetryListing -> viewModel.reload()
         is SelectProvider -> viewModel.select(action.source)
         is LinkTo -> viewModel.link(action.accountId)
+        is SelectCountry -> viewModel.selectCountry(action.country)
+        is LogIn -> viewModel.logIn(action.bankId)
+        ReopenLogin -> viewModel.reopenLogin()
+        CancelLogin -> viewModel.cancelLogin()
       }
     },
   )
@@ -117,6 +131,7 @@ private fun LinkBankAccountScaffold(
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
+  var bankQuery by rememberSaveable { mutableStateOf("") }
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
@@ -169,7 +184,7 @@ private fun LinkBankAccountScaffold(
             contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
             verticalArrangement = Arrangement.spacedBy(BankSyncDS.listItemSpacing),
           ) {
-            choosing(state, onAction)
+            choosing(state, bankQuery, { bankQuery = it }, onAction)
           }
         }
       }
@@ -186,6 +201,8 @@ private fun backAction(onAction: LinkBankAccountActionHandler) =
 
 private fun LazyListScope.choosing(
   state: LinkBankAccountState.Choosing,
+  bankQuery: String,
+  onBankQuery: (String) -> Unit,
   onAction: LinkBankAccountActionHandler,
 ) {
   item(key = "header") {
@@ -224,8 +241,15 @@ private fun LazyListScope.choosing(
     }
     is ExternalAccounts.Failure -> {
       item(key = "failure") {
-        ListingFailure(cause = accounts.cause, onRetry = { onAction(RetryListing) })
+        ListingFailure(
+          title = Strings.bankSyncLinkListFailed,
+          cause = accounts.cause,
+          onRetry = { onAction(RetryListing) },
+        )
       }
+    }
+    is ExternalAccounts.NeedsLogin -> {
+      goCardlessLogin(accounts.login, bankQuery, onBankQuery, onAction)
     }
     is ExternalAccounts.Loaded -> {
       if (accounts.items.isEmpty()) {
@@ -252,13 +276,18 @@ private fun LazyListScope.choosing(
 }
 
 @Composable
-private fun ListingFailure(cause: String?, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+internal fun ListingFailure(
+  title: String,
+  cause: String?,
+  onRetry: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   Column(
     modifier = modifier.fillMaxWidth().padding(BankSyncDS.headerPadding),
     verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsLabelSpacing),
   ) {
     Text(
-      text = Strings.bankSyncLinkListFailed,
+      text = title,
       style = typography.titleSmall,
       color = colors.errorText,
     )
@@ -348,11 +377,36 @@ private val PreviewAccounts =
     ExternalAccountItem("ACT-3", "Savings", "Other Bank", Amount(500), linkedTo = "Savings"),
   )
 
-private fun previewChoosing(accounts: ExternalAccounts, isLinking: Boolean = false) =
+private val PreviewBanks =
+  GoCardlessBanks.Loaded(
+    persistentListOf(
+      GoCardlessBankItem("MONZO_MONZGB2L", "Monzo"),
+      GoCardlessBankItem("REVOLUT_REVOGB21", "Revolut"),
+      GoCardlessBankItem("STARLING_SRLGGB3L", "Starling"),
+    )
+  )
+
+private fun previewLogin(
+  banks: GoCardlessBanks = PreviewBanks,
+  status: GoCardlessLoginStatus = GoCardlessLoginStatus.Idle,
+) =
+  previewChoosing(
+    accounts =
+      ExternalAccounts.NeedsLogin(
+        GoCardlessLogin(persistentListOf("GB", "IE"), country = "GB", banks, status)
+      ),
+    selected = AccountSyncSource.GoCardless,
+  )
+
+private fun previewChoosing(
+  accounts: ExternalAccounts,
+  isLinking: Boolean = false,
+  selected: AccountSyncSource = AccountSyncSource.SimpleFin,
+) =
   LinkBankAccountState.Choosing(
     accountName = "Cash",
-    providers = persistentListOf(AccountSyncSource.SimpleFin, AccountSyncSource.Akahu),
-    selected = AccountSyncSource.SimpleFin,
+    providers = persistentListOf(AccountSyncSource.GoCardless, AccountSyncSource.SimpleFin),
+    selected = selected,
     accounts = accounts,
     isLinking = isLinking,
   )
@@ -363,6 +417,11 @@ private class LinkBankAccountStateProvider :
     previewChoosing(ExternalAccounts.Loaded(PreviewAccounts), isLinking = true),
     previewChoosing(ExternalAccounts.Loading),
     previewChoosing(ExternalAccounts.Failure("Invalid access token")),
+    previewLogin(),
+    previewLogin(banks = GoCardlessBanks.Loading),
+    previewLogin(banks = GoCardlessBanks.Failure("Invalid secret")),
+    previewLogin(status = GoCardlessLoginStatus.Waiting("Monzo", link = "https://example.com")),
+    previewLogin(status = GoCardlessLoginStatus.Failed(cause = null, isTimeout = true)),
     LinkBankAccountState.NoProviders,
     LinkBankAccountState.Loading,
     LinkBankAccountState.Failure(cause = null),

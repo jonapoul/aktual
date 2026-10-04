@@ -26,6 +26,26 @@ internal fun externalAccounts(
   }
 }
 
+// The accounts shared through a GoCardless login, which is the bank's ID. See
+// SyncServerGoCardlessAccount in packages/loot-core/src/types/models/gocardless.ts, whose
+// institution is either a name or an object with one
+internal fun goCardlessAccounts(
+  requisitionId: String,
+  accounts: JsonArray,
+): List<ExternalBankAccount> = accounts.mapNotNull { element ->
+  val json = element as? JsonObject ?: return@mapNotNull null
+  val institution = json["institution"]
+  ExternalBankAccount(
+    accountId = json.string("account_id") ?: return@mapNotNull null,
+    name = json.string(NAME).orEmpty(),
+    institution =
+      (institution as? JsonObject)?.string(NAME) ?: institution.primitive()?.contentOrNull,
+    orgId = requisitionId,
+    orgDomain = null,
+    balance = null,
+  )
+}
+
 private fun simpleFin(json: JsonObject): ExternalBankAccount? {
   val org = json["org"] as? JsonObject
   return ExternalBankAccount(

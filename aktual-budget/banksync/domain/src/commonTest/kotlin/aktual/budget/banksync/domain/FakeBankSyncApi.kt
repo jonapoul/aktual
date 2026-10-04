@@ -6,6 +6,7 @@ import aktual.api.model.banksync.BankSyncStatusResponse
 import aktual.api.model.banksync.BankSyncTransaction
 import aktual.api.model.banksync.BankSyncTransactionsRequest
 import aktual.api.model.banksync.BankSyncTransactionsResponse
+import aktual.api.model.banksync.GoCardlessAccountsResponse
 import aktual.api.model.banksync.SimpleFinBatchRequest
 import aktual.api.model.banksync.SimpleFinBatchResponse
 import aktual.budget.model.AccountSyncSource
@@ -21,6 +22,9 @@ internal class FakeBankSyncApi : BankSyncApi {
   val removedRequisitions = mutableListOf<String>()
   var removeError: Exception? = null
   var error: Exception? = null
+  val pollResponses = ArrayDeque<GoCardlessAccountsResponse>()
+  val polled = mutableListOf<String>()
+  var pendingForever = false
 
   override suspend fun status(source: AccountSyncSource): BankSyncStatusResponse =
     throw UnsupportedOperationException()
@@ -43,6 +47,18 @@ internal class FakeBankSyncApi : BankSyncApi {
   override suspend fun accounts(source: AccountSyncSource): BankSyncAccountsResponse {
     error?.let { throw it }
     return accounts.getValue(source)
+  }
+
+  override suspend fun goCardlessBanks(country: String, showDemo: Boolean) =
+    throw UnsupportedOperationException()
+
+  override suspend fun goCardlessLogin(bankId: String) = throw UnsupportedOperationException()
+
+  // Each poll takes the next queued response, or is pending forever if [pendingForever]
+  override suspend fun goCardlessAccounts(requisitionId: String): GoCardlessAccountsResponse {
+    polled += requisitionId
+    error?.let { throw it }
+    return if (pendingForever) GoCardlessAccountsResponse.Pending else pollResponses.removeFirst()
   }
 
   override suspend fun removeGoCardlessRequisition(requisitionId: String): Boolean {
