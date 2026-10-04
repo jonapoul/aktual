@@ -47,3 +47,16 @@ Content-Type: application/json
 }
 
 <> poll-auth-success.200.json
+
+###
+# @name enablebanking/configure
+POST {{ACTUAL_BASE_URL}}/enablebanking/configure
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{
+    "applicationId": "{{ACTUAL_ENABLEBANKING_APPLICATION_ID}}",
+    "secretKey": "{{ACTUAL_ENABLEBANKING_SECRET_KEY}}"
+}
+
+<> configure-success.200.json

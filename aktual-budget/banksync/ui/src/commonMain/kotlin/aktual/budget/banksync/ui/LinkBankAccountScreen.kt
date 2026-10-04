@@ -15,10 +15,12 @@ import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
 import aktual.core.icons.material.AccountBalance
 import aktual.core.icons.material.ArrowBack
+import aktual.core.icons.material.Key
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.BankSyncProvidersNavigator
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -72,6 +74,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.persistentListOf
@@ -80,6 +83,7 @@ import kotlinx.collections.immutable.persistentListOf
 internal fun LinkBankAccountScreen(
   id: AccountId?,
   back: BackNavigator,
+  providers: BankSyncProvidersNavigator,
   modifier: Modifier = Modifier,
   viewModel: LinkBankAccountViewModel = linkBankAccountViewModel(id),
 ) {
@@ -95,6 +99,13 @@ internal fun LinkBankAccountScreen(
         is OpenBrowser -> uriHandler.openUri(event.url)
       }
     }
+  }
+
+  // check again on return from setting one up
+  @Suppress("ComposeViewModelForwarding")
+  LifecycleResumeEffect(viewModel) {
+    viewModel.refreshProviders()
+    onPauseOrDispose {}
   }
 
   LinkBankAccountScaffold(
@@ -113,6 +124,7 @@ internal fun LinkBankAccountScreen(
         is LogIn -> viewModel.logIn(action.bankId)
         ReopenLogin -> viewModel.reopenLogin()
         CancelLogin -> viewModel.cancelLogin()
+        OpenProviders -> providers()
       }
     },
   )
@@ -172,13 +184,22 @@ private fun LinkBankAccountScaffold(
             action = backAction(onAction),
           )
         }
-        NoProviders -> {
+        is NoProviders -> {
           FailureScreen(
             modifier = Modifier.padding(innerPadding),
             title = Strings.bankSyncLinkNoProvidersTitle,
             reason = Strings.bankSyncLinkNoProvidersMessage,
             icon = MaterialIcons.AccountBalance,
-            action = backAction(onAction),
+            action =
+              if (state.hasServer) {
+                FailureAction(
+                  text = { Strings.bankSyncProvidersOpen },
+                  icon = MaterialIcons.Key,
+                  onClick = { onAction(OpenProviders) },
+                )
+              } else {
+                backAction(onAction)
+              },
           )
         }
         is Choosing -> {
@@ -458,7 +479,8 @@ private class LinkBankAccountStateProvider :
     previewLogin(banks = LoginBanks.Failure("Invalid secret")),
     previewLogin(status = BankLoginStatus.Waiting("Monzo", link = "https://example.com")),
     previewLogin(status = BankLoginStatus.Failed(cause = null, isTimeout = true)),
-    NoProviders,
+    LinkBankAccountState.NoProviders(hasServer = true),
+    LinkBankAccountState.NoProviders(hasServer = false),
     Loading,
     LinkBankAccountState.Failure(cause = null),
   )

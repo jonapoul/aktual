@@ -8,6 +8,7 @@ import aktual.api.model.banksync.EnableBankingBank
 import aktual.api.model.banksync.EnableBankingBanksResponse
 import aktual.api.model.banksync.EnableBankingLoginResponse
 import aktual.api.model.banksync.ExternalBankAccount
+import aktual.api.model.banksync.SecretResponse
 import aktual.budget.model.Amount
 import aktual.core.model.AktualJson
 import aktual.core.model.BudgetServer
@@ -45,6 +46,31 @@ class EnableBankingApiTest {
   @AfterTest
   fun after() {
     mockEngine.close()
+  }
+
+  @Test
+  fun `Configure request`() = runTest {
+    mockEngine += { respondJson(EnablebankingResponses.CONFIGURE_SUCCESS_200) }
+
+    val response = api.configure("app-id", "-----BEGIN PRIVATE KEY-----")
+
+    assertThat(mockEngine.latestRequestUrl())
+      .isEqualTo("https://test.server.com/enablebanking/configure")
+    assertThat(mockEngine.latestRequest().body)
+      .isInstanceOf<TextContent>()
+      .prop(TextContent::text)
+      .isEqualTo("""{"applicationId":"app-id","secretKey":"-----BEGIN PRIVATE KEY-----"}""")
+    assertThat(response).isEqualTo(SecretResponse.Success)
+  }
+
+  @Test
+  fun `Parse configure failure`() = runTest {
+    mockEngine += { respondJson(EnablebankingResponses.CONFIGURE_FAILED_200) }
+
+    val response = api.configure("app-id", "key")
+
+    assertThat(response)
+      .isEqualTo(SecretResponse.Failed("CONFIGURATION_FAILED", "Invalid application ID"))
   }
 
   @Test
