@@ -193,6 +193,7 @@ include(
   ":aktual-budget:rules:domain",
   ":aktual-budget:rules:ui",
   ":aktual-budget:rules:vm",
+  ":aktual-budget:schedules:domain",
   ":aktual-budget:schedules:ui",
   ":aktual-budget:schedules:vm",
   ":aktual-budget:sync:domain",

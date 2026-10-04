@@ -11,8 +11,8 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.upcomingDates
-import aktual.budget.schedules.vm.ScheduleStatus
-import aktual.budget.schedules.vm.SchedulesLoader
+import aktual.budget.schedules.domain.ScheduleStatus
+import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.edit.EditScheduleState.Failure
 import aktual.core.Calendar
 import aktual.di.BudgetScope

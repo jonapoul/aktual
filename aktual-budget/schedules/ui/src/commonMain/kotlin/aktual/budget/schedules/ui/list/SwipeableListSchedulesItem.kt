@@ -1,6 +1,6 @@
 package aktual.budget.schedules.ui.list
 
-import aktual.budget.schedules.vm.Schedule
+import aktual.budget.schedules.domain.Schedule
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.PostAdd

@@ -1,4 +1,4 @@
-package aktual.budget.schedules.vm
+package aktual.budget.schedules.domain
 
 enum class ScheduleStatus {
   Missed,

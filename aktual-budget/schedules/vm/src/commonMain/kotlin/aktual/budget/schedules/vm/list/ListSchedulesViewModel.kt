@@ -6,8 +6,8 @@ import aktual.budget.db.dao.DatabaseTables.SCHEDULES
 import aktual.budget.model.LocalChange
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
-import aktual.budget.schedules.vm.Schedule
-import aktual.budget.schedules.vm.SchedulesLoader
+import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.di.BudgetScope
 import aktual.prefs.SchedulePreferences
 import aktual.prefs.asStateFlow

@@ -114,4 +114,6 @@ getName: SELECT name FROM schedules WHERE id = ?;
 
 getCustomUpcomingLength: SELECT custom_upcoming_length FROM schedules WHERE id = ?;
 
+setCustomUpcomingLength: UPDATE schedules SET custom_upcoming_length = ? WHERE id = ?;
+
 getSortOrder: SELECT sort_order FROM schedules WHERE id = ?;

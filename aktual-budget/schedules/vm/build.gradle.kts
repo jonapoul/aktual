@@ -2,7 +2,7 @@ plugins { id("aktual.module.viewmodel") }
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-budget:data:db"))
+    api(project(":aktual-budget:schedules:domain"))
     api(project(":aktual-prefs"))
   }
 
