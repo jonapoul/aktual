@@ -15,7 +15,7 @@ import aktual.budget.model.AccountSyncSource
 // Answers status, account list and GoCardless requests from what the test gives it
 internal class FakeBankSyncApi(vararg statuses: Pair<AccountSyncSource, BankSyncStatusResponse>) :
   BankSyncApi {
-  private val statuses = statuses.toMap()
+  val statuses = statuses.toMap().toMutableMap()
   val requested = mutableListOf<AccountSyncSource>()
   val accounts = mutableMapOf<AccountSyncSource, BankSyncAccountsResponse>()
   val listed = mutableListOf<AccountSyncSource>()

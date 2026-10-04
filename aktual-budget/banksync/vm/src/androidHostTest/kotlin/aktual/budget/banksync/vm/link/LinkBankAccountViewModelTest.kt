@@ -97,9 +97,27 @@ class LinkBankAccountViewModelTest {
   fun `No server means no providers`() = runLinkTest {
     createViewModel(server = None).state.test {
       assertThat(awaitItem()).isEqualTo(Loading)
-      assertThat(awaitItem()).isEqualTo(NoProviders)
+      assertThat(awaitItem()).isEqualTo(LinkBankAccountState.NoProviders(hasServer = false))
     }
     assertThat(api.requested).isEmpty()
+  }
+
+  @Test
+  fun `Providers are checked again once one's set up`() = runLinkTest {
+    api.statuses[PluggyAi] = BankSyncStatusResponse.Success(configured = false)
+    api.statuses[Akahu] = BankSyncStatusResponse.Success(configured = false)
+    api.accounts[PluggyAi] = BankSyncAccountsResponse.Success(listOf(CHECKING))
+    val viewModel = createViewModel()
+
+    viewModel.state.test {
+      assertThat(awaitItem()).isEqualTo(LinkBankAccountState.Loading)
+      assertThat(awaitItem()).isEqualTo(LinkBankAccountState.NoProviders(hasServer = true))
+
+      api.statuses[PluggyAi] = BankSyncStatusResponse.Success(configured = true)
+      viewModel.refreshProviders()
+      assertThat(awaitItem()).isEqualTo(LinkBankAccountState.Loading)
+      assertThat(awaitChoosing().providers).isEqualTo(persistentListOf(PluggyAi))
+    }
   }
 
   @Test

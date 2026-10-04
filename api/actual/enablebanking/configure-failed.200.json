@@ -1,0 +1,7 @@
+{
+  "status": "ok",
+  "data": {
+    "error_code": "CONFIGURATION_FAILED",
+    "error_type": "Invalid application ID"
+  }
+}
