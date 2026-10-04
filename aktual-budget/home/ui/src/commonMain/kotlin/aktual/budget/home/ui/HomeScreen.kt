@@ -1,21 +1,28 @@
 package aktual.budget.home.ui
 
+import aktual.budget.home.vm.AccountsCardState
 import aktual.budget.home.vm.HomeState
 import aktual.budget.home.vm.HomeViewModel
 import aktual.core.l10n.Strings
+import aktual.core.nav.BankSyncNavigator
+import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.FailureScreen
+import aktual.core.ui.Dimens
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,15 +37,30 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 internal fun HomeScreen(
+  transactions: TransactionsNavigator,
+  bankSync: BankSyncNavigator,
   modifier: Modifier = Modifier,
   viewModel: HomeViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  HomeScaffold(state = state, modifier = modifier)
+  HomeScaffold(
+    state = state,
+    onAction = { action ->
+      when (action) {
+        is OpenAccount -> transactions(action.id)
+        SetUpAccounts -> bankSync()
+      }
+    },
+    modifier = modifier,
+  )
 }
 
 @Composable
-private fun HomeScaffold(state: HomeState, modifier: Modifier = Modifier) {
+private fun HomeScaffold(
+  state: HomeState,
+  onAction: HomeActionHandler,
+  modifier: Modifier = Modifier,
+) {
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
@@ -52,15 +74,18 @@ private fun HomeScaffold(state: HomeState, modifier: Modifier = Modifier) {
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()
 
-      // Placeholder until the home cards land
-      FailureScreen(
-        modifier = Modifier.padding(innerPadding),
-        title = Strings.homeEmpty,
-        reason = null,
-        action = null,
-        icon = null,
-        background = colors.tableBackground,
-      )
+      Column(
+        modifier =
+          Modifier.fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(innerPadding)
+            .padding(Dimens.Huge),
+        verticalArrangement = Arrangement.spacedBy(Dimens.Huge),
+      ) {
+        AccountsCard(state = state.accounts, onAction = onAction)
+
+        BottomSpacing()
+      }
     }
   }
 }
@@ -83,12 +108,18 @@ private fun HomeTitle(budgetName: String?, modifier: Modifier = Modifier) {
 
 private class HomeStateProvider :
   ColoredParameterProvider<HomeState>(
-    HomeState(budgetName = "Household budget"),
-    HomeState(budgetName = null),
+    HomeState(
+      budgetName = "Household budget",
+      accounts = AccountsCardState.Loaded(PREVIEW_ACCOUNTS),
+    ),
+    HomeState(budgetName = null, accounts = Empty),
   )
 
 @PortraitPreview
 @Composable
 private fun PreviewHomeScaffold(
   @PreviewParameter(HomeStateProvider::class) params: ColoredParams<HomeState>
-) = PreviewWithColoredParams(params) { HomeScaffold(state = this) }
+) =
+  PreviewWithColoredParams(params) {
+    HomeScaffold(state = this, onAction = {})
+  }
