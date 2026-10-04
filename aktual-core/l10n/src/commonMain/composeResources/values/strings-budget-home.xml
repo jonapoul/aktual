@@ -1,5 +1,17 @@
 <resources>
   <string name="home_title">Home</string>
+  <plurals name="home_this_month_days_left">
+    <item quantity="one">%1$d day left</item>
+    <item quantity="other">%1$d days left</item>
+  </plurals>
+  <string name="home_this_month_last_day">Last day</string>
+  <string name="home_this_month_to_budget">to budget</string>
+  <string name="home_this_month_overbudgeted">overbudgeted</string>
+  <string name="home_this_month_remaining">remaining</string>
+  <string name="home_this_month_overspent">overspent</string>
+  <string name="home_this_month_spent">%1$s spent</string>
+  <string name="home_this_month_of_budgeted">of %1$s budgeted</string>
+  <string name="home_this_month_income">%1$s of %2$s income received</string>
   <string name="home_accounts_title">Accounts</string>
   <string name="home_accounts_on_budget">On budget</string>
   <string name="home_accounts_off_budget">Off budget</string>

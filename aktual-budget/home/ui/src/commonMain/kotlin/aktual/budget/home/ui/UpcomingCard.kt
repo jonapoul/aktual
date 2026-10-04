@@ -37,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
@@ -88,9 +89,9 @@ private fun UpcomingHeader(
   modifier: Modifier = Modifier,
 ) {
   Row(
-    modifier = modifier.fillMaxWidth().padding(start = CardPadding, end = 4.dp),
+    modifier = modifier.fillMaxWidth().padding(horizontal = CardPadding),
     horizontalArrangement = Arrangement.spacedBy(12.dp),
-    verticalAlignment = CenterVertically,
+    verticalAlignment = Top,
   ) {
     Text(
       modifier = Modifier.weight(1f).semantics { heading() },
