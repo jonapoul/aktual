@@ -15,6 +15,7 @@ kotlin {
     implementation(libs.androidx.paging.compose)
     implementation(libs.kotlinx.datetime)
     implementation(libs.shimmer)
+    implementation(project(":aktual-budget:banksync:ui"))
     implementation(project(":aktual-core:l10n"))
   }
 }

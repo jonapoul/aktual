@@ -5,11 +5,14 @@ import aktual.budget.banksync.vm.BankSyncAccountStatus
 import aktual.budget.banksync.vm.BankSyncProviderStatus
 import aktual.budget.banksync.vm.LastBankSync
 import aktual.budget.model.AccountSyncSource
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Sync
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
@@ -17,6 +20,11 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -29,9 +37,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -44,6 +57,7 @@ internal fun BankSyncAccountItem(
   account: BankSyncAccount,
   isLinked: Boolean,
   modifier: Modifier = Modifier,
+  sync: AccountSync? = null,
 ) {
   Row(
     modifier =
@@ -89,8 +103,39 @@ internal fun BankSyncAccountItem(
     }
 
     account.status?.let { AccountStatusChip(it) }
+
+    when {
+      account.isSyncing -> {
+        SyncingIndicator()
+      }
+      sync != null -> {
+        BareIconButton(
+          imageVector = MaterialIcons.Sync,
+          contentDescription =
+            Strings.bankSyncSyncAccount(account.name ?: Strings.bankSyncUnnamedAccount),
+          enabled = sync.enabled,
+          onClick = sync.onClick,
+        )
+      }
+    }
   }
 }
+
+@Composable
+internal fun SyncingIndicator(modifier: Modifier = Modifier) {
+  val transition = rememberInfiniteTransition(label = "sync")
+  val rotation by transition.animateFloat(0f, -360f, SyncingAnimationSpec, "sync-rotation")
+  BareIconButton(
+    modifier = modifier.rotate(rotation),
+    imageVector = MaterialIcons.Sync,
+    contentDescription = Strings.bankSyncSyncing,
+    enabled = false,
+    onClick = {},
+  )
+}
+
+private val SyncingAnimationSpec =
+  infiniteRepeatable<Float>(animation = tween(durationMillis = 1000, easing = LinearEasing))
 
 @Composable
 private fun lastSyncText(lastSync: LastBankSync): String =
@@ -289,6 +334,21 @@ private class AccountProvider :
     BankSyncPreview.savings,
     BankSyncPreview.creditCard,
   )
+
+@Preview
+@Composable
+private fun PreviewSyncableAccountItem(
+  @PreviewParameter(AccountProvider::class) params: ColoredParams<BankSyncAccount>
+) =
+  PreviewWithColoredParams(params) {
+    var isSyncing by remember { mutableStateOf(false) }
+    val account by remember(isSyncing) { mutableStateOf(this.copy(isSyncing = isSyncing)) }
+    BankSyncAccountItem(
+      account = account,
+      isLinked = true,
+      sync = AccountSync(enabled = true, onClick = { isSyncing = true }),
+    )
+  }
 
 @Preview
 @Composable

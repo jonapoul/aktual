@@ -1,6 +1,6 @@
 <resources>
   <string name="bank_sync_title">Bank sync</string>
-  <string name="bank_sync_read_only">Bank sync is read-only for now. You can see how your accounts are linked to your bank, but syncing and linking aren’t supported yet.</string>
+  <string name="bank_sync_notice">Syncing downloads new transactions from your bank through your server. Linking accounts to a bank isn’t supported yet.</string>
   <string name="bank_sync_empty">No open accounts</string>
   <string name="bank_sync_failure_title">Couldn’t load bank sync accounts</string>
   <string name="bank_sync_failure_message">An unexpected error occurred</string>
@@ -22,6 +22,14 @@
     <item quantity="one">%1$d day ago</item>
     <item quantity="other">%1$d days ago</item>
   </plurals>
+
+  <string name="bank_sync_sync_all">Sync all accounts</string>
+  <string name="bank_sync_sync_account">Sync %1$s</string>
+  <string name="bank_sync_syncing">Syncing…</string>
+  <string name="bank_sync_result_synced">%1$s: %2$d new, %3$d updated</string>
+  <string name="bank_sync_result_failed">Couldn’t sync %1$s</string>
+  <string name="bank_sync_result_several">Synced %1$d accounts: %2$d new, %3$d updated</string>
+  <string name="bank_sync_result_several_failed">Synced %1$d of %2$d accounts: %3$d new, %4$d updated</string>
 
   <string name="bank_sync_unlinked_title">Unlinked accounts</string>
   <string name="bank_sync_unlinked_message">Linking not supported yet</string>

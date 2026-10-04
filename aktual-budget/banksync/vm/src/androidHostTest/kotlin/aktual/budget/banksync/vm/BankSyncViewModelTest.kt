@@ -6,6 +6,12 @@ import aktual.api.model.banksync.BankSyncTransactionsRequest
 import aktual.api.model.banksync.BankSyncTransactionsResponse
 import aktual.api.model.banksync.SimpleFinBatchRequest
 import aktual.api.model.banksync.SimpleFinBatchResponse
+import aktual.budget.banksync.domain.BankSyncResult.Synced
+import aktual.budget.banksync.domain.BankSyncSummary
+import aktual.budget.banksync.vm.BankSyncEvent.Finished
+import aktual.budget.banksync.vm.LastBankSync.DaysAgo
+import aktual.budget.banksync.vm.LastBankSync.HoursAgo
+import aktual.budget.banksync.vm.LastBankSync.MinutesAgo
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
@@ -25,6 +31,8 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import kotlin.test.AfterTest
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -72,7 +80,7 @@ class BankSyncViewModelTest {
               persistentListOf(
                 BankSyncProvider(
                   source = GoCardless,
-                  status = BankSyncProviderStatus.Configured,
+                  status = Configured,
                   accounts =
                     persistentListOf(
                       account(
@@ -85,20 +93,21 @@ class BankSyncViewModelTest {
                 ),
                 BankSyncProvider(
                   source = SimpleFin,
-                  status = BankSyncProviderStatus.Configured,
+                  status = Configured,
                   accounts =
                     persistentListOf(
                       account(
                         "checking",
                         "Checking",
                         bank = "Bankity Bank",
-                        lastSync = LastBankSync.MinutesAgo(minutes = 5),
+                        lastSync = MinutesAgo(minutes = 5),
                       ),
                       account("credit", "Credit", status = BankSyncAccountStatus.RateLimited),
                     ),
                 ),
               ),
             unlinked = persistentListOf(account("cash", "Cash")),
+            canSync = true,
           )
         )
     }
@@ -124,10 +133,10 @@ class BankSyncViewModelTest {
       assertThat(awaitSettledSuccess().providers.associate { it.source to it.status })
         .isEqualTo(
           mapOf(
-            AccountSyncSource.Akahu to BankSyncProviderStatus.Failed,
-            GoCardless to BankSyncProviderStatus.Configured,
-            PluggyAi to BankSyncProviderStatus.Failed,
-            SimpleFin to BankSyncProviderStatus.NotConfigured,
+            AccountSyncSource.Akahu to Failed,
+            GoCardless to Configured,
+            PluggyAi to Failed,
+            SimpleFin to NotConfigured,
           )
         )
     }
@@ -172,20 +181,90 @@ class BankSyncViewModelTest {
   }
 
   @Test
+  fun `Local-only budget can't sync`() = runBankSyncTest {
+    insertAccount("a", "A", GoCardless)
+
+    val viewModel = createViewModel(FakeBankSyncApi(), server = None)
+
+    viewModel.state.test { assertThat(awaitSuccess().canSync).isFalse() }
+  }
+
+  @Test
+  fun `Sync all and per-account sync go through the controller`() = runBankSyncTest {
+    insertAccount("a", "A", GoCardless)
+    val viewModel = createViewModel(FakeBankSyncApi(GoCardless to configured()))
+
+    viewModel.syncAll()
+    viewModel.sync(AccountId("a"))
+
+    assertThat(controller.started).containsExactly(emptySet<AccountId>(), setOf(AccountId("a")))
+  }
+
+  @Test
+  fun `Marks the accounts a running sync hasn't finished yet`() = runBankSyncTest {
+    insertAccount("a", "A", GoCardless)
+    insertAccount("b", "B", GoCardless)
+    val viewModel = createViewModel(FakeBankSyncApi(GoCardless to configured()))
+
+    viewModel.state.test {
+      assertThat(awaitSettledSuccess(cancel = false).isSyncing).isFalse()
+
+      controller.running(listOf(AccountId("b")))
+      val state = awaitItem() as Success
+      assertThat(state.isSyncing).isTrue()
+      assertThat(state.providers.single().accounts.map { it.isSyncing })
+        .containsExactly(false, true)
+
+      // Already running
+      viewModel.syncAll()
+      assertThat(controller.started).isEmpty()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `A finished sync reloads and announces what it did`() = runBankSyncTest {
+    insertAccount("a", "A", GoCardless)
+    val viewModel = createViewModel(FakeBankSyncApi(GoCardless to configured()))
+
+    viewModel.state.test {
+      awaitSettledSuccess(cancel = false)
+      viewModel.events.test {
+        // As the controller would have written it
+        driver
+          .execute(null, "UPDATE accounts SET bank_sync_status = 'ok' WHERE id = 'a'", 0)
+          .await()
+        controller.finish(Synced(AccountId("a"), "A", added = emptyList(), updated = emptyList()))
+
+        assertThat(awaitItem())
+          .isEqualTo(Finished(BankSyncSummary.Synced("A", added = 0, updated = 0)))
+      }
+
+      var state = awaitItem() as Success
+      while (state.providers.single().accounts.single().status == null) {
+        state = awaitItem() as Success
+      }
+      assertThat(state.providers.single().accounts.single().status).isEqualTo(Ok)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Last sync is relative to now`() {
     fun ago(duration: Duration) = lastBankSync(NOW - duration, NOW)
     assertThat(lastBankSync(null, NOW)).isEqualTo(Never)
     assertThat(lastBankSync(NOW + 5.minutes, NOW)).isEqualTo(JustNow)
     assertThat(ago(30.seconds)).isEqualTo(JustNow)
-    assertThat(ago(59.minutes)).isEqualTo(LastBankSync.MinutesAgo(minutes = 59))
-    assertThat(ago(3.hours)).isEqualTo(LastBankSync.HoursAgo(hours = 3))
-    assertThat(ago(40.days)).isEqualTo(LastBankSync.DaysAgo(days = 40))
+    assertThat(ago(59.minutes)).isEqualTo(MinutesAgo(minutes = 59))
+    assertThat(ago(3.hours)).isEqualTo(HoursAgo(hours = 3))
+    assertThat(ago(40.days)).isEqualTo(DaysAgo(days = 40))
   }
 
   private data class TestContext(
     val scope: TestScope,
     val database: BudgetDatabase,
     val driver: SqlDriver,
+    val controller: FakeBankSyncController = FakeBankSyncController(),
   )
 
   private fun runBankSyncTest(action: suspend TestContext.() -> Unit) = runTest {
@@ -201,6 +280,7 @@ class BankSyncViewModelTest {
     return BankSyncViewModel(
       accountDao = AccountDao(database),
       api = api,
+      controller = controller,
       server = server,
       clock = TestClock(NOW),
     )
@@ -265,12 +345,14 @@ class BankSyncViewModelTest {
   }
 
   // Waits until every provider's status has come back
-  private suspend fun ReceiveTurbine<BankSyncState>.awaitSettledSuccess(): Success {
+  private suspend fun ReceiveTurbine<BankSyncState>.awaitSettledSuccess(
+    cancel: Boolean = true
+  ): Success {
     var state = awaitItem()
     while (state !is Success || state.providers.any { it.status == Checking }) {
       state = awaitItem()
     }
-    cancelAndIgnoreRemainingEvents()
+    if (cancel) cancelAndIgnoreRemainingEvents()
     return state
   }
 
