@@ -12,6 +12,7 @@ import aktual.core.nav.CreateTagNavRoute
 import aktual.core.nav.EditRuleNavRoute
 import aktual.core.nav.EditScheduleNavRoute
 import aktual.core.nav.EditTagNavRoute
+import aktual.core.nav.HomeNavRoute
 import aktual.core.nav.ListRulesNavRoute
 import aktual.core.nav.ListSchedulesNavRoute
 import aktual.core.nav.ListTagsNavRoute
@@ -33,6 +34,7 @@ class BudgetNavKeyStackSaverTest {
   fun `Stack with every route type survives saving and restoring`() {
     val keys =
       listOf(
+        HomeNavRoute,
         TransactionsNavRoute,
         TransactionsWithTagNavRoute(TagId("tag")),
         ReportsListNavRoute,

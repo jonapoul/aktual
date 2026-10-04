@@ -9,6 +9,11 @@ import kotlinx.serialization.Serializable
 sealed interface BudgetNavKey : NavKey {
   val tab: BudgetTab
 
+  sealed interface Home : BudgetNavKey {
+    override val tab: BudgetTab
+      get() = BudgetTab.Home
+  }
+
   sealed interface Transactions : BudgetNavKey {
     override val tab: BudgetTab
       get() = BudgetTab.Transactions

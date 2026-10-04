@@ -8,6 +8,7 @@ import aktual.core.icons.Reports
 import aktual.core.icons.Tag
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.AccountBalance
+import aktual.core.icons.material.Home
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.LinearScale
 import aktual.core.icons.material.Logout
@@ -20,6 +21,7 @@ import aktual.core.nav.BankSyncNavRoute
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.BudgetTab
+import aktual.core.nav.HomeNavRoute
 import aktual.core.nav.ListRulesNavRoute
 import aktual.core.nav.ListSchedulesNavRoute
 import aktual.core.nav.ListTagsNavRoute
@@ -123,6 +125,7 @@ internal fun BudgetNavRail(
   val contributors = viewModel.budgetNavEntryContributors
   val headerState by viewModel.headerState.collectAsState()
 
+  val homeStack = stackWithDefault(HomeNavRoute)
   val transactionsStack = stackWithDefault(TransactionsNavRoute)
   val reportsStack = stackWithDefault(ReportsListNavRoute)
   val schedulesStack = stackWithDefault(ListSchedulesNavRoute)
@@ -132,6 +135,7 @@ internal fun BudgetNavRail(
 
   val tabStacks =
     remember(
+      homeStack,
       transactionsStack,
       reportsStack,
       schedulesStack,
@@ -140,6 +144,7 @@ internal fun BudgetNavRail(
       bankSyncStack,
     ) {
       persistentMapOf(
+        BudgetTab.Home to homeStack,
         BudgetTab.Transactions to transactionsStack,
         BudgetTab.Reports to reportsStack,
         BudgetTab.Schedules to schedulesStack,
@@ -149,8 +154,7 @@ internal fun BudgetNavRail(
       )
     }
 
-  var selectedTab by
-    rememberSaveable(stateSaver = TabSaver) { mutableStateOf(BudgetTab.Transactions) }
+  var selectedTab by rememberSaveable(stateSaver = TabSaver) { mutableStateOf(BudgetTab.Home) }
 
   val activeStack = remember(tabStacks, selectedTab) { tabStacks.getValue(selectedTab) }
 
@@ -164,8 +168,8 @@ internal fun BudgetNavRail(
   }
 
   // NavDisplay only handles back when the stack has more than one entry
-  BackHandler(enabled = selectedTab != Transactions && activeStack.size == 1) {
-    selectedTab = Transactions
+  BackHandler(enabled = selectedTab != BudgetTab.Home && activeStack.size == 1) {
+    selectedTab = BudgetTab.Home
   }
 
   if (isCompactWidth()) {
@@ -552,6 +556,7 @@ private fun Colors.navRailItem(): NavigationRailItemColors =
 @Composable
 private fun BudgetTab.label(): String =
   when (this) {
+    BudgetTab.Home -> Strings.homeTitle
     Transactions -> Strings.transactionsTitle
     BudgetTab.Reports -> Strings.reportsTitle
     Schedules -> Strings.listSchedulesTitle
@@ -563,6 +568,7 @@ private fun BudgetTab.label(): String =
 @Stable
 private fun BudgetTab.icon(): ImageVector =
   when (this) {
+    BudgetTab.Home -> MaterialIcons.Home
     Transactions -> MaterialIcons.LinearScale
     BudgetTab.Reports -> AktualIcons.Reports
     Schedules -> AktualIcons.Calendar3
