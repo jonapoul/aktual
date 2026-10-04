@@ -96,7 +96,6 @@
   <string name="bank_sync_link_open">Link %1$s to a bank</string>
   <string name="bank_sync_link_title">Link to a bank</string>
   <string name="bank_sync_link_choose">Choose the account at your bank that %1$s should sync from.</string>
-  <string name="bank_sync_link_provider">Provider</string>
   <string name="bank_sync_link_linked_to">Linked to %1$s</string>
   <string name="bank_sync_link_failed">Couldn’t link account: %1$s</string>
   <string name="bank_sync_link_failure_title">Couldn’t load account</string>
