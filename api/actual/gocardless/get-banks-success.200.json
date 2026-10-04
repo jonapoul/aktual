@@ -1,0 +1,21 @@
+{
+  "status": "ok",
+  "data": [
+    {
+      "id": "SANDBOXFINANCE_SFIN0000",
+      "name": "Sandbox Finance",
+      "bic": "SFIN0000",
+      "transaction_total_days": "90",
+      "countries": ["XX"],
+      "logo": "https://cdn.nordigen.com/ais/SANDBOXFINANCE_SFIN0000.png"
+    },
+    {
+      "id": "MONZO_MONZGB2L",
+      "name": "Monzo",
+      "bic": "MONZGB2L",
+      "transaction_total_days": "730",
+      "countries": ["GB"],
+      "logo": "https://cdn.nordigen.com/ais/MONZO_MONZGB2L.png"
+    }
+  ]
+}

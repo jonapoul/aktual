@@ -14,6 +14,9 @@ internal object BankSyncDS {
   val itemCardPadding = 12.dp
   val itemContentSpacing = 2.dp
 
+  val progressSize = 20.dp
+  val progressStroke = 2.dp
+
   val chipPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
 
   val shimmerItemTextHeight = 20.dp
@@ -22,5 +25,7 @@ internal object BankSyncDS {
 
   val settingsPadding = PaddingValues(8.dp)
   val settingsItemSpacing = 10.dp
+  val settingsFieldSpacing = 12.dp
+  val settingsLabelSpacing = 6.dp
   val settingsTogglePadding = PaddingValues(6.dp)
 }

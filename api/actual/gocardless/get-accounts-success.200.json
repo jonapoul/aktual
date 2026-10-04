@@ -1,0 +1,38 @@
+{
+  "status": "ok",
+  "data": {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "created": "2026-10-03T12:00:00.000000Z",
+    "redirect": "https://actual.example.com/gocardless/link",
+    "status": "LN",
+    "institution_id": "SANDBOXFINANCE_SFIN0000",
+    "agreement": "f0e1d2c3-b4a5-9687-7869-5a4b3c2d1e0f",
+    "accounts": [
+      {
+        "account_id": "7e57ac6b-0f61-4a2d-9a0d-1c2b3d4e5f60",
+        "institution": {
+          "id": "SANDBOXFINANCE_SFIN0000",
+          "name": "Sandbox Finance",
+          "bic": "SFIN0000",
+          "transaction_total_days": "90",
+          "countries": ["XX"],
+          "logo": "https://cdn.nordigen.com/ais/SANDBOXFINANCE_SFIN0000.png"
+        },
+        "mask": "4321",
+        "iban": "5b0d1a9c6f3e2d7a8b4c1e0f9a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+        "name": "Main Account (XXX 4321) EUR",
+        "official_name": "integration-SANDBOXFINANCE_SFIN0000",
+        "type": "checking"
+      },
+      {
+        "account_id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+        "institution": "Sandbox Finance",
+        "mask": "0000",
+        "iban": null,
+        "name": "Savings",
+        "official_name": "integration-SANDBOXFINANCE_SFIN0000",
+        "type": "checking"
+      }
+    ]
+  }
+}
