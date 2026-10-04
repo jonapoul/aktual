@@ -189,6 +189,10 @@ internal class BankSyncTestScope(
 
   suspend fun account(id: AccountId) = checkNotNull(accountDao[id]) { "No $id" }
 
+  fun deleteBanks() {
+    driver.execute(identifier = null, sql = "UPDATE banks SET tombstone = 1", parameters = 0).value
+  }
+
   suspend fun insertCategory(id: CategoryId) {
     database.categoryMappingQueries.insert(id, id)
     database.categoriesQueries.insert(

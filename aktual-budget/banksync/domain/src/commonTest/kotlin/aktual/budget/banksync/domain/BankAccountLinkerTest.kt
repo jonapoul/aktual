@@ -11,6 +11,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.prop
@@ -72,6 +73,17 @@ internal class BankAccountLinkerTest {
       .link(ACCOUNT, AccountSyncSource.SimpleFin, EXTERNAL.copy(orgDomain = null, orgId = null))
 
     assertThat(account(ACCOUNT).bank).isEqualTo(account(OTHER).bank)
+  }
+
+  @Test
+  fun `Linking doesn't reuse a deleted bank`() = runBankSyncTest {
+    insertLinkedAccount(OTHER, bankId = "mybank.example.com", bankName = "My Bank")
+    deleteBanks()
+    api.responses["ACT-1"] = success()
+
+    linker(api).link(ACCOUNT, AccountSyncSource.SimpleFin, EXTERNAL)
+
+    assertThat(account(ACCOUNT).bank).isNotNull().isNotEqualTo(account(OTHER).bank)
   }
 
   @Test

@@ -94,9 +94,10 @@ ORDER BY v.date DESC, v.starting_balance_flag, v.sort_order DESC, v.id
 LIMIT 1;
 
 -- packages/loot-core/src/server/accounts/link.ts findOrCreateBank(). IS so that banks without an
--- ID or name still match. Upstream compares bank_id with =, so it never reuses a bank without an ID
+-- ID or name still match. Upstream compares bank_id with =, so it never reuses a bank without an ID,
+-- and doesn't skip deleted banks
 bankSyncFindBank:
-SELECT id FROM banks WHERE bank_id IS :bankId AND name IS :name LIMIT 1;
+SELECT id FROM banks WHERE bank_id IS :bankId AND name IS :name AND tombstone = 0 LIMIT 1;
 
 -- unlinkAccount(): how many accounts still use a bank, deleted ones included as upstream
 bankSyncBankUsers:
