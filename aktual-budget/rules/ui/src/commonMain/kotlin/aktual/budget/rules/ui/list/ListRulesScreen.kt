@@ -45,6 +45,7 @@ import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.topBarHazeOffset
 import aktual.core.ui.transparentTopAppBarColors
+import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -248,6 +249,7 @@ private fun ListRulesContent(
     when (state) {
       is Loading -> {
         Column(verticalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
+          VerticalSpacer(contentPadding.calculateTopPadding())
           repeat(times = 10) { ShimmerListRulesItem(checkboxes) }
         }
       }
