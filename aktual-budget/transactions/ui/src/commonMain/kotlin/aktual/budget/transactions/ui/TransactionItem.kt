@@ -110,10 +110,17 @@ private fun SecondLine(transaction: Transaction, dimens: LedgerDimens) {
   val warning = SpanStyle(color = colors.warningText, fontWeight = SemiBold)
   val text = buildAnnotatedString {
     val category = transaction.category
-    if (category == null) withStyle(warning) { append(needsCategory) } else append(category)
+    if (transaction.needsCategory) {
+      withStyle(warning) { append(needsCategory) }
+    } else if (category != null) {
+      append(category)
+    }
 
     val account = transaction.account
-    if (dimens.showAccount && account != null) append(" · $account")
+    if (dimens.showAccount && account != null) {
+      if (length > 0) append(" · ")
+      append(account)
+    }
   }
 
   Text(
@@ -153,13 +160,13 @@ internal fun LedgerTableRow(transaction: Transaction, modifier: Modifier = Modif
       maxLines = 1,
     )
 
-    val category = transaction.category
+    val needsCategory = transaction.needsCategory
     Text(
       modifier = Modifier.weight(DenseColumns.CATEGORY_WEIGHT),
-      text = category ?: Strings.transactionsNoCategory,
+      text = if (needsCategory) Strings.transactionsNoCategory else transaction.category.orEmpty(),
       fontSize = dimens.secondLineSize,
-      fontWeight = if (category == null) SemiBold else null,
-      color = if (category == null) colors.warningText else colors.pageTextLight,
+      fontWeight = if (needsCategory) SemiBold else null,
+      color = if (needsCategory) colors.warningText else colors.pageTextLight,
       overflow = Ellipsis,
       maxLines = 1,
     )

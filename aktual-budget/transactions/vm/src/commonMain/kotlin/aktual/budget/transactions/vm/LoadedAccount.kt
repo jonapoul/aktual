@@ -9,6 +9,8 @@ sealed interface LoadedAccount {
 
   data object AllAccounts : LoadedAccount
 
+  data object Uncategorised : LoadedAccount
+
   @JvmInline value class SpecificAccount(val account: Accounts) : LoadedAccount
 
   @JvmInline value class SpecificTag(val tag: String) : LoadedAccount

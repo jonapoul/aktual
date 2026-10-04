@@ -2,7 +2,7 @@ package aktual.budget.transactions.vm
 
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
-import aktual.budget.db.dao.TransactionPage
+import aktual.budget.model.AccountSpec
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
@@ -21,6 +21,8 @@ internal class TransactionsPagingSource(
   // source is created whenever the data is invalidated.
   private var filteredIds: List<TransactionId>? = null
 
+  private val accountId = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id
+
   override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Transaction> =
     try {
       // Start from page 0 if no key provided
@@ -31,7 +33,7 @@ internal class TransactionsPagingSource(
       val transactions =
         when (val tagSpec = spec.tagSpec) {
           AllTags -> {
-            loadPage(limit, offset).toTransactions()
+            loadPage(limit, offset)
           }
 
           // A running balance means little over a subset of the account, so tag lists have none
@@ -54,18 +56,37 @@ internal class TransactionsPagingSource(
       LoadResult.Error(e)
     }
 
-  private suspend fun loadPage(limit: Long, offset: Long): TransactionPage =
-    when (val accountSpec = spec.accountSpec) {
-      AllAccounts -> transactionDao.getPaged(limit, offset)
-      is SpecificAccount -> transactionDao.getByAccountPaged(accountSpec.id, limit, offset)
+  // A running balance means little over a subset of the account, so uncategorised lists have none
+  private suspend fun loadPage(limit: Long, offset: Long): List<Transaction> =
+    when (spec.categorySpec) {
+      AllCategories -> {
+        when (val accountSpec = spec.accountSpec) {
+          AllAccounts -> transactionDao.getPaged(limit, offset)
+          is SpecificAccount -> transactionDao.getByAccountPaged(accountSpec.id, limit, offset)
+        }.toTransactions()
+      }
+
+      Uncategorised -> {
+        transactionDao.getUncategorisedPaged(accountId, limit, offset).map {
+          it.toTransaction(balance = null)
+        }
+      }
     }
 
   private suspend fun loadFilteredIds(id: TagId): List<TransactionId> {
     val tagName = tagsDao.getTag(id)?.tag ?: return emptyList()
     val rows =
-      when (val accountSpec = spec.accountSpec) {
-        AllAccounts -> transactionDao.getIdsAndNotes()
-        is SpecificAccount -> transactionDao.getIdsAndNotesByAccount(accountSpec.id)
+      when (spec.categorySpec) {
+        AllCategories -> {
+          when (val accountSpec = spec.accountSpec) {
+            AllAccounts -> transactionDao.getIdsAndNotes()
+            is SpecificAccount -> transactionDao.getIdsAndNotesByAccount(accountSpec.id)
+          }
+        }
+
+        Uncategorised -> {
+          transactionDao.getUncategorisedIdsAndNotes(accountId)
+        }
       }
     return rows.mapNotNull { row ->
       val notes = row.notes
