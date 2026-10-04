@@ -8,6 +8,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.disabledIf
 import aktual.core.ui.slider
+import aktual.prefs.ui.core.BasicPreferenceItem
 import aktual.prefs.vm.SliderPreference
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding

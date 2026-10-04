@@ -19,4 +19,8 @@ internal object BankSyncDS {
   val shimmerItemTextHeight = 20.dp
   val shimmerItemTextHeightSmall = 15.dp
   val shimmerChipWidth = 48.dp
+
+  val settingsPadding = PaddingValues(8.dp)
+  val settingsItemSpacing = 10.dp
+  val settingsTogglePadding = PaddingValues(6.dp)
 }

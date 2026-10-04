@@ -14,7 +14,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.ListPreferenceItem
-import aktual.prefs.ui.PreferenceGroup
+import aktual.prefs.ui.core.PreferenceGroup
 import aktual.prefs.vm.root.CurrencyConfigState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

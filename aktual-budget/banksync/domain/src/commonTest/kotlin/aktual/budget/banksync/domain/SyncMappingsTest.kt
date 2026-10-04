@@ -44,4 +44,32 @@ internal class SyncMappingsTest {
       .hasMessage("Failed to parse mapping: Invalid mapping format")
     assertFailure { parse("{") }.isInstanceOf<IllegalArgumentException>()
   }
+
+  @Test
+  fun `Encoded mappings parse back`() {
+    val mappings =
+      SyncMappings.Default.with(Payment, Payee, "creditorName").with(Deposit, Notes, "category")
+
+    assertThat(mappings.encode())
+      .isEqualTo(
+        """
+        {"payment":{"date":"date","payee":"creditorName","notes":"notes"},
+        "deposit":{"date":"date","payee":"payeeName","notes":"category"}}
+        """
+          .trimIndent()
+          .replace("\n", "")
+      )
+    assertThat(parse(mappings.encode())).isEqualTo(mappings)
+  }
+
+  @Test
+  fun `Unnamed fields are left out`() {
+    val mappings =
+      SyncMappings(
+        payment = FieldMapping(date = "date", payee = null, notes = null),
+        deposit = FieldMapping(date = null, payee = null, notes = null),
+      )
+
+    assertThat(mappings.encode()).isEqualTo("""{"payment":{"date":"date"},"deposit":{}}""")
+  }
 }

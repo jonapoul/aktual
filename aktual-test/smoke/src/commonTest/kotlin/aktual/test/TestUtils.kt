@@ -1,5 +1,6 @@
 package aktual.test
 
+import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DashboardPageId
@@ -15,6 +16,8 @@ internal val SERVER_URL = ServerUrl("https://website.com")
 internal val LOGIN_TOKEN = Token("abc-123")
 
 internal val BUDGET_ID = BudgetId("abc-123")
+
+internal val ACCOUNT_ID = AccountId("abc-123")
 
 internal val TRANSACTIONS_SPEC = TransactionsSpec(AccountSpec.AllAccounts)
 

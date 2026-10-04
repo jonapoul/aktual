@@ -1,4 +1,4 @@
-package aktual.prefs.ui
+package aktual.prefs.ui.core
 
 import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.layout.ColumnScope
@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-internal fun PreferenceGroup(
+fun PreferenceGroup(
   title: String,
   subtitle: String?,
   modifier: Modifier = Modifier,

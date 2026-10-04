@@ -4,7 +4,7 @@ import aktual.core.icons.material.Build
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.PrimaryTextButton
-import aktual.prefs.ui.BasicPreferenceItem
+import aktual.prefs.ui.core.BasicPreferenceItem
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable

@@ -1,5 +1,6 @@
 package aktual.core.nav
 
+import aktual.budget.model.AccountId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
@@ -46,3 +47,5 @@ import kotlinx.serialization.Serializable
 @Serializable data class EditTagNavRoute(val id: TagId) : BudgetNavKey.Tags
 
 @Serializable data object BankSyncNavRoute : BudgetNavKey.BankSync
+
+@Serializable data class BankSyncSettingsNavRoute(val id: AccountId) : BudgetNavKey.BankSync

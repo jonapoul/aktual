@@ -11,6 +11,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Sync
 import aktual.core.l10n.Strings
+import aktual.core.nav.BankSyncSettingsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
@@ -58,6 +59,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 internal fun BankSyncScreen(
+  settings: BankSyncSettingsNavigator,
   modifier: Modifier = Modifier,
   viewModel: BankSyncViewModel = metroViewModel(),
 ) {
@@ -88,6 +90,7 @@ internal fun BankSyncScreen(
         Reload -> viewModel.reload()
         SyncAll -> viewModel.syncAll()
         is SyncAccount -> viewModel.sync(action.id)
+        is OpenSettings -> settings(action.id)
       }
     },
   )
@@ -230,6 +233,7 @@ private fun ContentSuccess(
         BankSyncAccountItem(
           account = account,
           isLinked = true,
+          onClick = { onAction(OpenSettings(account.id)) },
           sync =
             if (state.canSync) {
               AccountSync(

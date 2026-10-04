@@ -13,5 +13,6 @@ kotlin {
     implementation(libs.metrox.viewmodel)
     implementation(libs.shimmer)
     implementation(project(":aktual-core:l10n"))
+    implementation(project(":aktual-prefs:ui:core"))
   }
 }
