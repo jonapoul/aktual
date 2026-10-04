@@ -63,10 +63,7 @@ private fun ShimmerThisMonth(modifier: Modifier = Modifier) {
 
   Column(
     modifier =
-      modifier
-        .fillMaxWidth()
-        .padding(horizontal = CardPadding)
-        .shimmer(rememberShimmer(Window)),
+      modifier.fillMaxWidth().padding(horizontal = CardPadding).shimmer(rememberShimmer(Window)),
     verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {
     Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
