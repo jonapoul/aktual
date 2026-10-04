@@ -10,6 +10,7 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
+import aktual.budget.model.CategorySpec
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.TagSpec
@@ -19,6 +20,7 @@ import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
 import aktual.budget.transactions.vm.LoadedAccount.SpecificTag
+import aktual.budget.transactions.vm.LoadedAccount.Uncategorised
 import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
@@ -93,8 +95,8 @@ class TransactionsViewModel(
       BankSyncSummary.of(results.filter { it.account == accountId })
     }
 
-  // A tag-filtered list only holds part of each account, so it has no balance to show
-  val showBalance: Boolean = spec.tagSpec is TagSpec.AllTags
+  // A filtered list only holds part of each account, so it has no balance to show
+  val showBalance: Boolean = spec.tagSpec is AllTags && spec.categorySpec == AllCategories
 
   val balance: StateFlow<Amount?> =
     if (showBalance) {
@@ -115,24 +117,27 @@ class TransactionsViewModel(
       .cachedIn(viewModelScope)
 
   init {
-    // A tag-filtered screen titles itself after the tag; otherwise the title follows the account.
-    when (val tagSpec = spec.tagSpec) {
-      is TagSpec.SpecificTag ->
+    // A tag-filtered screen titles itself after the tag, then an uncategorised one after that
+    // filter; otherwise the title follows the account.
+    val tagSpec = spec.tagSpec
+    val accountSpec = spec.accountSpec
+    when {
+      tagSpec is TagSpec.SpecificTag ->
         viewModelScope.launch {
           val name = tagsDao.getTag(tagSpec.id)?.tag
           mutableLoadedAccount.update { if (name != null) SpecificTag(name) else AllAccounts }
         }
 
-      is TagSpec.AllTags ->
-        when (val s = spec.accountSpec) {
-          is AccountSpec.AllAccounts -> mutableLoadedAccount.update { AllAccounts }
+      spec.categorySpec == CategorySpec.Uncategorised ->
+        mutableLoadedAccount.update { Uncategorised }
 
-          is AccountSpec.SpecificAccount ->
-            viewModelScope.launch {
-              val account = accountDao[s.id] ?: error("No account matching $s")
-              mutableLoadedAccount.update { SpecificAccount(account) }
-            }
+      accountSpec is AccountSpec.SpecificAccount ->
+        viewModelScope.launch {
+          val account = accountDao[accountSpec.id] ?: error("No account matching $accountSpec")
+          mutableLoadedAccount.update { SpecificAccount(account) }
         }
+
+      else -> mutableLoadedAccount.update { AllAccounts }
     }
 
     // Invalidate PagingSource when transaction data changes.

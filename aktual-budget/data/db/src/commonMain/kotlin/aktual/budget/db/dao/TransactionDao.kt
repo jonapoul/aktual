@@ -32,6 +32,7 @@ data class TransactionRow(
   val categoryName: String?,
   val amount: Long,
   val isChild: Boolean?,
+  val needsCategory: Boolean,
 )
 
 // One page of the list, with the balance after its first (newest) row
@@ -43,7 +44,7 @@ class TransactionDao(database: BudgetDatabase) {
 
   suspend fun getPaged(limit: Long, offset: Long): TransactionPage = queries.withResult {
     TransactionPage(
-      rows = getPaged(limit, offset, ::TransactionRow).awaitAsList(),
+      rows = getPaged(limit, offset, ::transactionRow).awaitAsList(),
       topBalance = balanceFromOffset(offset).awaitAsOne(),
     )
   }
@@ -54,10 +55,22 @@ class TransactionDao(database: BudgetDatabase) {
     offset: Long,
   ): TransactionPage = queries.withResult {
     TransactionPage(
-      rows = getByAccountPaged(account, limit, offset, ::TransactionRow).awaitAsList(),
+      rows = getByAccountPaged(account, limit, offset, ::transactionRow).awaitAsList(),
       topBalance = balanceFromOffsetByAccount(account, offset).awaitAsOne(),
     )
   }
+
+  // Uncategorised transactions are a subset of their accounts, so the page has no balance
+  suspend fun getUncategorisedPaged(
+    account: AccountId?,
+    limit: Long,
+    offset: Long,
+  ): List<TransactionRow> = queries.withResult {
+    getUncategorisedPaged(account, limit, offset, ::transactionRow).awaitAsList()
+  }
+
+  fun observeUncategorisedCount(): Flow<Long> =
+    queries.countUncategorised().asFlow().map { it.awaitAsOne() }.distinctUntilChanged()
 
   // Current balance of every transaction, or of one account's
   fun observeBalance(account: AccountId? = null): Flow<Long> {
@@ -72,7 +85,7 @@ class TransactionDao(database: BudgetDatabase) {
 
   // Rows come back in the order of the given IDs
   suspend fun getByIds(ids: List<TransactionId>): List<TransactionRow> = queries.withResult {
-    val rows = getByIds(ids, ::TransactionRow).awaitAsList().associateBy { it.id }
+    val rows = getByIds(ids, ::transactionRow).awaitAsList().associateBy { it.id }
     ids.mapNotNull(rows::get)
   }
 
@@ -83,6 +96,11 @@ class TransactionDao(database: BudgetDatabase) {
   suspend fun getIdsAndNotesByAccount(account: AccountId): List<TransactionNotes> =
     queries.withResult {
       getIdsAndNotesByAccount(account).awaitAsList().map { TransactionNotes(it.id, it.notes) }
+    }
+
+  suspend fun getUncategorisedIdsAndNotes(account: AccountId?): List<TransactionNotes> =
+    queries.withResult {
+      getUncategorisedIdsAndNotes(account).awaitAsList().map { TransactionNotes(it.id, it.notes) }
     }
 
   suspend fun getNotesContainingHash(): List<String> = queries.withResult {
@@ -105,7 +123,7 @@ class TransactionDao(database: BudgetDatabase) {
   suspend fun insert(
     id: String,
     account: String,
-    category: String,
+    category: String?,
     payee: String,
     date: LocalDate,
     notes: String? = null,
@@ -119,7 +137,7 @@ class TransactionDao(database: BudgetDatabase) {
         isParent = isParent,
         isChild = parent != null,
         acct = AccountId(account),
-        category = CategoryId(category),
+        category = category?.let(::CategoryId),
         amount = Amount(amount),
         description = PayeeId(payee),
         notes = notes,
@@ -143,6 +161,30 @@ class TransactionDao(database: BudgetDatabase) {
     )
   }
 }
+
+@Suppress("LongParameterList")
+private fun transactionRow(
+  id: TransactionId,
+  date: LocalDate,
+  accountName: String?,
+  payeeName: String?,
+  notes: String?,
+  categoryName: String?,
+  amount: Long,
+  isChild: Boolean?,
+  needsCategory: Long,
+) =
+  TransactionRow(
+    id = id,
+    date = date,
+    accountName = accountName,
+    payeeName = payeeName,
+    notes = notes,
+    categoryName = categoryName,
+    amount = amount,
+    isChild = isChild,
+    needsCategory = needsCategory != 0L,
+  )
 
 // Under SQLite's limit on bound parameters in one statement
 private const val MAX_BIND_ARGS = 900

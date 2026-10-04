@@ -41,6 +41,7 @@ internal fun TransactionsTitleBar(
   val title =
     when (loadedAccount) {
       AllAccounts -> Strings.transactionsTitleAll
+      Uncategorised -> Strings.transactionsUncategorisedTitle
       Loading -> Strings.transactionsTitleLoading
       is SpecificAccount -> loadedAccount.account.name ?: Strings.transactionsTitleNone
       is SpecificTag -> "#${loadedAccount.tag}"
@@ -97,6 +98,7 @@ private fun PreviewTransactionsTitleBar(
 private class TransactionsTitleBarProvider :
   ColoredParameterProvider<LoadedAccount>(
     LoadedAccount.AllAccounts,
+    LoadedAccount.Uncategorised,
     LoadedAccount.Loading,
     LoadedAccount.SpecificAccount(PREVIEW_ACCOUNT),
     LoadedAccount.SpecificTag("groceries"),

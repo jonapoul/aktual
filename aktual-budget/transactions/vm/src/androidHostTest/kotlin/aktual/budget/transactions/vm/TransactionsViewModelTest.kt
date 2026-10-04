@@ -262,6 +262,48 @@ class TransactionsViewModelTest {
   }
 
   @Test
+  fun `Uncategorised transactions`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a")
+      insertTransaction(id = "b", account = "b", category = null, payee = "b")
+      insertTransaction(id = "c", account = "c", category = null, payee = "c", notes = "#food")
+    }
+    tags.insert(id = TagId("food"), tag = "food", color = null, description = null)
+    advanceUntilIdle()
+
+    val uncategorised =
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        tagsDao = tags,
+        spec = TransactionsSpec(categorySpec = Uncategorised),
+      )
+    val uncategorisedWithTag =
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        tagsDao = tags,
+        spec =
+          TransactionsSpec(
+            tagSpec = TagSpec.SpecificTag(TagId("food")),
+            categorySpec = Uncategorised,
+          ),
+      )
+    val params = LoadParams.Refresh<Int>(key = null, loadSize = 50, placeholdersEnabled = false)
+
+    // then - no balances, since the list only holds part of each account
+    assertThat(uncategorised.load(params))
+      .isPage()
+      .withData(
+        transaction(id = "b", account = "b", category = null, payee = "b"),
+        transaction(id = "c", account = "c", category = null, payee = "c", notes = "#food"),
+      )
+    assertThat(uncategorisedWithTag.load(params))
+      .isPage()
+      .withData(transaction(id = "c", account = "c", category = null, payee = "c", notes = "#food"))
+  }
+
+  @Test
   fun `Multiple transactions with different dates`() = runTest {
     // given
     buildViewModel(AllAccounts)

@@ -133,6 +133,11 @@ SELECT id FROM transactions
 
 -- Paginated queries for Paging 3. Sorted as upstream's v_transactions, so ties within a day keep a
 -- stable order across pages
+--
+-- needsCategory is upstream's 'uncategorized' account filter (desktop-client/src/queries/index.ts),
+-- minus starting balances: an on-budget, non-parent transaction with no category, which isn't a
+-- transfer to another on-budget account. The same predicate is repeated in the uncategorised
+-- queries below, so keep them in step
 getPaged:
 SELECT
   vt.id,
@@ -142,11 +147,19 @@ SELECT
   vt.notes,
   c.name AS categoryName,
   vt.amount,
-  vt.is_child AS isChild
+  vt.is_child AS isChild,
+  CASE WHEN
+    a.offbudget = 0 AND
+    c.id IS NULL AND
+    IFNULL(vt.is_parent, 0) = 0 AND
+    IFNULL(vt.starting_balance_flag, 0) = 0 AND
+    (p.transfer_acct IS NULL OR ta.offbudget = 1)
+  THEN 1 ELSE 0 END AS needsCategory
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
+  LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
   LIMIT :limit OFFSET :offset;
 
@@ -159,14 +172,62 @@ SELECT
   vt.notes,
   c.name AS categoryName,
   vt.amount,
-  vt.is_child AS isChild
+  vt.is_child AS isChild,
+  CASE WHEN
+    a.offbudget = 0 AND
+    c.id IS NULL AND
+    IFNULL(vt.is_parent, 0) = 0 AND
+    IFNULL(vt.starting_balance_flag, 0) = 0 AND
+    (p.transfer_acct IS NULL OR ta.offbudget = 1)
+  THEN 1 ELSE 0 END AS needsCategory
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
+  LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
   WHERE a.id = :account
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
   LIMIT :limit OFFSET :offset;
+
+getUncategorisedPaged:
+SELECT
+  vt.id,
+  vt.date,
+  a.name AS accountName,
+  p.name AS payeeName,
+  vt.notes,
+  c.name AS categoryName,
+  vt.amount,
+  vt.is_child AS isChild,
+  1 AS needsCategory
+  FROM v_transactions_internal_alive AS vt
+  LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
+  LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
+  LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
+  LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
+  WHERE
+    a.offbudget = 0 AND
+    c.id IS NULL AND
+    IFNULL(vt.is_parent, 0) = 0 AND
+    IFNULL(vt.starting_balance_flag, 0) = 0 AND
+    (p.transfer_acct IS NULL OR ta.offbudget = 1) AND
+    (:account IS NULL OR a.id = :account)
+  ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
+  LIMIT :limit OFFSET :offset;
+
+countUncategorised:
+SELECT COUNT(*)
+  FROM v_transactions_internal_alive AS vt
+  LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
+  LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
+  LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
+  LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
+  WHERE
+    a.offbudget = 0 AND
+    c.id IS NULL AND
+    IFNULL(vt.is_parent, 0) = 0 AND
+    IFNULL(vt.starting_balance_flag, 0) = 0 AND
+    (p.transfer_acct IS NULL OR ta.offbudget = 1);
 
 getByIds:
 SELECT
@@ -177,11 +238,19 @@ SELECT
   vt.notes,
   c.name AS categoryName,
   vt.amount,
-  vt.is_child AS isChild
+  vt.is_child AS isChild,
+  CASE WHEN
+    a.offbudget = 0 AND
+    c.id IS NULL AND
+    IFNULL(vt.is_parent, 0) = 0 AND
+    IFNULL(vt.starting_balance_flag, 0) = 0 AND
+    (p.transfer_acct IS NULL OR ta.offbudget = 1)
+  THEN 1 ELSE 0 END AS needsCategory
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
+  LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
   WHERE vt.id IN :ids;
 
 -- Balance after the transaction at :offset in getPaged's order, i.e. the sum of it and everything
@@ -213,6 +282,22 @@ SELECT id, notes FROM v_transactions
 getIdsAndNotesByAccount:
 SELECT id, notes FROM v_transactions WHERE account = :account
   ORDER BY date DESC, starting_balance_flag, sort_order DESC, id;
+
+getUncategorisedIdsAndNotes:
+SELECT vt.id, vt.notes
+  FROM v_transactions_internal_alive AS vt
+  LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
+  LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
+  LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
+  LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
+  WHERE
+    a.offbudget = 0 AND
+    c.id IS NULL AND
+    IFNULL(vt.is_parent, 0) = 0 AND
+    IFNULL(vt.starting_balance_flag, 0) = 0 AND
+    (p.transfer_acct IS NULL OR ta.offbudget = 1) AND
+    (:account IS NULL OR a.id = :account)
+  ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
 
 -- notes of every live transaction containing a '#', for aggregating per-tag transaction counts
 notesContainingHash:

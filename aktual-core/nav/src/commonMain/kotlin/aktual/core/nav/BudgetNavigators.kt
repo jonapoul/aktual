@@ -16,6 +16,8 @@ class TransactionsNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke(id: TagId) = stack.push(TransactionsWithTagNavRoute(id))
 
   operator fun invoke(id: AccountId) = stack.push(AccountTransactionsNavRoute(id))
+
+  fun uncategorised() = stack.push(UncategorisedTransactionsNavRoute)
 }
 
 @Immutable

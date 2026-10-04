@@ -20,6 +20,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable data class AccountTransactionsNavRoute(val id: AccountId) : BudgetNavKey.Transactions
 
+@Serializable data object UncategorisedTransactionsNavRoute : BudgetNavKey.Transactions
+
 @Serializable data object ReportsListNavRoute : BudgetNavKey.Reports
 
 @Serializable data class ReportNavRoute(val id: WidgetId) : BudgetNavKey.Reports

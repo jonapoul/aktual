@@ -19,4 +19,5 @@
   <string name="transactions_title_all">All Accounts</string>
   <string name="transactions_title_loading">Loading…</string>
   <string name="transactions_title_none">&lt;No title&gt;</string>
+  <string name="transactions_uncategorised_title">Uncategorised</string>
 </resources>
