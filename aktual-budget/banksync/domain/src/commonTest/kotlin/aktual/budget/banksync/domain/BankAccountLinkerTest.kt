@@ -1,10 +1,13 @@
 package aktual.budget.banksync.domain
 
 import aktual.api.model.banksync.ExternalBankAccount
+import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
 import aktual.budget.model.BankId
+import aktual.budget.model.LocalChange
+import aktual.budget.model.MessageValue
 import assertk.all
 import assertk.assertFailure
 import assertk.assertThat
@@ -92,6 +95,61 @@ internal class BankAccountLinkerTest {
       linker(api).link(AccountId("missing"), AccountSyncSource.SimpleFin, EXTERNAL)
     }
     assertThat(syncCalls).isEmpty()
+  }
+
+  @Test
+  fun `Creating adds a linked account with its transfer payee and syncs it`() = runBankSyncTest {
+    api.responses["ACT-1"] = success(balance = 123456)
+
+    val created = linker(api).create(SimpleFin, EXTERNAL, offBudget = false)
+    val sent = lastSync()
+    runBackground()
+
+    assertThat(account(created)).all {
+      prop("name") { it.name }.isEqualTo("Checking")
+      prop("offbudget") { it.offbudget }.isEqualTo(false)
+      prop("sort_order") { it.sort_order }.isEqualTo(16384.0)
+      prop("account_id") { it.account_id }.isEqualTo("ACT-1")
+      prop("account_sync_source") { it.account_sync_source }.isEqualTo(AccountSyncSource.SimpleFin)
+      prop("last_sync") { it.last_sync }.isNotNull()
+    }
+    val payee = sent.single { it.dataset == "payees" && it.column == "transfer_acct" }
+    assertThat(payee.value).isEqualTo(string(created.value))
+    assertThat(sent.filter { it.row == payee.row && it.column == "name" }.map { it.value })
+      .containsExactly(string(""))
+    assertThat(api.requests.map { it.second.accountId }).containsExactly("ACT-1")
+  }
+
+  @Test
+  fun `New accounts go after the others on or off budget`() = runBankSyncTest {
+    syncChanges(
+      listOf(LocalChange(ACCOUNTS, ACCOUNT.value, "sort_order", MessageValue.Number(20000)))
+    )
+    insertAccount(OTHER, offBudget = true)
+    val linker = linker(api)
+
+    val onBudget = linker.create(SimpleFin, EXTERNAL, offBudget = false)
+    val offBudget = linker.create(SimpleFin, EXTERNAL, offBudget = true)
+
+    assertThat(account(onBudget).sort_order).isEqualTo(36384.0)
+    assertThat(account(offBudget)).all {
+      prop("offbudget") { it.offbudget }.isEqualTo(true)
+      prop("sort_order") { it.sort_order }.isEqualTo(16384.0)
+    }
+  }
+
+  @Test
+  fun `New accounts ignore the order of deleted accounts`() = runBankSyncTest {
+    syncChanges(
+      listOf(
+        LocalChange(ACCOUNTS, ACCOUNT.value, "sort_order", MessageValue.Number(20000)),
+        LocalChange(ACCOUNTS, ACCOUNT.value, "tombstone", MessageValue.Number(1)),
+      )
+    )
+
+    val created = linker(api).create(SimpleFin, EXTERNAL, offBudget = false)
+
+    assertThat(account(created).sort_order).isEqualTo(16384.0)
   }
 
   @Test

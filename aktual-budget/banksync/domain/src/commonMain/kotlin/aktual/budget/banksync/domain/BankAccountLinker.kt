@@ -7,6 +7,7 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.BankSyncDao
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.db.dao.DatabaseTables.BANKS
+import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.BankId
@@ -17,6 +18,7 @@ import aktual.core.UuidGenerator
 import aktual.di.BudgetCoroutineScope
 import dev.zacsweers.metro.Inject
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.math.floor
 import kotlinx.coroutines.launch
 import logcat.logcat
 
@@ -41,18 +43,38 @@ class BankAccountLinker(
   suspend fun link(account: AccountId, source: AccountSyncSource, external: ExternalBankAccount) {
     checkNotNull(accountDao[account]) { "Account $account not found" }
     val changes = mutableListOf<LocalChange>()
-    val bankId = (external.orgDomain ?: external.orgId)?.let(::BankId)
-    val bank =
-      dao.findBank(bankId, external.institution)?.toString()
-        ?: uuidGenerator().also { id ->
-          bankId?.let { changes += LocalChange(BANKS, id, "bank_id", it.value.messageValue()) }
-          changes += LocalChange(BANKS, id, "name", external.institution.messageValue())
-        }
-    changes += change(account, "account_id", external.accountId.messageValue())
-    changes += change(account, "bank", bank.messageValue())
-    changes += change(account, "account_sync_source", source.value.messageValue())
+    changes.addLink(account, source, external)
     syncController.syncChanges(changes)
     scope.launch { bankSync.sync(setOf(account)) }
+  }
+
+  /**
+   * Adds a budget account named after [external], which [source] listed, at the end of the on or
+   * [offBudget] list with its transfer payee, then syncs it as [link] does. Its first sync adds the
+   * starting balance. See linkGoCardlessAccount() without an upgradingId.
+   */
+  suspend fun create(
+    source: AccountSyncSource,
+    external: ExternalBankAccount,
+    offBudget: Boolean,
+  ): AccountId {
+    val account = AccountId(uuidGenerator())
+    // Messages only carry whole numbers, so rounding down still puts it after a fractional order
+    val sortOrder =
+      (accountDao.maxSortOrder(offBudget)?.let(::floor)?.toLong() ?: 0L) + SORT_INCREMENT
+    val changes =
+      mutableListOf(
+        change(account, "name", external.name.messageValue()),
+        change(account, "offbudget", offBudget.messageValue()),
+        change(account, "sort_order", MessageValue.Number(sortOrder)),
+      )
+    changes.addLink(account, source, external)
+    val payee = uuidGenerator()
+    changes += LocalChange(PAYEES, payee, "name", "".messageValue())
+    changes += LocalChange(PAYEES, payee, "transfer_acct", account.value.messageValue())
+    syncController.syncChanges(changes)
+    scope.launch { bankSync.sync(setOf(account)) }
+    return account
   }
 
   /**
@@ -87,6 +109,27 @@ class BankAccountLinker(
     }
   }
 
+  // Links [account] to [external], adding its bank first unless there already is one
+  private suspend fun MutableList<LocalChange>.addLink(
+    account: AccountId,
+    source: AccountSyncSource,
+    external: ExternalBankAccount,
+  ) {
+    val bankId = (external.orgDomain ?: external.orgId)?.let(::BankId)
+    val bank =
+      dao.findBank(bankId, external.institution)?.toString()
+        ?: uuidGenerator().also { id ->
+          bankId?.let { this += LocalChange(BANKS, id, "bank_id", it.value.messageValue()) }
+          this += LocalChange(BANKS, id, "name", external.institution.messageValue())
+        }
+    this += change(account, "account_id", external.accountId.messageValue())
+    this += change(account, "bank", bank.messageValue())
+    this += change(account, "account_sync_source", source.value.messageValue())
+  }
+
   private fun change(account: AccountId, column: String, value: MessageValue) =
     LocalChange(ACCOUNTS, account.value, column, value)
 }
+
+// packages/loot-core/src/shared/util.ts
+private const val SORT_INCREMENT = 16384L

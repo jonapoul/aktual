@@ -64,6 +64,11 @@ class AccountDao(database: BudgetDatabase) {
     getBankSyncAccounts().awaitAsList()
   }
 
+  // The highest sort order among on or off budget accounts, null if there are none
+  suspend fun maxSortOrder(offBudget: Boolean): Double? = queries.withResult {
+    getMaxSortOrder(offBudget).awaitAsOneOrNull()?.sort_order
+  }
+
   // All non-tombstoned accounts (including closed) keyed by ID - schedules may reference closed
   // accounts
   suspend fun nameMap(): Map<AccountId, String?> = queries.withResult {

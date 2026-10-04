@@ -94,4 +94,6 @@ class BankSyncSettingsNavigator(private val stack: NavStack<BudgetNavKey>) {
 @Immutable
 class LinkBankAccountNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke(id: AccountId) = stack.push(LinkBankAccountNavRoute(id))
+
+  fun addAccount() = stack.push(LinkBankAccountNavRoute(id = null))
 }

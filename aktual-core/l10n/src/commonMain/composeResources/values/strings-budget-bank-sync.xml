@@ -96,6 +96,11 @@
   <string name="bank_sync_link_open">Link %1$s to a bank</string>
   <string name="bank_sync_link_title">Link to a bank</string>
   <string name="bank_sync_link_choose">Choose the account at your bank that %1$s should sync from.</string>
+  <string name="bank_sync_link_new_title">Add an account</string>
+  <string name="bank_sync_link_new_choose">Choose the account at your bank to add to your budget. It syncs from then on.</string>
+  <string name="bank_sync_link_new_on_budget">On budget</string>
+  <string name="bank_sync_link_new_off_budget">Off budget</string>
+  <string name="bank_sync_add_account">Add an account from your bank</string>
   <string name="bank_sync_link_linked_to">Linked to %1$s</string>
   <string name="bank_sync_link_failed">Couldn’t link account: %1$s</string>
   <string name="bank_sync_link_failure_title">Couldn’t load account</string>

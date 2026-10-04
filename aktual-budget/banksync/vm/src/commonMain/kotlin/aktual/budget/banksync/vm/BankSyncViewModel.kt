@@ -75,7 +75,7 @@ class BankSyncViewModel(
       when {
         isLoading -> Loading
         failure != null -> Failure(failure)
-        accounts.isEmpty() -> Empty
+        accounts.isEmpty() -> Empty(canSync = server is Remote)
         else -> accounts.toSuccess(statuses, progress, canSync = server is Remote)
       }
     }
