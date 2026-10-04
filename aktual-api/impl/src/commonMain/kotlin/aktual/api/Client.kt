@@ -3,6 +3,7 @@ package aktual.api
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -22,6 +23,9 @@ fun buildKtorClient(
     expectSuccess = true
 
     install(ContentNegotiation) { json(json) }
+
+    // No timeouts by default, only for requests that set their own
+    install(HttpTimeout)
 
     if (isDebug) {
       install(Logging) {
