@@ -1,7 +1,7 @@
 package aktual.budget.schedules.vm.search
 
-import aktual.budget.schedules.vm.Schedule
-import aktual.budget.schedules.vm.SchedulesLoader
+import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Failure
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Results
 import aktual.di.BudgetScope

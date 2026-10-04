@@ -1,4 +1,4 @@
-package aktual.budget.schedules.vm
+package aktual.test
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.model.AccountId
@@ -15,7 +15,7 @@ import kotlinx.serialization.json.Json
 
 // Inserts a fixed-date schedule with its own payee, account and rule
 @Suppress("LongParameterList")
-internal suspend fun BudgetDatabase.insertSchedule(
+suspend fun BudgetDatabase.insertSchedule(
   id: String,
   name: String?,
   payee: String,

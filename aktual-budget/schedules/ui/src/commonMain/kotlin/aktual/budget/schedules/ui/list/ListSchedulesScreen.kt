@@ -1,9 +1,9 @@
 package aktual.budget.schedules.ui.list
 
 import aktual.budget.model.ScheduleId
+import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.ui.list.ListSchedulesPreview.scheduleA
 import aktual.budget.schedules.ui.list.ListSchedulesPreview.scheduleB
-import aktual.budget.schedules.vm.Schedule
 import aktual.budget.schedules.vm.list.Empty
 import aktual.budget.schedules.vm.list.Failure
 import aktual.budget.schedules.vm.list.ListSchedulesEvent.DeleteFailed

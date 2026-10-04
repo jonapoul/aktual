@@ -1,6 +1,6 @@
 package aktual.budget.schedules.ui.list
 
-import aktual.budget.schedules.vm.Schedule
+import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.vm.list.ListSchedulesEvent
 import aktual.core.l10n.Res
 import aktual.core.l10n.list_schedules_delete_failed

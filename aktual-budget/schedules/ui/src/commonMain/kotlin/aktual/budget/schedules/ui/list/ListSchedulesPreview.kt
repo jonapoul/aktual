@@ -6,8 +6,8 @@ import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
-import aktual.budget.schedules.vm.Schedule
-import aktual.budget.schedules.vm.ScheduleStatus
+import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.ScheduleStatus
 import kotlinx.datetime.LocalDate
 
 internal object ListSchedulesPreview {

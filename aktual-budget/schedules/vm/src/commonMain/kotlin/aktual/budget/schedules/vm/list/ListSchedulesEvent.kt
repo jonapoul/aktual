@@ -1,6 +1,6 @@
 package aktual.budget.schedules.vm.list
 
-import aktual.budget.schedules.vm.Schedule
+import aktual.budget.schedules.domain.Schedule
 import androidx.compose.runtime.Immutable
 
 @Immutable

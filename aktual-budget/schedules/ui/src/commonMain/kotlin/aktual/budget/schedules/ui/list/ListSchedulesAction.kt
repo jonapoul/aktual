@@ -1,7 +1,7 @@
 package aktual.budget.schedules.ui.list
 
 import aktual.budget.model.ScheduleId
-import aktual.budget.schedules.vm.Schedule
+import aktual.budget.schedules.domain.Schedule
 import androidx.compose.runtime.Immutable
 
 internal sealed interface ListSchedulesAction
