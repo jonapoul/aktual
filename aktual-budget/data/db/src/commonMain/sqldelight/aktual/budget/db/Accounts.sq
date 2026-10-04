@@ -60,6 +60,19 @@ getAllNames: SELECT id, name FROM accounts WHERE tombstone = 0;
 getAllWithStatus:
 SELECT id, name, closed, offbudget FROM accounts WHERE tombstone = 0 ORDER BY sort_order, name;
 
+-- Every account with its current balance, closed ones included. As upstream's sidebar, the balance
+-- sums every live transaction, future-dated too, skipping split children since their parent's
+-- amount already covers them
+-- packages/desktop-client/src/spreadsheet/bindings.ts accountBalance()
+getAllWithBalances:
+SELECT a.id, a.name, a.offbudget, a.closed, a.account_sync_source, a.account_id,
+    a.bank_sync_status, a.last_sync, CAST(IFNULL(SUM(t.amount), 0) AS INTEGER) AS balance
+  FROM accounts a
+  LEFT JOIN v_transactions_internal_alive t ON t.account = a.id AND IFNULL(t.is_child, 0) = 0
+  WHERE a.tombstone = 0
+  GROUP BY a.id
+  ORDER BY a.sort_order, a.name;
+
 -- Open accounts with their linked bank's name, for the bank sync screen
 -- packages/desktop-client/src/components/mobile/banksync/MobileBankSyncPage.tsx
 getBankSyncAccounts:

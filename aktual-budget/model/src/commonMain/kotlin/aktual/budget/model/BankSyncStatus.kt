@@ -5,6 +5,19 @@ package aktual.budget.model
 // packages/loot-core/src/types/models/account.ts BankSyncStatus
 @JvmInline
 value class BankSyncStatus private constructor(val value: String) {
+  // The last sync didn't complete, so the account needs looking at
+  val isFailure: Boolean
+    get() =
+      when (this) {
+        Failed,
+        ReauthRequired,
+        AttentionRequired,
+        RateLimitExceeded,
+        TimedOut,
+        AccountMissing -> true
+        else -> false
+      }
+
   override fun toString(): String = value
 
   companion object {
