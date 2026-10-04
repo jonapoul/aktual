@@ -25,7 +25,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondError
-import io.ktor.http.HttpStatusCode
 import java.net.NoRouteToHostException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -131,7 +130,7 @@ class BudgetFileDownloaderTest {
   fun `Handle HTTP failure`() = runTest {
     // given the API call returns error code
     before()
-    mockEngine += { respondError(HttpStatusCode.NotFound) }
+    mockEngine += { respondError(NotFound) }
 
     // when
     budgetFileDownloader.download(BUDGET_ID).test {

@@ -12,7 +12,7 @@ import org.intellij.lang.annotations.Language
 
 fun MockRequestHandleScope.respondJson(
   @Language("JSON") content: String,
-  status: HttpStatusCode = HttpStatusCode.OK,
+  status: HttpStatusCode = OK,
 ): HttpResponseData =
   respond(
     content = content,
@@ -33,7 +33,7 @@ fun MockEngine.latestRequestUrl() = latestRequest().url.toString()
 fun MockEngine.Queue.enqueueResponse(content: ByteArray) = enqueue {
   respond(
     content = content,
-    status = HttpStatusCode.OK,
+    status = OK,
     headers = headersOf("Content-Length", content.size.toString()),
   )
 }

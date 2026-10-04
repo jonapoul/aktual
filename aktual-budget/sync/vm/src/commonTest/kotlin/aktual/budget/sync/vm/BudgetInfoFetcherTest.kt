@@ -20,7 +20,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.matchesPredicate
 import io.ktor.client.engine.mock.MockEngine
-import io.ktor.http.HttpStatusCode
 import java.net.NoRouteToHostException
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -107,7 +106,7 @@ class BudgetInfoFetcherTest {
     before()
     mockEngine += {
       respondJson(
-        status = HttpStatusCode.Unauthorized,
+        status = Unauthorized,
         content =
           """{ "status": "error", "reason": "unauthorized", "details": "token-not-found" }""",
       )
@@ -122,7 +121,7 @@ class BudgetInfoFetcherTest {
     // given
     before()
     mockEngine += {
-      respondJson(status = HttpStatusCode.Unauthorized, content = """{ "unexpected-key": 123 }""")
+      respondJson(status = Unauthorized, content = """{ "unexpected-key": 123 }""")
     }
 
     // then
