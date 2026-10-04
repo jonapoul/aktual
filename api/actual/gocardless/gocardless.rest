@@ -12,3 +12,43 @@ Content-Type: application/json
 }
 
 <> transactions-rate-limit.200.json
+
+###
+# @name gocardless/get-banks
+POST {{ACTUAL_BASE_URL}}/gocardless/get-banks
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{
+    "country": "GB",
+    "showDemo": false
+}
+
+<> get-banks-success.200.json
+
+###
+# @name gocardless/create-web-token
+POST {{ACTUAL_BASE_URL}}/gocardless/create-web-token
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Origin: {{ACTUAL_BASE_URL}}
+Content-Type: application/json
+
+{
+    "institutionId": "SANDBOXFINANCE_SFIN0000",
+    "accessValidForDays": 90
+}
+
+<> create-web-token-success.200.json
+
+###
+# @name gocardless/get-accounts
+POST {{ACTUAL_BASE_URL}}/gocardless/get-accounts
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{
+    "requisitionId": "{{ACTUAL_GOCARDLESS_REQUISITION_ID}}"
+}
+
+<> get-accounts-pending.200.json
+<> get-accounts-success.200.json

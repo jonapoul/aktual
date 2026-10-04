@@ -1,0 +1,7 @@
+{
+  "status": "ok",
+  "data": {
+    "error_code": "INTERNAL_ERROR",
+    "error_type": "Invalid Origin header"
+  }
+}
