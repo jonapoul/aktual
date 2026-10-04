@@ -2,7 +2,11 @@ package aktual.budget.banksync.vm
 
 import aktual.api.client.BankSyncApi
 import aktual.api.model.banksync.BankSyncStatusResponse
+import aktual.budget.banksync.domain.BankSyncController
+import aktual.budget.banksync.domain.BankSyncProgress
+import aktual.budget.banksync.domain.BankSyncSummary
 import aktual.budget.db.dao.AccountDao
+import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
@@ -25,15 +29,18 @@ import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
 /**
- * Read-only view of each open account's bank sync link, grouped by provider. Nothing here syncs or
- * links anything yet.
+ * Each open account's bank sync link, grouped by provider, and syncing them. Syncs run in
+ * [BankSyncController] rather than here, so they carry on after the screen closes.
  *
  * See packages/desktop-client/src/components/mobile/banksync/MobileBankSyncPage.tsx
  */
@@ -43,6 +50,7 @@ import logcat.logcat
 class BankSyncViewModel(
   private val accountDao: AccountDao,
   private val api: BankSyncApi,
+  private val controller: BankSyncController,
   private val server: BudgetServer,
   private val clock: Clock,
 ) : ViewModel() {
@@ -53,22 +61,44 @@ class BankSyncViewModel(
   private val mutableFailure = MutableStateFlow<String?>(null)
   private var loadJob: Job? = null
 
+  private val mutableEvents =
+    MutableSharedFlow<BankSyncEvent>(extraBufferCapacity = 1, onBufferOverflow = DROP_OLDEST)
+  val events: SharedFlow<BankSyncEvent> = mutableEvents.asSharedFlow()
+
   val state: StateFlow<BankSyncState> =
     viewModelScope.launchMolecule(Immediate) {
       val accounts by mutableAccounts.collectAsState()
       val statuses by mutableStatuses.collectAsState()
       val isLoading by mutableIsLoading.collectAsState()
       val failure by mutableFailure.collectAsState()
+      val progress by controller.progress.collectAsState()
       when {
         isLoading -> Loading
         failure != null -> Failure(failure)
         accounts.isEmpty() -> Empty
-        else -> accounts.toSuccess(statuses)
+        else -> accounts.toSuccess(statuses, progress, canSync = server is BudgetServer.Remote)
       }
     }
 
   init {
     reload()
+
+    // Show what changed, wherever the sync was started from
+    viewModelScope.launch {
+      controller.finished.collect { results ->
+        reload(showLoading = false)
+        BankSyncSummary.of(results)?.let { mutableEvents.tryEmit(BankSyncEvent.Finished(it)) }
+      }
+    }
+  }
+
+  /** Syncs every linked account, unless a sync is already running. */
+  fun syncAll() {
+    if (!controller.start()) logcat.d { "Bank sync already running" }
+  }
+
+  fun sync(account: AccountId) {
+    if (!controller.start(setOf(account))) logcat.d { "Bank sync already running" }
   }
 
   fun reload(showLoading: Boolean = true) {
@@ -157,8 +187,13 @@ private class LoadedAccounts(
 ) {
   fun isEmpty() = linked.isEmpty() && unlinked.isEmpty()
 
-  fun toSuccess(statuses: Map<AccountSyncSource, BankSyncProviderStatus>) =
-    Success(
+  fun toSuccess(
+    statuses: Map<AccountSyncSource, BankSyncProviderStatus>,
+    progress: BankSyncProgress,
+    canSync: Boolean,
+  ): Success {
+    val syncing = if (progress.isRunning) progress.pending.toSet() else emptySet()
+    return Success(
       providers =
         linked.entries
           // same order as upstream's groupBankSyncAccounts()
@@ -167,12 +202,20 @@ private class LoadedAccounts(
             BankSyncProvider(
               source = source,
               status = statuses[source] ?: Checking,
-              accounts = accounts,
+              accounts =
+                if (syncing.isEmpty()) {
+                  accounts
+                } else {
+                  accounts.map { it.copy(isSyncing = it.id in syncing) }.toImmutableList()
+                },
             )
           }
           .toImmutableList(),
       unlinked = unlinked,
+      canSync = canSync,
+      isSyncing = progress.isRunning,
     )
+  }
 
   companion object {
     val None = LoadedAccounts(linked = emptyMap(), unlinked = persistentListOf())

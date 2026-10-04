@@ -106,7 +106,7 @@ internal class BankSyncTestScope(
 
   // Its background work runs in the test's background scope
   fun controller(api: FakeBankSyncApi) =
-    BankSyncController(
+    BankSyncControllerImpl(
       api = api,
       importer = importer,
       writer = writer,
