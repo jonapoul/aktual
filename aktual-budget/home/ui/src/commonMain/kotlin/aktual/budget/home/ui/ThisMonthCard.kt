@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package aktual.budget.home.ui
 
 import aktual.budget.home.vm.ThisMonthCardState
@@ -57,7 +59,6 @@ internal fun ThisMonthCard(state: ThisMonthCardState, modifier: Modifier = Modif
 
 // Keep this in sync with ThisMonthContent
 @Composable
-@Suppress("MagicNumber")
 private fun ShimmerThisMonth(modifier: Modifier = Modifier) {
   val bar = Modifier.background(colors.tableText, CardShape)
 
