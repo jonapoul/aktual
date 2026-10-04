@@ -119,6 +119,7 @@ internal fun TransactionsScaffold(
           )
 
           if (density != Dense && showBalance) BalanceStrip(balance)
+          if (density == Dense) LedgerHeader()
         }
       },
       snackbarHost = {

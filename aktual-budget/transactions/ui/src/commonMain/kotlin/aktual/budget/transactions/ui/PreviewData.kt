@@ -22,25 +22,26 @@ private val Loaded = LoadState.NotLoading(endOfPaginationReached = true)
 
 // Without explicit load states, static paging data is stuck on a loading refresh
 internal fun previewPagingData(
-  transactions: ImmutableList<Transaction>
+  transactions: ImmutableList<Transaction>,
+  loading: Boolean = false,
 ): Flow<PagingData<Transaction>> =
   MutableStateFlow(
     PagingData.from(
       data = transactions,
       sourceLoadStates =
         LoadStates(
-          refresh = Loaded,
+          refresh = if (loading) LoadState.Loading else Loaded,
           prepend = Loaded,
           append = Loaded,
         ),
     )
   )
 
+internal fun emptyPreviewPagingData(loading: Boolean) =
+  previewPagingData(transactions = persistentListOf(), loading = loading)
+
 internal class DensityProvider :
   ColoredParameterProvider<TransactionsDensity>(Comfortable, Compact, Dense)
-
-internal fun previewLoadingPagingData(): Flow<PagingData<Transaction>> =
-  MutableStateFlow(PagingData.empty())
 
 internal val PREVIEW_DATE = LocalDate(2025, JUNE, 9)
 internal val PREVIEW_BALANCE = Amount(3412.60)

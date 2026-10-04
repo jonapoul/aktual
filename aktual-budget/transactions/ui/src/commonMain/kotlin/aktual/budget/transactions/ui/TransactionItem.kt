@@ -237,7 +237,7 @@ internal fun LedgerShimmerRow(modifier: Modifier = Modifier) {
 
 private const val DAY_NUMBER_LINE_HEIGHT = 1.1f
 private const val WEEKDAY_LENGTH = 3
-private const val SHIMMER_BAR_FRACTION = 3
+private const val SHIMMER_BAR_FRACTION = 1.5f
 
 @Preview
 @Composable
