@@ -66,6 +66,8 @@ flowchart TD
 
   home --tap account--> accountTransactions
   home --no accounts--> bankSync
+  home --tap upcoming schedule--> editSchedule
+  home --see all upcoming--> listSchedules
 
   reportsDashboard --tap report--> report
   reportsDashboard --tap create--> createReport

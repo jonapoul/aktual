@@ -2,15 +2,25 @@ package aktual.budget.home.vm
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.PreferencesDao
+import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.withoutResult
 import aktual.budget.home.domain.AccountsSummaryLoader
+import aktual.budget.home.domain.UpcomingSchedulesLoader
 import aktual.budget.home.vm.AccountsCardState.Loaded
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.SyncedPrefKey.Global.UpcomingScheduledTransactionLength
+import aktual.budget.model.UpcomingLength
+import aktual.budget.schedules.domain.SchedulesLoader
+import aktual.core.Calendar
 import aktual.test.TestBudgetLocalPreferences
+import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
+import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.Assert
@@ -43,7 +53,7 @@ class HomeViewModelTest {
     val viewModel = createViewModel(scope, prefs)
 
     viewModel.state.test {
-      assertThat(awaitItem().budgetName).isEqualTo("Household")
+      assertThat(awaitSettled().budgetName).isEqualTo("Household")
 
       prefs += DbMetadata(budgetName = "Renamed")
       var state = awaitItem()
@@ -80,6 +90,91 @@ class HomeViewModelTest {
     }
   }
 
+  @Test
+  fun `Nothing upcoming is empty`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Later", payee = "p", account = "a", nextDate = date(9))
+    val viewModel = createViewModel(scope)
+
+    viewModel.state.test { assertThat(awaitUpcoming()).isEqualTo(Empty) }
+  }
+
+  @Test
+  fun `Upcoming includes missed and due but not completed or paid`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Upcoming", payee = "p", account = "a", nextDate = date(5))
+    insertSchedule(id = "b", name = "Due", payee = "p", account = "a", nextDate = TODAY)
+    insertSchedule(id = "c", name = "Missed", payee = "p", account = "a", nextDate = MISSED)
+    insertSchedule(
+      id = "d",
+      name = "Completed",
+      payee = "p",
+      account = "a",
+      nextDate = date(2),
+      completed = true,
+    )
+    insertSchedule(id = "e", name = "Paid", payee = "p", account = "a", nextDate = date(3))
+    TransactionDao(this).insert("t1", "e-account", "cat", "e-payee", date(3), schedule = "e")
+    val viewModel = createViewModel(scope)
+
+    viewModel.state.test {
+      assertThat(awaitUpcomingLoaded()).all {
+        hasNames("Missed", "Due", "Upcoming")
+        prop(UpcomingCardState.Loaded::today).isEqualTo(TODAY)
+        prop(UpcomingCardState.Loaded::hiddenCount).isEqualTo(0)
+        prop(UpcomingCardState.Loaded::total).isEqualTo(Amount(-3_000L))
+      }
+    }
+  }
+
+  @Test
+  fun `Upcoming window follows the global length`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Inside", payee = "p", account = "a", nextDate = date(8))
+    insertSchedule(id = "b", name = "Outside", payee = "p", account = "a", nextDate = date(9))
+    val viewModel = createViewModel(scope)
+
+    viewModel.state.test {
+      assertThat(awaitUpcomingLoaded()).all {
+        hasNames("Inside")
+        prop(UpcomingCardState.Loaded::length).isEqualTo(UpcomingLength.Days(count = 7))
+      }
+
+      val twoWeeks = UpcomingLength.Weeks(count = 2)
+      preferences(scope)[UpcomingScheduledTransactionLength] = twoWeeks.encode()
+      var loaded = awaitUpcomingLoaded()
+      while (loaded.schedules.size < 2 || loaded.length != twoWeeks) loaded = awaitUpcomingLoaded()
+      assertThat(loaded).hasNames("Inside", "Outside")
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Upcoming rows are capped but the total isn't`() = runDatabaseTest { scope ->
+    for (day in 2..8) {
+      insertSchedule(id = "s$day", name = "S$day", payee = "p", account = "a", nextDate = date(day))
+    }
+    val viewModel = createViewModel(scope)
+
+    viewModel.state.test {
+      assertThat(awaitUpcomingLoaded()).all {
+        hasNames("S2", "S3", "S4", "S5", "S6")
+        prop(UpcomingCardState.Loaded::hiddenCount).isEqualTo(2)
+        prop(UpcomingCardState.Loaded::total).isEqualTo(Amount(-7_000L))
+      }
+    }
+  }
+
+  private fun Assert<UpcomingCardState.Loaded>.hasNames(vararg names: String) = transform {
+    it.schedules.map { schedule -> schedule.name }
+  }
+    .containsExactly(*names)
+
+  private suspend fun ReceiveTurbine<HomeState>.awaitUpcoming() = awaitSettled().upcoming
+
+  private suspend fun ReceiveTurbine<HomeState>.awaitUpcomingLoaded() =
+    awaitUpcoming() as UpcomingCardState.Loaded
+
+  private fun BudgetDatabase.preferences(scope: TestScope) =
+    PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
+
   private fun Assert<Loaded>.hasBalances(a: Long, b: Long, netWorth: Long) =
     prop(Loaded::summary).all {
       transform { it.onBudget.accounts.map { account -> account.balance } }
@@ -89,11 +184,14 @@ class HomeViewModelTest {
       transform { it.netWorth }.isEqualTo(Amount(netWorth))
     }
 
-  private suspend fun ReceiveTurbine<HomeState>.awaitAccounts(): AccountsCardState {
-    var accounts = awaitItem().accounts
-    while (accounts == Loading) accounts = awaitItem().accounts
-    return accounts
+  // Waits for both cards, so a late first load of one isn't mistaken for a change to the other
+  private suspend fun ReceiveTurbine<HomeState>.awaitSettled(): HomeState {
+    var state = awaitItem()
+    while (state.accounts == Loading || state.upcoming == Loading) state = awaitItem()
+    return state
   }
+
+  private suspend fun ReceiveTurbine<HomeState>.awaitAccounts() = awaitSettled().accounts
 
   private suspend fun ReceiveTurbine<HomeState>.awaitLoaded() = awaitAccounts() as Loaded
 
@@ -102,7 +200,19 @@ class HomeViewModelTest {
     prefs: TestBudgetLocalPreferences = TestBudgetLocalPreferences(DbMetadata()),
   ): HomeViewModel {
     Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
-    return HomeViewModel(prefs, AccountsSummaryLoader(AccountDao(this)))
+    val schedulesLoader =
+      SchedulesLoader(
+        scheduleDao = ScheduleDao(this),
+        accountDao = AccountDao(this),
+        payeeDao = PayeeDao(this),
+        preferencesDao = preferences(scope),
+        calendar = CALENDAR,
+      )
+    return HomeViewModel(
+      localPreferences = prefs,
+      accountsSummaryLoader = AccountsSummaryLoader(AccountDao(this)),
+      upcomingSchedulesLoader = UpcomingSchedulesLoader(schedulesLoader, CALENDAR),
+    )
   }
 
   private suspend fun BudgetDatabase.insertAccount(id: String, offBudget: Boolean = false) =
@@ -120,5 +230,10 @@ class HomeViewModelTest {
 
   private companion object {
     val DATE = LocalDate(2026, 1, 1)
+    val TODAY = LocalDate(2026, 4, 1)
+    val MISSED = LocalDate(2026, 3, 20)
+    val CALENDAR = Calendar { TODAY }
+
+    fun date(day: Int) = LocalDate(2026, 4, day)
   }
 }

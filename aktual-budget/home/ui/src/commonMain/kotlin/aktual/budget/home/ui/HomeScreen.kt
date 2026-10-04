@@ -5,6 +5,8 @@ import aktual.budget.home.vm.HomeState
 import aktual.budget.home.vm.HomeViewModel
 import aktual.core.l10n.Strings
 import aktual.core.nav.BankSyncNavigator
+import aktual.core.nav.EditScheduleNavigator
+import aktual.core.nav.ListSchedulesNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
@@ -39,6 +41,8 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 internal fun HomeScreen(
   transactions: TransactionsNavigator,
   bankSync: BankSyncNavigator,
+  schedules: ListSchedulesNavigator,
+  editSchedule: EditScheduleNavigator,
   modifier: Modifier = Modifier,
   viewModel: HomeViewModel = metroViewModel(),
 ) {
@@ -49,6 +53,8 @@ internal fun HomeScreen(
       when (action) {
         is OpenAccount -> transactions(action.id)
         SetUpAccounts -> bankSync()
+        is OpenSchedule -> editSchedule(action.id)
+        OpenSchedules -> schedules()
       }
     },
     modifier = modifier,
@@ -82,6 +88,8 @@ private fun HomeScaffold(
             .padding(Dimens.Huge),
         verticalArrangement = Arrangement.spacedBy(Dimens.Huge),
       ) {
+        UpcomingCard(state = state.upcoming, onAction = onAction)
+
         AccountsCard(state = state.accounts, onAction = onAction)
 
         BottomSpacing()
@@ -110,9 +118,10 @@ private class HomeStateProvider :
   ColoredParameterProvider<HomeState>(
     HomeState(
       budgetName = "Household budget",
+      upcoming = PREVIEW_UPCOMING,
       accounts = AccountsCardState.Loaded(PREVIEW_ACCOUNTS),
     ),
-    HomeState(budgetName = null, accounts = Empty),
+    HomeState(budgetName = null, upcoming = Empty, accounts = Empty),
   )
 
 @PortraitPreview
