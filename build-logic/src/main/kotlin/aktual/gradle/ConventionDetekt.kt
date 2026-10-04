@@ -13,7 +13,6 @@ import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.extensions.DetektExtension
 import dev.detekt.gradle.plugin.DetektPlugin
 import org.gradle.api.Project
-import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 
 class ConventionDetekt : ProjectPlugin {
   override fun Project.applyTo() {
@@ -21,7 +20,11 @@ class ConventionDetekt : ProjectPlugin {
 
     extensions.configure(DetektExtension::class) {
       with(rootProject.isolated.projectDirectory) {
-        config.from(file("config/detekt.yml"), file("config/detekt-compose.yml"))
+        config.from(
+          file("config/detekt.yml"),
+          file("config/detekt-compose.yml"),
+          file("config/detekt-quiet.yml"),
+        )
       }
       baseline.set(file("detekt-baseline.xml"))
       buildUponDefaultConfig.set(true)
@@ -31,19 +34,27 @@ class ConventionDetekt : ProjectPlugin {
     }
 
     val detektTasks = tasks.withType(Detekt::class)
+    // Outside build/reports, so CI doesn't annotate the PR with each task's duplicates
+    val dekektDir = layout.buildDirectory.dir("detekt")
 
-    tasks.register("detektCheck") { t ->
-      t.group = VERIFICATION_GROUP
+    // Each source set and compilation has its own task, so shared sources get checked more than
+    // once. Those tasks stay quiet and don't fail, this one reports all their issues instead
+    tasks.register("detektCheck", DetektReportTask::class.java) { t ->
       t.dependsOn(detektTasks)
+      t.checkstyleReports.from(dekektDir.map { it.asFileTree.matching { f -> f.include("*.xml") } })
+      t.basePath.set(rootProject.isolated.projectDirectory)
+      t.reportFile.set(layout.buildDirectory.file("reports/detekt/issues.txt"))
     }
 
     detektTasks.configureEach { t ->
       t.enabled = !t.name.contains("release", ignoreCase = true)
+      t.ignoreFailures.set(true)
 
       t.reports { r ->
         r.html.required.set(true)
         r.sarif.required.set(false)
-        r.checkstyle.required.set(false)
+        r.checkstyle.required.set(true)
+        r.checkstyle.outputLocation.set(dekektDir.map { it.file("${t.name}.xml") })
         r.markdown.required.set(false)
       }
 

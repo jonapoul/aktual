@@ -2,6 +2,7 @@ import dev.detekt.gradle.Detekt
 
 plugins {
   `java-gradle-plugin`
+  alias(libs.plugins.blueprintTest)
   alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.detekt)
 }
@@ -55,7 +56,14 @@ dependencies {
   compileOnlyPlugin(libs.plugins.straitjacket)
 
   detektPlugins(libs.detektGradle)
+
+  testImplementation(kotlin("test"))
+  testImplementation(libs.assertk)
+  testImplementation(libs.blueprintAssertk)
+  testRuntimeOnly(libs.junitPlatformLauncher)
 }
+
+tasks.withType<Test>().configureEach { useJUnitPlatform() }
 
 tasks.named("validatePlugins", ValidatePlugins::class.java).configure {
   enableStricterValidation = true
