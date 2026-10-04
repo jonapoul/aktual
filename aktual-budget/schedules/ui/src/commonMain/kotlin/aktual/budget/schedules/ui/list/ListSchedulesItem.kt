@@ -1,8 +1,8 @@
 package aktual.budget.schedules.ui.list
 
-import aktual.budget.model.Operator
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.ScheduleStatus
+import aktual.budget.schedules.domain.amountPrefix
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
@@ -51,17 +51,7 @@ internal fun ListSchedulesItem(
   modifier: Modifier = Modifier,
   query: String = "",
 ) {
-  val amountPrefix =
-    when (schedule.amountOp) {
-      Operator.IsApprox,
-      Operator.IsBetween -> "~"
-
-      Operator.GreaterThan,
-      Operator.GreaterThanOrEquals,
-      Operator.Is,
-      Operator.LessThan,
-      Operator.LessThanOrEquals -> ""
-    }
+  val amountPrefix = schedule.amountOp.amountPrefix()
   val amountStr = amountPrefix + schedule.amount.formattedString(includeSign = true)
   val textColor = if (schedule.isCompleted) colors.pageTextSubdued else colors.pageText
 

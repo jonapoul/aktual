@@ -12,6 +12,7 @@ import aktual.budget.model.ScheduleId
 import aktual.budget.model.UpcomingLength
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.ScheduleStatus
+import aktual.budget.schedules.domain.amountPrefix
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
@@ -156,7 +157,7 @@ private fun UpcomingRow(
     }
 
     Text(
-      text = schedule.amountPrefix() + schedule.amount.formattedString(),
+      text = schedule.amountOp.amountPrefix() + schedule.amount.formattedString(),
       style = typography.bodyLarge.tabularFigures(),
       fontWeight = SemiBold,
       color = if (schedule.amount < Zero) colors.numberNegative else colors.pageText,
@@ -204,18 +205,6 @@ private fun Schedule.dueString(today: LocalDate): String {
     else -> Plurals.homeUpcomingInDays(days, days)
   }
 }
-
-private fun Schedule.amountPrefix(): String =
-  when (amountOp) {
-    Operator.IsApprox,
-    Operator.IsBetween -> "~"
-
-    Operator.GreaterThan,
-    Operator.GreaterThanOrEquals,
-    Operator.Is,
-    Operator.LessThan,
-    Operator.LessThanOrEquals -> ""
-  }
 
 @Composable
 private fun MoreRow(count: Int, onClick: () -> Unit, modifier: Modifier = Modifier) {
