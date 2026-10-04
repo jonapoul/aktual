@@ -64,6 +64,7 @@ fun TransactionsScreen(
     loadedAccount = loadedAccount,
     density = density,
     balance = balance,
+    showBalance = viewModel.showBalance,
     isRoot = isRoot,
     canBankSync = canBankSync,
     isBankSyncing = isBankSyncing,
@@ -94,6 +95,7 @@ internal fun TransactionsScaffold(
   balance: Amount?,
   isRoot: Boolean,
   onAction: ActionListener,
+  showBalance: Boolean = true,
   canBankSync: Boolean = false,
   isBankSyncing: Boolean = false,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -103,7 +105,7 @@ internal fun TransactionsScaffold(
   val pagingItems = pagingData.collectAsLazyPagingItems()
   var showViewOptions by remember { mutableStateOf(false) }
 
-  WithLedgerDimens(density) {
+  WithLedgerDimens(density, showBalance) {
     Scaffold(
       topBar = {
         Column {
@@ -116,7 +118,7 @@ internal fun TransactionsScaffold(
             onOpenViewOptions = { showViewOptions = true },
           )
 
-          if (density != Dense) BalanceStrip(balance)
+          if (density != Dense && showBalance) BalanceStrip(balance)
         }
       },
       snackbarHost = {
