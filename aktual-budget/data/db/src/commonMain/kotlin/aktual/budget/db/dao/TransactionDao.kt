@@ -129,7 +129,7 @@ class TransactionDao(database: BudgetDatabase) {
         starting_balance_flag = null,
         transferred_id = null,
         sort_order = date.toEpochDays().days.inWholeMilliseconds.toDouble(),
-        tombstone = null,
+        tombstone = false,
         cleared = null,
         pending = null,
         parent_id = parent?.let(::TransactionId),

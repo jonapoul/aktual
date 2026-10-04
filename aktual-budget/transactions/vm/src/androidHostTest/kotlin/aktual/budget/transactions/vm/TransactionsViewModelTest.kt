@@ -254,8 +254,8 @@ class TransactionsViewModelTest {
     assertThat(result)
       .isPage()
       .withData(
-        transaction(id = "d", account = "c", category = "c", payee = "c", notes = "#FOOD again"),
         transaction(id = "a", account = "a", category = "a", payee = "a", notes = "lunch #food"),
+        transaction(id = "d", account = "c", category = "c", payee = "c", notes = "#FOOD again"),
       )
       .withPrevKey(expected = null)
       .withNextKey(expected = null)
