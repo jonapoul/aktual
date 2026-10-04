@@ -3,6 +3,8 @@ package aktual.budget.db.dao
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.withResult
 import aktual.budget.model.AccountId
+import aktual.budget.model.AccountSyncSource
+import aktual.budget.model.BankId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
@@ -33,7 +35,24 @@ data class BankSyncCandidate(
   val rawSyncedData: String? = null,
 )
 
-/** The lookups of packages/loot-core/src/server/accounts/sync.ts matchTransactions(). */
+/**
+ * An account that bank sync downloads transactions for.
+ *
+ * @property accountId The provider's ID for the account.
+ * @property source Null if the account was linked without one, which can't be synced.
+ * @property bankId GoCardless' requisition ID.
+ * @property bankName Enable Banking's name for the bank.
+ */
+data class BankSyncAccount(
+  val id: AccountId,
+  val name: String?,
+  val accountId: String,
+  val source: AccountSyncSource?,
+  val bankId: BankId,
+  val bankName: String?,
+)
+
+/** The lookups of bank sync, mostly packages/loot-core/src/server/accounts/sync.ts. */
 @Inject
 class BankSyncDao(database: BudgetDatabase) {
   private val queries = database.bankSyncQueries
@@ -76,6 +95,26 @@ class BankSyncDao(database: BudgetDatabase) {
   // The live children of a split parent
   suspend fun childIds(parent: TransactionId): List<TransactionId> = queries.withResult {
     bankSyncChildIds(parent).awaitAsList()
+  }
+
+  // Open, linked accounts, off budget ones last
+  suspend fun accounts(): List<BankSyncAccount> = queries.withResult {
+    bankSyncAccounts { id, name, accountId, source, bankId, bankName ->
+      BankSyncAccount(
+        id = id,
+        name = name,
+        accountId = accountId,
+        source = source,
+        bankId = bankId,
+        bankName = bankName,
+      )
+    }
+      .awaitAsList()
+  }
+
+  // The date of the account's oldest live transaction up to [today]
+  suspend fun oldestDate(account: AccountId, today: LocalDate): LocalDate? = queries.withResult {
+    bankSyncOldestDate(account, today).awaitAsOneOrNull()
   }
 
   // Every category that isn't deleted

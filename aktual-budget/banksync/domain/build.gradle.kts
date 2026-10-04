@@ -5,6 +5,7 @@ plugins { id("aktual.module.kotlin") }
 
 kotlin {
   commonMainDependencies {
+    api(project(":aktual-api"))
     api(project(":aktual-api:model"))
     api(project(":aktual-budget:data:db"))
     api(project(":aktual-budget:model"))

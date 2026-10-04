@@ -1,6 +1,6 @@
--- Lookups for reconciling bank sync downloads, see aktual-budget:banksync:domain. The views don't
--- carry raw_synced_data, and SQLDelight can't type the computed parent_id of
--- v_transactions_internal, so both come from the joined transactions row
+-- Lookups for bank sync, see aktual-budget:banksync:domain. The views don't carry raw_synced_data,
+-- and SQLDelight can't type the computed parent_id of v_transactions_internal, so both come from
+-- the joined transactions row
 
 -- packages/loot-core/src/server/accounts/sync.ts matchTransactions(), when deleted transactions
 -- are reimported
@@ -56,3 +56,19 @@ WHERE v.is_child = 1 AND t.parent_id = :parent;
 -- packages/loot-core/src/server/db/index.ts getCategories()
 bankSyncCategoryIds:
 SELECT id FROM categories WHERE tombstone = 0;
+
+-- packages/loot-core/src/server/accounts/app.ts accountsBankSync(). Only open accounts with both
+-- a linked bank and the provider's account ID are synced
+bankSyncAccounts:
+SELECT a.id, a.name, a.account_id, a.account_sync_source, b.bank_id, b.name AS bank_name
+FROM accounts a
+JOIN banks b ON a.bank = b.id
+WHERE
+  a.tombstone = 0 AND a.closed = 0
+  AND a.account_id IS NOT NULL AND a.account_id != ''
+  AND b.bank_id IS NOT NULL AND b.bank_id != ''
+ORDER BY a.offbudget, a.sort_order;
+
+-- packages/loot-core/src/server/accounts/sync.ts getAccountOldestTransaction()
+bankSyncOldestDate:
+SELECT date FROM v_transactions WHERE account = :account AND date <= :today ORDER BY date LIMIT 1;

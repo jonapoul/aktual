@@ -1,0 +1,78 @@
+{
+  "status": "ok",
+  "data": {
+    "ACT-1": {
+      "balances": [
+        {
+          "balanceAmount": {
+            "amount": "1234.56",
+            "currency": "USD"
+          },
+          "balanceType": "expected",
+          "referenceDate": "2026-09-30"
+        }
+      ],
+      "startingBalance": 123456,
+      "transactions": {
+        "all": [
+          {
+            "booked": true,
+            "sortOrder": 1759017600,
+            "date": "2026-09-28",
+            "payeeName": "Employer Inc",
+            "notes": "PAYROLL",
+            "transactionAmount": {
+              "amount": "2500.00",
+              "currency": "USD"
+            },
+            "transactionId": "TRN-booked-1",
+            "transactedDate": "2026-09-27",
+            "postedDate": "2026-09-28"
+          }
+        ],
+        "booked": [
+          {
+            "booked": true,
+            "sortOrder": 1759017600,
+            "date": "2026-09-28",
+            "payeeName": "Employer Inc",
+            "notes": "PAYROLL",
+            "transactionAmount": {
+              "amount": "2500.00",
+              "currency": "USD"
+            },
+            "transactionId": "TRN-booked-1",
+            "transactedDate": "2026-09-27",
+            "postedDate": "2026-09-28"
+          }
+        ],
+        "pending": []
+      }
+    },
+    "ACT-2": {
+      "balances": [],
+      "startingBalance": 5000,
+      "transactions": {
+        "all": [],
+        "booked": [],
+        "pending": []
+      }
+    },
+    "errors": {
+      "ACT-2": [
+        {
+          "error_type": "ACCOUNT_NEEDS_ATTENTION",
+          "error_code": "ACCOUNT_NEEDS_ATTENTION",
+          "reason": "The account needs your attention at <a href=\"https://bridge.simplefin.org/auth/login\">SimpleFIN</a>."
+        }
+      ],
+      "ACT-missing": [
+        {
+          "error_type": "ACCOUNT_MISSING",
+          "error_code": "ACCOUNT_MISSING",
+          "reason": "The account \"ACT-missing\" was not found. Try unlinking and relinking the account."
+        }
+      ]
+    }
+  }
+}
