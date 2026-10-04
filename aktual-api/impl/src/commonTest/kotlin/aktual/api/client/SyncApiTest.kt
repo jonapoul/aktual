@@ -32,7 +32,6 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
 import io.ktor.util.toMap
 import kotlin.test.AfterTest
@@ -157,7 +156,7 @@ class SyncApiTest {
   fun `Fetch user files failure response`() = runTest {
     // given
     mockEngine += {
-      respondJson(SyncResponses.LIST_USER_FILES_UNAUTHORIZED_401, HttpStatusCode.Unauthorized)
+      respondJson(SyncResponses.LIST_USER_FILES_UNAUTHORIZED_401, Unauthorized)
     }
 
     // when
@@ -217,7 +216,7 @@ class SyncApiTest {
   fun `Get user key failure`() = runTest {
     // given
     mockEngine += {
-      respondJson(SyncResponses.USER_GET_KEY_UNAUTHORIZED_401, HttpStatusCode.Unauthorized)
+      respondJson(SyncResponses.USER_GET_KEY_UNAUTHORIZED_401, Unauthorized)
     }
 
     // when
@@ -271,7 +270,7 @@ class SyncApiTest {
   fun `Get file info file not found failure`() = runTest {
     // given
     mockEngine += {
-      respondJson(SyncResponses.GET_USER_FILE_INFO_NO_FILE_400, HttpStatusCode.BadRequest)
+      respondJson(SyncResponses.GET_USER_FILE_INFO_NO_FILE_400, BadRequest)
     }
 
     // when
@@ -292,7 +291,7 @@ class SyncApiTest {
   fun `Get file info unauthorised failure`() = runTest {
     // given
     mockEngine += {
-      respondJson(SyncResponses.GET_USER_FILE_INFO_UNAUTHORIZED_401, HttpStatusCode.Unauthorized)
+      respondJson(SyncResponses.GET_USER_FILE_INFO_UNAUTHORIZED_401, Unauthorized)
     }
 
     // when

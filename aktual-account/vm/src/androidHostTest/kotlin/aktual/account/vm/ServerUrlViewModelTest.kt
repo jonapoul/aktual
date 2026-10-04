@@ -29,7 +29,6 @@ import assertk.assertions.isNull
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.createDynamicGraph
 import io.ktor.client.engine.mock.MockEngine
-import io.ktor.http.HttpStatusCode
 import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -167,7 +166,7 @@ class ServerUrlViewModelTest {
       """
           .trimIndent()
       mockEngine.clear()
-      mockEngine += { respondJson(body, HttpStatusCode.BadRequest) }
+      mockEngine += { respondJson(body, BadRequest) }
 
       // When
       viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
