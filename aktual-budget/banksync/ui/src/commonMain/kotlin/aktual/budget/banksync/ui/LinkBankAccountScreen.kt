@@ -203,8 +203,8 @@ private fun LazyListScope.choosing(
           modifier = Modifier.fillMaxWidth(),
           selected = state.selected,
           options = state.providers,
-          onSelect = { onAction(SelectProvider(it)) },
-          string = { providerName(it) },
+          onSelect = { source -> onAction(SelectProvider(source)) },
+          string = { source -> providerName(source) },
           isEnabled = !state.isLinking,
         )
       } else {
