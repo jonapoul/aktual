@@ -1,6 +1,3 @@
-import aktual.gradle.dsl.desktopMainDependencies
-import blueprint.core.commonMainDependencies
-
 plugins { id("aktual.module.compose") }
 
 kotlin {

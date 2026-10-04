@@ -1,5 +1,4 @@
-import blueprint.core.androidMainDependencies
-import blueprint.core.commonMainDependencies
+import org.gradle.kotlin.dsl.commonMainDependencies
 
 plugins {
   id("aktual.module.kotlin")

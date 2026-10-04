@@ -1,4 +1,3 @@
-import blueprint.core.commonMainDependencies
 import blueprint.core.getOptional
 import blueprint.core.gitVersionCode
 import blueprint.core.gitVersionDate

@@ -1,7 +1,5 @@
 package aktual.gradle
 
-import aktual.gradle.dsl.dependencies
-import aktual.gradle.dsl.invoke
 import aktual.gradle.dsl.withType
 import blueprint.core.get
 import blueprint.core.libs
@@ -9,6 +7,8 @@ import org.gradle.api.Project
 import org.gradle.api.file.RelativePath
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.testing.Test
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.invoke
 
 /**
  * Apply this on modules that need to run androidHostTest test cases using real database instances

@@ -4,8 +4,6 @@ package aktual.gradle
 
 import aktual.gradle.dsl.apply
 import aktual.gradle.dsl.configure
-import aktual.gradle.dsl.dependencies
-import aktual.gradle.dsl.invoke
 import aktual.gradle.dsl.withType
 import blueprint.core.get
 import blueprint.core.libs
@@ -13,6 +11,8 @@ import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.extensions.DetektExtension
 import dev.detekt.gradle.plugin.DetektPlugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.invoke
 
 class ConventionDetekt : ProjectPlugin {
   override fun Project.applyTo() {
