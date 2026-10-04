@@ -51,11 +51,13 @@ internal fun LedgerHeader(modifier: Modifier = Modifier) {
       Modifier.width(DenseColumns.amount),
       textAlign = End,
     )
-    LedgerHeaderText(
-      Strings.transactionsHeaderBalance,
-      Modifier.width(DenseColumns.balance),
-      textAlign = End,
-    )
+    if (dimens.showBalance) {
+      LedgerHeaderText(
+        Strings.transactionsHeaderBalance,
+        Modifier.width(DenseColumns.balance),
+        textAlign = End,
+      )
+    }
   }
 }
 

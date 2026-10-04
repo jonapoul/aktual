@@ -67,7 +67,7 @@ class TransactionsViewModel(
   }
 
   private val mutableLoadedAccount = MutableStateFlow<LoadedAccount>(Loading)
-  private val bankSyncAccount = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id
+  private val accountId = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id
   private val isRemote = server is BudgetServer.Remote
   private var currentPagingSource: PagingSource<Int, Transaction>? = null
 
@@ -85,16 +85,26 @@ class TransactionsViewModel(
 
   val isBankSyncing: StateFlow<Boolean> =
     bankSyncController.progress
-      .map { it.isRunning && bankSyncAccount in it.pending }
+      .map { it.isRunning && accountId in it.pending }
       .stateIn(viewModelScope, Eagerly, initialValue = false)
 
   val bankSyncFinished: Flow<BankSyncSummary> =
     bankSyncController.finished.mapNotNull { results ->
-      BankSyncSummary.of(results.filter { it.account == bankSyncAccount })
+      BankSyncSummary.of(results.filter { it.account == accountId })
     }
 
-  // Dummy value until #1675 computes the real one
-  val balance: StateFlow<Amount?> = MutableStateFlow(DummyBalance).asStateFlow()
+  // A tag-filtered list only holds part of each account, so it has no balance to show
+  val showBalance: Boolean = spec.tagSpec is TagSpec.AllTags
+
+  val balance: StateFlow<Amount?> =
+    if (showBalance) {
+      transactionDao
+        .observeBalance(accountId)
+        .map(::Amount)
+        .stateIn(viewModelScope, Eagerly, initialValue = null)
+    } else {
+      MutableStateFlow<Amount?>(null)
+    }
 
   val pagingData: Flow<PagingData<Transaction>> =
     Pager(
@@ -140,7 +150,7 @@ class TransactionsViewModel(
   }
 
   fun bankSync() {
-    val account = bankSyncAccount ?: return
+    val account = accountId ?: return
     if (!bankSyncController.start(setOf(account))) logcat.d { "Bank sync already running" }
   }
 

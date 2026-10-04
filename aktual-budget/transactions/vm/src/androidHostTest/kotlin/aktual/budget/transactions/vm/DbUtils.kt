@@ -40,6 +40,8 @@ internal suspend fun TransactionDao.insertTransaction(
   notes: String? = null,
   date: LocalDate = DATE_1,
   amount: Double = 123.45,
+  isParent: Boolean = false,
+  parent: String? = null,
 ) =
   insert(
     id = id,
@@ -49,6 +51,8 @@ internal suspend fun TransactionDao.insertTransaction(
     notes = notes,
     date = date,
     amount = amount,
+    isParent = isParent,
+    parent = parent,
   )
 
 private val ACCOUNTS = mapOf("a" to "Amex", "b" to "Barclays", "c" to "Chase")
@@ -64,6 +68,7 @@ internal fun transaction(
   notes: String? = null,
   date: LocalDate = DATE_1,
   amount: Double = 123.45,
+  balance: Double? = null,
 ) =
   Transaction(
     id = TransactionId(id),
@@ -73,5 +78,7 @@ internal fun transaction(
     notes = notes,
     category = CATEGORIES.getValue(category),
     amount = Amount(amount),
-    balance = DummyBalance,
+    balance = balance?.let(::Amount),
   )
+
+internal fun Transaction.withBalance(balance: Double) = copy(balance = Amount(balance))

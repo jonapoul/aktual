@@ -17,9 +17,14 @@ import androidx.compose.ui.unit.sp
 internal val LocalLedgerDimens = compositionLocalOf { LedgerDimens(Default) }
 
 @Composable
-internal fun WithLedgerDimens(density: TransactionsDensity, content: @Composable () -> Unit) =
+internal fun WithLedgerDimens(
+  density: TransactionsDensity,
+  showBalance: Boolean = true,
+  content: @Composable () -> Unit,
+) =
   CompositionLocalProvider(
-    LocalLedgerDimens provides remember(density) { LedgerDimens(density) },
+    LocalLedgerDimens provides
+      remember(density, showBalance) { LedgerDimens(density).copy(showBalance = showBalance) },
     content = content,
   )
 
@@ -40,6 +45,7 @@ internal data class LedgerDimens(
   val amountWeight: FontWeight,
   val balanceSize: TextUnit = 12.sp,
   val showAccount: Boolean = false,
+  val showBalance: Boolean = true,
 )
 
 internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
