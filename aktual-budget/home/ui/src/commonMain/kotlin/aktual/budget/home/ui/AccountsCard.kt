@@ -18,10 +18,8 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryTextButton
-import aktual.core.ui.RounderCardShape
 import aktual.core.ui.formattedString
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,19 +36,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp.Companion.Hairline
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.persistentListOf
 
-private val CardPadding = 16.dp
 private val RowMinHeight = 48.dp
 private val SyncDotSize = 8.dp
 
@@ -60,15 +55,7 @@ internal fun AccountsCard(
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .clip(RounderCardShape)
-        .background(colors.tableBackground, RounderCardShape)
-        .border(Hairline, colors.tableBorder, RounderCardShape)
-        .padding(vertical = CardPadding)
-  ) {
+  HomeCard(modifier = modifier) {
     HeaderRow(
       title = Strings.homeAccountsTitle,
       amount = (state as? Loaded)?.summary?.netWorth,
@@ -215,8 +202,6 @@ private fun AccountsEmpty(onAction: HomeActionHandler, modifier: Modifier = Modi
     PrimaryTextButton(text = Strings.homeAccountsEmptyAction, onClick = { onAction(SetUpAccounts) })
   }
 }
-
-private fun TextStyle.tabularFigures() = copy(fontFeatureSettings = "tnum")
 
 @Preview
 @Composable

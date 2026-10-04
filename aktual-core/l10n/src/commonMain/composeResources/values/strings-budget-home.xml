@@ -6,4 +6,33 @@
   <string name="home_accounts_sync_failed">Bank sync failed</string>
   <string name="home_accounts_empty">No accounts yet</string>
   <string name="home_accounts_empty_action">Set up bank sync</string>
+  <string name="home_upcoming_title">Upcoming · %1$s</string>
+  <plurals name="home_upcoming_window_days">
+    <item quantity="one">next %1$d day</item>
+    <item quantity="other">next %1$d days</item>
+  </plurals>
+  <plurals name="home_upcoming_window_weeks">
+    <item quantity="one">next week</item>
+    <item quantity="other">next %1$d weeks</item>
+  </plurals>
+  <plurals name="home_upcoming_window_months">
+    <item quantity="one">next month</item>
+    <item quantity="other">next %1$d months</item>
+  </plurals>
+  <plurals name="home_upcoming_window_years">
+    <item quantity="one">next year</item>
+    <item quantity="other">next %1$d years</item>
+  </plurals>
+  <string name="home_upcoming_window_current_month">this month</string>
+  <string name="home_upcoming_see_all">See all</string>
+  <string name="home_upcoming_today">Today</string>
+  <string name="home_upcoming_tomorrow">Tomorrow</string>
+  <plurals name="home_upcoming_in_days">
+    <item quantity="one">In %1$d day</item>
+    <item quantity="other">In %1$d days</item>
+  </plurals>
+  <string name="home_upcoming_overdue">Overdue</string>
+  <string name="home_upcoming_row_detail">%1$s · %2$s</string>
+  <string name="home_upcoming_more">+%1$d more</string>
+  <string name="home_upcoming_total">Total due</string>
 </resources>
