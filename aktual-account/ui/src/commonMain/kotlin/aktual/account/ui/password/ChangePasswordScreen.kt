@@ -19,7 +19,7 @@ import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NoticeBanner
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
@@ -192,14 +192,14 @@ private fun ChangePasswordState.Failure.errorMessage(): String =
 private fun PreviewChangePassword(
   @PreviewParameter(ChangePasswordProvider::class) params: ColoredParams<ChangePasswordParams>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     ChangePasswordScaffold(
-      inputPassword1 = params.data.password1,
-      inputPassword2 = params.data.password2,
-      showPasswords = params.data.showPasswords,
-      passwordsMatch = params.data.passwordsMatch,
-      state = params.data.state,
-      versions = AktualVersions.Dummy,
+      inputPassword1 = password1,
+      inputPassword2 = password2,
+      showPasswords = showPasswords,
+      passwordsMatch = passwordsMatch,
+      state = state,
+      versions = Dummy,
       onAction = {},
     )
   }

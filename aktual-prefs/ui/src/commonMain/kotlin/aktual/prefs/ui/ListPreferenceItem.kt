@@ -7,7 +7,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.ListBottomSheet
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.textField
 import aktual.prefs.ui.core.BasicPreferenceItem
 import aktual.prefs.vm.ListPreference
@@ -140,22 +140,22 @@ private fun PreviewListPreferenceItem(
   @PreviewParameter(ListPreferenceItemProvider::class)
   params: ColoredParams<ListPreferenceItemParams>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     ListPreferenceItem(
-      value = params.data.value,
-      options = params.data.options,
+      value = value,
+      options = options,
       optionString = { it.name },
       optionSuffix = null,
       onValueChange = {},
-      title = params.data.title,
-      subtitle = params.data.subtitle,
-      icon = params.data.icon,
-      enabled = params.data.enabled,
+      title = title,
+      subtitle = subtitle,
+      icon = icon,
+      enabled = enabled,
     )
   }
 
 private data class ListPreferenceItemParams(
-  val value: PreviewOption = PreviewOption.OptionA,
+  val value: PreviewOption = OptionA,
   val options: ImmutableList<PreviewOption> = PreviewOption.entries.toImmutableList(),
   val title: String,
   val subtitle: String?,

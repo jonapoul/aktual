@@ -12,7 +12,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.scrollbar
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
@@ -163,12 +163,12 @@ private const val NUM_SHIMMER_ROWS = 12
 private fun PreviewTransactions(
   @PreviewParameter(TransactionsProvider::class) params: ColoredParams<TransactionsParams>
 ) =
-  PreviewWithColors(params.colors) {
-    WithLedgerDimens(params.data.density) {
+  PreviewWithColoredParams(params) {
+    WithLedgerDimens(density) {
       Transactions(
         listState = rememberLazyListState(),
-        pagingItems = params.data.pagingData.collectAsLazyPagingItems(),
-        density = params.data.density,
+        pagingItems = pagingData.collectAsLazyPagingItems(),
+        density = density,
         contentPadding = Zero,
         innerPadding = Zero,
       )

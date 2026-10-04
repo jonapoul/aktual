@@ -329,9 +329,9 @@ private fun ListSchedulesMenuItems(onAction: ListSchedulesActionHandler) {
 @Preview
 @Composable
 private fun PreviewListSchedulesMenuItems(
-  @PreviewParameter(ColoredParameters::class) theme: Colors
+  @PreviewParameter(ColoredParameters::class) colors: Colors
 ) =
-  PreviewWithColors(theme) {
+  PreviewWithColors(colors) {
     Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {
       ListSchedulesMenuItems(onAction = {})
     }

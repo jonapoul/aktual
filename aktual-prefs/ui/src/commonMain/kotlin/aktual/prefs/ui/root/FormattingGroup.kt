@@ -12,7 +12,7 @@ import aktual.core.icons.material.Speed125
 import aktual.core.l10n.Strings
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.ListPreferenceItem
 import aktual.prefs.ui.core.PreferenceGroup
@@ -115,13 +115,13 @@ private fun FirstDayOfWeek.string(): String =
 private fun PreviewFormattingGroup(
   @PreviewParameter(FormattingGroupProvider::class) params: ColoredParams<FormattingGroupState>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     FormattingGroup(
       FormatConfigState(
-        numberFormat = ListPreference(params.data.numberFormat),
-        dateFormat = ListPreference(params.data.dateFormat),
-        firstDayOfWeek = ListPreference(params.data.firstDayOfWeek),
-        hideFraction = BooleanPreference(params.data.hideFraction),
+        numberFormat = ListPreference(numberFormat),
+        dateFormat = ListPreference(dateFormat),
+        firstDayOfWeek = ListPreference(firstDayOfWeek),
+        hideFraction = BooleanPreference(hideFraction),
       )
     )
   }
