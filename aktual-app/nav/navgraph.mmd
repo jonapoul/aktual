@@ -27,6 +27,8 @@ flowchart TD
     bankSync["Bank Sync"]
     bankSyncSettings["Bank Sync Settings"]
     linkBankAccount["Link Bank Account"]
+    bankSyncProviders["Bank Sync Providers"]
+    bankSyncProviderSetup["Bank Sync Provider Setup"]
   end
 
   app --valid token--> budgetList
@@ -75,3 +77,7 @@ flowchart TD
 
   bankSync --tap linked account--> bankSyncSettings
   bankSync --tap unlinked account--> linkBankAccount
+  bankSync --tap add account--> linkBankAccount
+  bankSync --tap providers--> bankSyncProviders
+  linkBankAccount --no providers set up--> bankSyncProviders
+  bankSyncProviders --tap provider--> bankSyncProviderSetup

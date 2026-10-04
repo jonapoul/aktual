@@ -8,6 +8,7 @@ import aktual.api.model.banksync.EnableBankingAccountsResponse
 import aktual.api.model.banksync.EnableBankingBank
 import aktual.api.model.banksync.EnableBankingBanksResponse
 import aktual.api.model.banksync.EnableBankingLoginResponse
+import aktual.api.model.banksync.SecretResponse
 import aktual.core.model.AktualJson
 import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
@@ -22,6 +23,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -34,6 +36,21 @@ class EnableBankingApiImpl(
   @param:AktualClient private val client: HttpClient,
   private val server: BudgetServer,
 ) : EnableBankingApi {
+  override suspend fun configure(applicationId: String, secretKey: String): SecretResponse {
+    val body = buildJsonObject {
+      put("applicationId", applicationId)
+      put("secretKey", secretKey)
+    }
+    val envelope = post("configure", body, REQUEST_TIMEOUT)
+    val configured = (envelope.data as? JsonObject)?.get("configured") as? JsonPrimitive
+    return when (val failure = envelope.failure()) {
+      null if configured?.booleanOrNull == true -> Success
+      is ProviderError -> SecretResponse.Failed(failure.errorCode, failure.errorType)
+      is Rejected -> SecretResponse.Failed(failure.reason, failure.details)
+      null -> SecretResponse.Failed(envelope.reason, envelope.details)
+    }
+  }
+
   override suspend fun banks(country: String): EnableBankingBanksResponse {
     val body = buildJsonObject { put(COUNTRY, country) }
     val envelope = post("aspsps", body, REQUEST_TIMEOUT)

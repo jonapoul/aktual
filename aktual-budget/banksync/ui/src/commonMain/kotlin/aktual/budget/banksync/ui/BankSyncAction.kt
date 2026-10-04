@@ -11,6 +11,8 @@ internal data object SyncAll : BankSyncAction
 
 internal data object AddAccount : BankSyncAction
 
+internal data object OpenProviders : BankSyncAction, LinkBankAccountAction
+
 @JvmInline internal value class SyncAccount(val id: AccountId) : BankSyncAction
 
 @JvmInline internal value class OpenSettings(val id: AccountId) : BankSyncAction

@@ -2,7 +2,6 @@ package aktual.budget.banksync.vm.link
 
 import aktual.api.client.BankSyncApi
 import aktual.api.client.EnableBankingApi
-import aktual.api.model.banksync.BankSyncAccountsResponse
 import aktual.api.model.banksync.BankSyncStatusResponse
 import aktual.api.model.banksync.BankSyncTransactionsResponse.Failure
 import aktual.api.model.banksync.BankSyncTransactionsResponse.ProviderError
@@ -107,9 +106,10 @@ class LinkBankAccountViewModel(
       }
       val loaded = providers
       val source = selected
+      val hasServer = server is Remote
       when {
         loaded == null -> LinkBankAccountState.Loading
-        loaded.isEmpty() || source == null -> LinkBankAccountState.NoProviders
+        loaded.isEmpty() || source == null -> LinkBankAccountState.NoProviders(hasServer)
         else ->
           LinkBankAccountState.Choosing(
             target = target,
@@ -127,10 +127,14 @@ class LinkBankAccountViewModel(
   init {
     viewModelScope.launch {
       if (account != null && !loadAccount(account)) return@launch
-      val providers = configuredProviders()
-      mutableProviders.update { providers }
-      providers.firstOrNull()?.let(::select)
+      loadProviders()
     }
+  }
+
+  fun refreshProviders() {
+    if (mutableProviders.value?.isEmpty() != true || server !is Remote) return
+    mutableProviders.update { null }
+    viewModelScope.launch { loadProviders() }
   }
 
   fun select(source: AccountSyncSource) {
@@ -143,7 +147,6 @@ class LinkBankAccountViewModel(
     }
   }
 
-  /** Lists the selected provider's accounts, or its banks to log in to, again if they failed. */
   fun reload() {
     val source = mutableSelected.value ?: return
     val login = logins[source]
@@ -153,7 +156,6 @@ class LinkBankAccountViewModel(
     }
   }
 
-  /** Lists the selected provider's banks in [country], an ISO 3166 code. */
   fun selectCountry(country: String) {
     selectedLogin()?.selectCountry(country)
   }
@@ -162,7 +164,6 @@ class LinkBankAccountViewModel(
     selectedLogin()?.selectAccountType(type)
   }
 
-  /** Starts logging in to [bankId] through the selected provider, opening its page in a browser. */
   fun logIn(bankId: String) {
     selectedLogin()?.logIn(bankId)
   }
@@ -175,14 +176,12 @@ class LinkBankAccountViewModel(
     selectedLogin()?.cancel()
   }
 
-  /** Whether a new account goes off budget, when there's no account to link. */
   fun setOffBudget(offBudget: Boolean) {
     mutableTarget.update { target ->
       if (target is New) LinkTarget.New(offBudget) else target
     }
   }
 
-  /** Links the account, or a new one, to [accountId] from the selected provider's list. */
   fun link(accountId: String) {
     val source = mutableSelected.value ?: return
     val external =
@@ -194,6 +193,7 @@ class LinkBankAccountViewModel(
         when {
           account != null -> linker.link(account, source, external)
           target is New -> linker.create(source, external, target.offBudget)
+          else -> error("Nothing to link ${external.accountId} to")
         }
         mutableEvents.emit(Linked)
       } catch (e: CancellationException) {
@@ -207,7 +207,12 @@ class LinkBankAccountViewModel(
     }
   }
 
-  // Whether [id] exists, after which its name is shown
+  private suspend fun loadProviders() {
+    val providers = configuredProviders()
+    mutableProviders.update { providers }
+    providers.firstOrNull()?.let(::select)
+  }
+
   private suspend fun loadAccount(id: AccountId): Boolean =
     try {
       val row = accountDao[id]
@@ -244,11 +249,11 @@ class LinkBankAccountViewModel(
       val listed =
         try {
           when (val response = api.accounts(source)) {
-            is BankSyncAccountsResponse.Success -> {
+            is Success -> {
               val items = items(response.accounts)
               Listed(ExternalAccounts.Loaded(items), response.accounts)
             }
-            is BankSyncAccountsResponse.Failed -> {
+            is Failed -> {
               logcat.w { "Listing $source accounts failed: ${response.error}" }
               Listed(ExternalAccounts.Failure(response.error.cause()))
             }

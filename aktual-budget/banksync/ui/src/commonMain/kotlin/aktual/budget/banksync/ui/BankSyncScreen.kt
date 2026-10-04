@@ -8,10 +8,12 @@ import aktual.budget.banksync.vm.Loading
 import aktual.budget.banksync.vm.Success
 import aktual.core.icons.material.AccountBalance
 import aktual.core.icons.material.Add
+import aktual.core.icons.material.Key
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Sync
 import aktual.core.l10n.Strings
+import aktual.core.nav.BankSyncProvidersNavigator
 import aktual.core.nav.BankSyncSettingsNavigator
 import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.ui.AktualTheme.colors
@@ -63,6 +65,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 internal fun BankSyncScreen(
   settings: BankSyncSettingsNavigator,
   link: LinkBankAccountNavigator,
+  providers: BankSyncProvidersNavigator,
   modifier: Modifier = Modifier,
   viewModel: BankSyncViewModel = metroViewModel(),
 ) {
@@ -93,6 +96,7 @@ internal fun BankSyncScreen(
         Reload -> viewModel.reload()
         SyncAll -> viewModel.syncAll()
         AddAccount -> link.addAccount()
+        OpenProviders -> providers()
         is SyncAccount -> viewModel.sync(action.id)
         is OpenSettings -> settings(action.id)
         is OpenLink -> link(action.id)
@@ -120,6 +124,14 @@ private fun BankSyncScaffold(
         navigationIcon = { NavDrawerIconButton() },
         title = { Text(text = Strings.bankSyncTitle) },
         actions = {
+          val canSync = state is Success && state.canSync || state is Empty && state.canSync
+          if (canSync) {
+            BareIconButton(
+              imageVector = MaterialIcons.Key,
+              contentDescription = Strings.bankSyncProvidersOpen,
+              onClick = { onAction(OpenProviders) },
+            )
+          }
           if (state is Success && state.canSync) {
             BareIconButton(
               imageVector = MaterialIcons.Add,

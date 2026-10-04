@@ -71,7 +71,7 @@ SELECT a.id, a.name, a.account_id, a.account_sync_source, a.last_sync, a.bank_sy
   ORDER BY a.sort_order, a.name;
 
 -- packages/loot-core/src/server/db/index.ts insertAccount(), which appends to its on/off budget list.
--- Upstream counts deleted accounts too
+-- Unlike upstream, deleted accounts are skipped
 getMaxSortOrder:
 SELECT MAX(sort_order) AS sort_order FROM accounts WHERE offbudget = ? AND tombstone = 0;
 
