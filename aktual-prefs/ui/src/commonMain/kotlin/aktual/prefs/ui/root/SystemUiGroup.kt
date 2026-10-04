@@ -12,8 +12,8 @@ import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.ListPreferenceItem
-import aktual.prefs.ui.PreferenceGroup
 import aktual.prefs.ui.SliderPreferenceItem
+import aktual.prefs.ui.core.PreferenceGroup
 import aktual.prefs.vm.root.SystemUiConfigState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

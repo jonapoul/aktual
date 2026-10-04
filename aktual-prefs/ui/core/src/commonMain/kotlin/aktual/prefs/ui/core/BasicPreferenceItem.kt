@@ -1,4 +1,4 @@
-package aktual.prefs.ui
+package aktual.prefs.ui.core
 
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
@@ -40,7 +40,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun BasicPreferenceItem(
+fun BasicPreferenceItem(
   title: String,
   subtitle: String?,
   icon: ImageVector?,

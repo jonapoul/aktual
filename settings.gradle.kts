@@ -221,6 +221,7 @@ include(
   ":aktual-prefs",
   ":aktual-prefs:impl",
   ":aktual-prefs:ui",
+  ":aktual-prefs:ui:core",
   ":aktual-prefs:vm",
   ":aktual-test",
   ":aktual-test:api",

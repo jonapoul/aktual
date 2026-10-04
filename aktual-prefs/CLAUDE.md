@@ -1,6 +1,6 @@
 # aktual-prefs
 
-Preferences and settings, split into `vm` (state) and `ui` (Compose).
+Preferences and settings, split into `vm` (state) and `ui` (Compose). `ui:core` holds the preference item composables shared with other features: `BasicPreferenceItem`, `PreferenceGroup` and the value-based `BooleanPreferenceItem`.
 
 ## Adding a new setting
 

@@ -2,10 +2,12 @@ package aktual.budget.banksync.ui
 
 import aktual.budget.banksync.domain.BankSyncSummary
 import aktual.core.l10n.Res
+import aktual.core.l10n.bank_sync_failure_message
 import aktual.core.l10n.bank_sync_result_failed
 import aktual.core.l10n.bank_sync_result_several
 import aktual.core.l10n.bank_sync_result_several_failed
 import aktual.core.l10n.bank_sync_result_synced
+import aktual.core.l10n.bank_sync_settings_save_failed
 import aktual.core.l10n.bank_sync_unnamed_account
 import androidx.compose.material3.SnackbarHostState
 import org.jetbrains.compose.resources.getString
@@ -45,3 +47,11 @@ suspend fun SnackbarHostState.showBankSyncSummary(summary: BankSyncSummary) {
 }
 
 private suspend fun name(name: String?) = name ?: getString(Res.string.bank_sync_unnamed_account)
+
+internal suspend fun SnackbarHostState.showSettingsSaveFailed(cause: String?) =
+  showSnackbar(
+    getString(
+      Res.string.bank_sync_settings_save_failed,
+      cause ?: getString(Res.string.bank_sync_failure_message),
+    )
+  )

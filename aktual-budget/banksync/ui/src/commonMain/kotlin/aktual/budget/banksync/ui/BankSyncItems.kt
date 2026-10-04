@@ -27,6 +27,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,13 +58,23 @@ internal fun BankSyncAccountItem(
   account: BankSyncAccount,
   isLinked: Boolean,
   modifier: Modifier = Modifier,
+  onClick: (() -> Unit)? = null,
   sync: AccountSync? = null,
 ) {
+  val clickLabel = Strings.bankSyncSettingsOpen(account.name ?: Strings.bankSyncUnnamedAccount)
+  val clickModifier =
+    if (onClick != null) {
+      Modifier.clickable(onClickLabel = clickLabel, onClick = onClick)
+    } else {
+      Modifier
+    }
+
   Row(
     modifier =
       modifier
         .fillMaxWidth()
         .clip(RowShape)
+        .then(clickModifier)
         .background(colors.tableBackground, RowShape)
         .border(Hairline, colors.tableBorder, RowShape)
         .padding(BankSyncDS.itemCardPadding),
