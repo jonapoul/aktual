@@ -64,6 +64,17 @@ internal class BankAccountLinkerTest {
   }
 
   @Test
+  fun `Banks without an org domain or ID match on name`() = runBankSyncTest {
+    insertLinkedAccount(OTHER, bankId = null, bankName = "My Bank")
+    api.responses["ACT-1"] = success()
+
+    linker(api)
+      .link(ACCOUNT, AccountSyncSource.SimpleFin, EXTERNAL.copy(orgDomain = null, orgId = null))
+
+    assertThat(account(ACCOUNT).bank).isEqualTo(account(OTHER).bank)
+  }
+
+  @Test
   fun `Linking a missing account fails`() = runBankSyncTest {
     assertFailure {
       linker(api).link(AccountId("missing"), AccountSyncSource.SimpleFin, EXTERNAL)

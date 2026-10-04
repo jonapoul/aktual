@@ -171,12 +171,12 @@ internal class BankSyncTestScope(
     id: AccountId,
     accountId: String = "provider-${id.value}",
     source: AccountSyncSource? = AccountSyncSource.GoCardless,
-    bankId: String = "bank-${id.value}",
+    bankId: String? = "bank-${id.value}",
     bankName: String? = "Bank ${id.value}",
     offBudget: Boolean = false,
   ) {
     val bank = Uuid.random()
-    database.banksQueries.insert(bank, BankId(bankId), bankName)
+    database.banksQueries.insert(bank, bankId?.let(::BankId), bankName)
     accountDao.insert(
       id = id,
       accountId = accountId,
