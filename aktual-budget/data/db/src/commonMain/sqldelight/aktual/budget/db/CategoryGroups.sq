@@ -10,16 +10,6 @@ CREATE TABLE IF NOT EXISTS category_groups(
   hidden INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
-insert:
-  INSERT OR REPLACE
-    INTO categories(id, name, is_income, sort_order, tombstone, hidden)
-    VALUES (?, ?, ?, ?, ?, ?);
-
-getWithIds:
-  SELECT * FROM category_groups
-    WHERE id IN :ids AND tombstone = 0
-    ORDER BY is_income, sort_order, id;
-
 getName: SELECT name FROM category_groups WHERE id = ?;
 
 getNames: SELECT name FROM category_groups WHERE id IN ?;

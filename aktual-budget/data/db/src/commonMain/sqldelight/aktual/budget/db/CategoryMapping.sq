@@ -9,13 +9,3 @@ insert:
   INSERT OR REPLACE
     INTO category_mapping(id, transferId)
     VALUES (?, ?);
-
-selectByTransferId:
-  SELECT *
-    FROM category_mapping
-    WHERE transferId = ?;
-
-update:
-  UPDATE category_mapping
-  SET transferId = ?
-  WHERE id = ?;

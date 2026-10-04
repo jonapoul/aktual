@@ -11,14 +11,3 @@ CREATE TABLE IF NOT EXISTS zero_budgets(
   goal INTEGER DEFAULT NULL,
   long_goal INTEGER DEFAULT NULL
 );
-
-getWithCategory:
-  SELECT *
-    FROM zero_budgets b
-    LEFT JOIN categories c ON c.id = b.category
-    WHERE c.tombstone = 0;
-
-getCarryover:
-  SELECT carryover
-    FROM zero_budgets
-    WHERE month = ? AND category = ?;
