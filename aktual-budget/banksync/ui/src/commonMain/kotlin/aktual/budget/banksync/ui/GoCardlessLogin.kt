@@ -63,7 +63,9 @@ internal fun LazyListScope.goCardlessLogin(
     is GoCardlessLoginStatus.Failed -> {
       item(key = "gocardless-failed") { LoginFailed(status) }
     }
-    GoCardlessLoginStatus.Idle -> Unit
+    GoCardlessLoginStatus.Idle -> {
+      // Just the banks
+    }
   }
 
   when (val banks = login.banks) {

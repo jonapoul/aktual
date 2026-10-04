@@ -99,8 +99,12 @@ internal class GoCardlessLoginModel(
         onAccounts(response.accounts)
         GoCardlessLoginStatus.Idle
       }
-      is GoCardlessAccountsResponse.Failed -> failed(response.error)
-      GoCardlessAccountsResponse.Pending -> GoCardlessLoginStatus.Idle
+      is GoCardlessAccountsResponse.Failed -> {
+        failed(response.error)
+      }
+      GoCardlessAccountsResponse.Pending -> {
+        GoCardlessLoginStatus.Idle
+      }
     }
   }
 
@@ -111,10 +115,11 @@ internal class GoCardlessLoginModel(
       val banks =
         try {
           when (val response = api.goCardlessBanks(country, showDemo)) {
-            is GoCardlessBanksResponse.Success ->
+            is GoCardlessBanksResponse.Success -> {
               GoCardlessBanks.Loaded(
                 response.banks.map { GoCardlessBankItem(it.id, it.name) }.toImmutableList()
               )
+            }
             is GoCardlessBanksResponse.Failed -> {
               logcat.w { "Listing GoCardless banks in $country failed: ${response.error}" }
               GoCardlessBanks.Failure(response.error.cause())
