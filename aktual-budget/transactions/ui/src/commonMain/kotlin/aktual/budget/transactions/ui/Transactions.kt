@@ -174,7 +174,6 @@ private fun PreviewTransactions(
 private data class TransactionsParams(
   val density: TransactionsDensity,
   val pagingData: Flow<PagingData<Transaction>> = previewPagingData(PREVIEW_TRANSACTIONS),
-  val isLoading: Boolean = false,
 )
 
 private class TransactionsProvider :
@@ -182,21 +181,9 @@ private class TransactionsProvider :
     TransactionsParams(Comfortable),
     TransactionsParams(Compact),
     TransactionsParams(Dense),
-    TransactionsParams(
-      Comfortable,
-      emptyPreviewPagingData(loading = true),
-      true,
-    ),
-    TransactionsParams(
-      Compact,
-      emptyPreviewPagingData(loading = true),
-      true,
-    ),
-    TransactionsParams(
-      Dense,
-      emptyPreviewPagingData(loading = true),
-      true,
-    ),
-    TransactionsParams(Compact, pagingData = emptyPreviewPagingData(loading = false)),
-    TransactionsParams(Dense, pagingData = emptyPreviewPagingData(loading = false)),
+    TransactionsParams(Comfortable, emptyPreviewPagingData(loading = true)),
+    TransactionsParams(Compact, emptyPreviewPagingData(loading = true)),
+    TransactionsParams(Dense, emptyPreviewPagingData(loading = true)),
+    TransactionsParams(Compact, emptyPreviewPagingData(loading = false)),
+    TransactionsParams(Dense, emptyPreviewPagingData(loading = false)),
   )
