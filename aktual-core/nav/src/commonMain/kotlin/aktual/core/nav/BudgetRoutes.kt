@@ -12,6 +12,8 @@ import kotlinx.serialization.Serializable
 // sealed BudgetNavKey type, and a value class serializes as its bare value with no type
 // discriminator, so restoring it (e.g. after rotation) crashes
 
+@Serializable data object HomeNavRoute : BudgetNavKey.Home
+
 @Serializable data object TransactionsNavRoute : BudgetNavKey.Transactions
 
 @Serializable data class TransactionsWithTagNavRoute(val id: TagId) : BudgetNavKey.Transactions

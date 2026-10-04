@@ -59,6 +59,7 @@ private val materialIcons =
       FormatBold,
       FormatItalic,
       FormatListBulleted,
+      Home,
       Info,
       Key,
       LightMode,
