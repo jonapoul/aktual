@@ -9,8 +9,10 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.async.coroutines.awaitAsOne
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import dev.zacsweers.metro.Inject
+import kotlin.uuid.Uuid
 import kotlinx.datetime.LocalDate
 
 data class BankSyncCandidate(
@@ -40,6 +42,7 @@ data class BankSyncAccount(
 @Inject
 class BankSyncDao(database: BudgetDatabase) {
   private val queries = database.bankSyncQueries
+  private val banks = database.banksQueries
 
   suspend fun matchByImportedId(
     importedId: String,
@@ -92,6 +95,18 @@ class BankSyncDao(database: BudgetDatabase) {
   suspend fun exampleData(account: AccountId, deposit: Boolean): String? = queries.withResult {
     val query = if (deposit) bankSyncDepositExample(account) else bankSyncPaymentExample(account)
     query.awaitAsOneOrNull()
+  }
+
+  suspend fun findBank(bankId: BankId?, name: String?): Uuid? = queries.withResult {
+    bankSyncFindBank(bankId, name).awaitAsOneOrNull()
+  }
+
+  suspend fun bankId(bank: Uuid): BankId? = banks.withResult {
+    getBankId(bank).awaitAsOneOrNull()?.bank_id
+  }
+
+  suspend fun bankUsers(bank: Uuid): Long = queries.withResult {
+    bankSyncBankUsers(bank).awaitAsOne()
   }
 
   suspend fun categoryIds(): Set<CategoryId> = queries.withResult {

@@ -1,0 +1,34 @@
+{
+  "status": "ok",
+  "data": {
+    "accounts": [
+      {
+        "id": "pluggy-1",
+        "type": "BANK",
+        "subtype": "CHECKING_ACCOUNT",
+        "name": " Conta Corrente ",
+        "number": "0001/12345-0",
+        "balance": 100.5,
+        "currencyCode": "BRL",
+        "taxNumber": "123.456.789-00",
+        "owner": "Jane Doe",
+        "bankData": {
+          "transferNumber": "0001/12345-0",
+          "closingBalance": 100.5,
+          "automaticallyInvestedBalance": 20.25
+        }
+      },
+      {
+        "id": "pluggy-2",
+        "type": "CREDIT",
+        "subtype": "CREDIT_CARD",
+        "name": "Cartão",
+        "number": "1234",
+        "balance": 300.1,
+        "currencyCode": "BRL",
+        "taxNumber": null,
+        "owner": "Jane Doe"
+      }
+    ]
+  }
+}
