@@ -64,7 +64,7 @@ internal suspend fun BudgetDatabase.insertSchedule(
     id = ruleId,
     stage = null,
     conditions = Json.decodeFromString(ListSerializer(Condition.serializer()), conditions),
-    actions = emptyList(),
+    actions = [],
     tombstone = false,
     conditions_op = null,
   )

@@ -73,7 +73,7 @@ class ServerUrlViewModelTest {
       )
 
     appGraph.preferences.serverUrl.set(EXAMPLE_URL)
-    appGraph.runLevelController.init(listOf(appGraph))
+    appGraph.runLevelController.init([appGraph])
 
     advanceUntilIdle()
 

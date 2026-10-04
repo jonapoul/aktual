@@ -74,7 +74,7 @@ class SyncApiTest {
     mockEngine += { respondJson(SyncResponses.LIST_USER_FILES_SUCCESS_200) }
     syncApi.fetchUserFiles(TOKEN)
     assertThat(mockEngine.latestRequestHeaders())
-      .isEqualToMap("X-ACTUAL-TOKEN" to listOf("abc-123"), "Accept" to listOf("application/json"))
+      .isEqualToMap("X-ACTUAL-TOKEN" to ["abc-123"], "Accept" to ["application/json"])
   }
 
   @Test
@@ -83,9 +83,9 @@ class SyncApiTest {
     syncApi.fetchUserFileInfo(TOKEN, BUDGET_ID)
     assertThat(mockEngine.latestRequestHeaders())
       .isEqualToMap(
-        "X-ACTUAL-TOKEN" to listOf("abc-123"),
-        "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
-        "Accept" to listOf("application/json"),
+        "X-ACTUAL-TOKEN" to ["abc-123"],
+        "X-ACTUAL-FILE-ID" to ["xyz-789"],
+        "Accept" to ["application/json"],
       )
   }
 
@@ -95,7 +95,7 @@ class SyncApiTest {
     val body = GetUserKeyRequest(BUDGET_ID, TOKEN)
     syncApi.fetchUserKey(body)
     val request = mockEngine.requestHistory.last()
-    assertThat(request.headers.toMap()).isEqualToMap("Accept" to listOf("application/json"))
+    assertThat(request.headers.toMap()).isEqualToMap("Accept" to ["application/json"])
     assertThat(request.body).isInstanceOf<TextContent>().all {
       prop(TextContent::text).isEqualTo("""{"fileId":"xyz-789","token":"abc-123"}""")
       prop(TextContent::contentType).isEqualTo(ContentType.Application.Json)
@@ -122,7 +122,7 @@ class SyncApiTest {
       .isEqualTo(
         ListUserFilesResponse.Success(
           data =
-            listOf(
+            [
               UserFile(
                 deleted = 0,
                 fileId = BudgetId("b328186c-c919-4333-959b-04e676c1ee46"),
@@ -136,7 +136,7 @@ class SyncApiTest {
                 groupId = "2d41985d-064f-461e-8432-23194354ee16",
                 name = "Test Budget",
                 owner = user.userId,
-                usersWithAccess = listOf(user),
+                usersWithAccess = [user],
               ),
               UserFile(
                 deleted = 0,
@@ -145,9 +145,9 @@ class SyncApiTest {
                 name = "My Finances",
                 encryptKeyId = KeyId("a57fc3bf-fa98-44f2-82b7-54b4755703a9"),
                 owner = user.userId,
-                usersWithAccess = listOf(user),
+                usersWithAccess = [user],
               ),
-            )
+            ]
         )
       )
   }
@@ -321,9 +321,9 @@ class SyncApiTest {
     assertThat(mockEngine.latestRequestHeaders())
       .isEqualTo(
         mapOf(
-          "X-ACTUAL-TOKEN" to listOf("abc-123"),
-          "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
-          "Accept" to listOf("application/json"),
+          "X-ACTUAL-TOKEN" to ["abc-123"],
+          "X-ACTUAL-FILE-ID" to ["xyz-789"],
+          "Accept" to ["application/json"],
         )
       )
   }

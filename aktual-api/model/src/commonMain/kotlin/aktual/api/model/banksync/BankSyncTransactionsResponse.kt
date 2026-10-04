@@ -13,15 +13,15 @@ sealed interface BankSyncTransactionsResponse {
   @Serializable
   data class Success(
     @SerialName("transactions") val transactions: Transactions,
-    @SerialName("balances") val balances: List<BankSyncBalance> = emptyList(),
+    @SerialName("balances") val balances: List<BankSyncBalance> = [],
     // The account's current balance in cents, despite the name
     @SerialName("startingBalance") val startingBalance: Long? = null,
   ) : BankSyncTransactionsResponse {
     @Serializable
     data class Transactions(
-      @SerialName("all") val all: List<BankSyncTransaction> = emptyList(),
-      @SerialName("booked") val booked: List<BankSyncTransaction> = emptyList(),
-      @SerialName("pending") val pending: List<BankSyncTransaction> = emptyList(),
+      @SerialName("all") val all: List<BankSyncTransaction> = [],
+      @SerialName("booked") val booked: List<BankSyncTransaction> = [],
+      @SerialName("pending") val pending: List<BankSyncTransaction> = [],
     )
   }
 

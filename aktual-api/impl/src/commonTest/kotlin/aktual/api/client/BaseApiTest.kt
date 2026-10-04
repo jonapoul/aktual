@@ -41,8 +41,7 @@ class BaseApiTest {
 
     assertThat(mockEngine.latestRequestUrl()).isEqualTo("https://test.server.com/info")
 
-    assertThat(mockEngine.latestRequestHeaders())
-      .isEqualTo(mapOf("Accept" to listOf("application/json")))
+    assertThat(mockEngine.latestRequestHeaders()).isEqualTo(mapOf("Accept" to ["application/json"]))
   }
 
   @Test

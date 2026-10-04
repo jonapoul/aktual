@@ -180,8 +180,8 @@ internal constructor(
       return Saved(
         form,
         ruleId = null,
-        conditions = emptyList(),
-        actions = emptyList(),
+        conditions = [],
+        actions = [],
         status = null,
       )
     }

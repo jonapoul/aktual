@@ -60,7 +60,7 @@ internal class TransactionsPagingSource(
     }
 
   private suspend fun loadFilteredIds(id: TagId): List<TransactionId> {
-    val tagName = tagsDao.getTag(id)?.tag ?: return emptyList()
+    val tagName = tagsDao.getTag(id)?.tag ?: return []
     val rows =
       when (val accountSpec = spec.accountSpec) {
         AllAccounts -> transactionDao.getIdsAndNotes()

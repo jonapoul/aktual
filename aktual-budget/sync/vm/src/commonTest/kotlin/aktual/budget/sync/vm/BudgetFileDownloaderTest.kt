@@ -119,8 +119,7 @@ class BudgetFileDownloaderTest {
       assertThat(state).isInstanceOf<Failure.IO>()
 
       // and only the temp dir was created
-      assertThat(temporaryFolder.list().map(Path::toFile))
-        .isEqualTo(listOf(budgetFiles.tmp().toFile()))
+      assertThat(temporaryFolder.list().map(Path::toFile)).isEqualTo([budgetFiles.tmp().toFile()])
 
       awaitComplete()
     }
@@ -146,8 +145,7 @@ class BudgetFileDownloaderTest {
     }
 
     // and only the temp dir was created
-    assertThat(temporaryFolder.list().map(Path::toFile))
-      .isEqualTo(listOf(budgetFiles.tmp().toFile()))
+    assertThat(temporaryFolder.list().map(Path::toFile)).isEqualTo([budgetFiles.tmp().toFile()])
   }
 
   private companion object {

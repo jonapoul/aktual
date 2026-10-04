@@ -107,8 +107,8 @@ class ReportMetaSerializationTest {
           .trimIndent(),
       )
 
-    assertThat(meta.expenseCategoryIds).isEqualTo(listOf(CategoryId("cat-1")))
-    assertThat(meta.incomeAccountIds).isEqualTo(listOf(AccountId("acct-1")))
+    assertThat(meta.expenseCategoryIds).isEqualTo([CategoryId("cat-1")])
+    assertThat(meta.incomeAccountIds).isEqualTo([AccountId("acct-1")])
     assertThat(meta.safeWithdrawalRate).isEqualTo(0.04)
     assertThat(meta.estimatedReturn).isNull()
     assertThat(meta.projectionType).isEqualTo(Hampel)
@@ -136,7 +136,7 @@ class ReportMetaSerializationTest {
         """{"accounts":["acct-1"],"granularity":"Monthly","source":"tracking-budget"}""",
       )
 
-    assertThat(meta.accounts).isEqualTo(listOf(AccountId("acct-1")))
+    assertThat(meta.accounts).isEqualTo([AccountId("acct-1")])
     assertThat(meta.granularity).isEqualTo(Monthly)
     assertThat(meta.source).isEqualTo(TrackingBudget)
   }

@@ -44,8 +44,7 @@ class BudgetReconcilerTest {
     before()
     seedLocal(BudgetId("a"), groupId = "g1", name = "Main")
 
-    val result =
-      reconciler.reconcile(remote = listOf(userFile(id = "a", groupId = "g1", name = "Main")))
+    val result = reconciler.reconcile(remote = [userFile(id = "a", groupId = "g1", name = "Main")])
 
     assertThat(result)
       .containsExactly(
@@ -65,8 +64,7 @@ class BudgetReconcilerTest {
     before()
     seedLocal(BudgetId("a"), groupId = "g1", name = "Main")
 
-    val result =
-      reconciler.reconcile(remote = listOf(userFile(id = "a", groupId = "g2", name = "Main")))
+    val result = reconciler.reconcile(remote = [userFile(id = "a", groupId = "g2", name = "Main")])
 
     assertThat(result)
       .containsExactly(
@@ -85,8 +83,7 @@ class BudgetReconcilerTest {
   fun `Server file with no local copy is Remote`() = runTest {
     before()
 
-    val result =
-      reconciler.reconcile(remote = listOf(userFile(id = "a", groupId = "g1", name = "Main")))
+    val result = reconciler.reconcile(remote = [userFile(id = "a", groupId = "g1", name = "Main")])
 
     assertThat(result)
       .containsExactly(
@@ -106,7 +103,7 @@ class BudgetReconcilerTest {
     before()
     seedLocal(BudgetId("a"), groupId = "g1", name = "Orphan")
 
-    val result = reconciler.reconcile(remote = emptyList())
+    val result = reconciler.reconcile(remote = [])
 
     assertThat(result)
       .containsExactly(
@@ -125,7 +122,7 @@ class BudgetReconcilerTest {
     before()
     files.directory(BudgetId("a"), mkdirs = true)
 
-    val result = reconciler.reconcile(remote = emptyList())
+    val result = reconciler.reconcile(remote = [])
 
     assertThat(result)
       .containsExactly(
@@ -161,8 +158,7 @@ class BudgetReconcilerTest {
     // a Local sharing the same directoryId
     files.directory(BudgetId("a"), mkdirs = true)
 
-    val result =
-      reconciler.reconcile(remote = listOf(userFile(id = "a", groupId = "g1", name = "Main")))
+    val result = reconciler.reconcile(remote = [userFile(id = "a", groupId = "g1", name = "Main")])
 
     val expected =
       Budget.Detached(
@@ -182,7 +178,7 @@ class BudgetReconcilerTest {
 
     val result =
       reconciler.reconcile(
-        remote = listOf(userFile(id = "a", groupId = "g1", name = "Gone").copy(deleted = 1))
+        remote = [userFile(id = "a", groupId = "g1", name = "Gone").copy(deleted = 1)]
       )
 
     assertThat(result).isEmpty()
@@ -194,8 +190,7 @@ class BudgetReconcilerTest {
 
     val result =
       reconciler.reconcile(
-        remote =
-          listOf(userFile(id = "a", groupId = "g1", name = "Main", encryptKeyId = KeyId("key-1")))
+        remote = [userFile(id = "a", groupId = "g1", name = "Main", encryptKeyId = KeyId("key-1"))]
       )
 
     assertThat(result)

@@ -18,7 +18,7 @@ import kotlinx.serialization.json.jsonPrimitive
 object MerkleOperations {
   private const val KEY_LENGTH = 16
   private const val HASH_KEY = "hash"
-  private val CHILD_KEYS = setOf("0", "1", "2")
+  private val CHILD_KEYS = ["0", "1", "2"]
 
   fun emptyTrie(): JsonObject = JsonObject(mapOf(HASH_KEY to JsonPrimitive(0)))
 

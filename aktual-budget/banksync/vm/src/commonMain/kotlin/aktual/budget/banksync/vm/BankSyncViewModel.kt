@@ -116,7 +116,7 @@ class BankSyncViewModel(
         } catch (e: Exception) {
           logcat.e(e) { "Failed loading bank sync accounts" }
           mutableFailure.update { e.requireMessage() }
-          emptySet()
+          []
         } finally {
           mutableIsLoading.update { false }
         }

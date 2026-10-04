@@ -10,6 +10,6 @@ internal class IdFirCheckersExtension(session: FirSession) :
   override val declarationCheckers: DeclarationCheckers =
     object : DeclarationCheckers() {
       override val classCheckers: Set<FirClassChecker> =
-        setOf(IdComparableChecker, IdSinglePropertyChecker)
+        [IdComparableChecker, IdSinglePropertyChecker]
     }
 }

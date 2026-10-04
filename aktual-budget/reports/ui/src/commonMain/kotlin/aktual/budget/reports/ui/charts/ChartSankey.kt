@@ -157,7 +157,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
     val nodeLabels =
       remember(layout, labels, values, nameStyle, valueStyle, textMeasurer, compact) {
         if (compact) {
-          emptyList()
+          []
         } else {
           with(density) {
             nodeLabels(data, layout, width, textMeasurer, labels, values, nameStyle, valueStyle)
@@ -413,7 +413,7 @@ private fun SankeyColor.resolve(theme: Colors): Color =
     Negative -> theme.toBudgetNegative
     is Palette ->
       with(theme) {
-        listOf(
+        [
             chartQual1,
             chartQual2,
             chartQual3,
@@ -423,7 +423,7 @@ private fun SankeyColor.resolve(theme: Colors): Color =
             chartQual7,
             chartQual8,
             chartQual9,
-          )
+          ]
           .getOrElse(index) { chartQual1 }
       }
   }

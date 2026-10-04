@@ -42,14 +42,14 @@ internal class KeyboardEventHandler(private val backStack: NavStack<NavKey>) {
     }
 
   private fun KeyEvent.string(): String =
-    listOf(
+    [
         "key" to key,
         "type" to type,
         "isAltPressed" to if (isAltPressed) true else null,
         "isCtrlPressed" to if (isCtrlPressed) true else null,
         "isMetaPressed" to if (isMetaPressed) true else null,
         "isShiftPressed" to if (isShiftPressed) true else null,
-      )
+      ]
       .mapNotNull { (k, v) -> v?.let { "$k=$it" } }
       .joinToString(separator = ",")
 }

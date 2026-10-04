@@ -15,7 +15,7 @@ private const val DAYS_PER_WEEK = 7
 
 // How far past the start to look for occurrences, widening once for sparse configs (e.g. every 10
 // years)
-private val SEARCH_HORIZON_YEARS = listOf(2, 100)
+private val SEARCH_HORIZON_YEARS = [2, 100]
 
 data class RecurOccurrences(val dates: List<LocalDate>, val exhausted: Boolean)
 
@@ -27,12 +27,11 @@ fun RecurConfig.occurrences(until: LocalDate): RecurOccurrences {
   val interval = (interval ?: 1).coerceAtLeast(1)
   val rules: List<PeriodRule> =
     when (frequency) {
-      Daily -> listOf(PeriodRule { k -> listOf(start.plus(k * interval, DAY)) })
-      Weekly -> listOf(PeriodRule { k -> listOf(start.plus(k * interval * DAYS_PER_WEEK, DAY)) })
-      Yearly ->
-        listOf(PeriodRule { k -> listOfNotNull(dateOrNull(start.year + k * interval, start)) })
+      Daily -> [PeriodRule { k -> [start.plus(k * interval, DAY)] }]
+      Weekly -> [PeriodRule { k -> [start.plus(k * interval * DAYS_PER_WEEK, DAY)] }]
+      Yearly -> [PeriodRule { k -> listOfNotNull(dateOrNull(start.year + k * interval, start)) }]
       Monthly -> monthlyRules(interval)
-      Unknown -> emptyList()
+      Unknown -> []
     }
 
   var exhausted = true
@@ -56,7 +55,7 @@ private fun RecurConfig.monthlyRules(interval: Int): List<PeriodRule> {
 
   val patterns = patterns.orEmpty()
   if (patterns.isEmpty()) {
-    return listOf(PeriodRule { k -> listOfNotNull(dateOrNull(month(k), start.day)) })
+    return [PeriodRule { k -> listOfNotNull(dateOrNull(month(k), start.day)) }]
   }
 
   val days = patterns.filter { it.type == Day }
@@ -112,7 +111,7 @@ private fun dayOfMonth(month: YearMonth, value: Int): LocalDate? =
 
 // "2nd Monday" or "last Friday" (-1) of the month. Zero means every one of those weekdays.
 private fun nthWeekday(month: YearMonth, pattern: RecurPattern): List<LocalDate> {
-  val weekday = pattern.type.dayOfWeek() ?: return emptyList()
+  val weekday = pattern.type.dayOfWeek() ?: return []
   val all = (month.firstDay..month.lastDay).filter { it.dayOfWeek == weekday }
   val n = pattern.value
   return when {
@@ -167,5 +166,5 @@ fun RecurConfig.upcomingDates(from: LocalDate, count: Int): List<LocalDate> {
       return upcoming.take(count).map(::adjustForWeekend)
     }
   }
-  return emptyList()
+  return []
 }

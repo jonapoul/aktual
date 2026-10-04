@@ -46,8 +46,8 @@ internal class InvalidComposeLazyKey(config: Config) :
   }
 
   private companion object {
-    val PRIMITIVE_TYPES =
-      setOf(
+    val PRIMITIVE_TYPES: Set<String> =
+      [
         "kotlin.Boolean",
         "kotlin.Byte",
         "kotlin.Char",
@@ -57,6 +57,6 @@ internal class InvalidComposeLazyKey(config: Config) :
         "kotlin.Long",
         "kotlin.Short",
         "kotlin.String",
-      )
+      ]
   }
 }

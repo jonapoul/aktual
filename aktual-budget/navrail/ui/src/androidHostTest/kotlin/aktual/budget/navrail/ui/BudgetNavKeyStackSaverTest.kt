@@ -32,7 +32,7 @@ class BudgetNavKeyStackSaverTest {
   @Test
   fun `Stack with every route type survives saving and restoring`() {
     val keys =
-      listOf(
+      [
         TransactionsNavRoute,
         TransactionsWithTagNavRoute(TagId("tag")),
         ReportsListNavRoute,
@@ -49,7 +49,7 @@ class BudgetNavKeyStackSaverTest {
         CreateTagNavRoute,
         SearchTagsNavRoute,
         EditTagNavRoute(TagId("tag")),
-      )
+      ]
     val saver = budgetNavKeyStackSaver()
     val stack = NavStackImpl(appCloser = null, stack = keys.toMutableStateList())
 

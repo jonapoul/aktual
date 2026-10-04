@@ -144,7 +144,7 @@ class MonteCarloRunDetailTest {
 }
 
 private val MEDIAN_INCOME_ROWS =
-  listOf(
+  [
     McRunDetailRow(
       year = 1,
       startBalance = 40000000,
@@ -269,10 +269,10 @@ private val MEDIAN_INCOME_ROWS =
       inaccessibleBalance = null,
       afterDepletion = false,
     ),
-  )
+  ]
 
 private val FAILED_INCOME_ROWS =
-  listOf(
+  [
     McRunDetailRow(
       year = 21,
       startBalance = 3790611,
@@ -366,10 +366,10 @@ private val FAILED_INCOME_ROWS =
       inaccessibleBalance = null,
       afterDepletion = true,
     ),
-  )
+  ]
 
 private val GUARDRAILS_ROWS =
-  listOf(
+  [
     McRunDetailRow(
       year = 2,
       startBalance = 67242092,
@@ -534,10 +534,10 @@ private val GUARDRAILS_ROWS =
       inaccessibleBalance = null,
       afterDepletion = false,
     ),
-  )
+  ]
 
 private val FLOOR_CEILING_ROWS =
-  listOf(
+  [
     McRunDetailRow(
       year = 1,
       startBalance = 90000000,
@@ -645,10 +645,10 @@ private val FLOOR_CEILING_ROWS =
       inaccessibleBalance = null,
       afterDepletion = false,
     ),
-  )
+  ]
 
 private val BOUNDARIES_ROWS =
-  listOf(
+  [
     McRunDetailRow(
       year = 1,
       startBalance = 90000000,
@@ -762,10 +762,10 @@ private val BOUNDARIES_ROWS =
       inaccessibleBalance = null,
       afterDepletion = false,
     ),
-  )
+  ]
 
 private val RATCHETING_ROWS =
-  listOf(
+  [
     McRunDetailRow(
       year = 3,
       startBalance = 133732400,
@@ -889,10 +889,10 @@ private val RATCHETING_ROWS =
       inaccessibleBalance = null,
       afterDepletion = false,
     ),
-  )
+  ]
 
 private val NOMINAL_ROWS =
-  listOf(
+  [
     McRunDetailRow(
       year = 1,
       startBalance = 50000000,
@@ -955,4 +955,4 @@ private val NOMINAL_ROWS =
       inaccessibleBalance = null,
       afterDepletion = false,
     ),
-  )
+  ]

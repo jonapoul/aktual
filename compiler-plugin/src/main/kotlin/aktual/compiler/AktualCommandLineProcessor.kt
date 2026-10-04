@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 
 class AktualCommandLineProcessor : CommandLineProcessor {
   override val pluginId: String = PLUGIN_ID
-  override val pluginOptions: Collection<AbstractCliOption> = emptyList()
+  override val pluginOptions: Collection<AbstractCliOption> = []
 
   override fun processOption(
     option: AbstractCliOption,

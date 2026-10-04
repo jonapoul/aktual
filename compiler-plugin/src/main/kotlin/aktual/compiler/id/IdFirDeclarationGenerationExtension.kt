@@ -28,23 +28,23 @@ internal class IdFirDeclarationGenerationExtension(session: FirSession) :
     context: MemberGenerationContext,
   ): Set<Name> =
     if (session.predicateBasedProvider.matches(IdPredicate, classSymbol)) {
-      setOf(TO_STRING, COMPARE_TO)
+      [TO_STRING, COMPARE_TO]
     } else {
-      emptySet()
+      []
     }
 
   override fun generateFunctions(
     callableId: CallableId,
     context: MemberGenerationContext?,
   ): List<FirNamedFunctionSymbol> {
-    val owner = context?.owner ?: return emptyList()
+    val owner = context?.owner ?: return []
     val function =
       when (callableId.callableName) {
         TO_STRING -> generateToString(owner)
         COMPARE_TO -> generateCompareTo(owner)
-        else -> return emptyList()
+        else -> return []
       }
-    return listOf(function.symbol)
+    return [function.symbol]
   }
 
   private fun generateToString(owner: FirClassSymbol<*>) =

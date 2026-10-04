@@ -65,7 +65,7 @@ internal constructor(
     val id = t.id ?: uuidGenerator(::TransactionId)
     val category = if (t.isParent || isOffBudget(t.account)) null else t.category
     val columns =
-      listOf(
+      [
         "acct" to t.account.value.messageValue(),
         "category" to category?.value.orSkip(),
         "amount" to t.amount.messageValue(),
@@ -85,7 +85,7 @@ internal constructor(
         "isParent" to t.isParent.trueOrSkip(),
         "isChild" to (t.parentId != null).trueOrSkip(),
         "parent_id" to t.parentId?.value.orSkip(),
-      )
+      ]
     addAll(TRANSACTIONS, id.value, columns)
     if (t.parentId != null) batchParents[id] = t.parentId
     batchAccounts[id] = t.account
@@ -106,7 +106,7 @@ internal constructor(
     // As insert() does, isChild follows parentId unless the caller sets it
     val isChild = u.isChild ?: (u.parentId as? Patch.To)?.let { it.value != null }
     val columns =
-      listOf(
+      [
         "acct" to u.account?.value?.messageValue(),
         "category" to category.messageValue { it.value.messageValue() },
         "amount" to u.amount?.messageValue(),
@@ -126,14 +126,14 @@ internal constructor(
         "isParent" to u.isParent?.messageValue(),
         "isChild" to isChild?.messageValue(),
         "parent_id" to u.parentId.messageValue { it.value.messageValue() },
-      )
+      ]
     addAll(TRANSACTIONS, u.id.value, columns)
     if (u.parentId is Patch.To) batchParents[u.id] = u.parentId.value
     if (u.account != null) batchAccounts[u.id] = u.account
     if (u.isParent != null) batchIsParent[u.id] = u.isParent
   }
 
-  suspend fun delete(id: TransactionId) = delete(listOf(id))
+  suspend fun delete(id: TransactionId) = delete([id])
 
   /**
    * db.deleteTransaction() for each transaction and, as batchUpdateTransactions() does, every child
@@ -210,13 +210,13 @@ internal constructor(
   /** db.update('accounts', ...) with any of the bank sync fields. */
   fun updateAccount(update: AccountUpdate) {
     val columns =
-      listOf(
+      [
         "balance_current" to update.balanceCurrent.messageValue { it.messageValue() },
         // Upstream stores the milliseconds as a string, e.g. new Date().getTime().toString()
         "last_sync" to
           update.lastSync.messageValue { it.toEpochMilliseconds().toString().messageValue() },
         "bank_sync_status" to update.bankSyncStatus.messageValue { it.value.messageValue() },
-      )
+      ]
     addAll(ACCOUNTS, update.id.value, columns)
   }
 

@@ -52,8 +52,8 @@ internal fun buildCustomReport(
   startDate: ReportDate = ReportDate.Month(YearMonth(1999, Month.JANUARY)),
   endDate: ReportDate = ReportDate.Month(YearMonth(2025, Month.DECEMBER)),
   range: DateRangeType = Last12Months,
-  selectedCategories: List<SelectedCategory> = emptyList(),
-  conditions: List<Condition> = emptyList(),
+  selectedCategories: List<SelectedCategory> = [],
+  conditions: List<Condition> = [],
   metadata: JsonObject? = null,
 ) =
   CustomReports(

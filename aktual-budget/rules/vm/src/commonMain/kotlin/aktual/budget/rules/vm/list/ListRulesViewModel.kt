@@ -160,7 +160,7 @@ class ListRulesViewModel(
    * then sorts within each stage by condition specificity score, with rule ID as tiebreaker.
    */
   private object RuleComparator : Comparator<Rule> {
-    private val EXACT_OPERATORS = setOf(Is, IsNot, IsApprox, OneOf, NotOneOf)
+    private val EXACT_OPERATORS = [Is, IsNot, IsApprox, OneOf, NotOneOf]
 
     override fun compare(a: Rule, b: Rule): Int {
       val stageDiff = a.stage.ordinal - b.stage.ordinal

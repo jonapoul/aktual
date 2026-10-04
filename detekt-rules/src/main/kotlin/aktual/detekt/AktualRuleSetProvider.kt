@@ -10,5 +10,5 @@ class AktualRuleSetProvider : RuleSetProvider {
   override val ruleSetId: RuleSetId = RuleSetId("aktual")
 
   override fun instance(): RuleSet =
-    RuleSet(id = ruleSetId, rules = listOf(::InjectedRawCoroutineScope, ::InvalidComposeLazyKey))
+    RuleSet(id = ruleSetId, rules = [::InjectedRawCoroutineScope, ::InvalidComposeLazyKey])
 }
