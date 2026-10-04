@@ -20,19 +20,10 @@ import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.network.sockets.ConnectTimeoutException
-import io.ktor.client.network.sockets.SocketTimeoutException
-import io.ktor.client.plugins.HttpRequestTimeoutException
-import io.ktor.client.plugins.expectSuccess
-import io.ktor.client.plugins.timeout
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.http.contentType
-import io.ktor.http.path
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.serialization.json.JsonArray
@@ -238,19 +229,7 @@ class BankSyncApiImpl(
       .toMap()
   }
 
-  // Null if the request timed out
-  private inline fun <T> timingOut(block: () -> T): T? =
-    try {
-      block()
-    } catch (_: HttpRequestTimeoutException) {
-      null
-    } catch (_: SocketTimeoutException) {
-      null
-    } catch (_: ConnectTimeoutException) {
-      null
-    }
-
-  private fun remote() = checkNotNull(server as? BudgetServer.Remote) { "No server for bank sync" }
+  private fun remote() = server.remote()
 
   private inline fun <reified T : Any> HttpRequestBuilder.request(
     source: AccountSyncSource,
@@ -258,42 +237,13 @@ class BankSyncApiImpl(
     body: T,
     timeout: Duration? = null,
   ) {
-    val remote = remote()
-    url {
-      protocol = remote.url.protocol()
-      host = remote.url.baseUrl
-      path(source.serverPath(), endpoint)
-    }
-    header(AktualHeaders.TOKEN, remote.token)
+    bankSyncRequest(remote(), source, endpoint, body, timeout)
 
     // Pluggy.ai credentials can be set per budget file, so the server needs to know which file
     if (source == AccountSyncSource.PluggyAi) {
       prefs[CloudFileId]?.let { header(AktualHeaders.FILE_ID, it) }
     }
-
-    if (timeout != null) {
-      timeout {
-        requestTimeoutMillis = timeout.inWholeMilliseconds
-        socketTimeoutMillis = timeout.inWholeMilliseconds
-      }
-    }
-
-    // Rejections like an unconfigured provider come back as 4xx with the usual JSON envelope
-    expectSuccess = false
-    contentType(ContentType.Application.Json)
-    setBody(body)
   }
-
-  // packages/sync-server/src/app.ts
-  private fun AccountSyncSource.serverPath(): String =
-    when (this) {
-      AccountSyncSource.GoCardless -> "gocardless"
-      AccountSyncSource.SimpleFin -> "simplefin"
-      AccountSyncSource.PluggyAi -> "pluggyai"
-      AccountSyncSource.Akahu -> "akahu"
-      AccountSyncSource.EnableBanking -> "enablebanking"
-      else -> throw IllegalArgumentException("Unsupported bank sync source $this")
-    }
 
   private companion object {
     // As upstream: a minute for one account, five for a SimpleFIN batch

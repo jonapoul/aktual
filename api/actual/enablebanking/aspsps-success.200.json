@@ -1,0 +1,23 @@
+{
+  "status": "ok",
+  "data": {
+    "aspsps": [
+      {
+        "name": "Mock ASPSP",
+        "country": "FI",
+        "logo": "https://enablebanking.com/brands/FI/Mock%20ASPSP/",
+        "psu_types": ["personal", "business"],
+        "beta": false,
+        "maximum_consent_validity": 7776000
+      },
+      {
+        "name": "Nordea",
+        "country": "FI",
+        "logo": "https://enablebanking.com/brands/FI/Nordea/",
+        "psu_types": ["personal"],
+        "beta": true,
+        "maximum_consent_validity": 15552000
+      }
+    ]
+  }
+}

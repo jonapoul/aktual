@@ -1,0 +1,49 @@
+###
+# @name enablebanking/status
+POST {{ACTUAL_BASE_URL}}/enablebanking/status
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{}
+
+###
+# @name enablebanking/aspsps
+POST {{ACTUAL_BASE_URL}}/enablebanking/aspsps
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{
+    "country": "FI"
+}
+
+<> aspsps-success.200.json
+
+###
+# @name enablebanking/start-auth
+POST {{ACTUAL_BASE_URL}}/enablebanking/start-auth
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{
+    "aspsp": {
+        "name": "Mock ASPSP",
+        "country": "FI"
+    },
+    "redirectUrl": "{{ACTUAL_BASE_URL}}/enablebanking/auth_callback",
+    "maxConsentValidity": 7776000,
+    "psuType": "personal"
+}
+
+<> start-auth-success.200.json
+
+###
+# @name enablebanking/poll-auth
+POST {{ACTUAL_BASE_URL}}/enablebanking/poll-auth
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{
+    "state": "{{ACTUAL_ENABLEBANKING_STATE}}"
+}
+
+<> poll-auth-success.200.json
