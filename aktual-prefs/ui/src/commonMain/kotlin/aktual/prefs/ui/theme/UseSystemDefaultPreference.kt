@@ -5,7 +5,7 @@ import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
 import aktual.core.ui.ColoredBooleanParameters
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.prefs.ui.core.BooleanPreferenceItem
 import aktual.prefs.vm.BooleanPreference
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,9 +36,9 @@ internal fun UseSystemDefaultPreference(
 private fun PreviewUseSystemDefaultPreference(
   @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     UseSystemDefaultPreference(
-      preference = BooleanPreference(value = params.data, enabled = true),
+      preference = BooleanPreference(value = this, enabled = true),
       onAction = {},
     )
   }

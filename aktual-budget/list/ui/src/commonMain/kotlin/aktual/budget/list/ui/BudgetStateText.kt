@@ -12,7 +12,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -88,6 +88,6 @@ private fun BudgetState.color(colors: Colors): Color =
 @Composable
 private fun PreviewBudgetStateText(
   @PreviewParameter(BudgetStateProvider::class) params: ColoredParams<BudgetState>
-) = PreviewWithColors(params.colors) { BudgetStateText(params.data) }
+) = PreviewWithColoredParams(params) { BudgetStateText(this) }
 
 private class BudgetStateProvider : ColoredParameterProvider<BudgetState>(BudgetState.entries)

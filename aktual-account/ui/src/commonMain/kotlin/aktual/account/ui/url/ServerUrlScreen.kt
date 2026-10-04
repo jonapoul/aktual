@@ -18,7 +18,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.ErrorBanner
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
@@ -207,15 +207,15 @@ private fun ServerUrlContent(
 private fun PreviewServerUrlScaffold(
   @PreviewParameter(ServerUrlScaffoldProvider::class) params: ColoredParams<ServerUrlScaffoldParams>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     ServerUrlScaffold(
-      url = params.data.url,
-      protocol = params.data.protocol,
-      versions = AktualVersions.Dummy,
+      url = url,
+      protocol = protocol,
+      versions = Dummy,
       isEnabled = true,
-      isLoading = params.data.isLoading,
+      isLoading = isLoading,
       onAction = {},
-      errorMessage = params.data.errorMessage,
+      errorMessage = errorMessage,
     )
   }
 
@@ -230,13 +230,13 @@ private class ServerUrlScaffoldProvider :
   ColoredParameterProvider<ServerUrlScaffoldParams>(
     ServerUrlScaffoldParams(
       url = "",
-      protocol = Protocol.Https,
+      protocol = Https,
       isLoading = false,
       errorMessage = null,
     ),
     ServerUrlScaffoldParams(
       url = "my.server.com:1234/path",
-      protocol = Protocol.Http,
+      protocol = Http,
       isLoading = true,
       errorMessage =
         "Hello this is an error message, split over multiple lines so you can see how it behaves",

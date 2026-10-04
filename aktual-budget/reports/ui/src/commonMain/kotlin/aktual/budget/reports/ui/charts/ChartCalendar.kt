@@ -14,7 +14,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.formattedString
 import aktual.core.ui.scrollbar
@@ -428,15 +428,15 @@ private val TABLE_SPACING = 2.dp
 private fun PreviewCalendarChart(
   @PreviewParameter(CalendarChartProvider::class) params: ColoredParams<CalendarChartParams>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     CalendarChart(
       modifier =
         Modifier.background(colors.tableBackground, CardShape)
           .width(WIDTH.dp)
           .height(HEIGHT.dp)
           .padding(5.dp),
-      compact = params.data.compact,
-      data = params.data.data,
+      compact = compact,
+      data = data,
       onAction = {},
     )
   }
@@ -456,8 +456,8 @@ private class CalendarChartProvider :
 private fun PreviewMonthHeader(
   @PreviewParameter(MonthHeaderProvider::class) params: ColoredParams<MonthHeaderParams>
 ) =
-  PreviewWithColors(params.colors) {
-    MonthHeader(month = params.data.month, compact = params.data.compact)
+  PreviewWithColoredParams(params) {
+    MonthHeader(month = month, compact = compact)
   }
 
 private data class MonthHeaderParams(val month: CalendarMonth, val compact: Boolean)
@@ -473,8 +473,8 @@ private class MonthHeaderProvider :
 private fun PreviewCalendarSummary(
   @PreviewParameter(CalendarSummaryProvider::class) params: ColoredParams<CalendarSummaryParams>
 ) =
-  PreviewWithColors(params.colors) {
-    CalendarSummary(data = params.data.data, compact = params.data.compact)
+  PreviewWithColoredParams(params) {
+    CalendarSummary(data = data, compact = compact)
   }
 
 private data class CalendarSummaryParams(val data: CalendarData, val compact: Boolean)
@@ -491,11 +491,11 @@ private class CalendarSummaryProvider :
 private fun PreviewDayButton(
   @PreviewParameter(DayButtonProvider::class) params: ColoredParams<DayButtonParams>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     DayButton(
-      modifier = Modifier.size(params.data.size),
-      day = params.data.day,
-      month = params.data.month,
+      modifier = Modifier.size(size),
+      day = day,
+      month = month,
       onAction = {},
     )
   }
@@ -523,8 +523,8 @@ private class DayButtonProvider :
 private fun PreviewCalendarMonth(
   @PreviewParameter(CalendarMonthProvider::class) params: ColoredParams<CalendarMonthParams>
 ) =
-  PreviewWithColors(colors = params.colors, isPrivacyEnabled = params.data.isPrivacyEnabled) {
-    CalendarMonth(month = params.data.month, compact = params.data.compact, onAction = {})
+  PreviewWithColoredParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
+    CalendarMonth(month = month, compact = compact, onAction = {})
   }
 
 private data class CalendarMonthParams(

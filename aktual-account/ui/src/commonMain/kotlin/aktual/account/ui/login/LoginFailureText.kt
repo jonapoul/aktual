@@ -5,7 +5,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.ErrorBanner
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
@@ -35,7 +35,7 @@ internal fun LoginFailureText(
 @Composable
 private fun PreviewLoginFailureText(
   @PreviewParameter(LoginFailureProvider::class) params: ColoredParams<LoginResult.Failure>
-) = PreviewWithColors(params.colors) { LoginFailureText(params.data) }
+) = PreviewWithColoredParams(params) { LoginFailureText(result = this) }
 
 private class LoginFailureProvider :
   ColoredParameterProvider<LoginResult.Failure>(

@@ -6,7 +6,7 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PasswordTransformation
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.keyboardFocusRequester
 import alakazam.compose.VerticalSpacer
@@ -82,8 +82,8 @@ internal fun PasswordLogin(
 private fun PreviewPasswordLogin(
   @PreviewParameter(PasswordLoginProvider::class) params: ColoredParams<PasswordLoginParams>
 ) =
-  PreviewWithColors(params.colors) {
-    PasswordLogin(isLoading = false, enteredPassword = Dummy, onAction = {})
+  PreviewWithColoredParams(params) {
+    PasswordLogin(isLoading = isLoading, enteredPassword = password, onAction = {})
   }
 
 private data class PasswordLoginParams(val isLoading: Boolean, val password: Password)

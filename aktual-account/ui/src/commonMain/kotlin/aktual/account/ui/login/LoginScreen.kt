@@ -17,7 +17,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
@@ -233,21 +233,20 @@ private fun Content(
 private fun PreviewLoginScaffold(
   @PreviewParameter(LoginScaffoldProvider::class) params: ColoredParams<LoginScaffoldParams>
 ) =
-  PreviewWithColors(params.colors) {
-    val data = params.data
+  PreviewWithColoredParams(params) {
     LoginScaffold(
-      versions = data.versions,
-      enteredPassword = data.password,
-      isLoading = data.isLoading,
-      loginFailure = data.loginFailure,
-      loginMethods = data.loginMethods,
-      selectedLoginMethod = data.selectedLoginMethod,
+      versions = versions,
+      enteredPassword = password,
+      isLoading = isLoading,
+      loginFailure = loginFailure,
+      loginMethods = loginMethods,
+      selectedLoginMethod = selectedLoginMethod,
       onAction = {},
     )
   }
 
 private data class LoginScaffoldParams(
-  val versions: AktualVersions = AktualVersions.Dummy,
+  val versions: AktualVersions = Dummy,
   val password: Password = Dummy,
   val isLoading: Boolean = false,
   val loginFailure: LoginResult.Failure? = null,

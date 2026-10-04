@@ -7,7 +7,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import alakazam.kotlin.ifNotNull
 import alakazam.kotlin.ifTrue
 import androidx.compose.foundation.background
@@ -125,13 +125,13 @@ private fun PreviewBasicPreferenceItem(
   @PreviewParameter(BasicPreferenceItemProvider::class)
   params: ColoredParams<BasicPreferenceItemParams>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     BasicPreferenceItem(
-      title = params.data.title,
-      subtitle = params.data.subtitle,
-      icon = params.data.icon,
+      title = title,
+      subtitle = subtitle,
+      icon = icon,
       onClick = {},
-      enabled = params.data.enabled,
+      enabled = enabled,
     )
   }
 

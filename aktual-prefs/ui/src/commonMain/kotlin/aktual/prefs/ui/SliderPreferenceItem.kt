@@ -5,7 +5,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.disabledIf
 import aktual.core.ui.slider
 import aktual.prefs.ui.core.BasicPreferenceItem
@@ -113,15 +113,15 @@ private fun PreviewSliderPreferenceItem(
   @PreviewParameter(SliderPreferenceItemProvider::class)
   params: ColoredParams<SliderPreferenceItemParams>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     SliderPreferenceItem(
-      value = params.data.value,
-      range = params.data.range,
+      value = value,
+      range = range,
       onValueChange = {},
-      title = params.data.title,
-      subtitle = params.data.subtitle,
-      icon = params.data.icon,
-      enabled = params.data.enabled,
+      title = title,
+      subtitle = subtitle,
+      icon = icon,
+      enabled = enabled,
     )
   }
 

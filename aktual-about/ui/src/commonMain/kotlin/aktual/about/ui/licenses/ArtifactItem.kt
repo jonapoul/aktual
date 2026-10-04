@@ -10,7 +10,7 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.NormalIconButton
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -207,7 +207,7 @@ private val TextSize = 12.sp
 @Composable
 private fun PreviewArtifactItem(
   @PreviewParameter(ArtifactItemProvider::class) params: ColoredParams<ArtifactDetail>
-) = PreviewWithColors(params.colors) { ArtifactItem(artifact = params.data, onLaunchUrl = {}) }
+) = PreviewWithColoredParams(params) { ArtifactItem(artifact = this, onLaunchUrl = {}) }
 
 private class ArtifactItemProvider :
   ColoredParameterProvider<ArtifactDetail>(

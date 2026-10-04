@@ -14,7 +14,7 @@ import aktual.core.ui.LocalNavDrawerOpener
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NavDrawerIconButton
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
@@ -40,11 +40,10 @@ internal fun TransactionsTitleBar(
 ) {
   val title =
     when (loadedAccount) {
-      LoadedAccount.AllAccounts -> Strings.transactionsTitleAll
-      LoadedAccount.Loading -> Strings.transactionsTitleLoading
-      is LoadedAccount.SpecificAccount ->
-        loadedAccount.account.name ?: Strings.transactionsTitleNone
-      is LoadedAccount.SpecificTag -> "#${loadedAccount.tag}"
+      AllAccounts -> Strings.transactionsTitleAll
+      Loading -> Strings.transactionsTitleLoading
+      is SpecificAccount -> loadedAccount.account.name ?: Strings.transactionsTitleNone
+      is SpecificTag -> "#${loadedAccount.tag}"
     }
 
   TopAppBar(
@@ -54,7 +53,7 @@ internal fun TransactionsTitleBar(
       if (isRoot && LocalNavDrawerOpener.current != null) {
         NavDrawerIconButton()
       } else {
-        NavBackIconButton { onAction(Action.NavBack) }
+        NavBackIconButton { onAction(NavBack) }
       }
     },
     title = { Text(text = title, maxLines = 1, overflow = Ellipsis) },
@@ -84,11 +83,11 @@ internal fun TransactionsTitleBar(
 private fun PreviewTransactionsTitleBar(
   @PreviewParameter(TransactionsTitleBarProvider::class) params: ColoredParams<LoadedAccount>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     TransactionsTitleBar(
       hazeState = rememberHazedTopBarState(),
       listState = rememberLazyListState(),
-      loadedAccount = params.data,
+      loadedAccount = this,
       isRoot = true,
       onAction = {},
       onOpenViewOptions = {},

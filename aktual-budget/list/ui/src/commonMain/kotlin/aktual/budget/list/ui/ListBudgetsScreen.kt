@@ -24,7 +24,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
@@ -245,7 +245,7 @@ private fun StateContent(
 @Composable
 private fun PreviewListBudgetsScaffold(
   @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ColoredParams<ListBudgetsState>
-) = PreviewWithColors(params.colors) { ListBudgetsScaffold(state = params.data, onAction = {}) }
+) = PreviewWithColoredParams(params) { ListBudgetsScaffold(state = this, onAction = {}) }
 
 private val PREVIEW_ITEMS =
   List(size = 5) { PreviewBudgetSynced } +

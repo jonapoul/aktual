@@ -18,7 +18,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.stringShort
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
@@ -460,15 +460,15 @@ private val TOOLTIP_SHAPE = RoundedCornerShape(4.dp)
 private fun PreviewSankeyChart(
   @PreviewParameter(SankeyChartProvider::class) params: ColoredParams<SankeyChartParams>
 ) =
-  PreviewWithColors(params.colors) {
+  PreviewWithColoredParams(params) {
     SankeyChart(
       modifier =
         Modifier.background(colors.tableBackground, CardShape)
           .width(WIDTH.dp)
-          .height(if (params.data.compact) 300.dp else 500.dp)
+          .height(if (compact) 300.dp else 500.dp)
           .padding(5.dp),
-      data = params.data.data,
-      compact = params.data.compact,
+      data = data,
+      compact = compact,
     )
   }
 
