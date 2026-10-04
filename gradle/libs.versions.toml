@@ -138,7 +138,7 @@ atlas = { id = "dev.jonpoulton.atlas", version = "0.7.1" }
 blueprint = { id = "dev.jonpoulton.blueprint", version.ref = "blueprint" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.1.1" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
-catalog = { id = "dev.jonpoulton.catalog", version = "0.5.1" }
+catalog = { id = "dev.jonpoulton.catalog", version = "0.6.0" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }
 fallbackSerializer = { id = "dev.jonpoulton.fallbackserializer", version = "0.3.1" }
