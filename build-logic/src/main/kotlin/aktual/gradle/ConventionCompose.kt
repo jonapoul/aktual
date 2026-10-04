@@ -4,15 +4,15 @@ package aktual.gradle
 
 import aktual.gradle.dsl.apply
 import aktual.gradle.dsl.configure
-import aktual.gradle.dsl.dependencies
-import aktual.gradle.dsl.desktopMainDependencies
-import aktual.gradle.dsl.invoke
 import aktual.gradle.dsl.kotlin
 import blueprint.core.get
 import blueprint.core.libs
 import blueprint.core.withAnyId
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.desktopMainDependencies
+import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.compose.resources.ResourcesExtension

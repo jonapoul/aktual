@@ -2,10 +2,10 @@ package aktual.gradle
 
 import aktual.gradle.dsl.apply
 import aktual.gradle.dsl.kotlin
-import blueprint.core.commonMainDependencies
 import blueprint.core.get
 import blueprint.core.libs
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.commonMainDependencies
 
 class ModuleViewModel : ProjectPlugin {
   override fun Project.applyTo() {

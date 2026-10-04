@@ -1,7 +1,3 @@
-import aktual.gradle.dsl.androidHostTestDependencies
-import aktual.gradle.dsl.desktopTestDependencies
-import blueprint.core.commonTestDependencies
-
 plugins {
   id("aktual.module.kotlin")
   id("aktual.convention.db-test")

@@ -1,6 +1,5 @@
 package aktual.gradle
 
-import aktual.gradle.dsl.androidHostTestDependencies
 import aktual.gradle.dsl.androidTestLibraries
 import aktual.gradle.dsl.apply
 import aktual.gradle.dsl.buildNamespace
@@ -8,8 +7,6 @@ import aktual.gradle.dsl.commonConfigure
 import aktual.gradle.dsl.configure
 import aktual.gradle.dsl.kotlin
 import aktual.gradle.dsl.testLibraries
-import blueprint.core.commonMainDependencies
-import blueprint.core.commonTestDependencies
 import blueprint.core.get
 import blueprint.core.intProperty
 import blueprint.core.libs
@@ -17,6 +14,9 @@ import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.gradle.LintPlugin
 import com.android.build.gradle.api.KotlinMultiplatformAndroidPlugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.androidHostTestDependencies
+import org.gradle.kotlin.dsl.commonMainDependencies
+import org.gradle.kotlin.dsl.commonTestDependencies
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 
 class ModuleKotlin : ProjectPlugin {

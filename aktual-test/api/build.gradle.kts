@@ -1,6 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-import blueprint.core.commonMainDependencies
 import com.github.gmazzo.buildconfig.BuildConfigSourceSet
 import org.gradle.internal.extensions.stdlib.capitalized
 
