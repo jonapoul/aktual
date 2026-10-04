@@ -1,13 +1,14 @@
 package aktual.budget.banksync.ui
 
+import aktual.budget.banksync.vm.link.BankLogin
+import aktual.budget.banksync.vm.link.BankLoginStatus
 import aktual.budget.banksync.vm.link.ExternalAccountItem
 import aktual.budget.banksync.vm.link.ExternalAccounts
-import aktual.budget.banksync.vm.link.GoCardlessBankItem
-import aktual.budget.banksync.vm.link.GoCardlessBanks
-import aktual.budget.banksync.vm.link.GoCardlessLogin
-import aktual.budget.banksync.vm.link.GoCardlessLoginStatus
 import aktual.budget.banksync.vm.link.LinkBankAccountState
 import aktual.budget.banksync.vm.link.LinkBankAccountViewModel
+import aktual.budget.banksync.vm.link.LoginAccountType
+import aktual.budget.banksync.vm.link.LoginBankItem
+import aktual.budget.banksync.vm.link.LoginBanks
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
@@ -106,6 +107,7 @@ internal fun LinkBankAccountScreen(
         is SelectProvider -> viewModel.select(action.source)
         is LinkTo -> viewModel.link(action.accountId)
         is SelectCountry -> viewModel.selectCountry(action.country)
+        is SelectAccountType -> viewModel.selectAccountType(action.type)
         is LogIn -> viewModel.logIn(action.bankId)
         ReopenLogin -> viewModel.reopenLogin()
         CancelLogin -> viewModel.cancelLogin()
@@ -249,7 +251,7 @@ private fun LazyListScope.choosing(
       }
     }
     is NeedsLogin -> {
-      goCardlessLogin(accounts.login, bankQuery, onBankQuery, onAction)
+      bankLogin(state.selected, accounts.login, bankQuery, onBankQuery, onAction)
     }
     is Loaded -> {
       if (accounts.items.isEmpty()) {
@@ -377,24 +379,25 @@ private val PreviewAccounts =
   )
 
 private val PreviewBanks =
-  GoCardlessBanks.Loaded(
+  LoginBanks.Loaded(
     persistentListOf(
-      GoCardlessBankItem("MONZO_MONZGB2L", "Monzo"),
-      GoCardlessBankItem("REVOLUT_REVOGB21", "Revolut"),
-      GoCardlessBankItem("STARLING_SRLGGB3L", "Starling"),
+      LoginBankItem("MONZO_MONZGB2L", "Monzo"),
+      LoginBankItem("REVOLUT_REVOGB21", "Revolut", isBeta = true),
+      LoginBankItem("STARLING_SRLGGB3L", "Starling"),
     )
   )
 
 private fun previewLogin(
-  banks: GoCardlessBanks = PreviewBanks,
-  status: GoCardlessLoginStatus = Idle,
+  banks: LoginBanks = PreviewBanks,
+  status: BankLoginStatus = Idle,
+  accountType: LoginAccountType? = null,
 ) =
   previewChoosing(
     accounts =
       ExternalAccounts.NeedsLogin(
-        GoCardlessLogin(persistentListOf("GB", "IE"), country = "GB", banks, status)
+        BankLogin(persistentListOf("GB", "IE"), country = "GB", banks, status, accountType)
       ),
-    selected = GoCardless,
+    selected = if (accountType == null) GoCardless else EnableBanking,
   )
 
 private fun previewChoosing(
@@ -404,7 +407,7 @@ private fun previewChoosing(
 ) =
   LinkBankAccountState.Choosing(
     accountName = "Cash",
-    providers = persistentListOf(GoCardless, SimpleFin),
+    providers = persistentListOf(GoCardless, EnableBanking, SimpleFin),
     selected = selected,
     accounts = accounts,
     isLinking = isLinking,
@@ -417,10 +420,11 @@ private class LinkBankAccountStateProvider :
     previewChoosing(Loading),
     previewChoosing(ExternalAccounts.Failure("Invalid access token")),
     previewLogin(),
+    previewLogin(accountType = Business),
     previewLogin(banks = Loading),
-    previewLogin(banks = GoCardlessBanks.Failure("Invalid secret")),
-    previewLogin(status = GoCardlessLoginStatus.Waiting("Monzo", link = "https://example.com")),
-    previewLogin(status = GoCardlessLoginStatus.Failed(cause = null, isTimeout = true)),
+    previewLogin(banks = LoginBanks.Failure("Invalid secret")),
+    previewLogin(status = BankLoginStatus.Waiting("Monzo", link = "https://example.com")),
+    previewLogin(status = BankLoginStatus.Failed(cause = null, isTimeout = true)),
     NoProviders,
     Loading,
     LinkBankAccountState.Failure(cause = null),

@@ -31,47 +31,55 @@ sealed interface ExternalAccounts {
 
   @JvmInline value class Loaded(val items: ImmutableList<ExternalAccountItem>) : ExternalAccounts
 
-  /** GoCardless lists accounts only once the user has logged in to their bank. */
-  @JvmInline value class NeedsLogin(val login: GoCardlessLogin) : ExternalAccounts
+  /** GoCardless and Enable Banking list accounts only once the user has logged in to their bank. */
+  @JvmInline value class NeedsLogin(val login: BankLogin) : ExternalAccounts
 }
 
 /**
- * Picking a bank to log in to through GoCardless.
+ * Picking a bank to log in to, for a provider that lists accounts only after the user logs in.
  *
- * @property countries ISO 3166 codes of the countries GoCardless supports, one of them [country].
+ * @property countries ISO 3166 codes of the countries the provider supports, one of them [country].
  * @property banks The banks in [country].
+ * @property accountType Whether the user logs in as a person or a business, if the provider asks.
  */
 @Immutable
-data class GoCardlessLogin(
+data class BankLogin(
   val countries: ImmutableList<String>,
   val country: String,
-  val banks: GoCardlessBanks,
-  val status: GoCardlessLoginStatus = Idle,
+  val banks: LoginBanks,
+  val status: BankLoginStatus = Idle,
+  val accountType: LoginAccountType? = null,
 )
 
 @Immutable
-sealed interface GoCardlessBanks {
-  data object Loading : GoCardlessBanks
+sealed interface LoginBanks {
+  data object Loading : LoginBanks
 
-  @JvmInline value class Failure(val cause: String?) : GoCardlessBanks
+  @JvmInline value class Failure(val cause: String?) : LoginBanks
 
-  @JvmInline value class Loaded(val items: ImmutableList<GoCardlessBankItem>) : GoCardlessBanks
+  @JvmInline value class Loaded(val items: ImmutableList<LoginBankItem>) : LoginBanks
 }
 
-@Immutable data class GoCardlessBankItem(val id: String, val name: String)
+/** @property isBeta The provider's support for the bank is still in beta. */
+@Immutable data class LoginBankItem(val id: String, val name: String, val isBeta: Boolean = false)
+
+enum class LoginAccountType {
+  Personal,
+  Business,
+}
 
 @Immutable
-sealed interface GoCardlessLoginStatus {
-  data object Idle : GoCardlessLoginStatus
+sealed interface BankLoginStatus {
+  data object Idle : BankLoginStatus
 
   /**
-   * Waiting for the user to log in to [bank] in their browser, at [link] once GoCardless has given
-   * one.
+   * Waiting for the user to log in to [bank] in their browser, at [link] once the provider has
+   * given one.
    */
-  data class Waiting(val bank: String, val link: String? = null) : GoCardlessLoginStatus
+  data class Waiting(val bank: String, val link: String? = null) : BankLoginStatus
 
   /** The login failed, or the user took too long if [isTimeout]. */
-  data class Failed(val cause: String?, val isTimeout: Boolean = false) : GoCardlessLoginStatus
+  data class Failed(val cause: String?, val isTimeout: Boolean = false) : BankLoginStatus
 }
 
 @Immutable

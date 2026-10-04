@@ -1,5 +1,6 @@
 package aktual.budget.banksync.ui
 
+import aktual.budget.banksync.vm.link.LoginAccountType
 import aktual.budget.model.AccountSyncSource
 import androidx.compose.runtime.Immutable
 
@@ -15,6 +16,9 @@ internal value class SelectProvider(val source: AccountSyncSource) : LinkBankAcc
 @JvmInline internal value class LinkTo(val accountId: String) : LinkBankAccountAction
 
 @JvmInline internal value class SelectCountry(val country: String) : LinkBankAccountAction
+
+@JvmInline
+internal value class SelectAccountType(val type: LoginAccountType) : LinkBankAccountAction
 
 @JvmInline internal value class LogIn(val bankId: String) : LinkBankAccountAction
 

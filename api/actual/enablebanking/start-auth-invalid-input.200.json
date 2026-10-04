@@ -1,0 +1,7 @@
+{
+  "status": "ok",
+  "data": {
+    "error_code": "INVALID_INPUT",
+    "error_type": "aspsp, redirectUrl and psuType are required"
+  }
+}

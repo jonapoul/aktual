@@ -1,0 +1,39 @@
+{
+  "status": "ok",
+  "data": {
+    "session_id": "0c6a7f3e-7c4b-4a8e-9a43-0f3a1c6d2b11",
+    "aspsp": {
+      "name": "Mock ASPSP",
+      "country": "FI"
+    },
+    "accounts": [
+      {
+        "account_id": "07cc67f4-45d6-494b-adac-09b5cbc7e2b5",
+        "name": "Current Account",
+        "institution": "Mock ASPSP",
+        "currency": "EUR",
+        "iban": "FI8821291587733472",
+        "balance": 123456,
+        "balances": [
+          {
+            "balanceAmount": {
+              "amount": "1234.56",
+              "currency": "EUR"
+            },
+            "balanceType": "CLAV",
+            "referenceDate": "2026-10-04"
+          }
+        ]
+      },
+      {
+        "account_id": "9b5d1a3c-2e4f-4b6a-8c7d-1e2f3a4b5c6d",
+        "name": "FI4950009420028730",
+        "institution": "Mock ASPSP",
+        "currency": "EUR",
+        "iban": "FI4950009420028730",
+        "balance": -2050,
+        "balances": []
+      }
+    ]
+  }
+}
