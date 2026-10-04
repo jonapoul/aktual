@@ -18,7 +18,6 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import io.ktor.client.engine.mock.MockEngine
-import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
 import io.mockk.mockk
 import java.net.NoRouteToHostException
@@ -124,7 +123,7 @@ class BudgetListFetcherTest {
       }
       """
         .trimIndent()
-    mockEngine += { respondJson(responseJson, HttpStatusCode.Forbidden) }
+    mockEngine += { respondJson(responseJson, Forbidden) }
     before()
 
     // when

@@ -22,7 +22,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
 import io.ktor.client.engine.mock.MockEngine
-import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
 import io.mockk.mockk
 import java.io.IOException
@@ -145,7 +144,7 @@ internal class LoginRequesterTest {
       }
       """
         .trimIndent()
-    mockEngine += { respondJson(body, HttpStatusCode.Unauthorized) }
+    mockEngine += { respondJson(body, Unauthorized) }
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
     // Then we get a token expired result
@@ -168,7 +167,7 @@ internal class LoginRequesterTest {
       }
       """
         .trimIndent()
-    mockEngine += { respondJson(body, HttpStatusCode.InternalServerError) }
+    mockEngine += { respondJson(body, InternalServerError) }
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
     // Then we get an other failure result with the reason

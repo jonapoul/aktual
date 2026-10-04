@@ -18,7 +18,6 @@ import github.api.client.GithubJson
 import github.api.model.GithubRelease
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondError
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
 import java.io.IOException
 import kotlin.test.AfterTest
@@ -109,7 +108,7 @@ class GithubRepositoryTest {
     // Given
     buildRepo()
     mockEngine += {
-      respondJson(GithubResponses.LIST_RELEASES_NOT_FOUND_404, HttpStatusCode.NotFound)
+      respondJson(GithubResponses.LIST_RELEASES_NOT_FOUND_404, NotFound)
     }
 
     // When
@@ -155,7 +154,7 @@ class GithubRepositoryTest {
   fun `HTTP failure`() = runTest {
     // Given
     buildRepo()
-    mockEngine += { respondError(HttpStatusCode.MethodNotAllowed) }
+    mockEngine += { respondError(MethodNotAllowed) }
 
     // When
     val state = githubRepository.fetchLatestRelease()

@@ -14,7 +14,6 @@ import assertk.assertions.isEqualTo
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondError
 import io.ktor.client.plugins.ClientRequestException
-import io.ktor.http.HttpStatusCode
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -71,7 +70,7 @@ class BaseApiTest {
   @Test
   fun `Fetch info failure response`() = runTest {
     // given
-    mockEngine += { respondError(HttpStatusCode.BadRequest) }
+    mockEngine += { respondError(BadRequest) }
 
     // when
     assertThrows<ClientRequestException> { baseApi.fetchInfo() }
