@@ -100,6 +100,18 @@ internal class BudgetSheetTest {
   }
 
   @Test
+  fun `Envelope totals include hidden categories and groups`() {
+    val categories = listOf(FOOD.copy(isHidden = true), RENT.copy(isGroupHidden = true), SALARY)
+
+    assertThat(envelope().copy(categories = categories).envelopeMonth(JAN, JAN)).all {
+      prop(Envelope::budgeted).isEqualTo(Amount(140_000L))
+      prop(Envelope::spent).isEqualTo(Amount(-135_000L))
+      prop(Envelope::balance).isEqualTo(Amount(5_000L))
+      prop(Envelope::toBudget).isEqualTo(Amount(160_000L))
+    }
+  }
+
+  @Test
   fun `Month before the first budget is empty`() {
     assertThat(envelope().envelopeMonth(start = JAN, month = YearMonth(2025, 12))).all {
       prop(Envelope::month).isEqualTo(YearMonth(2025, 12))

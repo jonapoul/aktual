@@ -8,7 +8,6 @@ import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
 import aktual.budget.model.SyncedPrefKey
-import aktual.core.Calendar
 import aktual.test.assertThatNextEmission
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestCoroutineContexts
@@ -101,7 +100,7 @@ internal class BudgetMonthCalculatorTest {
         BudgetMonthCalculatorImpl(
           budgetDao = BudgetDao(database, contexts),
           preferencesDao = database.preferences(this),
-          calendar = Calendar { TODAY },
+          calendar = { TODAY },
           contexts = contexts,
         )
       action(calculator, database)
@@ -119,6 +118,7 @@ internal class BudgetMonthCalculatorTest {
     val TODAY = LocalDate(2026, 4, 15)
 
     // The off budget, deleted and uncategorised transactions don't count
+    @Suppress("MaxLineLength", "TrimMultilineRawString")
     val SETUP =
       listOf(
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('usual', 'Usual', 0, 1)",

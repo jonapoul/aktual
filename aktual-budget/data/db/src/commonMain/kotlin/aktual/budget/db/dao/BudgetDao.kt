@@ -65,6 +65,7 @@ class BudgetDao(database: BudgetDatabase, private val contexts: CoroutineContext
   fun observeEnvelopeMonths(): Flow<List<Zero_budget_months>> =
     queries.zeroBudgetMonths().asFlow().mapToList(contexts.default).distinctUntilChanged()
 
+  @Suppress("CanBeNonNullable")
   private fun categoryBudget(
     month: YearMonth?,
     category: CategoryId,
@@ -74,7 +75,7 @@ class BudgetDao(database: BudgetDatabase, private val contexts: CoroutineContext
     CategoryBudget(
       month = requireNotNull(month),
       category = category,
-      amount = amount ?: Amount.Zero,
+      amount = amount ?: Zero,
       carryover = carryover,
     )
 }

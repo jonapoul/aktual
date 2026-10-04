@@ -92,14 +92,17 @@ private fun BudgetData.envelopeMonth(
     )
   }
 
+  // Unlike tracking budgets, upstream counts hidden categories and groups here
   val expenses = rows.filterBy(categories) { !it.isGroupIncome }
   val income = rows.filterBy(categories) { it.group == incomeGroup }.sumOf { it.spent }
   val fromLastMonth = previous.toBudget + previous.buffered
   val lastMonthOverspent =
     rows
+      .asSequence()
       .filter { !it.isIncome }
       .mapNotNull { previousById[it.id] }
       .filter { !it.carryover }
+      .toList()
       .sumOf { minOf(it.balance, Amount.Zero) }
   val budgeted = expenses.sumOf { it.budgeted }
 
