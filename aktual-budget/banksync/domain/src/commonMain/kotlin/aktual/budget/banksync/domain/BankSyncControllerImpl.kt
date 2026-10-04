@@ -54,7 +54,9 @@ class BankSyncControllerImpl(
   private val mutableProgress = MutableStateFlow(BankSyncProgress())
   override val progress: StateFlow<BankSyncProgress> = mutableProgress.asStateFlow()
 
-  private val mutableFinished = MutableSharedFlow<List<BankSyncResult>>(extraBufferCapacity = 1)
+  // Never suspends, so a slow collector can't hold up the sync that's finishing
+  private val mutableFinished =
+    MutableSharedFlow<List<BankSyncResult>>(extraBufferCapacity = 1, onBufferOverflow = DROP_OLDEST)
 
   override val finished: SharedFlow<List<BankSyncResult>> = mutableFinished.asSharedFlow()
 
