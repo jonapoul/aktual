@@ -62,8 +62,11 @@ class TransactionDao(database: BudgetDatabase) {
   // Current balance of every transaction, or of one account's
   fun observeBalance(account: AccountId? = null): Flow<Long> {
     val query =
-      if (account == null) queries.balanceFromOffset(offset = 0)
-      else queries.balanceFromOffsetByAccount(account, offset = 0)
+      if (account == null) {
+        queries.balanceFromOffset(offset = 0)
+      } else {
+        queries.balanceFromOffsetByAccount(account, offset = 0)
+      }
     return query.asFlow().map { it.awaitAsOne() }.distinctUntilChanged()
   }
 
