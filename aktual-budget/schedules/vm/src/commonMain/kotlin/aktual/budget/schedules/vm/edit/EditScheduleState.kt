@@ -2,7 +2,7 @@ package aktual.budget.schedules.vm.edit
 
 import aktual.budget.model.AccountId
 import aktual.budget.model.PayeeId
-import aktual.budget.schedules.vm.ScheduleStatus
+import aktual.budget.schedules.domain.ScheduleStatus
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate

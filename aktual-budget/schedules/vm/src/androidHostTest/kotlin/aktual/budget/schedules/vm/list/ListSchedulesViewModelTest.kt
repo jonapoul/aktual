@@ -6,19 +6,21 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.DatabaseTables.SCHEDULES
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.model.LocalChange
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
-import aktual.budget.schedules.vm.Schedule
-import aktual.budget.schedules.vm.SchedulesLoader
-import aktual.budget.schedules.vm.insertSchedule
+import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.core.Calendar
 import aktual.prefs.SchedulePreferences
 import aktual.prefs.SchedulePreferencesImpl
 import aktual.test.TestSyncController
 import aktual.test.buildPreferences
+import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
+import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.assertThat
@@ -176,12 +178,14 @@ class ListSchedulesViewModelTest {
     sync: BudgetSyncController,
     preferences: SchedulePreferences = SchedulePreferencesImpl(scope.buildPreferences()),
   ): ListSchedulesViewModel {
-    Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
+    val dispatcher = StandardTestDispatcher(scope.testScheduler)
+    Dispatchers.setMain(dispatcher)
     val loader =
       SchedulesLoader(
         scheduleDao = ScheduleDao(this),
         accountDao = AccountDao(this),
         payeeDao = PayeeDao(this),
+        preferencesDao = PreferencesDao(this, TestCoroutineContexts(dispatcher)),
         calendar = Calendar { LocalDate(2026, 4, 1) },
       )
     return ListSchedulesViewModel(

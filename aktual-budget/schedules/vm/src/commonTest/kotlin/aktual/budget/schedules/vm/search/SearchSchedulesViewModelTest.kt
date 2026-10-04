@@ -3,15 +3,17 @@ package aktual.budget.schedules.vm.search
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.model.ScheduleId
-import aktual.budget.schedules.vm.Schedule
-import aktual.budget.schedules.vm.SchedulesLoader
-import aktual.budget.schedules.vm.insertSchedule
+import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Failure
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Results
 import aktual.core.Calendar
+import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
+import alakazam.test.TestCoroutineContexts
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -114,12 +116,14 @@ class SearchSchedulesViewModelTest {
   }
 
   private fun BudgetDatabase.createViewModel(scope: TestScope): SearchSchedulesViewModel {
-    Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
+    val dispatcher = StandardTestDispatcher(scope.testScheduler)
+    Dispatchers.setMain(dispatcher)
     val loader =
       SchedulesLoader(
         scheduleDao = ScheduleDao(this),
         accountDao = AccountDao(this),
         payeeDao = PayeeDao(this),
+        preferencesDao = PreferencesDao(this, TestCoroutineContexts(dispatcher)),
         calendar = Calendar { LocalDate(2026, 4, 1) },
       )
     return SearchSchedulesViewModel(savedState = SavedStateHandle(), loader = loader)

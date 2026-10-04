@@ -1,8 +1,8 @@
 package aktual.budget.schedules.ui.list
 
 import aktual.budget.model.Operator
-import aktual.budget.schedules.vm.Schedule
-import aktual.budget.schedules.vm.ScheduleStatus
+import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.ScheduleStatus
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
