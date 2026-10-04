@@ -38,6 +38,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -59,6 +60,7 @@ import logcat.logcat
 // packages/desktop-client/src/components/reports/reports/monte-carlo/MonteCarlo.tsx
 @Stable
 @AssistedInject
+@OptIn(ExperimentalCoroutinesApi::class)
 class MonteCarloViewModel
 internal constructor(
   @Assisted private val id: WidgetId,

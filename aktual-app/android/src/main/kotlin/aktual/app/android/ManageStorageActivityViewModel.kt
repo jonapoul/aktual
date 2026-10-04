@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.update
 class ManageStorageActivityViewModel(themeResolver: ThemeResolver) : ViewModel() {
   private val isSystemInDarkTheme = MutableStateFlow<Boolean?>(null)
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   val theme: StateFlow<Colors?> =
     isSystemInDarkTheme
       .filterNotNull()
