@@ -26,7 +26,6 @@ import kotlin.math.roundToLong
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -44,7 +43,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 
 @Inject
-@OptIn(ExperimentalCoroutinesApi::class)
 internal class ChartDataLoader(
   private val dao: ReportsDao,
   private val preferences: PreferencesDao,
