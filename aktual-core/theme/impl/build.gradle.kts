@@ -10,15 +10,11 @@ kotlin {
     api(libs.compose.uiGraphics)
     api(libs.okio)
     api(project(":aktual-api"))
-    api(project(":aktual-core"))
     api(project(":aktual-core:theme"))
-    api(project(":aktual-core:theme:model"))
-    api(project(":aktual-di:core"))
     api(project(":aktual-prefs"))
     compileOnly(libs.compose.runtime)
     implementation(libs.kotlinx.serialization.json)
     implementation(project(":aktual-core:logging"))
-    implementation(project(":aktual-core:model"))
   }
 
   commonTestDependencies {

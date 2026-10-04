@@ -4,8 +4,6 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-api"))
     api(project(":aktual-core:theme"))
-    api(project(":aktual-core:theme:model"))
-    api(project(":aktual-di:core"))
     api(project(":aktual-prefs"))
   }
 

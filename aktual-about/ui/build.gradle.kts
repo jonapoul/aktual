@@ -10,9 +10,7 @@ kotlin {
     api(project(":aktual-about:vm"))
     api(project(":aktual-core:nav"))
     api(project(":aktual-core:ui"))
-    api(project(":aktual-di:core"))
     implementation(libs.androidx.compose.annotation)
     implementation(project(":aktual-core:l10n"))
-    implementation(project(":aktual-core:theme:model"))
   }
 }

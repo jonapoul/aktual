@@ -167,8 +167,6 @@ dependencies {
   implementation(project(":aktual-app:ui-app"))
   implementation(project(":aktual-app:ui-budget"))
   implementation(project(":aktual-core:l10n"))
-  implementation(project(":aktual-di:graphs"))
-  implementation(project(":aktual-prefs"))
   implementation(compose.desktop.currentOs)
   implementation(libs.androidx.lifecycle.viewmodel)
   implementation(libs.kotlinx.coroutines.swing)

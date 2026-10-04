@@ -4,7 +4,6 @@ kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin)
     api(libs.kotlinx.datetime)
-    api(project(":aktual-budget"))
     api(project(":aktual-budget:data:encryption"))
     api(project(":aktual-core"))
     api(project(":aktual-di:runlevel"))

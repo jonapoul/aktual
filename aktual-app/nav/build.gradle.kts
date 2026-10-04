@@ -14,7 +14,6 @@ kotlin {
     api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.immutable)
     api(libs.molecule)
-    api(project(":aktual-core"))
     api(project(":aktual-core:nav"))
     api(project(":aktual-core:ui"))
     api(project(":aktual-di:runlevel"))

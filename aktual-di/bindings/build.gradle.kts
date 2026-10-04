@@ -7,6 +7,5 @@ kotlin {
     api(project(":aktual-budget"))
     api(project(":aktual-core"))
     implementation(libs.ktor.engineDefaults)
-    implementation(project(":aktual-di:core"))
   }
 }

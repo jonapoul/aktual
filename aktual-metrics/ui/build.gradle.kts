@@ -6,7 +6,6 @@ kotlin {
   commonMainDependencies {
     api(libs.androidx.navigation3.runtime)
     api(libs.compose.foundation)
-    api(project(":aktual-core:model"))
     api(project(":aktual-core:nav"))
     api(project(":aktual-core:ui"))
     api(project(":aktual-metrics:vm"))

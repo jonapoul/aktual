@@ -7,6 +7,5 @@ kotlin {
     api(libs.sqldelight.runtime)
     api(project(":aktual-budget"))
     api(project(":aktual-core:model"))
-    api(project(":aktual-di:core"))
   }
 }

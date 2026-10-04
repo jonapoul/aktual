@@ -143,14 +143,10 @@ licensee {
 }
 
 dependencies {
-  implementation(project(":aktual-about:ui"))
   implementation(project(":aktual-app:di"))
   implementation(project(":aktual-app:nav"))
   implementation(project(":aktual-app:ui-app"))
   implementation(project(":aktual-app:ui-budget"))
-  implementation(project(":aktual-core:nav"))
-  implementation(project(":aktual-di:graphs"))
-  implementation(project(":aktual-prefs"))
   implementation(libs.alakazam.kotlin)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.activity.core)
