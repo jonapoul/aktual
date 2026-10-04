@@ -64,6 +64,10 @@ class BankSyncController(
     scope.launch {
       try {
         run(accounts)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed bank sync" }
       } finally {
         mutex.unlock()
       }
@@ -99,43 +103,50 @@ class BankSyncController(
   }
 
   // syncAccount() in packages/loot-core/src/server/accounts/sync.ts
-  private suspend fun syncAccount(account: BankSyncAccount): BankSyncResult {
-    val source =
-      account.source ?: return fail(account, BankSyncError.Internal("No bank sync provider"))
-    val oldest = dao.oldestDate(account.id, calendar.today())
-    val initialSync = oldest == null
-    val request =
-      BankSyncTransactionsRequest(
-        accountId = account.accountId,
-        startDate = startDate(oldest),
-        requisitionId = account.bankId.value.takeIf { source == GoCardless },
-        includeBalance = initialSync.takeIf { source == GoCardless },
-        aspspName = account.bankName.takeIf { source == EnableBanking },
-      )
-    val response =
-      try {
-        api.transactions(source, request)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.w(e) { "Failed downloading ${account.id}" }
-        return fail(account, BankSyncError.Internal(e.message))
-      }
-    return handle(account, response, initialSync)
-  }
+  private suspend fun syncAccount(account: BankSyncAccount): BankSyncResult =
+    catching(account) {
+      val source =
+        account.source
+          ?: return@catching fail(account, BankSyncError.Internal("No bank sync provider"))
+      val oldest = dao.oldestDate(account.id, calendar.today())
+      val initialSync = oldest == null
+      val request =
+        BankSyncTransactionsRequest(
+          accountId = account.accountId,
+          startDate = startDate(oldest),
+          requisitionId = account.bankId.value.takeIf { source == GoCardless },
+          includeBalance = initialSync.takeIf { source == GoCardless },
+          aspspName = account.bankName.takeIf { source == EnableBanking },
+        )
+      handle(account, api.transactions(source, request), initialSync)
+    }
+
+  // Fails the account with whatever's thrown, so it can't stop the other accounts syncing
+  private suspend inline fun catching(
+    account: BankSyncAccount,
+    block: () -> BankSyncResult,
+  ): BankSyncResult =
+    try {
+      block()
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      logcat.w(e) { "Failed syncing ${account.id}" }
+      fail(account, BankSyncError.Internal(e.message))
+    }
 
   // simpleFinBatchSync() in packages/loot-core/src/server/accounts/sync.ts
   private suspend fun syncSimpleFin(accounts: List<BankSyncAccount>) {
-    val today = calendar.today()
-    val oldest = accounts.associate { it.id to dao.oldestDate(it.id, today) }
-    val request =
-      SimpleFinBatchRequest(
-        accountIds = accounts.map { it.accountId },
-        startDates = accounts.map { startDate(oldest[it.id]) },
-      )
-    val response =
+    val (oldest, response) =
       try {
-        api.simpleFinBatch(request)
+        val today = calendar.today()
+        val oldest = accounts.associate { it.id to dao.oldestDate(it.id, today) }
+        val request =
+          SimpleFinBatchRequest(
+            accountIds = accounts.map { it.accountId },
+            startDates = accounts.map { startDate(oldest[it.id]) },
+          )
+        oldest to api.simpleFinBatch(request)
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {
@@ -146,15 +157,17 @@ class BankSyncController(
 
     for (account in accounts) {
       val result =
-        when (response) {
-          is SimpleFinBatchResponse.Failed -> {
-            fail(account, response.error.toError())
-          }
-          is SimpleFinBatchResponse.Success -> {
-            val download =
-              response.accounts[account.accountId]
-                ?: ProviderError(ProviderError.ACCOUNT_MISSING, ProviderError.ACCOUNT_MISSING)
-            handle(account, download, initialSync = oldest[account.id] == null)
+        catching(account) {
+          when (response) {
+            is SimpleFinBatchResponse.Failed -> {
+              fail(account, response.error.toError())
+            }
+            is SimpleFinBatchResponse.Success -> {
+              val download =
+                response.accounts[account.accountId]
+                  ?: ProviderError(ProviderError.ACCOUNT_MISSING, ProviderError.ACCOUNT_MISSING)
+              handle(account, download, initialSync = oldest[account.id] == null)
+            }
           }
         }
       report(result)
@@ -182,22 +195,20 @@ class BankSyncController(
         transactions = response.transactions.all,
         currentBalance = response.startingBalance?.let(::Amount),
       )
-    val result =
-      try {
-        importer.import(account.id, account.source, download, initialSync)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.w(e) { "Failed importing ${account.id}" }
-        return fail(account, BankSyncError.Internal(e.message))
-      }
+    val result = importer.import(account.id, account.source, download, initialSync)
     updateAccount(account.id, Ok, synced = true)
     return BankSyncResult.Synced(account.id, account.name, result.added, result.updated)
   }
 
   private suspend fun fail(account: BankSyncAccount, error: BankSyncError): BankSyncResult {
     logcat.w { "Bank sync failed for ${account.id}: $error" }
-    updateAccount(account.id, error.status, synced = false)
+    try {
+      updateAccount(account.id, error.status, synced = false)
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      logcat.w(e) { "Failed recording the status of ${account.id}" }
+    }
     return BankSyncResult.Failed(account.id, account.name, error)
   }
 

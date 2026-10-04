@@ -219,6 +219,22 @@ internal class BankSyncControllerTest {
   }
 
   @Test
+  fun `Failed writes don't stop other accounts syncing`() = runBankSyncTest {
+    insertLinkedAccount(A)
+    insertLinkedAccount(B, offBudget = true)
+    api.responses += mapOf("provider-a" to success(), "provider-b" to providerError("TIMED_OUT"))
+    syncError = IllegalStateException("Disk full")
+
+    val results = controller(api).sync()
+
+    assertThat(results)
+      .containsExactly(
+        Failed(A, "a", BankSyncError.Internal("Disk full")),
+        Failed(B, "b", Provider("TIMED_OUT", "TIMED_OUT")),
+      )
+  }
+
+  @Test
   fun `SimpleFIN accounts download together`() = runBankSyncTest {
     insertLinkedAccount(A, source = SimpleFin)
     insertLinkedAccount(B, source = SimpleFin)

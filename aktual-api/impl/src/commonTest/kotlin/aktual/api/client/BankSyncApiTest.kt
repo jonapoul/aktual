@@ -31,6 +31,8 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.key
 import assertk.assertions.prop
 import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.http.content.TextContent
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -189,6 +191,21 @@ class BankSyncApiTest {
           details = "Pluggy credentials are not configured",
         )
       )
+  }
+
+  @Test
+  fun `A request that times out is a provider error`() = runTest {
+    mockEngine += { throw SocketTimeoutException("Timed out") }
+    val response = bankSyncApi.transactions(SimpleFin, REQUEST)
+    assertThat(response).isEqualTo(ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT))
+  }
+
+  @Test
+  fun `A batch request that times out fails`() = runTest {
+    mockEngine += { throw ConnectTimeoutException("Timed out") }
+    val response = bankSyncApi.simpleFinBatch(BATCH_REQUEST)
+    assertThat(response)
+      .isEqualTo(Failed(ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT)))
   }
 
   @Test

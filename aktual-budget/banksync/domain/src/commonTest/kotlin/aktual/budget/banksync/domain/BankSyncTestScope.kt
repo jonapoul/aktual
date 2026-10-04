@@ -66,6 +66,7 @@ internal class BankSyncTestScope(
   private val backgroundScope: CoroutineScope,
 ) : BudgetSyncController {
   val syncCalls = mutableListOf<List<LocalChange>>()
+  var syncError: Exception? = null
   val transactionDao = TransactionDao(database)
   val payeeDao = PayeeDao(database)
   val preferences = PreferencesDao(database, TestCoroutineContexts(EmptyCoroutineContext))
@@ -114,6 +115,7 @@ internal class BankSyncTestScope(
     )
 
   override suspend fun syncChanges(changes: List<LocalChange>) {
+    syncError?.let { throw it }
     syncCalls.add(changes)
     syncDao.sendMessages(changes)
   }
