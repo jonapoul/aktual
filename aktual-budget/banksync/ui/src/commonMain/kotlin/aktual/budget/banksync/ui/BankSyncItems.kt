@@ -61,7 +61,9 @@ internal fun BankSyncAccountItem(
   onClick: (() -> Unit)? = null,
   sync: AccountSync? = null,
 ) {
-  val clickLabel = Strings.bankSyncSettingsOpen(account.name ?: Strings.bankSyncUnnamedAccount)
+  val name = account.name ?: Strings.bankSyncUnnamedAccount
+  val clickLabel =
+    if (isLinked) Strings.bankSyncSettingsOpen(name) else Strings.bankSyncLinkOpen(name)
   val clickModifier =
     if (onClick != null) {
       Modifier.clickable(onClickLabel = clickLabel, onClick = onClick)
@@ -255,7 +257,7 @@ internal fun ProviderHeader(
 }
 
 @Composable
-internal fun UnlinkedHeader(modifier: Modifier = Modifier) {
+internal fun UnlinkedHeader(canLink: Boolean, modifier: Modifier = Modifier) {
   Column(modifier = modifier.fillMaxWidth().padding(BankSyncDS.headerPadding)) {
     Text(
       text = Strings.bankSyncUnlinkedTitle,
@@ -264,7 +266,7 @@ internal fun UnlinkedHeader(modifier: Modifier = Modifier) {
       color = colors.pageTextLight,
     )
     Text(
-      text = Strings.bankSyncUnlinkedMessage,
+      text = if (canLink) Strings.bankSyncUnlinkedMessage else Strings.bankSyncUnlinkedNoServer,
       style = typography.bodySmall,
       color = colors.pageTextSubdued,
     )
@@ -274,7 +276,7 @@ internal fun UnlinkedHeader(modifier: Modifier = Modifier) {
 // Brand names, see getSyncSourceReadable() in
 // packages/desktop-client/src/components/banksync/bankSyncUtils.ts
 @Composable
-private fun providerName(source: AccountSyncSource): String =
+internal fun providerName(source: AccountSyncSource): String =
   when (source) {
     GoCardless -> Strings.bankSyncProviderGocardless
     SimpleFin -> Strings.bankSyncProviderSimplefin

@@ -39,7 +39,8 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonObject
@@ -63,8 +64,10 @@ internal class BankSyncTestScope(
   val database: BudgetDatabase,
   private val driver: SqlDriver,
   private val syncDao: SyncDao,
-  private val backgroundScope: CoroutineScope,
+  private val testScope: TestScope,
 ) : BudgetSyncController {
+  private val backgroundScope = testScope.backgroundScope
+
   val syncCalls = mutableListOf<List<LocalChange>>()
   var syncError: Exception? = null
   val transactionDao = TransactionDao(database)
@@ -115,6 +118,21 @@ internal class BankSyncTestScope(
       scope = BudgetCoroutineScope(backgroundScope),
     )
 
+  // Bank ids are read back as UUIDs, so they can't be [uuid]s
+  fun linker(api: FakeBankSyncApi) =
+    BankAccountLinker(
+      api = api,
+      accountDao = accountDao,
+      dao = BankSyncDao(database),
+      syncController = this,
+      bankSync = controller(api),
+      uuidGenerator = { Uuid.random().toString() },
+      scope = BudgetCoroutineScope(backgroundScope),
+    )
+
+  // Runs whatever's been launched in the background
+  fun runBackground() = testScope.runCurrent()
+
   override suspend fun syncChanges(changes: List<LocalChange>) {
     syncError?.let { throw it }
     syncCalls.add(changes)
@@ -153,12 +171,12 @@ internal class BankSyncTestScope(
     id: AccountId,
     accountId: String = "provider-${id.value}",
     source: AccountSyncSource? = AccountSyncSource.GoCardless,
-    bankId: String = "bank-${id.value}",
+    bankId: String? = "bank-${id.value}",
     bankName: String? = "Bank ${id.value}",
     offBudget: Boolean = false,
   ) {
     val bank = Uuid.random()
-    database.banksQueries.insert(bank, BankId(bankId), bankName)
+    database.banksQueries.insert(bank, bankId?.let(::BankId), bankName)
     accountDao.insert(
       id = id,
       accountId = accountId,
@@ -170,6 +188,10 @@ internal class BankSyncTestScope(
   }
 
   suspend fun account(id: AccountId) = checkNotNull(accountDao[id]) { "No $id" }
+
+  fun deleteBanks() {
+    driver.execute(identifier = null, sql = "UPDATE banks SET tombstone = 1", parameters = 0).value
+  }
 
   suspend fun insertCategory(id: CategoryId) {
     database.categoryMappingQueries.insert(id, id)
@@ -241,7 +263,7 @@ internal fun runBankSyncTest(action: suspend BankSyncTestScope.() -> Unit) = run
   driver.use {
     val database = buildDatabase(driver)
     val syncDao = SyncDao(database, driver, Clock.System)
-    val scope = BankSyncTestScope(database, driver, syncDao, backgroundScope)
+    val scope = BankSyncTestScope(database, driver, syncDao, this)
     scope.insertAccount()
     scope.action()
   }

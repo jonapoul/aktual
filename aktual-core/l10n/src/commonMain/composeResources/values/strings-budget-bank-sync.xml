@@ -1,6 +1,6 @@
 <resources>
   <string name="bank_sync_title">Bank sync</string>
-  <string name="bank_sync_notice">Syncing downloads new transactions from your bank through your server. Linking accounts to a bank isn’t supported yet.</string>
+  <string name="bank_sync_notice">Syncing downloads new transactions from your bank through your server.</string>
   <string name="bank_sync_empty">No open accounts</string>
   <string name="bank_sync_failure_title">Couldn’t load bank sync accounts</string>
   <string name="bank_sync_failure_message">An unexpected error occurred</string>
@@ -32,7 +32,8 @@
   <string name="bank_sync_result_several_failed">Synced %1$d of %2$d accounts: %3$d new, %4$d updated</string>
 
   <string name="bank_sync_unlinked_title">Unlinked accounts</string>
-  <string name="bank_sync_unlinked_message">Linking not supported yet</string>
+  <string name="bank_sync_unlinked_message">Tap an account to link it to a bank</string>
+  <string name="bank_sync_unlinked_no_server">Linking an account needs a server</string>
 
   <!-- Provider brand names - packages/desktop-client/src/components/banksync/bankSyncUtils.ts -->
   <string name="bank_sync_provider_gocardless">GoCardless</string>
@@ -83,4 +84,23 @@
   <string name="bank_sync_settings_update_dates_hint">By enabling this, the transaction date will be overwritten by the one provided by the bank.</string>
   <string name="bank_sync_settings_investment">Investment account</string>
   <string name="bank_sync_settings_investment_hint">Selecting this option will disable importing transactions and only import the account balance for use in reconciliation</string>
+  <string name="bank_sync_settings_unlink">Unlink account</string>
+  <string name="bank_sync_settings_unlink_failed">Couldn’t unlink account: %1$s</string>
+  <string name="bank_sync_settings_unlink_title">Confirm unlink</string>
+  <string name="bank_sync_settings_unlink_message">Are you sure you want to unlink %1$s?</string>
+  <string name="bank_sync_settings_unlink_detail">Transactions will no longer be synchronized with this account and must be manually entered. You will not be able to edit the bank sync settings for this account and the settings will close.</string>
+  <string name="bank_sync_settings_unlink_cancel">Cancel</string>
+  <string name="bank_sync_settings_unlink_confirm">Unlink</string>
+
+  <!-- Linking - packages/desktop-client/src/components/modals/SelectLinkedAccountsModal.tsx -->
+  <string name="bank_sync_link_open">Link %1$s to a bank</string>
+  <string name="bank_sync_link_title">Link to a bank</string>
+  <string name="bank_sync_link_choose">Choose the account at your bank that %1$s should sync from.</string>
+  <string name="bank_sync_link_linked_to">Linked to %1$s</string>
+  <string name="bank_sync_link_failed">Couldn’t link account: %1$s</string>
+  <string name="bank_sync_link_failure_title">Couldn’t load account</string>
+  <string name="bank_sync_link_no_providers_title">No bank sync providers set up</string>
+  <string name="bank_sync_link_no_providers_message">Set up SimpleFIN, Pluggy.ai or Akahu on your server to link accounts. GoCardless and Enable Banking aren’t supported yet.</string>
+  <string name="bank_sync_link_list_failed">Couldn’t list accounts</string>
+  <string name="bank_sync_link_empty">No accounts found</string>
 </resources>

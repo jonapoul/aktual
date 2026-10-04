@@ -1,6 +1,7 @@
 package aktual.budget.banksync.domain
 
 import aktual.api.client.BankSyncApi
+import aktual.api.model.banksync.BankSyncAccountsResponse
 import aktual.api.model.banksync.BankSyncStatusResponse
 import aktual.api.model.banksync.BankSyncTransaction
 import aktual.api.model.banksync.BankSyncTransactionsRequest
@@ -16,6 +17,9 @@ internal class FakeBankSyncApi : BankSyncApi {
   val batchRequests = mutableListOf<SimpleFinBatchRequest>()
   val responses = mutableMapOf<String, BankSyncTransactionsResponse>()
   var batchResponse: SimpleFinBatchResponse? = null
+  val accounts = mutableMapOf<AccountSyncSource, BankSyncAccountsResponse>()
+  val removedRequisitions = mutableListOf<String>()
+  var removeError: Exception? = null
   var error: Exception? = null
 
   override suspend fun status(source: AccountSyncSource): BankSyncStatusResponse =
@@ -34,6 +38,17 @@ internal class FakeBankSyncApi : BankSyncApi {
     batchRequests += request
     error?.let { throw it }
     return checkNotNull(batchResponse)
+  }
+
+  override suspend fun accounts(source: AccountSyncSource): BankSyncAccountsResponse {
+    error?.let { throw it }
+    return accounts.getValue(source)
+  }
+
+  override suspend fun removeGoCardlessRequisition(requisitionId: String): Boolean {
+    removedRequisitions += requisitionId
+    removeError?.let { throw it }
+    return true
   }
 }
 
