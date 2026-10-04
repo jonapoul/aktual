@@ -94,6 +94,7 @@ internal val TRANSACTION_UNCATEGORISED =
     category = null,
     amount = Amount(-16.99),
     balance = Amount(1045.09),
+    needsCategory = true,
   )
 
 internal val PREVIEW_TRANSACTIONS =

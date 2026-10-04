@@ -25,6 +25,7 @@ import aktual.core.nav.SearchReportsNavRoute
 import aktual.core.nav.SearchTagsNavRoute
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.nav.TransactionsWithTagNavRoute
+import aktual.core.nav.UncategorisedTransactionsNavRoute
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.toMutableStateList
 import assertk.assertThat
@@ -40,6 +41,7 @@ class BudgetNavKeyStackSaverTest {
         TransactionsNavRoute,
         TransactionsWithTagNavRoute(TagId("tag")),
         AccountTransactionsNavRoute(AccountId("account")),
+        UncategorisedTransactionsNavRoute,
         ReportsListNavRoute,
         ReportNavRoute(WidgetId("widget")),
         CreateReportNavRoute(DashboardPageId("page")),

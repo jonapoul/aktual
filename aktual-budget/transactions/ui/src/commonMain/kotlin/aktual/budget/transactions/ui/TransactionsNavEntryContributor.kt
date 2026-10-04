@@ -11,6 +11,7 @@ import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.NavStack
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.nav.TransactionsWithTagNavRoute
+import aktual.core.nav.UncategorisedTransactionsNavRoute
 import aktual.di.BudgetScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
@@ -36,6 +37,13 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
       TransactionsScreen(
         back = BackNavigator(stack),
         spec = TransactionsSpec(accountSpec = AccountSpec.SpecificAccount(route.id)),
+      )
+    }
+
+    budgetEntry<UncategorisedTransactionsNavRoute> {
+      TransactionsScreen(
+        back = BackNavigator(stack),
+        spec = TransactionsSpec(categorySpec = Uncategorised),
       )
     }
   }

@@ -35,7 +35,7 @@ internal suspend fun CategoryDao.insertCategory(id: CategoryId, name: String) = 
 internal suspend fun TransactionDao.insertTransaction(
   id: String,
   account: String,
-  category: String,
+  category: String?,
   payee: String,
   notes: String? = null,
   date: LocalDate = DATE_1,
@@ -63,7 +63,7 @@ private val CATEGORIES = mapOf("a" to "Additional", "b" to "Building", "c" to "C
 internal fun transaction(
   id: String,
   account: String,
-  category: String,
+  category: String?,
   payee: String,
   notes: String? = null,
   date: LocalDate = DATE_1,
@@ -76,9 +76,10 @@ internal fun transaction(
     account = ACCOUNTS.getValue(account),
     payee = PAYEES.getValue(payee),
     notes = notes,
-    category = CATEGORIES.getValue(category),
+    category = category?.let(CATEGORIES::getValue),
     amount = Amount(amount),
     balance = balance?.let(::Amount),
+    needsCategory = category == null,
   )
 
 internal fun Transaction.withBalance(balance: Double) = copy(balance = Amount(balance))

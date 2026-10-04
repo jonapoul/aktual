@@ -17,6 +17,7 @@ data class Transaction(
   val category: String?,
   val amount: Amount,
   val balance: Amount?,
+  val needsCategory: Boolean = false,
 ) : Comparable<Transaction> {
   override fun compareTo(other: Transaction) = date.compareTo(other.date)
 }
@@ -44,4 +45,5 @@ internal fun TransactionRow.toTransaction(balance: Amount?) =
     category = categoryName,
     amount = Amount(amount),
     balance = balance,
+    needsCategory = needsCategory,
   )
