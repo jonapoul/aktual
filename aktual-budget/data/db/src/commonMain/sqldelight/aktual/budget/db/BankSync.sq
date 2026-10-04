@@ -92,3 +92,12 @@ JOIN transactions t ON t.id = v.id
 WHERE v.account = :account AND v.amount > 0 AND t.raw_synced_data IS NOT NULL
 ORDER BY v.date DESC, v.starting_balance_flag, v.sort_order DESC, v.id
 LIMIT 1;
+
+-- packages/loot-core/src/server/accounts/link.ts findOrCreateBank(). IS so that banks without a
+-- name still match
+bankSyncFindBank:
+SELECT id FROM banks WHERE bank_id = :bankId AND name IS :name LIMIT 1;
+
+-- unlinkAccount(): how many accounts still use a bank, deleted ones included as upstream
+bankSyncBankUsers:
+SELECT COUNT(*) FROM accounts WHERE bank = :bank;

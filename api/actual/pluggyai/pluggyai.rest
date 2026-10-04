@@ -1,4 +1,15 @@
 ###
+# @name pluggyai/accounts
+POST {{ACTUAL_BASE_URL}}/pluggyai/accounts
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+X-ACTUAL-FILE-ID: {{ACTUAL_MAIN_FILE_ID}}
+Content-Type: application/json
+
+{}
+
+<> accounts-success.200.json
+
+###
 # @name pluggyai/transactions
 POST {{ACTUAL_BASE_URL}}/pluggyai/transactions
 X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}

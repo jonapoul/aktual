@@ -1,6 +1,5 @@
 package aktual.api.model.banksync
 
-import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
@@ -62,9 +61,7 @@ internal object BankSyncTransactionsResponseSerializer :
   JsonContentPolymorphicSerializer<BankSyncTransactionsResponse>(
     BankSyncTransactionsResponse::class
   ) {
-  override fun selectDeserializer(
-    element: JsonElement
-  ): DeserializationStrategy<BankSyncTransactionsResponse> =
+  override fun selectDeserializer(element: JsonElement) =
     if ("error_code" in element.jsonObject) {
       BankSyncTransactionsResponse.ProviderError.serializer()
     } else {

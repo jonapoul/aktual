@@ -26,6 +26,7 @@ flowchart TD
     searchSchedules["Search Schedules"]
     bankSync["Bank Sync"]
     bankSyncSettings["Bank Sync Settings"]
+    linkBankAccount["Link Bank Account"]
   end
 
   app --valid token--> budgetList
@@ -73,3 +74,4 @@ flowchart TD
   searchSchedules --tap schedule--> editSchedule
 
   bankSync --tap linked account--> bankSyncSettings
+  bankSync --tap unlinked account--> linkBankAccount

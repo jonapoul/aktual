@@ -13,6 +13,7 @@ internal class FakeBankSyncController : BankSyncController {
   override val progress = MutableStateFlow(BankSyncProgress())
   override val finished = MutableSharedFlow<List<BankSyncResult>>(extraBufferCapacity = 1)
   val started = mutableListOf<Set<AccountId>>()
+  val synced = mutableListOf<Set<AccountId>>()
 
   override fun start(accounts: Set<AccountId>): Boolean {
     if (progress.value.isRunning) return false
@@ -20,7 +21,10 @@ internal class FakeBankSyncController : BankSyncController {
     return true
   }
 
-  override suspend fun sync(accounts: Set<AccountId>) = error("Not used")
+  override suspend fun sync(accounts: Set<AccountId>): List<BankSyncResult> {
+    synced += accounts
+    return emptyList()
+  }
 
   fun running(pending: List<AccountId>) = progress.update {
     BankSyncProgress(isRunning = true, pending = pending)

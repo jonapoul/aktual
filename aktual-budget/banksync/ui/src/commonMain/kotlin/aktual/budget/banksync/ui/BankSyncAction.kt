@@ -13,6 +13,8 @@ internal data object SyncAll : BankSyncAction
 
 @JvmInline internal value class OpenSettings(val id: AccountId) : BankSyncAction
 
+@JvmInline internal value class OpenLink(val id: AccountId) : BankSyncAction
+
 @Immutable
 internal fun interface BankSyncActionHandler {
   operator fun invoke(action: BankSyncAction)
