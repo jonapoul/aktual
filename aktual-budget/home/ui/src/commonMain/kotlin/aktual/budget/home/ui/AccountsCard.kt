@@ -57,8 +57,7 @@ private val SyncDotSize = 8.dp
 @Composable
 internal fun AccountsCard(
   state: AccountsCardState,
-  onClickAccount: (AccountId) -> Unit,
-  onClickSetUp: () -> Unit,
+  onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -78,8 +77,8 @@ internal fun AccountsCard(
 
     when (state) {
       Loading -> AccountsLoading()
-      Empty -> AccountsEmpty(onClickSetUp)
-      is Loaded -> AccountsContent(state.summary, onClickAccount)
+      Empty -> AccountsEmpty(onAction)
+      is Loaded -> AccountsContent(state.summary, onAction)
     }
   }
 }
@@ -88,17 +87,17 @@ internal fun AccountsCard(
 @Suppress("UnusedReceiverParameter")
 private fun ColumnScope.AccountsContent(
   summary: AccountsSummary,
-  onClickAccount: (AccountId) -> Unit,
+  onAction: HomeActionHandler,
 ) {
-  AccountsSection(Strings.homeAccountsOnBudget, summary.onBudget, onClickAccount)
-  AccountsSection(Strings.homeAccountsOffBudget, summary.offBudget, onClickAccount)
+  AccountsSection(Strings.homeAccountsOnBudget, summary.onBudget, onAction)
+  AccountsSection(Strings.homeAccountsOffBudget, summary.offBudget, onAction)
 }
 
 @Composable
 private fun AccountsSection(
   title: String,
   section: AccountSection,
-  onClickAccount: (AccountId) -> Unit,
+  onAction: HomeActionHandler,
 ) {
   if (section.accounts.isEmpty()) return
 
@@ -110,7 +109,7 @@ private fun AccountsSection(
   )
 
   section.accounts.fastForEach { account ->
-    AccountRow(account = account, onClick = { onClickAccount(account.id) })
+    AccountRow(account = account, onClick = { onAction(OpenAccount(account.id)) })
   }
 }
 
@@ -201,7 +200,7 @@ private fun AccountsLoading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun AccountsEmpty(onClickSetUp: () -> Unit, modifier: Modifier = Modifier) {
+private fun AccountsEmpty(onAction: HomeActionHandler, modifier: Modifier = Modifier) {
   Column(
     modifier = modifier.fillMaxWidth().padding(horizontal = CardPadding).padding(top = 12.dp),
     horizontalAlignment = CenterHorizontally,
@@ -213,7 +212,7 @@ private fun AccountsEmpty(onClickSetUp: () -> Unit, modifier: Modifier = Modifie
       color = colors.pageTextSubdued,
     )
 
-    PrimaryTextButton(text = Strings.homeAccountsEmptyAction, onClick = onClickSetUp)
+    PrimaryTextButton(text = Strings.homeAccountsEmptyAction, onClick = { onAction(SetUpAccounts) })
   }
 }
 
@@ -228,8 +227,7 @@ private fun PreviewAccountsCard(
     AccountsCard(
       modifier = Modifier.padding(16.dp),
       state = this,
-      onClickAccount = {},
-      onClickSetUp = {},
+      onAction = {},
     )
   }
 

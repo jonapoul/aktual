@@ -3,7 +3,6 @@ package aktual.budget.home.ui
 import aktual.budget.home.vm.AccountsCardState
 import aktual.budget.home.vm.HomeState
 import aktual.budget.home.vm.HomeViewModel
-import aktual.budget.model.AccountId
 import aktual.core.l10n.Strings
 import aktual.core.nav.BankSyncNavigator
 import aktual.core.nav.TransactionsNavigator
@@ -46,8 +45,12 @@ internal fun HomeScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   HomeScaffold(
     state = state,
-    onClickAccount = { id -> transactions(id) },
-    onClickSetUpAccounts = { bankSync() },
+    onAction = { action ->
+      when (action) {
+        is OpenAccount -> transactions(action.id)
+        SetUpAccounts -> bankSync()
+      }
+    },
     modifier = modifier,
   )
 }
@@ -55,8 +58,7 @@ internal fun HomeScreen(
 @Composable
 private fun HomeScaffold(
   state: HomeState,
-  onClickAccount: (AccountId) -> Unit,
-  onClickSetUpAccounts: () -> Unit,
+  onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
 ) {
   Scaffold(
@@ -80,11 +82,7 @@ private fun HomeScaffold(
             .padding(Dimens.Huge),
         verticalArrangement = Arrangement.spacedBy(Dimens.Huge),
       ) {
-        AccountsCard(
-          state = state.accounts,
-          onClickAccount = onClickAccount,
-          onClickSetUp = onClickSetUpAccounts,
-        )
+        AccountsCard(state = state.accounts, onAction = onAction)
 
         BottomSpacing()
       }
@@ -123,5 +121,5 @@ private fun PreviewHomeScaffold(
   @PreviewParameter(HomeStateProvider::class) params: ColoredParams<HomeState>
 ) =
   PreviewWithColoredParams(params) {
-    HomeScaffold(state = this, onClickAccount = {}, onClickSetUpAccounts = {})
+    HomeScaffold(state = this, onAction = {})
   }
