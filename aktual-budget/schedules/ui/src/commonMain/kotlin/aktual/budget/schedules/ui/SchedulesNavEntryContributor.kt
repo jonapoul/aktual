@@ -4,6 +4,7 @@ import aktual.budget.schedules.ui.edit.EditScheduleScreen
 import aktual.budget.schedules.ui.list.ListSchedulesScreen
 import aktual.budget.schedules.ui.search.SearchSchedulesScreen
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.BudgetEntryScope
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.CreateScheduleNavRoute
@@ -14,15 +15,13 @@ import aktual.core.nav.NavStack
 import aktual.core.nav.ScheduleSettingsNavigator
 import aktual.core.nav.SearchSchedulesNavRoute
 import aktual.core.nav.SearchSchedulesNavigator
-import aktual.core.nav.budgetEntry
 import aktual.di.BudgetScope
-import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(BudgetScope::class)
 class SchedulesNavEntryContributor : BudgetNavEntryContributor {
-  override fun EntryProviderScope<BudgetNavKey>.contribute(
+  override fun BudgetEntryScope.contribute(
     stack: NavStack<BudgetNavKey>,
     appStack: NavStack<NavKey>,
   ) {

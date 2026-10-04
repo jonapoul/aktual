@@ -462,17 +462,17 @@ import aktual.app.nav.BudgetNavEntryContributor
 import aktual.app.nav.BudgetNavKey
 import aktual.di.BudgetNavScope
 import aktual.app.nav.List{Name}NavRoute
-import aktual.app.nav.budgetEntry
-import androidx.navigation3.runtime.EntryProviderScope
+import aktual.app.nav.BudgetEntryScope
+import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(BudgetNavScope::class)
 class {Name}NavEntryContributor : BudgetNavEntryContributor {
-  override fun contribute(
-    scope: EntryProviderScope<BudgetNavKey>,
+  override fun BudgetEntryScope.contribute(
     stack: NavStack<BudgetNavKey>,
+    appStack: NavStack<NavKey>,
   ) {
-    scope.budgetEntry<List{Name}NavRoute> { List{Name}Screen(/* navigators */) }
+    budgetEntry<List{Name}NavRoute> { List{Name}Screen(/* navigators */) }
   }
 }
 ```
