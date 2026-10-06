@@ -22,7 +22,6 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.formattedString
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -61,6 +60,13 @@ internal fun UpcomingCard(
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
 ) {
+  if (state == Failed) {
+    HomeCard(modifier = modifier) {
+      CardError(message = Strings.homeUpcomingFailed, onAction = onAction)
+    }
+    return
+  }
+
   if (state !is Loaded) return
 
   HomeCard(modifier = modifier) {
@@ -157,12 +163,11 @@ private fun UpcomingRow(
       )
     }
 
-    Text(
-      text = schedule.amountOp.amountPrefix() + schedule.amount.formattedString(),
-      style = typography.bodyLarge.tabularFigures(),
-      fontWeight = SemiBold,
+    AmountText(
+      amount = schedule.amount,
+      prefix = schedule.amountOp.amountPrefix(),
+      style = typography.bodyLarge,
       color = if (schedule.amount < Zero) colors.numberNegative else colors.pageText,
-      maxLines = 1,
     )
   }
 }
@@ -243,13 +248,7 @@ private fun TotalRow(total: Amount, modifier: Modifier = Modifier) {
       overflow = Ellipsis,
     )
 
-    Text(
-      text = total.formattedString(),
-      style = typography.labelLarge.tabularFigures(),
-      fontWeight = SemiBold,
-      color = colors.pageTextSubdued,
-      maxLines = 1,
-    )
+    AmountText(amount = total, style = typography.labelLarge, color = colors.pageTextSubdued)
   }
 }
 
@@ -272,6 +271,7 @@ private class UpcomingCardStateProvider :
   ColoredParameterProvider<UpcomingCardState>(
     PREVIEW_UPCOMING,
     PREVIEW_UPCOMING.copy(length = CurrentMonth, hiddenCount = 3),
+    Failed,
   )
 
 private val PREVIEW_TODAY = LocalDate(2026, 4, 1)

@@ -1,5 +1,9 @@
 <resources>
   <string name="home_title">Home</string>
+  <string name="home_retry">Retry</string>
+  <string name="home_amount_negative">minus %1$s</string>
+  <string name="home_onboarding_title">Welcome to your budget</string>
+  <string name="home_onboarding_message">Add an account to get started. Your budget, upcoming schedules and balances will show up here.</string>
   <plurals name="home_this_month_days_left">
     <item quantity="one">%1$d day left</item>
     <item quantity="other">%1$d days left</item>
@@ -12,6 +16,7 @@
   <string name="home_this_month_spent">%1$s spent</string>
   <string name="home_this_month_of_budgeted">of %1$s budgeted</string>
   <string name="home_this_month_income">%1$s of %2$s income received</string>
+  <string name="home_this_month_failed">Couldn't load this month's budget</string>
   <string name="home_attention_title">Needs attention</string>
   <string name="home_attention_fix">Fix</string>
   <string name="home_attention_review">Review</string>
@@ -38,6 +43,11 @@
     <item quantity="other">%1$d schedules overdue</item>
   </plurals>
   <string name="home_attention_overspent_sheet_title">Overspent categories</string>
+  <string name="home_attention_failed">Couldn't check what needs attention</string>
+  <string name="home_attention_icon_sync">Bank sync problem</string>
+  <string name="home_attention_icon_uncategorised">Uncategorised transactions</string>
+  <string name="home_attention_icon_overspent">Overspending</string>
+  <string name="home_attention_icon_overdue">Overdue schedules</string>
   <string name="home_accounts_title">Accounts</string>
   <string name="home_accounts_on_budget">On budget</string>
   <string name="home_accounts_off_budget">Off budget</string>
@@ -46,6 +56,7 @@
   <string name="home_accounts_show_less">Show fewer</string>
   <string name="home_accounts_empty">No accounts yet</string>
   <string name="home_accounts_empty_action">Set up bank sync</string>
+  <string name="home_accounts_failed">Couldn't load accounts</string>
   <string name="home_upcoming_title">Upcoming · %1$s</string>
   <plurals name="home_upcoming_window_days">
     <item quantity="one">next %1$d day</item>
@@ -75,4 +86,5 @@
   <string name="home_upcoming_row_detail">%1$s · %2$s</string>
   <string name="home_upcoming_more">+%1$d more</string>
   <string name="home_upcoming_total">Total due</string>
+  <string name="home_upcoming_failed">Couldn't load upcoming schedules</string>
 </resources>

@@ -19,11 +19,17 @@ data class HomeState(
   val attention: AttentionCardState = Loading,
   val upcoming: UpcomingCardState = Loading,
   val accounts: AccountsCardState = Loading,
-)
+) {
+  // Nothing to show on any card, as in a brand new budget. A failed month still needs its card
+  val isEmpty: Boolean
+    get() = thisMonth != Failed && attention == Empty && upcoming == Empty && accounts == Empty
+}
 
 @Immutable
 sealed interface ThisMonthCardState {
   data object Loading : ThisMonthCardState
+
+  data object Failed : ThisMonthCardState
 
   sealed interface Loaded : ThisMonthCardState {
     val month: YearMonth
@@ -61,6 +67,8 @@ sealed interface AttentionCardState {
 
   data object Empty : AttentionCardState
 
+  data object Failed : AttentionCardState
+
   data class Loaded(val items: ImmutableList<AttentionItem>) : AttentionCardState
 }
 
@@ -85,6 +93,8 @@ sealed interface UpcomingCardState {
 
   data object Empty : UpcomingCardState
 
+  data object Failed : UpcomingCardState
+
   // total covers the hidden schedules too
   data class Loaded(
     val length: UpcomingLength,
@@ -100,6 +110,8 @@ sealed interface AccountsCardState {
   data object Loading : AccountsCardState
 
   data object Empty : AccountsCardState
+
+  data object Failed : AccountsCardState
 
   // recent is the cut-down summary shown until the card is expanded, null if there's nothing to
   // hide

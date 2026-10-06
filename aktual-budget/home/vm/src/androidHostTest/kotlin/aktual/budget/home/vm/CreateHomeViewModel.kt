@@ -2,6 +2,7 @@ package aktual.budget.home.vm
 
 import aktual.budget.budgeting.domain.BudgetMonthCalculatorImpl
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.BudgetDao
 import aktual.budget.db.dao.PayeeDao
@@ -12,10 +13,12 @@ import aktual.budget.home.domain.AccountsSummaryLoader
 import aktual.budget.home.domain.NeedsAttentionLoader
 import aktual.budget.home.domain.ThisMonthLoader
 import aktual.budget.home.domain.UpcomingSchedulesLoader
+import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
+import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +30,7 @@ internal fun BudgetDatabase.createHomeViewModel(
   scope: TestScope,
   calendar: TestCalendar,
   prefs: TestBudgetLocalPreferences = TestBudgetLocalPreferences(DbMetadata()),
+  accountsCard: BudgetDatabase = this,
 ): HomeViewModel {
   Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
   val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
@@ -57,9 +61,16 @@ internal fun BudgetDatabase.createHomeViewModel(
         thisMonthLoader = thisMonthLoader,
         schedulesLoader = schedulesLoader,
       ),
-    accountsSummaryLoader = accountsSummaryLoader,
+    accountsSummaryLoader = AccountsSummaryLoader(AccountDao(accountsCard)),
     upcomingSchedulesLoader = UpcomingSchedulesLoader(schedulesLoader, calendar),
   )
+}
+
+// Every query on this throws
+internal fun closedDatabase(): BudgetDatabase {
+  val driver = inMemoryDriverFactory().create(BudgetId("closed"))
+  driver.close()
+  return buildDatabase(driver)
 }
 
 internal fun BudgetDatabase.preferences(scope: TestScope) =

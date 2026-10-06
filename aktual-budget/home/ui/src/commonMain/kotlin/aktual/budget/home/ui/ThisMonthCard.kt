@@ -48,10 +48,15 @@ import kotlinx.datetime.YearMonth
 private val ProgressBarHeight = 8.dp
 
 @Composable
-internal fun ThisMonthCard(state: ThisMonthCardState, modifier: Modifier = Modifier) {
+internal fun ThisMonthCard(
+  state: ThisMonthCardState,
+  onAction: HomeActionHandler,
+  modifier: Modifier = Modifier,
+) {
   HomeCard(modifier = modifier) {
     when (state) {
       Loading -> ShimmerThisMonth()
+      Failed -> CardError(message = Strings.homeThisMonthFailed, onAction = onAction)
       is Loaded -> ThisMonthContent(state)
     }
   }
@@ -260,7 +265,7 @@ private fun PreviewThisMonthCard(
   @PreviewParameter(ThisMonthCardStateProvider::class) params: ColoredParams<ThisMonthCardState>
 ) =
   PreviewWithColoredParams(params) {
-    ThisMonthCard(modifier = Modifier.padding(16.dp), state = this)
+    ThisMonthCard(modifier = Modifier.padding(16.dp), state = this, onAction = {})
   }
 
 private class ThisMonthCardStateProvider :
@@ -277,6 +282,7 @@ private class ThisMonthCardStateProvider :
       incomeBudgeted = Amount(2_800.00),
     ),
     Loading,
+    Failed,
   )
 
 internal val PREVIEW_THIS_MONTH =
