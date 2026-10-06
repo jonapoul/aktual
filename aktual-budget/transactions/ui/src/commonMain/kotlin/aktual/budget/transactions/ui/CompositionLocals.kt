@@ -46,6 +46,7 @@ internal data class LedgerDimens(
   val balanceSize: TextUnit = 12.sp,
   val showAccount: Boolean = false,
   val showBalance: Boolean = true,
+  val showMonth: Boolean = false,
 )
 
 internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
@@ -83,6 +84,7 @@ internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
         secondLineSize = 12.sp,
         amountSize = 14.sp,
         amountWeight = SemiBold,
+        showMonth = true,
       )
 
     Dense ->
