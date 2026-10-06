@@ -37,43 +37,41 @@ internal sealed interface CompiledAction {
     override fun exec(subject: RuleSubject): RuleSubject {
       val transaction = subject.transaction
       return when (field) {
-        RuleField.Account ->
+        Account ->
           subject.copy(transaction = transaction.copy(account = AccountId(value.text().orEmpty())))
-        RuleField.Category ->
-          subject.copy(transaction = transaction.copy(category = value.id(::CategoryId)))
-        RuleField.Payee ->
+        Category -> subject.copy(transaction = transaction.copy(category = value.id(::CategoryId)))
+        Payee ->
           subject.copy(
             transaction = transaction.copy(payee = value.id(::PayeeId)),
             newPayeePending = false,
           )
-        RuleField.PayeeName ->
+        PayeeName ->
           // The payee is looked up by name once the rule has finished
           subject.copy(
             transaction = transaction.copy(payee = null),
             payeeName = value.text(),
             newPayeePending = true,
           )
-        RuleField.ImportedPayee ->
-          subject.copy(transaction = transaction.copy(importedPayee = value.text()))
-        RuleField.Notes -> subject.copy(transaction = transaction.copy(notes = value.text()))
-        RuleField.Date ->
+        ImportedPayee -> subject.copy(transaction = transaction.copy(importedPayee = value.text()))
+        Notes -> subject.copy(transaction = transaction.copy(notes = value.text()))
+        Date ->
           value.date()?.let { subject.copy(transaction = transaction.copy(date = it)) } ?: subject
         RuleField.Amount ->
           value.amount()?.let { subject.copy(transaction = transaction.copy(amount = it)) }
             ?: subject
-        RuleField.Cleared ->
+        Cleared ->
           value.flag()?.let { subject.copy(transaction = transaction.copy(cleared = it)) }
             ?: subject
-        RuleField.Reconciled ->
+        Reconciled ->
           value.flag()?.let { subject.copy(transaction = transaction.copy(reconciled = it)) }
             ?: subject
         // Upstream writes this onto the transaction, where later category_group conditions read it
         // until the category next changes
-        RuleField.CategoryGroup -> subject.copy(categoryGroup = value.id(::CategoryGroupId))
+        CategoryGroup -> subject.copy(categoryGroup = value.id(::CategoryGroupId))
         // Not transaction fields: upstream's write is dropped when the transaction is saved
-        RuleField.Saved,
-        RuleField.Transfer,
-        RuleField.Parent -> subject
+        Saved,
+        Transfer,
+        Parent -> subject
       }
     }
   }
@@ -144,8 +142,7 @@ internal sealed interface CompiledAction {
         RuleAction.Op.PrependNotes -> PrependNotes(value.text().orEmpty(), splitIndex)
         RuleAction.Op.AppendNotes -> AppendNotes(value.text().orEmpty(), splitIndex)
         RuleAction.Op.DeleteTransaction -> DeleteTransaction(splitIndex)
-        RuleAction.Op.Unknown ->
-          throw RuleValidationException("Invalid action operation: ${action.op}")
+        Unknown -> throw RuleValidationException("Invalid action operation: ${action.op}")
       }
     }
 
@@ -157,7 +154,7 @@ internal sealed interface CompiledAction {
     ): CompiledAction {
       val field = action.field?.toRuleField()
       ruleAssert(field != null) { "Invalid field for action: ${action.field}" }
-      if (field == RuleField.Account) {
+      if (field == Account) {
         ruleAssert(!value.text().isNullOrEmpty()) { "Field cannot be empty: $field" }
       }
 

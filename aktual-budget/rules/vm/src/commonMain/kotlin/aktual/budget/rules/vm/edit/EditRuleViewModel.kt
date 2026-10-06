@@ -7,7 +7,6 @@ import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.RulesDao
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
-import aktual.budget.model.ConditionType
 import aktual.budget.model.Field
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
@@ -227,13 +226,13 @@ class EditRuleViewModel(
     )
 
   private fun emptyCondition() =
-    Condition(field = Field.Payee, operator = Is, type = ConditionType.Id, value = JsonNull)
+    Condition(field = Field.Payee, operator = Is, type = Id, value = JsonNull)
 
   private fun emptyAction() =
     RuleAction(
       value = null,
       op = RuleAction.Op.Default,
-      field = Field.Payee,
+      field = Payee,
       type = RuleAction.Type.Default,
     )
 

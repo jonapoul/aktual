@@ -75,7 +75,7 @@ private constructor(
         evalText(text.orEmpty().lowercase(), subject)
       }
 
-      FieldType.Id -> {
+      Id -> {
         val id =
           when (field) {
             Payee -> transaction.payee?.value
@@ -98,7 +98,7 @@ private constructor(
 
       FieldType.Number -> evalNumber(transaction.amount.toLong().toDouble())
 
-      FieldType.Date -> evalDate(transaction.date)
+      Date -> evalDate(transaction.date)
 
       FieldType.Boolean -> {
         val flag =
@@ -123,7 +123,7 @@ private constructor(
         op == Is && flag == (value as Flag).value
       }
 
-      FieldType.Saved -> false
+      Saved -> false
     }
   }
 
@@ -267,12 +267,12 @@ private constructor(
 
       val parsed =
         when (field.type) {
-          FieldType.Date -> parseDate(op, raw, field)
-          FieldType.Id -> parseId(op, raw, field, idMappings)
+          Date -> parseDate(op, raw, field)
+          Id -> parseId(op, raw, field, idMappings)
           FieldType.String -> parseString(op, raw, field)
           FieldType.Number -> parseNumber(op, raw, field)
           FieldType.Boolean -> parseBoolean(raw, field)
-          FieldType.Saved -> throw RuleValidationException("Invalid condition field: $field")
+          Saved -> throw RuleValidationException("Invalid condition field: $field")
         }
       return CompiledCondition(field, op, parsed, condition.options)
     }

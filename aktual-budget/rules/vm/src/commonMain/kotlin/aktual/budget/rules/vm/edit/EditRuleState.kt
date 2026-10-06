@@ -31,7 +31,7 @@ internal fun editRuleState(
   rule: Rule?,
 ): EditRuleState =
   when {
-    loading -> EditRuleState.Loading
+    loading -> Loading
     failure != null -> failure
     rule == null -> EditRuleState.Failure.NoMatch
     else -> EditRuleState.Success(rule, working)

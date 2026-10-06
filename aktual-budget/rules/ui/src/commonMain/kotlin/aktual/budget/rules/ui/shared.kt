@@ -45,29 +45,29 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 internal fun Field.string(options: ConditionOptions?): String =
   when (this) {
-    Field.Account,
-    Field.Acct -> Strings.rulesFieldAccount
-    Field.Amount ->
+    Account,
+    Acct -> Strings.rulesFieldAccount
+    Amount ->
       when {
         options?.inflow == true -> Strings.rulesFieldAmountInflow
         options?.outflow == true -> Strings.rulesFieldAmountOutflow
         else -> Strings.rulesFieldAmount
       }
-    Field.Category -> Strings.rulesFieldCategory
-    Field.CategoryGroup -> Strings.rulesFieldCategoryGroup
-    Field.Date -> Strings.rulesFieldDate
-    Field.Notes -> Strings.rulesFieldNotes
-    Field.Description,
-    Field.Payee -> Strings.rulesFieldPayee
-    Field.PayeeName -> Strings.rulesFieldPayeeName
-    Field.ImportedDescription,
-    Field.ImportedPayee -> Strings.rulesFieldImportedPayee
-    Field.Saved -> Strings.rulesFieldSaved
-    Field.Transfer -> Strings.rulesFieldTransfer
-    Field.Parent -> Strings.rulesFieldParent
-    Field.Cleared -> Strings.rulesFieldCleared
-    Field.Reconciled -> Strings.rulesFieldReconciled
-    Field.Unknown -> Strings.rulesFieldUnknown
+    Category -> Strings.rulesFieldCategory
+    CategoryGroup -> Strings.rulesFieldCategoryGroup
+    Date -> Strings.rulesFieldDate
+    Notes -> Strings.rulesFieldNotes
+    Description,
+    Payee -> Strings.rulesFieldPayee
+    PayeeName -> Strings.rulesFieldPayeeName
+    ImportedDescription,
+    ImportedPayee -> Strings.rulesFieldImportedPayee
+    Saved -> Strings.rulesFieldSaved
+    Transfer -> Strings.rulesFieldTransfer
+    Parent -> Strings.rulesFieldParent
+    Cleared -> Strings.rulesFieldCleared
+    Reconciled -> Strings.rulesFieldReconciled
+    Unknown -> Strings.rulesFieldUnknown
   }
 
 @Composable
@@ -116,26 +116,26 @@ private val ALL_OPERATORS =
 @Stable
 internal fun filteredOperators(condition: Condition): ImmutableList<Operator> =
   when (condition.field) {
-    Field.Account -> operators<AccountOperator>()
-    Field.Amount -> operators<AmountOperator>()
-    Field.Category -> operators<CategoryOperator>()
-    Field.CategoryGroup -> operators<CategoryGroupOperator>()
-    Field.Date -> operators<DateOperator>()
-    Field.Notes -> operators<NotesOperator>()
-    Field.Payee -> operators<PayeeOperator>()
-    Field.PayeeName -> operators<PayeeNameOperator>()
-    Field.ImportedPayee -> operators<ImportedPayeeOperator>()
-    Field.Saved -> operators<SavedOperator>()
-    Field.Transfer -> operators<TransferOperator>()
-    Field.Parent -> operators<ParentOperator>()
-    Field.Cleared -> operators<ClearedOperator>()
-    Field.Reconciled -> operators<ReconciledOperator>()
+    Account -> operators<AccountOperator>()
+    Amount -> operators<AmountOperator>()
+    Category -> operators<CategoryOperator>()
+    CategoryGroup -> operators<CategoryGroupOperator>()
+    Date -> operators<DateOperator>()
+    Notes -> operators<NotesOperator>()
+    Payee -> operators<PayeeOperator>()
+    PayeeName -> operators<PayeeNameOperator>()
+    ImportedPayee -> operators<ImportedPayeeOperator>()
+    Saved -> operators<SavedOperator>()
+    Transfer -> operators<TransferOperator>()
+    Parent -> operators<ParentOperator>()
+    Cleared -> operators<ClearedOperator>()
+    Reconciled -> operators<ReconciledOperator>()
 
     // no operators
-    Field.Acct,
-    Field.ImportedDescription,
-    Field.Description,
-    Field.Unknown -> persistentListOf()
+    Acct,
+    ImportedDescription,
+    Description,
+    Unknown -> persistentListOf()
   }
 
 private inline fun <reified O : Operator> operators(): ImmutableList<O> =
