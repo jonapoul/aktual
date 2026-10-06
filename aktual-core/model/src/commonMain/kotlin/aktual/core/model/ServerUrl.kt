@@ -12,7 +12,7 @@ data class ServerUrl(val protocol: Protocol, val baseUrl: String) {
   override fun toString(): String = "$protocol://$baseUrl"
 
   companion object {
-    val Demo = ServerUrl(protocol = Protocol.Https, baseUrl = "demo.actualbudget.org")
+    val Demo = ServerUrl(protocol = Https, baseUrl = "demo.actualbudget.org")
   }
 }
 

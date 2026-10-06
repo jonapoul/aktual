@@ -23,12 +23,12 @@ class KermitFileLogger(
   private val LogPriority.severity: Severity
     get() =
       when (this) {
-        VERBOSE -> Severity.Verbose
-        DEBUG -> Severity.Debug
-        INFO -> Severity.Info
-        WARN -> Severity.Warn
+        VERBOSE -> Verbose
+        DEBUG -> Debug
+        INFO -> Info
+        WARN -> Warn
         ERROR -> Severity.Error
-        ASSERT -> Severity.Assert
+        ASSERT -> Assert
       }
 
   override fun log(priority: LogPriority, tag: String, message: String) =

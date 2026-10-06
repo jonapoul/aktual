@@ -72,7 +72,7 @@ class LoginRequester(
   private suspend fun LoginResponse.Data.toLoginResult(): LoginResult =
     when (this) {
       is Invalid -> {
-        LoginResult.InvalidPassword
+        InvalidPassword
       }
 
       is Redirect -> {

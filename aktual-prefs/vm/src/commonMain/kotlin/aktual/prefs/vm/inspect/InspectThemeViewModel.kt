@@ -29,7 +29,7 @@ class InspectThemeViewModel(
   private val themeResolver: ThemeResolver,
   private val urlOpener: UrlOpener,
 ) : ViewModel() {
-  private val mutableState = MutableStateFlow<InspectThemeState>(InspectThemeState.Loading)
+  private val mutableState = MutableStateFlow<InspectThemeState>(Loading)
   val state: StateFlow<InspectThemeState> = mutableState.asStateFlow()
 
   init {
@@ -41,7 +41,7 @@ class InspectThemeViewModel(
   }
 
   fun retry() {
-    mutableState.update { InspectThemeState.Loading }
+    mutableState.update { Loading }
     viewModelScope.launch { loadTheme() }
   }
 

@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dev.zacsweers.metro.ContributesIntoMap
@@ -54,7 +53,7 @@ class AktualActivity(override val defaultViewModelProviderFactory: MetroViewMode
     // are blocked) according to the user's preference. The flow seeds with the default (true), so
     // we're secure-by-default until DataStore reports otherwise
     lifecycleScope.launch {
-      repeatOnLifecycle(Lifecycle.State.STARTED) {
+      repeatOnLifecycle(STARTED) {
         viewModel.hidePreviewInAppSwitcher.collect { hide ->
           if (hide) {
             window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)

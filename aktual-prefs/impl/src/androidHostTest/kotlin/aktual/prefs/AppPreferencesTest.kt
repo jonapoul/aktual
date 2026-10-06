@@ -1,6 +1,5 @@
 package aktual.prefs
 
-import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
@@ -30,14 +29,14 @@ class AppPreferencesTest {
         assertThatNextEmissionIsEqualTo(null)
 
         // When
-        val url1 = ServerUrl(protocol = Protocol.Https, baseUrl = "website.com")
+        val url1 = ServerUrl(protocol = Https, baseUrl = "website.com")
         set(url1)
 
         // Then
         assertThatNextEmissionIsEqualTo(url1)
 
         // When
-        val url2 = ServerUrl(protocol = Protocol.Http, baseUrl = "some.other.domain.co.uk")
+        val url2 = ServerUrl(protocol = Http, baseUrl = "some.other.domain.co.uk")
         set(url2)
 
         // Then

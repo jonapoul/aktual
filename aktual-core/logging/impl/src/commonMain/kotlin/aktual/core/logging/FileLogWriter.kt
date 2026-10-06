@@ -91,12 +91,12 @@ internal class FileLogWriter(
 
     private fun Severity.char(): Char =
       when (this) {
-        Severity.Verbose -> 'V'
-        Severity.Debug -> 'D'
-        Severity.Info -> 'I'
-        Severity.Warn -> 'W'
+        Verbose -> 'V'
+        Debug -> 'D'
+        Info -> 'I'
+        Warn -> 'W'
         Severity.Error -> 'E'
-        Severity.Assert -> 'A'
+        Assert -> 'A'
       }
   }
 }

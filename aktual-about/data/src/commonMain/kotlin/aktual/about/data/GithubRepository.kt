@@ -28,11 +28,11 @@ class GithubRepository(
       val latest = releases.maxByOrNull { it.publishedAt }
       return when {
         releases.isEmpty() || latest == null -> {
-          LatestReleaseState.NoReleases
+          NoReleases
         }
 
         buildConfig.versionName == latest.clippedVersion() -> {
-          LatestReleaseState.NoNewUpdate
+          NoNewUpdate
         }
 
         else -> {
@@ -40,7 +40,7 @@ class GithubRepository(
             LatestReleaseState.UpdateAvailable(latest)
           } else {
             // It's the same version as current (or earlier?)
-            LatestReleaseState.NoNewUpdate
+            NoNewUpdate
           }
         }
       }
