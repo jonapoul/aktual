@@ -7,7 +7,6 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.schedules.domain.Schedule
-import aktual.budget.schedules.domain.ScheduleStatus
 import kotlinx.datetime.LocalDate
 
 internal object ListSchedulesPreview {
@@ -27,7 +26,7 @@ internal object ListSchedulesPreview {
       amount = Amount(-150000),
       amountOp = Operator.Is,
       date = LocalDate(2026, 5, 1),
-      status = ScheduleStatus.Upcoming,
+      status = Upcoming,
     )
 
   val scheduleB =
@@ -46,7 +45,7 @@ internal object ListSchedulesPreview {
       amount = Amount(-8000),
       amountOp = Operator.IsApprox,
       date = LocalDate(2026, 4, 15),
-      status = ScheduleStatus.Missed,
+      status = Missed,
     )
 
   val scheduleCompleted =
@@ -54,6 +53,6 @@ internal object ListSchedulesPreview {
       id = ScheduleId("ghi-789"),
       name = "Old gym membership",
       isCompleted = true,
-      status = ScheduleStatus.Completed,
+      status = Completed,
     )
 }

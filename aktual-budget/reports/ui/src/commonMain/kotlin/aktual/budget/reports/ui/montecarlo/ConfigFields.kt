@@ -3,7 +3,6 @@ package aktual.budget.reports.ui.montecarlo
 import aktual.budget.model.Amount
 import aktual.budget.model.parseAmountInput
 import aktual.budget.model.toInputText
-import aktual.budget.reports.vm.NumberInput
 import aktual.budget.reports.vm.clampAmount
 import aktual.budget.reports.vm.numberInputText
 import aktual.budget.reports.vm.parseNumberInput
@@ -328,7 +327,7 @@ internal fun NumberField(
           allowEmpty = allowEmpty,
           roundToInteger = roundToInteger,
         )
-      if (input is NumberInput.Valid && input.value != value) onCommit(input.value)
+      if (input is Valid && input.value != value) onCommit(input.value)
     },
   )
 

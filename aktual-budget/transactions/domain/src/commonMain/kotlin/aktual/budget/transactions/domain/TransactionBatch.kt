@@ -128,7 +128,7 @@ internal constructor(
         "parent_id" to u.parentId.messageValue { it.value.messageValue() },
       )
     addAll(TRANSACTIONS, u.id.value, columns)
-    if (u.parentId is Patch.To) batchParents[u.id] = u.parentId.value
+    if (u.parentId is To) batchParents[u.id] = u.parentId.value
     if (u.account != null) batchAccounts[u.id] = u.account
     if (u.isParent != null) batchIsParent[u.id] = u.isParent
   }
@@ -276,5 +276,5 @@ private fun LocalDate.messageValue(): MessageValue =
 private fun <T : Any> Patch<T?>.messageValue(encode: (T) -> MessageValue): MessageValue? =
   when (this) {
     Keep -> null
-    is Patch.To -> value?.let(encode) ?: MessageValue.Null
+    is To -> value?.let(encode) ?: MessageValue.Null
   }

@@ -18,9 +18,9 @@ class ParseDateTest {
   fun `Parse and stringify`(
     case: TestCase =
       burstValues(
-        TestCase(year = 2025, month = Month.JULY, day = 27, expected = "2025-07-27"),
-        TestCase(year = 1, month = Month.JANUARY, day = 1, expected = "0001-01-01"),
-        TestCase(year = 9999, month = Month.DECEMBER, day = 31, expected = "9999-12-31"),
+        TestCase(year = 2025, month = JULY, day = 27, expected = "2025-07-27"),
+        TestCase(year = 1, month = JANUARY, day = 1, expected = "0001-01-01"),
+        TestCase(year = 9999, month = DECEMBER, day = 31, expected = "9999-12-31"),
       )
   ) {
     val date = ReportDate.Date(LocalDate(case.year, case.month, case.day))

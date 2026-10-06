@@ -425,7 +425,7 @@ private fun splitError(difference: Long): JsonObject = buildJsonObject {
   put("difference", difference)
 }
 
-private fun <T> patch(old: T?, new: T?): Patch<T?> = if (old == new) Patch.Keep else Patch.To(new)
+private fun <T> patch(old: T?, new: T?): Patch<T?> = if (old == new) Keep else Patch.To(new)
 
 // Math.round()
 private fun jsRound(value: Double): Long = floor(value + HALF).toLong()

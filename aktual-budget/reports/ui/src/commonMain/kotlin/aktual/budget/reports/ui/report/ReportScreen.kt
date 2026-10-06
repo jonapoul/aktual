@@ -186,7 +186,7 @@ private fun ReportContent(
     // Shown by MonteCarloReportScreen instead
     MonteCarlo -> Box(modifier = modifier)
 
-    is ReportState.Loaded ->
+    is Loaded ->
       ReportChart(
         modifier = modifier.background(colors.tableBackground, CardShape).padding(8.dp),
         data = state.data,

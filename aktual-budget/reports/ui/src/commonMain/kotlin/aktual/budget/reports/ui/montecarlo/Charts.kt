@@ -273,7 +273,7 @@ internal fun CashflowBars(
         rememberColumnCartesianLayer(
           columnProvider = columnProvider,
           columnCollectionSpacing = 2.dp,
-          mergeMode = { ColumnCartesianLayer.MergeMode.Stacked },
+          mergeMode = { Stacked },
         ),
         startAxis = amountAxis(),
         bottomAxis = ageAxis(chart.years.size),

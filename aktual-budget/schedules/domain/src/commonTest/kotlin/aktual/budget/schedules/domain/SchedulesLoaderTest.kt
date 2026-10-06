@@ -61,7 +61,7 @@ class SchedulesLoaderTest {
     insert(id = "b", name = "Long", nextDate = LocalDate(2026, 4, 25))
     insert(id = "c", name = "Global", nextDate = LocalDate(2026, 4, 26))
     setCustomUpcomingLength("a", UpcomingLength.Days(3))
-    setCustomUpcomingLength("b", UpcomingLength.OneMonth)
+    setCustomUpcomingLength("b", OneMonth)
     preferences(scope)[UpcomingScheduledTransactionLength] = UpcomingLength.Weeks(2).encode()
 
     assertThat(loader(scope).load())
@@ -91,7 +91,7 @@ class SchedulesLoaderTest {
     insert(id = "d", name = "Scheduled", nextDate = LocalDate(2026, 5, 1))
     insert(id = "e", name = "Completed", nextDate = LocalDate(2026, 4, 2), completed = true)
     insert(id = "f", name = "Outside", nextDate = LocalDate(2026, 4, 20))
-    setCustomUpcomingLength("f", UpcomingLength.OneMonth)
+    setCustomUpcomingLength("f", OneMonth)
 
     val upcoming = loader(scope).load().upcoming(TODAY, DefaultUpcomingLength)
 

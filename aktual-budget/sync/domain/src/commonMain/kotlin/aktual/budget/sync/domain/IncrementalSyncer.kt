@@ -73,7 +73,7 @@ internal class IncrementalSyncer(
         )
       }
       logcat.w { "Out of sync after $count attempts, diffTime=$diffTime" }
-      return SyncResult.OutOfSyncError
+      return OutOfSyncError
     }
 
     val now = clock.now()

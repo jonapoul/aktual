@@ -4,7 +4,6 @@ import aktual.budget.banksync.domain.MappedField
 import aktual.budget.banksync.domain.TransactionDirection
 import aktual.budget.banksync.vm.settings.BankSyncSettingsState
 import aktual.budget.banksync.vm.settings.BankSyncSettingsViewModel
-import aktual.budget.banksync.vm.settings.BankSyncToggle
 import aktual.budget.banksync.vm.settings.FieldOption
 import aktual.budget.banksync.vm.settings.MappedFieldRow
 import aktual.budget.model.AccountId
@@ -342,7 +341,7 @@ private fun OptionsGroup(
   ) {
     BooleanPreferenceItem(
       value = state.importPending,
-      onValueChange = { onAction(SetToggle(BankSyncToggle.ImportPending, it)) },
+      onValueChange = { onAction(SetToggle(ImportPending, it)) },
       title = Strings.bankSyncSettingsImportPending,
       subtitle = null,
       icon = MaterialIcons.Timer,
@@ -351,7 +350,7 @@ private fun OptionsGroup(
     )
     BooleanPreferenceItem(
       value = state.importNotes,
-      onValueChange = { onAction(SetToggle(BankSyncToggle.ImportNotes, it)) },
+      onValueChange = { onAction(SetToggle(ImportNotes, it)) },
       title = Strings.bankSyncSettingsImportNotes,
       subtitle = null,
       icon = MaterialIcons.Edit,
@@ -360,7 +359,7 @@ private fun OptionsGroup(
     )
     BooleanPreferenceItem(
       value = state.reimportDeleted,
-      onValueChange = { onAction(SetToggle(BankSyncToggle.ReimportDeleted, it)) },
+      onValueChange = { onAction(SetToggle(ReimportDeleted, it)) },
       title = Strings.bankSyncSettingsReimportDeleted,
       subtitle = Strings.bankSyncSettingsReimportDeletedHint,
       icon = MaterialIcons.Refresh,
@@ -369,7 +368,7 @@ private fun OptionsGroup(
     )
     BooleanPreferenceItem(
       value = state.updateDates,
-      onValueChange = { onAction(SetToggle(BankSyncToggle.UpdateDates, it)) },
+      onValueChange = { onAction(SetToggle(UpdateDates, it)) },
       title = Strings.bankSyncSettingsUpdateDates,
       subtitle = Strings.bankSyncSettingsUpdateDatesHint,
       icon = MaterialIcons.CalendarToday,
@@ -378,7 +377,7 @@ private fun OptionsGroup(
     )
     BooleanPreferenceItem(
       value = !state.importTransactions,
-      onValueChange = { onAction(SetToggle(BankSyncToggle.ImportTransactions, !it)) },
+      onValueChange = { onAction(SetToggle(ImportTransactions, !it)) },
       title = Strings.bankSyncSettingsInvestment,
       subtitle = Strings.bankSyncSettingsInvestmentHint,
       icon = MaterialIcons.BarChart,

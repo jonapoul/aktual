@@ -111,7 +111,7 @@ internal class BankSyncProviderSetupTest {
 
     override suspend fun configure(applicationId: String, secretKey: String): SecretResponse {
       configured += applicationId to secretKey
-      return SecretResponse.Success
+      return Success
     }
 
     override suspend fun banks(country: String): EnableBankingBanksResponse = error("Unused")

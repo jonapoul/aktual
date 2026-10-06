@@ -130,7 +130,7 @@ class ListBudgetsViewModel(
       is Broken -> false
     }
 
-  fun clearDeletingState() = mutableDeletingState.update { DeletingState.Inactive }
+  fun clearDeletingState() = mutableDeletingState.update { Inactive }
 
   fun deleteRemote(id: BudgetId) {
     logcat.d { "deleteRemote $id" }

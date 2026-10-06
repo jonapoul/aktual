@@ -79,7 +79,7 @@ private suspend fun encrypt(
   result: (Meta) -> EncryptResult.Success,
 ): EncryptResult =
   try {
-    val key = keys[keyId] ?: return EncryptResult.MissingKey
+    val key = keys[keyId] ?: return MissingKey
     val meta =
       withContext(contexts.io) {
         encryptToSink(key = key, keyId = keyId, random = random, source = source, sink = sink)

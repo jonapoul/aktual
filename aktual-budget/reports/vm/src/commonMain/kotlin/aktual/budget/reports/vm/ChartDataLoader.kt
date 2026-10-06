@@ -13,8 +13,6 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
-import aktual.budget.model.Field
-import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.WidgetType
@@ -444,7 +442,7 @@ internal class ChartDataLoader(
   private fun forecastSchedule(row: ForecastSchedules): ForecastSchedule? {
     val amount = parseScheduleAmount(row._amount) ?: return null
     val date = parseScheduleDate(row._date) ?: return null
-    val dateCondition = row._conditions?.firstOrNull { it.field == Field.Date }
+    val dateCondition = row._conditions?.firstOrNull { it.field == Date }
     return ForecastSchedule(
       id = row.id,
       nextDate = row.next_date,
@@ -452,7 +450,7 @@ internal class ChartDataLoader(
       account = row._account?.let(::AccountId),
       payee = row._payee,
       amount = amount,
-      exactDate = dateCondition?.operator == Operator.Is || row.posts_transaction == true,
+      exactDate = dateCondition?.operator == Is || row.posts_transaction == true,
     )
   }
 

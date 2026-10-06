@@ -97,7 +97,7 @@ class BankSyncProviderSetupViewModel(
           SetupError.Other(e.requireMessage())
         }
       mutableState.update { it.copy(isSaving = false, error = error) }
-      if (error == null) mutableEvents.emit(BankSyncProviderSetupEvent.Saved)
+      if (error == null) mutableEvents.emit(Saved)
     }
   }
 

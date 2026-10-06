@@ -69,7 +69,7 @@ private suspend fun decrypt(
   result: () -> DecryptResult.Success,
 ): DecryptResult =
   try {
-    val key = keys[meta.keyId] ?: return DecryptResult.MissingKey
+    val key = keys[meta.keyId] ?: return MissingKey
     withContext(contexts.io) {
       decryptToSink(
         key = key.toByteArray(),

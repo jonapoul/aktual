@@ -61,7 +61,7 @@ internal class ScheduleWriter(
     val next = nextDateId.toString()
     val schedule = scheduleId.toString()
     val changes = buildList {
-      add(LocalChange(RULES, rule, "stage", MessageValue.Null))
+      add(LocalChange(RULES, rule, "stage", Null))
       add(LocalChange(RULES, rule, "conditions", conditions.encode().messageValue()))
       add(LocalChange(RULES, rule, "actions", actions.encode().messageValue()))
       add(LocalChange(RULES, rule, "conditions_op", ConditionOp.And.serialName().messageValue()))
@@ -189,7 +189,7 @@ private fun Condition.withoutType(): Condition = copy(type = null)
 @Suppress("MagicNumber")
 private fun LocalDate?.dateValue(): MessageValue =
   if (this == null) {
-    MessageValue.Null
+    Null
   } else {
     MessageValue.Number(year * 10_000L + month.number * 100L + day)
   }
@@ -197,8 +197,8 @@ private fun LocalDate?.dateValue(): MessageValue =
 // getNextDate() for either kind of date
 internal fun ScheduleDate.nextDate(today: LocalDate): LocalDate? =
   when (this) {
-    is ScheduleDate.Once -> date
-    is ScheduleDate.Recurring -> config.nextDate(from = today)
+    is Once -> date
+    is Recurring -> config.nextDate(from = today)
   }
 
 private const val TOMBSTONE = "tombstone"

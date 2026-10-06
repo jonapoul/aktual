@@ -167,7 +167,7 @@ class SyncDao(
         when (value) {
           is MessageValue.Number -> bindLong(0, value.value)
           is MessageValue.String -> bindString(0, value.value)
-          MessageValue.Null -> bindString(0, null)
+          Null -> bindString(0, null)
         }
         bindString(1, row)
       }
@@ -183,7 +183,7 @@ class SyncDao(
         when (value) {
           is MessageValue.Number -> bindLong(1, value.value)
           is MessageValue.String -> bindString(1, value.value)
-          MessageValue.Null -> bindString(1, null)
+          Null -> bindString(1, null)
         }
       }
     }
