@@ -23,7 +23,7 @@ Gradle convention plugins that centralize build config. Included build - `settin
 - `ConventionCompose` - compiler plugin, metrics, stability
 - `ConventionDi` - Metro with full binding-graph validation + hints + shrink unused
 - `ConventionStyle` - detekt + licensee
-- `ConventionDetekt` - the per-source-set detekt tasks are silent and never fail. `detektCheck` (`DetektReportTask`) merges their checkstyle reports, prints the sorted, deduplicated issues as clickable `file://` links, writes them to `build/reports/detekt/issues.txt` and fails if there are any
+- `ConventionDetekt` - the per-source-set detekt tasks are silent and never fail. `detektCheck` (`DetektReportTask`) merges their checkstyle reports, writes the sorted, deduplicated issues to the module's `build/reports/detekt/issues.txt` and fails if there are any. `DetektSummaryService` (a shared build service) collects the issues of every `detektCheck` in the invocation, prints them once at the end of the build as clickable `file://` links and writes them to the root `build/reports/detekt/all-issues.txt`. It needs `--continue` to cover modules after the first failure
 - `ConventionLicensee` - Apache-2.0/MIT/BSD/EPL-1.0
 - `ConventionSortDependencies` - checks dependency declarations are in canonical order via square/gradle-dependencies-sorter; run `./gradlew sortDependencies` to fix
 - `ConventionTest` - Burst, `testAll`, Robolectric/MockK JVM args

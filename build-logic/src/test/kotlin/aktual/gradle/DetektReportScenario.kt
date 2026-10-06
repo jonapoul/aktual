@@ -29,12 +29,23 @@ class DetektReportScenario : ScenarioTest() {
     buildGradleKts(
       """
       import aktual.gradle.DetektReportTask
+      import aktual.gradle.DetektSummaryService
 
       plugins {
         id("aktual.convention.idea") apply false
       }
 
+      val detektSummary =
+        gradle.sharedServices.registerIfAbsent(
+          DetektSummaryService.NAME,
+          DetektSummaryService::class,
+        ) {
+          parameters.reportFile.set(layout.buildDirectory.file("all-issues.txt"))
+        }
+
       tasks.register<DetektReportTask>("detektCheck") {
+        summary.set(detektSummary)
+        usesService(detektSummary)
         checkstyleReports.from(
           providers.gradleProperty("reports").map { names -> names.split(",").map { it + ".xml" } }
         )
@@ -88,10 +99,11 @@ class DetektReportScenario : ScenarioTest() {
     assertThatDetektCheck("main,test,clean")
       .failsBuild()
       .taskFailed(":detektCheck")
-      .outputContains(expected)
       .outputContains("> Found 4 detekt issue(s), see file://$root/build/issues.txt")
+      .outputContains("Found 4 detekt issue(s), see file://$root/build/all-issues.txt\n$expected")
 
     assertThat(rootDir.resolve("build/issues.txt")).contentEquals(expected)
+    assertThat(rootDir.resolve("build/all-issues.txt")).contentEquals(expected)
   }
 
   @Test
