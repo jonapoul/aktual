@@ -50,6 +50,7 @@ import org.jetbrains.kotlin.psi.KtWhenConditionWithExpression
 import org.jetbrains.kotlin.psi.KtWhenEntry
 import org.jetbrains.kotlin.psi.KtWhenExpression
 import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
  * Flags a qualified enum entry or sealed subtype, like `Role.Admin`, where the expected type is
@@ -70,6 +71,8 @@ import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
  * - arguments that decide a generic type themselves: `listOf(Role.Admin)`, `x to Role.Admin`,
  *   `associateWith { Role.Admin }`
  * - elvis operands: `role ?: Role.Admin`
+ * - sealed subtypes in an `if`/`when` passed as an argument, where another branch can narrow the
+ *   expected type: `update(if (x) Patch.To(1) else Patch.Keep)`
  * - anything with no expected type, or a supertype as the expected type: `val role = Role.Admin`,
  *   `val any: Any = Role.Admin`
  *
@@ -101,6 +104,7 @@ internal class RedundantQualifier(config: Config) :
       val owner = owner(symbol) ?: return@analyze
       val expected = expectedType(expression) ?: return@analyze
       if (!expected.isClass(owner)) return@analyze
+      if (symbol !is KaEnumEntrySymbol && isArgumentBranch(expression)) return@analyze
       if (isShadowed(expression, symbol)) return@analyze
       report(expression, selector.getReferencedName())
     }
@@ -175,6 +179,24 @@ internal class RedundantQualifier(config: Config) :
       // Infix calls and elvis don't pass an expected type down the way a plain argument does
       else -> null
     }
+
+  // In `update(if (x) Patch.To(1) else Keep)` the other branch narrows the expected type to
+  // `Patch.To<Int>` and `Keep` no longer fits. Enum entries all share one type, so they are fine
+  private fun isArgumentBranch(expression: KtExpression): Boolean {
+    val path =
+      expression.parents
+        .takeWhile {
+          it.isBranchBody() || it is KtBlockExpression || it is KtParenthesizedExpression
+        }
+        .toList()
+    return path.any { it.isBranchBody() } && path.last().parent is KtValueArgument
+  }
+
+  private fun PsiElement.isBranchBody(): Boolean =
+    this is KtContainerNodeForControlStructureBody ||
+      this is KtWhenEntry ||
+      this is KtIfExpression ||
+      this is KtWhenExpression
 
   private fun KaSession.subjectType(whenExpression: KtWhenExpression): KaType? =
     whenExpression.subjectVariable?.returnType ?: whenExpression.subjectExpression?.expressionType

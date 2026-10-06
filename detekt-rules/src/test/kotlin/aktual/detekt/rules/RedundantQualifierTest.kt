@@ -233,6 +233,32 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
     )
 
   @Test
+  fun `reports generic sealed object as an argument`() =
+    assertReported("fun foo() = takesPatch(Patch.Keep)", "Patch.Keep" to "Keep")
+
+  @Test
+  fun `does not report sealed object in an argument branch`() =
+    assertNotReported(
+      "fun foo(set: Boolean) = takesPatch(if (set) Patch.To(1) else Patch.Keep)",
+      "Patch.Keep" to "Keep",
+    )
+
+  @Test
+  fun `reports sealed object in a return branch`() =
+    assertReported(
+      "fun foo(set: Boolean): Patch<Int> = if (set) Patch.To(1) else Patch.Keep",
+      "Patch.Keep" to "Keep",
+    )
+
+  @Test
+  fun `reports enum entry in an argument branch`() =
+    assertReported(
+      "fun foo(set: Boolean) = takesRole(if (set) Role.Admin else Role.Basic)",
+      "Role.Admin" to "Admin",
+      "Role.Basic" to "Basic",
+    )
+
+  @Test
   fun `does not report a companion property`() =
     assertNotReported("fun foo() = takesState(State.Default)")
 
@@ -313,6 +339,13 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
           val Default: State = Loading
         }
       }
+
+      sealed interface Patch<out T> {
+        data object Keep : Patch<Nothing>
+        data class To<out T>(val value: T) : Patch<T>
+      }
+
+      fun takesPatch(patch: Patch<Int>) = patch
 
       class User(val role: Role)
 
