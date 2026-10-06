@@ -6,6 +6,7 @@ import aktual.budget.home.domain.AccountSyncState
 import aktual.budget.home.domain.AccountSyncState.Failed
 import aktual.budget.home.domain.AccountSyncState.Ok
 import aktual.budget.home.domain.AccountsSummary
+import aktual.budget.home.domain.mostRecentlyActive
 import aktual.budget.home.vm.AccountsCardState
 import aktual.budget.home.vm.AccountsCardState.Loaded
 import aktual.budget.model.AccountId
@@ -19,6 +20,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.formattedString
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,9 +35,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -45,6 +52,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.minus
 
 private val RowMinHeight = 48.dp
 private val SyncDotSize = 8.dp
@@ -55,7 +64,7 @@ internal fun AccountsCard(
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  HomeCard(modifier = modifier) {
+  HomeCard(modifier = modifier.animateContentSize()) {
     HeaderRow(
       title = Strings.homeAccountsTitle,
       amount = (state as? Loaded)?.summary?.netWorth,
@@ -65,7 +74,7 @@ internal fun AccountsCard(
     when (state) {
       Loading -> AccountsLoading()
       Empty -> AccountsEmpty(onAction)
-      is Loaded -> AccountsContent(state.summary, onAction)
+      is Loaded -> AccountsContent(state, onAction)
     }
   }
 }
@@ -73,11 +82,39 @@ internal fun AccountsCard(
 @Composable
 @Suppress("UnusedReceiverParameter")
 private fun ColumnScope.AccountsContent(
-  summary: AccountsSummary,
+  state: Loaded,
   onAction: HomeActionHandler,
 ) {
+  var isExpanded by rememberSaveable { mutableStateOf(false) }
+  val recent = state.recent
+  val summary = if (isExpanded || recent == null) state.summary else recent
+
   AccountsSection(Strings.homeAccountsOnBudget, summary.onBudget, onAction)
   AccountsSection(Strings.homeAccountsOffBudget, summary.offBudget, onAction)
+
+  if (recent != null) {
+    val allCount = with(state.summary) { onBudget.accounts.size + offBudget.accounts.size }
+    ExpandRow(
+      text =
+        if (isExpanded) Strings.homeAccountsShowLess else Strings.homeAccountsShowAll(allCount),
+      onClick = { isExpanded = !isExpanded },
+    )
+  }
+}
+
+@Composable
+private fun ExpandRow(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+  Row(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .heightIn(min = RowMinHeight)
+        .clickable(role = Role.Button, onClick = onClick)
+        .padding(horizontal = CardPadding),
+    verticalAlignment = CenterVertically,
+  ) {
+    Text(text = text, style = typography.bodyMedium, color = colors.pageTextSubdued)
+  }
 }
 
 @Composable
@@ -219,6 +256,7 @@ private fun PreviewAccountsCard(
 private class AccountsCardStateProvider :
   ColoredParameterProvider<AccountsCardState>(
     Loaded(PREVIEW_ACCOUNTS),
+    Loaded(PREVIEW_ACCOUNTS, recent = PREVIEW_ACCOUNTS.mostRecentlyActive(limit = 5)),
     Loaded(PREVIEW_ACCOUNTS.copy(offBudget = section())),
     Empty,
     Loading,
@@ -228,16 +266,16 @@ internal val PREVIEW_ACCOUNTS =
   AccountsSummary(
     onBudget =
       section(
-        account("Current Account", 2_431.18),
-        account("Joint Account", 1_204.50),
-        account("Easy Saver", 8_500.00, Ok(lastSync = null)),
-        account("Credit Card", -642.37, Failed(ReauthRequired)),
-        account("Cash", 60.00),
+        account("Current Account", 2_431.18, daysAgo = 0),
+        account("Joint Account", 1_204.50, daysAgo = 1),
+        account("Easy Saver", 8_500.00, Ok(lastSync = null), daysAgo = 12),
+        account("Credit Card", -642.37, Failed(ReauthRequired), daysAgo = 2),
+        account("Cash", 60.00, daysAgo = 40),
       ),
     offBudget =
       section(
-        account("Stocks ISA", 14_220.91),
-        account("Pension", 38_114.02),
+        account("Stocks ISA", 14_220.91, daysAgo = 5),
+        account("Pension", 38_114.02, daysAgo = 30),
         account("Car Loan", -6_300.00),
       ),
     closed = persistentListOf(),
@@ -249,5 +287,16 @@ private fun section(vararg accounts: AccountBalance) =
     total = accounts.fold(Amount.Zero) { sum, account -> sum + account.balance },
   )
 
-private fun account(name: String, balance: Double, syncState: AccountSyncState = NotLinked) =
-  AccountBalance(AccountId(name), name, Amount(balance), syncState)
+private fun account(
+  name: String,
+  balance: Double,
+  syncState: AccountSyncState = NotLinked,
+  daysAgo: Int? = null,
+) =
+  AccountBalance(
+    id = AccountId(name),
+    name = name,
+    balance = Amount(balance),
+    syncState = syncState,
+    lastActivity = daysAgo?.let { LocalDate(year = 2026, month = 3, day = 31).minus(it, DAY) },
+  )

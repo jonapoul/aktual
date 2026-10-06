@@ -10,9 +10,12 @@ import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlin.time.Instant
+import kotlinx.datetime.LocalDate
 
 internal class AccountsSummaryTest {
   @Test
@@ -87,6 +90,53 @@ internal class AccountsSummaryTest {
       )
   }
 
+  @Test
+  fun `Most recently active keeps order and totals`() {
+    val summary =
+      listOf(
+          row("a", balance = 100, lastActivity = day(1)),
+          row("b", balance = 200, lastActivity = day(9)),
+          row("c", balance = 300),
+          row("d", balance = 400, lastActivity = day(5)),
+          row("e", balance = 500, offBudget = true, lastActivity = day(7)),
+          row("f", balance = 600, offBudget = true, lastActivity = day(2)),
+          row("g", balance = 700, closed = true, lastActivity = day(10)),
+        )
+        .toAccountsSummary()
+
+    assertThat(summary.mostRecentlyActive(limit = 3)).isNotNull().all {
+      prop(AccountsSummary::onBudget).all {
+        prop(AccountSection::accounts).ids().containsExactly("b", "d")
+        prop(AccountSection::total).isEqualTo(Amount(1_000L))
+      }
+      prop(AccountsSummary::offBudget).all {
+        prop(AccountSection::accounts).ids().containsExactly("e")
+        prop(AccountSection::total).isEqualTo(Amount(1_100L))
+      }
+      prop(AccountsSummary::netWorth).isEqualTo(summary.netWorth)
+    }
+  }
+
+  @Test
+  fun `Most recently active falls back to sort order without transactions`() {
+    val summary = listOf(row("a"), row("b"), row("c", offBudget = true)).toAccountsSummary()
+
+    assertThat(summary.mostRecentlyActive(limit = 2)).isNotNull().all {
+      prop(AccountsSummary::onBudget).prop(AccountSection::accounts).ids().containsExactly("a", "b")
+      prop(AccountsSummary::offBudget).prop(AccountSection::accounts).ids().containsExactly()
+    }
+  }
+
+  @Test
+  fun `Most recently active is null when nothing would be hidden`() {
+    val summary =
+      listOf(row("a"), row("b", offBudget = true), row("c", closed = true)).toAccountsSummary()
+
+    assertThat(summary.mostRecentlyActive(limit = 2)).isNull()
+  }
+
+  private fun day(day: Int) = LocalDate(2026, 1, day)
+
   private fun Assert<List<AccountBalance>>.ids() = transform { accounts ->
     accounts.map { it.id.value }
   }
@@ -100,6 +150,7 @@ internal class AccountsSummaryTest {
     remoteId: String? = "remote-$id",
     status: BankSyncStatus? = null,
     lastSync: Instant? = null,
+    lastActivity: LocalDate? = null,
   ) =
     GetAllWithBalances(
       id = AccountId(id),
@@ -111,6 +162,7 @@ internal class AccountsSummaryTest {
       bank_sync_status = status,
       last_sync = lastSync,
       balance = balance,
+      last_activity = lastActivity,
     )
 
   private companion object {

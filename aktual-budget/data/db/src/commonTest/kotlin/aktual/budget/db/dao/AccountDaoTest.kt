@@ -64,6 +64,7 @@ internal class AccountDaoTest {
           .containsExactly("a" to 1_000L, "b" to -2_000L, "c" to 3_000L, "d" to 0L)
         assertThat(rows.map { it.offbudget }).containsExactly(false, true, false, false)
         assertThat(rows.map { it.closed }).containsExactly(false, false, true, false)
+        assertThat(rows.map { it.last_activity }).containsExactly(DATE, DATE, DATE, null)
       }
     }
 
@@ -80,6 +81,19 @@ internal class AccountDaoTest {
 
       // then
       assertThatNextEmissionIsEqualTo(listOf("a" to 1_234L))
+    }
+  }
+
+  @Test
+  fun `Last activity is the latest transaction date`() = runDaoTest { accounts, transactions ->
+    // given
+    insertAccounts(buildAccount(id = AccountId("a")))
+    transactions.insert("t1", "a", "cat", "payee", LocalDate(2026, 2, 3), amount = 10.0)
+    transactions.insert("t2", "a", "cat", "payee", DATE, amount = 5.0)
+
+    // then
+    accounts.observeAllWithBalances().test {
+      assertThat(awaitItem().map { it.last_activity }).containsExactly(LocalDate(2026, 2, 3))
     }
   }
 

@@ -9,6 +9,7 @@ import aktual.budget.home.domain.ThisMonth
 import aktual.budget.home.domain.ThisMonthLoader
 import aktual.budget.home.domain.UpcomingSchedules
 import aktual.budget.home.domain.UpcomingSchedulesLoader
+import aktual.budget.home.domain.mostRecentlyActive
 import aktual.budget.model.DbMetadata
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
@@ -117,9 +118,10 @@ class HomeViewModel(
     if (onBudget.accounts.isEmpty() && offBudget.accounts.isEmpty()) {
       Empty
     } else {
-      AccountsCardState.Loaded(this)
+      AccountsCardState.Loaded(this, recent = mostRecentlyActive(MAX_COLLAPSED_ACCOUNTS))
     }
 }
 
 private const val MAX_UPCOMING_ROWS = 5
 private const val MAX_SYNC_FAILURE_ROWS = 3
+private const val MAX_COLLAPSED_ACCOUNTS = 5
