@@ -37,6 +37,15 @@ class ConventionDetekt : ProjectPlugin {
     // Outside build/reports, so CI doesn't annotate the PR with each task's duplicates
     val dekektDir = layout.buildDirectory.dir("detekt")
 
+    val summary =
+      gradle.sharedServices.registerIfAbsent(
+        DetektSummaryService.NAME,
+        DetektSummaryService::class.java,
+      ) { spec ->
+        val rootDir = rootProject.isolated.projectDirectory
+        spec.parameters.reportFile.set(rootDir.file("build/reports/detekt/all-issues.txt"))
+      }
+
     // Each source set and compilation has its own task, so shared sources get checked more than
     // once. Those tasks stay quiet and don't fail, this one reports all their issues instead
     tasks.register("detektCheck", DetektReportTask::class.java) { t ->
@@ -44,6 +53,8 @@ class ConventionDetekt : ProjectPlugin {
       t.checkstyleReports.from(dekektDir.map { it.asFileTree.matching { f -> f.include("*.xml") } })
       t.basePath.set(rootProject.isolated.projectDirectory)
       t.reportFile.set(layout.buildDirectory.file("reports/detekt/issues.txt"))
+      t.summary.set(summary)
+      t.usesService(summary)
     }
 
     detektTasks.configureEach { t ->
