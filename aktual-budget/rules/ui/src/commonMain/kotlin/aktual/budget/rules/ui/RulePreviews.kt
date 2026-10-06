@@ -2,8 +2,6 @@ package aktual.budget.rules.ui
 
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionType
-import aktual.budget.model.Field
-import aktual.budget.model.Operator
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.rules.vm.Rule
@@ -12,8 +10,8 @@ import kotlinx.serialization.json.JsonPrimitive
 
 internal val PreviewCondition1 =
   Condition(
-    field = Field.Category,
-    operator = Operator.Is,
+    field = Category,
+    operator = Is,
     value = JsonPrimitive("condition-1-value"),
     options = null,
     conditionsOp = And,
@@ -24,8 +22,8 @@ internal val PreviewCondition1 =
 
 internal val PreviewCondition2 =
   Condition(
-    field = Field.ImportedPayee,
-    operator = Operator.Contains,
+    field = ImportedPayee,
+    operator = Contains,
     value = JsonPrimitive("amazon"),
     options = null,
     conditionsOp = null,
@@ -61,7 +59,7 @@ internal val PreviewRule2 =
       persistentListOf(
         RuleAction(
           value = JsonPrimitive("b08a2607-399b-4a6b-9a5c-3b2d083fe07f"),
-          op = RuleAction.Op.LinkSchedule,
+          op = LinkSchedule,
         )
       ),
   )

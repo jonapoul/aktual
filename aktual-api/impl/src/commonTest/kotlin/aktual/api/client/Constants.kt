@@ -1,10 +1,9 @@
 package aktual.api.client
 
 import aktual.budget.model.BudgetId
-import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 
 val TOKEN = Token("abc-123")
 val BUDGET_ID = BudgetId("xyz-789")
-val SERVER_URL = ServerUrl(Protocol.Https, "test.server.com")
+val SERVER_URL = ServerUrl(Https, "test.server.com")

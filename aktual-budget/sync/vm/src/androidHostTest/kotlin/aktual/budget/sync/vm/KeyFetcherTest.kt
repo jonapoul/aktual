@@ -6,7 +6,6 @@ import aktual.budget.encryption.BufferDecrypter
 import aktual.budget.encryption.BufferDecrypterImpl
 import aktual.budget.model.BudgetId
 import aktual.core.model.Password
-import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.base64
@@ -84,7 +83,7 @@ class KeyFetcherTest {
   private companion object {
     val BUDGET_ID = BudgetId("abc-123")
     val TOKEN = Token(value = "xyz-789")
-    val SERVER_URL = ServerUrl(Protocol.Https, "test.server.com")
+    val SERVER_URL = ServerUrl(Https, "test.server.com")
 
     val CORRECT_PASSWORD = Password("P@ssw0rd!")
 

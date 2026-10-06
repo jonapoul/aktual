@@ -1,7 +1,6 @@
 package aktual.budget.rules.ui.edit.pickers
 
 import aktual.budget.model.RecurConfig
-import aktual.budget.model.RecurFrequency
 import aktual.core.icons.material.CalendarToday
 import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
@@ -130,7 +129,7 @@ internal fun DateTextField(
 
 private fun RecurConfig?.serializeWith(date: LocalDate?): JsonElement {
   date ?: return JsonNull
-  val config = this ?: RecurConfig(frequency = RecurFrequency.Monthly, start = date)
+  val config = this ?: RecurConfig(frequency = Monthly, start = date)
   return Json.encodeToJsonElement(RecurConfig.serializer(), config.copy(start = date))
 }
 
@@ -154,7 +153,7 @@ private val PreviewRecurConfig =
     serializer = RecurConfig.serializer(),
     value =
       RecurConfig(
-        frequency = RecurFrequency.Monthly,
+        frequency = Monthly,
         start = LocalDate.parse("2025-03-02"),
         interval = 1,
         patterns = emptyList(),

@@ -6,7 +6,6 @@ import aktual.budget.model.BudgetId
 import aktual.budget.sync.vm.DownloadState.Done
 import aktual.budget.sync.vm.DownloadState.Failure
 import aktual.budget.sync.vm.DownloadState.InProgress
-import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.bytes
@@ -153,6 +152,6 @@ class BudgetFileDownloaderTest {
   private companion object {
     val TOKEN = Token("abc-123")
     val BUDGET_ID = BudgetId("xyz-789")
-    val SERVER_URL = ServerUrl(Protocol.Https, "actual.website.com")
+    val SERVER_URL = ServerUrl(Https, "actual.website.com")
   }
 }

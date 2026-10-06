@@ -74,7 +74,7 @@ class RuleActionTest {
         expected =
           listOf(
             RuleAction(
-              op = RuleAction.Op.LinkSchedule,
+              op = LinkSchedule,
               value = JsonPrimitive("b08a2607-399b-4a6b-9a5c-3b2d083fe07f"),
             )
           ),
