@@ -15,7 +15,9 @@ import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.launchMolecule
@@ -23,8 +25,11 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -36,22 +41,39 @@ class HomeViewModel(
   accountsSummaryLoader: AccountsSummaryLoader,
   upcomingSchedulesLoader: UpcomingSchedulesLoader,
 ) : ViewModel() {
+  private var retries by mutableIntStateOf(0)
+
   val state: StateFlow<HomeState> =
     viewModelScope.launchMolecule(Immediate) {
       val budgetNameFlow = remember { localPreferences.observe(DbMetadata.BudgetName) }
       val budgetName by
         budgetNameFlow.collectAsState(initial = localPreferences[DbMetadata.BudgetName])
 
-      val thisMonthFlow = remember { thisMonthLoader.observe().map { it.toCardState() } }
+      val thisMonthFlow =
+        remember(retries) {
+          thisMonthLoader.observe().map { it.toCardState() }.orFailed("this month", Failed)
+        }
       val thisMonth by thisMonthFlow.collectAsState(initial = Loading)
 
-      val attentionFlow = remember { needsAttentionLoader.observe().map { it.toCardState() } }
+      val attentionFlow =
+        remember(retries) {
+          needsAttentionLoader
+            .observe()
+            .map { it.toCardState() }
+            .orFailed("needs attention", Failed)
+        }
       val attention by attentionFlow.collectAsState(initial = Loading)
 
-      val accountsFlow = remember { accountsSummaryLoader.observe().map { it.toCardState() } }
+      val accountsFlow =
+        remember(retries) {
+          accountsSummaryLoader.observe().map { it.toCardState() }.orFailed("accounts", Failed)
+        }
       val accounts by accountsFlow.collectAsState(initial = Loading)
 
-      val upcomingFlow = remember { upcomingSchedulesLoader.observe().map { it.toCardState() } }
+      val upcomingFlow =
+        remember(retries) {
+          upcomingSchedulesLoader.observe().map { it.toCardState() }.orFailed("upcoming", Failed)
+        }
       val upcoming by upcomingFlow.collectAsState(initial = Loading)
 
       HomeState(
@@ -62,6 +84,17 @@ class HomeViewModel(
         accounts = accounts,
       )
     }
+
+  // Restarts every source. Cards that were fine keep showing what they had
+  fun retry() {
+    retries++
+  }
+
+  // A failing source only takes down its own card
+  private fun <S> Flow<S>.orFailed(card: String, failed: S): Flow<S> = catch { e ->
+    logcat.e(e) { "Failed loading $card card" }
+    emit(failed)
+  }
 
   private fun ThisMonth.toCardState(): ThisMonthCardState =
     when (val budget = budget) {
