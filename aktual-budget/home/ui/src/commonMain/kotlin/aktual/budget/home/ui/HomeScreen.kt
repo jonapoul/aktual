@@ -14,32 +14,49 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.DesktopPreview
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.TabletPreview
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.isCompactWidth
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
@@ -78,6 +95,43 @@ private fun HomeScaffold(
   state: HomeState,
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
+  isCompact: Boolean = isCompactWidth(),
+) {
+  // A brand new budget has no accounts to list, so the onboarding card gets the whole width
+  if (isCompact || state.isEmpty) {
+    HomeContent(state = state, onAction = onAction, modifier = modifier) {
+      if (state.isEmpty) {
+        OnboardingCard(onAction = onAction)
+      } else {
+        ThisMonthCard(state = state.thisMonth, onAction = onAction)
+        AttentionCard(state = state.attention, onAction = onAction)
+        UpcomingCard(state = state.upcoming, onAction = onAction)
+        AccountsCard(state = state.accounts, onAction = onAction)
+      }
+    }
+  } else {
+    Row(modifier = modifier.fillMaxSize()) {
+      AccountsPanel(
+        modifier = Modifier.width(AccountsPanelWidth).fillMaxHeight(),
+        state = state.accounts,
+        onAction = onAction,
+      )
+
+      VerticalDivider(color = colors.tableBorder)
+
+      HomeContent(state = state, onAction = onAction, modifier = Modifier.weight(1f)) {
+        CardGrid(state = state, onAction = onAction)
+      }
+    }
+  }
+}
+
+@Composable
+private fun HomeContent(
+  state: HomeState,
+  onAction: HomeActionHandler,
+  modifier: Modifier = Modifier,
+  content: @Composable ColumnScope.() -> Unit,
 ) {
   val hazeState = rememberHazedTopBarState()
   val scrollState = rememberScrollState()
@@ -105,23 +159,69 @@ private fun HomeScaffold(
             .padding(Dimens.VeryLarge),
         verticalArrangement = Arrangement.spacedBy(Dimens.VeryLarge),
       ) {
-        if (state.isEmpty) {
-          OnboardingCard(onAction = onAction)
-        } else {
-          ThisMonthCard(state = state.thisMonth, onAction = onAction)
-
-          AttentionCard(state = state.attention, onAction = onAction)
-
-          UpcomingCard(state = state.upcoming, onAction = onAction)
-
-          AccountsCard(state = state.accounts, onAction = onAction)
-        }
-
+        content()
         BottomSpacing()
       }
     }
   }
 }
+
+// Scrolls separately from the cards, so the account list is always to hand
+@Composable
+private fun AccountsPanel(
+  state: AccountsCardState,
+  onAction: HomeActionHandler,
+  modifier: Modifier = Modifier,
+) {
+  Column(
+    modifier =
+      modifier
+        .background(colors.tableBackground)
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+        .verticalScrollWithBar(rememberScrollState())
+  ) {
+    AccountsCard(state = state, onAction = onAction, isBoxed = false, showAll = true)
+    BottomSpacing()
+  }
+}
+
+// Two columns once there's room for both, capped so the cards don't stretch across a wide monitor
+@Composable
+private fun CardGrid(
+  state: HomeState,
+  onAction: HomeActionHandler,
+  modifier: Modifier = Modifier,
+) {
+  BoxWithConstraints(modifier = modifier.widthIn(max = CardGridMaxWidth)) {
+    if (maxWidth < TwoColumnMinWidth) {
+      Column(verticalArrangement = Arrangement.spacedBy(Dimens.VeryLarge)) {
+        ThisMonthCard(state = state.thisMonth, onAction = onAction)
+        AttentionCard(state = state.attention, onAction = onAction)
+        UpcomingCard(state = state.upcoming, onAction = onAction)
+      }
+    } else {
+      Row(horizontalArrangement = Arrangement.spacedBy(Dimens.VeryLarge)) {
+        Column(
+          modifier = Modifier.weight(1f),
+          verticalArrangement = Arrangement.spacedBy(Dimens.VeryLarge),
+        ) {
+          ThisMonthCard(state = state.thisMonth, onAction = onAction)
+          AttentionCard(state = state.attention, onAction = onAction)
+        }
+
+        UpcomingCard(
+          modifier = Modifier.weight(1f),
+          state = state.upcoming,
+          onAction = onAction,
+        )
+      }
+    }
+  }
+}
+
+private val AccountsPanelWidth = 360.dp
+private val TwoColumnMinWidth = 640.dp
+private val CardGridMaxWidth = 1200.dp
 
 @Composable
 private fun HomeTitle(budgetName: String?, modifier: Modifier = Modifier) {
@@ -170,6 +270,8 @@ private class HomeStateProvider :
     ),
   )
 
+private class WideHomeStateProvider : ColoredParameterProvider<HomeState>(PREVIEW_HOME)
+
 private class PrivateHomeStateProvider : ColoredParameterProvider<HomeState>(PREVIEW_HOME)
 
 @PortraitPreview
@@ -178,7 +280,25 @@ private fun PreviewHomeScaffold(
   @PreviewParameter(HomeStateProvider::class) params: ColoredParams<HomeState>
 ) =
   PreviewWithColoredParams(params) {
-    HomeScaffold(state = this, onAction = {})
+    HomeScaffold(state = this, onAction = {}, isCompact = true)
+  }
+
+@TabletPreview
+@Composable
+private fun PreviewTabletHomeScaffold(
+  @PreviewParameter(HomeStateProvider::class) params: ColoredParams<HomeState>
+) =
+  PreviewWithColoredParams(params) {
+    HomeScaffold(state = this, onAction = {}, isCompact = false)
+  }
+
+@DesktopPreview
+@Composable
+private fun PreviewDesktopHomeScaffold(
+  @PreviewParameter(WideHomeStateProvider::class) params: ColoredParams<HomeState>
+) =
+  PreviewWithColoredParams(params) {
+    HomeScaffold(state = this, onAction = {}, isCompact = false)
   }
 
 @PortraitPreview
@@ -187,5 +307,5 @@ private fun PreviewPrivateHomeScaffold(
   @PreviewParameter(PrivateHomeStateProvider::class) params: ColoredParams<HomeState>
 ) =
   PreviewWithColoredParams(params, isPrivacyEnabled = true) {
-    HomeScaffold(state = this, onAction = {})
+    HomeScaffold(state = this, onAction = {}, isCompact = true)
   }
