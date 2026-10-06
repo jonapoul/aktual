@@ -45,7 +45,8 @@ sed -n '<from>,<to>p' <log path>
 ```
 
 Test failure details are in `<module-dir>/build/test-results/**/*.xml` and detekt findings in
-`<module-dir>/build/reports/detekt/issues.txt`.
+`<module-dir>/build/reports/detekt/issues.txt`, with every module's findings from the last run
+merged in `build/reports/detekt/all-issues.txt`.
 
 ### Timeout
 
