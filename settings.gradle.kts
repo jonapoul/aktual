@@ -47,7 +47,7 @@ plugins {
   id("com.gradle.develocity") version "4.6.0"
   id("dev.jonpoulton.atlas") version "0.7.1"
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-  id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.10"
+  id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.11"
 }
 
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
