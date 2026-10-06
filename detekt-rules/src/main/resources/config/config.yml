@@ -5,4 +5,4 @@ aktual:
   InvalidComposeLazyKey:
     active: true
   RedundantQualifier:
-    active: false
+    active: true
