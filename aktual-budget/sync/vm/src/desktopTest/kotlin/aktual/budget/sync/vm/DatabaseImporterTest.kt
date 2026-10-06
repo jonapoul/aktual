@@ -87,7 +87,7 @@ class DatabaseImporterTest {
     val result = importer(USER_FILE, zip)
 
     // then
-    assertThat(result).isEqualTo(ImportResult.InvalidZipFile)
+    assertThat(result).isEqualTo(InvalidZipFile)
 
     // and the budget dir doesn't exist
     val dir = budgetFiles.directory(BUDGET_ID)

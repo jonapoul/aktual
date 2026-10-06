@@ -114,6 +114,13 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
     )
 
   @Test
+  fun `reports sealed object in an assertion on a property`() =
+    assertReported(
+      "fun foo(screen: Assert<Screen>) = screen.prop(Screen::state).isEqualTo(State.Loading)",
+      "State.Loading" to "Loading",
+    )
+
+  @Test
   fun `reports enum entry with explicit type arguments`() =
     assertReported("fun foo() = listOf<Role>(Role.Admin)", "Role.Admin" to "Admin")
 
@@ -349,9 +356,18 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
 
       class User(val role: Role)
 
-      class Assert<T>(val actual: T)
+      class Screen(val state: State)
+
+      class Assert<out T>(val actual: T)
 
       fun <T> Assert<T>.isEqualTo(expected: T) = actual == expected
+
+      fun Assert<String?>.isEqualTo(other: String?, ignoreCase: Boolean = false) =
+        actual.equals(other, ignoreCase)
+
+      fun <T> Assert<Array<T>>.isEqualTo(expected: Array<T>) = actual.contentEquals(expected)
+
+      fun <T, P> Assert<T>.prop(property: kotlin.reflect.KProperty1<T, P>) = Assert(property.get(actual))
 
       fun makeRole(): Role = Role.entries.last()
 

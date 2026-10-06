@@ -11,7 +11,6 @@ import aktual.budget.banksync.vm.FakeSecretsApi
 import aktual.budget.banksync.vm.providers.BankSyncProvidersEvent.ResetFailed
 import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
-import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import app.cash.turbine.test
@@ -134,6 +133,6 @@ class BankSyncProvidersViewModelTest {
   }
 
   private companion object {
-    val SERVER = BudgetServer.Remote(ServerUrl(Protocol.Https, "test.server.com"), Token("token"))
+    val SERVER = BudgetServer.Remote(ServerUrl(Https, "test.server.com"), Token("token"))
   }
 }

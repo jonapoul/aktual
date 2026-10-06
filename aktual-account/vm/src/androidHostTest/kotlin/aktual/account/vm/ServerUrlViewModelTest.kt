@@ -1,6 +1,5 @@
 package aktual.account.vm
 
-import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.di.AppGraph
@@ -212,7 +211,7 @@ class ServerUrlViewModelTest {
       assertThatNextEmission().isNull()
 
       // when we save a token and a URL
-      val initialUrl = ServerUrl(Protocol.Https, "website.com")
+      val initialUrl = ServerUrl(Https, "website.com")
       appGraph.preferences.serverUrl.set(initialUrl)
       val token = Token("abc-123")
       appGraph.preferences.token.set(token)
@@ -221,7 +220,7 @@ class ServerUrlViewModelTest {
       assertThatNextEmissionIsEqualTo(token)
 
       // when we enter a different url and click confirm
-      val secondUrl = ServerUrl(Protocol.Http, "some.other.website.com")
+      val secondUrl = ServerUrl(Http, "some.other.website.com")
       assertThat(initialUrl).isNotEqualTo(secondUrl)
       viewModel.onSelectProtocol(secondUrl.protocol)
       viewModel.onEnterUrl(secondUrl.baseUrl)
@@ -264,6 +263,6 @@ class ServerUrlViewModelTest {
   }
 
   private companion object {
-    val EXAMPLE_URL = ServerUrl(Protocol.Http, "website.com")
+    val EXAMPLE_URL = ServerUrl(Http, "website.com")
   }
 }

@@ -86,7 +86,7 @@ class GithubRepositoryTest {
 
     // Then
     assertThat(TestBuildConfig.versionName).isEqualTo("1.2.3")
-    assertThat(state).isEqualTo(LatestReleaseState.NoNewUpdate)
+    assertThat(state).isEqualTo(NoNewUpdate)
   }
 
   @Test
@@ -100,7 +100,7 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertThat(state).isEqualTo(LatestReleaseState.NoReleases)
+    assertThat(state).isEqualTo(NoReleases)
   }
 
   @Test
@@ -115,7 +115,7 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertThat(state).isEqualTo(LatestReleaseState.PrivateRepo)
+    assertThat(state).isEqualTo(PrivateRepo)
   }
 
   @Test

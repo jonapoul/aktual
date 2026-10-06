@@ -57,7 +57,7 @@ class SecretsApiTest {
       .isInstanceOf<TextContent>()
       .prop(TextContent::text)
       .isEqualTo("""{"name":"simplefin_token","value":"abc"}""")
-    assertThat(response).isEqualTo(SecretResponse.Success)
+    assertThat(response).isEqualTo(Success)
   }
 
   @Test
@@ -69,7 +69,7 @@ class SecretsApiTest {
     assertThat(mockEngine.latestRequest().method).isEqualTo(HttpMethod.Delete)
     assertThat(mockEngine.latestRequestUrl())
       .isEqualTo("https://test.server.com/secret/simplefin_accessKey")
-    assertThat(response).isEqualTo(SecretResponse.Success)
+    assertThat(response).isEqualTo(Success)
   }
 
   @Test

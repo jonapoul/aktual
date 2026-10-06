@@ -6,7 +6,6 @@ import aktual.api.model.account.FailureReason
 import aktual.api.model.sync.UserFile
 import aktual.budget.model.BudgetId
 import aktual.core.model.KeyId
-import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.test.emptyMockEngine
@@ -136,7 +135,7 @@ class BudgetListFetcherTest {
 
   private companion object {
     val TOKEN = Token(value = "abc-123")
-    val SERVER_URL = ServerUrl(Protocol.Https, "test.unused.com")
+    val SERVER_URL = ServerUrl(Https, "test.unused.com")
 
     val VALID_RESPONSE =
       """

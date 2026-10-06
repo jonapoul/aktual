@@ -16,7 +16,7 @@ internal val ShadesOfCoffeeThemeSummary =
         Color(0xFF604b39),
         Color(0xFFc29670),
       ),
-    mode = ThemeMode.Light,
+    mode = Light,
   )
 
 // from Juulz/shades-of-coffee

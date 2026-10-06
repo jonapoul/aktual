@@ -1,6 +1,7 @@
 package aktual.detekt.rules
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import dev.detekt.api.Config
 import dev.detekt.api.Entity
 import dev.detekt.api.Finding
@@ -8,7 +9,10 @@ import dev.detekt.api.RequiresAnalysisApi
 import dev.detekt.api.Rule
 import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.analyze
+import org.jetbrains.kotlin.analysis.api.diagnostics.KaDiagnosticWithPsi
+import org.jetbrains.kotlin.analysis.api.resolution.KaCallCandidateInfo
 import org.jetbrains.kotlin.analysis.api.resolution.KaFunctionCall
+import org.jetbrains.kotlin.analysis.api.resolution.KaInapplicableCallCandidateInfo
 import org.jetbrains.kotlin.analysis.api.resolution.successfulFunctionCallOrNull
 import org.jetbrains.kotlin.analysis.api.resolution.symbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaClassLikeSymbol
@@ -248,13 +252,23 @@ internal class RedundantQualifier(config: Config) :
       call.resolveToCallCandidates().any { info ->
         val candidate = info.candidate as? KaFunctionCall<*>
         val other = candidate?.valueArgumentMapping?.get(argument)?.returnType
-        other != null && select(other)?.semanticallyEquals(substituted) != true
+        other != null &&
+          !failsElsewhere(info, argument) &&
+          select(other)?.semanticallyEquals(substituted) != true
       }
 
     return overloadsDisagree ||
       call.typeArgumentList == null &&
         declared is KaTypeParameterType &&
         isDecidedByArgument(declared.symbol, resolved.symbol)
+  }
+
+  // A candidate that fails on something other than this argument, like `Assert<String?>.isEqualTo`
+  // called on an `Assert<Role>`, is dropped before CSR looks at the argument
+  private fun failsElsewhere(info: KaCallCandidateInfo, argument: KtExpression): Boolean {
+    val diagnostic = (info as? KaInapplicableCallCandidateInfo)?.diagnostic
+    val psi = (diagnostic as? KaDiagnosticWithPsi<*>)?.psi ?: return false
+    return !PsiTreeUtil.isAncestor(argument.parent, psi, false)
   }
 
   // `Assert<T>.isEqualTo(expected: T)` gets T from its receiver, not the argument

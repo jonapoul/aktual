@@ -7,7 +7,6 @@ import aktual.budget.model.RecurConfig
 import aktual.budget.model.RecurEndMode
 import aktual.budget.model.RecurFrequency
 import aktual.budget.model.RecurPattern
-import aktual.budget.model.RecurType
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.WeekendSolveMode
 import aktual.budget.model.occurrences
@@ -42,7 +41,7 @@ class BalanceForecastTest {
       recur(
         Monthly,
         start = LocalDate(2026, 1, 1),
-        patterns = listOf(RecurPattern(-1, RecurType.Day), RecurPattern(2, RecurType.Monday)),
+        patterns = listOf(RecurPattern(-1, Day), RecurPattern(2, Monday)),
       )
 
     assertThat(config.occurrences(until = LocalDate(2026, 2, 28)).dates)

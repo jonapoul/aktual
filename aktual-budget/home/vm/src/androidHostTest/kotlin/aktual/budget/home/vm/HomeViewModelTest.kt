@@ -104,7 +104,7 @@ class HomeViewModelTest {
 
     viewModel.state.test {
       assertThat(awaitSettled()).all {
-        prop(HomeState::accounts).isEqualTo(AccountsCardState.Failed)
+        prop(HomeState::accounts).isEqualTo(Failed)
         prop(HomeState::thisMonth).isInstanceOf<ThisMonthCardState.Loaded>()
         prop(HomeState::attention).isEqualTo(Empty)
         prop(HomeState::upcoming).isEqualTo(Empty)

@@ -52,7 +52,7 @@ class SchedulesLoaderTest {
         "Later" to ScheduleStatus.Upcoming,
         "Far" to ScheduleStatus.Scheduled,
       )
-    assertThat(loader(scope).load(ScheduleId("b"))?.status).isEqualTo(ScheduleStatus.Upcoming)
+    assertThat(loader(scope).load(ScheduleId("b"))?.status).isEqualTo(Upcoming)
   }
 
   @Test
