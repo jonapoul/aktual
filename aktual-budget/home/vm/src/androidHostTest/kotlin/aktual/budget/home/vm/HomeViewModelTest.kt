@@ -86,7 +86,7 @@ class HomeViewModelTest {
       insertAccount("a$day")
       transactions.insert("t$day", "a$day", "cat", "payee", date(day), amount = 1.0)
     }
-    val viewModel = createViewModel(scope)
+    val viewModel = createHomeViewModel(scope, CALENDAR)
 
     viewModel.state.test {
       assertThat(awaitLoaded().recent?.onBudget?.accounts?.map { it.id.value })
@@ -97,7 +97,7 @@ class HomeViewModelTest {
   @Test
   fun `Few accounts have nothing to collapse`() = runDatabaseTest { scope ->
     insertAccount("a")
-    val viewModel = createViewModel(scope)
+    val viewModel = createHomeViewModel(scope, CALENDAR)
 
     viewModel.state.test {
       assertThat(awaitLoaded().recent).isEqualTo(null)
