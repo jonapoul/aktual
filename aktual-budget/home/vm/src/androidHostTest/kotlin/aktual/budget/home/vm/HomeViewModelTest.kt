@@ -70,6 +70,34 @@ class HomeViewModelTest {
   }
 
   @Test
+  fun `A failed month isn't hidden behind the empty state`() {
+    val state =
+      HomeState(
+        budgetName = null,
+        thisMonth = Failed,
+        attention = Empty,
+        upcoming = Empty,
+        accounts = Empty,
+      )
+
+    assertThat(state.isEmpty).isFalse()
+  }
+
+  @Test
+  fun `Retrying doesn't put loaded cards back to loading`() = runDatabaseTest { scope ->
+    insertAccount("a")
+    val viewModel = createHomeViewModel(scope, CALENDAR)
+
+    viewModel.state.test {
+      awaitSettled()
+
+      viewModel.retry()
+      scope.testScheduler.advanceUntilIdle()
+      expectNoEvents()
+    }
+  }
+
+  @Test
   fun `A failing source only fails its own card`() = runDatabaseTest { scope ->
     insertAccount("a")
     val viewModel = createHomeViewModel(scope, CALENDAR, accountsCard = closedDatabase())

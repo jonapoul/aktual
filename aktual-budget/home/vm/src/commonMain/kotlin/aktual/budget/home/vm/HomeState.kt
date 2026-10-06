@@ -20,9 +20,9 @@ data class HomeState(
   val upcoming: UpcomingCardState = Loading,
   val accounts: AccountsCardState = Loading,
 ) {
-  // Nothing to show on any card, as in a brand new budget
+  // Nothing to show on any card, as in a brand new budget. A failed month still needs its card
   val isEmpty: Boolean
-    get() = attention == Empty && upcoming == Empty && accounts == Empty
+    get() = thisMonth != Failed && attention == Empty && upcoming == Empty && accounts == Empty
 }
 
 @Immutable
