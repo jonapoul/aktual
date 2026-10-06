@@ -17,6 +17,10 @@ import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +28,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -66,10 +71,14 @@ private fun HomeScaffold(
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
 ) {
+  val hazeState = rememberHazedTopBarState()
+  val scrollState = rememberScrollState()
+
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
+        modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavDrawerIconButton() },
         title = { HomeTitle(budgetName = state.budgetName) },
@@ -82,8 +91,9 @@ private fun HomeScaffold(
       Column(
         modifier =
           Modifier.fillMaxSize()
-            .verticalScrollWithBar()
-            .padding(innerPadding)
+            .hazedTopBarContent(hazeState, innerPadding)
+            .verticalScrollWithBar(scrollState)
+            .padding(hazedTopBarContentPadding(hazeState, innerPadding))
             .padding(Dimens.VeryLarge),
         verticalArrangement = Arrangement.spacedBy(Dimens.VeryLarge),
       ) {
