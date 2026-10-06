@@ -33,6 +33,20 @@ script which handles output capture, filtering, and exit-code propagation:
 ./scripts/ktfmt.sh check 2>&1 | grep -v "^$" | head -50
 ```
 
+### Getting more output
+
+The script prints a filtered view, capped at 200 lines, and ends with the path of the full log, e.g.
+`Full log (1234 lines): /.../build/gradle-run/20261006-191500.log`. If the filtered view is missing
+something the caller asked for, or says `TRUNCATED`, search that log instead of running Gradle again:
+
+```bash
+grep -nE "<pattern>" <log path> | head -100
+sed -n '<from>,<to>p' <log path>
+```
+
+Test failure details are in `<module-dir>/build/test-results/**/*.xml` and detekt findings in
+`<module-dir>/build/reports/detekt/issues.txt`.
+
 ### Timeout
 
 Always pass **timeout: 600000** (10 minutes) to the Bash tool for all Gradle commands.
@@ -49,5 +63,7 @@ Always pass **timeout: 600000** (10 minutes) to the Bash tool for all Gradle com
    are: ..."), report the failure AND list the candidate task names verbatim so the caller
    can pick one - do not guess and re-run
 5. Do **not** attempt to fix issues - only report findings
-6. Do **not** read or modify source files
+6. Do **not** read or modify source files. Reading the full log and files under `build/` is fine
 7. Do **not** run `./gradlew build` or `./gradlew allTests` - those are full-project builds and will peg the machine
+8. **Never run the same Gradle command twice** to get more output - everything it printed is in
+   the full log. If that log still doesn't have what the caller needs, say so in the report
