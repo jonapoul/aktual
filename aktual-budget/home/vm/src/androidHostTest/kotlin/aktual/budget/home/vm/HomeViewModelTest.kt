@@ -1,29 +1,18 @@
 package aktual.budget.home.vm
 
-import aktual.budget.budgeting.domain.BudgetMonthCalculatorImpl
 import aktual.budget.db.BudgetDatabase
-import aktual.budget.db.dao.AccountDao
-import aktual.budget.db.dao.BudgetDao
-import aktual.budget.db.dao.PayeeDao
-import aktual.budget.db.dao.PreferencesDao
-import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.withoutResult
-import aktual.budget.home.domain.AccountsSummaryLoader
-import aktual.budget.home.domain.ThisMonthLoader
-import aktual.budget.home.domain.UpcomingSchedulesLoader
 import aktual.budget.home.vm.AccountsCardState.Loaded
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncedPrefKey.Global.UpcomingScheduledTransactionLength
 import aktual.budget.model.UpcomingLength
-import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
 import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
-import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.Assert
@@ -35,10 +24,7 @@ import assertk.assertions.prop
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -53,7 +39,7 @@ class HomeViewModelTest {
   @Test
   fun `Budget name follows local preferences`() = runDatabaseTest { scope ->
     val prefs = TestBudgetLocalPreferences(DbMetadata(budgetName = "Household"))
-    val viewModel = createViewModel(scope, prefs)
+    val viewModel = createHomeViewModel(scope, CALENDAR, prefs)
 
     viewModel.state.test {
       assertThat(awaitSettled().budgetName).isEqualTo("Household")
@@ -69,7 +55,7 @@ class HomeViewModelTest {
   fun `No open accounts is empty`() = runDatabaseTest { scope ->
     insertAccount("closed")
     accountsQueries.withoutResult { closeAccount(AccountId("closed")) }
-    val viewModel = createViewModel(scope)
+    val viewModel = createHomeViewModel(scope, CALENDAR)
 
     viewModel.state.test { assertThat(awaitAccounts()).isEqualTo(Empty) }
   }
@@ -80,7 +66,7 @@ class HomeViewModelTest {
     insertAccount("b", offBudget = true)
     val transactions = TransactionDao(this)
     transactions.insert("t1", "a", "cat", "payee", DATE, amount = 10.0)
-    val viewModel = createViewModel(scope)
+    val viewModel = createHomeViewModel(scope, CALENDAR)
 
     viewModel.state.test {
       assertThat(awaitLoaded()).hasBalances(a = 1_000L, b = 0L, netWorth = 1_000L)
@@ -96,7 +82,7 @@ class HomeViewModelTest {
   @Test
   fun `Nothing upcoming is empty`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Later", payee = "p", account = "a", nextDate = date(9))
-    val viewModel = createViewModel(scope)
+    val viewModel = createHomeViewModel(scope, CALENDAR)
 
     viewModel.state.test { assertThat(awaitUpcoming()).isEqualTo(Empty) }
   }
@@ -116,7 +102,7 @@ class HomeViewModelTest {
     )
     insertSchedule(id = "e", name = "Paid", payee = "p", account = "a", nextDate = date(3))
     TransactionDao(this).insert("t1", "e-account", "cat", "e-payee", date(3), schedule = "e")
-    val viewModel = createViewModel(scope)
+    val viewModel = createHomeViewModel(scope, CALENDAR)
 
     viewModel.state.test {
       assertThat(awaitUpcomingLoaded()).all {
@@ -132,7 +118,7 @@ class HomeViewModelTest {
   fun `Upcoming window follows the global length`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Inside", payee = "p", account = "a", nextDate = date(8))
     insertSchedule(id = "b", name = "Outside", payee = "p", account = "a", nextDate = date(9))
-    val viewModel = createViewModel(scope)
+    val viewModel = createHomeViewModel(scope, CALENDAR)
 
     viewModel.state.test {
       assertThat(awaitUpcomingLoaded()).all {
@@ -154,7 +140,7 @@ class HomeViewModelTest {
     for (day in 2..8) {
       insertSchedule(id = "s$day", name = "S$day", payee = "p", account = "a", nextDate = date(day))
     }
-    val viewModel = createViewModel(scope)
+    val viewModel = createHomeViewModel(scope, CALENDAR)
 
     viewModel.state.test {
       assertThat(awaitUpcomingLoaded()).all {
@@ -175,9 +161,6 @@ class HomeViewModelTest {
   private suspend fun ReceiveTurbine<HomeState>.awaitUpcomingLoaded() =
     awaitUpcoming() as UpcomingCardState.Loaded
 
-  private fun BudgetDatabase.preferences(scope: TestScope) =
-    PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
-
   private fun Assert<Loaded>.hasBalances(a: Long, b: Long, netWorth: Long) =
     prop(Loaded::summary).all {
       transform { it.onBudget.accounts.map { account -> account.balance } }
@@ -187,47 +170,9 @@ class HomeViewModelTest {
       transform { it.netWorth }.isEqualTo(Amount(netWorth))
     }
 
-  // Waits for every card, so a late first load of one isn't mistaken for a change to the other
-  private suspend fun ReceiveTurbine<HomeState>.awaitSettled(): HomeState {
-    var state = awaitItem()
-    while (state.thisMonth == Loading || state.accounts == Loading || state.upcoming == Loading) {
-      state = awaitItem()
-    }
-    return state
-  }
-
   private suspend fun ReceiveTurbine<HomeState>.awaitAccounts() = awaitSettled().accounts
 
   private suspend fun ReceiveTurbine<HomeState>.awaitLoaded() = awaitAccounts() as Loaded
-
-  private fun BudgetDatabase.createViewModel(
-    scope: TestScope,
-    prefs: TestBudgetLocalPreferences = TestBudgetLocalPreferences(DbMetadata()),
-  ): HomeViewModel {
-    Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
-    val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
-    val calculator =
-      BudgetMonthCalculatorImpl(
-        budgetDao = BudgetDao(this, contexts),
-        preferencesDao = preferences(scope),
-        calendar = CALENDAR,
-        contexts = contexts,
-      )
-    val schedulesLoader =
-      SchedulesLoader(
-        scheduleDao = ScheduleDao(this),
-        accountDao = AccountDao(this),
-        payeeDao = PayeeDao(this),
-        preferencesDao = preferences(scope),
-        calendar = CALENDAR,
-      )
-    return HomeViewModel(
-      localPreferences = prefs,
-      thisMonthLoader = ThisMonthLoader(calculator, CALENDAR),
-      accountsSummaryLoader = AccountsSummaryLoader(AccountDao(this)),
-      upcomingSchedulesLoader = UpcomingSchedulesLoader(schedulesLoader, CALENDAR),
-    )
-  }
 
   private suspend fun BudgetDatabase.insertAccount(id: String, offBudget: Boolean = false) =
     accountsQueries.withoutResult {

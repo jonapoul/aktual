@@ -3,6 +3,8 @@ package aktual.budget.home.vm
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.home.domain.AccountsSummary
 import aktual.budget.home.domain.AccountsSummaryLoader
+import aktual.budget.home.domain.NeedsAttention
+import aktual.budget.home.domain.NeedsAttentionLoader
 import aktual.budget.home.domain.ThisMonth
 import aktual.budget.home.domain.ThisMonthLoader
 import aktual.budget.home.domain.UpcomingSchedules
@@ -19,6 +21,7 @@ import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 
@@ -28,6 +31,7 @@ import kotlinx.coroutines.flow.map
 class HomeViewModel(
   localPreferences: BudgetLocalPreferences,
   thisMonthLoader: ThisMonthLoader,
+  needsAttentionLoader: NeedsAttentionLoader,
   accountsSummaryLoader: AccountsSummaryLoader,
   upcomingSchedulesLoader: UpcomingSchedulesLoader,
 ) : ViewModel() {
@@ -40,6 +44,9 @@ class HomeViewModel(
       val thisMonthFlow = remember { thisMonthLoader.observe().map { it.toCardState() } }
       val thisMonth by thisMonthFlow.collectAsState(initial = Loading)
 
+      val attentionFlow = remember { needsAttentionLoader.observe().map { it.toCardState() } }
+      val attention by attentionFlow.collectAsState(initial = Loading)
+
       val accountsFlow = remember { accountsSummaryLoader.observe().map { it.toCardState() } }
       val accounts by accountsFlow.collectAsState(initial = Loading)
 
@@ -49,6 +56,7 @@ class HomeViewModel(
       HomeState(
         budgetName = budgetName,
         thisMonth = thisMonth,
+        attention = attention,
         upcoming = upcoming,
         accounts = accounts,
       )
@@ -76,6 +84,21 @@ class HomeViewModel(
         )
     }
 
+  // In priority order
+  private fun NeedsAttention.toCardState(): AttentionCardState {
+    val items = buildList {
+      if (failedAccounts.size > MAX_SYNC_FAILURE_ROWS) {
+        add(AttentionItem.SyncFailedMany(failedAccounts.size))
+      } else {
+        failedAccounts.forEach { add(AttentionItem.SyncFailed(it.id, it.name, it.status)) }
+      }
+      if (uncategorisedCount > 0) add(AttentionItem.Uncategorised(uncategorisedCount))
+      if (overspent.isNotEmpty()) add(AttentionItem.Overspent(overspent))
+      if (overdueSchedules > 0) add(AttentionItem.OverdueSchedules(overdueSchedules))
+    }
+    return if (items.isEmpty()) Empty else AttentionCardState.Loaded(items.toPersistentList())
+  }
+
   private fun UpcomingSchedules.toCardState(): UpcomingCardState =
     if (schedules.isEmpty()) {
       Empty
@@ -99,3 +122,4 @@ class HomeViewModel(
 }
 
 private const val MAX_UPCOMING_ROWS = 5
+private const val MAX_SYNC_FAILURE_ROWS = 3

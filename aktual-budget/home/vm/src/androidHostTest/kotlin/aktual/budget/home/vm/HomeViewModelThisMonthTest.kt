@@ -1,25 +1,12 @@
 package aktual.budget.home.vm
 
-import aktual.budget.budgeting.domain.BudgetMonthCalculatorImpl
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
-import aktual.budget.db.dao.AccountDao
-import aktual.budget.db.dao.BudgetDao
-import aktual.budget.db.dao.PayeeDao
-import aktual.budget.db.dao.PreferencesDao
-import aktual.budget.db.dao.ScheduleDao
-import aktual.budget.home.domain.AccountsSummaryLoader
-import aktual.budget.home.domain.ThisMonthLoader
-import aktual.budget.home.domain.UpcomingSchedulesLoader
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
-import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncedPrefKey
-import aktual.budget.schedules.domain.SchedulesLoader
-import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
 import aktual.test.inMemoryDriverFactory
-import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -28,11 +15,9 @@ import assertk.assertions.isEqualTo
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import org.junit.runner.RunWith
@@ -147,38 +132,9 @@ class HomeViewModelThisMonthTest {
     driver.use {
       val database = buildDatabase(driver)
       (SETUP + budget).forEach { sql -> driver.run(sql) }
-      action(database.createViewModel(this), database)
+      action(database.createHomeViewModel(this, calendar), database)
     }
   }
-
-  private fun BudgetDatabase.createViewModel(scope: TestScope): HomeViewModel {
-    Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
-    val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
-    val calculator =
-      BudgetMonthCalculatorImpl(
-        budgetDao = BudgetDao(this, contexts),
-        preferencesDao = preferences(scope),
-        calendar = calendar,
-        contexts = contexts,
-      )
-    val schedulesLoader =
-      SchedulesLoader(
-        scheduleDao = ScheduleDao(this),
-        accountDao = AccountDao(this),
-        payeeDao = PayeeDao(this),
-        preferencesDao = preferences(scope),
-        calendar = calendar,
-      )
-    return HomeViewModel(
-      localPreferences = TestBudgetLocalPreferences(DbMetadata()),
-      thisMonthLoader = ThisMonthLoader(calculator, calendar),
-      accountsSummaryLoader = AccountsSummaryLoader(AccountDao(this)),
-      upcomingSchedulesLoader = UpcomingSchedulesLoader(schedulesLoader, calendar),
-    )
-  }
-
-  private fun BudgetDatabase.preferences(scope: TestScope) =
-    PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
 
   private suspend fun SqlDriver.run(sql: String) {
     execute(identifier = null, sql = sql, parameters = 0).await()
