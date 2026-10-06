@@ -3,7 +3,6 @@ package aktual.prefs.ui.theme.custom
 import aktual.core.model.ThemeId
 import aktual.core.theme.CustomThemeRepo
 import aktual.core.theme.CustomThemeSummary
-import aktual.core.theme.ThemeMode
 import aktual.prefs.vm.theme.custom.CacheState
 import aktual.prefs.vm.theme.custom.CatalogItem
 import androidx.compose.ui.graphics.Color
@@ -21,7 +20,7 @@ internal val PREVIEW_SUMMARY =
         Color(0xFFf214f6),
         Color(0xFF2156ff),
       ),
-    mode = ThemeMode.Light,
+    mode = Light,
   )
 
 internal val PREVIEW_CATALOG_ITEM =

@@ -250,7 +250,7 @@ class ListTagsViewModelTest {
         .prop(Success::tags)
         .extracting(TagItem::tag)
         .containsExactly("apple", "Mango", "rent")
-      assertThat(success.sort).isEqualTo(TagSort(TagSort.Field.Name, Ascending))
+      assertThat(success.sort).isEqualTo(TagSort(Name, Ascending))
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -271,7 +271,7 @@ class ListTagsViewModelTest {
         .containsExactly("apple", "rent")
 
       // switching to descending flips the order
-      viewModel.setSort(TagSort(TagSort.Field.Name, Descending))
+      viewModel.setSort(TagSort(Name, Descending))
       var success = awaitItem() as Success
       while (success.sort.direction != Descending) {
         success = awaitItem() as Success
@@ -284,8 +284,8 @@ class ListTagsViewModelTest {
     }
 
     // and the choice is remembered
-    assertThat(preferences.sortField.get()).isEqualTo(TagSort.Field.Name)
-    assertThat(preferences.sortDirection.get()).isEqualTo(TagSort.Direction.Descending)
+    assertThat(preferences.sortField.get()).isEqualTo(Name)
+    assertThat(preferences.sortDirection.get()).isEqualTo(Descending)
   }
 
   private fun BudgetDatabase.createViewModel(

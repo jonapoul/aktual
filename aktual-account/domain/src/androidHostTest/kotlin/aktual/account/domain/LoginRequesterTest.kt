@@ -4,7 +4,6 @@ import aktual.api.client.AccountApi
 import aktual.api.client.AccountApiImpl
 import aktual.api.model.account.LoginRequest
 import aktual.core.model.Password
-import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.prefs.AppPreferences
@@ -125,7 +124,7 @@ internal class LoginRequesterTest {
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
     // Then a success result was parsed, and the token was stored in prefs
-    assertThat(result).isEqualTo(LoginResult.InvalidPassword)
+    assertThat(result).isEqualTo(InvalidPassword)
   }
 
   @Test
@@ -148,7 +147,7 @@ internal class LoginRequesterTest {
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
     // Then we get a token expired result
-    assertThat(result).isEqualTo(LoginResult.TokenExpired)
+    assertThat(result).isEqualTo(TokenExpired)
   }
 
   @Test
@@ -177,6 +176,6 @@ internal class LoginRequesterTest {
   private companion object {
     val EXAMPLE_PASSWORD = Password(value = "P@ssw0rd")
     val EXAMPLE_TOKEN = Token(value = "abc123")
-    val EXAMPLE_URL = ServerUrl(Protocol.Https, "website.com")
+    val EXAMPLE_URL = ServerUrl(Https, "website.com")
   }
 }

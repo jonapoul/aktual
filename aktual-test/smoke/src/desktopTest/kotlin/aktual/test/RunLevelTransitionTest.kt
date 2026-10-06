@@ -201,7 +201,7 @@ class RunLevelTransitionTest {
       val budget = appGraph.runLevelController.onOfflineBudget(SECOND_BUDGET_ID, SECOND_DB_METADATA)
 
       assertThat(awaitItem()).containsExactly(appGraph, budget)
-      assertThat(budget.server).isEqualTo(BudgetServer.None)
+      assertThat(budget.server).isEqualTo(None)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -226,7 +226,7 @@ class RunLevelTransitionTest {
     val budget = appGraph.demoBudget.open()
     assertThat(appGraph.runLevelState[BudgetGraph::class]).isEqualTo(budget)
     assertThat(budget.id).isEqualTo(BudgetId.Demo)
-    assertThat(budget.server).isEqualTo(BudgetServer.None)
+    assertThat(budget.server).isEqualTo(None)
     assertThat(FileSystem.SYSTEM.exists(demoDir)).isTrue()
     assertThat(appGraph.budgetFiles.listLocal().map { it.id }).doesNotContain(BudgetId.Demo)
 

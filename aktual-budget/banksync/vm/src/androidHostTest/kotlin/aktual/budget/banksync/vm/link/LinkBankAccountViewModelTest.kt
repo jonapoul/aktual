@@ -110,12 +110,12 @@ class LinkBankAccountViewModelTest {
     val viewModel = createViewModel()
 
     viewModel.state.test {
-      assertThat(awaitItem()).isEqualTo(LinkBankAccountState.Loading)
+      assertThat(awaitItem()).isEqualTo(Loading)
       assertThat(awaitItem()).isEqualTo(LinkBankAccountState.NoProviders(hasServer = true))
 
       api.statuses[PluggyAi] = BankSyncStatusResponse.Success(configured = true)
       viewModel.refreshProviders()
-      assertThat(awaitItem()).isEqualTo(LinkBankAccountState.Loading)
+      assertThat(awaitItem()).isEqualTo(Loading)
       assertThat(awaitChoosing().providers).isEqualTo(persistentListOf(PluggyAi))
     }
   }
@@ -177,7 +177,7 @@ class LinkBankAccountViewModelTest {
       awaitChoosing()
       viewModel.events.test {
         viewModel.link("ACT-1")
-        assertThat(awaitItem()).isEqualTo(LinkBankAccountEvent.Linked)
+        assertThat(awaitItem()).isEqualTo(Linked)
       }
       cancelAndIgnoreRemainingEvents()
     }
@@ -201,7 +201,7 @@ class LinkBankAccountViewModelTest {
       assertThat(awaitChoosing().target).isEqualTo(LinkTarget.New(offBudget = true))
       viewModel.events.test {
         viewModel.link("ACT-1")
-        assertThat(awaitItem()).isEqualTo(LinkBankAccountEvent.Linked)
+        assertThat(awaitItem()).isEqualTo(Linked)
       }
       cancelAndIgnoreRemainingEvents()
     }
@@ -264,7 +264,7 @@ class LinkBankAccountViewModelTest {
               )
             )
           viewModel.link("GC-1")
-          assertThat(awaitItem()).isEqualTo(LinkBankAccountEvent.Linked)
+          assertThat(awaitItem()).isEqualTo(Linked)
         }
         cancelAndIgnoreRemainingEvents()
       }
@@ -354,7 +354,7 @@ class LinkBankAccountViewModelTest {
               )
             )
           viewModel.link("EB-1")
-          assertThat(awaitItem()).isEqualTo(LinkBankAccountEvent.Linked)
+          assertThat(awaitItem()).isEqualTo(Linked)
         }
         cancelAndIgnoreRemainingEvents()
       }

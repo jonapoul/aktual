@@ -185,7 +185,7 @@ class EditTagViewModelTest {
 
       viewModel.events.test {
         viewModel.save()
-        assertThatNextEmission().isEqualTo(EditTagEvent.FinishedSaving)
+        assertThatNextEmission().isEqualTo(FinishedSaving)
       }
 
       val saved = tagsDao.getTag(TagId(GENERATED_ID))
@@ -210,7 +210,7 @@ class EditTagViewModelTest {
 
       viewModel.events.test {
         viewModel.save()
-        assertThatNextEmission().isEqualTo(EditTagEvent.FinishedSaving)
+        assertThatNextEmission().isEqualTo(FinishedSaving)
       }
 
       assertThat(preferences.lastUsedTagColor.get()).isEqualTo("#AABBCC")
@@ -236,7 +236,7 @@ class EditTagViewModelTest {
 
       viewModel.events.test {
         viewModel.save()
-        assertThatNextEmission().isEqualTo(EditTagEvent.FinishedSaving)
+        assertThatNextEmission().isEqualTo(FinishedSaving)
       }
 
       // the existing row is updated in place rather than duplicated or rejected
@@ -266,7 +266,7 @@ class EditTagViewModelTest {
       viewModel.setTag("groceries")
       viewModel.events.test {
         viewModel.save()
-        assertThatNextEmission().isEqualTo(EditTagEvent.FinishedSaving)
+        assertThatNextEmission().isEqualTo(FinishedSaving)
       }
 
       // the old row's id is reused rather than the freshly generated uuid
@@ -294,7 +294,7 @@ class EditTagViewModelTest {
 
       viewModel.events.test {
         viewModel.save()
-        assertThatNextEmission().isEqualTo(EditTagEvent.FinishedSaving)
+        assertThatNextEmission().isEqualTo(FinishedSaving)
       }
 
       // the name now resolves to the resurrected row rather than the one we were editing

@@ -60,7 +60,7 @@ class EnableBankingApiTest {
       .isInstanceOf<TextContent>()
       .prop(TextContent::text)
       .isEqualTo("""{"applicationId":"app-id","secretKey":"-----BEGIN PRIVATE KEY-----"}""")
-    assertThat(response).isEqualTo(SecretResponse.Success)
+    assertThat(response).isEqualTo(Success)
   }
 
   @Test

@@ -2,7 +2,6 @@ package aktual.budget.reports.vm
 
 import aktual.budget.model.AccountId
 import aktual.budget.model.CategoryId
-import aktual.budget.model.ConditionOp
 import aktual.budget.model.WidgetType
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -67,7 +66,7 @@ class ReportMetaSerializationTest {
 
     val formula = decoded as FormulaReportMeta
     assertThat(formula.queries.getValue("a").timeFrame?.start).isEqualTo(YearMonth(2011, OCTOBER))
-    assertThat(formula.queries.getValue("a").conditionsOp).isEqualTo(ConditionOp.And)
+    assertThat(formula.queries.getValue("a").conditionsOp).isEqualTo(And)
   }
 
   @Test
