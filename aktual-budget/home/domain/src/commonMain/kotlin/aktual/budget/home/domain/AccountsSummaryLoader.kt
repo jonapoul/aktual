@@ -30,7 +30,13 @@ private fun List<GetAllWithBalances>.toSection(): AccountSection {
 }
 
 private fun GetAllWithBalances.toAccountBalance() =
-  AccountBalance(id = id, name = name.orEmpty(), balance = Amount(balance), syncState = syncState())
+  AccountBalance(
+    id = id,
+    name = name.orEmpty(),
+    balance = Amount(balance),
+    syncState = syncState(),
+    lastActivity = last_activity,
+  )
 
 // Upstream treats an account as linked if it has a sync source, and unlinking clears both
 private fun GetAllWithBalances.syncState(): AccountSyncState {

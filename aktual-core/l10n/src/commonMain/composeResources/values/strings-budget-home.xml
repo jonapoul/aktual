@@ -42,6 +42,8 @@
   <string name="home_accounts_on_budget">On budget</string>
   <string name="home_accounts_off_budget">Off budget</string>
   <string name="home_accounts_sync_failed">Bank sync failed</string>
+  <string name="home_accounts_show_all">Show all %1$d accounts</string>
+  <string name="home_accounts_show_less">Show fewer</string>
   <string name="home_accounts_empty">No accounts yet</string>
   <string name="home_accounts_empty_action">Set up bank sync</string>
   <string name="home_upcoming_title">Upcoming · %1$s</string>

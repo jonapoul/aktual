@@ -80,6 +80,31 @@ class HomeViewModelTest {
   }
 
   @Test
+  fun `Accounts collapse to the most recently active`() = runDatabaseTest { scope ->
+    val transactions = TransactionDao(this)
+    for (day in 1..7) {
+      insertAccount("a$day")
+      transactions.insert("t$day", "a$day", "cat", "payee", date(day), amount = 1.0)
+    }
+    val viewModel = createViewModel(scope)
+
+    viewModel.state.test {
+      assertThat(awaitLoaded().recent?.onBudget?.accounts?.map { it.id.value })
+        .isEqualTo(listOf("a3", "a4", "a5", "a6", "a7"))
+    }
+  }
+
+  @Test
+  fun `Few accounts have nothing to collapse`() = runDatabaseTest { scope ->
+    insertAccount("a")
+    val viewModel = createViewModel(scope)
+
+    viewModel.state.test {
+      assertThat(awaitLoaded().recent).isEqualTo(null)
+    }
+  }
+
+  @Test
   fun `Nothing upcoming is empty`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Later", payee = "p", account = "a", nextDate = date(9))
     val viewModel = createHomeViewModel(scope, CALENDAR)

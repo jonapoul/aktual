@@ -101,5 +101,8 @@ sealed interface AccountsCardState {
 
   data object Empty : AccountsCardState
 
-  data class Loaded(val summary: AccountsSummary) : AccountsCardState
+  // recent is the cut-down summary shown until the card is expanded, null if there's nothing to
+  // hide
+  data class Loaded(val summary: AccountsSummary, val recent: AccountsSummary? = null) :
+    AccountsCardState
 }
