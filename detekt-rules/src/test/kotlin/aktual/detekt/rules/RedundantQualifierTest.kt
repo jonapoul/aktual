@@ -38,7 +38,8 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
         Role.Admin -> 1
         Role.Basic -> 2
       }
-      """,
+      """
+        .trimIndent(),
       "Role.Admin" to "Admin",
       "Role.Basic" to "Basic",
     )
@@ -51,7 +52,8 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
         Role.Admin -> 1
         else -> role.ordinal
       }
-      """,
+      """
+        .trimIndent(),
       "Role.Admin" to "Admin",
     )
 
@@ -82,7 +84,8 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
       fun foo(): Role {
         return Role.Admin
       }
-      """,
+      """
+        .trimIndent(),
       "Role.Admin" to "Admin",
     )
 
@@ -98,7 +101,8 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
         var role: Role = makeRole()
         role = Role.Admin
       }
-      """,
+      """
+        .trimIndent(),
       "Role.Admin" to "Admin",
     )
 
@@ -129,7 +133,8 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
         State.Loading -> 1
         else -> 2
       }
-      """,
+      """
+        .trimIndent(),
       "State.Loading" to "Loading",
     )
 
@@ -141,7 +146,8 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
         is State.Failure -> 1
         else -> 2
       }
-      """,
+      """
+        .trimIndent(),
       "State.Failure" to "Failure",
     )
 
@@ -192,6 +198,7 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
         return Role.Admin
       }
       """
+        .trimIndent()
     )
 
   @Test
@@ -219,7 +226,8 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
     assertReported(
       """
       fun foo(role: Assert<Role>) = role.map { if (it == makeRole()) Role.Admin else Role.Basic }
-      """,
+      """
+        .trimIndent(),
       "Role.Admin" to "Admin",
       "Role.Basic" to "Basic",
     )

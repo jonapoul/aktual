@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.analysis.api.resolution.symbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaClassLikeSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaConstructorSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaEnumEntrySymbol
+import org.jetbrains.kotlin.analysis.api.symbols.KaFunctionSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaNamedClassSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaTypeParameterSymbol
@@ -152,34 +153,28 @@ internal class RedundantQualifier(config: Config) :
     }
   }
 
-  private fun KaSession.expectedType(expression: KtExpression): KaType? {
-    val parent = expression.parent
-    val expected =
-      when (parent) {
-        is KtBinaryExpression if parent.operationToken in EQUALITY -> {
-          val other = if (parent.left == expression) parent.right else parent.left
-          return other?.expressionType
-        }
-
-        is KtWhenConditionWithExpression ->
-          return parent.getStrictParentOfType<KtWhenExpression>()?.let { subjectType(it) }
-
-        // Infix calls and elvis don't pass an expected type down the way a plain argument does
-        is KtBinaryExpression if parent.operationToken != KtTokens.EQ -> return null
-
-        else -> expression.expectedType ?: return null
-      }
-
-    val call = (parent as? KtValueArgument)?.let(::callOf)
-    if (call != null) {
-      return expected.takeUnless { isInferred(call, expression) { it } }
+  private fun KaSession.expectedType(expression: KtExpression): KaType? =
+    when (val parent = expression.parent) {
+      is KtBinaryExpression -> operandType(parent, expression)
+      is KtWhenConditionWithExpression ->
+        parent.getStrictParentOfType<KtWhenExpression>()?.let { subjectType(it) }
+      is KtValueArgument -> argumentType(parent, expression)
+      else -> expression.expectedType?.takeUnless { isInferredLambdaResult(expression) }
     }
 
-    val lambda = lambdaReturning(expression) ?: return expected
-    val lambdaCall = (lambda.parent as? KtValueArgument)?.let(::callOf) ?: return null
-    val inferred = isInferred(lambdaCall, lambda) { (it as? KaFunctionType)?.returnType }
-    return expected.takeUnless { inferred }
+  private fun KaSession.argumentType(argument: KtValueArgument, expression: KtExpression): KaType? {
+    val call = callOf(argument)
+    val inferred = call != null && isInferred(call, expression) { type -> type }
+    return if (inferred) null else expression.expectedType
   }
+
+  private fun KaSession.operandType(binary: KtBinaryExpression, operand: KtExpression): KaType? =
+    when (binary.operationToken) {
+      in EQUALITY -> (if (binary.left == operand) binary.right else binary.left)?.expressionType
+      KtTokens.EQ -> operand.expectedType
+      // Infix calls and elvis don't pass an expected type down the way a plain argument does
+      else -> null
+    }
 
   private fun KaSession.subjectType(whenExpression: KtWhenExpression): KaType? =
     whenExpression.subjectVariable?.returnType ?: whenExpression.subjectExpression?.expressionType
@@ -190,24 +185,28 @@ internal class RedundantQualifier(config: Config) :
       else -> parent as? KtCallExpression
     }
 
-  // The lambda whose result this expression is, e.g. the `Role.Admin` in `run { Role.Admin }`
-  private fun lambdaReturning(expression: KtExpression): KtLambdaExpression? {
-    var element: PsiElement = expression
-    while (true) {
-      val parent = element.parent ?: return null
+  private fun KaSession.isInferredLambdaResult(expression: KtExpression): Boolean {
+    val lambda = lambdaReturning(expression) ?: return false
+    val call = (lambda.parent as? KtValueArgument)?.let(::callOf) ?: return true
+    return isInferred(call, lambda) { type -> (type as? KaFunctionType)?.returnType }
+  }
+
+  // The lambda whose result this element is, e.g. the `Role.Admin` in `run { Role.Admin }`
+  private fun lambdaReturning(element: PsiElement): KtLambdaExpression? {
+    val parent = element.parent
+    val passesResultUp =
       when (parent) {
-        is KtBlockExpression -> if (parent.statements.lastOrNull() != element) return null
-        is KtIfExpression -> if (parent.condition == element) return null
+        is KtFunctionLiteral -> return parent.parent as? KtLambdaExpression
+        is KtBlockExpression -> parent.statements.lastOrNull() == element
+        is KtIfExpression -> parent.condition != element
+        is KtReturnExpression -> parent.getTargetLabel() != null
         is KtWhenEntry,
         is KtWhenExpression,
         is KtContainerNodeForControlStructureBody,
-        is KtParenthesizedExpression -> Unit
-        is KtReturnExpression -> if (parent.getTargetLabel() == null) return null
-        is KtFunctionLiteral -> return parent.parent as? KtLambdaExpression
-        else -> return null
+        is KtParenthesizedExpression -> true
+        else -> false
       }
-      element = parent
-    }
+    return if (passesResultUp && parent != null) lambdaReturning(parent) else null
   }
 
   // Whether the type comes from the argument itself, as it does for T in `listOf(Role.Admin)`, or
@@ -217,26 +216,33 @@ internal class RedundantQualifier(config: Config) :
     argument: KtExpression,
     select: (KaType) -> KaType?,
   ): Boolean {
-    val resolved = call.resolveToCall()?.successfulFunctionCallOrNull() ?: return true
-    val signature = resolved.valueArgumentMapping[argument] ?: return true
-    val type = select(signature.symbol.returnType) ?: return true
-    val substituted = select(signature.returnType) ?: return true
+    val resolved = call.resolveToCall()?.successfulFunctionCallOrNull()
+    val signature = resolved?.valueArgumentMapping?.get(argument)
+    val declared = signature?.let { select(it.symbol.returnType) }
+    val substituted = signature?.let { select(it.returnType) }
+    if (resolved == null || declared == null || substituted == null) return true
 
     val overloadsDisagree =
       call.resolveToCallCandidates().any { info ->
-        val candidate = info.candidate as? KaFunctionCall<*> ?: return@any false
-        val other = candidate.valueArgumentMapping[argument]?.returnType ?: return@any false
-        select(other)?.semanticallyEquals(substituted) != true
+        val candidate = info.candidate as? KaFunctionCall<*>
+        val other = candidate?.valueArgumentMapping?.get(argument)?.returnType
+        other != null && select(other)?.semanticallyEquals(substituted) != true
       }
-    if (overloadsDisagree) return true
 
-    if (type !is KaTypeParameterType || call.typeArgumentList != null) return false
-    val function = resolved.symbol
-    if (function is KaConstructorSymbol) return true
-    if (type.symbol.containingDeclaration != function) return false
-    // `Assert<T>.isEqualTo(expected: T)` gets T from its receiver, not the argument
-    return function.receiverParameter?.returnType?.mentions(type.symbol) != true
+    return overloadsDisagree ||
+      call.typeArgumentList == null &&
+        declared is KaTypeParameterType &&
+        isDecidedByArgument(declared.symbol, resolved.symbol)
   }
+
+  // `Assert<T>.isEqualTo(expected: T)` gets T from its receiver, not the argument
+  private fun KaSession.isDecidedByArgument(
+    parameter: KaTypeParameterSymbol,
+    function: KaFunctionSymbol,
+  ): Boolean =
+    function is KaConstructorSymbol ||
+      parameter.containingDeclaration == function &&
+        function.receiverParameter?.returnType?.mentions(parameter) != true
 
   private fun KaType.mentions(parameter: KaTypeParameterSymbol): Boolean =
     when (this) {
