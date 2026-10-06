@@ -5,7 +5,9 @@ import aktual.budget.home.vm.HomeState
 import aktual.budget.home.vm.HomeViewModel
 import aktual.core.l10n.Strings
 import aktual.core.nav.BankSyncNavigator
+import aktual.core.nav.BankSyncSettingsNavigator
 import aktual.core.nav.EditScheduleNavigator
+import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.nav.ListSchedulesNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTheme.colors
@@ -40,6 +42,8 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 internal fun HomeScreen(
   transactions: TransactionsNavigator,
   bankSync: BankSyncNavigator,
+  bankSyncSettings: BankSyncSettingsNavigator,
+  linkBankAccount: LinkBankAccountNavigator,
   schedules: ListSchedulesNavigator,
   editSchedule: EditScheduleNavigator,
   modifier: Modifier = Modifier,
@@ -51,7 +55,10 @@ internal fun HomeScreen(
     onAction = { action ->
       when (action) {
         is OpenAccount -> transactions(action.id)
-        SetUpAccounts -> bankSync()
+        OpenBankSync -> bankSync()
+        is OpenBankSyncSettings -> bankSyncSettings(action.id)
+        is LinkBankAccount -> linkBankAccount(action.id)
+        ReviewUncategorised -> transactions.uncategorised()
         is OpenSchedule -> editSchedule(action.id)
         OpenSchedules -> schedules()
       }
@@ -89,6 +96,8 @@ private fun HomeScaffold(
       ) {
         ThisMonthCard(state = state.thisMonth)
 
+        AttentionCard(state = state.attention, onAction = onAction)
+
         UpcomingCard(state = state.upcoming, onAction = onAction)
 
         AccountsCard(state = state.accounts, onAction = onAction)
@@ -120,6 +129,7 @@ private class HomeStateProvider :
     HomeState(
       budgetName = "Household budget",
       thisMonth = PREVIEW_THIS_MONTH,
+      attention = PREVIEW_ATTENTION,
       upcoming = PREVIEW_UPCOMING,
       accounts = AccountsCardState.Loaded(PREVIEW_ACCOUNTS),
     ),

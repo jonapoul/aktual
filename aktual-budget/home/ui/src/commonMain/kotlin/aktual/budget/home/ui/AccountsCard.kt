@@ -199,7 +199,7 @@ private fun AccountsEmpty(onAction: HomeActionHandler, modifier: Modifier = Modi
       color = colors.pageTextSubdued,
     )
 
-    PrimaryTextButton(text = Strings.homeAccountsEmptyAction, onClick = { onAction(SetUpAccounts) })
+    PrimaryTextButton(text = Strings.homeAccountsEmptyAction, onClick = { onAction(OpenBankSync) })
   }
 }
 

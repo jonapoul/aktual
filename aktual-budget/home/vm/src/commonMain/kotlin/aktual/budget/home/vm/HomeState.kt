@@ -1,7 +1,10 @@
 package aktual.budget.home.vm
 
 import aktual.budget.home.domain.AccountsSummary
+import aktual.budget.home.domain.OverspentCategory
+import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
+import aktual.budget.model.BankSyncStatus
 import aktual.budget.model.UpcomingLength
 import aktual.budget.schedules.domain.Schedule
 import androidx.compose.runtime.Immutable
@@ -13,6 +16,7 @@ import kotlinx.datetime.YearMonth
 data class HomeState(
   val budgetName: String?,
   val thisMonth: ThisMonthCardState = Loading,
+  val attention: AttentionCardState = Loading,
   val upcoming: UpcomingCardState = Loading,
   val accounts: AccountsCardState = Loading,
 )
@@ -49,6 +53,30 @@ sealed interface ThisMonthCardState {
     val remaining: Amount
       get() = budgeted - spent
   }
+}
+
+@Immutable
+sealed interface AttentionCardState {
+  data object Loading : AttentionCardState
+
+  data object Empty : AttentionCardState
+
+  data class Loaded(val items: ImmutableList<AttentionItem>) : AttentionCardState
+}
+
+@Immutable
+sealed interface AttentionItem {
+  data class SyncFailed(val account: AccountId, val name: String, val status: BankSyncStatus) :
+    AttentionItem
+
+  // Stands in for the individual rows when too many accounts are failing
+  data class SyncFailedMany(val count: Int) : AttentionItem
+
+  data class Uncategorised(val count: Int) : AttentionItem
+
+  data class Overspent(val categories: ImmutableList<OverspentCategory>) : AttentionItem
+
+  data class OverdueSchedules(val count: Int) : AttentionItem
 }
 
 @Immutable
