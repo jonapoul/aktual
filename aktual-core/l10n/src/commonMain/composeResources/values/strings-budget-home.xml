@@ -12,6 +12,32 @@
   <string name="home_this_month_spent">%1$s spent</string>
   <string name="home_this_month_of_budgeted">of %1$s budgeted</string>
   <string name="home_this_month_income">%1$s of %2$s income received</string>
+  <string name="home_attention_title">Needs attention</string>
+  <string name="home_attention_fix">Fix</string>
+  <string name="home_attention_review">Review</string>
+  <string name="home_attention_sync_failed">%1$s: bank sync failed</string>
+  <string name="home_attention_sync_reauth">%1$s: needs re-authorising</string>
+  <string name="home_attention_sync_attention">%1$s: bank needs attention</string>
+  <string name="home_attention_sync_rate_limited">%1$s: bank sync rate limited</string>
+  <string name="home_attention_sync_timed_out">%1$s: bank sync timed out</string>
+  <string name="home_attention_sync_account_missing">%1$s: linked account is missing</string>
+  <plurals name="home_attention_sync_failed_many">
+    <item quantity="one">%1$d account failed to sync</item>
+    <item quantity="other">%1$d accounts failed to sync</item>
+  </plurals>
+  <plurals name="home_attention_uncategorised">
+    <item quantity="one">%1$d uncategorised transaction</item>
+    <item quantity="other">%1$d uncategorised transactions</item>
+  </plurals>
+  <plurals name="home_attention_overspent">
+    <item quantity="one">%1$d category overspent</item>
+    <item quantity="other">%1$d categories overspent</item>
+  </plurals>
+  <plurals name="home_attention_overdue">
+    <item quantity="one">%1$d schedule overdue</item>
+    <item quantity="other">%1$d schedules overdue</item>
+  </plurals>
+  <string name="home_attention_overspent_sheet_title">Overspent categories</string>
   <string name="home_accounts_title">Accounts</string>
   <string name="home_accounts_on_budget">On budget</string>
   <string name="home_accounts_off_budget">Off budget</string>

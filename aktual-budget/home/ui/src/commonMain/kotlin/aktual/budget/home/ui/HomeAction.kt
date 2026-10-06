@@ -8,7 +8,13 @@ internal sealed interface HomeAction
 
 @JvmInline internal value class OpenAccount(val id: AccountId) : HomeAction
 
-internal data object SetUpAccounts : HomeAction
+internal data object OpenBankSync : HomeAction
+
+@JvmInline internal value class OpenBankSyncSettings(val id: AccountId) : HomeAction
+
+@JvmInline internal value class LinkBankAccount(val id: AccountId) : HomeAction
+
+internal data object ReviewUncategorised : HomeAction
 
 @JvmInline internal value class OpenSchedule(val id: ScheduleId) : HomeAction
 
