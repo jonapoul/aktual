@@ -51,14 +51,14 @@ class ServerPinger(
   override fun close() {
     job?.cancel()
     job = null
-    pingStateHolder.update { PingState.Unknown }
+    pingStateHolder.update { Unknown }
   }
 
   private suspend fun attemptPing(healthApi: HealthApi): PingState {
     return try {
       val response = healthApi.getHealth()
       logcat.v { "Succeeded pinging server: $response" }
-      if (response.status == "UP") PingState.Success else PingState.Unknown
+      if (response.status == "UP") Success else Unknown
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {

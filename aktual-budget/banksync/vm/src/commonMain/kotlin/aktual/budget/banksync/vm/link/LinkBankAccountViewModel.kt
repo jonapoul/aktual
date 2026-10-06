@@ -301,7 +301,7 @@ class LinkBankAccountViewModel(
   private suspend fun isConfigured(source: AccountSyncSource): Boolean =
     try {
       when (val response = api.status(source)) {
-        is BankSyncStatusResponse.Success -> response.configured
+        is Success -> response.configured
         is BankSyncStatusResponse.Rejected -> false
       }
     } catch (e: CancellationException) {

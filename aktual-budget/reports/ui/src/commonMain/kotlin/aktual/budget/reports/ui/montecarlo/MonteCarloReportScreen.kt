@@ -157,7 +157,7 @@ internal fun MonteCarloScaffold(
           )
         },
         actions = {
-          if (state is MonteCarloState.Loaded) {
+          if (state is Loaded) {
             if (state.hasChanges) {
               TextButton(onClick = { onAction(Save) }) {
                 Text(Strings.monteCarloSave, color = colors.pageTextPositive)

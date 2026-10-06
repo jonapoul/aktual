@@ -6,7 +6,6 @@ import assertk.assertions.isEqualTo
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.LogcatLogger.Companion.loggers
 import logcat.logcat
@@ -30,7 +29,7 @@ class AktualAndroidLogcatLoggerTest {
   @Test
   fun `Log to logcat`() {
     // given
-    loggers += AktualAndroidLogcatLogger(LogPriority.VERBOSE)
+    loggers += AktualAndroidLogcatLogger(VERBOSE)
 
     // when
     logcat.i { "Hello world" }

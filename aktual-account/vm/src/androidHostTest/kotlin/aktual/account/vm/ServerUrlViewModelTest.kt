@@ -97,7 +97,7 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      assertThatNextEmissionIsEqualTo(NavDestination.ToLogin)
+      assertThatNextEmissionIsEqualTo(ToLogin)
       advanceUntilIdle()
       ensureAllEventsConsumed()
       cancelAndIgnoreRemainingEvents()
@@ -120,7 +120,7 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      assertThatNextEmissionIsEqualTo(NavDestination.ToBootstrap)
+      assertThatNextEmissionIsEqualTo(ToBootstrap)
       advanceUntilIdle()
       ensureAllEventsConsumed()
       cancelAndIgnoreRemainingEvents()

@@ -70,7 +70,7 @@ class CustomThemeSettingsViewModel(
     viewModelScope.launchMolecule(Immediate) {
       val isFetchingCatalog by mutableIsFetchingCatalog.collectAsState()
       if (isFetchingCatalog) {
-        return@launchMolecule CatalogState.Loading
+        return@launchMolecule Loading
       }
 
       val failure by mutableFailure.collectAsState()
@@ -217,7 +217,7 @@ class CustomThemeSettingsViewModel(
       mutableCachedThemes.update { cacheStates }
 
       if (showSnackbar) {
-        mutableEvents.tryEmit(CustomThemeEvent.CacheRefreshed)
+        mutableEvents.tryEmit(CacheRefreshed)
       }
     } catch (e: CancellationException) {
       throw e

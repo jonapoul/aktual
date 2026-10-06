@@ -267,8 +267,8 @@ private class LoginScaffoldProvider :
     LoginScaffoldParams(loginMethods = ALL_METHODS, selectedLoginMethod = LoginMethod.Password),
     LoginScaffoldParams(
       loginMethods = ALL_METHODS,
-      selectedLoginMethod = LoginMethod.Header,
+      selectedLoginMethod = Header,
       isLoading = true,
     ),
-    LoginScaffoldParams(loginMethods = ALL_METHODS, selectedLoginMethod = LoginMethod.OpenId),
+    LoginScaffoldParams(loginMethods = ALL_METHODS, selectedLoginMethod = OpenId),
   )

@@ -1,6 +1,5 @@
 package aktual.budget.rules.domain
 
-import aktual.budget.model.Field
 import aktual.budget.model.RuleId
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -25,13 +24,13 @@ class RankRulesTest {
         rule("id1", listOf(cond(Notes, Contains, "sar"))),
         rule("id2", listOf(cond(ImportedPayee, OneOf, listOf("jim", "sar")))),
         rule("id3", listOf(cond(Notes, Is, "James"))),
-        rule("id4", listOf(cond(Notes, Is, "James"), cond(Field.Amount, GreaterThan, 5))),
+        rule("id4", listOf(cond(Notes, Is, "James"), cond(Amount, GreaterThan, 5))),
         rule(
           "id5",
           listOf(
             cond(Notes, Is, "James"),
-            cond(Field.Amount, GreaterThan, 5),
-            cond(Field.Amount, LessThan, 10),
+            cond(Amount, GreaterThan, 5),
+            cond(Amount, LessThan, 10),
           ),
         ),
       )

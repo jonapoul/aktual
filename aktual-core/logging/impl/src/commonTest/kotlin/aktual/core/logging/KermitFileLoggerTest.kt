@@ -12,7 +12,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.time.Clock
 import kotlin.time.Instant
-import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
 import okio.FileSystem
@@ -46,7 +45,7 @@ class KermitFileLoggerTest {
   fun `Log to file asynchronously`() {
     // given
     LogcatLogger.loggers +=
-      KermitFileLogger(storage = logStorage, minPriority = LogPriority.DEBUG, clock = clock)
+      KermitFileLogger(storage = logStorage, minPriority = DEBUG, clock = clock)
 
     // when
     logcat.i { "Hello world" }

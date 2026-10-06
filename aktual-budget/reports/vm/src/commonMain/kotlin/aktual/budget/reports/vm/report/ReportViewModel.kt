@@ -51,7 +51,7 @@ internal constructor(
           chartDataLoader.load(item.meta).map { data -> ReportState.Loaded(type, item, data) }
         }
       }
-      .stateIn(viewModelScope, Eagerly, initialValue = ReportState.Loading)
+      .stateIn(viewModelScope, Eagerly, initialValue = Loading)
 
   fun saveText(content: String, align: TextAlign) {
     logcat.d { "Saving text for $id" }

@@ -91,7 +91,7 @@ class RunLevelStateHolder(private val driverFactory: SqlDriverFactory) :
   }
 
   override fun onOfflineBudget(id: BudgetId, metadata: DbMetadata): BudgetGraph =
-    openBudget(id, metadata, BudgetServer.None) { levels -> levels.popTo<AppGraph>() }
+    openBudget(id, metadata, None) { levels -> levels.popTo<AppGraph>() }
 
   private inline fun openBudget(
     id: BudgetId,

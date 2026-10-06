@@ -121,9 +121,8 @@ internal constructor(
 
   private fun ScheduleDate.upcoming(): ImmutableList<LocalDate> =
     when (this) {
-      is ScheduleDate.Once -> persistentListOf(date)
-      is ScheduleDate.Recurring ->
-        config.upcomingDates(from = today, count = UPCOMING_COUNT).toImmutableList()
+      is Once -> persistentListOf(date)
+      is Recurring -> config.upcomingDates(from = today, count = UPCOMING_COUNT).toImmutableList()
     }
 
   private suspend fun load() {
@@ -131,7 +130,7 @@ internal constructor(
       mutableEntities.update { loadEntities() }
       val saved = loadSaved()
       if (saved == null) {
-        mutableFailure.update { Failure.NotFound }
+        mutableFailure.update { NotFound }
       } else {
         mutableSaved.update { saved }
         mutableForm.update { saved.form }

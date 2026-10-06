@@ -79,7 +79,7 @@ internal constructor(
         val meta = widget?.let(decoder::decode)?.meta
         if (meta is MonteCarloReportMeta) SavedMeta.Found(meta) else SavedMeta.NotFound
       }
-      .stateIn(viewModelScope, Eagerly, SavedMeta.Loading)
+      .stateIn(viewModelScope, Eagerly, Loading)
 
   // The plan being edited, taken from the saved meta once and only changed by the user from then on
   private val mutableConfig = MutableStateFlow<McConfig?>(null)

@@ -140,7 +140,7 @@ class BankSyncViewModel(
   }
 
   private suspend fun checkProviders(sources: Set<AccountSyncSource>) {
-    if (server !is BudgetServer.Remote) {
+    if (server !is Remote) {
       mutableStatuses.update {
         sources.associateWith { BankSyncProviderStatus.NoServer }.toPersistentMap()
       }

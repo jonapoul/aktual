@@ -8,7 +8,7 @@ import kotlin.reflect.KClass
  * untangling the module graph to make it work better
  */
 @MapKey(implicitClassKey = false)
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(CLASS, FUNCTION)
 annotation class AccessorKey(val value: KClass<out Any>)
 
 fun interface Accessor {

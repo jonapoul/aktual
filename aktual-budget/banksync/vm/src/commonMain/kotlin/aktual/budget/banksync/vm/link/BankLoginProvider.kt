@@ -109,8 +109,8 @@ internal class EnableBankingLoginProvider(private val api: EnableBankingApi) : B
     val bank = banks[bankId] ?: error("No Enable Banking bank $bankId")
     val accountType: EnableBankingAccountType =
       when (type) {
-        LoginAccountType.Business -> Business
-        LoginAccountType.Personal,
+        Business -> Business
+        Personal,
         null -> Personal
       }
     return when (val response = api.login(bank, accountType)) {

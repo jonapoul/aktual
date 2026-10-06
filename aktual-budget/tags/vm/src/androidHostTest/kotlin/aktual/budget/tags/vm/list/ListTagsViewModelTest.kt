@@ -250,7 +250,7 @@ class ListTagsViewModelTest {
         .prop(Success::tags)
         .extracting(TagItem::tag)
         .containsExactly("apple", "Mango", "rent")
-      assertThat(success.sort).isEqualTo(TagSort(TagSort.Field.Name, TagSort.Direction.Ascending))
+      assertThat(success.sort).isEqualTo(TagSort(TagSort.Field.Name, Ascending))
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -271,9 +271,9 @@ class ListTagsViewModelTest {
         .containsExactly("apple", "rent")
 
       // switching to descending flips the order
-      viewModel.setSort(TagSort(TagSort.Field.Name, TagSort.Direction.Descending))
+      viewModel.setSort(TagSort(TagSort.Field.Name, Descending))
       var success = awaitItem() as Success
-      while (success.sort.direction != TagSort.Direction.Descending) {
+      while (success.sort.direction != Descending) {
         success = awaitItem() as Success
       }
       assertThat(success)

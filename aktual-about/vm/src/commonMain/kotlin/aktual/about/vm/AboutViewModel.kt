@@ -110,9 +110,9 @@ class AboutViewModel(
       val state = githubRepository.fetchLatestRelease()
       mutableCheckUpdatesState.update {
         when (state) {
-          NoNewUpdate -> CheckUpdatesState.NoUpdateFound
+          NoNewUpdate -> NoUpdateFound
 
-          NoReleases -> CheckUpdatesState.NoUpdateFound
+          NoReleases -> NoUpdateFound
 
           PrivateRepo -> CheckUpdatesState.Failed(cause = "Repo inaccessible")
 

@@ -4,7 +4,6 @@ import aktual.core.theme.Colors
 import aktual.core.theme.LightColors
 import aktual.core.ui.AktualTheme.colors
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -44,7 +43,7 @@ fun AnimatedLoading(modifier: Modifier = Modifier) {
       animationSpec =
         infiniteRepeatable(
           animation = tween(DURATION_MS, easing = LinearEasing),
-          repeatMode = RepeatMode.Restart,
+          repeatMode = Restart,
         ),
       label = "rotation",
     )

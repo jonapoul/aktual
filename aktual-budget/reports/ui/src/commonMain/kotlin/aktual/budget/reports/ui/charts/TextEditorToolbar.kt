@@ -135,7 +135,7 @@ private fun PreviewTextEditorToolbar(
     TextEditorToolbar(
       mode = this,
       onMode = {},
-      align = TextAlign.Left,
+      align = Left,
       onAlign = {},
       onFormat = {},
     )

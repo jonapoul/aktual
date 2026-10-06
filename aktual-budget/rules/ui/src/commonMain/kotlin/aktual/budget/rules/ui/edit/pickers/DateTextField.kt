@@ -1,7 +1,6 @@
 package aktual.budget.rules.ui.edit.pickers
 
 import aktual.budget.model.RecurConfig
-import aktual.budget.model.RecurEndMode
 import aktual.budget.model.RecurFrequency
 import aktual.core.icons.material.CalendarToday
 import aktual.core.icons.material.Clear
@@ -160,7 +159,7 @@ private val PreviewRecurConfig =
         interval = 1,
         patterns = emptyList(),
         skipWeekend = false,
-        endMode = RecurEndMode.Never,
+        endMode = Never,
         endOccurrences = 1,
         endDate = LocalDate.parse("2025-03-06"),
       ),

@@ -433,7 +433,7 @@ private fun LegendRow(label: String, size: String, color: Color) {
 @Composable
 private fun StorageDialogs(dialog: StorageDialog, onAction: ManageStorageActionHandler) {
   when (dialog) {
-    StorageDialog.None -> {
+    None -> {
       // N/A
     }
 

@@ -83,7 +83,7 @@ class BankSyncViewModelTest {
                         "savings",
                         "Savings",
                         bank = "Bankity Bank",
-                        status = BankSyncAccountStatus.ReauthRequired,
+                        status = ReauthRequired,
                       )
                     ),
                 ),
@@ -98,7 +98,7 @@ class BankSyncViewModelTest {
                         bank = "Bankity Bank",
                         lastSync = MinutesAgo(minutes = 5),
                       ),
-                      account("credit", "Credit", status = BankSyncAccountStatus.RateLimited),
+                      account("credit", "Credit", status = RateLimited),
                     ),
                 ),
               ),

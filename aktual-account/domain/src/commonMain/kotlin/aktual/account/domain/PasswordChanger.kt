@@ -26,7 +26,7 @@ class PasswordChanger(
       val request = ChangePasswordRequest(password)
       val response = withContext(contexts.io) { accountApi.changePassword(request, token) }
       logcat.v { "Received response: $response" }
-      ChangePasswordResult.Success
+      Success
     } catch (e: CancellationException) {
       throw e
     } catch (e: ResponseException) {

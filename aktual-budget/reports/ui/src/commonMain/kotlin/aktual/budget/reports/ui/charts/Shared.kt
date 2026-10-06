@@ -248,21 +248,21 @@ internal fun Footer(title: String, text: String, modifier: Modifier = Modifier) 
 @Composable
 internal fun DateRangeType.string() =
   when (this) {
-    DateRangeType.ThisWeek -> Strings.reportsDateTypeThisWeek
-    DateRangeType.LastWeek -> Strings.reportsDateTypeLastWeek
-    DateRangeType.ThisMonth -> Strings.reportsDateTypeThisMonth
-    DateRangeType.LastMonth -> Strings.reportsDateTypeLastMonth
-    DateRangeType.CurrentQuarter -> Strings.reportsDateTypeCurrentQuarter
-    DateRangeType.PreviousQuarter -> Strings.reportsDateTypePreviousQuarter
-    DateRangeType.Last30Days -> Strings.reportsDateTypeLast30Days
-    DateRangeType.Last3Months -> Strings.reportsDateTypeLast3Months
-    DateRangeType.Last6Months -> Strings.reportsDateTypeLast6Months
-    DateRangeType.Last12Months -> Strings.reportsDateTypeLast12Months
-    DateRangeType.YearToDate -> Strings.reportsDateTypeYearToDate
-    DateRangeType.LastYear -> Strings.reportsDateTypeLastYear
-    DateRangeType.PriorYearToDate -> Strings.reportsDateTypePriorYearToDate
-    DateRangeType.AllTime -> Strings.reportsDateTypeAllTime
-    DateRangeType.Unknown -> Strings.reportsDateTypeUnknown
+    ThisWeek -> Strings.reportsDateTypeThisWeek
+    LastWeek -> Strings.reportsDateTypeLastWeek
+    ThisMonth -> Strings.reportsDateTypeThisMonth
+    LastMonth -> Strings.reportsDateTypeLastMonth
+    CurrentQuarter -> Strings.reportsDateTypeCurrentQuarter
+    PreviousQuarter -> Strings.reportsDateTypePreviousQuarter
+    Last30Days -> Strings.reportsDateTypeLast30Days
+    Last3Months -> Strings.reportsDateTypeLast3Months
+    Last6Months -> Strings.reportsDateTypeLast6Months
+    Last12Months -> Strings.reportsDateTypeLast12Months
+    YearToDate -> Strings.reportsDateTypeYearToDate
+    LastYear -> Strings.reportsDateTypeLastYear
+    PriorYearToDate -> Strings.reportsDateTypePriorYearToDate
+    AllTime -> Strings.reportsDateTypeAllTime
+    Unknown -> Strings.reportsDateTypeUnknown
   }
 
 // Vertical line at an x value, drawn over the chart's layers. Hidden when zoomed out of range

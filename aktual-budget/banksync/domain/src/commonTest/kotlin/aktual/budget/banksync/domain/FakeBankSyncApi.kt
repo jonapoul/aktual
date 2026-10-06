@@ -58,7 +58,7 @@ internal class FakeBankSyncApi : BankSyncApi {
   override suspend fun goCardlessAccounts(requisitionId: String): GoCardlessAccountsResponse {
     polled += requisitionId
     error?.let { throw it }
-    return if (pendingForever) GoCardlessAccountsResponse.Pending else pollResponses.removeFirst()
+    return if (pendingForever) Pending else pollResponses.removeFirst()
   }
 
   override suspend fun removeGoCardlessRequisition(requisitionId: String): Boolean {

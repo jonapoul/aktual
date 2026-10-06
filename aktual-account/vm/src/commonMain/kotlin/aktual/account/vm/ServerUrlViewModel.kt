@@ -157,7 +157,7 @@ class ServerUrlViewModel(
   }
 
   fun onClickAbout() {
-    mutableNavDestination.trySend(NavDestination.ToAbout)
+    mutableNavDestination.trySend(ToAbout)
   }
 
   private suspend fun checkIfNeedsBootstrap(url: ServerUrl, accountApi: AccountApi) {
