@@ -11,6 +11,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.stringLong
+import aktual.core.ui.stringShort
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -95,8 +96,10 @@ private fun DateRail(date: LocalDate, dimens: LedgerDimens) =
       maxLines = 1,
     )
 
+    // Compact swaps the weekday for the month, since the rail has no room for both
+    val subtitle = if (dimens.showMonth) date.month.stringShort() else date.dayOfWeek.stringLong()
     Text(
-      text = date.dayOfWeek.stringLong().take(WEEKDAY_LENGTH).uppercase(),
+      text = subtitle.take(LABEL_LENGTH).uppercase(),
       fontSize = dimens.weekdaySize,
       fontWeight = SemiBold,
       color = colors.pageTextLight,
@@ -243,7 +246,7 @@ internal fun LedgerShimmerRow(modifier: Modifier = Modifier) {
 }
 
 private const val DAY_NUMBER_LINE_HEIGHT = 1.1f
-private const val WEEKDAY_LENGTH = 3
+private const val LABEL_LENGTH = 3
 private const val SHIMMER_BAR_FRACTION = 1.5f
 
 @Preview
