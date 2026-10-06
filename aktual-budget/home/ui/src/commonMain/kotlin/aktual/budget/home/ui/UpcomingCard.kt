@@ -112,10 +112,10 @@ private fun UpcomingLength.windowString(): String =
   when (this) {
     CurrentMonth -> Strings.homeUpcomingWindowCurrentMonth
     OneMonth -> Plurals.homeUpcomingWindowMonths(1, 1)
-    is UpcomingLength.Days -> Plurals.homeUpcomingWindowDays(count, count)
-    is UpcomingLength.Weeks -> Plurals.homeUpcomingWindowWeeks(count, count)
-    is UpcomingLength.Months -> Plurals.homeUpcomingWindowMonths(count, count)
-    is UpcomingLength.Years -> Plurals.homeUpcomingWindowYears(count, count)
+    is Days -> Plurals.homeUpcomingWindowDays(count, count)
+    is Weeks -> Plurals.homeUpcomingWindowWeeks(count, count)
+    is Months -> Plurals.homeUpcomingWindowMonths(count, count)
+    is Years -> Plurals.homeUpcomingWindowYears(count, count)
   }
 
 @Composable

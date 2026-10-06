@@ -5,69 +5,69 @@ package logcat
 object logcat {
   context(subject: Any)
   inline fun v(tag: String? = null, t: Throwable? = null, message: () -> String) =
-    combined1(LogPriority.VERBOSE, tag, t, message)
+    combined1(VERBOSE, tag, t, message)
 
   context(subject: Any)
   inline fun d(tag: String? = null, t: Throwable? = null, message: () -> String) =
-    combined1(LogPriority.DEBUG, tag, t, message)
+    combined1(DEBUG, tag, t, message)
 
   context(subject: Any)
   inline fun i(tag: String? = null, t: Throwable? = null, message: () -> String) =
-    combined1(LogPriority.INFO, tag, t, message)
+    combined1(INFO, tag, t, message)
 
   context(subject: Any)
   inline fun w(tag: String? = null, t: Throwable? = null, message: () -> String) =
-    combined1(LogPriority.WARN, tag, t, message)
+    combined1(WARN, tag, t, message)
 
   context(subject: Any)
   inline fun e(tag: String? = null, t: Throwable? = null, message: () -> String) =
-    combined1(LogPriority.ERROR, tag, t, message)
+    combined1(ERROR, tag, t, message)
 
   context(subject: Any)
   inline fun wtf(tag: String? = null, t: Throwable? = null, message: () -> String) =
-    combined1(LogPriority.ASSERT, tag, t, message)
+    combined1(ASSERT, tag, t, message)
 
   context(subject: Any)
   inline fun v(t: Throwable? = null, message: () -> String) =
-    combined1(LogPriority.VERBOSE, tag = null, t, message)
+    combined1(VERBOSE, tag = null, t, message)
 
   context(subject: Any)
   inline fun d(t: Throwable? = null, message: () -> String) =
-    combined1(LogPriority.DEBUG, tag = null, t, message)
+    combined1(DEBUG, tag = null, t, message)
 
   context(subject: Any)
   inline fun i(t: Throwable? = null, message: () -> String) =
-    combined1(LogPriority.INFO, tag = null, t, message)
+    combined1(INFO, tag = null, t, message)
 
   context(subject: Any)
   inline fun w(t: Throwable? = null, message: () -> String) =
-    combined1(LogPriority.WARN, tag = null, t, message)
+    combined1(WARN, tag = null, t, message)
 
   context(subject: Any)
   inline fun e(t: Throwable? = null, message: () -> String) =
-    combined1(LogPriority.ERROR, tag = null, t, message)
+    combined1(ERROR, tag = null, t, message)
 
   context(subject: Any)
   inline fun wtf(t: Throwable? = null, message: () -> String) =
-    combined1(LogPriority.ASSERT, tag = null, t, message)
+    combined1(ASSERT, tag = null, t, message)
 
   inline fun v(tag: String, t: Throwable? = null, message: () -> String) =
-    combined2(LogPriority.VERBOSE, tag, t, message)
+    combined2(VERBOSE, tag, t, message)
 
   inline fun d(tag: String, t: Throwable? = null, message: () -> String) =
-    combined2(LogPriority.DEBUG, tag, t, message)
+    combined2(DEBUG, tag, t, message)
 
   inline fun i(tag: String, t: Throwable? = null, message: () -> String) =
-    combined2(LogPriority.INFO, tag, t, message)
+    combined2(INFO, tag, t, message)
 
   inline fun w(tag: String, t: Throwable? = null, message: () -> String) =
-    combined2(LogPriority.WARN, tag, t, message)
+    combined2(WARN, tag, t, message)
 
   inline fun e(tag: String, t: Throwable? = null, message: () -> String) =
-    combined2(LogPriority.ERROR, tag, t, message)
+    combined2(ERROR, tag, t, message)
 
   inline fun wtf(tag: String, t: Throwable? = null, message: () -> String) =
-    combined2(LogPriority.ASSERT, tag, t, message)
+    combined2(ASSERT, tag, t, message)
 
   @Deprecated("Not intended to be used directly")
   context(subject: Any)

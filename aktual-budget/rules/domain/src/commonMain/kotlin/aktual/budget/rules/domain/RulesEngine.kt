@@ -4,7 +4,6 @@ import aktual.budget.model.Amount
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
-import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
@@ -163,14 +162,14 @@ internal class CompiledRule(
     // Fixed percentages are of what's left after the fixed amounts
     val afterFixedAmounts = remainder()
     splitAmounts
-      .filter { it.method == RuleAction.Method.FixedPercent }
+      .filter { it.method == FixedPercent }
       .forEach { action ->
         val percent = (action.value ?: 0.0) / PERCENT
         children.setAmount(action.splitIndex, jsRound(afterFixedAmounts * percent))
       }
 
     // Remainders share out what's left after that, with any rounding going to the last one
-    val remainders = splitAmounts.filter { it.method == RuleAction.Method.Remainder }
+    val remainders = splitAmounts.filter { it.method == Remainder }
     if (remainders.isNotEmpty()) {
       val each = jsRound(remainder().toDouble() / remainders.size)
       remainders.forEach { children.setAmount(it.splitIndex, each) }
@@ -213,8 +212,8 @@ internal class CompiledRule(
    * packages/loot-core/src/server/rules/rule-indexer.ts.
    */
   fun isCandidate(transaction: RuleTransaction): Boolean =
-    isIndexed(RuleField.ImportedPayee, transaction.importedPayee, firstChar = true) ||
-      isIndexed(RuleField.Payee, transaction.payee?.value, firstChar = false)
+    isIndexed(ImportedPayee, transaction.importedPayee, firstChar = true) ||
+      isIndexed(Payee, transaction.payee?.value, firstChar = false)
 
   private fun isIndexed(field: RuleField, value: String?, firstChar: Boolean): Boolean {
     val condition = conditions.firstOrNull { it.field == field }
@@ -222,8 +221,8 @@ internal class CompiledRule(
 
     val values =
       when (val v = condition.value) {
-        is ConditionValue.TextList -> v.values
-        is ConditionValue.Text -> listOf(v.value)
+        is TextList -> v.values
+        is Text -> listOf(v.value)
         else -> return true
       }
     val keys = values.map { indexKey(it, firstChar) ?: WILDCARD }.toSet()

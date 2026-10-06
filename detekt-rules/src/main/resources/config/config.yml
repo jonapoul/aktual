@@ -4,3 +4,5 @@ aktual:
     active: true
   InvalidComposeLazyKey:
     active: true
+  RedundantQualifier:
+    active: true

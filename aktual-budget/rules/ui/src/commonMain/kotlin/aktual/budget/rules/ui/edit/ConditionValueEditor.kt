@@ -32,8 +32,8 @@ internal fun ConditionValueEditor(
   val emit: (JsonElement) -> Unit = { newValue -> onAction(SetConditionValue(newValue, index)) }
 
   when (field) {
-    Field.Payee,
-    Field.Description ->
+    Payee,
+    Description ->
       EntityIdPicker(
         modifier = modifier,
         field = field,
@@ -43,8 +43,8 @@ internal fun ConditionValueEditor(
         fetchEntities = { it.payees() },
       )
 
-    Field.Account,
-    Field.Acct ->
+    Account,
+    Acct ->
       EntityIdPicker(
         modifier = modifier,
         field = field,
@@ -54,7 +54,7 @@ internal fun ConditionValueEditor(
         fetchEntities = { it.accounts() },
       )
 
-    Field.Category ->
+    Category ->
       EntityIdPicker(
         modifier = modifier,
         field = field,
@@ -64,7 +64,7 @@ internal fun ConditionValueEditor(
         fetchEntities = { it.categories() },
       )
 
-    Field.CategoryGroup ->
+    CategoryGroup ->
       EntityIdPicker(
         modifier = modifier,
         field = field,
@@ -74,7 +74,7 @@ internal fun ConditionValueEditor(
         fetchEntities = { it.categoryGroups() },
       )
 
-    Field.Amount ->
+    Amount ->
       AmountTextField(
         modifier = modifier,
         value = value,
@@ -82,19 +82,19 @@ internal fun ConditionValueEditor(
         onValueChange = emit,
       )
 
-    Field.Date ->
+    Date ->
       DateTextField(modifier = modifier, value = value, isEnabled = isEnabled, onValueChange = emit)
 
-    Field.Notes,
-    Field.PayeeName,
-    Field.ImportedPayee,
-    Field.ImportedDescription,
-    Field.Saved,
-    Field.Transfer,
-    Field.Parent,
-    Field.Cleared,
-    Field.Reconciled,
-    Field.Unknown ->
+    Notes,
+    PayeeName,
+    ImportedPayee,
+    ImportedDescription,
+    Saved,
+    Transfer,
+    Parent,
+    Cleared,
+    Reconciled,
+    Unknown ->
       // key(field) resets TextFieldState when switching between text-type fields (e.g. Notes →
       // PayeeName)
       key(field) {

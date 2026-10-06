@@ -144,10 +144,10 @@ internal fun ListRulesItem(
 @Stable
 private fun RuleStage.showBadge() =
   when (this) {
-    RuleStage.Default,
-    RuleStage.Unknown -> false
-    RuleStage.Pre,
-    RuleStage.Post -> true
+    Default,
+    Unknown -> false
+    Pre,
+    Post -> true
   }
 
 @Composable
@@ -341,8 +341,8 @@ private data class ListRulesItemParams(val item: Rule, val checkboxes: Checkboxe
 private class ListRulesItemProvider :
   ColoredParameterProvider<ListRulesItemParams>(
     ListRulesItemParams(item = PreviewRule1),
-    ListRulesItemParams(item = PreviewRule1.copy(stage = RuleStage.Pre)),
-    ListRulesItemParams(item = PreviewRule2.copy(stage = RuleStage.Post)),
+    ListRulesItemParams(item = PreviewRule1.copy(stage = Pre)),
+    ListRulesItemParams(item = PreviewRule2.copy(stage = Post)),
     ListRulesItemParams(item = PreviewRule2, checkboxes = Active(persistentSetOf(PreviewRule2.id))),
   )
 

@@ -10,54 +10,54 @@ data class ResolvedDateRange(val start: LocalDate, val end: LocalDate)
 fun DateRangeType.resolve(today: LocalDate): ResolvedDateRange {
   val firstOfMonth = LocalDate(today.year, today.month, 1)
   return when (this) {
-    DateRangeType.ThisWeek -> {
+    ThisWeek -> {
       val daysSinceMonday = today.dayOfWeek.ordinal
       ResolvedDateRange(today.minus(daysSinceMonday, DAY), today)
     }
-    DateRangeType.LastWeek -> {
+    LastWeek -> {
       val daysSinceMonday = today.dayOfWeek.ordinal
       val thisMonday = today.minus(daysSinceMonday, DAY)
       val lastMonday = thisMonday.minus(7, DAY)
       ResolvedDateRange(lastMonday, thisMonday.minus(1, DAY))
     }
-    DateRangeType.ThisMonth -> {
+    ThisMonth -> {
       ResolvedDateRange(firstOfMonth, today)
     }
-    DateRangeType.LastMonth -> {
+    LastMonth -> {
       val lastMonthStart = firstOfMonth.minus(1, MONTH)
       ResolvedDateRange(lastMonthStart, firstOfMonth.minus(1, DAY))
     }
-    DateRangeType.CurrentQuarter -> {
+    CurrentQuarter -> {
       val quarterStart = firstOfMonth.minus(today.month.ordinal % 3, MONTH)
       ResolvedDateRange(quarterStart, quarterStart.plus(3, MONTH).minus(1, DAY))
     }
-    DateRangeType.PreviousQuarter -> {
+    PreviousQuarter -> {
       val quarterStart = firstOfMonth.minus(today.month.ordinal % 3, MONTH)
       ResolvedDateRange(quarterStart.minus(3, MONTH), quarterStart.minus(1, DAY))
     }
-    DateRangeType.Last30Days -> {
+    Last30Days -> {
       ResolvedDateRange(today.minus(29, DAY), today)
     }
-    DateRangeType.Last3Months -> {
+    Last3Months -> {
       ResolvedDateRange(firstOfMonth.minus(2, MONTH), today)
     }
-    DateRangeType.Last6Months -> {
+    Last6Months -> {
       ResolvedDateRange(firstOfMonth.minus(5, MONTH), today)
     }
-    DateRangeType.Last12Months -> {
+    Last12Months -> {
       ResolvedDateRange(firstOfMonth.minus(11, MONTH), today)
     }
-    DateRangeType.YearToDate -> {
+    YearToDate -> {
       ResolvedDateRange(LocalDate(today.year, 1, 1), today)
     }
-    DateRangeType.LastYear -> {
+    LastYear -> {
       ResolvedDateRange(LocalDate(today.year - 1, 1, 1), LocalDate(today.year - 1, 12, 31))
     }
-    DateRangeType.PriorYearToDate -> {
+    PriorYearToDate -> {
       ResolvedDateRange(LocalDate(today.year - 1, 1, 1), today.minus(1, YEAR))
     }
-    DateRangeType.AllTime,
-    DateRangeType.Unknown -> {
+    AllTime,
+    Unknown -> {
       ResolvedDateRange(LocalDate(2000, 1, 1), today)
     }
   }

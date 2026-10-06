@@ -310,9 +310,9 @@ private fun providerSite(source: AccountSyncSource): String? =
 @Composable
 private fun errorMessage(error: SetupError): String =
   when (error) {
-    SetupError.NotAdmin -> Strings.bankSyncSetupNotAdmin
-    SetupError.LoggedOut -> Strings.bankSyncSetupLoggedOut
-    is SetupError.Other -> error.cause ?: Strings.bankSyncSetupFailed
+    NotAdmin -> Strings.bankSyncSetupNotAdmin
+    LoggedOut -> Strings.bankSyncSetupLoggedOut
+    is Other -> error.cause ?: Strings.bankSyncSetupFailed
   }
 
 @PortraitPreview

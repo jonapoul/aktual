@@ -72,9 +72,9 @@ fun ListBudgetsScreen(
   LaunchedEffect(viewModel.event) {
     viewModel.event.collect { event ->
       when (event) {
-        ListBudgetsEvent.NavToBudget -> toBudget()
+        NavToBudget -> toBudget()
         ListBudgetsEvent.LogOut -> logOut()
-        is ListBudgetsEvent.ShowSyncDialog -> budgetToSync = event.id
+        is ShowSyncDialog -> budgetToSync = event.id
       }
     }
   }

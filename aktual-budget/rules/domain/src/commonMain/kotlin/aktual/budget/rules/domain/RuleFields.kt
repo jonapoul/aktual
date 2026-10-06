@@ -36,14 +36,14 @@ internal enum class FieldType(val ops: Set<Operator>) {
 // FIELD_INFO in packages/loot-core/src/shared/rules.ts, keyed by the public field names
 internal enum class RuleField(val type: FieldType, val disallowedOps: Set<Operator> = emptySet()) {
   ImportedPayee(FieldType.String, disallowedOps = setOf(HasTags, HasAnyTag)),
-  Payee(FieldType.Id, disallowedOps = setOf(OnBudget, OffBudget)),
+  Payee(Id, disallowedOps = setOf(OnBudget, OffBudget)),
   PayeeName(FieldType.String),
   Date(FieldType.Date),
   Notes(FieldType.String, disallowedOps = setOf(OneOf, NotOneOf)),
   Amount(FieldType.Number),
-  Category(FieldType.Id, disallowedOps = setOf(OnBudget, OffBudget)),
-  CategoryGroup(FieldType.Id, disallowedOps = setOf(OnBudget, OffBudget)),
-  Account(FieldType.Id),
+  Category(Id, disallowedOps = setOf(OnBudget, OffBudget)),
+  CategoryGroup(Id, disallowedOps = setOf(OnBudget, OffBudget)),
+  Account(Id),
   Cleared(FieldType.Boolean),
   Reconciled(FieldType.Boolean),
   Saved(FieldType.Saved),
@@ -62,22 +62,22 @@ internal enum class RuleField(val type: FieldType, val disallowedOps: Set<Operat
 internal fun Field.toRuleField(): RuleField? =
   when (this) {
     Acct,
-    Account -> RuleField.Account
-    Amount -> RuleField.Amount
-    Category -> RuleField.Category
-    CategoryGroup -> RuleField.CategoryGroup
-    Date -> RuleField.Date
+    Account -> Account
+    Amount -> Amount
+    Category -> Category
+    CategoryGroup -> CategoryGroup
+    Date -> Date
     Description,
-    Payee -> RuleField.Payee
-    Notes -> RuleField.Notes
-    PayeeName -> RuleField.PayeeName
+    Payee -> Payee
+    Notes -> Notes
+    PayeeName -> PayeeName
     ImportedDescription,
-    ImportedPayee -> RuleField.ImportedPayee
-    Saved -> RuleField.Saved
-    Transfer -> RuleField.Transfer
-    Parent -> RuleField.Parent
-    Cleared -> RuleField.Cleared
-    Reconciled -> RuleField.Reconciled
+    ImportedPayee -> ImportedPayee
+    Saved -> Saved
+    Transfer -> Transfer
+    Parent -> Parent
+    Cleared -> Cleared
+    Reconciled -> Reconciled
     Unknown -> null
   }
 

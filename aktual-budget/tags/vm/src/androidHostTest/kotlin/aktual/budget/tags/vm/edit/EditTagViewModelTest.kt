@@ -344,14 +344,14 @@ class EditTagViewModelTest {
   private suspend fun ReceiveTurbine<EditTagState>.awaitEditing(): EditTagState.Editing {
     while (true) {
       val item = awaitItem()
-      if (item is EditTagState.Editing) return item
+      if (item is Editing) return item
     }
   }
 
   private suspend fun ReceiveTurbine<EditTagState>.awaitFailure(): EditTagState.Failure {
     while (true) {
       val item = awaitItem()
-      if (item is EditTagState.Failure) return item
+      if (item is Failure) return item
     }
   }
 

@@ -114,9 +114,9 @@ fun CustomThemeSettingsScreen(
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        CustomThemeEvent.CacheRefreshed ->
+        CacheRefreshed ->
           snackbar.showSnackbar(getString(Res.string.settings_theme_refresh_success))
-        is CustomThemeEvent.FailedFetching ->
+        is FailedFetching ->
           snackbar.showSnackbar(
             getString(Res.string.settings_theme_refresh_failure, event.name, event.reason)
           )

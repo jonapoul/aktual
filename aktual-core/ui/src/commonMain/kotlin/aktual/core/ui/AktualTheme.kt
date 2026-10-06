@@ -3,7 +3,6 @@ package aktual.core.ui
 import aktual.core.theme.Colors
 import aktual.core.theme.LocalColors
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.LocalOverscrollFactory
@@ -66,7 +65,7 @@ private fun aktualShimmerTheme(colors: Colors): ShimmerTheme =
       animationSpec =
         infiniteRepeatable(
           animation = shimmerSpec(durationMillis = 800, easing = LinearEasing, delayMillis = 1_500),
-          repeatMode = RepeatMode.Restart,
+          repeatMode = Restart,
         ),
       blendMode = BlendMode.DstIn,
       rotation = 15.0f,

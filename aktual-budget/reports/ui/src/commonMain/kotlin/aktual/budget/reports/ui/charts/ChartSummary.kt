@@ -511,10 +511,10 @@ private fun ShowAs(
 
     val currentType =
       when (data) {
-        is AveragePerMonth -> SummaryChartType.AveragePerMonth
-        is AveragePerYear -> SummaryChartType.AveragePerYear
-        is AveragePerTransaction -> SummaryChartType.AveragePerTransaction
-        is Percentage -> SummaryChartType.Percentage
+        is AveragePerMonth -> AveragePerMonth
+        is AveragePerYear -> AveragePerYear
+        is AveragePerTransaction -> AveragePerTransaction
+        is Percentage -> Percentage
         is Sum -> SummaryChartType.Sum
       }
 

@@ -1,7 +1,5 @@
 package aktual.prefs.vm.root
 
-import aktual.budget.model.BarEffect
-import aktual.budget.model.Currency
 import aktual.di.AppScope
 import aktual.prefs.CurrencyPreferences
 import aktual.prefs.FormatPreferences
@@ -50,7 +48,7 @@ class SettingsViewModel(
     val hazeAlpha by systemUiPreferences.hazeAlpha.collectAsStateFlow()
     val hidePreviewInAppSwitcher by
       systemUiPreferences.hidePreviewInAppSwitcher.collectAsStateFlow()
-    val anyHazeEnabled = appBarEffect != BarEffect.None || hazeDialogs
+    val anyHazeEnabled = appBarEffect != None || hazeDialogs
     return SystemUiConfigState(
       showStatusBar =
         BooleanPreference(
@@ -103,13 +101,13 @@ class SettingsViewModel(
       symbolPosition =
         ListPreference(
           value = symbolPosition,
-          enabled = currency != Currency.None,
+          enabled = currency != None,
           onChange = { currencyPreferences.symbolPosition.launchAndSet(it) },
         ),
       spaceBetweenAmountAndSymbol =
         BooleanPreference(
           value = spaceBetweenAmountAndSymbol,
-          enabled = currency != Currency.None,
+          enabled = currency != None,
           onChange = { currencyPreferences.spaceBetweenAmountAndSymbol.launchAndSet(it) },
         ),
     )

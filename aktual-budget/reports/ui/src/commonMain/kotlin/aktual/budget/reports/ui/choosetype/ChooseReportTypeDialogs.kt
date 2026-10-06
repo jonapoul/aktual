@@ -15,7 +15,7 @@ internal fun ChooseReportTypeDialogs(
 ) {
   when (dialog) {
     null -> return
-    ChooseReportTypeDialog.UnsupportedType -> UnsupportedTypeDialog(onAction)
+    UnsupportedType -> UnsupportedTypeDialog(onAction)
   }
 }
 

@@ -70,7 +70,7 @@ class TransactionsViewModel(
 
   private val mutableLoadedAccount = MutableStateFlow<LoadedAccount>(Loading)
   private val accountId = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id
-  private val isRemote = server is BudgetServer.Remote
+  private val isRemote = server is Remote
   private var currentPagingSource: PagingSource<Int, Transaction>? = null
 
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()

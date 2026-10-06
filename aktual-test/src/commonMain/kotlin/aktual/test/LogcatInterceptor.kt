@@ -11,7 +11,7 @@ import logcat.LogPriority
 import logcat.LogcatLogger
 
 class LogcatInterceptor(
-  override val minPriority: LogPriority = LogPriority.VERBOSE,
+  override val minPriority: LogPriority = VERBOSE,
   override val onlyPrintOnFailure: Boolean = true,
 ) : ILogcatInterceptor, TestInterceptor {
   override val logMessages = arrayListOf<String>()
@@ -38,7 +38,7 @@ class LogcatInterceptor(
 }
 
 class CoLogcatInterceptor(
-  override val minPriority: LogPriority = LogPriority.VERBOSE,
+  override val minPriority: LogPriority = VERBOSE,
   override val onlyPrintOnFailure: Boolean = true,
 ) : ILogcatInterceptor, CoroutineTestInterceptor {
   override val logMessages = arrayListOf<String>()

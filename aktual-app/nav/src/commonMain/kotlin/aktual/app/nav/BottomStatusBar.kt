@@ -19,7 +19,6 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -158,7 +157,7 @@ private fun loadedString(budgetName: String): AnnotatedString {
 private val SyncAnimationSpec =
   infiniteRepeatable<Float>(
     animation = tween(durationMillis = 1000, easing = LinearEasing),
-    repeatMode = RepeatMode.Restart,
+    repeatMode = Restart,
   )
 
 @Composable

@@ -164,7 +164,7 @@ class BankSyncControllerImpl(
       val result =
         catching(account) {
           when (response) {
-            is SimpleFinBatchResponse.Failed -> {
+            is Failed -> {
               fail(account, response.error.toError())
             }
             is SimpleFinBatchResponse.Success -> {
@@ -186,7 +186,7 @@ class BankSyncControllerImpl(
   ): BankSyncResult =
     when (response) {
       is Success -> import(account, response, initialSync)
-      is BankSyncTransactionsResponse.Failure -> fail(account, response.toError())
+      is Failure -> fail(account, response.toError())
     }
 
   // processBankSyncDownload() then handleSyncResponse()

@@ -222,15 +222,15 @@ class SyncBudgetViewModel(
     fileDownloader.download(budgetId).collect { state ->
       val stepState =
         when (state) {
-          is DownloadState.InProgress -> {
+          is InProgress -> {
             SyncStepState.InProgress.Definite(state.toPercent())
           }
 
-          is DownloadState.Failure -> {
+          is Failure -> {
             SyncStepState.Failed(state.message)
           }
 
-          is DownloadState.Done -> {
+          is Done -> {
             downloadedDbPath = state.path
             Succeeded
           }
@@ -309,7 +309,7 @@ class SyncBudgetViewModel(
       is Success -> {
         runLevelController.onBudget(budgetId, result.meta)
         logcat.i { "Built new budget component from $budgetId" }
-        setStepState(ValidatingDatabase, SyncStepState.Succeeded)
+        setStepState(ValidatingDatabase, Succeeded)
       }
     }
   }

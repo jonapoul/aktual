@@ -30,17 +30,16 @@ data class Message(
   val value: MessageValue,
 )
 
-fun KString?.messageValue(): MessageValue =
-  if (this == null) MessageValue.Null else MessageValue.String(this)
+fun KString?.messageValue(): MessageValue = if (this == null) Null else MessageValue.String(this)
 
 fun Int?.messageValue(): MessageValue =
-  if (this == null) MessageValue.Null else MessageValue.Number(this.toLong())
+  if (this == null) Null else MessageValue.Number(this.toLong())
 
 fun Boolean?.messageValue(): MessageValue =
   when (this) {
     true -> MessageValue.Number(1)
     false -> MessageValue.Number(0)
-    null -> MessageValue.Null
+    null -> Null
   }
 
 sealed interface MessageValue {

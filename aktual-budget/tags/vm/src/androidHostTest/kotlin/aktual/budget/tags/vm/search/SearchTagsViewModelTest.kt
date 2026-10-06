@@ -119,7 +119,7 @@ class SearchTagsViewModelTest {
 
   private suspend fun ReceiveTurbine<SearchTagsState>.awaitResults(): List<TagItem> {
     var state = awaitItem()
-    while (state !is SearchTagsState.Results) state = awaitItem()
+    while (state !is Results) state = awaitItem()
     cancelAndIgnoreRemainingEvents()
     return state.tags
   }

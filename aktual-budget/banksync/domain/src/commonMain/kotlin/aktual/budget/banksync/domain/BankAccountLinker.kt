@@ -94,7 +94,7 @@ class BankAccountLinker(
         "account_sync_source",
         "bank_sync_status",
       )
-    syncController.syncChanges(columns.map { change(account, it, MessageValue.Null) })
+    syncController.syncChanges(columns.map { change(account, it, Null) })
 
     if (row.account_sync_source != AccountSyncSource.GoCardless || dao.bankUsers(bank) > 0) return
     val requisition = dao.bankId(bank) ?: return

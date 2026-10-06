@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TransactionError(
   @SerialName("difference") val difference: Int,
-  @SerialName("type") val type: Type = Type.SplitTransactionError,
+  @SerialName("type") val type: Type = SplitTransactionError,
   @SerialName("version") val version: Int,
 ) {
   @Serializable

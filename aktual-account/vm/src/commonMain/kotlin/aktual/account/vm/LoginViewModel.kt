@@ -128,7 +128,7 @@ class LoginViewModel(
       delay(5.seconds)
       logcat.w { "Login timed out" }
       mutableIsLoading.update { false }
-      mutableEvents.tryEmit(LoginEvent.Timeout)
+      mutableEvents.tryEmit(Timeout)
       cancelJobs()
     }
   }

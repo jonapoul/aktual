@@ -7,19 +7,19 @@ import androidx.compose.runtime.Composable
 @Composable
 internal fun WidgetType.string() =
   when (this) {
-    WidgetType.NetWorth -> Strings.reportsChooseTypeNetWorth
-    WidgetType.CashFlow -> Strings.reportsChooseTypeCashFlow
-    WidgetType.Spending -> Strings.reportsChooseTypeSpending
-    WidgetType.Custom -> Strings.reportsChooseTypeCustom
-    WidgetType.Markdown -> Strings.reportsChooseTypeMarkdown
-    WidgetType.Summary -> Strings.reportsChooseTypeSummary
-    WidgetType.Calendar -> Strings.reportsChooseTypeCalendar
-    WidgetType.BudgetAnalysis -> Strings.reportsChooseTypeBudgetAnalysis
-    WidgetType.Formula -> Strings.reportsChooseTypeFormula
-    WidgetType.Crossover -> Strings.reportsChooseTypeCrossover
-    WidgetType.Sankey -> Strings.reportsChooseTypeSankey
-    WidgetType.BalanceForecast -> Strings.reportsChooseTypeBalanceForecast
-    WidgetType.AgeOfMoney -> Strings.reportsChooseTypeAgeOfMoney
-    WidgetType.MonteCarlo -> Strings.reportsChooseTypeMonteCarlo
-    WidgetType.Unknown -> Strings.reportsChooseTypeUnknown
+    NetWorth -> Strings.reportsChooseTypeNetWorth
+    CashFlow -> Strings.reportsChooseTypeCashFlow
+    Spending -> Strings.reportsChooseTypeSpending
+    Custom -> Strings.reportsChooseTypeCustom
+    Markdown -> Strings.reportsChooseTypeMarkdown
+    Summary -> Strings.reportsChooseTypeSummary
+    Calendar -> Strings.reportsChooseTypeCalendar
+    BudgetAnalysis -> Strings.reportsChooseTypeBudgetAnalysis
+    Formula -> Strings.reportsChooseTypeFormula
+    Crossover -> Strings.reportsChooseTypeCrossover
+    Sankey -> Strings.reportsChooseTypeSankey
+    BalanceForecast -> Strings.reportsChooseTypeBalanceForecast
+    AgeOfMoney -> Strings.reportsChooseTypeAgeOfMoney
+    MonteCarlo -> Strings.reportsChooseTypeMonteCarlo
+    Unknown -> Strings.reportsChooseTypeUnknown
   }

@@ -165,8 +165,8 @@ private fun EditRuleTitle(mode: Mode, modifier: Modifier = Modifier) {
     modifier = modifier,
     text =
       when (mode) {
-        Mode.Create -> Strings.editRuleToolbarCreate
-        Mode.Edit -> Strings.editRuleToolbarEdit
+        Create -> Strings.editRuleToolbarCreate
+        Edit -> Strings.editRuleToolbarEdit
       },
   )
 }
@@ -189,13 +189,13 @@ private fun EditRuleActions(
       isEnabled = state is Success && state.canSave,
       imageVector =
         when (mode) {
-          Mode.Create -> MaterialIcons.SaveAs
-          Mode.Edit -> MaterialIcons.Save
+          Create -> MaterialIcons.SaveAs
+          Edit -> MaterialIcons.Save
         },
       contentDescription =
         when (mode) {
-          Mode.Create -> Strings.editRuleCreate
-          Mode.Edit -> Strings.editRuleSave
+          Create -> Strings.editRuleCreate
+          Edit -> Strings.editRuleSave
         },
     )
 
@@ -376,7 +376,7 @@ private fun PreviewEditRuleScaffold(
   PreviewWithColoredParams(params) { EditRuleScaffold(state = state, mode = mode, onAction = {}) }
 }
 
-private data class EditRuleStateParams(val state: EditRuleState, val mode: Mode = Mode.Edit)
+private data class EditRuleStateParams(val state: EditRuleState, val mode: Mode = Edit)
 
 private class EditRuleStateProvider :
   ColoredParameterProvider<EditRuleStateParams>(

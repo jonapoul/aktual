@@ -81,7 +81,7 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
 @Composable
 private fun BarEffect.string(): String =
   when (this) {
-    BarEffect.None -> Strings.settingsUiBarEffectNone
-    BarEffect.Blur -> Strings.settingsUiBarEffectBlur
-    BarEffect.Glass -> Strings.settingsUiBarEffectGlass
+    None -> Strings.settingsUiBarEffectNone
+    Blur -> Strings.settingsUiBarEffectBlur
+    Glass -> Strings.settingsUiBarEffectGlass
   }

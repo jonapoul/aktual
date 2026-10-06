@@ -235,7 +235,7 @@ class EditTagViewModel(
         }
         // remember the colour so the next new tag can default to it
         color?.let { preferences.lastUsedTagColor.set(it) }
-        mutableEvents.tryEmit(EditTagEvent.FinishedSaving)
+        mutableEvents.tryEmit(FinishedSaving)
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {

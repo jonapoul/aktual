@@ -83,7 +83,7 @@ internal constructor(
     logcat.i { "Sync started" }
     update(Syncing)
     when (val result = syncer.sync()) {
-      is SyncResult.Success -> update(Inactive)
+      is Success -> update(Inactive)
       is SyncResult.Error -> update(SyncFailed(result.toString()))
     }
     scheduleInactive()

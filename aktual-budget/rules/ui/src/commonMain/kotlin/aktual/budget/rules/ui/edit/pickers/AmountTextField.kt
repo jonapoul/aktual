@@ -116,7 +116,7 @@ internal fun AmountTextField(
     modifier = modifier.fillMaxWidth(),
     state = textState,
     placeholderText =
-      Amount.Zero.formattedString(currencyConfig = currencyConfig.copy(currency = Currency.None)),
+      Amount.Zero.formattedString(currencyConfig = currencyConfig.copy(currency = None)),
     isEnabled = isEnabled,
     leadingIcon = {
       LeadingContent(
@@ -166,7 +166,7 @@ private fun LeadingContent(
       colors = if (isPositive) PositiveColors else NegativeColors,
     )
 
-    if (config.currency != Currency.None && config.position == BeforeAmount) {
+    if (config.currency != None && config.position == BeforeAmount) {
       Text(
         modifier = Modifier.minimumInteractiveComponentSize(),
         text = config.currency.symbol,
@@ -198,7 +198,7 @@ private fun TrailingContent(
   config: CurrencyConfig = LocalCurrencyConfig.current,
 ) {
   Row(modifier = modifier, verticalAlignment = CenterVertically) {
-    if (config.currency != Currency.None && config.position == AfterAmount) {
+    if (config.currency != None && config.position == AfterAmount) {
       Text(
         modifier = Modifier.minimumInteractiveComponentSize(),
         text = config.currency.symbol,
@@ -230,7 +230,7 @@ private class NumberOutputTransformation(
     val formatted =
       amount.toString(
         numberFormatConfig = numberFormatConfig,
-        currencyConfig = currencyConfig.copy(currency = Currency.None),
+        currencyConfig = currencyConfig.copy(currency = None),
         includeSign = false,
         isPrivacyEnabled = isPrivacyEnabled,
       )
@@ -263,7 +263,7 @@ private fun PreviewAmountTextField(
 private data class AmountTextFieldParams(
   val value: JsonElement,
   val isEnabled: Boolean = false,
-  val currency: Currency = Currency.PoundSterling,
+  val currency: Currency = PoundSterling,
   val position: CurrencySymbolPosition = CurrencySymbolPosition.Default,
   val includeSpace: Boolean = true,
   val numberFormat: NumberFormat = NumberFormat.Default,
@@ -281,6 +281,6 @@ private class AmountTextFieldProvider :
       AmountTextFieldParams(value = JsonPrimitive(12345), isEnabled = false),
       AmountTextFieldParams(value = JsonPrimitive(12345), position = AfterAmount),
       AmountTextFieldParams(value = JsonPrimitive(12345), includeSpace = false),
-      AmountTextFieldParams(value = JsonPrimitive(12345), currency = Currency.SwedishKrona),
+      AmountTextFieldParams(value = JsonPrimitive(12345), currency = SwedishKrona),
     )
   )

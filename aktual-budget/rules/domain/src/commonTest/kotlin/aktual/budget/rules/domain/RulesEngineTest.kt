@@ -2,7 +2,6 @@ package aktual.budget.rules.domain
 
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
-import aktual.budget.model.Field
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
@@ -220,15 +219,15 @@ class RulesEngineTest {
       listOf(
         rule(
           "schedule-rule",
-          listOf(cond(Field.Amount, Is, 999)),
+          listOf(cond(Amount, Is, 999)),
           listOf(action(LinkSchedule, value = "schedule-1"), set(Category, "rent")),
         ),
         rule(
           "other-schedule-rule",
-          listOf(cond(Field.Amount, Is, 100)),
+          listOf(cond(Amount, Is, 100)),
           listOf(action(LinkSchedule, value = "schedule-2"), set(Notes, "other")),
         ),
-        rule("plain", listOf(cond(Field.Amount, Is, 100)), listOf(set(Cleared, false))),
+        rule("plain", listOf(cond(Amount, Is, 100)), listOf(set(Cleared, false))),
       )
     val engine =
       RulesEngine(

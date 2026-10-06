@@ -51,7 +51,6 @@ import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.multiplatform.common.DashedShape
 import com.patrykandpatrick.vico.multiplatform.common.Fill
-import com.patrykandpatrick.vico.multiplatform.common.Position
 import com.patrykandpatrick.vico.multiplatform.common.component.rememberLineComponent
 import com.patrykandpatrick.vico.multiplatform.common.component.rememberShapeComponent
 import com.patrykandpatrick.vico.multiplatform.common.component.rememberTextComponent
@@ -281,8 +280,8 @@ private fun rememberTargetLine(): HorizontalLine {
       line = line,
       labelComponent = label,
       label = { text },
-      horizontalLabelPosition = Position.Horizontal.End,
-      verticalLabelPosition = Position.Vertical.Bottom,
+      horizontalLabelPosition = End,
+      verticalLabelPosition = Bottom,
     )
   }
 }

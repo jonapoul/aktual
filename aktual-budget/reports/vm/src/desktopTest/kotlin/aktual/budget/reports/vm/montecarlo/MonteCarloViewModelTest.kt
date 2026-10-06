@@ -174,7 +174,7 @@ class MonteCarloViewModelTest {
   ): MonteCarloState.Loaded {
     while (true) {
       val state = awaitItem()
-      if (state is MonteCarloState.Loaded && predicate(state)) return state
+      if (state is Loaded && predicate(state)) return state
     }
   }
 

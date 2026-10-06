@@ -73,7 +73,7 @@ internal fun Transactions(
       )
     }
 
-    refresh is LoadState.Loading -> {
+    refresh is Loading -> {
       TransactionsLoading(innerPadding, modifier.padding(contentPadding))
     }
 

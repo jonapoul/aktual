@@ -8,7 +8,6 @@ import aktual.budget.model.ScheduleId
 import aktual.budget.schedules.domain.ScheduleStatus
 import aktual.budget.schedules.ui.list.ScheduleStatusBadge
 import aktual.budget.schedules.vm.edit.EditScheduleError
-import aktual.budget.schedules.vm.edit.EditScheduleEvent
 import aktual.budget.schedules.vm.edit.EditScheduleState
 import aktual.budget.schedules.vm.edit.EditScheduleViewModel
 import aktual.budget.schedules.vm.edit.NamedEntity
@@ -107,8 +106,8 @@ internal fun EditScheduleScreen(
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        EditScheduleEvent.Created,
-        EditScheduleEvent.Deleted -> back()
+        Created,
+        Deleted -> back()
       }
     }
   }
@@ -595,7 +594,7 @@ private fun ConfirmDialog(
 private fun ErrorDialog(error: EditScheduleError, onDismiss: () -> Unit) {
   AktualAlertDialog(
     title =
-      if (error is EditScheduleError.Deleting) {
+      if (error is Deleting) {
         Strings.editScheduleErrorDeleting
       } else {
         Strings.editScheduleErrorSaving
@@ -606,9 +605,9 @@ private fun ErrorDialog(error: EditScheduleError, onDismiss: () -> Unit) {
     content = {
       Text(
         when (error) {
-          is EditScheduleError.DuplicateName -> Strings.editScheduleErrorDuplicate(error.name)
-          is EditScheduleError.Saving -> error.reason
-          is EditScheduleError.Deleting -> error.reason
+          is DuplicateName -> Strings.editScheduleErrorDuplicate(error.name)
+          is Saving -> error.reason
+          is Deleting -> error.reason
         }
       )
     },
