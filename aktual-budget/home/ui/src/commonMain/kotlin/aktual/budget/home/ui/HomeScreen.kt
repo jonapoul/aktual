@@ -99,7 +99,7 @@ private fun HomeScaffold(
 ) {
   // A brand new budget has no accounts to list, so the onboarding card gets the whole width
   if (isCompact || state.isEmpty) {
-    HomeContent(state = state, onAction = onAction, modifier = modifier) {
+    HomeContent(state = state, modifier = modifier) {
       if (state.isEmpty) {
         OnboardingCard(onAction = onAction)
       } else {
@@ -119,7 +119,7 @@ private fun HomeScaffold(
 
       VerticalDivider(color = colors.tableBorder)
 
-      HomeContent(state = state, onAction = onAction, modifier = Modifier.weight(1f)) {
+      HomeContent(state = state, modifier = Modifier.weight(1f)) {
         CardGrid(state = state, onAction = onAction)
       }
     }
@@ -129,7 +129,6 @@ private fun HomeScaffold(
 @Composable
 private fun HomeContent(
   state: HomeState,
-  onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
   content: @Composable ColumnScope.() -> Unit,
 ) {
