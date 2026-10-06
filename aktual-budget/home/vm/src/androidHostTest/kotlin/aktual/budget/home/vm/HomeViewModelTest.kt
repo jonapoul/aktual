@@ -20,6 +20,9 @@ import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -48,6 +51,36 @@ class HomeViewModelTest {
       var state = awaitItem()
       while (state.budgetName != "Renamed") state = awaitItem()
       cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `A new budget has nothing to show`() = runDatabaseTest { scope ->
+    val viewModel = createHomeViewModel(scope, CALENDAR)
+
+    viewModel.state.test { assertThat(awaitSettled().isEmpty).isTrue() }
+  }
+
+  @Test
+  fun `A budget with an account has something to show`() = runDatabaseTest { scope ->
+    insertAccount("a")
+    val viewModel = createHomeViewModel(scope, CALENDAR)
+
+    viewModel.state.test { assertThat(awaitSettled().isEmpty).isFalse() }
+  }
+
+  @Test
+  fun `A failing source only fails its own card`() = runDatabaseTest { scope ->
+    insertAccount("a")
+    val viewModel = createHomeViewModel(scope, CALENDAR, accountsCard = closedDatabase())
+
+    viewModel.state.test {
+      assertThat(awaitSettled()).all {
+        prop(HomeState::accounts).isEqualTo(AccountsCardState.Failed)
+        prop(HomeState::thisMonth).isInstanceOf<ThisMonthCardState.Loaded>()
+        prop(HomeState::attention).isEqualTo(Empty)
+        prop(HomeState::upcoming).isEqualTo(Empty)
+      }
     }
   }
 

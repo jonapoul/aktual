@@ -66,6 +66,7 @@ internal fun HomeScreen(
         ReviewUncategorised -> transactions.uncategorised()
         is OpenSchedule -> editSchedule(action.id)
         OpenSchedules -> schedules()
+        Retry -> viewModel.retry()
       }
     },
     modifier = modifier,
@@ -104,13 +105,17 @@ private fun HomeScaffold(
             .padding(Dimens.VeryLarge),
         verticalArrangement = Arrangement.spacedBy(Dimens.VeryLarge),
       ) {
-        ThisMonthCard(state = state.thisMonth)
+        if (state.isEmpty) {
+          OnboardingCard(onAction = onAction)
+        } else {
+          ThisMonthCard(state = state.thisMonth, onAction = onAction)
 
-        AttentionCard(state = state.attention, onAction = onAction)
+          AttentionCard(state = state.attention, onAction = onAction)
 
-        UpcomingCard(state = state.upcoming, onAction = onAction)
+          UpcomingCard(state = state.upcoming, onAction = onAction)
 
-        AccountsCard(state = state.accounts, onAction = onAction)
+          AccountsCard(state = state.accounts, onAction = onAction)
+        }
 
         BottomSpacing()
       }
@@ -134,17 +139,38 @@ private fun HomeTitle(budgetName: String?, modifier: Modifier = Modifier) {
   }
 }
 
+private const val PREVIEW_BUDGET_NAME = "Household budget"
+
+private val PREVIEW_HOME =
+  HomeState(
+    budgetName = PREVIEW_BUDGET_NAME,
+    thisMonth = PREVIEW_THIS_MONTH,
+    attention = PREVIEW_ATTENTION,
+    upcoming = PREVIEW_UPCOMING,
+    accounts = AccountsCardState.Loaded(PREVIEW_ACCOUNTS),
+  )
+
 private class HomeStateProvider :
   ColoredParameterProvider<HomeState>(
+    PREVIEW_HOME,
+    HomeState(budgetName = PREVIEW_BUDGET_NAME),
     HomeState(
-      budgetName = "Household budget",
+      budgetName = null,
       thisMonth = PREVIEW_THIS_MONTH,
-      attention = PREVIEW_ATTENTION,
-      upcoming = PREVIEW_UPCOMING,
-      accounts = AccountsCardState.Loaded(PREVIEW_ACCOUNTS),
+      attention = Empty,
+      upcoming = Empty,
+      accounts = Empty,
     ),
-    HomeState(budgetName = null, upcoming = Empty, accounts = Empty),
+    HomeState(
+      budgetName = PREVIEW_BUDGET_NAME,
+      thisMonth = Failed,
+      attention = Failed,
+      upcoming = Failed,
+      accounts = Failed,
+    ),
   )
+
+private class PrivateHomeStateProvider : ColoredParameterProvider<HomeState>(PREVIEW_HOME)
 
 @PortraitPreview
 @Composable
@@ -152,5 +178,14 @@ private fun PreviewHomeScaffold(
   @PreviewParameter(HomeStateProvider::class) params: ColoredParams<HomeState>
 ) =
   PreviewWithColoredParams(params) {
+    HomeScaffold(state = this, onAction = {})
+  }
+
+@PortraitPreview
+@Composable
+private fun PreviewPrivateHomeScaffold(
+  @PreviewParameter(PrivateHomeStateProvider::class) params: ColoredParams<HomeState>
+) =
+  PreviewWithColoredParams(params, isPrivacyEnabled = true) {
     HomeScaffold(state = this, onAction = {})
   }

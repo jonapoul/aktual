@@ -20,6 +20,8 @@ internal data object ReviewUncategorised : HomeAction
 
 internal data object OpenSchedules : HomeAction
 
+internal data object Retry : HomeAction
+
 @Immutable
 internal fun interface HomeActionHandler {
   operator fun invoke(action: HomeAction)

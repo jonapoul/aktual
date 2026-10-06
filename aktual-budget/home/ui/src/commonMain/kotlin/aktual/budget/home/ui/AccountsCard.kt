@@ -14,12 +14,11 @@ import aktual.budget.model.Amount
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.AnimatedLoading
+import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryTextButton
-import aktual.core.ui.formattedString
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,9 +28,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,6 +52,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
@@ -72,8 +75,14 @@ internal fun AccountsCard(
     )
 
     when (state) {
-      Loading -> AccountsLoading()
+      Loading -> ShimmerAccounts()
       Empty -> AccountsEmpty(onAction)
+      AccountsCardState.Failed ->
+        CardError(
+          modifier = Modifier.padding(top = 4.dp),
+          message = Strings.homeAccountsFailed,
+          onAction = onAction,
+        )
       is Loaded -> AccountsContent(state, onAction)
     }
   }
@@ -160,13 +169,7 @@ private fun HeaderRow(
     )
 
     if (amount != null) {
-      Text(
-        text = amount.formattedString(),
-        style = style.tabularFigures(),
-        fontWeight = SemiBold,
-        color = colors.pageTextSubdued,
-        maxLines = 1,
-      )
+      AmountText(amount = amount, style = style, color = colors.pageTextSubdued)
     }
   }
 }
@@ -206,22 +209,41 @@ private fun AccountRow(
       )
     }
 
-    Text(
-      text = account.balance.formattedString(),
-      style = typography.bodyLarge.tabularFigures(),
-      fontWeight = SemiBold,
+    AmountText(
+      amount = account.balance,
+      style = typography.bodyLarge,
       color = if (account.balance < Zero) colors.numberNegative else colors.pageText,
-      maxLines = 1,
     )
   }
 }
 
+// Keep this in sync with AccountRow
 @Composable
-private fun AccountsLoading(modifier: Modifier = Modifier) {
-  Box(modifier = modifier.fillMaxWidth().padding(CardPadding), contentAlignment = Center) {
-    AnimatedLoading(modifier = Modifier.size(32.dp))
+private fun ShimmerAccounts(modifier: Modifier = Modifier) {
+  val bar = Modifier.background(colors.tableText, CardShape)
+
+  Column(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .padding(horizontal = CardPadding)
+        .padding(top = 4.dp)
+        .shimmer(rememberShimmer(Window))
+  ) {
+    repeat(SHIMMER_ROWS) {
+      Row(
+        modifier = Modifier.fillMaxWidth().heightIn(min = RowMinHeight),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = CenterVertically,
+      ) {
+        Box(modifier = bar.width(140.dp).height(16.dp))
+        Box(modifier = bar.width(72.dp).height(16.dp))
+      }
+    }
   }
 }
+
+private const val SHIMMER_ROWS = 3
 
 @Composable
 private fun AccountsEmpty(onAction: HomeActionHandler, modifier: Modifier = Modifier) {
@@ -260,6 +282,7 @@ private class AccountsCardStateProvider :
     Loaded(PREVIEW_ACCOUNTS.copy(offBudget = section())),
     Empty,
     Loading,
+    AccountsCardState.Failed,
   )
 
 internal val PREVIEW_ACCOUNTS =

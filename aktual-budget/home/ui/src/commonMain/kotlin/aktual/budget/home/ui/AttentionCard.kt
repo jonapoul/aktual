@@ -21,7 +21,6 @@ import aktual.core.ui.BareTextButton
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.formattedString
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -64,6 +63,13 @@ internal fun AttentionCard(
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
 ) {
+  if (state == Failed) {
+    HomeCard(modifier = modifier) {
+      CardError(message = Strings.homeAttentionFailed, onAction = onAction)
+    }
+    return
+  }
+
   if (state !is Loaded) return
 
   var showOverspent by rememberSaveable { mutableStateOf(false) }
@@ -114,7 +120,7 @@ private fun AttentionRow(
     Icon(
       modifier = Modifier.size(IconSize),
       imageVector = item.icon(),
-      contentDescription = null,
+      contentDescription = item.iconDescription(),
       tint = item.tint(),
     )
 
@@ -149,6 +155,16 @@ private fun AttentionItem.icon(): ImageVector =
     is Uncategorised -> MaterialIcons.FormatListBulleted
     is Overspent -> MaterialIcons.Warning
     is OverdueSchedules -> MaterialIcons.CalendarToday
+  }
+
+@Composable
+private fun AttentionItem.iconDescription(): String =
+  when (this) {
+    is SyncFailed,
+    is SyncFailedMany -> Strings.homeAttentionIconSync
+    is Uncategorised -> Strings.homeAttentionIconUncategorised
+    is Overspent -> Strings.homeAttentionIconOverspent
+    is OverdueSchedules -> Strings.homeAttentionIconOverdue
   }
 
 @Composable
@@ -245,12 +261,10 @@ private fun OverspentContent(
           overflow = Ellipsis,
         )
 
-        Text(
-          text = category.balance.formattedString(),
-          style = typography.bodyLarge.tabularFigures(),
-          fontWeight = SemiBold,
+        AmountText(
+          amount = category.balance,
+          style = typography.bodyLarge,
           color = colors.numberNegative,
-          maxLines = 1,
         )
       }
     }
@@ -307,6 +321,7 @@ private class AttentionCardStateProvider :
         AttentionItem.OverdueSchedules(count = 3),
       )
     ),
+    Failed,
   )
 
 private class OverspentProvider :
