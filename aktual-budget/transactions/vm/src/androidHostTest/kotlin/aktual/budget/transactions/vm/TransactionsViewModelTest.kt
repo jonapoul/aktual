@@ -50,6 +50,7 @@ import kotlin.test.Test
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -695,15 +696,19 @@ class TransactionsViewModelTest {
     }
     advanceUntilIdle()
 
-    viewModel.balance.test {
-      assertThatNextEmissionIsEqualTo(Amount(123.45))
+    // The balance query runs off the test scheduler, so the state can still hold a value from
+    // before the inserts
+    viewModel.balance
+      .dropWhile { it != Amount(123.45) }
+      .test {
+        assertThatNextEmissionIsEqualTo(Amount(123.45))
 
-      // when
-      transactions.insertTransaction("c", "a", "c", "c", date = DATE_2, amount = -23.45)
+        // when
+        transactions.insertTransaction("c", "a", "c", "c", date = DATE_2, amount = -23.45)
 
-      // then
-      assertThatNextEmissionIsEqualTo(Amount(100.0))
-    }
+        // then
+        assertThatNextEmissionIsEqualTo(Amount(100.0))
+      }
   }
 
   @Test
