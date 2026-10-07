@@ -127,6 +127,26 @@ internal class TransactionDaoTest {
     }
 
   @Test
+  fun `Rows are off budget by their account and transfers by their payee`() =
+    runDaoTest { transactions ->
+      // given
+      transactions.insert("t1", ON_1, CATEGORY, PAYEE, DATE)
+      transactions.insert("t2", ON_1, category = null, TRANSFER_TO_ON_2, DATE)
+      transactions.insert("t3", ON_1, category = null, TRANSFER_TO_OFF, DATE)
+      transactions.insert("t4", OFF, category = null, PAYEE, DATE)
+      transactions.insert("t5", OFF, category = null, TRANSFER_TO_ON_1, DATE)
+
+      // when
+      val rows = transactions.getPaged(limit = 10, offset = 0).rows
+
+      // then
+      assertThat(rows.associate { it.id.toString() to it.offBudget })
+        .isEqualTo(mapOf("t1" to false, "t2" to false, "t3" to false, "t4" to true, "t5" to true))
+      assertThat(rows.associate { it.id.toString() to it.isTransfer })
+        .isEqualTo(mapOf("t1" to false, "t2" to true, "t3" to false, "t4" to false, "t5" to true))
+    }
+
+  @Test
   fun `Uncategorised count re-emits as transactions change`() = runDaoTest { transactions ->
     transactions.observeUncategorisedCount().test {
       assertThatNextEmissionIsEqualTo(0L)

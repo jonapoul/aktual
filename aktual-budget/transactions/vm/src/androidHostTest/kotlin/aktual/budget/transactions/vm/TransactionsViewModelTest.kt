@@ -229,6 +229,47 @@ class TransactionsViewModelTest {
   }
 
   @Test
+  fun `Off budget label shows whether or not the transaction is categorised`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    accounts.insert(id = AccountId("o"), name = "Offshore", offBudget = true)
+    with(transactions) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a")
+      insertTransaction(id = "o", account = "o", category = null, payee = "a")
+      insertTransaction(id = "p", account = "o", category = "b", payee = "b")
+    }
+    advanceUntilIdle()
+
+    val source =
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        tagsDao = tags,
+        spec = TransactionsSpec(AllAccounts),
+      )
+
+    // when
+    val result =
+      source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
+
+    // then
+    val uncategorised =
+      transaction(id = "o", account = "a", category = null, payee = "a")
+        .copy(account = "Offshore", needsCategory = false, specialCategory = OffBudget)
+    val categorised =
+      transaction(id = "p", account = "a", category = "b", payee = "b")
+        .copy(account = "Offshore", specialCategory = OffBudget)
+    assertThat(result)
+      .isPage()
+      .withData(
+        TRANSACTION_A.withBalance(370.35),
+        uncategorised.withBalance(246.90),
+        categorised.withBalance(123.45),
+      )
+      .withPrevKey(null)
+      .withNextKey(null)
+  }
+
+  @Test
   fun `Transactions for a specific tag`() = runTest {
     // given
     buildViewModel(AllAccounts)

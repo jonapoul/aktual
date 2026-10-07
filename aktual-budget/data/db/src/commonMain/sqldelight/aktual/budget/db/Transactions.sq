@@ -139,6 +139,9 @@ SELECT id FROM transactions
 -- minus starting balances: an on-budget, non-parent transaction with no category, which isn't a
 -- transfer to another on-budget account. The same predicate is repeated in the uncategorised
 -- queries below, so keep them in step
+--
+-- offBudget and isTransfer are what upstream's mobile list labels a row with in place of its
+-- category: specialCategory in desktop-client/src/components/mobile/transactions/TransactionListItem.tsx
 getPaged:
 SELECT
   vt.id,
@@ -156,7 +159,9 @@ SELECT
     IFNULL(vt.is_parent, 0) = 0 AND
     IFNULL(vt.starting_balance_flag, 0) = 0 AND
     (p.transfer_acct IS NULL OR ta.offbudget = 1)
-  THEN 1 ELSE 0 END AS needsCategory
+  THEN 1 ELSE 0 END AS needsCategory,
+  CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
+  CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
@@ -183,7 +188,9 @@ SELECT
     IFNULL(vt.is_parent, 0) = 0 AND
     IFNULL(vt.starting_balance_flag, 0) = 0 AND
     (p.transfer_acct IS NULL OR ta.offbudget = 1)
-  THEN 1 ELSE 0 END AS needsCategory
+  THEN 1 ELSE 0 END AS needsCategory,
+  CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
+  CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
@@ -204,7 +211,9 @@ SELECT
   vt.amount,
   vt.is_parent AS isParent,
   vt.is_child AS isChild,
-  1 AS needsCategory
+  1 AS needsCategory,
+  0 AS offBudget,
+  0 AS isTransfer
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
@@ -251,7 +260,9 @@ SELECT
     IFNULL(vt.is_parent, 0) = 0 AND
     IFNULL(vt.starting_balance_flag, 0) = 0 AND
     (p.transfer_acct IS NULL OR ta.offbudget = 1)
-  THEN 1 ELSE 0 END AS needsCategory
+  THEN 1 ELSE 0 END AS needsCategory,
+  CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
+  CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
@@ -279,6 +290,8 @@ SELECT
     IFNULL(vt.starting_balance_flag, 0) = 0 AND
     (p.transfer_acct IS NULL OR ta.offbudget = 1)
   THEN 1 ELSE 0 END AS needsCategory,
+  CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
+  CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
   t.parent_id AS parentId
   FROM v_transactions_internal_alive AS vt
   INNER JOIN transactions AS t ON t.id = vt.id

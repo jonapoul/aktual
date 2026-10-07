@@ -188,6 +188,12 @@ private fun categoryText(
   val shownParts =
     if (parts == Pinned && shown > 0) Plurals.transactionsSplitParts(total, shown, total) else null
   val warning = SpanStyle(color = colors.warningText, fontWeight = SemiBold)
+  val special =
+    when (transaction.specialCategory) {
+      OffBudget -> Strings.transactionsOffBudget
+      Transfer -> Strings.transactionsTransfer
+      null -> null
+    }
 
   return buildAnnotatedString {
     val category = transaction.category
@@ -195,6 +201,11 @@ private fun categoryText(
       transaction.split == Parent -> {
         withStyle(SpanStyle(fontStyle = Italic)) { append(split) }
         if (shownParts != null) append(" · $shownParts")
+      }
+
+      // Wins over a real category, as upstream's prettyCategory does
+      special != null -> {
+        withStyle(SpanStyle(fontStyle = Italic)) { append(special) }
       }
 
       transaction.needsCategory -> {
@@ -520,6 +531,8 @@ private class LedgerRowProvider :
     LedgerRowParams(Comfortable, TRANSACTION_2, showDate = false),
     LedgerRowParams(Comfortable, TRANSACTION_3),
     LedgerRowParams(Comfortable, TRANSACTION_UNCATEGORISED),
+    LedgerRowParams(Comfortable, TRANSACTION_TRANSFER),
+    LedgerRowParams(Comfortable, TRANSACTION_OFF_BUDGET),
     LedgerRowParams(Comfortable, TRANSACTION_SPLIT),
     LedgerRowParams(Comfortable, TRANSACTION_SPLIT, parts = Expanded),
     LedgerRowParams(Comfortable, TRANSACTION_SPLIT, parts = Pinned),
@@ -528,6 +541,8 @@ private class LedgerRowProvider :
     LedgerRowParams(Compact, TRANSACTION_2, showDate = false),
     LedgerRowParams(Compact, TRANSACTION_3),
     LedgerRowParams(Compact, TRANSACTION_UNCATEGORISED),
+    LedgerRowParams(Compact, TRANSACTION_TRANSFER),
+    LedgerRowParams(Compact, TRANSACTION_OFF_BUDGET),
     LedgerRowParams(Compact, TRANSACTION_SPLIT),
     LedgerRowParams(Compact, TRANSACTION_SPLIT, parts = Expanded),
     LedgerRowParams(Compact, TRANSACTION_SPLIT, parts = Pinned),
@@ -535,6 +550,8 @@ private class LedgerRowProvider :
     LedgerRowParams(Dense, TRANSACTION_1),
     LedgerRowParams(Dense, TRANSACTION_3),
     LedgerRowParams(Dense, TRANSACTION_UNCATEGORISED),
+    LedgerRowParams(Dense, TRANSACTION_TRANSFER),
+    LedgerRowParams(Dense, TRANSACTION_OFF_BUDGET),
     LedgerRowParams(Dense, TRANSACTION_SPLIT),
     LedgerRowParams(Dense, TRANSACTION_SPLIT, parts = Expanded),
     LedgerRowParams(Dense, TRANSACTION_SPLIT, parts = Pinned),

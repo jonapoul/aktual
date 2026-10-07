@@ -10,6 +10,8 @@ complexity:
     ignoreSingleWhenExpression: true
   LabeledExpression:
     active: false
+  LargeClass:
+    excludes: [ "**/test/**", "**/*Test/**" ]
   LongMethod:
     allowedLines: 100
   LongParameterList:
