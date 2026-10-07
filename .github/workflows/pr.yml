@@ -237,33 +237,21 @@ jobs:
       - uses: ./.github/actions/setup-gradle-properties
       - run: ./gradlew -p build-logic check
       - run: ./gradlew -p compiler-plugin check
-      - run: ./gradlew licensee androidManifestLock :aktual-core:l10n:catalog straitjacketCheck checkSortDependencies
+      - run: ./gradlew licensee androidManifestLock :aktual-core:l10n:catalog straitjacketCheck checkSortDependencies atlasGenerate
       - name: Check manifest lock is up to date
         run: |
           if ! git diff --exit-code -- '*AndroidManifest.lock.yaml'; then
             echo "::error::androidManifestLock produced changes that were not committed. Please run './gradlew :aktual-app:android:androidManifestLock' locally and commit the results."
             exit 1
           fi
+      - name: Check module READMEs are up to date
+        run: |
+          if [[ -n "$(git status --porcelain -- '*README.md')" ]]; then
+            git status --porcelain -- '*README.md'
+            echo "::error::atlasGenerate produced README changes that were not committed. Please run './gradlew atlasGenerate' locally and commit the results."
+            exit 1
+          fi
       - run: ./scripts/unusedStrings.sh
-      - uses: ./.github/actions/report-build-results
-        if: ${{ !cancelled() }}
-
-  atlas:
-    needs: [ changed-files, validation ]
-    if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.github/actions/setup-java
-      - uses: ./.github/actions/setup-gradle
-      - uses: ./.github/actions/setup-gradle-properties
-      - run: ./gradlew atlasGenerate
-      - name: Upload module graphs
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: atlas-outputs
-          path: '**/build/atlas/chart.*'
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
 
@@ -277,7 +265,6 @@ jobs:
       - lint
       - tests
       - other-checks
-      - atlas
       - claude-review
     runs-on: ubuntu-latest
     timeout-minutes: 5
