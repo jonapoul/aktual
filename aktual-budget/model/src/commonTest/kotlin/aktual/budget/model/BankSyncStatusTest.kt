@@ -22,7 +22,7 @@ class BankSyncStatusTest {
         BankSyncStatus.TimedOut,
         BankSyncStatus.AccountMissing,
         BankSyncStatus.Other("something-else"),
-      )
+      ),
   ) {
     val encoded = status.toString()
     assertThat(status).isEqualTo(BankSyncStatus.fromString(encoded))

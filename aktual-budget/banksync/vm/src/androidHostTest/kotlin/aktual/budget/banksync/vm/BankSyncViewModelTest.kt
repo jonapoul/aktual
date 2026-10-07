@@ -84,7 +84,7 @@ class BankSyncViewModelTest {
                         "Savings",
                         bank = "Bankity Bank",
                         status = ReauthRequired,
-                      )
+                      ),
                     ),
                 ),
                 BankSyncProvider(
@@ -104,7 +104,7 @@ class BankSyncViewModelTest {
               ),
             unlinked = persistentListOf(account("cash", "Cash")),
             canSync = true,
-          )
+          ),
         )
     }
   }
@@ -133,7 +133,7 @@ class BankSyncViewModelTest {
             GoCardless to Configured,
             PluggyAi to Failed,
             SimpleFin to NotConfigured,
-          )
+          ),
         )
     }
   }
@@ -342,7 +342,7 @@ class BankSyncViewModelTest {
 
   // Waits until every provider's status has come back
   private suspend fun ReceiveTurbine<BankSyncState>.awaitSettledSuccess(
-    cancel: Boolean = true
+    cancel: Boolean = true,
   ): Success {
     var state = awaitItem()
     while (state !is Success || state.providers.any { it.status == Checking }) {

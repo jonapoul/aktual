@@ -83,7 +83,7 @@ class SecretsApiTest {
         SecretResponse.Failed(
           reason = SecretResponse.NOT_ADMIN,
           details = "You have to be admin to manage global secrets",
-        )
+        ),
       )
   }
 }

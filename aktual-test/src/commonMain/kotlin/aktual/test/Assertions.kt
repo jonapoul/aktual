@@ -71,7 +71,7 @@ fun Assert<File>.contentEquals(expected: String) = transform { file ->
   } else {
     val diff = diff(expected, contents)
     expected(
-      "Unequal strings between expected{${expected.length}} and actual{${contents.length}}:\n$diff"
+      "Unequal strings between expected{${expected.length}} and actual{${contents.length}}:\n$diff",
     )
   }
 }
@@ -89,7 +89,7 @@ fun Assert<String>.equalsDiffed(expected: String) = transform { actual ->
   } else {
     expected(
       "Unequal strings between expected{${expected.length}} and actual{${stripped.length}}:\n" +
-        diff(expected, stripped)
+        diff(expected, stripped),
     )
   }
 }

@@ -228,7 +228,7 @@ private suspend fun CartesianChartModelProducer.populate(data: CrossoverData, zo
 @Preview
 @Composable
 private fun PreviewCrossoverChart(
-  @PreviewParameter(CrossoverChartProvider::class) params: ColoredParams<CrossoverChartParams>
+  @PreviewParameter(CrossoverChartProvider::class) params: ColoredParams<CrossoverChartParams>,
 ) =
   PreviewWithColoredParams(params) {
     CrossoverChart(

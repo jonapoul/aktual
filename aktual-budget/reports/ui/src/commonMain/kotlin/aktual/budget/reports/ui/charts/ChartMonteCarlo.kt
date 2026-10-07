@@ -318,7 +318,7 @@ private const val AGE_LABELS = 6
 @Preview
 @Composable
 private fun PreviewMonteCarloChart(
-  @PreviewParameter(MonteCarloChartProvider::class) params: ColoredParams<MonteCarloChartParams>
+  @PreviewParameter(MonteCarloChartProvider::class) params: ColoredParams<MonteCarloChartParams>,
 ) =
   PreviewWithColoredParams(params) {
     MonteCarloChart(

@@ -185,7 +185,7 @@ private const val NUM_SHIMMER_ROWS = 12
 @PortraitPreview
 @Composable
 private fun PreviewTransactions(
-  @PreviewParameter(TransactionsProvider::class) params: ColoredParams<TransactionsParams>
+  @PreviewParameter(TransactionsProvider::class) params: ColoredParams<TransactionsParams>,
 ) =
   PreviewWithColoredParams(params) {
     WithLedgerDimens(density) {

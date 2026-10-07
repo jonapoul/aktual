@@ -171,7 +171,7 @@ private fun PreviewWeightedTable(@PreviewParameter(ColoredParameters::class) col
 @Preview(widthDp = 700)
 @Composable
 private fun PreviewWeightedTableWithStylesAndPadding(
-  @PreviewParameter(ColoredParameters::class) colors: Colors
+  @PreviewParameter(ColoredParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     WeightedTable(
@@ -204,7 +204,7 @@ private fun PreviewWrapWidth(@PreviewParameter(ColoredParameters::class) colors:
 @Preview(widthDp = 900)
 @Composable
 private fun PreviewWrapWidthWithStylesAndPadding(
-  @PreviewParameter(ColoredParameters::class) colors: Colors
+  @PreviewParameter(ColoredParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     WrapWidthTable(

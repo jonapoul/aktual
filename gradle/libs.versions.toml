@@ -96,7 +96,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version 
 kotlinx-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.5.2" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-ktfmt = { module = "com.facebook:ktfmt", version = "0.64" } # only used in ktfmt.sh
+ktfmt = { module = "org.jetbrains.kotlinx:ktfmt", version = "0.65" } # only used in ktfmt.sh
 ktor-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-engineDefaults = { module = "io.ktor:ktor-client-engine-defaults", version.ref = "ktor" }

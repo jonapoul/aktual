@@ -20,7 +20,7 @@ internal class InjectedRawCoroutineScopeTest {
         @Inject
         class Foo(private val scope: CoroutineScope)
         """
-          .trimIndent()
+          .trimIndent(),
       )
       .hasSize(1)
 
@@ -30,7 +30,7 @@ internal class InjectedRawCoroutineScopeTest {
         """
         class Foo @Inject constructor(private val scope: CoroutineScope)
         """
-          .trimIndent()
+          .trimIndent(),
       )
       .hasSize(1)
 
@@ -41,7 +41,7 @@ internal class InjectedRawCoroutineScopeTest {
         @Inject
         class Foo(private val scope: kotlinx.coroutines.CoroutineScope)
         """
-          .trimIndent()
+          .trimIndent(),
       )
       .hasSize(1)
 
@@ -53,7 +53,7 @@ internal class InjectedRawCoroutineScopeTest {
         @ContributesBinding(BudgetScope::class)
         class Foo(private val scope: CoroutineScope) : Bar
         """
-          .trimIndent()
+          .trimIndent(),
       )
       .hasSize(1)
 
@@ -66,7 +66,7 @@ internal class InjectedRawCoroutineScopeTest {
           @Inject constructor(scope: CoroutineScope) : this(AppCoroutineScope(scope), 0)
         }
         """
-          .trimIndent()
+          .trimIndent(),
       )
       .hasSize(1)
 
@@ -78,7 +78,7 @@ internal class InjectedRawCoroutineScopeTest {
           @Provides fun foo(scope: CoroutineScope): Foo = Foo(scope)
         }
         """
-          .trimIndent()
+          .trimIndent(),
       )
       .hasSize(1)
 
@@ -89,7 +89,7 @@ internal class InjectedRawCoroutineScopeTest {
         @Inject
         class Foo(private val app: AppCoroutineScope, private val budget: BudgetCoroutineScope)
         """
-          .trimIndent()
+          .trimIndent(),
       )
       .isEmpty()
 
@@ -99,7 +99,7 @@ internal class InjectedRawCoroutineScopeTest {
         """
         class Foo(private val scope: CoroutineScope)
         """
-          .trimIndent()
+          .trimIndent(),
       )
       .isEmpty()
 
@@ -109,7 +109,7 @@ internal class InjectedRawCoroutineScopeTest {
         """
         fun foo(scope: CoroutineScope) = Unit
         """
-          .trimIndent()
+          .trimIndent(),
       )
       .isEmpty()
 
@@ -121,7 +121,7 @@ internal class InjectedRawCoroutineScopeTest {
           @Provides fun scope(): CoroutineScope = MainScope()
         }
         """
-          .trimIndent()
+          .trimIndent(),
       )
       .isEmpty()
 

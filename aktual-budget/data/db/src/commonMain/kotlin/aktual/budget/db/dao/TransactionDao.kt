@@ -122,7 +122,7 @@ class TransactionDao(database: BudgetDatabase) {
 
   // The live children of these split parents, each parent's in the order they were entered
   suspend fun childrenOf(
-    parents: Collection<TransactionId>
+    parents: Collection<TransactionId>,
   ): Map<TransactionId, List<TransactionRow>> = queries.withResult {
     parents
       .chunked(MAX_BIND_ARGS)
@@ -171,7 +171,7 @@ class TransactionDao(database: BudgetDatabase) {
         schedule = schedule?.let(::ScheduleId),
         reconciled = null,
         raw_synced_data = null,
-      )
+      ),
     )
   }
 }

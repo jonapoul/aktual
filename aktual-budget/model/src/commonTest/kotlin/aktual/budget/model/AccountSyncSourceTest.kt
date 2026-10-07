@@ -18,7 +18,7 @@ class AccountSyncSourceTest {
         AccountSyncSource.Akahu,
         AccountSyncSource.EnableBanking,
         AccountSyncSource.Other("something-else"),
-      )
+      ),
   ) {
     val encoded = source.toString()
     assertThat(source).isEqualTo(AccountSyncSource.fromString(encoded))

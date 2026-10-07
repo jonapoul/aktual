@@ -34,7 +34,7 @@ internal fun UseSystemDefaultPreference(
 @Preview
 @Composable
 private fun PreviewUseSystemDefaultPreference(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
 ) =
   PreviewWithColoredParams(params) {
     UseSystemDefaultPreference(

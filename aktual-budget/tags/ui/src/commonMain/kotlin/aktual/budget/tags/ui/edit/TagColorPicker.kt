@@ -285,7 +285,7 @@ private fun PresetSwatch(
         .clip(ButtonShape)
         .background(color)
         .border(borderWidth, borderColor, ButtonShape)
-        .clickable(onClick = onClick)
+        .clickable(onClick = onClick),
   )
 }
 
@@ -355,7 +355,7 @@ private fun Modifier.rotateVertically(): Modifier =
 @Preview
 @Composable
 private fun PreviewTagColorPicker(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
 ) =
   PreviewWithColoredParams(params) {
     var color by remember { mutableStateOf<Color?>(TAG_COLOR_PRESETS.random()) }

@@ -162,7 +162,7 @@ private fun RuleStageBadge(
         .clip(CardShape)
         .background(colors.pillBackgroundSelected, CardShape)
         .border(Hairline, colors.pillBorder, CardShape)
-        .padding(horizontal = 6.dp, vertical = 2.dp)
+        .padding(horizontal = 6.dp, vertical = 2.dp),
   ) {
     Text(text = stage.string(), color = colors.pillText, style = typography.labelSmall)
   }
@@ -210,7 +210,7 @@ private fun ListRulesItemConditions(
         modifier =
           Modifier.clip(CardShape)
             .background(colors.pillBackgroundLight, CardShape)
-            .padding(horizontal = 5.dp, vertical = 3.dp)
+            .padding(horizontal = 5.dp, vertical = 3.dp),
       ) {
         val prefix = if (index != 0) "and " else ""
         Text(
@@ -239,7 +239,7 @@ private fun ListRulesItemActions(
         modifier =
           Modifier.clip(CardShape)
             .background(colors.pillBackgroundLight, CardShape)
-            .padding(horizontal = 5.dp, vertical = 3.dp)
+            .padding(horizontal = 5.dp, vertical = 3.dp),
       ) {
         Text(text = rememberActionText(action, styles), overflow = Ellipsis, maxLines = 1)
       }
@@ -270,7 +270,7 @@ internal fun ShimmerListRulesItem(
         Box(
           modifier =
             Modifier.size(LocalMinimumInteractiveComponentSize.current / 2)
-              .background(colors.pageText, CardShape)
+              .background(colors.pageText, CardShape),
         )
       }
     }
@@ -280,7 +280,7 @@ internal fun ShimmerListRulesItem(
         modifier =
           Modifier.fillMaxWidth(fraction = 0.55f)
             .height(20.dp)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
 
       Box(
@@ -288,7 +288,7 @@ internal fun ShimmerListRulesItem(
           Modifier.padding(top = 4.dp)
             .fillMaxWidth(fraction = 0.35f)
             .height(20.dp)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
 
       Box(
@@ -296,7 +296,7 @@ internal fun ShimmerListRulesItem(
           Modifier.padding(top = 4.dp)
             .fillMaxWidth(fraction = 0.45f)
             .height(20.dp)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
     }
 
@@ -307,7 +307,7 @@ internal fun ShimmerListRulesItem(
       Box(
         modifier =
           Modifier.size(LocalMinimumInteractiveComponentSize.current / 2)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
     }
   }
@@ -330,7 +330,7 @@ private fun Modifier.ruleRow(
 @Preview
 @Composable
 private fun PreviewListRulesItem(
-  @PreviewParameter(ListRulesItemProvider::class) params: ColoredParams<ListRulesItemParams>
+  @PreviewParameter(ListRulesItemProvider::class) params: ColoredParams<ListRulesItemParams>,
 ) =
   PreviewWithColoredParams(params) {
     ListRulesItem(rule = item, checkboxes = checkboxes, onAction = {})

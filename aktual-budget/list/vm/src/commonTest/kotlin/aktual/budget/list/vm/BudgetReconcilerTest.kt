@@ -56,7 +56,7 @@ class BudgetReconcilerTest {
           cloudFileId = BudgetId("a"),
           groupId = "g1",
           owner = null,
-        )
+        ),
       )
   }
 
@@ -77,7 +77,7 @@ class BudgetReconcilerTest {
           cloudFileId = BudgetId("a"),
           groupId = "g2",
           owner = null,
-        )
+        ),
       )
   }
 
@@ -97,7 +97,7 @@ class BudgetReconcilerTest {
           cloudFileId = BudgetId("a"),
           groupId = "g1",
           owner = null,
-        )
+        ),
       )
   }
 
@@ -116,7 +116,7 @@ class BudgetReconcilerTest {
           encryptKeyId = null,
           cloudFileId = BudgetId("a"),
           groupId = "g1",
-        )
+        ),
       )
   }
 
@@ -129,7 +129,7 @@ class BudgetReconcilerTest {
 
     assertThat(result)
       .containsExactly(
-        Budget.Local(id = BudgetId("a"), name = "a", hasKey = false, encryptKeyId = null)
+        Budget.Local(id = BudgetId("a"), name = "a", hasKey = false, encryptKeyId = null),
       )
   }
 
@@ -148,7 +148,7 @@ class BudgetReconcilerTest {
           encryptKeyId = null,
           cloudFileId = BudgetId("a"),
           groupId = "g1",
-        )
+        ),
       )
   }
 
@@ -182,7 +182,7 @@ class BudgetReconcilerTest {
 
     val result =
       reconciler.reconcile(
-        remote = listOf(userFile(id = "a", groupId = "g1", name = "Gone").copy(deleted = 1))
+        remote = listOf(userFile(id = "a", groupId = "g1", name = "Gone").copy(deleted = 1)),
       )
 
     assertThat(result).isEmpty()
@@ -195,7 +195,7 @@ class BudgetReconcilerTest {
     val result =
       reconciler.reconcile(
         remote =
-          listOf(userFile(id = "a", groupId = "g1", name = "Main", encryptKeyId = KeyId("key-1")))
+          listOf(userFile(id = "a", groupId = "g1", name = "Main", encryptKeyId = KeyId("key-1"))),
       )
 
     assertThat(result)
@@ -207,7 +207,7 @@ class BudgetReconcilerTest {
           cloudFileId = BudgetId("a"),
           groupId = "g1",
           owner = null,
-        )
+        ),
       )
   }
 

@@ -201,7 +201,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
               nodeLabels.getOrNull(i)?.let { label -> drawNodeLabel(label) }
             }
           }
-        }
+        },
     )
 
     selection?.let { (hit, position) ->
@@ -326,7 +326,7 @@ private fun Tooltip(
         .widthIn(max = TOOLTIP_MAX_WIDTH)
         .shadow(TOOLTIP_ELEVATION, TOOLTIP_SHAPE)
         .background(colors.menuBackground, TOOLTIP_SHAPE)
-        .padding(10.dp)
+        .padding(10.dp),
   ) {
     Text(text = title, color = colors.menuItemText, style = typography.bodyMedium)
     Row {
@@ -456,7 +456,7 @@ private val TOOLTIP_SHAPE = RoundedCornerShape(4.dp)
 @Preview
 @Composable
 private fun PreviewSankeyChart(
-  @PreviewParameter(SankeyChartProvider::class) params: ColoredParams<SankeyChartParams>
+  @PreviewParameter(SankeyChartProvider::class) params: ColoredParams<SankeyChartParams>,
 ) =
   PreviewWithColoredParams(params) {
     SankeyChart(

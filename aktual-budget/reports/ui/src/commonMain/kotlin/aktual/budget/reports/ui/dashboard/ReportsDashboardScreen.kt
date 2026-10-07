@@ -276,7 +276,7 @@ private fun ContentList(
 @Composable
 private fun PreviewReportsDashboardScaffold(
   @PreviewParameter(ReportsDashboardScaffoldProvider::class)
-  params: ColoredParams<ReportsDashboardScaffoldParams>
+  params: ColoredParams<ReportsDashboardScaffoldParams>,
 ) =
   PreviewWithColoredParams(params) {
     ReportsDashboardScaffold(

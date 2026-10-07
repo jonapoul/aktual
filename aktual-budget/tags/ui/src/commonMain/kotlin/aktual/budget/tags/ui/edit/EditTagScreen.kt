@@ -385,7 +385,7 @@ private inline fun Field(
 @PortraitPreview
 @Composable
 private fun PreviewEditTagScreen(
-  @PreviewParameter(EditTagStateProvider::class) params: ColoredParams<EditTagState>
+  @PreviewParameter(EditTagStateProvider::class) params: ColoredParams<EditTagState>,
 ) =
   PreviewWithColoredParams(params) {
     EditTagScaffold(state = this, hasChanges = false, canSave = true, onAction = {})

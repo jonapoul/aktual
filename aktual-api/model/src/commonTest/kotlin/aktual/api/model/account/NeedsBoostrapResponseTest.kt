@@ -18,10 +18,14 @@ class NeedsBoostrapResponseTest {
               loginMethod = Password,
               availableLoginMethods =
                 listOf(
-                  AvailableLoginMethod(method = Password, isActive = true, displayName = "Password")
+                  AvailableLoginMethod(
+                    method = Password,
+                    isActive = true,
+                    displayName = "Password",
+                  ),
                 ),
               isMultiUser = false,
-            )
+            ),
         ),
     )
 }

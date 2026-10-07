@@ -91,7 +91,7 @@ private fun SettingsScaffold(state: SettingsScreenState, onAction: SettingsActio
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsToolbar) },
       )
-    }
+    },
   ) { innerPadding ->
     Box {
       PageBackground()

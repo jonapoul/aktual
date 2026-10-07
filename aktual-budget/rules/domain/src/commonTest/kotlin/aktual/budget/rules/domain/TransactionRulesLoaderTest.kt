@@ -158,7 +158,7 @@ class TransactionRulesLoaderTest {
           goal_def = null,
           template_settings = null,
           cleanup_def = null,
-        )
+        ),
       )
     }
 
@@ -178,6 +178,6 @@ class TransactionRulesLoaderTest {
           actions = actions,
           tombstone = tombstone,
           conditions_op = And,
-        )
+        ),
       )
 }

@@ -148,7 +148,7 @@ internal fun ZoomableChart(
   Box(modifier = modifier.testTag(Tags.ZoomableChart)) {
     val haptics = LocalHapticFeedback.current
     content(
-      if (enabled) Modifier.fillMaxSize().zoomGestures(state, haptics) else Modifier.fillMaxSize()
+      if (enabled) Modifier.fillMaxSize().zoomGestures(state, haptics) else Modifier.fillMaxSize(),
     )
   }
 
@@ -205,7 +205,7 @@ private object ZoomRangeKey : ExtraStore.Key<XRange>()
  * the data and range change together.
  */
 internal class ZoomRangeProvider(
-  private val base: CartesianLayerRangeProvider = CartesianLayerRangeProvider.auto()
+  private val base: CartesianLayerRangeProvider = CartesianLayerRangeProvider.auto(),
 ) : CartesianLayerRangeProvider {
   override fun getMinX(minX: Double, maxX: Double, extraStore: ExtraStore) =
     extraStore.getOrNull(ZoomRangeKey)?.start ?: base.getMinX(minX, maxX, extraStore)
@@ -270,7 +270,7 @@ private fun nearest(points: List<ZoomPoint>, zoom: XRange): List<ZoomPoint> =
   listOfNotNull(
     points
       .minByOrNull { if (it.x < zoom.start) zoom.start - it.x else it.x - zoom.endInclusive }
-      ?.copy(y = 0.0)
+      ?.copy(y = 0.0),
   )
 
 private const val SELECTION_ALPHA = 0.2f

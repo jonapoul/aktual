@@ -34,7 +34,7 @@ internal fun previewPagingData(
           prepend = Loaded,
           append = Loaded,
         ),
-    )
+    ),
   )
 
 internal fun emptyPreviewPagingData(loading: Boolean) =

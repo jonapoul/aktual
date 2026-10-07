@@ -134,7 +134,7 @@ internal fun ReportScaffold(
                 state.type.string()
               } else {
                 Strings.reportsDashboardTitle
-              }
+              },
           )
         },
         actions = {
@@ -199,7 +199,7 @@ private fun ReportContent(
 @PortraitPreview
 @Composable
 private fun PreviewReportScaffold(
-  @PreviewParameter(ReportScaffoldProvider::class) params: ColoredParams<ReportState>
+  @PreviewParameter(ReportScaffoldProvider::class) params: ColoredParams<ReportState>,
 ) = PreviewWithColoredParams(params) { ReportScaffold(state = this, onAction = {}) }
 
 private class ReportScaffoldProvider :

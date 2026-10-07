@@ -145,7 +145,7 @@ fun Modifier.hazedTopBarContent(state: HazedTopBarState, innerPadding: PaddingVa
           start = innerPadding.calculateStartPadding(layoutDirection),
           end = innerPadding.calculateEndPadding(layoutDirection),
           bottom = innerPadding.calculateBottomPadding(),
-        )
+        ),
       )
   } else {
     padding(innerPadding)
@@ -202,7 +202,7 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
         modifier
           .fillMaxSize()
           .then(if (excluded.isEmpty()) Modifier else Modifier.clip(HoledShape(excluded)))
-          .hazeBlur(input = HazeInput.Sources(hazeState), style = blurStyle)
+          .hazeBlur(input = HazeInput.Sources(hazeState), style = blurStyle),
     )
   }
 }

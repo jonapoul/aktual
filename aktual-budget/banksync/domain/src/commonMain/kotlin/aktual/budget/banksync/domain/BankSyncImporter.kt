@@ -409,7 +409,7 @@ internal fun startingBalance(
         minusAll(if (importPending) transactions else transactions.filter { it.isBooked })
       PluggyAi ->
         jsRound(
-          transactions.fold(current.toDouble()) { total, t -> total - t.decimalAmount() * CENTS }
+          transactions.fold(current.toDouble()) { total, t -> total - t.decimalAmount() * CENTS },
         )
       else -> current
     }

@@ -37,7 +37,7 @@ internal class BankLoginModel(
         country = defaultCountry(provider.countries),
         banks = Loading,
         accountType = LoginAccountType.Personal.takeIf { provider.asksAccountType },
-      )
+      ),
     )
   val state: StateFlow<BankLogin> = mutableState.asStateFlow()
 

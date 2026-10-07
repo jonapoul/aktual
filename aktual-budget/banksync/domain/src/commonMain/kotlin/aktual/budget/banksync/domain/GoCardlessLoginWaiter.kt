@@ -22,7 +22,7 @@ class GoCardlessLoginWaiter(private val api: BankSyncApi) {
   suspend fun await(requisitionId: String): GoCardlessAccountsResponse =
     withTimeoutOrNull(TIMEOUT) { poll(requisitionId) }
       ?: GoCardlessAccountsResponse.Failed(
-        ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT)
+        ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT),
       )
 
   private suspend fun poll(requisitionId: String): GoCardlessAccountsResponse {

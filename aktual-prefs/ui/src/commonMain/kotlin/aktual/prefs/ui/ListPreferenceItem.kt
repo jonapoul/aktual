@@ -138,7 +138,7 @@ private enum class PreviewOption {
 @Composable
 private fun PreviewListPreferenceItem(
   @PreviewParameter(ListPreferenceItemProvider::class)
-  params: ColoredParams<ListPreferenceItemParams>
+  params: ColoredParams<ListPreferenceItemParams>,
 ) =
   PreviewWithColoredParams(params) {
     ListPreferenceItem(

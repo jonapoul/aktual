@@ -174,7 +174,7 @@ class BalanceForecastTest {
           LocalDate(2026, 1, 1) to Amount(800L),
           LocalDate(2026, 2, 1) to Amount(500L),
           LocalDate(2026, 3, 1) to Amount(1000L),
-        )
+        ),
       )
     assertThat(data.scheduledCount).isEqualTo(2)
   }
@@ -231,7 +231,7 @@ class BalanceForecastTest {
           LocalDate(2026, 1, 1) to Amount(700L),
           LocalDate(2026, 2, 1) to Amount(600L),
           LocalDate(2026, 3, 1) to Amount(1100L),
-        )
+        ),
       )
   }
 

@@ -13,7 +13,7 @@ import kotlinx.coroutines.test.runTest
 
 // Like runDatabaseTest, but changes sent to the sync controller are applied to the database
 internal fun runSyncedDatabaseTest(
-  action: suspend BudgetDatabase.(TestScope, BudgetSyncController) -> Unit
+  action: suspend BudgetDatabase.(TestScope, BudgetSyncController) -> Unit,
 ) = runTest {
   val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
   driver.use {

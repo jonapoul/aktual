@@ -276,7 +276,7 @@ private fun ResetDialog(name: String, onDismiss: () -> Unit, onConfirm: () -> Un
 @Composable
 private fun PreviewBankSyncProvidersScaffold(
   @PreviewParameter(BankSyncProvidersStateProvider::class)
-  params: ColoredParams<BankSyncProvidersState>
+  params: ColoredParams<BankSyncProvidersState>,
 ) = PreviewWithColoredParams(params) { BankSyncProvidersScaffold(state = this, onAction = {}) }
 
 private val PreviewLoaded =
@@ -288,7 +288,7 @@ private val PreviewLoaded =
         BankSyncProviderItem(SimpleFin, Failed),
         BankSyncProviderItem(PluggyAi, Checking),
         BankSyncProviderItem(Akahu, NotConfigured),
-      )
+      ),
   )
 
 private class BankSyncProvidersStateProvider :

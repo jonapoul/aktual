@@ -33,7 +33,7 @@ fun McConfig.updateSpendingPhase(
 ): McConfig =
   copy(
     spendingPhases =
-      spendingPhases.map { if (it.id == id) transform(it) else it }.sortedByAge().toImmutableList()
+      spendingPhases.map { if (it.id == id) transform(it) else it }.sortedByAge().toImmutableList(),
   )
 
 // The first phase always starts immediately
@@ -43,7 +43,7 @@ fun McConfig.removeSpendingPhase(id: String): McConfig =
       spendingPhases
         .filterNot { it.id == id }
         .mapIndexed { i, phase -> if (i == 0) phase.copy(fromAge = null) else phase }
-        .toImmutableList()
+        .toImmutableList(),
   )
 
 fun McConfig.addTaxBand(id: String): McConfig {
@@ -55,7 +55,10 @@ fun McConfig.addTaxBand(id: String): McConfig {
 fun McConfig.updateTaxBand(id: String, transform: (McTaxBand) -> McTaxBand): McConfig =
   copy(
     taxBands =
-      taxBands.map { if (it.id == id) transform(it) else it }.sortedBy { it.from }.toImmutableList()
+      taxBands
+        .map { if (it.id == id) transform(it) else it }
+        .sortedBy { it.from }
+        .toImmutableList(),
   )
 
 // The first band always starts at zero income
@@ -65,14 +68,14 @@ fun McConfig.removeTaxBand(id: String): McConfig =
       taxBands
         .filterNot { it.id == id }
         .mapIndexed { i, band -> if (i == 0) band.copy(from = 0.0) else band }
-        .toImmutableList()
+        .toImmutableList(),
   )
 
 // The surplus pot is managed by the plan, so a new contribution starts on an ordinary one
 fun McConfig.addContribution(id: String): McConfig {
   val pot = pots.firstOrNull { !it.isSurplus } ?: pots.firstOrNull() ?: return this
   return copy(
-    contributions = (contributions + McContribution(id = id, potId = pot.id)).toImmutableList()
+    contributions = (contributions + McContribution(id = id, potId = pot.id)).toImmutableList(),
   )
 }
 
@@ -81,7 +84,7 @@ fun McConfig.updateContribution(
   transform: (McContribution) -> McContribution,
 ): McConfig =
   copy(
-    contributions = contributions.map { if (it.id == id) transform(it) else it }.toImmutableList()
+    contributions = contributions.map { if (it.id == id) transform(it) else it }.toImmutableList(),
   )
 
 fun McConfig.removeContribution(id: String): McConfig =
@@ -106,7 +109,7 @@ fun McConfig.updateIncomeStream(
   transform: (McIncomeStream) -> McIncomeStream,
 ): McConfig =
   copy(
-    incomeStreams = incomeStreams.map { if (it.id == id) transform(it) else it }.toImmutableList()
+    incomeStreams = incomeStreams.map { if (it.id == id) transform(it) else it }.toImmutableList(),
   )
 
 // Contributions paid out of a removed stream fall back to money from outside the plan

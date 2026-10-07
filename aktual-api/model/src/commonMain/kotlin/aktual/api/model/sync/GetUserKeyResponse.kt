@@ -57,7 +57,7 @@ sealed interface GetUserKeyResponse {
             id = KeyId(data.string("id")),
             salt = data.string("salt").base64(),
             test = test.requireNotNull(),
-          )
+          ),
       )
     }
 

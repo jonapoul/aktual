@@ -150,7 +150,7 @@ private fun ResultsList(
 @Composable
 private fun PreviewSearchSchedulesScaffold(
   @PreviewParameter(SearchSchedulesScaffoldProvider::class)
-  params: ColoredParams<SearchSchedulesParams>
+  params: ColoredParams<SearchSchedulesParams>,
 ) =
   PreviewWithColoredParams(params) {
     SearchSchedulesScaffold(query = query, state = state, onAction = {})

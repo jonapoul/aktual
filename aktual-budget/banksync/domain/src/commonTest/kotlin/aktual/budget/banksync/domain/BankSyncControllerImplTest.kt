@@ -158,7 +158,7 @@ internal class BankSyncControllerImplTest {
           account = A,
           name = "a",
           error = Provider("ITEM_ERROR", "ITEM_LOGIN_REQUIRED"),
-        )
+        ),
       )
     assertThat(account(A)).all {
       prop(Accounts::last_sync).isNull()
@@ -245,7 +245,7 @@ internal class BankSyncControllerImplTest {
         mapOf(
           "provider-a" to success(bankTx("-1.00", transactionId = "t1"), balance = 500),
           "provider-b" to providerError("ACCOUNT_NEEDS_ATTENTION"),
-        )
+        ),
       )
     api.responses["provider-d"] = success()
 
@@ -297,7 +297,7 @@ internal class BankSyncControllerImplTest {
     assertThat(api.batchRequests).isEmpty()
     assertThat(api.requests)
       .containsExactly(
-        AccountSyncSource.SimpleFin to BankSyncTransactionsRequest("provider-a", START)
+        AccountSyncSource.SimpleFin to BankSyncTransactionsRequest("provider-a", START),
       )
   }
 

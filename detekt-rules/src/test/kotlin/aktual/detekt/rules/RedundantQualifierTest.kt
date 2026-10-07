@@ -262,7 +262,7 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
         return Role.Admin
       }
       """
-        .trimIndent()
+        .trimIndent(),
     )
 
   @Test
@@ -353,7 +353,7 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
   @Test
   fun `does not report when CSR is off`() =
     assertThat(
-        lint("$PREAMBLE\nfun foo() = takesRole(Role.Admin)", LanguageVersionSettingsImpl.DEFAULT)
+        lint("$PREAMBLE\nfun foo() = takesRole(Role.Admin)", LanguageVersionSettingsImpl.DEFAULT),
       )
       .isEmpty()
 
@@ -405,7 +405,7 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
         specificFeatures =
           mapOf(
             LanguageFeature.ContextSensitiveResolutionUsingExpectedType to
-              LanguageFeature.State.ENABLED
+              LanguageFeature.State.ENABLED,
           ),
       )
 

@@ -75,7 +75,7 @@ private fun DarkThemeContent(
 @Composable
 private fun PreviewDarkColorsPreference(
   @PreviewParameter(DarkThemePreferenceProvider::class)
-  params: ColoredParams<DarkThemePreferenceParams>
+  params: ColoredParams<DarkThemePreferenceParams>,
 ) =
   PreviewWithColoredParams(params) {
     DarkThemePreference(

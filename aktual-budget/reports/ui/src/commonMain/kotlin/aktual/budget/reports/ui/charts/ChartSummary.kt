@@ -606,7 +606,7 @@ private fun string(type: SummaryChartType): String =
 @Preview
 @Composable
 private fun PreviewSummaryChart(
-  @PreviewParameter(SummaryChartProvider::class) params: ColoredParams<SummaryChartParams>
+  @PreviewParameter(SummaryChartProvider::class) params: ColoredParams<SummaryChartParams>,
 ) =
   PreviewWithColoredParams(params, isPrivacyEnabled = params.data.private) {
     SummaryChart(

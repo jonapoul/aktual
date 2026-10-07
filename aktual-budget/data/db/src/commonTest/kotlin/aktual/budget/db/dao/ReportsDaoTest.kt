@@ -33,7 +33,7 @@ internal class ReportsDaoTest {
           listOf(
             MonteCarloAccountBalances(account = AccountId("a"), total = 15_000),
             MonteCarloAccountBalances(account = AccountId("b"), total = 0),
-          )
+          ),
         )
       }
     }

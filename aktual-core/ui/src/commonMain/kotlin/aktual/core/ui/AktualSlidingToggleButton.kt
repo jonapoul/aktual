@@ -66,7 +66,7 @@ fun <T : Any> AktualSlidingToggleButton(
       Box(
         modifier =
           Modifier.fillMaxSize() // Will be constrained by the Layout logic
-            .background(colors.selectedBackground(isEnabled), ButtonShape)
+            .background(colors.selectedBackground(isEnabled), ButtonShape),
       )
 
       // Children 1 to N: The Labels
@@ -137,7 +137,7 @@ private fun Colors.unselectedBackground(isEnabled: Boolean): Color =
 @Preview
 @Composable
 private fun PreviewStrings(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
 ) =
   PreviewWithColoredParams(params) {
     var selected by remember { mutableStateOf("Option A") }

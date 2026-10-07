@@ -253,7 +253,7 @@ internal class TransactionDaoTest {
           goal_def = null,
           template_settings = null,
           cleanup_def = null,
-        )
+        ),
       )
     }
     categoryMappingQueries.withoutResult {

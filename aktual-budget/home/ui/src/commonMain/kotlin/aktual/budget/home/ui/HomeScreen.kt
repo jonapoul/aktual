@@ -176,7 +176,7 @@ private fun AccountsPanel(
       modifier
         .background(colors.tableBackground)
         .windowInsetsPadding(WindowInsets.safeDrawing.only(Top))
-        .verticalScrollWithBar(rememberScrollState())
+        .verticalScrollWithBar(rememberScrollState()),
   ) {
     AccountsCard(state = state, onAction = onAction, isBoxed = false, showAll = true)
     BottomSpacing()
@@ -276,7 +276,7 @@ private class PrivateHomeStateProvider : ColoredParameterProvider<HomeState>(PRE
 @PortraitPreview
 @Composable
 private fun PreviewHomeScaffold(
-  @PreviewParameter(HomeStateProvider::class) params: ColoredParams<HomeState>
+  @PreviewParameter(HomeStateProvider::class) params: ColoredParams<HomeState>,
 ) =
   PreviewWithColoredParams(params) {
     HomeScaffold(state = this, onAction = {})
@@ -285,7 +285,7 @@ private fun PreviewHomeScaffold(
 @TabletPreview
 @Composable
 private fun PreviewTabletHomeScaffold(
-  @PreviewParameter(HomeStateProvider::class) params: ColoredParams<HomeState>
+  @PreviewParameter(HomeStateProvider::class) params: ColoredParams<HomeState>,
 ) =
   PreviewWithColoredParams(params) {
     HomeScaffold(state = this, onAction = {})
@@ -294,7 +294,7 @@ private fun PreviewTabletHomeScaffold(
 @DesktopPreview
 @Composable
 private fun PreviewDesktopHomeScaffold(
-  @PreviewParameter(WideHomeStateProvider::class) params: ColoredParams<HomeState>
+  @PreviewParameter(WideHomeStateProvider::class) params: ColoredParams<HomeState>,
 ) =
   PreviewWithColoredParams(params) {
     HomeScaffold(state = this, onAction = {})
@@ -303,7 +303,7 @@ private fun PreviewDesktopHomeScaffold(
 @PortraitPreview
 @Composable
 private fun PreviewPrivateHomeScaffold(
-  @PreviewParameter(PrivateHomeStateProvider::class) params: ColoredParams<HomeState>
+  @PreviewParameter(PrivateHomeStateProvider::class) params: ColoredParams<HomeState>,
 ) =
   PreviewWithColoredParams(params, isPrivacyEnabled = true) {
     HomeScaffold(state = this, onAction = {})

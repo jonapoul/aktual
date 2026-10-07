@@ -217,7 +217,7 @@ private fun SpentProgress(state: Loaded, modifier: Modifier = Modifier) {
           .height(ProgressBarHeight)
           .clip(CircleShape)
           .background(colors.tableRowHeaderBackground)
-          .semantics { progressBarRangeInfo = ProgressBarRangeInfo(progress, 0f..1f) }
+          .semantics { progressBarRangeInfo = ProgressBarRangeInfo(progress, 0f..1f) },
     ) {
       Box(
         modifier =
@@ -226,7 +226,7 @@ private fun SpentProgress(state: Loaded, modifier: Modifier = Modifier) {
             .background(
               color = if (isOverspent) colors.numberNegative else colors.toBudgetPositive,
               shape = CircleShape,
-            )
+            ),
       )
     }
 
@@ -262,7 +262,7 @@ private fun Amount.absolute(): Amount = if (this < Zero) -this else this
 @Preview
 @Composable
 private fun PreviewThisMonthCard(
-  @PreviewParameter(ThisMonthCardStateProvider::class) params: ColoredParams<ThisMonthCardState>
+  @PreviewParameter(ThisMonthCardStateProvider::class) params: ColoredParams<ThisMonthCardState>,
 ) =
   PreviewWithColoredParams(params) {
     ThisMonthCard(modifier = Modifier.padding(16.dp), state = this, onAction = {})

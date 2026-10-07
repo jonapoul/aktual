@@ -34,7 +34,7 @@ internal fun LoginFailureText(
 @Preview
 @Composable
 private fun PreviewLoginFailureText(
-  @PreviewParameter(LoginFailureProvider::class) params: ColoredParams<LoginResult.Failure>
+  @PreviewParameter(LoginFailureProvider::class) params: ColoredParams<LoginResult.Failure>,
 ) = PreviewWithColoredParams(params) { LoginFailureText(result = this) }
 
 private class LoginFailureProvider :

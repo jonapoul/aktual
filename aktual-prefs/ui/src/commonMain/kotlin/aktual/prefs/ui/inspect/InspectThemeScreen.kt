@@ -117,7 +117,7 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: InspectThem
         title = { Text(title) },
         actions = { if (state is Loaded && state.isCustom) OpenRepoButton(onAction) },
       )
-    }
+    },
   ) { innerPadding ->
     InspectThemeContent(
       modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
@@ -230,7 +230,7 @@ private fun Color.toHexString(): String {
 @Preview
 @Composable
 private fun PreviewInspectColors(
-  @PreviewParameter(InspectThemePreviewProvider::class) params: ColoredParams<InspectThemeState>
+  @PreviewParameter(InspectThemePreviewProvider::class) params: ColoredParams<InspectThemeState>,
 ) = PreviewWithColoredParams(params) { InspectThemeScaffold(state = this, onAction = {}) }
 
 private class InspectThemePreviewProvider :

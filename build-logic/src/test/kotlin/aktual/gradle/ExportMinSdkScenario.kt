@@ -39,7 +39,7 @@ class ExportMinSdkScenario : ScenarioTest() {
         outputFile = readme
       }
       """
-        .trimIndent()
+        .trimIndent(),
     )
 
     "README.md"(readme(minSdk = 28))

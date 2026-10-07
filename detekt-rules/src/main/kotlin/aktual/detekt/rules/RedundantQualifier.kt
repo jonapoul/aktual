@@ -150,7 +150,7 @@ internal class RedundantQualifier(config: Config) :
       Finding(
         entity = Entity.from(element),
         message = "'${element.text}' can be written as '$name', the expected type is known",
-      )
+      ),
     )
 
   // The type whose scope the symbol is found in, if it's one CSR looks in

@@ -43,7 +43,7 @@ internal fun SubSettingsItem(
 @Preview
 @Composable
 private fun PreviewSubSettingsItem(
-  @PreviewParameter(SubSettingsItemProvider::class) params: ColoredParams<SubSettingsItemParams>
+  @PreviewParameter(SubSettingsItemProvider::class) params: ColoredParams<SubSettingsItemParams>,
 ) = PreviewWithColoredParams(params) { SubSettingsItem(title = title, icon = icon, onClick = {}) }
 
 private data class SubSettingsItemParams(val title: String, val icon: ImageVector)

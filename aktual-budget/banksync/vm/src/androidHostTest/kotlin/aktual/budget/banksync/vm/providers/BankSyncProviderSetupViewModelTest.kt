@@ -56,7 +56,7 @@ class BankSyncProviderSetupViewModelTest {
                 SetupField(EnableBankingSecretKey),
               ),
             redirectUrl = "https://test.server.com/enablebanking/auth_callback",
-          )
+          ),
         )
       viewModel.setValue(EnableBankingApplicationId, "app")
       assertThat(awaitItem().canSave).isFalse()

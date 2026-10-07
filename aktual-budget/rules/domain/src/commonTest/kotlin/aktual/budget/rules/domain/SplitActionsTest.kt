@@ -78,7 +78,7 @@ class SplitActionsTest {
             cleared = false,
             isChild = true,
           ),
-        )
+        ),
       )
   }
 

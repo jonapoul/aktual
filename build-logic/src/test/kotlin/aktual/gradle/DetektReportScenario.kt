@@ -53,7 +53,7 @@ class DetektReportScenario : ScenarioTest() {
         reportFile.set(layout.buildDirectory.file("issues.txt"))
       }
       """
-        .trimIndent()
+        .trimIndent(),
     )
 
     "main.xml"(
@@ -66,8 +66,8 @@ class DetektReportScenario : ScenarioTest() {
         <file name="src/main/kotlin/A.kt">
           <error line="7" column="1" severity="warning" message="Unused" source="detekt.UnusedVariable" />
         </file>
-        """
-      )
+        """,
+      ),
     )
 
     "test.xml"(
@@ -77,8 +77,8 @@ class DetektReportScenario : ScenarioTest() {
           <error line="12" column="3" severity="error" message="Too long" source="detekt.MaxLineLength" />
           <error line="12" column="3" severity="error" message="Empty" source="detekt.EmptyFunctionBlock" />
         </file>
-        """
-      )
+        """,
+      ),
     )
 
     "clean.xml"(checkstyle(""))

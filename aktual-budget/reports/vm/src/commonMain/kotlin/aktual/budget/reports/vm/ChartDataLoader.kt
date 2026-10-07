@@ -305,7 +305,7 @@ internal class ChartDataLoader(
                   accountId = row.account.value,
                   accountName = row.account_name.orEmpty(),
                 )
-              }
+              },
             ),
           categoryOrder = budgetOrder(rows),
           params = params,

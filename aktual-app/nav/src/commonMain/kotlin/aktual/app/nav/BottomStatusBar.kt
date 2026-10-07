@@ -222,7 +222,7 @@ private fun SyncState.tint(colors: Colors, attrs: BottomBarThemeAttrs) =
 @Preview
 @Composable
 private fun PreviewBottomBar(
-  @PreviewParameter(BottomBarProvider::class) params: ColoredParams<BottomBarParams>
+  @PreviewParameter(BottomBarProvider::class) params: ColoredParams<BottomBarParams>,
 ) =
   PreviewWithColoredParams(params) {
     BottomStatusBar(

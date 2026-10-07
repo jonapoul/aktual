@@ -85,7 +85,7 @@ class EditTagViewModelTest {
             initialDescription = "Weekly food shopping",
             color = Color(0xFFAABBCC),
             isNew = false,
-          )
+          ),
         )
       cancelAndIgnoreRemainingEvents()
     }

@@ -80,7 +80,7 @@ internal fun PasswordLogin(
 @Preview
 @Composable
 private fun PreviewPasswordLogin(
-  @PreviewParameter(PasswordLoginProvider::class) params: ColoredParams<PasswordLoginParams>
+  @PreviewParameter(PasswordLoginProvider::class) params: ColoredParams<PasswordLoginParams>,
 ) =
   PreviewWithColoredParams(params) {
     PasswordLogin(isLoading = isLoading, enteredPassword = password, onAction = {})

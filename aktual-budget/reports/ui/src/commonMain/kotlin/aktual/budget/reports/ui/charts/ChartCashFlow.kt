@@ -97,13 +97,13 @@ internal fun CashFlowChart(
           rememberCartesianChart(
             rememberColumnCartesianLayer(
               ColumnCartesianLayer.ColumnProvider.series(
-                rememberLineComponent(fill = Fill(colors.reportsBlue), thickness = 16.dp)
+                rememberLineComponent(fill = Fill(colors.reportsBlue), thickness = 16.dp),
               ),
               rangeProvider = remember { ZoomRangeProvider() },
             ),
             rememberColumnCartesianLayer(
               ColumnCartesianLayer.ColumnProvider.series(
-                rememberLineComponent(fill = Fill(colors.reportsRed), thickness = 16.dp)
+                rememberLineComponent(fill = Fill(colors.reportsRed), thickness = 16.dp),
               ),
               rangeProvider = remember { ZoomRangeProvider() },
             ),
@@ -113,7 +113,7 @@ internal fun CashFlowChart(
                   LineCartesianLayer.rememberLine(
                     fill = LineCartesianLayer.LineFill.single(Fill(colors.pageTextLight)),
                     stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 3.dp),
-                  )
+                  ),
                 ),
               rangeProvider = remember { ZoomRangeProvider() },
             ),
@@ -265,7 +265,7 @@ private suspend fun CartesianChartModelProducer.populate(data: CashFlowData, zoo
 @Preview
 @Composable
 private fun PreviewCashFlowChart(
-  @PreviewParameter(CashFlowChartProvider::class) params: ColoredParams<CashFlowChartParams>
+  @PreviewParameter(CashFlowChartProvider::class) params: ColoredParams<CashFlowChartParams>,
 ) =
   PreviewWithColoredParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CashFlowChart(

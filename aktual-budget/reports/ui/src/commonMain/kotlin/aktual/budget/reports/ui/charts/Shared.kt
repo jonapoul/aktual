@@ -148,7 +148,7 @@ internal fun monthStringsMap(): ImmutableMap<Month, String> =
  */
 @Composable
 internal fun rememberMarker(
-  markerShape: Shape = RoundedCornerShape(CornerSize(percent = 50))
+  markerShape: Shape = RoundedCornerShape(CornerSize(percent = 50)),
 ): CartesianMarker {
   val label =
     rememberTextComponent(

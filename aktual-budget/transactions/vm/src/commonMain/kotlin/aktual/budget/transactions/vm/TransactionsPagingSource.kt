@@ -88,7 +88,7 @@ internal class TransactionsPagingSource(
 
   // One query for all of the page's splits, and none when it has no splits
   private suspend fun childrenOf(
-    rows: List<TransactionRow>
+    rows: List<TransactionRow>,
   ): Map<TransactionId, List<TransactionRow>> {
     val parents = rows.filter { it.isParent }.map { it.id }
     return if (parents.isEmpty()) emptyMap() else transactionDao.childrenOf(parents)

@@ -72,7 +72,7 @@ elif [ ! -f "$KTFMT_JAR" ]; then
     echo "ktfmt not found in PATH, downloading version $KTFMT_VERSION..."
     mkdir -p "$JAR_DIR"
 
-    DOWNLOAD_URL="https://github.com/facebook/ktfmt/releases/download/v${KTFMT_VERSION}/ktfmt-${KTFMT_VERSION}-with-dependencies.jar"
+    DOWNLOAD_URL="https://github.com/Kotlin/ktfmt/releases/download/v${KTFMT_VERSION}/ktfmt-${KTFMT_VERSION}-with-dependencies.jar"
 
     if command -v curl >/dev/null 2>&1; then
         curl -L "$DOWNLOAD_URL" -o "$KTFMT_JAR" || { echo "Failed to download ktfmt"; exit 1; }

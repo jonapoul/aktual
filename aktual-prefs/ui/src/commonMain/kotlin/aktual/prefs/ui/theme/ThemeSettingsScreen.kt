@@ -83,7 +83,7 @@ private fun ThemeSettingsScaffold(state: ThemeSettingsState, onAction: ThemeSett
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsThemeToolbar) },
       )
-    }
+    },
   ) { innerPadding ->
     Box {
       PageBackground()

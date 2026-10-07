@@ -113,7 +113,7 @@ private fun FirstDayOfWeek.string(): String =
 @Preview
 @Composable
 private fun PreviewFormattingGroup(
-  @PreviewParameter(FormattingGroupProvider::class) params: ColoredParams<FormattingGroupState>
+  @PreviewParameter(FormattingGroupProvider::class) params: ColoredParams<FormattingGroupState>,
 ) =
   PreviewWithColoredParams(params) {
     FormattingGroup(
@@ -122,7 +122,7 @@ private fun PreviewFormattingGroup(
         dateFormat = ListPreference(dateFormat),
         firstDayOfWeek = ListPreference(firstDayOfWeek),
         hideFraction = BooleanPreference(hideFraction),
-      )
+      ),
     )
   }
 
@@ -140,5 +140,5 @@ private class FormattingGroupProvider :
       hideFraction = true,
       dateFormat = MmDdYyyy,
       firstDayOfWeek = Monday,
-    )
+    ),
   )

@@ -136,7 +136,7 @@ private fun RecurConfig?.serializeWith(date: LocalDate?): JsonElement {
 @Preview
 @Composable
 private fun PreviewDateTextField(
-  @PreviewParameter(DateTextFieldProvider::class) params: DateTextFieldParams
+  @PreviewParameter(DateTextFieldProvider::class) params: DateTextFieldParams,
 ) {
   PreviewWithColors(DarkColors) {
     with(params) {
@@ -170,5 +170,5 @@ private class DateTextFieldProvider :
       DateTextFieldParams(value = JsonNull),
       DateTextFieldParams(value = PreviewRecurConfig),
       DateTextFieldParams(value = PreviewRecurConfig, isEnabled = false),
-    )
+    ),
   )

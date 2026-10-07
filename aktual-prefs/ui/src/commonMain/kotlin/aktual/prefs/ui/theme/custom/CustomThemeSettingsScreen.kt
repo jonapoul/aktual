@@ -118,7 +118,7 @@ fun CustomThemeSettingsScreen(
           snackbar.showSnackbar(getString(Res.string.settings_theme_refresh_success))
         is FailedFetching ->
           snackbar.showSnackbar(
-            getString(Res.string.settings_theme_refresh_failure, event.name, event.reason)
+            getString(Res.string.settings_theme_refresh_failure, event.name, event.reason),
           )
         is CustomThemeEvent.InspectTheme -> toInspectTheme(event.id)
       }
@@ -295,7 +295,7 @@ private fun LoadingItem(modifier: Modifier = Modifier) {
   ) {
     // Checkbox
     Box(
-      modifier = Modifier.minimumInteractiveComponentSize().background(colors.pageText, CardShape)
+      modifier = Modifier.minimumInteractiveComponentSize().background(colors.pageText, CardShape),
     )
 
     // Text
@@ -304,14 +304,14 @@ private fun LoadingItem(modifier: Modifier = Modifier) {
         modifier =
           Modifier.fillMaxWidth(fraction = 0.55f)
             .height(20.dp)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
 
       Box(
         modifier =
           Modifier.fillMaxWidth(fraction = 0.35f)
             .height(15.dp)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
 
       // Preview colours
@@ -324,7 +324,7 @@ private fun LoadingItem(modifier: Modifier = Modifier) {
             modifier =
               Modifier.weight(PREVIEW_WEIGHT)
                 .height(PREVIEW_HEIGHT)
-                .background(colors.pageText, CardShape)
+                .background(colors.pageText, CardShape),
           )
         }
       }
@@ -332,7 +332,7 @@ private fun LoadingItem(modifier: Modifier = Modifier) {
 
     // Inspect button
     Box(
-      modifier = Modifier.minimumInteractiveComponentSize().background(colors.pageText, CardShape)
+      modifier = Modifier.minimumInteractiveComponentSize().background(colors.pageText, CardShape),
     )
   }
 }
@@ -453,7 +453,7 @@ private fun RowScope.BoxPreviewColor(summary: CustomThemeSummary, index: Int) =
     modifier =
       Modifier.weight(PREVIEW_WEIGHT)
         .height(PREVIEW_HEIGHT)
-        .background(summary.colors[index], CardShape)
+        .background(summary.colors[index], CardShape),
   )
 
 private val ITEM_PADDING = PaddingValues(horizontal = 15.dp, vertical = 12.dp)
@@ -465,7 +465,7 @@ private const val PREVIEW_WEIGHT = 1f
 @Composable
 @PortraitPreview
 private fun PreviewCustomThemeSettings(
-  @PreviewParameter(CatalogStateProvider::class) params: ColoredParams<CustomThemeSettingsParams>
+  @PreviewParameter(CatalogStateProvider::class) params: ColoredParams<CustomThemeSettingsParams>,
 ) =
   PreviewWithColoredParams(params) {
     CustomThemeSettingsScaffold(state = state, bottomSheet = bottomSheet, onAction = {})
@@ -478,7 +478,7 @@ private data class CustomThemeSettingsParams(
 
 private val SUCCESS_STATE =
   CatalogState.Success(
-    items = immutableList(size = 15) { i -> PREVIEW_CATALOG_ITEM.copy(id = ThemeId(i.toString())) }
+    items = immutableList(size = 15) { i -> PREVIEW_CATALOG_ITEM.copy(id = ThemeId(i.toString())) },
   )
 
 private class CatalogStateProvider :

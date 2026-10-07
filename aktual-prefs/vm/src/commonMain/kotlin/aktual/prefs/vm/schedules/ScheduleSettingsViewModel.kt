@@ -29,7 +29,7 @@ class ScheduleSettingsViewModel(preferences: SchedulePreferences) : ViewModel() 
           BooleanPreference(
             value = showCompleted,
             onChange = { viewModelScope.launch { preferences.showCompleted.set(it) } },
-          )
+          ),
       )
     }
 }

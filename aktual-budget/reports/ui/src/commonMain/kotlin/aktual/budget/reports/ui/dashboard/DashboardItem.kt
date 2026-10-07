@@ -167,7 +167,7 @@ private fun ReportCard(
         .fillMaxWidth()
         .wrapContentHeight()
         .background(colors.tableBackground, CardShape)
-        .clickable(onClick = onClick)
+        .clickable(onClick = onClick),
   ) {
     if (chartData != null) {
       ReportChart(
@@ -216,7 +216,7 @@ private fun DeleteReportDialogContent(name: String?, onConfirm: () -> Unit, onDi
 @Preview
 @Composable
 private fun PreviewReportDashboardItem(
-  @PreviewParameter(ReportDashboardItemProvider::class) params: ColoredParams<DashboardItemParams>
+  @PreviewParameter(ReportDashboardItemProvider::class) params: ColoredParams<DashboardItemParams>,
 ) =
   PreviewWithColoredParams(params) {
     DashboardItem(
@@ -231,7 +231,7 @@ private fun PreviewReportDashboardItem(
 @Preview
 @Composable
 private fun PreviewDeleteReportDialog(
-  @PreviewParameter(DeleteReportDialogProvider::class) params: ColoredParams<String?>
+  @PreviewParameter(DeleteReportDialogProvider::class) params: ColoredParams<String?>,
 ) =
   PreviewWithColoredParams(params) {
     DeleteReportDialogContent(name = params.data, onConfirm = {}, onDismiss = {})

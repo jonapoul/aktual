@@ -109,7 +109,7 @@ internal fun MetricsScaffold(
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.metricsToolbar) },
       )
-    }
+    },
   ) { innerPadding ->
     Box {
       WavyBackground()
@@ -178,7 +178,7 @@ internal fun LoadingItem(modifier: Modifier = Modifier) {
         modifier =
           Modifier.fillMaxWidth(fraction = 0.55f)
             .height(20.dp)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
 
       Box(
@@ -186,7 +186,7 @@ internal fun LoadingItem(modifier: Modifier = Modifier) {
           Modifier.padding(top = 4.dp)
             .fillMaxWidth(fraction = 0.35f)
             .height(18.dp)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
 
       Box(
@@ -194,7 +194,7 @@ internal fun LoadingItem(modifier: Modifier = Modifier) {
           Modifier.padding(top = 4.dp)
             .fillMaxWidth(fraction = 0.45f)
             .height(20.dp)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
     }
   }
@@ -351,7 +351,7 @@ private fun SuccessContentRow(title: String, value: String, modifier: Modifier =
 @PortraitPreview
 @Composable
 private fun PreviewMetricsScaffold(
-  @PreviewParameter(MetricsStateProvider::class) params: ColoredParams<MetricsState>
+  @PreviewParameter(MetricsStateProvider::class) params: ColoredParams<MetricsState>,
 ) = PreviewWithColoredParams(params) { MetricsScaffold(state = this, onAction = {}) }
 
 @Suppress("MagicNumber")

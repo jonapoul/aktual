@@ -228,7 +228,8 @@ private fun ResultItem(
 @PortraitPreview
 @Composable
 private fun PreviewSearchReportsScaffold(
-  @PreviewParameter(SearchReportsScaffoldProvider::class) params: ColoredParams<SearchReportsParams>
+  @PreviewParameter(SearchReportsScaffoldProvider::class)
+  params: ColoredParams<SearchReportsParams>,
 ) =
   PreviewWithColoredParams(params) {
     SearchReportsScaffold(query = query, state = state, onAction = {})
@@ -269,7 +270,7 @@ private class SearchReportsScaffoldProvider :
                       type = Markdown,
                       name = null,
                       content = "Keep an eye on net spending each month",
-                    )
+                    ),
                   ),
               ),
             ),

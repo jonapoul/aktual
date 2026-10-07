@@ -62,8 +62,8 @@ class BaseApiTest {
               name = "@actual-app/sync-server",
               description = "actual syncing server",
               version = "25.7.1",
-            )
-        )
+            ),
+        ),
       )
   }
 

@@ -95,7 +95,7 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
           PRIMARY KEY (dataset, row, column)
         )
         """
-          .trimIndent()
+          .trimIndent(),
       ),
   )
 

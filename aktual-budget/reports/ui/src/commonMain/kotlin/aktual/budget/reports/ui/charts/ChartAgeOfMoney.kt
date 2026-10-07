@@ -210,13 +210,13 @@ private fun Chart(
                           listOf(
                             colors.reportsChartFill.copy(alpha = 0.3f),
                             colors.reportsChartFill.copy(alpha = 0.05f),
-                          )
-                        )
-                      )
+                          ),
+                        ),
+                      ),
                     ),
                   pointProvider = if (compact) null else rememberPointProvider(),
                   pointConnector = LineCartesianLayer.PointConnector.cubic(),
-                )
+                ),
               ),
           ),
           startAxis =
@@ -325,7 +325,7 @@ private suspend fun CartesianChartModelProducer.populate(data: AgeOfMoneyData, z
 @Preview
 @Composable
 private fun PreviewAgeOfMoneyChart(
-  @PreviewParameter(AgeOfMoneyChartProvider::class) params: ColoredParams<AgeOfMoneyChartParams>
+  @PreviewParameter(AgeOfMoneyChartProvider::class) params: ColoredParams<AgeOfMoneyChartParams>,
 ) =
   PreviewWithColoredParams(params) {
     AgeOfMoneyChart(

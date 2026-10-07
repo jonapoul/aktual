@@ -47,7 +47,7 @@ class ColorsApiImplTest {
       assertThat(method).isEqualTo(Get)
       assertThat(url.toString())
         .isEqualTo(
-          "https://raw.githubusercontent.com/Juulz/shades-of-coffee/refs/heads/main/actual.css"
+          "https://raw.githubusercontent.com/Juulz/shades-of-coffee/refs/heads/main/actual.css",
         )
     }
   }
@@ -67,7 +67,7 @@ class ColorsApiImplTest {
       assertThat(url.toString())
         .isEqualTo(
           "https://raw.githubusercontent.com/actualbudget/actual/master/packages/desktop-client/" +
-            "src/data/customThemeCatalog.json"
+            "src/data/customThemeCatalog.json",
         )
     }
   }

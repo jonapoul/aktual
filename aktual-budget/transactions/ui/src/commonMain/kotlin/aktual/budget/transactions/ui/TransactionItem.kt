@@ -314,7 +314,7 @@ internal fun SplitChildren(
             .fillMaxWidth()
             .padding(start = dimens.railWidth, bottom = dimens.rowVertical)
             .background(colors.pageBackgroundModalActive)
-            .padding(vertical = SplitInsetVertical)
+            .padding(vertical = SplitInsetVertical),
       ) {
         parent.children.fastForEach { child -> SplitChildRow(child, parent, dimens) }
       }
@@ -486,7 +486,7 @@ private const val SHIMMER_BAR_FRACTION = 1.5f
 @Preview
 @Composable
 private fun PreviewLedgerRow(
-  @PreviewParameter(LedgerRowProvider::class) params: ColoredParams<LedgerRowParams>
+  @PreviewParameter(LedgerRowProvider::class) params: ColoredParams<LedgerRowParams>,
 ) =
   PreviewWithColoredParams(params) {
     WithLedgerDimens(density) {
@@ -504,7 +504,7 @@ private fun PreviewLedgerRow(
 @Preview
 @Composable
 private fun PreviewLedgerShimmerRow(
-  @PreviewParameter(DensityProvider::class) params: ColoredParams<TransactionsDensity>
+  @PreviewParameter(DensityProvider::class) params: ColoredParams<TransactionsDensity>,
 ) = PreviewWithColoredParams(params) { WithLedgerDimens(this) { LedgerShimmerRow() } }
 
 private data class LedgerRowParams(

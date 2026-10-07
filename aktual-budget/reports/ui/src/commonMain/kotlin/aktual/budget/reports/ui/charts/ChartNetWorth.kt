@@ -172,7 +172,7 @@ private fun Chart(
                       topFill = Fill(colors.reportsNumberPositive.copy(alpha = 0.2f)),
                       bottomFill = Fill(colors.reportsRed.copy(alpha = 0.2f)),
                     ),
-                )
+                ),
               ),
           ),
           startAxis =
@@ -214,7 +214,7 @@ private suspend fun CartesianChartModelProducer.populate(data: NetWorthData, zoo
 @Preview
 @Composable
 private fun PreviewNetWorthChart(
-  @PreviewParameter(NetWorthChartProvider::class) params: ColoredParams<NetWorthChartParams>
+  @PreviewParameter(NetWorthChartProvider::class) params: ColoredParams<NetWorthChartParams>,
 ) =
   PreviewWithColoredParams(params, isPrivacyEnabled = params.data.private) {
     NetWorthChart(
@@ -255,10 +255,10 @@ internal val PREVIEW_NET_WORTH_META =
               listOf(
                 JsonPrimitive("13a3d249-1bda-4e72-8ab1-eddae21fc795"),
                 JsonPrimitive("7d7c7459-59bf-4158-ae33-116c2e841020"),
-              )
+              ),
             ),
           type = Boolean,
-        )
+        ),
       ),
     conditionsOp = null,
     timeFrame =

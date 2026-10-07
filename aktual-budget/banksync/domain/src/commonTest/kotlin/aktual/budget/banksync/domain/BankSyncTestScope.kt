@@ -207,7 +207,7 @@ internal class BankSyncTestScope(
         goal_def = null,
         template_settings = null,
         cleanup_def = null,
-      )
+      ),
     )
   }
 
@@ -226,14 +226,14 @@ internal class BankSyncTestScope(
           actions = actions,
           tombstone = tombstone,
           conditions_op = And,
-        )
+        ),
       )
 
   // Live transactions in the account, newest first, as v_transactions orders them
   fun liveIds(account: AccountId = ACCOUNT): List<TransactionId> =
     query(
         "SELECT id FROM v_transactions WHERE account = '${account.value}' " +
-          "ORDER BY date DESC, starting_balance_flag, sort_order DESC, id"
+          "ORDER BY date DESC, starting_balance_flag, sort_order DESC, id",
       )
       .map(::TransactionId)
 
@@ -251,7 +251,7 @@ internal class BankSyncTestScope(
         parameters = 0,
         mapper = { cursor ->
           QueryResult.Value(
-            buildList { while (cursor.next().value) add(checkNotNull(cursor.getString(0))) }
+            buildList { while (cursor.next().value) add(checkNotNull(cursor.getString(0))) },
           )
         },
       )

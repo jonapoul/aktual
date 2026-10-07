@@ -175,7 +175,7 @@ private fun WidgetType(
         .background(colors.tableBackground.disabledIf(!enabled), CardShape)
         .border(Hairline, colors.pillBorderDark, CardShape)
         .clickable(enabled) { onAction(Create(type)) }
-        .padding(8.dp)
+        .padding(8.dp),
   ) {
     Row(modifier = Modifier.padding(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
       Text(
@@ -253,7 +253,7 @@ private val REPORT_HEIGHT = 250.dp
 @Composable
 private fun PreviewChooseReportTypeScaffold(
   @PreviewParameter(ChooseReportTypeScaffoldParameters::class)
-  params: ColoredParams<ChooseReportTypeScaffoldParams>
+  params: ColoredParams<ChooseReportTypeScaffoldParams>,
 ) = PreviewWithColoredParams(params) { ChooseReportTypeScaffold(dialog = dialog, onAction = {}) }
 
 private data class ChooseReportTypeScaffoldParams(val dialog: ChooseReportTypeDialog?)

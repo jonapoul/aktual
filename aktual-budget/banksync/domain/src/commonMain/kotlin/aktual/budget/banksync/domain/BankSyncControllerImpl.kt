@@ -224,7 +224,7 @@ class BankSyncControllerImpl(
           id = id,
           lastSync = if (synced) Patch.To(clock.now()) else Patch.Keep,
           bankSyncStatus = Patch.To(status),
-        )
+        ),
       )
     }
   }

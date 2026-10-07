@@ -244,7 +244,7 @@ private fun StateContent(
 @PortraitPreview
 @Composable
 private fun PreviewListBudgetsScaffold(
-  @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ColoredParams<ListBudgetsState>
+  @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ColoredParams<ListBudgetsState>,
 ) = PreviewWithColoredParams(params) { ListBudgetsScaffold(state = this, onAction = {}) }
 
 private val PREVIEW_ITEMS =

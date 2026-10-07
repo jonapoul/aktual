@@ -28,7 +28,7 @@ class CategoryDao(database: BudgetDatabase) {
         goal_def = null,
         template_settings = null,
         cleanup_def = null,
-      )
+      ),
     )
     mappings.insert(id = id, transferId = id)
   }

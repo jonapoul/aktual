@@ -55,7 +55,7 @@ internal class TransactionWriterTest {
           importedPayee = "TESCO STORES 1234",
           cleared = false,
           rawSyncedData = """{"id":"bank-123"}""",
-        )
+        ),
       )
     }
 
@@ -120,7 +120,7 @@ internal class TransactionWriterTest {
               amount = Amount(-3000),
               category = GROCERIES,
               isParent = true,
-            )
+            ),
           )
         val child1 =
           insert(
@@ -130,7 +130,7 @@ internal class TransactionWriterTest {
               amount = Amount(-1000),
               category = GROCERIES,
               parentId = parent,
-            )
+            ),
           )
         val child2 =
           insert(
@@ -140,7 +140,7 @@ internal class TransactionWriterTest {
               amount = Amount(-2000),
               category = HOUSEHOLD,
               parentId = parent,
-            )
+            ),
           )
         parent to listOf(child1, child2)
       }
@@ -192,7 +192,7 @@ internal class TransactionWriterTest {
           amount = Amount(-500),
           category = GROCERIES,
           notes = "Old notes",
-        )
+        ),
       )
     }
     writer.write {
@@ -204,7 +204,7 @@ internal class TransactionWriterTest {
           category = Patch.To(null),
           notes = Patch.To("New notes"),
           importedId = Patch.To("bank-456"),
-        )
+        ),
       )
     }
 
@@ -526,7 +526,7 @@ internal class TransactionWriterTest {
           balanceCurrent = Patch.To(Amount(12_345)),
           lastSync = Patch.To(NOW),
           bankSyncStatus = Patch.To(BankSyncStatus.Ok),
-        )
+        ),
       )
     }
 
@@ -548,7 +548,7 @@ internal class TransactionWriterTest {
           id = ACCOUNT,
           balanceCurrent = Patch.To(null),
           bankSyncStatus = Patch.To(null),
-        )
+        ),
       )
     }
 
@@ -608,7 +608,7 @@ internal class TransactionWriterTest {
           transferId = transfer,
           sortOrder = 42,
           reconciled = true,
-        )
+        ),
       )
     }
 

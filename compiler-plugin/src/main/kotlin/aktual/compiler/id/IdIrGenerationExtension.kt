@@ -33,7 +33,7 @@ internal class IdIrGenerationExtension : IrGenerationExtension {
             }
             return super.visitSimpleFunction(declaration)
           }
-        }
+        },
     )
   }
 
@@ -62,7 +62,7 @@ internal class IdIrGenerationExtension : IrGenerationExtension {
             irCall(compareToOnProperty.symbol).apply {
               dispatchReceiver = thisValue
               arguments[1] = otherValue
-            }
+            },
           )
         }
 
