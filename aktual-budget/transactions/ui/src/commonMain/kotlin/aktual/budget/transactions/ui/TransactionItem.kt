@@ -203,6 +203,7 @@ private fun categoryText(
         if (shownParts != null) append(" · $shownParts")
       }
 
+      // Wins over a real category, as upstream's prettyCategory does
       special != null -> {
         withStyle(SpanStyle(fontStyle = Italic)) { append(special) }
       }
