@@ -39,6 +39,7 @@ private val aktualIcons =
       Key,
       OpenBracket,
       Reports,
+      Split,
       Subtract,
       Sum,
       Tag,
