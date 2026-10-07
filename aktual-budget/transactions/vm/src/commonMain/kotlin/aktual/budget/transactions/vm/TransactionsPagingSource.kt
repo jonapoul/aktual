@@ -2,6 +2,8 @@ package aktual.budget.transactions.vm
 
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
+import aktual.budget.db.dao.TransactionNotes
+import aktual.budget.db.dao.TransactionRow
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
@@ -19,7 +21,7 @@ internal class TransactionsPagingSource(
   // A #tag match can't be expressed as a SQL offset query, so for tag-filtered specs we resolve the
   // full ordered id list once and page over it in memory. Cached for this source's lifetime - a new
   // source is created whenever the data is invalidated.
-  private var filteredIds: List<TransactionId>? = null
+  private var filteredIds: FilteredIds? = null
 
   private val accountId = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id
 
@@ -38,10 +40,19 @@ internal class TransactionsPagingSource(
 
           // A running balance means little over a subset of the account, so tag lists have none
           is SpecificTag -> {
-            val ids = filteredIds ?: loadFilteredIds(tagSpec.id).also { filteredIds = it }
+            val filtered = filteredIds ?: loadFilteredIds(tagSpec.id).also { filteredIds = it }
+            val ids = filtered.ids
             val from = offset.toInt().coerceIn(0, ids.size)
             val to = (from + limit.toInt()).coerceAtMost(ids.size)
-            transactionDao.getByIds(ids.subList(from, to)).map { it.toTransaction(balance = null) }
+            val rows = transactionDao.getByIds(ids.subList(from, to))
+            val children = childrenOf(rows)
+            rows.map { row ->
+              row.toTransaction(
+                balance = null,
+                children = children[row.id].orEmpty(),
+                shownChildren = filtered.children,
+              )
+            }
           }
         }
 
@@ -60,10 +71,12 @@ internal class TransactionsPagingSource(
   private suspend fun loadPage(limit: Long, offset: Long): List<Transaction> =
     when (spec.categorySpec) {
       AllCategories -> {
-        when (val accountSpec = spec.accountSpec) {
-          AllAccounts -> transactionDao.getPaged(limit, offset)
-          is SpecificAccount -> transactionDao.getByAccountPaged(accountSpec.id, limit, offset)
-        }.toTransactions()
+        val page =
+          when (val accountSpec = spec.accountSpec) {
+            AllAccounts -> transactionDao.getPaged(limit, offset)
+            is SpecificAccount -> transactionDao.getByAccountPaged(accountSpec.id, limit, offset)
+          }
+        page.toTransactions(childrenOf(page.rows))
       }
 
       Uncategorised -> {
@@ -73,26 +86,56 @@ internal class TransactionsPagingSource(
       }
     }
 
-  private suspend fun loadFilteredIds(id: TagId): List<TransactionId> {
-    val tagName = tagsDao.getTag(id)?.tag ?: return emptyList()
-    val rows =
-      when (spec.categorySpec) {
-        AllCategories -> {
+  // One query for all of the page's splits, and none when it has no splits
+  private suspend fun childrenOf(
+    rows: List<TransactionRow>
+  ): Map<TransactionId, List<TransactionRow>> {
+    val parents = rows.filter { it.isParent }.map { it.id }
+    return if (parents.isEmpty()) emptyMap() else transactionDao.childrenOf(parents)
+  }
+
+  private suspend fun loadFilteredIds(id: TagId): FilteredIds {
+    val tagName = tagsDao.getTag(id)?.tag ?: return FilteredIds()
+    val matches = { row: TransactionNotes ->
+      val notes = row.notes
+      notes != null && notesContainTag(notes, tagName)
+    }
+    return when (spec.categorySpec) {
+      AllCategories -> {
+        val rows =
           when (val accountSpec = spec.accountSpec) {
             AllAccounts -> transactionDao.getIdsAndNotes()
             is SpecificAccount -> transactionDao.getIdsAndNotesByAccount(accountSpec.id)
           }
-        }
-
-        Uncategorised -> {
-          transactionDao.getUncategorisedIdsAndNotes(accountId)
-        }
+        groupSplits(rows, rows.filter(matches))
       }
-    return rows.mapNotNull { row ->
-      val notes = row.notes
-      row.id.takeIf { notes != null && notesContainTag(notes, tagName) }
+
+      Uncategorised -> {
+        val rows = transactionDao.getUncategorisedIdsAndNotes(accountId)
+        FilteredIds(ids = rows.filter(matches).map { it.id })
+      }
     }
   }
+
+  // A split takes one slot, as its parent, if the parent or any of its children match
+  private fun groupSplits(
+    rows: List<TransactionNotes>,
+    matching: List<TransactionNotes>,
+  ): FilteredIds {
+    val (topLevel, children) = matching.partition { it.parent == null }
+    val ids = topLevel.mapTo(mutableSetOf()) { it.id }
+    children.mapNotNullTo(ids) { it.parent }
+    return FilteredIds(
+      ids = rows.filter { it.parent == null && it.id in ids }.map { it.id },
+      children = children.mapTo(mutableSetOf()) { it.id },
+    )
+  }
+
+  // The ids to page over, in list order, with the split children to show under them
+  private class FilteredIds(
+    val ids: List<TransactionId> = emptyList(),
+    val children: Set<TransactionId> = emptySet(),
+  )
 
   override fun getRefreshKey(state: PagingState<Int, Transaction>): Int? {
     // Try to find the page key of the closest item to the current scroll position

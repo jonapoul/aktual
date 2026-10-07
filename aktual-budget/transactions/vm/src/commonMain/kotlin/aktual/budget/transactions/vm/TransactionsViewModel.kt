@@ -14,6 +14,7 @@ import aktual.budget.model.CategorySpec
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.TagSpec
+import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
@@ -37,6 +38,9 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -69,6 +73,7 @@ class TransactionsViewModel(
   }
 
   private val mutableLoadedAccount = MutableStateFlow<LoadedAccount>(Loading)
+  private val mutableExpanded = MutableStateFlow<PersistentSet<TransactionId>>(persistentSetOf())
   private val accountId = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id
   private val isRemote = server is Remote
   private var currentPagingSource: PagingSource<Int, Transaction>? = null
@@ -107,6 +112,13 @@ class TransactionsViewModel(
     } else {
       MutableStateFlow<Amount?>(null)
     }
+
+  // A tag list shows the matching parts of each split, with nothing to toggle
+  val splitsPinnedOpen: Boolean = spec.tagSpec is TagSpec.SpecificTag
+
+  // The splits showing their parts. Kept out of the paging data so a toggle doesn't reload the
+  // page, and survives an invalidation
+  val expanded: StateFlow<ImmutableSet<TransactionId>> = mutableExpanded.asStateFlow()
 
   val pagingData: Flow<PagingData<Transaction>> =
     Pager(
@@ -152,6 +164,10 @@ class TransactionsViewModel(
 
   fun setDensity(density: TransactionsDensity) {
     prefs.update { meta -> meta.set(TransactionDensityKey, density) }
+  }
+
+  fun toggleExpanded(id: TransactionId) {
+    mutableExpanded.update { ids -> if (id in ids) ids.removing(id) else ids.adding(id) }
   }
 
   fun bankSync() {

@@ -13,6 +13,7 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import aktual.core.model.Token
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 
@@ -83,3 +84,20 @@ internal fun transaction(
   )
 
 internal fun Transaction.withBalance(balance: Double) = copy(balance = Amount(balance))
+
+internal fun Transaction.asChild() = copy(split = SplitRole.Child)
+
+// What the paging source should emit for a split parent showing these children
+internal fun Transaction.asParent(
+  payee: String?,
+  vararg children: Transaction,
+  totalChildren: Int = children.size,
+) =
+  copy(
+    payee = payee,
+    category = null,
+    needsCategory = false,
+    split = SplitRole.Parent,
+    children = children.map { it.asChild() }.toImmutableList(),
+    totalChildren = totalChildren,
+  )
