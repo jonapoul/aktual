@@ -42,7 +42,10 @@ internal constructor(
   private var inactiveJob: Job? = null
 
   // Fetch anything that changed on the server since the budget was last open
-  override fun initialize() = schedule()
+  override fun initialize() {
+    scope.launch { syncDao.rebuildScheduleJsonPaths() }
+    schedule()
+  }
 
   override suspend fun syncChanges(changes: List<LocalChange>) {
     syncDao.sendMessages(changes)
