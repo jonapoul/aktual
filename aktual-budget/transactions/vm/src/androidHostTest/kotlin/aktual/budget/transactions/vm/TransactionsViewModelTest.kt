@@ -531,7 +531,9 @@ class TransactionsViewModelTest {
           ),
         TRANSACTION_A.withBalance(123.45),
       )
-    viewModel.balance.test { assertThatNextEmissionIsEqualTo(Amount(346.90)) }
+    viewModel.balance
+      .dropWhile { it != Amount(346.90) }
+      .test { assertThatNextEmissionIsEqualTo(Amount(346.90)) }
   }
 
   @Test
@@ -871,6 +873,9 @@ class TransactionsViewModelTest {
     buildViewModel(SpecificAccount(LINKED))
     val unlinked = factory.create(TransactionsSpec(SpecificAccount(AccountId("a"))))
     val all = factory.create(TransactionsSpec(AllAccounts))
+
+    // The account query runs off the test scheduler, so wait for it before advancing
+    listOf(viewModel, unlinked, all).forEach { vm -> vm.loadedAccount.first { it != Loading } }
     advanceUntilIdle()
 
     // then
