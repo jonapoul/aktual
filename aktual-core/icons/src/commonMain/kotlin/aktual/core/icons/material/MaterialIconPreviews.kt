@@ -52,6 +52,7 @@ private val materialIcons =
       Dialogs,
       Edit,
       Error,
+      ExpandMore,
       FilterList,
       FormatAlignCenter,
       FormatAlignLeft,

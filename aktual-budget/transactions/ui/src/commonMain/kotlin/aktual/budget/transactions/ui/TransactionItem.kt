@@ -3,6 +3,11 @@ package aktual.budget.transactions.ui
 import aktual.budget.model.Amount
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.transactions.vm.Transaction
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Split
+import aktual.core.icons.material.ExpandMore
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
@@ -20,7 +25,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,13 +36,21 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import kotlinx.datetime.LocalDate
@@ -46,10 +62,16 @@ internal fun LedgerRow(
   transaction: Transaction,
   showDate: Boolean,
   modifier: Modifier = Modifier,
+  parts: SplitParts = Collapsed,
+  onToggleSplit: () -> Unit = {},
 ) {
   val dimens = LocalLedgerDimens.current
   Row(
-    modifier = modifier.fillMaxWidth().heightIn(min = dimens.rowHeight),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .heightIn(min = dimens.rowHeight)
+        .then(splitToggle(transaction, parts, onToggleSplit)),
     verticalAlignment = CenterVertically,
   ) {
     Box(
@@ -61,16 +83,8 @@ internal fun LedgerRow(
     }
 
     Column(modifier = Modifier.weight(1f).padding(vertical = dimens.rowVertical)) {
-      Text(
-        text = transaction.payee.orEmpty(),
-        fontSize = dimens.payeeSize,
-        fontWeight = dimens.payeeWeight,
-        color = colors.pageTextDark,
-        overflow = Ellipsis,
-        maxLines = 1,
-      )
-
-      SecondLine(transaction, dimens)
+      PayeeText(transaction, dimens)
+      SecondLine(transaction, dimens, parts)
     }
 
     Column(
@@ -105,39 +119,154 @@ private fun DateRail(date: LocalDate, dimens: LedgerDimens) =
   }
 
 @Composable
-private fun SecondLine(transaction: Transaction, dimens: LedgerDimens) {
-  val needsCategory = Strings.transactionsNeedsCategory
-  val warning = SpanStyle(color = colors.warningText, fontWeight = SemiBold)
-  val text = buildAnnotatedString {
-    val category = transaction.category
-    if (transaction.needsCategory) {
-      withStyle(warning) { append(needsCategory) }
-    } else if (category != null) {
-      append(category)
+private fun SecondLine(transaction: Transaction, dimens: LedgerDimens, parts: SplitParts) =
+  CategoryLine(
+    transaction = transaction,
+    parts = parts,
+    text =
+      categoryText(
+        transaction = transaction,
+        parts = parts,
+        needsCategory = Strings.transactionsNeedsCategory,
+        account = transaction.account.takeIf { dimens.showAccount },
+      ),
+    dimens = dimens,
+  )
+
+// The category, or what stands in for it, with the split marker before it
+@Composable
+private fun CategoryLine(
+  transaction: Transaction,
+  parts: SplitParts,
+  text: AnnotatedString,
+  dimens: LedgerDimens,
+  modifier: Modifier = Modifier,
+) =
+  Row(
+    modifier = modifier,
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(SplitIconGap),
+  ) {
+    if (transaction.split != None) {
+      Icon(
+        modifier = Modifier.size(SplitIconSize),
+        imageVector = AktualIcons.Split,
+        contentDescription = null,
+        tint = colors.pageTextLight,
+      )
     }
 
-    val account = transaction.account
-    if (dimens.showAccount && account != null) {
+    Text(
+      modifier = Modifier.weight(1f, fill = false),
+      text = text,
+      fontSize = dimens.secondLineSize,
+      color = colors.pageTextLight,
+      overflow = Ellipsis,
+      maxLines = 1,
+    )
+
+    if (transaction.isExpandable(parts)) {
+      Icon(
+        modifier = Modifier.size(ChevronSize).rotate(if (parts == Expanded) HALF_TURN else 0f),
+        imageVector = MaterialIcons.ExpandMore,
+        contentDescription = null,
+        tint = colors.pageTextLight,
+      )
+    }
+  }
+
+@Composable
+private fun categoryText(
+  transaction: Transaction,
+  parts: SplitParts,
+  needsCategory: String,
+  account: String? = null,
+): AnnotatedString {
+  val split = Strings.transactionsSplit
+  val shown = transaction.children.size
+  val total = transaction.totalChildren
+  val shownParts =
+    if (parts == Pinned && shown > 0) Plurals.transactionsSplitParts(total, shown, total) else null
+  val warning = SpanStyle(color = colors.warningText, fontWeight = SemiBold)
+
+  return buildAnnotatedString {
+    val category = transaction.category
+    when {
+      transaction.split == Parent -> {
+        withStyle(SpanStyle(fontStyle = Italic)) { append(split) }
+        if (shownParts != null) append(" · $shownParts")
+      }
+
+      transaction.needsCategory -> {
+        withStyle(warning) { append(needsCategory) }
+      }
+
+      category != null -> {
+        append(category)
+      }
+    }
+
+    if (account != null) {
       if (length > 0) append(" · ")
       append(account)
     }
   }
+}
 
+@Composable
+private fun PayeeText(
+  transaction: Transaction,
+  dimens: LedgerDimens,
+  modifier: Modifier = Modifier,
+) {
+  val noPayee = transaction.split == Parent && transaction.payee == null
   Text(
-    text = text,
-    fontSize = dimens.secondLineSize,
-    color = colors.pageTextLight,
+    modifier = modifier,
+    text = if (noPayee) Strings.transactionsSplitNoPayee else transaction.payee.orEmpty(),
+    fontSize = dimens.payeeSize,
+    fontWeight = dimens.payeeWeight,
+    fontStyle = if (noPayee) Italic else null,
+    color = if (noPayee) colors.pageTextLight else colors.pageTextDark,
     overflow = Ellipsis,
     maxLines = 1,
   )
 }
 
+private fun Transaction.isExpandable(parts: SplitParts) =
+  split == Parent && parts != Pinned && children.isNotEmpty()
+
+// Tapping a split opens and closes its parts. Other rows stay inert
+@Composable
+private fun splitToggle(
+  transaction: Transaction,
+  parts: SplitParts,
+  onToggleSplit: () -> Unit,
+): Modifier {
+  if (!transaction.isExpandable(parts)) return Modifier
+  val expanded = parts == Expanded
+  val state =
+    if (expanded) Strings.transactionsSplitExpanded else Strings.transactionsSplitCollapsed
+  return Modifier.toggleable(value = expanded, onValueChange = { onToggleSplit() }).semantics {
+    stateDescription = state
+  }
+}
+
 // Dense
 @Composable
-internal fun LedgerTableRow(transaction: Transaction, modifier: Modifier = Modifier) {
+internal fun LedgerTableRow(
+  transaction: Transaction,
+  modifier: Modifier = Modifier,
+  parts: SplitParts = Collapsed,
+  onToggleSplit: () -> Unit = {},
+) {
   val dimens = LocalLedgerDimens.current
   Row(
-    modifier = modifier.fillMaxWidth().height(dimens.rowHeight).padding(horizontal = dimens.rowEnd),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .height(dimens.rowHeight)
+        .then(splitToggle(transaction, parts, onToggleSplit))
+        .padding(horizontal = dimens.rowEnd),
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(dimens.contentGap),
   ) {
@@ -150,25 +279,14 @@ internal fun LedgerTableRow(transaction: Transaction, modifier: Modifier = Modif
       maxLines = 1,
     )
 
-    Text(
-      modifier = Modifier.weight(DenseColumns.PAYEE_WEIGHT),
-      text = transaction.payee.orEmpty(),
-      fontSize = dimens.payeeSize,
-      fontWeight = dimens.payeeWeight,
-      color = colors.pageTextDark,
-      overflow = Ellipsis,
-      maxLines = 1,
-    )
+    PayeeText(transaction, dimens, Modifier.weight(DenseColumns.PAYEE_WEIGHT))
 
-    val needsCategory = transaction.needsCategory
-    Text(
+    CategoryLine(
       modifier = Modifier.weight(DenseColumns.CATEGORY_WEIGHT),
-      text = if (needsCategory) Strings.transactionsNoCategory else transaction.category.orEmpty(),
-      fontSize = dimens.secondLineSize,
-      fontWeight = if (needsCategory) SemiBold else null,
-      color = if (needsCategory) colors.warningText else colors.pageTextLight,
-      overflow = Ellipsis,
-      maxLines = 1,
+      transaction = transaction,
+      parts = parts,
+      text = categoryText(transaction, parts, needsCategory = Strings.transactionsNoCategory),
+      dimens = dimens,
     )
 
     AmountText(transaction.amount, dimens, Modifier.width(DenseColumns.amount))
@@ -178,13 +296,126 @@ internal fun LedgerTableRow(transaction: Transaction, modifier: Modifier = Modif
   }
 }
 
+// The parts of a split, on an inset under their parent's row
 @Composable
-private fun AmountText(amount: Amount, dimens: LedgerDimens, modifier: Modifier = Modifier) =
+internal fun SplitChildren(
+  parent: Transaction,
+  density: TransactionsDensity,
+  modifier: Modifier = Modifier,
+) {
+  val dimens = LocalLedgerDimens.current
+  when (density) {
+    // The inset runs from the payee column to the screen edge, so amounts line up with the parent's
+    Comfortable,
+    Compact -> {
+      Column(
+        modifier =
+          modifier
+            .fillMaxWidth()
+            .padding(start = dimens.railWidth, bottom = dimens.rowVertical)
+            .background(colors.pageBackgroundModalActive)
+            .padding(vertical = SplitInsetVertical)
+      ) {
+        parent.children.fastForEach { child -> SplitChildRow(child, parent, dimens) }
+      }
+    }
+
+    Dense -> {
+      Column(modifier = modifier.fillMaxWidth().background(colors.pageBackgroundModalActive)) {
+        parent.children.fastForEach { child -> SplitChildTableRow(child, parent, dimens) }
+      }
+    }
+  }
+}
+
+@Composable
+private fun SplitChildRow(child: Transaction, parent: Transaction, dimens: LedgerDimens) =
+  Row(
+    modifier =
+      Modifier.fillMaxWidth()
+        .height(dimens.childRowHeight)
+        .padding(start = SplitInsetStart, end = dimens.rowEnd),
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(dimens.contentGap),
+  ) {
+    val category =
+      categoryText(child, parts = Collapsed, needsCategory = Strings.transactionsNeedsCategory)
+    val payee = child.payeeUnlike(parent)
+    val payeeStyle = SpanStyle(color = colors.tableText)
+
+    Text(
+      modifier = Modifier.weight(1f),
+      text =
+        buildAnnotatedString {
+          if (payee != null) {
+            withStyle(payeeStyle) { append(payee) }
+            if (category.isNotEmpty()) append(" · ")
+          }
+          append(category)
+        },
+      fontSize = dimens.secondLineSize,
+      color = colors.pageTextLight,
+      overflow = Ellipsis,
+      maxLines = 1,
+    )
+
+    AmountText(child.amount, dimens, fontSize = dimens.childAmountSize, fontWeight = Normal)
+  }
+
+@Composable
+private fun SplitChildTableRow(child: Transaction, parent: Transaction, dimens: LedgerDimens) =
+  Row(
+    modifier =
+      Modifier.fillMaxWidth().height(dimens.childRowHeight).padding(horizontal = dimens.rowEnd),
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(dimens.contentGap),
+  ) {
+    Box(modifier = Modifier.width(DenseColumns.date))
+
+    Text(
+      modifier = Modifier.weight(DenseColumns.PAYEE_WEIGHT),
+      text = child.payeeUnlike(parent).orEmpty(),
+      fontSize = dimens.secondLineSize,
+      color = colors.tableText,
+      overflow = Ellipsis,
+      maxLines = 1,
+    )
+
+    Text(
+      modifier = Modifier.weight(DenseColumns.CATEGORY_WEIGHT),
+      text = categoryText(child, parts = Collapsed, needsCategory = Strings.transactionsNoCategory),
+      fontSize = dimens.secondLineSize,
+      color = colors.pageTextLight,
+      overflow = Ellipsis,
+      maxLines = 1,
+    )
+
+    AmountText(
+      amount = child.amount,
+      dimens = dimens,
+      modifier = Modifier.width(DenseColumns.amount),
+      fontSize = dimens.childAmountSize,
+      fontWeight = Normal,
+    )
+    if (dimens.showBalance) Box(modifier = Modifier.width(DenseColumns.balance))
+  }
+
+// A part only names its payee when it differs from the one on the parent's row
+private fun Transaction.payeeUnlike(parent: Transaction) = payee.takeIf { it != parent.payee }
+
+@Composable
+private fun AmountText(
+  amount: Amount,
+  dimens: LedgerDimens,
+  modifier: Modifier = Modifier,
+  fontSize: TextUnit = dimens.amountSize,
+  fontWeight: FontWeight = dimens.amountWeight,
+) =
   Text(
     modifier = modifier,
     text = amount.formattedString(includeSign = true),
-    fontSize = dimens.amountSize,
-    fontWeight = dimens.amountWeight,
+    fontSize = fontSize,
+    fontWeight = fontWeight,
     color = amount.color(),
     textAlign = End,
     style = tabularFigures(),
@@ -242,6 +473,12 @@ internal fun LedgerShimmerRow(modifier: Modifier = Modifier) {
   }
 }
 
+private val SplitIconSize = 12.dp
+private val SplitIconGap = 5.dp
+private val ChevronSize = 14.dp
+private val SplitInsetStart = 12.dp
+private val SplitInsetVertical = 2.dp
+private const val HALF_TURN = 180f
 private const val DAY_NUMBER_LINE_HEIGHT = 1.1f
 private const val LABEL_LENGTH = 3
 private const val SHIMMER_BAR_FRACTION = 1.5f
@@ -253,10 +490,13 @@ private fun PreviewLedgerRow(
 ) =
   PreviewWithColoredParams(params) {
     WithLedgerDimens(density) {
-      when (density) {
-        Comfortable,
-        Compact -> LedgerRow(transaction, showDate = showDate)
-        Dense -> LedgerTableRow(transaction)
+      Column {
+        when (density) {
+          Comfortable,
+          Compact -> LedgerRow(transaction, showDate = showDate, parts = parts)
+          Dense -> LedgerTableRow(transaction, parts = parts)
+        }
+        if (parts != Collapsed) SplitChildren(transaction, density)
       }
     }
   }
@@ -271,6 +511,7 @@ private data class LedgerRowParams(
   val density: TransactionsDensity,
   val transaction: Transaction,
   val showDate: Boolean = true,
+  val parts: SplitParts = Collapsed,
 )
 
 private class LedgerRowProvider :
@@ -279,11 +520,23 @@ private class LedgerRowProvider :
     LedgerRowParams(Comfortable, TRANSACTION_2, showDate = false),
     LedgerRowParams(Comfortable, TRANSACTION_3),
     LedgerRowParams(Comfortable, TRANSACTION_UNCATEGORISED),
+    LedgerRowParams(Comfortable, TRANSACTION_SPLIT),
+    LedgerRowParams(Comfortable, TRANSACTION_SPLIT, parts = Expanded),
+    LedgerRowParams(Comfortable, TRANSACTION_SPLIT, parts = Pinned),
+    LedgerRowParams(Comfortable, TRANSACTION_SPLIT_CHILD),
     LedgerRowParams(Compact, TRANSACTION_1),
     LedgerRowParams(Compact, TRANSACTION_2, showDate = false),
     LedgerRowParams(Compact, TRANSACTION_3),
     LedgerRowParams(Compact, TRANSACTION_UNCATEGORISED),
+    LedgerRowParams(Compact, TRANSACTION_SPLIT),
+    LedgerRowParams(Compact, TRANSACTION_SPLIT, parts = Expanded),
+    LedgerRowParams(Compact, TRANSACTION_SPLIT, parts = Pinned),
+    LedgerRowParams(Compact, TRANSACTION_SPLIT_CHILD),
     LedgerRowParams(Dense, TRANSACTION_1),
     LedgerRowParams(Dense, TRANSACTION_3),
     LedgerRowParams(Dense, TRANSACTION_UNCATEGORISED),
+    LedgerRowParams(Dense, TRANSACTION_SPLIT),
+    LedgerRowParams(Dense, TRANSACTION_SPLIT, parts = Expanded),
+    LedgerRowParams(Dense, TRANSACTION_SPLIT, parts = Pinned),
+    LedgerRowParams(Dense, TRANSACTION_SPLIT_CHILD),
   )

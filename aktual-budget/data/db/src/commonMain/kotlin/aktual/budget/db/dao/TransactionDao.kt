@@ -22,7 +22,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 
-data class TransactionNotes(val id: TransactionId, val notes: String?)
+// parent is set on split children only
+data class TransactionNotes(val id: TransactionId, val notes: String?, val parent: TransactionId?)
 
 data class TransactionRow(
   val id: TransactionId,
@@ -32,6 +33,7 @@ data class TransactionRow(
   val notes: String?,
   val categoryName: String?,
   val amount: Long,
+  val isParent: Boolean,
   val isChild: Boolean?,
   val needsCategory: Boolean,
 )
@@ -91,17 +93,17 @@ class TransactionDao(database: BudgetDatabase) {
   }
 
   suspend fun getIdsAndNotes(): List<TransactionNotes> = queries.withResult {
-    getIdsAndNotes().awaitAsList().map { TransactionNotes(it.id, it.notes) }
+    getIdsAndNotes(::transactionNotes).awaitAsList()
   }
 
   suspend fun getIdsAndNotesByAccount(account: AccountId): List<TransactionNotes> =
     queries.withResult {
-      getIdsAndNotesByAccount(account).awaitAsList().map { TransactionNotes(it.id, it.notes) }
+      getIdsAndNotesByAccount(account, ::transactionNotes).awaitAsList()
     }
 
   suspend fun getUncategorisedIdsAndNotes(account: AccountId?): List<TransactionNotes> =
     queries.withResult {
-      getUncategorisedIdsAndNotes(account).awaitAsList().map { TransactionNotes(it.id, it.notes) }
+      getUncategorisedIdsAndNotes(account, ::transactionNotes).awaitAsList()
     }
 
   suspend fun getNotesContainingHash(): List<String> = queries.withResult {
@@ -117,6 +119,16 @@ class TransactionDao(database: BudgetDatabase) {
     queries.withResult {
       parents.chunked(MAX_BIND_ARGS).flatMap { chunk -> getChildIds(chunk).awaitAsList() }
     }
+
+  // The live children of these split parents, each parent's in the order they were entered
+  suspend fun childrenOf(
+    parents: Collection<TransactionId>
+  ): Map<TransactionId, List<TransactionRow>> = queries.withResult {
+    parents
+      .chunked(MAX_BIND_ARGS)
+      .flatMap { chunk -> getChildrenOf(chunk, ::childRow).awaitAsList() }
+      .groupBy({ it.first }, { it.second })
+  }
 
   // Emits whenever a table behind the transactions view is written to
   fun observeChanges(): Flow<Unit> = queries.getIdsCount().asFlow().map {}
@@ -173,6 +185,7 @@ private fun transactionRow(
   notes: String?,
   categoryName: String?,
   amount: Long,
+  isParent: Boolean?,
   isChild: Boolean?,
   needsCategory: Long,
 ) =
@@ -184,9 +197,47 @@ private fun transactionRow(
     notes = notes,
     categoryName = categoryName,
     amount = amount,
+    isParent = isParent == true,
     isChild = isChild,
     needsCategory = needsCategory != 0L,
   )
+
+@Suppress("LongParameterList")
+private fun childRow(
+  id: TransactionId,
+  date: LocalDate,
+  accountName: String?,
+  payeeName: String?,
+  notes: String?,
+  categoryName: String?,
+  amount: Long,
+  isParent: Boolean?,
+  isChild: Boolean?,
+  needsCategory: Long,
+  parentId: TransactionId?,
+): Pair<TransactionId, TransactionRow> {
+  val row =
+    transactionRow(
+      id,
+      date,
+      accountName,
+      payeeName,
+      notes,
+      categoryName,
+      amount,
+      isParent,
+      isChild,
+      needsCategory,
+    )
+  return (parentId ?: error("Child $id has no parent")) to row
+}
+
+private fun transactionNotes(
+  id: TransactionId,
+  notes: String?,
+  isChild: Boolean?,
+  parentId: TransactionId?,
+) = TransactionNotes(id, notes, parent = parentId.takeIf { isChild == true })
 
 // Under SQLite's limit on bound parameters in one statement
 private const val MAX_BIND_ARGS = 900

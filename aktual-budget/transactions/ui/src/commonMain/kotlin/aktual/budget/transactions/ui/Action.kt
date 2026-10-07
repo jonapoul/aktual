@@ -1,5 +1,6 @@
 package aktual.budget.transactions.ui
 
+import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import androidx.compose.runtime.Immutable
 
@@ -12,6 +13,8 @@ internal sealed interface Action {
   data class SetPrivacyMode(val isPrivacyEnabled: Boolean) : Action
 
   data class SetDensity(val density: TransactionsDensity) : Action
+
+  data class ToggleSplit(val id: TransactionId) : Action
 }
 
 @Immutable

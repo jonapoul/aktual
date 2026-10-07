@@ -20,4 +20,12 @@
   <string name="transactions_title_loading">Loading…</string>
   <string name="transactions_title_none">&lt;No title&gt;</string>
   <string name="transactions_uncategorised_title">Uncategorised</string>
+  <string name="transactions_split">Split</string>
+  <string name="transactions_split_no_payee">Split (no payee)</string>
+  <plurals name="transactions_split_parts">
+    <item quantity="one">%1$d of %2$d part</item>
+    <item quantity="other">%1$d of %2$d parts</item>
+  </plurals>
+  <string name="transactions_split_expanded">Parts shown</string>
+  <string name="transactions_split_collapsed">Parts hidden</string>
 </resources>

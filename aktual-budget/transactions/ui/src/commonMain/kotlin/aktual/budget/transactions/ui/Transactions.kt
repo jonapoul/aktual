@@ -1,5 +1,6 @@
 package aktual.budget.transactions.ui
 
+import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.transactions.vm.Transaction
 import aktual.core.icons.material.MaterialIcons
@@ -15,6 +16,7 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.scrollbar
 import alakazam.compose.VerticalSpacer
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,6 +36,8 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -43,6 +47,9 @@ internal fun Transactions(
   density: TransactionsDensity,
   innerPadding: PaddingValues,
   contentPadding: PaddingValues,
+  expanded: ImmutableSet<TransactionId>,
+  splitsPinnedOpen: Boolean,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
   val refresh = pagingItems.loadState.refresh
@@ -55,6 +62,9 @@ internal fun Transactions(
         modifier = modifier,
         contentPadding = contentPadding,
         innerPadding = innerPadding,
+        expanded = expanded,
+        splitsPinnedOpen = splitsPinnedOpen,
+        onAction = onAction,
       )
     }
 
@@ -119,6 +129,9 @@ private fun TransactionsFilled(
   density: TransactionsDensity,
   innerPadding: PaddingValues,
   contentPadding: PaddingValues,
+  expanded: ImmutableSet<TransactionId>,
+  splitsPinnedOpen: Boolean,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
@@ -139,10 +152,25 @@ private fun TransactionsFilled(
             HorizontalDivider(color = colors.tableBorder)
           }
 
+          val parts =
+            when {
+              splitsPinnedOpen -> SplitParts.Pinned
+              transaction.id in expanded -> SplitParts.Expanded
+              else -> SplitParts.Collapsed
+            }
+          val onToggleSplit = { onAction(Action.ToggleSplit(transaction.id)) }
+
           when (density) {
             Comfortable,
-            Compact -> LedgerRow(transaction, showDate)
-            Dense -> LedgerTableRow(transaction)
+            Compact ->
+              LedgerRow(transaction, showDate, parts = parts, onToggleSplit = onToggleSplit)
+            Dense -> LedgerTableRow(transaction, parts = parts, onToggleSplit = onToggleSplit)
+          }
+
+          if (transaction.children.isNotEmpty()) {
+            AnimatedVisibility(visible = parts != Collapsed) {
+              SplitChildren(transaction, density)
+            }
           }
         }
       }
@@ -167,6 +195,9 @@ private fun PreviewTransactions(
         density = density,
         contentPadding = Zero,
         innerPadding = Zero,
+        expanded = persistentSetOf(TRANSACTION_SPLIT.id),
+        splitsPinnedOpen = false,
+        onAction = {},
       )
     }
   }
