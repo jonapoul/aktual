@@ -9,7 +9,7 @@ sealed interface ChangePasswordResponse {
   @Serializable
   data class Success(
     @SerialName("data")
-    val data: JsonObject = JsonObject.Empty // always gives an empty JSON object?
+    val data: JsonObject = JsonObject.Empty, // always gives an empty JSON object?
   ) : ChangePasswordResponse
 
   @Serializable

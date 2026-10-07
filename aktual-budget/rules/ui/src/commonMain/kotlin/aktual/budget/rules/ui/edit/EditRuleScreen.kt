@@ -371,7 +371,7 @@ private fun RuleStage(
 @PortraitPreview
 @Composable
 private fun PreviewEditRuleScaffold(
-  @PreviewParameter(EditRuleStateProvider::class) params: ColoredParams<EditRuleStateParams>
+  @PreviewParameter(EditRuleStateProvider::class) params: ColoredParams<EditRuleStateParams>,
 ) {
   PreviewWithColoredParams(params) { EditRuleScaffold(state = state, mode = mode, onAction = {}) }
 }

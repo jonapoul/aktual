@@ -310,19 +310,19 @@ internal fun ShimmerBankSyncAccountItem(modifier: Modifier = Modifier) {
         modifier =
           Modifier.fillMaxWidth(fraction = 0.45f)
             .height(BankSyncDS.shimmerItemTextHeight)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
       Box(
         modifier =
           Modifier.fillMaxWidth(fraction = 0.35f)
             .height(BankSyncDS.shimmerItemTextHeightSmall)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
       Box(
         modifier =
           Modifier.fillMaxWidth(fraction = 0.6f)
             .height(BankSyncDS.shimmerItemTextHeightSmall)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
     }
 
@@ -330,7 +330,7 @@ internal fun ShimmerBankSyncAccountItem(modifier: Modifier = Modifier) {
       modifier =
         Modifier.height(BankSyncDS.shimmerItemTextHeight)
           .width(BankSyncDS.shimmerChipWidth)
-          .background(colors.pageText, CardShape)
+          .background(colors.pageText, CardShape),
     )
   }
 }
@@ -338,7 +338,7 @@ internal fun ShimmerBankSyncAccountItem(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun PreviewAccountItem(
-  @PreviewParameter(AccountProvider::class) params: ColoredParams<BankSyncAccount>
+  @PreviewParameter(AccountProvider::class) params: ColoredParams<BankSyncAccount>,
 ) = PreviewWithColoredParams(params) { BankSyncAccountItem(account = this, isLinked = true) }
 
 private class AccountProvider :
@@ -351,7 +351,7 @@ private class AccountProvider :
 @Preview
 @Composable
 private fun PreviewSyncableAccountItem(
-  @PreviewParameter(AccountProvider::class) params: ColoredParams<BankSyncAccount>
+  @PreviewParameter(AccountProvider::class) params: ColoredParams<BankSyncAccount>,
 ) =
   PreviewWithColoredParams(params) {
     var isSyncing by remember { mutableStateOf(false) }
@@ -373,7 +373,7 @@ private fun PreviewUnlinkedAccountItem(@PreviewParameter(ColoredParameters::clas
 @Preview
 @Composable
 private fun PreviewAccountStatusChip(
-  @PreviewParameter(AccountStatusProvider::class) params: ColoredParams<BankSyncAccountStatus>
+  @PreviewParameter(AccountStatusProvider::class) params: ColoredParams<BankSyncAccountStatus>,
 ) = PreviewWithColoredParams(params) { AccountStatusChip(this) }
 
 private class AccountStatusProvider :
@@ -382,7 +382,7 @@ private class AccountStatusProvider :
 @Preview
 @Composable
 private fun PreviewProviderHeader(
-  @PreviewParameter(ProviderStatusProvider::class) params: ColoredParams<BankSyncProviderStatus>
+  @PreviewParameter(ProviderStatusProvider::class) params: ColoredParams<BankSyncProviderStatus>,
 ) =
   PreviewWithColoredParams(params) {
     ProviderHeader(source = GoCardless, status = this)

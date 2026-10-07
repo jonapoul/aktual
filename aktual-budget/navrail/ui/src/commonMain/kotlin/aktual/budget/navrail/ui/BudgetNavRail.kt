@@ -381,7 +381,7 @@ private fun DrawerHeader(
         .fillMaxWidth()
         .clip(RoundedCornerShape(16.dp))
         .background(colors.sidebarItemBackgroundHover)
-        .padding(16.dp)
+        .padding(16.dp),
   ) {
     Text(
       text = state.budgetName.orEmpty(),

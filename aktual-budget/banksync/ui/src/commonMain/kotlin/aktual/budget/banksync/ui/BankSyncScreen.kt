@@ -309,7 +309,7 @@ private fun SyncAllButton(isSyncing: Boolean, onClick: () -> Unit, modifier: Mod
 @Preview
 @Composable
 private fun PreviewBankSyncScaffold(
-  @PreviewParameter(BankSyncStateProvider::class) params: ColoredParams<BankSyncState>
+  @PreviewParameter(BankSyncStateProvider::class) params: ColoredParams<BankSyncState>,
 ) = PreviewWithColoredParams(params) { BankSyncScaffold(state = this, onAction = {}) }
 
 private class BankSyncStateProvider :

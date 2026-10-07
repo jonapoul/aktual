@@ -122,7 +122,7 @@ class SyncResponseDecoderTest {
               timestamp = timestamp,
               value = MsgNum(1),
             ),
-        )
+        ),
       )
   }
 
@@ -144,7 +144,7 @@ class SyncResponseDecoderTest {
               timestamp = timestamp,
               value = MsgNum(1),
             ),
-        )
+        ),
       )
   }
 

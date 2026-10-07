@@ -66,7 +66,7 @@ class HomeViewModelAttentionTest {
             SyncFailed(AccountId("card"), "card", ReauthRequired),
             Uncategorised(count = 1),
             Overspent(
-              persistentListOf(OverspentCategory(CategoryId("food"), "Food", Amount(-20_000L)))
+              persistentListOf(OverspentCategory(CategoryId("food"), "Food", Amount(-20_000L))),
             ),
             OverdueSchedules(count = 1),
           )

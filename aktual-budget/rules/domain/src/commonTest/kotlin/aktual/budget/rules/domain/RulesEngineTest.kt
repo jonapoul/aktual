@@ -22,7 +22,7 @@ class RulesEngineTest {
             id = "a",
             conditions =
               listOf(
-                cond(Payee, OneOf, listOf("kroger", "kroger1", "kroger2", "kroger3", "kroger4"))
+                cond(Payee, OneOf, listOf("kroger", "kroger1", "kroger2", "kroger3", "kroger4")),
               ),
             actions = listOf(set(Notes, "got it2")),
             stage = Post,
@@ -43,7 +43,7 @@ class RulesEngineTest {
             conditions = listOf(cond(Payee, Is, "kroger4")),
             actions = listOf(set(Notes, "got it")),
           ),
-        )
+        ),
       )
 
     val result =
@@ -56,7 +56,7 @@ class RulesEngineTest {
           amount = 50,
           payee = "kroger4",
           notes = "got it2",
-        )
+        ),
       )
   }
 
@@ -72,7 +72,7 @@ class RulesEngineTest {
         listOf(
           rule("a", listOf(cond(Payee, Is, null)), listOf(set(Notes, "no payee"))),
           rule("b", listOf(cond(Payee, Is, null)), listOf(set(Payee, "kroger"))),
-        )
+        ),
       )
     val result = engine.run(tx(importedPayee = "kroger"), context())
     assertThat(result.payee).isEqualTo(PayeeId("kroger"))
@@ -91,8 +91,8 @@ class RulesEngineTest {
     val engine =
       RulesEngine(
         listOf(
-          rule("a", listOf(cond(CategoryGroup, Is, "bills")), listOf(set(Notes, "bills-matched")))
-        )
+          rule("a", listOf(cond(CategoryGroup, Is, "bills")), listOf(set(Notes, "bills-matched"))),
+        ),
       )
     val context =
       context(
@@ -100,7 +100,7 @@ class RulesEngineTest {
           mapOf(
             CategoryId("electric") to CategoryGroupId("bills"),
             CategoryId("movies") to CategoryGroupId("fun"),
-          )
+          ),
       )
     assertThat(engine.run(tx(category = "electric", notes = ""), context).notes)
       .isEqualTo("bills-matched")
@@ -124,7 +124,7 @@ class RulesEngineTest {
             listOf(set(Notes, "bills-matched")),
             stage = Post,
           ),
-        )
+        ),
       )
     val context =
       context(categoryGroups = mapOf(CategoryId("electric") to CategoryGroupId("bills")))
@@ -145,7 +145,7 @@ class RulesEngineTest {
             stage = Pre,
           ),
           rule("b", listOf(cond(Payee, Is, "amazon_id")), listOf(set(Category, "shopping"))),
-        )
+        ),
       )
     val context = context(payees = listOf(RulePayee(PayeeId("amazon_id"), "Amazon")))
     val result = engine.run(tx(importedPayee = "AMZN MKTP"), context)
@@ -165,7 +165,7 @@ class RulesEngineTest {
             stage = Pre,
           ),
           rule("b", listOf(cond(PayeeName, Is, "amazon")), listOf(set(Notes, "renamed"))),
-        )
+        ),
       )
     assertThat(engine.run(tx(importedPayee = "AMZN"), context()).notes).isEqualTo("renamed")
   }
@@ -185,7 +185,7 @@ class RulesEngineTest {
             listOf(cond(ImportedPayee, Is, "big shop")),
             listOf(set(Category, "specific")),
           ),
-        )
+        ),
       )
     assertThat(engine.run(tx(importedPayee = "Big Shop"), context()).category)
       .isEqualTo(CategoryId("specific"))
@@ -263,8 +263,8 @@ class RulesEngineTest {
             "r",
             listOf(cond(Payee, IsNot, "a"), cond(ImportedPayee, IsNot, "xyz")),
             listOf(set(Notes, "ran")),
-          )
-        )
+          ),
+        ),
       )
     assertThat(engine.run(tx(payee = "b", importedPayee = "other"), context()).notes).isNull()
     assertThat(engine.run(tx(payee = "b", importedPayee = "xenon"), context()).notes)
@@ -287,7 +287,7 @@ class RulesEngineTest {
             listOf(set(Notes, "split")),
             stage = Post,
           ),
-        )
+        ),
       )
     val result = engine.run(tx(importedPayee = "shop", amount = -1001, payee = "p"), context())
     assertThat(result.notes).isEqualTo("split")

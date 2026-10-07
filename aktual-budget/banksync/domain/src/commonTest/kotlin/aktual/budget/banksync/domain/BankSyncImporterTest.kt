@@ -67,7 +67,7 @@ internal class BankSyncImporterTest {
         """{"booked":true,"date":"2026-09-30","payeeName":"Tesco","transactionId":"t1",""" +
           """"transactionAmount":{"amount":"-12.34","currency":"GBP"},""" +
           """"account":"account-1","cleared":true,"amount":"-12.34",""" +
-          """"imported_payee":"Tesco","payee":"$payee"}"""
+          """"imported_payee":"Tesco","payee":"$payee"}""",
       )
     assertThat(row(second).sort_order)
       .isEqualTo((NOW.toEpochMilliseconds() - TRANSACTION_SORT_INCREMENT).toDouble())
@@ -210,7 +210,7 @@ internal class BankSyncImporterTest {
           date = DATE.minus(2, DAY),
           amount = Amount(-500),
           payee = payee,
-        )
+        ),
       )
     }
 
@@ -292,7 +292,7 @@ internal class BankSyncImporterTest {
           amount = Amount(-100),
           importedId = "t1",
           reconciled = true,
-        )
+        ),
       )
     }
 
@@ -429,7 +429,7 @@ internal class BankSyncImporterTest {
           importedId = importedId,
           cleared = cleared,
           isParent = true,
-        )
+        ),
       )
     val child =
       insert(
@@ -440,7 +440,7 @@ internal class BankSyncImporterTest {
           amount = Amount(-600),
           cleared = cleared,
           parentId = parent,
-        )
+        ),
       )
     insert(
       NewTransaction(
@@ -450,7 +450,7 @@ internal class BankSyncImporterTest {
         amount = Amount(-400),
         cleared = cleared,
         parentId = parent,
-      )
+      ),
     )
     parent to child
   }

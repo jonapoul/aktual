@@ -96,7 +96,7 @@ internal fun BankSyncProviderSetupScreen(
 @Composable
 private fun bankSyncProviderSetupViewModel(source: AccountSyncSource) =
   assistedMetroViewModel<BankSyncProviderSetupViewModel, BankSyncProviderSetupViewModel.Factory>(
-    key = source.value
+    key = source.value,
   ) {
     create(source)
   }
@@ -318,7 +318,7 @@ private fun errorMessage(error: SetupError): String =
 @Composable
 private fun PreviewBankSyncProviderSetupScaffold(
   @PreviewParameter(BankSyncProviderSetupStateProvider::class)
-  params: ColoredParams<BankSyncProviderSetupState>
+  params: ColoredParams<BankSyncProviderSetupState>,
 ) = PreviewWithColoredParams(params) { BankSyncProviderSetupScaffold(state = this, onAction = {}) }
 
 private fun previewState(

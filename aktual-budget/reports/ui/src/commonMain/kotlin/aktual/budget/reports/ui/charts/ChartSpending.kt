@@ -130,9 +130,9 @@ private fun Chart(
                   fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsGreen)),
                   areaFill =
                     LineCartesianLayer.AreaFill.single(
-                      fill = Fill(colors.reportsGreen.copy(alpha = 0.2f))
+                      fill = Fill(colors.reportsGreen.copy(alpha = 0.2f)),
                     ),
-                )
+                ),
               ),
           ),
           rememberLineCartesianLayer(
@@ -144,9 +144,9 @@ private fun Chart(
                   stroke = LineCartesianLayer.LineStroke.Dashed(thickness = 1.dp),
                   areaFill =
                     LineCartesianLayer.AreaFill.single(
-                      fill = Fill(colors.reportsGray.copy(alpha = 0.2f))
+                      fill = Fill(colors.reportsGray.copy(alpha = 0.2f)),
                     ),
-                )
+                ),
               ),
           ),
           startAxis =
@@ -184,7 +184,7 @@ private fun CompactHeader(
     Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start) {
       Text(text = data.title, color = colors.pageText, style = typography.bodyLarge)
       DateRangeText(
-        Strings.reportsSpendingDateRange(data.targetMonth.stringShort(), data.comparison.string())
+        Strings.reportsSpendingDateRange(data.targetMonth.stringShort(), data.comparison.string()),
       )
     }
 
@@ -295,7 +295,7 @@ private fun xAxisFormatter() = remember {
 @Preview
 @Composable
 private fun PreviewSpendingChart(
-  @PreviewParameter(SpendingChartProvider::class) params: ColoredParams<SpendingChartParams>
+  @PreviewParameter(SpendingChartProvider::class) params: ColoredParams<SpendingChartParams>,
 ) =
   PreviewWithColoredParams(params, isPrivacyEnabled = params.data.private) {
     SpendingChart(

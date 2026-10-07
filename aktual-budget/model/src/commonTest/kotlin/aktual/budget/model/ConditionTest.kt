@@ -97,9 +97,9 @@ class ConditionTest {
                     "9dfb243f-9ab8-4b7d-9411-a79f78f23125",
                     "474c707c-fab7-490d-9b33-ea8912c6fe9b",
                   )
-                  .map(::JsonPrimitive)
+                  .map(::JsonPrimitive),
             ),
-        )
+        ),
       )
 
     val serialized = PrettyJson.encodeToString(data)
@@ -125,7 +125,7 @@ class ConditionTest {
           type = Unknown,
           conditionsOp = Unknown,
           value = JsonPrimitive("abc"),
-        )
+        ),
       )
   }
 }

@@ -59,7 +59,7 @@ class ReportMetaSerializationTest {
           }
         }
         """
-          .trimIndent()
+          .trimIndent(),
       )
 
     val decoded = json.decodeFromJsonElement(ReportMeta.serializer(Formula), element)

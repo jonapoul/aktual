@@ -184,7 +184,7 @@ class MonteCarloEditsTest {
             McSpendingPhase(id = "p1"),
             McSpendingPhase(id = "p2", fromAge = 70),
             McSpendingPhase(id = "p3", fromAge = 80),
-          )
+          ),
       )
 
     val edited = config.updateSpendingPhase("p3") { it.copy(fromAge = 65) }
@@ -197,7 +197,7 @@ class MonteCarloEditsTest {
     val config =
       McConfig(
         spendingPhases =
-          persistentListOf(McSpendingPhase(id = "p1"), McSpendingPhase(id = "p2", fromAge = 70))
+          persistentListOf(McSpendingPhase(id = "p1"), McSpendingPhase(id = "p2", fromAge = 70)),
       )
 
     val edited = config.removeSpendingPhase("p1")

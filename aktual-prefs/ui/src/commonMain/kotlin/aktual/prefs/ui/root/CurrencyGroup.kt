@@ -110,7 +110,7 @@ private fun Currency.string(): String =
 
 @Composable
 private fun CurrencySymbolPosition.string(
-  config: CurrencyConfig = LocalCurrencyConfig.current
+  config: CurrencyConfig = LocalCurrencyConfig.current,
 ): String =
   when (this) {
     BeforeAmount ->

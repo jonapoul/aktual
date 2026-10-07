@@ -79,7 +79,7 @@ private fun TransactionsDensity.string(): String =
 @Preview
 @Composable
 private fun PreviewViewOptions(
-  @PreviewParameter(ViewOptionsProvider::class) params: ColoredParams<TransactionsDensity>
+  @PreviewParameter(ViewOptionsProvider::class) params: ColoredParams<TransactionsDensity>,
 ) = PreviewWithColoredParams(params) { ViewOptionsContent(density = this, onAction = {}) }
 
 private class ViewOptionsProvider :

@@ -218,7 +218,7 @@ private fun Chart(
                       topFill = Fill(colors.reportsChartFill.copy(alpha = 0.2f)),
                       bottomFill = Fill(colors.reportsNumberNegative.copy(alpha = 0.2f)),
                     ),
-                )
+                ),
               ),
           ),
           startAxis =
@@ -333,7 +333,7 @@ private const val DAILY_LABELS = 6
 @Composable
 private fun PreviewBalanceForecastChart(
   @PreviewParameter(BalanceForecastChartProvider::class)
-  params: ColoredParams<BalanceForecastChartParams>
+  params: ColoredParams<BalanceForecastChartParams>,
 ) =
   PreviewWithColoredParams(params) {
     BalanceForecastChart(

@@ -246,7 +246,7 @@ val Typography.buttonTextStyle: TextStyle
 @Preview
 @Composable
 private fun PreviewBare(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
 ) =
   PreviewWithColoredParams(params) {
     BareTextButton(text = "Bare", isEnabled = this, onClick = {})
@@ -255,7 +255,7 @@ private fun PreviewBare(
 @Preview
 @Composable
 private fun PreviewPrimary(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
 ) =
   PreviewWithColoredParams(params) {
     PrimaryTextButton(text = "Primary", isEnabled = this, onClick = {})
@@ -264,7 +264,7 @@ private fun PreviewPrimary(
 @Preview
 @Composable
 private fun PreviewNormal(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
 ) =
   PreviewWithColoredParams(params) {
     NormalTextButton(text = "Normal", isEnabled = this, onClick = {})
@@ -273,7 +273,7 @@ private fun PreviewNormal(
 @Preview
 @Composable
 private fun PreviewPrimaryWithLoadingNotLoading(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
 ) =
   PreviewWithColoredParams(params) {
     PrimaryTextButtonWithLoading(text = "OK", isLoading = this, onClick = {})

@@ -112,7 +112,7 @@ internal fun Condition.eval(transaction: RuleTransaction, context: RuleContext =
         payeeName = transaction.payee?.let(context::payeeName),
         categoryGroup = transaction.category?.let(context::categoryGroup),
         account = context.account(transaction.account),
-      )
+      ),
     )
 
 // Rule.exec: runs a single rule's actions if its conditions match

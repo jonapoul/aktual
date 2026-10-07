@@ -31,7 +31,7 @@ internal suspend fun SnackbarHostState.showDeleted(
 internal suspend fun SnackbarHostState.showDeleteFailed(event: ListTagsEvent.DeleteFailed) {
   showSnackbar(
     event.tag?.let { getString(Res.string.tags_delete_failed, it) }
-      ?: getString(Res.string.tags_delete_failed_unknown)
+      ?: getString(Res.string.tags_delete_failed_unknown),
   )
 }
 

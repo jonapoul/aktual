@@ -30,7 +30,7 @@ class AgeOfMoneyTest {
   fun `Oldest income is used first`() {
     val result =
       calculateAges(
-        listOf(income("2024-01-01", 500), income("2024-01-15", 500), expense("2024-02-01", 400))
+        listOf(income("2024-01-01", 500), income("2024-01-15", 500), expense("2024-02-01", 400)),
       )
 
     assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(31)
@@ -40,7 +40,7 @@ class AgeOfMoneyTest {
   fun `Large expense spans buckets and uses the last one`() {
     val result =
       calculateAges(
-        listOf(income("2024-01-01", 200), income("2024-01-15", 300), expense("2024-02-01", 400))
+        listOf(income("2024-01-01", 200), income("2024-01-15", 300), expense("2024-02-01", 400)),
       )
 
     assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(17)
@@ -55,7 +55,7 @@ class AgeOfMoneyTest {
           expense("2024-01-10", 300),
           expense("2024-01-20", 300),
           expense("2024-01-30", 300),
-        )
+        ),
       )
 
     assertThat(result.ages).extracting(ExpenseAge::age).containsExactly(9, 19, 29)
@@ -101,7 +101,7 @@ class AgeOfMoneyTest {
           income("2024-01-01", 500),
           expense("2024-02-15", 200),
           expense("2024-02-01", 200),
-        )
+        ),
       )
 
     assertThat(result.ages)
@@ -198,7 +198,7 @@ class AgeOfMoneyTest {
           expense("2024-01-10", 600),
           income("2024-02-01", 600),
           expense("2024-02-15", 700),
-        )
+        ),
       )
 
     // The second expense drains the rest of January's income, then dips into February's

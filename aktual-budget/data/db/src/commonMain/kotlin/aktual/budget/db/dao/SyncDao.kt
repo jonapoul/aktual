@@ -132,7 +132,7 @@ class SyncDao(
    * timestamp already exists -- meaning our local data is already up to date for that cell.
    */
   private suspend fun compareMessages(
-    envelopes: List<MessageEnvelope>
+    envelopes: List<MessageEnvelope>,
   ): List<Pair<MessageEnvelope, Boolean>> = envelopes.mapNotNull { envelope ->
     val msg = envelope.content
     val existing =

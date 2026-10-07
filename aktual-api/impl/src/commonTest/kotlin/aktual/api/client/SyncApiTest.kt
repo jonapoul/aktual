@@ -146,8 +146,8 @@ class SyncApiTest {
                 owner = user.userId,
                 usersWithAccess = listOf(user),
               ),
-            )
-        )
+            ),
+        ),
       )
   }
 
@@ -169,7 +169,7 @@ class SyncApiTest {
           ListUserFilesResponse.Failure(
             reason = Unauthorized,
             details = "token-not-found",
-          )
+          ),
         )
     }
   }
@@ -206,8 +206,8 @@ class SyncApiTest {
                       authTag = "35maee1UpzftRCks/yQjoB==".base64(),
                     ),
                 ),
-            )
-        )
+            ),
+        ),
       )
   }
 
@@ -231,7 +231,7 @@ class SyncApiTest {
     // then
     assertThat(response)
       .isDataClassEqualTo(
-        GetUserKeyResponse.Failure(reason = Unauthorized, details = "token-not-found")
+        GetUserKeyResponse.Failure(reason = Unauthorized, details = "token-not-found"),
       )
   }
 
@@ -260,8 +260,8 @@ class SyncApiTest {
                   iv = "8tzhaLCrSFyVfzZF".base64(),
                   authTag = "35maee1UpzftRCks/yQjoB==".base64(),
                 ),
-            )
-        )
+            ),
+        ),
       )
   }
 
@@ -304,7 +304,7 @@ class SyncApiTest {
     // then
     assertThat(response)
       .isDataClassEqualTo(
-        GetUserFileInfoResponse.Failure(Unauthorized, details = "token-not-found")
+        GetUserFileInfoResponse.Failure(Unauthorized, details = "token-not-found"),
       )
   }
 
@@ -322,7 +322,7 @@ class SyncApiTest {
           "X-ACTUAL-TOKEN" to listOf("abc-123"),
           "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
           "Accept" to listOf("application/json"),
-        )
+        ),
       )
   }
 

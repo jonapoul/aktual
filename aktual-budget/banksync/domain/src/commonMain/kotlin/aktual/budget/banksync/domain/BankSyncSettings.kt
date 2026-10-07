@@ -58,7 +58,7 @@ class BankSyncSettingsWriter(private val syncController: BudgetSyncController) {
         change(SyncReimportDeleted(account), settings.reimportDeleted),
         change(SyncImportTransactions(account), settings.importTransactions),
         change(SyncUpdateDates(account), settings.updateDates),
-      )
+      ),
     )
 
   private fun change(key: PerAccount, value: Boolean) = change(key, value.toString())

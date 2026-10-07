@@ -162,7 +162,7 @@ internal fun ScheduleStatusBadge(
       Scheduled -> Strings.listSchedulesStatusScheduled
     }
   Box(
-    modifier = modifier.background(bgColor, CardShape).padding(ListSchedulesDS.statusBadgePadding)
+    modifier = modifier.background(bgColor, CardShape).padding(ListSchedulesDS.statusBadgePadding),
   ) {
     Text(text = label, style = typography.labelSmall, color = textColor, maxLines = 1)
   }
@@ -193,21 +193,21 @@ internal fun ShimmerListSchedulesItem(modifier: Modifier = Modifier) {
         modifier =
           Modifier.fillMaxWidth(fraction = 0.45f)
             .height(ListSchedulesDS.shimmerItemTextHeight)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
 
       Box(
         modifier =
           Modifier.fillMaxWidth(fraction = 0.85f)
             .height(ListSchedulesDS.shimmerItemTextHeightSmall)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
 
       Box(
         modifier =
           Modifier.fillMaxWidth(fraction = 0.75f)
             .height(ListSchedulesDS.shimmerItemTextHeightSmall)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
     }
 
@@ -215,7 +215,7 @@ internal fun ShimmerListSchedulesItem(modifier: Modifier = Modifier) {
       modifier =
         Modifier.height(ListSchedulesDS.shimmerItemTextHeight)
           .width(40.dp)
-          .background(colors.pageText, CardShape)
+          .background(colors.pageText, CardShape),
     )
   }
 }
@@ -223,7 +223,7 @@ internal fun ShimmerListSchedulesItem(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun PreviewScheduleStatus(
-  @PreviewParameter(ScheduleStatusProvider::class) params: ColoredParams<ScheduleStatus>
+  @PreviewParameter(ScheduleStatusProvider::class) params: ColoredParams<ScheduleStatus>,
 ) = PreviewWithColoredParams(params) { ScheduleStatusBadge(this) }
 
 private class ScheduleStatusProvider :
@@ -232,7 +232,7 @@ private class ScheduleStatusProvider :
 @Preview
 @Composable
 private fun PreviewListItem(
-  @PreviewParameter(SchedulesProvider::class) params: ColoredParams<Schedule>
+  @PreviewParameter(SchedulesProvider::class) params: ColoredParams<Schedule>,
 ) = PreviewWithColoredParams(params) { ListSchedulesItem(schedule = this, onClick = {}) }
 
 private class SchedulesProvider :

@@ -30,7 +30,7 @@ internal fun yearStory(
         Strings.monteCarloStoryMinimumThen(planned)
       } else {
         Strings.monteCarloStoryMinimum(planned)
-      }
+      },
     )
   }
 
@@ -157,7 +157,7 @@ private fun fundingSentences(row: McRunDetailRow): List<String> {
           toContributions.money(),
         )
       else -> Strings.monteCarloStoryIncomePartial(fromIncome.money(), spent)
-    }
+    },
   )
 }
 

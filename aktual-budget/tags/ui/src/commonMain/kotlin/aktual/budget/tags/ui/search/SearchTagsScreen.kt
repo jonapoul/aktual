@@ -186,7 +186,7 @@ private fun ResultItem(
 @PortraitPreview
 @Composable
 private fun PreviewSearchTagsScaffold(
-  @PreviewParameter(SearchTagsScaffoldProvider::class) params: ColoredParams<SearchTagsParams>
+  @PreviewParameter(SearchTagsScaffoldProvider::class) params: ColoredParams<SearchTagsParams>,
 ) =
   PreviewWithColoredParams(params) {
     SearchTagsScaffold(query = query, state = state, onAction = {})

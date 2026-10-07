@@ -54,7 +54,7 @@ class BankSyncProviderSetupViewModel(
         source = source,
         fields = ProviderCredential.of(source).map(::SetupField).toImmutableList(),
         redirectUrl = redirectUrl(server),
-      )
+      ),
     )
   val state: StateFlow<BankSyncProviderSetupState> = mutableState.asStateFlow()
 

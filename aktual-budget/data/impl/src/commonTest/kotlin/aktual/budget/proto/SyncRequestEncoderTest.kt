@@ -120,7 +120,7 @@ class SyncRequestEncoderTest {
 
     assertThat(encoded.base64())
       .isEqualTo(
-        RESOURCES_DIR.resolve("proto-request-encrypted-new-account.txt").readLines().first()
+        RESOURCES_DIR.resolve("proto-request-encrypted-new-account.txt").readLines().first(),
       )
   }
 
@@ -138,7 +138,7 @@ class SyncRequestEncoderTest {
           column = "tombstone",
           timestamp = Timestamp.parse("2025-12-14T14:55:30.250Z-0000-b56c5557dc0f979f"),
           value = MsgNum(1),
-        )
+        ),
       )
 
     val encoder =
@@ -151,7 +151,7 @@ class SyncRequestEncoderTest {
 
     assertThat(encoded.base64())
       .isEqualTo(
-        RESOURCES_DIR.resolve("proto-request-encrypted-delete-account.txt").readLines().first()
+        RESOURCES_DIR.resolve("proto-request-encrypted-delete-account.txt").readLines().first(),
       )
   }
 

@@ -49,7 +49,7 @@ class GithubApiTest {
 
     // then
     assertThatRequestUrlEquals(
-      "https://api.github.com/repos/abc/123/releases/latest?per_page=420&page=69"
+      "https://api.github.com/repos/abc/123/releases/latest?per_page=420&page=69",
     )
   }
 

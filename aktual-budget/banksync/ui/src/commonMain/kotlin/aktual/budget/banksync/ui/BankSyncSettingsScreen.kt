@@ -116,7 +116,7 @@ internal fun BankSyncSettingsScreen(
 @Composable
 private fun bankSyncSettingsViewModel(id: AccountId) =
   assistedMetroViewModel<BankSyncSettingsViewModel, BankSyncSettingsViewModel.Factory>(
-    key = id.value
+    key = id.value,
   ) {
     create(id)
   }
@@ -260,7 +260,7 @@ private fun UnlinkButton(
           onClick = {
             showConfirm = false
             onConfirm()
-          }
+          },
         ) {
           Text(Strings.bankSyncSettingsUnlinkConfirm, color = colors.errorText)
         }
@@ -414,7 +414,7 @@ private fun fieldIcon(field: MappedField): ImageVector =
 @Composable
 private fun PreviewBankSyncSettingsScaffold(
   @PreviewParameter(BankSyncSettingsStateProvider::class)
-  params: ColoredParams<BankSyncSettingsState>
+  params: ColoredParams<BankSyncSettingsState>,
 ) = PreviewWithColoredParams(params) { BankSyncSettingsScaffold(state = this, onAction = {}) }
 
 private val PreviewEditing =

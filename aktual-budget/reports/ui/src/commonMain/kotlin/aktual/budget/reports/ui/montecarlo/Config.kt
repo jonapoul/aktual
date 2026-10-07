@@ -203,7 +203,7 @@ private val TAB_SPACING = 6.dp
 @PortraitPreview
 @Composable
 private fun PreviewMonteCarloConfiguration(
-  @PreviewParameter(ConfigTabProvider::class) params: ColoredParams<ConfigTab>
+  @PreviewParameter(ConfigTabProvider::class) params: ColoredParams<ConfigTab>,
 ) =
   PreviewWithColoredParams(params) {
     MonteCarloConfiguration(
@@ -239,7 +239,7 @@ private val PREVIEW_CONFIG =
           potId = "pot-1",
           sourceIncomeStreamId = "income-1",
           annualAmount = 2_000_000.0,
-        )
+        ),
       ),
     spendingPhases =
       persistentListOf(McSpendingPhase(), McSpendingPhase(id = "phase-2", fromAge = 75)),

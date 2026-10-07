@@ -37,7 +37,7 @@ class BudgetListFetcherTest {
   }
 
   private fun TestScope.before(
-    syncApi: SyncApi = SyncApiImpl(testHttpClient(mockEngine), SYSTEM, SERVER_URL)
+    syncApi: SyncApi = SyncApiImpl(testHttpClient(mockEngine), SYSTEM, SERVER_URL),
   ) {
     budgetListFetcher =
       BudgetListFetcher(syncApi = syncApi, contexts = TestCoroutineContexts(standardDispatcher))
@@ -70,9 +70,9 @@ class BudgetListFetcherTest {
                 name = "Main Budget",
                 encryptKeyId = KeyId("7fe20d96-ab62-43bc-b69c-53f55a26cbbf"),
                 owner = null,
-              )
-            )
-        )
+              ),
+            ),
+        ),
       )
   }
 

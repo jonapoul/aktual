@@ -26,7 +26,7 @@ class TestCoroutineContainer(
 }
 
 fun TestScope.coroutineContainer(
-  contexts: CoroutineContexts = TestCoroutineContexts(standardDispatcher)
+  contexts: CoroutineContexts = TestCoroutineContexts(standardDispatcher),
 ): TestCoroutineContainer = TestCoroutineContainer(scope = this, contexts)
 
 @BindingContainer

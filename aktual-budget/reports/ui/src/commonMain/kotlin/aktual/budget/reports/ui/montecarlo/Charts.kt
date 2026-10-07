@@ -96,7 +96,7 @@ internal fun FanChart(
           fill = LineCartesianLayer.LineFill.single(Fill(fill)),
           stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 2.dp),
           areaFill = LineCartesianLayer.AreaFill.single(Fill(fill.copy(alpha = FOCUSED_ALPHA))),
-        )
+        ),
       )
     }
 
@@ -200,7 +200,7 @@ internal fun DepletionHistogram(
       rememberCartesianChart(
         rememberColumnCartesianLayer(
           ColumnCartesianLayer.ColumnProvider.series(
-            rememberLineComponent(fill = Fill(colors.reportsNumberNegative), thickness = 6.dp)
+            rememberLineComponent(fill = Fill(colors.reportsNumberNegative), thickness = 6.dp),
           ),
           columnCollectionSpacing = 2.dp,
         ),
@@ -227,7 +227,7 @@ internal fun DepletionHistogram(
 }
 
 private suspend fun CartesianChartModelProducer.populateHistogram(
-  depletions: List<MonteCarloDepletion>
+  depletions: List<MonteCarloDepletion>,
 ) = runTransaction {
   columnSeries { series(x = depletions.map { it.age }, y = depletions.map { it.count }) }
 }
@@ -378,7 +378,7 @@ private class GuidelineMarker(private val line: LineComponent) : CartesianMarker
 
 @Composable
 private fun rememberSelectionListener(
-  onSelectAge: (Int?) -> Unit
+  onSelectAge: (Int?) -> Unit,
 ): CartesianMarkerVisibilityListener {
   val currentOnSelectAge by rememberUpdatedState(onSelectAge)
   return remember {

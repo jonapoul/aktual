@@ -65,7 +65,7 @@ internal fun SwipeableListSchedulesItem(
 @Preview
 @Composable
 private fun PreviewSwipeableListSchedulesItem(
-  @PreviewParameter(SwipeableProvider::class) params: ColoredParams<Boolean>
+  @PreviewParameter(SwipeableProvider::class) params: ColoredParams<Boolean>,
 ) =
   PreviewWithColoredParams(params) {
     SwipeableListSchedulesItem(

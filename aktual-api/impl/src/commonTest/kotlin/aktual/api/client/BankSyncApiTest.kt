@@ -99,10 +99,12 @@ class BankSyncApiTest {
 
     assertThat(mockEngine.latestRequestUrl())
       .isEqualTo("https://test.server.com/gocardless/transactions")
+
+    @Suppress("MaxLineLength")
     assertThat(mockEngine.latestRequest().body).isInstanceOf<TextContent>().all {
       prop(TextContent::text)
         .isEqualTo(
-          """{"accountId":"account-1","startDate":"2026-07-01","requisitionId":"requisition-1","includeBalance":true}"""
+          """{"accountId":"account-1","startDate":"2026-07-01","requisitionId":"requisition-1","includeBalance":true}""",
         )
     }
   }
@@ -165,7 +167,7 @@ class BankSyncApiTest {
           errorCode = "INVALID_ACCESS_TOKEN",
           reason =
             "Invalid SimpleFIN access token.  Reset the token and re-link any broken accounts.",
-        )
+        ),
       )
   }
 
@@ -181,7 +183,7 @@ class BankSyncApiTest {
           errorType = "RATE_LIMIT_EXCEEDED",
           errorCode = "NORDIGEN_ERROR",
           reason = "Rate limit exceeded",
-        )
+        ),
       )
   }
 
@@ -198,7 +200,7 @@ class BankSyncApiTest {
         Rejected(
           reason = "not-configured",
           details = "Pluggy credentials are not configured",
-        )
+        ),
       )
   }
 
@@ -228,7 +230,7 @@ class BankSyncApiTest {
     assertThat(mockEngine.latestRequest().body).isInstanceOf<TextContent>().all {
       prop(TextContent::text)
         .isEqualTo(
-          """{"accountId":["ACT-1","ACT-2","ACT-missing"],"startDate":["2026-07-01","2026-07-02","2026-07-03"]}"""
+          """{"accountId":["ACT-1","ACT-2","ACT-missing"],"startDate":["2026-07-01","2026-07-02","2026-07-03"]}""",
         )
     }
   }
@@ -315,8 +317,8 @@ class BankSyncApiTest {
               orgDomain = null,
               balance = Amount(-5678),
             ),
-          )
-        )
+          ),
+        ),
       )
   }
 
@@ -348,8 +350,8 @@ class BankSyncApiTest {
               orgDomain = null,
               balance = Amount(30010),
             ),
-          )
-        )
+          ),
+        ),
       )
   }
 
@@ -361,7 +363,7 @@ class BankSyncApiTest {
         {"status":"ok","data":{"accounts":[{"_id":"acc_1","name":"Everyday",
         "connection":{"_id":"conn_1","name":"ANZ"},"balance":{"current":42.5}}]}}
         """
-          .trimIndent()
+          .trimIndent(),
       )
     }
 
@@ -379,9 +381,9 @@ class BankSyncApiTest {
               orgId = "conn_1",
               orgDomain = "ANZ",
               balance = Amount(4250),
-            )
-          )
-        )
+            ),
+          ),
+        ),
       )
   }
 
@@ -409,7 +411,7 @@ class BankSyncApiTest {
 
     assertThat(response)
       .isEqualTo(
-        BankSyncAccountsResponse.Failed(Rejected("Missing user or app token", details = null))
+        BankSyncAccountsResponse.Failed(Rejected("Missing user or app token", details = null)),
       )
   }
 
@@ -439,8 +441,8 @@ class BankSyncApiTest {
               name = "Monzo",
               logo = "https://cdn.nordigen.com/ais/MONZO_MONZGB2L.png",
             ),
-          )
-        )
+          ),
+        ),
       )
   }
 
@@ -453,8 +455,8 @@ class BankSyncApiTest {
     assertThat(response)
       .isEqualTo(
         GoCardlessBanksResponse.Failed(
-          ProviderError(errorType = "Invalid Origin header", errorCode = "INTERNAL_ERROR")
-        )
+          ProviderError(errorType = "Invalid Origin header", errorCode = "INTERNAL_ERROR"),
+        ),
       )
   }
 
@@ -480,7 +482,7 @@ class BankSyncApiTest {
             "https://ob.gocardless.com/ob-psd2/start/3fa85f64-5717-4562-b3fc-2c963f66afa6/" +
               "SANDBOXFINANCE_SFIN0000",
           requisitionId = "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-        )
+        ),
       )
   }
 
@@ -539,8 +541,8 @@ class BankSyncApiTest {
               orgDomain = null,
               balance = null,
             ),
-          )
-        )
+          ),
+        ),
       )
   }
 

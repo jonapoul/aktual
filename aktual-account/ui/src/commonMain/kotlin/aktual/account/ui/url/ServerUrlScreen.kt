@@ -120,7 +120,7 @@ private fun ServerUrlScaffold(
           )
         },
       )
-    }
+    },
   ) { innerPadding ->
     Box {
       WavyBackground()
@@ -205,7 +205,8 @@ private fun ServerUrlContent(
 @Composable
 @PortraitPreview
 private fun PreviewServerUrlScaffold(
-  @PreviewParameter(ServerUrlScaffoldProvider::class) params: ColoredParams<ServerUrlScaffoldParams>
+  @PreviewParameter(ServerUrlScaffoldProvider::class)
+  params: ColoredParams<ServerUrlScaffoldParams>,
 ) =
   PreviewWithColoredParams(params) {
     ServerUrlScaffold(

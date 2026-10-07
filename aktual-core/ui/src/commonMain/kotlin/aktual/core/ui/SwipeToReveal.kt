@@ -75,7 +75,7 @@ fun SwipeToReveal(
           DraggableAnchors {
             SwipeState.Closed at 0f
             SwipeState.Open at -openOffsetPx
-          }
+          },
         )
       }
     }

@@ -270,7 +270,7 @@ class LinkBankAccountViewModel(
 
   // Which budget account each external one is already linked to, as the modal shows
   private suspend fun items(
-    accounts: List<ExternalBankAccount>
+    accounts: List<ExternalBankAccount>,
   ): ImmutableList<ExternalAccountItem> {
     val linked =
       accountDao

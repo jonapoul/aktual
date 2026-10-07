@@ -54,8 +54,8 @@ class BankSyncProvidersViewModelTest {
               BankSyncProviderItem(SimpleFin, NotConfigured),
               BankSyncProviderItem(PluggyAi, NotConfigured),
               BankSyncProviderItem(Akahu, NotConfigured),
-            )
-          )
+            ),
+          ),
         )
     }
   }
@@ -107,7 +107,7 @@ class BankSyncProvidersViewModelTest {
         BankSyncProviderItem(SimpleFin, otherStatus(goCardless)),
         BankSyncProviderItem(PluggyAi, otherStatus(goCardless)),
         BankSyncProviderItem(Akahu, otherStatus(goCardless)),
-      )
+      ),
     )
 
   // Only GoCardless is configured, so the rest stay unconfigured once checked

@@ -69,8 +69,8 @@ class GithubRepositoryTest {
             publishedAt = Instant.parse("2024-03-30T09:57:02Z"),
             htmlUrl = "https://github.com/jonapoul/aktual/releases/tag/2.3.4",
             tagName = "2.3.4",
-          )
-        )
+          ),
+        ),
       )
   }
 

@@ -34,7 +34,7 @@ tasks.check.configure { dependsOn(detektCheck) }
 dependencies {
   fun compileOnlyPlugin(plugin: Provider<PluginDependency>) =
     compileOnly(
-      plugin.map { "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version.requiredVersion}" }
+      plugin.map { "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version.requiredVersion}" },
     )
 
   compileOnly("aktual.compiler:compiler-plugin")

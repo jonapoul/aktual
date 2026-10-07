@@ -120,7 +120,7 @@ fun MonteCarloReportScreen(
             showDiscardDialog = false
             viewModel.reset()
             back()
-          }
+          },
         ) {
           Text(Strings.monteCarloDiscardConfirm, color = colors.errorText)
         }
@@ -153,7 +153,7 @@ internal fun MonteCarloScaffold(
           Text(
             text =
               (state as? MonteCarloState.Loaded)?.title?.takeIf { it.isNotEmpty() }
-                ?: Strings.reportsChooseTypeMonteCarlo
+                ?: Strings.reportsChooseTypeMonteCarlo,
           )
         },
         actions = {
@@ -261,7 +261,7 @@ private fun MonteCarloMenu(
 @PortraitPreview
 @Composable
 private fun PreviewMonteCarloScaffold(
-  @PreviewParameter(MonteCarloScaffoldProvider::class) params: ColoredParams<MonteCarloState>
+  @PreviewParameter(MonteCarloScaffoldProvider::class) params: ColoredParams<MonteCarloState>,
 ) = PreviewWithColoredParams(params) { MonteCarloScaffold(state = this, onAction = {}) }
 
 private class MonteCarloScaffoldProvider :
@@ -271,7 +271,7 @@ private class MonteCarloScaffoldProvider :
     previewMonteCarloState(resultsView = Runs),
     previewMonteCarloState(
       collapsedSections =
-        persistentSetOf<MonteCarloSection>(Configuration, Depletion, MonteCarloSection.HowItWorks)
+        persistentSetOf<MonteCarloSection>(Configuration, Depletion, MonteCarloSection.HowItWorks),
     ),
     Loading,
   )

@@ -112,7 +112,7 @@ class DatabaseImporterTest {
               userName = "",
               displayName = "",
               isOwner = true,
-            )
+            ),
           ),
       )
 

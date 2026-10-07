@@ -72,7 +72,7 @@ internal fun success(vararg transactions: JsonObject, balance: Long? = null) =
   BankSyncTransactionsResponse.Success(
     transactions =
       BankSyncTransactionsResponse.Success.Transactions(
-        all = transactions.map(::BankSyncTransaction)
+        all = transactions.map(::BankSyncTransaction),
       ),
     startingBalance = balance,
   )

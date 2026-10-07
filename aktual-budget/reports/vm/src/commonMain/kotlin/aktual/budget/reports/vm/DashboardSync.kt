@@ -74,7 +74,7 @@ internal class DashboardSync(
     val meta = dao.meta(id) ?: return
     val patched = JsonObject(meta + values)
     sync.syncChanges(
-      LocalChange(DASHBOARD, id.value, "meta", DbJson.encodeToString(patched).messageValue())
+      LocalChange(DASHBOARD, id.value, "meta", DbJson.encodeToString(patched).messageValue()),
     )
   }
 

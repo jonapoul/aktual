@@ -33,7 +33,7 @@ internal class MappableFieldsTest {
             ),
           MappedField.Notes to
             listOf(FieldExample("remittanceInformationUnstructuredArrayString", "Card payment")),
-        )
+        ),
       )
   }
 
@@ -54,7 +54,7 @@ internal class MappableFieldsTest {
           FieldExample("category", "12"),
           FieldExample("merchant.name", "Tesco Extra"),
           FieldExample("transaction_id", "a"),
-        )
+        ),
       )
   }
 

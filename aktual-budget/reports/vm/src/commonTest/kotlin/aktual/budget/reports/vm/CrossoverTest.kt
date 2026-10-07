@@ -54,7 +54,7 @@ class CrossoverTest {
           expenses = Amount(1000),
           nestEgg = Amount(300_000),
           adjustedExpenses = Amount(1000),
-        )
+        ),
       )
   }
 

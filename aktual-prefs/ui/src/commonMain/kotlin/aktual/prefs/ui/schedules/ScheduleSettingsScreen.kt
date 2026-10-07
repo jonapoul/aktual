@@ -76,7 +76,7 @@ private fun ScheduleSettingsScaffold(
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsSchedulesToolbar) },
       )
-    }
+    },
   ) { innerPadding ->
     Box {
       PageBackground()
@@ -119,7 +119,7 @@ private fun ScheduleSettingsContent(
 @PortraitPreview
 @Composable
 private fun PreviewScheduleSettingsScaffold(
-  @PreviewParameter(ScheduleSettingsProvider::class) params: ColoredParams<ScheduleSettingsState>
+  @PreviewParameter(ScheduleSettingsProvider::class) params: ColoredParams<ScheduleSettingsState>,
 ) = PreviewWithColoredParams(params) { ScheduleSettingsScaffold(state = this, onAction = {}) }
 
 private class ScheduleSettingsProvider :

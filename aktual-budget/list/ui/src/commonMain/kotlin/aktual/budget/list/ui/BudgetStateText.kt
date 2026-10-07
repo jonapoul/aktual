@@ -87,7 +87,7 @@ private fun BudgetState.color(colors: Colors): Color =
 @Preview
 @Composable
 private fun PreviewBudgetStateText(
-  @PreviewParameter(BudgetStateProvider::class) params: ColoredParams<BudgetState>
+  @PreviewParameter(BudgetStateProvider::class) params: ColoredParams<BudgetState>,
 ) = PreviewWithColoredParams(params) { BudgetStateText(this) }
 
 private class BudgetStateProvider : ColoredParameterProvider<BudgetState>(BudgetState.entries)

@@ -85,9 +85,9 @@ class LinkBankAccountViewModelTest {
                 persistentListOf(
                   ExternalAccountItem("ACT-1", "Checking", "My Bank", Amount(12.34)),
                   ExternalAccountItem("ACT-2", "Card", null, null, linkedTo = "Other"),
-                )
+                ),
               ),
-          )
+          ),
         )
     }
     assertThat(api.listed).containsExactly(PluggyAi)
@@ -141,8 +141,8 @@ class LinkBankAccountViewModelTest {
       assertThat(awaitChoosing().accounts)
         .isEqualTo(
           ExternalAccounts.Loaded(
-            persistentListOf(ExternalAccountItem("ACT-1", "Checking", "My Bank", Amount(12.34)))
-          )
+            persistentListOf(ExternalAccountItem("ACT-1", "Checking", "My Bank", Amount(12.34))),
+          ),
         )
     }
   }
@@ -161,8 +161,8 @@ class LinkBankAccountViewModelTest {
       assertThat(choosing.accounts)
         .isEqualTo(
           ExternalAccounts.Loaded(
-            persistentListOf(ExternalAccountItem("ACT-2", "Card", null, null))
-          )
+            persistentListOf(ExternalAccountItem("ACT-2", "Card", null, null)),
+          ),
         )
     }
     assertThat(api.listed).containsExactly(PluggyAi, Akahu)
@@ -230,7 +230,7 @@ class LinkBankAccountViewModelTest {
               countries = login.countries,
               country = "GB",
               banks = LoginBanks.Loaded(persistentListOf(LoginBankItem(MONZO.id, "Monzo"))),
-            )
+            ),
           )
 
         viewModel.selectCountry("IE")
@@ -260,8 +260,8 @@ class LinkBankAccountViewModelTest {
           assertThat(accounts)
             .isEqualTo(
               ExternalAccounts.Loaded(
-                persistentListOf(ExternalAccountItem("GC-1", "Current", "Monzo", null))
-              )
+                persistentListOf(ExternalAccountItem("GC-1", "Current", "Monzo", null)),
+              ),
             )
           viewModel.link("GC-1")
           assertThat(awaitItem()).isEqualTo(Linked)
@@ -332,10 +332,10 @@ class LinkBankAccountViewModelTest {
               country = "GB",
               banks =
                 LoginBanks.Loaded(
-                  persistentListOf(LoginBankItem("GB:Nordea", "Nordea", isBeta = true))
+                  persistentListOf(LoginBankItem("GB:Nordea", "Nordea", isBeta = true)),
                 ),
               accountType = Personal,
-            )
+            ),
           )
 
         viewModel.selectAccountType(Business)
@@ -350,8 +350,8 @@ class LinkBankAccountViewModelTest {
           assertThat(accounts)
             .isEqualTo(
               ExternalAccounts.Loaded(
-                persistentListOf(ExternalAccountItem("EB-1", "Current", "Nordea", Amount(1234L)))
-              )
+                persistentListOf(ExternalAccountItem("EB-1", "Current", "Nordea", Amount(1234L))),
+              ),
             )
           viewModel.link("EB-1")
           assertThat(awaitItem()).isEqualTo(Linked)
@@ -375,7 +375,7 @@ class LinkBankAccountViewModelTest {
       enableBankingApi.login = EnableBankingLoginResponse.Success(EB_LINK, EB_STATE)
       enableBankingApi.polls +=
         EnableBankingAccountsResponse.Failed(
-          ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT)
+          ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT),
         )
       val viewModel = createViewModel()
 

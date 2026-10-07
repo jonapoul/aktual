@@ -294,5 +294,5 @@ private class ListTagsStateProvider :
 @PortraitPreview
 @Composable
 private fun PreviewListTagsScaffold(
-  @PreviewParameter(ListTagsStateProvider::class) params: ColoredParams<ListTagsState>
+  @PreviewParameter(ListTagsStateProvider::class) params: ColoredParams<ListTagsState>,
 ) = PreviewWithColoredParams(params) { ListTagsScaffold(state = this, onAction = {}) }

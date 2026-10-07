@@ -68,7 +68,7 @@ internal constructor(
         }
         .sortedWith(
           compareBy<TagItem> { !it.tag.contains(trimmed, ignoreCase = true) }
-            .thenBy { it.tag.lowercase() }
+            .thenBy { it.tag.lowercase() },
         )
         .map { it.copy(description = snippet(it.description, trimmed, lead = DESCRIPTION_LEAD)) }
         .toList()

@@ -59,7 +59,7 @@ fun BooleanPreferenceItem(
 @Composable
 private fun PreviewBooleanPreferenceItem(
   @PreviewParameter(BooleanPreferenceItemProvider::class)
-  params: ColoredParams<BooleanPreferenceItemParams>
+  params: ColoredParams<BooleanPreferenceItemParams>,
 ) =
   PreviewWithColoredParams(params) {
     BooleanPreferenceItem(

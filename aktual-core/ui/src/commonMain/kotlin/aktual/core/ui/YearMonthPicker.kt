@@ -154,7 +154,7 @@ internal fun PickDateDialogContent(
 }
 
 private fun <T : Comparable<T>> YearMonthRange.rangeValues(
-  picker: (YearMonth) -> T
+  picker: (YearMonth) -> T,
 ): ImmutableList<T> = asSequence().map(picker).distinct().sorted().toImmutableList()
 
 @Preview
@@ -192,7 +192,7 @@ private fun PreviewDialogContent(@PreviewParameter(ColoredParameters::class) col
 @Preview
 @Composable
 private fun PreviewDialogContentOutOfRange(
-  @PreviewParameter(ColoredParameters::class) colors: Colors
+  @PreviewParameter(ColoredParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     PickDateDialogContent(

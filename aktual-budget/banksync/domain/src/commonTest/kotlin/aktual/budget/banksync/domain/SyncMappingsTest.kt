@@ -26,7 +26,7 @@ internal class SyncMappingsTest {
           payment =
             FieldMapping(date = "bookingDate", payee = "creditorName", notes = "remittance"),
           deposit = FieldMapping(date = "valueDate", payee = "debtorName", notes = null),
-        )
+        ),
       )
   }
 
@@ -57,7 +57,7 @@ internal class SyncMappingsTest {
         "deposit":{"date":"date","payee":"payeeName","notes":"category"}}
         """
           .trimIndent()
-          .replace("\n", "")
+          .replace("\n", ""),
       )
     assertThat(parse(mappings.encode())).isEqualTo(mappings)
   }

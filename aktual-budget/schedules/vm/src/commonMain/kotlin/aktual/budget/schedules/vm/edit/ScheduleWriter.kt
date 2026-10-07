@@ -77,7 +77,7 @@ internal class ScheduleWriter(
       add(LocalChange(SCHEDULES, schedule, "rule", rule.messageValue()))
       add(LocalChange(SCHEDULES, schedule, "name", name.messageValue()))
       add(
-        LocalChange(SCHEDULES, schedule, "posts_transaction", form.postsTransaction.messageValue())
+        LocalChange(SCHEDULES, schedule, "posts_transaction", form.postsTransaction.messageValue()),
       )
       add(LocalChange(SCHEDULES, schedule, "completed", false.messageValue()))
       add(LocalChange(SCHEDULES, schedule, TOMBSTONE, false.messageValue()))
@@ -119,7 +119,7 @@ internal class ScheduleWriter(
 
       add(LocalChange(SCHEDULES, schedule, "name", name.messageValue()))
       add(
-        LocalChange(SCHEDULES, schedule, "posts_transaction", form.postsTransaction.messageValue())
+        LocalChange(SCHEDULES, schedule, "posts_transaction", form.postsTransaction.messageValue()),
       )
     }
 

@@ -81,7 +81,7 @@ private fun hslToArgb(h: Float, s: Float, l: Float): Long {
 @Preview
 @Composable
 private fun PreviewDistinctColors(
-  @PreviewParameter(CountParameters::class) params: ColoredParams<Int>
+  @PreviewParameter(CountParameters::class) params: ColoredParams<Int>,
 ) =
   PreviewWithColoredParams(params) {
     val colors = rememberDistinctColors(count = this, colors = params.colors)

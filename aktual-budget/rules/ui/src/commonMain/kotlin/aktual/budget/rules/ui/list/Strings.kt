@@ -74,7 +74,7 @@ internal fun headerText(onAction: ListRulesActionHandler): AnnotatedString {
           tag = LEARN_MORE_URL,
           styles = TextLinkStyles(linkStyle.toSpanStyle()),
           linkInteractionListener = { onAction(OpenUrl(LEARN_MORE_URL)) },
-        )
+        ),
       ) {
         append(learnMoreText)
       }
@@ -141,7 +141,7 @@ internal fun rememberConditionText(
                     currencyConfig = currency,
                     includeSign = true,
                     isPrivacyEnabled = privacy,
-                  )
+                  ),
               )
             } else {
               append(value.content)

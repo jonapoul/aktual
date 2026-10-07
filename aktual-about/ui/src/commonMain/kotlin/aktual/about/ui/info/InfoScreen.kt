@@ -206,7 +206,7 @@ private fun InfoBuildState(buildState: BuildState, modifier: Modifier = Modifier
     modifier =
       modifier
         .background(colors.tableBackground, CardShape)
-        .border(Hairline, colors.tableBorder, CardShape)
+        .border(Hairline, colors.tableBorder, CardShape),
   ) {
     BuildStateItem(
       modifier = Modifier.padding(ItemMargin).clip(CardShape),

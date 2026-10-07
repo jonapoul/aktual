@@ -206,7 +206,7 @@ private val TextSize = 12.sp
 @Preview
 @Composable
 private fun PreviewArtifactItem(
-  @PreviewParameter(ArtifactItemProvider::class) params: ColoredParams<ArtifactDetail>
+  @PreviewParameter(ArtifactItemProvider::class) params: ColoredParams<ArtifactDetail>,
 ) = PreviewWithColoredParams(params) { ArtifactItem(artifact = this, onLaunchUrl = {}) }
 
 private class ArtifactItemProvider :

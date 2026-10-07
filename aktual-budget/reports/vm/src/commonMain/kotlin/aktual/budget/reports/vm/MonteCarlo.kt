@@ -1004,7 +1004,7 @@ internal fun runMonteCarlo(
                 growth =
                   roundJs(
                       (total + feesThisYear) * endDeflator -
-                        (yearStartTotal - withdrawalTaken + surplusSavedThisYear) * startDeflator
+                        (yearStartTotal - withdrawalTaken + surplusSavedThisYear) * startDeflator,
                     )
                     .coerceIn(-MAX_EMITTED_LONG, MAX_EMITTED_LONG),
                 feesPaid = feesPaid,

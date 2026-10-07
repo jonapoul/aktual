@@ -179,7 +179,7 @@ internal fun TransactionsScaffold(
 @TabletPreview
 @DesktopPreview
 private fun PreviewTransactionsScaffold(
-  @PreviewParameter(DensityProvider::class) params: ColoredParams<TransactionsDensity>
+  @PreviewParameter(DensityProvider::class) params: ColoredParams<TransactionsDensity>,
 ) =
   PreviewWithColoredParams(params) {
     TransactionsScaffold(
