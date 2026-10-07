@@ -30,6 +30,7 @@
     <item quantity="one">%1$d of %2$d part</item>
     <item quantity="other">%1$d of %2$d parts</item>
   </plurals>
+  <string name="transactions_split_remaining">%1$s left</string>
   <string name="transactions_split_expanded">Parts shown</string>
   <string name="transactions_split_collapsed">Parts hidden</string>
 </resources>

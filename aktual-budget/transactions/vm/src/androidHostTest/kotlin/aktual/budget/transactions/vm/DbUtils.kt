@@ -16,6 +16,7 @@ import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
+import kotlinx.serialization.json.JsonObject
 
 internal val DATE_1 = LocalDate(2025, Month.JUNE, 1)
 internal val DATE_2 = LocalDate(2025, Month.JUNE, 2)
@@ -43,6 +44,7 @@ internal suspend fun TransactionDao.insertTransaction(
   amount: Double = 123.45,
   isParent: Boolean = false,
   parent: String? = null,
+  error: JsonObject? = null,
 ) =
   insert(
     id = id,
@@ -54,6 +56,7 @@ internal suspend fun TransactionDao.insertTransaction(
     amount = amount,
     isParent = isParent,
     parent = parent,
+    error = error,
   )
 
 private val ACCOUNTS = mapOf("a" to "Amex", "b" to "Barclays", "c" to "Chase")

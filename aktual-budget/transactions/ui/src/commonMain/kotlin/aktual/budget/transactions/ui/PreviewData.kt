@@ -171,6 +171,13 @@ internal val TRANSACTION_SPLIT =
     totalChildren = 3,
   )
 
+internal val TRANSACTION_SPLIT_UNBALANCED =
+  TRANSACTION_SPLIT.copy(
+    id = TransactionId("efg"),
+    amount = Amount(-70.00),
+    splitRemaining = Amount(-5.83),
+  )
+
 internal val PREVIEW_TRANSACTIONS =
   persistentListOf(
     TRANSACTION_1,

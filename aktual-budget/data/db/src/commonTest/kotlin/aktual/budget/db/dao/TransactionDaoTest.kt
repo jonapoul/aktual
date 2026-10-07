@@ -18,6 +18,8 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 internal class TransactionDaoTest {
   @Test
@@ -243,6 +245,49 @@ internal class TransactionDaoTest {
       .isEqualTo(mapOf(TransactionId("p") to listOf("c0", "c1", "c2", "c3")))
     assertThat(children.getValue(TransactionId("p")).map { it.needsCategory })
       .containsExactly(false, false, false, true)
+  }
+
+  @Test
+  fun `Only an unbalanced split parent has a split difference`() = runDaoTest { transactions ->
+    // given
+    val unbalanced = splitError(difference = 500)
+    val unknown = buildJsonObject { put("type", "SomethingElse") }
+    transactions.insert(
+      "p",
+      ON_1,
+      category = null,
+      PAYEE,
+      DATE,
+      isParent = true,
+      error = unbalanced,
+    )
+    transactions.insert("c", ON_1, CATEGORY, PAYEE, DATE, parent = "p", error = unbalanced)
+    transactions.insert("q", ON_1, category = null, PAYEE, DATE, isParent = true)
+    transactions.insert("r", ON_1, category = null, PAYEE, DATE, isParent = true, error = unknown)
+    transactions.insert(
+      id = "s",
+      account = ON_1,
+      category = null,
+      payee = PAYEE,
+      date = DATE,
+      isParent = true,
+      error = splitError(difference = 0),
+    )
+
+    // when
+    val rows = transactions.getPaged(limit = 10, offset = 0).rows
+    val children = transactions.childrenOf(listOf(TransactionId("p"))).getValue(TransactionId("p"))
+
+    // then
+    assertThat(rows.associate { it.id.toString() to it.splitDifference })
+      .isEqualTo(mapOf("p" to 500L, "q" to null, "r" to null, "s" to null))
+    assertThat(children.map { it.splitDifference }).containsExactly(null)
+  }
+
+  private fun splitError(difference: Long) = buildJsonObject {
+    put("type", "SplitTransactionError")
+    put("version", 1)
+    put("difference", difference)
   }
 
   private suspend fun TransactionDao.uncategorisedIds(): List<String> =

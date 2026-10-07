@@ -154,7 +154,7 @@ private fun CategoryLine(
         modifier = Modifier.size(SplitIconSize),
         imageVector = AktualIcons.Split,
         contentDescription = null,
-        tint = colors.pageTextLight,
+        tint = if (transaction.splitRemaining == null) colors.pageTextLight else colors.warningText,
       )
     }
 
@@ -190,6 +190,8 @@ private fun categoryText(
   val shownParts =
     if (parts == Pinned && shown > 0) Plurals.transactionsSplitParts(total, shown, total) else null
   val warning = SpanStyle(color = colors.warningText, fontWeight = SemiBold)
+  val remaining =
+    transaction.splitRemaining?.let { Strings.transactionsSplitRemaining(it.formattedString()) }
   val special =
     when (transaction.specialCategory) {
       OffBudget -> Strings.transactionsOffBudget
@@ -203,6 +205,10 @@ private fun categoryText(
       transaction.split == Parent -> {
         withStyle(SpanStyle(fontStyle = Italic)) { append(split) }
         if (shownParts != null) append(" · $shownParts")
+        if (remaining != null) {
+          append(" · ")
+          withStyle(warning) { append(remaining) }
+        }
       }
 
       // Wins over a real category, as upstream's prettyCategory does
@@ -571,6 +577,7 @@ private class LedgerRowProvider :
     LedgerRowParams(Comfortable, TRANSACTION_SPLIT),
     LedgerRowParams(Comfortable, TRANSACTION_SPLIT, parts = Expanded),
     LedgerRowParams(Comfortable, TRANSACTION_SPLIT, parts = Pinned),
+    LedgerRowParams(Comfortable, TRANSACTION_SPLIT_UNBALANCED),
     LedgerRowParams(Comfortable, TRANSACTION_SPLIT_CHILD),
     LedgerRowParams(Compact, TRANSACTION_1),
     LedgerRowParams(Compact, TRANSACTION_2, showDate = false),
@@ -582,6 +589,7 @@ private class LedgerRowProvider :
     LedgerRowParams(Compact, TRANSACTION_SPLIT),
     LedgerRowParams(Compact, TRANSACTION_SPLIT, parts = Expanded),
     LedgerRowParams(Compact, TRANSACTION_SPLIT, parts = Pinned),
+    LedgerRowParams(Compact, TRANSACTION_SPLIT_UNBALANCED),
     LedgerRowParams(Compact, TRANSACTION_SPLIT_CHILD),
     LedgerRowParams(Dense, TRANSACTION_1),
     LedgerRowParams(Dense, TRANSACTION_3),
@@ -592,5 +600,6 @@ private class LedgerRowProvider :
     LedgerRowParams(Dense, TRANSACTION_SPLIT),
     LedgerRowParams(Dense, TRANSACTION_SPLIT, parts = Expanded),
     LedgerRowParams(Dense, TRANSACTION_SPLIT, parts = Pinned),
+    LedgerRowParams(Dense, TRANSACTION_SPLIT_UNBALANCED),
     LedgerRowParams(Dense, TRANSACTION_SPLIT_CHILD),
   )

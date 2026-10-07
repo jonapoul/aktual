@@ -46,6 +46,8 @@ data class Transaction(
   // The parts to show under a parent, which in a tag list can be fewer than totalChildren
   val children: ImmutableList<Transaction> = persistentListOf(),
   val totalChildren: Int = 0,
+  // What's left to assign on a split whose parts don't add up to its amount
+  val splitRemaining: Amount? = null,
 ) : Comparable<Transaction> {
   override fun compareTo(other: Transaction) = date.compareTo(other.date)
 }
@@ -97,6 +99,7 @@ internal fun TransactionRow.toTransaction(
         .map { it.toTransaction(balance = null) }
         .toImmutableList(),
     totalChildren = children.size,
+    splitRemaining = splitDifference?.let(::Amount),
   )
 }
 
