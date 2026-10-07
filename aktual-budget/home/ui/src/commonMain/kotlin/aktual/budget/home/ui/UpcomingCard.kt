@@ -24,7 +24,6 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -138,7 +137,7 @@ private fun UpcomingRow(
       modifier
         .fillMaxWidth()
         .heightIn(min = RowMinHeight)
-        .clickable(onClick = onClick)
+        .hoverClickable(onClick = onClick)
         .padding(horizontal = CardPadding, vertical = 6.dp),
     horizontalArrangement = Arrangement.spacedBy(12.dp),
     verticalAlignment = CenterVertically,
@@ -219,7 +218,7 @@ private fun MoreRow(count: Int, onClick: () -> Unit, modifier: Modifier = Modifi
       modifier
         .fillMaxWidth()
         .heightIn(min = 48.dp)
-        .clickable(onClick = onClick)
+        .hoverClickable(onClick = onClick)
         .padding(horizontal = CardPadding),
     verticalAlignment = CenterVertically,
   ) {

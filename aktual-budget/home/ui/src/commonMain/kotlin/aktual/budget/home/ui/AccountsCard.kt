@@ -21,7 +21,6 @@ import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryTextButton
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,8 +65,10 @@ internal fun AccountsCard(
   state: AccountsCardState,
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
+  isBoxed: Boolean = true,
+  showAll: Boolean = false,
 ) {
-  HomeCard(modifier = modifier.animateContentSize()) {
+  HomeCard(modifier = modifier.animateContentSize(), isBoxed = isBoxed) {
     HeaderRow(
       title = Strings.homeAccountsTitle,
       amount = (state as? Loaded)?.summary?.netWorth,
@@ -83,7 +84,7 @@ internal fun AccountsCard(
           message = Strings.homeAccountsFailed,
           onAction = onAction,
         )
-      is Loaded -> AccountsContent(state, onAction)
+      is Loaded -> AccountsContent(state, showAll, onAction)
     }
   }
 }
@@ -92,10 +93,11 @@ internal fun AccountsCard(
 @Suppress("UnusedReceiverParameter")
 private fun ColumnScope.AccountsContent(
   state: Loaded,
+  showAll: Boolean,
   onAction: HomeActionHandler,
 ) {
   var isExpanded by rememberSaveable { mutableStateOf(false) }
-  val recent = state.recent
+  val recent = if (showAll) null else state.recent
   val summary = if (isExpanded || recent == null) state.summary else recent
 
   AccountsSection(Strings.homeAccountsOnBudget, summary.onBudget, onAction)
@@ -118,7 +120,7 @@ private fun ExpandRow(text: String, onClick: () -> Unit, modifier: Modifier = Mo
       modifier
         .fillMaxWidth()
         .heightIn(min = RowMinHeight)
-        .clickable(role = Role.Button, onClick = onClick)
+        .hoverClickable(role = Role.Button, onClick = onClick)
         .padding(horizontal = CardPadding),
     verticalAlignment = CenterVertically,
   ) {
@@ -185,7 +187,7 @@ private fun AccountRow(
       modifier
         .fillMaxWidth()
         .heightIn(min = RowMinHeight)
-        .clickable(onClick = onClick)
+        .hoverClickable(onClick = onClick)
         .padding(horizontal = CardPadding),
     horizontalArrangement = Arrangement.spacedBy(12.dp),
     verticalAlignment = CenterVertically,

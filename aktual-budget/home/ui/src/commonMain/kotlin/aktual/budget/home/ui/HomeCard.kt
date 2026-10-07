@@ -12,6 +12,9 @@ import aktual.core.ui.RounderCardShape
 import aktual.core.ui.formattedString
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -21,11 +24,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -34,18 +41,40 @@ import androidx.compose.ui.unit.dp
 
 internal val CardPadding = 16.dp
 
+// Unboxed cards draw no frame of their own, for when their container already provides one
 @Composable
-internal fun HomeCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
-  Column(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .clip(RounderCardShape)
+internal fun HomeCard(
+  modifier: Modifier = Modifier,
+  isBoxed: Boolean = true,
+  content: @Composable ColumnScope.() -> Unit,
+) {
+  val frame =
+    if (isBoxed) {
+      Modifier.clip(RounderCardShape)
         .background(colors.tableBackground, RounderCardShape)
         .border(Hairline, colors.tableBorder, RounderCardShape)
-        .padding(vertical = CardPadding),
+    } else {
+      Modifier
+    }
+
+  Column(
+    modifier = modifier.fillMaxWidth().then(frame).padding(vertical = CardPadding),
     content = content,
   )
+}
+
+// Adds a hover highlight on top of the usual ripple, for desktop and other pointer devices
+@Composable
+internal fun Modifier.hoverClickable(role: Role? = null, onClick: () -> Unit): Modifier {
+  val interactionSource = remember { MutableInteractionSource() }
+  val isHovered by interactionSource.collectIsHoveredAsState()
+  return background(if (isHovered) colors.tableRowBackgroundHover else Transparent)
+    .clickable(
+      interactionSource = interactionSource,
+      indication = ripple(),
+      role = role,
+      onClick = onClick,
+    )
 }
 
 internal fun TextStyle.tabularFigures() = copy(fontFeatureSettings = "tnum")
