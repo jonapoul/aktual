@@ -43,6 +43,8 @@ internal data class LedgerDimens(
   val secondLineSize: TextUnit,
   val amountSize: TextUnit,
   val amountWeight: FontWeight,
+  val childRowHeight: Dp,
+  val childAmountSize: TextUnit,
   val balanceSize: TextUnit = 12.sp,
   val showAccount: Boolean = false,
   val showBalance: Boolean = true,
@@ -65,6 +67,8 @@ internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
         secondLineSize = 13.sp,
         amountSize = 15.sp,
         amountWeight = SemiBold,
+        childRowHeight = 36.dp,
+        childAmountSize = 14.sp,
         showAccount = true,
       )
 
@@ -83,6 +87,8 @@ internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
         secondLineSize = 12.sp,
         amountSize = 14.sp,
         amountWeight = SemiBold,
+        childRowHeight = 32.dp,
+        childAmountSize = 13.sp,
       )
 
     Dense ->
@@ -100,8 +106,17 @@ internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
         secondLineSize = 12.sp,
         amountSize = 13.sp,
         amountWeight = Medium,
+        childRowHeight = 28.dp,
+        childAmountSize = 12.sp,
       )
   }
+
+// How a split parent's row stands with its parts: closed, open, or always open with no toggle
+internal enum class SplitParts {
+  Collapsed,
+  Expanded,
+  Pinned,
+}
 
 // Column layout shared by the Dense header and rows
 internal object DenseColumns {

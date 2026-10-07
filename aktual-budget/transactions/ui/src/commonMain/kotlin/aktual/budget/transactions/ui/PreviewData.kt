@@ -47,6 +47,7 @@ internal val PREVIEW_DATE = LocalDate(2025, JUNE, 9)
 internal val PREVIEW_BALANCE = Amount(3412.60)
 
 private const val NATWEST = "NatWest"
+private const val AMAZON = "Amazon"
 
 internal val TRANSACTION_1 =
   Transaction(
@@ -97,6 +98,44 @@ internal val TRANSACTION_UNCATEGORISED =
     needsCategory = true,
   )
 
+private val SPLIT_DATE = PREVIEW_DATE.minus(2, DAY)
+
+private fun splitChild(id: String, payee: String, category: String?, amount: Double) =
+  Transaction(
+    id = TransactionId(id),
+    date = SPLIT_DATE,
+    account = "Amex",
+    payee = payee,
+    notes = null,
+    category = category,
+    amount = Amount(amount),
+    balance = null,
+    needsCategory = category == null,
+    split = Child,
+  )
+
+internal val TRANSACTION_SPLIT_CHILD = splitChild("vwx2", AMAZON, category = null, amount = -15.00)
+
+internal val TRANSACTION_SPLIT =
+  Transaction(
+    id = TransactionId("vwx"),
+    date = SPLIT_DATE,
+    account = "Amex",
+    payee = AMAZON,
+    notes = null,
+    category = null,
+    amount = Amount(-64.17),
+    balance = Amount(2262.08),
+    split = Parent,
+    children =
+      persistentListOf(
+        splitChild("vwx1", AMAZON, "Household", amount = -42.18),
+        TRANSACTION_SPLIT_CHILD,
+        splitChild("vwx3", "Audible", "Subscriptions", amount = -6.99),
+      ),
+    totalChildren = 3,
+  )
+
 internal val PREVIEW_TRANSACTIONS =
   persistentListOf(
     TRANSACTION_1,
@@ -113,16 +152,7 @@ internal val PREVIEW_TRANSACTIONS =
       amount = Amount(-1200.00),
       balance = Amount(1062.08),
     ),
-    Transaction(
-      id = TransactionId("pqr"),
-      date = PREVIEW_DATE.minus(2, DAY),
-      account = "Amex",
-      payee = "Amazon",
-      notes = "Bin bags, batteries",
-      category = "Household",
-      amount = Amount(-42.18),
-      balance = Amount(2262.08),
-    ),
+    TRANSACTION_SPLIT,
     Transaction(
       id = TransactionId("stu"),
       date = PREVIEW_DATE.minus(2, DAY),

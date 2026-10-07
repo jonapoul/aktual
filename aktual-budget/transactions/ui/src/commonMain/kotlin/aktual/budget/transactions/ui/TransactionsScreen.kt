@@ -2,6 +2,7 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.banksync.ui.showBankSyncSummary
 import aktual.budget.model.Amount
+import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.vm.LoadedAccount
@@ -39,6 +40,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -53,6 +56,7 @@ fun TransactionsScreen(
   val balance by viewModel.balance.collectAsStateWithLifecycle()
   val canBankSync by viewModel.canBankSync.collectAsStateWithLifecycle()
   val isBankSyncing by viewModel.isBankSyncing.collectAsStateWithLifecycle()
+  val expanded by viewModel.expanded.collectAsStateWithLifecycle()
   val snackbar = remember { SnackbarHostState() }
 
   LaunchedEffect(viewModel) {
@@ -68,6 +72,8 @@ fun TransactionsScreen(
     isRoot = isRoot,
     canBankSync = canBankSync,
     isBankSyncing = isBankSyncing,
+    expanded = expanded,
+    splitsPinnedOpen = viewModel.splitsPinnedOpen,
     snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
@@ -75,6 +81,7 @@ fun TransactionsScreen(
         BankSync -> viewModel.bankSync()
         is SetPrivacyMode -> viewModel.setPrivacyMode(action.isPrivacyEnabled)
         is SetDensity -> viewModel.setDensity(action.density)
+        is ToggleSplit -> viewModel.toggleExpanded(action.id)
       }
     },
   )
@@ -98,6 +105,8 @@ internal fun TransactionsScaffold(
   showBalance: Boolean = true,
   canBankSync: Boolean = false,
   isBankSyncing: Boolean = false,
+  expanded: ImmutableSet<TransactionId> = persistentSetOf(),
+  splitsPinnedOpen: Boolean = false,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -146,6 +155,9 @@ internal fun TransactionsScaffold(
             pagingItems = pagingItems,
             density = density,
             innerPadding = innerPadding,
+            expanded = expanded,
+            splitsPinnedOpen = splitsPinnedOpen,
+            onAction = onAction,
           )
         }
       }
@@ -176,6 +188,7 @@ private fun PreviewTransactionsScaffold(
       density = this,
       balance = PREVIEW_BALANCE,
       isRoot = true,
+      expanded = persistentSetOf(TRANSACTION_SPLIT.id),
       onAction = {},
     )
   }
