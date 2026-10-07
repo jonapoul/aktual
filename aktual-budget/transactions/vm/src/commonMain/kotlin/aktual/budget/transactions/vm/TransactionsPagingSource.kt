@@ -132,7 +132,7 @@ internal class TransactionsPagingSource(
   }
 
   // The ids to page over, in list order, with the split children to show under them
-  private class FilteredIds(
+  private data class FilteredIds(
     val ids: List<TransactionId> = emptyList(),
     val children: Set<TransactionId> = emptySet(),
   )

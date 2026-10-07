@@ -229,7 +229,7 @@ private fun childRow(
       isChild,
       needsCategory,
     )
-  return requireNotNull(parentId) to row
+  return (parentId ?: error("Child $id has no parent")) to row
 }
 
 private fun transactionNotes(

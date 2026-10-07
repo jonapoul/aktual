@@ -47,6 +47,7 @@ internal val PREVIEW_DATE = LocalDate(2025, JUNE, 9)
 internal val PREVIEW_BALANCE = Amount(3412.60)
 
 private const val NATWEST = "NatWest"
+private const val AMAZON = "Amazon"
 
 internal val TRANSACTION_1 =
   Transaction(
@@ -113,15 +114,14 @@ private fun splitChild(id: String, payee: String, category: String?, amount: Dou
     split = Child,
   )
 
-internal val TRANSACTION_SPLIT_CHILD =
-  splitChild("vwx2", "Amazon", category = null, amount = -15.00)
+internal val TRANSACTION_SPLIT_CHILD = splitChild("vwx2", AMAZON, category = null, amount = -15.00)
 
 internal val TRANSACTION_SPLIT =
   Transaction(
     id = TransactionId("vwx"),
     date = SPLIT_DATE,
     account = "Amex",
-    payee = "Amazon",
+    payee = AMAZON,
     notes = null,
     category = null,
     amount = Amount(-64.17),
@@ -129,7 +129,7 @@ internal val TRANSACTION_SPLIT =
     split = Parent,
     children =
       persistentListOf(
-        splitChild("vwx1", "Amazon", "Household", amount = -42.18),
+        splitChild("vwx1", AMAZON, "Household", amount = -42.18),
         TRANSACTION_SPLIT_CHILD,
         splitChild("vwx3", "Audible", "Subscriptions", amount = -6.99),
       ),

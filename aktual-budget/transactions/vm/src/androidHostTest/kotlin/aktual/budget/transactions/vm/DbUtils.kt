@@ -85,7 +85,7 @@ internal fun transaction(
 
 internal fun Transaction.withBalance(balance: Double) = copy(balance = Amount(balance))
 
-internal fun Transaction.asChild() = copy(split = SplitRole.Child)
+internal fun Transaction.asChild() = copy(split = Child)
 
 // What the paging source should emit for a split parent showing these children
 internal fun Transaction.asParent(
@@ -97,7 +97,7 @@ internal fun Transaction.asParent(
     payee = payee,
     category = null,
     needsCategory = false,
-    split = SplitRole.Parent,
+    split = Parent,
     children = children.map { it.asChild() }.toImmutableList(),
     totalChildren = totalChildren,
   )

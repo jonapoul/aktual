@@ -2,7 +2,6 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.model.Amount
 import aktual.budget.model.TransactionsDensity
-import aktual.budget.transactions.vm.SplitRole
 import aktual.budget.transactions.vm.Transaction
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Split
@@ -148,7 +147,7 @@ private fun CategoryLine(
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(SplitIconGap),
   ) {
-    if (transaction.split != SplitRole.None) {
+    if (transaction.split != None) {
       Icon(
         modifier = Modifier.size(SplitIconSize),
         imageVector = AktualIcons.Split,
@@ -193,14 +192,18 @@ private fun categoryText(
   return buildAnnotatedString {
     val category = transaction.category
     when {
-      transaction.split == SplitRole.Parent -> {
+      transaction.split == Parent -> {
         withStyle(SpanStyle(fontStyle = Italic)) { append(split) }
         if (shownParts != null) append(" · $shownParts")
       }
 
-      transaction.needsCategory -> withStyle(warning) { append(needsCategory) }
+      transaction.needsCategory -> {
+        withStyle(warning) { append(needsCategory) }
+      }
 
-      category != null -> append(category)
+      category != null -> {
+        append(category)
+      }
     }
 
     if (account != null) {
@@ -216,7 +219,7 @@ private fun PayeeText(
   dimens: LedgerDimens,
   modifier: Modifier = Modifier,
 ) {
-  val noPayee = transaction.split == SplitRole.Parent && transaction.payee == null
+  val noPayee = transaction.split == Parent && transaction.payee == null
   Text(
     modifier = modifier,
     text = if (noPayee) Strings.transactionsSplitNoPayee else transaction.payee.orEmpty(),
@@ -230,7 +233,7 @@ private fun PayeeText(
 }
 
 private fun Transaction.isExpandable(parts: SplitParts) =
-  split == SplitRole.Parent && parts != Pinned && children.isNotEmpty()
+  split == Parent && parts != Pinned && children.isNotEmpty()
 
 // Tapping a split opens and closes its parts. Other rows stay inert
 @Composable

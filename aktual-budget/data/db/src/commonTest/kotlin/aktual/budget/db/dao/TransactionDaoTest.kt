@@ -194,7 +194,7 @@ internal class TransactionDaoTest {
     transactions.insert("c2", ON_1, CATEGORY, PAYEE, DATE, parent = "p")
     transactions.insert("c3", ON_1, category = null, PAYEE, DATE, parent = "p")
     insertCopy(transactions, id = "c4", copyOf = "c1") { it.copy(tombstone = true) }
-    insertCopy(transactions, id = "c0", copyOf = "c1") { it.copy(sort_order = Double.MAX_VALUE) }
+    insertCopy(transactions, id = "c0", copyOf = "c1") { it.copy(sort_order = MAX_VALUE) }
     insertCopy(transactions, id = "dead", copyOf = "p") { it.copy(tombstone = true) }
     transactions.insert("d1", ON_1, CATEGORY, PAYEE, DATE, parent = "dead")
     transactions.insert("other", ON_1, category = null, PAYEE, DATE, isParent = true)
