@@ -1,4 +1,3 @@
-/** WARNING: SLOPIFIED CODE AHEAD */
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
@@ -109,6 +108,8 @@ class SyncDao(
         merkle = MerkleOperations.insert(merkle, envelope.timestamp)
       }
 
+      if (DatabaseTables.RULES in affectedTables) rebuildScheduleJsonPaths()
+
       merkle = MerkleOperations.prune(merkle)
       saveClock(merkle, updatedClockTimestamp)
     }
@@ -117,6 +118,13 @@ class SyncDao(
     affectedTables.forEach(driver::notifyListeners)
 
     return ApplyResult(merkle = merkle, affectedTables = affectedTables)
+  }
+
+  // schedules_json_paths isn't synced, so it's derived from the rules whenever they change. Mirrors
+  // trackJSONPaths() and onRuleUpdate() in packages/loot-core/src/server/schedules/app.ts
+  suspend fun rebuildScheduleJsonPaths() {
+    driver.await(identifier = null, sql = REBUILD_SCHEDULE_JSON_PATHS, parameters = 0)
+    driver.notifyListeners(SCHEDULES_JSON_PATHS)
   }
 
   /** Read the current merkle trie from the messages_clock table. */
@@ -210,6 +218,51 @@ class SyncDao(
 
   private companion object {
     const val PREFS_DATASET = "prefs"
+    const val SCHEDULES_JSON_PATHS = "schedules_json_paths"
+
+    // The path of each schedule condition, picked like extractScheduleConds() in
+    // packages/loot-core/src/shared/schedules.ts
+    const val REBUILD_SCHEDULE_JSON_PATHS =
+      """
+      INSERT OR REPLACE INTO schedules_json_paths (schedule_id, payee, account, amount, date)
+      SELECT
+        json_extract(a.value, '$.value'),
+        (
+          SELECT '$[' || c.key || ']' FROM json_each(r.conditions) c
+          WHERE json_extract(c.value, '$.op') = 'is'
+            AND json_extract(c.value, '$.field') IN ('payee', 'description')
+          ORDER BY json_extract(c.value, '$.field') = 'payee' DESC, c.key
+          LIMIT 1
+        ),
+        (
+          SELECT '$[' || c.key || ']' FROM json_each(r.conditions) c
+          WHERE json_extract(c.value, '$.op') = 'is'
+            AND json_extract(c.value, '$.field') IN ('account', 'acct')
+          ORDER BY json_extract(c.value, '$.field') = 'account' DESC, c.key
+          LIMIT 1
+        ),
+        (
+          SELECT '$[' || c.key || ']' FROM json_each(r.conditions) c
+          WHERE json_extract(c.value, '$.op') IN ('is', 'isapprox', 'isbetween')
+            AND json_extract(c.value, '$.field') = 'amount'
+          ORDER BY c.key
+          LIMIT 1
+        ),
+        (
+          SELECT '$[' || c.key || ']' FROM json_each(r.conditions) c
+          WHERE json_extract(c.value, '$.op') IN ('is', 'isapprox')
+            AND json_extract(c.value, '$.field') = 'date'
+          ORDER BY c.key
+          LIMIT 1
+        )
+      FROM rules r, json_each(r.actions) a
+      WHERE r.tombstone = 0
+        AND json_valid(r.conditions)
+        AND json_valid(r.actions)
+        AND json_extract(a.value, '$.op') = 'link-schedule'
+        AND json_extract(a.value, '$.value') IS NOT NULL
+      """
+        .trimIndent()
     const val MERKLE_KEY = "merkle"
     const val TIMESTAMP_KEY = "timestamp"
     val EPOCH_TIMESTAMP = Timestamp.fromMilliseconds(millis = 0)

@@ -13,3 +13,5 @@ insert:
   INSERT OR REPLACE
     INTO schedules_json_paths (schedule_id, payee, account, amount, date)
     VALUES (?, ?, ?, ?, ?);
+
+deleteAll: DELETE FROM schedules_json_paths;
