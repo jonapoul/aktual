@@ -99,6 +99,8 @@ class BankSyncApiTest {
 
     assertThat(mockEngine.latestRequestUrl())
       .isEqualTo("https://test.server.com/gocardless/transactions")
+
+    @Suppress("MaxLineLength")
     assertThat(mockEngine.latestRequest().body).isInstanceOf<TextContent>().all {
       prop(TextContent::text)
         .isEqualTo(
