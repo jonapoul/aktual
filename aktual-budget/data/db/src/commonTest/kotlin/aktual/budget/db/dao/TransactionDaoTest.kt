@@ -146,6 +146,70 @@ internal class TransactionDaoTest {
     }
   }
 
+  @Test
+  fun `Paged lists skip split children and keep their parents`() = runDaoTest { transactions ->
+    // given
+    transactions.insert("t1", ON_1, CATEGORY, PAYEE, DATE)
+    transactions.insert("p", ON_1, category = null, PAYEE, DATE, isParent = true)
+    transactions.insert("c1", ON_1, CATEGORY, PAYEE, DATE, parent = "p")
+    transactions.insert("c2", ON_1, CATEGORY, PAYEE, DATE, parent = "p")
+    transactions.insert("t2", ON_2, CATEGORY, PAYEE, DATE)
+
+    // when
+    val all = transactions.getPaged(limit = 10, offset = 0).rows
+    val account = transactions.getByAccountPaged(AccountId(ON_1), limit = 10, offset = 0).rows
+
+    // then
+    assertThat(all.associate { it.id.toString() to it.isParent })
+      .isEqualTo(mapOf("p" to true, "t1" to false, "t2" to false))
+    assertThat(account.map { it.id.toString() }).containsExactly("p", "t1")
+  }
+
+  @Test
+  fun `A split above the offset doesn't shift the balance`() = runDaoTest { transactions ->
+    // given
+    val newest = LocalDate(2026, 1, 2)
+    transactions.insert("t1", ON_1, CATEGORY, PAYEE, DATE, amount = 10.0)
+    transactions.insert("t2", ON_1, CATEGORY, PAYEE, DATE, amount = 20.0)
+    transactions.insert("p", ON_1, category = null, PAYEE, newest, amount = 100.0, isParent = true)
+    transactions.insert("c1", ON_1, CATEGORY, PAYEE, newest, amount = 60.0, parent = "p")
+    transactions.insert("c2", ON_1, CATEGORY, PAYEE, newest, amount = 40.0, parent = "p")
+
+    // when
+    val all = transactions.getPaged(limit = 1, offset = 1)
+    val account = transactions.getByAccountPaged(AccountId(ON_1), limit = 1, offset = 1)
+
+    // then
+    assertThat(all.rows.map { it.id.toString() }).containsExactly("t1")
+    assertThat(all.topBalance).isEqualTo(3000L)
+    assertThat(account.rows.map { it.id.toString() }).containsExactly("t1")
+    assertThat(account.topBalance).isEqualTo(3000L)
+  }
+
+  @Test
+  fun `Children of a split are live and in entry order`() = runDaoTest { transactions ->
+    // given
+    transactions.insert("p", ON_1, category = null, PAYEE, DATE, isParent = true)
+    transactions.insert("c1", ON_1, CATEGORY, PAYEE, DATE, parent = "p")
+    transactions.insert("c2", ON_1, CATEGORY, PAYEE, DATE, parent = "p")
+    transactions.insert("c3", ON_1, category = null, PAYEE, DATE, parent = "p")
+    insertCopy(transactions, id = "c4", copyOf = "c1") { it.copy(tombstone = true) }
+    insertCopy(transactions, id = "c0", copyOf = "c1") { it.copy(sort_order = Double.MAX_VALUE) }
+    insertCopy(transactions, id = "dead", copyOf = "p") { it.copy(tombstone = true) }
+    transactions.insert("d1", ON_1, CATEGORY, PAYEE, DATE, parent = "dead")
+    transactions.insert("other", ON_1, category = null, PAYEE, DATE, isParent = true)
+    transactions.insert("o1", ON_1, CATEGORY, PAYEE, DATE, parent = "other")
+
+    // when
+    val children = transactions.childrenOf(listOf(TransactionId("p"), TransactionId("dead")))
+
+    // then
+    assertThat(children.mapValues { (_, rows) -> rows.map { it.id.toString() } })
+      .isEqualTo(mapOf(TransactionId("p") to listOf("c0", "c1", "c2", "c3")))
+    assertThat(children.getValue(TransactionId("p")).map { it.needsCategory })
+      .containsExactly(false, false, false, true)
+  }
+
   private suspend fun TransactionDao.uncategorisedIds(): List<String> =
     getUncategorisedPaged(account = null, limit = 10, offset = 0).map { it.id.toString() }
 

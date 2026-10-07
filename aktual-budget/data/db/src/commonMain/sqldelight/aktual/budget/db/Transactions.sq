@@ -132,7 +132,8 @@ SELECT id FROM transactions
     acct IS NOT NULL;
 
 -- Paginated queries for Paging 3. Sorted as upstream's v_transactions, so ties within a day keep a
--- stable order across pages
+-- stable order across pages. The whole and per-account lists hide split children, which hang off
+-- their parent's row, as upstream's mobile lists do
 --
 -- needsCategory is upstream's 'uncategorized' account filter (desktop-client/src/queries/index.ts),
 -- minus starting balances: an on-budget, non-parent transaction with no category, which isn't a
@@ -147,6 +148,7 @@ SELECT
   vt.notes,
   c.name AS categoryName,
   vt.amount,
+  vt.is_parent AS isParent,
   vt.is_child AS isChild,
   CASE WHEN
     a.offbudget = 0 AND
@@ -160,6 +162,7 @@ SELECT
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
   LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
+  WHERE IFNULL(vt.is_child, 0) = 0
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
   LIMIT :limit OFFSET :offset;
 
@@ -172,6 +175,7 @@ SELECT
   vt.notes,
   c.name AS categoryName,
   vt.amount,
+  vt.is_parent AS isParent,
   vt.is_child AS isChild,
   CASE WHEN
     a.offbudget = 0 AND
@@ -185,7 +189,7 @@ SELECT
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
   LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
-  WHERE a.id = :account
+  WHERE a.id = :account AND IFNULL(vt.is_child, 0) = 0
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
   LIMIT :limit OFFSET :offset;
 
@@ -198,6 +202,7 @@ SELECT
   vt.notes,
   c.name AS categoryName,
   vt.amount,
+  vt.is_parent AS isParent,
   vt.is_child AS isChild,
   1 AS needsCategory
   FROM v_transactions_internal_alive AS vt
@@ -238,6 +243,7 @@ SELECT
   vt.notes,
   c.name AS categoryName,
   vt.amount,
+  vt.is_parent AS isParent,
   vt.is_child AS isChild,
   CASE WHEN
     a.offbudget = 0 AND
@@ -253,39 +259,78 @@ SELECT
   LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
   WHERE vt.id IN :ids;
 
+-- The live children of these split parents, in the order they were entered. As with getChildIds,
+-- parent_id comes from the table since SQLDelight can't type the view's
+getChildrenOf:
+SELECT
+  vt.id,
+  vt.date,
+  a.name AS accountName,
+  p.name AS payeeName,
+  vt.notes,
+  c.name AS categoryName,
+  vt.amount,
+  vt.is_parent AS isParent,
+  vt.is_child AS isChild,
+  CASE WHEN
+    a.offbudget = 0 AND
+    c.id IS NULL AND
+    IFNULL(vt.is_parent, 0) = 0 AND
+    IFNULL(vt.starting_balance_flag, 0) = 0 AND
+    (p.transfer_acct IS NULL OR ta.offbudget = 1)
+  THEN 1 ELSE 0 END AS needsCategory,
+  t.parent_id AS parentId
+  FROM v_transactions_internal_alive AS vt
+  INNER JOIN transactions AS t ON t.id = vt.id
+  LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
+  LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
+  LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
+  LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
+  WHERE t.parent_id IN :parents AND vt.is_child = 1
+  ORDER BY vt.sort_order DESC, vt.id;
+
 -- Balance after the transaction at :offset in getPaged's order, i.e. the sum of it and everything
 -- older. Split children are skipped since their parent's amount already covers them, as upstream's
--- balance queries do with splits: 'none'
+-- balance queries do with splits: 'none'. They're dropped before the offset, which has to count
+-- the same rows as the paged queries
 balanceFromOffset:
 SELECT IFNULL(SUM(amount), 0) FROM (
-  SELECT vt.amount, vt.is_child
+  SELECT vt.amount
   FROM v_transactions_internal_alive AS vt
+  WHERE IFNULL(vt.is_child, 0) = 0
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
   LIMIT -1 OFFSET :offset
-) WHERE IFNULL(is_child, 0) = 0;
+);
 
 balanceFromOffsetByAccount:
 SELECT IFNULL(SUM(amount), 0) FROM (
-  SELECT vt.amount, vt.is_child
+  SELECT vt.amount
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
-  WHERE a.id = :account
+  WHERE a.id = :account AND IFNULL(vt.is_child, 0) = 0
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
   LIMIT -1 OFFSET :offset
-) WHERE IFNULL(is_child, 0) = 0;
+);
 
--- id + notes for every live transaction, for in-memory #tag filtering (no SQL regex available)
+-- id + notes for every live transaction, for in-memory #tag filtering (no SQL regex available).
+-- parentId is only meaningful when isChild is set
 getIdsAndNotes:
-SELECT id, notes FROM v_transactions
-  ORDER BY date DESC, starting_balance_flag, sort_order DESC, id;
+SELECT vt.id, vt.notes, vt.is_child AS isChild, t.parent_id AS parentId
+  FROM v_transactions AS vt
+  INNER JOIN transactions AS t ON t.id = vt.id
+  ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
 
 getIdsAndNotesByAccount:
-SELECT id, notes FROM v_transactions WHERE account = :account
-  ORDER BY date DESC, starting_balance_flag, sort_order DESC, id;
+SELECT vt.id, vt.notes, vt.is_child AS isChild, t.parent_id AS parentId
+  FROM v_transactions AS vt
+  INNER JOIN transactions AS t ON t.id = vt.id
+  WHERE vt.account = :account
+  ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
 
 getUncategorisedIdsAndNotes:
-SELECT vt.id, vt.notes
+SELECT vt.id, vt.notes, vt.is_child AS isChild, t.parent_id AS parentId
   FROM v_transactions_internal_alive AS vt
+  INNER JOIN transactions AS t ON t.id = vt.id
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
