@@ -51,7 +51,7 @@ class BudgetFileDownloaderTest {
         serverUrl = SERVER_URL,
         client = testHttpClient(mockEngine),
         fileSystem = SYSTEM,
-      )
+      ),
   ) {
     budgetFiles = testBudgetFiles(temporaryFolder)
     budgetFileDownloader =

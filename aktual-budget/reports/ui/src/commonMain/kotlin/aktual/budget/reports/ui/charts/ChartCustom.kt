@@ -75,7 +75,7 @@ private fun dateRange(timeRange: ReportTimeRange): String =
 @Preview
 @Composable
 private fun PreviewCustomChart(
-  @PreviewParameter(CustomChartProvider::class) params: ColoredParams<CustomChartParams>
+  @PreviewParameter(CustomChartProvider::class) params: ColoredParams<CustomChartParams>,
 ) =
   PreviewWithColoredParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CustomChart(
@@ -113,6 +113,6 @@ internal val PREVIEW_CUSTOM_DATA =
           YearMonthRange(
             start = YearMonth(2011, Month.SEPTEMBER),
             endInclusive = YearMonth(2025, Month.JULY),
-          )
+          ),
       ),
   )

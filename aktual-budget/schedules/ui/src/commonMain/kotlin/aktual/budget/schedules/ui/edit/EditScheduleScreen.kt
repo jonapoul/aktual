@@ -137,7 +137,7 @@ internal fun EditScheduleScreen(
 @Composable
 private fun editScheduleViewModel(id: ScheduleId?) =
   assistedMetroViewModel<EditScheduleViewModel, EditScheduleViewModel.Factory>(
-    key = id.toString()
+    key = id.toString(),
   ) {
     create(id)
   }
@@ -540,7 +540,7 @@ private fun UpcomingDates(dates: ImmutableList<LocalDate>, modifier: Modifier = 
       modifier =
         Modifier.fillMaxWidth()
           .background(colors.tableBackground, CardShape)
-          .border(EditScheduleDS.hairline, colors.tableBorder, CardShape)
+          .border(EditScheduleDS.hairline, colors.tableBorder, CardShape),
     ) {
       if (dates.isEmpty()) {
         Text(
@@ -607,7 +607,7 @@ private fun ErrorDialog(error: EditScheduleError, onDismiss: () -> Unit) {
           is DuplicateName -> Strings.editScheduleErrorDuplicate(error.name)
           is Saving -> error.reason
           is Deleting -> error.reason
-        }
+        },
       )
     },
   )
@@ -616,7 +616,7 @@ private fun ErrorDialog(error: EditScheduleError, onDismiss: () -> Unit) {
 @PortraitPreview
 @Composable
 private fun PreviewEditScheduleScaffold(
-  @PreviewParameter(EditScheduleStateProvider::class) params: ColoredParams<EditScheduleState>
+  @PreviewParameter(EditScheduleStateProvider::class) params: ColoredParams<EditScheduleState>,
 ) =
   PreviewWithColoredParams(params) {
     EditScheduleScaffold(state = this, error = null, onAction = {})
@@ -642,7 +642,7 @@ internal val PreviewLoaded =
               skipWeekend = true,
               weekendSolveMode = Before,
               endMode = Never,
-            )
+            ),
           ),
         postsTransaction = false,
       ),

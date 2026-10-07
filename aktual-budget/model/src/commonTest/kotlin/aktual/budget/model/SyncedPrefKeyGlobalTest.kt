@@ -22,7 +22,7 @@ class SyncedPrefKeyGlobalTest {
         SyncedPrefKey.Global.LearnCategories,
         SyncedPrefKey.Global.NumberFormat,
         SyncedPrefKey.Global.UpcomingScheduledTransactionLength,
-      )
+      ),
   ) {
     assertThat(SyncedPrefKey.decode(key.key)).isEqualTo(key)
   }

@@ -29,7 +29,7 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
   private val list by lazy { data.toList() }
 
   constructor(
-    vararg data: Pair<Key<*>, Any?>
+    vararg data: Pair<Key<*>, Any?>,
   ) : this(data = data.mapNotNull { (k, v) -> v?.let { k to it } }.toMap().toPersistentMap())
 
   constructor(

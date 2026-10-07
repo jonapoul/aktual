@@ -63,7 +63,7 @@ class RecurConfigStringTest {
         MONTHLY_END_DATE,
         WEEKLY_SKIP_WEEKEND,
         MONTHLY_END_DATE_SKIP_WEEKEND,
-      )
+      ),
   ) = runComposeUiTest {
     var actual: String? = null
     setContent { actual = test.config.description(YyyyMmDd.formatter()) }

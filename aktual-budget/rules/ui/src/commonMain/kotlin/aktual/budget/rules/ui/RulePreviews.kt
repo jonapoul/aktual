@@ -45,7 +45,7 @@ internal val PreviewRule1 =
           type = Id,
           value = JsonPrimitive("0c76632b-d784-47b0-8391-d9c3067ad6fd"),
           op = RuleAction.Op.Set,
-        )
+        ),
       ),
   )
 
@@ -60,6 +60,6 @@ internal val PreviewRule2 =
         RuleAction(
           value = JsonPrimitive("b08a2607-399b-4a6b-9a5c-3b2d083fe07f"),
           op = LinkSchedule,
-        )
+        ),
       ),
   )

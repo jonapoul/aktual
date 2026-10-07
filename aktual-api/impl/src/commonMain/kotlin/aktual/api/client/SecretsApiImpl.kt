@@ -39,7 +39,7 @@ class SecretsApiImpl(
             buildJsonObject {
               put("name", secret.value)
               put("value", value)
-            }
+            },
           )
         }
       }

@@ -231,7 +231,7 @@ private fun Content(
 @PortraitPreview
 @LandscapePreview
 private fun PreviewLoginScaffold(
-  @PreviewParameter(LoginScaffoldProvider::class) params: ColoredParams<LoginScaffoldParams>
+  @PreviewParameter(LoginScaffoldProvider::class) params: ColoredParams<LoginScaffoldParams>,
 ) =
   PreviewWithColoredParams(params) {
     LoginScaffold(

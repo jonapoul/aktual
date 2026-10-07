@@ -45,7 +45,7 @@ class UpcomingLengthTest {
         UpcomingDaysCase(Years(1), parse("2017-06-15"), 366),
         UpcomingDaysCase(Years(1), parse("2019-06-15"), 367), // leap year
         UpcomingDaysCase(Years(2), parse("2017-06-15"), 731),
-      )
+      ),
   ) {
     assertThat(case.length.upcomingDays(case.today)).isEqualTo(case.expected)
   }
@@ -62,7 +62,7 @@ class UpcomingLengthTest {
         SerializationCase(Weeks(5), "5-week"),
         SerializationCase(Months(3), "3-month"),
         SerializationCase(Years(4), "4-year"),
-      )
+      ),
   ) {
     assertThat(encode(case.length)).isEqualTo(case.wire)
   }
@@ -78,7 +78,7 @@ class UpcomingLengthTest {
         SerializationCase(Weeks(5), "5-week"),
         SerializationCase(Months(3), "3-month"),
         SerializationCase(Years(4), "4-year"),
-      )
+      ),
   ) {
     assertThat(decode(case.wire)).isEqualTo(case.length)
   }

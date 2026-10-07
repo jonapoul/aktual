@@ -65,7 +65,7 @@ internal fun HeaderLogin(
 @Preview
 @Composable
 private fun PreviewHeaderLogin(
-  @PreviewParameter(HeaderLoginProvider::class) params: ColoredParams<HeaderLoginParams>
+  @PreviewParameter(HeaderLoginProvider::class) params: ColoredParams<HeaderLoginParams>,
 ) =
   PreviewWithColoredParams(params) {
     HeaderLogin(isLoading = isLoading, hasFailure = hasFailure, onAction = {})

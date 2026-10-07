@@ -206,7 +206,7 @@ private fun AccountRow(
         modifier =
           Modifier.size(SyncDotSize).background(colors.errorText, CircleShape).semantics {
             contentDescription = description
-          }
+          },
       )
     }
 
@@ -229,7 +229,7 @@ private fun ShimmerAccounts(modifier: Modifier = Modifier) {
         .fillMaxWidth()
         .padding(horizontal = CardPadding)
         .padding(top = 4.dp)
-        .shimmer(rememberShimmer(Window))
+        .shimmer(rememberShimmer(Window)),
   ) {
     repeat(SHIMMER_ROWS) {
       Row(
@@ -266,7 +266,7 @@ private fun AccountsEmpty(onAction: HomeActionHandler, modifier: Modifier = Modi
 @Preview
 @Composable
 private fun PreviewAccountsCard(
-  @PreviewParameter(AccountsCardStateProvider::class) params: ColoredParams<AccountsCardState>
+  @PreviewParameter(AccountsCardStateProvider::class) params: ColoredParams<AccountsCardState>,
 ) =
   PreviewWithColoredParams(params) {
     AccountsCard(

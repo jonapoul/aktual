@@ -102,7 +102,7 @@ class HomeViewModelThisMonthTest {
               budgeted = Zero,
               // April's overspend on food comes out of what was left
               toBudget = Amount(250_000L),
-            )
+            ),
           )
         cancelAndIgnoreRemainingEvents()
       }

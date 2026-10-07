@@ -171,7 +171,7 @@ class TransactionDao(database: BudgetDatabase) {
         schedule = schedule?.let(::ScheduleId),
         reconciled = null,
         raw_synced_data = null,
-      )
+      ),
     )
   }
 }

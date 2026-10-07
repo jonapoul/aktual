@@ -22,7 +22,7 @@ internal fun <T> rankBy(
 ): List<T> {
   val scores = rules.associateWith { score(operators(it)) }
   return rules.sortedWith(
-    compareBy<T> { stageOrder(stage(it)) }.thenBy { scores.getValue(it) }.thenBy { id(it).value }
+    compareBy<T> { stageOrder(stage(it)) }.thenBy { scores.getValue(it) }.thenBy { id(it).value },
   )
 }
 

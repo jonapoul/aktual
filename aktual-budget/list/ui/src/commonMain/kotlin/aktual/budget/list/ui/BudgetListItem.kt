@@ -65,7 +65,7 @@ internal fun BudgetListItem(
             onOpenChange(false)
             onClickDelete()
           },
-        )
+        ),
       ),
     isOpen = isOpen,
     onOpenChange = onOpenChange,
@@ -142,7 +142,7 @@ private fun budgetDescription(budget: Budget) =
 @Preview
 @Composable
 private fun PreviewBudgetListItem(
-  @PreviewParameter(BudgetListItemProvider::class) params: ColoredParams<BudgetListItemParams>
+  @PreviewParameter(BudgetListItemProvider::class) params: ColoredParams<BudgetListItemParams>,
 ) =
   PreviewWithColoredParams(params) {
     BudgetListItem(

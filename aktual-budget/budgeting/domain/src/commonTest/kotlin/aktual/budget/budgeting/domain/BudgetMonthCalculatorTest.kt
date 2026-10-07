@@ -89,7 +89,7 @@ internal class BudgetMonthCalculatorTest {
     }
 
   private fun runCalculatorTest(
-    action: suspend TestScope.(BudgetMonthCalculator, BudgetDatabase) -> Unit
+    action: suspend TestScope.(BudgetMonthCalculator, BudgetDatabase) -> Unit,
   ) = runTest {
     val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
     driver.use {

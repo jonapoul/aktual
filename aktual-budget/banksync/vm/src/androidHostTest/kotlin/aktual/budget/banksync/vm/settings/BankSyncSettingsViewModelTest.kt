@@ -72,7 +72,7 @@ class BankSyncSettingsViewModelTest {
             direction = Payment,
             fields = null,
             hasChanges = false,
-          )
+          ),
         )
     }
   }
@@ -120,7 +120,7 @@ class BankSyncSettingsViewModelTest {
             row(Date, "date", FieldOption("date", "2026-09-30")),
             row(Payee, "payeeName", FieldOption("payeeName", "Tesco")),
             row(Notes, "notes"),
-          )
+          ),
         )
 
       viewModel.setDirection(Deposit)
@@ -132,7 +132,7 @@ class BankSyncSettingsViewModelTest {
             row(Date, "date", FieldOption("valueDate", "2026-09-29")),
             row(Payee, "payeeName", FieldOption("debtorName", "Work")),
             row(Notes, "notes"),
-          )
+          ),
         )
 
       viewModel.setMapping(Payee, "debtorName")

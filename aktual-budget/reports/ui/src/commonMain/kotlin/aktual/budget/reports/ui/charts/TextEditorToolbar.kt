@@ -129,7 +129,7 @@ private fun AlignButton(
 @Preview
 @Composable
 private fun PreviewTextEditorToolbar(
-  @PreviewParameter(TextEditorToolbarProvider::class) params: ColoredParams<EditorMode>
+  @PreviewParameter(TextEditorToolbarProvider::class) params: ColoredParams<EditorMode>,
 ) =
   PreviewWithColoredParams(params) {
     TextEditorToolbar(

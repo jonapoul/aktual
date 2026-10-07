@@ -35,7 +35,7 @@ class GenerateDistinctColorsTest {
 
   @Test
   fun `different parameters produce different colors`(
-    colors: Colors = burstValues(LightColors, DarkColors)
+    colors: Colors = burstValues(LightColors, DarkColors),
   ) {
     val default = generateDistinctColors(colors, count = 5)
     val custom = generateDistinctColors(colors, count = 5, saturation = 0.5f, lightness = 0.25f)

@@ -28,7 +28,7 @@ internal enum class FieldType(val ops: Set<Operator>) {
   Saved(emptySet()),
   String(setOf(Is, Contains, Matches, OneOf, IsNot, DoesNotContain, NotOneOf, HasTags, HasAnyTag)),
   Number(
-    setOf(Is, IsApprox, IsBetween, GreaterThan, GreaterThanOrEquals, LessThan, LessThanOrEquals)
+    setOf(Is, IsApprox, IsBetween, GreaterThan, GreaterThanOrEquals, LessThan, LessThanOrEquals),
   ),
   Boolean(setOf(Is)),
 }

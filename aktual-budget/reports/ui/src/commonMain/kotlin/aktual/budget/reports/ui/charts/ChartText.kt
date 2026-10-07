@@ -179,7 +179,7 @@ private fun CompactMarkdown(data: TextData, modifier: Modifier = Modifier) =
           Modifier.align(BottomCenter)
             .fillMaxWidth()
             .height(FadeHeight)
-            .background(Brush.verticalGradient(listOf(Transparent, colors.tableBackground)))
+            .background(Brush.verticalGradient(listOf(Transparent, colors.tableBackground))),
       )
     }
   }
@@ -283,7 +283,7 @@ private fun textChartMarkdownTypography(align: TextAlign): MarkdownTypography {
 @Preview
 @Composable
 private fun PreviewTextChart(
-  @PreviewParameter(TextChartProvider::class) params: ColoredParams<TextChartParams>
+  @PreviewParameter(TextChartProvider::class) params: ColoredParams<TextChartParams>,
 ) =
   PreviewWithColoredParams(params, isPrivacyEnabled = params.data.private) {
     TextChart(
@@ -306,7 +306,7 @@ private class TextChartProvider :
       listOf(true, false).flatMap { compact ->
         listOf(true, false).map { private -> TextChartParams(data, compact, private) }
       }
-    }
+    },
   )
 
 @Language("Markdown")

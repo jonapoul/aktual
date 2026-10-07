@@ -85,7 +85,7 @@ private fun NameDialogContent(
 @Preview
 @Composable
 private fun PreviewNameDialog(
-  @PreviewParameter(NameDialogProvider::class) params: ColoredParams<String>
+  @PreviewParameter(NameDialogProvider::class) params: ColoredParams<String>,
 ) =
   PreviewWithColoredParams(params) {
     NameDialogContent(

@@ -122,7 +122,7 @@ class ReportsDao(database: BudgetDatabase, private val contexts: CoroutineContex
     queries.forecastSchedules().asFlow().mapToList(contexts.default).distinctUntilChanged()
 
   fun observePostedScheduleTransactions(
-    start: LocalDate
+    start: LocalDate,
   ): Flow<List<ForecastPostedScheduleTransactions>> =
     queries
       .forecastPostedScheduleTransactions(start)
@@ -147,7 +147,7 @@ class ReportsDao(database: BudgetDatabase, private val contexts: CoroutineContex
       .distinctUntilChanged()
 
   fun observeMonteCarloAccountBalances(
-    accounts: Collection<AccountId>
+    accounts: Collection<AccountId>,
   ): Flow<List<MonteCarloAccountBalances>> =
     queries
       .monteCarloAccountBalances(accounts)

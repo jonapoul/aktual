@@ -61,7 +61,7 @@ internal suspend fun SnackbarHostState.showSettingsSaveFailed(cause: String?) =
     getString(
       Res.string.bank_sync_settings_save_failed,
       cause ?: getString(Res.string.bank_sync_failure_message),
-    )
+    ),
   )
 
 internal suspend fun SnackbarHostState.showUnlinkFailed(cause: String?) =
@@ -69,7 +69,7 @@ internal suspend fun SnackbarHostState.showUnlinkFailed(cause: String?) =
     getString(
       Res.string.bank_sync_settings_unlink_failed,
       cause ?: getString(Res.string.bank_sync_failure_message),
-    )
+    ),
   )
 
 internal suspend fun SnackbarHostState.showLinkFailed(cause: String?) =
@@ -77,7 +77,7 @@ internal suspend fun SnackbarHostState.showLinkFailed(cause: String?) =
     getString(
       Res.string.bank_sync_link_failed,
       cause ?: getString(Res.string.bank_sync_failure_message),
-    )
+    ),
   )
 
 internal suspend fun SnackbarHostState.showProviderReset() =

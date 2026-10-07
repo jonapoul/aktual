@@ -407,7 +407,7 @@ private fun workingLines(row: McRunDetailRow, config: McConfig, surplusPotName: 
         )
       } else {
         Strings.monteCarloWorkingWithdrawalUntaxed(row.withdrawal.money())
-      }
+      },
     )
     add(
       when {
@@ -424,7 +424,7 @@ private fun workingLines(row: McRunDetailRow, config: McConfig, surplusPotName: 
             row.plannedSpending.money(),
           )
         else -> Strings.monteCarloWorkingSpent(row.spent.money())
-      }
+      },
     )
     if (row.surplusSaved > 0) {
       add(Strings.monteCarloWorkingSaved(surplusPotName, row.surplusSaved.money()))

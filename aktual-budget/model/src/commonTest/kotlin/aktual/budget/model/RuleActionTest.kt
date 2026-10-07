@@ -19,7 +19,7 @@ class RuleActionTest {
 
   @Test
   fun `Parse action from JSON`(
-    case: TestCase = burstValues(TEST_CASE_1, TEST_CASE_2, UNKNOWN_VALUES)
+    case: TestCase = burstValues(TEST_CASE_1, TEST_CASE_2, UNKNOWN_VALUES),
   ) {
     assertEquals(
       expected = case.expected,
@@ -76,7 +76,7 @@ class RuleActionTest {
             RuleAction(
               op = LinkSchedule,
               value = JsonPrimitive("b08a2607-399b-4a6b-9a5c-3b2d083fe07f"),
-            )
+            ),
           ),
         json =
           """
@@ -100,7 +100,7 @@ class RuleActionTest {
               op = Unknown,
               options = RuleAction.Options(method = Unknown),
               value = JsonPrimitive("abc"),
-            )
+            ),
           ),
         json =
           """

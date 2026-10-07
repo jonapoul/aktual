@@ -63,7 +63,7 @@ class ConventionCompose : ProjectPlugin {
       kotlin {
         desktopMainDependencies {
           implementation(
-            extensions.getByType(ComposePlugin.Dependencies::class.java).desktop.currentOs
+            extensions.getByType(ComposePlugin.Dependencies::class.java).desktop.currentOs,
           )
         }
       }

@@ -98,7 +98,7 @@ private fun BuiltInThemeItem(
     Row(
       modifier =
         Modifier.fillMaxHeight().weight(1f).background(backgroundColor, CardShape).clickable(
-          enabled
+          enabled,
         ) {
           onAction(SelectTheme(id))
         },
@@ -134,7 +134,7 @@ private fun BuiltInThemeItem(
 @Preview
 @Composable
 private fun PreviewBuiltInThemesPreference(
-  @PreviewParameter(ColoredParameters::class) colors: Colors
+  @PreviewParameter(ColoredParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     BuiltInThemesPreference(selectedTheme = LightColors.id, enabled = true, onAction = {})
@@ -143,7 +143,7 @@ private fun PreviewBuiltInThemesPreference(
 @Preview
 @Composable
 private fun PreviewBuiltInThemesPreferenceDisabled(
-  @PreviewParameter(ColoredParameters::class) colors: Colors
+  @PreviewParameter(ColoredParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     BuiltInThemesPreference(selectedTheme = LightColors.id, enabled = false, onAction = {})

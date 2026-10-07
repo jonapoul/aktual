@@ -276,7 +276,7 @@ private fun ErrorContent(
 @PortraitPreview
 @Composable
 private fun PreviewLicenses(
-  @PreviewParameter(LicensesParamsProvider::class) params: ColoredParams<LicensesState>
+  @PreviewParameter(LicensesParamsProvider::class) params: ColoredParams<LicensesState>,
 ) {
   PreviewWithColoredParams(params) { LicensesScaffold(state = this, onAction = {}) }
 }

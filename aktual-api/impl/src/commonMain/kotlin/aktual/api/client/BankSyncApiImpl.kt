@@ -82,13 +82,13 @@ class BankSyncApiImpl(
           .body<BankSyncEnvelope<JsonObject>>()
       }
         ?: return SimpleFinBatchResponse.Failed(
-          ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT)
+          ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT),
         )
     val data = envelope.data
     return when {
       !envelope.isOk || data == null ->
         SimpleFinBatchResponse.Failed(
-          BankSyncTransactionsResponse.Rejected(envelope.reason, envelope.details)
+          BankSyncTransactionsResponse.Rejected(envelope.reason, envelope.details),
         )
       data.isEmpty() ->
         SimpleFinBatchResponse.Failed(ProviderError(ProviderError.NO_DATA, ProviderError.NO_DATA))
@@ -106,7 +106,7 @@ class BankSyncApiImpl(
           .body<BankSyncEnvelope<JsonObject>>()
       }
         ?: return BankSyncAccountsResponse.Failed(
-          ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT)
+          ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT),
         )
     val data = envelope.data
     // Pluggy.ai and Akahu send failures as a bare message
@@ -117,7 +117,7 @@ class BankSyncApiImpl(
         BankSyncAccountsResponse.Failed(AktualJson.decodeFromJsonElement<ProviderError>(data))
       !envelope.isOk || error != null || accounts == null ->
         BankSyncAccountsResponse.Failed(
-          BankSyncTransactionsResponse.Rejected(envelope.reason ?: error, envelope.details)
+          BankSyncTransactionsResponse.Rejected(envelope.reason ?: error, envelope.details),
         )
       else -> BankSyncAccountsResponse.Success(externalAccounts(source, accounts))
     }

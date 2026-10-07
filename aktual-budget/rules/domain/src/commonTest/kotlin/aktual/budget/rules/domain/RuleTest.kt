@@ -58,7 +58,7 @@ class RuleTest {
           notes = "x",
           cleared = false,
           reconciled = true,
-        )
+        ),
       )
   }
 
@@ -254,7 +254,7 @@ class RuleTest {
         listOf(
           rule("bad", listOf(cond(Notes, Contains, "")), listOf(set(Category, "c"))),
           rule("good", listOf(cond(Notes, Contains, "a")), listOf(set(Category, "c"))),
-        )
+        ),
       )
     assertThat(engine.invalidRules).containsExactly(RuleId("bad"))
     assertThat(engine.rankedRules).containsExactly(RuleId("good"))

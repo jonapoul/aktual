@@ -256,7 +256,7 @@ private const val WEEKDAY_LENGTH = 3
 @Preview
 @Composable
 private fun PreviewUpcomingCard(
-  @PreviewParameter(UpcomingCardStateProvider::class) params: ColoredParams<UpcomingCardState>
+  @PreviewParameter(UpcomingCardStateProvider::class) params: ColoredParams<UpcomingCardState>,
 ) =
   PreviewWithColoredParams(params) {
     UpcomingCard(

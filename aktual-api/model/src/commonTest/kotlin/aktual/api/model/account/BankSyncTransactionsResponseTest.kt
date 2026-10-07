@@ -51,8 +51,8 @@ class BankSyncTransactionsResponseTest {
               balanceAmount = BankSyncAmount(amount = "123456", currency = "BRL"),
               balanceType = "expected",
               referenceDate = "2026-09-30",
-            )
-          )
+            ),
+          ),
         )
       transform { it.transactions.all.single().amount }.isEqualTo("-12.5")
       transform { it.transactions.booked }.isEqualTo(emptyList())

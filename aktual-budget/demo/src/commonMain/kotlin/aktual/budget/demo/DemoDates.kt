@@ -65,7 +65,7 @@ internal suspend fun SqlDriver.demoGeneratedOn(): LocalDate {
       )
       .await()
   return LocalDate.Formats.ISO_BASIC.parse(
-    requireNotNull(date) { "No demo transactions" }.toString()
+    requireNotNull(date) { "No demo transactions" }.toString(),
   )
 }
 
@@ -147,7 +147,7 @@ private fun JsonElement.shiftDateCondition(period: DatePeriod): JsonElement {
         JsonObject(
           value.mapValues { (key, v) ->
             if (key in RECUR_DATE_KEYS && v is JsonPrimitive) v.shiftDate(period) else v
-          }
+          },
         )
       is JsonArray -> value
     }

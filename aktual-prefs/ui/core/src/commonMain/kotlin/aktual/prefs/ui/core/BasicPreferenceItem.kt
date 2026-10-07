@@ -123,7 +123,7 @@ fun BasicPreferenceItem(
 @Composable
 private fun PreviewBasicPreferenceItem(
   @PreviewParameter(BasicPreferenceItemProvider::class)
-  params: ColoredParams<BasicPreferenceItemParams>
+  params: ColoredParams<BasicPreferenceItemParams>,
 ) =
   PreviewWithColoredParams(params) {
     BasicPreferenceItem(

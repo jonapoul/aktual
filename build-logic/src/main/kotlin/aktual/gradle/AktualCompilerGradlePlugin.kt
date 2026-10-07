@@ -11,7 +11,7 @@ class AktualCompilerGradlePlugin : KotlinCompilerPluginSupportPlugin {
   override fun isApplicable(kotlinCompilation: KotlinCompilation<*>): Boolean = true
 
   override fun applyToCompilation(
-    kotlinCompilation: KotlinCompilation<*>
+    kotlinCompilation: KotlinCompilation<*>,
   ): Provider<List<SubpluginOption>> = kotlinCompilation.target.project.provider { emptyList() }
 
   override fun getCompilerPluginId(): String = AktualCommandLineProcessor.PLUGIN_ID

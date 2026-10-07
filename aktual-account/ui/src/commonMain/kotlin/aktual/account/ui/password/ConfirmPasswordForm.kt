@@ -109,7 +109,7 @@ internal fun ConfirmPasswordForm(
 @Preview
 @Composable
 private fun PreviewConfirmPassword(
-  @PreviewParameter(ConfirmPasswordProvider::class) params: ColoredParams<ConfirmPasswordParams>
+  @PreviewParameter(ConfirmPasswordProvider::class) params: ColoredParams<ConfirmPasswordParams>,
 ) =
   PreviewWithColoredParams(params) {
     ConfirmPasswordForm(

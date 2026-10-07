@@ -232,7 +232,7 @@ fun McConfig.withLiveBalances(balances: Map<AccountId, Long>): McConfig =
           val balance = pot.accountId?.let(balances::get)
           if (balance == null) pot else pot.copy(startingBalance = max(0L, balance).toDouble())
         }
-        .toImmutableList()
+        .toImmutableList(),
   )
 
 // monteCarloConfigFromMeta()

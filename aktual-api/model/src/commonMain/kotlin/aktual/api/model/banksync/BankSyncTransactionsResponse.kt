@@ -59,7 +59,7 @@ data class BankSyncAmount(
 
 internal object BankSyncTransactionsResponseSerializer :
   JsonContentPolymorphicSerializer<BankSyncTransactionsResponse>(
-    BankSyncTransactionsResponse::class
+    BankSyncTransactionsResponse::class,
   ) {
   override fun selectDeserializer(element: JsonElement) =
     if ("error_code" in element.jsonObject) {

@@ -369,7 +369,7 @@ class MonteCarloTest {
   fun `Always succeeds with no withdrawals`() {
     val result =
       runMonteCarlo(
-        McConfig(spendingPhases = persistentListOf(McSpendingPhase(annualWithdrawal = 0.0)))
+        McConfig(spendingPhases = persistentListOf(McSpendingPhase(annualWithdrawal = 0.0))),
       )
     assertThat(result).all {
       prop(McResult::successRate).isEqualTo(1.0)
@@ -405,7 +405,7 @@ class MonteCarloTest {
               allocationPreset = Custom,
               expectedReturnMean = 0.05,
               returnStdDev = 0.0,
-            )
+            ),
           ),
         spendingPhases = persistentListOf(McSpendingPhase(annualWithdrawal = 1_000_000.0)),
         inflationMean = null,
@@ -423,11 +423,15 @@ class MonteCarloTest {
   fun `Custom mix only counts when it totals 100 percent`() {
     val pot = McPot(id = "a", allocationPreset = CustomMix)
     assertThat(
-        pot.copy(allocationStocks = 0.7, allocationBonds = 0.3, allocationCash = 0.0).assetWeights()
+        pot
+          .copy(allocationStocks = 0.7, allocationBonds = 0.3, allocationCash = 0.0)
+          .assetWeights(),
       )
       .isEqualTo(AssetWeights(stocks = 0.7, bonds = 0.3, cash = 0.0))
     assertThat(
-        pot.copy(allocationStocks = 0.5, allocationBonds = 0.3, allocationCash = 0.0).assetWeights()
+        pot
+          .copy(allocationStocks = 0.5, allocationBonds = 0.3, allocationCash = 0.0)
+          .assetWeights(),
       )
       .isNull()
     assertThat(pot.copy(allocationPreset = Custom).assetWeights()).isNull()

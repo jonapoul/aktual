@@ -170,7 +170,7 @@ class MonteCarloViewModelTest {
   }
 
   private suspend fun ReceiveTurbine<MonteCarloState>.awaitLoaded(
-    predicate: (MonteCarloState.Loaded) -> Boolean
+    predicate: (MonteCarloState.Loaded) -> Boolean,
   ): MonteCarloState.Loaded {
     while (true) {
       val state = awaitItem()
@@ -221,7 +221,7 @@ class MonteCarloViewModelTest {
     val ID = WidgetId("monte-carlo")
     val META: JsonObject =
       Json.parseToJsonElement(
-          """{"name": "Plan", "currentAge": 60, "targetAge": 70, "simulationCount": 1000}"""
+          """{"name": "Plan", "currentAge": 60, "targetAge": 70, "simulationCount": 1000}""",
         )
         .jsonObject
   }

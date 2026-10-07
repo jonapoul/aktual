@@ -143,7 +143,7 @@ private fun ListRulesScaffold(
           Modifier.hazedTopBar(
             hazeState,
             scrollOffset = { -headerState.offset + listState.topBarHazeOffset() },
-          )
+          ),
       ) {
         TopAppBar(
           colors = colors.transparentTopAppBarColors(),
@@ -379,7 +379,7 @@ private fun ContentSuccess(
 @PortraitPreview
 @Composable
 private fun PreviewListRulesScaffold(
-  @PreviewParameter(ListRulesStateProvider::class) params: ColoredParams<ListRulesStateParams>
+  @PreviewParameter(ListRulesStateProvider::class) params: ColoredParams<ListRulesStateParams>,
 ) =
   PreviewWithColoredParams(params) {
     ListRulesScaffold(state = state, checkboxes = checkboxes, onAction = {})

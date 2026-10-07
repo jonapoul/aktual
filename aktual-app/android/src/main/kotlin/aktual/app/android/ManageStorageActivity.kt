@@ -69,7 +69,7 @@ class ManageStorageActivity(override val defaultViewModelProviderFactory: MetroV
         AktualTheme(theme) {
           Box(contentAlignment = BottomCenter) {
             CompositionLocalProvider(
-              LocalMetroViewModelFactory provides defaultViewModelProviderFactory
+              LocalMetroViewModelFactory provides defaultViewModelProviderFactory,
             ) {
               ManageStorageScreen(
                 modifier =

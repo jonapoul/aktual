@@ -61,7 +61,7 @@ internal fun ShimmerBudgetListItem(modifier: Modifier = Modifier) {
         modifier =
           Modifier.fillMaxWidth(fraction = 0.55f)
             .height(20.dp)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
 
       // State text placeholder (real: 18dp icon row with 13sp text)
@@ -70,7 +70,7 @@ internal fun ShimmerBudgetListItem(modifier: Modifier = Modifier) {
           Modifier.padding(top = 4.dp)
             .fillMaxWidth(fraction = 0.35f)
             .height(18.dp)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
 
       // Description placeholder (real: 10sp / 12sp lineHeight x ~2 for 2 lines)
@@ -79,7 +79,7 @@ internal fun ShimmerBudgetListItem(modifier: Modifier = Modifier) {
           Modifier.padding(top = 4.dp)
             .fillMaxWidth(fraction = 0.45f)
             .height(20.dp)
-            .background(colors.pageText, CardShape)
+            .background(colors.pageText, CardShape),
       )
     }
   }

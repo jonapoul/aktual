@@ -164,7 +164,7 @@ class LicensesViewModelTest {
   }
 
   private suspend fun TurbineTestContext<LicensesState>.assertLoaded(
-    vararg models: ArtifactDetail
+    vararg models: ArtifactDetail,
   ) {
     assertLoaded(models.toList())
   }
@@ -179,7 +179,7 @@ class LicensesViewModelTest {
         artifacts = models.toImmutableList(),
         filterText = filterText,
         isSearchActive = isSearchActive,
-      )
+      ),
     )
   }
 

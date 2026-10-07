@@ -100,7 +100,7 @@ internal fun ChangePasswordScaffold(
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { /* empty */ },
       )
-    }
+    },
   ) { innerPadding ->
     Box {
       WavyBackground()
@@ -190,7 +190,7 @@ private fun ChangePasswordState.Failure.errorMessage(): String =
 @LandscapePreview
 @Composable
 private fun PreviewChangePassword(
-  @PreviewParameter(ChangePasswordProvider::class) params: ColoredParams<ChangePasswordParams>
+  @PreviewParameter(ChangePasswordProvider::class) params: ColoredParams<ChangePasswordParams>,
 ) =
   PreviewWithColoredParams(params) {
     ChangePasswordScaffold(

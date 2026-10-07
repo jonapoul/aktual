@@ -106,7 +106,7 @@ private fun HeadlineStats(
           results.successRate.toString(decimalPlaces = 1),
           results.simulationCount,
           results.endAge,
-        )
+        ),
       )
     }
   }
@@ -253,7 +253,7 @@ private fun DepletionCard(
         results.failedCount,
         results.simulationCount,
         results.simulationCount - results.failedCount,
-      )
+      ),
     )
 
     var selectedAge by remember(results) { mutableStateOf<Int?>(null) }
@@ -286,7 +286,7 @@ private fun DepletionCard(
         results.earliestDepletionAge ?: results.currentAge,
         results.medianDepletionAge ?: results.currentAge,
         results.latestDepletionAge ?: results.currentAge,
-      )
+      ),
     )
   }
 
@@ -312,7 +312,7 @@ private fun HowItWorks(
           Strings.monteCarloHowSequence(HISTORICAL_FIRST_YEAR, HISTORICAL_LAST_YEAR)
         Normal,
         Unknown -> Strings.monteCarloHowNormal
-      }
+      },
     )
   }
 

@@ -108,7 +108,7 @@ private fun PhaseCard(
             Strings.monteCarloAge(nextFrom - 1)
           } else {
             Strings.monteCarloPhaseOnwards
-          }
+          },
         )
       }
       LabeledField(Strings.monteCarloFieldYearlySpending) {
@@ -188,7 +188,7 @@ private fun GuardrailsFields(
     Strings.monteCarloRuleSentencePreservation(
       formatRuleRate(rule.preservationTriggerPct),
       formatRuleRate(rule.preservationCutPct),
-    )
+    ),
   )
   FieldRow {
     RulePercentField(Strings.monteCarloRuleFieldPreservationTrigger, rule.preservationTriggerPct) {
@@ -204,7 +204,7 @@ private fun GuardrailsFields(
     Strings.monteCarloRuleSentenceProsperity(
       formatRuleRate(rule.prosperityTriggerPct),
       formatRuleRate(rule.prosperityIncreasePct),
-    )
+    ),
   )
   FieldRow {
     RulePercentField(Strings.monteCarloRuleFieldProsperityTrigger, rule.prosperityTriggerPct) {
@@ -228,7 +228,7 @@ private fun RatchetingFields(
       formatMultiple(rule.balanceThresholdMultiple),
       rule.consecutiveYears,
       formatRuleRate(rule.ratchetIncreasePct),
-    )
+    ),
   )
   FieldRow {
     LabeledField(Strings.monteCarloRuleFieldBalanceMultiple) {
@@ -264,7 +264,7 @@ private fun FloorCeilingFields(
     Strings.monteCarloRuleSentenceFloorCeiling(
       formatRuleRate(rule.ceilingPct),
       formatRuleRate(rule.floorPct),
-    )
+    ),
   )
   FieldRow {
     RulePercentField(Strings.monteCarloRuleFieldCeiling, rule.ceilingPct, max = MAX_CEILING) { value
@@ -286,7 +286,7 @@ private fun BoundariesFields(
     Strings.monteCarloRuleSentenceUpper(
       formatRuleRate(rule.upperRateThreshold),
       formatRuleRate(rule.upperCutPct),
-    )
+    ),
   )
   FieldRow {
     RulePercentField(Strings.monteCarloRuleFieldUpperThreshold, rule.upperRateThreshold) { value ->
@@ -301,7 +301,7 @@ private fun BoundariesFields(
     Strings.monteCarloRuleSentenceLower(
       formatRuleRate(rule.lowerRateThreshold),
       formatRuleRate(rule.lowerIncreasePct),
-    )
+    ),
   )
   FieldRow {
     RulePercentField(Strings.monteCarloRuleFieldLowerThreshold, rule.lowerRateThreshold) { value ->

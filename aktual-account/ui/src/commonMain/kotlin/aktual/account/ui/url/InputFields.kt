@@ -85,7 +85,7 @@ private const val EXAMPLE_URL = "example.com"
 @Preview
 @Composable
 private fun PreviewInputFields(
-  @PreviewParameter(InputFieldsProvider::class) params: ColoredParams<InputFieldsParams>
+  @PreviewParameter(InputFieldsProvider::class) params: ColoredParams<InputFieldsParams>,
 ) =
   PreviewWithColoredParams(params) {
     InputFields(url = url, protocol = protocol, onAction = {})

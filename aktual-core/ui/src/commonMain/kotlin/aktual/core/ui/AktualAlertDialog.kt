@@ -150,7 +150,7 @@ fun AktualAlertDialogContent(
 @Preview
 @Composable
 private fun PreviewExampleContentWithButtons(
-  @PreviewParameter(ColoredParameters::class) colors: Colors
+  @PreviewParameter(ColoredParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     AktualAlertDialogContent(
@@ -162,7 +162,7 @@ private fun PreviewExampleContentWithButtons(
       },
       content = {
         Text(
-          "This is some text with even more text here to show how it behaves when splitting over lines"
+          "This is some text with even more text here to show how it behaves when splitting over lines",
         )
         PrimaryTextButton(text = "Click me", onClick = {})
         Text("This is some text")
@@ -174,7 +174,7 @@ private fun PreviewExampleContentWithButtons(
 @Preview
 @Composable
 private fun PreviewExampleContentWithoutButtons(
-  @PreviewParameter(ColoredParameters::class) colors: Colors
+  @PreviewParameter(ColoredParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     AktualAlertDialogContent(

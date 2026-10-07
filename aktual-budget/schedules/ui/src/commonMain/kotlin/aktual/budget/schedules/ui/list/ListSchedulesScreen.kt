@@ -311,7 +311,7 @@ private fun ListSchedulesMenu(
         onAction = { action ->
           expanded = false
           onAction(action)
-        }
+        },
       )
     }
   }
@@ -329,7 +329,7 @@ private fun ListSchedulesMenuItems(onAction: ListSchedulesActionHandler) {
 @Preview
 @Composable
 private fun PreviewListSchedulesMenuItems(
-  @PreviewParameter(ColoredParameters::class) colors: Colors
+  @PreviewParameter(ColoredParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {
@@ -340,7 +340,7 @@ private fun PreviewListSchedulesMenuItems(
 @Preview
 @Composable
 private fun PreviewListSchedulesScaffold(
-  @PreviewParameter(ListSchedulesProvider::class) params: ColoredParams<ListSchedulesState>
+  @PreviewParameter(ListSchedulesProvider::class) params: ColoredParams<ListSchedulesState>,
 ) =
   PreviewWithColoredParams(params) {
     ListSchedulesScaffold(state = this, onAction = {})

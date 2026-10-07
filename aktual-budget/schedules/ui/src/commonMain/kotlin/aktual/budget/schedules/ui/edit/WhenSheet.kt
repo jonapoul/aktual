@@ -191,7 +191,7 @@ private fun EndFields(
             endMode = mode,
             endOccurrences = (config.endOccurrences ?: 1).coerceAtLeast(1),
             endDate = config.endDate ?: config.start,
-          )
+          ),
         )
       },
       string = { it.string() },

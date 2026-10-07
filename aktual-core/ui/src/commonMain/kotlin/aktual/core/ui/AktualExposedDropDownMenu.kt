@@ -203,7 +203,7 @@ private fun PreviewDropDownMenu(@PreviewParameter(ColoredParameters::class) colo
 @Preview
 @Composable
 private fun PreviewDropDownMenuForcedWidth(
-  @PreviewParameter(ColoredParameters::class) colors: Colors
+  @PreviewParameter(ColoredParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     var value by remember { mutableStateOf("B") }

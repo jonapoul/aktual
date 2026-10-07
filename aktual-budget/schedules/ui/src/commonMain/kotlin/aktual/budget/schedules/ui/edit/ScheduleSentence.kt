@@ -361,7 +361,7 @@ private val SentenceLineHeight = 44.sp
 @Preview(widthDp = 390)
 @Composable
 private fun PreviewScheduleSentence(
-  @PreviewParameter(ScheduleSentenceProvider::class) params: ColoredParams<SentencePreview>
+  @PreviewParameter(ScheduleSentenceProvider::class) params: ColoredParams<SentencePreview>,
 ) =
   PreviewWithColoredParams(params) {
     ScheduleSentence(
@@ -394,7 +394,7 @@ private val PreviewLongNames =
               weekendSolveMode = After,
               endMode = OnDate,
               endDate = LocalDate(2028, 3, 30),
-            )
+            ),
           ),
       ),
     payeeName = "Student Loans Company",

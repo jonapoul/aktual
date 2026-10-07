@@ -54,7 +54,7 @@ internal fun TagItem(
           background = deleteBackground,
           foreground = deleteBackground.contrastingTextColor(),
           onClick = { onAction(DeleteTag(tag.id)) },
-        )
+        ),
       ),
     isOpen = isOpen,
     onOpenChange = onOpenChange,
@@ -148,7 +148,7 @@ private class TagItemProvider : ColoredParameterProvider<TagItem>(TagsPreview.al
 @Preview
 @Composable
 private fun PreviewTagItem(
-  @PreviewParameter(TagItemProvider::class) params: ColoredParams<TagItem>
+  @PreviewParameter(TagItemProvider::class) params: ColoredParams<TagItem>,
 ) =
   PreviewWithColoredParams(params) {
     TagItem(tag = this, isOpen = false, onOpenChange = {}, onAction = {})

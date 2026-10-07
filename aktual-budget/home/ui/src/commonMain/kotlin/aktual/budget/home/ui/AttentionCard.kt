@@ -274,7 +274,7 @@ private fun OverspentContent(
 @Preview
 @Composable
 private fun PreviewAttentionCard(
-  @PreviewParameter(AttentionCardStateProvider::class) params: ColoredParams<AttentionCardState>
+  @PreviewParameter(AttentionCardStateProvider::class) params: ColoredParams<AttentionCardState>,
 ) =
   PreviewWithColoredParams(params) {
     AttentionCard(
@@ -287,7 +287,7 @@ private fun PreviewAttentionCard(
 @Preview
 @Composable
 private fun PreviewOverspentContent(
-  @PreviewParameter(OverspentProvider::class) params: ColoredParams<AttentionItem.Overspent>
+  @PreviewParameter(OverspentProvider::class) params: ColoredParams<AttentionItem.Overspent>,
 ) =
   PreviewWithColoredParams(params) {
     OverspentContent(categories)
@@ -298,7 +298,7 @@ private val PREVIEW_OVERSPENT =
     persistentListOf(
       OverspentCategory(CategoryId("food"), "Food", Amount(-42.18)),
       OverspentCategory(CategoryId("fuel"), "Fuel", Amount(-12.00)),
-    )
+    ),
   )
 
 internal val PREVIEW_ATTENTION =
@@ -308,7 +308,7 @@ internal val PREVIEW_ATTENTION =
       AttentionItem.Uncategorised(count = 7),
       PREVIEW_OVERSPENT,
       AttentionItem.OverdueSchedules(count = 1),
-    )
+    ),
   )
 
 private class AttentionCardStateProvider :
@@ -319,7 +319,7 @@ private class AttentionCardStateProvider :
       persistentListOf(
         AttentionItem.SyncFailedMany(count = 4),
         AttentionItem.OverdueSchedules(count = 3),
-      )
+      ),
     ),
     Failed,
   )

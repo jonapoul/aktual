@@ -49,8 +49,8 @@ internal class GoCardlessLoginWaiterTest {
     assertThat(response)
       .isEqualTo(
         GoCardlessAccountsResponse.Failed(
-          ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT)
-        )
+          ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT),
+        ),
       )
     assertThat(currentTime).isEqualTo(10.minutes.inWholeMilliseconds)
   }

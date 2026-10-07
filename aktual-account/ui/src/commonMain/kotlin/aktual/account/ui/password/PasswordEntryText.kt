@@ -56,7 +56,7 @@ internal fun PasswordEntryText(
 @Preview
 @Composable
 private fun PreviewPasswordEntryText(
-  @PreviewParameter(PasswordEntryProvider::class) params: ColoredParams<PasswordEntryParams>
+  @PreviewParameter(PasswordEntryProvider::class) params: ColoredParams<PasswordEntryParams>,
 ) =
   PreviewWithColoredParams(params) {
     PasswordEntryText(

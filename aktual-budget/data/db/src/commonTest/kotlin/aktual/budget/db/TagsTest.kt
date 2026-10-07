@@ -36,7 +36,7 @@ internal class TagsTest {
           color = "#aabbcc",
           description = "Food shopping",
           hidden = false,
-        )
+        ),
       )
   }
 
@@ -60,7 +60,7 @@ internal class TagsTest {
             color = "#ddeeff",
             description = "Household",
             hidden = true,
-          )
+          ),
         )
     }
 

@@ -74,7 +74,7 @@ internal fun AmountTextField(
         when (currencyConfig.position) {
           BeforeAmount -> Start
           AfterAmount -> End
-        }
+        },
     )
 
   var lastEmittedValue by remember { mutableStateOf(value) }
@@ -243,7 +243,7 @@ private fun String.amountOrNull(): Amount? = toLongOrNull()?.let(::Amount)
 @Preview
 @Composable
 private fun PreviewAmountTextField(
-  @PreviewParameter(AmountTextFieldProvider::class) params: AmountTextFieldParams
+  @PreviewParameter(AmountTextFieldProvider::class) params: AmountTextFieldParams,
 ) {
   PreviewWithColors(DarkColors) {
     with(params) {
@@ -282,5 +282,5 @@ private class AmountTextFieldProvider :
       AmountTextFieldParams(value = JsonPrimitive(12345), position = AfterAmount),
       AmountTextFieldParams(value = JsonPrimitive(12345), includeSpace = false),
       AmountTextFieldParams(value = JsonPrimitive(12345), currency = SwedishKrona),
-    )
+    ),
   )

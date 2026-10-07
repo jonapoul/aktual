@@ -111,7 +111,7 @@ private const val MEASURE_VALUE = 100f
 @Composable
 private fun PreviewSliderPreferenceItem(
   @PreviewParameter(SliderPreferenceItemProvider::class)
-  params: ColoredParams<SliderPreferenceItemParams>
+  params: ColoredParams<SliderPreferenceItemParams>,
 ) =
   PreviewWithColoredParams(params) {
     SliderPreferenceItem(

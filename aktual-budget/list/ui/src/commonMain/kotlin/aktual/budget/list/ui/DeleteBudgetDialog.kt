@@ -175,7 +175,7 @@ private fun Colors.errorBare(isPressed: Boolean) =
 @Composable
 private fun PreviewDeleteBudgetDialog(
   @PreviewParameter(DeleteBudgetDialogProvider::class)
-  params: ColoredParams<DeleteBudgetDialogParams>
+  params: ColoredParams<DeleteBudgetDialogParams>,
 ) {
   PreviewWithColoredParams(params) {
     Content(

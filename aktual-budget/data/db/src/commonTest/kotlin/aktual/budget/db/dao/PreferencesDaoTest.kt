@@ -66,6 +66,6 @@ internal class PreferencesDaoTest {
     }
 
   private suspend fun PreferencesDao.assertAllPreferences(
-    vararg expected: Pair<SyncedPrefKey, String?>
+    vararg expected: Pair<SyncedPrefKey, String?>,
   ) = assertThat(getAll()).isEqualTo(expected.toMap())
 }

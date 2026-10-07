@@ -82,7 +82,7 @@ internal fun TransactionsTitleBar(
 @Preview
 @Composable
 private fun PreviewTransactionsTitleBar(
-  @PreviewParameter(TransactionsTitleBarProvider::class) params: ColoredParams<LoadedAccount>
+  @PreviewParameter(TransactionsTitleBarProvider::class) params: ColoredParams<LoadedAccount>,
 ) =
   PreviewWithColoredParams(params) {
     TransactionsTitleBar(

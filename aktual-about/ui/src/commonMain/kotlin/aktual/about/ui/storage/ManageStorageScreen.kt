@@ -370,13 +370,13 @@ private fun rememberSlices(
         PieSlice(
           value = state.cacheSize.numBytes.toFloat().coerceAtLeast(minimumValue = 0.001f),
           color = colors[state.budgets.size],
-        )
+        ),
       )
       add(
         PieSlice(
           value = state.otherSize.numBytes.toFloat().coerceAtLeast(minimumValue = 0.001f),
           color = colors[state.budgets.size + 1],
-        )
+        ),
       )
     }
       .toImmutableList()
@@ -534,7 +534,7 @@ private class StoragePreviewParams :
 @TabletPreview
 @Composable
 private fun PreviewManageStorage(
-  @PreviewParameter(StoragePreviewParams::class) params: ColoredParams<ManageStorageState>
+  @PreviewParameter(StoragePreviewParams::class) params: ColoredParams<ManageStorageState>,
 ) {
   PreviewWithColoredParams(params) {
     ManageStorageScaffold(state = this, onAction = {}, modifier = Modifier.fillMaxSize())

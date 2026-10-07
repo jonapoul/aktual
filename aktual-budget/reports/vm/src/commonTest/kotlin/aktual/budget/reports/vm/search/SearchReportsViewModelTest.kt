@@ -76,7 +76,7 @@ class SearchReportsViewModelTest {
           listOf(
             SearchReportsGroup(PAGE_1, persistentListOf(item(NET_WORTH, NetWorth, "Net worth"))),
             SearchReportsGroup(PAGE_2, persistentListOf(item(SPENDING, Spending, "NETFLIX"))),
-          )
+          ),
         )
     }
   }
@@ -101,8 +101,8 @@ class SearchReportsViewModelTest {
             SearchReportsGroup(
               PAGE_1,
               persistentListOf(item(TEXT, Markdown, name = null, content = "Save for a Holiday")),
-            )
-          )
+            ),
+          ),
         )
     }
   }
@@ -125,8 +125,11 @@ class SearchReportsViewModelTest {
       assertThat(awaitResults())
         .isEqualTo(
           listOf(
-            SearchReportsGroup(PAGE_2, persistentListOf(item(CUSTOM, Custom, "Groceries by month")))
-          )
+            SearchReportsGroup(
+              PAGE_2,
+              persistentListOf(item(CUSTOM, Custom, "Groceries by month")),
+            ),
+          ),
         )
     }
   }
@@ -142,8 +145,8 @@ class SearchReportsViewModelTest {
       assertThat(awaitResults())
         .isEqualTo(
           listOf(
-            SearchReportsGroup(PAGE_1, persistentListOf(item(CASH_FLOW, CashFlow, name = null)))
-          )
+            SearchReportsGroup(PAGE_1, persistentListOf(item(CASH_FLOW, CashFlow, name = null))),
+          ),
         )
     }
   }

@@ -175,7 +175,7 @@ private fun DeletePageDialogContent(
 @Preview
 @Composable
 private fun PreviewDashboardMenuItems(
-  @PreviewParameter(DashboardMenuItemsProvider::class) params: ColoredParams<Boolean>
+  @PreviewParameter(DashboardMenuItemsProvider::class) params: ColoredParams<Boolean>,
 ) =
   PreviewWithColoredParams(params) {
     Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {

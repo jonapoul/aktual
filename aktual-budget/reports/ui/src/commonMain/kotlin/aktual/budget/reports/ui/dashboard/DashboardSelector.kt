@@ -107,7 +107,7 @@ internal fun DashboardPage.displayName(): String = name.ifBlank { Strings.report
 @Composable
 private fun PreviewDashboardSelector(
   @PreviewParameter(DashboardSelectorItemsProvider::class)
-  params: ColoredParams<ImmutableList<DashboardPage>>
+  params: ColoredParams<ImmutableList<DashboardPage>>,
 ) =
   PreviewWithColoredParams(params) {
     DashboardSelector(
@@ -121,7 +121,7 @@ private fun PreviewDashboardSelector(
 @Composable
 private fun PreviewDashboardSelectorItems(
   @PreviewParameter(DashboardSelectorItemsProvider::class)
-  params: ColoredParams<ImmutableList<DashboardPage>>
+  params: ColoredParams<ImmutableList<DashboardPage>>,
 ) =
   PreviewWithColoredParams(params) {
     Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {

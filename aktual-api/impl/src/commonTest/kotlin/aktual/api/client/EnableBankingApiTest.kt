@@ -103,8 +103,8 @@ class EnableBankingApiTest {
               isBeta = true,
               maxConsentValidity = 15552000,
             ),
-          )
-        )
+          ),
+        ),
       )
   }
 
@@ -117,8 +117,8 @@ class EnableBankingApiTest {
     assertThat(response)
       .isEqualTo(
         EnableBankingBanksResponse.Failed(
-          Rejected("Enable Banking API error: 401 Unauthorized", details = null)
-        )
+          Rejected("Enable Banking API error: 401 Unauthorized", details = null),
+        ),
       )
   }
 
@@ -136,7 +136,7 @@ class EnableBankingApiTest {
       .isEqualTo(
         """{"aspsp":{"name":"Mock ASPSP","country":"FI"},""" +
           """"redirectUrl":"https://test.server.com/enablebanking/auth_callback",""" +
-          """"maxConsentValidity":7776000,"psuType":"business"}"""
+          """"maxConsentValidity":7776000,"psuType":"business"}""",
       )
     assertThat(response)
       .isEqualTo(
@@ -145,7 +145,7 @@ class EnableBankingApiTest {
             "https://tilisy.enablebanking.com/welcome?" +
               "sessionid=73100c65-c54d-46a1-87d1-aa3effde435a",
           state = STATE,
-        )
+        ),
       )
   }
 
@@ -161,8 +161,8 @@ class EnableBankingApiTest {
           ProviderError(
             errorType = "aspsp, redirectUrl and psuType are required",
             errorCode = "INVALID_INPUT",
-          )
-        )
+          ),
+        ),
       )
   }
 
@@ -198,8 +198,8 @@ class EnableBankingApiTest {
               orgDomain = null,
               balance = Amount(-2050L),
             ),
-          )
-        )
+          ),
+        ),
       )
   }
 
@@ -212,8 +212,8 @@ class EnableBankingApiTest {
     assertThat(response)
       .isEqualTo(
         EnableBankingAccountsResponse.Failed(
-          ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT)
-        )
+          ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT),
+        ),
       )
   }
 

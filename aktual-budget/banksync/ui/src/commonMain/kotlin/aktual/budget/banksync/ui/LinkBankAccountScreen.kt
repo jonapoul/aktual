@@ -133,7 +133,7 @@ internal fun LinkBankAccountScreen(
 @Composable
 private fun linkBankAccountViewModel(id: AccountId?) =
   assistedMetroViewModel<LinkBankAccountViewModel, LinkBankAccountViewModel.Factory>(
-    key = id?.value ?: NEW_ACCOUNT_KEY
+    key = id?.value ?: NEW_ACCOUNT_KEY,
   ) {
     create(id)
   }
@@ -420,7 +420,8 @@ private fun ExternalAccountRow(
 @PortraitPreview
 @Composable
 private fun PreviewLinkBankAccountScaffold(
-  @PreviewParameter(LinkBankAccountStateProvider::class) params: ColoredParams<LinkBankAccountState>
+  @PreviewParameter(LinkBankAccountStateProvider::class)
+  params: ColoredParams<LinkBankAccountState>,
 ) = PreviewWithColoredParams(params) { LinkBankAccountScaffold(state = this, onAction = {}) }
 
 private val PreviewAccounts =
@@ -436,7 +437,7 @@ private val PreviewBanks =
       LoginBankItem("MONZO_MONZGB2L", "Monzo"),
       LoginBankItem("REVOLUT_REVOGB21", "Revolut", isBeta = true),
       LoginBankItem("STARLING_SRLGGB3L", "Starling"),
-    )
+    ),
   )
 
 private fun previewLogin(
@@ -447,7 +448,7 @@ private fun previewLogin(
   previewChoosing(
     accounts =
       ExternalAccounts.NeedsLogin(
-        BankLogin(persistentListOf("GB", "IE"), country = "GB", banks, status, accountType)
+        BankLogin(persistentListOf("GB", "IE"), country = "GB", banks, status, accountType),
       ),
     selected = if (accountType == null) GoCardless else EnableBanking,
   )

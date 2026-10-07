@@ -331,7 +331,7 @@ private fun DayBarChart(
     if (dayValue != monthValue) {
       Box(
         modifier =
-          Modifier.fillMaxWidth().weight(1f - fraction).background(color.copy(alpha = 0.2f))
+          Modifier.fillMaxWidth().weight(1f - fraction).background(color.copy(alpha = 0.2f)),
       )
     }
 
@@ -359,7 +359,7 @@ internal fun CalendarMonth(
         .background(colors.tableBackground, CardShape)
         .widthIn(min = minSize)
         .heightIn(min = minSize)
-        .padding(10.dp)
+        .padding(10.dp),
   ) {
     MonthHeader(
       modifier = Modifier.fillMaxWidth().wrapContentHeight(),
@@ -426,7 +426,7 @@ private val TABLE_SPACING = 2.dp
 @Preview
 @Composable
 private fun PreviewCalendarChart(
-  @PreviewParameter(CalendarChartProvider::class) params: ColoredParams<CalendarChartParams>
+  @PreviewParameter(CalendarChartProvider::class) params: ColoredParams<CalendarChartParams>,
 ) =
   PreviewWithColoredParams(params) {
     CalendarChart(
@@ -454,7 +454,7 @@ private class CalendarChartProvider :
 @Preview
 @Composable
 private fun PreviewMonthHeader(
-  @PreviewParameter(MonthHeaderProvider::class) params: ColoredParams<MonthHeaderParams>
+  @PreviewParameter(MonthHeaderProvider::class) params: ColoredParams<MonthHeaderParams>,
 ) =
   PreviewWithColoredParams(params) {
     MonthHeader(month = month, compact = compact)
@@ -471,7 +471,7 @@ private class MonthHeaderProvider :
 @Preview
 @Composable
 private fun PreviewCalendarSummary(
-  @PreviewParameter(CalendarSummaryProvider::class) params: ColoredParams<CalendarSummaryParams>
+  @PreviewParameter(CalendarSummaryProvider::class) params: ColoredParams<CalendarSummaryParams>,
 ) =
   PreviewWithColoredParams(params) {
     CalendarSummary(data = data, compact = compact)
@@ -489,7 +489,7 @@ private class CalendarSummaryProvider :
 @Preview
 @Composable
 private fun PreviewDayButton(
-  @PreviewParameter(DayButtonProvider::class) params: ColoredParams<DayButtonParams>
+  @PreviewParameter(DayButtonProvider::class) params: ColoredParams<DayButtonParams>,
 ) =
   PreviewWithColoredParams(params) {
     DayButton(
@@ -521,7 +521,7 @@ private class DayButtonProvider :
 @Preview
 @Composable
 private fun PreviewCalendarMonth(
-  @PreviewParameter(CalendarMonthProvider::class) params: ColoredParams<CalendarMonthParams>
+  @PreviewParameter(CalendarMonthProvider::class) params: ColoredParams<CalendarMonthParams>,
 ) =
   PreviewWithColoredParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CalendarMonth(month = month, compact = compact, onAction = {})

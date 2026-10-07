@@ -54,7 +54,7 @@ class NameFetcherImpl(database: BudgetDatabase) : NameFetcher {
         Payee -> payees.name(PayeeId(id))
 
         else -> "NOT HANDLED YET: $field - $id"
-      }
+      },
     )
   }
 
@@ -74,7 +74,7 @@ class NameFetcherImpl(database: BudgetDatabase) : NameFetcher {
         Payee -> payees.names(ids.map(::PayeeId)).toJsonArray()
 
         else -> buildJsonArray { add(JsonPrimitive("NOT HANDLED YET: $field - $ids")) }
-      }
+      },
     )
   }
 

@@ -18,7 +18,7 @@ class BootstrapResponseTest {
       json = AccountResponses.BOOTSTRAP_SUCCESS_200,
       expected =
         BootstrapResponse.Success(
-          data = BootstrapResponse.Data(token = Token("92af386a-f727-431b-963a-f8cac5285878"))
+          data = BootstrapResponse.Data(token = Token("92af386a-f727-431b-963a-f8cac5285878")),
         ),
     )
 }

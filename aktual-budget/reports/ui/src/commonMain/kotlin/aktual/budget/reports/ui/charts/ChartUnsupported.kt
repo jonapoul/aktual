@@ -81,7 +81,7 @@ private fun StackTraceDialog(stackTrace: String, onDismiss: () -> Unit) {
     onDismissRequest = onDismiss,
     buttons = {
       TextButton(
-        onClick = { scope.launch { clipboard.setClipEntry(plainTextClipEntry(stackTrace)) } }
+        onClick = { scope.launch { clipboard.setClipEntry(plainTextClipEntry(stackTrace)) } },
       ) {
         Text(Strings.reportsUnsupportedErrorCopy)
       }
@@ -97,7 +97,7 @@ private fun StackTraceDialog(stackTrace: String, onDismiss: () -> Unit) {
 @Preview
 @Composable
 private fun PreviewUnsupportedChart(
-  @PreviewParameter(UnsupportedChartProvider::class) params: ColoredParams<UnsupportedData>
+  @PreviewParameter(UnsupportedChartProvider::class) params: ColoredParams<UnsupportedData>,
 ) = PreviewWithColoredParams(params) { UnsupportedChart(data = params.data) }
 
 private class UnsupportedChartProvider :
