@@ -9,12 +9,15 @@ import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.DesktopPreview
+import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.isCompactWidth
 import aktual.prefs.ui.core.BasicPreferenceItem
 import aktual.prefs.vm.ListPreference
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +39,15 @@ internal fun DarkThemePreference(
     icon = MaterialIcons.DarkMode,
     enabled = preference.enabled,
     onClick = null,
-    rightContent = { if (!isCompact) DarkThemeContent(preference, onAction) },
+    rightContent = {
+      if (!isCompact) {
+        DarkThemeContent(
+          modifier = Modifier.width(ToggleWidth),
+          preference = preference,
+          onAction = onAction,
+        )
+      }
+    },
     bottomContent = {
       if (isCompact) {
         DarkThemeContent(
@@ -48,6 +59,8 @@ internal fun DarkThemePreference(
     },
   )
 }
+
+private val ToggleWidth = 300.dp
 
 @Composable
 private fun DarkThemeContent(
@@ -71,7 +84,8 @@ private fun DarkThemeContent(
   )
 }
 
-@Preview
+@PortraitPreview
+@DesktopPreview
 @Composable
 private fun PreviewDarkColorsPreference(
   @PreviewParameter(DarkThemePreferenceProvider::class)
