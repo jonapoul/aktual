@@ -147,6 +147,21 @@ internal class TransactionDaoTest {
     }
 
   @Test
+  fun `Transfers name the account on the other side`() = runDaoTest { transactions ->
+    // given
+    transactions.insert("t1", ON_1, CATEGORY, PAYEE, DATE)
+    transactions.insert("t2", ON_1, category = null, TRANSFER_TO_ON_2, DATE)
+    transactions.insert("t3", ON_1, category = null, TRANSFER_TO_OFF, DATE)
+
+    // when
+    val rows = transactions.getPaged(limit = 10, offset = 0).rows
+
+    // then
+    assertThat(rows.associate { it.id.toString() to it.transferAccountName })
+      .isEqualTo(mapOf("t1" to null, "t2" to "Savings", "t3" to "Mortgage"))
+  }
+
+  @Test
   fun `Uncategorised count re-emits as transactions change`() = runDaoTest { transactions ->
     transactions.observeUncategorisedCount().test {
       assertThatNextEmissionIsEqualTo(0L)
@@ -247,8 +262,8 @@ internal class TransactionDaoTest {
     runDatabaseTest {
       insertAccounts(
         buildAccount(id = AccountId(ON_1)),
-        buildAccount(id = AccountId(ON_2)),
-        buildAccount(id = AccountId(OFF), offBudget = true),
+        buildAccount(id = AccountId(ON_2), name = "Savings"),
+        buildAccount(id = AccountId(OFF), name = "Mortgage", offBudget = true),
       )
       PayeeDao(this).insert(PayeeId(PAYEE), "Payee")
       insertTransferPayee(TRANSFER_TO_ON_1, ON_1)

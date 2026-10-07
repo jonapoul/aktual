@@ -104,11 +104,20 @@ internal val TRANSACTION_TRANSFER =
     date = PREVIEW_DATE.minus(1, DAY),
     account = NATWEST,
     payee = "Amex",
+    transfer = To,
     notes = null,
     category = null,
     amount = Amount(-250.00),
     balance = Amount(795.09),
     specialCategory = Transfer,
+  )
+
+internal val TRANSACTION_TRANSFER_IN =
+  TRANSACTION_TRANSFER.copy(
+    id = TransactionId("bcd"),
+    transfer = From,
+    amount = Amount(250.00),
+    balance = Amount(1045.09),
   )
 
 internal val TRANSACTION_OFF_BUDGET =

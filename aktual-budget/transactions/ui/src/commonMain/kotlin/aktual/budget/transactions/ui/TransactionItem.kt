@@ -4,6 +4,8 @@ import aktual.budget.model.Amount
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.transactions.vm.Transaction
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.LeftArrow2
+import aktual.core.icons.RightArrow2
 import aktual.core.icons.Split
 import aktual.core.icons.material.ExpandMore
 import aktual.core.icons.material.MaterialIcons
@@ -231,17 +233,45 @@ private fun PayeeText(
   modifier: Modifier = Modifier,
 ) {
   val noPayee = transaction.split == Parent && transaction.payee == null
-  Text(
+  Row(
     modifier = modifier,
-    text = if (noPayee) Strings.transactionsSplitNoPayee else transaction.payee.orEmpty(),
-    fontSize = dimens.payeeSize,
-    fontWeight = dimens.payeeWeight,
-    fontStyle = if (noPayee) Italic else null,
-    color = if (noPayee) colors.pageTextLight else colors.pageTextDark,
-    overflow = Ellipsis,
-    maxLines = 1,
-  )
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(TransferIconGap),
+  ) {
+    val transferIcon =
+      when (transaction.transfer) {
+        To -> AktualIcons.RightArrow2
+        From -> AktualIcons.LeftArrow2
+        null -> null
+      }
+    if (transferIcon != null) {
+      Icon(
+        modifier = Modifier.size(TransferIconSize),
+        imageVector = transferIcon,
+        contentDescription = null,
+        tint = colors.pageTextDark,
+      )
+    }
+
+    Text(
+      text = if (noPayee) Strings.transactionsSplitNoPayee else transaction.payeeLabel().orEmpty(),
+      fontSize = dimens.payeeSize,
+      fontWeight = dimens.payeeWeight,
+      fontStyle = if (noPayee) Italic else null,
+      color = if (noPayee) colors.pageTextLight else colors.pageTextDark,
+      overflow = Ellipsis,
+      maxLines = 1,
+    )
+  }
 }
+
+@Composable
+private fun Transaction.payeeLabel(): String? =
+  when (transfer) {
+    To -> Strings.transactionsTransferTo(payee.orEmpty())
+    From -> Strings.transactionsTransferFrom(payee.orEmpty())
+    null -> payee
+  }
 
 private fun Transaction.isExpandable(parts: SplitParts) =
   split == Parent && parts != Pinned && children.isNotEmpty()
@@ -412,7 +442,9 @@ private fun SplitChildTableRow(child: Transaction, parent: Transaction, dimens: 
   }
 
 // A part only names its payee when it differs from the one on the parent's row
-private fun Transaction.payeeUnlike(parent: Transaction) = payee.takeIf { it != parent.payee }
+@Composable
+private fun Transaction.payeeUnlike(parent: Transaction): String? =
+  payeeLabel().takeIf { payee != parent.payee || transfer != parent.transfer }
 
 @Composable
 private fun AmountText(
@@ -486,6 +518,8 @@ internal fun LedgerShimmerRow(modifier: Modifier = Modifier) {
 
 private val SplitIconSize = 12.dp
 private val SplitIconGap = 5.dp
+private val TransferIconSize = 12.dp
+private val TransferIconGap = 5.dp
 private val ChevronSize = 14.dp
 private val SplitInsetStart = 12.dp
 private val SplitInsetVertical = 2.dp
@@ -532,6 +566,7 @@ private class LedgerRowProvider :
     LedgerRowParams(Comfortable, TRANSACTION_3),
     LedgerRowParams(Comfortable, TRANSACTION_UNCATEGORISED),
     LedgerRowParams(Comfortable, TRANSACTION_TRANSFER),
+    LedgerRowParams(Comfortable, TRANSACTION_TRANSFER_IN),
     LedgerRowParams(Comfortable, TRANSACTION_OFF_BUDGET),
     LedgerRowParams(Comfortable, TRANSACTION_SPLIT),
     LedgerRowParams(Comfortable, TRANSACTION_SPLIT, parts = Expanded),
@@ -542,6 +577,7 @@ private class LedgerRowProvider :
     LedgerRowParams(Compact, TRANSACTION_3),
     LedgerRowParams(Compact, TRANSACTION_UNCATEGORISED),
     LedgerRowParams(Compact, TRANSACTION_TRANSFER),
+    LedgerRowParams(Compact, TRANSACTION_TRANSFER_IN),
     LedgerRowParams(Compact, TRANSACTION_OFF_BUDGET),
     LedgerRowParams(Compact, TRANSACTION_SPLIT),
     LedgerRowParams(Compact, TRANSACTION_SPLIT, parts = Expanded),
@@ -551,6 +587,7 @@ private class LedgerRowProvider :
     LedgerRowParams(Dense, TRANSACTION_3),
     LedgerRowParams(Dense, TRANSACTION_UNCATEGORISED),
     LedgerRowParams(Dense, TRANSACTION_TRANSFER),
+    LedgerRowParams(Dense, TRANSACTION_TRANSFER_IN),
     LedgerRowParams(Dense, TRANSACTION_OFF_BUDGET),
     LedgerRowParams(Dense, TRANSACTION_SPLIT),
     LedgerRowParams(Dense, TRANSACTION_SPLIT, parts = Expanded),

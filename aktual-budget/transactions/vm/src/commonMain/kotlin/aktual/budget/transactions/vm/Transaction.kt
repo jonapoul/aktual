@@ -22,12 +22,20 @@ enum class SpecialCategory {
   Transfer,
 }
 
+// Which way the money went, from the side of the row's account
+enum class TransferDirection {
+  To,
+  From,
+}
+
 @Immutable
 data class Transaction(
   val id: TransactionId,
   val date: LocalDate,
   val account: String?,
   val payee: String?,
+  // Set on a transfer, whose payee is the name of the other account
+  val transfer: TransferDirection? = null,
   val notes: String?,
   val category: String?,
   val amount: Amount,
@@ -58,12 +66,14 @@ internal fun TransactionRow.toTransaction(
   balance: Amount?,
   children: List<TransactionRow> = emptyList(),
   shownChildren: Set<TransactionId>? = null,
-): Transaction =
-  Transaction(
+): Transaction {
+  val payee = if (isParent) displayPayee(children) else this
+  return Transaction(
     id = id,
     date = date,
     account = accountName,
-    payee = if (isParent) displayPayee(children) else payeeName,
+    payee = payee?.payeeOrTransferAccount(),
+    transfer = payee?.transferDirection(),
     notes = notes,
     category = categoryName,
     amount = Amount(amount),
@@ -88,19 +98,32 @@ internal fun TransactionRow.toTransaction(
         .toImmutableList(),
     totalChildren = children.size,
   )
+}
+
+private fun TransactionRow.payeeOrTransferAccount(): String? = transferAccountName ?: payeeName
+
+// As upstream's getPrettyPayee in packages/desktop-client/src/components/mobile/utils.ts
+private fun TransactionRow.transferDirection(): TransferDirection? =
+  when {
+    transferAccountName == null -> null
+    amount > 0 -> From
+    else -> To
+  }
 
 // A split shows the most common payee of its parts, the first to get there on a tie, and never its
 // own. Mirrors packages/desktop-client/src/hooks/useDisplayPayee.tsx
-internal fun displayPayee(children: List<TransactionRow>): String? {
-  val counts = mutableMapOf<String, Int>()
-  var mostCommon: String? = null
+internal fun displayPayee(children: List<TransactionRow>): TransactionRow? {
+  val counts = mutableMapOf<Pair<String, Boolean>, Int>()
+  var mostCommon: TransactionRow? = null
   var maxCount = 0
-  for (payee in children.mapNotNull { it.payeeName }) {
+  for (child in children) {
+    val name = child.payeeOrTransferAccount() ?: continue
+    val payee = name to (child.transferAccountName != null)
     val count = counts.getOrElse(payee) { 0 } + 1
     counts[payee] = count
     if (count > maxCount) {
       maxCount = count
-      mostCommon = payee
+      mostCommon = child
     }
   }
   return mostCommon

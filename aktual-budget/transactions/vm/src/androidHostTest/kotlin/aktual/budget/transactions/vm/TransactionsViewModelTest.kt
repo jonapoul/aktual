@@ -134,6 +134,7 @@ class TransactionsViewModelTest {
     payees.insertPayee(PayeeId("a"), "Argos")
     payees.insertPayee(PayeeId("b"), "B&Q")
     payees.insertPayee(PayeeId("c"), "Co-op")
+    payees.insert(PayeeId("t"), name = null, transferAccount = AccountId("b"))
 
     categories.insertCategory(CategoryId("a"), "Additional")
     categories.insertCategory(CategoryId("b"), "Building")
@@ -554,6 +555,34 @@ class TransactionsViewModelTest {
     // then
     assertThat(snapshot.associate { it.id.toString() to it.payee })
       .isEqualTo(mapOf("common" to "B&Q", "none" to null, "tie" to "Argos"))
+  }
+
+  @Test
+  fun `A transfer shows the other account and its direction`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("out", "a", null, "t", amount = -50.0)
+      insertTransaction("in", "a", null, "t", amount = 50.0)
+      insertTransaction("split", "a", null, "c", isParent = true)
+      insertTransaction("split1", "a", "a", "t", amount = -10.0, parent = "split")
+      insertTransaction("other", "a", "a", "a")
+    }
+    advanceUntilIdle()
+
+    // when
+    val snapshot = viewModel.pagingData.asSnapshot()
+
+    // then
+    assertThat(snapshot.associate { it.id.toString() to (it.payee to it.transfer) })
+      .isEqualTo(
+        mapOf(
+          "in" to ("Barclays" to From),
+          "other" to ("Argos" to null),
+          "out" to ("Barclays" to To),
+          "split" to ("Barclays" to To),
+        ),
+      )
   }
 
   @Test
