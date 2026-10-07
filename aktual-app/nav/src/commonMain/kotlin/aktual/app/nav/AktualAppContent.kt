@@ -31,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
@@ -105,7 +106,8 @@ fun AktualAppContent(
         val attrs = LocalBottomBarThemeAttrs.current.current
         val bottomModifier =
           if (attrs.shouldHazeOnRootLevel) Modifier.hazedBottomBar(attrs) else Modifier
-        Column(modifier = bottomModifier) {
+        // an empty pointer input stops clicks reaching the content underneath
+        Column(modifier = bottomModifier.pointerInput(Unit) {}) {
           val bbs = bottomBarState
           if (bbs is Visible) {
             BottomStatusBar(
