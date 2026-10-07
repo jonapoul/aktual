@@ -229,6 +229,39 @@ class TransactionsViewModelTest {
   }
 
   @Test
+  fun `Transactions in an off budget account are labelled off budget`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    accounts.insert(id = AccountId("o"), name = "Offshore", offBudget = true)
+    with(transactions) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a")
+      insertTransaction(id = "o", account = "o", category = null, payee = "a")
+    }
+    advanceUntilIdle()
+
+    val source =
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        tagsDao = tags,
+        spec = TransactionsSpec(AllAccounts),
+      )
+
+    // when
+    val result =
+      source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
+
+    // then
+    val offBudget =
+      transaction(id = "o", account = "a", category = null, payee = "a")
+        .copy(account = "Offshore", needsCategory = false, specialCategory = OffBudget)
+    assertThat(result)
+      .isPage()
+      .withData(TRANSACTION_A.withBalance(246.90), offBudget.withBalance(123.45))
+      .withPrevKey(null)
+      .withNextKey(null)
+  }
+
+  @Test
   fun `Transactions for a specific tag`() = runTest {
     // given
     buildViewModel(AllAccounts)

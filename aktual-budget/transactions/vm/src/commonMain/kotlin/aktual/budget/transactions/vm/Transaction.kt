@@ -16,6 +16,12 @@ enum class SplitRole {
   Child,
 }
 
+// Stands in for the category, as upstream's mobile list does
+enum class SpecialCategory {
+  OffBudget,
+  Transfer,
+}
+
 @Immutable
 data class Transaction(
   val id: TransactionId,
@@ -27,6 +33,7 @@ data class Transaction(
   val amount: Amount,
   val balance: Amount?,
   val needsCategory: Boolean = false,
+  val specialCategory: SpecialCategory? = null,
   val split: SplitRole = None,
   // The parts to show under a parent, which in a tag list can be fewer than totalChildren
   val children: ImmutableList<Transaction> = persistentListOf(),
@@ -62,6 +69,12 @@ internal fun TransactionRow.toTransaction(
     amount = Amount(amount),
     balance = balance,
     needsCategory = needsCategory,
+    specialCategory =
+      when {
+        offBudget -> OffBudget
+        isTransfer -> Transfer
+        else -> null
+      },
     split =
       when {
         isParent -> Parent

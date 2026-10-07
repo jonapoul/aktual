@@ -36,6 +36,8 @@ data class TransactionRow(
   val isParent: Boolean,
   val isChild: Boolean?,
   val needsCategory: Boolean,
+  val offBudget: Boolean,
+  val isTransfer: Boolean,
 )
 
 // One page of the list, with the balance after its first (newest) row
@@ -188,6 +190,8 @@ private fun transactionRow(
   isParent: Boolean?,
   isChild: Boolean?,
   needsCategory: Long,
+  offBudget: Long,
+  isTransfer: Long,
 ) =
   TransactionRow(
     id = id,
@@ -200,6 +204,8 @@ private fun transactionRow(
     isParent = isParent == true,
     isChild = isChild,
     needsCategory = needsCategory != 0L,
+    offBudget = offBudget != 0L,
+    isTransfer = isTransfer != 0L,
   )
 
 @Suppress("LongParameterList")
@@ -214,6 +220,8 @@ private fun childRow(
   isParent: Boolean?,
   isChild: Boolean?,
   needsCategory: Long,
+  offBudget: Long,
+  isTransfer: Long,
   parentId: TransactionId?,
 ): Pair<TransactionId, TransactionRow> {
   val row =
@@ -228,6 +236,8 @@ private fun childRow(
       isParent,
       isChild,
       needsCategory,
+      offBudget,
+      isTransfer,
     )
   return (parentId ?: error("Child $id has no parent")) to row
 }

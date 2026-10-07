@@ -98,6 +98,32 @@ internal val TRANSACTION_UNCATEGORISED =
     needsCategory = true,
   )
 
+internal val TRANSACTION_TRANSFER =
+  Transaction(
+    id = TransactionId("pqr"),
+    date = PREVIEW_DATE.minus(1, DAY),
+    account = NATWEST,
+    payee = "Amex",
+    notes = null,
+    category = null,
+    amount = Amount(-250.00),
+    balance = Amount(795.09),
+    specialCategory = Transfer,
+  )
+
+internal val TRANSACTION_OFF_BUDGET =
+  Transaction(
+    id = TransactionId("yza"),
+    date = PREVIEW_DATE.minus(1, DAY),
+    account = "Mortgage",
+    payee = "Halifax",
+    notes = null,
+    category = null,
+    amount = Amount(-890.00),
+    balance = Amount(-94.91),
+    specialCategory = OffBudget,
+  )
+
 private val SPLIT_DATE = PREVIEW_DATE.minus(2, DAY)
 
 private fun splitChild(id: String, payee: String, category: String?, amount: Double) =
