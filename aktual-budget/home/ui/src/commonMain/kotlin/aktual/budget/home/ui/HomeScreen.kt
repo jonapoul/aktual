@@ -24,7 +24,6 @@ import aktual.core.ui.TabletPreview
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
-import aktual.core.ui.isCompactWidth
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
@@ -90,37 +89,39 @@ internal fun HomeScreen(
   )
 }
 
+// Measured against the screen's own width rather than the window's, since the nav rail takes some
+// of it. A brand new budget has no accounts to list, so the onboarding card gets the whole width
 @Composable
 private fun HomeScaffold(
   state: HomeState,
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
-  isCompact: Boolean = isCompactWidth(),
 ) {
-  // A brand new budget has no accounts to list, so the onboarding card gets the whole width
-  if (isCompact || state.isEmpty) {
-    HomeContent(state = state, modifier = modifier) {
-      if (state.isEmpty) {
-        OnboardingCard(onAction = onAction)
-      } else {
-        ThisMonthCard(state = state.thisMonth, onAction = onAction)
-        AttentionCard(state = state.attention, onAction = onAction)
-        UpcomingCard(state = state.upcoming, onAction = onAction)
-        AccountsCard(state = state.accounts, onAction = onAction)
+  BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    if (maxWidth < SidePanelMinWidth || state.isEmpty) {
+      HomeContent(state = state) {
+        if (state.isEmpty) {
+          OnboardingCard(onAction = onAction)
+        } else {
+          ThisMonthCard(state = state.thisMonth, onAction = onAction)
+          AttentionCard(state = state.attention, onAction = onAction)
+          UpcomingCard(state = state.upcoming, onAction = onAction)
+          AccountsCard(state = state.accounts, onAction = onAction)
+        }
       }
-    }
-  } else {
-    Row(modifier = modifier.fillMaxSize()) {
-      AccountsPanel(
-        modifier = Modifier.width(AccountsPanelWidth).fillMaxHeight(),
-        state = state.accounts,
-        onAction = onAction,
-      )
+    } else {
+      Row(modifier = Modifier.fillMaxSize()) {
+        AccountsPanel(
+          modifier = Modifier.width(AccountsPanelWidth).fillMaxHeight(),
+          state = state.accounts,
+          onAction = onAction,
+        )
 
-      VerticalDivider(color = colors.tableBorder)
+        VerticalDivider(color = colors.tableBorder)
 
-      HomeContent(state = state, modifier = Modifier.weight(1f)) {
-        CardGrid(state = state, onAction = onAction)
+        HomeContent(state = state, modifier = Modifier.weight(1f)) {
+          CardGrid(state = state, onAction = onAction)
+        }
       }
     }
   }
@@ -220,6 +221,7 @@ private fun CardGrid(
 
 private val AccountsPanelWidth = 360.dp
 private val TwoColumnMinWidth = 640.dp
+private val SidePanelMinWidth = AccountsPanelWidth + 400.dp
 private val CardGridMaxWidth = 1200.dp
 
 @Composable
@@ -279,7 +281,7 @@ private fun PreviewHomeScaffold(
   @PreviewParameter(HomeStateProvider::class) params: ColoredParams<HomeState>
 ) =
   PreviewWithColoredParams(params) {
-    HomeScaffold(state = this, onAction = {}, isCompact = true)
+    HomeScaffold(state = this, onAction = {})
   }
 
 @TabletPreview
@@ -288,7 +290,7 @@ private fun PreviewTabletHomeScaffold(
   @PreviewParameter(HomeStateProvider::class) params: ColoredParams<HomeState>
 ) =
   PreviewWithColoredParams(params) {
-    HomeScaffold(state = this, onAction = {}, isCompact = false)
+    HomeScaffold(state = this, onAction = {})
   }
 
 @DesktopPreview
@@ -297,7 +299,7 @@ private fun PreviewDesktopHomeScaffold(
   @PreviewParameter(WideHomeStateProvider::class) params: ColoredParams<HomeState>
 ) =
   PreviewWithColoredParams(params) {
-    HomeScaffold(state = this, onAction = {}, isCompact = false)
+    HomeScaffold(state = this, onAction = {})
   }
 
 @PortraitPreview
@@ -306,5 +308,5 @@ private fun PreviewPrivateHomeScaffold(
   @PreviewParameter(PrivateHomeStateProvider::class) params: ColoredParams<HomeState>
 ) =
   PreviewWithColoredParams(params, isPrivacyEnabled = true) {
-    HomeScaffold(state = this, onAction = {}, isCompact = true)
+    HomeScaffold(state = this, onAction = {})
   }
