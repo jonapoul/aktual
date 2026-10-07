@@ -27,10 +27,14 @@ internal class TransactionsPagingSource(
 
   override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Transaction> =
     try {
-      // Start from page 0 if no key provided
-      val page = params.key ?: 0
-      val offset = (page * params.loadSize).toLong()
-      val limit = params.loadSize.toLong()
+      // Keys are row offsets, not page numbers, since the first load is bigger than the rest. A
+      // prepend's key is the offset its page ends at
+      val key = params.key ?: 0
+      val isPrepend = params is Prepend
+      val start = if (isPrepend) (key - params.loadSize).coerceAtLeast(0) else key
+      val size = if (isPrepend) key - start else params.loadSize
+      val offset = start.toLong()
+      val limit = size.toLong()
 
       val transactions =
         when (val tagSpec = spec.tagSpec) {
@@ -58,8 +62,8 @@ internal class TransactionsPagingSource(
 
       LoadResult.Page(
         data = transactions,
-        prevKey = if (page > 0) page - 1 else null,
-        nextKey = if (transactions.size < params.loadSize) null else page + 1,
+        prevKey = if (start > 0) start else null,
+        nextKey = if (transactions.size < size) null else start + transactions.size,
       )
     } catch (e: CancellationException) {
       throw e
@@ -137,12 +141,10 @@ internal class TransactionsPagingSource(
     val children: Set<TransactionId> = emptySet(),
   )
 
-  override fun getRefreshKey(state: PagingState<Int, Transaction>): Int? {
-    // Try to find the page key of the closest item to the current scroll position
-    // This ensures that when the data refreshes, the user stays at roughly the same position
-    return state.anchorPosition?.let { anchorPosition ->
+  // Reload from the page nearest the scroll position, so a refresh keeps the user roughly in place
+  override fun getRefreshKey(state: PagingState<Int, Transaction>): Int? =
+    state.anchorPosition?.let { anchorPosition ->
       val anchorPage = state.closestPageToPosition(anchorPosition)
-      anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+      anchorPage?.let { it.prevKey ?: 0 }
     }
-  }
 }

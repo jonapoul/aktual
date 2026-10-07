@@ -419,29 +419,102 @@ class TransactionsViewModelTest {
       .isPage()
       .withData(DATED_F.withBalance(740.70), DATED_D.withBalance(617.25))
       .withPrevKey(null)
-      .withNextKey(1)
+      .withNextKey(2)
 
     // when - load second page
     val secondPage =
-      source.load(LoadParams.Append(key = 1, loadSize = 2, placeholdersEnabled = false))
+      source.load(LoadParams.Append(key = 2, loadSize = 2, placeholdersEnabled = false))
 
     // then - second page contains next 2 items, its balances carrying on from the first page
     assertThat(secondPage)
       .isPage()
       .withData(DATED_E.withBalance(493.80), DATED_A.withBalance(370.35))
-      .withPrevKey(0)
-      .withNextKey(2)
+      .withPrevKey(2)
+      .withNextKey(4)
 
     // when - load third page
     val thirdPage =
-      source.load(LoadParams.Append(key = 2, loadSize = 2, placeholdersEnabled = false))
+      source.load(LoadParams.Append(key = 4, loadSize = 2, placeholdersEnabled = false))
 
     // then - third page contains remaining items
     assertThat(thirdPage)
       .isPage()
       .withData(DATED_B.withBalance(246.90), DATED_C.withBalance(123.45))
-      .withPrevKey(1)
-      .withNextKey(3) // More pages possible since we loaded exactly the page size
+      .withPrevKey(4)
+      .withNextKey(6) // More pages possible since we loaded exactly the page size
+  }
+
+  @Test
+  fun `Pages don't overlap when the first load is bigger than the rest`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
+      insertTransaction(id = "b", account = "b", category = "b", payee = "b", date = DATE_1)
+      insertTransaction(id = "c", account = "c", category = "c", payee = "c", date = DATE_1)
+      insertTransaction(id = "d", account = "c", category = "c", payee = "c", date = DATE_2)
+      insertTransaction(id = "e", account = "c", category = "c", payee = "c", date = DATE_2)
+      insertTransaction(id = "f", account = "c", category = "c", payee = "c", date = DATE_3)
+    }
+    advanceUntilIdle()
+
+    val source =
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        tagsDao = tags,
+        spec = TransactionsSpec(AllAccounts),
+      )
+
+    // when - the first load is twice the page size, as Paging's initial load is
+    val firstPage =
+      source.load(LoadParams.Refresh(key = null, loadSize = 4, placeholdersEnabled = false))
+    val secondPage =
+      source.load(LoadParams.Append(key = 4, loadSize = 2, placeholdersEnabled = false))
+
+    // then
+    assertThat(firstPage)
+      .isPage()
+      .withData(
+        DATED_F.withBalance(740.70),
+        DATED_D.withBalance(617.25),
+        DATED_E.withBalance(493.80),
+        DATED_A.withBalance(370.35),
+      )
+      .withPrevKey(null)
+      .withNextKey(4)
+    assertThat(secondPage)
+      .isPage()
+      .withData(DATED_B.withBalance(246.90), DATED_C.withBalance(123.45))
+      .withPrevKey(4)
+      .withNextKey(6)
+  }
+
+  @Test
+  fun `Prepending stops at the start of the list`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
+      insertTransaction(id = "b", account = "b", category = "b", payee = "b", date = DATE_1)
+      insertTransaction(id = "c", account = "c", category = "c", payee = "c", date = DATE_1)
+      insertTransaction(id = "d", account = "c", category = "c", payee = "c", date = DATE_2)
+      insertTransaction(id = "e", account = "c", category = "c", payee = "c", date = DATE_2)
+      insertTransaction(id = "f", account = "c", category = "c", payee = "c", date = DATE_3)
+    }
+    advanceUntilIdle()
+
+    val source =
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        tagsDao = tags,
+        spec = TransactionsSpec(AllAccounts),
+      )
+
+    // when - only one row sits before the key, fewer than the page size
+    val page = source.load(LoadParams.Prepend(key = 1, loadSize = 2, placeholdersEnabled = false))
+
+    // then
+    assertThat(page).isPage().withData(DATED_F.withBalance(740.70)).withPrevKey(null).withNextKey(1)
   }
 
   @Test
@@ -468,7 +541,7 @@ class TransactionsViewModelTest {
     val firstPage =
       source.load(LoadParams.Refresh(key = null, loadSize = 2, placeholdersEnabled = false))
     val secondPage =
-      source.load(LoadParams.Append(key = 1, loadSize = 2, placeholdersEnabled = false))
+      source.load(LoadParams.Append(key = 2, loadSize = 2, placeholdersEnabled = false))
 
     // then
     assertThat(firstPage)
@@ -478,11 +551,11 @@ class TransactionsViewModelTest {
         transaction("c", "c", "c", "c", notes = "#food 2", date = DATE_2),
       )
       .withPrevKey(null)
-      .withNextKey(1)
+      .withNextKey(2)
     assertThat(secondPage)
       .isPage()
       .withData(transaction("a", "a", "a", "a", notes = "#food 1", date = DATE_1))
-      .withPrevKey(0)
+      .withPrevKey(2)
       .withNextKey(null)
   }
 
@@ -739,7 +812,7 @@ class TransactionsViewModelTest {
     val firstPage =
       source.load(LoadParams.Refresh(key = null, loadSize = 2, placeholdersEnabled = false))
     val secondPage =
-      source.load(LoadParams.Append(key = 1, loadSize = 2, placeholdersEnabled = false))
+      source.load(LoadParams.Append(key = 2, loadSize = 2, placeholdersEnabled = false))
 
     // then
     assertThat(firstPage)
@@ -754,11 +827,11 @@ class TransactionsViewModelTest {
         transaction("a", "a", "a", "a", notes = "#food", date = DATE_2),
       )
       .withPrevKey(null)
-      .withNextKey(1)
+      .withNextKey(2)
     assertThat(secondPage)
       .isPage()
       .withData(transaction("b", "b", "b", "b", notes = "#food", date = DATE_1))
-      .withPrevKey(0)
+      .withPrevKey(2)
       .withNextKey(null)
   }
 
