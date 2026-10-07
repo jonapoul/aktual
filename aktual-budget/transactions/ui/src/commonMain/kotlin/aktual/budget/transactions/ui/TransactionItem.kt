@@ -10,7 +10,6 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.formattedString
-import aktual.core.ui.stringLong
 import aktual.core.ui.stringShort
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -96,10 +95,8 @@ private fun DateRail(date: LocalDate, dimens: LedgerDimens) =
       maxLines = 1,
     )
 
-    // Compact swaps the weekday for the month, since the rail has no room for both
-    val subtitle = if (dimens.showMonth) date.month.stringShort() else date.dayOfWeek.stringLong()
     Text(
-      text = subtitle.take(LABEL_LENGTH).uppercase(),
+      text = date.month.stringShort().take(LABEL_LENGTH).uppercase(),
       fontSize = dimens.weekdaySize,
       fontWeight = SemiBold,
       color = colors.pageTextLight,
