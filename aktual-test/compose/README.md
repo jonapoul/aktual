@@ -1,5 +1,5 @@
 # aktual-test:compose
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-test/compose/chart.png)
 <!--endregion-->

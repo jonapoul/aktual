@@ -1,5 +1,5 @@
 # aktual-metrics:vm
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-metrics/vm/chart.png)
 <!--endregion-->

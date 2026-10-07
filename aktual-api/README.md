@@ -1,5 +1,5 @@
 # aktual-api
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-api/chart.png)
 <!--endregion-->

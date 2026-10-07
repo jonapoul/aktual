@@ -1,5 +1,5 @@
 # aktual-budget:transactions:ui
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-budget/transactions/ui/chart.png)
 <!--endregion-->

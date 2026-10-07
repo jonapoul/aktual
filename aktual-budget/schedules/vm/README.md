@@ -1,5 +1,5 @@
 # aktual-budget:schedules:vm
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-budget/schedules/vm/chart.png)
 <!--endregion-->

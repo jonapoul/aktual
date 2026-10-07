@@ -1,5 +1,5 @@
 # detekt-rules
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/detekt-rules/chart.png)
 <!--endregion-->
