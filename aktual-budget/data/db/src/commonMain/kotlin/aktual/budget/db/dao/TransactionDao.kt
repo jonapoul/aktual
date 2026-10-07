@@ -21,6 +21,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.longOrNull
 
 // parent is set on split children only
 data class TransactionNotes(val id: TransactionId, val notes: String?, val parent: TransactionId?)
@@ -39,6 +43,8 @@ data class TransactionRow(
   val needsCategory: Boolean,
   val offBudget: Boolean,
   val isTransfer: Boolean,
+  // What a split parent's amount has over the sum of its parts, if they don't add up
+  val splitDifference: Long? = null,
 )
 
 // One page of the list, with the balance after its first (newest) row
@@ -147,6 +153,7 @@ class TransactionDao(database: BudgetDatabase) {
     isParent: Boolean = false,
     parent: String? = null,
     schedule: String? = null,
+    error: JsonObject? = null,
   ) = queries.withoutResult {
     insert(
       Transactions(
@@ -162,7 +169,7 @@ class TransactionDao(database: BudgetDatabase) {
         financial_id = null,
         type = null,
         location = null,
-        error = null,
+        error = error,
         imported_description = null,
         starting_balance_flag = null,
         transferred_id = null,
@@ -191,6 +198,7 @@ private fun transactionRow(
   amount: Long,
   isParent: Boolean?,
   isChild: Boolean?,
+  error: JsonObject?,
   needsCategory: Long,
   offBudget: Long,
   isTransfer: Long,
@@ -209,7 +217,16 @@ private fun transactionRow(
     needsCategory = needsCategory != 0L,
     offBudget = offBudget != 0L,
     isTransfer = isTransfer != 0L,
+    splitDifference = error?.takeIf { isParent == true }?.splitDifference(),
   )
+
+// The difference of upstream's SplitTransactionError, in
+// packages/loot-core/src/shared/transactions.ts
+private fun JsonObject.splitDifference(): Long? {
+  val type = (get("type") as? JsonPrimitive)?.contentOrNull
+  if (type != "SplitTransactionError") return null
+  return (get("difference") as? JsonPrimitive)?.longOrNull?.takeIf { it != 0L }
+}
 
 @Suppress("LongParameterList")
 private fun childRow(
@@ -223,6 +240,7 @@ private fun childRow(
   amount: Long,
   isParent: Boolean?,
   isChild: Boolean?,
+  error: JsonObject?,
   needsCategory: Long,
   offBudget: Long,
   isTransfer: Long,
@@ -240,6 +258,7 @@ private fun childRow(
       amount,
       isParent,
       isChild,
+      error,
       needsCategory,
       offBudget,
       isTransfer,

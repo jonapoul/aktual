@@ -58,6 +58,8 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
@@ -530,6 +532,33 @@ class TransactionsViewModelTest {
         TRANSACTION_A.withBalance(123.45),
       )
     viewModel.balance.test { assertThatNextEmissionIsEqualTo(Amount(346.90)) }
+  }
+
+  @Test
+  fun `A split whose parts don't add up shows what's left to assign`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    val error = buildJsonObject {
+      put("type", "SplitTransactionError")
+      put("version", 1)
+      put("difference", 4000)
+    }
+    with(transactions) {
+      insertTransaction("p", "a", null, "a", amount = 100.0, isParent = true, error = error)
+      insertTransaction("p1", "a", "b", "b", amount = 60.0, parent = "p")
+    }
+    advanceUntilIdle()
+
+    // when
+    val snapshot = viewModel.pagingData.asSnapshot()
+
+    // then
+    assertThat(snapshot)
+      .containsExactly(
+        transaction("p", "a", null, "a", amount = 100.0, balance = 100.0)
+          .asParent(payee = "B&Q", transaction("p1", "a", "b", "b", amount = 60.0))
+          .copy(splitRemaining = Amount(40.0)),
+      )
   }
 
   @Test

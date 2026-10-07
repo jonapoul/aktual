@@ -142,6 +142,8 @@ SELECT id FROM transactions
 --
 -- offBudget and isTransfer are what upstream's mobile list labels a row with in place of its
 -- category: specialCategory in desktop-client/src/components/mobile/transactions/TransactionListItem.tsx
+--
+-- error is set on a split parent whose parts don't add up to its amount
 getPaged:
 SELECT
   vt.id,
@@ -154,6 +156,7 @@ SELECT
   vt.amount,
   vt.is_parent AS isParent,
   vt.is_child AS isChild,
+  vt.error,
   CASE WHEN
     a.offbudget = 0 AND
     c.id IS NULL AND
@@ -184,6 +187,7 @@ SELECT
   vt.amount,
   vt.is_parent AS isParent,
   vt.is_child AS isChild,
+  vt.error,
   CASE WHEN
     a.offbudget = 0 AND
     c.id IS NULL AND
@@ -214,6 +218,7 @@ SELECT
   vt.amount,
   vt.is_parent AS isParent,
   vt.is_child AS isChild,
+  vt.error,
   1 AS needsCategory,
   0 AS offBudget,
   0 AS isTransfer
@@ -258,6 +263,7 @@ SELECT
   vt.amount,
   vt.is_parent AS isParent,
   vt.is_child AS isChild,
+  vt.error,
   CASE WHEN
     a.offbudget = 0 AND
     c.id IS NULL AND
@@ -288,6 +294,7 @@ SELECT
   vt.amount,
   vt.is_parent AS isParent,
   vt.is_child AS isChild,
+  vt.error,
   CASE WHEN
     a.offbudget = 0 AND
     c.id IS NULL AND
