@@ -13,7 +13,6 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.AccountSpec.AllAccounts
 import aktual.budget.model.AccountSpec.SpecificAccount
-import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.LocalChange
@@ -23,7 +22,6 @@ import aktual.budget.model.TagId
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
-import aktual.core.model.ServerUrl
 import aktual.di.AppGraph
 import aktual.di.AppScope
 import aktual.di.RunLevelController
@@ -106,7 +104,7 @@ class TransactionsViewModelTest {
 
     with(appGraph.runLevelController) {
       init(listOf(appGraph))
-      onServerChosen(ServerUrl.Demo)
+      onServerChosen(Demo)
       onLoggedIn(TOKEN)
       val budgetGraph = onBudget(BUDGET_ID, METADATA)
       accounts = budgetGraph[AccountDao::class]
@@ -126,7 +124,7 @@ class TransactionsViewModelTest {
       id = LINKED,
       accountId = "remote",
       name = "Linked",
-      accountSyncSource = AccountSyncSource.SimpleFin,
+      accountSyncSource = SimpleFin,
     )
 
     payees.insertPayee(PayeeId("a"), "Argos")

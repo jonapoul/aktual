@@ -9,7 +9,7 @@ class BootstrapResponseTest {
   fun `Decode from JSON 400`() =
     testDecoding(
       json = AccountResponses.BOOTSTRAP_ALREADY_400,
-      expected = BootstrapResponse.Failure(reason = FailureReason.AlreadyBootstrapped),
+      expected = BootstrapResponse.Failure(reason = AlreadyBootstrapped),
     )
 
   @Test

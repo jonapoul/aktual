@@ -275,7 +275,7 @@ private fun DepletionCard(
               selected.age,
             ),
           style = typography.bodyMedium,
-          fontWeight = FontWeight.Medium,
+          fontWeight = Medium,
           color = colors.pageText,
         )
       }

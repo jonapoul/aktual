@@ -5,6 +5,6 @@ import io.ktor.http.URLProtocol
 
 internal fun ServerUrl.protocol(): URLProtocol =
   when (protocol) {
-    Http -> URLProtocol.HTTP
-    Https -> URLProtocol.HTTPS
+    Http -> HTTP
+    Https -> HTTPS
   }

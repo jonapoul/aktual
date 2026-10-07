@@ -13,7 +13,6 @@ import assertk.assertions.isDataClassEqualTo
 import assertk.assertions.isEqualTo
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
-import io.ktor.http.HttpMethod
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -45,7 +44,7 @@ class ColorsApiImplTest {
     // then
     assertThat(response).isDataClassEqualTo(ShadesOfCoffeeTheme)
     with(mockEngine.latestRequest()) {
-      assertThat(method).isEqualTo(HttpMethod.Get)
+      assertThat(method).isEqualTo(Get)
       assertThat(url.toString())
         .isEqualTo(
           "https://raw.githubusercontent.com/Juulz/shades-of-coffee/refs/heads/main/actual.css"
@@ -64,7 +63,7 @@ class ColorsApiImplTest {
     // then
     assertThat(response).contains(ShadesOfCoffeeThemeSummary)
     with(mockEngine.latestRequest()) {
-      assertThat(method).isEqualTo(HttpMethod.Get)
+      assertThat(method).isEqualTo(Get)
       assertThat(url.toString())
         .isEqualTo(
           "https://raw.githubusercontent.com/actualbudget/actual/master/packages/desktop-client/" +

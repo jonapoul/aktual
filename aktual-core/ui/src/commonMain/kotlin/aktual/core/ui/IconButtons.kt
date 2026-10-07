@@ -36,7 +36,7 @@ fun PrimaryIconButton(
   enabled: Boolean = true,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  colors: IconButtonColorProvider = IconButtonColorProvider.Primary,
+  colors: IconButtonColorProvider = Primary,
   content: @Composable () -> Unit = {
     DefaultIconButtonContent(imageVector, contentDescription, size)
   },
@@ -66,7 +66,7 @@ fun NormalIconButton(
   isEnabled: Boolean = true,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  colors: IconButtonColorProvider = IconButtonColorProvider.Normal,
+  colors: IconButtonColorProvider = Normal,
   content: @Composable () -> Unit = {
     DefaultIconButtonContent(imageVector, contentDescription, size)
   },
@@ -96,7 +96,7 @@ fun BareIconButton(
   enabled: Boolean = true,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  colors: IconButtonColorProvider = IconButtonColorProvider.Bare,
+  colors: IconButtonColorProvider = Bare,
   content: @Composable () -> Unit = {
     DefaultIconButtonContent(imageVector, contentDescription, size)
   },

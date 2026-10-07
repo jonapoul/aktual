@@ -42,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -120,7 +119,7 @@ private fun ExpandRow(text: String, onClick: () -> Unit, modifier: Modifier = Mo
       modifier
         .fillMaxWidth()
         .heightIn(min = RowMinHeight)
-        .hoverClickable(role = Role.Button, onClick = onClick)
+        .hoverClickable(role = Button, onClick = onClick)
         .padding(horizontal = CardPadding),
     verticalAlignment = CenterVertically,
   ) {

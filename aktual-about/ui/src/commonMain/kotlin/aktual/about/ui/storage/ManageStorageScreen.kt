@@ -66,7 +66,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -157,7 +156,7 @@ private fun ManageStorageContent(
   onAction: ManageStorageActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = TopCenter) {
     when (state) {
       Loading -> {
         Box(

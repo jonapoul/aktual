@@ -4,7 +4,6 @@ import aktual.budget.BudgetFiles
 import aktual.budget.db.AndroidxSqlDriverFactory
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.migrateDatabase
-import aktual.budget.model.BudgetId
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.db.QueryResult
@@ -34,10 +33,10 @@ class DemoDatesTest {
   @BeforeTest
   fun before() = runTest {
     dir = createTempDirectory().toOkioPath()
-    val files = BudgetFiles(FileSystem.SYSTEM, dir)
+    val files = BudgetFiles(SYSTEM, dir)
     val bytes = Res.readBytes("files/demo-budget.sqlite")
-    FileSystem.SYSTEM.write(files.database(BudgetId.Demo, mkdirs = true)) { write(bytes) }
-    driver = AndroidxSqlDriverFactory(files).create(BudgetId.Demo)
+    FileSystem.SYSTEM.write(files.database(Demo, mkdirs = true)) { write(bytes) }
+    driver = AndroidxSqlDriverFactory(files).create(Demo)
     generatedOn = driver.demoGeneratedOn()
   }
 

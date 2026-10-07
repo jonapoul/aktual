@@ -133,5 +133,5 @@ private fun TagSort.Direction.label(): String =
 @Composable
 private fun PreviewTagSortDialog(@PreviewParameter(ColoredParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
-    TagSortDialog(sort = TagSort.Default, onConfirm = {}, onDismiss = {})
+    TagSortDialog(sort = Default, onConfirm = {}, onDismiss = {})
   }

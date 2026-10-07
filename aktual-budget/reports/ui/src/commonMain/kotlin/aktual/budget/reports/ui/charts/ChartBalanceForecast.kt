@@ -52,7 +52,6 @@ import kotlin.math.roundToInt
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.DateTimeUnit.Companion.DAY
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month.DECEMBER
 import kotlinx.datetime.Month.JANUARY
@@ -158,7 +157,7 @@ private fun Header(
 
 @Composable
 private fun Empty(modifier: Modifier = Modifier) =
-  Box(modifier = modifier.padding(16.dp), contentAlignment = Alignment.Center) {
+  Box(modifier = modifier.padding(16.dp), contentAlignment = Center) {
     Text(
       text = Strings.reportsBalanceForecastEmpty,
       textAlign = Center,

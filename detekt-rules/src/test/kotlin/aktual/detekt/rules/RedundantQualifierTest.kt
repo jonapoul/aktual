@@ -170,6 +170,63 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
     assertNotReported("val role = Role.Admin", "Role.Admin" to "Admin")
 
   @Test
+  fun `does not report an override with no declared type`() =
+    assertNotReported(
+      """
+      class Impl : HasRole {
+        override val role = Role.Admin
+        override fun other() = Role.Basic
+      }
+      """
+        .trimIndent(),
+      "Role.Admin" to "Admin",
+    )
+
+  @Test
+  fun `does not report an override getter with no declared type`() =
+    assertNotReported(
+      """
+      class Impl : HasRole {
+        override val role get() = Role.Admin
+        override fun other() = makeRole()
+      }
+      """
+        .trimIndent(),
+      "Role.Admin" to "Admin",
+    )
+
+  @Test
+  fun `does not report branches of a property with no declared type`() =
+    assertNotReported(
+      """
+      fun foo(set: Boolean): Role {
+        val role = if (set) Role.Admin else Role.Basic
+        val kind = when (role) {
+          Admin -> Kind.Button
+          Basic -> Kind.Checkbox
+        }
+        return if (kind == Button) role else makeRole()
+      }
+      """
+        .trimIndent(),
+      "Role.Admin" to "Admin",
+      "Role.Basic" to "Basic",
+    )
+
+  @Test
+  fun `reports an override with a declared type`() =
+    assertReported(
+      """
+      class Impl : HasRole {
+        override val role: Role = Role.Admin
+        override fun other(): Role = makeRole()
+      }
+      """
+        .trimIndent(),
+      "Role.Admin" to "Admin",
+    )
+
+  @Test
   fun `does not report when the argument decides the type`() =
     assertNotReported("fun foo() = listOf(Role.Admin)", "Role.Admin" to "Admin")
 
@@ -266,8 +323,32 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
     )
 
   @Test
-  fun `does not report a companion property`() =
-    assertNotReported("fun foo() = takesState(State.Default)")
+  fun `reports companion property as an argument`() =
+    assertReported("fun foo() = takesState(State.Default)", "State.Default" to "Default")
+
+  @Test
+  fun `reports companion property of a value class as a named argument`() =
+    assertReported("fun foo() = takesKind(kind = Kind.Button)", "Kind.Button" to "Button")
+
+  @Test
+  fun `reports companion property in an equality check`() =
+    assertReported("fun foo(kind: Kind) = kind == Kind.Button", "Kind.Button" to "Button")
+
+  @Test
+  fun `reports companion property as a default parameter value`() =
+    assertReported("fun foo(kind: Kind? = Kind.Button) = kind", "Kind.Button" to "Button")
+
+  @Test
+  fun `does not report a companion property shadowed by a function`() =
+    assertNotReported("fun foo() = takesKind(Kind.Button)\nfun Button(x: Int) = x")
+
+  @Test
+  fun `does not report a companion property of another type`() =
+    assertNotReported("fun foo() = takesRole(Kind.Fallback)", "Kind.Fallback" to "Fallback")
+
+  @Test
+  fun `does not report a companion property in an argument branch`() =
+    assertNotReported("fun foo(set: Boolean) = takesKind(if (set) Kind.Button else Kind.Checkbox)")
 
   @Test
   fun `does not report when CSR is off`() =
@@ -347,6 +428,17 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
         }
       }
 
+      @JvmInline
+      value class Kind(val value: Int) {
+        companion object {
+          val Button = Kind(0)
+          val Checkbox = Kind(1)
+          val Fallback: Role = makeRole()
+        }
+      }
+
+      fun takesKind(kind: Kind?) = kind
+
       sealed interface Patch<out T> {
         data object Keep : Patch<Nothing>
         data class To<out T>(val value: T) : Patch<T>
@@ -355,6 +447,11 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
       fun takesPatch(patch: Patch<Int>) = patch
 
       class User(val role: Role)
+
+      interface HasRole {
+        val role: Role
+        fun other(): Role
+      }
 
       class Screen(val state: State)
 

@@ -42,7 +42,7 @@ fun PrimaryTextButton(
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = typography.buttonTextStyle,
-  fontSize: TextUnit = TextUnit.Unspecified,
+  fontSize: TextUnit = Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   suffix: (@Composable () -> Unit)? = null,
   colors: @Composable (Boolean) -> ButtonColors = { pressed ->
@@ -80,7 +80,7 @@ fun PrimaryTextButtonWithLoading(
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = typography.buttonTextStyle,
-  fontSize: TextUnit = TextUnit.Unspecified,
+  fontSize: TextUnit = Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   colors: @Composable (Boolean) -> ButtonColors = { pressed ->
     AktualTheme.colors.primaryButton(pressed)
@@ -130,7 +130,7 @@ fun NormalTextButton(
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = typography.buttonTextStyle,
-  fontSize: TextUnit = TextUnit.Unspecified,
+  fontSize: TextUnit = Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   suffix: (@Composable () -> Unit)? = null,
   colors: @Composable (Boolean) -> ButtonColors = { pressed ->
@@ -167,7 +167,7 @@ fun BareTextButton(
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = typography.buttonTextStyle,
-  fontSize: TextUnit = TextUnit.Unspecified,
+  fontSize: TextUnit = Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   suffix: (@Composable () -> Unit)? = null,
   colors: @Composable (Boolean) -> ButtonColors = { pressed ->
@@ -204,7 +204,7 @@ fun BasicTextButton(
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = LocalTextStyle.current,
-  fontSize: TextUnit = TextUnit.Unspecified,
+  fontSize: TextUnit = Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   suffix: (@Composable () -> Unit)? = null,
   content: @Composable RowScope.() -> Unit = {

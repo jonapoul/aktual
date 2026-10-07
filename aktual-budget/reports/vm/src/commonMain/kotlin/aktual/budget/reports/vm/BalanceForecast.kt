@@ -10,7 +10,6 @@ import aktual.budget.model.occurrences
 import kotlin.math.floor
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableMap
-import kotlinx.datetime.DateTimeUnit.Companion.DAY
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus

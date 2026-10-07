@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -58,7 +57,7 @@ internal fun ConfirmPasswordForm(
       showPassword = showPasswords,
       imeAction = Next,
       onValueChange = { pw -> onAction(SetPassword1(pw)) },
-      onGo = { focusManager.moveFocus(FocusDirection.Next) },
+      onGo = { focusManager.moveFocus(Next) },
     )
 
     PasswordEntryText(

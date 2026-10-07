@@ -12,7 +12,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 - **IMPORTANT**: After any architectural/structural change, grep `**/CLAUDE.md` for references that need updating (scopes, annotations, module paths, DI patterns). Don't wait to be asked.
 - Prefer `kotlinx.immutable` collections in the UI layer, not plain `List`/`Set`.
 - Prefer `stateFlow.update { x }` over `stateFlow.value = x`.
-- The project compiles with `-Xcontext-sensitive-resolution` (CSR), so enum entries and sealed subtypes can be referenced unqualified when the expected type is known. Always do this instead of qualifying (`PossibleRole.Admin`) or importing the entry. The expected type is known in:
+- The project compiles with `-Xcontext-sensitive-resolution` (CSR), so enum entries, sealed subtypes and companion properties of the expected type (`Role.Button`, `Alignment.Center`) can be referenced unqualified when the expected type is known. Always do this instead of qualifying (`PossibleRole.Admin`) or importing the entry. The expected type is known in:
   - function/constructor arguments, named or positional: `SideNavRail(selectedTab = Transactions)`
   - `when` branches and `==`/`!=` comparisons: `when (method) { Header -> ... }`, `if (tab == Accounts)`
   - assertions: `assertThat(role).isEqualTo(Admin)`
@@ -20,7 +20,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 
   The `RedundantQualifier` detekt rule flags qualifiers that can be dropped.
 
-  Qualify only where the name is ambiguous with a type in scope, as `LoginMethod.Password` is with the `Password` class. Constructor calls of sealed subtypes don't resolve through CSR either, so write `ScheduleDate.Once(date)`, not `Once(date)`.
+  Qualify only where the name is ambiguous with a type or function in scope, as `LoginMethod.Password` is with the `Password` class and `Role.Checkbox` is with the `Checkbox` composable, or where there is no declared type, as in `override val role = Role.Admin`. Constructor calls of sealed subtypes don't resolve through CSR either, so write `ScheduleDate.Once(date)`, not `Once(date)`.
 - `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` - add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
 - In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.
 - Wrap comments at 100 columns. That is where `ktfmt --google-style` wraps them, not the `max_line_length` of 120 in `.editorconfig`.

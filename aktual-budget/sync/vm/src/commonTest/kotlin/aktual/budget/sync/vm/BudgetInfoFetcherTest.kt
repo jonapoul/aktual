@@ -1,7 +1,6 @@
 package aktual.budget.sync.vm
 
 import aktual.api.client.SyncApiImpl
-import aktual.api.model.account.FailureReason
 import aktual.api.model.sync.EncryptMeta
 import aktual.api.model.sync.UserFile
 import aktual.budget.model.BudgetId
@@ -113,7 +112,7 @@ class BudgetInfoFetcherTest {
     }
 
     // then
-    assertThatFetchResult().isEqualTo(Result.HttpFailure(FailureReason.Unauthorized))
+    assertThatFetchResult().isEqualTo(Result.HttpFailure(Unauthorized))
   }
 
   @Test

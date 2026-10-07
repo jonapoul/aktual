@@ -15,11 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEventPass.Initial
 import androidx.compose.ui.input.pointer.PointerInputChange
-import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
@@ -162,7 +160,7 @@ private fun Modifier.zoomGestures(state: ChartZoomState, haptics: HapticFeedback
       val down = awaitFirstDown(requireUnconsumed = false, pass = Initial)
       if (!awaitSelectionStart(down)) return@awaitEachGesture
 
-      haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+      haptics.performHapticFeedback(LongPress)
       state.startSelection(down.position.x)
       try {
         var change: PointerInputChange?
@@ -191,7 +189,7 @@ private suspend fun AwaitPointerEventScope.awaitSelectionStart(down: PointerInpu
           when {
             change == null || !change.pressed || event.changes.size > 1 -> false
             (change.position - down.position).getDistance() > viewConfiguration.touchSlop ->
-              down.type == PointerType.Mouse
+              down.type == Mouse
             else -> null
           }
       }

@@ -221,11 +221,11 @@ class RunLevelTransitionTest {
 
   @Test
   fun openingAndClosingDemoBudget() = runTest {
-    val demoDir = appGraph.budgetFiles.directory(BudgetId.Demo)
+    val demoDir = appGraph.budgetFiles.directory(Demo)
 
     val budget = appGraph.demoBudget.open()
     assertThat(appGraph.runLevelState[BudgetGraph::class]).isEqualTo(budget)
-    assertThat(budget.id).isEqualTo(BudgetId.Demo)
+    assertThat(budget.id).isEqualTo(Demo)
     assertThat(budget.server).isEqualTo(None)
     assertThat(FileSystem.SYSTEM.exists(demoDir)).isTrue()
     assertThat(appGraph.budgetFiles.listLocal().map { it.id }).doesNotContain(BudgetId.Demo)

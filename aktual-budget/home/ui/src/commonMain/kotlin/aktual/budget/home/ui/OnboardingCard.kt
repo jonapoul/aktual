@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -37,14 +36,14 @@ internal fun OnboardingCard(onAction: HomeActionHandler, modifier: Modifier = Mo
         style = typography.titleMedium,
         fontWeight = SemiBold,
         color = colors.pageText,
-        textAlign = TextAlign.Center,
+        textAlign = Center,
       )
 
       Text(
         text = Strings.homeOnboardingMessage,
         style = typography.bodyMedium,
         color = colors.pageTextSubdued,
-        textAlign = TextAlign.Center,
+        textAlign = Center,
       )
 
       PrimaryTextButton(
