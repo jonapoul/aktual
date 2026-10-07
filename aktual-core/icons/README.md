@@ -1,5 +1,5 @@
 # aktual-core:icons
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-core/icons/chart.png)
 <!--endregion-->

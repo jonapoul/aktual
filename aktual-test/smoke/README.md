@@ -1,5 +1,5 @@
 # aktual-test:smoke
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-test/smoke/chart.png)
 <!--endregion-->

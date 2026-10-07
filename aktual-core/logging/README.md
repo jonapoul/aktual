@@ -1,5 +1,5 @@
 # aktual-core:logging
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-core/logging/chart.png)
 <!--endregion-->

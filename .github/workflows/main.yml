@@ -66,3 +66,32 @@ jobs:
 
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
+
+  charts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      - run: ./gradlew atlasGenerate
+      - name: Collect module graphs
+        run: |
+          find . -path '*/build/atlas/chart.*' \( -name '*.png' -o -name '*.svg' \) | while read -r chart; do
+            dest="$RUNNER_TEMP/site/${chart%/build/atlas/*}"
+            mkdir -p "$dest"
+            cp "$chart" "$dest/"
+          done
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: ${{ runner.temp }}/site
+      - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        id: deploy

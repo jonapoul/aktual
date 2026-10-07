@@ -1,5 +1,5 @@
 # aktual-budget:data:proto
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-budget/data/proto/chart.png)
 <!--endregion-->

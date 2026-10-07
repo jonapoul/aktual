@@ -1,5 +1,5 @@
 # aktual-prefs:vm
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-prefs/vm/chart.png)
 <!--endregion-->

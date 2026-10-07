@@ -1,5 +1,5 @@
 # aktual-di:graphs
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-di/graphs/chart.png)
 <!--endregion-->

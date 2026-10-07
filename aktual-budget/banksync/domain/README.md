@@ -1,5 +1,5 @@
 # aktual-budget:banksync:domain
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-budget/banksync/domain/chart.png)
 <!--endregion-->

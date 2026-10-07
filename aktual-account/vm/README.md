@@ -1,5 +1,5 @@
 # aktual-account:vm
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-account/vm/chart.png)
 <!--endregion-->

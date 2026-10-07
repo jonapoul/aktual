@@ -259,23 +259,11 @@ jobs:
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
       - run: ./gradlew atlasGenerate
-      - name: Check module graphs are up to date
-        run: |
-          changes=$(git status --porcelain -uall -- '*chart.png')
-          if [[ -n "$changes" ]]; then
-            echo "$changes"
-            echo "::error::atlasGenerate produced changes that were not committed. Please run './gradlew atlasGenerate' locally and commit the results."
-            exit 1
-          fi
-      - name: Zip Atlas generated files
-        if: failure()
-        run: find . \( -iname 'chart.png' -o -iname 'chart.d2' -o -iname 'classes.d2' \) -print0 | xargs -0r zip atlas-outputs.zip
-      - name: Upload Atlas generated files
-        if: failure()
+      - name: Upload module graphs
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: atlas-outputs
-          path: atlas-outputs.zip
+          path: '**/build/atlas/chart.*'
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
 

@@ -1,5 +1,5 @@
 # aktual-budget:tags:vm
 
 <!--region chart-->
-![chart](chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-budget/tags/vm/chart.png)
 <!--endregion-->
