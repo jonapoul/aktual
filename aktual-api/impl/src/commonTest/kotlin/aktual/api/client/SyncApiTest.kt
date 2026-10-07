@@ -1,6 +1,5 @@
 package aktual.api.client
 
-import aktual.api.model.account.FailureReason
 import aktual.api.model.sync.EncryptMeta
 import aktual.api.model.sync.GetUserFileInfoResponse
 import aktual.api.model.sync.GetUserKeyRequest
@@ -168,7 +167,7 @@ class SyncApiTest {
       assertThat(e.response.body<ListUserFilesResponse.Failure>())
         .isEqualTo(
           ListUserFilesResponse.Failure(
-            reason = FailureReason.Unauthorized,
+            reason = Unauthorized,
             details = "token-not-found",
           )
         )
@@ -232,7 +231,7 @@ class SyncApiTest {
     // then
     assertThat(response)
       .isDataClassEqualTo(
-        GetUserKeyResponse.Failure(reason = FailureReason.Unauthorized, details = "token-not-found")
+        GetUserKeyResponse.Failure(reason = Unauthorized, details = "token-not-found")
       )
   }
 
@@ -283,8 +282,7 @@ class SyncApiTest {
       }
 
     // then
-    assertThat(response)
-      .isDataClassEqualTo(GetUserFileInfoResponse.Failure(FailureReason.FileNotFound))
+    assertThat(response).isDataClassEqualTo(GetUserFileInfoResponse.Failure(FileNotFound))
   }
 
   @Test
@@ -306,7 +304,7 @@ class SyncApiTest {
     // then
     assertThat(response)
       .isDataClassEqualTo(
-        GetUserFileInfoResponse.Failure(FailureReason.Unauthorized, details = "token-not-found")
+        GetUserFileInfoResponse.Failure(Unauthorized, details = "token-not-found")
       )
   }
 

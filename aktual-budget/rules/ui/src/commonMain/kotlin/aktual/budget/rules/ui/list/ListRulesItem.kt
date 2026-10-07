@@ -135,7 +135,7 @@ internal fun ListRulesItem(
     }
 
     if (rule.stage.showBadge()) {
-      RuleStageBadge(stage = rule.stage, modifier = Modifier.align(Alignment.TopEnd))
+      RuleStageBadge(stage = rule.stage, modifier = Modifier.align(TopEnd))
     }
   }
 }

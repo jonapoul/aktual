@@ -29,13 +29,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -134,7 +132,7 @@ fun Modifier.hazedTopBar(
 // Pixels the list content has scrolled up behind the top bar. Once we're past the first item we're
 // definitely fully scrolled, so report a saturating value to hold the blur at max.
 fun LazyListState.topBarHazeOffset(): Float =
-  if (firstVisibleItemIndex > 0) Float.MAX_VALUE else firstVisibleItemScrollOffset.toFloat()
+  if (firstVisibleItemIndex > 0) MAX_VALUE else firstVisibleItemScrollOffset.toFloat()
 
 @Composable
 @ReadOnlyComposable
@@ -219,8 +217,8 @@ private class HoledShape(private val holes: SnapshotStateMap<Any, Rect>) : Shape
   ): Outline {
     val path =
       Path().apply {
-        addRect(Rect(Offset.Zero, size))
-        fillType = PathFillType.EvenOdd
+        addRect(Rect(Zero, size))
+        fillType = EvenOdd
         holes.values.forEach { addRect(it) }
       }
     return Outline.Generic(path)

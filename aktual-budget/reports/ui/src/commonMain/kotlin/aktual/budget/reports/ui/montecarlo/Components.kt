@@ -30,8 +30,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.semantics.Role.Companion.Button
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -91,7 +89,7 @@ internal fun SectionTitle(text: String, modifier: Modifier = Modifier) =
     modifier = modifier,
     text = text,
     style = typography.titleMedium,
-    fontWeight = FontWeight.SemiBold,
+    fontWeight = SemiBold,
     color = colors.pageText,
   )
 
@@ -107,7 +105,7 @@ internal fun GroupHeading(
     text = text.uppercase(),
     textAlign = textAlign,
     style = typography.labelSmall,
-    fontWeight = FontWeight.SemiBold,
+    fontWeight = SemiBold,
     letterSpacing = 0.5.sp,
     color = colors.pageText,
   )

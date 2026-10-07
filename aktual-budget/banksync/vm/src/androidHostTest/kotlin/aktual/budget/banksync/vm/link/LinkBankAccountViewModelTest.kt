@@ -362,7 +362,7 @@ class LinkBankAccountViewModelTest {
 
       val row = AccountDao(database)[ACCOUNT]
       assertThat(row?.account_id).isEqualTo("EB-1")
-      assertThat(row?.account_sync_source).isEqualTo(AccountSyncSource.EnableBanking)
+      assertThat(row?.account_sync_source).isEqualTo(EnableBanking)
       assertThat(BankSyncDao(database).bankId(checkNotNull(row?.bank))).isEqualTo(BankId("EB-1"))
       assertThat(enableBankingApi.logins)
         .containsExactly(NORDEA to EnableBankingAccountType.Business)

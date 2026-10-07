@@ -45,12 +45,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign as ComposeTextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -272,7 +270,7 @@ private fun textChartMarkdownTypography(align: TextAlign): MarkdownTypography {
     h5 = type.headlineSmall.aligned(),
     h6 = type.titleLarge.aligned(),
     text = type.bodyLarge.aligned(),
-    quote = type.bodyMedium.plus(SpanStyle(fontStyle = FontStyle.Italic)).aligned(),
+    quote = type.bodyMedium.plus(SpanStyle(fontStyle = Italic)).aligned(),
     paragraph = type.bodyLarge.aligned(),
     ordered = type.bodyLarge.aligned(),
     bullet = type.bodyLarge.aligned(),

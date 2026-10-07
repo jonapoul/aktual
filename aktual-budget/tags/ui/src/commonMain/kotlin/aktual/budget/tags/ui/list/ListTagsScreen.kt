@@ -285,7 +285,7 @@ private fun TagsList(
 
 private class ListTagsStateProvider :
   ColoredParameterProvider<ListTagsState>(
-    Success(tags = TagsPreview.all, sort = TagSort.Default),
+    Success(tags = TagsPreview.all, sort = Default),
     Empty,
     Loading,
     Failure("Database connection lost"),

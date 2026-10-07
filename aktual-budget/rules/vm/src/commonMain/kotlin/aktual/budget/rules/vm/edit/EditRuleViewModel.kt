@@ -220,7 +220,7 @@ class EditRuleViewModel(
     Rule(
       id = uuidGenerator(::RuleId),
       stage = Default,
-      conditionsOp = ConditionOp.Default,
+      conditionsOp = Default,
       conditions = persistentListOf(emptyCondition()),
       actions = persistentListOf(emptyAction()),
     )
@@ -231,9 +231,9 @@ class EditRuleViewModel(
   private fun emptyAction() =
     RuleAction(
       value = null,
-      op = RuleAction.Op.Default,
+      op = Default,
       field = Payee,
-      type = RuleAction.Type.Default,
+      type = Default,
     )
 
   private fun insertChanges(rule: Rules): List<LocalChange> {

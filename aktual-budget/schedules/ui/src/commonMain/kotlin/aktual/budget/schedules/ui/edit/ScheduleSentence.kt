@@ -87,11 +87,7 @@ internal fun ScheduleSentence(
         }
       },
     text = text,
-    style =
-      style.copy(
-        lineHeightStyle =
-          LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None)
-      ),
+    style = style.copy(lineHeightStyle = LineHeightStyle(Center, None)),
     onTextLayout = { layout = it },
   )
 }

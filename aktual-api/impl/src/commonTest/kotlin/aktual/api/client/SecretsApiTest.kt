@@ -16,8 +16,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
 import io.ktor.client.engine.mock.MockEngine
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -50,7 +48,7 @@ class SecretsApiTest {
     val response = api.set(SimpleFinToken, "abc")
 
     val request = mockEngine.latestRequest()
-    assertThat(request.method).isEqualTo(HttpMethod.Post)
+    assertThat(request.method).isEqualTo(Post)
     assertThat(request.headers[AktualHeaders.TOKEN]).isEqualTo(TOKEN.value)
     assertThat(mockEngine.latestRequestUrl()).isEqualTo("https://test.server.com/secret")
     assertThat(request.body)
@@ -66,7 +64,7 @@ class SecretsApiTest {
 
     val response = api.set(SimpleFinAccessKey, value = null)
 
-    assertThat(mockEngine.latestRequest().method).isEqualTo(HttpMethod.Delete)
+    assertThat(mockEngine.latestRequest().method).isEqualTo(Delete)
     assertThat(mockEngine.latestRequestUrl())
       .isEqualTo("https://test.server.com/secret/simplefin_accessKey")
     assertThat(response).isEqualTo(Success)
@@ -75,7 +73,7 @@ class SecretsApiTest {
   @Test
   fun `Parse refusal`() = runTest {
     mockEngine += {
-      respondJson(SecretResponses.SET_NOT_ADMIN_403, status = HttpStatusCode.Forbidden)
+      respondJson(SecretResponses.SET_NOT_ADMIN_403, status = Forbidden)
     }
 
     val response = api.set(SimpleFinToken, "abc")

@@ -74,9 +74,9 @@ internal fun aktualTypography(colors: Colors = AktualTheme.colors): Typography {
 
 private fun FontFamily.textStyle(
   weight: FontWeight? = null,
-  size: TextUnit = TextUnit.Unspecified,
-  color: Color = Color.Unspecified,
-  height: TextUnit = TextUnit.Unspecified,
+  size: TextUnit = Unspecified,
+  color: Color = Unspecified,
+  height: TextUnit = Unspecified,
 ): TextStyle =
   TextStyle(
     fontSize = size,

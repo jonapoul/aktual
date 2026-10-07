@@ -32,7 +32,7 @@ internal class CollapsingHeaderState {
   val nestedScrollConnection =
     object : NestedScrollConnection {
       override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-        if (height <= 0f) return Offset.Zero
+        if (height <= 0f) return Zero
         val previous = offset
         val new = (previous + available.y).coerceIn(-height, 0f)
         offset = new

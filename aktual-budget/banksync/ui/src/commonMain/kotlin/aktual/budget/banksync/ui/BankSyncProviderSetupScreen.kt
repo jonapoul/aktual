@@ -55,7 +55,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -240,7 +239,7 @@ private fun CredentialField(
       keyboardOptions =
         KeyboardOptions(
           autoCorrectEnabled = false,
-          capitalization = KeyboardCapitalization.None,
+          capitalization = None,
           keyboardType = if (isSecret) KeyboardType.Password else KeyboardType.Text,
         ),
       trailingIcon =

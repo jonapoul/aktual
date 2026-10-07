@@ -18,7 +18,6 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameters
-import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryIconButton
@@ -116,7 +115,7 @@ private fun Condition(
         imageVector = MaterialIcons.Delete,
         contentDescription = Strings.rulesItemDelete,
         onClick = { onAction(DeleteCondition(index)) },
-        colors = IconButtonColorProvider.NormalRed,
+        colors = NormalRed,
         isEnabled = isEnabled,
       )
     }

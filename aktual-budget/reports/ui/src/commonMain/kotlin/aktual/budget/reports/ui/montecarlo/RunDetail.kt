@@ -36,9 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
@@ -90,7 +88,7 @@ internal fun RunDetailView(
             )
           },
         style = typography.bodyMedium,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = SemiBold,
         color = colors.pageText,
       )
       BareTextButton(
@@ -227,13 +225,13 @@ private fun HeaderRow(columns: Columns) =
     GroupHeading(
       Strings.monteCarloDetailReturn,
       Modifier.width(RATE_WIDTH),
-      textAlign = TextAlign.End,
+      textAlign = End,
     )
     if (columns.showInflation) {
       GroupHeading(
         Strings.monteCarloDetailInflation,
         Modifier.width(RATE_WIDTH),
-        textAlign = TextAlign.End,
+        textAlign = End,
       )
     }
     AmountHeading(Strings.monteCarloDetailEnd)
@@ -241,7 +239,7 @@ private fun HeaderRow(columns: Columns) =
 
 @Composable
 private fun AmountHeading(text: String) =
-  GroupHeading(text, Modifier.width(AMOUNT_WIDTH), textAlign = TextAlign.End)
+  GroupHeading(text, Modifier.width(AMOUNT_WIDTH), textAlign = End)
 
 @Composable
 private fun YearRow(
@@ -270,7 +268,7 @@ private fun YearRow(
         tint = colors.pageText,
       )
     }
-    TableCell("$age", Modifier.width(AGE_WIDTH), textAlign = TextAlign.Start)
+    TableCell("$age", Modifier.width(AGE_WIDTH), textAlign = Start)
     AmountCell(row.startBalance.money())
     if (columns.hasContributions) AmountCell((row.contributions + row.surplusSaved).money())
     if (columns.hasIncome) AmountCell((row.income - row.incomeTax).money())
@@ -309,7 +307,7 @@ private fun TableCell(
   text: String,
   modifier: Modifier = Modifier,
   color: Color = colors.pageText,
-  textAlign: TextAlign = TextAlign.End,
+  textAlign: TextAlign = End,
 ) =
   Text(
     modifier = modifier,
@@ -353,7 +351,7 @@ private fun YearBreakdown(
         },
       style = typography.bodySmall,
       color = colors.pageTextLight,
-      textDecoration = TextDecoration.Underline,
+      textDecoration = Underline,
     )
 
     if (showsWorking) {
@@ -476,7 +474,7 @@ private fun PotTable(
       GroupHeading(
         Strings.monteCarloDetailReturn,
         Modifier.width(RATE_WIDTH),
-        textAlign = TextAlign.End,
+        textAlign = End,
       )
       PotHeading(Strings.monteCarloDetailPotEnd)
     }
@@ -491,7 +489,7 @@ private fun PotTable(
         TableCell(
           potLabel(config.pots, i),
           Modifier.width(POT_NAME_WIDTH),
-          textAlign = TextAlign.Start,
+          textAlign = Start,
         )
         AmountCell(row.potStartBalances.getOrElse(i) { 0 }.money())
         if (hasContributions) {

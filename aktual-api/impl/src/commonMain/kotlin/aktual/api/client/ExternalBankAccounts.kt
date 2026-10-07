@@ -20,9 +20,9 @@ internal fun externalAccounts(
 ): List<ExternalBankAccount> = accounts.mapNotNull { element ->
   val json = element as? JsonObject ?: return@mapNotNull null
   when (source) {
-    AccountSyncSource.SimpleFin -> simpleFin(json)
-    AccountSyncSource.PluggyAi -> pluggyAi(json)
-    AccountSyncSource.Akahu -> akahu(json)
+    SimpleFin -> simpleFin(json)
+    PluggyAi -> pluggyAi(json)
+    Akahu -> akahu(json)
     else -> throw IllegalArgumentException("$source doesn't list accounts")
   }
 }

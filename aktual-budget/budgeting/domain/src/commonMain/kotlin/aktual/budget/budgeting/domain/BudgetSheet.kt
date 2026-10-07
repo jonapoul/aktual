@@ -6,7 +6,6 @@ import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.datetime.DateTimeUnit.Companion.MONTH
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus

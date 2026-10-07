@@ -1,6 +1,5 @@
 package aktual.budget.reports.vm
 
-import kotlinx.datetime.DateTimeUnit.Companion.MONTH
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.Month.DECEMBER

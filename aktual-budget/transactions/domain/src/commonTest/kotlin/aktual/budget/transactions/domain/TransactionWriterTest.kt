@@ -533,7 +533,7 @@ internal class TransactionWriterTest {
     assertThat(accountDao[ACCOUNT]).isNotNull().all {
       prop("balance_current") { it.balance_current }.isEqualTo(Amount(12_345))
       prop("last_sync") { it.last_sync }.isEqualTo(NOW)
-      prop("bank_sync_status") { it.bank_sync_status }.isEqualTo(BankSyncStatus.Ok)
+      prop("bank_sync_status") { it.bank_sync_status }.isEqualTo(Ok)
     }
     assertThat(lastSync())
       .containsExactly(

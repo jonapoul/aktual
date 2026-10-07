@@ -125,12 +125,12 @@ fun Amount.formattedString(
 @Composable
 fun WithCompositionLocals(
   isPrivacyEnabled: Boolean = false,
-  format: NumberFormat = NumberFormat.Default,
+  format: NumberFormat = Default,
   hideFraction: Boolean = false,
-  currency: Currency = Currency.Default,
-  currencyPosition: CurrencySymbolPosition = CurrencySymbolPosition.Default,
+  currency: Currency = Default,
+  currencyPosition: CurrencySymbolPosition = Default,
   addCurrencySpace: Boolean = true,
-  dateFormat: DateFormat = DateFormat.Default,
+  dateFormat: DateFormat = Default,
   hazeState: HazeState = rememberHazeState(),
   hazeConfig: HazeConfig = remember { HazeConfig() },
   dialogBlurState: DialogBlurState = remember { DialogBlurState() },

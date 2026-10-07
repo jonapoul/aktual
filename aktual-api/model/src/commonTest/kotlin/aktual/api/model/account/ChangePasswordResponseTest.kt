@@ -17,7 +17,7 @@ class ChangePasswordResponseTest {
       json = AccountResponses.CHANGE_PASSWORD_TOKEN_NOT_FOUND_401,
       expected =
         ChangePasswordResponse.Failure(
-          reason = FailureReason.Unauthorized,
+          reason = Unauthorized,
           details = "token-not-found",
         ),
     )

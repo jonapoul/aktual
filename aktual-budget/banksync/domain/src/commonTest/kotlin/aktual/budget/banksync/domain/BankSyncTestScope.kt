@@ -170,7 +170,7 @@ internal class BankSyncTestScope(
   suspend fun insertLinkedAccount(
     id: AccountId,
     accountId: String = "provider-${id.value}",
-    source: AccountSyncSource? = AccountSyncSource.GoCardless,
+    source: AccountSyncSource? = GoCardless,
     bankId: String? = "bank-${id.value}",
     bankName: String? = "Bank ${id.value}",
     offBudget: Boolean = false,

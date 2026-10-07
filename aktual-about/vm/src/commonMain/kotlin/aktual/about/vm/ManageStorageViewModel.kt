@@ -197,7 +197,7 @@ class ManageStorageViewModel(
   }
 
   private fun directorySize(path: Path): Bytes {
-    if (!files.fileSystem.exists(path)) return Bytes.Zero
+    if (!files.fileSystem.exists(path)) return Zero
     return files.fileSystem
       .listRecursively(path)
       .sumOf { files.fileSystem.metadataOrNull(it)?.size ?: 0L }
