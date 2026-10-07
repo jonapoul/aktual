@@ -314,7 +314,7 @@ internal fun SplitChildren(
             .fillMaxWidth()
             .padding(start = dimens.railWidth, bottom = dimens.rowVertical)
             .background(colors.pageBackgroundModalActive)
-            .padding(vertical = SplitInsetVertical)
+            .padding(vertical = SplitInsetVertical),
       ) {
         parent.children.fastForEach { child -> SplitChildRow(child, parent, dimens) }
       }
