@@ -304,7 +304,7 @@ private fun LoadedContent(
   listState: LazyListState,
   modifier: Modifier = Modifier,
 ) {
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = TopCenter) {
     LazyColumn(
       modifier = Modifier.padding(8.dp).scrollbar(listState),
       state = listState,

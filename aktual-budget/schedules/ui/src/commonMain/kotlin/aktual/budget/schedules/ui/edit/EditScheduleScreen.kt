@@ -85,7 +85,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -470,7 +469,7 @@ private fun Header(name: String, status: ScheduleStatus?, modifier: Modifier = M
       style = typography.headlineMedium,
       color = if (name.isBlank()) colors.pageTextSubdued else colors.pageText,
       maxLines = 2,
-      overflow = TextOverflow.Ellipsis,
+      overflow = Ellipsis,
     )
 
     if (status != null) {

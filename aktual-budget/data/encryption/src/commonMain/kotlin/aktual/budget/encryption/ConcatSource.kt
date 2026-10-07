@@ -14,7 +14,7 @@ private class ConcatSource(sources: Iterable<Source>) : Source {
 
   constructor(vararg sources: Source) : this(sources.toList())
 
-  override fun timeout(): Timeout = Timeout.NONE
+  override fun timeout(): Timeout = NONE
 
   override fun read(sink: Buffer, byteCount: Long): Long {
     while (current != null) {

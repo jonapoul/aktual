@@ -14,7 +14,7 @@ sealed interface ChangePasswordResponse {
 
   @Serializable
   data class Failure(
-    @SerialName("reason") val reason: FailureReason = FailureReason.InvalidPassword,
+    @SerialName("reason") val reason: FailureReason = InvalidPassword,
     @SerialName("details") val details: String? = null,
   ) : ChangePasswordResponse
 }

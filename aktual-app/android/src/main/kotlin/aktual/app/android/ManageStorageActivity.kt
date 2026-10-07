@@ -25,7 +25,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -68,7 +67,7 @@ class ManageStorageActivity(override val defaultViewModelProviderFactory: MetroV
         dialogBlurState = remember { DialogBlurState() },
       ) {
         AktualTheme(theme) {
-          Box(contentAlignment = Alignment.BottomCenter) {
+          Box(contentAlignment = BottomCenter) {
             CompositionLocalProvider(
               LocalMetroViewModelFactory provides defaultViewModelProviderFactory
             ) {

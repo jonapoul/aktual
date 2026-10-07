@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.analysis.api.symbols.KaConstructorSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaEnumEntrySymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaFunctionSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaNamedClassSymbol
+import org.jetbrains.kotlin.analysis.api.symbols.KaPropertySymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaTypeParameterSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.markers.KaNamedSymbol
@@ -32,6 +33,7 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtCallableDeclaration
 import org.jetbrains.kotlin.psi.KtContainerNodeForControlStructureBody
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtElement
@@ -44,6 +46,7 @@ import org.jetbrains.kotlin.psi.KtLambdaExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtPackageDirective
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
+import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import org.jetbrains.kotlin.psi.KtReturnExpression
 import org.jetbrains.kotlin.psi.KtTypeReference
 import org.jetbrains.kotlin.psi.KtUserType
@@ -57,9 +60,9 @@ import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
 /**
- * Flags a qualified enum entry or sealed subtype, like `Role.Admin`, where the expected type is
- * known and context-sensitive resolution (CSR) would resolve a plain `Admin`. Does nothing unless
- * the module compiles with `-Xcontext-sensitive-resolution`.
+ * Flags a qualified enum entry, sealed subtype or companion property, like `Role.Admin`, where the
+ * expected type is known and context-sensitive resolution (CSR) would resolve a plain `Admin`. Does
+ * nothing unless the module compiles with `-Xcontext-sensitive-resolution`.
  *
  * Reported:
  * - function and constructor arguments, named or positional: `takesRole(Role.Admin)`
@@ -67,20 +70,22 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * - typed property initialisers, assignments, default parameter values and return values
  * - `is` checks against a sealed subtype: `state is State.Failure`
  * - lambda results where the call already fixes the return type: `flow.update { State.Loading }`
+ * - properties in the companion of the expected type: `clickable(role = Role.Button)`
  *
  * Not reported, because the plain name wouldn't compile or would mean something else:
  * - overloads that disagree on the parameter type: `YearMonth(2025, Month.JANUARY)`
  * - names shadowed by another class, property or function in scope, like a `Password` class next to
- *   `LoginMethod.Password`
+ *   `LoginMethod.Password`, or a `Button` composable next to `Role.Button`
  * - arguments that decide a generic type themselves: `listOf(Role.Admin)`, `x to Role.Admin`,
  *   `associateWith { Role.Admin }`
  * - elvis operands: `role ?: Role.Admin`
- * - sealed subtypes in an `if`/`when` passed as an argument, where another branch can narrow the
- *   expected type: `update(if (x) Patch.To(1) else Patch.Keep)`
+ * - sealed subtypes and companion properties in an `if`/`when` passed as an argument, where another
+ *   branch can narrow the expected type: `update(if (x) Patch.To(1) else Patch.Keep)`
  * - anything with no expected type, or a supertype as the expected type: `val role = Role.Admin`,
- *   `val any: Any = Role.Admin`
+ *   `val any: Any = Role.Admin`, `override val role = Role.Admin`, `val role = if (x) Role.Admin
+ *   else Role.Basic`
  *
- * These checks are conservative, so some qualifiers that could be dropped are missed. Imported
+ * These checks are conservative, so some qualifiers that could be dropped are missed. Imports of
  * entries and companion properties aren't looked at.
  */
 internal class RedundantQualifier(config: Config) :
@@ -148,7 +153,7 @@ internal class RedundantQualifier(config: Config) :
       )
     )
 
-  // The enum or sealed type whose scope the symbol is found in, if it's one CSR looks in
+  // The type whose scope the symbol is found in, if it's one CSR looks in
   private fun KaSession.owner(symbol: KaSymbol): KaNamedClassSymbol? {
     val owner = symbol.containingDeclaration as? KaNamedClassSymbol ?: return null
     return when (symbol) {
@@ -156,6 +161,10 @@ internal class RedundantQualifier(config: Config) :
       is KaNamedClassSymbol ->
         owner.takeIf {
           it.modality == SEALED && symbol.classKind != COMPANION_OBJECT && symbol.isSubClassOf(it)
+        }
+      is KaPropertySymbol ->
+        (owner.containingDeclaration as? KaNamedClassSymbol)?.takeIf {
+          owner.classKind == COMPANION_OBJECT && !symbol.isExtension
         }
       else -> null
     }
@@ -167,8 +176,24 @@ internal class RedundantQualifier(config: Config) :
       is KtWhenConditionWithExpression ->
         parent.getStrictParentOfType<KtWhenExpression>()?.let { subjectType(it) }
       is KtValueArgument -> argumentType(parent, expression)
-      else -> expression.expectedType?.takeUnless { isInferredLambdaResult(expression) }
+      else ->
+        expression.expectedType?.takeUnless {
+          isUntypedDeclaration(expression) || isInferredLambdaResult(expression)
+        }
     }
+
+  // `override val role = Role.Admin` and `val role = if (x) Role.Admin else Role.Basic` take their
+  // type from the initialiser, so there is no expected type for CSR to use
+  private fun isUntypedDeclaration(expression: KtExpression): Boolean {
+    val parent =
+      expression.parents.firstOrNull {
+        !it.isBranchBody() && it !is KtBlockExpression && it !is KtParenthesizedExpression
+      }
+    val declaration = (parent as? KtPropertyAccessor)?.property ?: parent
+    return declaration is KtCallableDeclaration &&
+      declaration !is KtFunctionLiteral &&
+      declaration.typeReference == null
+  }
 
   private fun KaSession.argumentType(argument: KtValueArgument, expression: KtExpression): KaType? {
     val call = callOf(argument)
@@ -232,7 +257,7 @@ internal class RedundantQualifier(config: Config) :
         is KtParenthesizedExpression -> true
         else -> false
       }
-    return if (passesResultUp && parent != null) lambdaReturning(parent) else null
+    return if (passesResultUp) lambdaReturning(parent) else null
   }
 
   // Whether the type comes from the argument itself, as it does for T in `listOf(Role.Admin)`, or

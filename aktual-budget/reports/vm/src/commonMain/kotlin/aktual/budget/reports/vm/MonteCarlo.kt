@@ -1047,7 +1047,7 @@ internal fun runMonteCarlo(
     }
 
     withdrawnTotals[simulationIndex] = withdrawnSum
-    if (simulationDepletionYear != Int.MAX_VALUE) {
+    if (simulationDepletionYear != MAX_VALUE) {
       depletionYearBySimulation[simulationIndex] = simulationDepletionYear
     }
 
@@ -1179,7 +1179,7 @@ private class CapturedPots(potCount: Int) {
   val taxables = DoubleArray(potCount)
   val fees = DoubleArray(potCount)
   // NaN until the pot experiences a return
-  val returns = DoubleArray(potCount) { Double.NaN }
+  val returns = DoubleArray(potCount) { NaN }
 
   fun returnsOrNull(): List<Double?> = returns.map { it.takeUnless(Double::isNaN) }
 }

@@ -18,7 +18,6 @@ import github.api.client.GithubJson
 import github.api.model.GithubRelease
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondError
-import io.ktor.http.URLProtocol
 import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -48,7 +47,7 @@ class GithubRepositoryTest {
     // Then
     val expected = "https://api.github.com/repos/jonapoul/aktual/releases/latest?per_page=1"
     assertThat(request.url.toString()).isEqualTo(expected)
-    assertThat(request.url.protocol).isEqualTo(URLProtocol.HTTPS)
+    assertThat(request.url.protocol).isEqualTo(HTTPS)
   }
 
   @Test

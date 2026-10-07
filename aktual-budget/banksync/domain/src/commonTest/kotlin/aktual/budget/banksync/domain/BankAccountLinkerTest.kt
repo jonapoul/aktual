@@ -3,7 +3,6 @@ package aktual.budget.banksync.domain
 import aktual.api.model.banksync.ExternalBankAccount
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.model.AccountId
-import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
 import aktual.budget.model.BankId
 import aktual.budget.model.LocalChange
@@ -27,13 +26,13 @@ internal class BankAccountLinkerTest {
   fun `Linking creates the bank and syncs the account`() = runBankSyncTest {
     api.responses["ACT-1"] = success()
 
-    linker(api).link(ACCOUNT, AccountSyncSource.SimpleFin, EXTERNAL)
+    linker(api).link(ACCOUNT, SimpleFin, EXTERNAL)
     runBackground()
 
     val account = account(ACCOUNT)
     assertThat(account).all {
       prop("account_id") { it.account_id }.isEqualTo("ACT-1")
-      prop("account_sync_source") { it.account_sync_source }.isEqualTo(AccountSyncSource.SimpleFin)
+      prop("account_sync_source") { it.account_sync_source }.isEqualTo(SimpleFin)
     }
     val bank = checkNotNull(account.bank)
     assertThat(dao.bankId(bank)).isEqualTo(BankId("mybank.example.com"))
@@ -46,7 +45,7 @@ internal class BankAccountLinkerTest {
     insertLinkedAccount(OTHER, bankId = "mybank.example.com", bankName = "My Bank")
     api.responses["ACT-1"] = success()
 
-    linker(api).link(ACCOUNT, AccountSyncSource.SimpleFin, EXTERNAL)
+    linker(api).link(ACCOUNT, SimpleFin, EXTERNAL)
 
     assertThat(account(ACCOUNT).bank).isEqualTo(account(OTHER).bank)
     assertThat(lastSync().map { it.dataset }).containsExactly("accounts", "accounts", "accounts")
@@ -60,7 +59,7 @@ internal class BankAccountLinkerTest {
     linker(api)
       .link(
         ACCOUNT,
-        AccountSyncSource.SimpleFin,
+        SimpleFin,
         EXTERNAL.copy(orgDomain = null, institution = null),
       )
 
@@ -72,8 +71,7 @@ internal class BankAccountLinkerTest {
     insertLinkedAccount(OTHER, bankId = null, bankName = "My Bank")
     api.responses["ACT-1"] = success()
 
-    linker(api)
-      .link(ACCOUNT, AccountSyncSource.SimpleFin, EXTERNAL.copy(orgDomain = null, orgId = null))
+    linker(api).link(ACCOUNT, SimpleFin, EXTERNAL.copy(orgDomain = null, orgId = null))
 
     assertThat(account(ACCOUNT).bank).isEqualTo(account(OTHER).bank)
   }
@@ -84,7 +82,7 @@ internal class BankAccountLinkerTest {
     deleteBanks()
     api.responses["ACT-1"] = success()
 
-    linker(api).link(ACCOUNT, AccountSyncSource.SimpleFin, EXTERNAL)
+    linker(api).link(ACCOUNT, SimpleFin, EXTERNAL)
 
     assertThat(account(ACCOUNT).bank).isNotNull().isNotEqualTo(account(OTHER).bank)
   }
@@ -92,7 +90,7 @@ internal class BankAccountLinkerTest {
   @Test
   fun `Linking a missing account fails`() = runBankSyncTest {
     assertFailure {
-      linker(api).link(AccountId("missing"), AccountSyncSource.SimpleFin, EXTERNAL)
+      linker(api).link(AccountId("missing"), SimpleFin, EXTERNAL)
     }
     assertThat(syncCalls).isEmpty()
   }
@@ -110,7 +108,7 @@ internal class BankAccountLinkerTest {
       prop("offbudget") { it.offbudget }.isEqualTo(false)
       prop("sort_order") { it.sort_order }.isEqualTo(16384.0)
       prop("account_id") { it.account_id }.isEqualTo("ACT-1")
-      prop("account_sync_source") { it.account_sync_source }.isEqualTo(AccountSyncSource.SimpleFin)
+      prop("account_sync_source") { it.account_sync_source }.isEqualTo(SimpleFin)
       prop("last_sync") { it.last_sync }.isNotNull()
     }
     val payee = sent.single { it.dataset == "payees" && it.column == "transfer_acct" }
@@ -154,7 +152,7 @@ internal class BankAccountLinkerTest {
 
   @Test
   fun `Unlinking clears the bank sync fields`() = runBankSyncTest {
-    insertLinkedAccount(OTHER, source = AccountSyncSource.SimpleFin)
+    insertLinkedAccount(OTHER, source = SimpleFin)
     database.accountsQueries.updateBalance(Amount(100), OTHER)
 
     linker(api).unlink(OTHER)

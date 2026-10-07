@@ -264,9 +264,9 @@ private data class AmountTextFieldParams(
   val value: JsonElement,
   val isEnabled: Boolean = false,
   val currency: Currency = PoundSterling,
-  val position: CurrencySymbolPosition = CurrencySymbolPosition.Default,
+  val position: CurrencySymbolPosition = Default,
   val includeSpace: Boolean = true,
-  val numberFormat: NumberFormat = NumberFormat.Default,
+  val numberFormat: NumberFormat = Default,
   val isPrivacyEnabled: Boolean = false,
 )
 

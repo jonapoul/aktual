@@ -12,7 +12,7 @@ class KermitFileLogger(
   storage: LogStorage,
   override val minPriority: LogPriority,
   clock: Clock = Clock.System,
-  timeZone: TimeZoneProvider = TimeZoneProvider.Default,
+  timeZone: TimeZoneProvider = Default,
   fileSystem: FileSystem = SYSTEM,
 ) : MinPriorityLogger {
   private val fileWriter =

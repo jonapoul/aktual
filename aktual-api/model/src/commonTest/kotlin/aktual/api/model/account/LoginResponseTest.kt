@@ -19,6 +19,6 @@ class LoginResponseTest {
   fun `Decode token-expired failure from JSON`() =
     testDecoding(
       json = AccountResponses.LOGIN_TOKEN_EXPIRED_401,
-      expected = LoginResponse.Failure(reason = FailureReason.TokenExpired),
+      expected = LoginResponse.Failure(reason = TokenExpired),
     )
 }

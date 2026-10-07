@@ -43,7 +43,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.shadow
@@ -52,7 +51,6 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
@@ -95,7 +93,7 @@ internal fun SankeyChart(
 
     val chartModifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f)
     if (data.nodes.isEmpty()) {
-      Box(modifier = chartModifier.padding(16.dp), contentAlignment = Alignment.Center) {
+      Box(modifier = chartModifier.padding(16.dp), contentAlignment = Center) {
         Text(
           text = Strings.reportsSankeyEmpty,
           color = colors.pageTextSubdued,
@@ -170,7 +168,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
     val onSelect by
       rememberUpdatedState<(Selection?) -> Unit> { tapped ->
         selection = if (tapped?.hit == selection?.hit) null else tapped
-        if (selection != null) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+        if (selection != null) haptics.performHapticFeedback(SegmentTick)
       }
     val tapModifier =
       if (compact) {

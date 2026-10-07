@@ -27,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -90,7 +89,7 @@ private fun StackTraceDialog(stackTrace: String, onDismiss: () -> Unit) {
     },
   ) {
     SelectionContainer(modifier = Modifier.heightIn(max = 400.dp).verticalScrollWithBar()) {
-      Text(text = stackTrace, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
+      Text(text = stackTrace, fontFamily = Monospace, fontSize = 12.sp)
     }
   }
 }

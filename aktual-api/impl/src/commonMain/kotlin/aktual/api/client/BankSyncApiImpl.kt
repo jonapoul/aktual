@@ -77,7 +77,7 @@ class BankSyncApiImpl(
       timingOut {
         client
           .post {
-            request(AccountSyncSource.SimpleFin, TRANSACTIONS, request, timeout = BATCH_TIMEOUT)
+            request(SimpleFin, TRANSACTIONS, request, timeout = BATCH_TIMEOUT)
           }
           .body<BankSyncEnvelope<JsonObject>>()
       }
@@ -240,7 +240,7 @@ class BankSyncApiImpl(
     bankSyncRequest(remote(), source, endpoint, body, timeout)
 
     // Pluggy.ai credentials can be set per budget file, so the server needs to know which file
-    if (source == AccountSyncSource.PluggyAi) {
+    if (source == PluggyAi) {
       prefs[CloudFileId]?.let { header(AktualHeaders.FILE_ID, it) }
     }
   }

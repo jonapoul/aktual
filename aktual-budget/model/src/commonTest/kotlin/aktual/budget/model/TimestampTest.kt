@@ -37,7 +37,7 @@ class TimestampTest {
     val TEST_CASE_2 =
       TestCase(
         string = "9999-12-31T23:59:59.999Z-FFFF-FFFFFFFFFFFFFFFF",
-        timestamp = Timestamp.MAXIMUM,
+        timestamp = MAXIMUM,
       )
   }
 }

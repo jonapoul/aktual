@@ -86,7 +86,7 @@ private fun YearBreakdown(
     Text(
       text = Strings.monteCarloAge(year.age),
       style = typography.bodyMedium,
-      fontWeight = FontWeight.Bold,
+      fontWeight = Bold,
       color = textColor,
     )
     if (year.afterDepletion) {

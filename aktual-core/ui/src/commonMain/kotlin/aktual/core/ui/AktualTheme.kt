@@ -16,7 +16,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.LocalShimmerTheme
 import com.valentinilk.shimmer.ShimmerTheme
@@ -67,7 +66,7 @@ private fun aktualShimmerTheme(colors: Colors): ShimmerTheme =
           animation = shimmerSpec(durationMillis = 800, easing = LinearEasing, delayMillis = 1_500),
           repeatMode = Restart,
         ),
-      blendMode = BlendMode.DstIn,
+      blendMode = DstIn,
       rotation = 15.0f,
       shaderColors =
         persistentListOf(

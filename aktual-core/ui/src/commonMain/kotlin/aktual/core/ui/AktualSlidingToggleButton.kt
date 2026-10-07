@@ -41,7 +41,7 @@ fun <T : Any> AktualSlidingToggleButton(
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
   string: @Composable (T) -> String = { it.toString() },
-  fontSize: TextUnit = TextUnit.Unspecified,
+  fontSize: TextUnit = Unspecified,
   itemPadding: PaddingValues = PaddingValues(horizontal = 5.dp, vertical = 10.dp),
 ) {
   require(options.isNotEmpty()) { "Passed an empty options list into SlidingToggleButton" }
