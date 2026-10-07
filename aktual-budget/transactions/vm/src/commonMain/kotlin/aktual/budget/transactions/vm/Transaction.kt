@@ -38,7 +38,7 @@ data class Transaction(
 // Walks down the page from the balance after its first row. Split children hang off their parent
 // with no balance, since its amount already covers theirs.
 internal fun TransactionPage.toTransactions(
-  children: Map<TransactionId, List<TransactionRow>>
+  children: Map<TransactionId, List<TransactionRow>>,
 ): List<Transaction> {
   var balance = topBalance
   return rows.map { row ->
