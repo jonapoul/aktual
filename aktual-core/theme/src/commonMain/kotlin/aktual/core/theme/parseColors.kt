@@ -6,13 +6,25 @@ import androidx.compose.ui.graphics.Color
 import logcat.logcat
 
 fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
-  val attributes: MutableMap<String, Color> =
+  val properties: Map<String, String> =
     css
       .lineSequence()
       .map { it.trim() }
-      .filter { it.startsWith("--color-") }
-      .associate(::parseAttributePair)
-      .toMutableMap()
+      .filter { it.startsWith("--") }
+      .mapNotNull(::parsePropertyPair)
+      .toMap()
+
+  val attributes = mutableMapOf<String, Color>()
+  for ((property, value) in properties) {
+    if (!property.startsWith(COLOR_PREFIX)) continue
+    val name = property.removePrefix(COLOR_PREFIX)
+    val color = properties.resolveColor(value)
+    if (color == null) {
+      logcat.w(TAG) { "Can't resolve '$value' for '$name' in custom theme ${summary.repo}" }
+    } else {
+      attributes[name] = color
+    }
+  }
 
   val pageBackground =
     requireNotNull(attributes.remove("pageBackground")) {
@@ -366,11 +378,33 @@ fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
 
 private const val TAG = "parseTheme"
 
-private val AttributeRegex = "--color-(.*?):\\s*?(.*?);".toRegex()
+private const val COLOR_PREFIX = "color-"
 
-private fun parseAttributePair(line: String): Pair<String, Color> {
-  val match =
-    AttributeRegex.find(line) ?: error("Attribute '$line' doesn't match regex $AttributeRegex")
+private val PropertyRegex = "--(.*?):\\s*?(.*?);".toRegex()
+
+private val VarRegex = """var\(\s*--([\w-]+)\s*(?:,\s*(.+?)\s*)?\)""".toRegex()
+
+// Themes can declare their own properties alongside the --color- ones, and reference them by var()
+private fun parsePropertyPair(line: String): Pair<String, String>? {
+  val match = PropertyRegex.find(line)
+  if (match == null) {
+    check(!line.startsWith("--$COLOR_PREFIX")) {
+      "Attribute '$line' doesn't match regex $PropertyRegex"
+    }
+    return null
+  }
   val (_, name, string) = match.groupValues
-  return name to string.trim().parseColor()
+  return name to string.trim()
+}
+
+// Follows var() references to other properties, returning null if one is missing or circular
+private fun Map<String, String>.resolveColor(
+  value: String,
+  seen: Set<String> = emptySet(),
+): Color? {
+  val match = VarRegex.matchEntire(value) ?: return value.parseColor()
+  val (_, name, fallback) = match.groupValues
+  val target = if (name in seen) null else get(name)
+  return target?.let { resolveColor(it, seen + name) }
+    ?: fallback.takeIf { it.isNotEmpty() }?.let { resolveColor(it, seen) }
 }
