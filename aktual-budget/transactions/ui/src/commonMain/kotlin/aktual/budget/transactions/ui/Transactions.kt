@@ -154,14 +154,14 @@ private fun TransactionsFilled(
       if (transaction != null) {
         val showDate = index == 0 || pagingItems.peek(index - 1)?.date != transaction.date
 
-        val rowModifier =
+        val background =
           if (shadeRows && index % 2 == 1) {
-            Modifier.background(colors.tableRowBackgroundAlternate)
+            colors.tableRowBackgroundAlternate
           } else {
-            Modifier
+            colors.tableBackground
           }
 
-        Column(modifier = Modifier.fillMaxWidth().animateItem().then(rowModifier)) {
+        Column(modifier = Modifier.fillMaxWidth().animateItem().background(background)) {
           // A hairline between days, or between every row when dense
           if (index > 0 && (showDate || density == Dense)) {
             HorizontalDivider(color = colors.tableBorder)
