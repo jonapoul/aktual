@@ -18,6 +18,13 @@ JOIN category_groups g ON g.id = c.cat_group AND g.tombstone = 0
 WHERE c.tombstone = 0
 ORDER BY g.is_income, g.sort_order, g.id, c.sort_order, c.id;
 
+-- packages/loot-core/src/server/budget/base.ts createBudget()
+budgetCategoryGroups:
+SELECT id, name, is_income, hidden, sort_order
+FROM category_groups
+WHERE tombstone = 0
+ORDER BY is_income, sort_order, id;
+
 -- packages/loot-core/src/server/budget/base.ts getSumAmountsByMonth()
 budgetSpentByMonth:
 SELECT

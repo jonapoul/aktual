@@ -1,6 +1,7 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetCategories
+import aktual.budget.db.BudgetCategoryGroups
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.BudgetSpentByMonth
 import aktual.budget.db.Zero_budget_months
@@ -39,6 +40,10 @@ class BudgetDao(database: BudgetDatabase, private val contexts: CoroutineContext
   // Live categories in live groups, income groups last
   fun observeCategories(): Flow<List<BudgetCategories>> =
     queries.budgetCategories().asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  // Live groups in the same order as observeCategories(), empty ones included
+  fun observeCategoryGroups(): Flow<List<BudgetCategoryGroups>> =
+    queries.budgetCategoryGroups().asFlow().mapToList(contexts.default).distinctUntilChanged()
 
   // Per-category totals of on-budget transactions for each month in the range
   fun observeSpentByMonth(start: LocalDate, end: LocalDate): Flow<List<BudgetSpentByMonth>> =

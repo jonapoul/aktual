@@ -31,6 +31,73 @@ internal class BudgetSheetTest {
   }
 
   @Test
+  fun `Bounds run from the budget start to a year after the current month`() {
+    val today = LocalDate(2026, 4, 1)
+    assertThat(budgetBounds(earliestTransaction = null, today))
+      .isEqualTo(YearMonth(2026, 1)..YearMonth(2027, 4))
+    assertThat(budgetBounds(LocalDate(2025, 6, 30), today))
+      .isEqualTo(YearMonth(2025, 3)..YearMonth(2027, 4))
+    assertThat(budgetBounds(LocalDate(2027, 9, 1), today))
+      .isEqualTo(YearMonth(2026, 1)..YearMonth(2027, 4))
+  }
+
+  @Test
+  fun `Range keeps each month of a single walk`() {
+    val months = envelope().envelopeMonths(JAN, FEB..MAR)
+    assertThat(months)
+      .containsExactly(envelope().envelopeMonth(JAN, FEB), envelope().envelopeMonth(JAN, MAR))
+
+    val tracking = tracking().trackingMonths(JAN, YearMonth(2025, 12)..FEB)
+    assertThat(tracking)
+      .containsExactly(
+        tracking().trackingMonth(JAN, YearMonth(2025, 12)),
+        tracking().trackingMonth(JAN, JAN),
+        tracking().trackingMonth(JAN, FEB),
+      )
+  }
+
+  @Test
+  fun `Envelope group totals include hidden categories`() {
+    val categories = listOf(FOOD.copy(isHidden = true), RENT, SECRET, SALARY)
+    val data = envelope().copy(categories = categories, groups = GROUPS)
+
+    assertThat(data.envelopeMonth(JAN, JAN))
+      .groups()
+      .containsExactly(
+        Totals("usual", budgeted = 40_000, spent = -35_000, balance = 5_000, listOf("food")),
+        Totals(
+          "bills",
+          budgeted = 100_000,
+          spent = -100_000,
+          balance = 0,
+          listOf("rent", "secret"),
+        ),
+        Totals("empty", budgeted = 0, spent = 0, balance = 0, emptyList()),
+        Totals("income", budgeted = 0, spent = 300_000, balance = 0, listOf("salary")),
+      )
+  }
+
+  @Test
+  fun `Tracking group totals leave out hidden categories`() {
+    val data = tracking(budget(JAN, "secret", 5_000)).copy(groups = GROUPS)
+
+    assertThat(data.trackingMonth(JAN, JAN))
+      .groups()
+      .containsExactly(
+        Totals("usual", budgeted = 40_000, spent = -35_000, balance = 5_000, listOf("food")),
+        Totals(
+          "bills",
+          budgeted = 100_000,
+          spent = -100_000,
+          balance = 0,
+          listOf("rent", "secret"),
+        ),
+        Totals("empty", budgeted = 0, spent = 0, balance = 0, emptyList()),
+        Totals("income", budgeted = 300_000, spent = 250_000, balance = 50_000, listOf("salary")),
+      )
+  }
+
+  @Test
   fun `Envelope month budgets income and keeps what's left in each category`() {
     assertThat(envelope().envelopeMonth(JAN, JAN)).all {
       prop(Envelope::income).isEqualTo(Amount(300_000L))
@@ -155,6 +222,26 @@ internal class BudgetSheetTest {
       )
   }
 
+  private data class Totals(
+    val id: String,
+    val budgeted: Long,
+    val spent: Long,
+    val balance: Long,
+    val categories: List<String>,
+  )
+
+  private fun Assert<BudgetMonth>.groups() = transform { month ->
+    month.groups.map { group ->
+      Totals(
+        id = group.id.value,
+        budgeted = group.budgeted.toLong(),
+        spent = group.spent.toLong(),
+        balance = group.balance.toLong(),
+        categories = group.categories.map { it.id.value },
+      )
+    }
+  }
+
   private fun Assert<BudgetMonth>.balances() = transform { month ->
     month.categories.map { it.id.value to it.balance.toLong() }
   }
@@ -224,6 +311,23 @@ internal class BudgetSheetTest {
     val RENT = category("rent", group = "bills")
     val SECRET = category("secret", group = "bills", isHidden = true)
     val SALARY = category("salary", group = "income", isIncome = true)
+
+    val GROUPS =
+      listOf(
+        group("usual"),
+        group("bills"),
+        group("empty"),
+        group("income", isIncome = true),
+      )
+
+    fun group(id: String, isIncome: Boolean = false) =
+      BudgetGroup(
+        id = CategoryGroupId(id),
+        name = id,
+        isIncome = isIncome,
+        isHidden = false,
+        sortOrder = null,
+      )
 
     fun category(id: String, group: String, isIncome: Boolean = false, isHidden: Boolean = false) =
       BudgetCategory(

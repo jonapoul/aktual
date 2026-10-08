@@ -1,6 +1,7 @@
 package aktual.budget.budgeting.domain
 
 import aktual.budget.db.BudgetCategories
+import aktual.budget.db.BudgetCategoryGroups
 import aktual.budget.db.BudgetSpentByMonth
 import aktual.budget.db.dao.BudgetDao
 import aktual.budget.db.dao.CategoryBudget
@@ -12,6 +13,8 @@ import aktual.core.Calendar
 import aktual.di.BudgetScope
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.ContributesBinding
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -22,6 +25,12 @@ import kotlinx.datetime.YearMonth
 
 interface BudgetMonthCalculator {
   fun observe(month: YearMonth): Flow<BudgetMonth>
+
+  // One walk from the budget start covers every month in the range
+  fun observeRange(months: ClosedRange<YearMonth>): Flow<ImmutableList<BudgetMonth>>
+
+  // packages/loot-core/src/server/budget/app.ts get-budget-bounds
+  fun observeBounds(): Flow<ClosedRange<YearMonth>>
 }
 
 @ContributesBinding(BudgetScope::class)
@@ -32,6 +41,9 @@ class BudgetMonthCalculatorImpl(
   private val contexts: CoroutineContexts,
 ) : BudgetMonthCalculator {
   override fun observe(month: YearMonth): Flow<BudgetMonth> =
+    observeRange(month..month).map { it.single() }.distinctUntilChanged()
+
+  override fun observeRange(months: ClosedRange<YearMonth>): Flow<ImmutableList<BudgetMonth>> =
     combine(
         preferencesDao.observe(SyncedPrefKey.Global.BudgetType).map { BudgetType.from(it) },
         budgetDao.observeEarliestTransactionDate(),
@@ -42,39 +54,61 @@ class BudgetMonthCalculatorImpl(
       .distinctUntilChanged()
       .flatMapLatest { (type, start) ->
         when (type) {
-          Envelope -> observeEnvelope(start, month)
-          Tracking -> observeTracking(start, month)
+          Envelope -> observeEnvelope(start, months)
+          Tracking -> observeTracking(start, months)
         }
       }
       .distinctUntilChanged()
       .flowOn(contexts.default)
 
-  private fun observeEnvelope(start: YearMonth, month: YearMonth): Flow<BudgetMonth> =
-    combine(
+  override fun observeBounds(): Flow<ClosedRange<YearMonth>> =
+    budgetDao
+      .observeEarliestTransactionDate()
+      .map { earliest -> budgetBounds(earliest, calendar.today()) }
+      .distinctUntilChanged()
+      .flowOn(contexts.default)
+
+  private fun observeEnvelope(
+    start: YearMonth,
+    months: ClosedRange<YearMonth>,
+  ): Flow<ImmutableList<BudgetMonth>> {
+    val end = months.endInclusive
+    return combine(
+      budgetDao.observeCategoryGroups(),
       budgetDao.observeCategories(),
-      budgetDao.observeSpentByMonth(start.firstDay, month.lastDay),
-      budgetDao.observeEnvelopeBudgets(start, month),
+      budgetDao.observeSpentByMonth(start.firstDay, end.lastDay),
+      budgetDao.observeEnvelopeBudgets(start, end),
       budgetDao.observeEnvelopeMonths(),
-    ) { categories, spent, budgets, months ->
-      val buffered = months.mapNotNull { row ->
+    ) { groups, categories, spent, budgets, budgetMonths ->
+      val buffered = budgetMonths.mapNotNull { row ->
         row.id.value.toYearMonthOrNull()?.let { it to (row.buffered ?: Amount.Zero) }
       }
-      budgetData(categories, spent, budgets, buffered.toMap()).envelopeMonth(start, month)
+      budgetData(groups, categories, spent, budgets, buffered.toMap())
+        .envelopeMonths(start, months)
+        .toImmutableList()
     }
+  }
 
-  private fun observeTracking(start: YearMonth, month: YearMonth): Flow<BudgetMonth> =
-    combine(
+  private fun observeTracking(
+    start: YearMonth,
+    months: ClosedRange<YearMonth>,
+  ): Flow<ImmutableList<BudgetMonth>> {
+    val end = months.endInclusive
+    return combine(
+      budgetDao.observeCategoryGroups(),
       budgetDao.observeCategories(),
-      budgetDao.observeSpentByMonth(start.firstDay, month.lastDay),
-      budgetDao.observeTrackingBudgets(start, month),
-    ) { categories, spent, budgets ->
-      budgetData(categories, spent, budgets).trackingMonth(start, month)
+      budgetDao.observeSpentByMonth(start.firstDay, end.lastDay),
+      budgetDao.observeTrackingBudgets(start, end),
+    ) { groups, categories, spent, budgets ->
+      budgetData(groups, categories, spent, budgets).trackingMonths(start, months).toImmutableList()
     }
+  }
 }
 
 private const val YEAR_MONTH_FACTOR = 100
 
 private fun budgetData(
+  groups: List<BudgetCategoryGroups>,
   categories: List<BudgetCategories>,
   spent: List<BudgetSpentByMonth>,
   budgets: List<CategoryBudget>,
@@ -99,6 +133,16 @@ private fun budgetData(
       },
     budgets = budgets.associateBy { MonthCategory(it.month, it.category) },
     buffered = buffered,
+    groups =
+      groups.map { row ->
+        BudgetGroup(
+          id = row.id,
+          name = row.name.orEmpty(),
+          isIncome = row.is_income == true,
+          isHidden = row.hidden,
+          sortOrder = row.sort_order,
+        )
+      },
   )
 
 // Stored as YYYYMM

@@ -9,6 +9,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
 import aktual.budget.model.SyncedPrefKey
 import aktual.test.assertThatNextEmission
+import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.db.SqlDriver
@@ -19,6 +20,8 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
 import kotlin.test.Test
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -88,6 +91,53 @@ internal class BudgetMonthCalculatorTest {
       }
     }
 
+  @Test
+  fun `Envelope range matches each month on its own`() = runCalculatorTest { calculator, _ ->
+    assertRangeMatchesMonths(calculator)
+  }
+
+  @Test
+  fun `Tracking range matches each month on its own`() = runCalculatorTest { calculator, database ->
+    database.preferences(this)[SyncedPrefKey.Global.BudgetType] = "tracking"
+    assertRangeMatchesMonths(calculator)
+  }
+
+  @Test
+  fun `Months are grouped with group names`() = runCalculatorTest { calculator, _ ->
+    calculator.observe(YearMonth(2026, 4)).test {
+      assertThatNextEmission()
+        .transform { month -> month.groups.map { it.name to it.categories.map { c -> c.name } } }
+        .containsExactly(
+          "Usual" to listOf("Food"),
+          "Empty" to emptyList<String>(),
+          "Income" to listOf("Salary"),
+        )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Bounds follow the earliest transaction`() = runCalculatorTest { calculator, database ->
+    calculator.observeBounds().test {
+      assertThatNextEmissionIsEqualTo(YearMonth(2025, 12)..YearMonth(2027, 4))
+
+      TransactionDao(database)
+        .insert("t8", "on", "food", "payee", LocalDate(2025, 6, 3), amount = -10.0)
+
+      assertThatNextEmissionIsEqualTo(YearMonth(2025, 3)..YearMonth(2027, 4))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  private suspend fun TestScope.assertRangeMatchesMonths(calculator: BudgetMonthCalculator) {
+    val range = YearMonth(2026, 1)..YearMonth(2026, 5)
+    val single = range.map { month -> calculator.observe(month).first() }.toImmutableList()
+    calculator.observeRange(range).test {
+      assertThatNextEmissionIsEqualTo(single)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private fun runCalculatorTest(
     action: suspend TestScope.(BudgetMonthCalculator, BudgetDatabase) -> Unit,
   ) = runTest {
@@ -123,6 +173,8 @@ internal class BudgetMonthCalculatorTest {
       listOf(
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('usual', 'Usual', 0, 1)",
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('income', 'Income', 1, 2)",
+        "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('empty', 'Empty', 0, 3)",
+        "INSERT INTO category_groups(id, name, is_income, sort_order, tombstone) VALUES ('gone', 'Gone', 0, 4, 1)",
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('food', 'Food', 0, 'usual', 1)",
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('salary', 'Salary', 1, 'income', 1)",
         "INSERT INTO categories(id, name, is_income, cat_group, tombstone) VALUES ('old', 'Old', 0, 'usual', 1)",
