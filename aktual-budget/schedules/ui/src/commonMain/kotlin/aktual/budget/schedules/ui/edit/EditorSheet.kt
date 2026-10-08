@@ -1,7 +1,7 @@
 package aktual.budget.schedules.ui.edit
 
 import aktual.core.l10n.Strings
-import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PrimaryTextButton
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
@@ -41,12 +40,10 @@ internal fun EditorSheet(
     scope.launch { sheetState.hide() }.invokeOnCompletion { then() }
   }
 
-  ModalBottomSheet(
+  AktualModalBottomSheet(
     modifier = modifier,
     onDismissRequest = onDismiss,
     sheetState = sheetState,
-    containerColor = colors.modalBackground,
-    contentColor = colors.pageText,
   ) {
     Column(
       modifier =

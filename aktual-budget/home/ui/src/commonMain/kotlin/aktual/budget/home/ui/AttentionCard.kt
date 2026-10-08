@@ -15,6 +15,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Warning
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareTextButton
@@ -31,7 +32,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
@@ -215,12 +215,10 @@ private fun OverspentSheet(
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  ModalBottomSheet(
+  AktualModalBottomSheet(
     modifier = modifier,
     onDismissRequest = onDismiss,
     sheetState = rememberBottomSheetState(initialValue = Hidden),
-    containerColor = colors.modalBackground,
-    contentColor = colors.pageText,
   ) {
     OverspentContent(categories)
   }

@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,12 +38,10 @@ fun <T : Any> ListBottomSheet(
   key: ((T) -> Any)? = null,
   isEnabled: (T) -> Boolean = { true },
 ) {
-  ModalBottomSheet(
+  AktualModalBottomSheet(
     modifier = modifier,
     onDismissRequest = onDismiss,
     sheetState = sheetState,
-    containerColor = colors.modalBackground,
-    contentColor = colors.pageText,
   ) {
     val listState = rememberLazyListState()
     LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
