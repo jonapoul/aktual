@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
@@ -98,7 +97,6 @@ internal fun ChartInfoSheet(
   AktualModalBottomSheet(
     modifier = modifier,
     onDismissRequest = onDismiss,
-    sheetState = rememberBottomSheetState(initialValue = Hidden),
   ) {
     Column(
       modifier =

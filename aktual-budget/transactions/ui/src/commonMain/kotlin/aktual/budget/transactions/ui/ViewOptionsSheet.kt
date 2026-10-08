@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,7 +34,6 @@ internal fun ViewOptionsSheet(
   AktualModalBottomSheet(
     modifier = modifier,
     onDismissRequest = onDismiss,
-    sheetState = rememberBottomSheetState(initialValue = Hidden),
   ) {
     ViewOptionsContent(density = density, onAction = onAction)
   }

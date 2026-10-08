@@ -4,6 +4,7 @@ import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
@@ -15,8 +16,8 @@ import androidx.compose.ui.Modifier
 @Composable
 fun AktualModalBottomSheet(
   onDismissRequest: () -> Unit,
-  sheetState: SheetState,
   modifier: Modifier = Modifier,
+  sheetState: SheetState = rememberBottomSheetState(initialValue = Hidden),
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val dialogBlurState = LocalDialogBlurState.current
