@@ -4,11 +4,10 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Cloud
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.material.ArrowRight
-import aktual.core.icons.material.FilterList
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OfflinePin
 import aktual.core.icons.material.Refresh
-import aktual.core.icons.material.Sort
+import aktual.core.icons.material.Tune
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
 import aktual.core.l10n.settings_theme_refresh_failure
@@ -48,6 +47,8 @@ import aktual.prefs.vm.theme.custom.CatalogItem
 import aktual.prefs.vm.theme.custom.CatalogState
 import aktual.prefs.vm.theme.custom.CustomThemeEvent
 import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
+import aktual.prefs.vm.theme.custom.ThemeFilter
+import aktual.prefs.vm.theme.custom.ThemeSorting
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -106,12 +107,12 @@ fun CustomThemeSettingsScreen(
   val filter by viewModel.filter.collectAsStateWithLifecycle()
   val sorting by viewModel.sorting.collectAsStateWithLifecycle()
   val snackbar = remember { SnackbarHostState() }
-  var bottomSheet by remember { mutableStateOf<BottomSheet?>(null) }
+  var showSortFilterSheet by remember { mutableStateOf(false) }
   var downloadFailure by remember { mutableStateOf<DownloadFailure?>(null) }
 
   SideEffect(state) {
     if (state !is Success) {
-      bottomSheet = null
+      showSortFilterSheet = false
       downloadFailure = null
     }
   }
@@ -132,16 +133,17 @@ fun CustomThemeSettingsScreen(
 
   CustomThemeSettingsScaffold(
     state = state,
-    bottomSheet = bottomSheet,
+    sorting = sorting,
+    filter = filter,
+    showSortFilterSheet = showSortFilterSheet,
     downloadFailure = downloadFailure,
     snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         NavBack -> back()
         RetryFetchCatalog -> viewModel.clearCache()
-        ShowFilterSheet -> bottomSheet = ThemeFilterBottomSheet(filter)
-        ShowSortSheet -> bottomSheet = ThemeSortingBottomSheet(sorting)
-        DismissBottomSheet -> bottomSheet = null
+        ShowSortFilterSheet -> showSortFilterSheet = true
+        DismissBottomSheet -> showSortFilterSheet = false
         DismissDownloadFailure -> downloadFailure = null
         is ShowDownloadFailure -> downloadFailure = action.failure
         is InspectTheme -> viewModel.fetchAndNavigate(action.summary)
@@ -156,7 +158,9 @@ fun CustomThemeSettingsScreen(
 @Composable
 private fun CustomThemeSettingsScaffold(
   state: CatalogState,
-  bottomSheet: BottomSheet?,
+  sorting: ThemeSorting,
+  filter: ThemeFilter,
+  showSortFilterSheet: Boolean,
   downloadFailure: DownloadFailure?,
   onAction: CustomThemeSettingsActionHandler,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -172,10 +176,7 @@ private fun CustomThemeSettingsScaffold(
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsThemeCustomTitle) },
-        actions = {
-          FilterButton(state, onAction)
-          SortButton(state, onAction)
-        },
+        actions = { SortFilterButton(state, onAction) },
       )
     },
     snackbarHost = {
@@ -206,12 +207,8 @@ private fun CustomThemeSettingsScaffold(
     }
   }
 
-  if (state is Success) {
-    when (bottomSheet) {
-      is ThemeFilterBottomSheet -> ThemeFilterBottomSheet(bottomSheet.value, onAction, sheetState)
-      is ThemeSortingBottomSheet -> ThemeSortingBottomSheet(bottomSheet.value, onAction, sheetState)
-      null -> Unit
-    }
+  if (state is Success && showSortFilterSheet) {
+    SortFilterBottomSheet(sorting, filter, onAction, sheetState)
   }
 
   if (downloadFailure != null) {
@@ -220,22 +217,12 @@ private fun CustomThemeSettingsScaffold(
 }
 
 @Composable
-private fun FilterButton(state: CatalogState, onAction: CustomThemeSettingsActionHandler) {
+private fun SortFilterButton(state: CatalogState, onAction: CustomThemeSettingsActionHandler) {
   BareIconButton(
-    imageVector = MaterialIcons.FilterList,
-    contentDescription = Strings.settingsThemeFilter,
+    imageVector = MaterialIcons.Tune,
+    contentDescription = Strings.settingsThemeSortFilter,
     enabled = state !is Loading,
-    onClick = { onAction(ShowFilterSheet) },
-  )
-}
-
-@Composable
-private fun SortButton(state: CatalogState, onAction: CustomThemeSettingsActionHandler) {
-  BareIconButton(
-    imageVector = MaterialIcons.Sort,
-    contentDescription = Strings.settingsThemeSort,
-    enabled = state !is Loading,
-    onClick = { onAction(ShowSortSheet) },
+    onClick = { onAction(ShowSortFilterSheet) },
   )
 }
 
@@ -495,7 +482,9 @@ private fun PreviewCustomThemeSettings(
   PreviewWithColoredParams(params) {
     CustomThemeSettingsScaffold(
       state = state,
-      bottomSheet = bottomSheet,
+      sorting = ByName,
+      filter = filter,
+      showSortFilterSheet = showSortFilterSheet,
       downloadFailure = null,
       onAction = {},
     )
@@ -518,7 +507,8 @@ private class CatalogItemProvider :
 
 private data class CustomThemeSettingsParams(
   val state: CatalogState,
-  val bottomSheet: BottomSheet? = null,
+  val filter: ThemeFilter = All,
+  val showSortFilterSheet: Boolean = false,
 )
 
 private val SUCCESS_STATE =
@@ -531,8 +521,5 @@ private class CatalogStateProvider :
     CustomThemeSettingsParams(Loading),
     CustomThemeSettingsParams(CatalogState.Failed.FetchingCatalog),
     CustomThemeSettingsParams(SUCCESS_STATE),
-    CustomThemeSettingsParams(
-      SUCCESS_STATE,
-      bottomSheet = ThemeFilterBottomSheet(Dark),
-    ),
+    CustomThemeSettingsParams(SUCCESS_STATE, filter = Dark, showSortFilterSheet = true),
   )

@@ -49,35 +49,53 @@ fun <T : Any> ListBottomSheet(
     val listState = rememberLazyListState()
     LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
       items(options, key) { item ->
-        val label = string(item)
-        val isSelected = item == value
-        ListItem(
-          modifier =
-            Modifier.animateItem().clickable(isEnabled(item)) {
-              onSelect(item)
-              onDismiss()
-            },
+        BottomSheetListItem(
+          modifier = Modifier.animateItem(),
+          label = string(item),
+          isSelected = item == value,
+          enabled = isEnabled(item),
+          onClick = {
+            onSelect(item)
+            onDismiss()
+          },
           leadingContent = leadingContent?.let { { it(item) } },
-          headlineContent = { Text(text = label) },
-          trailingContent =
-            if (isSelected || trailingContent != null) {
-              {
-                Row(
-                  horizontalArrangement = Arrangement.spacedBy(8.dp),
-                  verticalAlignment = CenterVertically,
-                ) {
-                  if (isSelected) BottomSheetIcon(MaterialIcons.Check)
-                  trailingContent?.invoke(item)
-                }
-              }
-            } else {
-              null
-            },
-          colors = colors.listItem(),
+          trailingContent = trailingContent?.let { { it(item) } },
         )
       }
     }
   }
+}
+
+@Composable
+fun BottomSheetListItem(
+  label: String,
+  isSelected: Boolean,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  leadingContent: (@Composable () -> Unit)? = null,
+  trailingContent: (@Composable () -> Unit)? = null,
+) {
+  ListItem(
+    modifier = modifier.clickable(enabled, onClick = onClick),
+    leadingContent = leadingContent,
+    headlineContent = { Text(text = label) },
+    trailingContent =
+      if (isSelected || trailingContent != null) {
+        {
+          Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = CenterVertically,
+          ) {
+            if (isSelected) BottomSheetIcon(MaterialIcons.Check)
+            trailingContent?.invoke()
+          }
+        }
+      } else {
+        null
+      },
+    colors = colors.listItem(),
+  )
 }
 
 @Composable
