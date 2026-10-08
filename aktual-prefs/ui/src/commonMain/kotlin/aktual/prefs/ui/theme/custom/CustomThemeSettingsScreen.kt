@@ -9,7 +9,6 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OfflinePin
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Sort
-import aktual.core.icons.material.Sync
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
 import aktual.core.l10n.settings_theme_refresh_failure
@@ -21,6 +20,7 @@ import aktual.core.nav.InspectThemeNavigator
 import aktual.core.theme.CustomThemeSummary
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
@@ -42,6 +42,7 @@ import aktual.core.ui.radioButton
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.prefs.vm.theme.custom.CacheState
 import aktual.prefs.vm.theme.custom.CatalogItem
 import aktual.prefs.vm.theme.custom.CatalogState
 import aktual.prefs.vm.theme.custom.CustomThemeEvent
@@ -84,6 +85,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -360,7 +362,7 @@ private fun SuccessContent(
 }
 
 @Composable
-internal fun CustomThemeItem(
+private fun CustomThemeItem(
   item: CatalogItem,
   onAction: CustomThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
@@ -410,24 +412,7 @@ internal fun CustomThemeItem(
           )
         }
 
-        Icon(
-          modifier = Modifier.padding(4.dp).size(25.dp),
-          imageVector =
-            when (item.state) {
-              is Cached -> MaterialIcons.OfflinePin
-              is Failed -> AktualIcons.CloudWarning
-              Fetching -> MaterialIcons.Sync
-              Remote -> AktualIcons.Cloud
-            },
-          tint =
-            when (item.state) {
-              is Cached -> colors.pageText
-              is Failed -> colors.errorText
-              Fetching -> colors.pageTextSubdued
-              Remote -> colors.pageText
-            },
-          contentDescription = null,
-        )
+        CacheStateIcon(state = item.state, modifier = Modifier.padding(4.dp).size(25.dp))
       }
 
       Row(
@@ -444,6 +429,16 @@ internal fun CustomThemeItem(
       onClick = { onAction(InspectTheme(item.summary)) },
       contentDescription = Strings.settingsThemePreview(item.summary.name),
     )
+  }
+}
+
+@Composable
+private fun CacheStateIcon(state: CacheState, modifier: Modifier = Modifier) {
+  when (state) {
+    Fetching -> AnimatedLoading(modifier)
+    is Cached -> Icon(MaterialIcons.OfflinePin, null, modifier, colors.pageText)
+    is Failed -> Icon(AktualIcons.CloudWarning, null, modifier, colors.errorText)
+    Remote -> Icon(AktualIcons.Cloud, null, modifier, colors.pageText)
   }
 }
 
@@ -470,6 +465,21 @@ private fun PreviewCustomThemeSettings(
   PreviewWithColoredParams(params) {
     CustomThemeSettingsScaffold(state = state, bottomSheet = bottomSheet, onAction = {})
   }
+
+@Preview
+@Composable
+private fun PreviewCustomThemeItem(
+  @PreviewParameter(CatalogItemProvider::class) params: ColoredParams<CatalogItem>,
+) = PreviewWithColoredParams(params) { CustomThemeItem(item = this, onAction = {}) }
+
+private class CatalogItemProvider :
+  ColoredParameterProvider<CatalogItem>(
+    PREVIEW_CATALOG_ITEM,
+    PREVIEW_CATALOG_ITEM.copy(isSelected = true),
+    PREVIEW_CATALOG_ITEM.copy(state = Remote),
+    PREVIEW_CATALOG_ITEM.copy(state = Fetching),
+    PREVIEW_CATALOG_ITEM.copy(state = CacheState.Failed("Something broke")),
+  )
 
 private data class CustomThemeSettingsParams(
   val state: CatalogState,
