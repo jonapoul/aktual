@@ -8,6 +8,7 @@ import aktual.core.icons.material.LightMode
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSheetIcon
@@ -18,7 +19,6 @@ import aktual.prefs.vm.theme.custom.ThemeSorting
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,12 +36,10 @@ internal fun SortFilterBottomSheet(
   sheetState: SheetState,
   modifier: Modifier = Modifier,
 ) {
-  ModalBottomSheet(
+  AktualModalBottomSheet(
     modifier = modifier,
     onDismissRequest = { onAction(DismissBottomSheet) },
     sheetState = sheetState,
-    containerColor = colors.modalBackground,
-    contentColor = colors.pageText,
   ) {
     Column(modifier = Modifier.verticalScrollWithBar()) {
       SectionHeader(Strings.settingsThemeSort)

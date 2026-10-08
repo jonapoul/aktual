@@ -2,6 +2,7 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.model.TransactionsDensity
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
@@ -32,12 +32,10 @@ internal fun ViewOptionsSheet(
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  ModalBottomSheet(
+  AktualModalBottomSheet(
     modifier = modifier,
     onDismissRequest = onDismiss,
     sheetState = rememberBottomSheetState(initialValue = Hidden),
-    containerColor = colors.modalBackground,
-    contentColor = colors.pageText,
   ) {
     ViewOptionsContent(density = density, onAction = onAction)
   }
