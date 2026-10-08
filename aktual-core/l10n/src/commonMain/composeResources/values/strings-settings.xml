@@ -36,6 +36,10 @@
   <string name="settings_theme_sort_by_repo">Sort by repository</string>
   <string name="settings_theme_sort_by_name">Sort by name</string>
 
+  <string name="settings_theme_download_failed_title">Failed downloading %1$s</string>
+  <string name="settings_theme_download_failed_show">Show download error for %1$s</string>
+  <string name="settings_theme_download_failed_ok">OK</string>
+
   <string name="settings_theme_inspect_loading">Loading…</string>
   <string name="settings_theme_inspect_open_repo">Open on GitHub</string>
   <string name="settings_theme_inspect_not_found">Theme not found</string>

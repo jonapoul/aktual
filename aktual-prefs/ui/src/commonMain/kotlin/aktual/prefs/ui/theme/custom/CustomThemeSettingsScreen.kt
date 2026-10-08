@@ -9,7 +9,6 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OfflinePin
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Sort
-import aktual.core.icons.material.Sync
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
 import aktual.core.l10n.settings_theme_refresh_failure
@@ -21,8 +20,10 @@ import aktual.core.nav.InspectThemeNavigator
 import aktual.core.theme.CustomThemeSummary
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ButtonShape
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -42,6 +43,7 @@ import aktual.core.ui.radioButton
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.prefs.vm.theme.custom.CacheState
 import aktual.prefs.vm.theme.custom.CatalogItem
 import aktual.prefs.vm.theme.custom.CatalogState
 import aktual.prefs.vm.theme.custom.CustomThemeEvent
@@ -84,6 +86,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -104,10 +107,12 @@ fun CustomThemeSettingsScreen(
   val sorting by viewModel.sorting.collectAsStateWithLifecycle()
   val snackbar = remember { SnackbarHostState() }
   var bottomSheet by remember { mutableStateOf<BottomSheet?>(null) }
+  var downloadFailure by remember { mutableStateOf<DownloadFailure?>(null) }
 
   SideEffect(state) {
     if (state !is Success) {
       bottomSheet = null
+      downloadFailure = null
     }
   }
 
@@ -128,6 +133,7 @@ fun CustomThemeSettingsScreen(
   CustomThemeSettingsScaffold(
     state = state,
     bottomSheet = bottomSheet,
+    downloadFailure = downloadFailure,
     snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
@@ -136,6 +142,8 @@ fun CustomThemeSettingsScreen(
         ShowFilterSheet -> bottomSheet = ThemeFilterBottomSheet(filter)
         ShowSortSheet -> bottomSheet = ThemeSortingBottomSheet(sorting)
         DismissBottomSheet -> bottomSheet = null
+        DismissDownloadFailure -> downloadFailure = null
+        is ShowDownloadFailure -> downloadFailure = action.failure
         is InspectTheme -> viewModel.fetchAndNavigate(action.summary)
         is SelectTheme -> viewModel.select(action.summary)
         is SetModeFilter -> viewModel.setFilter(action.mode)
@@ -149,6 +157,7 @@ fun CustomThemeSettingsScreen(
 private fun CustomThemeSettingsScaffold(
   state: CatalogState,
   bottomSheet: BottomSheet?,
+  downloadFailure: DownloadFailure?,
   onAction: CustomThemeSettingsActionHandler,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
@@ -203,6 +212,10 @@ private fun CustomThemeSettingsScaffold(
       is ThemeSortingBottomSheet -> ThemeSortingBottomSheet(bottomSheet.value, onAction, sheetState)
       null -> Unit
     }
+  }
+
+  if (downloadFailure != null) {
+    DownloadFailedDialog(downloadFailure, onDismiss = { onAction(DismissDownloadFailure) })
   }
 }
 
@@ -360,7 +373,7 @@ private fun SuccessContent(
 }
 
 @Composable
-internal fun CustomThemeItem(
+private fun CustomThemeItem(
   item: CatalogItem,
   onAction: CustomThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
@@ -410,24 +423,7 @@ internal fun CustomThemeItem(
           )
         }
 
-        Icon(
-          modifier = Modifier.padding(4.dp).size(25.dp),
-          imageVector =
-            when (item.state) {
-              is Cached -> MaterialIcons.OfflinePin
-              is Failed -> AktualIcons.CloudWarning
-              Fetching -> MaterialIcons.Sync
-              Remote -> AktualIcons.Cloud
-            },
-          tint =
-            when (item.state) {
-              is Cached -> colors.pageText
-              is Failed -> colors.errorText
-              Fetching -> colors.pageTextSubdued
-              Remote -> colors.pageText
-            },
-          contentDescription = null,
-        )
+        CacheStateIcon(item, onAction)
       }
 
       Row(
@@ -448,6 +444,34 @@ internal fun CustomThemeItem(
 }
 
 @Composable
+private fun CacheStateIcon(item: CatalogItem, onAction: CustomThemeSettingsActionHandler) {
+  when (val state = item.state) {
+    Fetching -> AnimatedLoading(STATE_ICON_MODIFIER)
+    is Cached -> Icon(MaterialIcons.OfflinePin, null, STATE_ICON_MODIFIER, colors.pageText)
+    Remote -> Icon(AktualIcons.Cloud, null, STATE_ICON_MODIFIER, colors.pageText)
+    is Failed -> FailureButton(item, state, onAction)
+  }
+}
+
+@Composable
+private fun FailureButton(
+  item: CatalogItem,
+  state: CacheState.Failed,
+  onAction: CustomThemeSettingsActionHandler,
+) {
+  val failure = DownloadFailure(item.summary.name, state.reason)
+  Icon(
+    modifier =
+      Modifier.clip(ButtonShape)
+        .clickable(role = Button) { onAction(ShowDownloadFailure(failure)) }
+        .then(STATE_ICON_MODIFIER),
+    imageVector = AktualIcons.CloudWarning,
+    contentDescription = Strings.settingsThemeDownloadFailedShow(item.summary.name),
+    tint = colors.errorText,
+  )
+}
+
+@Composable
 private fun RowScope.BoxPreviewColor(summary: CustomThemeSummary, index: Int) =
   Box(
     modifier =
@@ -458,6 +482,7 @@ private fun RowScope.BoxPreviewColor(summary: CustomThemeSummary, index: Int) =
 
 private val ITEM_PADDING = PaddingValues(horizontal = 15.dp, vertical = 12.dp)
 private val ITEM_SPACING = 4.dp
+private val STATE_ICON_MODIFIER = Modifier.padding(4.dp).size(25.dp)
 private val PREVIEW_SPACING = 2.dp
 private val PREVIEW_HEIGHT = 20.dp
 private const val PREVIEW_WEIGHT = 1f
@@ -468,8 +493,28 @@ private fun PreviewCustomThemeSettings(
   @PreviewParameter(CatalogStateProvider::class) params: ColoredParams<CustomThemeSettingsParams>,
 ) =
   PreviewWithColoredParams(params) {
-    CustomThemeSettingsScaffold(state = state, bottomSheet = bottomSheet, onAction = {})
+    CustomThemeSettingsScaffold(
+      state = state,
+      bottomSheet = bottomSheet,
+      downloadFailure = null,
+      onAction = {},
+    )
   }
+
+@Preview
+@Composable
+private fun PreviewCustomThemeItem(
+  @PreviewParameter(CatalogItemProvider::class) params: ColoredParams<CatalogItem>,
+) = PreviewWithColoredParams(params) { CustomThemeItem(item = this, onAction = {}) }
+
+private class CatalogItemProvider :
+  ColoredParameterProvider<CatalogItem>(
+    PREVIEW_CATALOG_ITEM,
+    PREVIEW_CATALOG_ITEM.copy(isSelected = true),
+    PREVIEW_CATALOG_ITEM.copy(state = Remote),
+    PREVIEW_CATALOG_ITEM.copy(state = Fetching),
+    PREVIEW_CATALOG_ITEM.copy(state = CacheState.Failed("Something broke")),
+  )
 
 private data class CustomThemeSettingsParams(
   val state: CatalogState,
