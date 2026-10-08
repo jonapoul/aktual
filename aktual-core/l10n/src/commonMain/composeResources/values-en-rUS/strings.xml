@@ -1,0 +1,28 @@
+<resources>
+  <string name="info_licenses">Third party licenses</string>
+  <string name="licenses_toolbar_title">Third-Party Licenses</string>
+  <string name="licenses_failed">Failed reading licenses: %1$s</string>
+  <string name="licenses_none_found">No licenses found!</string>
+  <string name="licenses_item_license">License:</string>
+  <string name="licenses_search_placeholder">Filter licenses…</string>
+  <string name="bank_sync_settings_reimport_deleted_hint">By default imported transactions that you delete will be re-imported with the next bank sync operation. To disable this behavior - untick this box.</string>
+  <string name="bank_sync_settings_unlink_detail">Transactions will no longer be synchronized with this account and must be manually entered. You will not be able to edit the bank sync settings for this account and the settings will close.</string>
+  <string name="home_attention_sync_reauth">%1$s: needs re-authorizing</string>
+  <plurals name="home_attention_uncategorised">
+    <item quantity="one">%1$d uncategorized transaction</item>
+    <item quantity="other">%1$d uncategorized transactions</item>
+  </plurals>
+  <string name="home_attention_icon_uncategorised">Uncategorized transactions</string>
+  <string name="reports_text_align_center">Align center</string>
+  <string name="edit_rule_unknown_values">This rule uses values that this version of the app doesn't recognize. Change them before saving.</string>
+  <string name="tags_create_color_label">Color</string>
+  <string name="tags_create_color_advanced">Advanced color options</string>
+  <string name="tags_create_color_random">Random color</string>
+  <string name="tags_create_color_invalid">Invalid color code</string>
+  <string name="transactions_uncategorised_title">Uncategorized</string>
+  <string name="settings_transactions_alternate_rows">Alternate row colors</string>
+  <string name="settings_transactions_alternate_rows_supported">Every other row is shaded with your theme\'s alternate row color</string>
+  <string name="settings_transactions_alternate_rows_unsupported">Your current theme doesn\'t define an alternate row color, so this has no effect</string>
+  <string name="settings_theme_inspect_sort_by_color">Sort by color</string>
+  <string name="settings_theme_inspect_search_prompt">Enter some text to search property names and colors</string>
+</resources>

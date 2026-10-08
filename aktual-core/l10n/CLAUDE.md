@@ -4,6 +4,14 @@ XML string resources + the **Catalog** Gradle plugin for typed codegen.
 
 Strings live in `src/commonMain/composeResources/values/strings-<feature>.xml` (one file per feature area - `core`, `account`, `settings`, `budget-*`, `about`, `metrics`).
 
+Strings with a US/UK spelling difference live in three places, and all three need updating together:
+
+- `values/` - US English, the fallback for non-English locales
+- `values-en/strings.xml` - British spelling, used by every English locale except the US
+- `values-en-rUS/strings.xml` - the US spelling again, since `values-en` would otherwise win for `en-US`
+
+The two override files hold only the strings that differ and must have the same set of names.
+
 ## Adding a string
 
 1. Add to the appropriate XML file:

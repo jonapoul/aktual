@@ -25,7 +25,7 @@
   <string name="transactions_title_all">All Accounts</string>
   <string name="transactions_title_loading">Loading…</string>
   <string name="transactions_title_none">&lt;No title&gt;</string>
-  <string name="transactions_uncategorised_title">Uncategorised</string>
+  <string name="transactions_uncategorised_title">Uncategorized</string>
   <string name="transactions_split">Split</string>
   <string name="transactions_split_no_payee">Split (no payee)</string>
   <plurals name="transactions_split_parts">
