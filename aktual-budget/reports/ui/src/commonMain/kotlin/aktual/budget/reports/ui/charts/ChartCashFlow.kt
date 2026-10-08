@@ -141,10 +141,6 @@ internal fun CashFlowChart(
           ),
       )
     }
-
-    if (!compact) {
-      Footer(title = Strings.reportsCashFlowFooterTitle, text = Strings.reportsCashFlowFooter)
-    }
   }
 
 @Stable

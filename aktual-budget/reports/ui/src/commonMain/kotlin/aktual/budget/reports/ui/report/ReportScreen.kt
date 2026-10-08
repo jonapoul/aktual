@@ -3,9 +3,11 @@ package aktual.budget.reports.ui.report
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.Tags
+import aktual.budget.reports.ui.charts.ChartInfoSheet
 import aktual.budget.reports.ui.charts.ChartZoomState
 import aktual.budget.reports.ui.charts.PREVIEW_AGE_OF_MONEY_DATA
 import aktual.budget.reports.ui.charts.ReportChart
+import aktual.budget.reports.ui.charts.info
 import aktual.budget.reports.ui.charts.rememberChartZoomState
 import aktual.budget.reports.ui.montecarlo.MonteCarloReportScreen
 import aktual.budget.reports.ui.string
@@ -13,6 +15,7 @@ import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.report.ReportViewModel
+import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ZoomOut
 import aktual.core.l10n.Strings
@@ -53,6 +56,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ReportScreen(
@@ -119,7 +123,14 @@ internal fun ReportScaffold(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
-  val zoom = rememberChartZoomState((state as? Loaded)?.data)
+  val data = (state as? Loaded)?.data
+  val zoom = rememberChartZoomState(data)
+  val info = data?.info() ?: persistentListOf()
+  var showInfo by remember { mutableStateOf(false) }
+
+  if (showInfo) {
+    ChartInfoSheet(info = info, onDismiss = { showInfo = false })
+  }
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
@@ -144,6 +155,14 @@ internal fun ReportScaffold(
               imageVector = MaterialIcons.ZoomOut,
               contentDescription = Strings.reportsResetZoom,
               onClick = zoom::reset,
+            )
+          }
+          if (info.isNotEmpty()) {
+            BareIconButton(
+              modifier = Modifier.testTag(Tags.ChartInfo),
+              imageVector = MaterialIcons.Info,
+              contentDescription = Strings.reportsChartInfo,
+              onClick = { showInfo = true },
             )
           }
         },

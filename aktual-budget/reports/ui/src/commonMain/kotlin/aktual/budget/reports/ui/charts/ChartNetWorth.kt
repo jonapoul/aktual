@@ -82,10 +82,6 @@ internal fun NetWorthChart(
       compact = compact,
       zoom = zoom,
     )
-
-    if (!compact) {
-      Footer(title = Strings.reportsNetWorthFooterTitle, text = Strings.reportsNetWorthFooter)
-    }
   }
 
 @Composable
