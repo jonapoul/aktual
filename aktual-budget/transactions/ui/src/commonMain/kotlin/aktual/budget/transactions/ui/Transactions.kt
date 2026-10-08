@@ -6,6 +6,7 @@ import aktual.budget.transactions.vm.Transaction
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
+import aktual.core.theme.hasAlternateRowColour
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
@@ -17,6 +18,7 @@ import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.scrollbar
 import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -51,6 +53,7 @@ internal fun Transactions(
   splitsPinnedOpen: Boolean,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
+  alternateRowColours: Boolean = false,
 ) {
   val refresh = pagingItems.loadState.refresh
   when {
@@ -64,6 +67,7 @@ internal fun Transactions(
         innerPadding = innerPadding,
         expanded = expanded,
         splitsPinnedOpen = splitsPinnedOpen,
+        alternateRowColours = alternateRowColours,
         onAction = onAction,
       )
     }
@@ -131,9 +135,13 @@ private fun TransactionsFilled(
   contentPadding: PaddingValues,
   expanded: ImmutableSet<TransactionId>,
   splitsPinnedOpen: Boolean,
+  alternateRowColours: Boolean,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
+  // Only themes with their own alternate row colour shade rows, see hasAlternateRowColour
+  val shadeRows = alternateRowColours && colors.hasAlternateRowColour
+
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
@@ -146,7 +154,14 @@ private fun TransactionsFilled(
       if (transaction != null) {
         val showDate = index == 0 || pagingItems.peek(index - 1)?.date != transaction.date
 
-        Column(modifier = Modifier.fillMaxWidth().animateItem()) {
+        val background =
+          if (shadeRows && index % 2 == 1) {
+            colors.tableRowBackgroundAlternate
+          } else {
+            colors.tableBackground
+          }
+
+        Column(modifier = Modifier.fillMaxWidth().animateItem().background(background)) {
           // A hairline between days, or between every row when dense
           if (index > 0 && (showDate || density == Dense)) {
             HorizontalDivider(color = colors.tableBorder)

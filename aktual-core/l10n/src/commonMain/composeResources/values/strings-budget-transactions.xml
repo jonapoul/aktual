@@ -13,6 +13,8 @@
   <string name="transactions_transfer_to">Transfer to %1$s</string>
   <string name="transactions_transfer_from">Transfer from %1$s</string>
   <string name="transactions_view_options">View options</string>
+  <string name="transactions_menu">Menu</string>
+  <string name="transactions_settings">Settings</string>
   <string name="transactions_density">Density</string>
   <string name="transactions_density_comfortable">Comfortable</string>
   <string name="transactions_density_compact">Compact</string>

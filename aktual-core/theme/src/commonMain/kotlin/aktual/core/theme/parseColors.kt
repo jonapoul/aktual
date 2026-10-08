@@ -28,6 +28,9 @@ fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
         fallback
       }
 
+  // A theme without its own alternate row colour leaves rows unshaded, as the built-in themes do
+  val tableBackground = "tableBackground".attr(fallbackTheme.tableBackground)
+
   val theme =
     with(fallbackTheme) {
       JsonCustomColors(
@@ -59,9 +62,8 @@ fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
           ),
         table =
           TableColors(
-            tableBackground = "tableBackground".attr(tableBackground),
-            tableRowBackgroundAlternate =
-              "tableRowBackgroundAlternate".attr(tableRowBackgroundAlternate),
+            tableBackground = tableBackground,
+            tableRowBackgroundAlternate = "tableRowBackgroundAlternate".attr(tableBackground),
             tableRowBackgroundHover = "tableRowBackgroundHover".attr(tableRowBackgroundHover),
             tableText = "tableText".attr(tableText),
             tableTextItemAdded = "tableTextItemAdded".attr(tableTextItemAdded),

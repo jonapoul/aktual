@@ -9,6 +9,7 @@ import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.HazedPullToRefreshBox
@@ -47,6 +48,7 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun TransactionsScreen(
   back: BackNavigator,
+  toSettings: TransactionSettingsNavigator,
   spec: TransactionsSpec,
   isRoot: Boolean = false,
   viewModel: TransactionsViewModel = metroViewModel(spec),
@@ -57,6 +59,7 @@ fun TransactionsScreen(
   val canBankSync by viewModel.canBankSync.collectAsStateWithLifecycle()
   val isBankSyncing by viewModel.isBankSyncing.collectAsStateWithLifecycle()
   val expanded by viewModel.expanded.collectAsStateWithLifecycle()
+  val alternateRowColours by viewModel.alternateRowColours.collectAsStateWithLifecycle()
   val snackbar = remember { SnackbarHostState() }
 
   LaunchedEffect(viewModel) {
@@ -74,11 +77,13 @@ fun TransactionsScreen(
     isBankSyncing = isBankSyncing,
     expanded = expanded,
     splitsPinnedOpen = viewModel.splitsPinnedOpen,
+    alternateRowColours = alternateRowColours,
     snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         NavBack -> back()
         BankSync -> viewModel.bankSync()
+        OpenSettings -> toSettings()
         is SetPrivacyMode -> viewModel.setPrivacyMode(action.isPrivacyEnabled)
         is SetDensity -> viewModel.setDensity(action.density)
         is ToggleSplit -> viewModel.toggleExpanded(action.id)
@@ -107,6 +112,7 @@ internal fun TransactionsScaffold(
   isBankSyncing: Boolean = false,
   expanded: ImmutableSet<TransactionId> = persistentSetOf(),
   splitsPinnedOpen: Boolean = false,
+  alternateRowColours: Boolean = false,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -157,6 +163,7 @@ internal fun TransactionsScaffold(
             innerPadding = innerPadding,
             expanded = expanded,
             splitsPinnedOpen = splitsPinnedOpen,
+            alternateRowColours = alternateRowColours,
             onAction = onAction,
           )
         }

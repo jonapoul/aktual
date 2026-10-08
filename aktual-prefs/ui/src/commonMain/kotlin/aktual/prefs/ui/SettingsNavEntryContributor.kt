@@ -12,12 +12,15 @@ import aktual.core.nav.ScheduleSettingsNavigator
 import aktual.core.nav.SettingsNavRoute
 import aktual.core.nav.ThemeSettingsNavRoute
 import aktual.core.nav.ThemeSettingsNavigator
+import aktual.core.nav.TransactionSettingsNavRoute
+import aktual.core.nav.TransactionSettingsNavigator
 import aktual.di.AppScope
 import aktual.prefs.ui.inspect.InspectThemeScreen
 import aktual.prefs.ui.root.SettingsScreen
 import aktual.prefs.ui.schedules.ScheduleSettingsScreen
 import aktual.prefs.ui.theme.ThemeSettingsScreen
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsScreen
+import aktual.prefs.ui.transactions.TransactionSettingsScreen
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
@@ -30,10 +33,13 @@ class SettingsNavEntryContributor : NavEntryContributor {
         back = BackNavigator(stack),
         toThemeSettings = ThemeSettingsNavigator(stack),
         toScheduleSettings = ScheduleSettingsNavigator(stack),
+        toTransactionSettings = TransactionSettingsNavigator(stack),
       )
     }
 
     entry<ScheduleSettingsNavRoute> { ScheduleSettingsScreen(BackNavigator(stack)) }
+
+    entry<TransactionSettingsNavRoute> { TransactionSettingsScreen(BackNavigator(stack)) }
 
     entry<ThemeSettingsNavRoute> {
       ThemeSettingsScreen(

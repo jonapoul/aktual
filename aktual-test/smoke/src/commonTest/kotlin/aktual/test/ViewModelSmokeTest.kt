@@ -31,6 +31,7 @@ import aktual.prefs.vm.root.SettingsViewModel
 import aktual.prefs.vm.schedules.ScheduleSettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
 import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
+import aktual.prefs.vm.transactions.TransactionSettingsViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
@@ -154,6 +155,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun settings() = testVm<SettingsViewModel>()
 
   @Test fun themeSettings() = testVm<ThemeSettingsViewModel>()
+
+  @Test fun transactionSettings() = testVm<TransactionSettingsViewModel>()
 
   @Test fun url() = testVm<ServerUrlViewModel>()
 
