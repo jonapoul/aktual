@@ -9,6 +9,10 @@ flowchart TD
   password["Change Password"]
   settings["Settings"]
   scheduleSettings["Schedule Settings"]
+  themeSettings["Theme Settings"]
+  customThemes["Custom Themes"]
+  inspectTheme["Inspect Theme"]
+  searchTheme["Search Theme"]
   url["Server URL"]
 
   subgraph budgetNavRail["Budget Nav Rail"]
@@ -48,6 +52,11 @@ flowchart TD
   budgetList --tap about--> info
 
   settings --tap schedules--> scheduleSettings
+  settings --tap theme--> themeSettings
+  themeSettings --tap custom themes--> customThemes
+  themeSettings --tap inspect--> inspectTheme
+  customThemes --tap inspect--> inspectTheme
+  inspectTheme --tap search--> searchTheme
 
   budgetSync --budget synced--> budgetNavRail
 

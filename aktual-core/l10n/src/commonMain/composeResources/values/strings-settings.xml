@@ -50,6 +50,10 @@
   <string name="settings_theme_inspect_sort_default">Default order</string>
   <string name="settings_theme_inspect_sort_by_name">Sort by name</string>
   <string name="settings_theme_inspect_sort_by_color">Sort by colour</string>
+  <string name="settings_theme_inspect_search">Search</string>
+  <string name="settings_theme_inspect_search_placeholder">Search properties</string>
+  <string name="settings_theme_inspect_search_prompt">Enter some text to search property names and colours</string>
+  <string name="settings_theme_inspect_search_no_results">No properties match “%1$s”</string>
 
   <string name="settings_format_group">Formatting</string>
   <string name="settings_format_desc">Formatting does not affect how budget data is stored, and can be changed at any time.</string>

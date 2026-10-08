@@ -15,6 +15,11 @@ class InspectThemeNavigator(private val stack: NavStack<NavKey>) {
 }
 
 @Immutable
+class SearchThemeNavigator(private val stack: NavStack<NavKey>) {
+  operator fun invoke(id: ThemeId) = stack.push(SearchThemeNavRoute(id))
+}
+
+@Immutable
 class ThemeSettingsNavigator(private val stack: NavStack<NavKey>) {
   operator fun invoke() = stack.push(ThemeSettingsNavRoute)
 }

@@ -9,6 +9,8 @@ import aktual.core.nav.NavEntryContributor
 import aktual.core.nav.NavStack
 import aktual.core.nav.ScheduleSettingsNavRoute
 import aktual.core.nav.ScheduleSettingsNavigator
+import aktual.core.nav.SearchThemeNavRoute
+import aktual.core.nav.SearchThemeNavigator
 import aktual.core.nav.SettingsNavRoute
 import aktual.core.nav.ThemeSettingsNavRoute
 import aktual.core.nav.ThemeSettingsNavigator
@@ -16,6 +18,7 @@ import aktual.core.nav.TransactionSettingsNavRoute
 import aktual.core.nav.TransactionSettingsNavigator
 import aktual.di.AppScope
 import aktual.prefs.ui.inspect.InspectThemeScreen
+import aktual.prefs.ui.inspect.search.SearchThemeScreen
 import aktual.prefs.ui.root.SettingsScreen
 import aktual.prefs.ui.schedules.ScheduleSettingsScreen
 import aktual.prefs.ui.theme.ThemeSettingsScreen
@@ -54,7 +57,13 @@ class SettingsNavEntryContributor : NavEntryContributor {
     }
 
     entry<InspectThemeNavRoute> { route ->
-      InspectThemeScreen(BackNavigator(stack), route.id)
+      InspectThemeScreen(
+        back = BackNavigator(stack),
+        toSearch = SearchThemeNavigator(stack),
+        themeId = route.id,
+      )
     }
+
+    entry<SearchThemeNavRoute> { route -> SearchThemeScreen(BackNavigator(stack), route.id) }
   }
 }

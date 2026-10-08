@@ -4,10 +4,12 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.OpenInNew
 import aktual.core.icons.material.Refresh
+import aktual.core.icons.material.Search
 import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.SearchThemeNavigator
 import aktual.core.theme.DarkColors
 import aktual.core.theme.LightColors
 import aktual.core.theme.MidnightColors
@@ -29,6 +31,7 @@ import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
+import aktual.core.ui.rememberHighlighted
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.prefs.vm.inspect.InspectThemeState
@@ -38,6 +41,7 @@ import aktual.prefs.vm.inspect.InspectThemeState.NotFound
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.inspect.PropertySorting
 import aktual.prefs.vm.inspect.ThemeProperty
+import aktual.prefs.vm.inspect.toHexString
 import aktual.prefs.vm.theme.properties
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -62,25 +66,23 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
-import kotlin.math.roundToInt
 
 @Composable
 fun InspectThemeScreen(
   back: BackNavigator,
+  toSearch: SearchThemeNavigator,
   themeId: ThemeId,
   viewModel: InspectThemeViewModel = metroViewModel(themeId),
 ) {
@@ -95,6 +97,7 @@ fun InspectThemeScreen(
     onAction = { action ->
       when (action) {
         NavBack -> back()
+        OpenSearch -> toSearch(themeId)
         OpenRepo -> viewModel.openRepo()
         Retry -> viewModel.retry()
         ShowSortSheet -> showSortSheet = true
@@ -137,7 +140,16 @@ private fun InspectThemeScaffold(
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(title) },
-        actions = { if (state is Loaded) MoreMenu(state.isCustom, onAction) },
+        actions = {
+          if (state is Loaded) {
+            BareIconButton(
+              imageVector = MaterialIcons.Search,
+              contentDescription = Strings.settingsThemeInspectSearch,
+              onClick = { onAction(OpenSearch) },
+            )
+            MoreMenu(state.isCustom, onAction)
+          }
+        },
       )
     },
   ) { innerPadding ->
@@ -238,7 +250,11 @@ private fun InspectThemeContent(
 }
 
 @Composable
-private fun ThemePropertyRow(property: ThemeProperty, modifier: Modifier = Modifier) {
+internal fun ThemePropertyRow(
+  property: ThemeProperty,
+  modifier: Modifier = Modifier,
+  query: String = "",
+) {
   Row(
     modifier = modifier.fillMaxWidth().height(Min).background(property.color).padding(4.dp),
     horizontalArrangement = SpaceBetween,
@@ -247,7 +263,7 @@ private fun ThemePropertyRow(property: ThemeProperty, modifier: Modifier = Modif
     val textColor = remember(property.color) { if (property.color.isLight()) Black else White }
     Text(
       modifier = Modifier.weight(1f),
-      text = property.name,
+      text = rememberHighlighted(property.name, query),
       color = textColor,
       style = typography.bodySmall,
       textAlign = Start,
@@ -255,26 +271,12 @@ private fun ThemePropertyRow(property: ThemeProperty, modifier: Modifier = Modif
     )
 
     Text(
-      text = property.color.toHexString(),
+      text = rememberHighlighted(property.color.toHexString(), query),
       color = textColor,
       style = typography.labelMedium,
       textAlign = End,
       maxLines = 1,
     )
-  }
-}
-
-@Stable
-@Suppress("MagicNumber")
-private fun Color.toHexString(): String {
-  val r = (red * 255).roundToInt()
-  val g = (green * 255).roundToInt()
-  val b = (blue * 255).roundToInt()
-  val a = (alpha * 255).roundToInt()
-  return if (a == 255) {
-    "#%02X%02X%02X".format(r, g, b)
-  } else {
-    "#%02X%02X%02X%02X".format(a, r, g, b)
   }
 }
 
