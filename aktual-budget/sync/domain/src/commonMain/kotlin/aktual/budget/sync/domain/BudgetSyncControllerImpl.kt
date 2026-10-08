@@ -19,8 +19,11 @@ import dev.zacsweers.metro.ForScope
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -43,9 +46,20 @@ internal constructor(
 
   // Fetch anything that changed on the server since the budget was last open
   override fun initialize() {
-    scope.launch { syncDao.rebuildScheduleJsonPaths() }
+    scope.launch { rebuildScheduleJsonPaths() }
     schedule()
   }
+
+  private suspend fun rebuildScheduleJsonPaths() =
+    try {
+      syncDao.rebuildScheduleJsonPaths()
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      // The database closes with the budget, which can happen while this is still running
+      currentCoroutineContext().ensureActive()
+      logcat.e(e) { "Failed rebuilding schedule JSON paths" }
+    }
 
   override suspend fun syncChanges(changes: List<LocalChange>) {
     syncDao.sendMessages(changes)
