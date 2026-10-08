@@ -11,12 +11,8 @@ import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.stringShort
-import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -234,16 +230,6 @@ internal fun DateRangeText(
     maxLines = 1,
     style = typography.bodyMedium,
   )
-
-@Composable
-internal fun Footer(title: String, text: String, modifier: Modifier = Modifier) =
-  Column(modifier = modifier.fillMaxWidth().padding(8.dp)) {
-    Text(text = title, fontWeight = Bold, color = colors.pageText, style = typography.bodyMedium)
-
-    VerticalSpacer(4.dp)
-
-    Text(text = text, color = colors.pageText, style = typography.bodySmall)
-  }
 
 @Composable
 internal fun DateRangeType.string() =

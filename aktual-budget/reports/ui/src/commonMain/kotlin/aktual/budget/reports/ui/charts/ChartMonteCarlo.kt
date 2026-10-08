@@ -75,7 +75,6 @@ internal fun MonteCarloChart(
 
     if (!compact) {
       Summary(data, Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp))
-      Footer(title = Strings.reportsMonteCarloHowTitle, text = Strings.reportsMonteCarloHow)
     }
   }
 

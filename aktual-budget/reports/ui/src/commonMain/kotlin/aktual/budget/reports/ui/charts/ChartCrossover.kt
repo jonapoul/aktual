@@ -75,10 +75,6 @@ internal fun CrossoverChart(
       compact = compact,
       zoom = zoom,
     )
-
-    if (!compact) {
-      Footer(title = Strings.reportsCrossoverWhatTitle, text = Strings.reportsCrossoverWhat)
-    }
   }
 
 @Composable

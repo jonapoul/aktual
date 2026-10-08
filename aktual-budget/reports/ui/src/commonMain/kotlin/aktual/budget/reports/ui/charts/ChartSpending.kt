@@ -87,10 +87,6 @@ internal fun SpendingChart(
       compact = compact,
       zoom = zoom,
     )
-
-    if (!compact) {
-      Footer(title = Strings.reportsSpendingFooterTitle, text = Strings.reportsSpendingFooter)
-    }
   }
 
 @Composable

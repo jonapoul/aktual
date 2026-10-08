@@ -41,6 +41,19 @@ class ReportScaffoldTest {
     onNodeWithTag(Tags.ResetZoom).assertDoesNotExist()
   }
 
+  @Test
+  fun `Info button shows the chart explanation`() = runComposeUiTest {
+    // given
+    setContent { PreviewWithColors(DarkColors) { ReportScaffold(state = STATE, onAction = {}) } }
+    onNodeWithTag(Tags.ChartInfoSheet).assertDoesNotExist()
+
+    // when
+    onNodeWithTag(Tags.ChartInfo).performClick()
+
+    // then
+    onNodeWithTag(Tags.ChartInfoSheet).assertExists()
+  }
+
   private companion object {
     const val LONG_PRESS_MS = 1_000L
 

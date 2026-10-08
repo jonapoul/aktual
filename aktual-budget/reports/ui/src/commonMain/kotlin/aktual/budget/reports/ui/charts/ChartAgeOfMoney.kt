@@ -85,11 +85,6 @@ internal fun AgeOfMoneyChart(
       compact = compact,
       zoom = zoom,
     )
-
-    if (!compact) {
-      Footer(title = Strings.reportsAgeOfMoneyWhatTitle, text = Strings.reportsAgeOfMoneyWhat)
-      Footer(title = Strings.reportsAgeOfMoneyHowTitle, text = Strings.reportsAgeOfMoneyHow)
-    }
   }
 }
 

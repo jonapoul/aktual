@@ -79,27 +79,13 @@ internal fun BalanceForecastChart(
       Chart(modifier = chartModifier, data = data, compact = compact, zoom = zoom)
     }
 
-    if (!compact) {
-      if (data.items.isNotEmpty()) {
-        Text(
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
-          text = data.summary(),
-          style = typography.bodySmall,
-          color = colors.pageTextSubdued,
-        )
-      }
-
-      if (data.source == TrackingBudget) {
-        Footer(
-          title = Strings.reportsBalanceForecastHowTitle,
-          text = Strings.reportsBalanceForecastTrackingHow,
-        )
-      } else {
-        Footer(
-          title = Strings.reportsBalanceForecastHowTitle,
-          text = Strings.reportsBalanceForecastHow,
-        )
-      }
+    if (!compact && data.items.isNotEmpty()) {
+      Text(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+        text = data.summary(),
+        style = typography.bodySmall,
+        color = colors.pageTextSubdued,
+      )
     }
   }
 
