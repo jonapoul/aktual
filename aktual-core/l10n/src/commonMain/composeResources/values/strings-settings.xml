@@ -45,6 +45,7 @@
   <string name="settings_theme_inspect_not_found">Theme not found</string>
   <string name="settings_theme_inspect_not_found_reason">Could not find theme '%1$s'</string>
   <string name="settings_theme_inspect_retry">Retry</string>
+  <string name="settings_theme_inspect_menu">More options</string>
   <string name="settings_theme_inspect_sort">Sort properties</string>
   <string name="settings_theme_inspect_sort_default">Default order</string>
   <string name="settings_theme_inspect_sort_by_name">Sort by name</string>

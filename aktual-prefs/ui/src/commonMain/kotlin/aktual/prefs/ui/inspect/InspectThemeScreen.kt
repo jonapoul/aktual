@@ -1,6 +1,7 @@
 package aktual.prefs.ui.inspect
 
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.OpenInNew
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Sort
@@ -11,6 +12,8 @@ import aktual.core.theme.DarkColors
 import aktual.core.theme.LightColors
 import aktual.core.theme.MidnightColors
 import aktual.core.theme.isLight
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
@@ -53,7 +56,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue.Hidden
 import androidx.compose.material3.Text
@@ -135,12 +137,7 @@ private fun InspectThemeScaffold(
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(title) },
-        actions = {
-          if (state is Loaded) {
-            SortButton(onAction)
-            if (state.isCustom) OpenRepoButton(onAction)
-          }
-        },
+        actions = { if (state is Loaded) MoreMenu(state.isCustom, onAction) },
       )
     },
   ) { innerPadding ->
@@ -159,21 +156,37 @@ private fun InspectThemeScaffold(
 }
 
 @Composable
-private fun SortButton(onAction: InspectThemeActionHandler) {
-  BareIconButton(
-    imageVector = MaterialIcons.Sort,
-    contentDescription = Strings.settingsThemeInspectSort,
-    onClick = { onAction(ShowSortSheet) },
-  )
-}
+private fun MoreMenu(isCustom: Boolean, onAction: InspectThemeActionHandler) {
+  var showMenu by remember { mutableStateOf(false) }
 
-@Composable
-private fun OpenRepoButton(onAction: InspectThemeActionHandler) {
-  IconButton(onClick = { onAction(OpenRepo) }) {
-    Icon(
-      imageVector = MaterialIcons.OpenInNew,
-      contentDescription = Strings.settingsThemeInspectOpenRepo,
+  BareIconButton(
+    imageVector = MaterialIcons.MoreVert,
+    contentDescription = Strings.settingsThemeInspectMenu,
+    onClick = { showMenu = true },
+  )
+
+  AktualDropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+    val sortText = Strings.settingsThemeInspectSort
+    AktualDropdownMenuItem(
+      text = { Text(sortText) },
+      onClick = {
+        showMenu = false
+        onAction(ShowSortSheet)
+      },
+      leadingIcon = { Icon(MaterialIcons.Sort, contentDescription = sortText) },
     )
+
+    if (isCustom) {
+      val repoText = Strings.settingsThemeInspectOpenRepo
+      AktualDropdownMenuItem(
+        text = { Text(repoText) },
+        onClick = {
+          showMenu = false
+          onAction(OpenRepo)
+        },
+        leadingIcon = { Icon(MaterialIcons.OpenInNew, contentDescription = repoText) },
+      )
+    }
   }
 }
 
