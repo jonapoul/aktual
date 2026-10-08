@@ -19,6 +19,10 @@ class ModuleCompose : ProjectPlugin {
     }
 
     kotlin {
+      compilerOptions {
+        freeCompilerArgs.add("-opt-in=androidx.compose.ui.test.ExperimentalTestApi")
+      }
+
       commonMainDependencies {
         api(libs["compose.runtime"])
         composeLibraries.forEach { implementation(it) }

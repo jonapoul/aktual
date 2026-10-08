@@ -16,7 +16,6 @@ import aktual.budget.model.RecurType.Friday
 import aktual.budget.model.RecurType.Saturday
 import aktual.budget.model.WeekendSolveMode.After
 import aktual.budget.model.WeekendSolveMode.Before
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.v2.runComposeUiTest
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
@@ -30,7 +29,6 @@ import kotlinx.datetime.Month.SEPTEMBER
 
 // From packages/loot-core/src/shared/schedules.test.ts
 @Burst
-@OptIn(ExperimentalTestApi::class)
 class RecurConfigStringTest {
   data class TestCase(val expected: String, val config: RecurConfig)
 

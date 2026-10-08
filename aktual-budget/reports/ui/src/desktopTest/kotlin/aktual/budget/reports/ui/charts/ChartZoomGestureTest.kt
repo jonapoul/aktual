@@ -6,7 +6,6 @@ import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ComposeUiTest
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.v2.runComposeUiTest
@@ -22,7 +21,6 @@ import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
 import kotlin.test.Test
 
-@OptIn(ExperimentalTestApi::class)
 class ChartZoomGestureTest {
   private val zoom = ChartZoomState()
 
