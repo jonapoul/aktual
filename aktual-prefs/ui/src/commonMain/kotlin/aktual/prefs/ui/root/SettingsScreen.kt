@@ -8,8 +8,8 @@ import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
-import aktual.core.icons.material.LinearScale
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.ReceiptLong
 import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -141,7 +141,7 @@ private fun SettingsContent(
     item {
       SubSettingsItem(
         title = Strings.settingsTransactions,
-        icon = MaterialIcons.LinearScale,
+        icon = MaterialIcons.ReceiptLong,
         onClick = { onAction(NavToTransactionSettings) },
       )
     }

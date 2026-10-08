@@ -1,12 +1,12 @@
 package aktual.prefs.ui.root
 
 import aktual.budget.model.BarEffect
+import aktual.core.icons.material.BlurCircular
 import aktual.core.icons.material.BlurOn
 import aktual.core.icons.material.Dialogs
-import aktual.core.icons.material.LinearScale
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Opacity
 import aktual.core.icons.material.Security
-import aktual.core.icons.material.TransitionDissolve
 import aktual.core.icons.material.Visibility
 import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
@@ -56,7 +56,7 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
       preference = state.hazeRadiusDp,
       title = Strings.settingsUiBlurRadius,
       subtitle = null,
-      icon = MaterialIcons.LinearScale,
+      icon = MaterialIcons.BlurCircular,
       includeBackground = false,
     )
 
@@ -64,7 +64,7 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
       preference = state.hazeAlpha,
       title = Strings.settingsUiBlurAlpha,
       subtitle = null,
-      icon = MaterialIcons.TransitionDissolve,
+      icon = MaterialIcons.Opacity,
       includeBackground = false,
     )
 

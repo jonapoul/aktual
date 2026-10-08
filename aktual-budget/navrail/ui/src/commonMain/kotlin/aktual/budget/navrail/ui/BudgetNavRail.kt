@@ -10,10 +10,10 @@ import aktual.core.icons.Tuning
 import aktual.core.icons.material.AccountBalance
 import aktual.core.icons.material.Home
 import aktual.core.icons.material.Info
-import aktual.core.icons.material.LinearScale
 import aktual.core.icons.material.Logout
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Menu
+import aktual.core.icons.material.ReceiptLong
 import aktual.core.icons.material.Settings
 import aktual.core.icons.material.SwapHoriz
 import aktual.core.l10n.Strings
@@ -572,7 +572,7 @@ private fun BudgetTab.label(): String =
 private fun BudgetTab.icon(): ImageVector =
   when (this) {
     BudgetTab.Home -> MaterialIcons.Home
-    Transactions -> MaterialIcons.LinearScale
+    Transactions -> MaterialIcons.ReceiptLong
     BudgetTab.Reports -> AktualIcons.Reports
     Schedules -> AktualIcons.Calendar3
     Rules -> AktualIcons.Tuning
