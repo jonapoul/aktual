@@ -10,6 +10,8 @@ internal sealed interface Action {
 
   data object BankSync : Action
 
+  data object OpenSettings : Action
+
   data class SetPrivacyMode(val isPrivacyEnabled: Boolean) : Action
 
   data class SetDensity(val density: TransactionsDensity) : Action

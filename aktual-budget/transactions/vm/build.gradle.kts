@@ -20,6 +20,7 @@ kotlin {
     api(libs.androidx.paging.common)
     api(libs.kotlinx.datetime)
     api(project(":aktual-budget:banksync:domain"))
+    api(project(":aktual-prefs"))
   }
 
   androidHostTestDependencies {

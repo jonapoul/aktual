@@ -9,6 +9,7 @@ import aktual.core.nav.BudgetEntryScope
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.NavStack
+import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.nav.TransactionsWithTagNavRoute
 import aktual.core.nav.UncategorisedTransactionsNavRoute
@@ -23,12 +24,18 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
     appStack: NavStack<NavKey>,
   ) {
     budgetEntry<TransactionsNavRoute> {
-      TransactionsScreen(back = BackNavigator(stack), spec = TransactionsSpec(), isRoot = true)
+      TransactionsScreen(
+        back = BackNavigator(stack),
+        toSettings = TransactionSettingsNavigator(appStack),
+        spec = TransactionsSpec(),
+        isRoot = true,
+      )
     }
 
     budgetEntry<TransactionsWithTagNavRoute> { route ->
       TransactionsScreen(
         back = BackNavigator(stack),
+        toSettings = TransactionSettingsNavigator(appStack),
         spec = TransactionsSpec(tagSpec = TagSpec.SpecificTag(route.id)),
       )
     }
@@ -36,6 +43,7 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
     budgetEntry<AccountTransactionsNavRoute> { route ->
       TransactionsScreen(
         back = BackNavigator(stack),
+        toSettings = TransactionSettingsNavigator(appStack),
         spec = TransactionsSpec(accountSpec = AccountSpec.SpecificAccount(route.id)),
       )
     }
@@ -43,6 +51,7 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
     budgetEntry<UncategorisedTransactionsNavRoute> {
       TransactionsScreen(
         back = BackNavigator(stack),
+        toSettings = TransactionSettingsNavigator(appStack),
         spec = TransactionsSpec(categorySpec = Uncategorised),
       )
     }

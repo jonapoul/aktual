@@ -24,6 +24,8 @@ import aktual.budget.transactions.vm.LoadedAccount.SpecificTag
 import aktual.budget.transactions.vm.LoadedAccount.Uncategorised
 import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
+import aktual.prefs.TransactionPreferences
+import aktual.prefs.asStateFlow
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -63,6 +65,7 @@ class TransactionsViewModel(
   private val tagsDao: TagsDao,
   private val preferencesDao: PreferencesDao,
   private val bankSyncController: BankSyncController,
+  transactionPreferences: TransactionPreferences,
   server: BudgetServer,
 ) : ViewModel() {
   @AssistedFactory
@@ -84,6 +87,9 @@ class TransactionsViewModel(
     prefs
       .map { meta -> meta[TransactionDensityKey] ?: Default }
       .stateIn(viewModelScope, Eagerly, initialValue = prefs[TransactionDensityKey] ?: Default)
+
+  val alternateRowColours: StateFlow<Boolean> =
+    transactionPreferences.alternateRowColours.asStateFlow(viewModelScope)
 
   val canBankSync: StateFlow<Boolean> =
     mutableLoadedAccount

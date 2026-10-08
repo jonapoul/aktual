@@ -51,7 +51,7 @@ internal val ShadesOfCoffeeTheme =
     table =
       TableColors(
         tableBackground = Color(0xFFf5f2ef),
-        tableRowBackgroundAlternate = LightColors.tableRowBackgroundAlternate,
+        tableRowBackgroundAlternate = Color(0xFFf5f2ef),
         tableRowBackgroundHover = Color(0xFFece5df),
         tableText = Color(0xFF272630),
         tableTextItemAdded = Color(0xFF272630),

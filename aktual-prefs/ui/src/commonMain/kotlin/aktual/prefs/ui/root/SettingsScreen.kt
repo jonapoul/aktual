@@ -8,12 +8,14 @@ import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
+import aktual.core.icons.material.LinearScale
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.ScheduleSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavigator
+import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
@@ -62,6 +64,7 @@ fun SettingsScreen(
   back: BackNavigator,
   toThemeSettings: ThemeSettingsNavigator,
   toScheduleSettings: ScheduleSettingsNavigator,
+  toTransactionSettings: TransactionSettingsNavigator,
   viewModel: SettingsViewModel = metroViewModel<SettingsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -73,6 +76,7 @@ fun SettingsScreen(
         NavBack -> back()
         NavToThemeSettings -> toThemeSettings()
         NavToScheduleSettings -> toScheduleSettings()
+        NavToTransactionSettings -> toTransactionSettings()
       }
     },
   )
@@ -132,6 +136,13 @@ private fun SettingsContent(
         title = Strings.settingsSchedules,
         icon = AktualIcons.Calendar3,
         onClick = { onAction(NavToScheduleSettings) },
+      )
+    }
+    item {
+      SubSettingsItem(
+        title = Strings.settingsTransactions,
+        icon = MaterialIcons.LinearScale,
+        onClick = { onAction(NavToTransactionSettings) },
       )
     }
     item { SystemUiGroup(state.systemUi) }

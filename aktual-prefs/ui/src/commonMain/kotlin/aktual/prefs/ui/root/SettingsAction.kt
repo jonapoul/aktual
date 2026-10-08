@@ -10,6 +10,8 @@ internal data object NavToThemeSettings : SettingsAction
 
 internal data object NavToScheduleSettings : SettingsAction
 
+internal data object NavToTransactionSettings : SettingsAction
+
 @Immutable
 internal fun interface SettingsActionHandler {
   operator fun invoke(action: SettingsAction)

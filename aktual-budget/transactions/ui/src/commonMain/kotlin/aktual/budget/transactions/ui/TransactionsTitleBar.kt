@@ -2,10 +2,14 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.transactions.vm.LoadedAccount
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.MoreVert
+import aktual.core.icons.material.Settings
 import aktual.core.icons.material.Tune
 import aktual.core.icons.material.Visibility
 import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -18,6 +22,7 @@ import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
@@ -25,6 +30,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -75,8 +84,33 @@ internal fun TransactionsTitleBar(
         onClick = onOpenViewOptions,
         content = { Icon(MaterialIcons.Tune, Strings.transactionsViewOptions) },
       )
+
+      TransactionsMenu(onAction)
     },
   )
+}
+
+@Composable
+private fun TransactionsMenu(onAction: ActionListener, modifier: Modifier = Modifier) {
+  var expanded by remember { mutableStateOf(false) }
+
+  Box(modifier = modifier) {
+    IconButton(
+      onClick = { expanded = true },
+      content = { Icon(MaterialIcons.MoreVert, Strings.transactionsMenu) },
+    )
+
+    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      AktualDropdownMenuItem(
+        text = Strings.transactionsSettings,
+        leadingIcon = MaterialIcons.Settings,
+        onClick = {
+          expanded = false
+          onAction(OpenSettings)
+        },
+      )
+    }
+  }
 }
 
 @Preview

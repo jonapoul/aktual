@@ -290,3 +290,8 @@ sealed interface Colors {
     val Defaults = setOf(LightColors, DarkColors, MidnightColors)
   }
 }
+
+// The built-in themes set the alternate row colour to the table background, so only some custom
+// themes shade every other row
+val Colors.hasAlternateRowColour: Boolean
+  get() = tableRowBackgroundAlternate != tableBackground
