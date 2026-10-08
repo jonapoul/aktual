@@ -112,6 +112,7 @@ fun CustomThemeSettingsScreen(
   SideEffect(state) {
     if (state !is Success) {
       bottomSheet = null
+      downloadFailure = null
     }
   }
 
