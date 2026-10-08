@@ -1,8 +1,10 @@
 package aktual.prefs.ui.inspect
 
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.OpenInNew
 import aktual.core.icons.material.Refresh
+import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
 import aktual.core.nav.BackNavigator
@@ -10,8 +12,11 @@ import aktual.core.theme.DarkColors
 import aktual.core.theme.LightColors
 import aktual.core.theme.MidnightColors
 import aktual.core.theme.isLight
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -31,6 +36,7 @@ import aktual.prefs.vm.inspect.InspectThemeState.Loaded
 import aktual.prefs.vm.inspect.InspectThemeState.Loading
 import aktual.prefs.vm.inspect.InspectThemeState.NotFound
 import aktual.prefs.vm.inspect.InspectThemeViewModel
+import aktual.prefs.vm.inspect.PropertySorting
 import aktual.prefs.vm.inspect.ThemeProperty
 import aktual.prefs.vm.theme.properties
 import androidx.compose.foundation.background
@@ -50,14 +56,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue.Hidden
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -76,14 +85,21 @@ fun InspectThemeScreen(
   viewModel: InspectThemeViewModel = metroViewModel(themeId),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val sorting by viewModel.sorting.collectAsStateWithLifecycle()
+  var showSortSheet by remember { mutableStateOf(false) }
 
   InspectThemeScaffold(
     state = state,
+    sorting = sorting,
+    showSortSheet = showSortSheet,
     onAction = { action ->
       when (action) {
         NavBack -> back()
         OpenRepo -> viewModel.openRepo()
         Retry -> viewModel.retry()
+        ShowSortSheet -> showSortSheet = true
+        DismissSortSheet -> showSortSheet = false
+        is SetSorting -> viewModel.setSorting(action.sorting)
       }
     },
   )
@@ -97,9 +113,15 @@ private fun metroViewModel(themeId: ThemeId) =
   )
 
 @Composable
-private fun InspectThemeScaffold(state: InspectThemeState, onAction: InspectThemeActionHandler) {
+private fun InspectThemeScaffold(
+  state: InspectThemeState,
+  sorting: PropertySorting,
+  showSortSheet: Boolean,
+  onAction: InspectThemeActionHandler,
+) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
+  val sheetState = rememberBottomSheetState(initialValue = Hidden)
 
   val title =
     when (state) {
@@ -115,7 +137,7 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: InspectThem
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(title) },
-        actions = { if (state is Loaded && state.isCustom) OpenRepoButton(onAction) },
+        actions = { if (state is Loaded) MoreMenu(state.isCustom, onAction) },
       )
     },
   ) { innerPadding ->
@@ -127,15 +149,44 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: InspectThem
       onAction = onAction,
     )
   }
+
+  if (state is Loaded && showSortSheet) {
+    PropertySortingBottomSheet(sorting, onAction, sheetState)
+  }
 }
 
 @Composable
-private fun OpenRepoButton(onAction: InspectThemeActionHandler) {
-  IconButton(onClick = { onAction(OpenRepo) }) {
-    Icon(
-      imageVector = MaterialIcons.OpenInNew,
-      contentDescription = Strings.settingsThemeInspectOpenRepo,
+private fun MoreMenu(isCustom: Boolean, onAction: InspectThemeActionHandler) {
+  var showMenu by remember { mutableStateOf(false) }
+
+  BareIconButton(
+    imageVector = MaterialIcons.MoreVert,
+    contentDescription = Strings.settingsThemeInspectMenu,
+    onClick = { showMenu = true },
+  )
+
+  AktualDropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+    val sortText = Strings.settingsThemeInspectSort
+    AktualDropdownMenuItem(
+      text = { Text(sortText) },
+      onClick = {
+        showMenu = false
+        onAction(ShowSortSheet)
+      },
+      leadingIcon = { Icon(MaterialIcons.Sort, contentDescription = sortText) },
     )
+
+    if (isCustom) {
+      val repoText = Strings.settingsThemeInspectOpenRepo
+      AktualDropdownMenuItem(
+        text = { Text(repoText) },
+        onClick = {
+          showMenu = false
+          onAction(OpenRepo)
+        },
+        leadingIcon = { Icon(MaterialIcons.OpenInNew, contentDescription = repoText) },
+      )
+    }
   }
 }
 
@@ -231,7 +282,10 @@ private fun Color.toHexString(): String {
 @Composable
 private fun PreviewInspectColors(
   @PreviewParameter(InspectThemePreviewProvider::class) params: ColoredParams<InspectThemeState>,
-) = PreviewWithColoredParams(params) { InspectThemeScaffold(state = this, onAction = {}) }
+) =
+  PreviewWithColoredParams(params) {
+    InspectThemeScaffold(state = this, sorting = Default, showSortSheet = false, onAction = {})
+  }
 
 private class InspectThemePreviewProvider :
   ColoredParameterProvider<InspectThemeState>(

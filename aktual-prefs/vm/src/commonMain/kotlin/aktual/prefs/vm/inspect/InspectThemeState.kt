@@ -19,3 +19,9 @@ sealed interface InspectThemeState {
 }
 
 @Immutable data class ThemeProperty(val name: String, val color: Color)
+
+enum class PropertySorting {
+  Default,
+  ByName,
+  ByColor,
+}
