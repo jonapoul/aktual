@@ -27,6 +27,11 @@ internal data object ShowSortSheet : CustomThemeSettingsAction
 
 @JvmInline internal value class SetSorting(val sorting: ThemeSorting) : CustomThemeSettingsAction
 
+@JvmInline
+internal value class ShowDownloadFailure(val failure: DownloadFailure) : CustomThemeSettingsAction
+
+internal data object DismissDownloadFailure : CustomThemeSettingsAction
+
 @Immutable
 internal fun interface CustomThemeSettingsActionHandler {
   operator fun invoke(action: CustomThemeSettingsAction)
