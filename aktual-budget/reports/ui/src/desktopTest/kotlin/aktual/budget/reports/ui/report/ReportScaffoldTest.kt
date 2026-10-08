@@ -8,14 +8,12 @@ import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.report.ReportState
 import aktual.core.theme.DarkColors
 import aktual.core.ui.PreviewWithColors
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import kotlin.test.Test
 
-@OptIn(ExperimentalTestApi::class)
 class ReportScaffoldTest {
   @Test
   fun `Reset zoom button shows in the top bar while zoomed`() = runComposeUiTest {

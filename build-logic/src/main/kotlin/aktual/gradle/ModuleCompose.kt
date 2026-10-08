@@ -19,6 +19,12 @@ class ModuleCompose : ProjectPlugin {
     }
 
     kotlin {
+      sourceSets.configureEach { ss ->
+        if (ss.name.endsWith("Test")) {
+          ss.languageSettings.optIn("androidx.compose.ui.test.ExperimentalTestApi")
+        }
+      }
+
       commonMainDependencies {
         api(libs["compose.runtime"])
         composeLibraries.forEach { implementation(it) }

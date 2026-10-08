@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalTestApi::class)
-
 package aktual.account.ui.login
 
 import aktual.account.domain.LoginRequester
@@ -18,7 +16,6 @@ import aktual.test.assertEditableTextEquals
 import aktual.test.buildPreferences
 import aktual.test.runTest
 import aktual.test.setAndroidThemedContent
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasTestTag
