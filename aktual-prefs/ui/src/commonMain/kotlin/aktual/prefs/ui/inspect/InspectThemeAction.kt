@@ -7,6 +7,8 @@ internal sealed interface InspectThemeAction
 
 internal data object NavBack : InspectThemeAction
 
+internal data object OpenSearch : InspectThemeAction
+
 internal data object OpenRepo : InspectThemeAction
 
 internal data object Retry : InspectThemeAction

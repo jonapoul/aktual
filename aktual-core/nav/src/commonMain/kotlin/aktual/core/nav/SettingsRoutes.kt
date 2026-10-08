@@ -14,4 +14,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable data class InspectThemeNavRoute(val id: ThemeId) : NavKey
 
+@Serializable data class SearchThemeNavRoute(val id: ThemeId) : NavKey
+
 @Serializable data object TransactionSettingsNavRoute : NavKey
