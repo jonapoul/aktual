@@ -55,7 +55,7 @@ private fun DownloadFailedDialogContent(
 @Preview
 @Composable
 private fun PreviewDownloadFailedContent(
-  @PreviewParameter(ColoredParameters::class) colors: Colors
+  @PreviewParameter(ColoredParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     DownloadFailedDialogContent(

@@ -453,7 +453,11 @@ private fun CacheStateIcon(item: CatalogItem, onAction: CustomThemeSettingsActio
 }
 
 @Composable
-private fun FailureButton(item: CatalogItem, state: CacheState.Failed, onAction: CustomThemeSettingsActionHandler) {
+private fun FailureButton(
+  item: CatalogItem,
+  state: CacheState.Failed,
+  onAction: CustomThemeSettingsActionHandler,
+) {
   val failure = DownloadFailure(item.summary.name, state.reason)
   Icon(
     modifier =
