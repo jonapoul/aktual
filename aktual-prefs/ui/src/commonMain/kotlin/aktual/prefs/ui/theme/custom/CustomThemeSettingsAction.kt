@@ -19,9 +19,7 @@ internal value class InspectTheme(val summary: CustomThemeSummary) : CustomTheme
 @JvmInline
 internal value class SelectTheme(val summary: CustomThemeSummary) : CustomThemeSettingsAction
 
-internal data object ShowFilterSheet : CustomThemeSettingsAction
-
-internal data object ShowSortSheet : CustomThemeSettingsAction
+internal data object ShowSortFilterSheet : CustomThemeSettingsAction
 
 @JvmInline internal value class SetModeFilter(val mode: ThemeFilter) : CustomThemeSettingsAction
 

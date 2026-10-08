@@ -28,11 +28,12 @@
   <string name="settings_theme_refresh_prefix">Error</string>
   <string name="settings_theme_refresh_failure">Failed fetching catalog</string>
   <string name="settings_theme_refresh_retry">Retry</string>
-  <string name="settings_theme_filter">Filter themes</string>
+  <string name="settings_theme_sort_filter">Sort and filter themes</string>
+  <string name="settings_theme_filter">Filter</string>
   <string name="settings_theme_filter_all">All themes</string>
   <string name="settings_theme_filter_light">Light themes only</string>
   <string name="settings_theme_filter_dark">Dark themes only</string>
-  <string name="settings_theme_sort">Sort themes</string>
+  <string name="settings_theme_sort">Sort</string>
   <string name="settings_theme_sort_by_repo">Sort by repository</string>
   <string name="settings_theme_sort_by_name">Sort by name</string>
 
