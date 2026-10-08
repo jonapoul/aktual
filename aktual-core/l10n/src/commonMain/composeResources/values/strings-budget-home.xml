@@ -21,7 +21,7 @@
   <string name="home_attention_fix">Fix</string>
   <string name="home_attention_review">Review</string>
   <string name="home_attention_sync_failed">%1$s: bank sync failed</string>
-  <string name="home_attention_sync_reauth">%1$s: needs re-authorising</string>
+  <string name="home_attention_sync_reauth">%1$s: needs re-authorizing</string>
   <string name="home_attention_sync_attention">%1$s: bank needs attention</string>
   <string name="home_attention_sync_rate_limited">%1$s: bank sync rate limited</string>
   <string name="home_attention_sync_timed_out">%1$s: bank sync timed out</string>
@@ -31,8 +31,8 @@
     <item quantity="other">%1$d accounts failed to sync</item>
   </plurals>
   <plurals name="home_attention_uncategorised">
-    <item quantity="one">%1$d uncategorised transaction</item>
-    <item quantity="other">%1$d uncategorised transactions</item>
+    <item quantity="one">%1$d uncategorized transaction</item>
+    <item quantity="other">%1$d uncategorized transactions</item>
   </plurals>
   <plurals name="home_attention_overspent">
     <item quantity="one">%1$d category overspent</item>
@@ -45,7 +45,7 @@
   <string name="home_attention_overspent_sheet_title">Overspent categories</string>
   <string name="home_attention_failed">Couldn't check what needs attention</string>
   <string name="home_attention_icon_sync">Bank sync problem</string>
-  <string name="home_attention_icon_uncategorised">Uncategorised transactions</string>
+  <string name="home_attention_icon_uncategorised">Uncategorized transactions</string>
   <string name="home_attention_icon_overspent">Overspending</string>
   <string name="home_attention_icon_overdue">Overdue schedules</string>
   <string name="home_accounts_title">Accounts</string>
