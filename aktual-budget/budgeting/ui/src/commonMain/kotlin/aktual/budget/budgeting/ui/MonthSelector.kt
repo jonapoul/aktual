@@ -68,7 +68,7 @@ internal fun MonthSelector(
 
     Column(
       modifier =
-        Modifier.weight(1f, fill = false)
+        Modifier.weight(1f)
           .clip(CardShape)
           .clickable(
             onClickLabel = Strings.budgetingPickMonth,

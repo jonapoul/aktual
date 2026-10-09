@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -152,6 +153,7 @@ private fun BudgetScaffold(
         title = {
           if (state is Loaded) {
             MonthSelector(
+              modifier = Modifier.fillMaxWidth(),
               state = state,
               onAction = onAction,
               onPickMonth = { showMonthPicker = true },
