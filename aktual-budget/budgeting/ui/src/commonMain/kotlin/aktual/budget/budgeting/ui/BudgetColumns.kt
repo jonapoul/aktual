@@ -257,7 +257,12 @@ private fun Summaries(
   ) {
     Box(modifier = Modifier.width(ColumnsDS.categoryWidth).padding(end = ColumnsDS.monthGap)) {
       if (uncategorised != null) {
-        BannerRow(banner = uncategorised, month = state.month, onAction = onAction)
+        BannerRow(
+          banner = uncategorised,
+          month = state.month,
+          type = state.type,
+          onAction = onAction,
+        )
       }
     }
 

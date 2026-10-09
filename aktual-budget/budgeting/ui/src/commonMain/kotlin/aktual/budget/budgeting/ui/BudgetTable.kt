@@ -83,6 +83,7 @@ internal fun LazyListScope.budgetTable(
     BannerRow(
       banner = banner,
       month = budget.month,
+      type = type,
       onAction = onAction,
       modifier = Modifier.padding(bottom = 8.dp),
     )
@@ -248,6 +249,7 @@ private fun Breakdown(lines: ImmutableList<Pair<String, Amount>>, modifier: Modi
 internal fun BannerRow(
   banner: Banner,
   month: YearMonth,
+  type: BudgetType,
   onAction: BudgetActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -294,17 +296,20 @@ internal fun BannerRow(
     )
 
     // packages/desktop-client/src/components/mobile/budget/BudgetPage.tsx OverbudgetedBanner and
-    // OverspendingBanner
-    val (label, action) =
+    // OverspendingBanner. Tracking budgets can't cover overspending
+    val action =
       when (banner) {
         is Uncategorised -> Strings.budgetingBannerReview to ReviewUncategorised
-        is Overspent ->
+        is Overspent if type == Envelope ->
           Strings.budgetingBannerCover to OpenSheet(SheetRequest.OverspentSheet(month))
+        is Overspent -> null
         is Overbudgeted ->
           Strings.budgetingBannerCover to OpenSheet(SheetRequest.CoverOverbudgetedSheet(month))
       }
-    TextButton(onClick = { onAction(action) }) {
-      Text(text = label, color = text, fontWeight = SemiBold)
+    if (action != null) {
+      TextButton(onClick = { onAction(action.second) }) {
+        Text(text = action.first, color = text, fontWeight = SemiBold)
+      }
     }
   }
 }
