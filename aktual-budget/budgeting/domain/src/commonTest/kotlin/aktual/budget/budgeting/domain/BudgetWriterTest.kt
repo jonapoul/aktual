@@ -235,6 +235,18 @@ internal class BudgetWriterTest {
   }
 
   @Test
+  fun `Tracking average starts from the first tracking budget row`() = runWriterTest {
+    insertAverageTransactions()
+    tracking()
+    writer.setBudget(YearMonth(2023, 10), CAT1, Amount(1000))
+
+    writer.setSingleAverage(APR, CAT1, months = 12)
+
+    // (300 + 600 + 900) / 4, counting October 2023
+    assertThat(budgeted(APR, CAT1)).isEqualTo(Amount(450))
+  }
+
+  @Test
   fun `Bulk 3 month average from complete months`() = runWriterTest {
     insertAverageTransactions()
 
