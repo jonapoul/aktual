@@ -5,9 +5,13 @@ import aktual.budget.db.BudgetCategoryGroups
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.BudgetSpentByMonth
 import aktual.budget.db.Zero_budget_months
+import aktual.budget.db.withResult
 import aktual.budget.model.Amount
+import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryId
 import alakazam.kotlin.CoroutineContexts
+import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
@@ -18,12 +22,23 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 
+// A budget row of one month, with the flags of the category it's for
+data class MonthBudget(
+  val category: CategoryId,
+  val amount: Amount,
+  val isIncome: Boolean,
+  val isHidden: Boolean,
+  val isGroupHidden: Boolean,
+)
+
 data class CategoryBudget(
   val month: YearMonth,
   val category: CategoryId,
   val amount: Amount,
   val carryover: Boolean,
 )
+
+private const val YEAR_MONTH_FACTOR = 100
 
 @Inject
 class BudgetDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
@@ -69,6 +84,66 @@ class BudgetDao(database: BudgetDatabase, private val contexts: CoroutineContext
 
   fun observeEnvelopeMonths(): Flow<List<Zero_budget_months>> =
     queries.zeroBudgetMonths().asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  suspend fun categories(): List<BudgetCategories> = queries.withResult {
+    budgetCategories().awaitAsList()
+  }
+
+  suspend fun spentByMonth(start: LocalDate, end: LocalDate): List<BudgetSpentByMonth> =
+    queries.withResult {
+      budgetSpentByMonth(start, end).awaitAsList()
+    }
+
+  // Upstream looks up the row's ID, which may not be "${YYYYMM}-${category}"
+  suspend fun budgetId(type: BudgetType, month: YearMonth, category: CategoryId): String? =
+    queries.withResult {
+      when (type) {
+        Envelope -> zeroBudgetId(month, category)
+        Tracking -> reflectBudgetId(month, category)
+      }.awaitAsOneOrNull()
+    }
+
+  // Rows of live categories only
+  suspend fun budgetsInMonth(type: BudgetType, month: YearMonth): List<MonthBudget> =
+    queries.withResult {
+      when (type) {
+        Envelope -> zeroBudgetsInMonth(month, ::monthBudget)
+        Tracking -> reflectBudgetsInMonth(month, ::monthBudget)
+      }.awaitAsList()
+    }
+
+  // The earliest month up to [end] with a budget row or an on-budget transaction for [category]
+  suspend fun firstActivityMonth(
+    type: BudgetType,
+    category: CategoryId,
+    end: YearMonth,
+  ): YearMonth? =
+    queries
+      .withResult {
+        when (type) {
+          Envelope -> zeroBudgetFirstActivity(category, end).awaitAsOneOrNull()?.month
+          Tracking -> reflectBudgetFirstActivity(category, end).awaitAsOneOrNull()?.month
+        }
+      }
+      ?.let {
+        YearMonth(year = (it / YEAR_MONTH_FACTOR).toInt(), month = (it % YEAR_MONTH_FACTOR).toInt())
+      }
+
+  @Suppress("CanBeNonNullable")
+  private fun monthBudget(
+    category: CategoryId?,
+    amount: Amount?,
+    isIncome: Boolean?,
+    isHidden: Boolean?,
+    isGroupHidden: Boolean?,
+  ) =
+    MonthBudget(
+      category = requireNotNull(category),
+      amount = amount ?: Zero,
+      isIncome = isIncome == true,
+      isHidden = isHidden == true,
+      isGroupHidden = isGroupHidden == true,
+    )
 
   @Suppress("CanBeNonNullable")
   private fun categoryBudget(
