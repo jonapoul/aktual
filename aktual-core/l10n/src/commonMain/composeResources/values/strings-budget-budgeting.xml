@@ -3,6 +3,15 @@
   <string name="budgeting_menu">More options</string>
   <string name="budgeting_show_hidden">Show hidden categories</string>
   <string name="budgeting_hide_hidden">Hide hidden categories</string>
+  <string name="budgeting_previous_month">Previous month</string>
+  <string name="budgeting_next_month">Next month</string>
+  <string name="budgeting_previous_year">Previous year</string>
+  <string name="budgeting_next_year">Next year</string>
+  <string name="budgeting_pick_month">Pick a month</string>
+  <string name="budgeting_today">Today</string>
+  <string name="budgeting_this_month">This month</string>
+  <string name="budgeting_month_range">%1$s to %2$s</string>
+  <string name="budgeting_month_count">Months shown</string>
   <string name="budgeting_to_budget">To budget</string>
   <string name="budgeting_overbudgeted">Overbudgeted</string>
   <string name="budgeting_available">Available</string>

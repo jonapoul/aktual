@@ -56,4 +56,11 @@ class DbMetadataTest {
     val encoded = PrettyJson.encodeToString(decoded)
     assertThat(encoded).isEqualTo(encoded)
   }
+
+  @Test
+  fun `Read and write a number`() {
+    val metadata = DbMetadata(DbMetadata.BudgetMonthCount to 3)
+    val json = PrettyJson.encodeToString(metadata)
+    assertThat(PrettyJson.decodeFromString<DbMetadata>(json)).isEqualTo(metadata)
+  }
 }
