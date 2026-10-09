@@ -8,6 +8,12 @@ import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
 import aktual.budget.model.WidgetId
 import androidx.compose.runtime.Immutable
+import kotlinx.datetime.YearMonth
+
+@Immutable
+class BudgetNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke(month: YearMonth? = null) = stack.push(BudgetNavRoute(month))
+}
 
 @Immutable
 class TransactionsNavigator(private val stack: NavStack<BudgetNavKey>) {

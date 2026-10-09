@@ -15,6 +15,11 @@ sealed interface BudgetNavKey : NavKey {
       get() = BudgetTab.Home
   }
 
+  sealed interface Budget : BudgetNavKey {
+    override val tab: BudgetTab
+      get() = BudgetTab.Budget
+  }
+
   sealed interface Transactions : BudgetNavKey {
     override val tab: BudgetTab
       get() = BudgetTab.Transactions

@@ -17,6 +17,7 @@ flowchart TD
 
   subgraph budgetNavRail["Budget Nav Rail"]
     home["Home"]
+    budget["Budget"]
     transactions["Transactions"]
     accountTransactions["Account Transactions"]
     tagTransactions["Tag Transactions"]
@@ -77,6 +78,8 @@ flowchart TD
   home --no accounts--> bankSync
   home --tap upcoming schedule--> editSchedule
   home --see all upcoming--> listSchedules
+
+  budget --review uncategorised--> uncategorisedTransactions
 
   reportsDashboard --tap report--> report
   reportsDashboard --tap create--> createReport

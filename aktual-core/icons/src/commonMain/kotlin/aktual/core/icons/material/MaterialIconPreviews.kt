@@ -24,6 +24,7 @@ private val materialIcons =
   with(MaterialIcons) {
     listOf(
       AccountBalance,
+      AccountBalanceWallet,
       Add,
       Apps,
       ArrowBack,
