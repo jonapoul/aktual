@@ -39,6 +39,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -181,7 +182,10 @@ private fun Breakdown(vararg lines: Pair<String, Amount>, modifier: Modifier = M
     verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
     for ((label, amount) in lines) {
-      Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = CenterVertically,
+      ) {
         Text(text = label, fontSize = 13.sp, color = colors.pageTextSubdued)
         Text(
           text = amount.formattedString(),
@@ -545,6 +549,7 @@ private fun BalancePill(balance: Amount, carryover: Boolean, modifier: Modifier 
 private data class PillColors(val background: Color, val text: Color)
 
 @Composable
+@ReadOnlyComposable
 private fun balanceColors(balance: Amount): PillColors =
   when {
     balance > Zero -> PillColors(colors.noticeBackground, colors.noticeText)
