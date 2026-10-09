@@ -73,6 +73,8 @@ class BudgetViewModelTest {
             toBudget = Amount(-5_000L),
             available = Amount(300_000L),
             budgeted = Amount(305_000L),
+            overspentLastMonth = Zero,
+            held = Zero,
           ),
         )
       assertThat(state.shown.groups.map { it.id }).containsExactly(CategoryGroupId("usual"))
@@ -200,6 +202,8 @@ class BudgetViewModelTest {
               isProjected = true,
               budgeted = Amount(305_000L),
               spent = Amount(-50_000L),
+              incomeBudgeted = Amount(280_000L),
+              received = Amount(300_000L),
             ),
           )
         // Overspending isn't flagged as overbudgeted for tracking budgets
@@ -410,6 +414,46 @@ class BudgetViewModelTest {
         listOf("copyUntilYearEnd", month, food),
       )
   }
+
+  @Test
+  fun `Money movements call the writer`() = runBudgetTest { viewModel, _ ->
+    val month = YearMonth(2026, 4)
+    val food = CategoryId("food")
+    val rent = CategoryId("rent")
+    assertThat(viewModel.transfer(month, "20", from = rent, to = food)).isTrue()
+    assertThat(viewModel.transfer(month, "5", from = rent, to = null)).isTrue()
+    assertThat(viewModel.coverOverspending(month, to = food, from = rent, input = "450")).isTrue()
+    assertThat(viewModel.coverOverspending(month, to = food, from = null, input = "1")).isTrue()
+    viewModel.setCarryover(month, food, enabled = true)
+    assertThat(viewModel.hold(month, "10")).isTrue()
+    viewModel.resetHold(month)
+    assertThat(viewModel.transferAvailable(month, "15", food)).isTrue()
+    assertThat(viewModel.coverOverbudgeted(month, rent, "50")).isTrue()
+    testScheduler.advanceUntilIdle()
+    assertThat(writer.calls)
+      .containsExactly(
+        listOf("transferCategory", month, Amount(2_000L), rent, food),
+        listOf("transferCategory", month, Amount(500L), rent, null),
+        listOf("coverOverspending", month, food, rent, Amount(45_000L)),
+        listOf("coverOverspending", month, food, null, Amount(100L)),
+        listOf("setCarryover", month, food, true),
+        listOf("holdForNextMonth", month, Amount(1_000L)),
+        listOf("resetHold", month),
+        listOf("transferAvailable", month, Amount(1_500L), food),
+        listOf("coverOverbudgeted", month, rent, Amount(5_000L)),
+      )
+  }
+
+  @Test
+  fun `Money movements reject zero, negative and unreadable amounts`() =
+    runBudgetTest { viewModel, _ ->
+      val month = YearMonth(2026, 4)
+      assertThat(viewModel.transfer(month, "0", CategoryId("rent"), null)).isFalse()
+      assertThat(viewModel.hold(month, "-5")).isFalse()
+      assertThat(viewModel.transferAvailable(month, "abc", CategoryId("food"))).isFalse()
+      testScheduler.advanceUntilIdle()
+      assertThat(writer.calls).isEmpty()
+    }
 
   private suspend fun ReceiveTurbine<BudgetState>.awaitLoaded(): BudgetState.Loaded {
     var state = awaitItem()

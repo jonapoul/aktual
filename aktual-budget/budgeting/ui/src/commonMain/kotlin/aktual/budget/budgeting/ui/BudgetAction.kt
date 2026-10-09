@@ -33,17 +33,57 @@ internal data object ReviewUncategorised : BudgetAction
 
 internal data class OpenCategory(val month: YearMonth, val category: CategoryId) : BudgetAction
 
-// Opens the budget sheet on compact widths. Expanded widths edit in place
-internal data class EditBudget(val month: YearMonth, val category: CategoryId) : BudgetAction
+// Handled by the scaffold, which shows the sheet
+internal data class OpenSheet(val sheet: SheetRequest) : BudgetAction
+
+// Changes the budget's amounts
+internal sealed interface BudgetWrite : BudgetAction
 
 internal data class SetBudget(val month: YearMonth, val category: CategoryId, val input: String) :
-  BudgetAction
+  BudgetWrite
 
 internal data class ApplyQuickAction(
   val month: YearMonth,
   val category: CategoryId,
   val action: QuickAction,
-) : BudgetAction
+) : BudgetWrite
+
+// Typed amounts are unsigned. A null category is To Budget
+internal data class TransferBudget(
+  val month: YearMonth,
+  val input: String,
+  val from: CategoryId,
+  val to: CategoryId?,
+) : BudgetWrite
+
+internal data class CoverOverspending(
+  val month: YearMonth,
+  val to: CategoryId,
+  val from: CategoryId?,
+  val input: String,
+) : BudgetWrite
+
+internal data class ToggleCarryover(
+  val month: YearMonth,
+  val category: CategoryId,
+  val enabled: Boolean,
+) : BudgetWrite
+
+internal data class HoldBudget(val month: YearMonth, val input: String) : BudgetWrite
+
+internal data class ResetHold(val month: YearMonth) : BudgetWrite
+
+internal data class TransferAvailable(
+  val month: YearMonth,
+  val input: String,
+  val category: CategoryId,
+) : BudgetWrite
+
+internal data class CoverOverbudgeted(
+  val month: YearMonth,
+  val category: CategoryId,
+  val input: String,
+) : BudgetWrite
 
 @Immutable
 internal fun interface BudgetActionHandler {

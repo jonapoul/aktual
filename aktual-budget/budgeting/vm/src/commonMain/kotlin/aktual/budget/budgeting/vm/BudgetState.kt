@@ -67,8 +67,15 @@ fun MonthBudget.category(id: CategoryId): CategoryRow? =
 
 @Immutable
 sealed interface BudgetSummary {
-  data class Envelope(val toBudget: Amount, val available: Amount, val budgeted: Amount) :
-    BudgetSummary
+  // packages/desktop-client/src/components/budget/envelope/budgetsummary/TotalsList.tsx.
+  // Overspending carried from last month is negative, and held is what's kept back for next month
+  data class Envelope(
+    val toBudget: Amount,
+    val available: Amount,
+    val budgeted: Amount,
+    val overspentLastMonth: Amount = Zero,
+    val held: Amount = Zero,
+  ) : BudgetSummary
 
   // packages/desktop-client/src/components/mobile/budget/BudgetTable.tsx Saved. Months that
   // haven't finished show what the budget is set to save, others what was actually saved
@@ -77,6 +84,8 @@ sealed interface BudgetSummary {
     val isProjected: Boolean,
     val budgeted: Amount,
     val spent: Amount,
+    val incomeBudgeted: Amount = Zero,
+    val received: Amount = Zero,
   ) : BudgetSummary
 }
 

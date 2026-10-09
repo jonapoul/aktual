@@ -61,6 +61,7 @@ import logcat.logcat
 // packages/desktop-client/src/components/mobile/budget/BudgetPage.tsx, and
 // packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx for several months
 @Stable
+@Suppress("TooManyFunctions") // One per budget write upstream offers
 @AssistedInject
 class BudgetViewModel(
   @Assisted private val month: YearMonth?,
@@ -154,6 +155,47 @@ class BudgetViewModel(
 
   fun copyToYearEnd(month: YearMonth, category: CategoryId) =
     write("copy to year end") { copyUntilYearEnd(month, category) }
+
+  // Typed amounts below are unsigned amounts of money to move. False if the input doesn't read as
+  // one, so the sheet stays open
+
+  // A null destination is To Budget
+  fun transfer(month: YearMonth, input: String, from: CategoryId, to: CategoryId?): Boolean =
+    writeAmount(input, "transfer") { amount -> transferCategory(month, amount, from, to) }
+
+  // A null source is To Budget
+  fun coverOverspending(month: YearMonth, to: CategoryId, from: CategoryId?, input: String) =
+    writeAmount(input, "cover overspending") { amount ->
+      coverOverspending(month, to, from, amount)
+    }
+
+  fun setCarryover(month: YearMonth, category: CategoryId, enabled: Boolean) =
+    write("set carryover") { setCarryover(month, category, enabled) }
+
+  fun hold(month: YearMonth, input: String): Boolean =
+    writeAmount(input, "hold") { amount -> holdForNextMonth(month, amount) }
+
+  fun resetHold(month: YearMonth) = write("reset hold") { resetHold(month) }
+
+  fun transferAvailable(month: YearMonth, input: String, category: CategoryId): Boolean =
+    writeAmount(input, "transfer available") { amount ->
+      transferAvailable(month, amount, category)
+    }
+
+  fun coverOverbudgeted(month: YearMonth, category: CategoryId, input: String): Boolean =
+    writeAmount(input, "cover overbudgeted") { amount ->
+      coverOverbudgeted(month, category, amount)
+    }
+
+  private fun writeAmount(
+    input: String,
+    description: String,
+    action: suspend BudgetWriter.(Amount) -> Unit,
+  ): Boolean {
+    val amount = evaluateAmountInput(input)?.takeIf { it > Amount.Zero } ?: return false
+    write(description) { action(amount) }
+    return true
+  }
 
   // The calculator picks up the change, so there's nothing to update here
   private fun write(description: String, action: suspend BudgetWriter.() -> Unit) {
@@ -313,7 +355,13 @@ class BudgetViewModel(
   private fun BudgetMonth.summary(current: YearMonth): BudgetSummary =
     when (this) {
       is Envelope -> {
-        BudgetSummary.Envelope(toBudget = toBudget, available = availableFunds, budgeted = budgeted)
+        BudgetSummary.Envelope(
+          toBudget = toBudget,
+          available = availableFunds,
+          budgeted = budgeted,
+          overspentLastMonth = lastMonthOverspent,
+          held = buffered,
+        )
       }
 
       is Tracking -> {
@@ -324,6 +372,8 @@ class BudgetViewModel(
           isProjected = isProjected,
           budgeted = budgeted,
           spent = spent,
+          incomeBudgeted = incomeBudgeted,
+          received = income,
         )
       }
     }

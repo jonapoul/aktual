@@ -5,9 +5,12 @@ import aktual.budget.budgeting.vm.CategoryRow
 import aktual.budget.budgeting.vm.GroupRow
 import aktual.budget.budgeting.vm.MonthBudget
 import aktual.budget.model.Amount
+import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
@@ -17,6 +20,7 @@ import aktual.core.ui.stringLong
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.scrollBy
@@ -41,10 +45,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -171,9 +179,12 @@ private fun LazyListScope.budgetColumns(
               amount = month.spent,
               color = if (month.spent == Zero) colors.pageTextSubdued else colors.tableText,
             )
-            Box(modifier = Modifier.weight(1f), contentAlignment = CenterEnd) {
-              BalancePill(balance = month.balance, carryover = month.carryover)
-            }
+            BalanceCell(
+              month = column.month,
+              category = month,
+              type = state.type,
+              onAction = onAction,
+            )
           }
         }
       }
@@ -245,13 +256,16 @@ private fun Summaries(
     verticalAlignment = Bottom,
   ) {
     Box(modifier = Modifier.width(ColumnsDS.categoryWidth).padding(end = ColumnsDS.monthGap)) {
-      if (uncategorised != null) BannerRow(banner = uncategorised, onAction = onAction)
+      if (uncategorised != null) {
+        BannerRow(banner = uncategorised, month = state.month, onAction = onAction)
+      }
     }
 
     Row(modifier = Modifier.weight(1f).horizontalScroll(layout.scroll)) {
       columns.fastForEach { column ->
         SummaryCard(
           modifier = Modifier.width(layout.monthWidth).padding(start = ColumnsDS.monthGap),
+          onClick = { onAction(OpenSheet(SheetRequest.SummarySheet(column.month))) },
           column = column,
           isCurrent = column.month == state.current,
         )
@@ -261,7 +275,13 @@ private fun Summaries(
 }
 
 @Composable
-private fun SummaryCard(column: MonthColumn, isCurrent: Boolean, modifier: Modifier = Modifier) {
+private fun SummaryCard(
+  column: MonthColumn,
+  isCurrent: Boolean,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val label = Strings.budgetingSummaryOpen(column.month.stringLong())
   Column(
     modifier =
       modifier
@@ -271,6 +291,8 @@ private fun SummaryCard(column: MonthColumn, isCurrent: Boolean, modifier: Modif
           color = if (isCurrent) colors.pageTextLink else colors.tableBorder,
           shape = CardShape,
         )
+        .clip(CardShape)
+        .clickable(onClickLabel = label, role = Button, onClick = onClick)
         .padding(12.dp),
     verticalArrangement = Arrangement.spacedBy(6.dp),
   ) {
@@ -403,6 +425,41 @@ private fun RowScope.AmountCell(
   )
 
 // Income is budgeted for in tracking budgets only, and what's received sits under Balance
+// Upstream opens the balance menu from the balance cell on desktop
+@Composable
+private fun RowScope.BalanceCell(
+  month: YearMonth,
+  category: CategoryRow,
+  type: BudgetType,
+  onAction: BudgetActionHandler,
+) {
+  var expanded by remember { mutableStateOf(false) }
+  val actions = balanceActions(month, category, type, onAction)
+  Box(
+    modifier =
+      Modifier.weight(1f)
+        .clickable(
+          onClickLabel = Strings.budgetingBalanceOptions(category.name),
+          role = Button,
+          onClick = { expanded = true },
+        ),
+    contentAlignment = CenterEnd,
+  ) {
+    BalancePill(balance = category.balance, carryover = category.carryover)
+    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      actions.fastForEach { action ->
+        AktualDropdownMenuItem(
+          text = action.label,
+          onClick = {
+            expanded = false
+            action.onClick()
+          },
+        )
+      }
+    }
+  }
+}
+
 @Composable
 private fun RowScope.IncomeCells(
   budgeted: Amount,
