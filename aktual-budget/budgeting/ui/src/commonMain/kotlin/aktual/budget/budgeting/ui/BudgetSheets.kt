@@ -134,7 +134,7 @@ private fun TransferBalanceSheet(
     title = Strings.budgetingTransferTitle(category.name),
     initial = category.balance,
     optionsLabel = Strings.budgetingTransferTo,
-    options = budget.pickOptions(withToBudget = true) { it.id != category.id },
+    options = budget.pickOptions(toBudgetIf = { true }) { it.id != category.id },
     confirmText = Strings.budgetingTransferConfirm,
     onDismiss = onDismiss,
     onConfirm = { input, to -> onAction(TransferBudget(month, input, category.id, to?.id)) },
@@ -152,7 +152,8 @@ private fun CoverBalanceSheet(
     title = Strings.budgetingCoverTitle(category.name),
     initial = -category.balance,
     optionsLabel = Strings.budgetingCoverFrom,
-    options = budget.pickOptions(withToBudget = true) { it.id != category.id && it.balance > Zero },
+    options =
+      budget.pickOptions(toBudgetIf = { it > Zero }) { it.id != category.id && it.balance > Zero },
     confirmText = Strings.budgetingCoverConfirm,
     onDismiss = onDismiss,
     onConfirm = { input, from -> onAction(CoverOverspending(month, category.id, from?.id, input)) },
@@ -187,7 +188,7 @@ private fun TransferAvailableBudgetSheet(
     title = Strings.budgetingTransferAvailable,
     initial = summary.toBudget,
     optionsLabel = Strings.budgetingTransferTo,
-    options = budget.pickOptions(withToBudget = false) { true },
+    options = budget.pickOptions { true },
     confirmText = Strings.budgetingTransferConfirm,
     onDismiss = onDismiss,
     onConfirm = { input, to ->
@@ -207,7 +208,7 @@ private fun CoverOverbudgetedBudgetSheet(
     title = Strings.budgetingCoverOverbudgetedTitle,
     initial = -summary.toBudget,
     optionsLabel = Strings.budgetingCoverFrom,
-    options = budget.pickOptions(withToBudget = false) { it.balance > Zero },
+    options = budget.pickOptions { it.balance > Zero },
     confirmText = Strings.budgetingCoverConfirm,
     onDismiss = onDismiss,
     onConfirm = { input, from ->
@@ -318,13 +319,14 @@ private fun MenuSheet(
 @Immutable
 internal data class PickOption(val id: CategoryId?, val name: String, val balance: Amount)
 
+// To Budget is listed first when [toBudgetIf] accepts what's left to budget
 @Composable
 private fun MonthBudget.pickOptions(
-  withToBudget: Boolean,
+  toBudgetIf: ((Amount) -> Boolean)? = null,
   filter: (CategoryRow) -> Boolean,
 ): ImmutableList<PickOption> = buildList {
   val toBudget = (summary as? BudgetSummary.Envelope)?.toBudget
-  if (withToBudget && toBudget != null) {
+  if (toBudget != null && toBudgetIf?.invoke(toBudget) == true) {
     add(PickOption(id = null, name = Strings.budgetingToBudget, balance = toBudget))
   }
   expenseCategories().filter(filter).forEach { add(PickOption(it.id, it.name, it.balance)) }
