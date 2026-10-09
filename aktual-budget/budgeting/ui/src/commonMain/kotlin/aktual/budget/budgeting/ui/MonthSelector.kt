@@ -13,7 +13,6 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.stringLong
 import aktual.core.ui.stringShort
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -111,7 +110,7 @@ private val BudgetState.Loaded.showsOnlyCurrent: Boolean
 private fun BudgetState.Loaded.title(): String {
   val last = lastMonth
   return when {
-    monthCount == 1 -> month.stringLong()
+    monthCount == 1 -> month.stringShort()
     month.year == last.year ->
       Strings.budgetingMonthRange(month.month.stringShort(), last.stringShort())
     else -> Strings.budgetingMonthRange(month.stringShort(), last.stringShort())
