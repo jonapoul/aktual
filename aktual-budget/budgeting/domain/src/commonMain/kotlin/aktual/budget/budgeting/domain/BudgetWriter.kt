@@ -81,7 +81,8 @@ class BudgetWriterImpl(
   override suspend fun setSingleAverage(month: YearMonth, category: CategoryId, months: Int) {
     val type = type()
     val isIncome = budgetDao.categories().firstOrNull { it.id == category }?.is_income == true
-    val average = average(type, month, category, isIncome, months)
+    val window = averageWindow(month, months)
+    val average = average(type, window, spentIn(window), category, isIncome)
     send(type) { set(month, category, average) }
   }
 
@@ -128,8 +129,10 @@ class BudgetWriterImpl(
         .categories()
         .filter { !it.hidden && !it.group_hidden }
         .filter { type == Tracking || it.is_income != true }
+    val window = averageWindow(month, months)
+    val spent = spentIn(window)
     val averages = categories.associate {
-      it.id to average(type, month, it.id, it.is_income == true, months)
+      it.id to average(type, window, spent, it.id, it.is_income == true)
     }
     send(type) { averages.forEach { (category, amount) -> set(month, category, amount) } }
   }
@@ -137,37 +140,37 @@ class BudgetWriterImpl(
   // getCategoryAverage(). Expense averages are flipped to a positive budget
   private suspend fun average(
     type: BudgetType,
-    month: YearMonth,
+    window: List<YearMonth>,
+    spent: Map<MonthCategory, Long>,
     category: CategoryId,
     isIncome: Boolean,
-    count: Int,
   ): Amount {
-    val months = averageMonths(type, month, category, count)
+    if (window.isEmpty()) return Zero
+    // getAverageMonths() stops before the category's first activity
+    val firstActivity = budgetDao.firstActivityMonth(type, category, window.first())
+    val months = window.takeWhile { firstActivity == null || it >= firstActivity }
     if (months.isEmpty()) return Zero
-    val spent =
-      budgetDao
-        .spentByMonth(months.last().firstDay, months.first().lastDay)
-        .filter { it.category == category }
-        .sumOf { it.total }
+    val sum = months.sumOf { spent[MonthCategory(it, category)] ?: 0L }
     // Math.round() rounds halves up
-    val average = floor(spent.toDouble() / months.size + HALF).toLong()
+    val average = floor(sum.toDouble() / months.size + HALF).toLong()
     return Amount(if (isIncome) average else -average)
   }
 
   // getAverageMonths(). Newest first, from the month before but never later than last month
-  private suspend fun averageMonths(
-    type: BudgetType,
-    month: YearMonth,
-    category: CategoryId,
-    count: Int,
-  ): List<YearMonth> {
+  private fun averageWindow(month: YearMonth, count: Int): List<YearMonth> {
     val first = minOf(month.previous(), calendar.today().yearMonth.previous())
-    val firstActivity = budgetDao.firstActivityMonth(type, category, first)
-    return generateSequence(first) { it.previous() }
-      .take(count)
-      .takeWhile { firstActivity == null || it >= firstActivity }
-      .toList()
+    return generateSequence(first) { it.previous() }.take(count).toList()
   }
+
+  // Every category's spending across the window, fetched once for all of them
+  private suspend fun spentIn(window: List<YearMonth>): Map<MonthCategory, Long> =
+    if (window.isEmpty()) {
+      emptyMap()
+    } else {
+      budgetDao.spentByMonth(window.last().firstDay, window.first().lastDay).associate {
+        MonthCategory(it.month.toYearMonth(), it.category) to it.total
+      }
+    }
 
   private suspend fun bounds(): ClosedRange<YearMonth> =
     budgetBounds(budgetDao.observeEarliestTransactionDate().first(), calendar.today())
@@ -220,6 +223,9 @@ private const val DB_MONTH_FACTOR = 100
 
 private val YearMonth.dbMonth: Long
   get() = year.toLong() * DB_MONTH_FACTOR + month.number
+
+private fun Long.toYearMonth(): YearMonth =
+  YearMonth(year = (this / DB_MONTH_FACTOR).toInt(), month = (this % DB_MONTH_FACTOR).toInt())
 
 private fun YearMonth.previous(): YearMonth = minus(1, MONTH)
 
