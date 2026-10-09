@@ -4,29 +4,45 @@ import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.BudgetDao
+import aktual.budget.db.dao.DatabaseTables.NOTES
 import aktual.budget.db.dao.DatabaseTables.REFLECT_BUDGETS
 import aktual.budget.db.dao.DatabaseTables.ZERO_BUDGETS
+import aktual.budget.db.dao.DatabaseTables.ZERO_BUDGET_MONTHS
+import aktual.budget.db.dao.NotesDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.SyncDao
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
 import aktual.budget.model.CategoryId
+import aktual.budget.model.Currency
+import aktual.budget.model.CurrencySymbolPosition
+import aktual.budget.model.DateFormat
+import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
+import aktual.budget.model.NumberFormat
 import aktual.budget.model.SyncedPrefKey
 import aktual.core.Calendar
+import aktual.prefs.CurrencyPreferences
+import aktual.prefs.FormatPreferences
+import aktual.prefs.Preference
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.db.SqlDriver
+import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.containsOnly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
+import assertk.assertions.prop
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 import kotlin.time.Clock
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
@@ -275,6 +291,158 @@ internal class BudgetWriterTest {
     assertThat(syncCalls.single().map { it.row }.toSet()).containsOnly("202404-cat1")
   }
 
+  @Test
+  fun `coverOverbudgeted fully covers when the category has enough left over`() = runWriterTest {
+    insertOverbudgeted()
+
+    writer.coverOverbudgeted(FEB, CAT1)
+
+    assertThat(envelope(FEB).toBudget).isEqualTo(Zero)
+    assertThat(balance(FEB, CAT1)).isEqualTo(Amount(10))
+  }
+
+  @Test
+  fun `coverOverbudgeted partially covers when the category is short`() = runWriterTest {
+    insertOverbudgeted()
+
+    writer.coverOverbudgeted(FEB, CAT3)
+
+    assertThat(envelope(FEB).toBudget).isEqualTo(Amount(-80))
+    assertThat(balance(FEB, CAT3)).isEqualTo(Zero)
+  }
+
+  @Test
+  fun `Transferring between categories moves the budget and adds a note`() = runWriterTest {
+    writer.setBudget(JAN, CAT1, Amount(5000))
+    syncCalls.clear()
+
+    writer.transferCategory(JAN, Amount(2000), from = CAT1, to = CAT2)
+
+    assertThat(budgeted(JAN, CAT1)).isEqualTo(Amount(3000))
+    assertThat(budgeted(JAN, CAT2)).isEqualTo(Amount(2000))
+    assertThat(syncCalls.single().last())
+      .isEqualTo(
+        LocalChange(
+          dataset = NOTES,
+          row = "budget-2024-01",
+          column = "note",
+          value = MessageValue.String("- Reassigned 20.00 from cat1 → cat2 on February 15"),
+        ),
+      )
+  }
+
+  @Test
+  fun `Transferring to To Budget only changes the source`() = runWriterTest {
+    writer.setBudget(JAN, CAT1, Amount(5000))
+    syncCalls.clear()
+
+    writer.transferCategory(JAN, Amount(2000), from = CAT1, to = null)
+
+    assertThat(budgeted(JAN, CAT1)).isEqualTo(Amount(3000))
+    assertThat(budgeted(JAN, CAT2)).isEqualTo(Zero)
+    assertThat(note(JAN)).isEqualTo("- Reassigned 20.00 from cat1 → To Budget on February 15")
+  }
+
+  @Test
+  fun `Movement note is appended to an existing note`() = runWriterTest {
+    run("INSERT INTO notes(id, note) VALUES ('budget-2024-01', 'Existing')")
+
+    writer.transferCategory(JAN, Amount(2000), from = CAT1, to = CAT2)
+
+    assertThat(note(JAN)).isEqualTo("Existing\n- Reassigned 20.00 from cat1 → cat2 on February 15")
+  }
+
+  @Test
+  fun `Transferring from To Budget is clamped to what's available`() = runWriterTest {
+    insertTransaction("income", 20240110, amount = 10000, category = INCOME)
+
+    writer.transferAvailable(JAN, Amount(15000), CAT1)
+
+    assertThat(budgeted(JAN, CAT1)).isEqualTo(Amount(10000))
+    assertThat(envelope(JAN).toBudget).isEqualTo(Zero)
+  }
+
+  @Test
+  fun `Covering overspending is capped by the source's balance`() = runWriterTest {
+    insertOverspending()
+
+    writer.coverOverspending(JAN, to = CAT1, from = CAT2)
+
+    assertThat(budgeted(JAN, CAT1)).isEqualTo(Amount(1500))
+    assertThat(budgeted(JAN, CAT2)).isEqualTo(Zero)
+    assertThat(note(JAN)).isEqualTo("- Reassigned 5.00 from cat2 → cat1 on February 15")
+  }
+
+  @Test
+  fun `Covering part of the overspending`() = runWriterTest {
+    insertOverspending()
+
+    writer.coverOverspending(JAN, to = CAT1, from = CAT2, amount = Amount(300))
+
+    assertThat(budgeted(JAN, CAT1)).isEqualTo(Amount(1300))
+    assertThat(budgeted(JAN, CAT2)).isEqualTo(Amount(200))
+  }
+
+  @Test
+  fun `Covering overspending from To Budget only changes the target`() = runWriterTest {
+    insertOverspending()
+    insertTransaction("income", 20240110, amount = 10000, category = INCOME)
+    syncCalls.clear()
+
+    writer.coverOverspending(JAN, to = CAT1, from = null)
+
+    assertThat(syncCalls.single().map { it.row }).containsExactly("202401-cat1", "budget-2024-01")
+    assertThat(balance(JAN, CAT1)).isEqualTo(Zero)
+    assertThat(note(JAN)).isEqualTo("- Reassigned 20.00 from To Budget → cat1 on February 15")
+  }
+
+  @Test
+  fun `Nothing is covered when the category isn't overspent`() = runWriterTest {
+    writer.setBudget(JAN, CAT1, Amount(1000))
+    writer.setBudget(JAN, CAT2, Amount(500))
+    syncCalls.clear()
+
+    writer.coverOverspending(JAN, to = CAT1, from = CAT2)
+
+    assertThat(syncCalls).isEmpty()
+  }
+
+  @Test
+  fun `Holding for next month is clamped to what's available`() = runWriterTest {
+    insertTransaction("income", 20240110, amount = 10000, category = INCOME)
+
+    assertThat(writer.holdForNextMonth(JAN, Amount(15000))).isTrue()
+
+    assertThat(syncCalls.single())
+      .containsExactly(
+        LocalChange(ZERO_BUDGET_MONTHS, "2024-01", "buffered", MessageValue.Number(10000)),
+      )
+    assertThat(envelope(JAN)).all {
+      prop(BudgetMonth.Envelope::buffered).isEqualTo(Amount(10000))
+      prop(BudgetMonth.Envelope::toBudget).isEqualTo(Zero)
+    }
+  }
+
+  @Test
+  fun `Nothing is held when there's nothing to budget`() = runWriterTest {
+    assertThat(writer.holdForNextMonth(JAN, Amount(15000))).isFalse()
+
+    assertThat(syncCalls).isEmpty()
+  }
+
+  @Test
+  fun `Resetting a hold`() = runWriterTest {
+    insertTransaction("income", 20240110, amount = 10000, category = INCOME)
+    writer.holdForNextMonth(JAN, Amount(4000))
+
+    writer.resetHold(JAN)
+
+    assertThat(envelope(JAN)).all {
+      prop(BudgetMonth.Envelope::buffered).isEqualTo(Zero)
+      prop(BudgetMonth.Envelope::toBudget).isEqualTo(Amount(10000))
+    }
+  }
+
   private class WriterTestScope(
     database: BudgetDatabase,
     private val driver: SqlDriver,
@@ -286,8 +454,19 @@ internal class BudgetWriterTest {
     private val budgetDao = BudgetDao(database, contexts)
     private val calendar = Calendar { TODAY }
 
-    val writer = BudgetWriterImpl(this, budgetDao, preferences, calendar)
+    private val notesDao = NotesDao(database)
     val calculator = BudgetMonthCalculatorImpl(budgetDao, preferences, calendar, contexts)
+    val writer =
+      BudgetWriterImpl(
+        syncController = this,
+        budgetDao = budgetDao,
+        preferencesDao = preferences,
+        calendar = calendar,
+        calculator = calculator,
+        notesDao = notesDao,
+        formatPreferences = TestFormatPreferences,
+        currencyPreferences = TestCurrencyPreferences,
+      )
 
     override suspend fun syncChanges(changes: List<LocalChange>) {
       syncCalls.add(changes)
@@ -299,6 +478,34 @@ internal class BudgetWriterTest {
     suspend fun budgeted(month: YearMonth, category: CategoryId): Amount =
       calculator.observe(month).first().categories.single { it.id == category }.budgeted
 
+    suspend fun envelope(month: YearMonth): BudgetMonth.Envelope =
+      calculator.observe(month).first() as BudgetMonth.Envelope
+
+    suspend fun balance(month: YearMonth, category: CategoryId): Amount =
+      envelope(month).categories.single { it.id == category }.balance
+
+    suspend fun note(month: YearMonth): String? = notesDao.getNote("budget-$month")
+
+    // prepareDatabase(). February is 90 overbudgeted, with balances of 100, -20 and 10
+    suspend fun insertOverbudgeted() {
+      run(
+        "INSERT INTO categories(id, name, is_income, cat_group, sort_order) " +
+          "VALUES ('cat3', 'cat3', 0, 'group1', 3)",
+      )
+      run("INSERT INTO category_mapping(id, transferId) VALUES ('cat3', 'cat3')")
+      writer.setBudget(JAN, CAT1, Amount(100))
+      writer.setBudget(JAN, CAT2, Amount(-20))
+      writer.setBudget(JAN, CAT3, Amount(10))
+      writer.setCarryover(JAN, CAT2, enabled = true)
+    }
+
+    // cat1 is overspent by 2000 and cat2 has 500 left
+    suspend fun insertOverspending() {
+      writer.setBudget(JAN, CAT1, Amount(1000))
+      writer.setBudget(JAN, CAT2, Amount(500))
+      insertTransaction("spend", 20240120, amount = -3000)
+    }
+
     suspend fun tracking() {
       preferences[SyncedPrefKey.Global.BudgetType] = "tracking"
     }
@@ -306,10 +513,15 @@ internal class BudgetWriterTest {
     suspend fun hideCategory(id: CategoryId) =
       run("UPDATE categories SET hidden = 1 WHERE id = '${id.value}'")
 
-    suspend fun insertTransaction(id: String, date: Int, amount: Int) =
+    suspend fun insertTransaction(
+      id: String,
+      date: Int,
+      amount: Int,
+      category: CategoryId = CAT1,
+    ) =
       run(
         "INSERT INTO transactions(id, acct, category, amount, date, tombstone) " +
-          "VALUES ('$id', 'account1', 'cat1', $amount, $date, 0)",
+          "VALUES ('$id', 'account1', '${category.value}', $amount, $date, 0)",
       )
 
     // setupAverageDatabase()
@@ -336,6 +548,19 @@ internal class BudgetWriterTest {
     }
   }
 
+  private object TestFormatPreferences : FormatPreferences {
+    override val hideFraction = fixed(false)
+    override val dateFormat = fixed(DateFormat.Default)
+    override val firstDayOfWeek = fixed(FirstDayOfWeek.Default)
+    override val numberFormat = fixed(NumberFormat.Default)
+  }
+
+  private object TestCurrencyPreferences : CurrencyPreferences {
+    override val currency = fixed(Currency.UsDollar)
+    override val symbolPosition = fixed(CurrencySymbolPosition.BeforeAmount)
+    override val spaceBetweenAmountAndSymbol = fixed(false)
+  }
+
   private companion object {
     // global.currentMonth = '2024-02', so the budget runs to February 2025
     val TODAY = LocalDate(2024, 2, 15)
@@ -347,7 +572,19 @@ internal class BudgetWriterTest {
 
     val CAT1 = CategoryId("cat1")
     val CAT2 = CategoryId("cat2")
+    val CAT3 = CategoryId("cat3")
     val INCOME = CategoryId("income-cat")
+
+    fun <T : Any> fixed(value: T) =
+      object : Preference<T> {
+        override val default = value
+
+        override suspend fun get() = value
+
+        override suspend fun set(value: T?) = Unit
+
+        override fun asFlow() = flowOf(value)
+      }
 
     @Suppress("MaxLineLength")
     val SETUP =

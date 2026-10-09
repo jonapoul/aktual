@@ -25,4 +25,5 @@ object DatabaseTables {
   const val TRANSACTIONS = "transactions"
   const val TRANSACTION_FILTERS = "transaction_filters"
   const val ZERO_BUDGETS = "zero_budgets"
+  const val ZERO_BUDGET_MONTHS = "zero_budget_months"
 }
