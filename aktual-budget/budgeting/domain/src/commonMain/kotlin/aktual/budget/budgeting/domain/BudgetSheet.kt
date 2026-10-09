@@ -4,11 +4,13 @@ import aktual.budget.db.dao.CategoryBudget
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 import kotlinx.datetime.yearMonth
 
 internal data class BudgetCategory(
@@ -21,6 +23,14 @@ internal data class BudgetCategory(
   val isGroupHidden: Boolean,
 )
 
+internal data class BudgetGroup(
+  val id: CategoryGroupId,
+  val name: String,
+  val isIncome: Boolean,
+  val isHidden: Boolean,
+  val sortOrder: Double?,
+)
+
 internal data class MonthCategory(val month: YearMonth, val category: CategoryId)
 
 // Categories must be ordered by group, with the first income group's categories ahead of any other
@@ -30,12 +40,14 @@ internal data class BudgetData(
   val spent: Map<MonthCategory, Amount>,
   val budgets: Map<MonthCategory, CategoryBudget>,
   val buffered: Map<YearMonth, Amount> = emptyMap(),
+  val groups: List<BudgetGroup> = emptyList(),
 ) {
   // Upstream only reads the first income group
   val incomeGroup: CategoryGroupId? = categories.firstOrNull { it.isGroupIncome }?.group
 }
 
 private const val LEAD_MONTHS = 3
+private const val TRAILING_MONTHS = 12
 
 // packages/loot-core/src/server/budget/base.ts getBudgetRange(). Budgets start three months before
 // the earliest transaction, or the current month if that comes first
@@ -45,15 +57,43 @@ internal fun budgetStart(earliestTransaction: LocalDate?, today: LocalDate): Yea
   return minOf(earliest, current).minus(LEAD_MONTHS, MONTH)
 }
 
+// packages/loot-core/src/server/budget/base.ts getBudgetRange(). Budgets end a year after the
+// current month, future-dated transactions don't extend them
+internal fun budgetBounds(
+  earliestTransaction: LocalDate?,
+  today: LocalDate,
+): ClosedRange<YearMonth> =
+  budgetStart(earliestTransaction, today)..today.yearMonth.plus(TRAILING_MONTHS, MONTH)
+
+// Walks forward from the first budget month once, keeping every month in the range
+private inline fun <T : BudgetMonth> walk(
+  start: YearMonth,
+  months: ClosedRange<YearMonth>,
+  blank: (YearMonth) -> T,
+  next: (month: YearMonth, previous: T) -> T,
+): List<T> {
+  val first = minOf(start, months.start)
+  var result = blank(first)
+  return buildList {
+    for (current in first..months.endInclusive) {
+      result = next(current, result)
+      if (current in months) add(result)
+    }
+  }
+}
+
 // packages/loot-core/src/server/budget/envelope.ts. Each month depends on the one before, so walk
 // forward from the first budget month
-internal fun BudgetData.envelopeMonth(start: YearMonth, month: YearMonth): BudgetMonth.Envelope {
-  var result = blankEnvelope(minOf(start, month))
-  for (current in minOf(start, month)..month) {
-    result = envelopeMonth(current, previous = result)
+internal fun BudgetData.envelopeMonths(
+  start: YearMonth,
+  months: ClosedRange<YearMonth>,
+): List<BudgetMonth.Envelope> =
+  walk(start, months, ::blankEnvelope) { month, previous ->
+    envelopeMonth(month, previous)
   }
-  return result
-}
+
+internal fun BudgetData.envelopeMonth(start: YearMonth, month: YearMonth): BudgetMonth.Envelope =
+  envelopeMonths(start, month..month).single()
 
 private fun blankEnvelope(month: YearMonth) =
   BudgetMonth.Envelope(
@@ -125,18 +165,26 @@ private fun BudgetData.envelopeMonth(
     lastMonthOverspent = lastMonthOverspent,
     buffered = buffer,
     categories = rows.toImmutableList(),
+    // Hidden categories count here too, and income groups have no budget or leftover
+    groups =
+      groupMonths(rows, counts = { true }) { group, totals ->
+        if (group.isIncome) totals.copy(budgeted = Zero, balance = Zero) else totals
+      },
   )
 }
 
 // packages/loot-core/src/server/budget/tracking.ts. Only a carried-over balance links one month to
 // the next
-internal fun BudgetData.trackingMonth(start: YearMonth, month: YearMonth): BudgetMonth.Tracking {
-  var result = blankTracking(minOf(start, month))
-  for (current in minOf(start, month)..month) {
-    result = trackingMonth(current, previous = result)
+internal fun BudgetData.trackingMonths(
+  start: YearMonth,
+  months: ClosedRange<YearMonth>,
+): List<BudgetMonth.Tracking> =
+  walk(start, months, ::blankTracking) { month, previous ->
+    trackingMonth(month, previous)
   }
-  return result
-}
+
+internal fun BudgetData.trackingMonth(start: YearMonth, month: YearMonth): BudgetMonth.Tracking =
+  trackingMonths(start, month..month).single()
 
 private fun blankTracking(month: YearMonth) =
   BudgetMonth.Tracking(
@@ -181,6 +229,7 @@ private fun BudgetData.trackingMonth(
     income = income.sumOf { it.spent },
     incomeBudgeted = income.sumOf { it.budgeted },
     categories = rows.toImmutableList(),
+    groups = groupMonths(rows, counts = { !it.isHidden }) { _, totals -> totals },
   )
 }
 
@@ -201,6 +250,34 @@ private fun BudgetCategory.toMonth(
     balance = balance,
     carryover = carryover,
   )
+
+// packages/loot-core/src/server/budget/{envelope,tracking}.ts createCategoryGroup()
+private inline fun BudgetData.groupMonths(
+  rows: List<CategoryMonth>,
+  counts: (BudgetCategory) -> Boolean,
+  adjust: (BudgetGroup, CategoryGroupMonth) -> CategoryGroupMonth,
+): ImmutableList<CategoryGroupMonth> {
+  val byGroup = rows.indices.groupBy { categories[it].group }
+  return groups
+    .map { group ->
+      val indices = byGroup[group.id].orEmpty()
+      val counted = indices.filter { counts(categories[it]) }.map { rows[it] }
+      val totals =
+        CategoryGroupMonth(
+          id = group.id,
+          name = group.name,
+          isIncome = group.isIncome,
+          isHidden = group.isHidden,
+          sortOrder = group.sortOrder,
+          budgeted = counted.sumOf { it.budgeted },
+          spent = counted.sumOf { it.spent },
+          balance = counted.sumOf { it.balance },
+          categories = indices.map { rows[it] }.toImmutableList(),
+        )
+      adjust(group, totals)
+    }
+    .toImmutableList()
+}
 
 // Rows line up with the categories they were built from
 private inline fun List<CategoryMonth>.filterBy(
