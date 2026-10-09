@@ -1,5 +1,8 @@
 package aktual.budget.budgeting.ui
 
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.BudgetCategoryNavRoute
+import aktual.core.nav.BudgetCategoryNavigator
 import aktual.core.nav.BudgetEntryScope
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
@@ -17,7 +20,20 @@ class BudgetingNavEntryContributor : BudgetNavEntryContributor {
     appStack: NavStack<NavKey>,
   ) {
     budgetEntry<BudgetNavRoute> { route ->
-      BudgetScreen(month = route.month, transactions = TransactionsNavigator(stack))
+      BudgetScreen(
+        month = route.month,
+        transactions = TransactionsNavigator(stack),
+        categories = BudgetCategoryNavigator(stack),
+      )
+    }
+
+    budgetEntry<BudgetCategoryNavRoute> { route ->
+      BudgetCategoryScreen(
+        category = route.category,
+        month = route.month,
+        back = BackNavigator(stack),
+        transactions = TransactionsNavigator(stack),
+      )
     }
   }
 }

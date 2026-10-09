@@ -5,6 +5,7 @@ import aktual.budget.banksync.domain.BankSyncController
 import aktual.budget.banksync.domain.BankSyncSummary
 import aktual.budget.db.Accounts
 import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
@@ -20,6 +21,7 @@ import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
+import aktual.budget.transactions.vm.LoadedAccount.SpecificCategory
 import aktual.budget.transactions.vm.LoadedAccount.SpecificTag
 import aktual.budget.transactions.vm.LoadedAccount.Uncategorised
 import aktual.core.model.BudgetServer
@@ -63,6 +65,7 @@ class TransactionsViewModel(
   private val accountDao: AccountDao,
   private val transactionDao: TransactionDao,
   private val tagsDao: TagsDao,
+  private val categoryDao: CategoryDao,
   private val preferencesDao: PreferencesDao,
   private val bankSyncController: BankSyncController,
   transactionPreferences: TransactionPreferences,
@@ -135,10 +138,12 @@ class TransactionsViewModel(
       .cachedIn(viewModelScope)
 
   init {
-    // A tag-filtered screen titles itself after the tag, then an uncategorised one after that
-    // filter; otherwise the title follows the account.
+    // A tag-filtered screen titles itself after the tag, then an uncategorised or category one
+    // after
+    // that filter; otherwise the title follows the account.
     val tagSpec = spec.tagSpec
     val accountSpec = spec.accountSpec
+    val categorySpec = spec.categorySpec
     when {
       tagSpec is TagSpec.SpecificTag ->
         viewModelScope.launch {
@@ -148,6 +153,14 @@ class TransactionsViewModel(
 
       spec.categorySpec == CategorySpec.Uncategorised ->
         mutableLoadedAccount.update { Uncategorised }
+
+      categorySpec is CategorySpec.SpecificCategory ->
+        viewModelScope.launch {
+          val name = categoryDao.name(categorySpec.id)
+          mutableLoadedAccount.update {
+            if (name != null) SpecificCategory(name, categorySpec.month) else AllAccounts
+          }
+        }
 
       accountSpec is AccountSpec.SpecificAccount ->
         viewModelScope.launch {

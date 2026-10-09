@@ -151,7 +151,11 @@ private fun LazyListScope.budgetColumns(
 
     if (!group.isCollapsed) {
       items(group.categories, key = { categoryKey(it.id) }) { category ->
-        CategoryRowLayout(category = category, nameWidth = ColumnsDS.categoryWidth) {
+        CategoryRowLayout(
+          category = category,
+          nameWidth = ColumnsDS.categoryWidth,
+          onOpen = { onAction(OpenCategory(state.openMonth, category.id)) },
+        ) {
           Months(columns, layout) { column ->
             val month = column.categories[category.id] ?: return@Months
             BudgetedCell(
@@ -194,7 +198,11 @@ private fun LazyListScope.budgetColumns(
 
   if (!income.isCollapsed) {
     items(income.categories, key = { categoryKey(it.id) }) { category ->
-      CategoryRowLayout(category = category, nameWidth = ColumnsDS.categoryWidth) {
+      CategoryRowLayout(
+        category = category,
+        nameWidth = ColumnsDS.categoryWidth,
+        onOpen = { onAction(OpenCategory(state.openMonth, category.id)) },
+      ) {
         Months(columns, layout) { column ->
           val month = column.categories[category.id] ?: return@Months
           // Envelope budgets don't budget income, as upstream shows Received only
@@ -430,6 +438,10 @@ private data class MonthColumn(
 )
 
 @Immutable private data class ColumnsLayout(val monthWidth: Dp, val scroll: ScrollState)
+
+// The current month when it's showing, otherwise the first one shown
+private val BudgetState.Loaded.openMonth: YearMonth
+  get() = if (current in month..lastMonth) current else month
 
 private fun categoryKey(id: CategoryId) = "category-${id.value}"
 

@@ -1,6 +1,8 @@
 package aktual.budget.model
 
 import androidx.compose.runtime.Immutable
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
 
 @Immutable
 data class TransactionsSpec(
@@ -25,4 +27,12 @@ sealed interface CategorySpec {
   data object AllCategories : CategorySpec
 
   data object Uncategorised : CategorySpec
+
+  // A null month covers every month
+  data class SpecificCategory(val id: CategoryId, val month: YearMonth? = null) : CategorySpec {
+    val dates: ClosedRange<LocalDate>
+      get() = if (month == null) ALL_DATES else month.firstDay..month.lastDay
+  }
 }
+
+private val ALL_DATES = LocalDate(1, 1, 1)..LocalDate(9999, 12, 31)

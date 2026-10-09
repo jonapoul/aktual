@@ -73,7 +73,7 @@ internal class TransactionsPagingSource(
 
   // A running balance means little over a subset of the account, so uncategorised lists have none
   private suspend fun loadPage(limit: Long, offset: Long): List<Transaction> =
-    when (spec.categorySpec) {
+    when (val categorySpec = spec.categorySpec) {
       AllCategories -> {
         val page =
           when (val accountSpec = spec.accountSpec) {
@@ -87,6 +87,13 @@ internal class TransactionsPagingSource(
         transactionDao.getUncategorisedPaged(accountId, limit, offset).map {
           it.toTransaction(balance = null)
         }
+      }
+
+      // As uncategorised lists, a category's has no balance and shows split parts as rows
+      is SpecificCategory -> {
+        transactionDao
+          .getByCategoryPaged(categorySpec.id, categorySpec.dates, accountId, limit, offset)
+          .map { it.toTransaction(balance = null) }
       }
     }
 
@@ -104,7 +111,7 @@ internal class TransactionsPagingSource(
       val notes = row.notes
       notes != null && notesContainTag(notes, tagName)
     }
-    return when (spec.categorySpec) {
+    return when (val categorySpec = spec.categorySpec) {
       AllCategories -> {
         val rows =
           when (val accountSpec = spec.accountSpec) {
@@ -116,6 +123,12 @@ internal class TransactionsPagingSource(
 
       Uncategorised -> {
         val rows = transactionDao.getUncategorisedIdsAndNotes(accountId)
+        FilteredIds(ids = rows.filter(matches).map { it.id })
+      }
+
+      is SpecificCategory -> {
+        val rows =
+          transactionDao.getIdsAndNotesByCategory(categorySpec.id, categorySpec.dates, accountId)
         FilteredIds(ids = rows.filter(matches).map { it.id })
       }
     }

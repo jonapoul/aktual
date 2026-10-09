@@ -2,6 +2,7 @@ package aktual.budget.transactions.vm
 
 import aktual.budget.db.Accounts
 import androidx.compose.runtime.Immutable
+import kotlinx.datetime.YearMonth
 
 @Immutable
 sealed interface LoadedAccount {
@@ -14,4 +15,7 @@ sealed interface LoadedAccount {
   @JvmInline value class SpecificAccount(val account: Accounts) : LoadedAccount
 
   @JvmInline value class SpecificTag(val tag: String) : LoadedAccount
+
+  // A null month covers every month
+  data class SpecificCategory(val name: String, val month: YearMonth?) : LoadedAccount
 }

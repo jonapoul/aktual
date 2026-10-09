@@ -51,4 +51,10 @@
   <string name="budgeting_average_6">Set to 6 month average</string>
   <string name="budgeting_average_12">Set to yearly average</string>
   <string name="budgeting_copy_year_end">Copy to end of year</string>
+
+  <string name="budgeting_category_open">Open %1$s</string>
+  <string name="budgeting_category_history">History</string>
+  <string name="budgeting_category_transactions">View transactions</string>
+  <string name="budgeting_category_failure">Couldn\'t load this category</string>
+  <string name="budgeting_category_select_month">Show %1$s</string>
 </resources>

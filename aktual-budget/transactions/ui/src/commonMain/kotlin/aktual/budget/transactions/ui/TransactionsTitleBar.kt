@@ -21,6 +21,7 @@ import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
+import aktual.core.ui.stringLong
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyListState
@@ -37,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import kotlinx.datetime.YearMonth
 
 @Composable
 internal fun TransactionsTitleBar(
@@ -54,6 +56,10 @@ internal fun TransactionsTitleBar(
       Loading -> Strings.transactionsTitleLoading
       is SpecificAccount -> loadedAccount.account.name ?: Strings.transactionsTitleNone
       is SpecificTag -> "#${loadedAccount.tag}"
+      is SpecificCategory ->
+        loadedAccount.month?.let {
+          Strings.transactionsCategoryTitle(loadedAccount.name, it.stringLong())
+        } ?: loadedAccount.name
     }
 
   TopAppBar(
@@ -136,4 +142,7 @@ private class TransactionsTitleBarProvider :
     LoadedAccount.Loading,
     LoadedAccount.SpecificAccount(PREVIEW_ACCOUNT),
     LoadedAccount.SpecificTag("groceries"),
+    LoadedAccount.SpecificCategory("Groceries", PREVIEW_MONTH),
   )
+
+private val PREVIEW_MONTH = YearMonth(2026, 10)

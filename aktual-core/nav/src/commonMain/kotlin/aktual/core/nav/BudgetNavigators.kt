@@ -2,6 +2,7 @@ package aktual.core.nav
 
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
+import aktual.budget.model.CategoryId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
@@ -16,6 +17,12 @@ class BudgetNavigator(private val stack: NavStack<BudgetNavKey>) {
 }
 
 @Immutable
+class BudgetCategoryNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke(category: CategoryId, month: YearMonth) =
+    stack.push(BudgetCategoryNavRoute(category, month))
+}
+
+@Immutable
 class TransactionsNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke() = stack.replaceAll(TransactionsNavRoute)
 
@@ -24,6 +31,9 @@ class TransactionsNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke(id: AccountId) = stack.push(AccountTransactionsNavRoute(id))
 
   fun uncategorised() = stack.push(UncategorisedTransactionsNavRoute)
+
+  operator fun invoke(category: CategoryId, month: YearMonth) =
+    stack.push(CategoryTransactionsNavRoute(category, month))
 }
 
 @Immutable

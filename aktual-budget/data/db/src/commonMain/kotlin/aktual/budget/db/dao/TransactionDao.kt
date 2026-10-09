@@ -81,6 +81,26 @@ class TransactionDao(database: BudgetDatabase) {
     getUncategorisedPaged(account, limit, offset, ::transactionRow).awaitAsList()
   }
 
+  // A category's transactions are a subset of their accounts, so the page has no balance
+  suspend fun getByCategoryPaged(
+    category: CategoryId,
+    dates: ClosedRange<LocalDate>,
+    account: AccountId?,
+    limit: Long,
+    offset: Long,
+  ): List<TransactionRow> = queries.withResult {
+    getByCategoryPaged(
+        category = category,
+        fromDate = dates.start,
+        toDate = dates.endInclusive,
+        account = account,
+        limit = limit,
+        offset = offset,
+        mapper = ::transactionRow,
+      )
+      .awaitAsList()
+  }
+
   fun observeUncategorisedCount(): Flow<Long> =
     queries.countUncategorised().asFlow().map { it.awaitAsOne() }.distinctUntilChanged()
 
@@ -114,6 +134,21 @@ class TransactionDao(database: BudgetDatabase) {
     queries.withResult {
       getUncategorisedIdsAndNotes(account, ::transactionNotes).awaitAsList()
     }
+
+  suspend fun getIdsAndNotesByCategory(
+    category: CategoryId,
+    dates: ClosedRange<LocalDate>,
+    account: AccountId?,
+  ): List<TransactionNotes> = queries.withResult {
+    getIdsAndNotesByCategory(
+        category = category,
+        fromDate = dates.start,
+        toDate = dates.endInclusive,
+        account = account,
+        mapper = ::transactionNotes,
+      )
+      .awaitAsList()
+  }
 
   suspend fun getNotesContainingHash(): List<String> = queries.withResult {
     notesContainingHash().awaitAsList().mapNotNull(NotesContainingHash::notes)

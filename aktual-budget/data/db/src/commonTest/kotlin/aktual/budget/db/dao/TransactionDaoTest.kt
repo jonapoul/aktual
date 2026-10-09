@@ -111,6 +111,31 @@ internal class TransactionDaoTest {
     }
 
   @Test
+  fun `A category's transactions in a month include split parts and skip off budget accounts`() =
+    runDaoTest { transactions ->
+      // given
+      transactions.insert("t1", ON_1, CATEGORY, PAYEE, LocalDate(2026, 1, 5))
+      transactions.insert("t2", ON_2, CATEGORY, PAYEE, LocalDate(2026, 1, 20))
+      transactions.insert("t3", ON_1, CATEGORY, PAYEE, LocalDate(2026, 2, 1))
+      transactions.insert("t4", OFF, CATEGORY, PAYEE, LocalDate(2026, 1, 6))
+      transactions.insert("t5", ON_1, category = null, PAYEE, LocalDate(2026, 1, 7))
+      transactions.insert("p", ON_1, category = null, PAYEE, LocalDate(2026, 1, 8), isParent = true)
+      transactions.insert("c1", ON_1, CATEGORY, PAYEE, LocalDate(2026, 1, 8), parent = "p")
+      val january = LocalDate(2026, 1, 1)..LocalDate(2026, 1, 31)
+
+      // when
+      val all = transactions.getByCategoryPaged(CategoryId(CATEGORY), january, null, 10, 0)
+      val account =
+        transactions.getByCategoryPaged(CategoryId(CATEGORY), january, AccountId(ON_1), 10, 0)
+      val ids = transactions.getIdsAndNotesByCategory(CategoryId(CATEGORY), january, null)
+
+      // then
+      assertThat(all.map { it.id.toString() }).containsExactly("t2", "c1", "t1")
+      assertThat(account.map { it.id.toString() }).containsExactly("c1", "t1")
+      assertThat(ids.map { it.id.toString() }).containsExactly("t2", "c1", "t1")
+    }
+
+  @Test
   fun `Rows of the whole list only need a category if they're uncategorised`() =
     runDaoTest { transactions ->
       // given

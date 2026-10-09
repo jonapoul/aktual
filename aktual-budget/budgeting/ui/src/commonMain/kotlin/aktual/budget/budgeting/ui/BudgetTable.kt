@@ -92,6 +92,7 @@ internal fun LazyListScope.budgetTable(
           category = category,
           showSpent = showSpent,
           onEdit = { onAction(EditBudget(budget.month, category.id)) },
+          onOpen = { onAction(OpenCategory(budget.month, category.id)) },
         )
       }
     }
@@ -112,6 +113,7 @@ internal fun LazyListScope.budgetTable(
         category = category,
         isTracking = isTracking,
         onEdit = { onAction(EditBudget(budget.month, category.id)) },
+        onOpen = { onAction(OpenCategory(budget.month, category.id)) },
       )
     }
   }
@@ -457,9 +459,10 @@ private fun CategoryItem(
   category: CategoryRow,
   showSpent: Boolean,
   onEdit: () -> Unit,
+  onOpen: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  CategoryRowLayout(category = category, modifier = modifier) {
+  CategoryRowLayout(category = category, onOpen = onOpen, modifier = modifier) {
     if (showSpent) {
       AmountText(amount = category.spent, modifier = Modifier.width(BudgetDS.valueWidth))
     } else {
@@ -477,9 +480,10 @@ private fun IncomeItem(
   category: CategoryRow,
   isTracking: Boolean,
   onEdit: () -> Unit,
+  onOpen: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  CategoryRowLayout(category = category, modifier = modifier) {
+  CategoryRowLayout(category = category, onOpen = onOpen, modifier = modifier) {
     if (isTracking) {
       EditableAmount(amount = category.budgeted, name = category.name, onEdit = onEdit)
     }
@@ -509,10 +513,12 @@ private fun EditableAmount(amount: Amount, name: String, onEdit: () -> Unit) {
 @Composable
 internal fun CategoryRowLayout(
   category: CategoryRow,
+  onOpen: () -> Unit,
   modifier: Modifier = Modifier,
   nameWidth: Dp? = null,
   amounts: @Composable RowScope.() -> Unit,
 ) {
+  val openLabel = Strings.budgetingCategoryOpen(category.name)
   Column(modifier = modifier.fillMaxWidth().background(colors.tableBackground)) {
     HorizontalDivider(color = colors.tableBorder)
     TableRow(
@@ -522,11 +528,12 @@ internal fun CategoryRowLayout(
     ) {
       Text(
         modifier =
-          if (nameWidth == null) {
-            Modifier.weight(1f)
-          } else {
-            Modifier.width(nameWidth - CategoryInset)
-          },
+          (if (nameWidth == null) {
+              Modifier.weight(1f)
+            } else {
+              Modifier.width(nameWidth - CategoryInset)
+            })
+            .clickable(onClickLabel = openLabel, role = Button, onClick = onOpen),
         text = category.name,
         fontSize = 14.sp,
         color = colors.tableText,
