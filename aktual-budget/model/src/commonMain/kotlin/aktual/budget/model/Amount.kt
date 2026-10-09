@@ -44,9 +44,11 @@ value class Amount(private val value: Long) : Comparable<Amount> {
     currencyConfig: CurrencyConfig,
     includeSign: Boolean,
     isPrivacyEnabled: Boolean,
+    includeSymbol: Boolean = true,
   ): String = buildString {
     val (currency, position, addSpace) = currencyConfig
-    if (position == BeforeAmount && currency != None) {
+    val hasSymbol = includeSymbol && currency != None
+    if (position == BeforeAmount && hasSymbol) {
       append(currency.symbol)
       if (addSpace) append(" ")
     }
@@ -74,7 +76,7 @@ value class Amount(private val value: Long) : Comparable<Amount> {
 
     append(numberFormat.format(toDouble().absoluteValue))
 
-    if (position == AfterAmount && currency != None) {
+    if (position == AfterAmount && hasSymbol) {
       if (addSpace) append(" ")
       append(currency.symbol)
     }

@@ -2,23 +2,32 @@ package aktual.budget.budgeting.domain
 
 import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.BudgetDao
+import aktual.budget.db.dao.DatabaseTables.NOTES
 import aktual.budget.db.dao.DatabaseTables.REFLECT_BUDGETS
 import aktual.budget.db.dao.DatabaseTables.ZERO_BUDGETS
+import aktual.budget.db.dao.DatabaseTables.ZERO_BUDGET_MONTHS
+import aktual.budget.db.dao.NotesDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryId
+import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
+import aktual.budget.model.NumberFormatConfig
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.messageValue
 import aktual.core.Calendar
 import aktual.di.BudgetScope
+import aktual.prefs.CurrencyPreferences
+import aktual.prefs.FormatPreferences
 import dev.zacsweers.metro.ContributesBinding
 import kotlin.math.floor
 import kotlinx.coroutines.flow.first
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.format.char
 import kotlinx.datetime.minus
 import kotlinx.datetime.number
 import kotlinx.datetime.plus
@@ -28,6 +37,7 @@ import kotlinx.datetime.yearMonth
  * The per-category and month-wide actions of packages/loot-core/src/server/budget/actions.ts. Each
  * call sends its changes in one batch, and the UI picks them up through [BudgetMonthCalculator].
  */
+@Suppress("ComplexInterface")
 interface BudgetWriter {
   suspend fun setBudget(month: YearMonth, category: CategoryId, amount: Amount)
 
@@ -46,6 +56,28 @@ interface BudgetWriter {
   suspend fun setZero(month: YearMonth)
 
   suspend fun setAverage(month: YearMonth, months: Int)
+
+  // Envelope budgets only from here on. A null category is To Budget
+
+  suspend fun transferCategory(month: YearMonth, amount: Amount, from: CategoryId, to: CategoryId?)
+
+  suspend fun transferAvailable(month: YearMonth, amount: Amount, category: CategoryId)
+
+  // A null amount covers all of the overspending
+  suspend fun coverOverspending(
+    month: YearMonth,
+    to: CategoryId,
+    from: CategoryId?,
+    amount: Amount? = null,
+  )
+
+  // A null amount covers all of the overbudgeting
+  suspend fun coverOverbudgeted(month: YearMonth, category: CategoryId, amount: Amount? = null)
+
+  // False if there was nothing to hold
+  suspend fun holdForNextMonth(month: YearMonth, amount: Amount): Boolean
+
+  suspend fun resetHold(month: YearMonth)
 }
 
 @ContributesBinding(BudgetScope::class)
@@ -54,6 +86,10 @@ class BudgetWriterImpl(
   private val budgetDao: BudgetDao,
   private val preferencesDao: PreferencesDao,
   private val calendar: Calendar,
+  private val calculator: BudgetMonthCalculator,
+  private val notesDao: NotesDao,
+  private val formatPreferences: FormatPreferences,
+  private val currencyPreferences: CurrencyPreferences,
 ) : BudgetWriter {
   override suspend fun setBudget(month: YearMonth, category: CategoryId, amount: Amount) = send {
     set(month, category, amount)
@@ -137,6 +173,126 @@ class BudgetWriterImpl(
     send(type) { averages.forEach { (category, amount) -> set(month, category, amount) } }
   }
 
+  // transferCategory()
+  override suspend fun transferCategory(
+    month: YearMonth,
+    amount: Amount,
+    from: CategoryId,
+    to: CategoryId?,
+  ) {
+    val sheet = envelope(month) ?: return
+    send(Envelope) {
+      set(month, from, sheet.budgeted(from) - amount)
+      if (to != null) set(month, to, sheet.budgeted(to) + amount)
+      movementNote(sheet, amount, sheet.name(from), to?.let(sheet::name) ?: TO_BUDGET)
+    }
+  }
+
+  // transferAvailable()
+  override suspend fun transferAvailable(month: YearMonth, amount: Amount, category: CategoryId) {
+    val sheet = envelope(month) ?: return
+    val clamped = maxOf(minOf(amount, sheet.toBudget), Amount.Zero)
+    send(Envelope) { set(month, category, sheet.budgeted(category) + clamped) }
+  }
+
+  // coverOverspending()
+  override suspend fun coverOverspending(
+    month: YearMonth,
+    to: CategoryId,
+    from: CategoryId?,
+    amount: Amount?,
+  ) {
+    val sheet = envelope(month) ?: return
+    val available = if (from == null) sheet.toBudget else sheet.balance(from)
+    val toCover = amount.orDefault(-sheet.balance(to))
+    if (toCover <= Zero || available <= Zero) return
+    val cover = minOf(toCover, available)
+    send(Envelope) {
+      if (from != null) set(month, from, sheet.budgeted(from) - cover)
+      set(month, to, sheet.budgeted(to) + cover)
+      movementNote(sheet, cover, from?.let(sheet::name) ?: TO_BUDGET, sheet.name(to))
+    }
+  }
+
+  // coverOverbudgeted()
+  override suspend fun coverOverbudgeted(month: YearMonth, category: CategoryId, amount: Amount?) {
+    val sheet = envelope(month) ?: return
+    val available = sheet.balance(category)
+    val toCover = amount.orDefault(-sheet.toBudget)
+    if (toCover <= Zero || available <= Zero) return
+    val cover = minOf(toCover, available)
+    send(Envelope) {
+      set(month, category, sheet.budgeted(category) - cover)
+      movementNote(sheet, cover, sheet.name(category), OVERBUDGETED)
+    }
+  }
+
+  // holdForNextMonth() and calcBufferedAmount()
+  override suspend fun holdForNextMonth(month: YearMonth, amount: Amount): Boolean {
+    val sheet = envelope(month) ?: return false
+    if (sheet.toBudget <= Zero) return false
+    // The stored amount, which isn't the sheet's when an income category is held instead
+    val buffered =
+      budgetDao
+        .observeEnvelopeMonths()
+        .first()
+        .firstOrNull { it.id.value == month.toString() }
+        ?.buffered ?: Amount.Zero
+    setBuffer(month, buffered + minOf(maxOf(amount, -buffered), sheet.toBudget))
+    return true
+  }
+
+  // resetHold()
+  override suspend fun resetHold(month: YearMonth) = setBuffer(month, Zero)
+
+  // setBuffer()
+  private suspend fun setBuffer(month: YearMonth, amount: Amount) =
+    syncController.syncChanges(
+      listOf(
+        LocalChange(
+          dataset = ZERO_BUDGET_MONTHS,
+          row = month.toString(),
+          column = "buffered",
+          value = MessageValue.Number(amount.toLong()),
+        ),
+      ),
+    )
+
+  private suspend fun envelope(month: YearMonth): BudgetMonth.Envelope? =
+    calculator.observe(month).first() as? BudgetMonth.Envelope
+
+  // addMovementNotes(). Not translated, since the note is synced
+  private suspend fun Batch.movementNote(
+    sheet: BudgetMonth.Envelope,
+    amount: Amount,
+    from: String,
+    to: String,
+  ) {
+    val id = "budget-${sheet.month}"
+    val existing = notesDao.getNote(id).orEmpty()
+    val displayAmount =
+      amount.toString(
+        numberFormatConfig =
+          NumberFormatConfig(
+            format = formatPreferences.numberFormat.get(),
+            hideFraction = formatPreferences.hideFraction.get(),
+          ),
+        currencyConfig =
+          CurrencyConfig(
+            currency = currencyPreferences.currency.get(),
+            position = BeforeAmount,
+            includeSpace = false,
+          ),
+        includeSign = false,
+        isPrivacyEnabled = false,
+        includeSymbol = false,
+      )
+    val day = NOTE_DAY_FORMAT.format(calendar.today())
+    val note = "- Reassigned $displayAmount from $from → $to on $day"
+    val text = if (existing.isEmpty()) note else "$existing\n$note"
+    changes += LocalChange(NOTES, id, "note", text.messageValue())
+  }
+
   // getCategoryAverage(). Expense averages are flipped to a positive budget
   private suspend fun average(
     type: BudgetType,
@@ -217,6 +373,29 @@ class BudgetWriterImpl(
     }
   }
 }
+
+private const val TO_BUDGET = "To Budget"
+private const val OVERBUDGETED = "Overbudgeted"
+
+// MMMM dd
+private val NOTE_DAY_FORMAT = LocalDate.Format {
+  monthName(ENGLISH_FULL)
+  char(' ')
+  day()
+}
+
+// Upstream treats a zero amount as unset
+private fun Amount?.orDefault(default: Amount): Amount = this?.takeIf { it != Zero } ?: default
+
+// Upstream's budget-* and leftover-* cells, which are zero for unknown categories
+private fun BudgetMonth.Envelope.budgeted(id: CategoryId): Amount =
+  categories.firstOrNull { it.id == id }?.budgeted ?: Amount.Zero
+
+private fun BudgetMonth.Envelope.balance(id: CategoryId): Amount =
+  categories.firstOrNull { it.id == id }?.balance ?: Amount.Zero
+
+private fun BudgetMonth.Envelope.name(id: CategoryId): String =
+  categories.firstOrNull { it.id == id }?.name.orEmpty()
 
 private const val HALF = 0.5
 private const val DB_MONTH_FACTOR = 100

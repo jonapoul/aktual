@@ -2,3 +2,6 @@ CREATE TABLE IF NOT EXISTS notes(
   id TEXT PRIMARY KEY,
   note TEXT
 );
+
+getNote:
+SELECT note FROM notes WHERE id = :id;
