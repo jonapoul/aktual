@@ -88,7 +88,11 @@ internal fun LazyListScope.budgetTable(
 
     if (!group.isCollapsed) {
       items(group.categories, key = { "category-${it.id.value}" }) { category ->
-        CategoryItem(category = category, showSpent = showSpent)
+        CategoryItem(
+          category = category,
+          showSpent = showSpent,
+          onEdit = { onAction(EditBudget(budget.month, category.id)) },
+        )
       }
     }
   }
@@ -104,7 +108,11 @@ internal fun LazyListScope.budgetTable(
 
   if (!income.isCollapsed) {
     items(income.categories, key = { "category-${it.id.value}" }) { category ->
-      IncomeItem(category = category, isTracking = isTracking)
+      IncomeItem(
+        category = category,
+        isTracking = isTracking,
+        onEdit = { onAction(EditBudget(budget.month, category.id)) },
+      )
     }
   }
 }
@@ -443,24 +451,37 @@ internal fun GroupHeaderRow(
   }
 }
 
+// Only the budgeted amount can be edited, so Spent isn't tappable
 @Composable
-private fun CategoryItem(category: CategoryRow, showSpent: Boolean, modifier: Modifier = Modifier) {
+private fun CategoryItem(
+  category: CategoryRow,
+  showSpent: Boolean,
+  onEdit: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   CategoryRowLayout(category = category, modifier = modifier) {
-    AmountText(
-      amount = if (showSpent) category.spent else category.budgeted,
-      modifier = Modifier.width(BudgetDS.valueWidth),
-    )
+    if (showSpent) {
+      AmountText(amount = category.spent, modifier = Modifier.width(BudgetDS.valueWidth))
+    } else {
+      EditableAmount(amount = category.budgeted, name = category.name, onEdit = onEdit)
+    }
     Box(modifier = Modifier.width(BudgetDS.balanceWidth), contentAlignment = CenterEnd) {
       BalancePill(balance = category.balance, carryover = category.carryover)
     }
   }
 }
 
+// Envelope budgets don't budget income, as upstream shows Received only
 @Composable
-private fun IncomeItem(category: CategoryRow, isTracking: Boolean, modifier: Modifier = Modifier) {
+private fun IncomeItem(
+  category: CategoryRow,
+  isTracking: Boolean,
+  onEdit: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   CategoryRowLayout(category = category, modifier = modifier) {
     if (isTracking) {
-      AmountText(amount = category.budgeted, modifier = Modifier.width(BudgetDS.valueWidth))
+      EditableAmount(amount = category.budgeted, name = category.name, onEdit = onEdit)
     }
     AmountText(
       amount = category.spent,
@@ -468,6 +489,20 @@ private fun IncomeItem(category: CategoryRow, isTracking: Boolean, modifier: Mod
       color = if (category.spent > Zero) colors.numberPositive else colors.tableText,
       includeSign = true,
     )
+  }
+}
+
+@Composable
+private fun EditableAmount(amount: Amount, name: String, onEdit: () -> Unit) {
+  val label = Strings.budgetingEditBudget(name)
+  Box(
+    modifier =
+      Modifier.width(BudgetDS.valueWidth)
+        .height(BudgetDS.rowHeight)
+        .clickable(onClickLabel = label, role = Button, onClick = onEdit),
+    contentAlignment = CenterEnd,
+  ) {
+    AmountText(amount = amount)
   }
 }
 

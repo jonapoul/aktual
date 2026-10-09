@@ -3,6 +3,10 @@
   <string name="nav_back">Navigate back</string>
 
   <string name="input_clear">Clear</string>
+  <string name="input_add">Add</string>
+  <string name="input_subtract">Subtract</string>
+  <string name="input_multiply">Multiply</string>
+  <string name="input_divide">Divide</string>
 
   <string name="budget_loaded">Loaded:</string>
   <string name="connection_connected">Connected</string>

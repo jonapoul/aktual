@@ -39,4 +39,16 @@
   <string name="budgeting_empty">No categories yet</string>
   <string name="budgeting_failure_title">Couldn\'t load the budget</string>
   <string name="budgeting_failure_message">An unexpected error occurred</string>
+
+  <string name="budgeting_edit_title">%1$s · %2$s</string>
+  <string name="budgeting_edit_subtitle">Spent %1$s · Balance %2$s</string>
+  <string name="budgeting_edit_save">Save</string>
+  <string name="budgeting_edit_cancel">Cancel</string>
+  <string name="budgeting_edit_budget">Edit budget for %1$s</string>
+  <string name="budgeting_edit_options">Budget options for %1$s</string>
+  <string name="budgeting_copy_last_month">Copy last month\'s budget</string>
+  <string name="budgeting_average_3">Set to 3 month average</string>
+  <string name="budgeting_average_6">Set to 6 month average</string>
+  <string name="budgeting_average_12">Set to yearly average</string>
+  <string name="budgeting_copy_year_end">Copy to end of year</string>
 </resources>

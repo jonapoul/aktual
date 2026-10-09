@@ -24,6 +24,7 @@ import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
@@ -43,10 +44,12 @@ import kotlinx.datetime.YearMonth
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
+@Suppress("TooManyFunctions")
 @RunWith(RobolectricTestRunner::class)
 class BudgetViewModelTest {
   private val calendar = TestCalendar(LocalDate(2026, 4, 15))
   private val prefs = TestBudgetLocalPreferences(DbMetadata())
+  private val writer = RecordingBudgetWriter()
 
   private val BudgetState.Loaded.shown: MonthBudget
     get() = checkNotNull(this[month]) { "$month hasn't loaded" }
@@ -364,6 +367,50 @@ class BudgetViewModelTest {
     }
   }
 
+  @Test
+  fun `Saving a budget sets the typed amount`() = runBudgetTest { viewModel, _ ->
+    assertThat(viewModel.setBudget(YearMonth(2026, 4), CategoryId("food"), "120 + 30.50")).isTrue()
+    testScheduler.advanceUntilIdle()
+    assertThat(writer.calls)
+      .containsExactly(listOf("setBudget", YearMonth(2026, 4), CategoryId("food"), Amount(15_050L)))
+  }
+
+  @Test
+  fun `Saving a negative budget keeps its sign`() = runBudgetTest { viewModel, _ ->
+    assertThat(viewModel.setBudget(YearMonth(2026, 4), CategoryId("food"), "-20")).isTrue()
+    testScheduler.advanceUntilIdle()
+    assertThat(writer.calls)
+      .containsExactly(listOf("setBudget", YearMonth(2026, 4), CategoryId("food"), Amount(-2_000L)))
+  }
+
+  @Test
+  fun `Invalid budget input is rejected`() = runBudgetTest { viewModel, _ ->
+    assertThat(viewModel.setBudget(YearMonth(2026, 4), CategoryId("food"), "12 +")).isFalse()
+    assertThat(viewModel.setBudget(YearMonth(2026, 4), CategoryId("food"), "abc")).isFalse()
+    testScheduler.advanceUntilIdle()
+    assertThat(writer.calls).isEmpty()
+  }
+
+  @Test
+  fun `Quick actions call the writer`() = runBudgetTest { viewModel, _ ->
+    val month = YearMonth(2026, 4)
+    val food = CategoryId("food")
+    viewModel.copyLastMonth(month, food)
+    viewModel.setAverage(month, food, months = 3)
+    viewModel.setAverage(month, food, months = 6)
+    viewModel.setAverage(month, food, months = 12)
+    viewModel.copyToYearEnd(month, food)
+    testScheduler.advanceUntilIdle()
+    assertThat(writer.calls)
+      .containsExactly(
+        listOf("copySinglePreviousMonth", month, food),
+        listOf("setSingleAverage", month, food, 3),
+        listOf("setSingleAverage", month, food, 6),
+        listOf("setSingleAverage", month, food, 12),
+        listOf("copyUntilYearEnd", month, food),
+      )
+  }
+
   private suspend fun ReceiveTurbine<BudgetState>.awaitLoaded(): BudgetState.Loaded {
     var state = awaitItem()
     while (state !is Loaded) state = awaitItem()
@@ -402,6 +449,7 @@ class BudgetViewModelTest {
           calendar = calendar,
           contexts = contexts,
         ),
+      writer = writer,
       transactionDao = TransactionDao(this),
       localPreferences = prefs,
       syncController = TestSyncController(),

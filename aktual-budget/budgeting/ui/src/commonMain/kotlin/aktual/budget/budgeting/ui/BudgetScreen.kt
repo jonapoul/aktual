@@ -2,6 +2,7 @@ package aktual.budget.budgeting.ui
 
 import aktual.budget.budgeting.vm.BudgetState
 import aktual.budget.budgeting.vm.BudgetViewModel
+import aktual.budget.budgeting.vm.category
 import aktual.core.icons.material.CalendarToday
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
@@ -103,9 +104,24 @@ internal fun BudgetScreen(
         ToggleHidden -> viewModel.toggleHidden()
         is ToggleGroup -> viewModel.toggleCollapsed(action.id)
         ReviewUncategorised -> transactions.uncategorised()
+        // The scaffold opens the sheet
+        is EditBudget -> Unit
+        is SetBudget -> viewModel.setBudget(action.month, action.category, action.input)
+        is ApplyQuickAction -> viewModel.apply(action)
       }
     },
   )
+}
+
+private fun BudgetViewModel.apply(action: ApplyQuickAction) {
+  val (month, category) = action
+  when (action.action) {
+    CopyLastMonth -> copyLastMonth(month, category)
+    Average3 -> setAverage(month, category, months = 3)
+    Average6 -> setAverage(month, category, months = 6)
+    Average12 -> setAverage(month, category, months = 12)
+    CopyToYearEnd -> copyToYearEnd(month, category)
+  }
 }
 
 @Composable
@@ -127,6 +143,13 @@ private fun BudgetScaffold(
   val pageListStates = remember { PageListStates() }
   val visibleMonth by rememberUpdatedState((state as? BudgetState.Loaded)?.month)
   var showMonthPicker by remember { mutableStateOf(false) }
+  var editing by remember { mutableStateOf<EditBudget?>(null) }
+  val latestOnAction by rememberUpdatedState(onAction)
+  val handler = remember {
+    BudgetActionHandler { action ->
+      if (action is EditBudget) editing = action else latestOnAction(action)
+    }
+  }
   val focusRequester = remember { FocusRequester() }
 
   LaunchedEffect(focusRequester) { focusRequester.requestFocus() }
@@ -135,7 +158,7 @@ private fun BudgetScaffold(
     modifier =
       modifier
         .fillMaxSize()
-        .onKeyEvent { event -> event.changeMonth(state, onAction) }
+        .onKeyEvent { event -> event.changeMonth(state, handler) }
         .focusRequester(focusRequester)
         .focusable(),
     topBar = {
@@ -155,7 +178,7 @@ private fun BudgetScaffold(
             MonthSelector(
               modifier = Modifier.fillMaxWidth(),
               state = state,
-              onAction = onAction,
+              onAction = handler,
               onPickMonth = { showMonthPicker = true },
             )
           } else {
@@ -168,10 +191,10 @@ private fun BudgetScaffold(
               MonthCountSelector(
                 count = state.monthCount,
                 max = state.maxMonthCount,
-                onAction = onAction,
+                onAction = handler,
               )
             }
-            BudgetMenu(state = state, onAction = onAction)
+            BudgetMenu(state = state, onAction = handler)
           }
         },
       )
@@ -179,7 +202,7 @@ private fun BudgetScaffold(
   ) { innerPadding ->
     BoxWithConstraints {
       val fitting = if (isCompact) 1 else fittingMonths(maxWidth)
-      SideEffect(fitting) { onAction(SetFittingMonths(fitting)) }
+      SideEffect(fitting) { handler(SetFittingMonths(fitting)) }
 
       PageBackground()
 
@@ -187,7 +210,7 @@ private fun BudgetScaffold(
         hazeState = hazeState,
         innerPadding = innerPadding,
         isRefreshing = isRefreshing,
-        onRefresh = { onAction(Refresh) },
+        onRefresh = { handler(Refresh) },
       ) { padding ->
         BudgetContent(
           state = state,
@@ -195,14 +218,26 @@ private fun BudgetScaffold(
           contentPadding = padding,
           listState = listState,
           pageListStates = pageListStates,
-          onAction = onAction,
+          onAction = handler,
         )
       }
     }
   }
 
   if (showMonthPicker && state is Loaded) {
-    MonthPickerSheet(state = state, onAction = onAction, onDismiss = { showMonthPicker = false })
+    MonthPickerSheet(state = state, onAction = handler, onDismiss = { showMonthPicker = false })
+  }
+
+  val edit = editing
+  val category = edit?.let { (state as? Loaded)?.get(it.month)?.category(it.category) }
+  if (edit != null && category != null && state is Loaded) {
+    BudgetSheet(
+      month = edit.month,
+      category = category,
+      type = state.type,
+      onAction = handler,
+      onDismiss = { editing = null },
+    )
   }
 }
 

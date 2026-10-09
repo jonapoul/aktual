@@ -8,7 +8,6 @@ internal object EditScheduleDS {
   val fieldSpacing = 12.dp
   val labelSpacing = 6.dp
   val rowPadding = 12.dp
-  val sheetPadding = 20.dp
   val sheetSpacing = 16.dp
   val badgeSpacing = 10.dp
   val hairline = 1.dp
