@@ -38,6 +38,9 @@ data class CategoryBudget(
   val carryover: Boolean,
 )
 
+// The stored values of one budget row
+data class BudgetRow(val id: String, val amount: Amount, val carryover: Boolean)
+
 private const val YEAR_MONTH_FACTOR = 100
 
 @Inject
@@ -95,11 +98,11 @@ class BudgetDao(database: BudgetDatabase, private val contexts: CoroutineContext
     }
 
   // Upstream looks up the row's ID, which may not be "${YYYYMM}-${category}"
-  suspend fun budgetId(type: BudgetType, month: YearMonth, category: CategoryId): String? =
+  suspend fun budgetRow(type: BudgetType, month: YearMonth, category: CategoryId): BudgetRow? =
     queries.withResult {
       when (type) {
-        Envelope -> zeroBudgetId(month, category)
-        Tracking -> reflectBudgetId(month, category)
+        Envelope -> zeroBudgetRow(month, category, ::budgetRow)
+        Tracking -> reflectBudgetRow(month, category, ::budgetRow)
       }.awaitAsOneOrNull()
     }
 
@@ -128,6 +131,9 @@ class BudgetDao(database: BudgetDatabase, private val contexts: CoroutineContext
       ?.let {
         YearMonth(year = (it / YEAR_MONTH_FACTOR).toInt(), month = (it % YEAR_MONTH_FACTOR).toInt())
       }
+
+  private fun budgetRow(id: String, amount: Amount?, carryover: Long?) =
+    BudgetRow(id = id, amount = amount ?: Zero, carryover = carryover == 1L)
 
   @Suppress("CanBeNonNullable")
   private fun monthBudget(

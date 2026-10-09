@@ -1,6 +1,7 @@
 package aktual.budget.budgeting.vm
 
 import aktual.budget.budgeting.domain.BudgetWriter
+import aktual.budget.budgeting.domain.UndoToken
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import kotlinx.datetime.YearMonth
@@ -51,14 +52,18 @@ internal class RecordingBudgetWriter : BudgetWriter {
   override suspend fun coverOverbudgeted(month: YearMonth, category: CategoryId, amount: Amount?) =
     record("coverOverbudgeted", month, category, amount)
 
-  override suspend fun holdForNextMonth(month: YearMonth, amount: Amount): Boolean {
+  override suspend fun holdForNextMonth(month: YearMonth, amount: Amount) =
     record("holdForNextMonth", month, amount)
-    return true
-  }
 
   override suspend fun resetHold(month: YearMonth) = record("resetHold", month)
 
-  private fun record(vararg call: Any?) {
+  override suspend fun undo(token: UndoToken) {
+    calls += listOf("undo", token)
+  }
+
+  // A new token per call, so tests can tell them apart
+  private fun record(vararg call: Any?): UndoToken {
     calls += call.toList()
+    return UndoToken(emptyList())
   }
 }

@@ -455,6 +455,52 @@ class BudgetViewModelTest {
       assertThat(writer.calls).isEmpty()
     }
 
+  @Test
+  fun `Month-wide actions call the writer`() = runBudgetTest { viewModel, _ ->
+    val month = YearMonth(2026, 4)
+    viewModel.copyPreviousMonth(month)
+    viewModel.setZero(month)
+    viewModel.setMonthAverage(month, months = 6)
+    testScheduler.advanceUntilIdle()
+    assertThat(writer.calls)
+      .containsExactly(
+        listOf("copyPreviousMonth", month),
+        listOf("setZero", month),
+        listOf("setAverage", month, 6),
+      )
+  }
+
+  @Test
+  fun `Each change can be undone`() = runBudgetTest { viewModel, _ ->
+    viewModel.events.test {
+      viewModel.setZero(YearMonth(2026, 4))
+      val updated = awaitItem() as BudgetEvent.Updated
+
+      viewModel.undo(updated.token)
+      testScheduler.advanceUntilIdle()
+
+      assertThat(writer.calls.last()).containsExactly("undo", updated.token)
+    }
+  }
+
+  @Test
+  fun `Only the latest change can be undone`() = runBudgetTest { viewModel, _ ->
+    viewModel.events.test {
+      viewModel.setZero(YearMonth(2026, 4))
+      val first = awaitItem() as BudgetEvent.Updated
+      viewModel.copyPreviousMonth(YearMonth(2026, 4))
+      val second = awaitItem() as BudgetEvent.Updated
+
+      viewModel.undo(first.token)
+      viewModel.undo(second.token)
+      viewModel.undo(second.token)
+      testScheduler.advanceUntilIdle()
+
+      assertThat(writer.calls.filter { it.first() == "undo" })
+        .containsExactly(listOf("undo", second.token))
+    }
+  }
+
   private suspend fun ReceiveTurbine<BudgetState>.awaitLoaded(): BudgetState.Loaded {
     var state = awaitItem()
     while (state !is Loaded) state = awaitItem()

@@ -35,8 +35,8 @@ import assertk.assertions.containsExactly
 import assertk.assertions.containsOnly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
-import assertk.assertions.isFalse
-import assertk.assertions.isTrue
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import assertk.assertions.prop
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
@@ -411,7 +411,7 @@ internal class BudgetWriterTest {
   fun `Holding for next month is clamped to what's available`() = runWriterTest {
     insertTransaction("income", 20240110, amount = 10000, category = INCOME)
 
-    assertThat(writer.holdForNextMonth(JAN, Amount(15000))).isTrue()
+    assertThat(writer.holdForNextMonth(JAN, Amount(15000))).isNotNull()
 
     assertThat(syncCalls.single())
       .containsExactly(
@@ -425,7 +425,7 @@ internal class BudgetWriterTest {
 
   @Test
   fun `Nothing is held when there's nothing to budget`() = runWriterTest {
-    assertThat(writer.holdForNextMonth(JAN, Amount(15000))).isFalse()
+    assertThat(writer.holdForNextMonth(JAN, Amount(15000))).isNull()
 
     assertThat(syncCalls).isEmpty()
   }
@@ -441,6 +441,87 @@ internal class BudgetWriterTest {
       prop(BudgetMonth.Envelope::buffered).isEqualTo(Zero)
       prop(BudgetMonth.Envelope::toBudget).isEqualTo(Amount(10000))
     }
+  }
+
+  @Test
+  fun `Undoing a new budget resets it`() = runWriterTest {
+    val token = writer.setBudget(JAN, CAT1, Amount(5000))
+
+    writer.undo(requireNotNull(token))
+
+    assertThat(budgeted(JAN, CAT1)).isEqualTo(Zero)
+  }
+
+  @Test
+  fun `Undoing an edit restores the previous amount`() = runWriterTest {
+    writer.setBudget(JAN, CAT1, Amount(1000))
+    val token = writer.setBudget(JAN, CAT1, Amount(5000))
+
+    writer.undo(requireNotNull(token))
+
+    assertThat(budgeted(JAN, CAT1)).isEqualTo(Amount(1000))
+  }
+
+  @Test
+  fun `Undoing a month-wide copy restores every category`() = runWriterTest {
+    writer.setBudget(JAN, CAT1, Amount(5000))
+    writer.setBudget(JAN, CAT2, Amount(1000))
+    writer.setBudget(FEB, CAT1, Amount(300))
+    val token = writer.copyPreviousMonth(FEB)
+
+    writer.undo(requireNotNull(token))
+
+    assertThat(budgeted(FEB, CAT1)).isEqualTo(Amount(300))
+    assertThat(budgeted(FEB, CAT2)).isEqualTo(Zero)
+  }
+
+  @Test
+  fun `Undoing a transfer restores both categories and the note`() = runWriterTest {
+    run("INSERT INTO notes(id, note) VALUES ('budget-2024-01', 'Existing')")
+    writer.setBudget(JAN, CAT1, Amount(5000))
+    val token = writer.transferCategory(JAN, Amount(2000), from = CAT1, to = CAT2)
+
+    writer.undo(requireNotNull(token))
+
+    assertThat(budgeted(JAN, CAT1)).isEqualTo(Amount(5000))
+    assertThat(budgeted(JAN, CAT2)).isEqualTo(Zero)
+    assertThat(note(JAN)).isEqualTo("Existing")
+  }
+
+  @Test
+  fun `Undoing a transfer clears a note it created`() = runWriterTest {
+    writer.setBudget(JAN, CAT1, Amount(5000))
+    val token = writer.transferCategory(JAN, Amount(2000), from = CAT1, to = CAT2)
+
+    writer.undo(requireNotNull(token))
+
+    assertThat(note(JAN)).isNull()
+  }
+
+  @Test
+  fun `Undoing a hold restores the previous hold`() = runWriterTest {
+    insertTransaction("income", 20240110, amount = 10000, category = INCOME)
+    writer.holdForNextMonth(JAN, Amount(4000))
+    val token = writer.holdForNextMonth(JAN, Amount(2000))
+
+    writer.undo(requireNotNull(token))
+
+    assertThat(envelope(JAN).buffered).isEqualTo(Amount(4000))
+  }
+
+  @Test
+  fun `Undoing a carryover change restores each month`() = runWriterTest {
+    writer.setCarryover(YearMonth(2025, 2), CAT1, enabled = true)
+    val token = writer.setCarryover(YearMonth(2025, 1), CAT1, enabled = true)
+    syncCalls.clear()
+
+    writer.undo(requireNotNull(token))
+
+    assertThat(syncCalls.single().map { it.row to it.value })
+      .containsExactly(
+        "202501-cat1" to MessageValue.Number(0),
+        "202502-cat1" to MessageValue.Number(1),
+      )
   }
 
   private class WriterTestScope(

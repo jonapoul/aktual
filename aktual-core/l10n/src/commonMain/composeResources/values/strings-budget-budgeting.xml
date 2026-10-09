@@ -84,4 +84,14 @@
   <string name="budgeting_cover_overbudgeted">Cover from a category</string>
   <string name="budgeting_cover_overbudgeted_title">Cover overbudgeting</string>
   <string name="budgeting_banner_cover">Cover</string>
+
+  <string name="budgeting_month_menu">Options for %1$s</string>
+  <string name="budgeting_month_zero">Set budgets to zero</string>
+  <string name="budgeting_month_average_3">Set budgets to 3 month average</string>
+  <string name="budgeting_month_average_6">Set budgets to 6 month average</string>
+  <string name="budgeting_month_average_12">Set budgets to yearly average</string>
+  <string name="budgeting_month_confirm">This changes the budget of every category in %1$s.</string>
+  <string name="budgeting_month_apply">Apply</string>
+  <string name="budgeting_updated">Budget updated</string>
+  <string name="budgeting_undo">Undo</string>
 </resources>

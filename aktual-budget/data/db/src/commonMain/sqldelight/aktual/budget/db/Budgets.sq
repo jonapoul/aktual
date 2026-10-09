@@ -54,11 +54,11 @@ zeroBudgetMonths:
 SELECT id, buffered FROM zero_budget_months;
 
 -- packages/loot-core/src/server/budget/actions.ts setBudget() and setCarryover()
-zeroBudgetId:
-SELECT id FROM zero_budgets WHERE month = :month AND category = :category LIMIT 1;
+zeroBudgetRow:
+SELECT id, amount, carryover FROM zero_budgets WHERE month = :month AND category = :category LIMIT 1;
 
-reflectBudgetId:
-SELECT id FROM reflect_budgets WHERE month = :month AND category = :category LIMIT 1;
+reflectBudgetRow:
+SELECT id, amount, carryover FROM reflect_budgets WHERE month = :month AND category = :category LIMIT 1;
 
 -- packages/loot-core/src/server/budget/actions.ts getBudgetData()
 zeroBudgetsInMonth:
