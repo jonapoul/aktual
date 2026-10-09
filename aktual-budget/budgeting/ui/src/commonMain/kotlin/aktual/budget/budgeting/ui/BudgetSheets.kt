@@ -11,6 +11,7 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toInputText
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -30,6 +31,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -70,6 +72,10 @@ internal sealed interface SheetRequest {
 
   // Picks which overspent category to cover, from the overspending banner
   data class OverspentSheet(override val month: YearMonth) : SheetRequest
+
+  // A dialog rather than a sheet, as the action changes every category
+  data class ConfirmMonthSheet(override val month: YearMonth, val action: MonthAction) :
+    SheetRequest
 }
 
 @Composable
@@ -119,8 +125,59 @@ internal fun BudgetSheets(
       envelope?.let { CoverOverbudgetedBudgetSheet(month, budget, it, onAction, onDismiss) }
 
     is OverspentSheet -> OverspentMenuSheet(month, budget, onAction, onDismiss)
+
+    is ConfirmMonthSheet -> ConfirmMonthDialog(month, request.action, onAction, onDismiss)
   }
 }
+
+// The month menu of upstream's budget summary
+@Composable
+internal fun monthActions(
+  month: YearMonth,
+  onAction: BudgetActionHandler,
+): ImmutableList<MenuItem> =
+  MonthAction.entries
+    .map { action ->
+      MenuItem(
+        label = action.label(),
+        onClick = { onAction(OpenSheet(SheetRequest.ConfirmMonthSheet(month, action))) },
+      )
+    }
+    .toImmutableList()
+
+@Composable
+private fun MonthAction.label(): String =
+  when (this) {
+    CopyLastMonth -> Strings.budgetingCopyLastMonth
+    SetZero -> Strings.budgetingMonthZero
+    Average3 -> Strings.budgetingMonthAverage3
+    Average6 -> Strings.budgetingMonthAverage6
+    Average12 -> Strings.budgetingMonthAverage12
+  }
+
+@Composable
+private fun ConfirmMonthDialog(
+  month: YearMonth,
+  action: MonthAction,
+  onAction: BudgetActionHandler,
+  onDismiss: () -> Unit,
+) =
+  AktualAlertDialog(
+    title = action.label(),
+    onDismissRequest = onDismiss,
+    buttons = {
+      TextButton(onClick = onDismiss) { Text(Strings.budgetingEditCancel) }
+      TextButton(
+        onClick = {
+          onDismiss()
+          onAction(ApplyMonthAction(month, action))
+        },
+      ) {
+        Text(Strings.budgetingMonthApply)
+      }
+    },
+    content = { Text(Strings.budgetingMonthConfirm(month.stringLong())) },
+  )
 
 @Composable
 private fun TransferBalanceSheet(

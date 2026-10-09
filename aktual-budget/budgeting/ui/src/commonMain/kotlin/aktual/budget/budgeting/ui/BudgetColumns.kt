@@ -8,10 +8,13 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.MoreVert
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.formattedString
@@ -271,6 +274,7 @@ private fun Summaries(
         SummaryCard(
           modifier = Modifier.width(layout.monthWidth).padding(start = ColumnsDS.monthGap),
           onClick = { onAction(OpenSheet(SheetRequest.SummarySheet(column.month))) },
+          onAction = onAction,
           column = column,
           isCurrent = column.month == state.current,
         )
@@ -284,6 +288,7 @@ private fun SummaryCard(
   column: MonthColumn,
   isCurrent: Boolean,
   onClick: () -> Unit,
+  onAction: BudgetActionHandler,
   modifier: Modifier = Modifier,
 ) {
   val label = Strings.budgetingSummaryOpen(column.month.stringLong())
@@ -311,13 +316,16 @@ private fun SummaryCard(
       )
       if (isCurrent) {
         Text(
+          modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
           text = Strings.budgetingThisMonth,
           fontSize = 12.sp,
           fontWeight = Medium,
           color = colors.pageTextLink,
           maxLines = 1,
+          textAlign = End,
         )
       }
+      MonthMenu(month = column.month, onAction = onAction)
     }
 
     val summary = column.budget?.summary ?: return@Column
@@ -340,6 +348,30 @@ private fun SummaryCard(
         fontSize = 18,
         color = headline.color,
       )
+    }
+  }
+}
+
+@Composable
+private fun MonthMenu(month: YearMonth, onAction: BudgetActionHandler) {
+  var expanded by remember { mutableStateOf(false) }
+  val actions = monthActions(month, onAction)
+  Box {
+    BareIconButton(
+      imageVector = MaterialIcons.MoreVert,
+      contentDescription = Strings.budgetingMonthMenu(month.stringLong()),
+      onClick = { expanded = true },
+    )
+    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      actions.fastForEach { action ->
+        AktualDropdownMenuItem(
+          text = action.label,
+          onClick = {
+            expanded = false
+            action.onClick()
+          },
+        )
+      }
     }
   }
 }

@@ -85,6 +85,18 @@ internal data class CoverOverbudgeted(
   val input: String,
 ) : BudgetWrite
 
+// Every category in the month, once confirmed
+internal data class ApplyMonthAction(val month: YearMonth, val action: MonthAction) : BudgetWrite
+
+// packages/desktop-client/src/components/budget/envelope/budgetsummary/BudgetMonthMenu.tsx
+internal enum class MonthAction {
+  CopyLastMonth,
+  SetZero,
+  Average3,
+  Average6,
+  Average12,
+}
+
 @Immutable
 internal fun interface BudgetActionHandler {
   operator fun invoke(action: BudgetAction)

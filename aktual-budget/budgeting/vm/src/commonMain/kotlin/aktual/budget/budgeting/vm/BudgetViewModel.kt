@@ -8,6 +8,7 @@ import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.budgeting.domain.BudgetWriter
 import aktual.budget.budgeting.domain.CategoryGroupMonth
 import aktual.budget.budgeting.domain.CategoryMonth
+import aktual.budget.budgeting.domain.UndoToken
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
@@ -40,8 +41,11 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -98,6 +102,13 @@ class BudgetViewModel(
         is Data -> current.toState(metadata)
       }
     }
+
+  private val mutableEvents =
+    MutableSharedFlow<BudgetEvent>(extraBufferCapacity = 1, onBufferOverflow = DROP_OLDEST)
+  val events: SharedFlow<BudgetEvent> = mutableEvents.asSharedFlow()
+
+  // Only the latest change can be undone
+  private var lastUndo: UndoToken? = null
 
   val isSyncing: StateFlow<Boolean> =
     syncStateHolder.map { it == Syncing }.stateIn(viewModelScope, Eagerly, initialValue = false)
@@ -156,6 +167,30 @@ class BudgetViewModel(
   fun copyToYearEnd(month: YearMonth, category: CategoryId) =
     write("copy to year end") { copyUntilYearEnd(month, category) }
 
+  // Month-wide, for every category in the month
+  fun copyPreviousMonth(month: YearMonth) =
+    write("copy previous month") { copyPreviousMonth(month) }
+
+  fun setZero(month: YearMonth) = write("zero budgets") { setZero(month) }
+
+  fun setMonthAverage(month: YearMonth, months: Int) =
+    write("set $months month averages") { setAverage(month, months) }
+
+  // Does nothing once a later change has been made
+  fun undo(token: UndoToken) {
+    if (lastUndo !== token) return
+    lastUndo = null
+    viewModelScope.launch {
+      try {
+        writer.undo(token)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed to undo" }
+      }
+    }
+  }
+
   // Typed amounts below are unsigned amounts of money to move. False if the input doesn't read as
   // one, so the sheet stays open
 
@@ -190,18 +225,20 @@ class BudgetViewModel(
   private fun writeAmount(
     input: String,
     description: String,
-    action: suspend BudgetWriter.(Amount) -> Unit,
+    action: suspend BudgetWriter.(Amount) -> UndoToken?,
   ): Boolean {
     val amount = evaluateAmountInput(input)?.takeIf { it > Amount.Zero } ?: return false
     write(description) { action(amount) }
     return true
   }
 
-  // The calculator picks up the change, so there's nothing to update here
-  private fun write(description: String, action: suspend BudgetWriter.() -> Unit) {
+  // The calculator picks up the change, so only the undo is kept here
+  private fun write(description: String, action: suspend BudgetWriter.() -> UndoToken?) {
     viewModelScope.launch {
       try {
-        writer.action()
+        val token = writer.action() ?: return@launch
+        lastUndo = token
+        mutableEvents.tryEmit(BudgetEvent.Updated(token))
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {

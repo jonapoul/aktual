@@ -13,6 +13,7 @@ import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -123,6 +124,37 @@ class BudgetColumnsTest {
 
     // then
     assertThat(actions).containsExactly(OpenSheet(SheetRequest.SummarySheet(october)))
+  }
+
+  @Test
+  fun `Month menu asks before changing every category`() = runColumnsTest {
+    // when
+    onNodeWithContentDescription("Options for October 2026").performClick()
+    onNodeWithText("Set budgets to zero").performClick()
+
+    // then
+    assertThat(actions).containsExactly(OpenSheet(SheetRequest.ConfirmMonthSheet(october, SetZero)))
+  }
+
+  @Test
+  fun `Confirming a month action applies it`() = runComposeUiTest {
+    // given
+    setContent {
+      PreviewWithColors(DarkColors) {
+        BudgetSheets(
+          request = SheetRequest.ConfirmMonthSheet(october, Average6),
+          state = previewColumns(count = 2),
+          onAction = { actions += it },
+          onDismiss = {},
+        )
+      }
+    }
+
+    // when
+    onNodeWithText("Apply").performClick()
+
+    // then
+    assertThat(actions).containsExactly(ApplyMonthAction(october, Average6))
   }
 
   private fun hasClickLabel(label: String) =
