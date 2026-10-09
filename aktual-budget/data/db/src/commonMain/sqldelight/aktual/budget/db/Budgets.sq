@@ -52,3 +52,48 @@ WHERE b.month >= :start AND b.month <= :end;
 
 zeroBudgetMonths:
 SELECT id, buffered FROM zero_budget_months;
+
+-- packages/loot-core/src/server/budget/actions.ts setBudget() and setCarryover()
+zeroBudgetId:
+SELECT id FROM zero_budgets WHERE month = :month AND category = :category LIMIT 1;
+
+reflectBudgetId:
+SELECT id FROM reflect_budgets WHERE month = :month AND category = :category LIMIT 1;
+
+-- packages/loot-core/src/server/budget/actions.ts getBudgetData()
+zeroBudgetsInMonth:
+SELECT b.category, b.amount, c.is_income, c.hidden, g.hidden AS group_hidden
+FROM zero_budgets b
+LEFT JOIN categories c ON b.category = c.id
+LEFT JOIN category_groups g ON c.cat_group = g.id
+WHERE c.tombstone = 0 AND b.month = :month;
+
+reflectBudgetsInMonth:
+SELECT b.category, b.amount, c.is_income, c.hidden, g.hidden AS group_hidden
+FROM reflect_budgets b
+LEFT JOIN categories c ON b.category = c.id
+LEFT JOIN category_groups g ON c.cat_group = g.id
+WHERE c.tombstone = 0 AND b.month = :month;
+
+-- packages/loot-core/src/server/budget/actions.ts getFirstActivityMonth()
+zeroBudgetFirstActivity:
+SELECT MIN(month) AS month
+FROM (
+  SELECT CAST(month AS INTEGER) AS month FROM zero_budgets WHERE category = :category AND month <= :end
+  UNION ALL
+  SELECT CAST(t.date / 100 AS INTEGER) AS month
+  FROM v_transactions_internal_alive t
+  LEFT JOIN accounts a ON a.id = t.account
+  WHERE t.category = :category AND CAST(t.date / 100 AS INTEGER) <= :end AND a.offbudget = 0
+);
+
+reflectBudgetFirstActivity:
+SELECT MIN(month) AS month
+FROM (
+  SELECT CAST(month AS INTEGER) AS month FROM reflect_budgets WHERE category = :category AND month <= :end
+  UNION ALL
+  SELECT CAST(t.date / 100 AS INTEGER) AS month
+  FROM v_transactions_internal_alive t
+  LEFT JOIN accounts a ON a.id = t.account
+  WHERE t.category = :category AND CAST(t.date / 100 AS INTEGER) <= :end AND a.offbudget = 0
+);
