@@ -8,15 +8,12 @@ import aktual.budget.schedules.vm.edit.isDeposit
 import aktual.budget.schedules.vm.edit.withDeposit
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
-import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AmountField
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -131,27 +128,6 @@ internal fun AmountSheet(
 }
 
 @Composable
-private fun AmountField(state: TextFieldState, label: String?, modifier: Modifier = Modifier) {
-  Column(
-    modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(EditScheduleDS.labelSpacing),
-  ) {
-    if (label != null) {
-      Text(text = label, style = typography.labelLarge)
-    }
-
-    AktualTextField(
-      modifier = Modifier.fillMaxWidth(),
-      state = state,
-      placeholderText = ZERO_PLACEHOLDER,
-      singleLine = true,
-      keyboardOptions = KeyboardOptions(keyboardType = Decimal),
-      textStyle = typography.headlineSmall.copy(color = colors.pageText),
-    )
-  }
-}
-
-@Composable
 private fun AmountOp.string(): String =
   when (this) {
     Exactly -> Strings.editScheduleAmountOpExactly
@@ -179,5 +155,3 @@ private val ScheduleAmount.second: Amount?
   get() = (this as? Between)?.let { maxOf(it.from.abs(), it.to.abs()) }
 
 private fun Amount.abs(): Amount = if (this < Zero) -this else this
-
-private const val ZERO_PLACEHOLDER = "0.00"

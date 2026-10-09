@@ -1,6 +1,7 @@
 package aktual.budget.budgeting.ui
 
 import aktual.budget.model.CategoryGroupId
+import aktual.budget.model.CategoryId
 import androidx.compose.runtime.Immutable
 import kotlinx.datetime.YearMonth
 
@@ -29,6 +30,18 @@ internal data object ToggleHidden : BudgetAction
 internal data class ToggleGroup(val id: CategoryGroupId) : BudgetAction
 
 internal data object ReviewUncategorised : BudgetAction
+
+// Opens the budget sheet on compact widths. Expanded widths edit in place
+internal data class EditBudget(val month: YearMonth, val category: CategoryId) : BudgetAction
+
+internal data class SetBudget(val month: YearMonth, val category: CategoryId, val input: String) :
+  BudgetAction
+
+internal data class ApplyQuickAction(
+  val month: YearMonth,
+  val category: CategoryId,
+  val action: QuickAction,
+) : BudgetAction
 
 @Immutable
 internal fun interface BudgetActionHandler {

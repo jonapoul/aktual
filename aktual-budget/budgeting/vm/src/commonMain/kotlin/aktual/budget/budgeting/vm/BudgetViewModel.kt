@@ -5,17 +5,20 @@ import aktual.budget.BudgetSyncController
 import aktual.budget.SyncStateHolder
 import aktual.budget.budgeting.domain.BudgetMonth
 import aktual.budget.budgeting.domain.BudgetMonthCalculator
+import aktual.budget.budgeting.domain.BudgetWriter
 import aktual.budget.budgeting.domain.CategoryGroupMonth
 import aktual.budget.budgeting.domain.CategoryMonth
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryGroupId
+import aktual.budget.model.CategoryId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.DbMetadata.Companion.BudgetCollapsed
 import aktual.budget.model.DbMetadata.Companion.BudgetMonthCount
 import aktual.budget.model.DbMetadata.Companion.BudgetShowHiddenCategories
 import aktual.budget.model.DbMetadata.Companion.MobileShowSpentColumn
+import aktual.budget.model.evaluateAmountInput
 import aktual.core.Calendar
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
@@ -35,6 +38,7 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,6 +51,7 @@ import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -60,6 +65,7 @@ import logcat.logcat
 class BudgetViewModel(
   @Assisted private val month: YearMonth?,
   private val calculator: BudgetMonthCalculator,
+  private val writer: BudgetWriter,
   private val transactionDao: TransactionDao,
   private val localPreferences: BudgetLocalPreferences,
   private val syncController: BudgetSyncController,
@@ -131,6 +137,35 @@ class BudgetViewModel(
       BudgetCollapsed,
       if (id.value in collapsed) collapsed - id.value else collapsed + id.value,
     )
+  }
+
+  // Typed amounts can be arithmetic, as upstream. False if the input doesn't read as an amount
+  fun setBudget(month: YearMonth, category: CategoryId, input: String): Boolean {
+    val amount = evaluateAmountInput(input) ?: return false
+    write("set budget") { setBudget(month, category, amount) }
+    return true
+  }
+
+  fun copyLastMonth(month: YearMonth, category: CategoryId) =
+    write("copy last month") { copySinglePreviousMonth(month, category) }
+
+  fun setAverage(month: YearMonth, category: CategoryId, months: Int) =
+    write("set $months month average") { setSingleAverage(month, category, months) }
+
+  fun copyToYearEnd(month: YearMonth, category: CategoryId) =
+    write("copy to year end") { copyUntilYearEnd(month, category) }
+
+  // The calculator picks up the change, so there's nothing to update here
+  private fun write(description: String, action: suspend BudgetWriter.() -> Unit) {
+    viewModelScope.launch {
+      try {
+        writer.action()
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed to $description" }
+      }
+    }
   }
 
   private fun shiftMonth(by: Int) {

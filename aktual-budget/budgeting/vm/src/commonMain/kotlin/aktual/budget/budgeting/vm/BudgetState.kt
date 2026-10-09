@@ -60,6 +60,11 @@ data class MonthBudget(
     get() = groups.isEmpty() && income == null
 }
 
+fun MonthBudget.category(id: CategoryId): CategoryRow? =
+  (groups + listOfNotNull(income)).firstNotNullOfOrNull { group ->
+    group.categories.firstOrNull { it.id == id }
+  }
+
 @Immutable
 sealed interface BudgetSummary {
   data class Envelope(val toBudget: Amount, val available: Amount, val budgeted: Amount) :
