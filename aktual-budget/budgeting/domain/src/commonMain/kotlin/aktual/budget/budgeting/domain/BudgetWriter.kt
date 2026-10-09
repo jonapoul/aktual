@@ -71,9 +71,10 @@ class BudgetWriterImpl(
 
   // copySinglePreviousMonth()
   override suspend fun copySinglePreviousMonth(month: YearMonth, category: CategoryId) {
-    val previous = budgetDao.budgetsInMonth(type(), month.previous())
+    val type = type()
+    val previous = budgetDao.budgetsInMonth(type, month.previous())
     val amount = previous.firstOrNull { it.category == category }?.amount ?: Amount.Zero
-    send { set(month, category, amount) }
+    send(type) { set(month, category, amount) }
   }
 
   // setNMonthAvg()
