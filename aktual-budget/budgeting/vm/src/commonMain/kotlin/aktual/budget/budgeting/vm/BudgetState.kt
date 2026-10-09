@@ -7,6 +7,7 @@ import aktual.budget.model.CategoryId
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.plus
 
 @Immutable
 sealed interface BudgetState {
@@ -14,21 +15,49 @@ sealed interface BudgetState {
 
   data object Failed : BudgetState
 
-  // Amounts keep their transaction sign, so spending is negative
   data class Loaded(
     val type: BudgetType,
+    // The first visible month
     val month: YearMonth,
-    val summary: BudgetSummary,
-    val groups: ImmutableList<GroupRow>,
-    // Upstream only shows the first income group
-    val income: GroupRow?,
-    val banners: ImmutableList<Banner>,
+    val current: YearMonth,
+    val earliest: YearMonth,
+    val latest: YearMonth,
+    // How many months are visible, and the most that fit
+    val monthCount: Int,
+    val maxMonthCount: Int,
+    // The visible months and their neighbours. One that hasn't loaded yet is missing
+    val months: ImmutableList<MonthBudget>,
     val showSpent: Boolean,
     val showHidden: Boolean,
   ) : BudgetState {
+    val lastMonth: YearMonth
+      get() = month.plus(monthCount - 1, MONTH)
+
+    val canGoBack: Boolean
+      get() = month > earliest
+
+    val canGoForward: Boolean
+      get() = lastMonth < latest
+
     val isEmpty: Boolean
-      get() = groups.isEmpty() && income == null
+      get() = months.firstOrNull()?.isEmpty == true
+
+    operator fun get(month: YearMonth): MonthBudget? = months.firstOrNull { it.month == month }
   }
+}
+
+// Amounts keep their transaction sign, so spending is negative
+@Immutable
+data class MonthBudget(
+  val month: YearMonth,
+  val summary: BudgetSummary,
+  val groups: ImmutableList<GroupRow>,
+  // Upstream only shows the first income group
+  val income: GroupRow?,
+  val banners: ImmutableList<Banner>,
+) {
+  val isEmpty: Boolean
+    get() = groups.isEmpty() && income == null
 }
 
 @Immutable

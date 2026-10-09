@@ -21,6 +21,7 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonPrimitive
 
 @Serializable(DbMetadata.Serializer::class)
@@ -102,6 +103,11 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
   }
 
   @JvmInline
+  value class IntKey(override val name: String) : PrimitiveKey<Int> {
+    override fun decode(element: JsonPrimitive) = element.int
+  }
+
+  @JvmInline
   value class StringKey(override val name: String) : PrimitiveKey<String> {
     override fun decode(element: JsonPrimitive) = element.content
   }
@@ -120,6 +126,7 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
     val BudgetName: Key<String> = StringKey("budgetName")
     val BudgetCollapsed: Key<List<String>> = ListKey("budget.collapsed")
     val BudgetShowHiddenCategories: Key<Boolean> = BoolKey("budget.showHiddenCategories")
+    val BudgetMonthCount: Key<Int> = IntKey("budget.monthCount")
     val MobileShowSpentColumn: Key<Boolean> = BoolKey("mobile.showSpentColumn")
     val CloudFileId: Key<BudgetId> = TypedKey("cloudFileId", ::BudgetId)
     val GroupId: Key<String> = StringKey("groupId")
@@ -136,6 +143,7 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
         BudgetName.name -> BudgetName
         BudgetCollapsed.name -> BudgetCollapsed
         BudgetShowHiddenCategories.name -> BudgetShowHiddenCategories
+        BudgetMonthCount.name -> BudgetMonthCount
         MobileShowSpentColumn.name -> MobileShowSpentColumn
         CloudFileId.name -> CloudFileId
         GroupId.name -> GroupId
@@ -189,6 +197,7 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
 private fun DbMetadata.Key<*>.encode(value: Any?): JsonElement? =
   when (this) {
     is DbMetadata.BoolKey -> (value as? Boolean)?.let(::JsonPrimitive)
+    is DbMetadata.IntKey -> (value as? Int)?.let(::JsonPrimitive)
     is DbMetadata.StringKey -> (value as? String)?.let(::JsonPrimitive)
     is DbMetadata.TypedKey<*> -> value?.toString()?.let(::JsonPrimitive)
     is DbMetadata.ListKey -> (value as? List<String>)?.map(::JsonPrimitive)?.let(::JsonArray)

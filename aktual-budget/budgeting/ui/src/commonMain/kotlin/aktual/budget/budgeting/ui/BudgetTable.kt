@@ -1,11 +1,12 @@
 package aktual.budget.budgeting.ui
 
 import aktual.budget.budgeting.vm.Banner
-import aktual.budget.budgeting.vm.BudgetState
 import aktual.budget.budgeting.vm.BudgetSummary
 import aktual.budget.budgeting.vm.CategoryRow
 import aktual.budget.budgeting.vm.GroupRow
+import aktual.budget.budgeting.vm.MonthBudget
 import aktual.budget.model.Amount
+import aktual.budget.model.BudgetType
 import aktual.core.icons.material.ArrowDropDown
 import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.ExpandMore
@@ -53,39 +54,47 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastForEach
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 // packages/desktop-client/src/components/mobile/budget/BudgetTable.tsx
-internal fun LazyListScope.budgetTable(state: BudgetState.Loaded, onAction: BudgetActionHandler) {
+internal fun LazyListScope.budgetTable(
+  budget: MonthBudget,
+  type: BudgetType,
+  showSpent: Boolean,
+  onAction: BudgetActionHandler,
+) {
   item(key = "summary") {
-    SummaryCard(summary = state.summary, modifier = Modifier.padding(bottom = 8.dp))
+    SummaryCard(summary = budget.summary, modifier = Modifier.padding(bottom = 8.dp))
   }
 
-  items(state.banners, key = { it::class.simpleName.orEmpty() }) { banner ->
+  items(budget.banners, key = { it::class.simpleName.orEmpty() }) { banner ->
     BannerRow(banner = banner, onAction = onAction, modifier = Modifier.padding(bottom = 8.dp))
   }
 
-  item(key = "header") { ColumnHeader(showSpent = state.showSpent, onAction = onAction) }
+  item(key = "header") { ColumnHeader(showSpent = showSpent, onAction = onAction) }
 
-  for (group in state.groups) {
+  for (group in budget.groups) {
     stickyHeader(key = "group-${group.id.value}") {
       GroupHeader(
         group = group,
-        value = if (state.showSpent) group.spent else group.budgeted,
+        value = if (showSpent) group.spent else group.budgeted,
         onAction = onAction,
       )
     }
 
     if (!group.isCollapsed) {
       items(group.categories, key = { "category-${it.id.value}" }) { category ->
-        CategoryItem(category = category, showSpent = state.showSpent)
+        CategoryItem(category = category, showSpent = showSpent)
       }
     }
   }
 
-  val income = state.income ?: return
-  val isTracking = state.type == Tracking
+  val income = budget.income ?: return
+  val isTracking = type == Tracking
 
   item(key = "income-header") { IncomeColumnHeader(isTracking = isTracking) }
 
@@ -112,76 +121,81 @@ private fun SummaryCard(summary: BudgetSummary, modifier: Modifier = Modifier) {
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = CenterVertically,
   ) {
-    when (summary) {
-      is Envelope -> {
-        Headline(
-          label =
-            if (summary.toBudget < Zero) {
-              Strings.budgetingOverbudgeted
-            } else {
-              Strings.budgetingToBudget
-            },
-          amount = summary.toBudget,
-          color =
-            when {
-              summary.toBudget < Zero -> colors.toBudgetNegative
-              summary.toBudget > Zero -> colors.toBudgetPositive
-              else -> colors.toBudgetZero
-            },
-        )
-        Breakdown(
-          Strings.budgetingAvailable to summary.available,
-          Strings.budgetingBudgeted to summary.budgeted,
-        )
-      }
-
-      is Tracking -> {
-        Headline(
-          label =
-            when {
-              summary.isProjected -> Strings.budgetingProjectedSavings
-              summary.saved < Zero -> Strings.budgetingOverspent
-              else -> Strings.budgetingSaved
-            },
-          amount = summary.saved,
-          color =
-            when {
-              summary.isProjected -> colors.warningText
-              summary.saved < Zero -> colors.errorTextDark
-              else -> colors.pageText
-            },
-        )
-        Breakdown(
-          Strings.budgetingBudgeted to summary.budgeted,
-          Strings.budgetingSpent to summary.spent,
-        )
-      }
-    }
+    Headline(headline = summary.headline())
+    Breakdown(lines = summary.breakdown())
   }
 }
 
+internal data class SummaryHeadline(val label: String, val amount: Amount, val color: Color)
+
 @Composable
-private fun Headline(label: String, amount: Amount, color: Color, modifier: Modifier = Modifier) {
+internal fun BudgetSummary.headline(): SummaryHeadline =
+  when (this) {
+    is Envelope ->
+      SummaryHeadline(
+        label = if (toBudget < Zero) Strings.budgetingOverbudgeted else Strings.budgetingToBudget,
+        amount = toBudget,
+        color =
+          when {
+            toBudget < Zero -> colors.toBudgetNegative
+            toBudget > Zero -> colors.toBudgetPositive
+            else -> colors.toBudgetZero
+          },
+      )
+
+    is Tracking ->
+      SummaryHeadline(
+        label =
+          when {
+            isProjected -> Strings.budgetingProjectedSavings
+            saved < Zero -> Strings.budgetingOverspent
+            else -> Strings.budgetingSaved
+          },
+        amount = saved,
+        color =
+          when {
+            isProjected -> colors.warningText
+            saved < Zero -> colors.errorTextDark
+            else -> colors.pageText
+          },
+      )
+  }
+
+@Composable
+internal fun BudgetSummary.breakdown(): ImmutableList<Pair<String, Amount>> =
+  when (this) {
+    is Envelope ->
+      persistentListOf(
+        Strings.budgetingAvailable to available,
+        Strings.budgetingBudgeted to budgeted,
+      )
+
+    is Tracking ->
+      persistentListOf(Strings.budgetingBudgeted to budgeted, Strings.budgetingSpent to spent)
+  }
+
+@Composable
+private fun Headline(headline: SummaryHeadline, modifier: Modifier = Modifier) {
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
-    Text(text = label, fontSize = 13.sp, color = colors.pageTextSubdued)
+    Text(text = headline.label, fontSize = 13.sp, color = colors.pageTextSubdued)
     Text(
-      text = amount.formattedString(includeSign = true),
+      text = headline.amount.formattedString(includeSign = true),
       style = typography.headlineSmall.tabularFigures(),
       fontWeight = SemiBold,
-      color = color,
+      color = headline.color,
       maxLines = 1,
     )
   }
 }
 
 @Composable
-private fun Breakdown(vararg lines: Pair<String, Amount>, modifier: Modifier = Modifier) {
+private fun Breakdown(lines: ImmutableList<Pair<String, Amount>>, modifier: Modifier = Modifier) {
   Column(
     modifier = modifier,
     horizontalAlignment = Alignment.End,
     verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
-    for ((label, amount) in lines) {
+    lines.fastForEach { (label, amount) ->
       Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = CenterVertically,
@@ -201,7 +215,7 @@ private fun Breakdown(vararg lines: Pair<String, Amount>, modifier: Modifier = M
 
 // Covering overspending and overbudgeting lands with the budget actions
 @Composable
-private fun BannerRow(
+internal fun BannerRow(
   banner: Banner,
   onAction: BudgetActionHandler,
   modifier: Modifier = Modifier,
@@ -325,7 +339,7 @@ private fun IncomeColumnHeader(isTracking: Boolean, modifier: Modifier = Modifie
 }
 
 @Composable
-private fun HeaderLabel(
+internal fun HeaderLabel(
   text: String,
   modifier: Modifier = Modifier,
   textAlign: TextAlign = Start,
@@ -376,11 +390,13 @@ private fun IncomeGroupHeader(
   }
 }
 
+// Without a name width, the name takes the space the amounts leave
 @Composable
-private fun GroupHeaderRow(
+internal fun GroupHeaderRow(
   group: GroupRow,
   onAction: BudgetActionHandler,
   modifier: Modifier = Modifier,
+  nameWidth: Dp? = null,
   amounts: @Composable RowScope.() -> Unit,
 ) {
   val label =
@@ -403,7 +419,7 @@ private fun GroupHeaderRow(
       height = BudgetDS.headerHeight,
     ) {
       Row(
-        modifier = Modifier.weight(1f),
+        modifier = if (nameWidth == null) Modifier.weight(1f) else Modifier.width(nameWidth),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = CenterVertically,
       ) {
@@ -456,21 +472,26 @@ private fun IncomeItem(category: CategoryRow, isTracking: Boolean, modifier: Mod
 }
 
 @Composable
-private fun CategoryRowLayout(
+internal fun CategoryRowLayout(
   category: CategoryRow,
   modifier: Modifier = Modifier,
+  nameWidth: Dp? = null,
   amounts: @Composable RowScope.() -> Unit,
 ) {
   Column(modifier = modifier.fillMaxWidth().background(colors.tableBackground)) {
     HorizontalDivider(color = colors.tableBorder)
     TableRow(
       modifier =
-        Modifier.alpha(if (category.isHidden) HIDDEN_ALPHA else 1f)
-          .padding(start = BudgetDS.categoryIndent - BudgetDS.rowPadding),
+        Modifier.alpha(if (category.isHidden) HIDDEN_ALPHA else 1f).padding(start = CategoryInset),
       height = BudgetDS.rowHeight,
     ) {
       Text(
-        modifier = Modifier.weight(1f),
+        modifier =
+          if (nameWidth == null) {
+            Modifier.weight(1f)
+          } else {
+            Modifier.width(nameWidth - CategoryInset)
+          },
         text = category.name,
         fontSize = 14.sp,
         color = colors.tableText,
@@ -483,7 +504,7 @@ private fun CategoryRowLayout(
 }
 
 @Composable
-private fun TableRow(
+internal fun TableRow(
   height: Dp,
   modifier: Modifier = Modifier,
   content: @Composable RowScope.() -> Unit,
@@ -495,7 +516,7 @@ private fun TableRow(
   )
 
 @Composable
-private fun AmountText(
+internal fun AmountText(
   amount: Amount,
   modifier: Modifier = Modifier,
   color: Color = colors.tableText,
@@ -515,7 +536,7 @@ private fun AmountText(
 
 // packages/desktop-client/src/components/budget/BalanceWithCarryover.tsx
 @Composable
-private fun BalancePill(balance: Amount, carryover: Boolean, modifier: Modifier = Modifier) {
+internal fun BalancePill(balance: Amount, carryover: Boolean, modifier: Modifier = Modifier) {
   val pill = balanceColors(balance)
   val rollsOver = Strings.budgetingRollsOver
   Row(
@@ -546,11 +567,11 @@ private fun BalancePill(balance: Amount, carryover: Boolean, modifier: Modifier 
   }
 }
 
-private data class PillColors(val background: Color, val text: Color)
+internal data class PillColors(val background: Color, val text: Color)
 
 @Composable
 @ReadOnlyComposable
-private fun balanceColors(balance: Amount): PillColors =
+internal fun balanceColors(balance: Amount): PillColors =
   when {
     balance > Zero -> PillColors(colors.noticeBackground, colors.noticeText)
     balance < Zero -> PillColors(colors.errorBackground, colors.errorText)
@@ -583,9 +604,10 @@ internal fun ShimmerBudgetTable(modifier: Modifier = Modifier) {
   }
 }
 
-private fun TextStyle.tabularFigures() = copy(fontFeatureSettings = "tnum")
+internal fun TextStyle.tabularFigures() = copy(fontFeatureSettings = "tnum")
 
-private val TopShape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)
+internal val TopShape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)
+private val CategoryInset = BudgetDS.categoryIndent - BudgetDS.rowPadding
 private val PillShape = RoundedCornerShape(12.dp)
 private const val HIDDEN_ALPHA = 0.5f
 private const val COLLAPSED_ROTATION = -90f

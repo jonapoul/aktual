@@ -7,12 +7,15 @@ import aktual.budget.budgeting.vm.BudgetState
 import aktual.budget.budgeting.vm.BudgetSummary
 import aktual.budget.budgeting.vm.CategoryRow
 import aktual.budget.budgeting.vm.GroupRow
+import aktual.budget.budgeting.vm.MonthBudget
 import aktual.budget.model.Amount
+import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.plus
 
 private fun category(
   name: String,
@@ -82,9 +85,8 @@ private val PREVIEW_INCOME =
     category("Side work", budgeted = 200.0, spent = 180.0, balance = 0.0),
   )
 
-internal val PREVIEW_ENVELOPE =
-  BudgetState.Loaded(
-    type = Envelope,
+private val PREVIEW_MONTH =
+  MonthBudget(
     month = YearMonth(2026, 10),
     summary =
       BudgetSummary.Envelope(
@@ -99,13 +101,10 @@ internal val PREVIEW_ENVELOPE =
         Banner.Uncategorised(count = 3),
         Banner.Overspent(count = 1, total = Amount(-40.0)),
       ),
-    showSpent = false,
-    showHidden = true,
   )
 
-internal val PREVIEW_TRACKING =
-  PREVIEW_ENVELOPE.copy(
-    type = Tracking,
+private val PREVIEW_TRACKING_MONTH =
+  PREVIEW_MONTH.copy(
     summary =
       BudgetSummary.Tracking(
         saved = Amount(640.0),
@@ -114,9 +113,53 @@ internal val PREVIEW_TRACKING =
         spent = Amount(-1_603.0),
       ),
     banners = persistentListOf(),
+  )
+
+internal val PREVIEW_ENVELOPE =
+  BudgetState.Loaded(
+    type = Envelope,
+    month = YearMonth(2026, 10),
+    current = YearMonth(2026, 10),
+    earliest = YearMonth(2026, 1),
+    latest = YearMonth(2027, 10),
+    monthCount = 1,
+    maxMonthCount = 1,
+    months = persistentListOf(PREVIEW_MONTH),
+    showSpent = false,
+    showHidden = true,
+  )
+
+internal val PREVIEW_LATER = PREVIEW_ENVELOPE.copy(month = YearMonth(2027, 3))
+
+internal val PREVIEW_TRACKING =
+  PREVIEW_ENVELOPE.copy(
+    type = Tracking,
+    months = persistentListOf(PREVIEW_TRACKING_MONTH),
     showSpent = true,
     showHidden = false,
   )
 
 internal val PREVIEW_EMPTY =
-  PREVIEW_ENVELOPE.copy(groups = persistentListOf(), income = null, banners = persistentListOf())
+  PREVIEW_ENVELOPE.copy(
+    months =
+      persistentListOf(
+        PREVIEW_MONTH.copy(
+          groups = persistentListOf(),
+          income = null,
+          banners = persistentListOf(),
+        ),
+      ),
+  )
+
+// Starts a month back, so the current month isn't the first column
+internal fun previewColumns(count: Int, type: BudgetType = Envelope): BudgetState.Loaded {
+  val template = if (type == Envelope) PREVIEW_MONTH else PREVIEW_TRACKING_MONTH
+  val first = YearMonth(2026, 9)
+  return PREVIEW_ENVELOPE.copy(
+    type = type,
+    month = first,
+    monthCount = count,
+    maxMonthCount = 4,
+    months = List(count) { template.copy(month = first.plus(it, MONTH)) }.toImmutableList(),
+  )
+}
