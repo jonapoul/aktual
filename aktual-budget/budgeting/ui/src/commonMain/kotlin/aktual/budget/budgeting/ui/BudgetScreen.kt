@@ -10,6 +10,7 @@ import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Visibility
 import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
+import aktual.core.nav.BudgetCategoryNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
@@ -80,6 +81,7 @@ import kotlinx.datetime.plus
 internal fun BudgetScreen(
   month: YearMonth?,
   transactions: TransactionsNavigator,
+  categories: BudgetCategoryNavigator,
   modifier: Modifier = Modifier,
   viewModel: BudgetViewModel = budgetViewModel(month),
 ) {
@@ -104,6 +106,7 @@ internal fun BudgetScreen(
         ToggleHidden -> viewModel.toggleHidden()
         is ToggleGroup -> viewModel.toggleCollapsed(action.id)
         ReviewUncategorised -> transactions.uncategorised()
+        is OpenCategory -> categories(action.category, action.month)
         // The scaffold opens the sheet
         is EditBudget -> Unit
         is SetBudget -> viewModel.setBudget(action.month, action.category, action.input)

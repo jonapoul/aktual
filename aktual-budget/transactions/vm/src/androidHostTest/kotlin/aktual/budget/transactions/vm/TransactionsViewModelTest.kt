@@ -15,6 +15,7 @@ import aktual.budget.model.AccountSpec.AllAccounts
 import aktual.budget.model.AccountSpec.SpecificAccount
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
+import aktual.budget.model.CategorySpec
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
@@ -58,6 +59,8 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import okio.FileSystem
@@ -305,6 +308,37 @@ class TransactionsViewModelTest {
       )
       .withPrevKey(expected = null)
       .withNextKey(expected = null)
+  }
+
+  @Test
+  fun `A category's transactions in one month`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a")
+      insertTransaction(id = "b", account = "b", category = "b", payee = "b")
+      insertTransaction(id = "c", account = "c", category = "a", payee = "c", date = JULY)
+    }
+    advanceUntilIdle()
+    val spec =
+      TransactionsSpec(
+        categorySpec = CategorySpec.SpecificCategory(CategoryId("a"), YearMonth(2025, 6)),
+      )
+    val source =
+      TransactionsPagingSource(transactionDao = transactions, tagsDao = tags, spec = spec)
+    val params = LoadParams.Refresh<Int>(key = null, loadSize = 50, placeholdersEnabled = false)
+
+    // then - no balances, since the list only holds part of each account
+    assertThat(source.load(params))
+      .isPage()
+      .withData(transaction(id = "a", account = "a", category = "a", payee = "a"))
+      .withPrevKey(expected = null)
+      .withNextKey(expected = null)
+
+    // and the title names the category and month
+    val categoryViewModel = factory.create(spec)
+    assertThat(categoryViewModel.loadedAccount.first { it != Loading })
+      .isEqualTo(LoadedAccount.SpecificCategory("Additional", YearMonth(2025, 6)))
   }
 
   @Test
@@ -1027,6 +1061,8 @@ class TransactionsViewModelTest {
   }
 
   private companion object {
+    val JULY = LocalDate(2025, 7, 1)
+
     val LINKED = AccountId("linked")
 
     val TRANSACTION_A = transaction(id = "a", account = "a", category = "a", payee = "a")

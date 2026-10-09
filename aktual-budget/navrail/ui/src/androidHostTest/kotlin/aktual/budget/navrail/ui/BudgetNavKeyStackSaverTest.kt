@@ -1,12 +1,15 @@
 package aktual.budget.navrail.ui
 
 import aktual.budget.model.AccountId
+import aktual.budget.model.CategoryId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
 import aktual.budget.model.WidgetId
 import aktual.core.nav.AccountTransactionsNavRoute
+import aktual.core.nav.BudgetCategoryNavRoute
+import aktual.core.nav.CategoryTransactionsNavRoute
 import aktual.core.nav.CreateReportNavRoute
 import aktual.core.nav.CreateRuleNavRoute
 import aktual.core.nav.CreateScheduleNavRoute
@@ -31,6 +34,7 @@ import androidx.compose.runtime.toMutableStateList
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
+import kotlinx.datetime.YearMonth
 
 class BudgetNavKeyStackSaverTest {
   @Test
@@ -42,6 +46,8 @@ class BudgetNavKeyStackSaverTest {
         TransactionsWithTagNavRoute(TagId("tag")),
         AccountTransactionsNavRoute(AccountId("account")),
         UncategorisedTransactionsNavRoute,
+        CategoryTransactionsNavRoute(CategoryId("category"), YearMonth(2026, 10)),
+        BudgetCategoryNavRoute(CategoryId("category"), YearMonth(2026, 10)),
         ReportsListNavRoute,
         ReportNavRoute(WidgetId("widget")),
         CreateReportNavRoute(DashboardPageId("page")),

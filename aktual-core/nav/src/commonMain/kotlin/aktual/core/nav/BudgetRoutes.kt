@@ -1,6 +1,7 @@
 package aktual.core.nav
 
 import aktual.budget.model.AccountId
+import aktual.budget.model.CategoryId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
@@ -18,6 +19,11 @@ import kotlinx.serialization.Serializable
 // A null month shows the current one
 @Serializable data class BudgetNavRoute(val month: YearMonth? = null) : BudgetNavKey.Budget
 
+// One category's history, with its transactions in the selected month
+@Serializable
+data class BudgetCategoryNavRoute(val category: CategoryId, val month: YearMonth) :
+  BudgetNavKey.Budget
+
 @Serializable data object TransactionsNavRoute : BudgetNavKey.Transactions
 
 @Serializable data class TransactionsWithTagNavRoute(val id: TagId) : BudgetNavKey.Transactions
@@ -25,6 +31,10 @@ import kotlinx.serialization.Serializable
 @Serializable data class AccountTransactionsNavRoute(val id: AccountId) : BudgetNavKey.Transactions
 
 @Serializable data object UncategorisedTransactionsNavRoute : BudgetNavKey.Transactions
+
+@Serializable
+data class CategoryTransactionsNavRoute(val category: CategoryId, val month: YearMonth) :
+  BudgetNavKey.Transactions
 
 @Serializable data object ReportsListNavRoute : BudgetNavKey.Reports
 

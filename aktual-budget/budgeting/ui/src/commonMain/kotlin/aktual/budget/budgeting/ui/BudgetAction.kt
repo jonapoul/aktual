@@ -31,6 +31,8 @@ internal data class ToggleGroup(val id: CategoryGroupId) : BudgetAction
 
 internal data object ReviewUncategorised : BudgetAction
 
+internal data class OpenCategory(val month: YearMonth, val category: CategoryId) : BudgetAction
+
 // Opens the budget sheet on compact widths. Expanded widths edit in place
 internal data class EditBudget(val month: YearMonth, val category: CategoryId) : BudgetAction
 
