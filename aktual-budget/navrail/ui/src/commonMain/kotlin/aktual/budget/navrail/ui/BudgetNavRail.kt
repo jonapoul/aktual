@@ -8,6 +8,7 @@ import aktual.core.icons.Reports
 import aktual.core.icons.Tag
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.AccountBalance
+import aktual.core.icons.material.AccountBalanceWallet
 import aktual.core.icons.material.Home
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.Logout
@@ -21,6 +22,7 @@ import aktual.core.nav.BankSyncNavRoute
 import aktual.core.nav.BudgetEntryScope
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
+import aktual.core.nav.BudgetNavRoute
 import aktual.core.nav.BudgetTab
 import aktual.core.nav.HomeNavRoute
 import aktual.core.nav.ListRulesNavRoute
@@ -125,6 +127,7 @@ internal fun BudgetNavRail(
   val headerState by viewModel.headerState.collectAsState()
 
   val homeStack = stackWithDefault(HomeNavRoute)
+  val budgetStack = stackWithDefault(BudgetNavRoute())
   val transactionsStack = stackWithDefault(TransactionsNavRoute)
   val reportsStack = stackWithDefault(ReportsListNavRoute)
   val schedulesStack = stackWithDefault(ListSchedulesNavRoute)
@@ -135,6 +138,7 @@ internal fun BudgetNavRail(
   val tabStacks =
     remember(
       homeStack,
+      budgetStack,
       transactionsStack,
       reportsStack,
       schedulesStack,
@@ -144,6 +148,7 @@ internal fun BudgetNavRail(
     ) {
       persistentMapOf(
         BudgetTab.Home to homeStack,
+        BudgetTab.Budget to budgetStack,
         BudgetTab.Transactions to transactionsStack,
         BudgetTab.Reports to reportsStack,
         BudgetTab.Schedules to schedulesStack,
@@ -560,6 +565,7 @@ private fun Colors.navRailItem(): NavigationRailItemColors =
 private fun BudgetTab.label(): String =
   when (this) {
     BudgetTab.Home -> Strings.homeTitle
+    Budget -> Strings.budgetingTitle
     Transactions -> Strings.transactionsTitle
     BudgetTab.Reports -> Strings.reportsTitle
     Schedules -> Strings.listSchedulesTitle
@@ -572,6 +578,7 @@ private fun BudgetTab.label(): String =
 private fun BudgetTab.icon(): ImageVector =
   when (this) {
     BudgetTab.Home -> MaterialIcons.Home
+    Budget -> MaterialIcons.AccountBalanceWallet
     Transactions -> MaterialIcons.ReceiptLong
     BudgetTab.Reports -> AktualIcons.Reports
     Schedules -> AktualIcons.Calendar3

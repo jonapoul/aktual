@@ -6,6 +6,7 @@ import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
 import aktual.budget.model.WidgetId
+import kotlinx.datetime.YearMonth
 import kotlinx.serialization.Serializable
 
 // Routes with args must be data classes, not value classes. The nav stack is saved as JSON of the
@@ -13,6 +14,9 @@ import kotlinx.serialization.Serializable
 // discriminator, so restoring it (e.g. after rotation) crashes
 
 @Serializable data object HomeNavRoute : BudgetNavKey.Home
+
+// A null month shows the current one
+@Serializable data class BudgetNavRoute(val month: YearMonth? = null) : BudgetNavKey.Budget
 
 @Serializable data object TransactionsNavRoute : BudgetNavKey.Transactions
 

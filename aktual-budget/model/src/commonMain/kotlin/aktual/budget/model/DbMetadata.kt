@@ -119,6 +119,8 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
   companion object {
     val BudgetName: Key<String> = StringKey("budgetName")
     val BudgetCollapsed: Key<List<String>> = ListKey("budget.collapsed")
+    val BudgetShowHiddenCategories: Key<Boolean> = BoolKey("budget.showHiddenCategories")
+    val MobileShowSpentColumn: Key<Boolean> = BoolKey("mobile.showSpentColumn")
     val CloudFileId: Key<BudgetId> = TypedKey("cloudFileId", ::BudgetId)
     val GroupId: Key<String> = StringKey("groupId")
     val Id: Key<String> = StringKey("id")
@@ -133,6 +135,8 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
       when (key) {
         BudgetName.name -> BudgetName
         BudgetCollapsed.name -> BudgetCollapsed
+        BudgetShowHiddenCategories.name -> BudgetShowHiddenCategories
+        MobileShowSpentColumn.name -> MobileShowSpentColumn
         CloudFileId.name -> CloudFileId
         GroupId.name -> GroupId
         Id.name -> Id

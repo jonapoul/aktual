@@ -1,0 +1,33 @@
+<resources>
+  <string name="budgeting_title">Budget</string>
+  <string name="budgeting_menu">More options</string>
+  <string name="budgeting_show_hidden">Show hidden categories</string>
+  <string name="budgeting_hide_hidden">Hide hidden categories</string>
+  <string name="budgeting_to_budget">To budget</string>
+  <string name="budgeting_overbudgeted">Overbudgeted</string>
+  <string name="budgeting_available">Available</string>
+  <string name="budgeting_budgeted">Budgeted</string>
+  <string name="budgeting_spent">Spent</string>
+  <string name="budgeting_saved">Saved</string>
+  <string name="budgeting_overspent">Overspent</string>
+  <string name="budgeting_projected_savings">Projected savings</string>
+  <string name="budgeting_column_category">Category</string>
+  <string name="budgeting_column_budgeted">Budgeted</string>
+  <string name="budgeting_column_spent">Spent</string>
+  <string name="budgeting_column_balance">Balance</string>
+  <string name="budgeting_column_received">Received</string>
+  <string name="budgeting_toggle_spent">Show spent</string>
+  <string name="budgeting_toggle_budgeted">Show budgeted</string>
+  <string name="budgeting_group_collapse">Collapse %1$s</string>
+  <string name="budgeting_group_expand">Expand %1$s</string>
+  <string name="budgeting_rolls_over">Rolls over</string>
+  <string name="budgeting_banner_review">Review</string>
+  <string name="budgeting_banner_overbudgeted">You\'ve budgeted more than your available funds</string>
+  <plurals name="budgeting_banner_overspent">
+    <item quantity="one">%1$d overspent category (%2$s)</item>
+    <item quantity="other">%1$d overspent categories (%2$s)</item>
+  </plurals>
+  <string name="budgeting_empty">No categories yet</string>
+  <string name="budgeting_failure_title">Couldn\'t load the budget</string>
+  <string name="budgeting_failure_message">An unexpected error occurred</string>
+</resources>
