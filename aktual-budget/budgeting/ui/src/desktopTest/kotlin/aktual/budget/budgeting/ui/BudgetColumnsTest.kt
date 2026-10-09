@@ -4,13 +4,17 @@ import aktual.budget.model.CategoryId
 import aktual.core.theme.DarkColors
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextReplacement
@@ -101,6 +105,30 @@ class BudgetColumnsTest {
     cell(september, "Parking").assertIsSelected()
     assertThat(actions).isEmpty()
   }
+
+  @Test
+  fun `Balance menu toggles rollover`() = runColumnsTest {
+    // when
+    onAllNodes(hasClickLabel("Balance options for Utilities"))[0].performClick()
+    onNodeWithText("Rollover overspending").performClick()
+
+    // then
+    assertThat(actions).containsExactly(ToggleCarryover(september, CategoryId("Utilities"), true))
+  }
+
+  @Test
+  fun `Summary card opens the month summary`() = runColumnsTest {
+    // when
+    onNode(hasClickLabel("Budget summary for October 2026")).performClick()
+
+    // then
+    assertThat(actions).containsExactly(OpenSheet(SheetRequest.SummarySheet(october)))
+  }
+
+  private fun hasClickLabel(label: String) =
+    SemanticsMatcher("click label $label") {
+      it.config.getOrNull(SemanticsActions.OnClick)?.label == label
+    }
 
   private fun ComposeUiTest.cell(month: YearMonth, category: String): SemanticsNodeInteraction =
     onNodeWithTag(BudgetCell(month, CategoryId(category)).tag, useUnmergedTree = true)

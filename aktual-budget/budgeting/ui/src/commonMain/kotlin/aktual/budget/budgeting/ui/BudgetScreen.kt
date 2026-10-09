@@ -2,7 +2,6 @@ package aktual.budget.budgeting.ui
 
 import aktual.budget.budgeting.vm.BudgetState
 import aktual.budget.budgeting.vm.BudgetViewModel
-import aktual.budget.budgeting.vm.category
 import aktual.core.icons.material.CalendarToday
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
@@ -108,12 +107,25 @@ internal fun BudgetScreen(
         ReviewUncategorised -> transactions.uncategorised()
         is OpenCategory -> categories(action.category, action.month)
         // The scaffold opens the sheet
-        is EditBudget -> Unit
-        is SetBudget -> viewModel.setBudget(action.month, action.category, action.input)
-        is ApplyQuickAction -> viewModel.apply(action)
+        is OpenSheet -> Unit
+        is BudgetWrite -> viewModel.write(action)
       }
     },
   )
+}
+
+private fun BudgetViewModel.write(action: BudgetWrite) {
+  when (action) {
+    is SetBudget -> setBudget(action.month, action.category, action.input)
+    is ApplyQuickAction -> apply(action)
+    is TransferBudget -> transfer(action.month, action.input, action.from, action.to)
+    is CoverOverspending -> coverOverspending(action.month, action.to, action.from, action.input)
+    is ToggleCarryover -> setCarryover(action.month, action.category, action.enabled)
+    is HoldBudget -> hold(action.month, action.input)
+    is ResetHold -> resetHold(action.month)
+    is TransferAvailable -> transferAvailable(action.month, action.input, action.category)
+    is CoverOverbudgeted -> coverOverbudgeted(action.month, action.category, action.input)
+  }
 }
 
 private fun BudgetViewModel.apply(action: ApplyQuickAction) {
@@ -146,11 +158,11 @@ private fun BudgetScaffold(
   val pageListStates = remember { PageListStates() }
   val visibleMonth by rememberUpdatedState((state as? BudgetState.Loaded)?.month)
   var showMonthPicker by remember { mutableStateOf(false) }
-  var editing by remember { mutableStateOf<EditBudget?>(null) }
+  var sheet by remember { mutableStateOf<SheetRequest?>(null) }
   val latestOnAction by rememberUpdatedState(onAction)
   val handler = remember {
     BudgetActionHandler { action ->
-      if (action is EditBudget) editing = action else latestOnAction(action)
+      if (action is OpenSheet) sheet = action.sheet else latestOnAction(action)
     }
   }
   val focusRequester = remember { FocusRequester() }
@@ -231,15 +243,13 @@ private fun BudgetScaffold(
     MonthPickerSheet(state = state, onAction = handler, onDismiss = { showMonthPicker = false })
   }
 
-  val edit = editing
-  val category = edit?.let { (state as? Loaded)?.get(it.month)?.category(it.category) }
-  if (edit != null && category != null && state is Loaded) {
-    BudgetSheet(
-      month = edit.month,
-      category = category,
-      type = state.type,
+  val request = sheet
+  if (request != null && state is Loaded) {
+    BudgetSheets(
+      request = request,
+      state = state,
       onAction = handler,
-      onDismiss = { editing = null },
+      onDismiss = { if (sheet == request) sheet = null },
     )
   }
 }

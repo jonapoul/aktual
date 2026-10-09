@@ -18,6 +18,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.formattedString
+import aktual.core.ui.stringLong
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
@@ -59,6 +61,7 @@ import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.datetime.YearMonth
 
 // packages/desktop-client/src/components/mobile/budget/BudgetTable.tsx
 internal fun LazyListScope.budgetTable(
@@ -68,11 +71,22 @@ internal fun LazyListScope.budgetTable(
   onAction: BudgetActionHandler,
 ) {
   item(key = "summary") {
-    SummaryCard(summary = budget.summary, modifier = Modifier.padding(bottom = 8.dp))
+    SummaryCard(
+      summary = budget.summary,
+      label = Strings.budgetingSummaryOpen(budget.month.stringLong()),
+      onClick = { onAction(OpenSheet(SheetRequest.SummarySheet(budget.month))) },
+      modifier = Modifier.padding(bottom = 8.dp),
+    )
   }
 
   items(budget.banners, key = { it::class.simpleName.orEmpty() }) { banner ->
-    BannerRow(banner = banner, onAction = onAction, modifier = Modifier.padding(bottom = 8.dp))
+    BannerRow(
+      banner = banner,
+      month = budget.month,
+      type = type,
+      onAction = onAction,
+      modifier = Modifier.padding(bottom = 8.dp),
+    )
   }
 
   item(key = "header") { ColumnHeader(showSpent = showSpent, onAction = onAction) }
@@ -91,7 +105,8 @@ internal fun LazyListScope.budgetTable(
         CategoryItem(
           category = category,
           showSpent = showSpent,
-          onEdit = { onAction(EditBudget(budget.month, category.id)) },
+          onBalance = { onAction(OpenSheet(SheetRequest.BalanceSheet(budget.month, category.id))) },
+          onEdit = { onAction(OpenSheet(SheetRequest.EditSheet(budget.month, category.id))) },
           onOpen = { onAction(OpenCategory(budget.month, category.id)) },
         )
       }
@@ -112,7 +127,7 @@ internal fun LazyListScope.budgetTable(
       IncomeItem(
         category = category,
         isTracking = isTracking,
-        onEdit = { onAction(EditBudget(budget.month, category.id)) },
+        onEdit = { onAction(OpenSheet(SheetRequest.EditSheet(budget.month, category.id))) },
         onOpen = { onAction(OpenCategory(budget.month, category.id)) },
       )
     }
@@ -120,13 +135,20 @@ internal fun LazyListScope.budgetTable(
 }
 
 @Composable
-private fun SummaryCard(summary: BudgetSummary, modifier: Modifier = Modifier) {
+private fun SummaryCard(
+  summary: BudgetSummary,
+  label: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   Row(
     modifier =
       modifier
         .fillMaxWidth()
+        .clip(CardShape)
         .background(colors.tableBackground, CardShape)
         .border(1.dp, colors.tableBorder, CardShape)
+        .clickable(onClickLabel = label, role = Button, onClick = onClick)
         .padding(12.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = CenterVertically,
@@ -223,10 +245,11 @@ private fun Breakdown(lines: ImmutableList<Pair<String, Amount>>, modifier: Modi
   }
 }
 
-// Covering overspending and overbudgeting lands with the budget actions
 @Composable
 internal fun BannerRow(
   banner: Banner,
+  month: YearMonth,
+  type: BudgetType,
   onAction: BudgetActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -272,9 +295,20 @@ internal fun BannerRow(
       overflow = Ellipsis,
     )
 
-    if (banner is Uncategorised) {
-      TextButton(onClick = { onAction(ReviewUncategorised) }) {
-        Text(text = Strings.budgetingBannerReview, color = text, fontWeight = SemiBold)
+    // packages/desktop-client/src/components/mobile/budget/BudgetPage.tsx OverbudgetedBanner and
+    // OverspendingBanner. Tracking budgets can't cover overspending
+    val action =
+      when (banner) {
+        is Uncategorised -> Strings.budgetingBannerReview to ReviewUncategorised
+        is Overspent if type == Envelope ->
+          Strings.budgetingBannerCover to OpenSheet(SheetRequest.OverspentSheet(month))
+        is Overspent -> null
+        is Overbudgeted ->
+          Strings.budgetingBannerCover to OpenSheet(SheetRequest.CoverOverbudgetedSheet(month))
+      }
+    if (action != null) {
+      TextButton(onClick = { onAction(action.second) }) {
+        Text(text = action.first, color = text, fontWeight = SemiBold)
       }
     }
   }
@@ -459,6 +493,7 @@ private fun CategoryItem(
   category: CategoryRow,
   showSpent: Boolean,
   onEdit: () -> Unit,
+  onBalance: () -> Unit,
   onOpen: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -468,7 +503,14 @@ private fun CategoryItem(
     } else {
       EditableAmount(amount = category.budgeted, name = category.name, onEdit = onEdit)
     }
-    Box(modifier = Modifier.width(BudgetDS.balanceWidth), contentAlignment = CenterEnd) {
+    val balanceLabel = Strings.budgetingBalanceOptions(category.name)
+    Box(
+      modifier =
+        Modifier.width(BudgetDS.balanceWidth)
+          .height(BudgetDS.rowHeight)
+          .clickable(onClickLabel = balanceLabel, role = Button, onClick = onBalance),
+      contentAlignment = CenterEnd,
+    ) {
       BalancePill(balance = category.balance, carryover = category.carryover)
     }
   }

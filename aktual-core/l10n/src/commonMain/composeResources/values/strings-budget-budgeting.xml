@@ -57,4 +57,31 @@
   <string name="budgeting_category_transactions">View transactions</string>
   <string name="budgeting_category_failure">Couldn\'t load this category</string>
   <string name="budgeting_category_select_month">Show %1$s</string>
+
+  <string name="budgeting_balance_options">Balance options for %1$s</string>
+  <string name="budgeting_balance_transfer">Transfer to another category</string>
+  <string name="budgeting_balance_cover">Cover overspending</string>
+  <string name="budgeting_balance_rollover_on">Rollover overspending</string>
+  <string name="budgeting_balance_rollover_off">Remove overspending rollover</string>
+  <string name="budgeting_transfer_title">Transfer from %1$s</string>
+  <string name="budgeting_transfer_confirm">Transfer</string>
+  <string name="budgeting_transfer_to">To</string>
+  <string name="budgeting_cover_title">Cover %1$s</string>
+  <string name="budgeting_cover_confirm">Cover</string>
+  <string name="budgeting_cover_from">From</string>
+  <string name="budgeting_cover_pick">Cover which category?</string>
+  <string name="budgeting_summary_open">Budget summary for %1$s</string>
+  <string name="budgeting_summary_available">Available funds</string>
+  <string name="budgeting_summary_overspent">Overspent last month</string>
+  <string name="budgeting_summary_held">For next month</string>
+  <string name="budgeting_summary_income">Income</string>
+  <string name="budgeting_summary_expenses">Expenses</string>
+  <string name="budgeting_summary_received">Received</string>
+  <string name="budgeting_hold">Hold for next month</string>
+  <string name="budgeting_hold_confirm">Hold</string>
+  <string name="budgeting_hold_reset">Reset next month\'s hold</string>
+  <string name="budgeting_transfer_available">Transfer to a category</string>
+  <string name="budgeting_cover_overbudgeted">Cover from a category</string>
+  <string name="budgeting_cover_overbudgeted_title">Cover overbudgeting</string>
+  <string name="budgeting_banner_cover">Cover</string>
 </resources>
