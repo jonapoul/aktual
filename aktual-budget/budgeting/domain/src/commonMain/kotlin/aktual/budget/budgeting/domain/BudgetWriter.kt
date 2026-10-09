@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
-import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
 import kotlinx.datetime.minus
 import kotlinx.datetime.number
@@ -38,6 +37,7 @@ import kotlinx.datetime.yearMonth
  * The per-category and month-wide actions of packages/loot-core/src/server/budget/actions.ts. Each
  * call sends its changes in one batch, and the UI picks them up through [BudgetMonthCalculator].
  */
+@Suppress("ComplexInterface")
 interface BudgetWriter {
   suspend fun setBudget(month: YearMonth, category: CategoryId, amount: Amount)
 
@@ -379,7 +379,7 @@ private const val OVERBUDGETED = "Overbudgeted"
 
 // MMMM dd
 private val NOTE_DAY_FORMAT = LocalDate.Format {
-  monthName(MonthNames.ENGLISH_FULL)
+  monthName(ENGLISH_FULL)
   char(' ')
   day()
 }

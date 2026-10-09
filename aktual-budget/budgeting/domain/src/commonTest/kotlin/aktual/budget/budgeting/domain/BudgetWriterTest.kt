@@ -575,17 +575,6 @@ internal class BudgetWriterTest {
     val CAT3 = CategoryId("cat3")
     val INCOME = CategoryId("income-cat")
 
-    fun <T : Any> fixed(value: T) =
-      object : Preference<T> {
-        override val default = value
-
-        override suspend fun get() = value
-
-        override suspend fun set(value: T?) = Unit
-
-        override fun asFlow() = flowOf(value)
-      }
-
     @Suppress("MaxLineLength")
     val SETUP =
       listOf(
@@ -597,5 +586,16 @@ internal class BudgetWriterTest {
         "INSERT INTO category_mapping(id, transferId) VALUES ('income-cat', 'income-cat'), ('cat1', 'cat1'), ('cat2', 'cat2')",
         "INSERT INTO accounts(id, name, offbudget) VALUES ('account1', 'Account 1', 0)",
       )
+
+    fun <T : Any> fixed(fixed: T) =
+      object : Preference<T> {
+        override val default = fixed
+
+        override suspend fun get() = fixed
+
+        override suspend fun set(value: T?) = Unit
+
+        override fun asFlow() = flowOf(fixed)
+      }
   }
 }
