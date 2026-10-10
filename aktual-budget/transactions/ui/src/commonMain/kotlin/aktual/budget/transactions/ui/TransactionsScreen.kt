@@ -25,20 +25,27 @@ import aktual.core.ui.rememberHazedTopBarState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.util.fastFirstOrNull
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableSet
@@ -118,11 +125,13 @@ internal fun TransactionsScaffold(
   val listState = rememberLazyListState()
   val pagingItems = pagingData.collectAsLazyPagingItems()
   var showViewOptions by remember { mutableStateOf(false) }
+  var topBarHeight by remember { mutableIntStateOf(0) }
+  val year by rememberVisibleYear(listState, pagingItems) { topBarHeight }
 
   WithLedgerDimens(density, showBalance) {
     Scaffold(
       topBar = {
-        Column {
+        Column(modifier = Modifier.onSizeChanged { topBarHeight = it.height }) {
           TransactionsTitleBar(
             hazeState = hazeState,
             listState = listState,
@@ -134,6 +143,7 @@ internal fun TransactionsScaffold(
 
           if (density != Dense && showBalance) BalanceStrip(balance)
           if (density == Dense) LedgerHeader()
+          year?.let { YearDivider(it) }
         }
       },
       snackbarHost = {
@@ -178,6 +188,25 @@ internal fun TransactionsScaffold(
     )
   }
 }
+
+// The year of the topmost transaction that isn't hidden behind the top bar. It's pinned under the
+// bar, where the list's own year dividers scroll up to meet it
+@Composable
+private fun rememberVisibleYear(
+  listState: LazyListState,
+  pagingItems: LazyPagingItems<Transaction>,
+  topBarHeight: () -> Int,
+): State<Int?> =
+  remember(listState, pagingItems) {
+    derivedStateOf {
+      // The list's first item is the spacer under the top bar, so transactions are one further on
+      val topItem =
+        listState.layoutInfo.visibleItemsInfo.fastFirstOrNull {
+          it.index > 0 && it.offset + it.size > topBarHeight()
+        }
+      topItem?.let { pagingItems.itemSnapshotList.getOrNull(it.index - 1)?.date?.year }
+    }
+  }
 
 @Composable
 @PortraitPreview

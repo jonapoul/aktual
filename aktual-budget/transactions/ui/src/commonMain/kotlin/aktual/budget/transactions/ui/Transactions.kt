@@ -152,7 +152,9 @@ private fun TransactionsFilled(
     items(count = pagingItems.itemCount, key = pagingItems.itemKey { it.id.toString() }) { index ->
       val transaction = pagingItems[index]
       if (transaction != null) {
-        val showDate = index == 0 || pagingItems.peek(index - 1)?.date != transaction.date
+        val previous = if (index > 0) pagingItems.peek(index - 1) else null
+        val showDate = previous?.date != transaction.date
+        val showYear = previous != null && previous.date.year != transaction.date.year
 
         val background =
           if (shadeRows && index % 2 == 1) {
@@ -166,6 +168,9 @@ private fun TransactionsFilled(
           if (index > 0 && (showDate || density == Dense)) {
             HorizontalDivider(color = colors.tableBorder)
           }
+
+          // The first year is already pinned under the top bar
+          if (showYear) YearDivider(transaction.date.year)
 
           val parts =
             when {
