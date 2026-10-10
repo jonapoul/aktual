@@ -10,7 +10,6 @@ import aktual.about.vm.LicensesState.Error
 import aktual.about.vm.LicensesState.Loaded
 import aktual.core.UrlOpener
 import aktual.test.assertThatNextEmissionIsEqualTo
-import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.TurbineTestContext
 import app.cash.turbine.test
 import io.mockk.coEvery
@@ -95,66 +94,6 @@ class LicensesViewModelTest {
   }
 
   @Test
-  fun `Open and close search`() = runTest {
-    // Given the repo fetches a library successfully
-    val models = listOf(EXAMPLE_MODEL)
-    coEvery { repository.loadLicenses() } returns Success(models)
-
-    // When
-    buildViewModel()
-
-    viewModel.licensesState.test {
-      assertLoaded(models)
-
-      viewModel.openSearch()
-      assertLoaded(models, isSearchActive = true)
-
-      viewModel.clearFilter()
-      assertLoaded(models)
-
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
-  fun `Filter licenses based on search results`() = runTest {
-    // Given the repo fetches some libraries successfully
-    val basicLib = EXAMPLE_MODEL
-    val projectLib = EXAMPLE_MODEL.copy(name = "my project")
-    val versionLib = EXAMPLE_MODEL.copy(version = "7.8.9")
-    val urlLib = EXAMPLE_MODEL.copy(scm = ArtifactScm("www.url.com"))
-    val licenseLib = EXAMPLE_MODEL.copy(spdxLicenses = setOf(Apache2.copy(identifier = "MIT")))
-    val allLibraries = listOf(basicLib, projectLib, versionLib, urlLib, licenseLib)
-    coEvery { repository.loadLicenses() } returns Success(allLibraries)
-
-    buildViewModel()
-
-    viewModel.licensesState.test {
-      // No filter
-      assertLoaded(allLibraries)
-
-      // Activate search
-      viewModel.openSearch()
-      assertLoaded(allLibraries, isSearchActive = true)
-
-      // Apply filters
-      viewModel.setFilterText(text = "my project")
-      assertLoaded(listOf(projectLib), filterText = "my project", isSearchActive = true)
-
-      viewModel.setFilterText(text = "url")
-      assertLoaded(listOf(urlLib), filterText = "url", isSearchActive = true)
-
-      viewModel.setFilterText(text = "MIT")
-      assertLoaded(listOf(licenseLib), filterText = "MIT", isSearchActive = true)
-
-      viewModel.setFilterText(text = "")
-      assertLoaded(allLibraries, filterText = "", isSearchActive = true)
-
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
   fun `Sort licenses`() = runTest {
     // Given libraries in their default order
     val apple = EXAMPLE_MODEL.copy(artifactId = "a", name = "apple", spdxLicenses = setOf(MIT))
@@ -183,12 +122,7 @@ class LicensesViewModelTest {
   }
 
   private fun buildViewModel() {
-    viewModel =
-      LicensesViewModel(
-        savedState = SavedStateHandle(),
-        licensesRepository = repository,
-        urlOpener = urlOpener,
-      )
+    viewModel = LicensesViewModel(licensesRepository = repository, urlOpener = urlOpener)
   }
 
   private suspend fun TurbineTestContext<LicensesState>.assertLoaded(
@@ -197,18 +131,8 @@ class LicensesViewModelTest {
     assertLoaded(models.toList())
   }
 
-  private suspend fun TurbineTestContext<LicensesState>.assertLoaded(
-    models: List<ArtifactDetail>,
-    filterText: String = "",
-    isSearchActive: Boolean = false,
-  ) {
-    assertThatNextEmissionIsEqualTo(
-      Loaded(
-        artifacts = models.toImmutableList(),
-        filterText = filterText,
-        isSearchActive = isSearchActive,
-      ),
-    )
+  private suspend fun TurbineTestContext<LicensesState>.assertLoaded(models: List<ArtifactDetail>) {
+    assertThatNextEmissionIsEqualTo(Loaded(models.toImmutableList()))
   }
 
   private companion object {

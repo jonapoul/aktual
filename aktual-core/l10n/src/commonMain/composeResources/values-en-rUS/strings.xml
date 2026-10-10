@@ -4,7 +4,9 @@
   <string name="licenses_failed">Failed reading licenses: %1$s</string>
   <string name="licenses_none_found">No licenses found!</string>
   <string name="licenses_item_license">License:</string>
-  <string name="licenses_search_placeholder">Filter licenses…</string>
+  <string name="licenses_search_placeholder">Search licenses</string>
+  <string name="licenses_search_prompt">Enter some text to search by name, artifact, version or license</string>
+  <string name="licenses_search_no_results">No licenses match “%1$s”</string>
   <string name="bank_sync_settings_reimport_deleted_hint">By default imported transactions that you delete will be re-imported with the next bank sync operation. To disable this behavior - untick this box.</string>
   <string name="bank_sync_settings_unlink_detail">Transactions will no longer be synchronized with this account and must be manually entered. You will not be able to edit the bank sync settings for this account and the settings will close.</string>
   <string name="home_attention_sync_reauth">%1$s: needs re-authorizing</string>

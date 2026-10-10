@@ -2,6 +2,7 @@ package aktual.about.ui
 
 import aktual.about.ui.info.InfoScreen
 import aktual.about.ui.licenses.LicensesScreen
+import aktual.about.ui.licenses.search.SearchLicensesScreen
 import aktual.about.ui.storage.ManageStorageScreen
 import aktual.about.vm.StorageNavEvent
 import aktual.core.nav.BackNavigator
@@ -13,6 +14,8 @@ import aktual.core.nav.ManageStorageNavRoute
 import aktual.core.nav.ManageStorageNavigator
 import aktual.core.nav.NavEntryContributor
 import aktual.core.nav.NavStack
+import aktual.core.nav.SearchLicensesNavRoute
+import aktual.core.nav.SearchLicensesNavigator
 import aktual.di.AppScope
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
@@ -29,7 +32,11 @@ class AboutNavEntryContributor : NavEntryContributor {
       )
     }
 
-    entry<LicensesNavRoute> { LicensesScreen(BackNavigator(stack)) }
+    entry<LicensesNavRoute> {
+      LicensesScreen(back = BackNavigator(stack), toSearch = SearchLicensesNavigator(stack))
+    }
+
+    entry<SearchLicensesNavRoute> { SearchLicensesScreen(BackNavigator(stack)) }
 
     entry<ManageStorageNavRoute> {
       ManageStorageScreen(

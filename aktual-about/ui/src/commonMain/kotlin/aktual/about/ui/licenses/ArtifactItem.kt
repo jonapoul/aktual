@@ -11,6 +11,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.rememberHighlighted
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -49,6 +50,7 @@ internal fun ArtifactItem(
   artifact: ArtifactDetail,
   onLaunchUrl: (url: String) -> Unit,
   modifier: Modifier = Modifier,
+  query: String = "",
 ) {
   val interactionSource = remember { MutableInteractionSource() }
   Row(
@@ -84,18 +86,21 @@ internal fun ArtifactItem(
         value = artifact.fullArtifact,
         headerStyle = headerStyle,
         headerWidth = headerWidth,
+        query = query,
       )
       LibraryTableRow(
         title = Strings.licensesItemVersion,
         value = artifact.version,
         headerStyle = headerStyle,
         headerWidth = headerWidth,
+        query = query,
       )
       LibraryTableRow(
         title = Strings.licensesItemLicense,
         value = artifact.license(),
         headerStyle = headerStyle,
         headerWidth = headerWidth,
+        query = query,
       )
     }
 
@@ -170,6 +175,7 @@ private fun LibraryTableRow(
   value: String?,
   headerStyle: TextStyle,
   headerWidth: Dp,
+  query: String,
   modifier: Modifier = Modifier,
 ) {
   if (value.isNullOrEmpty()) {
@@ -191,7 +197,7 @@ private fun LibraryTableRow(
 
     Text(
       modifier = Modifier.weight(1f),
-      text = value,
+      text = rememberHighlighted(value, query),
       textAlign = Start,
       color = colors.pageText,
       lineHeight = LineHeight,

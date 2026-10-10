@@ -14,6 +14,11 @@ class LicensesNavigator(private val stack: NavStack<NavKey>) {
 }
 
 @Immutable
+class SearchLicensesNavigator(private val stack: NavStack<NavKey>) {
+  operator fun invoke() = stack.push(SearchLicensesNavRoute)
+}
+
+@Immutable
 class ManageStorageNavigator(private val stack: NavStack<NavKey>) {
   operator fun invoke() = stack.push(ManageStorageNavRoute)
 }
