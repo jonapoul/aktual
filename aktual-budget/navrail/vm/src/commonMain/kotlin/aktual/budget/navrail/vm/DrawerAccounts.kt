@@ -30,7 +30,7 @@ data class DrawerAccounts(
 @Immutable
 data class DrawerAccountSection(
   val accounts: ImmutableList<DrawerAccount> = persistentListOf(),
-  val total: Amount = Amount.Zero,
+  val total: Amount = Zero,
 )
 
 @Immutable data class DrawerAccount(val id: AccountId, val name: String, val balance: Amount)

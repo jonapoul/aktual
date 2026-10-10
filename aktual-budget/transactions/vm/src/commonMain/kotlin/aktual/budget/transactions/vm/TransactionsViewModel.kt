@@ -165,8 +165,7 @@ class TransactionsViewModel(
           mutableLoadedAccount.update { SpecificAccount(account) }
         }
 
-      accountSpec is AccountSpec.Group ->
-        mutableLoadedAccount.update { LoadedAccount.Group(accountSpec.group) }
+      accountSpec is Group -> mutableLoadedAccount.update { LoadedAccount.Group(accountSpec.group) }
 
       else -> mutableLoadedAccount.update { AllAccounts }
     }
@@ -185,7 +184,7 @@ class TransactionsViewModel(
     when (val accountSpec = spec.accountSpec) {
       AccountSpec.AllAccounts -> transactionDao.observeBalance()
       is AccountSpec.SpecificAccount -> transactionDao.observeBalance(accountSpec.id)
-      is AccountSpec.Group -> transactionDao.observeBalance(accountSpec.group)
+      is Group -> transactionDao.observeBalance(accountSpec.group)
     }
 
   fun setDensity(density: TransactionsDensity) {

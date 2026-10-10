@@ -102,6 +102,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
@@ -120,37 +121,8 @@ internal fun BudgetNavRail(
   val headerState by viewModel.headerState.collectAsState()
   val accounts by viewModel.accounts.collectAsState()
 
-  val homeStack = stackWithDefault(HomeNavRoute)
-  val budgetStack = stackWithDefault(BudgetNavRoute())
-  val transactionsStack = stackWithDefault(TransactionsNavRoute)
-  val reportsStack = stackWithDefault(ReportsListNavRoute)
-  val schedulesStack = stackWithDefault(ListSchedulesNavRoute)
-  val rulesStack = stackWithDefault(ListRulesNavRoute)
-  val tagsStack = stackWithDefault(ListTagsNavRoute)
-  val bankSyncStack = stackWithDefault(BankSyncNavRoute)
-
-  val tabStacks =
-    remember(
-      homeStack,
-      budgetStack,
-      transactionsStack,
-      reportsStack,
-      schedulesStack,
-      rulesStack,
-      tagsStack,
-      bankSyncStack,
-    ) {
-      persistentMapOf(
-        BudgetTab.Home to homeStack,
-        BudgetTab.Budget to budgetStack,
-        BudgetTab.Transactions to transactionsStack,
-        BudgetTab.Reports to reportsStack,
-        BudgetTab.Schedules to schedulesStack,
-        BudgetTab.Rules to rulesStack,
-        BudgetTab.Tags to tagsStack,
-        BudgetTab.BankSync to bankSyncStack,
-      )
-    }
+  val tabStacks = rememberTabStacks()
+  val transactionsStack = tabStacks.getValue(Transactions)
 
   var selectedTab by rememberSaveable(stateSaver = TabSaver) { mutableStateOf(BudgetTab.Home) }
   var showRenameDialog by rememberSaveable { mutableStateOf(false) }
@@ -242,6 +214,40 @@ internal fun BudgetNavRail(
         viewModel.rename(name)
       },
       onDismiss = { showRenameDialog = false },
+    )
+  }
+}
+
+@Composable
+private fun rememberTabStacks(): ImmutableMap<BudgetTab, NavStack<BudgetNavKey>> {
+  val homeStack = stackWithDefault(HomeNavRoute)
+  val budgetStack = stackWithDefault(BudgetNavRoute())
+  val transactionsStack = stackWithDefault(TransactionsNavRoute)
+  val reportsStack = stackWithDefault(ReportsListNavRoute)
+  val schedulesStack = stackWithDefault(ListSchedulesNavRoute)
+  val rulesStack = stackWithDefault(ListRulesNavRoute)
+  val tagsStack = stackWithDefault(ListTagsNavRoute)
+  val bankSyncStack = stackWithDefault(BankSyncNavRoute)
+
+  return remember(
+    homeStack,
+    budgetStack,
+    transactionsStack,
+    reportsStack,
+    schedulesStack,
+    rulesStack,
+    tagsStack,
+    bankSyncStack,
+  ) {
+    persistentMapOf(
+      BudgetTab.Home to homeStack,
+      BudgetTab.Budget to budgetStack,
+      BudgetTab.Transactions to transactionsStack,
+      BudgetTab.Reports to reportsStack,
+      BudgetTab.Schedules to schedulesStack,
+      BudgetTab.Rules to rulesStack,
+      BudgetTab.Tags to tagsStack,
+      BudgetTab.BankSync to bankSyncStack,
     )
   }
 }
