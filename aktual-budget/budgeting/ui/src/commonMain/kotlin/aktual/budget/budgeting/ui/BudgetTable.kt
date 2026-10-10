@@ -18,6 +18,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
+import aktual.core.ui.redacted
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -211,7 +213,7 @@ private fun Headline(headline: SummaryHeadline, modifier: Modifier = Modifier) {
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
     Text(text = headline.label, fontSize = 13.sp, color = colors.pageTextSubdued)
     Text(
-      text = headline.amount.formattedString(includeSign = true),
+      text = headline.amount.formattedText(includeSign = true),
       style = typography.headlineSmall.tabularFigures(),
       fontWeight = SemiBold,
       color = headline.color,
@@ -234,7 +236,7 @@ private fun Breakdown(lines: ImmutableList<Pair<String, Amount>>, modifier: Modi
       ) {
         Text(text = label, fontSize = 13.sp, color = colors.pageTextSubdued)
         Text(
-          text = amount.formattedString(),
+          text = amount.formattedText(),
           fontSize = 13.sp,
           style = TextStyle.Default.tabularFigures(),
           color = colors.pageText,
@@ -288,7 +290,7 @@ internal fun BannerRow(
               banner.total.formattedString(),
             )
           is Overbudgeted -> Strings.budgetingBannerOverbudgeted
-        },
+        }.redacted(),
       fontSize = 14.sp,
       color = text,
       maxLines = 2,
@@ -609,7 +611,7 @@ internal fun AmountText(
 ) =
   Text(
     modifier = modifier,
-    text = amount.formattedString(includeSign = includeSign),
+    text = amount.formattedText(includeSign = includeSign),
     fontSize = 14.sp,
     fontWeight = if (bold) SemiBold else Normal,
     style = TextStyle.Default.tabularFigures(),
@@ -633,7 +635,7 @@ internal fun BalancePill(balance: Amount, carryover: Boolean, modifier: Modifier
     verticalAlignment = CenterVertically,
   ) {
     Text(
-      text = balance.formattedString(includeSign = true),
+      text = balance.formattedText(includeSign = true),
       fontSize = 13.sp,
       fontWeight = Medium,
       style = TextStyle.Default.tabularFigures(),

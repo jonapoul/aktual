@@ -9,6 +9,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.redacted
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -98,7 +99,7 @@ private fun YearBreakdown(
     }
     if (year.unspentIncome > 0) {
       Text(
-        text = Strings.monteCarloCashflowUnspent(year.unspentIncome.money()),
+        text = Strings.monteCarloCashflowUnspent(year.unspentIncome.money()).redacted(),
         style = typography.bodySmall,
         color = textColor,
       )
@@ -155,7 +156,12 @@ private fun BreakdownRow(
       fontWeight = weight,
       color = textColor,
     )
-    Text(text = amount, style = typography.bodySmall, fontWeight = weight, color = textColor)
+    Text(
+      text = amount.redacted(),
+      style = typography.bodySmall,
+      fontWeight = weight,
+      color = textColor,
+    )
   }
 
 @Composable

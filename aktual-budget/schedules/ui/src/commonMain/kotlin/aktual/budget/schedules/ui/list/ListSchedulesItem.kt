@@ -16,6 +16,7 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
+import aktual.core.ui.redacted
 import aktual.core.ui.rememberHighlighted
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -134,7 +135,11 @@ private fun LabelValue(
     verticalAlignment = CenterVertically,
   ) {
     Text(label, style = typography.bodySmall, color = colors.pageTextSubdued)
-    Text(rememberHighlighted(value, query), style = typography.bodySmall, color = valueColor)
+    Text(
+      text = rememberHighlighted(value, query).redacted(),
+      style = typography.bodySmall,
+      color = valueColor,
+    )
   }
 }
 

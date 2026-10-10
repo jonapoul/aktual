@@ -16,6 +16,7 @@ import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.formattedString
+import aktual.core.ui.redacted
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -122,7 +123,7 @@ private fun Stat(
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
     GroupHeading(heading)
     Text(
-      text = value,
+      text = value.redacted(),
       style = if (isLarge) typography.headlineMedium else typography.titleMedium,
       fontWeight = if (isLarge) FontWeight.Normal else FontWeight.Medium,
       color = color,

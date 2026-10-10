@@ -18,7 +18,7 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
 import aktual.core.ui.isInPreview
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
@@ -107,7 +107,7 @@ private fun Header(
     Column(horizontalAlignment = Alignment.End) {
       val netWorthLatest = remember(data) { data.items.maxBy { (month, _) -> month }.value }
       Text(
-        text = netWorthLatest.formattedString(includeSign = false),
+        text = netWorthLatest.formattedText(includeSign = false),
         textAlign = End,
         style = typography.bodyLarge,
         color = colors.pageText,
@@ -121,7 +121,7 @@ private fun Header(
           netWorthLatest - netWorthFirst
         }
       Text(
-        text = netWorthChange.formattedString(includeSign = true),
+        text = netWorthChange.formattedText(includeSign = true),
         textAlign = End,
         style = typography.bodySmall,
         color = if (netWorthChange.isPositive()) colors.noticeText else colors.errorText,

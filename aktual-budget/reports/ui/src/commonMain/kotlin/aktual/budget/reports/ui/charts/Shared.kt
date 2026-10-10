@@ -10,6 +10,8 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
+import aktual.core.ui.redacted
+import aktual.core.ui.redactedFontFamily
 import aktual.core.ui.stringShort
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
@@ -24,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -121,18 +124,22 @@ internal fun amountYAxisFormatter(
   numberFormatConfig: NumberFormatConfig = LocalNumberFormatConfig.current,
   currencyConfig: CurrencyConfig = LocalCurrencyConfig.current,
   isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
-) =
-  remember(numberFormatConfig, currencyConfig, isPrivacyEnabled) {
+): CartesianValueFormatter {
+  val redactedFont = redactedFontFamily()
+  return remember(numberFormatConfig, currencyConfig, isPrivacyEnabled, redactedFont) {
     CartesianValueFormatter { _, value, _ ->
-      Amount(value)
-        .toString(
-          numberFormatConfig = numberFormatConfig.copy(hideFraction = true),
-          currencyConfig = currencyConfig,
-          includeSign = false,
-          isPrivacyEnabled = isPrivacyEnabled,
-        )
+      val text =
+        Amount(value)
+          .toString(
+            numberFormatConfig = numberFormatConfig.copy(hideFraction = true),
+            currencyConfig = currencyConfig,
+            includeSign = false,
+            isPrivacyEnabled = isPrivacyEnabled,
+          )
+      AnnotatedString(text).redacted(redactedFont)
     }
   }
+}
 
 @Composable
 internal fun monthStringsMap(): ImmutableMap<Month, String> =

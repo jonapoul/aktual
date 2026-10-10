@@ -24,8 +24,12 @@ import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.REDACTED_MASK
 import aktual.core.ui.bareIconButton
 import aktual.core.ui.formattedString
+import aktual.core.ui.redactedFontFamily
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
@@ -68,7 +72,9 @@ internal fun AmountTextField(
 
   val rememberOnValueChange by rememberUpdatedState(onValueChange)
 
-  val textStyle =
+  val interactionSource = remember { MutableInteractionSource() }
+  val isFocused by interactionSource.collectIsFocusedAsState()
+  val baseStyle =
     LocalTextStyle.current.copy(
       textAlign =
         when (currencyConfig.position) {
@@ -85,6 +91,10 @@ internal fun AmountTextField(
     }
   val textState = rememberTextFieldState(initialText = initialText)
   var isPositive by remember { mutableStateOf(value.isPositive()) }
+
+  // The mask is a fixed length, so it would hide what's being typed
+  val isMasked = isPrivacyEnabled && !isFocused && textState.text.isNotEmpty()
+  val textStyle = if (isMasked) baseStyle.copy(fontFamily = redactedFontFamily()) else baseStyle
 
   // Sync text field from external value changes (field type change, condition reset)
   SideEffect(value) {
@@ -135,9 +145,10 @@ internal fun AmountTextField(
     keyboardOptions = KeyboardOptions(keyboardType = Phone),
     singleLine = true,
     textStyle = textStyle,
+    interactionSource = interactionSource,
     outputTransformation =
-      remember(numberFormatConfig, currencyConfig, isPrivacyEnabled) {
-        NumberOutputTransformation(numberFormatConfig, currencyConfig, isPrivacyEnabled)
+      remember(numberFormatConfig, currencyConfig, isMasked) {
+        NumberOutputTransformation(numberFormatConfig, currencyConfig, isMasked)
       },
   )
 }
@@ -226,13 +237,17 @@ private class NumberOutputTransformation(
   override fun TextFieldBuffer.transformOutput() {
     val rawText = toString()
     if (rawText.isEmpty()) return
+    if (isPrivacyEnabled) {
+      replace(0, length, REDACTED_MASK)
+      return
+    }
     val amount = rawText.amountOrNull() ?: Zero
     val formatted =
       amount.toString(
         numberFormatConfig = numberFormatConfig,
         currencyConfig = currencyConfig.copy(currency = None),
         includeSign = false,
-        isPrivacyEnabled = isPrivacyEnabled,
+        isPrivacyEnabled = false,
       )
     replace(0, length, formatted)
   }

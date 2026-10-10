@@ -17,6 +17,8 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
+import aktual.core.ui.redacted
 import aktual.core.ui.stringShort
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -230,6 +232,7 @@ private fun categoryText(
       append(account)
     }
   }
+    .redacted()
 }
 
 @Composable
@@ -462,7 +465,7 @@ private fun AmountText(
 ) =
   Text(
     modifier = modifier,
-    text = amount.formattedString(includeSign = true),
+    text = amount.formattedText(includeSign = true),
     fontSize = fontSize,
     fontWeight = fontWeight,
     color = amount.color(),
@@ -476,7 +479,7 @@ private fun AmountText(
 private fun BalanceText(balance: Amount?, dimens: LedgerDimens, modifier: Modifier = Modifier) =
   Text(
     modifier = modifier,
-    text = balance?.formattedString().orEmpty(),
+    text = balance?.formattedText() ?: AnnotatedString(""),
     fontSize = dimens.balanceSize,
     color = colors.pageTextSubdued,
     textAlign = End,

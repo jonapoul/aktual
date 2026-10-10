@@ -9,6 +9,8 @@ import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.NumberFormatConfig
+import aktual.core.l10n.Res
+import aktual.core.l10n.redacted_script
 import aktual.core.theme.BottomBarThemeAttrs
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -25,10 +27,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontFamily
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
+import org.jetbrains.compose.resources.Font
 
 val LocalPrivacyEnabled = compositionLocalOf { false }
 
@@ -121,6 +127,49 @@ fun Amount.formattedString(
   includeSign: Boolean = false,
   isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
 ): String = toString(numberFormatConfig, currencyConfig, includeSign, isPrivacyEnabled)
+
+// Same as formattedString, but draws the privacy mask as a scribble
+@Composable
+fun Amount.formattedText(
+  numberFormatConfig: NumberFormatConfig = LocalNumberFormatConfig.current,
+  currencyConfig: CurrencyConfig = LocalCurrencyConfig.current,
+  includeSign: Boolean = false,
+  isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
+): AnnotatedString =
+  toString(numberFormatConfig, currencyConfig, includeSign, isPrivacyEnabled).redacted()
+
+// Draws any privacy masks in the string as a scribble
+@Composable fun String.redacted(): AnnotatedString = AnnotatedString(this).redacted()
+
+@Composable
+fun AnnotatedString.redacted(): AnnotatedString {
+  if (Amount.PRIVACY_MASK !in text) return this
+  return redacted(redactedFontFamily())
+}
+
+// For text built outside of composition, like chart axis labels
+fun AnnotatedString.redacted(fontFamily: FontFamily): AnnotatedString {
+  if (Amount.PRIVACY_MASK !in text) return this
+  val style = SpanStyle(fontFamily = fontFamily)
+  val masks =
+    Regex.fromLiteral(Amount.PRIVACY_MASK).findAll(text).map { match ->
+      AnnotatedString.Range(style, match.range.first, match.range.last + 1)
+    }
+  return AnnotatedString(
+    text = text.replace(Amount.PRIVACY_MASK, REDACTED_MASK),
+    annotations = spanStyles + paragraphStyles + getLinkAnnotations(0, length) + masks,
+  )
+}
+
+@Composable
+fun redactedFontFamily(): FontFamily {
+  val font = Font(Res.font.redacted_script)
+  return remember(font) { FontFamily(font) }
+}
+
+// The font only has scribbles for letters and digits. Same length as the mask it replaces, so
+// existing spans still line up
+const val REDACTED_MASK = "redac"
 
 @Composable
 fun WithCompositionLocals(

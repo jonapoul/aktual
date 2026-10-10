@@ -38,7 +38,6 @@ value class Amount(private val value: Long) : Comparable<Amount> {
 
   fun isPositive() = this >= Zero
 
-  @Suppress("MagicNumber")
   fun toString(
     numberFormatConfig: NumberFormatConfig,
     currencyConfig: CurrencyConfig,
@@ -53,6 +52,24 @@ value class Amount(private val value: Long) : Comparable<Amount> {
       if (addSpace) append(" ")
     }
 
+    if (isPrivacyEnabled) {
+      append(PRIVACY_MASK)
+    } else {
+      appendNumber(numberFormatConfig, currency, includeSign)
+    }
+
+    if (position == AfterAmount && hasSymbol) {
+      if (addSpace) append(" ")
+      append(currency.symbol)
+    }
+  }
+
+  @Suppress("MagicNumber")
+  private fun StringBuilder.appendNumber(
+    numberFormatConfig: NumberFormatConfig,
+    currency: Currency,
+    includeSign: Boolean,
+  ) {
     if (includeSign && value > 0) append("+")
     if (value < 0) append("-")
 
@@ -75,19 +92,13 @@ value class Amount(private val value: Long) : Comparable<Amount> {
       }
 
     append(numberFormat.format(toDouble().absoluteValue))
-
-    if (position == AfterAmount && hasSymbol) {
-      if (addSpace) append(" ")
-      append(currency.symbol)
-    }
   }
-    .let { string ->
-      val numberCount = string.count { it.isDigit() }
-      if (isPrivacyEnabled) "~".repeat(numberCount) else string
-    }
 
   companion object {
     private const val FACTOR = 100.0
+
+    // Fixed length, so the mask doesn't give away the size of the amount
+    const val PRIVACY_MASK = "•••••"
     val Zero = Amount(0L)
 
     private val enIn = locale("en", "IN")

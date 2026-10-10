@@ -18,6 +18,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.redacted
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -218,9 +219,10 @@ private fun ContributionCard(
       Text(
         text =
           Strings.monteCarloContributionExceeds(
-            incomeLabel(config.incomeStreams, config.incomeStreams.indexOf(stream)),
-            stream.annualAmount.roundToLong().money(),
-          ),
+              incomeLabel(config.incomeStreams, config.incomeStreams.indexOf(stream)),
+              stream.annualAmount.roundToLong().money(),
+            )
+            .redacted(),
         style = typography.bodySmall,
         color = colors.warningText,
       )

@@ -19,7 +19,7 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryTextButton
-import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.stringLong
@@ -224,7 +224,7 @@ private fun Figure(label: String, amount: Amount, modifier: Modifier = Modifier)
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
     Text(text = label, fontSize = 13.sp, color = colors.pageTextSubdued)
     Text(
-      text = amount.formattedString(),
+      text = amount.formattedText(),
       fontSize = 16.sp,
       fontWeight = Medium,
       style = TextStyle.Default.tabularFigures(),

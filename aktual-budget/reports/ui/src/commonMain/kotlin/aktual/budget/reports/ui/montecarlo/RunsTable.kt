@@ -8,6 +8,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.formattedString
+import aktual.core.ui.redacted
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -197,7 +198,7 @@ private fun Cell(
 ) =
   Text(
     modifier = modifier,
-    text = text,
+    text = text.redacted(),
     style = typography.bodyMedium,
     color = color,
     textAlign = textAlign,

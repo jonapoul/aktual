@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -55,18 +56,19 @@ fun WeightedTable(
   ellipsize: Boolean = true,
 ) {
   val textMeasurer = rememberTextMeasurer()
+  val rows = data.redacted()
 
   val columnWidths =
-    remember(data, textStyles) {
-      (0 until data.numColumns)
-        .map { columnIndex -> columnWidth(textMeasurer, data, textStyles, columnIndex) }
+    remember(rows, textStyles) {
+      (0 until rows.numColumns)
+        .map { columnIndex -> columnWidth(textMeasurer, rows, textStyles, columnIndex) }
         .toImmutableList()
     }
 
   val totalWidth = columnWidths.sum()
 
   LazyColumn(modifier = modifier) {
-    items(data) { cells ->
+    items(rows) { cells ->
       Row(verticalAlignment = CenterVertically) {
         cells.fastForEachIndexed { index, cell ->
           val columnWidth = columnWidths.getOrNull(index) ?: 0
@@ -87,7 +89,7 @@ fun WeightedTable(
 @Stable
 private fun columnWidth(
   textMeasurer: TextMeasurer,
-  data: ImmutableList<ImmutableList<String>>,
+  data: ImmutableList<ImmutableList<AnnotatedString>>,
   textStyles: ImmutableList<TextStyle>,
   columnIndex: Int,
 ): Int {
@@ -98,6 +100,12 @@ private fun columnWidth(
   }
   return maxWidth
 }
+
+@Composable
+private fun ImmutableList<ImmutableList<String>>.redacted() = map { row ->
+  row.map { cell -> cell.redacted() }.toImmutableList()
+}
+  .toImmutableList()
 
 private val ImmutableList<ImmutableList<*>>.numColumns: Int
   get() = maxOfOrNull { it.size } ?: 0
@@ -128,12 +136,13 @@ fun WrapWidthTable(
 ) {
   val textMeasurer = rememberTextMeasurer()
   val density = LocalDensity.current
+  val rows = data.redacted()
 
   val columnWidths =
-    remember(data, textStyles, density) {
-      (0 until data.numColumns).map { columnIndex ->
+    remember(rows, textStyles, density) {
+      (0 until rows.numColumns).map { columnIndex ->
         val maxWidthPx =
-          data.maxOfOrNull { row ->
+          rows.maxOfOrNull { row ->
             textMeasurer
               .measure(text = row[columnIndex], style = textStyles[columnIndex])
               .size
@@ -145,7 +154,7 @@ fun WrapWidthTable(
     }
 
   LazyColumn(modifier = modifier) {
-    items(data) { row ->
+    items(rows) { row ->
       Row(verticalAlignment = CenterVertically) {
         row.fastForEachIndexed { index, cell ->
           Text(

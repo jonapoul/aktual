@@ -11,7 +11,9 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
 import aktual.core.ui.isInPreview
+import aktual.core.ui.redacted
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -112,7 +114,7 @@ private fun Header(
     val ending = data.items.values.lastOrNull() ?: return@Row
     Column(horizontalAlignment = Alignment.End) {
       Text(
-        text = ending.formattedString(),
+        text = ending.formattedText(),
         textAlign = End,
         style = typography.bodyLarge,
         color = if (ending.isPositive()) colors.pageText else colors.errorText,
@@ -132,7 +134,7 @@ private fun Header(
       if (lowest.key != data.items.keys.last()) {
         VerticalSpacer(2.dp)
         Text(
-          text = Strings.reportsBalanceForecastLow(lowest.value.formattedString()),
+          text = Strings.reportsBalanceForecastLow(lowest.value.formattedString()).redacted(),
           textAlign = End,
           style = typography.bodySmall,
           color = if (lowest.value.isPositive()) colors.pageTextSubdued else colors.errorText,

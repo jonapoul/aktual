@@ -43,14 +43,36 @@ class AmountTest {
     assertThat(123_456_789.0.amount.toString(format = DotComma)).isEqualTo("123.456.789,00")
   }
 
-  // One dash per digit - not including commas/spaces/dots
   @Test
-  fun `With privacy`() {
-    assertThat(123.0.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~")
-    assertThat(123.45.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~")
-    assertThat(1234.56.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~~")
-    assertThat(123_456_789.0.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~~~~~~~")
+  fun `Privacy mask is the same for every amount`() {
+    assertThat(0.0.amount.toString(isPrivacyEnabled = true)).isEqualTo("•••••")
+    assertThat(123.45.amount.toString(isPrivacyEnabled = true)).isEqualTo("•••••")
+    assertThat((-1234.56).amount.toString(isPrivacyEnabled = true)).isEqualTo("•••••")
+    assertThat(123_456_789.0.amount.toString(isPrivacyEnabled = true)).isEqualTo("•••••")
   }
+
+  @Test
+  fun `Privacy mask hides the sign`() {
+    assertThat(123.45.amount.toString(includeSign = true, isPrivacyEnabled = true))
+      .isEqualTo("•••••")
+  }
+
+  @Test
+  fun `Privacy mask keeps the currency symbol`() {
+    val amount = 123.45.amount
+    assertThat(amount.toString(currency = CurrencyConfig(PoundSterling, BeforeAmount, false)))
+      .isEqualTo("£•••••")
+    assertThat(amount.toString(currency = CurrencyConfig(PoundSterling, AfterAmount, true)))
+      .isEqualTo("••••• £")
+  }
+
+  private fun Amount.toString(currency: CurrencyConfig) =
+    toString(
+      numberFormatConfig = NumberFormatConfig(CommaDot, hideFraction = false),
+      currencyConfig = currency,
+      includeSign = false,
+      isPrivacyEnabled = true,
+    )
 
   private companion object {
     const val WEIRD_SPACE = '\u00A0'

@@ -18,7 +18,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
 import aktual.core.ui.scrollbar
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.ScrollState
@@ -394,7 +394,7 @@ private fun SummaryAmount(
   color: Color,
 ) =
   Text(
-    text = amount.formattedString(includeSign = includeSign),
+    text = amount.formattedText(includeSign = includeSign),
     fontSize = fontSize.sp,
     fontWeight = if (includeSign) SemiBold else Normal,
     style = TextStyle.Default.tabularFigures(),

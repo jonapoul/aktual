@@ -28,6 +28,7 @@ import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.checkbox
 import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
 import aktual.core.ui.stringShort
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
@@ -221,7 +222,7 @@ private fun RegularPerMonth(
       ) {
         Text(
           modifier = Modifier.fillMaxWidth(),
-          text = data.total.formattedString(),
+          text = data.total.formattedText(),
           fontSize = 30.sp,
           textAlign = Center,
           color = colors.pageText,
@@ -296,7 +297,7 @@ private fun RegularPerYear(
       ) {
         Text(
           modifier = Modifier.fillMaxWidth(),
-          text = data.total.formattedString(),
+          text = data.total.formattedText(),
           fontSize = 30.sp,
           textAlign = Center,
           color = colors.pageText,
@@ -371,7 +372,7 @@ private fun RegularPerTransaction(
       ) {
         Text(
           modifier = Modifier.fillMaxWidth(),
-          text = data.total.formattedString(),
+          text = data.total.formattedText(),
           fontSize = 30.sp,
           textAlign = Center,
           color = colors.pageText,

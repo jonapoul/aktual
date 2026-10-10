@@ -16,6 +16,8 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
+import aktual.core.ui.redacted
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -135,9 +137,10 @@ private fun ThisMonthContent(state: Loaded, modifier: Modifier = Modifier) {
       Text(
         text =
           Strings.homeThisMonthIncome(
-            state.income.formattedString(),
-            state.incomeBudgeted.formattedString(),
-          ),
+              state.income.formattedString(),
+              state.incomeBudgeted.formattedString(),
+            )
+            .redacted(),
         style = typography.bodySmall,
         color = colors.pageTextSubdued,
         maxLines = 1,
@@ -187,7 +190,7 @@ private fun Headline(amount: Amount, label: String, color: Color, modifier: Modi
   ) {
     Text(
       modifier = Modifier.alignByBaseline(),
-      text = amount.absolute().formattedString(),
+      text = amount.absolute().formattedText(),
       style = typography.headlineMedium.tabularFigures(),
       fontWeight = SemiBold,
       color = color,
@@ -233,7 +236,7 @@ private fun SpentProgress(state: Loaded, modifier: Modifier = Modifier) {
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
       Text(
         modifier = Modifier.weight(1f),
-        text = Strings.homeThisMonthSpent(state.spent.formattedString()),
+        text = Strings.homeThisMonthSpent(state.spent.formattedString()).redacted(),
         style = typography.bodySmall.tabularFigures(),
         color = if (isOverspent) colors.numberNegative else colors.pageTextSubdued,
         maxLines = 1,
@@ -241,7 +244,7 @@ private fun SpentProgress(state: Loaded, modifier: Modifier = Modifier) {
       )
 
       Text(
-        text = Strings.homeThisMonthOfBudgeted(state.budgeted.formattedString()),
+        text = Strings.homeThisMonthOfBudgeted(state.budgeted.formattedString()).redacted(),
         style = typography.bodySmall.tabularFigures(),
         color = colors.pageTextSubdued,
         maxLines = 1,

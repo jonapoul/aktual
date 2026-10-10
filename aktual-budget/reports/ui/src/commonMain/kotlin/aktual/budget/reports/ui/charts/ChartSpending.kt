@@ -14,6 +14,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.WrapWidthTable
 import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
 import aktual.core.ui.isInPreview
 import aktual.core.ui.stringShort
 import alakazam.compose.HorizontalSpacer
@@ -185,7 +186,7 @@ private fun CompactHeader(
     }
 
     Text(
-      text = data.difference.formattedString(includeSign = true),
+      text = data.difference.formattedText(includeSign = true),
       fontWeight = Medium,
       color = if (data.difference.isPositive()) colors.errorText else colors.noticeTextLight,
     )
