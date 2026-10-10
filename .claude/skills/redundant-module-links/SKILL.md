@@ -45,7 +45,7 @@ Through the `gradle-runner` agent:
 ./gradlew atlasGenerate
 ```
 
-Use the full `compileAll` here, not `compile.sh`, since a removed `api` link can break a module that wasn't itself changed. The second `atlasGenerate` updates the checked-in `chart.png` files. Finish with `./scripts/ktfmt.sh check`.
+Use the full `compileAll` here, not `compile.sh`, since a removed `api` link can break a module that wasn't itself changed. The second `atlasGenerate` updates the README chart links. Finish with `./scripts/ktfmt.sh check`.
 
 If a module fails to compile, restore that one line and say which.
 

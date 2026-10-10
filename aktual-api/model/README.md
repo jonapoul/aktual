@@ -1,5 +1,5 @@
 # aktual-api:model
 
 <!--region chart-->
-![chart](https://jonapoul.github.io/aktual/aktual-api/model/chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-api/model/chart.svg)
 <!--endregion-->

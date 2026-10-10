@@ -8,7 +8,7 @@ class ConventionAtlas : ProjectPlugin {
   override fun Project.applyTo() {
     val chartOutputDir = layout.buildDirectory.dir("atlas")
 
-    // module-dir/build/atlas/chart.png
+    // module-dir/build/atlas/chart.svg
     tasks.withType(ExecD2::class.java).configureEach { t ->
       t.outputFile.set(
         t.outputFormat.flatMap { format ->

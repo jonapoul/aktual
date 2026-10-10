@@ -1,5 +1,5 @@
 # aktual-about:data
 
 <!--region chart-->
-![chart](https://jonapoul.github.io/aktual/aktual-about/data/chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-about/data/chart.svg)
 <!--endregion-->
