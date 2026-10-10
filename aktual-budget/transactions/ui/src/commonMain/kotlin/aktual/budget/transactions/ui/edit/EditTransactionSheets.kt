@@ -13,6 +13,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.EditorSheet
 import aktual.core.ui.ListBottomSheet
+import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -32,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
@@ -221,9 +224,10 @@ private fun NotesSheet(notes: String?, onDismiss: () -> Unit, onSave: (String) -
     onConfirm = { onSave(text.text.toString()) },
   ) {
     AktualTextField(
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester()),
       state = text,
       placeholderText = Strings.transactionNotesPlaceholder,
+      keyboardOptions = KeyboardOptions(capitalization = Sentences),
     )
   }
 }

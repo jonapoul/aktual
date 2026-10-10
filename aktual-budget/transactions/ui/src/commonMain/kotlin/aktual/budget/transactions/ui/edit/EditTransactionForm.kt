@@ -12,11 +12,16 @@ import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AmountKeypad
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.RootOverlayContent
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedText
+import aktual.core.ui.isInPreview
 import aktual.core.ui.stringLong
 import aktual.core.ui.switch
 import aktual.core.ui.verticalScrollWithBar
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,8 +30,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -52,6 +59,9 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -89,6 +99,16 @@ internal fun EditTransactionForm(
           evaluateAmountInput(text)?.let { onAction(SetAmount(it.signed(latestIsIncome))) }
         }
     }
+  }
+
+  val density = LocalDensity.current
+  var keypadHeight by remember { mutableStateOf(0.dp) }
+  val keypad: @Composable (Modifier) -> Unit = { keypadModifier ->
+    DockedKeypad(
+      modifier = keypadModifier,
+      amountText = amountText,
+      onDone = { onActiveField(null) },
+    )
   }
 
   Column(modifier = modifier.fillMaxSize()) {
@@ -140,19 +160,49 @@ internal fun EditTransactionForm(
         onAction = onAction,
       )
 
-      BottomSpacing()
+      // Leaves room to scroll the fields clear of the keypad
+      if (isTyping) Spacer(Modifier.height(keypadHeight)) else BottomSpacing()
     }
 
-    if (isTyping) {
-      AmountKeypad(
-        modifier = Modifier.fillMaxWidth().background(colors.cardBackground).padding(KeypadPadding),
-        state = amountText,
-        canFinish = amountText.isValidAmount(),
-        onDone = { onActiveField(null) },
-      )
+    if (isInPreview()) {
+      if (isTyping) keypad(Modifier)
+    } else {
+      RootOverlayContent {
+        AnimatedVisibility(
+          visible = isTyping,
+          enter = slideInVertically { it },
+          exit = slideOutVertically { it },
+        ) {
+          keypad(Modifier.onSizeChanged { keypadHeight = with(density) { it.height.toDp() } })
+        }
+      }
     }
   }
 }
+
+// Covers the bottom status bar, and keeps clear of the system navigation bar
+@Composable
+private fun DockedKeypad(
+  amountText: TextFieldState,
+  onDone: () -> Unit,
+  modifier: Modifier = Modifier,
+) =
+  Column(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .background(colors.cardBackground)
+        // an empty pointer input stops clicks reaching the content underneath
+        .pointerInput(Unit) {},
+  ) {
+    AmountKeypad(
+      modifier = Modifier.fillMaxWidth().padding(KeypadPadding),
+      state = amountText,
+      canFinish = amountText.isValidAmount(),
+      onDone = onDone,
+    )
+    BottomSpacing(height = 0.dp)
+  }
 
 @Composable
 private fun FieldsCard(
@@ -313,9 +363,10 @@ private fun SwitchRow(label: String, checked: Boolean, onChange: (Boolean) -> Un
     Text(
       modifier = Modifier.weight(1f),
       text = label,
-      fontSize = ValueSize,
-      color = colors.pageText,
+      fontSize = FieldLabelSize,
+      color = colors.pageTextSubdued,
     )
+
     Switch(checked = checked, onCheckedChange = onChange, colors = colors.switch())
   }
 

@@ -121,7 +121,7 @@ fun AktualAppContent(
           BottomSpacing()
         }
 
-        rootOverlay.content?.invoke()
+        rootOverlay.Content()
       }
     }
   }

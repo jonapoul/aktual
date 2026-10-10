@@ -14,6 +14,7 @@ import aktual.core.l10n.redacted_script
 import aktual.core.theme.BottomBarThemeAttrs
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
@@ -22,14 +23,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.util.fastForEach
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.datetime.LocalDate
@@ -41,14 +43,36 @@ val LocalPrivacyEnabled = compositionLocalOf { false }
 // Opens the budget nav drawer, or null when the current layout has no drawer
 val LocalNavDrawerOpener = compositionLocalOf<(() -> Unit)?> { null }
 
-// Content drawn at the app root, above the bottom status bar
+// Content drawn at the app root, above the bottom status bar. Later content is drawn on top
 @Stable
 class RootOverlay {
-  var content: (@Composable () -> Unit)? by mutableStateOf(null)
+  private val contents = mutableStateListOf<@Composable () -> Unit>()
+
+  fun add(content: @Composable () -> Unit) {
+    contents.add(content)
+  }
+
+  fun remove(content: @Composable () -> Unit) {
+    contents.remove(content)
+  }
+
+  @Composable fun Content() = contents.fastForEach { it() }
 }
 
 val LocalRootOverlay =
   staticCompositionLocalOf<RootOverlay> { error("No RootOverlay value provided") }
+
+// Draws content in the root overlay for as long as the caller stays composed
+@Composable
+fun RootOverlayContent(content: @Composable () -> Unit) {
+  val overlay = LocalRootOverlay.current
+  val latestContent by rememberUpdatedState(content)
+  DisposableEffect(overlay) {
+    val entry: @Composable () -> Unit = { latestContent() }
+    overlay.add(entry)
+    onDispose { overlay.remove(entry) }
+  }
+}
 
 internal val DefaultBottomBarThemeAttrs =
   BottomBarThemeAttrs(

@@ -44,8 +44,8 @@ import aktual.core.ui.BackHandler
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.LocalNavDrawerOpener
 import aktual.core.ui.LocalPrivacyEnabled
-import aktual.core.ui.LocalRootOverlay
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.RootOverlayContent
 import aktual.core.ui.SideSpacing
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.disabled
@@ -74,7 +74,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -82,7 +81,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -281,26 +279,18 @@ private fun DrawerNavLayout(
 
   BackHandler(enabled = drawerState.isOpen) { closeDrawer() }
 
-  val drawer by
-    rememberUpdatedState<@Composable () -> Unit> {
-      ModalNavigationDrawer(
-        modifier =
-          Modifier.passTouchesThrough(!drawerState.isOpen && !drawerState.isAnimationRunning),
-        drawerState = drawerState,
-        // Only allow swiping to close, so opening doesn't clash with horizontal gestures in the
-        // content
-        gesturesEnabled = drawerState.isOpen,
-        drawerContent = { BudgetDrawerSheet { sidebar(closeDrawer) } },
-        content = {},
-      )
-    }
-
   // Draw the drawer from the app root so it sits above the bottom status bar
-  val rootOverlay = LocalRootOverlay.current
-  DisposableEffect(rootOverlay) {
-    val content: @Composable () -> Unit = { drawer() }
-    rootOverlay.content = content
-    onDispose { if (rootOverlay.content === content) rootOverlay.content = null }
+  RootOverlayContent {
+    ModalNavigationDrawer(
+      modifier =
+        Modifier.passTouchesThrough(!drawerState.isOpen && !drawerState.isAnimationRunning),
+      drawerState = drawerState,
+      // Only allow swiping to close, so opening doesn't clash with horizontal gestures in the
+      // content
+      gesturesEnabled = drawerState.isOpen,
+      drawerContent = { BudgetDrawerSheet { sidebar(closeDrawer) } },
+      content = {},
+    )
   }
 
   CompositionLocalProvider(LocalNavDrawerOpener provides openDrawer) {
