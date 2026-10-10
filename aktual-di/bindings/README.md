@@ -1,5 +1,5 @@
 # aktual-di:bindings
 
 <!--region chart-->
-![chart](https://jonapoul.github.io/aktual/aktual-di/bindings/chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-di/bindings/chart.svg)
 <!--endregion-->

@@ -5,7 +5,7 @@ import atlas.core.LinkStyle.Solid
 import atlas.d2.ArrowType.Arrow
 import atlas.d2.Direction.Down
 import atlas.d2.ElkAlgorithm.Layered
-import atlas.d2.FileFormat.Png
+import atlas.d2.FileFormat.Svg
 import atlas.d2.Theme.DarkFlagshipTerrastruct
 import com.github.burrunan.s3cache.AwsS3BuildCache
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
@@ -129,9 +129,10 @@ atlas {
   }
 
   d2 {
+    animateLinks = true
     center = true
     direction = Down
-    fileFormat = Png
+    fileFormat = Svg
     pad = 3
     sketch = false
     theme = DarkFlagshipTerrastruct

@@ -1,5 +1,5 @@
 # aktual-di:runlevel
 
 <!--region chart-->
-![chart](https://jonapoul.github.io/aktual/aktual-di/runlevel/chart.png)
+![chart](https://jonapoul.github.io/aktual/aktual-di/runlevel/chart.svg)
 <!--endregion-->
