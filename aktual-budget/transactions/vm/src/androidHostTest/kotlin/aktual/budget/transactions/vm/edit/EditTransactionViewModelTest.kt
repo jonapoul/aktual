@@ -122,7 +122,7 @@ class EditTransactionViewModelTest {
   private suspend fun ReceiveTurbine<EditTransactionState>.awaitLoaded():
     EditTransactionState.Loaded {
     var state = awaitItem()
-    while (state !is EditTransactionState.Loaded) state = awaitItem()
+    while (state !is Loaded) state = awaitItem()
     return state
   }
 

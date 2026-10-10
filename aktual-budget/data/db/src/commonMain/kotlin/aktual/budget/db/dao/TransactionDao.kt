@@ -59,6 +59,7 @@ data class TransactionDetail(
 // One page of the list, with the balance after its first (newest) row
 data class TransactionPage(val rows: List<TransactionRow>, val topBalance: Long)
 
+@Suppress("TooManyFunctions") // One per query the transaction screens and writer need
 @Inject
 class TransactionDao(database: BudgetDatabase) {
   private val queries = database.transactionsQueries
@@ -378,7 +379,7 @@ private fun transactionDetail(
         isTransfer,
       ),
     // Upstream's column defaults
-    cleared = cleared ?: true,
+    cleared = cleared != false,
     reconciled = reconciled == true,
     parent = parentId.takeIf { isChild == true },
   )
