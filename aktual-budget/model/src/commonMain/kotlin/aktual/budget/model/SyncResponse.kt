@@ -32,9 +32,6 @@ data class Message(
 
 fun KString?.messageValue(): MessageValue = if (this == null) Null else MessageValue.String(this)
 
-fun Int?.messageValue(): MessageValue =
-  if (this == null) Null else MessageValue.Number(this.toLong())
-
 fun Boolean?.messageValue(): MessageValue =
   when (this) {
     true -> MessageValue.Number(1)

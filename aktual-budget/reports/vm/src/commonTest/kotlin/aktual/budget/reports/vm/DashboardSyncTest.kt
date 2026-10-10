@@ -8,9 +8,8 @@ import aktual.budget.db.dao.DatabaseTables.CUSTOM_REPORTS
 import aktual.budget.db.withoutResult
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
-import aktual.budget.model.LocalChange
-import aktual.budget.model.MessageValue
 import aktual.budget.model.WidgetId
+import aktual.budget.model.localChange
 import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
@@ -104,7 +103,7 @@ class DashboardSyncTest {
     sync.renameCustomReport(CustomReportId("report"), "new")
 
     assertThat(controller.changes)
-      .containsExactly(LocalChange(CUSTOM_REPORTS, "report", "name", MessageValue.String("new")))
+      .containsExactly(localChange(CUSTOM_REPORTS, "report", "name", "new"))
   }
 
   @Test

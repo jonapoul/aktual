@@ -3,9 +3,8 @@ package aktual.budget.navrail.vm
 import aktual.api.client.BudgetSyncApi
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
-import aktual.budget.model.LocalChange
-import aktual.budget.model.MessageValue
 import aktual.budget.model.SyncResponse
+import aktual.budget.model.localChange
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
@@ -103,11 +102,11 @@ class BudgetNavRailViewModelTest {
     val BUDGET_ID = BudgetId("b328186c-c919-4333-959b-04e676c1ee46")
     val REMOTE = BudgetServer.Remote(ServerUrl(Https, "test.server.com"), Token("abc-123"))
     val NAME_CHANGE =
-      LocalChange(
+      localChange(
         dataset = "prefs",
         row = "budgetName",
         column = "value",
-        value = MessageValue.String("Renamed"),
+        value = "Renamed",
       )
   }
 }

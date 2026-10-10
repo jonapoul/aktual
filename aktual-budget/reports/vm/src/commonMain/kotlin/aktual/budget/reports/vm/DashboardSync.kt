@@ -12,6 +12,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
+import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
 import aktual.budget.model.tombstone
 import dev.zacsweers.metro.Inject
@@ -74,14 +75,14 @@ internal class DashboardSync(
     val meta = dao.meta(id) ?: return
     val patched = JsonObject(meta + values)
     sync.syncChanges(
-      LocalChange(DASHBOARD, id.value, "meta", DbJson.encodeToString(patched).messageValue()),
+      localChange(DASHBOARD, id.value, "meta", DbJson.encodeToString(patched)),
     )
   }
 
   suspend fun deleteWidget(id: WidgetId) = sync.syncChanges(tombstone(DASHBOARD, id.value))
 
   suspend fun renameCustomReport(id: CustomReportId, name: String) =
-    sync.syncChanges(LocalChange(CUSTOM_REPORTS, id.value, "name", name.messageValue()))
+    sync.syncChanges(localChange(CUSTOM_REPORTS, id.value, "name", name))
 
   suspend fun insertPage(id: DashboardPageId, name: String) {
     fun change(column: String, value: MessageValue) =
@@ -95,7 +96,7 @@ internal class DashboardSync(
   }
 
   suspend fun renamePage(id: DashboardPageId, name: String) =
-    sync.syncChanges(LocalChange(DASHBOARD_PAGES, id.value, "name", name.messageValue()))
+    sync.syncChanges(localChange(DASHBOARD_PAGES, id.value, "name", name))
 
   // Refuses to delete the last page, like upstream. Returns whether the page was deleted
   suspend fun deletePage(id: DashboardPageId): Boolean {

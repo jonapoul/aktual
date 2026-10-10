@@ -8,6 +8,7 @@ import aktual.budget.db.dao.DatabaseTables.SCHEDULES
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
+import aktual.budget.model.localChange
 import aktual.test.inMemoryDriverFactory
 import app.cash.sqldelight.async.coroutines.awaitAsOne
 import assertk.all
@@ -62,15 +63,15 @@ internal class SyncDaoTest {
   private fun schedule() =
     listOf(
       LocalChange(SCHEDULES, SCHEDULE, "rule", RULE.string()),
-      LocalChange(SCHEDULES, SCHEDULE, "completed", MessageValue.Number(0)),
-      LocalChange(SCHEDULES, SCHEDULE, "tombstone", MessageValue.Number(0)),
+      localChange(SCHEDULES, SCHEDULE, "completed", 0),
+      localChange(SCHEDULES, SCHEDULE, "tombstone", 0),
     )
 
   private fun rule(conditions: String) =
     listOf(
       LocalChange(RULES, RULE, "conditions", conditions.string()),
       LocalChange(RULES, RULE, "actions", ACTIONS.string()),
-      LocalChange(RULES, RULE, "tombstone", MessageValue.Number(0)),
+      localChange(RULES, RULE, "tombstone", 0),
     )
 
   private fun String.string() = MessageValue.String(this)

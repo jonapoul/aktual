@@ -4,8 +4,6 @@ import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.PREFERENCES
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.AccountId
-import aktual.budget.model.LocalChange
-import aktual.budget.model.MessageValue
 import aktual.budget.model.SyncedPrefKey.PerAccount
 import aktual.budget.model.SyncedPrefKey.PerAccount.CustomSyncMappings
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportNotes
@@ -13,6 +11,7 @@ import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportPending
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportTransactions
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncReimportDeleted
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncUpdateDates
+import aktual.budget.model.localChange
 import dev.zacsweers.metro.Inject
 
 /**
@@ -64,5 +63,5 @@ class BankSyncSettingsWriter(private val syncController: BudgetSyncController) {
   private fun change(key: PerAccount, value: Boolean) = change(key, value.toString())
 
   private fun change(key: PerAccount, value: String) =
-    LocalChange(PREFERENCES, key.key, column = "value", MessageValue.String(value))
+    localChange(PREFERENCES, key.key, column = "value", value)
 }

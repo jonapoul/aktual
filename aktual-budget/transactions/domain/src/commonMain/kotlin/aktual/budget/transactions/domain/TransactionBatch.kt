@@ -15,6 +15,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
+import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
 import aktual.budget.model.tombstone
 import aktual.core.UuidGenerator
@@ -160,11 +161,11 @@ internal constructor(
     id: PayeeId = uuidGenerator(::PayeeId),
   ): PayeeId {
     val row = id.value
-    changes += LocalChange(PAYEES, row, "name", name.messageValue())
+    changes += localChange(PAYEES, row, "name", name)
     if (transferAccount != null) {
-      changes += LocalChange(PAYEES, row, "transfer_acct", transferAccount.value.messageValue())
+      changes += localChange(PAYEES, row, "transfer_acct", transferAccount.value)
     }
-    changes += LocalChange(PAYEE_MAPPING, row, "targetId", row.messageValue())
+    changes += localChange(PAYEE_MAPPING, row, "targetId", row)
     newPayees.getOrPut(name.lowercase()) { id }
     return id
   }

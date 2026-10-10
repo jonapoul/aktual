@@ -13,6 +13,7 @@ import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.BankId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
+import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
 import aktual.core.UuidGenerator
 import aktual.di.BudgetCoroutineScope
@@ -70,8 +71,8 @@ class BankAccountLinker(
       )
     changes.addLink(account, source, external)
     val payee = uuidGenerator()
-    changes += LocalChange(PAYEES, payee, "name", "".messageValue())
-    changes += LocalChange(PAYEES, payee, "transfer_acct", account.value.messageValue())
+    changes += localChange(PAYEES, payee, "name", "")
+    changes += localChange(PAYEES, payee, "transfer_acct", account.value)
     syncController.syncChanges(changes)
     scope.launch { bankSync.sync(setOf(account)) }
     return account
@@ -119,8 +120,8 @@ class BankAccountLinker(
     val bank =
       dao.findBank(bankId, external.institution)?.toString()
         ?: uuidGenerator().also { id ->
-          bankId?.let { this += LocalChange(BANKS, id, "bank_id", it.value.messageValue()) }
-          this += LocalChange(BANKS, id, "name", external.institution.messageValue())
+          bankId?.let { this += localChange(BANKS, id, "bank_id", it.value) }
+          this += localChange(BANKS, id, "name", external.institution)
         }
     this += change(account, "account_id", external.accountId.messageValue())
     this += change(account, "bank", bank.messageValue())

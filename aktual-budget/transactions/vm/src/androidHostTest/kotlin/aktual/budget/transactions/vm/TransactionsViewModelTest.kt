@@ -16,13 +16,12 @@ import aktual.budget.model.AccountSpec.SpecificAccount
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.CategorySpec
-import aktual.budget.model.LocalChange
-import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TagId
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
+import aktual.budget.model.localChange
 import aktual.di.AppGraph
 import aktual.di.AppScope
 import aktual.di.RunLevelController
@@ -944,7 +943,7 @@ class TransactionsViewModelTest {
     assertThat(viewModel.pagingData.asSnapshot()).containsExactly(TRANSACTION_A.withBalance(123.45))
 
     // when
-    val edit = LocalChange("transactions", row = "a", column = "notes", MessageValue.String("New"))
+    val edit = localChange("transactions", row = "a", column = "notes", "New")
     sync.sendMessages(listOf(edit))
     advanceUntilIdle()
 
