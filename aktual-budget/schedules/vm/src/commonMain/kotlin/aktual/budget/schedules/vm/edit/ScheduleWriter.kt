@@ -14,7 +14,7 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.ScheduleNextDateId
-import aktual.budget.model.messageValue
+import aktual.budget.model.localChange
 import aktual.budget.model.nextDate
 import aktual.budget.model.serialName
 import aktual.budget.model.tombstone
@@ -63,23 +63,23 @@ internal class ScheduleWriter(
     val schedule = scheduleId.toString()
     val changes = buildList {
       +LocalChange(RULES, rule, "stage", Null)
-      +LocalChange(RULES, rule, "conditions", conditions.encode().messageValue())
-      +LocalChange(RULES, rule, "actions", actions.encode().messageValue())
-      +LocalChange(RULES, rule, "conditions_op", ConditionOp.And.serialName().messageValue())
-      +LocalChange(RULES, rule, TOMBSTONE, false.messageValue())
+      +localChange(RULES, rule, "conditions", conditions.encode())
+      +localChange(RULES, rule, "actions", actions.encode())
+      +localChange(RULES, rule, "conditions_op", ConditionOp.And.serialName())
+      +localChange(RULES, rule, TOMBSTONE, false)
 
-      +LocalChange(SCHEDULES_NEXT_DATE, next, "schedule_id", schedule.messageValue())
+      +localChange(SCHEDULES_NEXT_DATE, next, "schedule_id", schedule)
       +LocalChange(SCHEDULES_NEXT_DATE, next, "local_next_date", nextDate.dateValue())
-      +LocalChange(SCHEDULES_NEXT_DATE, next, "local_next_date_ts", MessageValue.Number(now))
+      +localChange(SCHEDULES_NEXT_DATE, next, "local_next_date_ts", now)
       +LocalChange(SCHEDULES_NEXT_DATE, next, "base_next_date", nextDate.dateValue())
-      +LocalChange(SCHEDULES_NEXT_DATE, next, "base_next_date_ts", MessageValue.Number(now))
-      +LocalChange(SCHEDULES_NEXT_DATE, next, TOMBSTONE, false.messageValue())
+      +localChange(SCHEDULES_NEXT_DATE, next, "base_next_date_ts", now)
+      +localChange(SCHEDULES_NEXT_DATE, next, TOMBSTONE, false)
 
-      +LocalChange(SCHEDULES, schedule, "rule", rule.messageValue())
-      +LocalChange(SCHEDULES, schedule, "name", name.messageValue())
-      +LocalChange(SCHEDULES, schedule, "posts_transaction", form.postsTransaction.messageValue())
-      +LocalChange(SCHEDULES, schedule, "completed", false.messageValue())
-      +LocalChange(SCHEDULES, schedule, TOMBSTONE, false.messageValue())
+      +localChange(SCHEDULES, schedule, "rule", rule)
+      +localChange(SCHEDULES, schedule, "name", name)
+      +localChange(SCHEDULES, schedule, "posts_transaction", form.postsTransaction)
+      +localChange(SCHEDULES, schedule, "completed", false)
+      +localChange(SCHEDULES, schedule, TOMBSTONE, false)
     }
 
     syncController.syncChanges(changes)
@@ -105,8 +105,8 @@ internal class ScheduleWriter(
     val rule = ruleId.toString()
     val schedule = id.toString()
     val changes = buildList {
-      +LocalChange(RULES, rule, "conditions", conditions.encode().messageValue())
-      if (actions != null) +LocalChange(RULES, rule, "actions", actions.encode().messageValue())
+      +localChange(RULES, rule, "conditions", conditions.encode())
+      if (actions != null) +localChange(RULES, rule, "actions", actions.encode())
 
       // The next date only moves when the account or date changed. Upstream skips closed accounts
       // when moving schedules along, so switching away from one needs a fresh next date
@@ -116,8 +116,8 @@ internal class ScheduleWriter(
       val dateChanged = old.date?.value != new.date?.value
       if (accountChanged || dateChanged) addAll(resetNextDate(id, form.date))
 
-      +LocalChange(SCHEDULES, schedule, "name", name.messageValue())
-      +LocalChange(SCHEDULES, schedule, "posts_transaction", form.postsTransaction.messageValue())
+      +localChange(SCHEDULES, schedule, "name", name)
+      +localChange(SCHEDULES, schedule, "posts_transaction", form.postsTransaction)
     }
 
     syncController.syncChanges(changes)
@@ -144,13 +144,13 @@ internal class ScheduleWriter(
     val row = (existing ?: uuidGenerator(::ScheduleNextDateId)).toString()
     return buildList {
       if (existing == null) {
-        +LocalChange(SCHEDULES_NEXT_DATE, row, "schedule_id", id.toString().messageValue())
+        +localChange(SCHEDULES_NEXT_DATE, row, "schedule_id", id.toString())
         +LocalChange(SCHEDULES_NEXT_DATE, row, "local_next_date", nextDate.dateValue())
-        +LocalChange(SCHEDULES_NEXT_DATE, row, "local_next_date_ts", MessageValue.Number(now))
-        +LocalChange(SCHEDULES_NEXT_DATE, row, TOMBSTONE, false.messageValue())
+        +localChange(SCHEDULES_NEXT_DATE, row, "local_next_date_ts", now)
+        +localChange(SCHEDULES_NEXT_DATE, row, TOMBSTONE, false)
       }
       +LocalChange(SCHEDULES_NEXT_DATE, row, "base_next_date", nextDate.dateValue())
-      +LocalChange(SCHEDULES_NEXT_DATE, row, "base_next_date_ts", MessageValue.Number(now))
+      +localChange(SCHEDULES_NEXT_DATE, row, "base_next_date_ts", now)
     }
   }
 

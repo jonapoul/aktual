@@ -22,6 +22,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.SyncedPrefKey
+import aktual.budget.model.localChange
 import aktual.core.Calendar
 import aktual.prefs.CurrencyPreferences
 import aktual.prefs.FormatPreferences
@@ -55,9 +56,9 @@ internal class BudgetWriterTest {
 
     assertThat(syncCalls.single())
       .containsExactly(
-        LocalChange(ZERO_BUDGETS, "202401-cat1", "month", MessageValue.Number(202401)),
-        LocalChange(ZERO_BUDGETS, "202401-cat1", "category", MessageValue.String("cat1")),
-        LocalChange(ZERO_BUDGETS, "202401-cat1", "amount", MessageValue.Number(5000)),
+        localChange(ZERO_BUDGETS, "202401-cat1", "month", 202401),
+        localChange(ZERO_BUDGETS, "202401-cat1", "category", "cat1"),
+        localChange(ZERO_BUDGETS, "202401-cat1", "amount", 5000),
       )
     assertThat(budgeted(JAN, CAT1)).isEqualTo(Amount(5000))
   }
@@ -69,7 +70,7 @@ internal class BudgetWriterTest {
     writer.setBudget(JAN, CAT1, Amount(5000))
 
     assertThat(syncCalls.single())
-      .containsExactly(LocalChange(ZERO_BUDGETS, "other", "amount", MessageValue.Number(5000)))
+      .containsExactly(localChange(ZERO_BUDGETS, "other", "amount", 5000))
     assertThat(budgeted(JAN, CAT1)).isEqualTo(Amount(5000))
   }
 
@@ -322,11 +323,11 @@ internal class BudgetWriterTest {
     assertThat(budgeted(JAN, CAT2)).isEqualTo(Amount(2000))
     assertThat(syncCalls.single().last())
       .isEqualTo(
-        LocalChange(
+        localChange(
           dataset = NOTES,
           row = "budget-2024-01",
           column = "note",
-          value = MessageValue.String("- Reassigned 20.00 from cat1 → cat2 on February 15"),
+          value = "- Reassigned 20.00 from cat1 → cat2 on February 15",
         ),
       )
   }
@@ -415,7 +416,7 @@ internal class BudgetWriterTest {
 
     assertThat(syncCalls.single())
       .containsExactly(
-        LocalChange(ZERO_BUDGET_MONTHS, "2024-01", "buffered", MessageValue.Number(10000)),
+        localChange(ZERO_BUDGET_MONTHS, "2024-01", "buffered", 10000),
       )
     assertThat(envelope(JAN)).all {
       prop(BudgetMonth.Envelope::buffered).isEqualTo(Amount(10000))

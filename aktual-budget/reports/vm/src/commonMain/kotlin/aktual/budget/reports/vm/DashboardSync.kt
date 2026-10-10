@@ -8,11 +8,9 @@ import aktual.budget.db.dao.DatabaseTables.DASHBOARD
 import aktual.budget.db.dao.DatabaseTables.DASHBOARD_PAGES
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
-import aktual.budget.model.LocalChange
-import aktual.budget.model.MessageValue
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
-import aktual.budget.model.messageValue
+import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import dev.zacsweers.metro.Inject
 import kotlinx.serialization.json.Json
@@ -34,19 +32,16 @@ internal class DashboardSync(
     y: Long,
     meta: JsonObject,
   ) {
-    fun change(column: String, value: MessageValue) =
-      LocalChange(DASHBOARD, id.value, column, value)
-
     sync.syncChanges(
-      change("id", id.value.messageValue()),
-      change("type", type.serialName().messageValue()),
-      change("width", MessageValue.Number(DashboardDao.DEFAULT_WIDTH)),
-      change("height", MessageValue.Number(DashboardDao.DEFAULT_HEIGHT)),
-      change("x", MessageValue.Number(x)),
-      change("y", MessageValue.Number(y)),
-      change("meta", DbJson.encodeToString(meta).messageValue()),
-      change("dashboard_page_id", page.value.messageValue()),
-      change("tombstone", false.messageValue()),
+      localChange(DASHBOARD, id.value, "id", id.value),
+      localChange(DASHBOARD, id.value, "type", type.serialName()),
+      localChange(DASHBOARD, id.value, "width", DashboardDao.DEFAULT_WIDTH),
+      localChange(DASHBOARD, id.value, "height", DashboardDao.DEFAULT_HEIGHT),
+      localChange(DASHBOARD, id.value, "x", x),
+      localChange(DASHBOARD, id.value, "y", y),
+      localChange(DASHBOARD, id.value, "meta", DbJson.encodeToString(meta)),
+      localChange(DASHBOARD, id.value, "dashboard_page_id", page.value),
+      localChange(DASHBOARD, id.value, "tombstone", false),
     )
   }
 
@@ -74,28 +69,25 @@ internal class DashboardSync(
     val meta = dao.meta(id) ?: return
     val patched = JsonObject(meta + values)
     sync.syncChanges(
-      LocalChange(DASHBOARD, id.value, "meta", DbJson.encodeToString(patched).messageValue()),
+      localChange(DASHBOARD, id.value, "meta", DbJson.encodeToString(patched)),
     )
   }
 
   suspend fun deleteWidget(id: WidgetId) = sync.syncChanges(tombstone(DASHBOARD, id.value))
 
   suspend fun renameCustomReport(id: CustomReportId, name: String) =
-    sync.syncChanges(LocalChange(CUSTOM_REPORTS, id.value, "name", name.messageValue()))
+    sync.syncChanges(localChange(CUSTOM_REPORTS, id.value, "name", name))
 
   suspend fun insertPage(id: DashboardPageId, name: String) {
-    fun change(column: String, value: MessageValue) =
-      LocalChange(DASHBOARD_PAGES, id.value, column, value)
-
     sync.syncChanges(
-      change("id", id.value.messageValue()),
-      change("name", name.messageValue()),
-      change("tombstone", false.messageValue()),
+      localChange(DASHBOARD_PAGES, id.value, "id", id.value),
+      localChange(DASHBOARD_PAGES, id.value, "name", name),
+      localChange(DASHBOARD_PAGES, id.value, "tombstone", false),
     )
   }
 
   suspend fun renamePage(id: DashboardPageId, name: String) =
-    sync.syncChanges(LocalChange(DASHBOARD_PAGES, id.value, "name", name.messageValue()))
+    sync.syncChanges(localChange(DASHBOARD_PAGES, id.value, "name", name))
 
   // Refuses to delete the last page, like upstream. Returns whether the page was deleted
   suspend fun deletePage(id: DashboardPageId): Boolean {

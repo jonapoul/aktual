@@ -11,8 +11,29 @@ data class LocalChange(
   val value: MessageValue,
 )
 
+fun localChange(
+  dataset: String,
+  row: String,
+  column: String,
+  value: String?,
+) = LocalChange(dataset, row, column, value?.let(MessageValue::String) ?: MessageValue.Null)
+
+fun localChange(
+  dataset: String,
+  row: String,
+  column: String,
+  value: Long,
+) = LocalChange(dataset, row, column, MessageValue.Number(value))
+
+fun localChange(
+  dataset: String,
+  row: String,
+  column: String,
+  value: Boolean?,
+) = LocalChange(dataset, row, column, value.messageValue())
+
 fun tombstone(dataset: String, row: String): LocalChange =
-  LocalChange(dataset, row, column = "tombstone", value = MessageValue.Number(1))
+  localChange(dataset, row, column = "tombstone", value = 1)
 
 fun untombstone(dataset: String, row: String): LocalChange =
-  LocalChange(dataset, row, column = "tombstone", value = MessageValue.Number(0))
+  localChange(dataset, row, column = "tombstone", value = 0)

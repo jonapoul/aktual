@@ -17,6 +17,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.NumberFormatConfig
 import aktual.budget.model.SyncedPrefKey
+import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
 import aktual.core.Calendar
 import aktual.di.BudgetScope
@@ -332,7 +333,7 @@ class BudgetWriterImpl(
     val note = "- Reassigned $displayAmount from $from → $to on $day"
     val text = if (existing.isEmpty()) note else "$existing\n$note"
     change(
-      LocalChange(NOTES, id, "note", text.messageValue()),
+      localChange(NOTES, id, "note", text),
       previous = stored.messageValue(),
     )
   }
@@ -422,8 +423,8 @@ class BudgetWriterImpl(
         change(LocalChange(table, existing.id, column, value), previous = existing[column])
       } else {
         val id = "${month.dbMonth}-${category.value}"
-        changes += LocalChange(table, id, "month", MessageValue.Number(month.dbMonth))
-        changes += LocalChange(table, id, "category", category.value.messageValue())
+        changes += localChange(table, id, "month", month.dbMonth)
+        changes += localChange(table, id, "category", category.value)
         change(LocalChange(table, id, column, value), previous = MessageValue.Number(0))
       }
     }

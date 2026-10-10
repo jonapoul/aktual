@@ -5,8 +5,7 @@ import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.BankId
-import aktual.budget.model.LocalChange
-import aktual.budget.model.MessageValue
+import aktual.budget.model.localChange
 import assertk.all
 import assertk.assertFailure
 import assertk.assertThat
@@ -121,7 +120,7 @@ internal class BankAccountLinkerTest {
   @Test
   fun `New accounts go after the others on or off budget`() = runBankSyncTest {
     syncChanges(
-      listOf(LocalChange(ACCOUNTS, ACCOUNT.value, "sort_order", MessageValue.Number(20000))),
+      listOf(localChange(ACCOUNTS, ACCOUNT.value, "sort_order", 20000)),
     )
     insertAccount(OTHER, offBudget = true)
     val linker = linker(api)
@@ -140,8 +139,8 @@ internal class BankAccountLinkerTest {
   fun `New accounts ignore the order of deleted accounts`() = runBankSyncTest {
     syncChanges(
       listOf(
-        LocalChange(ACCOUNTS, ACCOUNT.value, "sort_order", MessageValue.Number(20000)),
-        LocalChange(ACCOUNTS, ACCOUNT.value, "tombstone", MessageValue.Number(1)),
+        localChange(ACCOUNTS, ACCOUNT.value, "sort_order", 20000),
+        localChange(ACCOUNTS, ACCOUNT.value, "tombstone", 1),
       ),
     )
 

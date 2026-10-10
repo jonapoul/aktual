@@ -9,12 +9,11 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Field
 import aktual.budget.model.LocalChange
-import aktual.budget.model.MessageValue
 import aktual.budget.model.Operator
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
-import aktual.budget.model.messageValue
+import aktual.budget.model.localChange
 import aktual.budget.model.serialName
 import aktual.budget.model.tombstone
 import aktual.budget.rules.vm.EntityListFetcher
@@ -237,17 +236,20 @@ class EditRuleViewModel(
     )
 
   private fun insertChanges(rule: Rules): List<LocalChange> {
-    fun change(column: String, value: MessageValue) =
-      LocalChange(RULES, rule.id.toString(), column, value)
-
+    val row = rule.id.toString()
     return with(rule) {
       listOf(
-        change("id", id.toString().messageValue()),
-        change("stage", stage?.serialName().messageValue()),
-        change("conditions", DbJson.encodeToString(conditions.orEmpty()).messageValue()),
-        change("actions", DbJson.encodeToString(actions.orEmpty()).messageValue()),
-        change("tombstone", tombstone.messageValue()),
-        change("conditions_op", conditions_op?.serialName().messageValue()),
+        localChange(RULES, row, "id", row),
+        localChange(RULES, row, "stage", stage?.serialName()),
+        localChange(
+          RULES,
+          row,
+          "conditions",
+          DbJson.encodeToString(conditions.orEmpty()),
+        ),
+        localChange(RULES, row, "actions", DbJson.encodeToString(actions.orEmpty())),
+        localChange(RULES, row, "tombstone", tombstone),
+        localChange(RULES, row, "conditions_op", conditions_op?.serialName()),
       )
     }
   }

@@ -4,8 +4,7 @@ import aktual.api.client.BudgetSyncApi
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.BudgetSyncController
 import aktual.budget.model.DbMetadata
-import aktual.budget.model.LocalChange
-import aktual.budget.model.MessageValue
+import aktual.budget.model.localChange
 import aktual.core.model.BudgetServer
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.di.BudgetScope
@@ -69,10 +68,10 @@ class BudgetNavRailViewModel(
 
   // Like savePrefs in packages/loot-core/src/server/prefs.ts
   private fun budgetNameChange(name: String) =
-    LocalChange(
+    localChange(
       dataset = "prefs",
       row = DbMetadata.BudgetName.name,
       column = "value",
-      value = MessageValue.String(name),
+      value = name,
     )
 }
