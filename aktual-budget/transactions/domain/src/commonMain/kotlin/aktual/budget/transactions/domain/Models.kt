@@ -69,6 +69,18 @@ data class TransactionUpdate(
   val rawSyncedData: Patch<String?> = Keep,
 )
 
+// The fields of a transaction that its editor changes
+data class TransactionFields(
+  val account: AccountId?,
+  val date: LocalDate,
+  val amount: Amount,
+  val payee: PayeeId?,
+  val category: CategoryId?,
+  val notes: String?,
+  val cleared: Boolean,
+  val reconciled: Boolean,
+)
+
 /** The bank sync fields of an account, written like upstream's db.update('accounts', ...). */
 data class AccountUpdate(
   val id: AccountId,

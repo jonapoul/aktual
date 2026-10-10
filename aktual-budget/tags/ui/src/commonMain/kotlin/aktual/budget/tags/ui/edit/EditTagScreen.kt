@@ -266,10 +266,13 @@ private fun EditTagTopBar(
 private fun DiscardChangesDialog(onDiscard: () -> Unit, onCancel: () -> Unit) {
   AktualAlertDialog(
     title = Strings.tagsDiscardTitle,
+    highlight = colors.warningText,
     onDismissRequest = onCancel,
     buttons = {
       TextButton(onClick = onCancel) { Text(Strings.tagsDiscardCancel) }
-      TextButton(onClick = onDiscard) { Text(Strings.tagsDiscardConfirm) }
+      TextButton(onClick = onDiscard) {
+        Text(Strings.tagsDiscardConfirm, color = colors.warningText)
+      }
     },
     content = { Text(Strings.tagsDiscardMessage) },
   )

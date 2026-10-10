@@ -3,6 +3,7 @@ package aktual.budget.transactions.domain
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.dao.TransactionDetail
 import aktual.budget.db.dao.TransactionRow
+import aktual.budget.model.Amount
 import aktual.budget.model.TransactionId
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +15,20 @@ data class LoadedTransaction(
   val detail: TransactionDetail,
   val children: List<TransactionRow>,
   val balanceAfter: Long,
-)
+) {
+  val fields: TransactionFields
+    get() =
+      TransactionFields(
+        account = detail.account,
+        date = detail.row.date,
+        amount = Amount(detail.row.amount),
+        payee = detail.payee,
+        category = detail.category,
+        notes = detail.row.notes,
+        cleared = detail.cleared,
+        reconciled = detail.reconciled,
+      )
+}
 
 /**
  * Loads one transaction for its detail screen. As upstream's TransactionEdit, which loads it with

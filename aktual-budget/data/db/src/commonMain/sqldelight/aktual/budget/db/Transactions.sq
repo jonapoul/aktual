@@ -348,8 +348,8 @@ SELECT
   LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
   WHERE vt.id IN :ids;
 
--- One live transaction, as getByIds has it, plus its cleared/reconciled state and the parent a split
--- child hangs off
+-- One live transaction, as getByIds has it, plus its cleared/reconciled state, the parent a split
+-- child hangs off and the IDs its editor changes
 getDetail:
 SELECT
   vt.id,
@@ -374,7 +374,10 @@ SELECT
   CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
   vt.cleared,
   vt.reconciled,
-  t.parent_id AS parentId
+  t.parent_id AS parentId,
+  vt.account AS accountId,
+  vt.payee AS payeeId,
+  c.id AS categoryId
   FROM v_transactions_internal_alive AS vt
   INNER JOIN transactions AS t ON t.id = vt.id
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
