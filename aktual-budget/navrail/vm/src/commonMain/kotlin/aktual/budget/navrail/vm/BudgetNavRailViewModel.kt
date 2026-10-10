@@ -1,7 +1,11 @@
 package aktual.budget.navrail.vm
 
+import aktual.api.client.BudgetSyncApi
 import aktual.budget.BudgetLocalPreferences
+import aktual.budget.BudgetSyncController
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.LocalChange
+import aktual.budget.model.MessageValue
 import aktual.core.model.BudgetServer
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.di.BudgetScope
@@ -16,15 +20,21 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import logcat.logcat
 
 @Stable
 @ViewModelKey
 @ContributesIntoMap(BudgetScope::class)
 class BudgetNavRailViewModel(
   contributors: Set<BudgetNavEntryContributor>,
-  localPreferences: BudgetLocalPreferences,
-  server: BudgetServer,
+  private val localPreferences: BudgetLocalPreferences,
+  private val server: BudgetServer,
+  private val syncApi: BudgetSyncApi,
+  private val sync: BudgetSyncController,
 ) : ViewModel() {
   val budgetNavEntryContributors: ImmutableSet<BudgetNavEntryContributor> =
     contributors.toImmutableSet()
@@ -37,4 +47,32 @@ class BudgetNavRailViewModel(
       val serverHost = (server as? BudgetServer.Remote)?.url?.baseUrl
       DrawerHeaderState(budgetName = budgetName, serverHost = serverHost)
     }
+
+  fun rename(name: String) {
+    viewModelScope.launch {
+      try {
+        // The server keeps its own copy of the name for the budget list, see saveMetadataPrefs in
+        // packages/loot-core/src/server/preferences/app.ts
+        val cloudFileId = localPreferences[DbMetadata.CloudFileId]
+        if (server is Remote && cloudFileId != null) {
+          syncApi.renameBudget(cloudFileId, name)
+        }
+        localPreferences.update { metadata -> metadata.set(DbMetadata.BudgetName, name) }
+        sync.syncChanges(budgetNameChange(name))
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed renaming budget" }
+      }
+    }
+  }
+
+  // Like savePrefs in packages/loot-core/src/server/prefs.ts
+  private fun budgetNameChange(name: String) =
+    LocalChange(
+      dataset = "prefs",
+      row = DbMetadata.BudgetName.name,
+      column = "value",
+      value = MessageValue.String(name),
+    )
 }
