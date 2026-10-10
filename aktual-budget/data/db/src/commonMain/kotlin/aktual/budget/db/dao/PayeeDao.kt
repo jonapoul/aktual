@@ -1,6 +1,7 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.GetAllNonTransfer
 import aktual.budget.db.Payees
 import aktual.budget.db.payees.GetAllActive
 import aktual.budget.db.withResult
@@ -49,5 +50,9 @@ class PayeeDao(database: BudgetDatabase) {
 
   suspend fun getAllActive(): List<GetAllActive> = queries.withResult {
     getAllActive().awaitAsList()
+  }
+
+  suspend fun getAllNonTransfer(): List<GetAllNonTransfer> = queries.withResult {
+    getAllNonTransfer().awaitAsList()
   }
 }

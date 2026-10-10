@@ -2,6 +2,7 @@ package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Categories
+import aktual.budget.db.GetAllActiveGrouped
 import aktual.budget.db.categories.GetAllActive
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
@@ -49,5 +50,9 @@ class CategoryDao(database: BudgetDatabase) {
 
   suspend fun getAllActive(): List<GetAllActive> = queries.withResult {
     getAllActive().awaitAsList()
+  }
+
+  suspend fun getAllActiveGrouped(): List<GetAllActiveGrouped> = queries.withResult {
+    getAllActiveGrouped().awaitAsList()
   }
 }

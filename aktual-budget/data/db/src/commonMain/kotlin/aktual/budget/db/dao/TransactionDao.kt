@@ -54,6 +54,9 @@ data class TransactionDetail(
   val cleared: Boolean,
   val reconciled: Boolean,
   val parent: TransactionId?,
+  val account: AccountId?,
+  val payee: PayeeId?,
+  val category: CategoryId?,
 )
 
 // One page of the list, with the balance after its first (newest) row
@@ -364,6 +367,9 @@ private fun transactionDetail(
   cleared: Boolean?,
   reconciled: Boolean?,
   parentId: TransactionId?,
+  accountId: AccountId?,
+  payeeId: PayeeId?,
+  categoryId: CategoryId?,
 ) =
   TransactionDetail(
     row =
@@ -387,6 +393,9 @@ private fun transactionDetail(
     cleared = cleared != false,
     reconciled = reconciled == true,
     parent = parentId.takeIf { isChild == true },
+    account = accountId,
+    payee = payeeId,
+    category = categoryId,
   )
 
 // Null for closed accounts, which are grouped whichever budget they were in
