@@ -7,6 +7,7 @@ import aktual.core.icons.material.ArrowDropDown
 import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
+import aktual.core.model.unaryPlus
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareTextButton
@@ -369,8 +370,8 @@ private fun YearBreakdown(
 @Composable
 private fun workingLines(row: McRunDetailRow, config: McConfig, surplusPotName: String) =
   buildList {
-    row.ruleExplanation?.let { add(ruleWorking(it, config.withdrawalRule)) }
-    if (row.minimumApplied) add(Strings.monteCarloWorkingMinimum(row.plannedSpending.money()))
+    row.ruleExplanation?.let { +ruleWorking(it, config.withdrawalRule) }
+    if (row.minimumApplied) +Strings.monteCarloWorkingMinimum(row.plannedSpending.money())
     if (row.income > 0) {
       val income =
         if (row.incomeTax > 0) {
@@ -396,47 +397,43 @@ private fun workingLines(row: McRunDetailRow, config: McConfig, surplusPotName: 
         } else {
           emptyList()
         }
-      add(if (streams.isEmpty()) income else "$income (${streams.joinToString("; ")})")
+      if (streams.isEmpty()) +income else +"$income (${streams.joinToString("; ")})"
     }
-    add(
-      if (row.taxPaid > 0) {
-        Strings.monteCarloWorkingWithdrawalTaxed(
-          row.withdrawal.money(),
-          row.taxPaid.money(),
-          (row.withdrawal - row.taxPaid).money(),
+    if (row.taxPaid > 0) {
+      +Strings.monteCarloWorkingWithdrawalTaxed(
+        row.withdrawal.money(),
+        row.taxPaid.money(),
+        (row.withdrawal - row.taxPaid).money(),
+      )
+    } else {
+      +Strings.monteCarloWorkingWithdrawalUntaxed(row.withdrawal.money())
+    }
+    when {
+      row.spent < row.plannedSpending ->
+        +Strings.monteCarloWorkingSpentShort(
+          row.spent.money(),
+          row.plannedSpending.money(),
+          (row.plannedSpending - row.spent).money(),
         )
-      } else {
-        Strings.monteCarloWorkingWithdrawalUntaxed(row.withdrawal.money())
-      },
-    )
-    add(
-      when {
-        row.spent < row.plannedSpending ->
-          Strings.monteCarloWorkingSpentShort(
-            row.spent.money(),
-            row.plannedSpending.money(),
-            (row.plannedSpending - row.spent).money(),
-          )
-        row.spent > row.plannedSpending ->
-          Strings.monteCarloWorkingSpentExtra(
-            row.spent.money(),
-            (row.spent - row.plannedSpending).money(),
-            row.plannedSpending.money(),
-          )
-        else -> Strings.monteCarloWorkingSpent(row.spent.money())
-      },
-    )
+      row.spent > row.plannedSpending ->
+        +Strings.monteCarloWorkingSpentExtra(
+          row.spent.money(),
+          (row.spent - row.plannedSpending).money(),
+          row.plannedSpending.money(),
+        )
+      else -> +Strings.monteCarloWorkingSpent(row.spent.money())
+    }
     if (row.surplusSaved > 0) {
-      add(Strings.monteCarloWorkingSaved(surplusPotName, row.surplusSaved.money()))
+      +Strings.monteCarloWorkingSaved(surplusPotName, row.surplusSaved.money())
     }
     if (row.unspentIncome > 0 && row.surplusSaved == 0L) {
-      add(Strings.monteCarloWorkingUnspent(row.unspentIncome.money()))
+      +Strings.monteCarloWorkingUnspent(row.unspentIncome.money())
     }
     if (row.contributions > 0) {
-      add(Strings.monteCarloWorkingContributions(row.contributions.money()))
+      +Strings.monteCarloWorkingContributions(row.contributions.money())
     }
-    if (row.feesPaid > 0) add(Strings.monteCarloWorkingFees(row.feesPaid.money()))
-    row.inaccessibleBalance?.let { add(Strings.monteCarloWorkingLocked(it.money())) }
+    if (row.feesPaid > 0) +Strings.monteCarloWorkingFees(row.feesPaid.money())
+    row.inaccessibleBalance?.let { +Strings.monteCarloWorkingLocked(it.money()) }
   }
 
 @Composable

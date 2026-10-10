@@ -11,6 +11,7 @@ import aktual.budget.model.CategoryId
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
 import aktual.core.l10n.Strings
+import aktual.core.model.unaryPlus
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
@@ -541,12 +542,12 @@ private fun categoryKey(id: CategoryId) = "category-${id.value}"
 
 // The item keys budgetColumns lays out, to find a row's index while it's off screen
 private fun List<MonthColumn>.itemKeys(): List<String> = buildList {
-  add("summaries")
-  add("header")
+  +"summaries"
+  +"header"
   val template = this@itemKeys.firstNotNullOfOrNull { it.budget } ?: return@buildList
   for (group in template.groups + listOfNotNull(template.income)) {
-    add("group-${group.id.value}")
-    if (!group.isCollapsed) group.categories.forEach { add(categoryKey(it.id)) }
+    +"group-${group.id.value}"
+    if (!group.isCollapsed) group.categories.forEach { +categoryKey(it.id) }
   }
 }
 
