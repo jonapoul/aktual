@@ -1,4 +1,4 @@
-package aktual.account.domain
+package aktual.account.vm
 
 sealed interface ChangePasswordResult {
   data object Success : ChangePasswordResult

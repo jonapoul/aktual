@@ -1,15 +1,6 @@
 package aktual.budget.home.vm
 
 import aktual.budget.BudgetLocalPreferences
-import aktual.budget.home.domain.AccountsSummary
-import aktual.budget.home.domain.AccountsSummaryLoader
-import aktual.budget.home.domain.NeedsAttention
-import aktual.budget.home.domain.NeedsAttentionLoader
-import aktual.budget.home.domain.ThisMonth
-import aktual.budget.home.domain.ThisMonthLoader
-import aktual.budget.home.domain.UpcomingSchedules
-import aktual.budget.home.domain.UpcomingSchedulesLoader
-import aktual.budget.home.domain.mostRecentlyActive
 import aktual.budget.model.DbMetadata
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable

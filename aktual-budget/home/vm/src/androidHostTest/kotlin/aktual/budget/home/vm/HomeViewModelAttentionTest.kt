@@ -2,7 +2,6 @@ package aktual.budget.home.vm
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
-import aktual.budget.home.domain.OverspentCategory
 import aktual.budget.home.vm.AttentionItem.OverdueSchedules
 import aktual.budget.home.vm.AttentionItem.Overspent
 import aktual.budget.home.vm.AttentionItem.SyncFailed

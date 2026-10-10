@@ -9,10 +9,6 @@ import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.db.dao.TransactionDao
-import aktual.budget.home.domain.AccountsSummaryLoader
-import aktual.budget.home.domain.NeedsAttentionLoader
-import aktual.budget.home.domain.ThisMonthLoader
-import aktual.budget.home.domain.UpcomingSchedulesLoader
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.schedules.domain.SchedulesLoader

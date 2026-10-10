@@ -1,4 +1,4 @@
-package aktual.budget.home.domain
+package aktual.budget.home.vm
 
 import aktual.budget.db.GetAllWithBalances
 import aktual.budget.model.AccountId

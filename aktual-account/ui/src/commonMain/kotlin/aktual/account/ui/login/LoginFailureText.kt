@@ -1,6 +1,6 @@
 package aktual.account.ui.login
 
-import aktual.account.domain.LoginResult
+import aktual.account.vm.LoginResult
 import aktual.core.l10n.Strings
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams

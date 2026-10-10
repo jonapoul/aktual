@@ -1,6 +1,5 @@
 package aktual.account.vm
 
-import aktual.account.domain.LoginRequester
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.AvailableLoginMethod
 import aktual.core.model.Token

@@ -1,7 +1,5 @@
 package aktual.budget.home.vm
 
-import aktual.budget.home.domain.AccountsSummary
-import aktual.budget.home.domain.OverspentCategory
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.BankSyncStatus

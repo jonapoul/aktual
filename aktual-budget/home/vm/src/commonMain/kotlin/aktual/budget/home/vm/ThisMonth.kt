@@ -1,4 +1,4 @@
-package aktual.budget.home.domain
+package aktual.budget.home.vm
 
 import aktual.budget.budgeting.domain.BudgetMonth
 import kotlinx.datetime.LocalDate

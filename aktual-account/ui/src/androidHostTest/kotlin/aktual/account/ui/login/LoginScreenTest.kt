@@ -1,7 +1,7 @@
 package aktual.account.ui.login
 
-import aktual.account.domain.LoginRequester
-import aktual.account.domain.LoginResult
+import aktual.account.vm.LoginRequester
+import aktual.account.vm.LoginResult
 import aktual.account.vm.LoginViewModel
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Password

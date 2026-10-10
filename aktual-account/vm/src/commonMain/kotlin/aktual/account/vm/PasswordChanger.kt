@@ -1,4 +1,4 @@
-package aktual.account.domain
+package aktual.account.vm
 
 import aktual.api.client.AccountApi
 import aktual.api.model.account.ChangePasswordRequest
