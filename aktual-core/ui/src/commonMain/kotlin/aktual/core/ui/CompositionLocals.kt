@@ -144,7 +144,13 @@ fun Amount.formattedText(
 @Composable
 fun AnnotatedString.redacted(): AnnotatedString {
   if (Amount.PRIVACY_MASK !in text) return this
-  val style = SpanStyle(fontFamily = redactedFontFamily())
+  return redacted(redactedFontFamily())
+}
+
+// For text built outside of composition, like chart axis labels
+fun AnnotatedString.redacted(fontFamily: FontFamily): AnnotatedString {
+  if (Amount.PRIVACY_MASK !in text) return this
+  val style = SpanStyle(fontFamily = fontFamily)
   val masks =
     Regex.fromLiteral(Amount.PRIVACY_MASK).findAll(text).map { match ->
       AnnotatedString.Range(style, match.range.first, match.range.last + 1)
@@ -155,7 +161,11 @@ fun AnnotatedString.redacted(): AnnotatedString {
   )
 }
 
-@Composable fun redactedFontFamily(): FontFamily = FontFamily(Font(Res.font.redacted_script))
+@Composable
+fun redactedFontFamily(): FontFamily {
+  val font = Font(Res.font.redacted_script)
+  return remember(font) { FontFamily(font) }
+}
 
 // The font only has scribbles for letters and digits. Same length as the mask it replaces, so
 // existing spans still line up
