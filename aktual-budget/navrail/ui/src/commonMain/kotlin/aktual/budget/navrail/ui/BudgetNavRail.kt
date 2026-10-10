@@ -40,27 +40,30 @@ import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.ColoredParameters
+import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalNavDrawerOpener
 import aktual.core.ui.LocalRootOverlay
+import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SideSpacing
 import aktual.core.ui.TabletPreview
+import aktual.core.ui.bareIconButton
 import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.isMobileLandscape
+import aktual.core.ui.normalIconButton
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -95,6 +98,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -343,10 +347,11 @@ private fun BudgetDrawerSheet(
     Column(modifier = Modifier.weight(1f).verticalScrollWithBar().padding(12.dp)) {
       DrawerHeader(
         state = headerState,
+        onRename = onRename,
         modifier = Modifier.padding(bottom = 12.dp),
       )
 
-      for (tab in PrimaryTabs) {
+      for (tab in DrawerTabs) {
         DrawerItem(
           icon = tab.icon(),
           label = tab.label(),
@@ -361,18 +366,17 @@ private fun BudgetDrawerSheet(
       color = colors.sidebarItemText.disabled,
     )
 
-    DrawerGrid(
+    DrawerActions(
       modifier = Modifier.padding(12.dp),
-      items = drawerGridItems(headerState.isDemo, selectedTab, onSelectTab, onRename, onAction),
+      actions = drawerActions(headerState.isDemo, onAction),
     )
   }
 }
 
 @Immutable
-private data class DrawerGridItem(
+private data class DrawerAction(
   val icon: ImageVector,
   val label: String,
-  val selected: Boolean = false,
   val onClick: () -> Unit,
 )
 
@@ -380,51 +384,35 @@ context(list: MutableList<T>)
 private operator fun <T> T.unaryPlus() = list.add(this)
 
 @Composable
-private fun drawerGridItems(
+private fun drawerActions(
   isDemo: Boolean,
-  selectedTab: BudgetTab,
-  onSelectTab: (BudgetTab) -> Unit,
-  onRename: () -> Unit,
   onAction: BudgetNavActionHandler,
-): ImmutableList<DrawerGridItem> = buildList {
-  for (tab in SecondaryTabs) {
-    +DrawerGridItem(
-      icon = tab.icon(),
-      label = tab.label(),
-      selected = tab == selectedTab,
-      onClick = { onSelectTab(tab) },
-    )
-  }
-  +DrawerGridItem(
-    icon = MaterialIcons.Edit,
-    label = Strings.budgetNavMenuRenameBudget,
-    onClick = onRename,
-  )
+): ImmutableList<DrawerAction> = buildList {
   if (!isDemo) {
-    +DrawerGridItem(
+    +DrawerAction(
       icon = MaterialIcons.SwapHoriz,
       label = Strings.budgetNavMenuSwitchBudget,
       onClick = { onAction(SwitchFile) },
     )
   }
-  +DrawerGridItem(
+  +DrawerAction(
     icon = MaterialIcons.Settings,
     label = Strings.budgetNavMenuSettings,
     onClick = { onAction(Settings) },
   )
-  +DrawerGridItem(
+  +DrawerAction(
     icon = MaterialIcons.Info,
     label = Strings.budgetNavMenuAbout,
     onClick = { onAction(About) },
   )
   if (isDemo) {
-    +DrawerGridItem(
+    +DrawerAction(
       icon = MaterialIcons.Logout,
       label = Strings.budgetNavMenuExitDemo,
       onClick = { onAction(ExitDemo) },
     )
   } else {
-    +DrawerGridItem(
+    +DrawerAction(
       icon = MaterialIcons.Logout,
       label = Strings.budgetNavMenuLogOut,
       onClick = { onAction(LogOut) },
@@ -434,73 +422,81 @@ private fun drawerGridItems(
   .toImmutableList()
 
 @Composable
-private fun DrawerGrid(items: ImmutableList<DrawerGridItem>, modifier: Modifier = Modifier) {
-  Column(modifier = modifier, verticalArrangement = spacedBy(DrawerGridSpacing)) {
-    items.chunked(DRAWER_GRID_COLUMNS).fastForEach { row ->
-      Row(horizontalArrangement = spacedBy(DrawerGridSpacing)) {
-        row.fastForEach { item -> DrawerGridCell(item, modifier = Modifier.weight(1f)) }
-        repeat(DRAWER_GRID_COLUMNS - row.size) { Spacer(modifier = Modifier.weight(1f)) }
-      }
+private fun DrawerActions(actions: ImmutableList<DrawerAction>, modifier: Modifier = Modifier) {
+  Row(modifier = modifier, horizontalArrangement = spacedBy(8.dp)) {
+    actions.fastForEach { action ->
+      NormalIconButton(
+        modifier = Modifier.weight(1f),
+        imageVector = action.icon,
+        contentDescription = action.label,
+        colors = DrawerButtonColors,
+        onClick = action.onClick,
+      )
     }
   }
 }
 
-@Composable
-private fun DrawerGridCell(item: DrawerGridItem, modifier: Modifier = Modifier) {
-  val contentColor = if (item.selected) colors.sidebarItemTextSelected else colors.sidebarItemText
-  Column(
-    modifier =
-      modifier
-        .clip(RoundedCornerShape(16.dp))
-        .background(if (item.selected) contentColor.disabled else colors.sidebarItemBackgroundHover)
-        .clickable(onClick = item.onClick)
-        .padding(horizontal = 4.dp, vertical = 10.dp),
-    horizontalAlignment = CenterHorizontally,
-    verticalArrangement = spacedBy(4.dp),
-  ) {
-    Icon(item.icon, contentDescription = null, tint = contentColor)
-    Text(
-      text = item.label,
-      style = typography.labelMedium,
-      color = contentColor,
-      maxLines = 1,
-      overflow = Ellipsis,
+private val DrawerButtonColors = IconButtonColorProvider { theme, isPressed ->
+  theme
+    .normalIconButton(isPressed)
+    .copy(
+      containerColor =
+        if (isPressed) theme.sidebarItemTextSelected.disabled else theme.sidebarItemBackgroundHover,
+      contentColor = if (isPressed) theme.sidebarItemTextSelected else theme.sidebarItemText,
+      disabledContainerColor = theme.sidebarItemBackgroundHover.disabled,
+      disabledContentColor = theme.sidebarItemText.disabled,
     )
-  }
 }
-
-private const val DRAWER_GRID_COLUMNS = 2
-private val DrawerGridSpacing = 8.dp
 
 @Composable
 private fun DrawerHeader(
   state: DrawerHeaderState,
+  onRename: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(
+  Row(
     modifier =
       modifier
         .fillMaxWidth()
         .clip(RoundedCornerShape(16.dp))
         .background(colors.sidebarItemBackgroundHover)
-        .padding(16.dp),
+        .padding(start = 16.dp, top = 8.dp, end = 4.dp, bottom = 8.dp),
+    verticalAlignment = CenterVertically,
   ) {
-    Text(
-      text = state.budgetName.orEmpty(),
-      style = typography.titleMedium,
-      fontWeight = Bold,
-      color = colors.sidebarBudgetName,
-      maxLines = 1,
-      overflow = Ellipsis,
-    )
-    Text(
-      text = state.serverHost ?: Strings.budgetNavDemo,
-      style = typography.bodySmall,
-      color = colors.sidebarTextSubdued,
-      maxLines = 1,
-      overflow = Ellipsis,
+    Column(modifier = Modifier.weight(1f)) {
+      Text(
+        text = state.budgetName.orEmpty(),
+        style = typography.titleMedium,
+        fontWeight = Bold,
+        color = colors.sidebarBudgetName,
+        maxLines = 1,
+        overflow = Ellipsis,
+      )
+      Text(
+        text = state.serverHost ?: Strings.budgetNavDemo,
+        style = typography.bodySmall,
+        color = colors.sidebarTextSubdued,
+        maxLines = 1,
+        overflow = Ellipsis,
+      )
+    }
+
+    BareIconButton(
+      imageVector = MaterialIcons.Edit,
+      contentDescription = Strings.budgetNavMenuRenameBudget,
+      colors = RenameButtonColors,
+      onClick = onRename,
     )
   }
+}
+
+private val RenameButtonColors = IconButtonColorProvider { theme, isPressed ->
+  theme
+    .bareIconButton(isPressed)
+    .copy(
+      containerColor = if (isPressed) theme.sidebarItemTextSelected.disabled else Transparent,
+      contentColor = if (isPressed) theme.sidebarItemTextSelected else theme.sidebarBudgetName,
+    )
 }
 
 // Material's default is 56dp
@@ -694,6 +690,9 @@ private val SecondaryTabs: ImmutableList<BudgetTab> = persistentListOf(BankSync)
 
 private val PrimaryTabs: ImmutableList<BudgetTab> =
   BudgetTab.entries.filterNot { it in SecondaryTabs }.toImmutableList()
+
+// The drawer has room to list every tab
+private val DrawerTabs: ImmutableList<BudgetTab> = (PrimaryTabs + SecondaryTabs).toImmutableList()
 
 private val TabSaver: Saver<BudgetTab, Int> =
   Saver(save = { it.ordinal }, restore = { BudgetTab.entries[it] })
