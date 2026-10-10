@@ -15,10 +15,8 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.LocalCurrencyConfig
-import aktual.core.ui.LocalNumberFormatConfig
-import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.formattedText
 import aktual.core.ui.stringShort
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
@@ -37,7 +35,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +52,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
@@ -131,7 +129,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
     val values =
       data.nodes.map { node ->
         if (data.showPercentages) {
-          node.percent.toString(PERCENT_DECIMALS)
+          AnnotatedString(node.percent.toString(PERCENT_DECIMALS))
         } else {
           node.value.formatted()
         }
@@ -255,7 +253,7 @@ private fun Density.nodeLabels(
   width: Float,
   textMeasurer: TextMeasurer,
   labels: List<String>,
-  values: List<String>,
+  values: List<AnnotatedString>,
   nameStyle: TextStyle,
   valueStyle: TextStyle,
 ): List<NodeLabel?> {
@@ -268,7 +266,7 @@ private fun Density.nodeLabels(
 
   return data.nodes.mapIndexed { i, node ->
     val rect = layout.nodes.getOrNull(i) ?: return@mapIndexed null
-    val name = textMeasurer.measureLabel(labels[i], nameStyle, constraints)
+    val name = textMeasurer.measureLabel(AnnotatedString(labels[i]), nameStyle, constraints)
     val value = textMeasurer.measureLabel(values[i], valueStyle, constraints)
     val textHeight = name.size.height + value.size.height
     if (rect.height + NODE_PADDING.toPx() < textHeight) return@mapIndexed null
@@ -282,7 +280,7 @@ private fun Density.nodeLabels(
 }
 
 private fun TextMeasurer.measureLabel(
-  text: String,
+  text: AnnotatedString,
   style: TextStyle,
   constraints: Constraints,
 ): TextLayoutResult =
@@ -434,15 +432,7 @@ private fun SankeyLabel.string(): String =
     Other -> Strings.reportsSankeyOther
   }
 
-@Composable
-@ReadOnlyComposable
-private fun Amount.formatted(): String =
-  toString(
-    numberFormatConfig = LocalNumberFormatConfig.current,
-    currencyConfig = LocalCurrencyConfig.current,
-    includeSign = false,
-    isPrivacyEnabled = LocalPrivacyEnabled.current,
-  )
+@Composable private fun Amount.formatted(): AnnotatedString = formattedText(includeSign = false)
 
 private val NODE_WIDTH = 8.dp
 private val NODE_PADDING = 16.dp

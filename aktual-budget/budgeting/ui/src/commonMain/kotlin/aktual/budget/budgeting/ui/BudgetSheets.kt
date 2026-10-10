@@ -22,6 +22,7 @@ import aktual.core.ui.EditorSheet
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.keyboardFocusRequester
+import aktual.core.ui.redacted
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -539,7 +540,7 @@ private fun SummaryRow(label: String, amount: Amount, bold: Boolean = false) {
 @Composable
 private fun AmountLabel(text: String) =
   Text(
-    text = text,
+    text = text.redacted(),
     fontSize = 13.sp,
     style = TextStyle.Default.tabularFigures(),
     color = colors.pageTextSubdued,

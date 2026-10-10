@@ -15,6 +15,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.isInPreview
+import aktual.core.ui.redacted
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -120,7 +121,9 @@ private fun Summary(data: MonteCarloData, modifier: Modifier = Modifier) =
     val style = typography.bodySmall
     val color = colors.pageTextSubdued
     Text(
-      text = Strings.reportsMonteCarloMedianEnding(data.medianEndingBalance.formattedString()),
+      text =
+        Strings.reportsMonteCarloMedianEnding(data.medianEndingBalance.formattedString())
+          .redacted(),
       style = style,
       color = color,
     )

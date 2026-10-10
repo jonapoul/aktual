@@ -18,6 +18,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
+import aktual.core.ui.redacted
 import aktual.core.ui.stringShort
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -231,6 +232,7 @@ private fun categoryText(
       append(account)
     }
   }
+    .redacted()
 }
 
 @Composable

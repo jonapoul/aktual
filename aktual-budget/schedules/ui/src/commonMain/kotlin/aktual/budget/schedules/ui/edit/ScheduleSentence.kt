@@ -16,6 +16,7 @@ import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import aktual.core.ui.frequencyDescription
+import aktual.core.ui.redacted
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -67,7 +68,7 @@ internal fun ScheduleSentence(
   modifier: Modifier = Modifier,
   style: TextStyle = typography.titleSmall.copy(lineHeight = SentenceLineHeight),
 ) {
-  val text = rememberScheduleSentence(state, activePart, onClick)
+  val text = rememberScheduleSentence(state, activePart, onClick).redacted()
   val chipColors =
     ChipColors(
       background = colors.pillBackgroundSelected.copy(alpha = CHIP_BACKGROUND_ALPHA),

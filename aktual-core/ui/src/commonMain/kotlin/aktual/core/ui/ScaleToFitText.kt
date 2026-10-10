@@ -41,6 +41,7 @@ fun ScaleToFitText(
   minTextSize: TextUnit = 0.sp,
   maxTextSize: TextUnit = 100.sp,
 ) {
+  val text = text.redacted()
   BoxWithConstraints(modifier = modifier, contentAlignment = Center) {
     val density = LocalDensity.current
     val maxWidthPx = with(density) { maxWidth.toPx().roundToInt() }

@@ -19,6 +19,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
+import aktual.core.ui.redacted
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -289,7 +290,7 @@ internal fun BannerRow(
               banner.total.formattedString(),
             )
           is Overbudgeted -> Strings.budgetingBannerOverbudgeted
-        },
+        }.redacted(),
       fontSize = 14.sp,
       color = text,
       maxLines = 2,

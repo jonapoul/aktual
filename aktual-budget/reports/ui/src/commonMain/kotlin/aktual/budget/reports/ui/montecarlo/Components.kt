@@ -9,6 +9,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.redacted
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -112,7 +113,12 @@ internal fun GroupHeading(
 
 @Composable
 internal fun BodyText(text: String, modifier: Modifier = Modifier) =
-  Text(modifier = modifier, text = text, style = typography.bodyMedium, color = colors.pageText)
+  Text(
+    modifier = modifier,
+    text = text.redacted(),
+    style = typography.bodyMedium,
+    color = colors.pageText,
+  )
 
 // MonteCarloHelpTooltip: a small info icon that shows its text when tapped
 @Composable

@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -55,6 +56,7 @@ fun WeightedTable(
   ellipsize: Boolean = true,
 ) {
   val textMeasurer = rememberTextMeasurer()
+  val data = data.redacted()
 
   val columnWidths =
     remember(data, textStyles) {
@@ -87,7 +89,7 @@ fun WeightedTable(
 @Stable
 private fun columnWidth(
   textMeasurer: TextMeasurer,
-  data: ImmutableList<ImmutableList<String>>,
+  data: ImmutableList<ImmutableList<AnnotatedString>>,
   textStyles: ImmutableList<TextStyle>,
   columnIndex: Int,
 ): Int {
@@ -98,6 +100,12 @@ private fun columnWidth(
   }
   return maxWidth
 }
+
+@Composable
+private fun ImmutableList<ImmutableList<String>>.redacted() = map { row ->
+  row.map { cell -> cell.redacted() }.toImmutableList()
+}
+  .toImmutableList()
 
 private val ImmutableList<ImmutableList<*>>.numColumns: Int
   get() = maxOfOrNull { it.size } ?: 0
@@ -128,6 +136,7 @@ fun WrapWidthTable(
 ) {
   val textMeasurer = rememberTextMeasurer()
   val density = LocalDensity.current
+  val data = data.redacted()
 
   val columnWidths =
     remember(data, textStyles, density) {

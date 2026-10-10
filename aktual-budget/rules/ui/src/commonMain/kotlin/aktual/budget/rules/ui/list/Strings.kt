@@ -25,6 +25,7 @@ import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.description
+import aktual.core.ui.redacted
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -112,67 +113,68 @@ internal fun rememberConditionText(
   val recurText = recurConfig?.description(dateFormat)
 
   return remember(
-    condition,
-    styles,
-    opText,
-    fieldText,
-    fieldNames,
-    recurText,
-    numberFormat,
-    currency,
-    privacy,
-  ) {
-    buildAnnotatedString {
-      withStyle(styles.default) { append(prefix) }
-      withStyle(styles.highlighted) { append(fieldText) }
-      withStyle(styles.default) {
-        append(" ")
-        append(opText)
-        append(" ")
-      }
-      when (val value = fieldNames ?: condition.value) {
-        is JsonPrimitive -> {
-          withStyle(styles.highlighted) {
-            if (condition.field == Amount) {
-              append(
-                Amount(value.int)
-                  .toString(
-                    numberFormatConfig = numberFormat,
-                    currencyConfig = currency,
-                    includeSign = true,
-                    isPrivacyEnabled = privacy,
-                  ),
-              )
-            } else {
-              append(value.content)
+      condition,
+      styles,
+      opText,
+      fieldText,
+      fieldNames,
+      recurText,
+      numberFormat,
+      currency,
+      privacy,
+    ) {
+      buildAnnotatedString {
+        withStyle(styles.default) { append(prefix) }
+        withStyle(styles.highlighted) { append(fieldText) }
+        withStyle(styles.default) {
+          append(" ")
+          append(opText)
+          append(" ")
+        }
+        when (val value = fieldNames ?: condition.value) {
+          is JsonPrimitive -> {
+            withStyle(styles.highlighted) {
+              if (condition.field == Amount) {
+                append(
+                  Amount(value.int)
+                    .toString(
+                      numberFormatConfig = numberFormat,
+                      currencyConfig = currency,
+                      includeSign = true,
+                      isPrivacyEnabled = privacy,
+                    ),
+                )
+              } else {
+                append(value.content)
+              }
             }
           }
-        }
 
-        is JsonArray -> {
-          withStyle(styles.default) { append("[") }
-          value.forEachIndexed { index, element ->
-            withStyle(styles.highlighted) { append(element.jsonPrimitive.content) }
-            if (index != value.lastIndex) {
-              withStyle(styles.default) { append(", ") }
+          is JsonArray -> {
+            withStyle(styles.default) { append("[") }
+            value.forEachIndexed { index, element ->
+              withStyle(styles.highlighted) { append(element.jsonPrimitive.content) }
+              if (index != value.lastIndex) {
+                withStyle(styles.default) { append(", ") }
+              }
             }
+            withStyle(styles.default) { append("]") }
           }
-          withStyle(styles.default) { append("]") }
-        }
 
-        JsonNull -> {
-          error("Should never see null in a condition's value: $condition")
-        }
-
-        is JsonObject -> {
-          if (condition.field != Date || recurText == null) {
-            error("Should only see a JSON object in a condition value for a date: $condition")
+          JsonNull -> {
+            error("Should never see null in a condition's value: $condition")
           }
-          withStyle(styles.highlighted) { append(recurText) }
+
+          is JsonObject -> {
+            if (condition.field != Date || recurText == null) {
+              error("Should only see a JSON object in a condition value for a date: $condition")
+            }
+            withStyle(styles.highlighted) { append(recurText) }
+          }
         }
       }
     }
-  }
+    .redacted()
 }
 
 private fun fieldNamesFlow(condition: Condition, nameFetcher: NameFetcher): Flow<JsonElement?> =
@@ -243,73 +245,74 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
   val fieldName by fieldNameFlow.collectAsStateWithLifecycle(initialValue = "...")
 
   return remember(
-    action,
-    styles,
-    opText,
-    fieldText,
-    setToText,
-    fieldName,
-    numberFormat,
-    currency,
-    privacy,
-  ) {
-    buildAnnotatedString {
-      val content = action.value?.content.orEmpty()
-      when (action.op) {
-        AppendNotes -> {
-          withStyle(styles.default) {
-            append(opText)
-            append(" ")
+      action,
+      styles,
+      opText,
+      fieldText,
+      setToText,
+      fieldName,
+      numberFormat,
+      currency,
+      privacy,
+    ) {
+      buildAnnotatedString {
+        val content = action.value?.content.orEmpty()
+        when (action.op) {
+          AppendNotes -> {
+            withStyle(styles.default) {
+              append(opText)
+              append(" ")
+            }
+            withStyle(styles.highlighted) { append(content) }
           }
-          withStyle(styles.highlighted) { append(content) }
-        }
-        DeleteTransaction,
-        Unknown -> {
-          withStyle(styles.default) { append(opText) }
-        }
-        LinkSchedule -> {
-          withStyle(styles.default) {
-            append(opText)
-            append(" ")
+          DeleteTransaction,
+          Unknown -> {
+            withStyle(styles.default) { append(opText) }
           }
-          withStyle(styles.highlighted) { append(fieldName) }
-        }
-        PrependNotes -> {
-          withStyle(styles.default) {
-            append(opText)
-            append(" ")
+          LinkSchedule -> {
+            withStyle(styles.default) {
+              append(opText)
+              append(" ")
+            }
+            withStyle(styles.highlighted) { append(fieldName) }
           }
-          withStyle(styles.highlighted) { append(content) }
-        }
-        Set -> {
-          withStyle(styles.default) {
-            append(opText)
-            append(" ")
+          PrependNotes -> {
+            withStyle(styles.default) {
+              append(opText)
+              append(" ")
+            }
+            withStyle(styles.highlighted) { append(content) }
           }
-          withStyle(styles.highlighted) { append(fieldText) }
-          withStyle(styles.default) { append(setToText) }
-          withStyle(styles.highlighted) {
-            if (action.field == Amount) {
-              append(formatAmount(action, numberFormat, currency, privacy))
-            } else if (fieldName != null) {
-              append(fieldName)
-            } else {
-              append(content)
+          Set -> {
+            withStyle(styles.default) {
+              append(opText)
+              append(" ")
+            }
+            withStyle(styles.highlighted) { append(fieldText) }
+            withStyle(styles.default) { append(setToText) }
+            withStyle(styles.highlighted) {
+              if (action.field == Amount) {
+                append(formatAmount(action, numberFormat, currency, privacy))
+              } else if (fieldName != null) {
+                append(fieldName)
+              } else {
+                append(content)
+              }
             }
           }
-        }
-        SetSplitAmount -> {
-          withStyle(styles.default) {
-            append(opText)
-            append(" ")
-          }
-          withStyle(styles.highlighted) {
-            append(formatAmount(action, numberFormat, currency, privacy))
+          SetSplitAmount -> {
+            withStyle(styles.default) {
+              append(opText)
+              append(" ")
+            }
+            withStyle(styles.highlighted) {
+              append(formatAmount(action, numberFormat, currency, privacy))
+            }
           }
         }
       }
     }
-  }
+    .redacted()
 }
 
 private fun formatAmount(

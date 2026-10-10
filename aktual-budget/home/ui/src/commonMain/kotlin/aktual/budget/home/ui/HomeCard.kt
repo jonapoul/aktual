@@ -10,6 +10,7 @@ import aktual.core.ui.BareTextButton
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.formattedString
+import aktual.core.ui.redacted
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -97,7 +98,7 @@ internal fun AmountText(
 
   Text(
     modifier = modifier.semantics { contentDescription = spoken },
-    text = text,
+    text = text.redacted(),
     style = style.tabularFigures(),
     fontWeight = SemiBold,
     color = color,

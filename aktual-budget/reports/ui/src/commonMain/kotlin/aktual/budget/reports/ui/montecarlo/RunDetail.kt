@@ -12,6 +12,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.redacted
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -312,7 +313,7 @@ private fun TableCell(
 ) =
   Text(
     modifier = modifier,
-    text = text,
+    text = text.redacted(),
     style = typography.bodySmall,
     color = color,
     textAlign = textAlign,
@@ -438,7 +439,12 @@ private fun workingLines(row: McRunDetailRow, config: McConfig, surplusPotName: 
 
 @Composable
 private fun DetailText(text: String, modifier: Modifier = Modifier) =
-  Text(modifier = modifier, text = text, style = typography.bodySmall, color = colors.pageText)
+  Text(
+    modifier = modifier,
+    text = text.redacted(),
+    style = typography.bodySmall,
+    color = colors.pageText,
+  )
 
 @Composable
 private fun PotTable(

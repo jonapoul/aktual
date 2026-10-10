@@ -29,9 +29,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.withStyle
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.datetime.LocalDate
@@ -137,19 +135,31 @@ fun Amount.formattedText(
   currencyConfig: CurrencyConfig = LocalCurrencyConfig.current,
   includeSign: Boolean = false,
   isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
-): AnnotatedString {
-  val string = toString(numberFormatConfig, currencyConfig, includeSign, isPrivacyEnabled)
-  if (!isPrivacyEnabled) return AnnotatedString(string)
-  val redacted = SpanStyle(fontFamily = FontFamily(Font(Res.font.redacted_script)))
-  return buildAnnotatedString {
-    append(string.substringBefore(Amount.PRIVACY_MASK))
-    withStyle(redacted) { append(REDACTED_MASK) }
-    append(string.substringAfter(Amount.PRIVACY_MASK))
-  }
+): AnnotatedString =
+  toString(numberFormatConfig, currencyConfig, includeSign, isPrivacyEnabled).redacted()
+
+// Draws any privacy masks in the string as a scribble
+@Composable fun String.redacted(): AnnotatedString = AnnotatedString(this).redacted()
+
+@Composable
+fun AnnotatedString.redacted(): AnnotatedString {
+  if (Amount.PRIVACY_MASK !in text) return this
+  val style = SpanStyle(fontFamily = redactedFontFamily())
+  val masks =
+    Regex.fromLiteral(Amount.PRIVACY_MASK).findAll(text).map { match ->
+      AnnotatedString.Range(style, match.range.first, match.range.last + 1)
+    }
+  return AnnotatedString(
+    text = text.replace(Amount.PRIVACY_MASK, REDACTED_MASK),
+    annotations = spanStyles + paragraphStyles + getLinkAnnotations(0, length) + masks,
+  )
 }
 
-// The font only has scribbles for letters and digits
-private const val REDACTED_MASK = "redact"
+@Composable fun redactedFontFamily(): FontFamily = FontFamily(Font(Res.font.redacted_script))
+
+// The font only has scribbles for letters and digits. Same length as the mask it replaces, so
+// existing spans still line up
+const val REDACTED_MASK = "redac"
 
 @Composable
 fun WithCompositionLocals(

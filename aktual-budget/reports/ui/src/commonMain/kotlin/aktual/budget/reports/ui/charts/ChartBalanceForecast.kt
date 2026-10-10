@@ -13,6 +13,7 @@ import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.isInPreview
+import aktual.core.ui.redacted
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -133,7 +134,7 @@ private fun Header(
       if (lowest.key != data.items.keys.last()) {
         VerticalSpacer(2.dp)
         Text(
-          text = Strings.reportsBalanceForecastLow(lowest.value.formattedString()),
+          text = Strings.reportsBalanceForecastLow(lowest.value.formattedString()).redacted(),
           textAlign = End,
           style = typography.bodySmall,
           color = if (lowest.value.isPositive()) colors.pageTextSubdued else colors.errorText,

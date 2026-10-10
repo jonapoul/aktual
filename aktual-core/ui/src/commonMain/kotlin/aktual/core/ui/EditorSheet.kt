@@ -63,7 +63,11 @@ fun EditorSheet(
       Column(verticalArrangement = Arrangement.spacedBy(EditorSheetDS.titleSpacing)) {
         Text(text = title, style = typography.headlineSmall)
         if (subtitle != null) {
-          Text(text = subtitle, style = typography.bodyMedium, color = colors.pageTextSubdued)
+          Text(
+            text = subtitle.redacted(),
+            style = typography.bodyMedium,
+            color = colors.pageTextSubdued,
+          )
         }
       }
 
