@@ -41,7 +41,7 @@ fun ScaleToFitText(
   minTextSize: TextUnit = 0.sp,
   maxTextSize: TextUnit = 100.sp,
 ) {
-  val text = text.redacted()
+  val redacted = text.redacted()
   BoxWithConstraints(modifier = modifier, contentAlignment = Center) {
     val density = LocalDensity.current
     val maxWidthPx = with(density) { maxWidth.toPx().roundToInt() }
@@ -60,7 +60,7 @@ fun ScaleToFitText(
 
           val result =
             textMeasurer.measure(
-              text = text,
+              text = redacted,
               style = style.copy(fontSize = midSize.sp),
               constraints = Constraints(maxWidth = maxWidthPx, maxHeight = maxHeightPx),
               maxLines = maxLines,
@@ -83,12 +83,12 @@ fun ScaleToFitText(
     if (isInPreview()) {
       runBlocking { resizingText() }
     } else {
-      SideEffect(text, maxWidthPx, maxHeightPx) { resizingText() }
+      SideEffect(redacted, maxWidthPx, maxHeightPx) { resizingText() }
     }
 
     Text(
       modifier = Modifier.wrapContentSize(),
-      text = text,
+      text = redacted,
       style = style,
       maxLines = maxLines,
       color = color,

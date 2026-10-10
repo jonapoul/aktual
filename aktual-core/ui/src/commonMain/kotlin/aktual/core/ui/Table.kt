@@ -56,19 +56,19 @@ fun WeightedTable(
   ellipsize: Boolean = true,
 ) {
   val textMeasurer = rememberTextMeasurer()
-  val data = data.redacted()
+  val rows = data.redacted()
 
   val columnWidths =
-    remember(data, textStyles) {
-      (0 until data.numColumns)
-        .map { columnIndex -> columnWidth(textMeasurer, data, textStyles, columnIndex) }
+    remember(rows, textStyles) {
+      (0 until rows.numColumns)
+        .map { columnIndex -> columnWidth(textMeasurer, rows, textStyles, columnIndex) }
         .toImmutableList()
     }
 
   val totalWidth = columnWidths.sum()
 
   LazyColumn(modifier = modifier) {
-    items(data) { cells ->
+    items(rows) { cells ->
       Row(verticalAlignment = CenterVertically) {
         cells.fastForEachIndexed { index, cell ->
           val columnWidth = columnWidths.getOrNull(index) ?: 0
@@ -136,13 +136,13 @@ fun WrapWidthTable(
 ) {
   val textMeasurer = rememberTextMeasurer()
   val density = LocalDensity.current
-  val data = data.redacted()
+  val rows = data.redacted()
 
   val columnWidths =
-    remember(data, textStyles, density) {
-      (0 until data.numColumns).map { columnIndex ->
+    remember(rows, textStyles, density) {
+      (0 until rows.numColumns).map { columnIndex ->
         val maxWidthPx =
-          data.maxOfOrNull { row ->
+          rows.maxOfOrNull { row ->
             textMeasurer
               .measure(text = row[columnIndex], style = textStyles[columnIndex])
               .size
@@ -154,7 +154,7 @@ fun WrapWidthTable(
     }
 
   LazyColumn(modifier = modifier) {
-    items(data) { row ->
+    items(rows) { row ->
       Row(verticalAlignment = CenterVertically) {
         row.fastForEachIndexed { index, cell ->
           Text(
