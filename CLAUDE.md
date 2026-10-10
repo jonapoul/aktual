@@ -10,6 +10,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ## General
 
 - **IMPORTANT**: After any architectural/structural change, grep `**/CLAUDE.md` for references that need updating (scopes, annotations, module paths, DI patterns). Don't wait to be asked.
+- Limit visibility where possible: make a type `internal` unless another module uses it. A public VM that injects internal types needs an `internal constructor`.
 - Prefer `kotlinx.immutable` collections in the UI layer, not plain `List`/`Set`.
 - Prefer `stateFlow.update { x }` over `stateFlow.value = x`.
 - The project compiles with `-Xcontext-sensitive-resolution` (CSR), so enum entries, sealed subtypes and companion properties of the expected type (`Role.Button`, `Alignment.Center`) can be referenced unqualified when the expected type is known. Always do this instead of qualifying (`PossibleRole.Admin`) or importing the entry. The expected type is known in:
