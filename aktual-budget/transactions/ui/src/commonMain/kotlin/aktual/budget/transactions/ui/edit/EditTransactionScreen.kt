@@ -67,6 +67,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -367,6 +368,7 @@ private fun Transaction.categoryText(): String? =
   }
 
 @Composable
+@ReadOnlyComposable
 private fun Transaction.categoryColor(): Color =
   if (specialCategory == null && needsCategory) colors.warningText else colors.pageText
 
@@ -489,6 +491,7 @@ private fun Transaction.transferIcon(): ImageVector? =
   }
 
 // Outgoing money is red here, where the list leaves it plain
+@ReadOnlyComposable
 @Composable
 private fun Amount.heroColor(): Color = if (this < Zero) colors.numberNegative else color()
 
