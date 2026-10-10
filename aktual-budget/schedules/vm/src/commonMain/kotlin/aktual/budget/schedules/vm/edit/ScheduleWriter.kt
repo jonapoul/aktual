@@ -62,7 +62,7 @@ internal class ScheduleWriter(
     val next = nextDateId.toString()
     val schedule = scheduleId.toString()
     val changes = buildList {
-      +LocalChange(RULES, rule, "stage", MessageValue.Null)
+      +LocalChange(RULES, rule, "stage", Null)
       +localChange(RULES, rule, "conditions", conditions.encode())
       +localChange(RULES, rule, "actions", actions.encode())
       +localChange(RULES, rule, "conditions_op", ConditionOp.And.serialName())

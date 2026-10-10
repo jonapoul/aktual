@@ -30,20 +30,7 @@ fun localChange(
   row: String,
   column: String,
   value: Boolean?,
-) =
-  LocalChange(
-    dataset = dataset,
-    row = row,
-    column = column,
-    value =
-      MessageValue.Number(
-        when (value) {
-          true -> 1
-          false -> 0
-          null -> 0
-        },
-      ),
-  )
+) = LocalChange(dataset, row, column, value.messageValue())
 
 fun tombstone(dataset: String, row: String): LocalChange =
   localChange(dataset, row, column = "tombstone", value = 1)
