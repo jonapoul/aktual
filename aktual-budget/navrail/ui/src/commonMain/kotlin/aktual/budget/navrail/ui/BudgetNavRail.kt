@@ -9,6 +9,7 @@ import aktual.core.icons.Tag
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.AccountBalance
 import aktual.core.icons.material.AccountBalanceWallet
+import aktual.core.icons.material.Edit
 import aktual.core.icons.material.Home
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.Logout
@@ -54,12 +55,15 @@ import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
@@ -78,6 +82,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -101,6 +106,7 @@ import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -159,6 +165,7 @@ internal fun BudgetNavRail(
     }
 
   var selectedTab by rememberSaveable(stateSaver = TabSaver) { mutableStateOf(BudgetTab.Home) }
+  var showRenameDialog by rememberSaveable { mutableStateOf(false) }
 
   val activeStack = remember(tabStacks, selectedTab) { tabStacks.getValue(selectedTab) }
 
@@ -184,6 +191,7 @@ internal fun BudgetNavRail(
       activeStack = activeStack,
       selectedTab = selectedTab,
       onSelectTab = onSelectTab,
+      onRename = { showRenameDialog = true },
       onAction = onAction,
       modifier = modifier,
     )
@@ -195,8 +203,20 @@ internal fun BudgetNavRail(
       activeStack = activeStack,
       selectedTab = selectedTab,
       onSelectTab = onSelectTab,
+      onRename = { showRenameDialog = true },
       onAction = onAction,
       modifier = modifier,
+    )
+  }
+
+  if (showRenameDialog) {
+    RenameBudgetDialog(
+      currentName = headerState.budgetName.orEmpty(),
+      onConfirm = { name ->
+        showRenameDialog = false
+        viewModel.rename(name)
+      },
+      onDismiss = { showRenameDialog = false },
     )
   }
 }
@@ -215,6 +235,7 @@ private fun DrawerNavLayout(
   activeStack: NavStack<BudgetNavKey>,
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
+  onRename: () -> Unit,
   onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -242,6 +263,10 @@ private fun DrawerNavLayout(
             onSelectTab = { tab ->
               closeDrawer()
               onSelectTab(tab)
+            },
+            onRename = {
+              closeDrawer()
+              onRename()
             },
             onAction = { action ->
               closeDrawer()
@@ -306,6 +331,7 @@ private fun BudgetDrawerSheet(
   headerState: DrawerHeaderState,
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
+  onRename: () -> Unit,
   onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -314,7 +340,7 @@ private fun BudgetDrawerSheet(
     drawerContainerColor = colors.sidebarBackground,
     drawerContentColor = colors.sidebarItemText,
   ) {
-    Column(modifier = Modifier.verticalScrollWithBar().padding(12.dp)) {
+    Column(modifier = Modifier.weight(1f).verticalScrollWithBar().padding(12.dp)) {
       DrawerHeader(
         state = headerState,
         modifier = Modifier.padding(bottom = 12.dp),
@@ -328,52 +354,123 @@ private fun BudgetDrawerSheet(
           onClick = { onSelectTab(tab) },
         )
       }
+    }
 
-      HorizontalDivider(
-        modifier = Modifier.padding(vertical = 8.dp),
-        color = colors.sidebarItemText.disabled,
-      )
+    HorizontalDivider(
+      modifier = Modifier.padding(horizontal = 12.dp),
+      color = colors.sidebarItemText.disabled,
+    )
 
-      for (tab in SecondaryTabs) {
-        DrawerItem(
-          icon = tab.icon(),
-          label = tab.label(),
-          selected = tab == selectedTab,
-          onClick = { onSelectTab(tab) },
-        )
+    DrawerGrid(
+      modifier = Modifier.padding(12.dp),
+      items = drawerGridItems(headerState.isDemo, selectedTab, onSelectTab, onRename, onAction),
+    )
+  }
+}
+
+@Immutable
+private data class DrawerGridItem(
+  val icon: ImageVector,
+  val label: String,
+  val selected: Boolean = false,
+  val onClick: () -> Unit,
+)
+
+context(list: MutableList<T>)
+private operator fun <T> T.unaryPlus() = list.add(this)
+
+@Composable
+private fun drawerGridItems(
+  isDemo: Boolean,
+  selectedTab: BudgetTab,
+  onSelectTab: (BudgetTab) -> Unit,
+  onRename: () -> Unit,
+  onAction: BudgetNavActionHandler,
+): ImmutableList<DrawerGridItem> = buildList {
+  for (tab in SecondaryTabs) {
+    +DrawerGridItem(
+      icon = tab.icon(),
+      label = tab.label(),
+      selected = tab == selectedTab,
+      onClick = { onSelectTab(tab) },
+    )
+  }
+  +DrawerGridItem(
+    icon = MaterialIcons.Edit,
+    label = Strings.budgetNavMenuRenameBudget,
+    onClick = onRename,
+  )
+  if (!isDemo) {
+    +DrawerGridItem(
+      icon = MaterialIcons.SwapHoriz,
+      label = Strings.budgetNavMenuSwitchBudget,
+      onClick = { onAction(SwitchFile) },
+    )
+  }
+  +DrawerGridItem(
+    icon = MaterialIcons.Settings,
+    label = Strings.budgetNavMenuSettings,
+    onClick = { onAction(Settings) },
+  )
+  +DrawerGridItem(
+    icon = MaterialIcons.Info,
+    label = Strings.budgetNavMenuAbout,
+    onClick = { onAction(About) },
+  )
+  if (isDemo) {
+    +DrawerGridItem(
+      icon = MaterialIcons.Logout,
+      label = Strings.budgetNavMenuExitDemo,
+      onClick = { onAction(ExitDemo) },
+    )
+  } else {
+    +DrawerGridItem(
+      icon = MaterialIcons.Logout,
+      label = Strings.budgetNavMenuLogOut,
+      onClick = { onAction(LogOut) },
+    )
+  }
+}
+  .toImmutableList()
+
+@Composable
+private fun DrawerGrid(items: ImmutableList<DrawerGridItem>, modifier: Modifier = Modifier) {
+  Column(modifier = modifier, verticalArrangement = spacedBy(DrawerGridSpacing)) {
+    items.chunked(DRAWER_GRID_COLUMNS).fastForEach { row ->
+      Row(horizontalArrangement = spacedBy(DrawerGridSpacing)) {
+        row.fastForEach { item -> DrawerGridCell(item, modifier = Modifier.weight(1f)) }
+        repeat(DRAWER_GRID_COLUMNS - row.size) { Spacer(modifier = Modifier.weight(1f)) }
       }
-
-      if (headerState.isDemo) {
-        DrawerItem(
-          icon = MaterialIcons.Logout,
-          label = Strings.budgetNavMenuExitDemo,
-          onClick = { onAction(ExitDemo) },
-        )
-      } else {
-        DrawerItem(
-          icon = MaterialIcons.SwapHoriz,
-          label = Strings.budgetNavMenuSwitchBudget,
-          onClick = { onAction(SwitchFile) },
-        )
-        DrawerItem(
-          icon = MaterialIcons.Logout,
-          label = Strings.budgetNavMenuLogOut,
-          onClick = { onAction(LogOut) },
-        )
-      }
-      DrawerItem(
-        icon = MaterialIcons.Settings,
-        label = Strings.budgetNavMenuSettings,
-        onClick = { onAction(Settings) },
-      )
-      DrawerItem(
-        icon = MaterialIcons.Info,
-        label = Strings.budgetNavMenuAbout,
-        onClick = { onAction(About) },
-      )
     }
   }
 }
+
+@Composable
+private fun DrawerGridCell(item: DrawerGridItem, modifier: Modifier = Modifier) {
+  val contentColor = if (item.selected) colors.sidebarItemTextSelected else colors.sidebarItemText
+  Column(
+    modifier =
+      modifier
+        .clip(RoundedCornerShape(16.dp))
+        .background(if (item.selected) contentColor.disabled else colors.sidebarItemBackgroundHover)
+        .clickable(onClick = item.onClick)
+        .padding(horizontal = 4.dp, vertical = 10.dp),
+    horizontalAlignment = CenterHorizontally,
+    verticalArrangement = spacedBy(4.dp),
+  ) {
+    Icon(item.icon, contentDescription = null, tint = contentColor)
+    Text(
+      text = item.label,
+      style = typography.labelMedium,
+      color = contentColor,
+      maxLines = 1,
+      overflow = Ellipsis,
+    )
+  }
+}
+
+private const val DRAWER_GRID_COLUMNS = 2
+private val DrawerGridSpacing = 8.dp
 
 @Composable
 private fun DrawerHeader(
@@ -406,6 +503,9 @@ private fun DrawerHeader(
   }
 }
 
+// Material's default is 56dp
+private val DrawerItemHeight = 44.dp
+
 @Composable
 private fun DrawerItem(
   icon: ImageVector,
@@ -415,7 +515,7 @@ private fun DrawerItem(
   selected: Boolean = false,
 ) {
   NavigationDrawerItem(
-    modifier = modifier,
+    modifier = modifier.height(DrawerItemHeight),
     icon = { Icon(icon, contentDescription = null) },
     label = { Text(text = label) },
     selected = selected,
@@ -432,6 +532,7 @@ private fun SideNavLayout(
   activeStack: NavStack<BudgetNavKey>,
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
+  onRename: () -> Unit,
   onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -443,6 +544,7 @@ private fun SideNavLayout(
         expanded = showMenu,
         isDemo = isDemo,
         onSelectTab = onSelectTab,
+        onRename = onRename,
         onAction = onAction,
         onDismissRequest = { showMenu = false },
         modifier = Modifier.align(TopEnd),
@@ -613,6 +715,7 @@ private fun BudgetMenu(
   isDemo: Boolean,
   onDismissRequest: () -> Unit,
   onSelectTab: (BudgetTab) -> Unit,
+  onRename: () -> Unit,
   onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -628,6 +731,14 @@ private fun BudgetMenu(
           },
         )
       }
+      AktualDropdownMenuItem(
+        text = Strings.budgetNavMenuRenameBudget,
+        leadingIcon = MaterialIcons.Edit,
+        onClick = {
+          onDismissRequest()
+          onRename()
+        },
+      )
       if (isDemo) {
         AktualDropdownMenuItem(
           text = Strings.budgetNavMenuExitDemo,
@@ -687,6 +798,7 @@ private fun PreviewBudgetDrawerSheet(@PreviewParameter(ColoredParameters::class)
         ),
       selectedTab = Transactions,
       onSelectTab = {},
+      onRename = {},
       onAction = {},
     )
   }

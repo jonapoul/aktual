@@ -1,6 +1,8 @@
 package aktual.api.client
 
+import aktual.api.model.sync.UpdateUserFileNameRequest
 import aktual.budget.BudgetLocalPreferences
+import aktual.budget.model.BudgetId
 import aktual.budget.model.SyncResponse
 import aktual.budget.proto.SyncResponseDecoder
 import aktual.core.model.BudgetServer
@@ -27,7 +29,7 @@ class BudgetSyncApiImpl(
   private val decoder: SyncResponseDecoder,
 ) : BudgetSyncApi {
   override suspend fun syncBudget(requestBody: ByteString): SyncResponse {
-    val remote = checkNotNull(server as? BudgetServer.Remote) { "No server to sync with" }
+    val remote = remote()
     val response = client.post {
       url {
         protocol = remote.url.protocol()
@@ -47,4 +49,20 @@ class BudgetSyncApiImpl(
       metadata = prefs.value,
     )
   }
+
+  override suspend fun renameBudget(id: BudgetId, name: String) {
+    val remote = remote()
+    client.post {
+      url {
+        protocol = remote.url.protocol()
+        host = remote.url.baseUrl
+        path("/sync/update-user-filename")
+      }
+      contentType(ContentType.Application.Json)
+      setBody(UpdateUserFileNameRequest(id, name, remote.token))
+    }
+  }
+
+  private fun remote(): BudgetServer.Remote =
+    checkNotNull(server as? BudgetServer.Remote) { "No server to sync with" }
 }
