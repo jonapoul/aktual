@@ -26,6 +26,8 @@ import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.bareIconButton
 import aktual.core.ui.formattedString
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
@@ -85,6 +87,8 @@ internal fun AmountTextField(
     }
   val textState = rememberTextFieldState(initialText = initialText)
   var isPositive by remember { mutableStateOf(value.isPositive()) }
+  val interactionSource = remember { MutableInteractionSource() }
+  val isFocused by interactionSource.collectIsFocusedAsState()
 
   // Sync text field from external value changes (field type change, condition reset)
   SideEffect(value) {
@@ -135,9 +139,15 @@ internal fun AmountTextField(
     keyboardOptions = KeyboardOptions(keyboardType = Phone),
     singleLine = true,
     textStyle = textStyle,
+    interactionSource = interactionSource,
+    // The mask is a fixed length, so it would hide what's being typed
     outputTransformation =
-      remember(numberFormatConfig, currencyConfig, isPrivacyEnabled) {
-        NumberOutputTransformation(numberFormatConfig, currencyConfig, isPrivacyEnabled)
+      remember(numberFormatConfig, currencyConfig, isPrivacyEnabled, isFocused) {
+        NumberOutputTransformation(
+          numberFormatConfig,
+          currencyConfig,
+          isPrivacyEnabled = isPrivacyEnabled && !isFocused,
+        )
       },
   )
 }
