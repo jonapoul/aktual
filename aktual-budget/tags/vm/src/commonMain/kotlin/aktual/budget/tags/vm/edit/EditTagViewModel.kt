@@ -4,9 +4,8 @@ import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.TAGS
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.LocalChange
-import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
-import aktual.budget.model.messageValue
+import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.tags.vm.list.toTagItem
 import aktual.budget.tags.vm.toColorOrNull
@@ -251,15 +250,13 @@ class EditTagViewModel(
     color: String?,
     description: String?,
   ): List<LocalChange> {
-    fun change(column: String, value: MessageValue) =
-      LocalChange(TAGS, id.toString(), column, value)
-
+    val row = id.toString()
     return listOf(
-      change("id", id.toString().messageValue()),
-      change("tag", tag.messageValue()),
-      change("color", color.messageValue()),
-      change("description", description.messageValue()),
-      change("tombstone", false.messageValue()),
+      localChange(TAGS, row, "id", row),
+      localChange(TAGS, row, "tag", tag),
+      localChange(TAGS, row, "color", color),
+      localChange(TAGS, row, "description", description),
+      localChange(TAGS, row, "tombstone", false),
     )
   }
 

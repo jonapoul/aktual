@@ -12,9 +12,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.BankId
 import aktual.budget.model.LocalChange
-import aktual.budget.model.MessageValue
 import aktual.budget.model.localChange
-import aktual.budget.model.messageValue
 import aktual.core.UuidGenerator
 import aktual.di.BudgetCoroutineScope
 import dev.zacsweers.metro.Inject
@@ -65,9 +63,9 @@ class BankAccountLinker(
       (accountDao.maxSortOrder(offBudget)?.let(::floor)?.toLong() ?: 0L) + SORT_INCREMENT
     val changes =
       mutableListOf(
-        change(account, "name", external.name.messageValue()),
-        change(account, "offbudget", offBudget.messageValue()),
-        change(account, "sort_order", MessageValue.Number(sortOrder)),
+        localChange(ACCOUNTS, account.value, "name", external.name),
+        localChange(ACCOUNTS, account.value, "offbudget", offBudget),
+        localChange(ACCOUNTS, account.value, "sort_order", sortOrder),
       )
     changes.addLink(account, source, external)
     val payee = uuidGenerator()
@@ -95,7 +93,7 @@ class BankAccountLinker(
         "account_sync_source",
         "bank_sync_status",
       )
-    syncController.syncChanges(columns.map { change(account, it, Null) })
+    syncController.syncChanges(columns.map { LocalChange(ACCOUNTS, account.value, it, Null) })
 
     if (row.account_sync_source != GoCardless || dao.bankUsers(bank) > 0) return
     val requisition = dao.bankId(bank) ?: return
@@ -123,13 +121,10 @@ class BankAccountLinker(
           bankId?.let { this += localChange(BANKS, id, "bank_id", it.value) }
           this += localChange(BANKS, id, "name", external.institution)
         }
-    this += change(account, "account_id", external.accountId.messageValue())
-    this += change(account, "bank", bank.messageValue())
-    this += change(account, "account_sync_source", source.value.messageValue())
+    this += localChange(ACCOUNTS, account.value, "account_id", external.accountId)
+    this += localChange(ACCOUNTS, account.value, "bank", bank)
+    this += localChange(ACCOUNTS, account.value, "account_sync_source", source.value)
   }
-
-  private fun change(account: AccountId, column: String, value: MessageValue) =
-    LocalChange(ACCOUNTS, account.value, column, value)
 }
 
 // packages/loot-core/src/shared/util.ts
