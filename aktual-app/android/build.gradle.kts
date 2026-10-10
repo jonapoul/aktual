@@ -21,7 +21,8 @@ plugins {
   id("aktual.convention.test")
 }
 
-val gitVersionCode = gitVersionCode()
+// Local builds share a version code, so any of them can be installed over another
+val appVersionCode = providers.environmentVariable("CI").flatMap { gitVersionCode() }.orElse(1)
 val gitVersionName = gitVersionDate()
 
 android {
@@ -32,7 +33,7 @@ android {
     applicationId = "dev.jonpoulton.aktual.app"
     minSdk = providers.intProperty(key = "aktual.android.minSdk").get()
     targetSdk = providers.intProperty(key = "aktual.android.targetSdk").get()
-    versionCode = gitVersionCode.get()
+    versionCode = appVersionCode.get()
     versionName = gitVersionName.get()
     multiDexEnabled = true
     base.archivesName = "$applicationId-$versionName"
