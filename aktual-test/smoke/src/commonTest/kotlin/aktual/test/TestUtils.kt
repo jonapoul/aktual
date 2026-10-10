@@ -5,6 +5,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.RuleId
+import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.WidgetId
 import aktual.core.model.ServerUrl
@@ -19,6 +20,8 @@ internal val BUDGET_ID = BudgetId("abc-123")
 internal val ACCOUNT_ID = AccountId("abc-123")
 
 internal val TRANSACTIONS_SPEC = TransactionsSpec(AllAccounts)
+
+internal val TRANSACTION_ID = TransactionId("abc-123")
 
 internal val DB_METADATA = DbMetadata(budgetName = "My Budget", cloudFileId = BUDGET_ID)
 

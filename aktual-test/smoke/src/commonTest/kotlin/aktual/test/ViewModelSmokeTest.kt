@@ -26,6 +26,7 @@ import aktual.budget.tags.vm.edit.EditTagViewModel
 import aktual.budget.tags.vm.list.ListTagsViewModel
 import aktual.budget.tags.vm.search.SearchTagsViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
+import aktual.budget.transactions.vm.edit.EditTransactionViewModel
 import aktual.core.theme.DarkColors
 import aktual.metrics.vm.MetricsViewModel
 import aktual.prefs.vm.currency.CurrencySettingsViewModel
@@ -194,6 +195,12 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   fun transactions() =
     testAssistedVM<TransactionsViewModel, TransactionsViewModel.Factory> {
       create(TRANSACTIONS_SPEC)
+    }
+
+  @Test
+  fun editTransaction() =
+    testAssistedVM<EditTransactionViewModel, EditTransactionViewModel.Factory> {
+      create(TRANSACTION_ID)
     }
 
   @Test

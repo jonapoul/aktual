@@ -1,7 +1,9 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.model.Amount
+import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
+import aktual.budget.transactions.vm.SpecialCategory
 import aktual.budget.transactions.vm.Transaction
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.LeftArrow2
@@ -21,6 +23,7 @@ import aktual.core.ui.formattedText
 import aktual.core.ui.redacted
 import aktual.core.ui.stringShort
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -68,6 +71,7 @@ internal fun LedgerRow(
   modifier: Modifier = Modifier,
   parts: SplitParts = Collapsed,
   onToggleSplit: () -> Unit = {},
+  onOpen: () -> Unit = {},
 ) {
   val dimens = LocalLedgerDimens.current
   Row(
@@ -75,7 +79,7 @@ internal fun LedgerRow(
       modifier
         .fillMaxWidth()
         .heightIn(min = dimens.rowHeight)
-        .then(splitToggle(transaction, parts, onToggleSplit)),
+        .then(rowClick(transaction, parts, onToggleSplit, onOpen)),
     verticalAlignment = CenterVertically,
   ) {
     Box(
@@ -194,12 +198,7 @@ private fun categoryText(
   val warning = SpanStyle(color = colors.warningText, fontWeight = SemiBold)
   val remaining =
     transaction.splitRemaining?.let { Strings.transactionsSplitRemaining(it.formattedString()) }
-  val special =
-    when (transaction.specialCategory) {
-      OffBudget -> Strings.transactionsOffBudget
-      Transfer -> Strings.transactionsTransfer
-      null -> null
-    }
+  val special = transaction.specialCategory?.label()
 
   return buildAnnotatedString {
     val category = transaction.category
@@ -275,7 +274,14 @@ private fun PayeeText(
 }
 
 @Composable
-private fun Transaction.payeeLabel(): String? =
+internal fun SpecialCategory.label(): String =
+  when (this) {
+    OffBudget -> Strings.transactionsOffBudget
+    Transfer -> Strings.transactionsTransfer
+  }
+
+@Composable
+internal fun Transaction.payeeLabel(): String? =
   when (transfer) {
     To -> Strings.transactionsTransferTo(payee.orEmpty())
     From -> Strings.transactionsTransferFrom(payee.orEmpty())
@@ -285,14 +291,16 @@ private fun Transaction.payeeLabel(): String? =
 private fun Transaction.isExpandable(parts: SplitParts) =
   split == Parent && parts != Pinned && children.isNotEmpty()
 
-// Tapping a split opens and closes its parts. Other rows stay inert
+// Tapping a split opens and closes its parts, each of which opens the whole split. Other rows open
+// straight away
 @Composable
-private fun splitToggle(
+private fun rowClick(
   transaction: Transaction,
   parts: SplitParts,
   onToggleSplit: () -> Unit,
+  onOpen: () -> Unit,
 ): Modifier {
-  if (!transaction.isExpandable(parts)) return Modifier
+  if (!transaction.isExpandable(parts)) return Modifier.clickable(onClick = onOpen)
   val expanded = parts == Expanded
   val state =
     if (expanded) Strings.transactionsSplitExpanded else Strings.transactionsSplitCollapsed
@@ -308,6 +316,7 @@ internal fun LedgerTableRow(
   modifier: Modifier = Modifier,
   parts: SplitParts = Collapsed,
   onToggleSplit: () -> Unit = {},
+  onOpen: () -> Unit = {},
 ) {
   val dimens = LocalLedgerDimens.current
   Row(
@@ -315,7 +324,7 @@ internal fun LedgerTableRow(
       modifier
         .fillMaxWidth()
         .height(dimens.rowHeight)
-        .then(splitToggle(transaction, parts, onToggleSplit))
+        .then(rowClick(transaction, parts, onToggleSplit, onOpen))
         .padding(horizontal = dimens.rowEnd),
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(dimens.contentGap),
@@ -352,6 +361,7 @@ internal fun SplitChildren(
   parent: Transaction,
   density: TransactionsDensity,
   modifier: Modifier = Modifier,
+  onOpen: (TransactionId) -> Unit = {},
 ) {
   val dimens = LocalLedgerDimens.current
   when (density) {
@@ -366,24 +376,34 @@ internal fun SplitChildren(
             .background(colors.pageBackgroundModalActive)
             .padding(vertical = SplitInsetVertical),
       ) {
-        parent.children.fastForEach { child -> SplitChildRow(child, parent, dimens) }
+        parent.children.fastForEach { child ->
+          SplitChildRow(child, parent, dimens, onOpen = { onOpen(child.id) })
+        }
       }
     }
 
     Dense -> {
       Column(modifier = modifier.fillMaxWidth().background(colors.pageBackgroundModalActive)) {
-        parent.children.fastForEach { child -> SplitChildTableRow(child, parent, dimens) }
+        parent.children.fastForEach { child ->
+          SplitChildTableRow(child, parent, dimens, onOpen = { onOpen(child.id) })
+        }
       }
     }
   }
 }
 
 @Composable
-private fun SplitChildRow(child: Transaction, parent: Transaction, dimens: LedgerDimens) =
+private fun SplitChildRow(
+  child: Transaction,
+  parent: Transaction,
+  dimens: LedgerDimens,
+  onOpen: () -> Unit,
+) =
   Row(
     modifier =
       Modifier.fillMaxWidth()
         .height(dimens.childRowHeight)
+        .clickable(onClick = onOpen)
         .padding(start = SplitInsetStart, end = dimens.rowEnd),
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(dimens.contentGap),
@@ -413,10 +433,18 @@ private fun SplitChildRow(child: Transaction, parent: Transaction, dimens: Ledge
   }
 
 @Composable
-private fun SplitChildTableRow(child: Transaction, parent: Transaction, dimens: LedgerDimens) =
+private fun SplitChildTableRow(
+  child: Transaction,
+  parent: Transaction,
+  dimens: LedgerDimens,
+  onOpen: () -> Unit,
+) =
   Row(
     modifier =
-      Modifier.fillMaxWidth().height(dimens.childRowHeight).padding(horizontal = dimens.rowEnd),
+      Modifier.fillMaxWidth()
+        .height(dimens.childRowHeight)
+        .clickable(onClick = onOpen)
+        .padding(horizontal = dimens.rowEnd),
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(dimens.contentGap),
   ) {
@@ -490,7 +518,7 @@ private fun BalanceText(balance: Amount?, dimens: LedgerDimens, modifier: Modifi
 
 @Composable
 @ReadOnlyComposable
-private fun Amount.color(): Color = if (this > Zero) colors.numberPositive else colors.tableText
+internal fun Amount.color(): Color = if (this > Zero) colors.numberPositive else colors.tableText
 
 @Composable
 @ReadOnlyComposable

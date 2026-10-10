@@ -28,6 +28,7 @@ flowchart TD
     accountGroupTransactions["Account Group Transactions"]
     tagTransactions["Tag Transactions"]
     uncategorisedTransactions["Uncategorised Transactions"]
+    transaction["Transaction"]
     reportsDashboard["Reports Dashboard"]
     report["Report"]
     createReport["Create Report"]
@@ -94,6 +95,12 @@ flowchart TD
   home --see all upcoming--> listSchedules
 
   budget --review uncategorised--> uncategorisedTransactions
+
+  transactions --tap transaction--> transaction
+  accountTransactions --tap transaction--> transaction
+  accountGroupTransactions --tap transaction--> transaction
+  tagTransactions --tap transaction--> transaction
+  uncategorisedTransactions --tap transaction--> transaction
 
   reportsDashboard --tap report--> report
   reportsDashboard --tap create--> createReport

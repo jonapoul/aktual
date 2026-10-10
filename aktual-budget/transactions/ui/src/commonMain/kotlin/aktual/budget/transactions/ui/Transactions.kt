@@ -179,17 +179,34 @@ private fun TransactionsFilled(
               else -> SplitParts.Collapsed
             }
           val onToggleSplit = { onAction(Action.ToggleSplit(transaction.id)) }
+          val onOpen = { onAction(Action.OpenTransaction(transaction.id)) }
 
           when (density) {
             Comfortable,
             Compact ->
-              LedgerRow(transaction, showDate, parts = parts, onToggleSplit = onToggleSplit)
-            Dense -> LedgerTableRow(transaction, parts = parts, onToggleSplit = onToggleSplit)
+              LedgerRow(
+                transaction = transaction,
+                showDate = showDate,
+                parts = parts,
+                onToggleSplit = onToggleSplit,
+                onOpen = onOpen,
+              )
+            Dense ->
+              LedgerTableRow(
+                transaction = transaction,
+                parts = parts,
+                onToggleSplit = onToggleSplit,
+                onOpen = onOpen,
+              )
           }
 
           if (transaction.children.isNotEmpty()) {
             AnimatedVisibility(visible = parts != Collapsed) {
-              SplitChildren(transaction, density)
+              SplitChildren(
+                parent = transaction,
+                density = density,
+                onOpen = { id -> onAction(Action.OpenTransaction(id)) },
+              )
             }
           }
         }

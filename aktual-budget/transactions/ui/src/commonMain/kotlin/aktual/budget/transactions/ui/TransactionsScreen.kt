@@ -9,6 +9,7 @@ import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.EditTransactionNavigator
 import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.DesktopPreview
@@ -56,6 +57,7 @@ import kotlinx.coroutines.flow.Flow
 fun TransactionsScreen(
   back: BackNavigator,
   toSettings: TransactionSettingsNavigator,
+  openTransaction: EditTransactionNavigator,
   spec: TransactionsSpec,
   isRoot: Boolean = false,
   viewModel: TransactionsViewModel = metroViewModel(spec),
@@ -93,6 +95,7 @@ fun TransactionsScreen(
         OpenSettings -> toSettings()
         is SetDensity -> viewModel.setDensity(action.density)
         is ToggleSplit -> viewModel.toggleExpanded(action.id)
+        is OpenTransaction -> openTransaction(action.id)
       }
     },
   )
