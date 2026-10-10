@@ -50,7 +50,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
+
+private val QueryDebounce = 300.milliseconds
 
 /**
  * Full screen search layout, with a back button and search field in the top bar. Scrolling
@@ -95,6 +101,7 @@ fun SearchScaffold(
   }
 }
 
+@OptIn(FlowPreview::class)
 @Composable
 private fun SearchField(
   initialQuery: String,
@@ -118,7 +125,9 @@ private fun SearchField(
   }
 
   LaunchedEffect(state) {
-    snapshotFlow { state.text.toString() }.collect { query -> currentOnQueryChange(query) }
+    snapshotFlow { state.text.toString() }
+      .debounce { query -> if (query.isEmpty()) Duration.ZERO else QueryDebounce }
+      .collect { query -> currentOnQueryChange(query) }
   }
 
   ProvideTextStyle(value = typography.bodyLarge) {
