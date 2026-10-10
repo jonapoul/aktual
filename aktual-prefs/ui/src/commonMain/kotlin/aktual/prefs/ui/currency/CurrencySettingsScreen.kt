@@ -1,4 +1,4 @@
-package aktual.prefs.ui.root
+package aktual.prefs.ui.currency
 
 import aktual.budget.model.Amount
 import aktual.budget.model.Currency
@@ -11,53 +11,74 @@ import aktual.core.icons.material.LineStartArrowNotch
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.SpaceBar
 import aktual.core.l10n.Strings
+import aktual.core.nav.BackNavigator
+import aktual.core.theme.Colors
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.LocalCurrencyConfig
+import aktual.core.ui.PortraitPreview
+import aktual.core.ui.PreviewWithColors
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.ListPreferenceItem
-import aktual.prefs.ui.core.PreferenceGroup
-import aktual.prefs.vm.root.CurrencyConfigState
+import aktual.prefs.ui.SettingsListScaffold
+import aktual.prefs.vm.BooleanPreference
+import aktual.prefs.vm.ListPreference
+import aktual.prefs.vm.currency.CurrencySettingsState
+import aktual.prefs.vm.currency.CurrencySettingsViewModel
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
-internal fun CurrencyGroup(state: CurrencyConfigState, modifier: Modifier = Modifier) {
-  PreferenceGroup(
+fun CurrencySettingsScreen(
+  back: BackNavigator,
+  viewModel: CurrencySettingsViewModel = metroViewModel<CurrencySettingsViewModel>(),
+) {
+  val state by viewModel.state.collectAsStateWithLifecycle()
+  CurrencySettingsScaffold(state = state, onBack = { back() })
+}
+
+@Composable
+private fun CurrencySettingsScaffold(state: CurrencySettingsState, onBack: () -> Unit) {
+  SettingsListScaffold(
     title = Strings.settingsCurrency,
-    subtitle = Strings.settingsCurrencyDesc,
-    modifier = modifier,
+    description = Strings.settingsCurrencyDesc,
+    onBack = onBack,
   ) {
-    ListPreferenceItem(
-      preference = state.currency,
-      optionString = { c -> c.string() },
-      optionSuffix = { c -> Text(c.symbol, textAlign = Center) },
-      icon = MaterialIcons.CurrencyPound,
-      title = Strings.settingsCurrencyDefault,
-      subtitle = null,
-      includeBackground = false,
-    )
-
-    ListPreferenceItem(
-      preference = state.symbolPosition,
-      optionString = { c -> c.string() },
-      optionSuffix = null,
-      icon =
-        when (state.symbolPosition.value) {
-          BeforeAmount -> MaterialIcons.LineStartArrowNotch
-          AfterAmount -> MaterialIcons.LineEndArrowNotch
-        },
-      title = Strings.settingsCurrencySymbolPosition,
-      subtitle = null,
-      includeBackground = false,
-    )
-
-    BooleanPreferenceItem(
-      preference = state.spaceBetweenAmountAndSymbol,
-      icon = MaterialIcons.SpaceBar,
-      title = Strings.settingsCurrencyAddSpace,
-      subtitle = null,
-      includeBackground = false,
-    )
+    item {
+      ListPreferenceItem(
+        preference = state.currency,
+        optionString = { c -> c.string() },
+        optionSuffix = { c -> Text(c.symbol, textAlign = Center) },
+        icon = MaterialIcons.CurrencyPound,
+        title = Strings.settingsCurrencyDefault,
+        subtitle = null,
+      )
+    }
+    item {
+      ListPreferenceItem(
+        preference = state.symbolPosition,
+        optionString = { c -> c.string() },
+        optionSuffix = null,
+        icon =
+          when (state.symbolPosition.value) {
+            BeforeAmount -> MaterialIcons.LineStartArrowNotch
+            AfterAmount -> MaterialIcons.LineEndArrowNotch
+          },
+        title = Strings.settingsCurrencySymbolPosition,
+        subtitle = null,
+      )
+    }
+    item {
+      BooleanPreferenceItem(
+        preference = state.spaceBetweenAmountAndSymbol,
+        icon = MaterialIcons.SpaceBar,
+        title = Strings.settingsCurrencyAddSpace,
+        subtitle = null,
+      )
+    }
   }
 }
 
@@ -130,3 +151,20 @@ private fun symbolPositionString(config: CurrencyConfig, position: CurrencySymbo
     includeSign = false,
     isPrivacyEnabled = false,
   )
+
+@PortraitPreview
+@Composable
+private fun PreviewCurrencySettingsScaffold(
+  @PreviewParameter(ColoredParameters::class) colors: Colors,
+) =
+  PreviewWithColors(colors) {
+    CurrencySettingsScaffold(
+      onBack = {},
+      state =
+        CurrencySettingsState(
+          currency = ListPreference(Currency.PoundSterling),
+          symbolPosition = ListPreference(CurrencySymbolPosition.BeforeAmount),
+          spaceBetweenAmountAndSymbol = BooleanPreference(true),
+        ),
+    )
+  }

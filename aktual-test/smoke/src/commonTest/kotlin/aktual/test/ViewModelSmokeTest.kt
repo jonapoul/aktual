@@ -27,10 +27,12 @@ import aktual.budget.tags.vm.search.SearchTagsViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.theme.DarkColors
 import aktual.metrics.vm.MetricsViewModel
+import aktual.prefs.vm.currency.CurrencySettingsViewModel
+import aktual.prefs.vm.format.FormatSettingsViewModel
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.inspect.search.SearchThemeViewModel
-import aktual.prefs.vm.root.SettingsViewModel
 import aktual.prefs.vm.schedules.ScheduleSettingsViewModel
+import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
 import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
 import aktual.prefs.vm.transactions.TransactionSettingsViewModel
@@ -120,7 +122,11 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test fun budgetList() = testVm<ListBudgetsViewModel>()
 
+  @Test fun currencySettings() = testVm<CurrencySettingsViewModel>()
+
   @Test fun customThemeSettings() = testVm<CustomThemeSettingsViewModel>()
+
+  @Test fun formatSettings() = testVm<FormatSettingsViewModel>()
 
   @Test fun home() = testVm<HomeViewModel>()
 
@@ -154,7 +160,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test fun searchTags() = testSavedStateVM<SearchTagsViewModel>()
 
-  @Test fun settings() = testVm<SettingsViewModel>()
+  @Test fun systemUiSettings() = testVm<SystemUiSettingsViewModel>()
 
   @Test fun themeSettings() = testVm<ThemeSettingsViewModel>()
 

@@ -78,7 +78,6 @@
   <string name="settings_currency_add_space">Add space between amount and symbol</string>
 
   <string name="settings_ui_group">System UI</string>
-  <string name="settings_ui_desc">Configure various aspects of the app's global UI.</string>
   <string name="settings_ui_show_status">Show bottom status bar</string>
   <string name="settings_ui_bar_effect">Status bar and app bar effect</string>
   <string name="settings_ui_bar_effect_none">None</string>

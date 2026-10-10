@@ -38,3 +38,18 @@ class ScheduleSettingsNavigator(private val stack: NavStack<NavKey>) {
 class TransactionSettingsNavigator(private val stack: NavStack<NavKey>) {
   operator fun invoke() = stack.push(TransactionSettingsNavRoute)
 }
+
+@Immutable
+class SystemUiSettingsNavigator(private val stack: NavStack<NavKey>) {
+  operator fun invoke() = stack.push(SystemUiSettingsNavRoute)
+}
+
+@Immutable
+class FormatSettingsNavigator(private val stack: NavStack<NavKey>) {
+  operator fun invoke() = stack.push(FormatSettingsNavRoute)
+}
+
+@Immutable
+class CurrencySettingsNavigator(private val stack: NavStack<NavKey>) {
+  operator fun invoke() = stack.push(CurrencySettingsNavRoute)
+}
