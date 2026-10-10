@@ -1,9 +1,13 @@
-plugins { id("aktual.module.viewmodel") }
+plugins {
+  id("aktual.module.viewmodel")
+  id("aktual.convention.db-test")
+}
 
 kotlin {
   commonMainDependencies {
     api(project(":aktual-api"))
     api(project(":aktual-budget"))
+    api(project(":aktual-budget:data:db"))
     api(project(":aktual-core:nav"))
     implementation(project(":aktual-core:logging"))
   }

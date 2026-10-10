@@ -79,6 +79,7 @@ internal class TransactionsPagingSource(
           when (val accountSpec = spec.accountSpec) {
             AllAccounts -> transactionDao.getPaged(limit, offset)
             is SpecificAccount -> transactionDao.getByAccountPaged(accountSpec.id, limit, offset)
+            is Group -> transactionDao.getByGroupPaged(accountSpec.group, limit, offset)
           }
         page.toTransactions(childrenOf(page.rows))
       }
@@ -117,6 +118,7 @@ internal class TransactionsPagingSource(
           when (val accountSpec = spec.accountSpec) {
             AllAccounts -> transactionDao.getIdsAndNotes()
             is SpecificAccount -> transactionDao.getIdsAndNotesByAccount(accountSpec.id)
+            is Group -> transactionDao.getIdsAndNotesByGroup(accountSpec.group)
           }
         groupSplits(rows, rows.filter(matches))
       }

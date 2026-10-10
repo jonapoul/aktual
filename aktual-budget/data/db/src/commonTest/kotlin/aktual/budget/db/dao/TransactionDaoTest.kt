@@ -228,6 +228,33 @@ internal class TransactionDaoTest {
   }
 
   @Test
+  fun `Account groups split open accounts by budget and keep closed ones apart`() =
+    runDaoTest { transactions ->
+      // given
+      insertAccounts(buildAccount(id = AccountId(CLOSED), name = "Closed", offBudget = true))
+      accountsQueries.withoutResult { closeAccount(AccountId(CLOSED)) }
+      transactions.insert("t1", ON_1, CATEGORY, PAYEE, DATE, amount = 10.0)
+      transactions.insert("t2", ON_2, CATEGORY, PAYEE, DATE, amount = 20.0)
+      transactions.insert("t3", OFF, category = null, PAYEE, DATE, amount = 5.0)
+      transactions.insert("t4", CLOSED, category = null, PAYEE, DATE, amount = 1.0)
+
+      // when
+      val onBudget = transactions.getByGroupPaged(OnBudget, limit = 10, offset = 0)
+      val offBudget = transactions.getByGroupPaged(OffBudget, limit = 10, offset = 0)
+      val closed = transactions.getByGroupPaged(Closed, limit = 10, offset = 0)
+
+      // then
+      assertThat(onBudget.rows.map { it.id.toString() }).containsExactly("t1", "t2")
+      assertThat(onBudget.topBalance).isEqualTo(3000L)
+      assertThat(offBudget.rows.map { it.id.toString() }).containsExactly("t3")
+      assertThat(offBudget.topBalance).isEqualTo(500L)
+      assertThat(closed.rows.map { it.id.toString() }).containsExactly("t4")
+      assertThat(closed.topBalance).isEqualTo(100L)
+      assertThat(transactions.getIdsAndNotesByGroup(OnBudget).map { it.id.toString() })
+        .containsExactly("t1", "t2")
+    }
+
+  @Test
   fun `A split above the offset doesn't shift the balance`() = runDaoTest { transactions ->
     // given
     val newest = LocalDate(2026, 1, 2)
@@ -386,6 +413,7 @@ internal class TransactionDaoTest {
     const val ON_1 = "on1"
     const val ON_2 = "on2"
     const val OFF = "off"
+    const val CLOSED = "closed"
     const val PAYEE = "payee"
     const val CATEGORY = "category"
     const val DELETED_CATEGORY = "deleted-category"

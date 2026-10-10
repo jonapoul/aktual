@@ -114,10 +114,7 @@ class TransactionsViewModel(
 
   val balance: StateFlow<Amount?> =
     if (showBalance) {
-      transactionDao
-        .observeBalance(accountId)
-        .map(::Amount)
-        .stateIn(viewModelScope, Eagerly, initialValue = null)
+      observeBalance().map(::Amount).stateIn(viewModelScope, Eagerly, initialValue = null)
     } else {
       MutableStateFlow<Amount?>(null)
     }
@@ -168,6 +165,8 @@ class TransactionsViewModel(
           mutableLoadedAccount.update { SpecificAccount(account) }
         }
 
+      accountSpec is Group -> mutableLoadedAccount.update { LoadedAccount.Group(accountSpec.group) }
+
       else -> mutableLoadedAccount.update { AllAccounts }
     }
 
@@ -180,6 +179,13 @@ class TransactionsViewModel(
       }
     }
   }
+
+  private fun observeBalance(): Flow<Long> =
+    when (val accountSpec = spec.accountSpec) {
+      AccountSpec.AllAccounts -> transactionDao.observeBalance()
+      is AccountSpec.SpecificAccount -> transactionDao.observeBalance(accountSpec.id)
+      is Group -> transactionDao.observeBalance(accountSpec.group)
+    }
 
   fun setDensity(density: TransactionsDensity) {
     prefs.update { meta -> meta.set(TransactionDensityKey, density) }

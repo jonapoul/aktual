@@ -5,6 +5,7 @@ import aktual.budget.db.NotesContainingHash
 import aktual.budget.db.Transactions
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
+import aktual.budget.model.AccountGroup
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
@@ -72,6 +73,19 @@ class TransactionDao(database: BudgetDatabase) {
     )
   }
 
+  suspend fun getByGroupPaged(
+    group: AccountGroup,
+    limit: Long,
+    offset: Long,
+  ): TransactionPage = queries.withResult {
+    val closed = group == Closed
+    val offBudget = group.offBudget
+    TransactionPage(
+      rows = getByGroupPaged(closed, offBudget, limit, offset, ::transactionRow).awaitAsList(),
+      topBalance = balanceFromOffsetByGroup(closed, offBudget, offset).awaitAsOne(),
+    )
+  }
+
   // Uncategorised transactions are a subset of their accounts, so the page has no balance
   suspend fun getUncategorisedPaged(
     account: AccountId?,
@@ -115,6 +129,13 @@ class TransactionDao(database: BudgetDatabase) {
     return query.asFlow().map { it.awaitAsOne() }.distinctUntilChanged()
   }
 
+  fun observeBalance(group: AccountGroup): Flow<Long> =
+    queries
+      .balanceFromOffsetByGroup(group == Closed, group.offBudget, offset = 0)
+      .asFlow()
+      .map { it.awaitAsOne() }
+      .distinctUntilChanged()
+
   // Rows come back in the order of the given IDs
   suspend fun getByIds(ids: List<TransactionId>): List<TransactionRow> = queries.withResult {
     val rows = getByIds(ids, ::transactionRow).awaitAsList().associateBy { it.id }
@@ -128,6 +149,11 @@ class TransactionDao(database: BudgetDatabase) {
   suspend fun getIdsAndNotesByAccount(account: AccountId): List<TransactionNotes> =
     queries.withResult {
       getIdsAndNotesByAccount(account, ::transactionNotes).awaitAsList()
+    }
+
+  suspend fun getIdsAndNotesByGroup(group: AccountGroup): List<TransactionNotes> =
+    queries.withResult {
+      getIdsAndNotesByGroup(group == Closed, group.offBudget, ::transactionNotes).awaitAsList()
     }
 
   suspend fun getUncategorisedIdsAndNotes(account: AccountId?): List<TransactionNotes> =
@@ -300,6 +326,15 @@ private fun childRow(
     )
   return (parentId ?: error("Child $id has no parent")) to row
 }
+
+// Null for closed accounts, which are grouped whichever budget they were in
+private val AccountGroup.offBudget: Boolean?
+  get() =
+    when (this) {
+      OnBudget -> false
+      OffBudget -> true
+      Closed -> null
+    }
 
 private fun transactionNotes(
   id: TransactionId,

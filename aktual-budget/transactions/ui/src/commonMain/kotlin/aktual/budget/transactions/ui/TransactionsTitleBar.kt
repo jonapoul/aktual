@@ -55,6 +55,12 @@ internal fun TransactionsTitleBar(
       Uncategorised -> Strings.transactionsUncategorisedTitle
       Loading -> Strings.transactionsTitleLoading
       is SpecificAccount -> loadedAccount.account.name ?: Strings.transactionsTitleNone
+      is Group ->
+        when (loadedAccount.group) {
+          OnBudget -> Strings.transactionsTitleOnBudget
+          OffBudget -> Strings.transactionsTitleOffBudget
+          Closed -> Strings.transactionsTitleClosed
+        }
       is SpecificTag -> "#${loadedAccount.tag}"
       is SpecificCategory ->
         loadedAccount.month?.let {
@@ -141,6 +147,7 @@ private class TransactionsTitleBarProvider :
     LoadedAccount.Uncategorised,
     LoadedAccount.Loading,
     LoadedAccount.SpecificAccount(PREVIEW_ACCOUNT),
+    LoadedAccount.Group(OnBudget),
     LoadedAccount.SpecificTag("groceries"),
     LoadedAccount.SpecificCategory("Groceries", PREVIEW_MONTH),
   )

@@ -206,6 +206,42 @@ SELECT
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
   LIMIT :limit OFFSET :offset;
 
+-- A group of accounts as upstream's sidebar lists them: on or off budget, which only cover open
+-- accounts, or closed, where :offBudget is null. accountFilter() in desktop-client/src/queries/index.ts
+getByGroupPaged:
+SELECT
+  vt.id,
+  vt.date,
+  a.name AS accountName,
+  p.name AS payeeName,
+  ta.name AS transferAccountName,
+  vt.notes,
+  c.name AS categoryName,
+  vt.amount,
+  vt.is_parent AS isParent,
+  vt.is_child AS isChild,
+  vt.error,
+  CASE WHEN
+    a.offbudget = 0 AND
+    c.id IS NULL AND
+    IFNULL(vt.is_parent, 0) = 0 AND
+    IFNULL(vt.starting_balance_flag, 0) = 0 AND
+    (p.transfer_acct IS NULL OR ta.offbudget = 1)
+  THEN 1 ELSE 0 END AS needsCategory,
+  CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
+  CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer
+  FROM v_transactions_internal_alive AS vt
+  LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
+  LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
+  LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
+  LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
+  WHERE
+    a.closed = :closed AND
+    (:offBudget IS NULL OR a.offbudget = :offBudget) AND
+    IFNULL(vt.is_child, 0) = 0
+  ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
+  LIMIT :limit OFFSET :offset;
+
 getUncategorisedPaged:
 SELECT
   vt.id,
@@ -369,6 +405,19 @@ SELECT IFNULL(SUM(amount), 0) FROM (
   LIMIT -1 OFFSET :offset
 );
 
+balanceFromOffsetByGroup:
+SELECT IFNULL(SUM(amount), 0) FROM (
+  SELECT vt.amount
+  FROM v_transactions_internal_alive AS vt
+  LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
+  WHERE
+    a.closed = :closed AND
+    (:offBudget IS NULL OR a.offbudget = :offBudget) AND
+    IFNULL(vt.is_child, 0) = 0
+  ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
+  LIMIT -1 OFFSET :offset
+);
+
 -- id + notes for every live transaction, for in-memory #tag filtering (no SQL regex available).
 -- parentId is only meaningful when isChild is set
 getIdsAndNotes:
@@ -382,6 +431,14 @@ SELECT vt.id, vt.notes, vt.is_child AS isChild, t.parent_id AS parentId
   FROM v_transactions AS vt
   INNER JOIN transactions AS t ON t.id = vt.id
   WHERE vt.account = :account
+  ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
+
+getIdsAndNotesByGroup:
+SELECT vt.id, vt.notes, vt.is_child AS isChild, t.parent_id AS parentId
+  FROM v_transactions AS vt
+  INNER JOIN transactions AS t ON t.id = vt.id
+  INNER JOIN accounts AS a ON a.id = vt.account
+  WHERE a.closed = :closed AND (:offBudget IS NULL OR a.offbudget = :offBudget)
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
 
 getUncategorisedIdsAndNotes:

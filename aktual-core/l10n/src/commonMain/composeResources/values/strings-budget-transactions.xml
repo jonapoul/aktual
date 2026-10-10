@@ -23,6 +23,9 @@
   <string name="transactions_header_privacy_on">Enable privacy mode</string>
   <string name="transactions_header_privacy_off">Disable privacy mode</string>
   <string name="transactions_title_all">All Accounts</string>
+  <string name="transactions_title_on_budget">On Budget Accounts</string>
+  <string name="transactions_title_off_budget">Off Budget Accounts</string>
+  <string name="transactions_title_closed">Closed Accounts</string>
   <string name="transactions_title_loading">Loading…</string>
   <string name="transactions_title_none">&lt;No title&gt;</string>
   <string name="transactions_uncategorised_title">Uncategorized</string>

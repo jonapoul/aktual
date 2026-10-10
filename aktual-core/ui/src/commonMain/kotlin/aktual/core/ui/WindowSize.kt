@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.toSize
 
 @Composable fun isCompactWidth(): Boolean = rememberWindowSizeClass().widthSizeClass == Compact
 
+@Composable fun isExpandedWidth(): Boolean = rememberWindowSizeClass().widthSizeClass == Expanded
+
 @Stable
 @Composable
 private fun rememberWindowSizeClass(size: DpSize = rememberWindowSize()): WindowSizeClass =
