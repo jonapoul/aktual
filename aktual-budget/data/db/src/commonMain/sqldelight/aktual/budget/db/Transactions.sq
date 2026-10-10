@@ -348,6 +348,60 @@ SELECT
   LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
   WHERE vt.id IN :ids;
 
+-- One live transaction, as getByIds has it, plus its cleared/reconciled state and the parent a split
+-- child hangs off
+getDetail:
+SELECT
+  vt.id,
+  vt.date,
+  a.name AS accountName,
+  p.name AS payeeName,
+  ta.name AS transferAccountName,
+  vt.notes,
+  c.name AS categoryName,
+  vt.amount,
+  vt.is_parent AS isParent,
+  vt.is_child AS isChild,
+  vt.error,
+  CASE WHEN
+    a.offbudget = 0 AND
+    c.id IS NULL AND
+    IFNULL(vt.is_parent, 0) = 0 AND
+    IFNULL(vt.starting_balance_flag, 0) = 0 AND
+    (p.transfer_acct IS NULL OR ta.offbudget = 1)
+  THEN 1 ELSE 0 END AS needsCategory,
+  CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
+  CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
+  vt.cleared,
+  vt.reconciled,
+  t.parent_id AS parentId
+  FROM v_transactions_internal_alive AS vt
+  INNER JOIN transactions AS t ON t.id = vt.id
+  LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
+  LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
+  LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
+  LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
+  WHERE vt.id = :id;
+
+-- Its account's balance after this transaction: the sum of it and everything older in getPaged's
+-- order. Split children are skipped, as in balanceFromOffset
+balanceAfter:
+SELECT IFNULL(SUM(vt.amount), 0)
+  FROM v_transactions_internal_alive AS vt
+  INNER JOIN v_transactions_internal_alive AS me ON me.id = :id
+  WHERE vt.account = me.account AND
+    IFNULL(vt.is_child, 0) = 0 AND (
+      vt.date < me.date OR (vt.date = me.date AND (
+        IFNULL(vt.starting_balance_flag, 0) > IFNULL(me.starting_balance_flag, 0) OR (
+          IFNULL(vt.starting_balance_flag, 0) = IFNULL(me.starting_balance_flag, 0) AND (
+            IFNULL(vt.sort_order, 0) < IFNULL(me.sort_order, 0) OR (
+              IFNULL(vt.sort_order, 0) = IFNULL(me.sort_order, 0) AND vt.id >= me.id
+            )
+          )
+        )
+      ))
+    );
+
 -- The live children of these split parents, in the order they were entered. As with getChildIds,
 -- parent_id comes from the table since SQLDelight can't type the view's
 getChildrenOf:

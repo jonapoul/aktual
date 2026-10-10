@@ -48,9 +48,18 @@ data class TransactionRow(
   val splitDifference: Long? = null,
 )
 
+// One transaction as its detail screen shows it. parent is set on split children only
+data class TransactionDetail(
+  val row: TransactionRow,
+  val cleared: Boolean,
+  val reconciled: Boolean,
+  val parent: TransactionId?,
+)
+
 // One page of the list, with the balance after its first (newest) row
 data class TransactionPage(val rows: List<TransactionRow>, val topBalance: Long)
 
+@Suppress("TooManyFunctions") // One per query the transaction screens and writer need
 @Inject
 class TransactionDao(database: BudgetDatabase) {
   private val queries = database.transactionsQueries
@@ -140,6 +149,15 @@ class TransactionDao(database: BudgetDatabase) {
   suspend fun getByIds(ids: List<TransactionId>): List<TransactionRow> = queries.withResult {
     val rows = getByIds(ids, ::transactionRow).awaitAsList().associateBy { it.id }
     ids.mapNotNull(rows::get)
+  }
+
+  suspend fun detail(id: TransactionId): TransactionDetail? = queries.withResult {
+    getDetail(id, ::transactionDetail).awaitAsOneOrNull()
+  }
+
+  // The account's balance after this transaction, as the list's running balance shows it
+  suspend fun balanceAfter(id: TransactionId): Long = queries.withResult {
+    balanceAfter(id).awaitAsOne()
   }
 
   suspend fun getIdsAndNotes(): List<TransactionNotes> = queries.withResult {
@@ -326,6 +344,50 @@ private fun childRow(
     )
   return (parentId ?: error("Child $id has no parent")) to row
 }
+
+@Suppress("LongParameterList")
+private fun transactionDetail(
+  id: TransactionId,
+  date: LocalDate,
+  accountName: String?,
+  payeeName: String?,
+  transferAccountName: String?,
+  notes: String?,
+  categoryName: String?,
+  amount: Long,
+  isParent: Boolean?,
+  isChild: Boolean?,
+  error: JsonObject?,
+  needsCategory: Long,
+  offBudget: Long,
+  isTransfer: Long,
+  cleared: Boolean?,
+  reconciled: Boolean?,
+  parentId: TransactionId?,
+) =
+  TransactionDetail(
+    row =
+      transactionRow(
+        id,
+        date,
+        accountName,
+        payeeName,
+        transferAccountName,
+        notes,
+        categoryName,
+        amount,
+        isParent,
+        isChild,
+        error,
+        needsCategory,
+        offBudget,
+        isTransfer,
+      ),
+    // Upstream's column defaults
+    cleared = cleared != false,
+    reconciled = reconciled == true,
+    parent = parentId.takeIf { isChild == true },
+  )
 
 // Null for closed accounts, which are grouped whichever budget they were in
 private val AccountGroup.offBudget: Boolean?

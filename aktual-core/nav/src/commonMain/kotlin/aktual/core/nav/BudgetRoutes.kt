@@ -7,6 +7,7 @@ import aktual.budget.model.DashboardPageId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
+import aktual.budget.model.TransactionId
 import aktual.budget.model.WidgetId
 import kotlinx.datetime.YearMonth
 import kotlinx.serialization.Serializable
@@ -39,6 +40,8 @@ data class AccountGroupTransactionsNavRoute(val group: AccountGroup) : BudgetNav
 @Serializable
 data class CategoryTransactionsNavRoute(val category: CategoryId, val month: YearMonth) :
   BudgetNavKey.Transactions
+
+@Serializable data class TransactionNavRoute(val id: TransactionId) : BudgetNavKey.Transactions
 
 @Serializable data object ReportsListNavRoute : BudgetNavKey.Reports
 

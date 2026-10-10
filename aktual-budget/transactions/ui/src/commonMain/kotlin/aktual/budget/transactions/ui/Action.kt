@@ -15,6 +15,8 @@ internal sealed interface Action {
   data class SetDensity(val density: TransactionsDensity) : Action
 
   data class ToggleSplit(val id: TransactionId) : Action
+
+  data class OpenTransaction(val id: TransactionId) : Action
 }
 
 @Immutable

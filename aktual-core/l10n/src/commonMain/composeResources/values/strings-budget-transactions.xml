@@ -37,4 +37,15 @@
   <string name="transactions_split_remaining">%1$s left</string>
   <string name="transactions_split_expanded">Parts shown</string>
   <string name="transactions_split_collapsed">Parts hidden</string>
+  <string name="transaction_failure_title">Couldn’t load transaction</string>
+  <string name="transaction_failure_not_found">This transaction doesn’t exist any more.</string>
+  <string name="transaction_category">Category</string>
+  <string name="transaction_account">Account</string>
+  <string name="transaction_notes">Notes</string>
+  <string name="transaction_none">None</string>
+  <string name="transaction_cleared">Cleared</string>
+  <string name="transaction_uncleared">Uncleared</string>
+  <string name="transaction_reconciled">Reconciled</string>
+  <string name="transaction_split_into">Split into %1$d</string>
+  <string name="transaction_balance_after">Balance after</string>
 </resources>
