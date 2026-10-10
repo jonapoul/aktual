@@ -26,4 +26,5 @@ The two override files hold only the strings that differ and must have the same 
 
 - XML names are `snake_case` prefixed by feature; generated Kotlin is `camelCase`.
 - All generated `Strings.*` properties are `@Composable`.
+- Don't escape apostrophes or quotes (`\'`, `\"`). These are Compose resources, not Android `res/`, so the backslash is shown literally. Only `\n`, `\t`, `\uXXXX` and `\\` are unescaped.
 - Generated code lives in `build/generated/kotlin/catalogCommonMain` if you need to read it.

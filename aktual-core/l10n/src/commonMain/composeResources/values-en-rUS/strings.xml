@@ -25,8 +25,8 @@
   <string name="tags_create_color_invalid">Invalid color code</string>
   <string name="transactions_uncategorised_title">Uncategorized</string>
   <string name="settings_transactions_alternate_rows">Alternate row colors</string>
-  <string name="settings_transactions_alternate_rows_supported">Every other row is shaded with your theme\'s alternate row color</string>
-  <string name="settings_transactions_alternate_rows_unsupported">Your current theme doesn\'t define an alternate row color, so this has no effect</string>
+  <string name="settings_transactions_alternate_rows_supported">Every other row is shaded with your theme's alternate row color</string>
+  <string name="settings_transactions_alternate_rows_unsupported">Your current theme doesn't define an alternate row color, so this has no effect</string>
   <string name="settings_theme_inspect_sort_by_color">Sort by color</string>
   <string name="settings_theme_inspect_search_prompt">Enter some text to search property names and colors</string>
 </resources>

@@ -11,8 +11,8 @@
 
   <string name="settings_transactions_toolbar">Transaction Settings</string>
   <string name="settings_transactions_alternate_rows">Alternate row colors</string>
-  <string name="settings_transactions_alternate_rows_supported">Every other row is shaded with your theme\'s alternate row color</string>
-  <string name="settings_transactions_alternate_rows_unsupported">Your current theme doesn\'t define an alternate row color, so this has no effect</string>
+  <string name="settings_transactions_alternate_rows_supported">Every other row is shaded with your theme's alternate row color</string>
+  <string name="settings_transactions_alternate_rows_unsupported">Your current theme doesn't define an alternate row color, so this has no effect</string>
 
   <string name="settings_theme_toolbar">Theme</string>
   <string name="settings_theme_use_system">Use System Default</string>

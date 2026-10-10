@@ -20,9 +20,9 @@
   <string name="tags_delete">Delete</string>
   <string name="tags_deleted">Deleted #%1$s</string>
   <string name="tags_deleted_undo">Undo</string>
-  <string name="tags_delete_failed">Couldn\'t delete #%1$s</string>
-  <string name="tags_delete_failed_unknown">Couldn\'t delete tag</string>
-  <string name="tags_restore_failed">Couldn\'t restore #%1$s</string>
+  <string name="tags_delete_failed">Couldn't delete #%1$s</string>
+  <string name="tags_delete_failed_unknown">Couldn't delete tag</string>
+  <string name="tags_restore_failed">Couldn't restore #%1$s</string>
   <string name="tags_create_title">New tag</string>
   <string name="tags_edit_title">Edit tag</string>
   <string name="tags_create_tag_label">Tag</string>
@@ -37,7 +37,7 @@
   <string name="tags_create_color_random">Random color</string>
   <string name="tags_create_color_invalid">Invalid color code</string>
   <string name="tags_create_save">Save</string>
-  <string name="tags_save_failure_title">Couldn\'t save tag</string>
+  <string name="tags_save_failure_title">Couldn't save tag</string>
   <string name="tags_save_failure_dismiss">OK</string>
   <string name="tags_edit_failure_prefix">Failed loading tag</string>
   <string name="tags_edit_not_found">This tag no longer exists</string>
