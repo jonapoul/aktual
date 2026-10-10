@@ -4,6 +4,7 @@ flowchart TD
   budgetSync["Sync Budget"]
   info["About"]
   licenses["Licenses"]
+  searchLicenses["Search Licenses"]
   login["Login"]
   manageStorage["Manage Storage"]
   password["Change Password"]
@@ -70,6 +71,7 @@ flowchart TD
   budgetSync --budget synced--> budgetNavRail
 
   info --tap licenses--> licenses
+  licenses --tap search--> searchLicenses
   info --tap manage storage--> manageStorage
 
   login --valid token--> budgetList

@@ -7,55 +7,38 @@ import aktual.di.AppScope
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
 import app.cash.molecule.launchMolecule
-import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactoryKey
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
 @Stable
-@AssistedInject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class)
 class LicensesViewModel(
-  @Assisted private val savedState: SavedStateHandle,
   private val licensesRepository: LicensesRepository,
   private val urlOpener: UrlOpener,
 ) : ViewModel() {
-  @AssistedFactory
-  @ViewModelAssistedFactoryKey(LicensesViewModel::class)
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ViewModelAssistedFactory {
-    override fun create(extras: CreationExtras): LicensesViewModel =
-      create(extras.createSavedStateHandle())
-
-    fun create(@Assisted savedState: SavedStateHandle): LicensesViewModel
-  }
-
   private val mutableState = MutableStateFlow<LicensesState>(Loading)
+  private val mutableSorting = MutableStateFlow<LicenseSorting>(ByArtifact)
 
-  private val searchTerm = savedState.getStateFlow(KEY_SEARCH_TERM, "")
-  private val isSearchActive = savedState.getStateFlow(KEY_IS_SEARCH_ACTIVE, false)
+  val sorting: StateFlow<LicenseSorting> = mutableSorting.asStateFlow()
 
   val licensesState: StateFlow<LicensesState> =
     viewModelScope.launchMolecule(Immediate) {
       val licensesState by mutableState.collectAsState()
-      val searchTerm by searchTerm.collectAsState()
-      val isSearchActive by isSearchActive.collectAsState()
+      val sorting by mutableSorting.collectAsState()
 
       when (val licenses = licensesState) {
-        is Loaded -> licenses.filteredBy(searchTerm, isSearchActive)
+        is Loaded -> licenses.sortedBy(sorting)
         else -> licenses
       }
     }
@@ -82,11 +65,7 @@ class LicensesViewModel(
     if (libraries.isEmpty()) {
       LicensesState.NoneFound
     } else {
-      LicensesState.Loaded(
-        artifacts = libraries.toImmutableList(),
-        filterText = "",
-        isSearchActive = false,
-      )
+      LicensesState.Loaded(libraries.toImmutableList())
     }
 
   fun openUrl(url: String) {
@@ -94,24 +73,8 @@ class LicensesViewModel(
     urlOpener(url)
   }
 
-  fun openSearch() {
-    logcat.d { "openSearch" }
-    savedState[KEY_IS_SEARCH_ACTIVE] = true
-  }
-
-  fun clearFilter() {
-    logcat.d { "clearFilter" }
-    savedState[KEY_SEARCH_TERM] = ""
-    savedState[KEY_IS_SEARCH_ACTIVE] = false
-  }
-
-  fun setFilterText(text: String) {
-    logcat.d { "setFilterText $text" }
-    savedState[KEY_SEARCH_TERM] = text
-  }
-
-  private companion object {
-    const val KEY_SEARCH_TERM = "search_term"
-    const val KEY_IS_SEARCH_ACTIVE = "is_search_active"
+  fun setSorting(sorting: LicenseSorting) {
+    logcat.d { "setSorting $sorting" }
+    mutableSorting.update { sorting }
   }
 }

@@ -2,6 +2,7 @@ package aktual.test
 
 import aktual.about.vm.AboutViewModel
 import aktual.about.vm.LicensesViewModel
+import aktual.about.vm.SearchLicensesViewModel
 import aktual.account.vm.ChangePasswordViewModel
 import aktual.account.vm.LoginViewModel
 import aktual.account.vm.ServerUrlViewModel
@@ -130,7 +131,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test fun home() = testVm<HomeViewModel>()
 
-  @Test fun licenses() = testSavedStateVM<LicensesViewModel>()
+  @Test fun licenses() = testVm<LicensesViewModel>()
 
   @Test
   fun linkBankAccount() =
@@ -198,6 +199,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test
   fun inspectTheme() =
     testAssistedVM<InspectThemeViewModel, InspectThemeViewModel.Factory> { create(DarkColors.id) }
+
+  @Test fun searchLicenses() = testVm<SearchLicensesViewModel>()
 
   @Test
   fun searchTheme() =

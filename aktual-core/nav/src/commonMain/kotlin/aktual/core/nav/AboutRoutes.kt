@@ -7,4 +7,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object LicensesNavRoute : NavKey
 
+@Serializable data object SearchLicensesNavRoute : NavKey
+
 @Serializable data object ManageStorageNavRoute : NavKey

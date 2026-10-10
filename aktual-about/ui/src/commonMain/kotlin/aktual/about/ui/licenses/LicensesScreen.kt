@@ -1,18 +1,17 @@
 package aktual.about.ui.licenses
 
 import aktual.about.data.ArtifactDetail
+import aktual.about.vm.LicenseSorting
 import aktual.about.vm.LicensesState
 import aktual.about.vm.LicensesViewModel
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
-import aktual.core.icons.material.SearchOff
-import aktual.core.l10n.Plurals
+import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
-import aktual.core.ui.AktualTextField
+import aktual.core.nav.SearchLicensesNavigator
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
@@ -30,35 +29,26 @@ import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue.Hidden
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -67,18 +57,27 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun LicensesScreen(back: BackNavigator, viewModel: LicensesViewModel = metroViewModel()) {
+fun LicensesScreen(
+  back: BackNavigator,
+  toSearch: SearchLicensesNavigator,
+  viewModel: LicensesViewModel = metroViewModel(),
+) {
   val licensesState by viewModel.licensesState.collectAsStateWithLifecycle()
+  val sorting by viewModel.sorting.collectAsStateWithLifecycle()
+  var showSortSheet by remember { mutableStateOf(false) }
 
   LicensesScaffold(
     state = licensesState,
+    sorting = sorting,
+    showSortSheet = showSortSheet,
     onAction = { action ->
       when (action) {
         NavBack -> back()
         Reload -> viewModel.load()
-        OpenSearch -> viewModel.openSearch()
-        ClearFilter -> viewModel.clearFilter()
-        is EditFilterText -> viewModel.setFilterText(action.text)
+        OpenSearch -> toSearch()
+        ShowSortSheet -> showSortSheet = true
+        DismissSortSheet -> showSortSheet = false
+        is SetSorting -> viewModel.setSorting(action.sorting)
         is LaunchUrl -> viewModel.openUrl(action.url)
       }
     },
@@ -86,26 +85,37 @@ fun LicensesScreen(back: BackNavigator, viewModel: LicensesViewModel = metroView
 }
 
 @Composable
-private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandler) {
+private fun LicensesScaffold(
+  state: LicensesState,
+  sorting: LicenseSorting,
+  showSortSheet: Boolean,
+  onAction: LicensesActionHandler,
+) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
-  val loadedState = state as? Loaded
-  val isSearchActive = loadedState?.isSearchActive == true
+  val sheetState = rememberBottomSheetState(initialValue = Hidden)
 
   Scaffold(
-    modifier = Modifier.fillMaxSize().imePadding(),
+    modifier = Modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
-        title = { Title(isSearchActive, loadedState, onAction) },
+        title = { Text(text = Strings.licensesToolbarTitle, maxLines = 1, overflow = Ellipsis) },
         actions = {
-          BareIconButton(
-            imageVector = if (isSearchActive) MaterialIcons.SearchOff else MaterialIcons.Search,
-            contentDescription = Strings.licensesToolbarSearch,
-            onClick = { onAction(if (isSearchActive) ClearFilter else OpenSearch) },
-          )
+          if (state is Loaded) {
+            BareIconButton(
+              imageVector = MaterialIcons.Search,
+              contentDescription = Strings.licensesToolbarSearch,
+              onClick = { onAction(OpenSearch) },
+            )
+            BareIconButton(
+              imageVector = MaterialIcons.Sort,
+              contentDescription = Strings.licensesToolbarSort,
+              onClick = { onAction(ShowSortSheet) },
+            )
+          }
         },
       )
     },
@@ -121,52 +131,10 @@ private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandl
       )
     }
   }
-}
 
-@Composable
-private fun Title(
-  isSearchActive: Boolean,
-  loadedState: LicensesState.Loaded?,
-  onAction: LicensesActionHandler,
-) {
-  AnimatedContent(
-    targetState = isSearchActive,
-    transitionSpec = { fadeIn() togetherWith fadeOut() },
-  ) { searching ->
-    if (searching) {
-      CompositionLocalProvider(LocalTextStyle provides typography.bodyLarge) {
-        FilterInput(loadedState?.filterText, loadedState?.artifacts?.size, onAction)
-      }
-    } else {
-      Text(text = Strings.licensesToolbarTitle, maxLines = 1, overflow = Ellipsis)
-    }
+  if (state is Loaded && showSortSheet) {
+    LicenseSortingBottomSheet(sorting, onAction, sheetState)
   }
-}
-
-@Composable
-private fun FilterInput(
-  filterText: String?,
-  numResults: Int?,
-  onAction: LicensesActionHandler,
-  modifier: Modifier = Modifier,
-) {
-  val state = rememberTextFieldState(initialText = filterText.orEmpty())
-  val focusRequester = remember { FocusRequester() }
-
-  LaunchedEffect(Unit) { focusRequester.requestFocus() }
-
-  LaunchedEffect(state) {
-    snapshotFlow { state.text.toString() }.collect { filter -> onAction(EditFilterText(filter)) }
-  }
-
-  AktualTextField(
-    modifier = modifier.focusRequester(focusRequester).fillMaxWidth(),
-    state = state,
-    singleLine = true,
-    placeholderText = Strings.licensesSearchPlaceholder,
-    supportingText =
-      numResults?.let { n -> { Text(text = Plurals.licensesSearchNumResults(n, n)) } },
-  )
 }
 
 @Composable
@@ -180,7 +148,7 @@ private fun LicensesContent(
   when (state) {
     Loading -> LoadingContent(modifier)
     NoneFound -> NoneFoundContent(modifier)
-    is Loaded -> LoadedContent(state, contentPadding, listState, onAction, modifier)
+    is Loaded -> ArtifactList(state.artifacts, contentPadding, listState, onAction, modifier)
     is LicensesState.Error -> ErrorContent(state.errorMessage, onAction, modifier)
   }
 
@@ -198,33 +166,6 @@ private fun NoneFoundContent(modifier: Modifier = Modifier) {
     background = colors.tableBackground,
     action = null,
   )
-}
-
-@Composable
-private fun LoadedContent(
-  state: LicensesState.Loaded,
-  contentPadding: PaddingValues,
-  listState: LazyListState,
-  onAction: LicensesActionHandler,
-  modifier: Modifier = Modifier,
-) {
-  if (state.artifacts.isEmpty()) {
-    FailureScreen(
-      modifier = modifier,
-      title = Strings.licensesNoResults,
-      reason = null,
-      icon = null,
-      background = colors.tableBackground,
-      action =
-        FailureAction(
-          text = { Strings.licensesFilterClear },
-          icon = MaterialIcons.SearchOff,
-          onClick = { onAction(ClearFilter) },
-        ),
-    )
-  } else {
-    ArtifactList(state.artifacts, contentPadding, listState, onAction, modifier)
-  }
 }
 
 @Composable
@@ -278,17 +219,16 @@ private fun ErrorContent(
 private fun PreviewLicenses(
   @PreviewParameter(LicensesParamsProvider::class) params: ColoredParams<LicensesState>,
 ) {
-  PreviewWithColoredParams(params) { LicensesScaffold(state = this, onAction = {}) }
+  PreviewWithColoredParams(params) {
+    LicensesScaffold(state = this, sorting = ByArtifact, showSortSheet = false, onAction = {})
+  }
 }
 
 private val LOADED_STATE =
   LicensesState.Loaded(
-    artifacts =
-      List(size = 5) { listOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi) }
-        .flatten()
-        .toImmutableList(),
-    filterText = "",
-    isSearchActive = false,
+    List(size = 5) { listOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi) }
+      .flatten()
+      .toImmutableList(),
   )
 
 private class LicensesParamsProvider :
@@ -297,9 +237,4 @@ private class LicensesParamsProvider :
     NoneFound,
     Loading,
     LOADED_STATE,
-    LOADED_STATE.copy(isSearchActive = true),
-    LOADED_STATE.copy(
-      artifacts = emptyList<ArtifactDetail>().toImmutableList(),
-      isSearchActive = true,
-    ),
   )
