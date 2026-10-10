@@ -21,6 +21,7 @@ import aktual.budget.model.DbMetadata.Companion.BudgetShowHiddenCategories
 import aktual.budget.model.DbMetadata.Companion.MobileShowSpentColumn
 import aktual.budget.model.evaluateAmountInput
 import aktual.core.Calendar
+import aktual.core.model.unaryPlus
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -372,13 +373,13 @@ class BudgetViewModel(
   }
 
   private fun BudgetMonth.banners(uncategorised: Int): ImmutableList<Banner> = buildList {
-    if (uncategorised > 0) add(Banner.Uncategorised(uncategorised))
+    if (uncategorised > 0) +Banner.Uncategorised(uncategorised)
     val overspent = overspentCategories()
     if (overspent.isNotEmpty()) {
-      add(Banner.Overspent(count = overspent.size, total = overspent.sumOf { it.balance }))
+      +Banner.Overspent(count = overspent.size, total = overspent.sumOf { it.balance })
     }
     if (this@banners is Envelope && toBudget < Amount.Zero) {
-      add(Banner.Overbudgeted(toBudget))
+      +Banner.Overbudgeted(toBudget)
     }
   }
     .toImmutableList()

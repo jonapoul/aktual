@@ -2,6 +2,7 @@ package aktual.budget.home.vm
 
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata
+import aktual.core.model.unaryPlus
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -114,13 +115,13 @@ internal constructor(
   private fun NeedsAttention.toCardState(): AttentionCardState {
     val items = buildList {
       if (failedAccounts.size > MAX_SYNC_FAILURE_ROWS) {
-        add(AttentionItem.SyncFailedMany(failedAccounts.size))
+        +AttentionItem.SyncFailedMany(failedAccounts.size)
       } else {
-        failedAccounts.forEach { add(AttentionItem.SyncFailed(it.id, it.name, it.status)) }
+        failedAccounts.forEach { +AttentionItem.SyncFailed(it.id, it.name, it.status) }
       }
-      if (uncategorisedCount > 0) add(AttentionItem.Uncategorised(uncategorisedCount))
-      if (overspent.isNotEmpty()) add(AttentionItem.Overspent(overspent))
-      if (overdueSchedules > 0) add(AttentionItem.OverdueSchedules(overdueSchedules))
+      if (uncategorisedCount > 0) +AttentionItem.Uncategorised(uncategorisedCount)
+      if (overspent.isNotEmpty()) +AttentionItem.Overspent(overspent)
+      if (overdueSchedules > 0) +AttentionItem.OverdueSchedules(overdueSchedules)
     }
     return if (items.isEmpty()) Empty else AttentionCardState.Loaded(items.toPersistentList())
   }

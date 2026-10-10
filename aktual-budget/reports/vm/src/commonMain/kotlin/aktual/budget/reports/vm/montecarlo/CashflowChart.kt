@@ -4,6 +4,7 @@ import aktual.budget.reports.vm.McConfig
 import aktual.budget.reports.vm.McRunDetailRow
 import aktual.budget.reports.vm.activeAt
 import aktual.budget.reports.vm.resolve
+import aktual.core.model.unaryPlus
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -120,9 +121,9 @@ fun buildCashflowChart(
   val inflows = potSeries + incomeSeries
   val outflows = buildList {
     addAll(phaseSeries)
-    if (hasTax) add(taxSeries)
+    if (hasTax) +taxSeries
     addAll(contributionSeries)
-    if (hasSurplus) add(surplusSeries)
+    if (hasSurplus) +surplusSeries
   }
   val all = inflows + outflows
 
@@ -130,14 +131,14 @@ fun buildCashflowChart(
 
   // Tax sits between the inflows and spending so the chain reads in order
   val groups = buildList {
-    add(CashflowGroup(Withdrawals, indices(potSeries), listMembers = true))
-    if (incomeSeries.isNotEmpty()) add(CashflowGroup(Income, indices(incomeSeries), true))
-    if (hasTax) add(CashflowGroup(Tax, indices(listOf(taxSeries)), listMembers = false))
-    add(CashflowGroup(Spending, indices(phaseSeries), listMembers = true))
+    +CashflowGroup(Withdrawals, indices(potSeries), listMembers = true)
+    if (incomeSeries.isNotEmpty()) +CashflowGroup(Income, indices(incomeSeries), true)
+    if (hasTax) +CashflowGroup(Tax, indices(listOf(taxSeries)), listMembers = false)
+    +CashflowGroup(Spending, indices(phaseSeries), listMembers = true)
     if (contributionSeries.isNotEmpty()) {
-      add(CashflowGroup(Contributions, indices(contributionSeries), listMembers = true))
+      +CashflowGroup(Contributions, indices(contributionSeries), listMembers = true)
     }
-    if (hasSurplus) add(CashflowGroup(Saved, indices(listOf(surplusSeries)), listMembers = false))
+    if (hasSurplus) +CashflowGroup(Saved, indices(listOf(surplusSeries)), listMembers = false)
   }
 
   // Each series' position among the phases, or -1 for other kinds

@@ -12,6 +12,7 @@ import aktual.core.l10n.Strings
 import aktual.core.model.Bytes
 import aktual.core.model.bytes
 import aktual.core.model.percent
+import aktual.core.model.unaryPlus
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme
@@ -364,19 +365,15 @@ private fun rememberSlices(
   remember(state, colors) {
     buildList {
       state.budgets.forEachIndexed { index, budget ->
-        add(PieSlice(value = budget.size.numBytes.toFloat(), color = colors[index]))
+        +PieSlice(value = budget.size.numBytes.toFloat(), color = colors[index])
       }
-      add(
-        PieSlice(
-          value = state.cacheSize.numBytes.toFloat().coerceAtLeast(minimumValue = 0.001f),
-          color = colors[state.budgets.size],
-        ),
+      +PieSlice(
+        value = state.cacheSize.numBytes.toFloat().coerceAtLeast(minimumValue = 0.001f),
+        color = colors[state.budgets.size],
       )
-      add(
-        PieSlice(
-          value = state.otherSize.numBytes.toFloat().coerceAtLeast(minimumValue = 0.001f),
-          color = colors[state.budgets.size + 1],
-        ),
+      +PieSlice(
+        value = state.otherSize.numBytes.toFloat().coerceAtLeast(minimumValue = 0.001f),
+        color = colors[state.budgets.size + 1],
       )
     }
       .toImmutableList()
