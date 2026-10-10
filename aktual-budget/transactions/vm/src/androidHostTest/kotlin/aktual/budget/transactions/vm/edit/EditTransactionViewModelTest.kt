@@ -46,6 +46,7 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.AfterTest
 import kotlin.time.Clock
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -261,6 +262,39 @@ class EditTransactionViewModelTest {
   }
 
   @Test
+  fun `Edits can't be discarded or changed while they're being saved`() = runDatabaseTest { scope ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val gate = CompletableDeferred<Unit>()
+    val sync = FakeSyncController(gate = gate)
+    val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.startEditing()
+      awaitEdit()
+
+      viewModel.setNotes("Lunch")
+      viewModel.save()
+      var loaded = awaitLoaded()
+      while (!loaded.isWorking) loaded = awaitLoaded()
+
+      viewModel.stopEditing()
+      viewModel.setNotes("Dinner")
+      scope.advanceUntilIdle()
+      expectNoEvents()
+
+      gate.complete(Unit)
+      while (loaded.mode != View) loaded = awaitLoaded()
+      assertThat(sync.calls)
+        .containsExactly(
+          listOf(LocalChange(TRANSACTIONS, "t", "notes", MessageValue.String("Lunch"))),
+        )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Saving without changes writes nothing`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
@@ -433,10 +467,14 @@ class EditTransactionViewModelTest {
   }
 
   // Records the changes it's sent, without applying them to the database
-  private class FakeSyncController(private val failure: Exception? = null) : BudgetSyncController {
+  private class FakeSyncController(
+    private val failure: Exception? = null,
+    private val gate: CompletableDeferred<Unit>? = null,
+  ) : BudgetSyncController {
     val calls = mutableListOf<List<LocalChange>>()
 
     override suspend fun syncChanges(changes: List<LocalChange>) {
+      gate?.await()
       failure?.let { throw it }
       calls += changes
     }

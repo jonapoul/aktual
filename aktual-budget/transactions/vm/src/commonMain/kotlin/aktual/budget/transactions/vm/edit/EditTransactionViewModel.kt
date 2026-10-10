@@ -198,8 +198,12 @@ internal constructor(
     if (saved.canEdit) mutableDraft.update { saved.fields }
   }
 
-  // Throws away any edits
-  fun stopEditing() = mutableDraft.update { null }
+  // Throws away any edits, unless they're being saved
+  fun stopEditing() {
+    if (!mutableIsWorking.value) closeDraft()
+  }
+
+  private fun closeDraft() = mutableDraft.update { null }
 
   fun setAmount(amount: Amount) = updateDraft { it.copy(amount = amount) }
 
@@ -222,7 +226,7 @@ internal constructor(
 
   private fun updateDraft(makeCopy: (TransactionFields) -> TransactionFields) =
     mutableDraft.update { draft ->
-      draft?.let(makeCopy)
+      if (mutableIsWorking.value) draft else draft?.let(makeCopy)
     }
 
   fun save() {
@@ -231,7 +235,7 @@ internal constructor(
     if (mutableIsWorking.value) return
     val update = transactionDiff(saved.details.transaction.id, saved.fields, draft)
     if (update == null) {
-      stopEditing()
+      closeDraft()
       return
     }
 
@@ -240,7 +244,7 @@ internal constructor(
       try {
         writer.write { update(update) }
         loader.load(id)?.let { reloaded -> mutableSaved.update { reloaded.toSaved() } }
-        stopEditing()
+        closeDraft()
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {

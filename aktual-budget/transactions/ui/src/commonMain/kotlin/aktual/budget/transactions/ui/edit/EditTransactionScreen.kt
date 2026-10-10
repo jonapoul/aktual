@@ -176,6 +176,7 @@ private fun EditTransactionScaffold(
   // lose any changes
   fun onBack() {
     when {
+      loaded?.isWorking == true -> Unit
       edit == null -> onAction(NavigateBack)
       edit.hasChanges -> dialog = ConfirmDiscard
       else -> onAction(StopEditing)
@@ -288,7 +289,7 @@ private fun EditTransactionTopBar(
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
       if (isEditing) {
-        IconButton(onClick = onBack) {
+        IconButton(onClick = onBack, enabled = !loaded.isWorking) {
           Icon(
             imageVector = MaterialIcons.Clear,
             contentDescription = Strings.transactionStopEditing,
