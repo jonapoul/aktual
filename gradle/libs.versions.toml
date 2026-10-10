@@ -138,7 +138,7 @@ androidCacheFix = { id = "org.gradle.android.cache-fix", version = "3.0.3" }
 atlas = { id = "dev.jonpoulton.atlas", version = "0.7.1" }
 blueprint = { id = "dev.jonpoulton.blueprint", version.ref = "blueprint" }
 blueprintTest = { id = "dev.jonpoulton.blueprint.test", version.ref = "blueprint" }
-buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.1.1" }
+buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.1.2" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.6.0" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
