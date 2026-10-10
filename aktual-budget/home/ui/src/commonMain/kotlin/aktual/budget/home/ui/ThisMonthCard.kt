@@ -16,6 +16,7 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -187,7 +188,7 @@ private fun Headline(amount: Amount, label: String, color: Color, modifier: Modi
   ) {
     Text(
       modifier = Modifier.alignByBaseline(),
-      text = amount.absolute().formattedString(),
+      text = amount.absolute().formattedText(),
       style = typography.headlineMedium.tabularFigures(),
       fontWeight = SemiBold,
       color = color,

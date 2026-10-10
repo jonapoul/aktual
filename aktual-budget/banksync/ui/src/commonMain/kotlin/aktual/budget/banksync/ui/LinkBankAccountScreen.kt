@@ -36,7 +36,7 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.RowShape
-import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -408,7 +408,7 @@ private fun ExternalAccountRow(
 
     item.balance?.let { balance ->
       Text(
-        text = balance.formattedString(),
+        text = balance.formattedText(),
         style = typography.bodyMedium,
         color = if (balance.isPositive()) colors.tableText else colors.errorText,
         maxLines = 1,

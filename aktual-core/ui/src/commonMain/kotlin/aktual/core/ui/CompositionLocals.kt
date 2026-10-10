@@ -9,6 +9,8 @@ import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.NumberFormatConfig
+import aktual.core.l10n.Res
+import aktual.core.l10n.redacted_script
 import aktual.core.theme.BottomBarThemeAttrs
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -25,10 +27,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.withStyle
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
+import org.jetbrains.compose.resources.Font
 
 val LocalPrivacyEnabled = compositionLocalOf { false }
 
@@ -121,6 +129,27 @@ fun Amount.formattedString(
   includeSign: Boolean = false,
   isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
 ): String = toString(numberFormatConfig, currencyConfig, includeSign, isPrivacyEnabled)
+
+// Same as formattedString, but draws the privacy mask as a scribble
+@Composable
+fun Amount.formattedText(
+  numberFormatConfig: NumberFormatConfig = LocalNumberFormatConfig.current,
+  currencyConfig: CurrencyConfig = LocalCurrencyConfig.current,
+  includeSign: Boolean = false,
+  isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
+): AnnotatedString {
+  val string = toString(numberFormatConfig, currencyConfig, includeSign, isPrivacyEnabled)
+  if (!isPrivacyEnabled) return AnnotatedString(string)
+  val redacted = SpanStyle(fontFamily = FontFamily(Font(Res.font.redacted_script)))
+  return buildAnnotatedString {
+    append(string.substringBefore(Amount.PRIVACY_MASK))
+    withStyle(redacted) { append(REDACTED_MASK) }
+    append(string.substringAfter(Amount.PRIVACY_MASK))
+  }
+}
+
+// The font only has scribbles for letters and digits
+private const val REDACTED_MASK = "redact"
 
 @Composable
 fun WithCompositionLocals(

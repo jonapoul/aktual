@@ -14,6 +14,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.WrapWidthTable
 import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
 import aktual.core.ui.isInPreview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -213,7 +214,7 @@ private fun RegularHeader(
 
       Text(
         modifier = Modifier.padding(padding),
-        text = summaryData.net.formattedString(includeSign = true),
+        text = summaryData.net.formattedText(includeSign = true),
         textAlign = End,
         style = boldStyle,
         color = if (summaryData.net.isPositive()) colors.noticeText else colors.errorText,
@@ -238,7 +239,7 @@ private fun CompactHeader(
 
     val netFlow = calculateNetFlow(data)
     Text(
-      text = netFlow.formattedString(includeSign = true),
+      text = netFlow.formattedText(includeSign = true),
       color = if (netFlow.isPositive()) colors.noticeText else colors.errorText,
       overflow = Ellipsis,
     )

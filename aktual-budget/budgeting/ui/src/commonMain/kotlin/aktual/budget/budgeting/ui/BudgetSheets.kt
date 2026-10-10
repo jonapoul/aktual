@@ -20,6 +20,7 @@ import aktual.core.ui.AmountField
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.EditorSheet
 import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.layout.Arrangement
@@ -526,7 +527,7 @@ private fun SummaryRow(label: String, amount: Amount, bold: Boolean = false) {
   Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
     Text(text = label, fontSize = 14.sp, color = colors.pageTextSubdued)
     Text(
-      text = amount.formattedString(includeSign = true),
+      text = amount.formattedText(includeSign = true),
       fontSize = 14.sp,
       fontWeight = if (bold) SemiBold else Normal,
       style = TextStyle.Default.tabularFigures(),

@@ -35,7 +35,7 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.bareIconButton
 import aktual.core.ui.disabled
-import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
 import aktual.core.ui.normalIconButton
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.animation.AnimatedVisibility
@@ -300,7 +300,7 @@ private fun BalanceText(
 ) =
   Text(
     modifier = modifier,
-    text = amount.formattedString(),
+    text = amount.formattedText(),
     style = style.copy(fontFeatureSettings = "tnum"),
     color = color,
     maxLines = 1,

@@ -6,7 +6,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -41,7 +42,7 @@ internal fun BalanceStrip(balance: Amount?, modifier: Modifier = Modifier) =
       )
 
       Text(
-        text = balance?.formattedString().orEmpty(),
+        text = balance?.formattedText() ?: AnnotatedString(""),
         fontSize = 15.sp,
         fontWeight = SemiBold,
         color = colors.tableText,

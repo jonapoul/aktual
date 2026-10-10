@@ -16,7 +16,7 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.ScaleToFitText
-import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
 import aktual.core.ui.scrollbar
 import aktual.core.ui.stringLong
 import aktual.core.ui.stringShort
@@ -188,7 +188,7 @@ private fun Income(
     )
     Text(
       modifier = if (compact) Modifier else Modifier.weight(1f),
-      text = month.income.formattedString(),
+      text = month.income.formattedText(),
       color = colors.reportsBlue,
       textAlign = End,
     )
@@ -209,7 +209,7 @@ private fun Expenses(
     )
     Text(
       modifier = if (compact) Modifier else Modifier.weight(1f),
-      text = month.expenses.formattedString(),
+      text = month.expenses.formattedText(),
       color = colors.reportsRed,
       textAlign = End,
     )
@@ -246,7 +246,7 @@ internal fun CalendarSummary(
       )
       Text(
         modifier = Modifier.weight(1f),
-        text = data.income.formattedString(),
+        text = data.income.formattedText(),
         color = colors.reportsBlue,
         textAlign = End,
       )
@@ -261,7 +261,7 @@ internal fun CalendarSummary(
       )
       Text(
         modifier = Modifier.weight(1f),
-        text = data.expenses.formattedString(),
+        text = data.expenses.formattedText(),
         color = colors.reportsRed,
         textAlign = End,
       )
