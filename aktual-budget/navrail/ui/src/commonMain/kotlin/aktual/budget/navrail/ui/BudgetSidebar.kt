@@ -14,6 +14,8 @@ import aktual.core.icons.material.Logout
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Settings
 import aktual.core.icons.material.SwapHoriz
+import aktual.core.icons.material.Visibility
+import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.core.model.unaryPlus
 import aktual.core.nav.AccountGroupTransactionsNavRoute
@@ -27,6 +29,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.IconButtonColorProvider
+import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
@@ -107,6 +110,7 @@ internal fun ColumnScope.BudgetSidebarContent(
   onSelectTab: (BudgetTab) -> Unit,
   onOpenTransactions: (BudgetNavKey.Transactions) -> Unit,
   onRename: () -> Unit,
+  onSetPrivacyMode: (Boolean) -> Unit,
   onAction: BudgetNavActionHandler,
 ) {
   Column(modifier = Modifier.weight(1f).verticalScrollWithBar().padding(12.dp)) {
@@ -158,7 +162,7 @@ internal fun ColumnScope.BudgetSidebarContent(
 
   DrawerActions(
     modifier = Modifier.padding(12.dp),
-    actions = drawerActions(headerState.isDemo, onAction),
+    actions = drawerActions(headerState.isDemo, onSetPrivacyMode, onAction),
   )
 }
 
@@ -336,8 +340,22 @@ private data class DrawerAction(
 @Composable
 private fun drawerActions(
   isDemo: Boolean,
+  onSetPrivacyMode: (Boolean) -> Unit,
   onAction: BudgetNavActionHandler,
 ): ImmutableList<DrawerAction> = buildList {
+  if (LocalPrivacyEnabled.current) {
+    +DrawerAction(
+      icon = MaterialIcons.VisibilityOff,
+      label = Strings.budgetNavMenuPrivacyOff,
+      onClick = { onSetPrivacyMode(false) },
+    )
+  } else {
+    +DrawerAction(
+      icon = MaterialIcons.Visibility,
+      label = Strings.budgetNavMenuPrivacyOn,
+      onClick = { onSetPrivacyMode(true) },
+    )
+  }
   if (!isDemo) {
     +DrawerAction(
       icon = MaterialIcons.SwapHoriz,
@@ -502,6 +520,7 @@ private fun PreviewBudgetDrawerSheet(@PreviewParameter(ColoredParameters::class)
         onSelectTab = {},
         onOpenTransactions = {},
         onRename = {},
+        onSetPrivacyMode = {},
         onAction = {},
       )
     }

@@ -9,6 +9,7 @@ import aktual.budget.model.localChange
 import aktual.core.model.BudgetServer
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.di.BudgetScope
+import aktual.prefs.AppPreferences
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,6 +40,7 @@ class BudgetNavRailViewModel(
   private val syncApi: BudgetSyncApi,
   private val sync: BudgetSyncController,
   accountDao: AccountDao,
+  private val appPreferences: AppPreferences,
 ) : ViewModel() {
   val budgetNavEntryContributors: ImmutableSet<BudgetNavEntryContributor> =
     contributors.toImmutableSet()
@@ -58,6 +60,10 @@ class BudgetNavRailViewModel(
       .map { rows -> rows.toDrawerAccounts() }
       .catch { e -> logcat.e(e) { "Failed loading accounts" } }
       .stateIn(viewModelScope, Eagerly, initialValue = DrawerAccounts())
+
+  fun setPrivacyMode(isEnabled: Boolean) {
+    viewModelScope.launch { appPreferences.isPrivacyEnabled.set(isEnabled) }
+  }
 
   fun rename(name: String) {
     viewModelScope.launch {

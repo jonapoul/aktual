@@ -12,8 +12,6 @@ internal sealed interface Action {
 
   data object OpenSettings : Action
 
-  data class SetPrivacyMode(val isPrivacyEnabled: Boolean) : Action
-
   data class SetDensity(val density: TransactionsDensity) : Action
 
   data class ToggleSplit(val id: TransactionId) : Action

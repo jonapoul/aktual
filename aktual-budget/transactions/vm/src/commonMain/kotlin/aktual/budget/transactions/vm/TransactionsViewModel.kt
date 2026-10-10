@@ -6,14 +6,12 @@ import aktual.budget.banksync.domain.BankSyncSummary
 import aktual.budget.db.Accounts
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
-import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
 import aktual.budget.model.CategorySpec
 import aktual.budget.model.DbMetadata
-import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
@@ -66,7 +64,6 @@ class TransactionsViewModel(
   private val transactionDao: TransactionDao,
   private val tagsDao: TagsDao,
   private val categoryDao: CategoryDao,
-  private val preferencesDao: PreferencesDao,
   private val bankSyncController: BankSyncController,
   transactionPreferences: TransactionPreferences,
   server: BudgetServer,
@@ -198,12 +195,6 @@ class TransactionsViewModel(
   fun bankSync() {
     val account = accountId ?: return
     if (!bankSyncController.start(setOf(account))) logcat.d { "Bank sync already running" }
-  }
-
-  fun setPrivacyMode(privacyMode: Boolean) {
-    viewModelScope.launch {
-      preferencesDao[SyncedPrefKey.Global.IsPrivacyEnabled] = privacyMode.toString()
-    }
   }
 
   private fun buildPagingSource() =

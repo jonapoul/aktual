@@ -84,7 +84,6 @@ fun TransactionsScreen(
         NavBack -> back()
         BankSync -> viewModel.bankSync()
         OpenSettings -> toSettings()
-        is SetPrivacyMode -> viewModel.setPrivacyMode(action.isPrivacyEnabled)
         is SetDensity -> viewModel.setDensity(action.density)
         is ToggleSplit -> viewModel.toggleExpanded(action.id)
       }

@@ -14,8 +14,12 @@ import aktual.budget.model.localChange
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
+import aktual.prefs.AppPreferences
+import aktual.prefs.AppPreferencesImpl
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestSyncController
+import aktual.test.assertThatNextEmissionIsEqualTo
+import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -27,6 +31,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.LocalDate
 import okio.ByteString
 import okio.IOException
@@ -41,8 +46,8 @@ class BudgetNavRailViewModelTest {
   private val api = TestBudgetSyncApi()
 
   @Test
-  fun `Renaming updates the server, the local name and the sync log`() = runDatabaseTest {
-    val viewModel = viewModel(REMOTE)
+  fun `Renaming updates the server, the local name and the sync log`() = runDatabaseTest { scope ->
+    val viewModel = viewModel(REMOTE, scope)
 
     viewModel.headerState.test {
       assertThat(awaitItem().budgetName).isEqualTo("Household")
@@ -57,8 +62,8 @@ class BudgetNavRailViewModelTest {
   }
 
   @Test
-  fun `Renaming without a server only changes the local name`() = runDatabaseTest {
-    val viewModel = viewModel(None)
+  fun `Renaming without a server only changes the local name`() = runDatabaseTest { scope ->
+    val viewModel = viewModel(None, scope)
 
     viewModel.headerState.test {
       assertThat(awaitItem().budgetName).isEqualTo("Household")
@@ -73,9 +78,9 @@ class BudgetNavRailViewModelTest {
   }
 
   @Test
-  fun `The name is kept if the server rejects the rename`() = runDatabaseTest {
+  fun `The name is kept if the server rejects the rename`() = runDatabaseTest { scope ->
     api.failure = IOException("Offline")
-    val viewModel = viewModel(REMOTE)
+    val viewModel = viewModel(REMOTE, scope)
 
     viewModel.headerState.test {
       assertThat(awaitItem().budgetName).isEqualTo("Household")
@@ -89,7 +94,7 @@ class BudgetNavRailViewModelTest {
   }
 
   @Test
-  fun `Accounts are grouped with their balances`() = runDatabaseTest {
+  fun `Accounts are grouped with their balances`() = runDatabaseTest { scope ->
     insertAccount("on")
     insertAccount("off", offBudget = true)
     insertAccount("closed")
@@ -97,7 +102,7 @@ class BudgetNavRailViewModelTest {
     val transactions = TransactionDao(this)
     transactions.insert("t1", "on", "cat", "payee", DATE, amount = 10.0)
     transactions.insert("t2", "closed", "cat", "payee", DATE, amount = 3.0)
-    val viewModel = viewModel(None)
+    val viewModel = viewModel(None, scope)
 
     viewModel.accounts.test {
       assertThat(awaitLoaded())
@@ -146,7 +151,27 @@ class BudgetNavRailViewModelTest {
       )
     }
 
-  private fun BudgetDatabase.viewModel(server: BudgetServer) =
+  @Test
+  fun `Privacy mode is saved to the app preferences`() = runDatabaseTest { scope ->
+    val preferences = AppPreferencesImpl(scope.buildPreferences())
+    val viewModel = viewModel(None, scope, preferences)
+
+    preferences.isPrivacyEnabled.asFlow().test {
+      assertThatNextEmissionIsEqualTo(false)
+
+      viewModel.setPrivacyMode(isEnabled = true)
+      assertThatNextEmissionIsEqualTo(true)
+
+      viewModel.setPrivacyMode(isEnabled = false)
+      assertThatNextEmissionIsEqualTo(false)
+    }
+  }
+
+  private fun BudgetDatabase.viewModel(
+    server: BudgetServer,
+    scope: TestScope,
+    appPreferences: AppPreferences = AppPreferencesImpl(scope.buildPreferences()),
+  ) =
     BudgetNavRailViewModel(
       contributors = emptySet(),
       localPreferences = prefs,
@@ -154,6 +179,7 @@ class BudgetNavRailViewModelTest {
       syncApi = api,
       sync = sync,
       accountDao = AccountDao(this),
+      appPreferences = appPreferences,
     )
 
   private class TestBudgetSyncApi : BudgetSyncApi {
