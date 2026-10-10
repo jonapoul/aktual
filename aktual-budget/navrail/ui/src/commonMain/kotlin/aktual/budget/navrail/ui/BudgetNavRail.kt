@@ -17,6 +17,8 @@ import aktual.core.icons.material.Menu
 import aktual.core.icons.material.ReceiptLong
 import aktual.core.icons.material.Settings
 import aktual.core.icons.material.SwapHoriz
+import aktual.core.icons.material.Visibility
+import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.core.nav.BankSyncNavRoute
 import aktual.core.nav.BudgetEntryScope
@@ -41,6 +43,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.LocalNavDrawerOpener
+import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.LocalRootOverlay
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SideSpacing
@@ -162,6 +165,8 @@ internal fun BudgetNavRail(
         close()
         showRenameDialog = true
       },
+      // Stays open, so the balances can be seen changing
+      onSetPrivacyMode = viewModel::setPrivacyMode,
       onAction = { action ->
         close()
         onAction(action)
@@ -201,6 +206,7 @@ internal fun BudgetNavRail(
       selectedTab = selectedTab,
       onSelectTab = onSelectTab,
       onRename = { showRenameDialog = true },
+      onSetPrivacyMode = viewModel::setPrivacyMode,
       onAction = onAction,
       modifier = modifier,
     )
@@ -346,6 +352,7 @@ private fun SideNavLayout(
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
   onRename: () -> Unit,
+  onSetPrivacyMode: (Boolean) -> Unit,
   onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -358,6 +365,7 @@ private fun SideNavLayout(
         isDemo = isDemo,
         onSelectTab = onSelectTab,
         onRename = onRename,
+        onSetPrivacyMode = onSetPrivacyMode,
         onAction = onAction,
         onDismissRequest = { showMenu = false },
         modifier = Modifier.align(TopEnd),
@@ -551,9 +559,11 @@ private fun BudgetMenu(
   onDismissRequest: () -> Unit,
   onSelectTab: (BudgetTab) -> Unit,
   onRename: () -> Unit,
+  onSetPrivacyMode: (Boolean) -> Unit,
   onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
+  val isPrivacyEnabled = LocalPrivacyEnabled.current
   Box(modifier = modifier) {
     AktualDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
       for (tab in SecondaryTabs) {
@@ -572,6 +582,20 @@ private fun BudgetMenu(
         onClick = {
           onDismissRequest()
           onRename()
+        },
+      )
+      AktualDropdownMenuItem(
+        text =
+          if (isPrivacyEnabled) {
+            Strings.budgetNavMenuPrivacyOff
+          } else {
+            Strings.budgetNavMenuPrivacyOn
+          },
+        leadingIcon =
+          if (isPrivacyEnabled) MaterialIcons.VisibilityOff else MaterialIcons.Visibility,
+        onClick = {
+          onDismissRequest()
+          onSetPrivacyMode(!isPrivacyEnabled)
         },
       )
       if (isDemo) {

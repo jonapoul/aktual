@@ -7,6 +7,8 @@
   <string name="budget_nav_menu_rename_budget">Rename budget</string>
   <string name="budget_nav_menu_log_out">Log out</string>
   <string name="budget_nav_menu_exit_demo">Exit demo</string>
+  <string name="budget_nav_menu_privacy_on">Enable privacy mode</string>
+  <string name="budget_nav_menu_privacy_off">Disable privacy mode</string>
 
   <string name="budget_nav_accounts_all">All accounts</string>
   <string name="budget_nav_accounts_on_budget">On budget</string>

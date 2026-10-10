@@ -5,8 +5,6 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Settings
 import aktual.core.icons.material.Tune
-import aktual.core.icons.material.Visibility
-import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
@@ -15,7 +13,6 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.LocalNavDrawerOpener
-import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PreviewWithColoredParams
@@ -80,18 +77,6 @@ internal fun TransactionsTitleBar(
     },
     title = { Text(text = title, maxLines = 1, overflow = Ellipsis) },
     actions = {
-      if (LocalPrivacyEnabled.current) {
-        IconButton(
-          onClick = { onAction(Action.SetPrivacyMode(isPrivacyEnabled = false)) },
-          content = { Icon(MaterialIcons.VisibilityOff, Strings.transactionsHeaderPrivacyOff) },
-        )
-      } else {
-        IconButton(
-          onClick = { onAction(Action.SetPrivacyMode(isPrivacyEnabled = true)) },
-          content = { Icon(MaterialIcons.Visibility, Strings.transactionsHeaderPrivacyOn) },
-        )
-      }
-
       IconButton(
         onClick = onOpenViewOptions,
         content = { Icon(MaterialIcons.Tune, Strings.transactionsViewOptions) },

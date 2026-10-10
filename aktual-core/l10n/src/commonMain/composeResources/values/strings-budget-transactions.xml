@@ -20,8 +20,6 @@
   <string name="transactions_density_compact">Compact</string>
   <string name="transactions_density_dense">Dense</string>
   <string name="transactions_load_failed">Failed loading transactions</string>
-  <string name="transactions_header_privacy_on">Enable privacy mode</string>
-  <string name="transactions_header_privacy_off">Disable privacy mode</string>
   <string name="transactions_title_all">All Accounts</string>
   <string name="transactions_title_on_budget">On Budget Accounts</string>
   <string name="transactions_title_off_budget">Off Budget Accounts</string>
