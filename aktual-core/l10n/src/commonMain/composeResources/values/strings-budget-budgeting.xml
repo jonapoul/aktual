@@ -31,13 +31,13 @@
   <string name="budgeting_group_expand">Expand %1$s</string>
   <string name="budgeting_rolls_over">Rolls over</string>
   <string name="budgeting_banner_review">Review</string>
-  <string name="budgeting_banner_overbudgeted">You\'ve budgeted more than your available funds</string>
+  <string name="budgeting_banner_overbudgeted">You've budgeted more than your available funds</string>
   <plurals name="budgeting_banner_overspent">
     <item quantity="one">%1$d overspent category (%2$s)</item>
     <item quantity="other">%1$d overspent categories (%2$s)</item>
   </plurals>
   <string name="budgeting_empty">No categories yet</string>
-  <string name="budgeting_failure_title">Couldn\'t load the budget</string>
+  <string name="budgeting_failure_title">Couldn't load the budget</string>
   <string name="budgeting_failure_message">An unexpected error occurred</string>
 
   <string name="budgeting_edit_title">%1$s · %2$s</string>
@@ -46,7 +46,7 @@
   <string name="budgeting_edit_cancel">Cancel</string>
   <string name="budgeting_edit_budget">Edit budget for %1$s</string>
   <string name="budgeting_edit_options">Budget options for %1$s</string>
-  <string name="budgeting_copy_last_month">Copy last month\'s budget</string>
+  <string name="budgeting_copy_last_month">Copy last month's budget</string>
   <string name="budgeting_average_3">Set to 3 month average</string>
   <string name="budgeting_average_6">Set to 6 month average</string>
   <string name="budgeting_average_12">Set to yearly average</string>
@@ -55,7 +55,7 @@
   <string name="budgeting_category_open">Open %1$s</string>
   <string name="budgeting_category_history">History</string>
   <string name="budgeting_category_transactions">View transactions</string>
-  <string name="budgeting_category_failure">Couldn\'t load this category</string>
+  <string name="budgeting_category_failure">Couldn't load this category</string>
   <string name="budgeting_category_select_month">Show %1$s</string>
 
   <string name="budgeting_balance_options">Balance options for %1$s</string>
@@ -79,7 +79,7 @@
   <string name="budgeting_summary_received">Received</string>
   <string name="budgeting_hold">Hold for next month</string>
   <string name="budgeting_hold_confirm">Hold</string>
-  <string name="budgeting_hold_reset">Reset next month\'s hold</string>
+  <string name="budgeting_hold_reset">Reset next month's hold</string>
   <string name="budgeting_transfer_available">Transfer to a category</string>
   <string name="budgeting_cover_overbudgeted">Cover from a category</string>
   <string name="budgeting_cover_overbudgeted_title">Cover overbudgeting</string>
