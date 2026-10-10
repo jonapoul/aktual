@@ -45,7 +45,6 @@ import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.redacted
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.stringLong
-import aktual.core.ui.stringShort
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
