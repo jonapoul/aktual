@@ -9,6 +9,7 @@ import aktual.core.AppDirectory
 import aktual.core.model.Bytes
 import aktual.core.model.Percent
 import aktual.core.model.bytes
+import aktual.core.model.unaryPlus
 import aktual.core.theme.CustomThemeCache
 import aktual.di.AppScope
 import aktual.di.BudgetGraph
@@ -172,7 +173,7 @@ class ManageStorageViewModel(
               entry.name
             }
           val size = directorySize(entry)
-          add(BudgetStorageItem(id = budgetId, name = name, size = size))
+          +BudgetStorageItem(id = budgetId, name = name, size = size)
         }
       }
     }

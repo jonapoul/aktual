@@ -5,6 +5,7 @@ import aktual.budget.reports.vm.McRunDetailRow
 import aktual.budget.reports.vm.McWithdrawalRule
 import aktual.budget.reports.vm.WithdrawalRuleType
 import aktual.core.l10n.Strings
+import aktual.core.model.unaryPlus
 import androidx.compose.runtime.Composable
 
 // Ported from
@@ -21,25 +22,23 @@ internal fun yearStory(
   hasSurplusPot: Boolean,
 ): List<String> = buildList {
   val ruleSentence = row.ruleExplanation?.let { ruleDecisionSentence(it, rule) }
-  ruleSentence?.let(::add)
+  ruleSentence?.let { +it }
 
   if (row.minimumApplied) {
     val planned = row.plannedSpending.money()
-    add(
-      if (ruleSentence != null) {
-        Strings.monteCarloStoryMinimumThen(planned)
-      } else {
-        Strings.monteCarloStoryMinimum(planned)
-      },
-    )
+    if (ruleSentence != null) {
+      +Strings.monteCarloStoryMinimumThen(planned)
+    } else {
+      +Strings.monteCarloStoryMinimum(planned)
+    }
   }
 
   addAll(fundingSentences(row))
 
   if (hasSurplusPot && row.surplusSaved > 0) {
-    add(Strings.monteCarloStorySurplusSaved(row.surplusSaved.money(), surplusPotName))
+    +Strings.monteCarloStorySurplusSaved(row.surplusSaved.money(), surplusPotName)
   } else if (row.unspentIncome > 0) {
-    add(Strings.monteCarloStoryUnspent(row.unspentIncome.money()))
+    +Strings.monteCarloStoryUnspent(row.unspentIncome.money())
   }
 }
 

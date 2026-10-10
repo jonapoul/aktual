@@ -11,6 +11,7 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toInputText
 import aktual.core.l10n.Strings
+import aktual.core.model.unaryPlus
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
@@ -314,31 +315,25 @@ internal fun balanceActions(
   onAction: BudgetActionHandler,
 ): ImmutableList<MenuItem> = buildList {
   if (type == Envelope && category.balance > Zero) {
-    add(
-      MenuItem(
-        label = Strings.budgetingBalanceTransfer,
-        onClick = { onAction(OpenSheet(SheetRequest.TransferSheet(month, category.id))) },
-      ),
+    +MenuItem(
+      label = Strings.budgetingBalanceTransfer,
+      onClick = { onAction(OpenSheet(SheetRequest.TransferSheet(month, category.id))) },
     )
   }
   if (type == Envelope && category.balance < Zero) {
-    add(
-      MenuItem(
-        label = Strings.budgetingBalanceCover,
-        onClick = { onAction(OpenSheet(SheetRequest.CoverSheet(month, category.id))) },
-      ),
+    +MenuItem(
+      label = Strings.budgetingBalanceCover,
+      onClick = { onAction(OpenSheet(SheetRequest.CoverSheet(month, category.id))) },
     )
   }
-  add(
-    MenuItem(
-      label =
-        if (category.carryover) {
-          Strings.budgetingBalanceRolloverOff
-        } else {
-          Strings.budgetingBalanceRolloverOn
-        },
-      onClick = { onAction(ToggleCarryover(month, category.id, !category.carryover)) },
-    ),
+  +MenuItem(
+    label =
+      if (category.carryover) {
+        Strings.budgetingBalanceRolloverOff
+      } else {
+        Strings.budgetingBalanceRolloverOn
+      },
+    onClick = { onAction(ToggleCarryover(month, category.id, !category.carryover)) },
   )
 }
   .toImmutableList()
@@ -384,9 +379,9 @@ private fun MonthBudget.pickOptions(
 ): ImmutableList<PickOption> = buildList {
   val toBudget = (summary as? BudgetSummary.Envelope)?.toBudget
   if (toBudget != null && toBudgetIf?.invoke(toBudget) == true) {
-    add(PickOption(id = null, name = Strings.budgetingToBudget, balance = toBudget))
+    +PickOption(id = null, name = Strings.budgetingToBudget, balance = toBudget)
   }
-  expenseCategories().filter(filter).forEach { add(PickOption(it.id, it.name, it.balance)) }
+  expenseCategories().filter(filter).forEach { +PickOption(it.id, it.name, it.balance) }
 }
   .toImmutableList()
 

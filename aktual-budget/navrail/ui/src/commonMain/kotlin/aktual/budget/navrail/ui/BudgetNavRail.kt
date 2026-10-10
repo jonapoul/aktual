@@ -19,6 +19,7 @@ import aktual.core.icons.material.ReceiptLong
 import aktual.core.icons.material.Settings
 import aktual.core.icons.material.SwapHoriz
 import aktual.core.l10n.Strings
+import aktual.core.model.unaryPlus
 import aktual.core.nav.BankSyncNavRoute
 import aktual.core.nav.BudgetEntryScope
 import aktual.core.nav.BudgetNavEntryContributor
@@ -379,9 +380,6 @@ private data class DrawerAction(
   val label: String,
   val onClick: () -> Unit,
 )
-
-context(list: MutableList<T>)
-private operator fun <T> T.unaryPlus() = list.add(this)
 
 @Composable
 private fun drawerActions(
