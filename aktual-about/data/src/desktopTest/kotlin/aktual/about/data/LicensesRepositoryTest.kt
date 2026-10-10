@@ -67,7 +67,17 @@ class LicensesRepositoryTest {
     assertThat(state)
       .isDataClassEqualTo(
         LicensesLoadState.Success(
-          libraries = listOf(composeMaterialRipple, fragmentKtx, alakazamAndroidCore, slf4jApi),
+          libraries =
+            listOf(
+              ActualBudget,
+              composeMaterialRipple,
+              fragmentKtx,
+              RedactedScriptFont,
+              alakazamAndroidCore,
+              MaterialDesignIcons,
+              slf4jApi,
+              InterFont,
+            ),
         ),
       )
   }
