@@ -1,63 +1,28 @@
 package aktual.prefs.ui.root
 
-import aktual.budget.model.BarEffect
-import aktual.budget.model.Currency
-import aktual.budget.model.CurrencySymbolPosition
-import aktual.budget.model.DateFormat
-import aktual.budget.model.FirstDayOfWeek
-import aktual.budget.model.NumberFormat
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
+import aktual.core.icons.material.CurrencyPound
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Numbers
 import aktual.core.icons.material.ReceiptLong
 import aktual.core.icons.material.ThemeRoutine
+import aktual.core.icons.material.Tune
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.CurrencySettingsNavigator
+import aktual.core.nav.FormatSettingsNavigator
 import aktual.core.nav.ScheduleSettingsNavigator
+import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavigator
 import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.theme.Colors
-import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameters
-import aktual.core.ui.Dimens
-import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.hazedTopBar
-import aktual.core.ui.hazedTopBarContent
-import aktual.core.ui.hazedTopBarContentPadding
-import aktual.core.ui.rememberHazedTopBarState
-import aktual.core.ui.scrollbar
-import aktual.core.ui.transparentTopAppBarColors
-import aktual.prefs.vm.BooleanPreference
-import aktual.prefs.vm.ListPreference
-import aktual.prefs.vm.root.CurrencyConfigState
-import aktual.prefs.vm.root.FormatConfigState
-import aktual.prefs.vm.root.HazeAlphaPreference
-import aktual.prefs.vm.root.HazeRadiusPreference
-import aktual.prefs.vm.root.SettingsScreenState
-import aktual.prefs.vm.root.SettingsViewModel
-import aktual.prefs.vm.root.SystemUiConfigState
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import aktual.prefs.ui.SettingsListScaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 fun SettingsScreen(
@@ -65,64 +30,31 @@ fun SettingsScreen(
   toThemeSettings: ThemeSettingsNavigator,
   toScheduleSettings: ScheduleSettingsNavigator,
   toTransactionSettings: TransactionSettingsNavigator,
-  viewModel: SettingsViewModel = metroViewModel<SettingsViewModel>(),
+  toSystemUiSettings: SystemUiSettingsNavigator,
+  toFormatSettings: FormatSettingsNavigator,
+  toCurrencySettings: CurrencySettingsNavigator,
 ) {
-  val state by viewModel.state.collectAsStateWithLifecycle()
-
   SettingsScaffold(
-    state = state,
     onAction = { action ->
       when (action) {
         NavBack -> back()
         NavToThemeSettings -> toThemeSettings()
         NavToScheduleSettings -> toScheduleSettings()
         NavToTransactionSettings -> toTransactionSettings()
+        NavToSystemUiSettings -> toSystemUiSettings()
+        NavToFormatSettings -> toFormatSettings()
+        NavToCurrencySettings -> toCurrencySettings()
       }
     },
   )
 }
 
 @Composable
-private fun SettingsScaffold(state: SettingsScreenState, onAction: SettingsActionHandler) {
-  val listState = rememberLazyListState()
-  val hazeState = rememberHazedTopBarState()
-
-  Scaffold(
-    topBar = {
-      TopAppBar(
-        modifier = Modifier.hazedTopBar(hazeState, listState),
-        colors = colors.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton { onAction(NavBack) } },
-        title = { Text(Strings.settingsToolbar) },
-      )
-    },
-  ) { innerPadding ->
-    Box {
-      PageBackground()
-      SettingsContent(
-        modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
-        contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
-        listState = listState,
-        state = state,
-        onAction = onAction,
-      )
-    }
-  }
-}
-
-@Composable
-private fun SettingsContent(
-  state: SettingsScreenState,
-  contentPadding: PaddingValues,
-  listState: LazyListState,
-  onAction: SettingsActionHandler,
-  modifier: Modifier = Modifier,
-) {
-  LazyColumn(
-    modifier = modifier.fillMaxSize().scrollbar(listState).padding(Dimens.Large),
-    state = listState,
-    contentPadding = contentPadding,
-    verticalArrangement = Arrangement.spacedBy(10.dp),
+private fun SettingsScaffold(onAction: SettingsActionHandler) {
+  SettingsListScaffold(
+    title = Strings.settingsToolbar,
+    description = null,
+    onBack = { onAction(NavBack) },
   ) {
     item {
       SubSettingsItem(
@@ -145,43 +77,31 @@ private fun SettingsContent(
         onClick = { onAction(NavToTransactionSettings) },
       )
     }
-    item { SystemUiGroup(state.systemUi) }
-    item { FormattingGroup(state.format) }
-    item { CurrencyGroup(state.currency) }
-    item { BottomSpacing() }
+    item {
+      SubSettingsItem(
+        title = Strings.settingsUiGroup,
+        icon = MaterialIcons.Tune,
+        onClick = { onAction(NavToSystemUiSettings) },
+      )
+    }
+    item {
+      SubSettingsItem(
+        title = Strings.settingsFormatGroup,
+        icon = MaterialIcons.Numbers,
+        onClick = { onAction(NavToFormatSettings) },
+      )
+    }
+    item {
+      SubSettingsItem(
+        title = Strings.settingsCurrency,
+        icon = MaterialIcons.CurrencyPound,
+        onClick = { onAction(NavToCurrencySettings) },
+      )
+    }
   }
 }
 
 @PortraitPreview
 @Composable
 private fun PreviewSettingsScaffold(@PreviewParameter(ColoredParameters::class) colors: Colors) =
-  PreviewWithColors(colors) {
-    SettingsScaffold(
-      onAction = {},
-      state =
-        SettingsScreenState(
-          systemUi =
-            SystemUiConfigState(
-              showStatusBar = BooleanPreference(true),
-              appBarEffect = ListPreference(BarEffect.Blur),
-              hazeDialogs = BooleanPreference(true),
-              hazeRadiusDp = HazeRadiusPreference(5f),
-              hazeAlpha = HazeAlphaPreference(0.5f),
-              hidePreviewInAppSwitcher = BooleanPreference(true),
-            ),
-          format =
-            FormatConfigState(
-              numberFormat = ListPreference(NumberFormat.CommaDot),
-              dateFormat = ListPreference(DateFormat.MmDdYyyy),
-              firstDayOfWeek = ListPreference(FirstDayOfWeek.Monday),
-              hideFraction = BooleanPreference(true),
-            ),
-          currency =
-            CurrencyConfigState(
-              currency = ListPreference(Currency.PoundSterling),
-              symbolPosition = ListPreference(CurrencySymbolPosition.BeforeAmount),
-              spaceBetweenAmountAndSymbol = BooleanPreference(true),
-            ),
-        ),
-    )
-  }
+  PreviewWithColors(colors) { SettingsScaffold(onAction = {}) }
