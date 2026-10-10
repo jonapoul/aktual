@@ -3,6 +3,7 @@ package aktual.budget.navrail.vm
 import aktual.api.client.BudgetSyncApi
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.BudgetSyncController
+import aktual.budget.db.dao.AccountDao
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.localChange
 import aktual.core.model.BudgetServer
@@ -21,6 +22,9 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -34,6 +38,7 @@ class BudgetNavRailViewModel(
   private val server: BudgetServer,
   private val syncApi: BudgetSyncApi,
   private val sync: BudgetSyncController,
+  accountDao: AccountDao,
 ) : ViewModel() {
   val budgetNavEntryContributors: ImmutableSet<BudgetNavEntryContributor> =
     contributors.toImmutableSet()
@@ -46,6 +51,13 @@ class BudgetNavRailViewModel(
       val serverHost = (server as? BudgetServer.Remote)?.url?.baseUrl
       DrawerHeaderState(budgetName = budgetName, serverHost = serverHost)
     }
+
+  val accounts: StateFlow<DrawerAccounts> =
+    accountDao
+      .observeAllWithBalances()
+      .map { rows -> rows.toDrawerAccounts() }
+      .catch { e -> logcat.e(e) { "Failed loading accounts" } }
+      .stateIn(viewModelScope, Eagerly, initialValue = DrawerAccounts())
 
   fun rename(name: String) {
     viewModelScope.launch {

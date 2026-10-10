@@ -7,6 +7,14 @@
   <string name="budget_nav_menu_rename_budget">Rename budget</string>
   <string name="budget_nav_menu_log_out">Log out</string>
   <string name="budget_nav_menu_exit_demo">Exit demo</string>
+
+  <string name="budget_nav_accounts_all">All accounts</string>
+  <string name="budget_nav_accounts_on_budget">On budget</string>
+  <string name="budget_nav_accounts_off_budget">Off budget</string>
+  <string name="budget_nav_accounts_closed">Closed accounts</string>
+  <string name="budget_nav_accounts_expand">Expand %1$s</string>
+  <string name="budget_nav_accounts_collapse">Collapse %1$s</string>
+
   <string name="budget_nav_demo">Demo mode</string>
 
   <string name="budget_nav_rename_placeholder">Budget name</string>

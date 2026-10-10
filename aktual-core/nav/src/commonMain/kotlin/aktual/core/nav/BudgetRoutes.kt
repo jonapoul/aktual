@@ -1,5 +1,6 @@
 package aktual.core.nav
 
+import aktual.budget.model.AccountGroup
 import aktual.budget.model.AccountId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.DashboardPageId
@@ -29,6 +30,9 @@ data class BudgetCategoryNavRoute(val category: CategoryId, val month: YearMonth
 @Serializable data class TransactionsWithTagNavRoute(val id: TagId) : BudgetNavKey.Transactions
 
 @Serializable data class AccountTransactionsNavRoute(val id: AccountId) : BudgetNavKey.Transactions
+
+@Serializable
+data class AccountGroupTransactionsNavRoute(val group: AccountGroup) : BudgetNavKey.Transactions
 
 @Serializable data object UncategorisedTransactionsNavRoute : BudgetNavKey.Transactions
 

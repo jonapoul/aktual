@@ -25,6 +25,7 @@ flowchart TD
     budget["Budget"]
     transactions["Transactions"]
     accountTransactions["Account Transactions"]
+    accountGroupTransactions["Account Group Transactions"]
     tagTransactions["Tag Transactions"]
     uncategorisedTransactions["Uncategorised Transactions"]
     reportsDashboard["Reports Dashboard"]
@@ -83,6 +84,9 @@ flowchart TD
   budgetNavRail --back--> budgetList
   budgetNavRail --tap exit demo--> url
   budgetNavRail --tap about--> info
+  budgetNavRail --tap all accounts in drawer--> transactions
+  budgetNavRail --tap account in drawer--> accountTransactions
+  budgetNavRail --tap account group in drawer--> accountGroupTransactions
 
   home --tap account--> accountTransactions
   home --no accounts--> bankSync

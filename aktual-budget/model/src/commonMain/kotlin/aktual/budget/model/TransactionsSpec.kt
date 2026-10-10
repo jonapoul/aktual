@@ -3,6 +3,7 @@ package aktual.budget.model
 import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
+import kotlinx.serialization.Serializable
 
 @Immutable
 data class TransactionsSpec(
@@ -15,6 +16,16 @@ sealed interface AccountSpec {
   data object AllAccounts : AccountSpec
 
   data class SpecificAccount(val id: AccountId) : AccountSpec
+
+  data class Group(val group: AccountGroup) : AccountSpec
+}
+
+// The account lists of upstream's sidebar. Closed accounts are in neither budget group
+@Serializable
+enum class AccountGroup {
+  OnBudget,
+  OffBudget,
+  Closed,
 }
 
 sealed interface TagSpec {

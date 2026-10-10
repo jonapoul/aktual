@@ -7,6 +7,7 @@ import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
 import aktual.budget.model.WidgetId
+import aktual.core.nav.AccountGroupTransactionsNavRoute
 import aktual.core.nav.AccountTransactionsNavRoute
 import aktual.core.nav.BudgetCategoryNavRoute
 import aktual.core.nav.CategoryTransactionsNavRoute
@@ -45,6 +46,7 @@ class BudgetNavKeyStackSaverTest {
         TransactionsNavRoute,
         TransactionsWithTagNavRoute(TagId("tag")),
         AccountTransactionsNavRoute(AccountId("account")),
+        AccountGroupTransactionsNavRoute(OffBudget),
         UncategorisedTransactionsNavRoute,
         CategoryTransactionsNavRoute(CategoryId("category"), YearMonth(2026, 10)),
         BudgetCategoryNavRoute(CategoryId("category"), YearMonth(2026, 10)),

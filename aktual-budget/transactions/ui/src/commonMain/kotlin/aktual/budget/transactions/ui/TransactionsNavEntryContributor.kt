@@ -4,6 +4,7 @@ import aktual.budget.model.AccountSpec
 import aktual.budget.model.CategorySpec
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionsSpec
+import aktual.core.nav.AccountGroupTransactionsNavRoute
 import aktual.core.nav.AccountTransactionsNavRoute
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.BudgetEntryScope
@@ -16,6 +17,8 @@ import aktual.core.nav.TransactionsNavRoute
 import aktual.core.nav.TransactionsWithTagNavRoute
 import aktual.core.nav.UncategorisedTransactionsNavRoute
 import aktual.di.BudgetScope
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
@@ -47,6 +50,16 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
         back = BackNavigator(stack),
         toSettings = TransactionSettingsNavigator(appStack),
         spec = TransactionsSpec(accountSpec = AccountSpec.SpecificAccount(route.id)),
+        isRoot = stack.isRootedAt(route),
+      )
+    }
+
+    budgetEntry<AccountGroupTransactionsNavRoute> { route ->
+      TransactionsScreen(
+        back = BackNavigator(stack),
+        toSettings = TransactionSettingsNavigator(appStack),
+        spec = TransactionsSpec(accountSpec = AccountSpec.Group(route.group)),
+        isRoot = stack.isRootedAt(route),
       )
     }
 
@@ -70,3 +83,9 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
     }
   }
 }
+
+// The nav drawer opens an account as the only entry of its stack. Remembered so the screen keeps
+// its nav icon while it animates out
+@Composable
+private fun NavStack<BudgetNavKey>.isRootedAt(route: BudgetNavKey): Boolean =
+  remember(route) { firstOrNull() == route }
