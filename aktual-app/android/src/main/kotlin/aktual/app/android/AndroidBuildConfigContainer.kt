@@ -13,5 +13,8 @@ import dev.zacsweers.metro.SingleIn
 object AndroidBuildConfigContainer {
   @Provides
   @SingleIn(AppScope::class)
-  fun buildConfig(): BuildConfig = aktual.app.di.buildConfig(isDebug = AppBuildConfig.DEBUG)
+  fun buildConfig(): BuildConfig =
+    aktual.app.di
+      .buildConfig(isDebug = AppBuildConfig.DEBUG)
+      .copy(versionCode = AppBuildConfig.VERSION_CODE)
 }
