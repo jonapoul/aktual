@@ -44,6 +44,7 @@ import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.redacted
 import aktual.core.ui.rememberHazedTopBarState
+import aktual.core.ui.stringLong
 import aktual.core.ui.stringShort
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.ScrollState
@@ -51,6 +52,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -249,7 +251,7 @@ private fun Hero(details: TransactionDetails, modifier: Modifier = Modifier) {
       horizontalArrangement = Arrangement.spacedBy(PillGap),
     ) {
       Text(
-        text = "${transaction.date.dayOfWeek.stringShort()} ${transaction.date.formatted()}",
+        text = "${transaction.date.dayOfWeek.stringLong()} ${transaction.date.formatted()}",
         fontSize = DateSize,
         color = colors.pageTextLight,
       )
@@ -269,14 +271,14 @@ private fun Avatar(initial: Char?, modifier: Modifier = Modifier) =
         text = initial.uppercase(),
         fontSize = AvatarTextSize,
         fontWeight = Bold,
-        color = colors.formLabelText,
+        color = colors.mobileHeaderText,
       )
     } else {
       Icon(
         modifier = Modifier.size(AvatarIconSize),
         imageVector = AktualIcons.Split,
         contentDescription = null,
-        tint = colors.formLabelText,
+        tint = colors.mobileHeaderText,
       )
     }
   }
@@ -305,10 +307,11 @@ private fun StatusPill(details: TransactionDetails, modifier: Modifier = Modifie
 }
 
 @Composable
-private fun DetailCard(content: @Composable () -> Unit) =
-  Column(modifier = Modifier.fillMaxWidth().background(colors.cardBackground, DetailCardShape)) {
-    content()
-  }
+private inline fun DetailCard(content: @Composable ColumnScope.() -> Unit) =
+  Column(
+    modifier = Modifier.fillMaxWidth().background(colors.cardBackground, DetailCardShape),
+    content = content,
+  )
 
 @Composable private fun CardDivider() = HorizontalDivider(color = colors.tableBorder)
 
