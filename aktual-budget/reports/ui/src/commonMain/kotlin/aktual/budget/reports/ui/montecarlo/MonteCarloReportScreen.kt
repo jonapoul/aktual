@@ -110,6 +110,7 @@ fun MonteCarloReportScreen(
   if (showDiscardDialog) {
     AktualAlertDialog(
       title = Strings.monteCarloDiscardTitle,
+      highlight = colors.warningText,
       onDismissRequest = { showDiscardDialog = false },
       buttons = {
         TextButton(onClick = { showDiscardDialog = false }) {
@@ -122,7 +123,7 @@ fun MonteCarloReportScreen(
             back()
           },
         ) {
-          Text(Strings.monteCarloDiscardConfirm, color = colors.errorText)
+          Text(Strings.monteCarloDiscardConfirm, color = colors.warningText)
         }
       },
       content = { Text(Strings.monteCarloDiscardMessage) },

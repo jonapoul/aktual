@@ -7,6 +7,7 @@ import aktual.core.ui.AktualTheme.colors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
 internal enum class TransactionDialog {
   ConfirmDelete,
@@ -31,6 +32,7 @@ internal fun EditTransactionDialogs(
         message = Strings.transactionDeleteMessage,
         confirm = Strings.transactionDeleteConfirm,
         cancel = Strings.transactionSheetCancel,
+        highlight = colors.errorText,
         onConfirm = {
           dismiss()
           onAction(DeleteTransaction)
@@ -44,6 +46,7 @@ internal fun EditTransactionDialogs(
         message = Strings.transactionDiscardMessage,
         confirm = Strings.transactionDiscardConfirm,
         cancel = Strings.transactionDiscardCancel,
+        highlight = colors.warningText,
         onConfirm = {
           dismiss()
           onAction(StopEditing)
@@ -90,6 +93,7 @@ private fun ReconciledDialog(message: String, onConfirm: () -> Unit, onCancel: (
     message = message,
     confirm = Strings.transactionReconciledConfirm,
     cancel = Strings.transactionSheetCancel,
+    highlight = colors.warningText,
     onConfirm = onConfirm,
     onCancel = onCancel,
   )
@@ -100,15 +104,17 @@ private fun ConfirmDialog(
   message: String,
   confirm: String,
   cancel: String,
+  highlight: Color,
   onConfirm: () -> Unit,
   onCancel: () -> Unit,
 ) =
   AktualAlertDialog(
     title = title,
+    highlight = highlight,
     onDismissRequest = onCancel,
     buttons = {
       TextButton(onClick = onCancel) { Text(cancel) }
-      TextButton(onClick = onConfirm) { Text(confirm, color = colors.errorText) }
+      TextButton(onClick = onConfirm) { Text(confirm, color = highlight) }
     },
     content = { Text(message) },
   )

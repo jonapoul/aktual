@@ -85,6 +85,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -275,6 +276,7 @@ private fun EditScheduleDialog(
         message = Strings.editScheduleDeleteMessage,
         confirm = Strings.editScheduleDeleteConfirm,
         cancel = Strings.editScheduleDeleteCancel,
+        highlight = colors.errorText,
         onConfirm = {
           onDismiss()
           onAction(DeleteSchedule)
@@ -288,6 +290,7 @@ private fun EditScheduleDialog(
         message = Strings.editScheduleDiscardMessage,
         confirm = Strings.editScheduleDiscardConfirm,
         cancel = Strings.editScheduleDiscardCancel,
+        highlight = colors.warningText,
         onConfirm = {
           onDismiss()
           onAction(if (isNew) NavigateBack else StopEditing)
@@ -575,15 +578,17 @@ private fun ConfirmDialog(
   message: String,
   confirm: String,
   cancel: String,
+  highlight: Color,
   onConfirm: () -> Unit,
   onCancel: () -> Unit,
 ) {
   AktualAlertDialog(
     title = title,
+    highlight = highlight,
     onDismissRequest = onCancel,
     buttons = {
       TextButton(onClick = onCancel) { Text(cancel) }
-      TextButton(onClick = onConfirm) { Text(confirm, color = colors.errorText) }
+      TextButton(onClick = onConfirm) { Text(confirm, color = highlight) }
     },
     content = { Text(message) },
   )

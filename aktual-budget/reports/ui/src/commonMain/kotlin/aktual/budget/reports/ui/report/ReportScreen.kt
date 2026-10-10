@@ -103,11 +103,12 @@ fun ReportScreen(
 private fun DiscardTextDialog(onDiscard: () -> Unit, onCancel: () -> Unit) =
   AktualAlertDialog(
     title = Strings.reportsTextDiscardTitle,
+    highlight = colors.warningText,
     onDismissRequest = onCancel,
     buttons = {
       TextButton(onClick = onCancel) { Text(Strings.reportsTextDiscardCancel) }
       TextButton(onClick = onDiscard) {
-        Text(Strings.reportsTextDiscardConfirm, color = colors.errorText)
+        Text(Strings.reportsTextDiscardConfirm, color = colors.warningText)
       }
     },
     content = { Text(Strings.reportsTextDiscardMessage) },
