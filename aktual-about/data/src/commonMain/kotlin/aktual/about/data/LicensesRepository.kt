@@ -25,7 +25,7 @@ class LicensesRepository(private val assets: Assets, private val contexts: Corou
           )
         }
 
-      val sorted = dirtyLibraries.sortedBy { it.id }
+      val sorted = (dirtyLibraries + NonLibraryArtifacts).sortedBy { it.id }
       LicensesLoadState.Success(sorted)
     } catch (e: CancellationException) {
       throw e
