@@ -28,7 +28,8 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(LoggedInScope::class)
-class ChangePasswordViewModel(
+class ChangePasswordViewModel
+internal constructor(
   versionsStateHolder: AktualVersionsStateHolder,
   private val passwordChanger: PasswordChanger,
   private val loginRequester: LoginRequester,

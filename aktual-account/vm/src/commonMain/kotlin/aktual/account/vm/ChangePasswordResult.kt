@@ -1,6 +1,6 @@
 package aktual.account.vm
 
-sealed interface ChangePasswordResult {
+internal sealed interface ChangePasswordResult {
   data object Success : ChangePasswordResult
 
   sealed interface Failure : ChangePasswordResult

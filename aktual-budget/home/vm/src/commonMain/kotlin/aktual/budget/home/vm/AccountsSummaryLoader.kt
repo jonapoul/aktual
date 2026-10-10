@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 @Inject
-class AccountsSummaryLoader(private val accountDao: AccountDao) {
+internal class AccountsSummaryLoader(private val accountDao: AccountDao) {
   fun observe(): Flow<AccountsSummary> =
     accountDao.observeAllWithBalances().map { rows -> rows.toAccountsSummary() }
 }

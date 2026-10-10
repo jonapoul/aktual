@@ -6,7 +6,7 @@ import aktual.budget.schedules.domain.Schedule
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 
-data class UpcomingSchedules(
+internal data class UpcomingSchedules(
   val length: UpcomingLength,
   val today: LocalDate,
   val schedules: ImmutableList<Schedule>,

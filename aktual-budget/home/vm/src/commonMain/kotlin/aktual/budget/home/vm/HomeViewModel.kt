@@ -25,7 +25,8 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(BudgetScope::class)
-class HomeViewModel(
+class HomeViewModel
+internal constructor(
   localPreferences: BudgetLocalPreferences,
   thisMonthLoader: ThisMonthLoader,
   needsAttentionLoader: NeedsAttentionLoader,

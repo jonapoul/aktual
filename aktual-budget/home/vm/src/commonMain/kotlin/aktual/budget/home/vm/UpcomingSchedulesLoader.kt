@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
 @Inject
-class UpcomingSchedulesLoader(
+internal class UpcomingSchedulesLoader(
   private val schedulesLoader: SchedulesLoader,
   private val calendar: Calendar,
 ) {

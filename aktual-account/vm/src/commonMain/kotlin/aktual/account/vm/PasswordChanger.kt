@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 import logcat.logcat
 
 @Inject
-class PasswordChanger(
+internal class PasswordChanger(
   private val token: Token,
   private val accountApi: AccountApi,
   private val contexts: CoroutineContexts,

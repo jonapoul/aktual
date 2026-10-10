@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Inject
-class NeedsAttentionLoader(
+internal class NeedsAttentionLoader(
   private val accountsSummaryLoader: AccountsSummaryLoader,
   private val transactionDao: TransactionDao,
   private val thisMonthLoader: ThisMonthLoader,

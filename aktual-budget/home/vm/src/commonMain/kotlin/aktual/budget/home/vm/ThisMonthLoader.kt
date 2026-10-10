@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.yearMonth
 
 @Inject
-class ThisMonthLoader(
+internal class ThisMonthLoader(
   private val calculator: BudgetMonthCalculator,
   private val calendar: Calendar,
 ) {
