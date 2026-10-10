@@ -40,6 +40,10 @@
     <item quantity="other">%1$d matches</item>
   </plurals>
   <string name="licenses_filter_clear">Clear filter</string>
+  <string name="licenses_toolbar_sort">Sort licenses</string>
+  <string name="licenses_sort_by_artifact">Sort by artifact</string>
+  <string name="licenses_sort_by_name">Sort by name</string>
+  <string name="licenses_sort_by_license">Sort by license</string>
 
   <string name="storage_toolbar">Manage Storage</string>
   <string name="storage_total">Total Storage</string>

@@ -22,6 +22,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -44,6 +45,9 @@ class LicensesViewModel(
   }
 
   private val mutableState = MutableStateFlow<LicensesState>(Loading)
+  private val mutableSorting = MutableStateFlow<LicenseSorting>(ByArtifact)
+
+  val sorting: StateFlow<LicenseSorting> = mutableSorting.asStateFlow()
 
   private val searchTerm = savedState.getStateFlow(KEY_SEARCH_TERM, "")
   private val isSearchActive = savedState.getStateFlow(KEY_IS_SEARCH_ACTIVE, false)
@@ -53,9 +57,10 @@ class LicensesViewModel(
       val licensesState by mutableState.collectAsState()
       val searchTerm by searchTerm.collectAsState()
       val isSearchActive by isSearchActive.collectAsState()
+      val sorting by mutableSorting.collectAsState()
 
       when (val licenses = licensesState) {
-        is Loaded -> licenses.filteredBy(searchTerm, isSearchActive)
+        is Loaded -> licenses.sortedBy(sorting).filteredBy(searchTerm, isSearchActive)
         else -> licenses
       }
     }
@@ -92,6 +97,11 @@ class LicensesViewModel(
   fun openUrl(url: String) {
     logcat.d { "openUrl $url" }
     urlOpener(url)
+  }
+
+  fun setSorting(sorting: LicenseSorting) {
+    logcat.d { "setSorting $sorting" }
+    mutableSorting.update { sorting }
   }
 
   fun openSearch() {

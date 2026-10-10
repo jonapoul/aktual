@@ -1,12 +1,14 @@
 package aktual.about.ui.licenses
 
 import aktual.about.data.ArtifactDetail
+import aktual.about.vm.LicenseSorting
 import aktual.about.vm.LicensesState
 import aktual.about.vm.LicensesViewModel
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.icons.material.SearchOff
+import aktual.core.icons.material.Sort
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -48,13 +50,17 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue.Hidden
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -69,15 +75,22 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun LicensesScreen(back: BackNavigator, viewModel: LicensesViewModel = metroViewModel()) {
   val licensesState by viewModel.licensesState.collectAsStateWithLifecycle()
+  val sorting by viewModel.sorting.collectAsStateWithLifecycle()
+  var showSortSheet by remember { mutableStateOf(false) }
 
   LicensesScaffold(
     state = licensesState,
+    sorting = sorting,
+    showSortSheet = showSortSheet,
     onAction = { action ->
       when (action) {
         NavBack -> back()
         Reload -> viewModel.load()
         OpenSearch -> viewModel.openSearch()
         ClearFilter -> viewModel.clearFilter()
+        ShowSortSheet -> showSortSheet = true
+        DismissSortSheet -> showSortSheet = false
+        is SetSorting -> viewModel.setSorting(action.sorting)
         is EditFilterText -> viewModel.setFilterText(action.text)
         is LaunchUrl -> viewModel.openUrl(action.url)
       }
@@ -86,9 +99,15 @@ fun LicensesScreen(back: BackNavigator, viewModel: LicensesViewModel = metroView
 }
 
 @Composable
-private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandler) {
+private fun LicensesScaffold(
+  state: LicensesState,
+  sorting: LicenseSorting,
+  showSortSheet: Boolean,
+  onAction: LicensesActionHandler,
+) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
+  val sheetState = rememberBottomSheetState(initialValue = Hidden)
   val loadedState = state as? Loaded
   val isSearchActive = loadedState?.isSearchActive == true
 
@@ -106,6 +125,13 @@ private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandl
             contentDescription = Strings.licensesToolbarSearch,
             onClick = { onAction(if (isSearchActive) ClearFilter else OpenSearch) },
           )
+          if (loadedState != null) {
+            BareIconButton(
+              imageVector = MaterialIcons.Sort,
+              contentDescription = Strings.licensesToolbarSort,
+              onClick = { onAction(ShowSortSheet) },
+            )
+          }
         },
       )
     },
@@ -120,6 +146,10 @@ private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandl
         onAction = onAction,
       )
     }
+  }
+
+  if (loadedState != null && showSortSheet) {
+    LicenseSortingBottomSheet(sorting, onAction, sheetState)
   }
 }
 
@@ -278,7 +308,9 @@ private fun ErrorContent(
 private fun PreviewLicenses(
   @PreviewParameter(LicensesParamsProvider::class) params: ColoredParams<LicensesState>,
 ) {
-  PreviewWithColoredParams(params) { LicensesScaffold(state = this, onAction = {}) }
+  PreviewWithColoredParams(params) {
+    LicensesScaffold(state = this, sorting = ByArtifact, showSortSheet = false, onAction = {})
+  }
 }
 
 private val LOADED_STATE =

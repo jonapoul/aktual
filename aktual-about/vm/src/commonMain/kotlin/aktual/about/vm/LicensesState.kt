@@ -20,6 +20,31 @@ sealed interface LicensesState {
   data class Error(val errorMessage: String) : LicensesState
 }
 
+enum class LicenseSorting {
+  ByArtifact,
+  ByName,
+  ByLicense,
+}
+
+internal fun LicensesState.Loaded.sortedBy(sorting: LicenseSorting) =
+  when (sorting) {
+    // LicensesRepository already sorts by artifact
+    ByArtifact -> this
+    ByName -> copy(artifacts = artifacts.sortedBy { it.sortName() }.toImmutableList())
+    ByLicense ->
+      copy(
+        artifacts =
+          artifacts
+            .sortedWith(compareBy(nullsLast()) { it.licenseName()?.lowercase() })
+            .toImmutableList(),
+      )
+  }
+
+private fun ArtifactDetail.sortName(): String = (name ?: artifactId).lowercase()
+
+private fun ArtifactDetail.licenseName(): String? =
+  spdxLicenses.firstOrNull()?.name ?: unknownLicenses.firstOrNull()?.name
+
 internal fun LicensesState.Loaded.filteredBy(text: String, isSearchActive: Boolean) =
   copy(
     artifacts = artifacts.filter { lib -> lib.matches(text) }.toImmutableList(),

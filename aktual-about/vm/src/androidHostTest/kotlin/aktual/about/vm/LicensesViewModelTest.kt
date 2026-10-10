@@ -154,6 +154,34 @@ class LicensesViewModelTest {
     }
   }
 
+  @Test
+  fun `Sort licenses`() = runTest {
+    // Given libraries in their default order
+    val apple = EXAMPLE_MODEL.copy(artifactId = "a", name = "apple", spdxLicenses = setOf(MIT))
+    val zebra = EXAMPLE_MODEL.copy(artifactId = "b", name = "Zebra")
+    val unnamed = EXAMPLE_MODEL.copy(artifactId = "mango", name = null, spdxLicenses = emptySet())
+    val models = listOf(apple, zebra, unnamed)
+    coEvery { repository.loadLicenses() } returns Success(models)
+
+    buildViewModel()
+
+    viewModel.licensesState.test {
+      assertLoaded(models)
+
+      viewModel.setSorting(ByName)
+      assertLoaded(apple, unnamed, zebra)
+
+      // Artifacts without a license go last
+      viewModel.setSorting(ByLicense)
+      assertLoaded(zebra, apple, unnamed)
+
+      viewModel.setSorting(ByArtifact)
+      assertLoaded(models)
+
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private fun buildViewModel() {
     viewModel =
       LicensesViewModel(
@@ -184,6 +212,8 @@ class LicensesViewModelTest {
   }
 
   private companion object {
+    val MIT = Apache2.copy(identifier = "MIT", name = "MIT License")
+
     val EXAMPLE_MODEL =
       ArtifactDetail(
         groupId = "com.website",
