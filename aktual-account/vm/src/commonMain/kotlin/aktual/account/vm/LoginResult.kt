@@ -1,4 +1,4 @@
-package aktual.account.domain
+package aktual.account.vm
 
 import aktual.core.model.Token
 import androidx.compose.runtime.Immutable

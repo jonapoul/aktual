@@ -1,4 +1,4 @@
-package aktual.budget.home.domain
+package aktual.budget.home.vm
 
 import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.core.Calendar
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.yearMonth
 
 @Inject
-class ThisMonthLoader(
+internal class ThisMonthLoader(
   private val calculator: BudgetMonthCalculator,
   private val calendar: Calendar,
 ) {

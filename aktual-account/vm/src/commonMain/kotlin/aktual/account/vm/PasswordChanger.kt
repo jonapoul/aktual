@@ -1,4 +1,4 @@
-package aktual.account.domain
+package aktual.account.vm
 
 import aktual.api.client.AccountApi
 import aktual.api.model.account.ChangePasswordRequest
@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 import logcat.logcat
 
 @Inject
-class PasswordChanger(
+internal class PasswordChanger(
   private val token: Token,
   private val accountApi: AccountApi,
   private val contexts: CoroutineContexts,

@@ -1,14 +1,14 @@
 package aktual.budget.home.ui
 
-import aktual.budget.home.domain.AccountBalance
-import aktual.budget.home.domain.AccountSection
-import aktual.budget.home.domain.AccountSyncState
-import aktual.budget.home.domain.AccountSyncState.Failed
-import aktual.budget.home.domain.AccountSyncState.Ok
-import aktual.budget.home.domain.AccountsSummary
-import aktual.budget.home.domain.mostRecentlyActive
+import aktual.budget.home.vm.AccountBalance
+import aktual.budget.home.vm.AccountSection
+import aktual.budget.home.vm.AccountSyncState
+import aktual.budget.home.vm.AccountSyncState.Failed
+import aktual.budget.home.vm.AccountSyncState.Ok
 import aktual.budget.home.vm.AccountsCardState
 import aktual.budget.home.vm.AccountsCardState.Loaded
+import aktual.budget.home.vm.AccountsSummary
+import aktual.budget.home.vm.mostRecentlyActive
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.core.l10n.Strings

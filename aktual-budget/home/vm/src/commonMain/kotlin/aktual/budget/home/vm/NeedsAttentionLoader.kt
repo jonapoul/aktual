@@ -1,4 +1,4 @@
-package aktual.budget.home.domain
+package aktual.budget.home.vm
 
 import aktual.budget.budgeting.domain.BudgetMonth
 import aktual.budget.db.dao.TransactionDao
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Inject
-class NeedsAttentionLoader(
+internal class NeedsAttentionLoader(
   private val accountsSummaryLoader: AccountsSummaryLoader,
   private val transactionDao: TransactionDao,
   private val thisMonthLoader: ThisMonthLoader,

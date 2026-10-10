@@ -1,9 +1,9 @@
 package aktual.budget.home.ui
 
-import aktual.budget.home.domain.OverspentCategory
 import aktual.budget.home.vm.AttentionCardState
 import aktual.budget.home.vm.AttentionCardState.Loaded
 import aktual.budget.home.vm.AttentionItem
+import aktual.budget.home.vm.OverspentCategory
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId

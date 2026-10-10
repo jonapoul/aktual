@@ -1,4 +1,4 @@
-package aktual.budget.home.domain
+package aktual.budget.home.vm
 
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.domain.upcoming
@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
 @Inject
-class UpcomingSchedulesLoader(
+internal class UpcomingSchedulesLoader(
   private val schedulesLoader: SchedulesLoader,
   private val calendar: Calendar,
 ) {
