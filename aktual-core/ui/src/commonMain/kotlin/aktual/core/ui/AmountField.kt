@@ -93,7 +93,7 @@ private fun operatorKeys(): List<Pair<String, String>> =
 
 /**
  * A calculator keypad typing an amount into [state], for a screen that shows the amount itself in
- * place of a text field. Each row of digits ends in one of [AmountField]'s operator keys.
+ * place of a text field. Each row of keys ends in one of [AmountField]'s operator keys.
  */
 @Composable
 fun AmountKeypad(
@@ -110,8 +110,7 @@ fun AmountKeypad(
     DIGIT_ROWS.fastForEachIndexed { index, digits ->
       KeypadRow {
         digits.fastForEach { digit -> KeypadKey(digit, onClick = { state.edit { append(digit) } }) }
-        val (symbol, description) = operators[index]
-        KeypadKey(symbol, description = description, onClick = { state.edit { append(symbol) } })
+        OperatorKey(operators[index], state)
       }
     }
 
@@ -123,14 +122,22 @@ fun AmountKeypad(
         description = Strings.inputBackspace,
         onClick = { state.edit { if (length > 0) replace(length - 1, length, "") } },
       )
-      PrimaryTextButton(
-        modifier = Modifier.weight(1f).height(AmountFieldDS.keyHeight),
-        text = Strings.inputDone,
-        isEnabled = canFinish,
-        onClick = onDone,
-      )
+      OperatorKey(operators[DIGIT_ROWS.size], state)
     }
+
+    PrimaryTextButton(
+      modifier = Modifier.fillMaxWidth().height(AmountFieldDS.keyHeight),
+      text = Strings.inputDone,
+      isEnabled = canFinish,
+      onClick = onDone,
+    )
   }
+}
+
+@Composable
+private fun RowScope.OperatorKey(operator: Pair<String, String>, state: TextFieldState) {
+  val (symbol, description) = operator
+  KeypadKey(symbol, description = description, onClick = { state.edit { append(symbol) } })
 }
 
 @Composable
