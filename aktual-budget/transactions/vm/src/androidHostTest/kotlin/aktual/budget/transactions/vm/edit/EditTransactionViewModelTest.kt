@@ -51,7 +51,8 @@ class EditTransactionViewModelTest {
           EditTransactionState.Loaded(
             saved =
               TransactionDetails(
-                transaction = transaction("t", account = "a", category = "a", payee = "a"),
+                transaction =
+                  transaction("t", account = "a", category = "a", payee = "a", balance = 123.45),
                 cleared = true,
                 reconciled = false,
               ),
@@ -76,7 +77,7 @@ class EditTransactionViewModelTest {
     viewModel.state.test {
       assertThat(awaitLoaded().saved.transaction)
         .isEqualTo(
-          transaction("p", "a", null, "a", amount = 100.0)
+          transaction("p", "a", null, "a", amount = 100.0, balance = 100.0)
             .asParent(
               payee = "B&Q",
               transaction("p1", "a", "b", "b", amount = 60.0),

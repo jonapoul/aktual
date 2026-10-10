@@ -83,6 +83,24 @@ internal class TransactionLoaderTest {
   }
 
   @Test
+  fun `Balance after counts the transaction and everything older in its account`() = runWriterTest {
+    insertAccount(ACCOUNT)
+    insertAccount(OTHER)
+    val ids = writer.write {
+      listOf(
+        insert(
+          NewTransaction(account = ACCOUNT, date = LocalDate(2026, 9, 14), amount = Amount(100)),
+        ),
+        insert(NewTransaction(account = ACCOUNT, date = DATE, amount = Amount(20), sortOrder = 1)),
+        insert(NewTransaction(account = ACCOUNT, date = DATE, amount = Amount(3), sortOrder = 2)),
+        insert(NewTransaction(account = OTHER, date = DATE, amount = Amount(4000))),
+      )
+    }
+
+    assertThat(ids.map { loader().load(it)?.balanceAfter }).containsExactly(100L, 120L, 123L, 4000L)
+  }
+
+  @Test
   fun `Missing and deleted transactions load as null`() = runWriterTest {
     insertAccount(ACCOUNT)
     val id = writer.write { insert(NewTransaction(account = ACCOUNT, date = DATE)) }
@@ -148,6 +166,7 @@ internal class TransactionLoaderTest {
 
   private companion object {
     val ACCOUNT = AccountId("account")
+    val OTHER = AccountId("other")
     val GROCERIES = CategoryId("groceries")
     val HOUSEHOLD = CategoryId("household")
     val DATE = LocalDate(2026, 9, 15)

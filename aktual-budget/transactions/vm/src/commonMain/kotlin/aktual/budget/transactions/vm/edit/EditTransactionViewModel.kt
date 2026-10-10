@@ -1,5 +1,6 @@
 package aktual.budget.transactions.vm.edit
 
+import aktual.budget.model.Amount
 import aktual.budget.model.TransactionId
 import aktual.budget.transactions.domain.LoadedTransaction
 import aktual.budget.transactions.domain.TransactionLoader
@@ -87,7 +88,7 @@ internal constructor(
 
   private fun LoadedTransaction.toDetails() =
     TransactionDetails(
-      transaction = detail.row.toTransaction(balance = null, children = children),
+      transaction = detail.row.toTransaction(balance = Amount(balanceAfter), children = children),
       cleared = detail.cleared,
       reconciled = detail.reconciled,
     )

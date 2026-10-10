@@ -9,8 +9,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
-// A transaction with its split's parts, if it's a split parent
-data class LoadedTransaction(val detail: TransactionDetail, val children: List<TransactionRow>)
+// A transaction with its split's parts, if it's a split parent, and its account's balance after it
+data class LoadedTransaction(
+  val detail: TransactionDetail,
+  val children: List<TransactionRow>,
+  val balanceAfter: Long,
+)
 
 /**
  * Loads one transaction for its detail screen. As upstream's TransactionEdit, which loads it with
@@ -25,7 +29,7 @@ class TransactionLoader(private val transactionDao: TransactionDao) {
     val row = detail.row
     val children =
       if (row.isParent) transactionDao.childrenOf(listOf(row.id))[row.id].orEmpty() else emptyList()
-    return LoadedTransaction(detail, children)
+    return LoadedTransaction(detail, children, transactionDao.balanceAfter(row.id))
   }
 
   // Reloads whenever a table behind the transactions view changes, starting with the current state

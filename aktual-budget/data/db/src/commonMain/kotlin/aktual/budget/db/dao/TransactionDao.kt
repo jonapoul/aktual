@@ -155,6 +155,11 @@ class TransactionDao(database: BudgetDatabase) {
     getDetail(id, ::transactionDetail).awaitAsOneOrNull()
   }
 
+  // The account's balance after this transaction, as the list's running balance shows it
+  suspend fun balanceAfter(id: TransactionId): Long = queries.withResult {
+    balanceAfter(id).awaitAsOne()
+  }
+
   suspend fun getIdsAndNotes(): List<TransactionNotes> = queries.withResult {
     getIdsAndNotes(::transactionNotes).awaitAsList()
   }

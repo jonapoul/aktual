@@ -383,6 +383,25 @@ SELECT
   LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
   WHERE vt.id = :id;
 
+-- Its account's balance after this transaction: the sum of it and everything older in getPaged's
+-- order. Split children are skipped, as in balanceFromOffset
+balanceAfter:
+SELECT IFNULL(SUM(vt.amount), 0)
+  FROM v_transactions_internal_alive AS vt
+  INNER JOIN v_transactions_internal_alive AS me ON me.id = :id
+  WHERE vt.account = me.account AND
+    IFNULL(vt.is_child, 0) = 0 AND (
+      vt.date < me.date OR (vt.date = me.date AND (
+        IFNULL(vt.starting_balance_flag, 0) > IFNULL(me.starting_balance_flag, 0) OR (
+          IFNULL(vt.starting_balance_flag, 0) = IFNULL(me.starting_balance_flag, 0) AND (
+            IFNULL(vt.sort_order, 0) < IFNULL(me.sort_order, 0) OR (
+              IFNULL(vt.sort_order, 0) = IFNULL(me.sort_order, 0) AND vt.id >= me.id
+            )
+          )
+        )
+      ))
+    );
+
 -- The live children of these split parents, in the order they were entered. As with getChildIds,
 -- parent_id comes from the table since SQLDelight can't type the view's
 getChildrenOf:
