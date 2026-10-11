@@ -16,6 +16,7 @@ import aktual.core.nav.CreateReportNavRoute
 import aktual.core.nav.CreateRuleNavRoute
 import aktual.core.nav.CreateScheduleNavRoute
 import aktual.core.nav.CreateTagNavRoute
+import aktual.core.nav.CreateTransactionNavRoute
 import aktual.core.nav.EditRuleNavRoute
 import aktual.core.nav.EditScheduleNavRoute
 import aktual.core.nav.EditTagNavRoute
@@ -52,6 +53,8 @@ class BudgetNavKeyStackSaverTest {
         UncategorisedTransactionsNavRoute,
         CategoryTransactionsNavRoute(CategoryId("category"), YearMonth(2026, 10)),
         TransactionNavRoute(TransactionId("transaction")),
+        CreateTransactionNavRoute(AccountId("account"), CategoryId("category")),
+        CreateTransactionNavRoute(),
         BudgetCategoryNavRoute(CategoryId("category"), YearMonth(2026, 10)),
         ReportsListNavRoute,
         ReportNavRoute(WidgetId("widget")),

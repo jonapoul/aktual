@@ -43,6 +43,13 @@ data class CategoryTransactionsNavRoute(val category: CategoryId, val month: Yea
 
 @Serializable data class TransactionNavRoute(val id: TransactionId) : BudgetNavKey.Transactions
 
+// Starts the new transaction in the account or category of the list it was added from
+@Serializable
+data class CreateTransactionNavRoute(
+  val account: AccountId? = null,
+  val category: CategoryId? = null,
+) : BudgetNavKey.Transactions
+
 @Serializable data object ReportsListNavRoute : BudgetNavKey.Reports
 
 @Serializable data class ReportNavRoute(val id: WidgetId) : BudgetNavKey.Reports

@@ -81,6 +81,16 @@ data class TransactionFields(
   val reconciled: Boolean,
 )
 
+enum class TransactionField {
+  Account,
+  Date,
+  Amount,
+  Payee,
+  Category,
+  Notes,
+  Cleared,
+}
+
 /** The bank sync fields of an account, written like upstream's db.update('accounts', ...). */
 data class AccountUpdate(
   val id: AccountId,

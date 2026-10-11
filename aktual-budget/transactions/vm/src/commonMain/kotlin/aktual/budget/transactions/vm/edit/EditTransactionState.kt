@@ -3,27 +3,45 @@ package aktual.budget.transactions.vm.edit
 import aktual.budget.model.AccountId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.model.TransactionId
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.vm.Transaction
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 
-// Create joins these as the editor's phases land
+// What the editor opens: a saved transaction, or a new one starting in the account or category of
+// the list it was added from
+sealed interface EditTransactionTarget {
+  data class Existing(val id: TransactionId) : EditTransactionTarget
+
+  data class New(val account: AccountId? = null, val category: CategoryId? = null) :
+    EditTransactionTarget
+}
+
 @Immutable
 sealed interface TransactionEditMode {
   data object View : TransactionEditMode
 
-  data class Edit(
-    val draft: TransactionFields,
-    val payeeName: String?,
-    val categoryName: String?,
-    val accountName: String?,
-    // Transactions in an off budget account have no category
-    val isOffBudget: Boolean,
-    val hasChanges: Boolean,
-    val options: TransactionOptions,
-  ) : TransactionEditMode
+  sealed interface Editing : TransactionEditMode {
+    val form: TransactionForm
+  }
+
+  data class Edit(override val form: TransactionForm) : Editing
+
+  data class Create(override val form: TransactionForm) : Editing
 }
+
+@Immutable
+data class TransactionForm(
+  val draft: TransactionFields,
+  val payeeName: String?,
+  val categoryName: String?,
+  val accountName: String?,
+  // Transactions in an off budget account have no category
+  val isOffBudget: Boolean,
+  val hasChanges: Boolean,
+  val options: TransactionOptions,
+)
 
 // A transaction as its detail screen shows it, with a split's parts as its children
 @Immutable
@@ -60,8 +78,16 @@ sealed interface EditTransactionState {
     @JvmInline value class Other(val reason: String) : Failure
   }
 
+  // A new transaction needs an account to go in and, as upstream has it, a category to pick
+  sealed interface Empty : EditTransactionState {
+    data object NoAccounts : Empty
+
+    data object NoCategories : Empty
+  }
+
   data class Loaded(
-    val saved: TransactionDetails,
+    // Null for a new transaction
+    val saved: TransactionDetails?,
     val mode: TransactionEditMode,
     // Whether the edit and delete actions are offered at all. False for schedule previews, which
     // have no row, and for splits and transfers until the editor handles them
@@ -69,7 +95,13 @@ sealed interface EditTransactionState {
     val isWorking: Boolean = false,
   ) : EditTransactionState {
     val canSave: Boolean
-      get() = !isWorking && mode is Edit && mode.hasChanges
+      get() =
+        !isWorking &&
+          when (mode) {
+            View -> false
+            is Edit -> mode.form.hasChanges
+            is Create -> mode.form.draft.account != null
+          }
   }
 }
 
@@ -80,6 +112,11 @@ sealed interface EditTransactionError {
   @JvmInline value class Deleting(val reason: String) : EditTransactionError
 }
 
+// Each of these closes the screen
 sealed interface EditTransactionEvent {
   data object Deleted : EditTransactionEvent
+
+  data object Created : EditTransactionEvent
+
+  data object Discarded : EditTransactionEvent
 }
