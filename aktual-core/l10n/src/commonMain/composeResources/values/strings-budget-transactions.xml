@@ -97,5 +97,6 @@
   <string name="transaction_create_no_categories">To add a transaction, you need to create a category first. You can add categories from the budget page.</string>
   <string name="transaction_create_go_to_budget">Go to budget</string>
   <string name="transaction_payee_search">Find or add a payee</string>
+  <string name="transaction_category_search">Find a category</string>
   <string name="transaction_payee_create">Create payee “%1$s”</string>
 </resources>

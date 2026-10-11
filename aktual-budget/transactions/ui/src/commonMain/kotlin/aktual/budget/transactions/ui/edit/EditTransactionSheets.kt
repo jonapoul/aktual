@@ -172,7 +172,7 @@ private fun PayeeSheet(
         transferMatches.none { it.name.equals(name, ignoreCase = true) }
 
     AktualTextField(
-      modifier = Modifier.fillMaxWidth().padding(PayeeSearchPadding),
+      modifier = Modifier.fillMaxWidth().padding(SearchPadding),
       state = query,
       placeholderText = Strings.transactionPayeeSearch,
       singleLine = true,
@@ -265,6 +265,8 @@ private fun AccountSheet(
     key = { it.id.toString() },
   )
 
+// As upstream's category picker, typing filters the categories by their name or their group's.
+// Groups with no match are left out, and "None" is only offered until something's typed
 @Composable
 private fun CategorySheet(
   selected: CategoryId?,
@@ -276,20 +278,34 @@ private fun CategorySheet(
     onDismissRequest = onDismiss,
     sheetState = rememberBottomSheetState(Hidden),
   ) {
+    val query = rememberTextFieldState()
+    val name = query.text.toString().trim()
+    val matches = remember(groups, name) { groups.matching(name) }
+
+    AktualTextField(
+      modifier = Modifier.fillMaxWidth().padding(SearchPadding),
+      state = query,
+      placeholderText = Strings.transactionCategorySearch,
+      singleLine = true,
+      clearable = true,
+    )
+
     val listState = rememberLazyListState()
     LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
-      item {
-        BottomSheetListItem(
-          label = Strings.transactionNone,
-          isSelected = selected == null,
-          onClick = {
-            onSelect(null)
-            onDismiss()
-          },
-        )
+      if (name.isEmpty()) {
+        item {
+          BottomSheetListItem(
+            label = Strings.transactionNone,
+            isSelected = selected == null,
+            onClick = {
+              onSelect(null)
+              onDismiss()
+            },
+          )
+        }
       }
 
-      groups.fastForEach { group ->
+      matches.fastForEach { group ->
         val name = group.name
         if (name != null) {
           item { GroupHeader(name) }
@@ -308,6 +324,19 @@ private fun CategorySheet(
       }
     }
   }
+
+// A group whose own name matches keeps all of its categories
+private fun ImmutableList<CategoryGroupOptions>.matching(
+  query: String,
+): ImmutableList<CategoryGroupOptions> {
+  if (query.isEmpty()) return this
+  return mapNotNull { group ->
+    if (group.name?.contains(query, ignoreCase = true) == true) return@mapNotNull group
+    val categories = group.categories.filter { it.name.contains(query, ignoreCase = true) }
+    if (categories.isEmpty()) null else group.copy(categories = categories.toImmutableList())
+  }
+    .toImmutableList()
+}
 
 @Composable
 private fun DateDialog(date: LocalDate, onDismiss: () -> Unit, onSelect: (LocalDate) -> Unit) {
@@ -354,4 +383,4 @@ private fun NotesSheet(notes: String?, onDismiss: () -> Unit, onSave: (String) -
 private val GroupHeaderPadding =
   PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp)
 private val GroupHeaderSize = 13.sp
-private val PayeeSearchPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+private val SearchPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
