@@ -654,6 +654,37 @@ class EditTransactionViewModelTest {
   }
 
   @Test
+  fun `Moving into the account a transfer goes to drops the transfer`() = runDatabaseTest { scope ->
+    insertEntities()
+    PayeeDao(this).insert(PayeeId("to-b"), name = null, transferAccount = AccountId("b"))
+    with(TransactionDao(this)) {
+      insertTransaction("p", "a", null, "a", amount = 100.0, isParent = true)
+      insert("p1", "a", null, "to-b", DATE_1, amount = 60.0, parent = "p")
+      insertTransaction("p2", "a", "c", "c", amount = 40.0, parent = "p")
+    }
+    val viewModel = createViewModel(scope, id = "p")
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.startEditing()
+      awaitEdit()
+
+      viewModel.setAccount(AccountId("b"))
+
+      var edit = awaitEdit()
+      while (edit.parts.first().part.payee != null) edit = awaitEdit()
+      assertThat(edit).all {
+        prop("account") { it.draft.account }.isEqualTo(AccountId("b"))
+        prop("payee") { it.draft.payee }.isEqualTo(PayeeId("a"))
+        prop(TransactionForm::parts)
+          .extracting { it.part.payee to it.isTransfer }
+          .containsExactly(null to false, PayeeId("c") to false)
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Deleting a transfer deletes its other side`() = runDatabaseTest { scope ->
     insertEntities()
     PayeeDao(this).insert(PayeeId("to-b"), name = null, transferAccount = AccountId("b"))

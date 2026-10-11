@@ -417,7 +417,16 @@ internal constructor(
 
   fun setCategory(category: CategoryId?) = updateDraft(Category) { it.copy(category = category) }
 
-  fun setAccount(account: AccountId) = updateDraft(Account) { it.copy(account = account) }
+  // An account can't transfer to itself, so moving into the one a payee stands for drops that
+  // payee, from the parts of a split too
+  fun setAccount(account: AccountId) {
+    val transfers = mutableEntities.value?.transferAccounts.orEmpty()
+    fun PayeeId?.unlessToAccount() = this?.takeIf { transfers[it] != account }
+    updateDraft(Account) { it.copy(account = account, payee = it.payee.unlessToAccount()) }
+    updateSplit { draft ->
+      draft.copy(parts = draft.parts.map { it.copy(payee = it.payee.unlessToAccount()) })
+    }
+  }
 
   fun setDate(date: LocalDate) = updateDraft(Date) { it.copy(date = date) }
 
