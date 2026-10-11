@@ -231,6 +231,10 @@ class TransactionDao(database: BudgetDatabase) {
       }
     }
 
+  suspend fun hasReconciledTransfer(id: TransactionId): Boolean = queries.withResult {
+    hasReconciledTransfer(id).awaitAsOne()
+  }
+
   // Emits whenever a table behind the transactions view is written to
   fun observeChanges(): Flow<Unit> = queries.getIdsCount().asFlow().map {}
 
@@ -246,6 +250,7 @@ class TransactionDao(database: BudgetDatabase) {
     parent: String? = null,
     schedule: String? = null,
     error: JsonObject? = null,
+    transferId: String? = null,
   ) = queries.withoutResult {
     insert(
       Transactions(
@@ -264,7 +269,7 @@ class TransactionDao(database: BudgetDatabase) {
         error = error,
         imported_description = null,
         starting_balance_flag = null,
-        transferred_id = null,
+        transferred_id = transferId?.let(::TransactionId),
         sort_order = date.toEpochDays().days.inWholeMilliseconds.toDouble(),
         tombstone = false,
         cleared = null,

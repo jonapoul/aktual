@@ -27,9 +27,19 @@ WHERE p.transfer_acct IS NULL OR a.id IS NOT NULL;
 
 getAllActive: SELECT id, name FROM v_payees WHERE tombstone = 0 ORDER BY name;
 
--- Without the transfer payees, which stand in for accounts
-getAllNonTransfer:
-SELECT id, name FROM v_payees WHERE tombstone = 0 AND transfer_acct IS NULL ORDER BY name;
+-- With the account each transfer payee stands in for
+getAllWithTransfer:
+SELECT id, name, transfer_acct FROM v_payees WHERE tombstone = 0 ORDER BY name;
+
+-- transactions/transfer.ts getTransferredAccount(), with the payee resolved through payee_mapping
+-- as the transaction views do
+getTransferAccount:
+SELECT transfer_acct
+  FROM v_payees
+  WHERE id = COALESCE((SELECT targetId FROM payee_mapping WHERE id = :id), :id);
+
+-- transactions/transfer.ts getPayee()
+getTransferPayee: SELECT id FROM payees WHERE transfer_acct = ? LIMIT 1;
 
 getById: SELECT * FROM payees WHERE id = ? LIMIT 1;
 

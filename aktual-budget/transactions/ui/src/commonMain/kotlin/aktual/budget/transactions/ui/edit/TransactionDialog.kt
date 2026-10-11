@@ -16,6 +16,9 @@ internal enum class TransactionDialog {
   ConfirmReconciledSave,
   ConfirmReconciledUnlock,
   ConfirmReconciledDelete,
+  // The same, for a transfer whose other side is the reconciled one
+  ConfirmReconciledTransferSave,
+  ConfirmReconciledTransferDelete,
 }
 
 @Composable
@@ -78,6 +81,23 @@ internal fun EditTransactionDialogs(
     ConfirmReconciledDelete ->
       ReconciledDialog(
         message = Strings.transactionReconciledDelete,
+        onConfirm = { onShow(ConfirmDelete) },
+        onCancel = dismiss,
+      )
+
+    ConfirmReconciledTransferSave ->
+      ReconciledDialog(
+        message = Strings.transactionReconciledTransferSave,
+        onConfirm = {
+          dismiss()
+          onAction(SaveTransaction)
+        },
+        onCancel = dismiss,
+      )
+
+    ConfirmReconciledTransferDelete ->
+      ReconciledDialog(
+        message = Strings.transactionReconciledTransferDelete,
         onConfirm = { onShow(ConfirmDelete) },
         onCancel = dismiss,
       )

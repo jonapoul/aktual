@@ -42,6 +42,8 @@ data class TransactionForm(
   val accountName: String?,
   // Transactions in an off budget account have no category
   val isOffBudget: Boolean,
+  // Nor do transfers to another on budget account
+  val isTransfer: Boolean = false,
   val hasChanges: Boolean,
   val options: TransactionOptions,
   // Empty unless the transaction is split
@@ -54,7 +56,13 @@ data class TransactionForm(
 }
 
 @Immutable
-data class SplitPartForm(val part: SplitPart, val payeeName: String?, val categoryName: String?)
+data class SplitPartForm(
+  val part: SplitPart,
+  val payeeName: String?,
+  val categoryName: String?,
+  // A transfer to another on budget account, which has no category
+  val isTransfer: Boolean = false,
+)
 
 // A transaction as its detail screen shows it, with a split's parts as its children
 @Immutable
@@ -62,6 +70,8 @@ data class TransactionDetails(
   val transaction: Transaction,
   val cleared: Boolean,
   val reconciled: Boolean,
+  // Whether it, or a part of it, is a transfer whose other side is reconciled
+  val hasReconciledTransfer: Boolean = false,
 )
 
 @Immutable data class EntityOption<T : Any>(val id: T, val name: String)
@@ -77,6 +87,8 @@ data class CategoryGroupOptions(
 @Immutable
 data class TransactionOptions(
   val payees: ImmutableList<EntityOption<PayeeId>>,
+  // The payees that transfer to another account, named after it
+  val transfers: ImmutableList<EntityOption<PayeeId>>,
   val categoryGroups: ImmutableList<CategoryGroupOptions>,
   val accounts: ImmutableList<EntityOption<AccountId>>,
 )
@@ -102,9 +114,6 @@ sealed interface EditTransactionState {
     // Null for a new transaction
     val saved: TransactionDetails?,
     val mode: TransactionEditMode,
-    // Whether the edit and delete actions are offered at all. False for schedule previews, which
-    // have no row, and for transfers until the editor handles them
-    val canEdit: Boolean,
     val isWorking: Boolean = false,
   ) : EditTransactionState {
     // A split can't be saved until its parts add up

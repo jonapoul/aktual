@@ -1,7 +1,7 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
-import aktual.budget.db.GetAllNonTransfer
+import aktual.budget.db.GetAllWithTransfer
 import aktual.budget.db.Payees
 import aktual.budget.db.payees.GetAllActive
 import aktual.budget.db.withResult
@@ -52,7 +52,17 @@ class PayeeDao(database: BudgetDatabase) {
     getAllActive().awaitAsList()
   }
 
-  suspend fun getAllNonTransfer(): List<GetAllNonTransfer> = queries.withResult {
-    getAllNonTransfer().awaitAsList()
+  suspend fun getAllWithTransfer(): List<GetAllWithTransfer> = queries.withResult {
+    getAllWithTransfer().awaitAsList()
+  }
+
+  // The account this payee transfers to, null if it's an ordinary payee
+  suspend fun transferAccount(id: PayeeId): AccountId? = queries.withResult {
+    getTransferAccount(id).awaitAsOneOrNull()?.transfer_acct
+  }
+
+  // The payee that stands in for this account on the other side of a transfer
+  suspend fun transferPayee(account: AccountId): PayeeId? = queries.withResult {
+    getTransferPayee(account).awaitAsOneOrNull()
   }
 }

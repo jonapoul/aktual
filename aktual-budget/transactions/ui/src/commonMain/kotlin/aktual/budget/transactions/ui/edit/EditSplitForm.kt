@@ -239,11 +239,16 @@ private fun PartRow(
   ) {
     Column(modifier = Modifier.weight(1f)) {
       PartText(
-        text = if (isOffBudget) Strings.transactionsOffBudget else part.categoryName,
+        text =
+          when {
+            isOffBudget -> Strings.transactionsOffBudget
+            part.isTransfer -> Strings.transactionsTransfer
+            else -> part.categoryName
+          },
         placeholder = Strings.transactionSplitChooseCategory,
         label = Strings.transactionCategory,
         fontSize = ValueSize,
-        enabled = !isOffBudget,
+        enabled = !isOffBudget && !part.isTransfer,
         onClick = { fieldState.edit(Category, id) },
       )
       Row(horizontalArrangement = Arrangement.spacedBy(PartDetailGap)) {

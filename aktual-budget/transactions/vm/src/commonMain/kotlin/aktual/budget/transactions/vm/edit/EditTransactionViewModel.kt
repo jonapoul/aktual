@@ -161,7 +161,6 @@ internal constructor(
     return EditTransactionState.Loaded(
       saved = saved.details,
       mode = mode,
-      canEdit = saved.canEdit,
       isWorking = isWorking,
     )
   }
@@ -180,7 +179,6 @@ internal constructor(
         EditTransactionState.Loaded(
           saved = null,
           mode = TransactionEditMode.Create(form),
-          canEdit = true,
           isWorking = isWorking,
         )
     }
@@ -212,13 +210,14 @@ internal constructor(
         },
       accountName = fields.account?.let(entities.accountNames::get),
       isOffBudget = fields.account in entities.offBudget,
+      isTransfer = entities.isBudgetTransfer(fields.account, fields.payee),
       hasChanges =
         if (saved == null) {
           draft != initial
         } else {
           transactionDiff(saved.details.transaction.id, saved.draft, draft) != null
         },
-      options = entities.options,
+      options = entities.options.withoutTransfersTo(fields.account, entities),
       parts = parts,
       splitRemaining = draft.splitDifference,
     )
@@ -246,6 +245,7 @@ internal constructor(
             part.category?.let { id ->
               entities.categoryNames[id] ?: child?.category.takeIf { id == old?.category }
             },
+          isTransfer = entities.isBudgetTransfer(draft.fields.account, part.payee),
         )
       }
       .toImmutableList()
@@ -313,9 +313,10 @@ internal constructor(
   }
 
   private suspend fun loadEntities(): Entities {
-    // Transfer payees are left out until the editor handles transfers
-    val payees =
-      payeeDao.getAllNonTransfer().mapNotNull { row -> row.name?.let { EntityOption(row.id, it) } }
+    val allPayees = payeeDao.getAllWithTransfer()
+    val transferAccounts =
+      allPayees.mapNotNull { row -> row.transfer_acct?.let { row.id to it } }.toMap()
+    val payees = allPayees.mapNotNull { row -> row.name?.let { EntityOption(row.id, it) } }
     val categories = categoryDao.getAllActiveGrouped()
     val groups =
       categories
@@ -331,10 +332,16 @@ internal constructor(
           )
         }
     val accounts = accountDao.getAllWithStatus()
+    val closed = accounts.filter { it.closed == true }.map { it.id }.toSet()
     return Entities(
       options =
         TransactionOptions(
-          payees = payees.toImmutableList(),
+          payees = payees.filter { it.id !in transferAccounts }.toImmutableList(),
+          // As upstream, there's no starting a transfer to a closed account
+          transfers =
+            payees
+              .filter { transferAccounts[it.id]?.let { id -> id !in closed } == true }
+              .toImmutableList(),
           categoryGroups = groups.toImmutableList(),
           accounts =
             accounts
@@ -346,12 +353,12 @@ internal constructor(
       categoryNames = groups.flatMap { it.categories }.associate { it.id to it.name },
       accountNames = accounts.mapNotNull { row -> row.name?.let { row.id to it } }.toMap(),
       offBudget = accounts.filter { it.offbudget == true }.map { it.id }.toSet(),
+      transferAccounts = transferAccounts,
     )
   }
 
   fun startEditing() {
     val saved = mutableSaved.value ?: return
-    if (!saved.canEdit) return
     mutableDraft.update { saved.draft }
     if (rules == null) viewModelScope.launch { loadPayeeLookup() }
   }
@@ -410,7 +417,16 @@ internal constructor(
 
   fun setCategory(category: CategoryId?) = updateDraft(Category) { it.copy(category = category) }
 
-  fun setAccount(account: AccountId) = updateDraft(Account) { it.copy(account = account) }
+  // An account can't transfer to itself, so moving into the one a payee stands for drops that
+  // payee, from the parts of a split too
+  fun setAccount(account: AccountId) {
+    val transfers = mutableEntities.value?.transferAccounts.orEmpty()
+    fun PayeeId?.unlessToAccount() = this?.takeIf { transfers[it] != account }
+    updateDraft(Account) { it.copy(account = account, payee = it.payee.unlessToAccount()) }
+    updateSplit { draft ->
+      draft.copy(parts = draft.parts.map { it.copy(payee = it.payee.unlessToAccount()) })
+    }
+  }
 
   fun setDate(date: LocalDate) = updateDraft(Date) { it.copy(date = date) }
 
@@ -522,7 +538,9 @@ internal constructor(
     }
 
     launchSave {
-      writer.write { transactionDiff(id, saved.draft, withSavedPayees(draft))?.let { write(it) } }
+      writer.write(runTransfers = true) {
+        transactionDiff(id, saved.draft, withSavedPayees(draft))?.let { write(it) }
+      }
       loader.load(target.id)?.let { reloaded -> mutableSaved.update { reloaded.toSaved() } }
       closeDraft()
     }
@@ -531,7 +549,7 @@ internal constructor(
   private fun saveNew(draft: TransactionDraft) {
     val account = draft.fields.account ?: return
     launchSave {
-      writer.write {
+      writer.write(runTransfers = true) {
         val toSave = withSavedPayees(draft)
         val fields = toSave.fields
         val transaction =
@@ -583,13 +601,13 @@ internal constructor(
 
   fun delete() {
     val saved = mutableSaved.value ?: return
-    if (!saved.canEdit || mutableIsWorking.value) return
+    if (mutableIsWorking.value) return
 
     mutableIsWorking.update { true }
     viewModelScope.launch {
       try {
         isDeleted = true
-        writer.write { delete(saved.details.transaction.id) }
+        writer.write(runTransfers = true) { delete(saved.details.transaction.id) }
         mutableEvents.tryEmit(Deleted)
       } catch (e: CancellationException) {
         throw e
@@ -611,17 +629,13 @@ internal constructor(
           transaction = transaction,
           cleared = detail.cleared,
           reconciled = detail.reconciled,
+          hasReconciledTransfer = hasReconciledTransfer,
         ),
       draft = draft,
-      canEdit = transaction.transfer == null && transaction.children.all { it.transfer == null },
     )
   }
 
-  private data class Saved(
-    val details: TransactionDetails,
-    val draft: TransactionDraft,
-    val canEdit: Boolean,
-  ) {
+  private data class Saved(val details: TransactionDetails, val draft: TransactionDraft) {
     val fields: TransactionFields
       get() = draft.fields
   }
@@ -632,7 +646,26 @@ internal constructor(
     val categoryNames: Map<CategoryId, String>,
     val accountNames: Map<AccountId, String>,
     val offBudget: Set<AccountId>,
+    // The account each transfer payee stands in for
+    val transferAccounts: Map<PayeeId, AccountId>,
   )
+
+  // As upstream's isBudgetTransfer, though it doesn't look at the account the transfer is from. An
+  // off budget one shows as that instead
+  private fun Entities.isBudgetTransfer(account: AccountId?, payee: PayeeId?): Boolean {
+    val to = payee?.let(transferAccounts::get) ?: return false
+    return account !in offBudget && to !in offBudget
+  }
+
+  // An account can't transfer to itself
+  private fun TransactionOptions.withoutTransfersTo(
+    account: AccountId?,
+    entities: Entities,
+  ): TransactionOptions {
+    if (account == null) return this
+    val others = transfers.filter { entities.transferAccounts[it.id] != account }
+    return if (others.size == transfers.size) this else copy(transfers = others.toImmutableList())
+  }
 
   private fun TransactionFields.toRuleTransaction() =
     RuleTransaction(
