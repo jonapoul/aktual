@@ -51,6 +51,7 @@ internal fun UnsupportedChart(data: UnsupportedData, modifier: Modifier = Modifi
           when (data.reason) {
             Filters -> Strings.reportsUnsupportedFilters
             InvalidMeta -> Strings.reportsUnsupportedInvalidMeta
+            MissingReport -> Strings.reportsUnsupportedMissing
             ReportType -> Strings.reportsUnsupportedType
             SankeyBudgeted -> Strings.reportsUnsupportedSankeyBudgeted
           },

@@ -1,7 +1,8 @@
 package aktual.budget.reports.ui.charts
 
 import aktual.budget.reports.vm.CustomData
-import aktual.budget.reports.vm.ReportTimeRange
+import aktual.budget.reports.vm.CustomReportConfig
+import aktual.budget.reports.vm.CustomReportDates
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -23,9 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
-import kotlinx.datetime.YearMonth
-import kotlinx.datetime.YearMonthRange
+import kotlinx.datetime.yearMonth
 
 @Composable
 internal fun CustomChart(
@@ -62,14 +64,14 @@ private fun Header(
       overflow = Ellipsis,
     )
 
-    DateRangeText(dateRange(data.range))
+    DateRangeText(dateRange(data.config.dates))
   }
 
 @Composable
-private fun dateRange(timeRange: ReportTimeRange): String =
-  when (timeRange) {
-    is Relative -> timeRange.type.string()
-    is Specific -> dateRange(timeRange.range.start, timeRange.range.endInclusive)
+private fun dateRange(dates: CustomReportDates): String =
+  when (dates) {
+    is Live -> dates.type.string()
+    is Static -> dateRange(dates.start.yearMonth, dates.end.yearMonth)
   }
 
 @Preview
@@ -106,13 +108,29 @@ private class CustomChartProvider :
 internal val PREVIEW_CUSTOM_DATA =
   CustomData(
     title = "My Custom Report",
-    mode = Live,
-    range =
-      ReportTimeRange.Specific(
-        range =
-          YearMonthRange(
-            start = YearMonth(2011, Month.SEPTEMBER),
-            endInclusive = YearMonth(2025, Month.JULY),
+    config =
+      CustomReportConfig(
+        mode = Total,
+        groupBy = Category,
+        balanceType = Payment,
+        graphType = BarGraph,
+        interval = Monthly,
+        dates =
+          CustomReportDates.Static(
+            start = LocalDate(2011, Month.SEPTEMBER, 1),
+            end = LocalDate(2025, Month.JULY, 31),
           ),
+        showEmpty = false,
+        showOffBudget = false,
+        showHidden = false,
+        showUncategorized = false,
+        selectedCategories = persistentListOf(),
+        conditions = persistentListOf(),
+        conditionsOp = And,
+        sortBy = Desc,
+        trimIntervals = false,
+        showTrendLines = false,
+        colorScheme = null,
       ),
+    range = LocalDate(2011, Month.SEPTEMBER, 1)..LocalDate(2025, Month.JULY, 31),
   )

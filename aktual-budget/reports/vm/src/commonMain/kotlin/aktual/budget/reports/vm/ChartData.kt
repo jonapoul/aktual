@@ -1,7 +1,6 @@
 package aktual.budget.reports.vm
 
 import aktual.budget.model.Amount
-import aktual.budget.model.DateRangeType
 import aktual.budget.model.WidgetType
 import aktual.core.model.Percent
 import androidx.compose.runtime.Immutable
@@ -9,6 +8,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
 
@@ -289,16 +289,13 @@ data class UnsupportedData(
 enum class UnsupportedReason {
   Filters,
   InvalidMeta,
+  MissingReport,
   ReportType,
   SankeyBudgeted,
 }
 
-data class CustomData(val title: String, val mode: DateRangeMode, val range: ReportTimeRange) :
-  ChartData
-
-@Immutable
-sealed interface ReportTimeRange {
-  @JvmInline value class Relative(val type: DateRangeType) : ReportTimeRange
-
-  data class Specific(val range: YearMonthRange) : ReportTimeRange
-}
+data class CustomData(
+  val title: String,
+  val config: CustomReportConfig,
+  val range: LocalDateRange,
+) : ChartData

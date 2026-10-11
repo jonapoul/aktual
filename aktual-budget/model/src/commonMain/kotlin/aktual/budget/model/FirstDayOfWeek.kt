@@ -11,5 +11,7 @@ enum class FirstDayOfWeek(val value: Int) {
 
   companion object {
     val Default = Monday
+
+    fun from(value: String?): FirstDayOfWeek? = entries.firstOrNull { it.value.toString() == value }
   }
 }
