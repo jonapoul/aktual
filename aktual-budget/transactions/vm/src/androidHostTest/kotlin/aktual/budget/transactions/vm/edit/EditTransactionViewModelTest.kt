@@ -46,7 +46,6 @@ import aktual.test.TestCalendar
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
-import androidx.compose.ui.graphics.Color
 import app.cash.turbine.Event
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -943,7 +942,7 @@ class EditTransactionViewModelTest {
 
       var tags = awaitEdit().options.tags
       while (tags.size < 2) tags = awaitEdit().options.tags
-      assertThat(tags).containsExactly(TagOption("Bills", null), TagOption("food", Color.Red))
+      assertThat(tags).containsExactly(TagOption("Bills", null), TagOption("food", Red))
       cancelAndIgnoreRemainingEvents()
     }
   }

@@ -21,7 +21,8 @@ fun tagQuery(notes: String, cursor: Int): TagQuery? {
 // those matching nearer their start. A lone '#' offers every tag
 fun ImmutableList<TagOption>.matching(query: TagQuery): ImmutableList<TagOption> {
   if (query.name.isEmpty()) return take(MAX_TAGS).toImmutableList()
-  return mapNotNull { option ->
+  return asSequence()
+    .mapNotNull { option ->
       val index = option.tag.indexOf(query.name, ignoreCase = true)
       if (index < 0) null else option to index
     }

@@ -148,20 +148,25 @@ internal fun EditTransactionScreen(
         DismissError -> viewModel.dismissError()
         CommitAmount -> viewModel.commitAmount()
         GoToBudget -> toBudget()
-        is SetAmount -> viewModel.setAmount(action.amount)
-        is SetPayee -> viewModel.setPayee(action.id)
-        is CreatePayee -> viewModel.createPayee(action.name)
-        is SetCategory -> viewModel.setCategory(action.id)
-        is SetAccount -> viewModel.setAccount(action.id)
-        is SetDate -> viewModel.setDate(action.date)
-        is SetNotes -> viewModel.setNotes(action.notes)
-        is SetCleared -> viewModel.setCleared(action.cleared)
-        is CreateTag -> viewModel.createTag(action.tag)
+        is FieldAction -> viewModel.onFieldAction(action)
         is SplitAction -> viewModel.onSplitAction(action)
       }
     },
   )
 }
+
+private fun EditTransactionViewModel.onFieldAction(action: FieldAction) =
+  when (action) {
+    is SetAmount -> setAmount(action.amount)
+    is SetPayee -> setPayee(action.id)
+    is CreatePayee -> createPayee(action.name)
+    is SetCategory -> setCategory(action.id)
+    is SetAccount -> setAccount(action.id)
+    is SetDate -> setDate(action.date)
+    is SetNotes -> setNotes(action.notes)
+    is SetCleared -> setCleared(action.cleared)
+    is CreateTag -> createTag(action.tag)
+  }
 
 private fun EditTransactionViewModel.onSplitAction(action: SplitAction) =
   when (action) {

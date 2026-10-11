@@ -72,7 +72,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import logcat.logcat
 
-@Suppress("TooManyFunctions") // One per editor action
+@Suppress("TooManyFunctions", "LongParameterList") // One per editor action, and its sources
 @Stable
 @AssistedInject
 class EditTransactionViewModel
@@ -705,14 +705,14 @@ internal constructor(
     return if (others.size == transfers.size) this else copy(transfers = others.toImmutableList())
   }
 
-  private fun List<GetTags>.toTagOptions(): ImmutableList<TagOption> = filter {
-    it.hidden != true
-  }
-    .mapNotNull { row ->
-      row.tag?.let { TagOption(tag = it, color = row.color?.toColorOrNull()) }
-    }
-    .sortedBy { it.tag.lowercase() }
-    .toImmutableList()
+  private fun List<GetTags>.toTagOptions(): ImmutableList<TagOption> =
+    asSequence()
+      .filter { it.hidden != true }
+      .mapNotNull { row ->
+        row.tag?.let { TagOption(tag = it, color = row.color?.toColorOrNull()) }
+      }
+      .sortedBy { it.tag.lowercase() }
+      .toImmutableList()
 
   private fun TransactionFields.toRuleTransaction() =
     RuleTransaction(
