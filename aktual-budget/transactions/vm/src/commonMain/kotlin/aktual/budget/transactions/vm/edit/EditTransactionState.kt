@@ -11,6 +11,7 @@ import aktual.budget.transactions.vm.Transaction
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 // What the editor opens: a saved transaction, or a new one starting in the account or category of
 // the list it was added from
@@ -82,6 +83,20 @@ data class CategoryGroupOptions(
   val name: String?,
   val categories: ImmutableList<EntityOption<CategoryId>>,
 )
+
+// What the category picker lists for a search: the categories whose name has it, under their
+// groups. A group whose own name has it keeps all of its categories
+fun ImmutableList<CategoryGroupOptions>.matching(
+  query: String,
+): ImmutableList<CategoryGroupOptions> {
+  if (query.isEmpty()) return this
+  return mapNotNull { group ->
+    if (group.name?.contains(query, ignoreCase = true) == true) return@mapNotNull group
+    val categories = group.categories.filter { it.name.contains(query, ignoreCase = true) }
+    if (categories.isEmpty()) null else group.copy(categories = categories.toImmutableList())
+  }
+    .toImmutableList()
+}
 
 // What the editor's pickers offer
 @Immutable
