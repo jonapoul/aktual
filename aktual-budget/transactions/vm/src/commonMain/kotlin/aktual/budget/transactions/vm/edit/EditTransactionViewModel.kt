@@ -205,11 +205,10 @@ internal constructor(
 
   private suspend fun observe() {
     try {
-      rules = rulesLoader.load()
       val entities = loadEntities()
       mutableEntities.update { entities }
       when (target) {
-        is New -> startDraft(newDraft(target, entities))
+        is New -> startDraft(target, entities)
         is Existing -> follow(target)
       }
     } catch (e: CancellationException) {
@@ -220,7 +219,9 @@ internal constructor(
     }
   }
 
-  private fun startDraft(draft: TransactionFields) {
+  private suspend fun startDraft(target: EditTransactionTarget.New, entities: Entities) {
+    rules = rulesLoader.load()
+    val draft = newDraft(target, entities)
     initial = draft
     mutableDraft.update { draft }
   }
@@ -294,7 +295,21 @@ internal constructor(
 
   fun startEditing() {
     val saved = mutableSaved.value ?: return
-    if (saved.canEdit) mutableDraft.update { saved.fields }
+    if (!saved.canEdit) return
+    mutableDraft.update { saved.fields }
+    if (rules == null) viewModelScope.launch { loadPayeeLookup() }
+  }
+
+  // A saved transaction only uses the rules' payees, to add one by name, so it's viewed and
+  // edited without them if they fail to load
+  private suspend fun loadPayeeLookup() {
+    try {
+      rules = rulesLoader.load()
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      logcat.w(e) { "Failed loading rules for $target" }
+    }
   }
 
   // Throws away any edits, unless they're being saved. There's nothing to go back to for a new
