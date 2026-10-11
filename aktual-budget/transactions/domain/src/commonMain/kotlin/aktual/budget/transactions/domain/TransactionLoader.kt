@@ -17,6 +17,8 @@ data class LoadedTransaction(
   val balanceAfter: Long,
   // The children again, as their editor holds them
   val parts: List<SplitPart> = emptyList(),
+  // Whether it, or a part of it, is a transfer whose other side is reconciled
+  val hasReconciledTransfer: Boolean = false,
 ) {
   val fields: TransactionFields
     get() =
@@ -53,6 +55,7 @@ class TransactionLoader(private val transactionDao: TransactionDao) {
       children = children,
       balanceAfter = transactionDao.balanceAfter(row.id),
       parts = parts(row.id, children),
+      hasReconciledTransfer = transactionDao.hasReconciledTransfer(row.id),
     )
   }
 

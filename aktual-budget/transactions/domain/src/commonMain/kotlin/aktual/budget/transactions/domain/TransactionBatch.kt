@@ -50,11 +50,21 @@ internal constructor(
   // The account and isParent flag each transaction was given in this batch
   private val batchAccounts = mutableMapOf<TransactionId, AccountId>()
   private val batchIsParent = mutableMapOf<TransactionId, Boolean>()
+  private val added = mutableSetOf<TransactionId>()
+  private val updated = mutableSetOf<TransactionId>()
   private val deleted = mutableSetOf<TransactionId>()
   private val newPayees = mutableMapOf<String, PayeeId>()
   private var existingPayees: Map<String, PayeeId>? = null
 
   internal fun changes(): List<LocalChange> = changes.toList()
+
+  // Each transaction is in one set only: deleted wins, then added
+  internal fun touched(): TouchedTransactions =
+    TouchedTransactions(
+      added = added - deleted,
+      updated = updated - added - deleted,
+      deleted = deleted.toSet(),
+    )
 
   /**
    * db.insertTransaction(), plus batchUpdateTransactions() clearing the category of split parents
@@ -88,6 +98,7 @@ internal constructor(
         "parent_id" to t.parentId?.value.orSkip(),
       )
     addAll(TRANSACTIONS, id.value, columns)
+    added += id
     if (t.parentId != null) batchParents[id] = t.parentId
     batchAccounts[id] = t.account
     batchIsParent[id] = t.isParent
@@ -129,6 +140,7 @@ internal constructor(
         "parent_id" to u.parentId.messageValue { it.value.messageValue() },
       )
     addAll(TRANSACTIONS, u.id.value, columns)
+    updated += u.id
     if (u.parentId is To) batchParents[u.id] = u.parentId.value
     if (u.account != null) batchAccounts[u.id] = u.account
     if (u.isParent != null) batchIsParent[u.id] = u.isParent
@@ -259,6 +271,13 @@ internal constructor(
       }
         .also { existingPayees = it }
 }
+
+// The transactions a batch wrote, whose transfers need looking at
+internal data class TouchedTransactions(
+  val added: Set<TransactionId>,
+  val updated: Set<TransactionId>,
+  val deleted: Set<TransactionId>,
+)
 
 // convertInputType() rejects dates before this
 private val MIN_DATE = LocalDate(year = 1995, month = 1, day = 1)

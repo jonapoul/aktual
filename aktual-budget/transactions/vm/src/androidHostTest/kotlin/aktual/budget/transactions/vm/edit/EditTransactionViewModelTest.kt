@@ -100,7 +100,6 @@ class EditTransactionViewModelTest {
                 reconciled = false,
               ),
             mode = View,
-            canEdit = true,
           ),
         )
       cancelAndIgnoreRemainingEvents()
@@ -186,10 +185,12 @@ class EditTransactionViewModelTest {
   }
 
   @Test
-  fun `The pickers offer open accounts and ordinary payees`() = runDatabaseTest { scope ->
+  fun `The pickers offer open accounts, payees and transfers`() = runDatabaseTest { scope ->
     insertEntities()
     AccountDao(this).insert(id = AccountId("d"), name = "Mortgage", offBudget = true)
     PayeeDao(this).insert(PayeeId("transfer"), name = null, transferAccount = AccountId("b"))
+    // The transaction's own account isn't one it can transfer to
+    PayeeDao(this).insert(PayeeId("self"), name = null, transferAccount = AccountId("a"))
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
     val viewModel = createViewModel(scope, id = "t")
 
@@ -201,6 +202,8 @@ class EditTransactionViewModelTest {
         prop(TransactionOptions::payees)
           .extracting { it.name }
           .containsExactly("Argos", "B&Q", "Co-op")
+        prop(TransactionOptions::transfers)
+          .containsExactly(EntityOption(PayeeId("transfer"), "Barclays"))
         prop(TransactionOptions::accounts)
           .extracting { it.name }
           .containsExactlyInAnyOrder("Amex", "Barclays", "Chase", "Mortgage")
@@ -397,8 +400,7 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "p")
 
     viewModel.state.test {
-      assertThat(awaitLoaded().canEdit).isTrue()
-
+      awaitLoaded()
       viewModel.startEditing()
 
       assertThat(awaitEdit()).all {
@@ -411,24 +413,6 @@ class EditTransactionViewModelTest {
             SplitPartForm(part("p2", 40.0, "b", "c"), payeeName = "B&Q", categoryName = "Car"),
           )
       }
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
-  fun `A split with a transfer part can't be edited yet`() = runDatabaseTest { scope ->
-    insertEntities()
-    PayeeDao(this).insert(PayeeId("transfer"), name = null, transferAccount = AccountId("b"))
-    with(TransactionDao(this)) {
-      insertTransaction("p", "a", null, "a", amount = 100.0, isParent = true)
-      insertTransaction("p1", "a", "b", "b", amount = 60.0, parent = "p")
-      insertTransaction("p2", "a", "c", "b", amount = 30.0, parent = "p")
-      insert("p3", "a", null, "transfer", DATE_1, amount = 10.0, parent = "p")
-    }
-    val viewModel = createViewModel(scope, id = "p")
-
-    viewModel.state.test {
-      assertThat(awaitLoaded().canEdit).isFalse()
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -642,16 +626,61 @@ class EditTransactionViewModelTest {
   }
 
   @Test
-  fun `Transfers can't be edited yet`() = runDatabaseTest { scope ->
+  fun `A transfer between on budget accounts has no category`() = runDatabaseTest { scope ->
     insertEntities()
+    AccountDao(this).insert(id = AccountId("d"), name = "Mortgage", offBudget = true)
     PayeeDao(this).insert(PayeeId("transfer"), name = null, transferAccount = AccountId("b"))
+    PayeeDao(this).insert(PayeeId("mortgage"), name = null, transferAccount = AccountId("d"))
     TransactionDao(this)
       .insert(id = "t", account = "a", category = null, payee = "transfer", date = DATE_1)
     val viewModel = createViewModel(scope, id = "t")
 
     viewModel.state.test {
-      assertThat(awaitLoaded().canEdit).isFalse()
+      awaitLoaded()
+      viewModel.startEditing()
+      assertThat(awaitEdit()).all {
+        prop(TransactionForm::payeeName).isEqualTo("Barclays")
+        prop(TransactionForm::isTransfer).isTrue()
+      }
+
+      // Money leaving the budget is categorised
+      viewModel.setPayee(PayeeId("mortgage"))
+      assertThat(awaitEdit().isTransfer).isFalse()
+
+      viewModel.setPayee(PayeeId("a"))
+      assertThat(awaitEdit().isTransfer).isFalse()
       cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Deleting a transfer deletes its other side`() = runDatabaseTest { scope ->
+    insertEntities()
+    PayeeDao(this).insert(PayeeId("to-b"), name = null, transferAccount = AccountId("b"))
+    PayeeDao(this).insert(PayeeId("to-a"), name = null, transferAccount = AccountId("a"))
+    with(TransactionDao(this)) {
+      insert("t", "a", null, "to-b", DATE_1, amount = -10.0, transferId = "o")
+      insert("o", "b", null, "to-a", DATE_1, amount = 10.0, transferId = "t")
+    }
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+    viewModel.events.test {
+      viewModel.state.test {
+        assertThat(awaitLoaded().saved?.hasReconciledTransfer).isEqualTo(false)
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.delete()
+
+      assertThatNextEmissionIsEqualTo(Deleted)
+      assertThat(sync.calls)
+        .containsExactly(
+          listOf(tombstone(TRANSACTIONS, "t")),
+          listOf(
+            tombstone(TRANSACTIONS, "o"),
+            LocalChange(TRANSACTIONS, "t", "transferred_id", Null),
+          ),
+        )
     }
   }
 

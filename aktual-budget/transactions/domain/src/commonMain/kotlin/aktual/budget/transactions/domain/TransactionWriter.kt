@@ -21,7 +21,7 @@ import logcat.logcat
  * in accounts/sync.ts make inside batchMessages(). Everything goes through [BudgetSyncController],
  * which also applies the changes to the local database.
  *
- * Transfers, rules and category learning aren't run.
+ * Rules and category learning aren't run, and transfers only when asked for.
  */
 @Inject
 @SingleIn(BudgetScope::class)
@@ -40,23 +40,40 @@ class TransactionWriter(
    * Runs [block] to collect changes, then sends them all in one syncChanges() call, unless there
    * are none. Returns whatever [block] returns, e.g. the IDs it created. Calls run one at a time,
    * so each batch sees what the last one wrote. Don't call it again from inside [block].
+   *
+   * [runTransfers] is batchUpdateTransactions()'s flag of that name: once the changes are written,
+   * the other side of every transfer among them is added, updated or removed to match, in a second
+   * syncChanges() call. Bank sync leaves it off, as upstream's does.
    */
-  suspend fun <R> write(block: suspend TransactionBatch.() -> R): R = mutex.withLock {
-    val batch =
-      TransactionBatch(
-        accountDao = accountDao,
-        categoryDao = categoryDao,
-        payeeDao = payeeDao,
-        transactionDao = transactionDao,
-        uuidGenerator = uuidGenerator,
-        clock = clock,
-      )
+  suspend fun <R> write(
+    runTransfers: Boolean = false,
+    block: suspend TransactionBatch.() -> R,
+  ): R = mutex.withLock {
+    val batch = newBatch()
     val result = batch.block()
-    val changes = batch.changes()
-    if (changes.isNotEmpty()) {
-      syncController.syncChanges(changes)
-      logcat.i { "Wrote ${changes.size} transaction changes" }
+    send(batch)
+    if (runTransfers) {
+      val transfers = newBatch()
+      Transfers(transfers, accountDao, payeeDao, transactionDao).run(batch.touched())
+      send(transfers)
     }
     result
+  }
+
+  private fun newBatch() =
+    TransactionBatch(
+      accountDao = accountDao,
+      categoryDao = categoryDao,
+      payeeDao = payeeDao,
+      transactionDao = transactionDao,
+      uuidGenerator = uuidGenerator,
+      clock = clock,
+    )
+
+  private suspend fun send(batch: TransactionBatch) {
+    val changes = batch.changes()
+    if (changes.isEmpty()) return
+    syncController.syncChanges(changes)
+    logcat.i { "Wrote ${changes.size} transaction changes" }
   }
 }

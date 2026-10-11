@@ -448,6 +448,18 @@ SELECT vt.id, vt.payee, c.id AS category, vt.sort_order AS sortOrder
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   WHERE t.parent_id = :parent AND vt.is_child = 1;
 
+-- Whether this transaction, or a part of it, is a transfer whose other side is reconciled
+hasReconciledTransfer:
+SELECT EXISTS(
+  SELECT 1
+    FROM transactions AS t
+    INNER JOIN transactions AS other ON other.id = t.transferred_id
+    WHERE (t.id = :id OR t.parent_id = :id)
+      AND t.tombstone = 0
+      AND other.tombstone = 0
+      AND other.reconciled = 1
+);
+
 -- Balance after the transaction at :offset in getPaged's order, i.e. the sum of it and everything
 -- older. Split children are skipped since their parent's amount already covers them, as upstream's
 -- balance queries do with splits: 'none'. They're dropped before the offset, which has to count

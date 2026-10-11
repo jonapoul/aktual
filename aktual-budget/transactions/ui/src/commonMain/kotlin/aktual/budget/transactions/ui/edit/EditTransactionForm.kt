@@ -294,8 +294,13 @@ private fun FieldsCard(
     CardDivider()
     FieldRow(
       label = Strings.transactionCategory,
-      value = if (form.isOffBudget) Strings.transactionsOffBudget else form.categoryName,
-      enabled = !form.isOffBudget,
+      value =
+        when {
+          form.isOffBudget -> Strings.transactionsOffBudget
+          form.isTransfer -> Strings.transactionsTransfer
+          else -> form.categoryName
+        },
+      enabled = !form.isOffBudget && !form.isTransfer,
       onClick = { onEdit(Category) },
     )
     CardDivider()

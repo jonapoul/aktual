@@ -227,15 +227,10 @@ private fun EditTransactionScaffold(
         onBack = { onBack() },
         onEdit = { onAction(StartEditing) },
         onSave = {
-          if (form?.draft?.reconciled == true) {
-            dialog = ConfirmReconciledSave
-          } else {
-            onAction(SaveTransaction)
-          }
+          val confirm = saveDialog(form, loaded?.saved)
+          if (confirm == null) onAction(SaveTransaction) else dialog = confirm
         },
-        onDelete = {
-          dialog = if (loaded?.saved?.reconciled == true) ConfirmReconciledDelete else ConfirmDelete
-        },
+        onDelete = { dialog = deleteDialog(loaded?.saved) },
       )
     },
   ) { innerPadding ->
@@ -338,6 +333,22 @@ private fun EditTransactionTopBar(
   )
 }
 
+// As upstream, changing a reconciled transaction is checked first, and so is changing a transfer
+// whose other side is reconciled
+private fun saveDialog(form: TransactionForm?, saved: TransactionDetails?): TransactionDialog? =
+  when {
+    form?.draft?.reconciled == true -> ConfirmReconciledSave
+    saved?.hasReconciledTransfer == true -> ConfirmReconciledTransferSave
+    else -> null
+  }
+
+private fun deleteDialog(saved: TransactionDetails?): TransactionDialog =
+  when {
+    saved?.reconciled == true -> ConfirmReconciledDelete
+    saved?.hasReconciledTransfer == true -> ConfirmReconciledTransferDelete
+    else -> ConfirmDelete
+  }
+
 @Composable
 private fun TopBarActions(
   state: EditTransactionState.Loaded,
@@ -356,7 +367,7 @@ private fun TopBarActions(
         shape = SaveShape,
         onClick = onSave,
       )
-    } else if (state.canEdit) {
+    } else {
       BareIconButton(
         imageVector = MaterialIcons.Edit,
         contentDescription = Strings.transactionEdit,
@@ -886,7 +897,6 @@ private fun previewLoaded(
   EditTransactionState.Loaded(
     saved = TransactionDetails(transaction, cleared = cleared, reconciled = reconciled),
     mode = mode,
-    canEdit = true,
   )
 
 private fun previewForm(transaction: Transaction, reconciled: Boolean = false) =
@@ -906,10 +916,12 @@ private fun previewForm(transaction: Transaction, reconciled: Boolean = false) =
     categoryName = transaction.category,
     accountName = transaction.account,
     isOffBudget = transaction.specialCategory == OffBudget,
+    isTransfer = transaction.specialCategory == Transfer,
     hasChanges = true,
     options =
       TransactionOptions(
         payees = persistentListOf(),
+        transfers = persistentListOf(),
         categoryGroups = persistentListOf(),
         accounts = persistentListOf(),
       ),
@@ -952,6 +964,7 @@ private val PREVIEW_NEW =
     options =
       TransactionOptions(
         payees = persistentListOf(),
+        transfers = persistentListOf(),
         categoryGroups = persistentListOf(),
         accounts = persistentListOf(),
       ),
@@ -978,7 +991,6 @@ private class EditTransactionStateProvider :
     EditTransactionState.Loaded(
       saved = null,
       mode = TransactionEditMode.Create(PREVIEW_NEW),
-      canEdit = true,
     ),
     EditTransactionState.Empty.NoAccounts,
     EditTransactionState.Empty.NoCategories,

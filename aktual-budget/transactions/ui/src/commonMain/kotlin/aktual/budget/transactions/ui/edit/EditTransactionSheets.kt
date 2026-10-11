@@ -68,6 +68,7 @@ internal fun EditTransactionSheet(
       PayeeSheet(
         selected = draft.payee,
         options = form.options.payees,
+        transfers = form.options.transfers,
         onDismiss = onDismiss,
         onSelect = { onAction(SetPayee(it)) },
         onCreate = { onAction(CreatePayee(it)) },
@@ -114,6 +115,7 @@ private fun PartSheet(
       PayeeSheet(
         selected = part.payee,
         options = form.options.payees,
+        transfers = form.options.transfers,
         onDismiss = onDismiss,
         onSelect = { onAction(SetPartPayee(part.id, it)) },
         onCreate = { onAction(CreatePartPayee(part.id, it)) },
@@ -139,12 +141,13 @@ private fun PartSheet(
     Date -> Unit
   }
 
-// As upstream's payee picker: "None" is only offered when there's a payee to remove, and typing
-// a name that no payee has offers to create it
+// As upstream's payee picker: "None" is only offered when there's a payee to remove, typing a
+// name that no payee has offers to create it, and the accounts to transfer to come last
 @Composable
 private fun PayeeSheet(
   selected: PayeeId?,
   options: ImmutableList<EntityOption<PayeeId>>,
+  transfers: ImmutableList<EntityOption<PayeeId>>,
   onDismiss: () -> Unit,
   onSelect: (PayeeId?) -> Unit,
   onCreate: (String) -> Unit,
@@ -159,7 +162,14 @@ private fun PayeeSheet(
       remember(options, name) {
         options.filter { it.name.contains(name, ignoreCase = true) }.toImmutableList()
       }
-    val isNew = name.isNotEmpty() && matches.none { it.name.equals(name, ignoreCase = true) }
+    val transferMatches =
+      remember(transfers, name) {
+        transfers.filter { it.name.contains(name, ignoreCase = true) }.toImmutableList()
+      }
+    val isNew =
+      name.isNotEmpty() &&
+        matches.none { it.name.equals(name, ignoreCase = true) } &&
+        transferMatches.none { it.name.equals(name, ignoreCase = true) }
 
     AktualTextField(
       modifier = Modifier.fillMaxWidth().padding(PayeeSearchPadding),
@@ -209,8 +219,33 @@ private fun PayeeSheet(
           },
         )
       }
+
+      if (transferMatches.isNotEmpty()) {
+        item { GroupHeader(Strings.transactionsTransfer) }
+      }
+
+      items(transferMatches, key = { it.id.toString() }) { payee ->
+        BottomSheetListItem(
+          label = payee.name,
+          isSelected = payee.id == selected,
+          onClick = {
+            onSelect(payee.id)
+            onDismiss()
+          },
+        )
+      }
     }
   }
+
+@Composable
+private fun GroupHeader(name: String) =
+  Text(
+    modifier = Modifier.fillMaxWidth().padding(GroupHeaderPadding),
+    text = name,
+    fontSize = GroupHeaderSize,
+    fontWeight = SemiBold,
+    color = colors.pageTextSubdued,
+  )
 
 @Composable
 private fun AccountSheet(
@@ -257,15 +292,7 @@ private fun CategorySheet(
       groups.fastForEach { group ->
         val name = group.name
         if (name != null) {
-          item {
-            Text(
-              modifier = Modifier.fillMaxWidth().padding(GroupHeaderPadding),
-              text = name,
-              fontSize = GroupHeaderSize,
-              fontWeight = SemiBold,
-              color = colors.pageTextSubdued,
-            )
-          }
+          item { GroupHeader(name) }
         }
 
         items(group.categories, key = { it.id.toString() }) { category ->
