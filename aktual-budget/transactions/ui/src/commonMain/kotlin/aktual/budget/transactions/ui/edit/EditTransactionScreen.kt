@@ -48,7 +48,6 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -74,6 +73,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -105,6 +105,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.persistentListOf
 
@@ -224,7 +226,7 @@ private fun EditTransactionScaffold(
       PageBackground()
 
       when (state) {
-        Loading -> LoadingScreen(modifier = Modifier.padding(innerPadding))
+        Loading -> ShimmerTransaction(modifier = Modifier.padding(innerPadding))
 
         is Failure -> LoadFailure(state, onAction, Modifier.padding(innerPadding))
 
@@ -364,6 +366,42 @@ private fun TopBarActions(
               onDelete()
             },
           )
+        }
+      }
+    }
+  }
+}
+
+// Stands in for the hero and the details card while the transaction loads
+@Composable
+private fun ShimmerTransaction(modifier: Modifier = Modifier) {
+  val bar = Modifier.background(colors.tableText, ShimmerBarShape)
+  Column(
+    modifier =
+      modifier.fillMaxSize().padding(horizontal = CardInset).shimmer(rememberShimmer(Window)),
+    verticalArrangement = Arrangement.spacedBy(CardSpacing),
+  ) {
+    Column(
+      modifier = Modifier.fillMaxWidth().padding(HeroPadding),
+      horizontalAlignment = CenterHorizontally,
+      verticalArrangement = Arrangement.spacedBy(HeroSpacing),
+    ) {
+      Box(modifier = Modifier.size(AvatarSize).background(colors.tableText, CircleShape))
+      Box(modifier = bar.size(width = ShimmerPayeeWidth, height = ShimmerTextHeight))
+      Box(modifier = bar.size(width = ShimmerAmountWidth, height = ShimmerAmountHeight))
+      Box(modifier = bar.size(width = ShimmerDateWidth, height = ShimmerTextHeight))
+    }
+
+    DetailCard {
+      repeat(SHIMMER_ROWS) { index ->
+        if (index > 0) CardDivider()
+        Row(
+          modifier = Modifier.fillMaxWidth().padding(RowPadding),
+          verticalAlignment = CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(RowIconGap),
+        ) {
+          Box(modifier = bar.size(RowIconSize))
+          Box(modifier = bar.weight(1f).height(ShimmerRowHeight))
         }
       }
     }
@@ -806,6 +844,14 @@ private val PartGap = 12.dp
 private val PartBarWidth = 4.dp
 private val PartBarHeight = 32.dp
 private val PartBarShape = RoundedCornerShape(2.dp)
+private val ShimmerBarShape = RoundedCornerShape(4.dp)
+private val ShimmerPayeeWidth = 140.dp
+private val ShimmerAmountWidth = 180.dp
+private val ShimmerAmountHeight = 44.dp
+private val ShimmerDateWidth = 200.dp
+private val ShimmerTextHeight = 18.dp
+private val ShimmerRowHeight = 32.dp
+private const val SHIMMER_ROWS = 3
 
 @PortraitPreview
 @Composable
