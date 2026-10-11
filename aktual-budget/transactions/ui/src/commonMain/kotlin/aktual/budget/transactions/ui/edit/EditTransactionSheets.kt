@@ -7,6 +7,7 @@ import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.vm.edit.CategoryGroupOptions
 import aktual.budget.transactions.vm.edit.EntityOption
 import aktual.budget.transactions.vm.edit.TransactionForm
+import aktual.budget.transactions.vm.edit.matching
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
@@ -306,9 +307,9 @@ private fun CategorySheet(
       }
 
       matches.fastForEach { group ->
-        val name = group.name
-        if (name != null) {
-          item { GroupHeader(name) }
+        val groupName = group.name
+        if (groupName != null) {
+          item { GroupHeader(groupName) }
         }
 
         items(group.categories, key = { it.id.toString() }) { category ->
@@ -324,19 +325,6 @@ private fun CategorySheet(
       }
     }
   }
-
-// A group whose own name matches keeps all of its categories
-private fun ImmutableList<CategoryGroupOptions>.matching(
-  query: String,
-): ImmutableList<CategoryGroupOptions> {
-  if (query.isEmpty()) return this
-  return mapNotNull { group ->
-    if (group.name?.contains(query, ignoreCase = true) == true) return@mapNotNull group
-    val categories = group.categories.filter { it.name.contains(query, ignoreCase = true) }
-    if (categories.isEmpty()) null else group.copy(categories = categories.toImmutableList())
-  }
-    .toImmutableList()
-}
 
 @Composable
 private fun DateDialog(date: LocalDate, onDismiss: () -> Unit, onSelect: (LocalDate) -> Unit) {
