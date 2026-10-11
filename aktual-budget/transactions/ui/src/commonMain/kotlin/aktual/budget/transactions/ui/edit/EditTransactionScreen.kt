@@ -4,6 +4,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.ui.TRANSACTION_1
 import aktual.budget.transactions.ui.TRANSACTION_OFF_BUDGET
@@ -18,6 +19,7 @@ import aktual.budget.transactions.vm.edit.EditTransactionError
 import aktual.budget.transactions.vm.edit.EditTransactionState
 import aktual.budget.transactions.vm.edit.EditTransactionTarget
 import aktual.budget.transactions.vm.edit.EditTransactionViewModel
+import aktual.budget.transactions.vm.edit.SplitPartForm
 import aktual.budget.transactions.vm.edit.TransactionDetails
 import aktual.budget.transactions.vm.edit.TransactionEditMode
 import aktual.budget.transactions.vm.edit.TransactionForm
@@ -79,7 +81,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -109,6 +110,7 @@ import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun EditTransactionScreen(
@@ -154,10 +156,24 @@ internal fun EditTransactionScreen(
         is SetDate -> viewModel.setDate(action.date)
         is SetNotes -> viewModel.setNotes(action.notes)
         is SetCleared -> viewModel.setCleared(action.cleared)
+        is SplitAction -> viewModel.onSplitAction(action)
       }
     },
   )
 }
+
+private fun EditTransactionViewModel.onSplitAction(action: SplitAction) =
+  when (action) {
+    SplitTransaction -> split()
+    AddSplit -> addSplit()
+    is RemoveSplit -> removeSplit(action.id)
+    is FillRemaining -> fillRemaining(action.id)
+    is SetPartAmount -> setPartAmount(action.id, action.amount)
+    is SetPartPayee -> setPartPayee(action.id, action.payee)
+    is CreatePartPayee -> createPartPayee(action.id, action.name)
+    is SetPartCategory -> setPartCategory(action.id, action.category)
+    is SetPartNotes -> setPartNotes(action.id, action.notes)
+  }
 
 @Composable
 private fun editTransactionViewModel(target: EditTransactionTarget) =
@@ -180,10 +196,11 @@ private fun EditTransactionScaffold(
   val isCreating = loaded?.mode is Create
   var dialog by remember { mutableStateOf<TransactionDialog?>(null) }
   // A new transaction starts with the keypad open
-  var activeField by
-    remember(isEditing) { mutableStateOf(if (isCreating) EditField.Amount else null) }
-  val amountText = rememberTextFieldState()
-  val isAmountValid = activeField != EditField.Amount || amountText.isValidAmount()
+  val fieldState =
+    remember(isEditing) {
+      EditFieldState(if (isCreating) ActiveField(EditField.Amount) else null)
+    }
+  val isAmountValid = !fieldState.isTypingAmount || fieldState.amountText.isValidAmount()
 
   // Backing out of an edit drops back to viewing the transaction, or closes a new one, checking
   // first if that would lose any changes
@@ -246,9 +263,7 @@ private fun EditTransactionScaffold(
             EditTransactionForm(
               modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
               form = form,
-              amountText = amountText,
-              activeField = activeField,
-              onActiveField = { activeField = it },
+              fieldState = fieldState,
               onUnlock = { dialog = ConfirmReconciledUnlock },
               onAction = onAction,
               scrollState = scrollState,
@@ -259,10 +274,10 @@ private fun EditTransactionScaffold(
 
       if (form != null) {
         EditTransactionSheet(
-          field = activeField,
+          active = fieldState.active,
           form = form,
           onAction = onAction,
-          onDismiss = { activeField = null },
+          onDismiss = { fieldState.close() },
         )
       }
 
@@ -735,7 +750,7 @@ private fun SplitParts(parent: Transaction, modifier: Modifier = Modifier) =
     DetailCard {
       parent.children.fastForEachIndexed { index, child ->
         if (index > 0) CardDivider()
-        SplitPartRow(child, parent)
+        SplitPartRow(child)
       }
 
       val remaining = parent.splitRemaining
@@ -754,7 +769,7 @@ private fun SplitParts(parent: Transaction, modifier: Modifier = Modifier) =
   }
 
 @Composable
-private fun SplitPartRow(child: Transaction, parent: Transaction) =
+private fun SplitPartRow(child: Transaction) =
   Row(
     modifier = Modifier.fillMaxWidth().padding(PartPadding),
     verticalAlignment = CenterVertically,
@@ -768,7 +783,7 @@ private fun SplitPartRow(child: Transaction, parent: Transaction) =
 
     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(LabelGap)) {
       CategoryValue(child)
-      val subtitle = child.partSubtitle(parent)
+      val subtitle = child.partSubtitle()
       if (subtitle != null) {
         Text(text = subtitle, fontSize = LabelSize, color = colors.pageTextLight)
       }
@@ -782,12 +797,11 @@ private fun SplitPartRow(child: Transaction, parent: Transaction) =
     )
   }
 
-// A part's notes, then its payee when it isn't the one in the hero
+// A part's payee, then its notes
 @Composable
-private fun Transaction.partSubtitle(parent: Transaction): AnnotatedString? {
-  val payee = payeeLabel().takeIf { payee != parent.payee || transfer != parent.transfer }
+private fun Transaction.partSubtitle(): AnnotatedString? {
   val notes = notes?.takeIf { it.isNotBlank() }
-  val text = listOfNotNull(notes, payee).joinToString(" · ")
+  val text = listOfNotNull(payeeLabel(), notes).joinToString(" · ")
   return if (text.isEmpty()) null else AnnotatedString(text)
 }
 
@@ -834,11 +848,11 @@ private val LabelGap = 2.dp
 private val LabelSize = 12.sp
 internal val ValueSize = 15.sp
 private val BalancePadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
-private val SplitHeaderPadding = PaddingValues(start = 4.dp, bottom = 8.dp)
+internal val SplitHeaderPadding = PaddingValues(start = 4.dp, bottom = 8.dp)
 private val SplitHeaderGap = 8.dp
 private val SplitIconSize = 16.dp
-private val SplitHeaderSize = 13.sp
-private val SplitHeaderTracking = 1.sp
+internal val SplitHeaderSize = 13.sp
+internal val SplitHeaderTracking = 1.sp
 private val PartPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
 private val PartGap = 12.dp
 private val PartBarWidth = 4.dp
@@ -901,6 +915,22 @@ private fun previewForm(transaction: Transaction, reconciled: Boolean = false) =
       ),
   )
 
+private val PREVIEW_SPLIT_FORM =
+  previewForm(TRANSACTION_SPLIT_UNBALANCED)
+    .copy(
+      parts =
+        TRANSACTION_SPLIT_UNBALANCED.children
+          .map { child ->
+            SplitPartForm(
+              part = SplitPart(id = child.id, amount = child.amount, notes = child.notes),
+              payeeName = child.payee,
+              categoryName = child.category,
+            )
+          }
+          .toImmutableList(),
+      splitRemaining = TRANSACTION_SPLIT_UNBALANCED.splitRemaining,
+    )
+
 private val PREVIEW_NEW =
   TransactionForm(
     draft =
@@ -940,6 +970,10 @@ private class EditTransactionStateProvider :
       TRANSACTION_OFF_BUDGET,
       reconciled = true,
       mode = TransactionEditMode.Edit(previewForm(TRANSACTION_OFF_BUDGET, reconciled = true)),
+    ),
+    previewLoaded(
+      TRANSACTION_SPLIT_UNBALANCED,
+      mode = TransactionEditMode.Edit(PREVIEW_SPLIT_FORM),
     ),
     EditTransactionState.Loaded(
       saved = null,

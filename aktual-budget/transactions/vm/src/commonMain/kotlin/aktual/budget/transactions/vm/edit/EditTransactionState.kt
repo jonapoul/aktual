@@ -1,13 +1,16 @@
 package aktual.budget.transactions.vm.edit
 
 import aktual.budget.model.AccountId
+import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
+import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.vm.Transaction
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 // What the editor opens: a saved transaction, or a new one starting in the account or category of
 // the list it was added from
@@ -41,7 +44,17 @@ data class TransactionForm(
   val isOffBudget: Boolean,
   val hasChanges: Boolean,
   val options: TransactionOptions,
-)
+  // Empty unless the transaction is split
+  val parts: ImmutableList<SplitPartForm> = persistentListOf(),
+  // What's left to assign while a split's parts don't add up to its amount
+  val splitRemaining: Amount? = null,
+) {
+  val isSplit: Boolean
+    get() = parts.isNotEmpty()
+}
+
+@Immutable
+data class SplitPartForm(val part: SplitPart, val payeeName: String?, val categoryName: String?)
 
 // A transaction as its detail screen shows it, with a split's parts as its children
 @Immutable
@@ -90,17 +103,18 @@ sealed interface EditTransactionState {
     val saved: TransactionDetails?,
     val mode: TransactionEditMode,
     // Whether the edit and delete actions are offered at all. False for schedule previews, which
-    // have no row, and for splits and transfers until the editor handles them
+    // have no row, and for transfers until the editor handles them
     val canEdit: Boolean,
     val isWorking: Boolean = false,
   ) : EditTransactionState {
+    // A split can't be saved until its parts add up
     val canSave: Boolean
       get() =
         !isWorking &&
           when (mode) {
             View -> false
-            is Edit -> mode.form.hasChanges
-            is Create -> mode.form.draft.account != null
+            is Edit -> mode.form.hasChanges && mode.form.splitRemaining == null
+            is Create -> mode.form.draft.account != null && mode.form.splitRemaining == null
           }
   }
 }

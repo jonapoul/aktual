@@ -59,6 +59,9 @@ data class TransactionDetail(
   val category: CategoryId?,
 )
 
+// What a split child's editor needs on top of its row
+data class ChildFields(val payee: PayeeId?, val category: CategoryId?, val sortOrder: Long?)
+
 // One page of the list, with the balance after its first (newest) row
 data class TransactionPage(val rows: List<TransactionRow>, val topBalance: Long)
 
@@ -220,6 +223,13 @@ class TransactionDao(database: BudgetDatabase) {
       .flatMap { chunk -> getChildrenOf(chunk, ::childRow).awaitAsList() }
       .groupBy({ it.first }, { it.second })
   }
+
+  suspend fun childFields(parent: TransactionId): Map<TransactionId, ChildFields> =
+    queries.withResult {
+      getChildFields(parent).awaitAsList().associate { child ->
+        child.id to ChildFields(child.payee, child.category, child.sortOrder?.toLong())
+      }
+    }
 
   // Emits whenever a table behind the transactions view is written to
   fun observeChanges(): Flow<Unit> = queries.getIdsCount().asFlow().map {}

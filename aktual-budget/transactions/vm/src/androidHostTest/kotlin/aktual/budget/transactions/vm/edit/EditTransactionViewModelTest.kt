@@ -26,6 +26,7 @@ import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.transactions.domain.LastTransaction
+import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.domain.TransactionLoader
 import aktual.budget.transactions.domain.TransactionWriter
@@ -59,6 +60,7 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.AfterTest
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -389,22 +391,253 @@ class EditTransactionViewModelTest {
   }
 
   @Test
-  fun `Splits can't be edited yet`() = runDatabaseTest { scope ->
+  fun `A split is edited with its parts`() = runDatabaseTest { scope ->
     insertEntities()
+    insertSplit()
+    val viewModel = createViewModel(scope, id = "p")
+
+    viewModel.state.test {
+      assertThat(awaitLoaded().canEdit).isTrue()
+
+      viewModel.startEditing()
+
+      assertThat(awaitEdit()).all {
+        prop(TransactionForm::payeeName).isEqualTo("Argos")
+        prop(TransactionForm::splitRemaining).isNull()
+        prop(TransactionForm::hasChanges).isFalse()
+        prop(TransactionForm::parts)
+          .containsExactly(
+            SplitPartForm(part("p1", 60.0, "b", "b"), payeeName = "B&Q", categoryName = "Building"),
+            SplitPartForm(part("p2", 40.0, "b", "c"), payeeName = "B&Q", categoryName = "Car"),
+          )
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `A split with a transfer part can't be edited yet`() = runDatabaseTest { scope ->
+    insertEntities()
+    PayeeDao(this).insert(PayeeId("transfer"), name = null, transferAccount = AccountId("b"))
     with(TransactionDao(this)) {
       insertTransaction("p", "a", null, "a", amount = 100.0, isParent = true)
-      insertTransaction("p1", "a", "b", "b", amount = 100.0, parent = "p")
+      insertTransaction("p1", "a", "b", "b", amount = 60.0, parent = "p")
+      insertTransaction("p2", "a", "c", "b", amount = 30.0, parent = "p")
+      insert("p3", "a", null, "transfer", DATE_1, amount = 10.0, parent = "p")
     }
     val viewModel = createViewModel(scope, id = "p")
 
     viewModel.state.test {
       assertThat(awaitLoaded().canEdit).isFalse()
-
-      viewModel.startEditing()
-      scope.advanceUntilIdle()
-
-      expectNoEvents()
       cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Splitting moves the payee to two empty parts`() = runDatabaseTest { scope ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.startEditing()
+      awaitEdit()
+
+      viewModel.split()
+
+      var loaded = awaitLoaded()
+      assertThat(loaded.canSave).isFalse()
+      assertThat(loaded.mode)
+        .isInstanceOf<TransactionEditMode.Edit>()
+        .prop(TransactionEditMode.Edit::form)
+        .all {
+          prop(TransactionForm::draft).isEqualTo(SAVED.copy(payee = null))
+          // The split has no payee of its own now, so its parts' one stands in
+          prop(TransactionForm::payeeName).isEqualTo("Argos")
+          prop(TransactionForm::splitRemaining).isEqualTo(Amount(123.45))
+          prop(TransactionForm::parts)
+            .extracting { it.part }
+            .containsExactly(
+              SplitPart(TransactionId("part-1"), Zero, PayeeId("a"), CategoryId("a"), null, -1),
+              SplitPart(TransactionId("part-2"), Zero, PayeeId("a"), CategoryId("a"), null, -2),
+            )
+        }
+
+      // Saving does nothing while the parts don't add up
+      viewModel.save()
+      viewModel.setPartAmount(TransactionId("part-1"), Amount(123.45))
+
+      loaded = awaitLoaded()
+      assertThat(loaded.canSave).isTrue()
+
+      viewModel.save()
+      while (loaded.mode != View) loaded = awaitLoaded()
+      val columns = setOf("amount", "description", "isParent", "parent_id")
+      assertThat(sync.calls.single().filter { it.column in columns })
+        .containsExactly(
+          LocalChange(TRANSACTIONS, "t", "description", Null),
+          localChange(TRANSACTIONS, "t", "isParent", true),
+          localChange(TRANSACTIONS, "part-1", "amount", 12345L),
+          localChange(TRANSACTIONS, "part-1", "description", "a"),
+          localChange(TRANSACTIONS, "part-1", "parent_id", "t"),
+          localChange(TRANSACTIONS, "part-2", "amount", 0L),
+          localChange(TRANSACTIONS, "part-2", "description", "a"),
+          localChange(TRANSACTIONS, "part-2", "parent_id", "t"),
+        )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `An added part can take what's left to assign`() = runDatabaseTest { scope ->
+    insertEntities()
+    insertSplit()
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, id = "p", sync = sync)
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.startEditing()
+      awaitEdit()
+
+      viewModel.addSplit()
+      // As upstream, a new part starts with the payee of the one before it
+      assertThat(awaitEdit().parts.last())
+        .isEqualTo(
+          SplitPartForm(
+            part =
+              SplitPart(
+                id = TransactionId("part-1"),
+                payee = PayeeId("b"),
+                sortOrder = SORT_ORDER - 1,
+              ),
+            payeeName = "B&Q",
+            categoryName = null,
+          ),
+        )
+
+      viewModel.setPartAmount(TransactionId("p2"), Amount(30.0))
+      assertThat(awaitEdit().splitRemaining).isEqualTo(Amount(10.0))
+
+      viewModel.fillRemaining(TransactionId("part-1"))
+      assertThat(awaitEdit()).all {
+        prop(TransactionForm::splitRemaining).isNull()
+        prop(TransactionForm::parts)
+          .extracting { it.part.amount }
+          .containsExactly(Amount(60.0), Amount(30.0), Amount(10.0))
+      }
+
+      viewModel.save()
+      var loaded = awaitLoaded()
+      while (loaded.mode != View) loaded = awaitLoaded()
+      assertThat(sync.calls.single().filter { it.column in setOf("amount", "parent_id") })
+        .containsExactly(
+          localChange(TRANSACTIONS, "p2", "amount", 3000L),
+          localChange(TRANSACTIONS, "part-1", "amount", 1000L),
+          localChange(TRANSACTIONS, "part-1", "parent_id", "p"),
+        )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Removing the last part leaves an ordinary transaction`() = runDatabaseTest { scope ->
+    insertEntities()
+    with(TransactionDao(this)) {
+      insertTransaction("p", "a", null, "a", amount = 100.0, isParent = true)
+      insertTransaction("p1", "a", "b", "b", amount = 100.0, parent = "p")
+    }
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, id = "p", sync = sync)
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.startEditing()
+      awaitEdit()
+
+      viewModel.removeSplit(TransactionId("p1"))
+      assertThat(awaitEdit()).all {
+        prop(TransactionForm::isSplit).isFalse()
+        prop(TransactionForm::hasChanges).isTrue()
+      }
+
+      viewModel.save()
+      var loaded = awaitLoaded()
+      while (loaded.mode != View) loaded = awaitLoaded()
+      assertThat(sync.calls)
+        .containsExactly(
+          listOf(
+            localChange(TRANSACTIONS, "p", "isParent", false),
+            tombstone(TRANSACTIONS, "p1"),
+          ),
+        )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `A part's fields are edited on their own`() = runDatabaseTest { scope ->
+    insertEntities()
+    insertSplit()
+    val viewModel = createViewModel(scope, id = "p")
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.startEditing()
+      awaitEdit()
+
+      viewModel.setPartCategory(TransactionId("p1"), CategoryId("a"))
+      viewModel.setPartPayee(TransactionId("p1"), PayeeId("c"))
+      viewModel.setPartNotes(TransactionId("p1"), "Paint")
+
+      var edit = awaitEdit()
+      while (edit.parts.first().part.notes == null) edit = awaitEdit()
+      assertThat(edit.parts)
+        .containsExactly(
+          SplitPartForm(
+            part = part("p1", 60.0, "c", "a").copy(notes = "Paint"),
+            payeeName = "Co-op",
+            categoryName = "Additional",
+          ),
+          SplitPartForm(part("p2", 40.0, "b", "c"), payeeName = "B&Q", categoryName = "Car"),
+        )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Saving a new split inserts the parent and its parts`() = runDatabaseTest { scope ->
+    insertEntities()
+    val sync = FakeSyncController()
+    val target = EditTransactionTarget.New(AccountId("a"))
+    val viewModel = createViewModel(scope, sync = sync, target = target)
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitCreate()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.setAmount(Amount(-25.0))
+      viewModel.split()
+      viewModel.setPartAmount(TransactionId("part-1"), Amount(-20.0))
+      viewModel.fillRemaining(TransactionId("part-2"))
+      viewModel.save()
+
+      assertThatNextEmissionIsEqualTo(Created)
+      val columns = setOf("amount", "isParent", "isChild", "parent_id")
+      assertThat(sync.calls.single().filter { it.column in columns })
+        .containsExactly(
+          localChange(TRANSACTIONS, "uuid", "amount", -2500L),
+          localChange(TRANSACTIONS, "uuid", "isParent", 1L),
+          localChange(TRANSACTIONS, "part-1", "amount", -2000L),
+          localChange(TRANSACTIONS, "part-1", "isChild", 1L),
+          localChange(TRANSACTIONS, "part-1", "parent_id", "uuid"),
+          localChange(TRANSACTIONS, "part-2", "amount", -500L),
+          localChange(TRANSACTIONS, "part-2", "isChild", 1L),
+          localChange(TRANSACTIONS, "part-2", "parent_id", "uuid"),
+        )
     }
   }
 
@@ -647,6 +880,23 @@ class EditTransactionViewModelTest {
     return state
   }
 
+  // 100.00 split into parts of 60.00 and 40.00
+  private suspend fun BudgetDatabase.insertSplit() =
+    with(TransactionDao(this)) {
+      insertTransaction("p", "a", null, "a", amount = 100.0, isParent = true)
+      insertTransaction("p1", "a", "b", "b", amount = 60.0, parent = "p")
+      insertTransaction("p2", "a", "c", "b", amount = 40.0, parent = "p")
+    }
+
+  private fun part(id: String, amount: Double, payee: String, category: String) =
+    SplitPart(
+      id = TransactionId(id),
+      amount = Amount(amount),
+      payee = PayeeId(payee),
+      category = CategoryId(category),
+      sortOrder = SORT_ORDER,
+    )
+
   private suspend fun BudgetDatabase.insertEntities() {
     with(AccountDao(this)) {
       insertAccount(AccountId("a"), "Amex")
@@ -695,6 +945,7 @@ class EditTransactionViewModelTest {
     val categoryDao = CategoryDao(this)
     val payeeDao = PayeeDao(this)
     val transactionDao = TransactionDao(this)
+    var nextPart = 1
     return EditTransactionViewModel(
       target = target,
       loader = TransactionLoader(transactionDao),
@@ -719,6 +970,7 @@ class EditTransactionViewModelTest {
       accountDao = accountDao,
       payeeDao = payeeDao,
       categoryDao = categoryDao,
+      uuidGenerator = { "part-${nextPart++}" },
     )
   }
 
@@ -753,6 +1005,9 @@ class EditTransactionViewModelTest {
       )
 
     val TODAY = LocalDate(2026, 10, 11)
+
+    // What insertTransaction() gives a row on DATE_1
+    val SORT_ORDER = DATE_1.toEpochDays().days.inWholeMilliseconds
 
     // What a new transaction starts as, before its list or the last one added fill anything in
     val NEW =

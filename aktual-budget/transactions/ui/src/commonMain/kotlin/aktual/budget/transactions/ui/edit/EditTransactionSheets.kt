@@ -3,6 +3,7 @@ package aktual.budget.transactions.ui.edit
 import aktual.budget.model.AccountId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.vm.edit.CategoryGroupOptions
 import aktual.budget.transactions.vm.edit.EntityOption
 import aktual.budget.transactions.vm.edit.TransactionForm
@@ -49,13 +50,20 @@ import kotlinx.datetime.toKotlinLocalDate
 // The picker of whichever field is being edited. The amount has the keypad instead
 @Composable
 internal fun EditTransactionSheet(
-  field: EditField?,
+  active: ActiveField?,
   form: TransactionForm,
   onAction: EditTransactionActionHandler,
   onDismiss: () -> Unit,
 ) {
+  val partId = active?.part
+  if (partId != null) {
+    val part = form.parts.firstOrNull { it.part.id == partId }?.part ?: return
+    PartSheet(active.field, part, form, onAction, onDismiss)
+    return
+  }
+
   val draft = form.draft
-  when (field) {
+  when (active?.field) {
     Payee ->
       PayeeSheet(
         selected = draft.payee,
@@ -91,6 +99,45 @@ internal fun EditTransactionSheet(
     null -> Unit
   }
 }
+
+// A split's part has its parent's account and date
+@Composable
+private fun PartSheet(
+  field: EditField,
+  part: SplitPart,
+  form: TransactionForm,
+  onAction: EditTransactionActionHandler,
+  onDismiss: () -> Unit,
+) =
+  when (field) {
+    Payee ->
+      PayeeSheet(
+        selected = part.payee,
+        options = form.options.payees,
+        onDismiss = onDismiss,
+        onSelect = { onAction(SetPartPayee(part.id, it)) },
+        onCreate = { onAction(CreatePartPayee(part.id, it)) },
+      )
+
+    Category ->
+      CategorySheet(
+        selected = part.category,
+        groups = form.options.categoryGroups,
+        onDismiss = onDismiss,
+        onSelect = { onAction(SetPartCategory(part.id, it)) },
+      )
+
+    Notes ->
+      NotesSheet(
+        notes = part.notes,
+        onDismiss = onDismiss,
+        onSave = { onAction(SetPartNotes(part.id, it)) },
+      )
+
+    Amount,
+    Account,
+    Date -> Unit
+  }
 
 // As upstream's payee picker: "None" is only offered when there's a payee to remove, and typing
 // a name that no payee has offers to create it

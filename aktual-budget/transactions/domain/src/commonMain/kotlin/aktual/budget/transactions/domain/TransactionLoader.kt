@@ -15,6 +15,8 @@ data class LoadedTransaction(
   val detail: TransactionDetail,
   val children: List<TransactionRow>,
   val balanceAfter: Long,
+  // The children again, as their editor holds them
+  val parts: List<SplitPart> = emptyList(),
 ) {
   val fields: TransactionFields
     get() =
@@ -28,6 +30,9 @@ data class LoadedTransaction(
         cleared = detail.cleared,
         reconciled = detail.reconciled,
       )
+
+  val draft: TransactionDraft
+    get() = TransactionDraft(fields, parts)
 }
 
 /**
@@ -43,7 +48,31 @@ class TransactionLoader(private val transactionDao: TransactionDao) {
     val row = detail.row
     val children =
       if (row.isParent) transactionDao.childrenOf(listOf(row.id))[row.id].orEmpty() else emptyList()
-    return LoadedTransaction(detail, children, transactionDao.balanceAfter(row.id))
+    return LoadedTransaction(
+      detail = detail,
+      children = children,
+      balanceAfter = transactionDao.balanceAfter(row.id),
+      parts = parts(row.id, children),
+    )
+  }
+
+  private suspend fun parts(
+    parent: TransactionId,
+    children: List<TransactionRow>,
+  ): List<SplitPart> {
+    if (children.isEmpty()) return emptyList()
+    val fields = transactionDao.childFields(parent)
+    return children.map { child ->
+      val ids = fields[child.id]
+      SplitPart(
+        id = child.id,
+        amount = Amount(child.amount),
+        payee = ids?.payee,
+        category = ids?.category,
+        notes = child.notes,
+        sortOrder = ids?.sortOrder,
+      )
+    }
   }
 
   // Reloads whenever a table behind the transactions view changes, starting with the current state

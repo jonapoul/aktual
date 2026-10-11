@@ -3,14 +3,18 @@ package aktual.budget.transactions.ui.edit
 import aktual.budget.model.Amount
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toInputText
+import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.ui.tabularFigures
 import aktual.budget.transactions.vm.edit.TransactionForm
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Split
 import aktual.core.icons.material.ExpandMore
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AmountKeypad
+import aktual.core.ui.BareTextButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.RootOverlayContent
 import aktual.core.ui.formatted
@@ -39,7 +43,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -64,20 +67,20 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.persistentListOf
 
 internal fun TextFieldState.isValidAmount(): Boolean = evaluateAmountInput(text.toString()) != null
 
-// The edit artboard of option A: the amount up top, typed with the docked keypad, then a card of
-// rows that each open a picker
+// The edit artboards of option A: the amount up top, typed with the docked keypad, then a card of
+// rows that each open a picker. A split lists its parts under them, with amounts of their own
 @Composable
 internal fun EditTransactionForm(
   form: TransactionForm,
-  amountText: TextFieldState,
-  activeField: EditField?,
-  onActiveField: (EditField?) -> Unit,
+  fieldState: EditFieldState,
   onUnlock: () -> Unit,
   onAction: EditTransactionActionHandler,
   scrollState: ScrollState,
@@ -85,21 +88,17 @@ internal fun EditTransactionForm(
   modifier: Modifier = Modifier,
 ) {
   val draft = form.draft
-  val isTyping = activeField == EditField.Amount
+  val amountText = fieldState.amountText
+  val isTyping = fieldState.isTypingAmount
+  val isTypingTotal = isTyping && fieldState.active?.part == null
 
   // Typed amounts are unsigned, and pick up their sign from the expense/income toggle. Zero has no
   // sign of its own, so the toggle is remembered for it
   var zeroIsIncome by remember { mutableStateOf(false) }
   val isIncome = if (draft.amount == Zero) zeroIsIncome else draft.amount > Zero
 
-  val latestIsIncome by rememberUpdatedState(isIncome)
-  if (isTyping) {
-    LaunchedEffect(amountText) {
-      snapshotFlow { amountText.text.toString() }
-        .collect { text ->
-          evaluateAmountInput(text)?.let { onAction(SetAmount(it.signed(latestIsIncome))) }
-        }
-    }
+  TypedAmountEffect(fieldState = fieldState, isIncome = isIncome, onAction = onAction)
+  if (isTypingTotal) {
     DisposableEffect(Unit) { onDispose { onAction(CommitAmount) } }
   }
 
@@ -109,9 +108,10 @@ internal fun EditTransactionForm(
     DockedKeypad(
       modifier = keypadModifier,
       amountText = amountText,
-      onDone = { onActiveField(null) },
+      onDone = { fieldState.close() },
     )
   }
+  val typeTotal = { fieldState.typeAmount(draft.amount.toInputText()) }
 
   Column(modifier = modifier.fillMaxSize()) {
     Column(
@@ -122,45 +122,56 @@ internal fun EditTransactionForm(
           .padding(horizontal = CardInset),
       verticalArrangement = Arrangement.spacedBy(CardSpacing),
     ) {
-      Column(
-        modifier = Modifier.fillMaxWidth().padding(AmountPadding),
-        horizontalAlignment = CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(AmountSpacing),
-      ) {
-        AktualSlidingToggleButton(
-          modifier = Modifier.width(ToggleWidth),
-          selected = isIncome,
-          options = persistentListOf(false, true),
-          onSelect = { income ->
+      if (form.isSplit) {
+        SplitTotal(
+          amount = draft.amount,
+          typed = amountText.text.toString(),
+          isTyping = isTypingTotal,
+          isIncome = isIncome,
+          isValid = amountText.isValidAmount(),
+          onClick = typeTotal,
+        )
+
+        SplitFieldsCard(form = form, onEdit = { fieldState.edit(it) })
+
+        SplitParts(form = form, fieldState = fieldState, isIncome = isIncome, onAction = onAction)
+
+        DetailCard {
+          NotesRow(notes = draft.notes, onClick = { fieldState.edit(Notes) })
+          CardDivider()
+          StatusRow(draft = draft, onUnlock = onUnlock, onAction = onAction)
+        }
+      } else {
+        SignedAmount(
+          amount = draft.amount,
+          typed = amountText.text.toString(),
+          isTyping = isTypingTotal,
+          isIncome = isIncome,
+          isValid = amountText.isValidAmount(),
+          onClick = typeTotal,
+          onSign = { income ->
             zeroIsIncome = income
             onAction(SetAmount(draft.amount.signed(income)))
           },
-          string = { income ->
-            if (income) Strings.transactionIncome else Strings.transactionExpense
-          },
-          fontSize = ToggleTextSize,
-          itemPadding = TogglePadding,
         )
 
-        HeroAmount(
-          amount = draft.amount,
-          typed = amountText.text.toString(),
-          isTyping = isTyping,
-          isIncome = isIncome,
-          isValid = amountText.isValidAmount(),
-          onClick = {
-            amountText.setTextAndPlaceCursorAtEnd(draft.amount.toInputText())
-            onActiveField(EditField.Amount)
-          },
+        FieldsCard(
+          form = form,
+          onEdit = { fieldState.edit(it) },
+          onUnlock = onUnlock,
+          onAction = onAction,
         )
+
+        // As upstream's mobile editor, which only splits a transaction that has an amount
+        if (draft.amount != Zero) {
+          BareTextButton(
+            modifier = Modifier.align(CenterHorizontally),
+            text = Strings.transactionsSplit,
+            prefix = { Icon(imageVector = AktualIcons.Split, contentDescription = null) },
+            onClick = { onAction(SplitTransaction) },
+          )
+        }
       }
-
-      FieldsCard(
-        form = form,
-        onActiveField = onActiveField,
-        onUnlock = onUnlock,
-        onAction = onAction,
-      )
 
       // Leaves room to scroll the fields clear of the keypad
       if (isTyping) Spacer(Modifier.height(keypadHeight)) else BottomSpacing()
@@ -181,6 +192,66 @@ internal fun EditTransactionForm(
     }
   }
 }
+
+// Sends each amount typed to whichever amount is being edited, the transaction's or a part's
+@Composable
+private fun TypedAmountEffect(
+  fieldState: EditFieldState,
+  isIncome: Boolean,
+  onAction: EditTransactionActionHandler,
+) {
+  val latestIsIncome by rememberUpdatedState(isIncome)
+  val latestOnAction by rememberUpdatedState(onAction)
+  LaunchedEffect(fieldState) {
+    snapshotFlow { fieldState.active to fieldState.amountText.text.toString() }
+      .collect { (active, text) ->
+        if (active?.field != EditField.Amount) return@collect
+        val amount = evaluateAmountInput(text) ?: return@collect
+        val part = active.part
+        if (part == null) {
+          latestOnAction(SetAmount(amount.signed(latestIsIncome)))
+        } else {
+          latestOnAction(SetPartAmount(part, amount.negatedIf(!latestIsIncome)))
+        }
+      }
+  }
+}
+
+// The expense/income toggle over the amount
+@Composable
+private fun SignedAmount(
+  amount: Amount,
+  typed: String,
+  isTyping: Boolean,
+  isIncome: Boolean,
+  isValid: Boolean,
+  onClick: () -> Unit,
+  onSign: (Boolean) -> Unit,
+) =
+  Column(
+    modifier = Modifier.fillMaxWidth().padding(AmountPadding),
+    horizontalAlignment = CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(AmountSpacing),
+  ) {
+    AktualSlidingToggleButton(
+      modifier = Modifier.width(ToggleWidth),
+      selected = isIncome,
+      options = persistentListOf(false, true),
+      onSelect = onSign,
+      string = { income -> if (income) Strings.transactionIncome else Strings.transactionExpense },
+      fontSize = ToggleTextSize,
+      itemPadding = TogglePadding,
+    )
+
+    HeroAmount(
+      amount = amount,
+      typed = typed,
+      isTyping = isTyping,
+      isIncome = isIncome,
+      isValid = isValid,
+      onClick = onClick,
+    )
+  }
 
 // Covers the bottom status bar, and keeps clear of the system navigation bar
 @Composable
@@ -209,7 +280,7 @@ private fun DockedKeypad(
 @Composable
 private fun FieldsCard(
   form: TransactionForm,
-  onActiveField: (EditField?) -> Unit,
+  onEdit: (EditField) -> Unit,
   onUnlock: () -> Unit,
   onAction: EditTransactionActionHandler,
 ) {
@@ -218,54 +289,66 @@ private fun FieldsCard(
     FieldRow(
       label = Strings.transactionPayee,
       value = form.payeeName,
-      onClick = { onActiveField(Payee) },
+      onClick = { onEdit(Payee) },
     )
     CardDivider()
     FieldRow(
       label = Strings.transactionCategory,
       value = if (form.isOffBudget) Strings.transactionsOffBudget else form.categoryName,
       enabled = !form.isOffBudget,
-      onClick = { onActiveField(Category) },
+      onClick = { onEdit(Category) },
     )
     CardDivider()
     FieldRow(
       label = Strings.transactionAccount,
       value = form.accountName,
-      onClick = { onActiveField(Account) },
+      onClick = { onEdit(Account) },
     )
     CardDivider()
     FieldRow(
       label = Strings.transactionDate,
       value = "${draft.date.dayOfWeek.stringLong()} ${draft.date.formatted()}",
-      onClick = { onActiveField(Date) },
+      onClick = { onEdit(Date) },
     )
     CardDivider()
-    FieldRow(
-      label = Strings.transactionNotes,
-      value = draft.notes?.takeIf { it.isNotBlank() },
-      showChevron = false,
-      onClick = { onActiveField(Notes) },
-    )
+    NotesRow(notes = draft.notes, onClick = { onEdit(Notes) })
     CardDivider()
-    if (draft.reconciled) {
-      // Stays on until the unlock is confirmed
-      SwitchRow(
-        label = Strings.transactionReconciled,
-        checked = true,
-        onChange = { onUnlock() },
-      )
-    } else {
-      SwitchRow(
-        label = Strings.transactionCleared,
-        checked = draft.cleared,
-        onChange = { onAction(SetCleared(it)) },
-      )
-    }
+    StatusRow(draft = draft, onUnlock = onUnlock, onAction = onAction)
   }
 }
 
 @Composable
-private fun HeroAmount(
+private fun NotesRow(notes: String?, onClick: () -> Unit) =
+  FieldRow(
+    label = Strings.transactionNotes,
+    value = notes?.takeIf { it.isNotBlank() },
+    showChevron = false,
+    onClick = onClick,
+  )
+
+@Composable
+private fun StatusRow(
+  draft: TransactionFields,
+  onUnlock: () -> Unit,
+  onAction: EditTransactionActionHandler,
+) =
+  if (draft.reconciled) {
+    // Stays on until the unlock is confirmed
+    SwitchRow(
+      label = Strings.transactionReconciled,
+      checked = true,
+      onChange = { onUnlock() },
+    )
+  } else {
+    SwitchRow(
+      label = Strings.transactionCleared,
+      checked = draft.cleared,
+      onChange = { onAction(SetCleared(it)) },
+    )
+  }
+
+@Composable
+internal fun HeroAmount(
   amount: Amount,
   typed: String,
   isTyping: Boolean,
@@ -273,6 +356,8 @@ private fun HeroAmount(
   isValid: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  fontSize: TextUnit = HeroAmountSize,
+  cursorHeight: Dp = CursorHeight,
 ) {
   val lineColor = if (isTyping) colors.buttonPrimaryBackground else colors.tableBorder
   val textColor =
@@ -297,7 +382,7 @@ private fun HeroAmount(
         } else {
           amount.abs().formattedText()
         },
-      fontSize = HeroAmountSize,
+      fontSize = fontSize,
       fontWeight = Bold,
       letterSpacing = HeroAmountTracking,
       color = textColor,
@@ -307,31 +392,33 @@ private fun HeroAmount(
     if (isTyping) {
       Box(
         modifier =
-          Modifier.size(CursorWidth, CursorHeight).background(colors.buttonPrimaryBackground),
+          Modifier.size(CursorWidth, cursorHeight).background(colors.buttonPrimaryBackground),
       )
     }
   }
 }
 
 @Composable
-private fun FieldRow(
+internal fun FieldRow(
   label: String,
   value: String?,
   onClick: () -> Unit,
   enabled: Boolean = true,
   showChevron: Boolean = true,
+  minHeight: Dp = FieldRowHeight,
+  labelWidth: Dp = FieldLabelWidth,
 ) =
   Row(
     modifier =
       Modifier.fillMaxWidth()
         .clickable(enabled = enabled, onClickLabel = label, onClick = onClick)
-        .heightIn(min = FieldRowHeight)
+        .heightIn(min = minHeight)
         .padding(FieldRowPadding),
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(FieldRowGap),
   ) {
     Text(
-      modifier = Modifier.width(FieldLabelWidth),
+      modifier = Modifier.width(labelWidth),
       text = label,
       fontSize = FieldLabelSize,
       color = colors.pageTextSubdued,
@@ -384,6 +471,9 @@ private fun Amount.abs(): Amount = if (this < Zero) -this else this
 
 private fun Amount.signed(isIncome: Boolean): Amount = if (isIncome) abs() else -abs()
 
+// A part's amount is typed and shown from its split's side, so an expense's parts read as positive
+internal fun Amount.negatedIf(negate: Boolean): Amount = if (negate) -this else this
+
 private val AmountPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 4.dp)
 private val AmountSpacing = 10.dp
 private val ToggleWidth = 200.dp
@@ -391,8 +481,8 @@ private val ToggleTextSize = 13.sp
 private val TogglePadding = PaddingValues(horizontal = 5.dp, vertical = 7.dp)
 private val UnderlineWidth = 2.dp
 private val UnderlinePadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 4.dp)
-private val CursorGap = 2.dp
-private val CursorWidth = 2.dp
+internal val CursorGap = 2.dp
+internal val CursorWidth = 2.dp
 private val CursorHeight = 40.dp
 private val FieldRowHeight = 48.dp
 private val FieldRowPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
@@ -402,4 +492,4 @@ private val FieldLabelWidth = 84.dp
 private val FieldLabelSize = 13.sp
 private val ChevronSize = 16.dp
 private val KeypadPadding = 8.dp
-private const val EMPTY_AMOUNT = "0"
+internal const val EMPTY_AMOUNT = "0"
