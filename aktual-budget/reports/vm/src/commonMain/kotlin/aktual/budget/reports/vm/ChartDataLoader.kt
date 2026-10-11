@@ -6,6 +6,7 @@ import aktual.budget.db.ForecastSchedules
 import aktual.budget.db.ForecastTrackingBudgetTotals
 import aktual.budget.db.ForecastTransferPayees
 import aktual.budget.db.SankeyCategoryTotals
+import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.model.AccountId
@@ -13,6 +14,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
+import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.PayeeId
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.WidgetType
@@ -43,6 +45,7 @@ import kotlinx.serialization.json.contentOrNull
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ChartDataLoader(
   private val dao: ReportsDao,
+  private val customReports: CustomReportsDao,
   private val preferences: PreferencesDao,
   private val calendar: Calendar,
   private val contexts: CoroutineContexts,
@@ -53,18 +56,45 @@ internal class ChartDataLoader(
       is BalanceForecastReportMeta -> balanceForecast(meta)
       is CashFlowReportMeta -> cashFlow(meta)
       is CrossoverReportMeta -> crossover(meta)
+      is CustomReportMeta -> custom(meta)
       is MarkdownReportMeta -> text(meta)
       is MonteCarloReportMeta -> monteCarlo(meta)
       is NetWorthReportMeta -> netWorth(meta)
       is SankeyReportMeta -> sankey(meta)
       is BudgetAnalysisReportMeta,
       is CalendarReportMeta,
-      is CustomReportMeta,
       is FormulaReportMeta,
       is SpendingReportMeta,
       is SummaryReportMeta -> unsupported(meta, ReportType)
       is UnsupportedReportMeta ->
         unsupported(meta, if (meta.type == Unknown) ReportType else InvalidMeta)
+    }
+
+  // packages/desktop-client/src/components/reports/reports/GetCardData.tsx
+  fun custom(meta: CustomReportMeta): Flow<ChartData> =
+    combine(
+      customReports.observe(meta.id),
+      dao.observeTransactionDateBounds(),
+      preferences.observe(SyncedPrefKey.Global.FirstDayOfWeekIdx),
+    ) { report, bounds, firstDayOfWeek ->
+      if (report == null || report.tombstone == true) {
+        return@combine unsupportedData(meta, MissingReport)
+      }
+
+      val config =
+        report.toConfig() ?: return@combine UnsupportedData(InvalidMeta, Custom, report.name)
+
+      val today = calendar.today()
+      val range =
+        resolveCustomReportRange(
+          dates = config.dates,
+          today = today,
+          earliestTransaction = bounds.earliest ?: today,
+          latestTransaction = bounds.latest ?: today,
+          // Upstream treats an unset preference as Sunday
+          firstDayOfWeek = FirstDayOfWeek.from(firstDayOfWeek) ?: Sunday,
+        )
+      CustomData(title = report.name.orEmpty(), config = config, range = range)
     }
 
   fun text(meta: MarkdownReportMeta): Flow<ChartData> {
@@ -513,7 +543,10 @@ internal class ChartDataLoader(
       .flowOn(contexts.default)
   }
 
-  fun unsupported(meta: ReportMeta, reason: UnsupportedReason): Flow<ChartData> {
+  fun unsupported(meta: ReportMeta, reason: UnsupportedReason): Flow<ChartData> =
+    flowOf(unsupportedData(meta, reason))
+
+  private fun unsupportedData(meta: ReportMeta, reason: UnsupportedReason): UnsupportedData {
     val (type, name) =
       when (meta) {
         is AgeOfMoneyReportMeta -> WidgetType.AgeOfMoney to meta.name
@@ -533,7 +566,7 @@ internal class ChartDataLoader(
         is UnsupportedReportMeta -> meta.type to (meta.raw["name"] as? JsonPrimitive)?.contentOrNull
       }
     val stackTrace = (meta as? UnsupportedReportMeta)?.stackTrace
-    return flowOf(UnsupportedData(reason, type, name, stackTrace))
+    return UnsupportedData(reason, type, name, stackTrace)
   }
 
   private fun List<Condition>?.hasFilters() = !isNullOrEmpty()

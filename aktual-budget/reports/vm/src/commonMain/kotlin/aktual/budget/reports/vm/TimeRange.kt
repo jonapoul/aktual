@@ -14,7 +14,7 @@ import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.yearMonth
 
-private const val MONTHS_PER_QUARTER = 3
+internal const val MONTHS_PER_QUARTER = 3
 private const val DEFAULT_WINDOW_MONTHS = 5
 
 // packages/desktop-client/src/components/reports/reportRanges.ts calculateTimeRange()
@@ -52,7 +52,7 @@ private fun slidingWindow(start: YearMonth, end: YearMonth, current: YearMonth):
   }
 }
 
-private fun quarter(month: YearMonth): YearMonthRange {
+internal fun quarter(month: YearMonth): YearMonthRange {
   val first =
     YearMonth(
       month.year,

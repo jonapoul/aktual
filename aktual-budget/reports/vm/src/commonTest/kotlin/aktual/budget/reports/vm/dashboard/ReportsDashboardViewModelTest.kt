@@ -1,6 +1,7 @@
 package aktual.budget.reports.vm.dashboard
 
 import aktual.budget.db.Dashboard_pages
+import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ReportsDao
@@ -83,6 +84,7 @@ class ReportsDashboardViewModelTest {
         chartDataLoader =
           ChartDataLoader(
             ReportsDao(this, contexts),
+            CustomReportsDao(this, contexts),
             PreferencesDao(this, contexts),
             calendar = { LocalDate(2026, 1, 1) },
             contexts = contexts,

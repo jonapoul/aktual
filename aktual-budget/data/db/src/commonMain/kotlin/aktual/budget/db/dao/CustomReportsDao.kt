@@ -9,6 +9,7 @@ import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -23,6 +24,9 @@ class CustomReportsDao(database: BudgetDatabase, private val contexts: Coroutine
   suspend operator fun get(id: CustomReportId): CustomReports? = queries.withResult {
     getById(id).awaitAsOneOrNull()
   }
+
+  fun observe(id: CustomReportId): Flow<CustomReports?> =
+    queries.getById(id).asFlow().mapToOneOrNull(contexts.default).distinctUntilChanged()
 
   fun observeNames(): Flow<Map<CustomReportId, String>> =
     queries
