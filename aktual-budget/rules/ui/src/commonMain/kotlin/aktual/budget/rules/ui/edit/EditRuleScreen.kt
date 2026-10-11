@@ -250,6 +250,7 @@ private fun EditRuleContent(
   when (state) {
     is Failure -> {
       FailureScreen(
+        modifier = modifier,
         title = Strings.editRuleFailedTitle,
         reason = state.reason,
         background = colors.tableBackground,
