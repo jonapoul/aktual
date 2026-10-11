@@ -4,7 +4,6 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
-import aktual.budget.model.TransactionId
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.ui.TRANSACTION_1
 import aktual.budget.transactions.ui.TRANSACTION_OFF_BUDGET
@@ -17,9 +16,11 @@ import aktual.budget.transactions.ui.tabularFigures
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.edit.EditTransactionError
 import aktual.budget.transactions.vm.edit.EditTransactionState
+import aktual.budget.transactions.vm.edit.EditTransactionTarget
 import aktual.budget.transactions.vm.edit.EditTransactionViewModel
 import aktual.budget.transactions.vm.edit.TransactionDetails
 import aktual.budget.transactions.vm.edit.TransactionEditMode
+import aktual.budget.transactions.vm.edit.TransactionForm
 import aktual.budget.transactions.vm.edit.TransactionOptions
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.LeftArrow2
@@ -28,6 +29,7 @@ import aktual.core.icons.Split
 import aktual.core.icons.Tag
 import aktual.core.icons.material.AccountBalanceWallet
 import aktual.core.icons.material.ArrowBack
+import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.Clear
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Edit
@@ -46,7 +48,6 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -72,6 +73,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -103,15 +105,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun EditTransactionScreen(
-  id: TransactionId,
+  target: EditTransactionTarget,
   back: BackNavigator,
+  toBudget: () -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: EditTransactionViewModel = editTransactionViewModel(id),
+  viewModel: EditTransactionViewModel = editTransactionViewModel(target),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val error by viewModel.error.collectAsStateWithLifecycle()
@@ -119,7 +124,9 @@ internal fun EditTransactionScreen(
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        Deleted -> back()
+        Deleted,
+        Created,
+        Discarded -> back()
       }
     }
   }
@@ -137,8 +144,11 @@ internal fun EditTransactionScreen(
         DeleteTransaction -> viewModel.delete()
         UnlockReconciled -> viewModel.unlockReconciled()
         DismissError -> viewModel.dismissError()
+        CommitAmount -> viewModel.commitAmount()
+        GoToBudget -> toBudget()
         is SetAmount -> viewModel.setAmount(action.amount)
         is SetPayee -> viewModel.setPayee(action.id)
+        is CreatePayee -> viewModel.createPayee(action.name)
         is SetCategory -> viewModel.setCategory(action.id)
         is SetAccount -> viewModel.setAccount(action.id)
         is SetDate -> viewModel.setDate(action.date)
@@ -150,11 +160,11 @@ internal fun EditTransactionScreen(
 }
 
 @Composable
-private fun editTransactionViewModel(id: TransactionId) =
+private fun editTransactionViewModel(target: EditTransactionTarget) =
   assistedMetroViewModel<EditTransactionViewModel, EditTransactionViewModel.Factory>(
-    key = id.toString(),
+    key = target.toString(),
   ) {
-    create(id)
+    create(target)
   }
 
 @Composable
@@ -165,20 +175,23 @@ private fun EditTransactionScaffold(
   modifier: Modifier = Modifier,
 ) {
   val loaded = state as? EditTransactionState.Loaded
-  val edit = loaded?.mode as? TransactionEditMode.Edit
-  val isEditing = edit != null
+  val form = (loaded?.mode as? TransactionEditMode.Editing)?.form
+  val isEditing = form != null
+  val isCreating = loaded?.mode is Create
   var dialog by remember { mutableStateOf<TransactionDialog?>(null) }
-  var activeField by remember(isEditing) { mutableStateOf<EditField?>(null) }
+  // A new transaction starts with the keypad open
+  var activeField by
+    remember(isEditing) { mutableStateOf(if (isCreating) EditField.Amount else null) }
   val amountText = rememberTextFieldState()
   val isAmountValid = activeField != EditField.Amount || amountText.isValidAmount()
 
-  // Backing out of an edit drops back to viewing the transaction, checking first if that would
-  // lose any changes
+  // Backing out of an edit drops back to viewing the transaction, or closes a new one, checking
+  // first if that would lose any changes
   fun onBack() {
     when {
       loaded?.isWorking == true -> Unit
-      edit == null -> onAction(NavigateBack)
-      edit.hasChanges -> dialog = ConfirmDiscard
+      form == null -> onAction(NavigateBack)
+      form.hasChanges -> dialog = ConfirmDiscard
       else -> onAction(StopEditing)
     }
   }
@@ -192,12 +205,12 @@ private fun EditTransactionScaffold(
     topBar = {
       EditTransactionTopBar(
         modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
-        loaded = loaded,
+        state = state,
         canSave = loaded?.canSave == true && isAmountValid,
         onBack = { onBack() },
         onEdit = { onAction(StartEditing) },
         onSave = {
-          if (edit?.draft?.reconciled == true) {
+          if (form?.draft?.reconciled == true) {
             dialog = ConfirmReconciledSave
           } else {
             onAction(SaveTransaction)
@@ -213,37 +226,26 @@ private fun EditTransactionScaffold(
       PageBackground()
 
       when (state) {
-        Loading -> LoadingScreen(modifier = Modifier.padding(innerPadding))
+        Loading -> ShimmerTransaction(modifier = Modifier.padding(innerPadding))
 
-        is Failure ->
-          FailureScreen(
-            modifier = Modifier.padding(innerPadding),
-            title = Strings.transactionFailureTitle,
-            reason =
-              when (state) {
-                NotFound -> Strings.transactionFailureNotFound
-                is Other -> state.reason
-              },
-            action =
-              FailureAction(
-                text = { Strings.navBack },
-                icon = MaterialIcons.ArrowBack,
-                onClick = { onAction(NavigateBack) },
-              ),
-          )
+        is Failure -> LoadFailure(state, onAction, Modifier.padding(innerPadding))
+
+        is Empty -> NothingToCreateWith(state, onAction, Modifier.padding(innerPadding))
 
         is Loaded ->
-          if (edit == null) {
-            TransactionContent(
-              modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
-              details = state.saved,
-              scrollState = scrollState,
-              contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
-            )
+          if (form == null) {
+            state.saved?.let { saved ->
+              TransactionContent(
+                modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
+                details = saved,
+                scrollState = scrollState,
+                contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
+              )
+            }
           } else {
             EditTransactionForm(
               modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
-              edit = edit,
+              form = form,
               amountText = amountText,
               activeField = activeField,
               onActiveField = { activeField = it },
@@ -255,10 +257,10 @@ private fun EditTransactionScaffold(
           }
       }
 
-      if (edit != null) {
+      if (form != null) {
         EditTransactionSheet(
           field = activeField,
-          edit = edit,
+          form = form,
           onAction = onAction,
           onDismiss = { activeField = null },
         )
@@ -275,7 +277,7 @@ private fun EditTransactionScaffold(
 
 @Composable
 private fun EditTransactionTopBar(
-  loaded: EditTransactionState.Loaded?,
+  state: EditTransactionState,
   canSave: Boolean,
   onBack: () -> Unit,
   onEdit: () -> Unit,
@@ -283,7 +285,9 @@ private fun EditTransactionTopBar(
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val isEditing = loaded?.mode is Edit
+  val loaded = state as? EditTransactionState.Loaded
+  val isEditing = loaded?.mode is Editing
+  val isCreating = loaded?.mode is Create || state is Empty
   TopAppBar(
     modifier = modifier,
     colors = colors.transparentTopAppBarColors(),
@@ -300,7 +304,10 @@ private fun EditTransactionTopBar(
       }
     },
     title = {
-      if (isEditing) Text(text = Strings.transactionEditTitle)
+      when {
+        isCreating -> Text(text = Strings.transactionCreateTitle)
+        isEditing -> Text(text = Strings.transactionEditTitle)
+      }
     },
     actions = {
       if (loaded != null) {
@@ -326,7 +333,7 @@ private fun TopBarActions(
   modifier: Modifier = Modifier,
 ) {
   Row(modifier = modifier, verticalAlignment = CenterVertically) {
-    if (state.mode is Edit) {
+    if (state.mode is Editing) {
       PrimaryTextButton(
         modifier = Modifier.padding(end = SaveInset),
         text = Strings.transactionSave,
@@ -364,6 +371,101 @@ private fun TopBarActions(
     }
   }
 }
+
+// Stands in for the hero and the details card while the transaction loads
+@Composable
+private fun ShimmerTransaction(modifier: Modifier = Modifier) {
+  val bar = Modifier.background(colors.tableText, ShimmerBarShape)
+  Column(
+    modifier =
+      modifier.fillMaxSize().padding(horizontal = CardInset).shimmer(rememberShimmer(Window)),
+    verticalArrangement = Arrangement.spacedBy(CardSpacing),
+  ) {
+    Column(
+      modifier = Modifier.fillMaxWidth().padding(HeroPadding),
+      horizontalAlignment = CenterHorizontally,
+      verticalArrangement = Arrangement.spacedBy(HeroSpacing),
+    ) {
+      Box(modifier = Modifier.size(AvatarSize).background(colors.tableText, CircleShape))
+      Box(modifier = bar.size(width = ShimmerPayeeWidth, height = ShimmerTextHeight))
+      Box(modifier = bar.size(width = ShimmerAmountWidth, height = ShimmerAmountHeight))
+      Box(modifier = bar.size(width = ShimmerDateWidth, height = ShimmerTextHeight))
+    }
+
+    DetailCard {
+      repeat(SHIMMER_ROWS) { index ->
+        if (index > 0) CardDivider()
+        Row(
+          modifier = Modifier.fillMaxWidth().padding(RowPadding),
+          verticalAlignment = CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(RowIconGap),
+        ) {
+          Box(modifier = bar.size(RowIconSize))
+          Box(modifier = bar.weight(1f).height(ShimmerRowHeight))
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun LoadFailure(
+  state: EditTransactionState.Failure,
+  onAction: EditTransactionActionHandler,
+  modifier: Modifier = Modifier,
+) =
+  FailureScreen(
+    modifier = modifier,
+    title = Strings.transactionFailureTitle,
+    reason =
+      when (state) {
+        NotFound -> Strings.transactionFailureNotFound
+        is Other -> state.reason
+      },
+    action =
+      FailureAction(
+        text = { Strings.navBack },
+        icon = MaterialIcons.ArrowBack,
+        onClick = { onAction(NavigateBack) },
+      ),
+  )
+
+// As upstream's mobile editor, which sends you off to add what a new transaction needs first
+@Composable
+private fun NothingToCreateWith(
+  state: EditTransactionState.Empty,
+  onAction: EditTransactionActionHandler,
+  modifier: Modifier = Modifier,
+) =
+  when (state) {
+    NoAccounts ->
+      FailureScreen(
+        modifier = modifier,
+        title = Strings.transactionCreateNoAccountsTitle,
+        reason = Strings.transactionCreateNoAccounts,
+        icon = null,
+        action =
+          FailureAction(
+            text = { Strings.navBack },
+            icon = MaterialIcons.ArrowBack,
+            onClick = { onAction(NavigateBack) },
+          ),
+      )
+
+    NoCategories ->
+      FailureScreen(
+        modifier = modifier,
+        title = Strings.transactionCreateNoCategoriesTitle,
+        reason = Strings.transactionCreateNoCategories,
+        icon = null,
+        action =
+          FailureAction(
+            text = { Strings.transactionCreateGoToBudget },
+            icon = MaterialIcons.ArrowRight,
+            onClick = { onAction(GoToBudget) },
+          ),
+      )
+  }
 
 // Option A of the transaction editor designs: the payee and amount up top, the rest in cards
 // under them. A split lists its parts first, in place of the category
@@ -742,6 +844,14 @@ private val PartGap = 12.dp
 private val PartBarWidth = 4.dp
 private val PartBarHeight = 32.dp
 private val PartBarShape = RoundedCornerShape(2.dp)
+private val ShimmerBarShape = RoundedCornerShape(4.dp)
+private val ShimmerPayeeWidth = 140.dp
+private val ShimmerAmountWidth = 180.dp
+private val ShimmerAmountHeight = 44.dp
+private val ShimmerDateWidth = 200.dp
+private val ShimmerTextHeight = 18.dp
+private val ShimmerRowHeight = 32.dp
+private const val SHIMMER_ROWS = 3
 
 @PortraitPreview
 @Composable
@@ -765,8 +875,8 @@ private fun previewLoaded(
     canEdit = true,
   )
 
-private fun previewEdit(transaction: Transaction, reconciled: Boolean = false) =
-  TransactionEditMode.Edit(
+private fun previewForm(transaction: Transaction, reconciled: Boolean = false) =
+  TransactionForm(
     draft =
       TransactionFields(
         account = AccountId("account"),
@@ -791,6 +901,32 @@ private fun previewEdit(transaction: Transaction, reconciled: Boolean = false) =
       ),
   )
 
+private val PREVIEW_NEW =
+  TransactionForm(
+    draft =
+      TransactionFields(
+        account = null,
+        date = TRANSACTION_1.date,
+        amount = Zero,
+        payee = null,
+        category = null,
+        notes = null,
+        cleared = false,
+        reconciled = false,
+      ),
+    payeeName = null,
+    categoryName = null,
+    accountName = null,
+    isOffBudget = false,
+    hasChanges = false,
+    options =
+      TransactionOptions(
+        payees = persistentListOf(),
+        categoryGroups = persistentListOf(),
+        accounts = persistentListOf(),
+      ),
+  )
+
 private class EditTransactionStateProvider :
   ColoredParameterProvider<EditTransactionState>(
     Loading,
@@ -799,10 +935,17 @@ private class EditTransactionStateProvider :
     previewLoaded(TRANSACTION_TRANSFER.copy(notes = null), reconciled = true),
     previewLoaded(TRANSACTION_OFF_BUDGET, cleared = false),
     previewLoaded(TRANSACTION_SPLIT_UNBALANCED),
-    previewLoaded(TRANSACTION_1, mode = previewEdit(TRANSACTION_1)),
+    previewLoaded(TRANSACTION_1, mode = TransactionEditMode.Edit(previewForm(TRANSACTION_1))),
     previewLoaded(
       TRANSACTION_OFF_BUDGET,
       reconciled = true,
-      mode = previewEdit(TRANSACTION_OFF_BUDGET, reconciled = true),
+      mode = TransactionEditMode.Edit(previewForm(TRANSACTION_OFF_BUDGET, reconciled = true)),
     ),
+    EditTransactionState.Loaded(
+      saved = null,
+      mode = TransactionEditMode.Create(PREVIEW_NEW),
+      canEdit = true,
+    ),
+    EditTransactionState.Empty.NoAccounts,
+    EditTransactionState.Empty.NoCategories,
   )

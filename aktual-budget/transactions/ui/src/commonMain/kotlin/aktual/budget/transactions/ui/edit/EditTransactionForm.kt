@@ -4,7 +4,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toInputText
 import aktual.budget.transactions.ui.tabularFigures
-import aktual.budget.transactions.vm.edit.TransactionEditMode
+import aktual.budget.transactions.vm.edit.TransactionForm
 import aktual.core.icons.material.ExpandMore
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
@@ -44,6 +44,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,7 +74,7 @@ internal fun TextFieldState.isValidAmount(): Boolean = evaluateAmountInput(text.
 // rows that each open a picker
 @Composable
 internal fun EditTransactionForm(
-  edit: TransactionEditMode.Edit,
+  form: TransactionForm,
   amountText: TextFieldState,
   activeField: EditField?,
   onActiveField: (EditField?) -> Unit,
@@ -83,7 +84,7 @@ internal fun EditTransactionForm(
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
-  val draft = edit.draft
+  val draft = form.draft
   val isTyping = activeField == EditField.Amount
 
   // Typed amounts are unsigned, and pick up their sign from the expense/income toggle. Zero has no
@@ -99,6 +100,7 @@ internal fun EditTransactionForm(
           evaluateAmountInput(text)?.let { onAction(SetAmount(it.signed(latestIsIncome))) }
         }
     }
+    DisposableEffect(Unit) { onDispose { onAction(CommitAmount) } }
   }
 
   val density = LocalDensity.current
@@ -154,7 +156,7 @@ internal fun EditTransactionForm(
       }
 
       FieldsCard(
-        edit = edit,
+        form = form,
         onActiveField = onActiveField,
         onUnlock = onUnlock,
         onAction = onAction,
@@ -206,29 +208,29 @@ private fun DockedKeypad(
 
 @Composable
 private fun FieldsCard(
-  edit: TransactionEditMode.Edit,
+  form: TransactionForm,
   onActiveField: (EditField?) -> Unit,
   onUnlock: () -> Unit,
   onAction: EditTransactionActionHandler,
 ) {
-  val draft = edit.draft
+  val draft = form.draft
   DetailCard {
     FieldRow(
       label = Strings.transactionPayee,
-      value = edit.payeeName,
+      value = form.payeeName,
       onClick = { onActiveField(Payee) },
     )
     CardDivider()
     FieldRow(
       label = Strings.transactionCategory,
-      value = if (edit.isOffBudget) Strings.transactionsOffBudget else edit.categoryName,
-      enabled = !edit.isOffBudget,
+      value = if (form.isOffBudget) Strings.transactionsOffBudget else form.categoryName,
+      enabled = !form.isOffBudget,
       onClick = { onActiveField(Category) },
     )
     CardDivider()
     FieldRow(
       label = Strings.transactionAccount,
-      value = edit.accountName,
+      value = form.accountName,
       onClick = { onActiveField(Account) },
     )
     CardDivider()

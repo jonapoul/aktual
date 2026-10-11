@@ -5,13 +5,16 @@ import aktual.budget.model.CategorySpec
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.ui.edit.EditTransactionScreen
+import aktual.budget.transactions.vm.edit.EditTransactionTarget
 import aktual.core.nav.AccountGroupTransactionsNavRoute
 import aktual.core.nav.AccountTransactionsNavRoute
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.BudgetEntryScope
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
+import aktual.core.nav.BudgetNavigator
 import aktual.core.nav.CategoryTransactionsNavRoute
+import aktual.core.nav.CreateTransactionNavRoute
 import aktual.core.nav.EditTransactionNavigator
 import aktual.core.nav.NavStack
 import aktual.core.nav.TransactionNavRoute
@@ -83,7 +86,23 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
     }
 
     budgetEntry<TransactionNavRoute> { route ->
-      EditTransactionScreen(id = route.id, back = BackNavigator(stack))
+      EditTransactionScreen(
+        target = EditTransactionTarget.Existing(route.id),
+        back = BackNavigator(stack),
+        toBudget = { BudgetNavigator(stack)() },
+      )
+    }
+
+    budgetEntry<CreateTransactionNavRoute> { route ->
+      EditTransactionScreen(
+        target = EditTransactionTarget.New(route.account, route.category),
+        back = BackNavigator(stack),
+        // The budget takes this screen's place, since it wouldn't see the new categories
+        toBudget = {
+          stack.pop()
+          BudgetNavigator(stack)()
+        },
+      )
     }
 
     budgetEntry<UncategorisedTransactionsNavRoute> {

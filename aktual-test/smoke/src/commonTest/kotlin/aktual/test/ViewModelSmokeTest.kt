@@ -26,6 +26,7 @@ import aktual.budget.tags.vm.edit.EditTagViewModel
 import aktual.budget.tags.vm.list.ListTagsViewModel
 import aktual.budget.tags.vm.search.SearchTagsViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
+import aktual.budget.transactions.vm.edit.EditTransactionTarget
 import aktual.budget.transactions.vm.edit.EditTransactionViewModel
 import aktual.core.theme.DarkColors
 import aktual.metrics.vm.MetricsViewModel
@@ -200,7 +201,13 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test
   fun editTransaction() =
     testAssistedVM<EditTransactionViewModel, EditTransactionViewModel.Factory> {
-      create(TRANSACTION_ID)
+      create(EditTransactionTarget.Existing(TRANSACTION_ID))
+    }
+
+  @Test
+  fun createTransaction() =
+    testAssistedVM<EditTransactionViewModel, EditTransactionViewModel.Factory> {
+      create(EditTransactionTarget.New())
     }
 
   @Test

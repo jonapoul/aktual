@@ -2,29 +2,42 @@ package aktual.budget.transactions.vm.edit
 
 import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.Rules
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
+import aktual.budget.db.dao.DatabaseTables.PAYEES
+import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.RuleContextDao
+import aktual.budget.db.dao.RulesDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
+import aktual.budget.model.Condition
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
+import aktual.budget.model.RuleAction
+import aktual.budget.model.RuleId
 import aktual.budget.model.TransactionId
+import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
+import aktual.budget.rules.domain.TransactionRulesLoader
+import aktual.budget.transactions.domain.LastTransaction
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.domain.TransactionLoader
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.budget.transactions.vm.DATE_1
+import aktual.budget.transactions.vm.DATE_2
 import aktual.budget.transactions.vm.asParent
 import aktual.budget.transactions.vm.insertAccount
 import aktual.budget.transactions.vm.insertCategory
 import aktual.budget.transactions.vm.insertPayee
 import aktual.budget.transactions.vm.insertTransaction
 import aktual.budget.transactions.vm.transaction
+import aktual.test.TestCalendar
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
 import app.cash.turbine.Event
@@ -53,10 +66,13 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalDate
+import kotlinx.serialization.json.JsonPrimitive
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
+@Suppress("TooManyFunctions")
 @RunWith(RobolectricTestRunner::class)
 class EditTransactionViewModelTest {
   @AfterTest
@@ -100,7 +116,7 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "p2")
 
     viewModel.state.test {
-      assertThat(awaitLoaded().saved.transaction)
+      assertThat(awaitLoaded().saved?.transaction)
         .isEqualTo(
           transaction("p", "a", null, "a", amount = 100.0, balance = 100.0)
             .asParent(
@@ -122,12 +138,12 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "p")
 
     viewModel.state.test {
-      assertThat(awaitLoaded().saved.transaction.children.size).isEqualTo(1)
+      assertThat(awaitLoaded().saved?.transaction?.children?.size).isEqualTo(1)
 
       transactions.insertTransaction("p2", "a", "c", "b", amount = 40.0, parent = "p")
       scope.advanceUntilIdle()
 
-      assertThat(awaitLoaded().saved.transaction.children.size).isEqualTo(2)
+      assertThat(awaitLoaded().saved?.transaction?.children?.size).isEqualTo(2)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -156,12 +172,12 @@ class EditTransactionViewModelTest {
       viewModel.startEditing()
 
       assertThat(awaitEdit()).all {
-        prop(TransactionEditMode.Edit::draft).isEqualTo(SAVED)
-        prop(TransactionEditMode.Edit::payeeName).isEqualTo("Argos")
-        prop(TransactionEditMode.Edit::categoryName).isEqualTo("Additional")
-        prop(TransactionEditMode.Edit::accountName).isEqualTo("Amex")
-        prop(TransactionEditMode.Edit::isOffBudget).isFalse()
-        prop(TransactionEditMode.Edit::hasChanges).isFalse()
+        prop(TransactionForm::draft).isEqualTo(SAVED)
+        prop(TransactionForm::payeeName).isEqualTo("Argos")
+        prop(TransactionForm::categoryName).isEqualTo("Additional")
+        prop(TransactionForm::accountName).isEqualTo("Amex")
+        prop(TransactionForm::isOffBudget).isFalse()
+        prop(TransactionForm::hasChanges).isFalse()
       }
       cancelAndIgnoreRemainingEvents()
     }
@@ -212,12 +228,11 @@ class EditTransactionViewModelTest {
       var edit = awaitEdit()
       while (edit.draft.account != AccountId("d")) edit = awaitEdit()
       assertThat(edit).all {
-        prop(TransactionEditMode.Edit::draft)
-          .isEqualTo(SAVED.copy(payee = null, account = AccountId("d")))
-        prop(TransactionEditMode.Edit::payeeName).isNull()
-        prop(TransactionEditMode.Edit::accountName).isEqualTo("Mortgage")
-        prop(TransactionEditMode.Edit::isOffBudget).isTrue()
-        prop(TransactionEditMode.Edit::hasChanges).isTrue()
+        prop(TransactionForm::draft).isEqualTo(SAVED.copy(payee = null, account = AccountId("d")))
+        prop(TransactionForm::payeeName).isNull()
+        prop(TransactionForm::accountName).isEqualTo("Mortgage")
+        prop(TransactionForm::isOffBudget).isTrue()
+        prop(TransactionForm::hasChanges).isTrue()
       }
 
       viewModel.stopEditing()
@@ -347,7 +362,8 @@ class EditTransactionViewModelTest {
         mode
           .isNotNull()
           .isInstanceOf<TransactionEditMode.Edit>()
-          .prop(TransactionEditMode.Edit::draft)
+          .prop(TransactionEditMode.Edit::form)
+          .prop(TransactionForm::draft)
           .isEqualTo(SAVED.copy(cleared = false))
       }
     }
@@ -406,10 +422,222 @@ class EditTransactionViewModelTest {
     }
   }
 
-  private suspend fun ReceiveTurbine<EditTransactionState>.awaitEdit(): TransactionEditMode.Edit {
+  @Test
+  fun `A new transaction starts in the list's account and category`() = runDatabaseTest { scope ->
+    insertEntities()
+    val target = EditTransactionTarget.New(AccountId("b"), CategoryId("c"))
+    val viewModel = createViewModel(scope, target = target)
+
+    viewModel.state.test {
+      assertThat(awaitCreate()).all {
+        prop(TransactionForm::draft)
+          .isEqualTo(NEW.copy(account = AccountId("b"), category = CategoryId("c")))
+        prop(TransactionForm::accountName).isEqualTo("Barclays")
+        prop(TransactionForm::categoryName).isEqualTo("Car")
+        prop(TransactionForm::hasChanges).isFalse()
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `A new transaction follows the last one added`() = runDatabaseTest { scope ->
+    insertEntities()
+    val last = LastTransaction()
+    last.set(SAVED.copy(account = AccountId("c"), date = DATE_2))
+    val viewModel =
+      createViewModel(scope, target = EditTransactionTarget.New(), lastTransaction = last)
+
+    viewModel.state.test {
+      assertThat(awaitCreate().draft).isEqualTo(NEW.copy(account = AccountId("c"), date = DATE_2))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `A new transaction can't be saved without an account`() = runDatabaseTest { scope ->
+    insertEntities()
+    val viewModel = createViewModel(scope, target = EditTransactionTarget.New())
+
+    viewModel.state.test {
+      assertThat(awaitLoaded().canSave).isFalse()
+
+      viewModel.setAccount(AccountId("a"))
+
+      assertThat(awaitLoaded().canSave).isTrue()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `A new transaction needs an account to go in`() = runDatabaseTest { scope ->
+    CategoryDao(this).insertCategory(CategoryId("a"), "Additional")
+    val viewModel = createViewModel(scope, target = EditTransactionTarget.New())
+
+    viewModel.state.test {
+      var state = awaitItem()
+      while (state == Loading) state = awaitItem()
+      assertThat(state).isEqualTo(EditTransactionState.Empty.NoAccounts)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `A new transaction needs a category to pick`() = runDatabaseTest { scope ->
+    AccountDao(this).insertAccount(AccountId("a"), "Amex")
+    val viewModel = createViewModel(scope, target = EditTransactionTarget.New())
+
+    viewModel.state.test {
+      var state = awaitItem()
+      while (state == Loading) state = awaitItem()
+      assertThat(state).isEqualTo(EditTransactionState.Empty.NoCategories)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Rules fill in what a new transaction is missing`() = runDatabaseTest { scope ->
+    insertEntities()
+    insertCategoryRule(payee = "a", category = "b")
+    val target = EditTransactionTarget.New(AccountId("a"))
+    val viewModel = createViewModel(scope, target = target)
+
+    viewModel.state.test {
+      awaitCreate()
+      viewModel.setPayee(PayeeId("a"))
+
+      val filled = NEW.copy(account = AccountId("a"), payee = PayeeId("a"))
+      assertThat(awaitCreate()).all {
+        prop(TransactionForm::draft).isEqualTo(filled.copy(category = CategoryId("b")))
+        prop(TransactionForm::categoryName).isEqualTo("Building")
+      }
+
+      // Taking the category off again is the user's choice, so later runs leave it off
+      viewModel.setCategory(null)
+      assertThat(awaitCreate().draft).isEqualTo(filled)
+
+      viewModel.setNotes("Lunch")
+      assertThat(awaitCreate().draft).isEqualTo(filled.copy(notes = "Lunch"))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Rules leave a saved transaction alone`() = runDatabaseTest { scope ->
+    insertEntities()
+    insertCategoryRule(payee = "b", category = "b")
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val viewModel = createViewModel(scope, id = "t")
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.startEditing()
+      awaitEdit()
+
+      viewModel.setPayee(PayeeId("b"))
+
+      assertThat(awaitEdit().draft).isEqualTo(SAVED.copy(payee = PayeeId("b")))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Saving a new transaction inserts it and closes`() = runDatabaseTest { scope ->
+    insertEntities()
+    val sync = FakeSyncController()
+    val last = LastTransaction()
+    val target = EditTransactionTarget.New(AccountId("a"))
+    val viewModel = createViewModel(scope, sync = sync, target = target, lastTransaction = last)
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitCreate()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.setAmount(Amount(-25.0))
+      viewModel.setPayee(PayeeId("a"))
+      viewModel.setDate(DATE_2)
+      viewModel.save()
+
+      assertThatNextEmissionIsEqualTo(Created)
+      assertThat(sync.calls.single().filter { it.column != "sort_order" })
+        .containsExactly(
+          localChange(TRANSACTIONS, "uuid", "acct", "a"),
+          localChange(TRANSACTIONS, "uuid", "amount", -2500L),
+          localChange(TRANSACTIONS, "uuid", "description", "a"),
+          localChange(TRANSACTIONS, "uuid", "date", 20250602L),
+          localChange(TRANSACTIONS, "uuid", "cleared", false),
+          localChange(TRANSACTIONS, "uuid", "reconciled", false),
+        )
+      assertThat(last.fields).isNotNull().all {
+        prop(TransactionFields::account).isEqualTo(AccountId("a"))
+        prop(TransactionFields::date).isEqualTo(DATE_2)
+      }
+    }
+  }
+
+  @Test
+  fun `A payee added by name is created with the transaction`() = runDatabaseTest { scope ->
+    insertEntities()
+    val sync = FakeSyncController()
+    val target = EditTransactionTarget.New(AccountId("a"))
+    val viewModel = createViewModel(scope, sync = sync, target = target)
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitCreate()
+
+        // A name that's already taken picks that payee
+        viewModel.createPayee("argos")
+        assertThat(awaitCreate().draft.payee).isEqualTo(PayeeId("a"))
+
+        viewModel.createPayee(" Deli ")
+        assertThat(awaitCreate().payeeName).isEqualTo("Deli")
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.save()
+
+      assertThatNextEmissionIsEqualTo(Created)
+      val changes = sync.calls.single()
+      assertThat(changes.filter { it.dataset != TRANSACTIONS || it.column == "description" })
+        .containsExactly(
+          localChange(PAYEES, "uuid", "name", "Deli"),
+          localChange(PAYEE_MAPPING, "uuid", "targetId", "uuid"),
+          localChange(TRANSACTIONS, "uuid", "description", "uuid"),
+        )
+    }
+  }
+
+  @Test
+  fun `Discarding a new transaction closes without writing`() = runDatabaseTest { scope ->
+    insertEntities()
+    val sync = FakeSyncController()
+    val target = EditTransactionTarget.New(AccountId("a"))
+    val viewModel = createViewModel(scope, sync = sync, target = target)
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitCreate()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.setNotes("Lunch")
+      viewModel.stopEditing()
+
+      assertThatNextEmissionIsEqualTo(Discarded)
+      assertThat(sync.calls).isEmpty()
+    }
+  }
+
+  private suspend fun ReceiveTurbine<EditTransactionState>.awaitEdit(): TransactionForm {
     var mode = awaitLoaded().mode
     while (mode !is Edit) mode = awaitLoaded().mode
-    return mode
+    return mode.form
+  }
+
+  private suspend fun ReceiveTurbine<EditTransactionState>.awaitCreate(): TransactionForm {
+    var mode = awaitLoaded().mode
+    while (mode !is Create) mode = awaitLoaded().mode
+    return mode.form
   }
 
   private suspend fun ReceiveTurbine<EditTransactionState>.awaitLoaded():
@@ -437,10 +665,30 @@ class EditTransactionViewModelTest {
     }
   }
 
+  // Gives transactions with this payee the category, if they have none
+  private suspend fun BudgetDatabase.insertCategoryRule(payee: String, category: String) =
+    RulesDao(this)
+      .insert(
+        Rules(
+          id = RuleId("rule"),
+          stage = null,
+          conditions =
+            listOf(Condition(field = Payee, operator = Is, value = JsonPrimitive(payee))),
+          actions =
+            listOf(
+              RuleAction(value = JsonPrimitive(category), op = RuleAction.Op.Set, field = Category),
+            ),
+          tombstone = false,
+          conditions_op = And,
+        ),
+      )
+
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
-    id: String,
+    id: String = "t",
     sync: FakeSyncController = FakeSyncController(),
+    target: EditTransactionTarget = EditTransactionTarget.Existing(TransactionId(id)),
+    lastTransaction: LastTransaction = LastTransaction(),
   ): EditTransactionViewModel {
     Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     val accountDao = AccountDao(this)
@@ -448,7 +696,7 @@ class EditTransactionViewModelTest {
     val payeeDao = PayeeDao(this)
     val transactionDao = TransactionDao(this)
     return EditTransactionViewModel(
-      id = TransactionId(id),
+      target = target,
       loader = TransactionLoader(transactionDao),
       writer =
         TransactionWriter(
@@ -460,6 +708,14 @@ class EditTransactionViewModelTest {
           uuidGenerator = { "uuid" },
           clock = Clock.System,
         ),
+      rulesLoader =
+        TransactionRulesLoader(
+          rulesDao = RulesDao(this),
+          contextDao = RuleContextDao(this),
+          uuidGenerator = { "uuid" },
+        ),
+      lastTransaction = lastTransaction,
+      calendar = TestCalendar(TODAY),
       accountDao = accountDao,
       payeeDao = payeeDao,
       categoryDao = categoryDao,
@@ -493,6 +749,21 @@ class EditTransactionViewModelTest {
         category = CategoryId("a"),
         notes = null,
         cleared = true,
+        reconciled = false,
+      )
+
+    val TODAY = LocalDate(2026, 10, 11)
+
+    // What a new transaction starts as, before its list or the last one added fill anything in
+    val NEW =
+      TransactionFields(
+        account = null,
+        date = TODAY,
+        amount = Zero,
+        payee = null,
+        category = null,
+        notes = null,
+        cleared = false,
         reconciled = false,
       )
   }

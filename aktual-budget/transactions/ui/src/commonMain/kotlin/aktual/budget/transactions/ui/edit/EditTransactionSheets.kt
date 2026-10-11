@@ -5,11 +5,14 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.transactions.vm.edit.CategoryGroupOptions
 import aktual.budget.transactions.vm.edit.EntityOption
-import aktual.budget.transactions.vm.edit.TransactionEditMode
+import aktual.budget.transactions.vm.edit.TransactionForm
+import aktual.core.icons.material.Add
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.EditorSheet
 import aktual.core.ui.ListBottomSheet
@@ -31,7 +34,6 @@ import androidx.compose.material3.getSelectedDate
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
@@ -48,24 +50,25 @@ import kotlinx.datetime.toKotlinLocalDate
 @Composable
 internal fun EditTransactionSheet(
   field: EditField?,
-  edit: TransactionEditMode.Edit,
+  form: TransactionForm,
   onAction: EditTransactionActionHandler,
   onDismiss: () -> Unit,
 ) {
-  val draft = edit.draft
+  val draft = form.draft
   when (field) {
     Payee ->
       PayeeSheet(
         selected = draft.payee,
-        options = edit.options.payees,
+        options = form.options.payees,
         onDismiss = onDismiss,
         onSelect = { onAction(SetPayee(it)) },
+        onCreate = { onAction(CreatePayee(it)) },
       )
 
     Category ->
       CategorySheet(
         selected = draft.category,
-        groups = edit.options.categoryGroups,
+        groups = form.options.categoryGroups,
         onDismiss = onDismiss,
         onSelect = { onAction(SetCategory(it)) },
       )
@@ -73,7 +76,7 @@ internal fun EditTransactionSheet(
     Account ->
       AccountSheet(
         selected = draft.account,
-        options = edit.options.accounts,
+        options = form.options.accounts,
         onDismiss = onDismiss,
         onSelect = { onAction(SetAccount(it)) },
       )
@@ -89,36 +92,78 @@ internal fun EditTransactionSheet(
   }
 }
 
-@Immutable private data class PayeeChoice(val id: PayeeId?, val name: String)
-
-// As upstream's payee picker, "None" is only offered when there's a payee to remove
+// As upstream's payee picker: "None" is only offered when there's a payee to remove, and typing
+// a name that no payee has offers to create it
 @Composable
 private fun PayeeSheet(
   selected: PayeeId?,
   options: ImmutableList<EntityOption<PayeeId>>,
   onDismiss: () -> Unit,
   onSelect: (PayeeId?) -> Unit,
-) {
-  val none = Strings.transactionNone
-  val hasPayee = selected != null
-  val choices =
-    remember(options, hasPayee, none) {
-      buildList {
-        if (hasPayee) add(PayeeChoice(id = null, name = none))
-        options.mapTo(this) { PayeeChoice(it.id, it.name) }
-      }
-        .toImmutableList()
-    }
-  ListBottomSheet(
-    value = choices.firstOrNull { it.id == selected } ?: PayeeChoice(selected, name = ""),
-    options = choices,
-    onDismiss = onDismiss,
-    onSelect = { onSelect(it.id) },
+  onCreate: (String) -> Unit,
+) =
+  AktualModalBottomSheet(
+    onDismissRequest = onDismiss,
     sheetState = rememberBottomSheetState(Hidden),
-    string = { it.name },
-    key = { it.id?.toString().orEmpty() },
-  )
-}
+  ) {
+    val query = rememberTextFieldState()
+    val name = query.text.toString().trim()
+    val matches =
+      remember(options, name) {
+        options.filter { it.name.contains(name, ignoreCase = true) }.toImmutableList()
+      }
+    val isNew = name.isNotEmpty() && matches.none { it.name.equals(name, ignoreCase = true) }
+
+    AktualTextField(
+      modifier = Modifier.fillMaxWidth().padding(PayeeSearchPadding),
+      state = query,
+      placeholderText = Strings.transactionPayeeSearch,
+      singleLine = true,
+      clearable = true,
+      keyboardOptions = KeyboardOptions(capitalization = Words),
+    )
+
+    val listState = rememberLazyListState()
+    LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
+      if (isNew) {
+        item {
+          BottomSheetListItem(
+            label = Strings.transactionPayeeCreate(name),
+            isSelected = false,
+            leadingContent = { BottomSheetIcon(MaterialIcons.Add) },
+            onClick = {
+              onCreate(name)
+              onDismiss()
+            },
+          )
+        }
+      }
+
+      if (selected != null && name.isEmpty()) {
+        item {
+          BottomSheetListItem(
+            label = Strings.transactionNone,
+            isSelected = false,
+            onClick = {
+              onSelect(null)
+              onDismiss()
+            },
+          )
+        }
+      }
+
+      items(matches, key = { it.id.toString() }) { payee ->
+        BottomSheetListItem(
+          label = payee.name,
+          isSelected = payee.id == selected,
+          onClick = {
+            onSelect(payee.id)
+            onDismiss()
+          },
+        )
+      }
+    }
+  }
 
 @Composable
 private fun AccountSheet(
@@ -235,3 +280,4 @@ private fun NotesSheet(notes: String?, onDismiss: () -> Unit, onSave: (String) -
 private val GroupHeaderPadding =
   PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp)
 private val GroupHeaderSize = 13.sp
+private val PayeeSearchPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)

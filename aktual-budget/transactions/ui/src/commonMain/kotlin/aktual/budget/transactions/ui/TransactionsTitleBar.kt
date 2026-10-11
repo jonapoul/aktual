@@ -1,6 +1,7 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.transactions.vm.LoadedAccount
+import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Settings
@@ -77,6 +78,11 @@ internal fun TransactionsTitleBar(
     },
     title = { Text(text = title, maxLines = 1, overflow = Ellipsis) },
     actions = {
+      IconButton(
+        onClick = { onAction(CreateTransaction) },
+        content = { Icon(MaterialIcons.Add, Strings.transactionsCreate) },
+      )
+
       IconButton(
         onClick = onOpenViewOptions,
         content = { Icon(MaterialIcons.Tune, Strings.transactionsViewOptions) },

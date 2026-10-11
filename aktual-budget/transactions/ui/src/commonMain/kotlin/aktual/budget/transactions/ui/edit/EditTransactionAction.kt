@@ -23,9 +23,15 @@ internal data object UnlockReconciled : EditTransactionAction
 
 internal data object DismissError : EditTransactionAction
 
+internal data object CommitAmount : EditTransactionAction
+
+internal data object GoToBudget : EditTransactionAction
+
 @JvmInline internal value class SetAmount(val amount: Amount) : EditTransactionAction
 
 @JvmInline internal value class SetPayee(val id: PayeeId?) : EditTransactionAction
+
+@JvmInline internal value class CreatePayee(val name: String) : EditTransactionAction
 
 @JvmInline internal value class SetCategory(val id: CategoryId?) : EditTransactionAction
 

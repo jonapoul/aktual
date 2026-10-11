@@ -1,7 +1,9 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.banksync.ui.showBankSyncSummary
+import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
+import aktual.budget.model.CategorySpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
@@ -96,6 +98,11 @@ fun TransactionsScreen(
         is SetDensity -> viewModel.setDensity(action.density)
         is ToggleSplit -> viewModel.toggleExpanded(action.id)
         is OpenTransaction -> openTransaction(action.id)
+        CreateTransaction ->
+          openTransaction.create(
+            account = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id,
+            category = (spec.categorySpec as? CategorySpec.SpecificCategory)?.id,
+          )
       }
     },
   )
