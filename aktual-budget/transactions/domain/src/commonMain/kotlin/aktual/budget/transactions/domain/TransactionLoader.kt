@@ -52,20 +52,27 @@ class TransactionLoader(private val transactionDao: TransactionDao) {
       detail = detail,
       children = children,
       balanceAfter = transactionDao.balanceAfter(row.id),
-      parts = children.map { part(it) },
+      parts = parts(row.id, children),
     )
   }
 
-  private suspend fun part(child: TransactionRow): SplitPart {
-    val detail = transactionDao.detail(child.id)
-    return SplitPart(
-      id = child.id,
-      amount = Amount(child.amount),
-      payee = detail?.payee,
-      category = detail?.category,
-      notes = child.notes,
-      sortOrder = transactionDao.row(child.id)?.sort_order?.toLong(),
-    )
+  private suspend fun parts(
+    parent: TransactionId,
+    children: List<TransactionRow>,
+  ): List<SplitPart> {
+    if (children.isEmpty()) return emptyList()
+    val fields = transactionDao.childFields(parent)
+    return children.map { child ->
+      val ids = fields[child.id]
+      SplitPart(
+        id = child.id,
+        amount = Amount(child.amount),
+        payee = ids?.payee,
+        category = ids?.category,
+        notes = child.notes,
+        sortOrder = ids?.sortOrder,
+      )
+    }
   }
 
   // Reloads whenever a table behind the transactions view changes, starting with the current state

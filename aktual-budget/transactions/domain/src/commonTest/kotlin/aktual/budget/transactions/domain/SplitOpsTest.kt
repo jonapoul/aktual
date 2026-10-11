@@ -129,6 +129,15 @@ class SplitOpsTest {
   }
 
   @Test
+  fun `A part with no payee stays that way when something else changes on the parent`() {
+    val split = split(2500, part("t2", 2000, payee = PAYEE), part("t3", 500), payee = PAYEE)
+
+    val updated = split.withFields(split.fields.copy(notes = "updated note", cleared = false))
+
+    assertThat(updated.parts).isEqualTo(split.parts)
+  }
+
+  @Test
   fun `Deleting a split transaction works`() {
     val split = split(2500, part("t2", 2000), part("t3", 500))
 

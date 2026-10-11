@@ -439,6 +439,15 @@ SELECT
   WHERE t.parent_id IN :parents AND vt.is_child = 1
   ORDER BY vt.sort_order DESC, vt.id;
 
+-- The payee, category and sort order of a split parent's live children, which getChildrenOf only
+-- has the names of
+getChildFields:
+SELECT vt.id, vt.payee, c.id AS category, vt.sort_order AS sortOrder
+  FROM v_transactions_internal_alive AS vt
+  INNER JOIN transactions AS t ON t.id = vt.id
+  LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
+  WHERE t.parent_id = :parent AND vt.is_child = 1;
+
 -- Balance after the transaction at :offset in getPaged's order, i.e. the sum of it and everything
 -- older. Split children are skipped since their parent's amount already covers them, as upstream's
 -- balance queries do with splits: 'none'. They're dropped before the offset, which has to count

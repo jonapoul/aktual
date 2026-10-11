@@ -39,11 +39,14 @@ fun TransactionDraft.addPart(newId: () -> TransactionId): TransactionDraft {
 }
 
 /**
- * updateTransaction() on the parent. A part that had the parent's payee follows it to the new one,
- * and as makeChild() has it, a part with no payee takes the parent's.
+ * updateTransaction() on the parent. When its payee changes, a part that had the old one follows it
+ * to the new one, and as makeChild() has it, a part with no payee takes the new one too. Upstream
+ * also fills in a part's missing payee on any other change to the parent. That's left out, so a
+ * part's payee stays off once it's been taken off.
  */
-fun TransactionDraft.withFields(updated: TransactionFields): TransactionDraft =
-  copy(
+fun TransactionDraft.withFields(updated: TransactionFields): TransactionDraft {
+  if (updated.payee == fields.payee) return copy(fields = updated)
+  return copy(
     fields = updated,
     parts =
       parts.map { part ->
@@ -51,6 +54,7 @@ fun TransactionDraft.withFields(updated: TransactionFields): TransactionDraft =
         part.copy(payee = payee ?: updated.payee)
       },
   )
+}
 
 // updateTransaction() on a child
 fun TransactionDraft.withPart(updated: SplitPart): TransactionDraft =
