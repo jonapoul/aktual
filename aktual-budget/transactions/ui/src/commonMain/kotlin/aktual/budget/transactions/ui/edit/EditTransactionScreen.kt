@@ -156,6 +156,7 @@ internal fun EditTransactionScreen(
         is SetDate -> viewModel.setDate(action.date)
         is SetNotes -> viewModel.setNotes(action.notes)
         is SetCleared -> viewModel.setCleared(action.cleared)
+        is CreateTag -> viewModel.createTag(action.tag)
         is SplitAction -> viewModel.onSplitAction(action)
       }
     },

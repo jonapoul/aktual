@@ -88,6 +88,7 @@
   <string name="transaction_reconciled_confirm">Confirm</string>
   <string name="transaction_error_saving">Couldn’t save transaction</string>
   <string name="transaction_error_deleting">Couldn’t delete transaction</string>
+  <string name="transaction_error_creating_tag">Couldn’t create tag</string>
   <string name="transaction_error_dismiss">OK</string>
   <string name="transactions_create">Add transaction</string>
   <string name="transaction_create_title">New transaction</string>
@@ -99,4 +100,6 @@
   <string name="transaction_payee_search">Find or add a payee</string>
   <string name="transaction_category_search">Find a category</string>
   <string name="transaction_payee_create">Create payee “%1$s”</string>
+  <string name="transaction_notes_add_tag">Add tag</string>
+  <string name="transaction_notes_create_tag">Create tag</string>
 </resources>

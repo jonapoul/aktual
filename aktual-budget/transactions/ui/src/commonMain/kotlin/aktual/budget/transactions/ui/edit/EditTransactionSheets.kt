@@ -16,9 +16,7 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
-import aktual.core.ui.EditorSheet
 import aktual.core.ui.ListBottomSheet
-import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,7 +36,6 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
@@ -95,7 +92,13 @@ internal fun EditTransactionSheet(
       DateDialog(date = draft.date, onDismiss = onDismiss, onSelect = { onAction(SetDate(it)) })
 
     Notes ->
-      NotesSheet(notes = draft.notes, onDismiss = onDismiss, onSave = { onAction(SetNotes(it)) })
+      NotesSheet(
+        notes = draft.notes,
+        tags = form.options.tags,
+        onDismiss = onDismiss,
+        onSave = { onAction(SetNotes(it)) },
+        onCreateTag = { onAction(CreateTag(it)) },
+      )
 
     Amount,
     null -> Unit
@@ -133,8 +136,10 @@ private fun PartSheet(
     Notes ->
       NotesSheet(
         notes = part.notes,
+        tags = form.options.tags,
         onDismiss = onDismiss,
         onSave = { onAction(SetPartNotes(part.id, it)) },
+        onCreateTag = { onAction(CreateTag(it)) },
       )
 
     Amount,
@@ -346,26 +351,6 @@ private fun DateDialog(date: LocalDate, onDismiss: () -> Unit, onSelect: (LocalD
     },
     content = { DatePicker(state = state) },
   )
-}
-
-@Composable
-private fun NotesSheet(notes: String?, onDismiss: () -> Unit, onSave: (String) -> Unit) {
-  val text = rememberTextFieldState(initialText = notes.orEmpty())
-  EditorSheet(
-    title = Strings.transactionNotes,
-    cancelText = Strings.transactionSheetCancel,
-    confirmText = Strings.transactionSheetDone,
-    canConfirm = true,
-    onDismiss = onDismiss,
-    onConfirm = { onSave(text.text.toString()) },
-  ) {
-    AktualTextField(
-      modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester()),
-      state = text,
-      placeholderText = Strings.transactionNotesPlaceholder,
-      keyboardOptions = KeyboardOptions(capitalization = Sentences),
-    )
-  }
 }
 
 private val GroupHeaderPadding =

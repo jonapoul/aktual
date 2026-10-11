@@ -1,8 +1,10 @@
 package aktual.budget.transactions.vm.edit
 
+import aktual.budget.db.GetTags
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
@@ -11,6 +13,8 @@ import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.LoadedRules
 import aktual.budget.rules.domain.RuleTransaction
 import aktual.budget.rules.domain.TransactionRulesLoader
+import aktual.budget.tags.vm.TagCreator
+import aktual.budget.tags.vm.toColorOrNull
 import aktual.budget.transactions.domain.LastTransaction
 import aktual.budget.transactions.domain.LoadedTransaction
 import aktual.budget.transactions.domain.NewTransaction
@@ -51,6 +55,7 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -59,6 +64,9 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -79,6 +87,8 @@ internal constructor(
   private val payeeDao: PayeeDao,
   private val categoryDao: CategoryDao,
   private val uuidGenerator: UuidGenerator,
+  private val tagCreator: TagCreator,
+  tagsDao: TagsDao,
 ) : ViewModel() {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
@@ -99,6 +109,17 @@ internal constructor(
   private val mutableIsWorking = MutableStateFlow(false)
   private val mutableError = MutableStateFlow<EditTransactionError?>(null)
   private var isDeleted = false
+
+  // Followed, so a tag created from the notes is offered straight away
+  private val tags: StateFlow<ImmutableList<TagOption>> =
+    tagsDao
+      .observeTags()
+      .map { rows -> rows.toTagOptions() }
+      .catch { e ->
+        logcat.w(e) { "Failed loading tags" }
+        emit(persistentListOf())
+      }
+      .stateIn(viewModelScope, Eagerly, persistentListOf())
 
   private var rules: LoadedRules? = null
   // What a new transaction started as
@@ -127,7 +148,8 @@ internal constructor(
       val draft by mutableDraft.collectAsState()
       val newPayees by mutableNewPayees.collectAsState()
       val isWorking by mutableIsWorking.collectAsState()
-      buildState(saved, entities, failure, draft, newPayees, isWorking)
+      val tagOptions by tags.collectAsState()
+      buildState(saved, entities, failure, draft, newPayees, tagOptions, isWorking)
     }
 
   init {
@@ -140,11 +162,12 @@ internal constructor(
     failure: Failure?,
     draft: TransactionDraft?,
     newPayees: Map<PayeeId, String>,
+    tags: ImmutableList<TagOption>,
     isWorking: Boolean,
   ): EditTransactionState {
     if (failure != null) return failure
     if (entities == null) return Loading
-    val form = draft?.let { form(it, entities, newPayees, saved) }
+    val form = draft?.let { form(it, entities, newPayees, tags, saved) }
     return when (target) {
       is Existing -> existingState(saved, form, isWorking)
       is New -> newState(entities, form, isWorking)
@@ -188,6 +211,7 @@ internal constructor(
     draft: TransactionDraft,
     entities: Entities,
     newPayees: Map<PayeeId, String>,
+    tags: ImmutableList<TagOption>,
     saved: Saved?,
   ): TransactionForm {
     val fields = draft.fields
@@ -217,7 +241,7 @@ internal constructor(
         } else {
           transactionDiff(saved.details.transaction.id, saved.draft, draft) != null
         },
-      options = entities.options.withoutTransfersTo(fields.account, entities),
+      options = entities.options.withoutTransfersTo(fields.account, entities).copy(tags = tags),
       parts = parts,
       splitRemaining = draft.splitDifference,
     )
@@ -460,6 +484,20 @@ internal constructor(
 
   fun setPartNotes(id: TransactionId, notes: String) = updatePart(id) { it.copy(notes = notes) }
 
+  // As upstream, the tag's created straight away rather than when the transaction's saved
+  fun createTag(tag: String) {
+    viewModelScope.launch {
+      try {
+        tagCreator.create(tag)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed creating tag $tag" }
+        mutableError.update { EditTransactionError.CreatingTag(e.requireMessage()) }
+      }
+    }
+  }
+
   fun dismissError() = mutableError.update { null }
 
   private fun newPartId(): TransactionId = uuidGenerator(::TransactionId)
@@ -666,6 +704,15 @@ internal constructor(
     val others = transfers.filter { entities.transferAccounts[it.id] != account }
     return if (others.size == transfers.size) this else copy(transfers = others.toImmutableList())
   }
+
+  private fun List<GetTags>.toTagOptions(): ImmutableList<TagOption> = filter {
+    it.hidden != true
+  }
+    .mapNotNull { row ->
+      row.tag?.let { TagOption(tag = it, color = row.color?.toColorOrNull()) }
+    }
+    .sortedBy { it.tag.lowercase() }
+    .toImmutableList()
 
   private fun TransactionFields.toRuleTransaction() =
     RuleTransaction(

@@ -44,6 +44,8 @@ internal data object GoToBudget : EditTransactionAction
 
 @JvmInline internal value class SetCleared(val cleared: Boolean) : EditTransactionAction
 
+@JvmInline internal value class CreateTag(val tag: String) : EditTransactionAction
+
 // What changes a split and its parts
 @Immutable internal sealed interface SplitAction : EditTransactionAction
 

@@ -7,10 +7,12 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
+import aktual.budget.db.dao.DatabaseTables.TAGS
 import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.RuleContextDao
 import aktual.budget.db.dao.RulesDao
+import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
@@ -21,10 +23,12 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
+import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.rules.domain.TransactionRulesLoader
+import aktual.budget.tags.vm.TagCreator
 import aktual.budget.transactions.domain.LastTransaction
 import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.domain.TransactionFields
@@ -41,6 +45,8 @@ import aktual.budget.transactions.vm.transaction
 import aktual.test.TestCalendar
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
+import alakazam.test.TestCoroutineContexts
+import androidx.compose.ui.graphics.Color
 import app.cash.turbine.Event
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -921,6 +927,88 @@ class EditTransactionViewModelTest {
     }
   }
 
+  @Test
+  fun `The notes offer the tags by name`() = runDatabaseTest { scope ->
+    insertEntities()
+    with(tagsDao(scope)) {
+      insert(id = TagId("f"), tag = "food", color = "#FF0000", description = null)
+      insert(id = TagId("b"), tag = "Bills", color = null, description = null)
+    }
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val viewModel = createViewModel(scope, id = "t")
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.startEditing()
+
+      var tags = awaitEdit().options.tags
+      while (tags.size < 2) tags = awaitEdit().options.tags
+      assertThat(tags).containsExactly(TagOption("Bills", null), TagOption("food", Color.Red))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `A tag created from the notes is synced and offered`() = runDatabaseTest { scope ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.startEditing()
+      awaitEdit()
+
+      viewModel.createTag("food")
+      var tags = awaitEdit().options.tags
+      while (tags.isEmpty()) tags = awaitEdit().options.tags
+      assertThat(tags).containsExactly(TagOption("food", null))
+      assertThat(sync.calls)
+        .containsExactly(
+          listOf(
+            LocalChange(TAGS, "tag", "id", MessageValue.String("tag")),
+            LocalChange(TAGS, "tag", "tag", MessageValue.String("food")),
+            LocalChange(TAGS, "tag", "color", Null),
+            LocalChange(TAGS, "tag", "description", Null),
+            LocalChange(TAGS, "tag", "tombstone", MessageValue.Number(0)),
+          ),
+        )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Creating a tag that exists keeps it as it is`() = runDatabaseTest { scope ->
+    insertEntities()
+    val tags = tagsDao(scope)
+    tags.insert(id = TagId("f"), tag = "food", color = "#FF0000", description = "Meals")
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+    viewModel.createTag("food")
+    scope.advanceUntilIdle()
+
+    assertThat(sync.calls).isEmpty()
+    assertThat(tags.getTag(TagId("f"))?.color).isEqualTo("#FF0000")
+  }
+
+  @Test
+  fun `A tag that fails to sync shows an error`() = runDatabaseTest { scope ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val sync = FakeSyncController(failure = IllegalStateException("Offline"))
+    val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+    viewModel.error.test {
+      assertThat(awaitItem()).isNull()
+      viewModel.createTag("food")
+      assertThat(awaitItem()).isEqualTo(EditTransactionError.CreatingTag("Offline"))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private suspend fun ReceiveTurbine<EditTransactionState>.awaitEdit(): TransactionForm {
     var mode = awaitLoaded().mode
     while (mode !is Edit) mode = awaitLoaded().mode
@@ -1001,6 +1089,7 @@ class EditTransactionViewModelTest {
     lastTransaction: LastTransaction = LastTransaction(),
   ): EditTransactionViewModel {
     Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
+    val tags = tagsDao(scope)
     val accountDao = AccountDao(this)
     val categoryDao = CategoryDao(this)
     val payeeDao = PayeeDao(this)
@@ -1031,8 +1120,13 @@ class EditTransactionViewModelTest {
       payeeDao = payeeDao,
       categoryDao = categoryDao,
       uuidGenerator = { "part-${nextPart++}" },
+      tagCreator = TagCreator(tagsDao = tags, uuidGenerator = { "tag" }, syncController = sync),
+      tagsDao = tags,
     )
   }
+
+  private fun BudgetDatabase.tagsDao(scope: TestScope) =
+    TagsDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
 
   // Records the changes it's sent, without applying them to the database
   private class FakeSyncController(
