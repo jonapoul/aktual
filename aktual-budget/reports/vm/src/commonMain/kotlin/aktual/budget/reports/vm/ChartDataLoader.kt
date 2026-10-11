@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
 import kotlinx.datetime.minusMonth
@@ -73,29 +74,75 @@ internal class ChartDataLoader(
   // packages/desktop-client/src/components/reports/reports/GetCardData.tsx
   fun custom(meta: CustomReportMeta): Flow<ChartData> =
     combine(
-      customReports.observe(meta.id),
-      dao.observeTransactionDateBounds(),
-      preferences.observe(SyncedPrefKey.Global.FirstDayOfWeekIdx),
-    ) { report, bounds, firstDayOfWeek ->
-      if (report == null || report.tombstone == true) {
-        return@combine unsupportedData(meta, MissingReport)
+        customReports.observe(meta.id),
+        dao.observeTransactionDateBounds(),
+        preferences.observe(SyncedPrefKey.Global.FirstDayOfWeekIdx),
+      ) { report, bounds, firstDayOfWeek ->
+        if (report == null || report.tombstone == true) {
+          return@combine flowOf(unsupportedData(meta, MissingReport))
+        }
+
+        val config = report.toConfig()
+        val reason: UnsupportedReason? =
+          when {
+            config == null -> InvalidMeta
+            config.conditions.hasFilters() -> Filters
+            config.balanceType == Budgeted -> CustomBudgeted
+            else -> null
+          }
+        if (config == null || reason != null) {
+          return@combine flowOf(UnsupportedData(reason ?: InvalidMeta, Custom, report.name))
+        }
+
+        val today = calendar.today()
+        // Upstream treats an unset preference as Sunday
+        val firstDay = FirstDayOfWeek.from(firstDayOfWeek) ?: Sunday
+        val range =
+          resolveCustomReportRange(
+            dates = config.dates,
+            today = today,
+            earliestTransaction = bounds.earliest ?: today,
+            latestTransaction = bounds.latest ?: today,
+            firstDayOfWeek = firstDay,
+          )
+        customData(report.name.orEmpty(), config, range, firstDay)
       }
+      .flatMapLatest { it }
 
-      val config =
-        report.toConfig() ?: return@combine UnsupportedData(InvalidMeta, Custom, report.name)
+  private fun customData(
+    title: String,
+    config: CustomReportConfig,
+    range: LocalDateRange,
+    firstDayOfWeek: FirstDayOfWeek,
+  ): Flow<ChartData> {
+    val query = customReportQuery(config.interval, range)
+    // Only the lists the report groups by. Categories are always needed, for categoryGroups
+    val payees = if (config.groupBy == Payee) customReports.observePayees() else flowOf(emptyList())
+    val accounts =
+      if (config.groupBy == Account) customReports.observeAccounts() else flowOf(emptyList())
 
-      val today = calendar.today()
-      val range =
-        resolveCustomReportRange(
-          dates = config.dates,
-          today = today,
-          earliestTransaction = bounds.earliest ?: today,
-          latestTransaction = bounds.latest ?: today,
-          // Upstream treats an unset preference as Sunday
-          firstDayOfWeek = FirstDayOfWeek.from(firstDayOfWeek) ?: Sunday,
+    return combine(
+        customReports.observeAmounts(query.start, query.end, query.divisor),
+        customReports.observeCategories(),
+        customReports.observeCategoryGroups(),
+        payees,
+        accounts,
+        ::CustomReportInputs,
+      )
+      .map { inputs ->
+        val sheet = customSpreadsheet(config, range, firstDayOfWeek, inputs)
+        CustomData(
+          title = title,
+          config = config,
+          range = range,
+          intervals = sheet.intervals,
+          groups = sheet.groups,
+          categoryGroups = sheet.categoryGroups,
+          totals = sheet.totals,
         )
-      CustomData(title = report.name.orEmpty(), config = config, range = range)
-    }
+      }
+      .flowOn(contexts.default)
+  }
 
   fun text(meta: MarkdownReportMeta): Flow<ChartData> {
     val align: TextAlign = meta.textAlign?.takeIf { it != Unknown } ?: Left

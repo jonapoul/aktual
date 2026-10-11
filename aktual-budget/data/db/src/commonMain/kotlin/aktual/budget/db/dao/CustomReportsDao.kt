@@ -1,6 +1,11 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.CustomReportAccounts
+import aktual.budget.db.CustomReportAmounts
+import aktual.budget.db.CustomReportCategories
+import aktual.budget.db.CustomReportCategoryGroups
+import aktual.budget.db.CustomReportPayees
 import aktual.budget.db.CustomReports
 import aktual.budget.db.withResult
 import aktual.budget.model.CustomReportId
@@ -14,6 +19,7 @@ import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.LocalDate
 
 @Inject
 class CustomReportsDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
@@ -41,4 +47,27 @@ class CustomReportsDao(database: BudgetDatabase, private val contexts: Coroutine
   suspend fun getIdByName(name: String): CustomReportId? = queries.withResult {
     getIdByName(name).awaitAsOneOrNull()
   }
+
+  fun observeAmounts(
+    start: LocalDate,
+    end: LocalDate,
+    divisor: Long,
+  ): Flow<List<CustomReportAmounts>> =
+    queries
+      .customReportAmounts(divisor, start, end)
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
+
+  fun observeCategories(): Flow<List<CustomReportCategories>> =
+    queries.customReportCategories().asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  fun observeCategoryGroups(): Flow<List<CustomReportCategoryGroups>> =
+    queries.customReportCategoryGroups().asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  fun observePayees(): Flow<List<CustomReportPayees>> =
+    queries.customReportPayees().asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  fun observeAccounts(): Flow<List<CustomReportAccounts>> =
+    queries.customReportAccounts().asFlow().mapToList(contexts.default).distinctUntilChanged()
 }

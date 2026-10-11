@@ -48,3 +48,59 @@ getIds: SELECT id FROM custom_reports;
 getNames: SELECT id, name FROM custom_reports WHERE tombstone = 0 AND name IS NOT NULL;
 getShowTrendLines: SELECT show_trend_lines FROM custom_reports WHERE id = ?;
 insert: INSERT INTO custom_reports VALUES ?;
+
+-- packages/desktop-client/src/components/reports/spreadsheets/makeQuery.ts makeQuery(). Upstream runs one
+-- query each for the positive (assets) and negative (debts) amounts, this sums both in one pass. Joined
+-- rows aren't checked for tombstones, as upstream's AQL joins don't. :divisor turns the date into the
+-- interval it falls in: 1 for days, 100 for months, 10000 for years
+customReportAmounts:
+SELECT
+  CAST(t.date / CAST(:divisor AS INTEGER) AS INTEGER) AS interval_key,
+  c.id AS category,
+  c.hidden AS category_hidden,
+  g.id AS category_group,
+  g.hidden AS category_group_hidden,
+  t.account,
+  a.offbudget AS off_budget,
+  p.id AS payee,
+  ta.id AS transfer_account,
+  IFNULL(SUM(CASE WHEN t.amount > 0 THEN t.amount ELSE 0 END), 0) AS assets,
+  IFNULL(SUM(CASE WHEN t.amount < 0 THEN t.amount ELSE 0 END), 0) AS debts
+FROM v_transactions_internal_alive t
+LEFT JOIN accounts a ON a.id = t.account
+LEFT JOIN categories c ON c.id = t.category
+LEFT JOIN category_groups g ON g.id = c.cat_group
+LEFT JOIN payees p ON p.id = t.payee
+LEFT JOIN accounts ta ON ta.id = p.transfer_acct
+WHERE t.is_parent = 0 AND t.amount != 0 AND t.date >= :start AND t.date <= :end
+GROUP BY interval_key, t.account, p.id, c.id, ta.id;
+
+-- packages/loot-core/src/server/db/index.ts getCategoriesGrouped(), ordered as
+-- packages/desktop-client/src/components/reports/ReportOptions.ts categoryLists() sorts the flat list
+customReportCategories:
+SELECT c.id, c.name, c.cat_group, c.sort_order
+FROM categories c
+LEFT JOIN category_groups g ON g.id = c.cat_group AND g.tombstone = 0
+WHERE c.tombstone = 0
+ORDER BY g.is_income, g.sort_order, c.sort_order, c.id;
+
+customReportCategoryGroups:
+SELECT id, name
+FROM category_groups
+WHERE tombstone = 0
+ORDER BY is_income, sort_order, id;
+
+-- packages/loot-core/src/server/db/index.ts getPayees()
+customReportPayees:
+SELECT p.id, COALESCE(a.name, p.name) AS name
+FROM payees p
+LEFT JOIN accounts a ON (p.transfer_acct = a.id AND a.tombstone = 0)
+WHERE p.tombstone = 0 AND (p.transfer_acct IS NULL OR a.id IS NOT NULL)
+ORDER BY p.transfer_acct IS NULL DESC, p.name COLLATE NOCASE, a.offbudget, a.sort_order;
+
+-- packages/loot-core/src/server/db/index.ts getAccounts()
+customReportAccounts:
+SELECT id, name
+FROM accounts
+WHERE tombstone = 0
+ORDER BY sort_order, name;
