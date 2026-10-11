@@ -81,6 +81,33 @@ data class TransactionFields(
   val reconciled: Boolean,
 )
 
+// One part of a split as its editor holds it. Its account, date, cleared and reconciled are its
+// parent's, as upstream's makeChild() has them
+data class SplitPart(
+  val id: TransactionId,
+  val amount: Amount = Zero,
+  val payee: PayeeId? = null,
+  val category: CategoryId? = null,
+  val notes: String? = null,
+  val sortOrder: Long? = null,
+)
+
+// A transaction as its editor holds it. It's a split parent for as long as it has parts
+data class TransactionDraft(
+  val fields: TransactionFields,
+  val parts: List<SplitPart> = emptyList(),
+) {
+  val isSplit: Boolean
+    get() = parts.isNotEmpty()
+}
+
+// What saving a draft writes
+data class TransactionChanges(
+  val added: List<NewTransaction> = emptyList(),
+  val updated: List<TransactionUpdate> = emptyList(),
+  val deleted: List<TransactionId> = emptyList(),
+)
+
 enum class TransactionField {
   Account,
   Date,

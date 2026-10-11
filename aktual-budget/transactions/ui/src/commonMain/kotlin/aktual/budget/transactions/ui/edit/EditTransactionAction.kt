@@ -4,6 +4,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.model.TransactionId
 import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
 
@@ -42,6 +43,27 @@ internal data object GoToBudget : EditTransactionAction
 @JvmInline internal value class SetNotes(val notes: String) : EditTransactionAction
 
 @JvmInline internal value class SetCleared(val cleared: Boolean) : EditTransactionAction
+
+// What changes a split and its parts
+@Immutable internal sealed interface SplitAction : EditTransactionAction
+
+internal data object SplitTransaction : SplitAction
+
+internal data object AddSplit : SplitAction
+
+@JvmInline internal value class RemoveSplit(val id: TransactionId) : SplitAction
+
+@JvmInline internal value class FillRemaining(val id: TransactionId) : SplitAction
+
+internal data class SetPartAmount(val id: TransactionId, val amount: Amount) : SplitAction
+
+internal data class SetPartPayee(val id: TransactionId, val payee: PayeeId?) : SplitAction
+
+internal data class CreatePartPayee(val id: TransactionId, val name: String) : SplitAction
+
+internal data class SetPartCategory(val id: TransactionId, val category: CategoryId?) : SplitAction
+
+internal data class SetPartNotes(val id: TransactionId, val notes: String) : SplitAction
 
 @Immutable
 internal fun interface EditTransactionActionHandler {

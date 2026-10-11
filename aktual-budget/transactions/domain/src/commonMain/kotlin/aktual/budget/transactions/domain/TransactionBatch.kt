@@ -134,6 +134,13 @@ internal constructor(
     if (u.isParent != null) batchIsParent[u.id] = u.isParent
   }
 
+  // The parent's update goes first, so a part added to a new split finds it already a parent
+  suspend fun write(changes: TransactionChanges) {
+    changes.updated.forEach { update(it) }
+    changes.added.forEach { insert(it) }
+    if (changes.deleted.isNotEmpty()) delete(changes.deleted)
+  }
+
   suspend fun delete(id: TransactionId) = delete(listOf(id))
 
   /**

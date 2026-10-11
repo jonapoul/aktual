@@ -67,7 +67,33 @@ internal class TransactionLoaderTest {
       prop("id") { it.detail.row.id }.isEqualTo(parent)
       prop("isParent") { it.detail.row.isParent }.isTrue()
       prop("children") { it.children.map { c -> c.id } }.containsExactly(*children.toTypedArray())
+      prop(LoadedTransaction::parts)
+        .containsExactly(
+          SplitPart(children[0], Amount(-1000), category = GROCERIES, sortOrder = 2),
+          SplitPart(children[1], Amount(-2000), category = HOUSEHOLD, sortOrder = 1),
+        )
     }
+  }
+
+  @Test
+  fun `Saving a split's changes writes its parts`() = runWriterTest {
+    val (parent, children) = insertSplit()
+    val saved = checkNotNull(loader().load(parent)).draft
+    val draft =
+      saved
+        .withoutPart(children[1])
+        .addPart { TransactionId("added") }
+        .fillRemaining(TransactionId("added"))
+
+    writer.write { transactionDiff(parent, saved, draft)?.let { write(it) } }
+
+    assertThat(loader().load(parent)?.parts)
+      .isEqualTo(
+        listOf(
+          SplitPart(children[0], Amount(-1000), category = GROCERIES, sortOrder = 2),
+          SplitPart(TransactionId("added"), Amount(-2000), sortOrder = 1),
+        ),
+      )
   }
 
   @Test

@@ -7,23 +7,35 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.LoadedRules
 import aktual.budget.rules.domain.RuleTransaction
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.transactions.domain.LastTransaction
 import aktual.budget.transactions.domain.LoadedTransaction
 import aktual.budget.transactions.domain.NewTransaction
+import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.domain.TransactionBatch
+import aktual.budget.transactions.domain.TransactionDraft
 import aktual.budget.transactions.domain.TransactionField
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.domain.TransactionLoader
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.transactions.domain.addPart
 import aktual.budget.transactions.domain.applyRuleChanges
+import aktual.budget.transactions.domain.fillRemaining
 import aktual.budget.transactions.domain.isEmpty
+import aktual.budget.transactions.domain.split
+import aktual.budget.transactions.domain.splitDifference
+import aktual.budget.transactions.domain.toNewTransaction
 import aktual.budget.transactions.domain.transactionDiff
+import aktual.budget.transactions.domain.withFields
+import aktual.budget.transactions.domain.withPart
+import aktual.budget.transactions.domain.withoutPart
 import aktual.budget.transactions.vm.edit.EditTransactionState.Failure
 import aktual.budget.transactions.vm.toTransaction
 import aktual.core.Calendar
+import aktual.core.UuidGenerator
 import aktual.di.BudgetScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
@@ -38,6 +50,7 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -51,6 +64,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import logcat.logcat
 
+@Suppress("TooManyFunctions") // One per editor action
 @Stable
 @AssistedInject
 class EditTransactionViewModel
@@ -64,6 +78,7 @@ internal constructor(
   private val accountDao: AccountDao,
   private val payeeDao: PayeeDao,
   private val categoryDao: CategoryDao,
+  private val uuidGenerator: UuidGenerator,
 ) : ViewModel() {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
@@ -78,7 +93,7 @@ internal constructor(
   private val mutableEntities = MutableStateFlow<Entities?>(null)
   private val mutableFailure = MutableStateFlow<Failure?>(null)
   // The edits in progress, or null when viewing
-  private val mutableDraft = MutableStateFlow<TransactionFields?>(null)
+  private val mutableDraft = MutableStateFlow<TransactionDraft?>(null)
   // Payees added by name, or by a rule, which aren't created until the transaction is saved
   private val mutableNewPayees = MutableStateFlow<Map<PayeeId, String>>(emptyMap())
   private val mutableIsWorking = MutableStateFlow(false)
@@ -87,7 +102,7 @@ internal constructor(
 
   private var rules: LoadedRules? = null
   // What a new transaction started as
-  private var initial: TransactionFields? = null
+  private var initial: TransactionDraft? = null
   // Fields of a new transaction that the user emptied, which rules mustn't fill back in. As
   // upstream's clearedFields
   private var emptied = emptySet<TransactionField>()
@@ -123,7 +138,7 @@ internal constructor(
     saved: Saved?,
     entities: Entities?,
     failure: Failure?,
-    draft: TransactionFields?,
+    draft: TransactionDraft?,
     newPayees: Map<PayeeId, String>,
     isWorking: Boolean,
   ): EditTransactionState {
@@ -172,36 +187,77 @@ internal constructor(
 
   // A name the pickers don't offer, like a closed account's, falls back to the saved one
   private fun form(
-    draft: TransactionFields,
+    draft: TransactionDraft,
     entities: Entities,
     newPayees: Map<PayeeId, String>,
     saved: Saved?,
   ): TransactionForm {
+    val fields = draft.fields
     val transaction = saved?.details?.transaction
+    val parts = partForms(draft, entities, newPayees, saved)
+    val payeeName =
+      fields.payee?.let { id ->
+        entities.payeeNames[id]
+          ?: newPayees[id]
+          ?: transaction?.payee.takeIf { id == saved?.fields?.payee }
+      }
     return TransactionForm(
-      draft = draft,
-      payeeName =
-        draft.payee?.let { id ->
-          entities.payeeNames[id]
-            ?: newPayees[id]
-            ?: transaction?.payee.takeIf { id == saved?.fields?.payee }
-        },
+      draft = fields,
+      // A split with no payee of its own shows the most common one of its parts, as when viewing
+      payeeName = payeeName ?: parts.mostCommonPayee(),
       categoryName =
-        draft.category?.let { id ->
+        fields.category?.let { id ->
           entities.categoryNames[id]
             ?: transaction?.category.takeIf { id == saved?.fields?.category }
         },
-      accountName = draft.account?.let(entities.accountNames::get),
-      isOffBudget = draft.account in entities.offBudget,
+      accountName = fields.account?.let(entities.accountNames::get),
+      isOffBudget = fields.account in entities.offBudget,
       hasChanges =
         if (saved == null) {
           draft != initial
         } else {
-          transactionDiff(saved.details.transaction.id, saved.fields, draft) != null
+          transactionDiff(saved.details.transaction.id, saved.draft, draft) != null
         },
       options = entities.options,
+      parts = parts,
+      splitRemaining = draft.splitDifference,
     )
   }
+
+  private fun partForms(
+    draft: TransactionDraft,
+    entities: Entities,
+    newPayees: Map<PayeeId, String>,
+    saved: Saved?,
+  ): ImmutableList<SplitPartForm> {
+    val savedParts = saved?.draft?.parts.orEmpty().associateBy { it.id }
+    val savedChildren = saved?.details?.transaction?.children.orEmpty().associateBy { it.id }
+    return draft.parts
+      .map { part ->
+        val old = savedParts[part.id]
+        val child = savedChildren[part.id]
+        SplitPartForm(
+          part = part,
+          payeeName =
+            part.payee?.let { id ->
+              entities.payeeNames[id] ?: newPayees[id] ?: child?.payee.takeIf { id == old?.payee }
+            },
+          categoryName =
+            part.category?.let { id ->
+              entities.categoryNames[id] ?: child?.category.takeIf { id == old?.category }
+            },
+        )
+      }
+      .toImmutableList()
+  }
+
+  private fun List<SplitPartForm>.mostCommonPayee(): String? = mapNotNull {
+    it.payeeName
+  }
+    .groupingBy { it }
+    .eachCount()
+    .maxByOrNull { it.value }
+    ?.key
 
   private suspend fun observe() {
     try {
@@ -221,7 +277,7 @@ internal constructor(
 
   private suspend fun startDraft(target: EditTransactionTarget.New, entities: Entities) {
     rules = rulesLoader.load()
-    val draft = newDraft(target, entities)
+    val draft = TransactionDraft(newDraft(target, entities))
     initial = draft
     mutableDraft.update { draft }
   }
@@ -296,7 +352,7 @@ internal constructor(
   fun startEditing() {
     val saved = mutableSaved.value ?: return
     if (!saved.canEdit) return
-    mutableDraft.update { saved.fields }
+    mutableDraft.update { saved.draft }
     if (rules == null) viewModelScope.launch { loadPayeeLookup() }
   }
 
@@ -340,12 +396,16 @@ internal constructor(
 
   // Picks the payee with this name, ignoring case, or a new one if there's none
   fun createPayee(name: String) {
-    val rules = rules ?: return
+    setPayee(resolvePayee(name) ?: return)
+  }
+
+  private fun resolvePayee(name: String): PayeeId? {
+    val rules = rules ?: return null
     val trimmed = name.trim()
-    if (trimmed.isEmpty()) return
+    if (trimmed.isEmpty()) return null
     val id = rules.resolvePayee(trimmed)
     mutableNewPayees.update { rules.createdPayees }
-    setPayee(id)
+    return id
   }
 
   fun setCategory(category: CategoryId?) = updateDraft(Category) { it.copy(category = category) }
@@ -361,7 +421,45 @@ internal constructor(
   // As upstream's onUnlockReconciledInner, which leaves it cleared
   fun unlockReconciled() = updateDraft(field = null) { it.copy(reconciled = false) }
 
+  // As upstream's mobile editor, which splits into two empty parts
+  fun split() = updateSplit { it.split(::newPartId, count = 2) }
+
+  fun addSplit() = updateSplit { it.addPart(::newPartId) }
+
+  // Removing the last part leaves an ordinary transaction
+  fun removeSplit(id: TransactionId) = updateSplit { it.withoutPart(id) }
+
+  fun fillRemaining(id: TransactionId) = updateSplit { it.fillRemaining(id) }
+
+  fun setPartAmount(id: TransactionId, amount: Amount) = updatePart(id) { it.copy(amount = amount) }
+
+  fun setPartPayee(id: TransactionId, payee: PayeeId?) = updatePart(id) { it.copy(payee = payee) }
+
+  fun createPartPayee(id: TransactionId, name: String) {
+    setPartPayee(id, resolvePayee(name) ?: return)
+  }
+
+  fun setPartCategory(id: TransactionId, category: CategoryId?) =
+    updatePart(id) { it.copy(category = category) }
+
+  fun setPartNotes(id: TransactionId, notes: String) = updatePart(id) { it.copy(notes = notes) }
+
   fun dismissError() = mutableError.update { null }
+
+  private fun newPartId(): TransactionId = uuidGenerator(::TransactionId)
+
+  // Rules aren't run on a split's parts
+  private fun updateSplit(change: (TransactionDraft) -> TransactionDraft) {
+    if (mutableIsWorking.value) return
+    val draft = change(mutableDraft.value ?: return)
+    mutableDraft.update { draft }
+  }
+
+  private fun updatePart(id: TransactionId, change: (SplitPart) -> SplitPart) =
+    updateSplit { draft ->
+      val part = draft.parts.firstOrNull { it.id == id }
+      if (part == null) draft else draft.withPart(change(part))
+    }
 
   // Setting a field of a new transaction runs the rules on it. Null leaves them out
   private fun updateDraft(
@@ -369,66 +467,88 @@ internal constructor(
     makeCopy: (TransactionFields) -> TransactionFields,
   ) {
     if (mutableIsWorking.value) return
-    val updated = makeCopy(mutableDraft.value ?: return)
+    val current = mutableDraft.value ?: return
+    val updated = current.withFields(makeCopy(current.fields))
     val runsRules = field != null && target is New
     val draft = if (runsRules) withRules(updated, field) else updated
     mutableDraft.update { draft }
   }
 
-  // As onUpdate() in upstream's TransactionEdit.tsx, which only runs rules on new transactions
-  private fun withRules(draft: TransactionFields, updated: TransactionField): TransactionFields {
+  // As onUpdate() in upstream's TransactionEdit.tsx, which only runs rules on new transactions. A
+  // rule that splits the transaction gives it its parts, unless it has some already
+  private fun withRules(draft: TransactionDraft, updated: TransactionField): TransactionDraft {
     val rules = rules ?: return draft
-    emptied = if (draft.isEmpty(updated)) emptied + updated else emptied - updated
-    val result = rules.run(draft.toRuleTransaction())
+    val fields = draft.fields
+    emptied = if (fields.isEmpty(updated)) emptied + updated else emptied - updated
+    val result = rules.run(fields.toRuleTransaction())
     mutableNewPayees.update { rules.createdPayees }
-    return applyRuleChanges(draft, draft.afterRules(result), updated, emptied)
+    val afterRules = fields.afterRules(result, keepPayee = draft.isSplit)
+    val applied = applyRuleChanges(fields, afterRules, updated, emptied)
+    return when {
+      draft.isSplit -> draft.withFields(applied)
+      result.isParent -> TransactionDraft(applied, result.subtransactions.toParts())
+      else -> draft.copy(fields = applied)
+    }
+  }
+
+  private fun List<RuleTransaction>.toParts(): List<SplitPart> = mapIndexed { index, child ->
+    SplitPart(
+      id = newPartId(),
+      amount = child.amount,
+      payee = child.payee,
+      category = child.category,
+      notes = child.notes,
+      sortOrder = -(index + 1L),
+    )
   }
 
   fun save() {
     if (mutableIsWorking.value) return
     commitAmount()
     val draft = mutableDraft.value ?: return
+    if (draft.splitDifference != null) return
     when (target) {
       is Existing -> saveEdits(target, draft)
       is New -> saveNew(draft)
     }
   }
 
-  private fun saveEdits(target: EditTransactionTarget.Existing, draft: TransactionFields) {
+  private fun saveEdits(target: EditTransactionTarget.Existing, draft: TransactionDraft) {
     val saved = mutableSaved.value ?: return
     val id = saved.details.transaction.id
-    if (transactionDiff(id, saved.fields, draft) == null) {
+    if (transactionDiff(id, saved.draft, draft) == null) {
       closeDraft()
       return
     }
 
     launchSave {
-      writer.write {
-        val fields = draft.copy(payee = savedPayee(draft.payee))
-        transactionDiff(id, saved.fields, fields)?.let { update(it) }
-      }
+      writer.write { transactionDiff(id, saved.draft, withSavedPayees(draft))?.let { write(it) } }
       loader.load(target.id)?.let { reloaded -> mutableSaved.update { reloaded.toSaved() } }
       closeDraft()
     }
   }
 
-  private fun saveNew(draft: TransactionFields) {
-    val account = draft.account ?: return
+  private fun saveNew(draft: TransactionDraft) {
+    val account = draft.fields.account ?: return
     launchSave {
       writer.write {
+        val toSave = withSavedPayees(draft)
+        val fields = toSave.fields
         val transaction =
           NewTransaction(
             account = account,
-            date = draft.date,
-            amount = draft.amount,
-            payee = savedPayee(draft.payee),
-            category = draft.category,
-            notes = draft.notes?.ifEmpty { null },
-            cleared = draft.cleared,
+            date = fields.date,
+            amount = fields.amount,
+            payee = fields.payee,
+            category = fields.category,
+            notes = fields.notes?.ifEmpty { null },
+            cleared = fields.cleared,
+            isParent = toSave.isSplit,
           )
-        insert(transaction)
+        val id = insert(transaction)
+        toSave.parts.forEach { insert(it.toNewTransaction(id, account, fields)) }
       }
-      lastTransaction.set(draft)
+      lastTransaction.set(draft.fields)
       mutableEvents.tryEmit(Created)
     }
   }
@@ -448,6 +568,12 @@ internal constructor(
       }
     }
   }
+
+  private suspend fun TransactionBatch.withSavedPayees(draft: TransactionDraft): TransactionDraft =
+    draft.copy(
+      fields = draft.fields.copy(payee = savedPayee(draft.fields.payee)),
+      parts = draft.parts.map { it.copy(payee = savedPayee(it.payee)) },
+    )
 
   // Creates the payee if it's one of the new ones, unless one with its name has turned up since
   private suspend fun TransactionBatch.savedPayee(id: PayeeId?): PayeeId? {
@@ -486,16 +612,19 @@ internal constructor(
           cleared = detail.cleared,
           reconciled = detail.reconciled,
         ),
-      fields = fields,
-      canEdit = transaction.split == None && transaction.transfer == null,
+      draft = draft,
+      canEdit = transaction.transfer == null && transaction.children.all { it.transfer == null },
     )
   }
 
   private data class Saved(
     val details: TransactionDetails,
-    val fields: TransactionFields,
+    val draft: TransactionDraft,
     val canEdit: Boolean,
-  )
+  ) {
+    val fields: TransactionFields
+      get() = draft.fields
+  }
 
   private data class Entities(
     val options: TransactionOptions,
@@ -517,14 +646,14 @@ internal constructor(
       reconciled = reconciled,
     )
 
-  private fun TransactionFields.afterRules(result: RuleTransaction) =
+  // A rule that splits the transaction moves its payee to the parts it makes. They aren't used if
+  // the transaction is split already, so then the payee stays
+  private fun TransactionFields.afterRules(result: RuleTransaction, keepPayee: Boolean) =
     copy(
       account = result.account.takeIf { it != NO_ACCOUNT },
       date = result.date,
       amount = result.amount,
-      // TODO(#1761): a rule that splits the transaction moves its payee to the parts, which the
-      // editor doesn't have yet
-      payee = if (result.isParent) payee else result.payee,
+      payee = if (result.isParent && keepPayee) payee else result.payee,
       category = result.category,
       notes = result.notes,
       cleared = result.cleared,
