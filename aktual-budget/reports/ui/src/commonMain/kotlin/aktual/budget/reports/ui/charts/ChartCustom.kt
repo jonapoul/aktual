@@ -133,4 +133,8 @@ internal val PREVIEW_CUSTOM_DATA =
         colorScheme = null,
       ),
     range = LocalDate(2011, Month.SEPTEMBER, 1)..LocalDate(2025, Month.JULY, 31),
+    intervals = persistentListOf(),
+    groups = persistentListOf(),
+    categoryGroups = persistentListOf(),
+    totals = Zero,
   )

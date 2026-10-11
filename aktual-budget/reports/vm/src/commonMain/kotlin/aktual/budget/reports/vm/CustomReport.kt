@@ -23,7 +23,6 @@ import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.Month.DECEMBER
 import kotlinx.datetime.Month.JANUARY
 import kotlinx.datetime.YearMonth
-import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.yearMonth
@@ -185,12 +184,8 @@ private fun weekRange(
   offset: Int,
   add: Int,
 ): LocalDateRange {
-  val daysIntoWeek =
-    (today.dayOfWeek.isoDayNumber % DAYS_PER_WEEK - firstDayOfWeek.value + DAYS_PER_WEEK) %
-      DAYS_PER_WEEK
-  val start = today.minus(daysIntoWeek, DAY).minus(offset, WEEK)
+  val start = weekStart(today, firstDayOfWeek).minus(offset, WEEK)
   return start..start.plus(add, WEEK).plus(DAYS_PER_WEEK - 1, DAY)
 }
 
-private const val DAYS_PER_WEEK = 7
 private const val LAST_30_DAYS_OFFSET = 29

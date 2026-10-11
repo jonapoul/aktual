@@ -289,13 +289,23 @@ data class UnsupportedData(
 enum class UnsupportedReason {
   Filters,
   InvalidMeta,
+  CustomBudgeted,
   MissingReport,
   ReportType,
   SankeyBudgeted,
 }
 
+/**
+ * [groups] is what the report is grouped by, and [categoryGroups] each category group with its
+ * categories. Both leave out empty groups unless the report shows them, and are sorted as the
+ * report asks.
+ */
 data class CustomData(
   val title: String,
   val config: CustomReportConfig,
   val range: LocalDateRange,
+  val intervals: ImmutableList<CustomIntervalTotals>,
+  val groups: ImmutableList<CustomGroupTotals>,
+  val categoryGroups: ImmutableList<CustomGroupTotals>,
+  val totals: CustomTotals,
 ) : ChartData
