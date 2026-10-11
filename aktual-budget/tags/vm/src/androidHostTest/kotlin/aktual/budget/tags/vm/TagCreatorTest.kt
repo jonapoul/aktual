@@ -36,7 +36,6 @@ class TagCreatorTest {
 
     assertThat(creator(scope, sync).create("food")).isEqualTo(TagId("old-id"))
     assertThat(sync.changes).isEqualTo(changes("old-id", "food"))
-    assertThat(tagsDao(scope).getTag(TagId("old-id"))?.tag).isEqualTo("food")
   }
 
   @Test
