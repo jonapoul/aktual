@@ -18,9 +18,11 @@ kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin)
     api(libs.androidx.paging.common)
+    api(libs.compose.uiGraphics)
     api(libs.kotlinx.datetime)
     api(project(":aktual-budget:banksync:domain"))
     api(project(":aktual-prefs"))
+    implementation(project(":aktual-budget:tags:vm"))
   }
 
   androidHostTestDependencies {

@@ -28,21 +28,26 @@ internal data object CommitAmount : EditTransactionAction
 
 internal data object GoToBudget : EditTransactionAction
 
-@JvmInline internal value class SetAmount(val amount: Amount) : EditTransactionAction
+// What changes one of the transaction's own fields
+@Immutable internal sealed interface FieldAction : EditTransactionAction
 
-@JvmInline internal value class SetPayee(val id: PayeeId?) : EditTransactionAction
+@JvmInline internal value class SetAmount(val amount: Amount) : FieldAction
 
-@JvmInline internal value class CreatePayee(val name: String) : EditTransactionAction
+@JvmInline internal value class SetPayee(val id: PayeeId?) : FieldAction
 
-@JvmInline internal value class SetCategory(val id: CategoryId?) : EditTransactionAction
+@JvmInline internal value class CreatePayee(val name: String) : FieldAction
 
-@JvmInline internal value class SetAccount(val id: AccountId) : EditTransactionAction
+@JvmInline internal value class SetCategory(val id: CategoryId?) : FieldAction
 
-@JvmInline internal value class SetDate(val date: LocalDate) : EditTransactionAction
+@JvmInline internal value class SetAccount(val id: AccountId) : FieldAction
 
-@JvmInline internal value class SetNotes(val notes: String) : EditTransactionAction
+@JvmInline internal value class SetDate(val date: LocalDate) : FieldAction
 
-@JvmInline internal value class SetCleared(val cleared: Boolean) : EditTransactionAction
+@JvmInline internal value class SetNotes(val notes: String) : FieldAction
+
+@JvmInline internal value class SetCleared(val cleared: Boolean) : FieldAction
+
+@JvmInline internal value class CreateTag(val tag: String) : FieldAction
 
 // What changes a split and its parts
 @Immutable internal sealed interface SplitAction : EditTransactionAction
