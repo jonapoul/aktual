@@ -750,7 +750,7 @@ private fun SplitParts(parent: Transaction, modifier: Modifier = Modifier) =
     DetailCard {
       parent.children.fastForEachIndexed { index, child ->
         if (index > 0) CardDivider()
-        SplitPartRow(child, parent)
+        SplitPartRow(child)
       }
 
       val remaining = parent.splitRemaining
@@ -769,7 +769,7 @@ private fun SplitParts(parent: Transaction, modifier: Modifier = Modifier) =
   }
 
 @Composable
-private fun SplitPartRow(child: Transaction, parent: Transaction) =
+private fun SplitPartRow(child: Transaction) =
   Row(
     modifier = Modifier.fillMaxWidth().padding(PartPadding),
     verticalAlignment = CenterVertically,
@@ -783,7 +783,7 @@ private fun SplitPartRow(child: Transaction, parent: Transaction) =
 
     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(LabelGap)) {
       CategoryValue(child)
-      val subtitle = child.partSubtitle(parent)
+      val subtitle = child.partSubtitle()
       if (subtitle != null) {
         Text(text = subtitle, fontSize = LabelSize, color = colors.pageTextLight)
       }
@@ -797,12 +797,11 @@ private fun SplitPartRow(child: Transaction, parent: Transaction) =
     )
   }
 
-// A part's notes, then its payee when it isn't the one in the hero
+// A part's payee, then its notes
 @Composable
-private fun Transaction.partSubtitle(parent: Transaction): AnnotatedString? {
-  val payee = payeeLabel().takeIf { payee != parent.payee || transfer != parent.transfer }
+private fun Transaction.partSubtitle(): AnnotatedString? {
   val notes = notes?.takeIf { it.isNotBlank() }
-  val text = listOfNotNull(notes, payee).joinToString(" · ")
+  val text = listOfNotNull(payeeLabel(), notes).joinToString(" · ")
   return if (text.isEmpty()) null else AnnotatedString(text)
 }
 
