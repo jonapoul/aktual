@@ -179,6 +179,15 @@ reportsNumberNegative
 reportsNumberNeutral
 reportsNumberPositive
 reportsRed
+settingsCardBackground
+settingsCardBorder
+settingsCardText
+settingsCardTextSubdued
+settingsNavItemAccentSelected
+settingsNavItemBackgroundHover
+settingsNavItemBackgroundSelected
+settingsNavItemText
+settingsNavItemTextSelected
 sidebarBackground
 sidebarBackgroundFailedSubtle
 sidebarBorder
