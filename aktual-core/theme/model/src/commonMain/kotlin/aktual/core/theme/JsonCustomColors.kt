@@ -26,6 +26,7 @@ data class JsonCustomColors(
   @SerialName("form") val form: FormColors,
   @SerialName("misc") val misc: MiscColors,
   @SerialName("chartQual") val chartQual: ChartQualColors,
+  @SerialName("settings") val settings: SettingsColors,
   @SerialName("isLight") override val isLight: Boolean,
 ) : CustomColors {
 
@@ -780,6 +781,33 @@ data class JsonCustomColors(
 
   override val chartQual9: Color
     get() = chartQual.chartQual9
+
+  override val settingsCardBackground: Color
+    get() = settings.settingsCardBackground
+
+  override val settingsCardBorder: Color
+    get() = settings.settingsCardBorder
+
+  override val settingsCardText: Color
+    get() = settings.settingsCardText
+
+  override val settingsCardTextSubdued: Color
+    get() = settings.settingsCardTextSubdued
+
+  override val settingsNavItemAccentSelected: Color
+    get() = settings.settingsNavItemAccentSelected
+
+  override val settingsNavItemBackgroundHover: Color
+    get() = settings.settingsNavItemBackgroundHover
+
+  override val settingsNavItemBackgroundSelected: Color
+    get() = settings.settingsNavItemBackgroundSelected
+
+  override val settingsNavItemText: Color
+    get() = settings.settingsNavItemText
+
+  override val settingsNavItemTextSelected: Color
+    get() = settings.settingsNavItemTextSelected
 }
 
 @Serializable
@@ -1065,4 +1093,17 @@ data class ChartQualColors(
   @SerialName("chartQual7") val chartQual7: Color,
   @SerialName("chartQual8") val chartQual8: Color,
   @SerialName("chartQual9") val chartQual9: Color,
+)
+
+@Serializable
+data class SettingsColors(
+  @SerialName("settingsCardBackground") val settingsCardBackground: Color,
+  @SerialName("settingsCardBorder") val settingsCardBorder: Color,
+  @SerialName("settingsCardText") val settingsCardText: Color,
+  @SerialName("settingsCardTextSubdued") val settingsCardTextSubdued: Color,
+  @SerialName("settingsNavItemAccentSelected") val settingsNavItemAccentSelected: Color,
+  @SerialName("settingsNavItemBackgroundHover") val settingsNavItemBackgroundHover: Color,
+  @SerialName("settingsNavItemBackgroundSelected") val settingsNavItemBackgroundSelected: Color,
+  @SerialName("settingsNavItemText") val settingsNavItemText: Color,
+  @SerialName("settingsNavItemTextSelected") val settingsNavItemTextSelected: Color,
 )

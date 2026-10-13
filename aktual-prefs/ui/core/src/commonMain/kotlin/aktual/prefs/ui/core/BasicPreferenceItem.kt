@@ -8,6 +8,7 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.disabledIf
 import alakazam.kotlin.ifNotNull
 import alakazam.kotlin.ifTrue
 import androidx.compose.foundation.background
@@ -54,14 +55,14 @@ fun BasicPreferenceItem(
   rightContent: (@Composable RowScope.() -> Unit)? = null,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
-  val contentColor = if (enabled) colors.pageText else colors.pageTextSubdued
+  val contentColor = colors.settingsCardText.disabledIf(!enabled)
 
   Row(
     modifier =
       modifier
         .clip(CardShape)
-        .ifTrue(includeBackground) { background(colors.pillBackground, CardShape) }
-        .ifTrue(includeBackground) { border(Hairline, colors.pillBorderDark, CardShape) }
+        .ifTrue(includeBackground) { background(colors.settingsCardBackground, CardShape) }
+        .ifTrue(includeBackground) { border(1.dp, colors.settingsCardBorder, CardShape) }
         .ifNotNull(onClick) {
           clickable(enabled, onClick = it, interactionSource = interactionSource)
         }
@@ -97,8 +98,8 @@ fun BasicPreferenceItem(
               text = subtitle,
               fontWeight = Light,
               textAlign = Start,
-              style = typography.bodyMedium,
-              color = if (enabled) colors.pageTextLight else colors.pageTextSubdued,
+              style = typography.labelLarge,
+              color = colors.settingsCardTextSubdued.disabledIf(!enabled),
             )
           }
         }

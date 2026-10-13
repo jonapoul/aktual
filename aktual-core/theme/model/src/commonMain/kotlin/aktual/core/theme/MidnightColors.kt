@@ -60,6 +60,16 @@ data object MidnightColors : DefaultColors {
   override val toBudgetZero = numberPositive
   override val toBudgetNegative = budgetNumberNegative
 
+  override val settingsCardBackground = tableBackground
+  override val settingsCardBorder = tableBorder
+  override val settingsCardText = tableText
+  override val settingsCardTextSubdued = ColorPalette.gray200
+  override val settingsNavItemText = pageText
+  override val settingsNavItemAccentSelected = ColorPalette.purple200
+  override val settingsNavItemTextSelected = settingsNavItemAccentSelected
+  override val settingsNavItemBackgroundHover = settingsNavItemText.withOpacity(0.08)
+  override val settingsNavItemBackgroundSelected = settingsNavItemAccentSelected.withOpacity(0.22)
+
   override val sidebarBackground = ColorPalette.gray900
   override val sidebarItemBackgroundPending = ColorPalette.orange200
   override val sidebarItemBackgroundPositive = ColorPalette.green400

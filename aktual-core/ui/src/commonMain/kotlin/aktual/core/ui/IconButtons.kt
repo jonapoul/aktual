@@ -165,17 +165,19 @@ fun interface IconButtonColorProvider {
   @Composable operator fun invoke(colors: Colors, isPressed: Boolean): IconButtonColors
 
   companion object {
-    val Bare = IconButtonColorProvider { theme, isPressed -> theme.bareIconButton(isPressed) }
-    val Primary = IconButtonColorProvider { theme, isPressed -> theme.primaryIconButton(isPressed) }
-    val Normal = IconButtonColorProvider { theme, isPressed -> theme.normalIconButton(isPressed) }
+    val Bare = IconButtonColorProvider { colors, isPressed -> colors.bareIconButton(isPressed) }
+    val Primary = IconButtonColorProvider { colors, isPressed ->
+      colors.primaryIconButton(isPressed)
+    }
+    val Normal = IconButtonColorProvider { colors, isPressed -> colors.normalIconButton(isPressed) }
 
-    val NormalRed = IconButtonColorProvider { theme, isPressed ->
-      theme
+    val NormalRed = IconButtonColorProvider { colors, isPressed ->
+      colors
         .normalIconButton(isPressed)
         .copy(
-          containerColor = theme.errorBackground,
-          disabledContainerColor = theme.errorBackground.disabled,
-          contentColor = theme.errorText,
+          containerColor = colors.errorBackground,
+          disabledContainerColor = colors.errorBackground.disabled,
+          contentColor = colors.errorText,
         )
     }
   }

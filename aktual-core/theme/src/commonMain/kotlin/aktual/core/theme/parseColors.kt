@@ -352,6 +352,22 @@ fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
             tooltipBorder = "tooltipBorder".attr(tooltipBorder),
             overlayBackground = "overlayBackground".attr(overlayBackground),
           ),
+        settings =
+          SettingsColors(
+            settingsCardBackground = "settingsCardBackground".attr(settingsCardBackground),
+            settingsCardBorder = "settingsCardBorder".attr(settingsCardBorder),
+            settingsCardText = "settingsCardText".attr(settingsCardText),
+            settingsCardTextSubdued = "settingsCardTextSubdued".attr(settingsCardTextSubdued),
+            settingsNavItemAccentSelected =
+              "settingsNavItemAccentSelected".attr(settingsNavItemAccentSelected),
+            settingsNavItemBackgroundHover =
+              "settingsNavItemBackgroundHover".attr(settingsNavItemBackgroundHover),
+            settingsNavItemBackgroundSelected =
+              "settingsNavItemBackgroundSelected".attr(settingsNavItemBackgroundSelected),
+            settingsNavItemText = "settingsNavItemText".attr(settingsNavItemText),
+            settingsNavItemTextSelected =
+              "settingsNavItemTextSelected".attr(settingsNavItemTextSelected),
+          ),
         chartQual =
           ChartQualColors(
             chartQual1 = "chartQual1".attr(chartQual1),
