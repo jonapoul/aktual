@@ -62,13 +62,23 @@ data object DarkColors : DefaultColors {
   override val toBudgetZero = numberPositive
   override val toBudgetNegative = budgetNumberNegative
 
+  override val settingsCardBackground = tableBackground
+  override val settingsCardBorder = tableBorder
+  override val settingsCardText = tableText
+  override val settingsCardTextSubdued = ColorPalette.navy300
+  override val settingsNavItemText = pageText
+  override val settingsNavItemAccentSelected = ColorPalette.purple200
+  override val settingsNavItemTextSelected = settingsNavItemAccentSelected
+  override val settingsNavItemBackgroundHover = settingsNavItemText.withOpacity(0.08)
+  override val settingsNavItemBackgroundSelected = settingsNavItemAccentSelected.withOpacity(0.22)
+
   override val sidebarBackground = ColorPalette.navy900
   override val sidebarItemBackgroundPending = ColorPalette.orange200
   override val sidebarItemBackgroundPositive = ColorPalette.green500
   override val sidebarItemBackgroundFailed = ColorPalette.red300
   override val sidebarItemAccentSelected = ColorPalette.purple200
   override val sidebarItemBackgroundHover = ColorPalette.navy700
-  override val sidebarItemBackgroundSelected = sidebarItemAccentSelected.copy(alpha = 0.22f)
+  override val sidebarItemBackgroundSelected = sidebarItemAccentSelected.withOpacity(0.22)
   override val sidebarItemText = ColorPalette.navy150
   override val sidebarItemTextUpdated = sidebarItemText
   override val sidebarItemTextSelected = ColorPalette.purple200
@@ -78,7 +88,7 @@ data object DarkColors : DefaultColors {
   override val sidebarTextMuted = ColorPalette.navy500
   override val sidebarTextPositive = sidebarItemBackgroundPositive
   override val sidebarTextFailed = sidebarItemBackgroundFailed
-  override val sidebarBackgroundFailedSubtle = sidebarItemBackgroundFailed.copy(alpha = 0.16f)
+  override val sidebarBackgroundFailedSubtle = sidebarItemBackgroundFailed.withOpacity(0.16)
   override val sidebarBorder = sidebarItemBackgroundHover
   override val sidebarControlBackground = sidebarItemBackgroundHover
   override val sidebarBrand = sidebarItemAccentSelected

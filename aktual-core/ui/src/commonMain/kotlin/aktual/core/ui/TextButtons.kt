@@ -38,7 +38,7 @@ fun PrimaryTextButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
-  contentPadding: PaddingValues = ButtonPadding,
+  contentPadding: PaddingValues = DefaultButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = typography.buttonTextStyle,
@@ -76,7 +76,7 @@ fun PrimaryTextButtonWithLoading(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
-  contentPadding: PaddingValues = ButtonPadding,
+  contentPadding: PaddingValues = DefaultButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = typography.buttonTextStyle,
@@ -126,7 +126,7 @@ fun NormalTextButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
-  contentPadding: PaddingValues = ButtonPadding,
+  contentPadding: PaddingValues = DefaultButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = typography.buttonTextStyle,
@@ -163,7 +163,7 @@ fun BareTextButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
-  contentPadding: PaddingValues = ButtonPadding,
+  contentPadding: PaddingValues = DefaultButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = typography.buttonTextStyle,
@@ -200,7 +200,7 @@ fun BasicTextButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
-  contentPadding: PaddingValues = ButtonPadding,
+  contentPadding: PaddingValues = DefaultButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = LocalTextStyle.current,
@@ -238,7 +238,7 @@ private fun RowScope.DefaultTextButtonContent(
   suffix?.invoke()
 }
 
-private val ButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+val DefaultButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
 
 val Typography.buttonTextStyle: TextStyle
   get() = bodyMedium.copy(fontSize = 15.sp)

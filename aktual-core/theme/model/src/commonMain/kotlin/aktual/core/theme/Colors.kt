@@ -63,6 +63,16 @@ sealed interface Colors {
   val toBudgetZero: Color
   val toBudgetNegative: Color
 
+  val settingsCardBackground: Color
+  val settingsCardBorder: Color
+  val settingsCardText: Color
+  val settingsCardTextSubdued: Color
+  val settingsNavItemAccentSelected: Color
+  val settingsNavItemBackgroundHover: Color
+  val settingsNavItemBackgroundSelected: Color
+  val settingsNavItemText: Color
+  val settingsNavItemTextSelected: Color
+
   val sidebarBackground: Color
   val sidebarItemBackgroundPending: Color
   val sidebarItemBackgroundPositive: Color

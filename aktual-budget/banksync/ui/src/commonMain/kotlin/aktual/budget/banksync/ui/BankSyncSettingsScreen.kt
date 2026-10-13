@@ -35,6 +35,7 @@ import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.errorButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -68,6 +69,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -234,6 +236,8 @@ private fun BankSyncSettingsContent(
   }
 }
 
+private val UnlinkButtonPadding = PaddingValues(all = 16.dp)
+
 @Composable
 private fun UnlinkButton(
   accountName: String?,
@@ -245,6 +249,8 @@ private fun UnlinkButton(
   NormalTextButton(
     modifier = modifier.fillMaxWidth(),
     text = Strings.bankSyncSettingsUnlink,
+    colors = { pressed -> colors.errorButton(pressed) },
+    contentPadding = UnlinkButtonPadding,
     onClick = { showConfirm = true },
   )
 
