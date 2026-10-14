@@ -1,5 +1,3 @@
-@file:Suppress("ComposeCompositionLocalUsage")
-
 package aktual.core.ui
 
 import aktual.budget.model.BarEffect
@@ -29,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Rect
@@ -37,7 +34,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -155,37 +151,6 @@ fun Modifier.hazedTopBarContent(state: HazedTopBarState, innerPadding: PaddingVa
     padding(innerPadding)
   }
 }
-
-/**
- * Provided by a screen whose content scrolls behind a [HazedTopBarState] bar, so sticky headers in
- * the content can blur whatever scrolls behind them too. See [hazedStickyHeader].
- */
-val LocalStickyHazeState = staticCompositionLocalOf<HazedTopBarState?> { null }
-
-/**
- * Background for a sticky list header that blurs the content scrolling under it. The header is a
- * source above the screen's content, so the top bar blurs it as well. Falls back to a flat
- * [fallback] fill when there's no [LocalStickyHazeState] or the effect is off.
- */
-@Composable
-fun Modifier.hazedStickyHeader(
-  fallback: Color,
-  shape: Shape = RectangleShape,
-  config: HazeConfig = LocalHazeConfig.current,
-): Modifier {
-  val state = LocalStickyHazeState.current
-  if (state == null || !state.enabled) return background(fallback, shape)
-
-  val input = HazeInput.Sources(state.hazeState)
-  val source = clip(shape).hazeSource(state.hazeState, zIndex = STICKY_HEADER_Z_INDEX)
-  return when (state.effect) {
-    None -> background(fallback, shape)
-    Blur -> source.hazeBlur(input = input, style = barBlurStyle(fallback, config))
-    Glass -> source.hazeGlass(input = input, style = barGlassStyle(fallback, config))
-  }
-}
-
-private const val STICKY_HEADER_Z_INDEX = 1f
 
 fun hazedTopBarContentPadding(state: HazedTopBarState, innerPadding: PaddingValues): PaddingValues =
   if (state.enabled) {

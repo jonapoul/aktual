@@ -19,7 +19,6 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.formattedText
-import aktual.core.ui.hazedStickyHeader
 import aktual.core.ui.scrollbar
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.ScrollState
@@ -87,7 +86,6 @@ internal fun BudgetColumns(
   listState: LazyListState,
   onAction: BudgetActionHandler,
   modifier: Modifier = Modifier,
-  topPadding: Dp = 0.dp,
 ) {
   val columns = remember(state.months, state.month, state.monthCount) { state.columns() }
   val scroll = rememberScrollState()
@@ -125,7 +123,7 @@ internal fun BudgetColumns(
     LazyColumn(
       modifier = Modifier.scrollbar(listState),
       state = listState,
-      contentPadding = BudgetDS.listPadding.plusTop(topPadding),
+      contentPadding = BudgetDS.listPadding,
     ) {
       budgetColumns(state, columns, layout, cursor, grid, onAction)
       item(key = "bottom") { BottomSpacing() }
@@ -411,7 +409,7 @@ private fun ColumnHeaders(
   modifier: Modifier = Modifier,
 ) {
   TableRow(
-    modifier = modifier.hazedStickyHeader(colors.tableHeaderBackground, TopShape),
+    modifier = modifier.background(colors.tableHeaderBackground, TopShape),
     height = BudgetDS.headerHeight,
   ) {
     HeaderLabel(

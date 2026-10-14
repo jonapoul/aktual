@@ -19,7 +19,6 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
-import aktual.core.ui.hazedStickyHeader
 import aktual.core.ui.redacted
 import aktual.core.ui.stringLong
 import androidx.compose.animation.core.animateFloatAsState
@@ -459,7 +458,7 @@ internal fun GroupHeaderRow(
 
   val rotation by animateFloatAsState(if (group.isCollapsed) COLLAPSED_ROTATION else 0f)
 
-  Column(modifier = modifier.fillMaxWidth().hazedStickyHeader(colors.tableRowHeaderBackground)) {
+  Column(modifier = modifier.fillMaxWidth().background(colors.tableRowHeaderBackground)) {
     HorizontalDivider(color = colors.tableBorder)
     TableRow(
       modifier =

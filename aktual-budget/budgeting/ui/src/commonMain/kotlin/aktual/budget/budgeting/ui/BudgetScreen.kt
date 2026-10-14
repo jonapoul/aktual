@@ -26,7 +26,6 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LocalBottomSpacing
-import aktual.core.ui.LocalStickyHazeState
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -43,8 +42,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -60,7 +57,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -82,8 +78,6 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -270,16 +264,14 @@ private fun BudgetScaffold(
         isRefreshing = isRefreshing,
         onRefresh = { handler(Refresh) },
       ) { padding ->
-        CompositionLocalProvider(LocalStickyHazeState provides hazeState) {
-          BudgetContent(
-            state = state,
-            isCompact = isCompact,
-            contentPadding = padding,
-            listState = listState,
-            pageListStates = pageListStates,
-            onAction = handler,
-          )
-        }
+        BudgetContent(
+          state = state,
+          isCompact = isCompact,
+          contentPadding = padding,
+          listState = listState,
+          pageListStates = pageListStates,
+          onAction = handler,
+        )
       }
     }
   }
@@ -332,11 +324,12 @@ private fun BudgetContent(
   onAction: BudgetActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val listModifier = modifier.fillMaxSize()
-  val topPadding = contentPadding.calculateTopPadding()
+  // Sticky headers ignore content padding, so the list starts below the top bar rather than under
+  // it, or they'd hide behind it
+  val listModifier = modifier.fillMaxSize().padding(top = contentPadding.calculateTopPadding())
 
   when (state) {
-    Loading -> LoadingTable(modifier = listModifier.padding(top = topPadding))
+    Loading -> LoadingTable(modifier = listModifier)
 
     Failed ->
       FailureScreen(
@@ -368,7 +361,6 @@ private fun BudgetContent(
           BudgetPager(
             modifier = listModifier,
             state = state,
-            topPadding = topPadding,
             pageListStates = pageListStates,
             onAction = onAction,
           )
@@ -377,7 +369,6 @@ private fun BudgetContent(
           BudgetColumns(
             modifier = listModifier,
             state = state,
-            topPadding = topPadding,
             listState = listState,
             onAction = onAction,
           )
@@ -408,7 +399,6 @@ private class PageListStates {
 @Composable
 private fun BudgetPager(
   state: BudgetState.Loaded,
-  topPadding: Dp,
   pageListStates: PageListStates,
   onAction: BudgetActionHandler,
   modifier: Modifier = Modifier,
@@ -443,12 +433,12 @@ private fun BudgetPager(
     }
 
     if (budget == null) {
-      LoadingTable(modifier = Modifier.fillMaxSize().padding(top = topPadding))
+      LoadingTable(modifier = Modifier.fillMaxSize())
     } else {
       LazyColumn(
         modifier = Modifier.fillMaxSize().scrollbar(listState),
         state = listState,
-        contentPadding = BudgetDS.listPadding.plusTop(topPadding),
+        contentPadding = BudgetDS.listPadding,
       ) {
         budgetTable(budget, state.type, state.showSpent, onAction)
         item(key = "bottom") { BottomSpacing() }
@@ -572,11 +562,3 @@ internal object BudgetDS {
   val rowPadding = 12.dp
   val categoryIndent = 32.dp
 }
-
-internal fun PaddingValues.plusTop(extra: Dp): PaddingValues =
-  PaddingValues(
-    start = calculateStartPadding(LayoutDirection.Ltr),
-    end = calculateEndPadding(LayoutDirection.Ltr),
-    top = calculateTopPadding() + extra,
-    bottom = calculateBottomPadding(),
-  )
