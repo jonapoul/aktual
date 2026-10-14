@@ -2,7 +2,7 @@ package aktual.prefs.vm.format
 
 import aktual.prefs.FormatPreferencesImpl
 import aktual.test.buildPreferences
-import alakazam.test.standardDispatcher
+import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -15,7 +15,7 @@ import org.robolectric.RobolectricTestRunner
 class FormatSettingsViewModelTest {
   @Test
   fun `Hide fraction toggles the preference`() = runTest {
-    val preferences = FormatPreferencesImpl(buildPreferences(standardDispatcher))
+    val preferences = FormatPreferencesImpl(buildPreferences(unconfinedDispatcher))
     val viewModel = FormatSettingsViewModel(preferences)
 
     viewModel.state.test {

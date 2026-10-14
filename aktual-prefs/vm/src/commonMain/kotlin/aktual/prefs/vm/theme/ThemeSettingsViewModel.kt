@@ -5,9 +5,9 @@ import aktual.core.theme.DarkColors
 import aktual.core.theme.MidnightColors
 import aktual.di.AppScope
 import aktual.prefs.ThemePreferences
-import aktual.prefs.asStateFlow
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
+import aktual.prefs.vm.asLoadedStateFlow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -26,9 +26,9 @@ import kotlinx.coroutines.launch
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class ThemeSettingsViewModel(private val preferences: ThemePreferences) : ViewModel() {
-  private val useSystemDefault = preferences.useSystemDefault.asStateFlow(viewModelScope)
-  private val nightTheme = preferences.nightTheme.asStateFlow(viewModelScope)
-  private val constantTheme = preferences.constantTheme.asStateFlow(viewModelScope)
+  private val useSystemDefault = preferences.useSystemDefault.asLoadedStateFlow(viewModelScope)
+  private val nightTheme = preferences.nightTheme.asLoadedStateFlow(viewModelScope)
+  private val constantTheme = preferences.constantTheme.asLoadedStateFlow(viewModelScope)
 
   val state: StateFlow<ThemeSettingsState> =
     viewModelScope.launchMolecule(Immediate) {

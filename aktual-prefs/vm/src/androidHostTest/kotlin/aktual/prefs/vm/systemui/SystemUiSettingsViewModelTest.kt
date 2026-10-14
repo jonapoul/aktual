@@ -2,7 +2,7 @@ package aktual.prefs.vm.systemui
 
 import aktual.prefs.SystemUiPreferencesImpl
 import aktual.test.buildPreferences
-import alakazam.test.standardDispatcher
+import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isFalse
@@ -16,7 +16,7 @@ import org.robolectric.RobolectricTestRunner
 class SystemUiSettingsViewModelTest {
   @Test
   fun `Bottom bar preference changes`() = runTest {
-    val preferences = SystemUiPreferencesImpl(buildPreferences(standardDispatcher))
+    val preferences = SystemUiPreferencesImpl(buildPreferences(unconfinedDispatcher))
     val viewModel = SystemUiSettingsViewModel(preferences)
 
     viewModel.state.test {

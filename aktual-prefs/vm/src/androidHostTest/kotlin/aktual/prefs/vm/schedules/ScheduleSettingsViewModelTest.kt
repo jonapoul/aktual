@@ -2,7 +2,7 @@ package aktual.prefs.vm.schedules
 
 import aktual.prefs.SchedulePreferencesImpl
 import aktual.test.buildPreferences
-import alakazam.test.standardDispatcher
+import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isFalse
@@ -16,7 +16,7 @@ import org.robolectric.RobolectricTestRunner
 class ScheduleSettingsViewModelTest {
   @Test
   fun `Show completed toggles the preference`() = runTest {
-    val preferences = SchedulePreferencesImpl(buildPreferences(standardDispatcher))
+    val preferences = SchedulePreferencesImpl(buildPreferences(unconfinedDispatcher))
     val viewModel = ScheduleSettingsViewModel(preferences)
 
     viewModel.state.test {

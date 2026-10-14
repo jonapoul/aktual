@@ -2,7 +2,7 @@ package aktual.prefs.vm.transactions
 
 import aktual.prefs.TransactionPreferencesImpl
 import aktual.test.buildPreferences
-import alakazam.test.standardDispatcher
+import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isFalse
@@ -16,7 +16,7 @@ import org.robolectric.RobolectricTestRunner
 class TransactionSettingsViewModelTest {
   @Test
   fun `Alternate row colours toggles the preference`() = runTest {
-    val preferences = TransactionPreferencesImpl(buildPreferences(standardDispatcher))
+    val preferences = TransactionPreferencesImpl(buildPreferences(unconfinedDispatcher))
     val viewModel = TransactionSettingsViewModel(preferences)
 
     viewModel.state.test {

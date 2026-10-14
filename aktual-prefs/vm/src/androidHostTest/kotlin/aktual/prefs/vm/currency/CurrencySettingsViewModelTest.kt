@@ -2,7 +2,7 @@ package aktual.prefs.vm.currency
 
 import aktual.prefs.CurrencyPreferencesImpl
 import aktual.test.buildPreferences
-import alakazam.test.standardDispatcher
+import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
@@ -18,7 +18,7 @@ import org.robolectric.RobolectricTestRunner
 class CurrencySettingsViewModelTest {
   @Test
   fun `Symbol settings are disabled without a currency`() = runTest {
-    val preferences = CurrencyPreferencesImpl(buildPreferences(standardDispatcher))
+    val preferences = CurrencyPreferencesImpl(buildPreferences(unconfinedDispatcher))
     val viewModel = CurrencySettingsViewModel(preferences)
 
     viewModel.state.test {

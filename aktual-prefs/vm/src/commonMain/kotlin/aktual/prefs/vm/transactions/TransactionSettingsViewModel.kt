@@ -2,8 +2,8 @@ package aktual.prefs.vm.transactions
 
 import aktual.di.AppScope
 import aktual.prefs.TransactionPreferences
-import aktual.prefs.asStateFlow
 import aktual.prefs.vm.BooleanPreference
+import aktual.prefs.vm.asLoadedStateFlow
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,7 +19,8 @@ import kotlinx.coroutines.launch
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class TransactionSettingsViewModel(preferences: TransactionPreferences) : ViewModel() {
-  private val alternateRowColours = preferences.alternateRowColours.asStateFlow(viewModelScope)
+  private val alternateRowColours =
+    preferences.alternateRowColours.asLoadedStateFlow(viewModelScope)
 
   val state: StateFlow<TransactionSettingsState> =
     viewModelScope.launchMolecule(Immediate) {
