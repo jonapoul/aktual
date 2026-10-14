@@ -8,6 +8,7 @@ import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.vm.LoadedAccount
+import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.nav.BackNavigator
@@ -138,7 +139,7 @@ internal fun TransactionsScaffold(
   var topBarHeight by remember { mutableIntStateOf(0) }
   val year by rememberVisibleYear(listState, pagingItems) { topBarHeight }
 
-  WithLedgerDimens(density, showBalance) {
+  WithLedgerDimens(density, showBalance, showAccount = loadedAccount !is SpecificAccount) {
     Scaffold(
       topBar = {
         Column(modifier = Modifier.onSizeChanged { topBarHeight = it.height }) {
