@@ -84,7 +84,7 @@ private fun QuickActionButtons(
   FlowRow(
     modifier = modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
+    verticalArrangement = Arrangement.spacedBy(2.dp),
     maxItemsInEachRow = 2,
   ) {
     for (action in QuickAction.available(type)) {
