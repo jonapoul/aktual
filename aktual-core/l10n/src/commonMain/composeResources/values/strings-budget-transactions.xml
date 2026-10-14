@@ -15,6 +15,16 @@
   <string name="transactions_view_options">View options</string>
   <string name="transactions_menu">Menu</string>
   <string name="transactions_settings">Settings</string>
+  <string name="transactions_delete_account">Delete account</string>
+  <string name="transactions_delete_account_title">Delete account?</string>
+  <string name="transactions_delete_account_message">This deletes the account and all of its transactions permanently. Money in it may vanish from your budget. Transfers to other accounts stay there, but are no longer transfers.</string>
+  <string name="transactions_delete_account_confirm">Delete</string>
+  <string name="transactions_delete_account_cancel">Cancel</string>
+  <string name="transactions_delete_account_done">Account deleted</string>
+  <string name="transactions_delete_account_failed">Couldn’t delete account</string>
+  <string name="transactions_delete_account_login_kept_title">Bank login not removed</string>
+  <string name="transactions_delete_account_login_kept_message">The account was deleted, but its GoCardless bank login couldn’t be removed from the server.</string>
+  <string name="transactions_delete_account_login_kept_dismiss">OK</string>
   <string name="transactions_density">Density</string>
   <string name="transactions_density_comfortable">Comfortable</string>
   <string name="transactions_density_compact">Compact</string>

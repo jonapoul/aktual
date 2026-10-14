@@ -37,16 +37,21 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingSource.LoadParams
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
+import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
+import assertk.assertions.prop
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.createDynamicGraph
 import kotlin.io.path.createTempDirectory
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -1059,8 +1064,39 @@ class TransactionsViewModelTest {
     }
   }
 
+  @Test
+  fun `Deleting an account unlinks it from its bank`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(BANKED))
+    accounts.insert(
+      id = BANKED,
+      accountId = "remote",
+      name = "Banked",
+      bank = Uuid.parse("00000000-0000-0000-0000-000000000001"),
+      accountSyncSource = SimpleFin,
+    )
+    transactions.insertTransaction(id = "x", account = "banked", category = null, payee = "a")
+
+    viewModel.events.test {
+      // when
+      viewModel.deleteAccount()
+
+      // then
+      assertThat(awaitItem()).isEqualTo(AccountDeleted)
+    }
+    assertThat(accounts[BANKED]).isNotNull().all {
+      prop("tombstone") { it.tombstone }.isEqualTo(true)
+      prop("bank") { it.bank }.isNull()
+      prop("account_id") { it.account_id }.isNull()
+      prop("account_sync_source") { it.account_sync_source }.isNull()
+    }
+    assertThat(transactions.row(TransactionId("x"))?.tombstone).isEqualTo(true)
+  }
+
   private companion object {
     val JULY = LocalDate(2025, 7, 1)
+
+    val BANKED = AccountId("banked")
 
     val LINKED = AccountId("linked")
 

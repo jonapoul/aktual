@@ -12,9 +12,11 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
 
@@ -176,9 +178,10 @@ internal class BankAccountLinkerTest {
   fun `Unlinking the last GoCardless account deletes its requisition`() = runBankSyncTest {
     insertLinkedAccount(OTHER, bankId = "requisition-1")
 
-    linker(api).unlink(OTHER)
+    val removed = linker(api).unlink(OTHER)
 
     assertThat(api.removedRequisitions).containsExactly("requisition-1")
+    assertThat(removed).isTrue()
   }
 
   @Test
@@ -197,9 +200,10 @@ internal class BankAccountLinkerTest {
     insertLinkedAccount(OTHER, bankId = "requisition-1")
     api.removeError = IllegalStateException("Server down")
 
-    linker(api).unlink(OTHER)
+    val removed = linker(api).unlink(OTHER)
 
     assertThat(account(OTHER).bank).isNull()
+    assertThat(removed).isFalse()
   }
 
   private companion object {

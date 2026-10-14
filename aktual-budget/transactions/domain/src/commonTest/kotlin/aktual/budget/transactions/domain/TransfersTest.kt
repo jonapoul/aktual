@@ -285,6 +285,30 @@ internal class TransfersTest {
     assertThat(loader.load(parent)).isNotNull().prop("flag") { it.hasReconciledTransfer }.isTrue()
   }
 
+  @Test
+  fun `Deleting an account keeps the other side of its transfers`() = runWriterTest {
+    val payees = prepareDatabase()
+    val transfer =
+      insert(NewTransaction(account = ONE, date = DATE, amount = Amount(5000), payee = payees.two))
+    val other = otherSide(transfer)
+    val parent = insert(NewTransaction(account = ONE, date = DATE, isParent = true))
+    val child = insert(NewTransaction(account = ONE, date = DATE, parentId = parent))
+    val elsewhere = insert(NewTransaction(account = TWO, date = DATE, amount = Amount(100)))
+
+    writer.write { deleteAccount(ONE) }
+
+    for (id in listOf(transfer, parent, child)) assertThat(row(id).tombstone).isEqualTo(true)
+    assertThat(row(other)).all {
+      prop("tombstone") { it.tombstone }.isEqualTo(false)
+      prop("transferred_id") { it.transferred_id }.isNull()
+      prop("description") { it.description }.isNull()
+    }
+    assertThat(row(elsewhere).tombstone).isEqualTo(false)
+    assertThat(accountDao[ONE]?.tombstone).isEqualTo(true)
+    assertThat(payeeDao[payees.one]?.tombstone).isEqualTo(true)
+    assertThat(payeeDao[payees.two]?.tombstone).isEqualTo(false)
+  }
+
   private data class TransferPayees(val one: PayeeId, val two: PayeeId, val three: PayeeId)
 
   // Two on budget accounts and an off budget one, each with its transfer payee

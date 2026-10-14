@@ -11,29 +11,30 @@ import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionsViewModel
+import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditTransactionNavigator
 import aktual.core.nav.TransactionSettingsNavigator
+import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LandscapePreview
-import aktual.core.ui.LocalBottomSpacing
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.TabletPreview
-import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -42,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -72,10 +74,32 @@ fun TransactionsScreen(
   val isBankSyncing by viewModel.isBankSyncing.collectAsStateWithLifecycle()
   val expanded by viewModel.expanded.collectAsStateWithLifecycle()
   val alternateRowColours by viewModel.alternateRowColours.collectAsStateWithLifecycle()
-  val snackbar = remember { SnackbarHostState() }
+  val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
-    viewModel.bankSyncFinished.collect { summary -> snackbar.showBankSyncSummary(summary) }
+    viewModel.bankSyncFinished.collect { summary ->
+      snackbars.show { showBankSyncSummary(summary) }
+    }
+  }
+
+  val deleted = Strings.transactionsDeleteAccountDone
+  val deleteFailed = Strings.transactionsDeleteAccountFailed
+  var showLoginKept by rememberSaveable { mutableStateOf(false) }
+  LaunchedEffect(viewModel) {
+    viewModel.events.collect { event ->
+      when (event) {
+        AccountDeleted -> {
+          snackbars.show { showSnackbar(deleted) }
+          back()
+        }
+        AccountDeletedBankLoginKept -> {
+          showLoginKept = true
+        }
+        DeleteAccountFailed -> {
+          snackbars.show { showSnackbar(deleteFailed) }
+        }
+      }
+    }
   }
 
   TransactionsScaffold(
@@ -90,12 +114,12 @@ fun TransactionsScreen(
     expanded = expanded,
     splitsPinnedOpen = viewModel.splitsPinnedOpen,
     alternateRowColours = alternateRowColours,
-    snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         NavBack -> back()
         BankSync -> viewModel.bankSync()
         OpenSettings -> toSettings()
+        DeleteAccount -> viewModel.deleteAccount()
         is SetDensity -> viewModel.setDensity(action.density)
         is ToggleSplit -> viewModel.toggleExpanded(action.id)
         is OpenTransaction -> openTransaction(action.id)
@@ -107,7 +131,28 @@ fun TransactionsScreen(
       }
     },
   )
+
+  if (showLoginKept) {
+    BankLoginKeptDialog(
+      onDismiss = {
+        showLoginKept = false
+        back()
+      },
+    )
+  }
 }
+
+@Composable
+private fun BankLoginKeptDialog(onDismiss: () -> Unit) =
+  AktualAlertDialog(
+    title = Strings.transactionsDeleteAccountLoginKeptTitle,
+    highlight = colors.warningText,
+    onDismissRequest = onDismiss,
+    buttons = {
+      TextButton(onClick = onDismiss) { Text(Strings.transactionsDeleteAccountLoginKeptDismiss) }
+    },
+    content = { Text(Strings.transactionsDeleteAccountLoginKeptMessage) },
+  )
 
 @Composable
 private fun metroViewModel(spec: TransactionsSpec) =
@@ -130,7 +175,6 @@ internal fun TransactionsScaffold(
   expanded: ImmutableSet<TransactionId> = persistentSetOf(),
   splitsPinnedOpen: Boolean = false,
   alternateRowColours: Boolean = false,
-  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -156,12 +200,6 @@ internal fun TransactionsScaffold(
           if (density == Dense) LedgerHeader()
           year?.let { YearDivider(it) }
         }
-      },
-      snackbarHost = {
-        SnackbarHost(
-          hostState = snackbarHostState,
-          modifier = Modifier.padding(bottom = LocalBottomSpacing.current + bottomNavBarPadding()),
-        )
       },
     ) { innerPadding ->
       Box {

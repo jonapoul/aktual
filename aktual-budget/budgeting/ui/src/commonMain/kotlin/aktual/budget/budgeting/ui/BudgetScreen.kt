@@ -25,12 +25,11 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
-import aktual.core.ui.LocalBottomSpacing
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.rememberHazedTopBarState
@@ -52,7 +51,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -83,7 +81,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.monthsUntil
 import kotlinx.datetime.plus
@@ -99,13 +96,14 @@ internal fun BudgetScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val isSyncing by viewModel.isSyncing.collectAsStateWithLifecycle()
-  val snackbar = remember { SnackbarHostState() }
+  val snackbars = LocalSnackbars.current
 
   // A newer change replaces the snackbar, as only the latest can be undone
   LaunchedEffect(viewModel) {
-    viewModel.events.collectLatest { event ->
+    viewModel.events.collect { event ->
       when (event) {
-        is Updated -> snackbar.showUpdated(onUndo = { viewModel.undo(event.token) })
+        is Updated ->
+          snackbars.show(key = viewModel) { showUpdated(onUndo = { viewModel.undo(event.token) }) }
       }
     }
   }
@@ -114,7 +112,6 @@ internal fun BudgetScreen(
     modifier = modifier,
     state = state,
     isRefreshing = isSyncing,
-    snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         Refresh -> viewModel.refresh()
@@ -188,7 +185,6 @@ private fun BudgetScaffold(
   onAction: BudgetActionHandler,
   modifier: Modifier = Modifier,
   isCompact: Boolean = isCompactWidth(),
-  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -251,7 +247,6 @@ private fun BudgetScaffold(
         },
       )
     },
-    snackbarHost = { BudgetSnackbarHost(snackbarHostState) },
   ) { innerPadding ->
     BoxWithConstraints {
       val fitting = if (isCompact) 1 else fittingMonths(maxWidth)
@@ -504,13 +499,6 @@ private fun BudgetMenu(
     }
   }
 }
-
-@Composable
-private fun BudgetSnackbarHost(state: SnackbarHostState) =
-  SnackbarHost(
-    hostState = state,
-    modifier = Modifier.padding(bottom = LocalBottomSpacing.current + bottomNavBarPadding()),
-  )
 
 private suspend fun SnackbarHostState.showUpdated(onUndo: () -> Unit) {
   val result =

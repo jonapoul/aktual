@@ -2,11 +2,13 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.transactions.vm.LoadedAccount
 import aktual.core.icons.material.Add
+import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Settings
 import aktual.core.icons.material.Tune
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
@@ -27,6 +29,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -88,14 +91,19 @@ internal fun TransactionsTitleBar(
         content = { Icon(MaterialIcons.Tune, Strings.transactionsViewOptions) },
       )
 
-      TransactionsMenu(onAction)
+      TransactionsMenu(canDeleteAccount = loadedAccount is SpecificAccount, onAction = onAction)
     },
   )
 }
 
 @Composable
-private fun TransactionsMenu(onAction: ActionListener, modifier: Modifier = Modifier) {
+private fun TransactionsMenu(
+  canDeleteAccount: Boolean,
+  onAction: ActionListener,
+  modifier: Modifier = Modifier,
+) {
   var expanded by remember { mutableStateOf(false) }
+  var confirmDelete by remember { mutableStateOf(false) }
 
   Box(modifier = modifier) {
     IconButton(
@@ -112,9 +120,45 @@ private fun TransactionsMenu(onAction: ActionListener, modifier: Modifier = Modi
           onAction(OpenSettings)
         },
       )
+
+      if (canDeleteAccount) {
+        AktualDropdownMenuItem(
+          text = Strings.transactionsDeleteAccount,
+          leadingIcon = MaterialIcons.Delete,
+          onClick = {
+            expanded = false
+            confirmDelete = true
+          },
+        )
+      }
     }
   }
+
+  if (confirmDelete) {
+    ConfirmDeleteAccountDialog(
+      onConfirm = {
+        confirmDelete = false
+        onAction(DeleteAccount)
+      },
+      onCancel = { confirmDelete = false },
+    )
+  }
 }
+
+@Composable
+private fun ConfirmDeleteAccountDialog(onConfirm: () -> Unit, onCancel: () -> Unit) =
+  AktualAlertDialog(
+    title = Strings.transactionsDeleteAccountTitle,
+    highlight = colors.errorText,
+    onDismissRequest = onCancel,
+    buttons = {
+      TextButton(onClick = onCancel) { Text(Strings.transactionsDeleteAccountCancel) }
+      TextButton(onClick = onConfirm) {
+        Text(Strings.transactionsDeleteAccountConfirm, color = colors.errorText)
+      }
+    },
+    content = { Text(Strings.transactionsDeleteAccountMessage) },
+  )
 
 @Preview
 @Composable

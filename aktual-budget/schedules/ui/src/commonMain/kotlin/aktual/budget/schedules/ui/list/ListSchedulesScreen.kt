@@ -35,12 +35,11 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
-import aktual.core.ui.LocalBottomSpacing
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
@@ -60,8 +59,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -69,7 +66,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -80,7 +76,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun ListSchedulesScreen(
@@ -91,15 +86,14 @@ internal fun ListSchedulesScreen(
   viewModel: ListSchedulesViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  val snackbar = remember { SnackbarHostState() }
-  val scope = rememberCoroutineScope()
+  val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        is Deleted -> snackbar.showDeleted(event, onUndo = viewModel::undoDelete)
-        is DeleteFailed -> snackbar.showDeleteFailed(event)
-        is RestoreFailed -> snackbar.showRestoreFailed(event)
+        is Deleted -> snackbars.show { showDeleted(event, onUndo = viewModel::undoDelete) }
+        is DeleteFailed -> snackbars.show { showDeleteFailed(event) }
+        is RestoreFailed -> snackbars.show { showRestoreFailed(event) }
       }
     }
   }
@@ -114,7 +108,6 @@ internal fun ListSchedulesScreen(
   ListSchedulesScaffold(
     modifier = modifier,
     state = state,
-    snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         Reload -> viewModel.reload()
@@ -122,7 +115,7 @@ internal fun ListSchedulesScreen(
         is Open -> editSchedule(action.id)
         OpenSearch -> toSearch()
         is Delete -> viewModel.delete(action.schedule)
-        is Post -> scope.launch { snackbar.showPostUnsupported() }
+        is Post -> snackbars.show { showPostUnsupported() }
         OpenSettings -> toSettings()
       }
     },
@@ -134,7 +127,6 @@ private fun ListSchedulesScaffold(
   state: ListSchedulesState,
   onAction: ListSchedulesActionHandler,
   modifier: Modifier = Modifier,
-  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -162,12 +154,6 @@ private fun ListSchedulesScaffold(
           )
           ListSchedulesMenu(onAction = onAction)
         },
-      )
-    },
-    snackbarHost = {
-      SnackbarHost(
-        hostState = snackbarHostState,
-        modifier = Modifier.padding(bottom = LocalBottomSpacing.current + bottomNavBarPadding()),
       )
     },
   ) { innerPadding ->
