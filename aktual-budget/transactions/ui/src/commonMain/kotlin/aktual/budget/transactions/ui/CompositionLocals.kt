@@ -20,11 +20,15 @@ internal val LocalLedgerDimens = compositionLocalOf { LedgerDimens(Default) }
 internal fun WithLedgerDimens(
   density: TransactionsDensity,
   showBalance: Boolean = true,
+  showAccount: Boolean = true,
   content: @Composable () -> Unit,
 ) =
   CompositionLocalProvider(
     LocalLedgerDimens provides
-      remember(density, showBalance) { LedgerDimens(density).copy(showBalance = showBalance) },
+      remember(density, showBalance, showAccount) {
+        val dimens = LedgerDimens(density)
+        dimens.copy(showBalance = showBalance, showAccount = dimens.showAccount && showAccount)
+      },
     content = content,
   )
 
