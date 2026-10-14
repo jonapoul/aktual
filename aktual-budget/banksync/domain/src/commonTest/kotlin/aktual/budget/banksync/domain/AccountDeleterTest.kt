@@ -39,6 +39,18 @@ internal class AccountDeleterTest {
   }
 
   @Test
+  fun `A failed unlink after deleting still reports the account deleted`() = runBankSyncTest {
+    insertLinkedAccount(LINKED, bankId = "requisition-1")
+    syncErrorAfter = syncCalls.size + 1
+    syncError = IllegalStateException("Disk full")
+
+    val removed = deleter().delete(LINKED)
+
+    assertThat(removed).isFalse()
+    assertThat(account(LINKED).tombstone).isEqualTo(true)
+  }
+
+  @Test
   fun `A failed delete keeps the account linked`() = runBankSyncTest {
     insertLinkedAccount(LINKED, bankId = "requisition-1")
     syncError = IllegalStateException("Disk full")

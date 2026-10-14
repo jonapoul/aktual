@@ -3,6 +3,8 @@ package aktual.budget.banksync.domain
 import aktual.budget.model.AccountId
 import aktual.budget.transactions.domain.TransactionWriter
 import dev.zacsweers.metro.Inject
+import kotlin.coroutines.cancellation.CancellationException
+import logcat.logcat
 
 /**
  * The forced branch of closeAccount() in packages/loot-core/src/server/accounts/app.ts: deletes the
@@ -11,9 +13,17 @@ import dev.zacsweers.metro.Inject
  */
 @Inject
 class AccountDeleter(private val linker: BankAccountLinker, private val writer: TransactionWriter) {
-  // False if the account was deleted but its GoCardless bank login couldn't be removed
+  // False if the account was deleted but couldn't be unlinked, or its GoCardless bank login
+  // couldn't be removed
   suspend fun delete(account: AccountId): Boolean {
     writer.write { deleteAccount(account) }
-    return linker.unlink(account)
+    return try {
+      linker.unlink(account)
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      logcat.w(e) { "Deleted $account but failed unlinking it" }
+      false
+    }
   }
 }

@@ -70,6 +70,8 @@ internal class BankSyncTestScope(
 
   val syncCalls = mutableListOf<List<LocalChange>>()
   var syncError: Exception? = null
+  // How many syncChanges() calls succeed before [syncError] is thrown
+  var syncErrorAfter = 0
   val transactionDao = TransactionDao(database)
   val payeeDao = PayeeDao(database)
   val preferences = PreferencesDao(database, TestCoroutineContexts(EmptyCoroutineContext))
@@ -134,7 +136,7 @@ internal class BankSyncTestScope(
   fun runBackground() = testScope.runCurrent()
 
   override suspend fun syncChanges(changes: List<LocalChange>) {
-    syncError?.let { throw it }
+    syncError?.takeIf { syncCalls.size >= syncErrorAfter }?.let { throw it }
     syncCalls.add(changes)
     syncDao.sendMessages(changes)
   }
