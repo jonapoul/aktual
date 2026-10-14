@@ -6,19 +6,25 @@ import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toSignedInputText
 import aktual.core.l10n.Strings
 import aktual.core.ui.AmountField
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.EditorSheet
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.YearMonth
 
@@ -60,17 +66,34 @@ internal fun BudgetSheet(
     )
 
     val sheet = this
-    FlowRow(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      for (action in QuickAction.available(type)) {
-        NormalTextButton(
-          text = action.string(),
-          onClick = { sheet.close { onAction(ApplyQuickAction(month, category.id, action)) } },
-        )
-      }
+    QuickActionButtons(
+      type = type,
+      onClick = { action ->
+        sheet.close { onAction(ApplyQuickAction(month, category.id, action)) }
+      },
+    )
+  }
+}
+
+@Composable
+private fun QuickActionButtons(
+  type: BudgetType,
+  onClick: (QuickAction) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  FlowRow(
+    modifier = modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    verticalArrangement = Arrangement.spacedBy(2.dp),
+    maxItemsInEachRow = 2,
+  ) {
+    for (action in QuickAction.available(type)) {
+      NormalTextButton(
+        modifier = Modifier.weight(1f),
+        text = action.string(),
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+        onClick = { onClick(action) },
+      )
     }
   }
 }
@@ -99,3 +122,11 @@ internal fun QuickAction.string(): String =
     Average12 -> Strings.budgetingAverage12
     CopyToYearEnd -> Strings.budgetingCopyYearEnd
   }
+
+private class QuickActionsProvider : ColoredParameterProvider<BudgetType>(Envelope, Tracking)
+
+@Preview
+@Composable
+private fun PreviewQuickActionButtons(
+  @PreviewParameter(QuickActionsProvider::class) params: ColoredParams<BudgetType>,
+) = PreviewWithColoredParams(params) { QuickActionButtons(type = this, onClick = {}) }

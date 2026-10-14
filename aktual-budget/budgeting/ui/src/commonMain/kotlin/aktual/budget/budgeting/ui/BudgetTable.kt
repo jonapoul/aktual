@@ -583,20 +583,24 @@ internal fun CategoryRowLayout(
         Modifier.alpha(if (category.isHidden) HIDDEN_ALPHA else 1f).padding(start = CategoryInset),
       height = BudgetDS.rowHeight,
     ) {
-      Text(
+      val baseModifier =
+        if (nameWidth == null) Modifier.weight(1f) else Modifier.width(nameWidth - CategoryInset)
+      Box(
         modifier =
-          (if (nameWidth == null) {
-              Modifier.weight(1f)
-            } else {
-              Modifier.width(nameWidth - CategoryInset)
-            })
+          baseModifier
+            .height(BudgetDS.rowHeight)
             .clickable(onClickLabel = openLabel, role = Button, onClick = onOpen),
-        text = category.name,
-        fontSize = 14.sp,
-        color = colors.tableText,
-        maxLines = 1,
-        overflow = Ellipsis,
-      )
+        contentAlignment = CenterStart,
+      ) {
+        Text(
+          text = category.name,
+          fontSize = 14.sp,
+          color = colors.tableText,
+          maxLines = 1,
+          overflow = Ellipsis,
+        )
+      }
+
       amounts()
     }
   }
