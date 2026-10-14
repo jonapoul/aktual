@@ -227,6 +227,22 @@ internal constructor(
     return insert(transaction)
   }
 
+  /**
+   * The forced branch of accounts/app.ts closeAccount(): deletes the account, its transactions and
+   * its transfer payee. The other side of each transfer stays, as an ordinary transaction.
+   */
+  suspend fun deleteAccount(id: AccountId) {
+    val transactions = transactionDao.accountTransfers(id)
+    for (linked in transactions.values) {
+      if (linked != null && linked !in transactions) {
+        update(TransactionUpdate(id = linked, payee = Patch.To(null), transferId = Patch.To(null)))
+      }
+    }
+    delete(transactions.keys)
+    payeeDao.transferPayee(id)?.let { changes += tombstone(PAYEES, it.value) }
+    changes += tombstone(ACCOUNTS, id.value)
+  }
+
   /** db.update('accounts', ...) with any of the bank sync fields. */
   fun updateAccount(update: AccountUpdate) {
     val columns =

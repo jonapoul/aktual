@@ -11,6 +11,7 @@ import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionsViewModel
+import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditTransactionNavigator
 import aktual.core.nav.TransactionSettingsNavigator
@@ -78,6 +79,16 @@ fun TransactionsScreen(
     viewModel.bankSyncFinished.collect { summary -> snackbar.showBankSyncSummary(summary) }
   }
 
+  val deleteFailed = Strings.transactionsDeleteAccountFailed
+  LaunchedEffect(viewModel) {
+    viewModel.events.collect { event ->
+      when (event) {
+        AccountDeleted -> back()
+        DeleteAccountFailed -> snackbar.showSnackbar(deleteFailed)
+      }
+    }
+  }
+
   TransactionsScaffold(
     pagingData = viewModel.pagingData,
     loadedAccount = loadedAccount,
@@ -96,6 +107,7 @@ fun TransactionsScreen(
         NavBack -> back()
         BankSync -> viewModel.bankSync()
         OpenSettings -> toSettings()
+        DeleteAccount -> viewModel.deleteAccount()
         is SetDensity -> viewModel.setDensity(action.density)
         is ToggleSplit -> viewModel.toggleExpanded(action.id)
         is OpenTransaction -> openTransaction(action.id)

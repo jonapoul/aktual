@@ -16,6 +16,7 @@ import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
+import aktual.budget.transactions.domain.TransactionWriter
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
@@ -43,9 +44,13 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
@@ -65,6 +70,7 @@ class TransactionsViewModel(
   private val tagsDao: TagsDao,
   private val categoryDao: CategoryDao,
   private val bankSyncController: BankSyncController,
+  private val writer: TransactionWriter,
   transactionPreferences: TransactionPreferences,
   server: BudgetServer,
 ) : ViewModel() {
@@ -80,8 +86,16 @@ class TransactionsViewModel(
   private val accountId = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id
   private val isRemote = server is Remote
   private var currentPagingSource: PagingSource<Int, Transaction>? = null
+  private val mutableEvents =
+    MutableSharedFlow<TransactionsEvent>(
+      replay = 0,
+      extraBufferCapacity = 1,
+      onBufferOverflow = DROP_OLDEST,
+    )
 
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
+
+  val events: SharedFlow<TransactionsEvent> = mutableEvents.asSharedFlow()
 
   val density: StateFlow<TransactionsDensity> =
     prefs
@@ -195,6 +209,22 @@ class TransactionsViewModel(
   fun bankSync() {
     val account = accountId ?: return
     if (!bankSyncController.start(setOf(account))) logcat.d { "Bank sync already running" }
+  }
+
+  fun deleteAccount() {
+    val account = accountId ?: return
+    viewModelScope.launch {
+      try {
+        writer.write { deleteAccount(account) }
+        logcat.i { "Deleted account $account" }
+        mutableEvents.tryEmit(AccountDeleted)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed deleting account $account" }
+        mutableEvents.tryEmit(DeleteAccountFailed)
+      }
+    }
   }
 
   private fun buildPagingSource() =

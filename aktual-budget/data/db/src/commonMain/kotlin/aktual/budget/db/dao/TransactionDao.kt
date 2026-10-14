@@ -210,6 +210,12 @@ class TransactionDao(database: BudgetDatabase) {
     getRowById(id).awaitAsOneOrNull()
   }
 
+  // Each live transaction in the account, split parts included, with the other side of its transfer
+  suspend fun accountTransfers(account: AccountId): Map<TransactionId, TransactionId?> =
+    queries.withResult {
+      getAccountTransfers(account).awaitAsList().associate { it.id to it.transferred_id }
+    }
+
   // Every child of these split parents, deleted or not, as upstream's idsWithChildren()
   suspend fun childIds(parents: Collection<TransactionId>): List<TransactionId> =
     queries.withResult {

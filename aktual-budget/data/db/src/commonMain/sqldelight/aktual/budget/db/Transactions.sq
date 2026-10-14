@@ -122,6 +122,10 @@ SELECT id FROM v_transactions ORDER BY date DESC;
 getRowById:
 SELECT * FROM transactions WHERE id = ?;
 
+-- The live transactions of an account, split parts included, for accounts/app.ts closeAccount()
+getAccountTransfers:
+SELECT id, transferred_id FROM transactions WHERE acct = ? AND IFNULL(tombstone, 0) = 0;
+
 -- packages/loot-core/src/server/transactions/index.ts idsWithChildren(). Upstream reads
 -- v_transactions_internal, whose computed parent_id SQLDelight can't type, so this inlines its filters
 getChildIds:
