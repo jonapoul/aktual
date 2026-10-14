@@ -13,6 +13,7 @@ import aktual.budget.transactions.ui.TRANSACTION_TRANSFER
 import aktual.budget.transactions.ui.color
 import aktual.budget.transactions.ui.label
 import aktual.budget.transactions.ui.payeeLabel
+import aktual.budget.transactions.ui.scheduleIcon
 import aktual.budget.transactions.ui.tabularFigures
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.edit.EditTransactionError
@@ -559,6 +560,14 @@ private fun Hero(details: TransactionDetails, modifier: Modifier = Modifier) {
       verticalAlignment = CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(IconGap),
     ) {
+      transaction.scheduleIcon()?.let { icon ->
+        Icon(
+          modifier = Modifier.size(TransferIconSize),
+          imageVector = icon,
+          contentDescription = null,
+          tint = colors.pageText,
+        )
+      }
       transaction.transferIcon()?.let { icon ->
         Icon(
           modifier = Modifier.size(TransferIconSize),

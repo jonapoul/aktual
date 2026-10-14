@@ -6,6 +6,8 @@ import aktual.budget.model.TransactionsDensity
 import aktual.budget.transactions.vm.SpecialCategory
 import aktual.budget.transactions.vm.Transaction
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.ArrowsSynchronize
+import aktual.core.icons.Calendar3
 import aktual.core.icons.LeftArrow2
 import aktual.core.icons.RightArrow2
 import aktual.core.icons.Split
@@ -45,6 +47,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.AnnotatedString
@@ -246,6 +249,15 @@ private fun PayeeText(
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(TransferIconGap),
   ) {
+    transaction.scheduleIcon()?.let { icon ->
+      Icon(
+        modifier = Modifier.size(TransferIconSize),
+        imageVector = icon,
+        contentDescription = null,
+        tint = colors.pageTextDark,
+      )
+    }
+
     val transferIcon =
       when (transaction.transfer) {
         To -> AktualIcons.RightArrow2
@@ -286,6 +298,13 @@ internal fun Transaction.payeeLabel(): String? =
     To -> Strings.transactionsTransferTo(payee.orEmpty())
     From -> Strings.transactionsTransferFrom(payee.orEmpty())
     null -> payee
+  }
+
+internal fun Transaction.scheduleIcon(): ImageVector? =
+  when (scheduleRecurring) {
+    true -> AktualIcons.ArrowsSynchronize
+    false -> AktualIcons.Calendar3
+    null -> null
   }
 
 private fun Transaction.isExpandable(parts: SplitParts) =

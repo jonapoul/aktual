@@ -46,6 +46,8 @@ data class TransactionRow(
   val isTransfer: Boolean,
   // What a split parent's amount has over the sum of its parts, if they don't add up
   val splitDifference: Long? = null,
+  // Null when not from a schedule
+  val scheduleRecurring: Boolean? = null,
 )
 
 // One transaction as its detail screen shows it. parent is set on split children only
@@ -299,6 +301,7 @@ private fun transactionRow(
   needsCategory: Long,
   offBudget: Long,
   isTransfer: Long,
+  scheduleRecurring: Long?,
 ) =
   TransactionRow(
     id = id,
@@ -314,6 +317,7 @@ private fun transactionRow(
     needsCategory = needsCategory != 0L,
     offBudget = offBudget != 0L,
     isTransfer = isTransfer != 0L,
+    scheduleRecurring = scheduleRecurring?.let { it != 0L },
     splitDifference = error?.takeIf { isParent == true }?.splitDifference(),
   )
 
@@ -341,6 +345,7 @@ private fun childRow(
   needsCategory: Long,
   offBudget: Long,
   isTransfer: Long,
+  scheduleRecurring: Long?,
   parentId: TransactionId?,
 ): Pair<TransactionId, TransactionRow> {
   val row =
@@ -359,6 +364,7 @@ private fun childRow(
       needsCategory,
       offBudget,
       isTransfer,
+      scheduleRecurring,
     )
   return (parentId ?: error("Child $id has no parent")) to row
 }
@@ -379,6 +385,7 @@ private fun transactionDetail(
   needsCategory: Long,
   offBudget: Long,
   isTransfer: Long,
+  scheduleRecurring: Long?,
   cleared: Boolean?,
   reconciled: Boolean?,
   parentId: TransactionId?,
@@ -403,6 +410,7 @@ private fun transactionDetail(
         needsCategory,
         offBudget,
         isTransfer,
+        scheduleRecurring,
       ),
     // Upstream's column defaults
     cleared = cleared != false,
