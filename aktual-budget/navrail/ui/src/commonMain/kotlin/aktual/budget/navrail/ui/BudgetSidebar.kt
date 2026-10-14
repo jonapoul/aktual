@@ -46,12 +46,14 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -470,6 +472,9 @@ private val RenameButtonColors = IconButtonColorProvider { theme, isPressed ->
 // Material's default is 56dp
 private val DrawerItemHeight = 44.dp
 
+// Aktual icons are 20dp and Material ones 24dp, so pad them to the same width to line up labels
+private val DrawerIconSize = 24.dp
+
 @Composable
 private fun DrawerItem(
   icon: ImageVector,
@@ -481,7 +486,11 @@ private fun DrawerItem(
 ) {
   NavigationDrawerItem(
     modifier = modifier.height(DrawerItemHeight),
-    icon = { Icon(icon, contentDescription = null) },
+    icon = {
+      Box(modifier = Modifier.size(DrawerIconSize), contentAlignment = Center) {
+        Icon(icon, contentDescription = null)
+      }
+    },
     label = { Text(text = label, maxLines = 1, overflow = Ellipsis) },
     badge = amount?.let { { BalanceText(it) } },
     selected = selected,
