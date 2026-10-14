@@ -301,4 +301,17 @@ internal val ShadesOfCoffeeTheme =
         chartQual8 = Color(color = 0xFFEFDA97),
         chartQual9 = Color(color = 0xFFDF948A),
       ),
+    // the upstream theme doesn't define these yet, so parsing falls back to LightColors
+    settings =
+      SettingsColors(
+        settingsCardBackground = LightColors.settingsCardBackground,
+        settingsCardBorder = LightColors.settingsCardBorder,
+        settingsCardText = LightColors.settingsCardText,
+        settingsCardTextSubdued = LightColors.settingsCardTextSubdued,
+        settingsNavItemAccentSelected = LightColors.settingsNavItemAccentSelected,
+        settingsNavItemBackgroundHover = LightColors.settingsNavItemBackgroundHover,
+        settingsNavItemBackgroundSelected = LightColors.settingsNavItemBackgroundSelected,
+        settingsNavItemText = LightColors.settingsNavItemText,
+        settingsNavItemTextSelected = LightColors.settingsNavItemTextSelected,
+      ),
   )
