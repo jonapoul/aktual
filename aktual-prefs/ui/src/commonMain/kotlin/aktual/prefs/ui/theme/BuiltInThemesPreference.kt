@@ -55,21 +55,21 @@ internal fun BuiltInThemesPreference(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
       ) {
-        BuiltInThemeItem(
+        ThemeItem(
           id = LightColors.id,
           name = Strings.settingsThemeLight,
           selectedId = selectedTheme,
           enabled = enabled,
           onAction = onAction,
         )
-        BuiltInThemeItem(
+        ThemeItem(
           id = DarkColors.id,
           name = Strings.settingsThemeDark,
           selectedId = selectedTheme,
           enabled = enabled,
           onAction = onAction,
         )
-        BuiltInThemeItem(
+        ThemeItem(
           id = MidnightColors.id,
           name = Strings.settingsThemeMidnight,
           selectedId = selectedTheme,
@@ -82,7 +82,7 @@ internal fun BuiltInThemesPreference(
 }
 
 @Composable
-private fun BuiltInThemeItem(
+internal fun ThemeItem(
   id: ThemeId,
   name: String,
   selectedId: ThemeId?,

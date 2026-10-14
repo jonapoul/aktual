@@ -1,6 +1,7 @@
 package aktual.prefs.vm.theme
 
 import aktual.core.model.ThemeId
+import aktual.core.theme.CustomThemeCache
 import aktual.core.theme.DarkColors
 import aktual.core.theme.MidnightColors
 import aktual.di.AppScope
@@ -19,27 +20,42 @@ import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class ThemeSettingsViewModel(private val preferences: ThemePreferences) : ViewModel() {
+class ThemeSettingsViewModel(
+  private val preferences: ThemePreferences,
+  cache: CustomThemeCache,
+) : ViewModel() {
   private val useSystemDefault = preferences.useSystemDefault.asLoadedStateFlow(viewModelScope)
   private val nightTheme = preferences.nightTheme.asLoadedStateFlow(viewModelScope)
   private val constantTheme = preferences.constantTheme.asLoadedStateFlow(viewModelScope)
+  private val localThemes =
+    cache
+      .localThemes()
+      .map { themes ->
+        themes.map { LocalTheme(it.id, it.name) }.sortedBy { it.name.lowercase() }.toImmutableList()
+      }
+      .stateIn(viewModelScope, Eagerly, persistentListOf())
 
   val state: StateFlow<ThemeSettingsState> =
     viewModelScope.launchMolecule(Immediate) {
       val useSystemDefault by useSystemDefault.collectAsState()
       val nightTheme by nightTheme.collectAsState()
       val constantTheme by constantTheme.collectAsState()
+      val localThemes by localThemes.collectAsState()
 
       ThemeSettingsState(
         useSystemDefault = useSystemDefault(useSystemDefault),
         darkTheme = darkTheme(nightTheme, enabled = useSystemDefault),
         constantTheme = constantTheme,
+        localThemes = localThemes,
       )
     }
 

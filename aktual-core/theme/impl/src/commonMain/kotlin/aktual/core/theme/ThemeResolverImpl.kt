@@ -8,7 +8,7 @@ import dev.zacsweers.metro.ContributesBinding
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.distinctUntilChanged
 import logcat.logcat
 
 @ContributesBinding(AppScope::class)
@@ -29,7 +29,9 @@ class ThemeResolverImpl(
           customThemeId ?: DarkColors.id
         }
       }
-      .map { id -> resolveWithFallback(id, isSystemInDarkTheme) }
+      // Re-resolve when a local theme changes, so edits to the active one show straight away
+      .combine(cache.localThemes()) { id, _ -> resolveWithFallback(id, isSystemInDarkTheme) }
+      .distinctUntilChanged()
 
   override suspend fun resolve(id: ThemeId): Colors? {
     Colors.Defaults.firstOrNull { it.id == id }
@@ -48,6 +50,10 @@ class ThemeResolverImpl(
     if (repo == null) {
       logcat.e { "Failed to convert '$id' to a custom theme repository" }
       return LightColors
+    }
+    if (repo.isLocal) {
+      logcat.w { "Local theme $repo not found" }
+      return fallback(isSystemInDarkTheme)
     }
     return fetchAndCache(repo, isSystemInDarkTheme)
   }

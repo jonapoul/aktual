@@ -124,6 +124,15 @@ private fun ThemeSettingsContent(
       )
     }
 
+    item {
+      LocalThemesPreference(
+        themes = state.localThemes,
+        selectedTheme = state.constantTheme,
+        enabled = !state.useSystemDefault.value,
+        onAction = onAction,
+      )
+    }
+
     item { CustomThemesPreference(enabled = !state.useSystemDefault.value, onAction = onAction) }
 
     item { BottomSpacing() }
@@ -145,6 +154,7 @@ private fun PreviewColorsSettings(@PreviewParameter(ColoredParameters::class) co
               enabled = false,
             ),
           constantTheme = LightColors.id,
+          localThemes = persistentListOf(),
         ),
       onAction = {},
     )

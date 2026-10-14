@@ -4,7 +4,9 @@ import aktual.test.TemporaryFolder
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import app.cash.burst.InterceptTest
+import app.cash.turbine.test
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isDataClassEqualTo
 import assertk.assertions.isEmpty
@@ -88,5 +90,31 @@ class CustomColorsCacheImplTest {
     cache.save(ShadesOfCoffeeTheme)
     val unknown = CustomThemeRepo(userName = "nobody", repoName = "unknown")
     assertThat(cache.theme(unknown)).isNull()
+  }
+
+  @Test
+  fun `local themes are listed and updated on save and delete`() = runCacheTest {
+    val local = LightColors.toCustomColors("Mine", CustomThemeRepo.local("abc"))
+    cache.localThemes().test {
+      assertThat(awaitItem()).isEmpty()
+
+      cache.save(local)
+      assertThat(awaitItem()).containsExactly(local)
+
+      cache.delete(local.repo)
+      assertThat(awaitItem()).isEmpty()
+    }
+  }
+
+  @Test
+  fun `local themes are kept apart from downloaded ones`() = runCacheTest {
+    val local = LightColors.toCustomColors("Mine", CustomThemeRepo.local("abc"))
+    cache.save(ShadesOfCoffeeTheme)
+    cache.save(local)
+    assertThat(cache.repos()).containsExactly(ShadesOfCoffeeTheme.repo)
+
+    cache.clear()
+    assertThat(cache.theme(ShadesOfCoffeeTheme.repo)).isNull()
+    assertThat(cache.theme(local.repo)).isEqualTo(local)
   }
 }

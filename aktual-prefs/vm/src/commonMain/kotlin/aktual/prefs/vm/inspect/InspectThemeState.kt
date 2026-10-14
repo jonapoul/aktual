@@ -15,9 +15,24 @@ sealed interface InspectThemeState {
 
   data class Loaded(
     val id: ThemeId,
-    val isCustom: Boolean,
+    // Null for built-in themes, which go by their ID
+    val name: String?,
+    val source: ThemeSource,
     val properties: ImmutableList<ThemeProperty>,
   ) : InspectThemeState
+}
+
+enum class ThemeSource {
+  BuiltIn,
+  Downloaded,
+  Local,
+}
+
+@Immutable
+sealed interface InspectThemeEvent {
+  @JvmInline value class Duplicated(val id: ThemeId) : InspectThemeEvent
+
+  data object Deleted : InspectThemeEvent
 }
 
 @Immutable data class ThemeProperty(val name: String, val color: Color)
@@ -34,6 +49,18 @@ fun Color.toHexString(): String {
   } else {
     "#%02X%02X%02X%02X".format(a, r, g, b)
   }
+}
+
+private val HexColorRegex = "#?([0-9A-Fa-f]{2})?[0-9A-Fa-f]{6}".toRegex()
+
+// Inverse of toHexString: "#RRGGBB", or "#AARRGGBB" with alpha
+@Suppress("MagicNumber")
+fun String.parseHexColorOrNull(): Color? {
+  val trimmed = trim()
+  if (!HexColorRegex.matches(trimmed)) return null
+  val hex = trimmed.removePrefix("#")
+  val value = hex.toLong(radix = 16)
+  return if (hex.length == 6) Color(value or 0xFF000000) else Color(value)
 }
 
 enum class PropertySorting {

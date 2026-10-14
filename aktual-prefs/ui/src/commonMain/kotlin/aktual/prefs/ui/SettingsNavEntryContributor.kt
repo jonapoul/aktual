@@ -78,6 +78,7 @@ class SettingsNavEntryContributor : NavEntryContributor {
       InspectThemeScreen(
         back = BackNavigator(stack),
         toSearch = SearchThemeNavigator(stack),
+        toInspectTheme = InspectThemeNavigator(stack),
         themeId = route.id,
       )
     }
