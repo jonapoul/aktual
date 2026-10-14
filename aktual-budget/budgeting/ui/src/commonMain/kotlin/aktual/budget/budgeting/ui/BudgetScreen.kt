@@ -78,6 +78,7 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -324,12 +325,11 @@ private fun BudgetContent(
   onAction: BudgetActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  // Sticky headers ignore content padding, so the list starts below the top bar rather than under
-  // it, or they'd hide behind it
-  val listModifier = modifier.fillMaxSize().padding(top = contentPadding.calculateTopPadding())
+  val listModifier = modifier.fillMaxSize()
+  val topPadding = contentPadding.calculateTopPadding()
 
   when (state) {
-    Loading -> LoadingTable(modifier = listModifier)
+    Loading -> LoadingTable(modifier = listModifier.padding(top = topPadding))
 
     Failed ->
       FailureScreen(
@@ -361,6 +361,7 @@ private fun BudgetContent(
           BudgetPager(
             modifier = listModifier,
             state = state,
+            topPadding = topPadding,
             pageListStates = pageListStates,
             onAction = onAction,
           )
@@ -371,6 +372,7 @@ private fun BudgetContent(
             state = state,
             listState = listState,
             onAction = onAction,
+            topPadding = topPadding,
           )
       }
   }
@@ -399,6 +401,7 @@ private class PageListStates {
 @Composable
 private fun BudgetPager(
   state: BudgetState.Loaded,
+  topPadding: Dp,
   pageListStates: PageListStates,
   onAction: BudgetActionHandler,
   modifier: Modifier = Modifier,
@@ -426,6 +429,7 @@ private fun BudgetPager(
     val month = state.earliest.plus(index, MONTH)
     val budget = state[month]
     val listState = rememberLazyListState()
+    val stuck = remember(listState, topPadding) { StuckHeaders(listState, topPadding) }
 
     DisposableEffect(month, listState) {
       pageListStates[month] = listState
@@ -433,14 +437,14 @@ private fun BudgetPager(
     }
 
     if (budget == null) {
-      LoadingTable(modifier = Modifier.fillMaxSize())
+      LoadingTable(modifier = Modifier.fillMaxSize().padding(top = topPadding))
     } else {
       LazyColumn(
         modifier = Modifier.fillMaxSize().scrollbar(listState),
         state = listState,
-        contentPadding = BudgetDS.listPadding,
+        contentPadding = BudgetDS.listPadding(top = topPadding),
       ) {
-        budgetTable(budget, state.type, state.showSpent, onAction)
+        budgetTable(budget, state.type, state.showSpent, stuck, onAction)
         item(key = "bottom") { BottomSpacing() }
       }
     }
@@ -561,4 +565,6 @@ internal object BudgetDS {
   val headerHeight = 36.dp
   val rowPadding = 12.dp
   val categoryIndent = 32.dp
+
+  fun listPadding(top: Dp) = PaddingValues(start = 8.dp, end = 8.dp, top = 8.dp + top)
 }

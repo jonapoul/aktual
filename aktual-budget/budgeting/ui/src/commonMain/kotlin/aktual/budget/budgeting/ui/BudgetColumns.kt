@@ -86,6 +86,7 @@ internal fun BudgetColumns(
   listState: LazyListState,
   onAction: BudgetActionHandler,
   modifier: Modifier = Modifier,
+  topPadding: Dp = 0.dp,
 ) {
   val columns = remember(state.months, state.month, state.monthCount) { state.columns() }
   val scroll = rememberScrollState()
@@ -98,12 +99,15 @@ internal fun BudgetColumns(
     if (!cursor.isEditing && cursor.selected != null) tableFocus.requestFocus()
   }
 
-  // The column header and a group header stick to the top
-  val stickyHeight = with(LocalDensity.current) { (BudgetDS.headerHeight * 2).roundToPx() }
+  // The column header and a group header stick below the top bar
+  val density = LocalDensity.current
+  val stuck = remember(listState, topPadding) { StuckHeaders(listState, topPadding) }
+  val stickyHeight = with(density) { (BudgetDS.headerHeight * 2).roundToPx() }
+  val topBarHeight = with(density) { topPadding.roundToPx() }
   LaunchedEffect(cursor.selected?.category, columns) {
     val category = cursor.selected?.category ?: return@LaunchedEffect
     val index = columns.itemKeys().indexOf(categoryKey(category))
-    if (index >= 0) listState.reveal(index, stickyHeight)
+    if (index >= 0) listState.reveal(index, stickyHeight, topBarHeight)
   }
 
   BoxWithConstraints(
@@ -123,9 +127,9 @@ internal fun BudgetColumns(
     LazyColumn(
       modifier = Modifier.scrollbar(listState),
       state = listState,
-      contentPadding = BudgetDS.listPadding,
+      contentPadding = BudgetDS.listPadding(top = topPadding),
     ) {
-      budgetColumns(state, columns, layout, cursor, grid, onAction)
+      budgetColumns(state, columns, layout, cursor, grid, stuck, onAction)
       item(key = "bottom") { BottomSpacing() }
     }
   }
@@ -137,21 +141,28 @@ private fun LazyListScope.budgetColumns(
   layout: ColumnsLayout,
   cursor: BudgetCursor,
   grid: BudgetGrid,
+  stuck: StuckHeaders,
   onAction: BudgetActionHandler,
 ) {
   item(key = "summaries") {
     Summaries(state = state, columns = columns, layout = layout, onAction = onAction)
   }
 
-  stickyHeader(key = "header") { ColumnHeaders(columns = columns, layout = layout) }
+  stuckHeader(key = "header", stuck = stuck) { modifier ->
+    ColumnHeaders(modifier = modifier, columns = columns, layout = layout)
+  }
 
   // Every month has the same groups and categories
   val template = columns.firstNotNullOfOrNull { it.budget } ?: return
-  val isTracking = state.type == Tracking
 
   for (group in template.groups) {
-    stickyHeader(key = "group-${group.id.value}") {
-      GroupHeaderRow(group = group, onAction = onAction, nameWidth = ColumnsDS.categoryWidth) {
+    stuckHeader(key = "group-${group.id.value}", stuck = stuck) { modifier ->
+      GroupHeaderRow(
+        modifier = modifier,
+        group = group,
+        onAction = onAction,
+        nameWidth = ColumnsDS.categoryWidth,
+      ) {
         Months(columns, layout) { column ->
           val month = column.groups[group.id] ?: return@Months
           AmountCell(amount = month.budgeted, bold = true)
@@ -196,9 +207,28 @@ private fun LazyListScope.budgetColumns(
   }
 
   val income = template.income ?: return
+  incomeColumns(state, income, columns, layout, cursor, grid, stuck, onAction)
+}
 
-  stickyHeader(key = "group-${income.id.value}") {
-    GroupHeaderRow(group = income, onAction = onAction, nameWidth = ColumnsDS.categoryWidth) {
+private fun LazyListScope.incomeColumns(
+  state: BudgetState.Loaded,
+  income: GroupRow,
+  columns: ImmutableList<MonthColumn>,
+  layout: ColumnsLayout,
+  cursor: BudgetCursor,
+  grid: BudgetGrid,
+  stuck: StuckHeaders,
+  onAction: BudgetActionHandler,
+) {
+  val isTracking = state.type == Tracking
+
+  stuckHeader(key = "group-${income.id.value}", stuck = stuck) { modifier ->
+    GroupHeaderRow(
+      modifier = modifier,
+      group = income,
+      onAction = onAction,
+      nameWidth = ColumnsDS.categoryWidth,
+    ) {
       Months(columns, layout) { column ->
         val month = column.groups[income.id] ?: return@Months
         IncomeCells(
@@ -568,14 +598,14 @@ private fun List<MonthColumn>.grid(isTracking: Boolean): BudgetGrid {
 }
 
 // Scrolls just enough to show the row below the sticky headers, jumping first if it's off screen
-private suspend fun LazyListState.reveal(index: Int, stickyHeight: Int) {
+private suspend fun LazyListState.reveal(index: Int, stickyHeight: Int, topBarHeight: Int) {
   if (layoutInfo.visibleItemsInfo.none { it.index == index }) {
     scrollToItem(index)
     scrollBy(-stickyHeight.toFloat())
   }
   val info = layoutInfo
   val item = info.visibleItemsInfo.firstOrNull { it.index == index } ?: return
-  val top = info.viewportStartOffset + stickyHeight
+  val top = info.viewportStartOffset + topBarHeight + stickyHeight
   val bottom = info.viewportEndOffset - info.afterContentPadding
   when {
     item.offset < top -> animateScrollBy((item.offset - top).toFloat())

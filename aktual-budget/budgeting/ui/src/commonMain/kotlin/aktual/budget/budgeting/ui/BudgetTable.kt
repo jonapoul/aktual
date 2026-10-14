@@ -72,6 +72,7 @@ internal fun LazyListScope.budgetTable(
   budget: MonthBudget,
   type: BudgetType,
   showSpent: Boolean,
+  stuck: StuckHeaders,
   onAction: BudgetActionHandler,
 ) {
   item(key = "summary") {
@@ -96,8 +97,9 @@ internal fun LazyListScope.budgetTable(
   item(key = "header") { ColumnHeader(showSpent = showSpent, onAction = onAction) }
 
   for (group in budget.groups) {
-    stickyHeader(key = "group-${group.id.value}") {
+    stuckHeader(key = "group-${group.id.value}", stuck = stuck) { modifier ->
       GroupHeader(
+        modifier = modifier,
         group = group,
         value = if (showSpent) group.spent else group.budgeted,
         onAction = onAction,
@@ -123,8 +125,13 @@ internal fun LazyListScope.budgetTable(
 
   item(key = "income-header") { IncomeColumnHeader(isTracking = isTracking) }
 
-  stickyHeader(key = "group-${income.id.value}") {
-    IncomeGroupHeader(group = income, isTracking = isTracking, onAction = onAction)
+  stuckHeader(key = "group-${income.id.value}", stuck = stuck) { modifier ->
+    IncomeGroupHeader(
+      modifier = modifier,
+      group = income,
+      isTracking = isTracking,
+      onAction = onAction,
+    )
   }
 
   if (!income.isCollapsed) {
