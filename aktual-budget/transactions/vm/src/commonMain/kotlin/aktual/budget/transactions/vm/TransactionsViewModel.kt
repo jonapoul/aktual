@@ -45,16 +45,16 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -86,16 +86,13 @@ class TransactionsViewModel(
   private val accountId = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id
   private val isRemote = server is Remote
   private var currentPagingSource: PagingSource<Int, Transaction>? = null
-  private val mutableEvents =
-    MutableSharedFlow<TransactionsEvent>(
-      replay = 0,
-      extraBufferCapacity = 1,
-      onBufferOverflow = DROP_OLDEST,
-    )
+  // Buffered, so an event sent while the screen is being recreated waits for it
+  private val mutableEvents = Channel<TransactionsEvent>(Channel.BUFFERED)
+  private var deleteJob: Job? = null
 
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
 
-  val events: SharedFlow<TransactionsEvent> = mutableEvents.asSharedFlow()
+  val events: Flow<TransactionsEvent> = mutableEvents.receiveAsFlow()
 
   val density: StateFlow<TransactionsDensity> =
     prefs
@@ -213,16 +210,17 @@ class TransactionsViewModel(
 
   fun deleteAccount() {
     val account = accountId ?: return
-    viewModelScope.launch {
+    if (deleteJob?.isActive == true) return
+    deleteJob = viewModelScope.launch {
       try {
         val loginRemoved = deleter.delete(account)
         logcat.i { "Deleted account $account" }
-        mutableEvents.tryEmit(if (loginRemoved) AccountDeleted else AccountDeletedBankLoginKept)
+        mutableEvents.trySend(if (loginRemoved) AccountDeleted else AccountDeletedBankLoginKept)
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {
         logcat.e(e) { "Failed deleting account $account" }
-        mutableEvents.tryEmit(DeleteAccountFailed)
+        mutableEvents.trySend(DeleteAccountFailed)
       }
     }
   }
