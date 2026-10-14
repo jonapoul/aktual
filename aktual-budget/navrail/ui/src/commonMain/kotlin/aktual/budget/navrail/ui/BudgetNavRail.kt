@@ -44,14 +44,17 @@ import aktual.core.ui.BackHandler
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.LocalNavDrawerOpener
 import aktual.core.ui.LocalPrivacyEnabled
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RootOverlayContent
 import aktual.core.ui.SideSpacing
+import aktual.core.ui.SnackbarsHost
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.isExpandedWidth
 import aktual.core.ui.isMobileLandscape
+import aktual.core.ui.rememberSnackbars
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.fadeOut
@@ -84,6 +87,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -412,8 +416,24 @@ internal fun BudgetNavDisplay(
   selectedTab: BudgetTab,
   modifier: Modifier = Modifier,
 ) {
+  val snackbars = rememberSnackbars()
+  CompositionLocalProvider(LocalSnackbars provides snackbars) {
+    Box(modifier = modifier) {
+      BudgetNavEntries(contributors, appStack, activeStack, selectedTab)
+      SnackbarsHost(snackbars, Modifier.align(BottomCenter))
+    }
+  }
+}
+
+@Composable
+private fun BudgetNavEntries(
+  contributors: ImmutableSet<BudgetNavEntryContributor>,
+  appStack: NavStack<NavKey>,
+  activeStack: NavStack<BudgetNavKey>,
+  selectedTab: BudgetTab,
+) {
   NavDisplay(
-    modifier = modifier,
+    modifier = Modifier.fillMaxSize(),
     backStack = activeStack,
     onBack = { activeStack.pop() },
     transitionSpec = {

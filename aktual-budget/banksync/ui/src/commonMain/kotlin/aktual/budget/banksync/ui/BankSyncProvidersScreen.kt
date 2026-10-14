@@ -17,6 +17,7 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PageBackground
@@ -41,8 +42,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -68,13 +67,13 @@ internal fun BankSyncProvidersScreen(
   viewModel: BankSyncProvidersViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  val snackbar = remember { SnackbarHostState() }
+  val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        Reset -> snackbar.showProviderReset()
-        is ResetFailed -> snackbar.showProviderResetFailed(event.error)
+        Reset -> snackbars.show { showProviderReset() }
+        is ResetFailed -> snackbars.show { showProviderResetFailed(event.error) }
       }
     }
   }
@@ -89,7 +88,6 @@ internal fun BankSyncProvidersScreen(
   BankSyncProvidersScaffold(
     modifier = modifier,
     state = state,
-    snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         CloseProviders -> back()
@@ -105,7 +103,6 @@ private fun BankSyncProvidersScaffold(
   state: BankSyncProvidersState,
   onAction: BankSyncProvidersActionHandler,
   modifier: Modifier = Modifier,
-  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
   val scrollState = rememberScrollState()
@@ -120,7 +117,6 @@ private fun BankSyncProvidersScaffold(
         title = { Text(text = Strings.bankSyncProvidersTitle) },
       )
     },
-    snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
   ) { innerPadding ->
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()

@@ -31,6 +31,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureCard
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LoadingScreen
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -58,15 +59,12 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -88,14 +86,14 @@ internal fun LinkBankAccountScreen(
   viewModel: LinkBankAccountViewModel = linkBankAccountViewModel(id),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  val snackbar = remember { SnackbarHostState() }
+  val snackbars = LocalSnackbars.current
   val uriHandler = LocalUriHandler.current
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
         Linked -> back()
-        is LinkFailed -> snackbar.showLinkFailed(event.cause)
+        is LinkFailed -> snackbars.show { showLinkFailed(event.cause) }
         is OpenBrowser -> uriHandler.openUri(event.url)
       }
     }
@@ -111,7 +109,6 @@ internal fun LinkBankAccountScreen(
   LinkBankAccountScaffold(
     modifier = modifier,
     state = state,
-    snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         CloseLink -> back()
@@ -143,7 +140,6 @@ private fun LinkBankAccountScaffold(
   state: LinkBankAccountState,
   onAction: LinkBankAccountActionHandler,
   modifier: Modifier = Modifier,
-  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -167,7 +163,6 @@ private fun LinkBankAccountScaffold(
         },
       )
     },
-    snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
   ) { innerPadding ->
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()

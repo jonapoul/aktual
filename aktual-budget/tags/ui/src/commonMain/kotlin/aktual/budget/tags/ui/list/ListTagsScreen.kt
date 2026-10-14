@@ -27,12 +27,11 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LoadingScreen
-import aktual.core.ui.LocalBottomSpacing
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
@@ -48,8 +47,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -75,7 +72,7 @@ internal fun ListTagsScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
-  val snackbar = remember { SnackbarHostState() }
+  val snackbars = LocalSnackbars.current
 
   // refresh on return (e.g. after creating or editing a tag) so the list reflects the changes
   @Suppress("ComposeViewModelForwarding")
@@ -87,9 +84,9 @@ internal fun ListTagsScreen(
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        is Deleted -> snackbar.showDeleted(event, onUndo = viewModel::undoDelete)
-        is DeleteFailed -> snackbar.showDeleteFailed(event)
-        is RestoreFailed -> snackbar.showRestoreFailed(event)
+        is Deleted -> snackbars.show { showDeleted(event, onUndo = viewModel::undoDelete) }
+        is DeleteFailed -> snackbars.show { showDeleteFailed(event) }
+        is RestoreFailed -> snackbars.show { showRestoreFailed(event) }
       }
     }
   }
@@ -98,7 +95,6 @@ internal fun ListTagsScreen(
     modifier = modifier,
     state = state,
     isRefreshing = isRefreshing,
-    snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         Reload -> viewModel.reload()
@@ -120,7 +116,6 @@ private fun ListTagsScaffold(
   onAction: ListTagsActionHandler,
   modifier: Modifier = Modifier,
   isRefreshing: Boolean = false,
-  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -167,12 +162,6 @@ private fun ListTagsScaffold(
             onClick = { onAction(CreateTag) },
           )
         },
-      )
-    },
-    snackbarHost = {
-      SnackbarHost(
-        hostState = snackbarHostState,
-        modifier = Modifier.padding(bottom = LocalBottomSpacing.current + bottomNavBarPadding()),
       )
     },
   ) { innerPadding ->

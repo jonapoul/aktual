@@ -77,12 +77,12 @@ class BankAccountLinker(
   }
 
   /**
-   * Clears [account]'s link. Once nothing else uses its GoCardless bank login, that's deleted too,
-   * though failing to only gets logged, as upstream.
+   * Clears [account]'s link. Once nothing else uses its GoCardless bank login, that's deleted too.
+   * Failing to delete it doesn't stop the unlink, as upstream, but returns false.
    */
-  suspend fun unlink(account: AccountId) {
+  suspend fun unlink(account: AccountId): Boolean {
     val row = checkNotNull(accountDao[account]) { "Account $account not found" }
-    val bank = row.bank ?: return
+    val bank = row.bank ?: return true
     val columns =
       listOf(
         "account_id",
@@ -95,16 +95,17 @@ class BankAccountLinker(
       )
     syncController.syncChanges(columns.map { LocalChange(ACCOUNTS, account.value, it, Null) })
 
-    if (row.account_sync_source != GoCardless || dao.bankUsers(bank) > 0) return
-    val requisition = dao.bankId(bank) ?: return
-    try {
-      if (!api.removeGoCardlessRequisition(requisition.value)) {
-        logcat.w { "GoCardless refused to delete requisition $requisition" }
+    if (row.account_sync_source != GoCardless || dao.bankUsers(bank) > 0) return true
+    val requisition = dao.bankId(bank) ?: return true
+    return try {
+      api.removeGoCardlessRequisition(requisition.value).also { removed ->
+        if (!removed) logcat.w { "GoCardless refused to delete requisition $requisition" }
       }
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
       logcat.w(e) { "Failed deleting GoCardless requisition $requisition" }
+      false
     }
   }
 

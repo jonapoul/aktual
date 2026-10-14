@@ -30,6 +30,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LoadingScreen
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PageBackground
@@ -55,8 +56,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -85,15 +84,15 @@ internal fun BankSyncSettingsScreen(
   viewModel: BankSyncSettingsViewModel = bankSyncSettingsViewModel(id),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  val snackbar = remember { SnackbarHostState() }
+  val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
         Saved -> back()
-        is SaveFailed -> snackbar.showSettingsSaveFailed(event.cause)
+        is SaveFailed -> snackbars.show { showSettingsSaveFailed(event.cause) }
         Unlinked -> back()
-        is UnlinkFailed -> snackbar.showUnlinkFailed(event.cause)
+        is UnlinkFailed -> snackbars.show { showUnlinkFailed(event.cause) }
       }
     }
   }
@@ -101,7 +100,6 @@ internal fun BankSyncSettingsScreen(
   BankSyncSettingsScaffold(
     modifier = modifier,
     state = state,
-    snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         NavigateBack -> back()
@@ -128,7 +126,6 @@ private fun BankSyncSettingsScaffold(
   state: BankSyncSettingsState,
   onAction: BankSyncSettingsActionHandler,
   modifier: Modifier = Modifier,
-  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
   val scrollState = rememberScrollState()
@@ -166,7 +163,6 @@ private fun BankSyncSettingsScaffold(
         },
       )
     },
-    snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
   ) { innerPadding ->
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()

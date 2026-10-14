@@ -24,12 +24,11 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
-import aktual.core.ui.LocalBottomSpacing
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.NoticeBanner
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
@@ -45,14 +44,11 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,12 +66,12 @@ internal fun BankSyncScreen(
   viewModel: BankSyncViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  val snackbar = remember { SnackbarHostState() }
+  val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        is Finished -> snackbar.showBankSyncSummary(event.summary)
+        is Finished -> snackbars.show { showBankSyncSummary(event.summary) }
       }
     }
   }
@@ -90,7 +86,6 @@ internal fun BankSyncScreen(
   BankSyncScaffold(
     modifier = modifier,
     state = state,
-    snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         Reload -> viewModel.reload()
@@ -110,7 +105,6 @@ private fun BankSyncScaffold(
   state: BankSyncState,
   onAction: BankSyncActionHandler,
   modifier: Modifier = Modifier,
-  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -143,12 +137,6 @@ private fun BankSyncScaffold(
             }
           }
         },
-      )
-    },
-    snackbarHost = {
-      SnackbarHost(
-        hostState = snackbarHostState,
-        modifier = Modifier.padding(bottom = LocalBottomSpacing.current + bottomNavBarPadding()),
       )
     },
   ) { innerPadding ->

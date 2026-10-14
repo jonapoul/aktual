@@ -15,26 +15,26 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditTransactionNavigator
 import aktual.core.nav.TransactionSettingsNavigator
+import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LandscapePreview
-import aktual.core.ui.LocalBottomSpacing
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.TabletPreview
-import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -73,18 +73,26 @@ fun TransactionsScreen(
   val isBankSyncing by viewModel.isBankSyncing.collectAsStateWithLifecycle()
   val expanded by viewModel.expanded.collectAsStateWithLifecycle()
   val alternateRowColours by viewModel.alternateRowColours.collectAsStateWithLifecycle()
-  val snackbar = remember { SnackbarHostState() }
+  val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
-    viewModel.bankSyncFinished.collect { summary -> snackbar.showBankSyncSummary(summary) }
+    viewModel.bankSyncFinished.collect { summary ->
+      snackbars.show { showBankSyncSummary(summary) }
+    }
   }
 
+  val deleted = Strings.transactionsDeleteAccountDone
   val deleteFailed = Strings.transactionsDeleteAccountFailed
+  var showLoginKept by remember { mutableStateOf(false) }
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        AccountDeleted -> back()
-        DeleteAccountFailed -> snackbar.showSnackbar(deleteFailed)
+        AccountDeleted -> {
+          snackbars.show { showSnackbar(deleted) }
+          back()
+        }
+        AccountDeletedBankLoginKept -> showLoginKept = true
+        DeleteAccountFailed -> snackbars.show { showSnackbar(deleteFailed) }
       }
     }
   }
@@ -101,7 +109,6 @@ fun TransactionsScreen(
     expanded = expanded,
     splitsPinnedOpen = viewModel.splitsPinnedOpen,
     alternateRowColours = alternateRowColours,
-    snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         NavBack -> back()
@@ -119,7 +126,28 @@ fun TransactionsScreen(
       }
     },
   )
+
+  if (showLoginKept) {
+    BankLoginKeptDialog(
+      onDismiss = {
+        showLoginKept = false
+        back()
+      },
+    )
+  }
 }
+
+@Composable
+private fun BankLoginKeptDialog(onDismiss: () -> Unit) =
+  AktualAlertDialog(
+    title = Strings.transactionsDeleteAccountLoginKeptTitle,
+    highlight = colors.warningText,
+    onDismissRequest = onDismiss,
+    buttons = {
+      TextButton(onClick = onDismiss) { Text(Strings.transactionsDeleteAccountLoginKeptDismiss) }
+    },
+    content = { Text(Strings.transactionsDeleteAccountLoginKeptMessage) },
+  )
 
 @Composable
 private fun metroViewModel(spec: TransactionsSpec) =
@@ -142,7 +170,6 @@ internal fun TransactionsScaffold(
   expanded: ImmutableSet<TransactionId> = persistentSetOf(),
   splitsPinnedOpen: Boolean = false,
   alternateRowColours: Boolean = false,
-  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -168,12 +195,6 @@ internal fun TransactionsScaffold(
           if (density == Dense) LedgerHeader()
           year?.let { YearDivider(it) }
         }
-      },
-      snackbarHost = {
-        SnackbarHost(
-          hostState = snackbarHostState,
-          modifier = Modifier.padding(bottom = LocalBottomSpacing.current + bottomNavBarPadding()),
-        )
       },
     ) { innerPadding ->
       Box {
