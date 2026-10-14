@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.util.fastFirstOrNull
+import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.zIndex
 
 // Lists here scroll under the top bar, but sticky headers pin to the very top of a list, ignoring
@@ -27,14 +28,16 @@ internal class StuckHeaders(
 
   private fun LazyListLayoutInfo.shift(key: Any, topBar: Int): Float {
     val item = visibleItemsInfo.fastFirstOrNull { it.key == key } ?: return 0f
-    val next =
-      visibleItemsInfo
-        .filter { it.index > item.index && it.contentType == StickyHeader }
-        .minByOrNull { it.index }
+    // Runs every frame, so one pass with no allocations
+    var next: LazyListItemInfo? = null
+    visibleItemsInfo.fastForEach { other ->
+      val isLaterHeader = other.index > item.index && other.contentType == StickyHeader
+      if (isLaterHeader && other.index < next?.index ?: Int.MAX_VALUE) next = other
+    }
 
     val top = top(item)
     var desired = maxOf(topBar, top)
-    if (next != null) desired = minOf(desired, maxOf(topBar, top(next)) - item.size)
+    next?.let { desired = minOf(desired, maxOf(topBar, top(it)) - item.size) }
     return (desired - top).toFloat()
   }
 
