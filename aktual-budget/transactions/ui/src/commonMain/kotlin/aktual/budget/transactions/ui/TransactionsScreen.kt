@@ -91,8 +91,12 @@ fun TransactionsScreen(
           snackbars.show { showSnackbar(deleted) }
           back()
         }
-        AccountDeletedBankLoginKept -> showLoginKept = true
-        DeleteAccountFailed -> snackbars.show { showSnackbar(deleteFailed) }
+        AccountDeletedBankLoginKept -> {
+          showLoginKept = true
+        }
+        DeleteAccountFailed -> {
+          snackbars.show { showSnackbar(deleteFailed) }
+        }
       }
     }
   }

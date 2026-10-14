@@ -1,7 +1,7 @@
 package aktual.budget.transactions.vm
 
 import aktual.budget.BudgetLocalPreferences
-import aktual.budget.banksync.domain.BankAccountLinker
+import aktual.budget.banksync.domain.AccountDeleter
 import aktual.budget.banksync.domain.BankSyncController
 import aktual.budget.banksync.domain.BankSyncSummary
 import aktual.budget.db.Accounts
@@ -17,7 +17,6 @@ import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
-import aktual.budget.transactions.domain.TransactionWriter
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
@@ -71,8 +70,7 @@ class TransactionsViewModel(
   private val tagsDao: TagsDao,
   private val categoryDao: CategoryDao,
   private val bankSyncController: BankSyncController,
-  private val writer: TransactionWriter,
-  private val linker: BankAccountLinker,
+  private val deleter: AccountDeleter,
   transactionPreferences: TransactionPreferences,
   server: BudgetServer,
 ) : ViewModel() {
@@ -217,9 +215,7 @@ class TransactionsViewModel(
     val account = accountId ?: return
     viewModelScope.launch {
       try {
-        // As closeAccount(), which unlinks before deleting
-        val loginRemoved = linker.unlink(account)
-        writer.write { deleteAccount(account) }
+        val loginRemoved = deleter.delete(account)
         logcat.i { "Deleted account $account" }
         mutableEvents.tryEmit(if (loginRemoved) AccountDeleted else AccountDeletedBankLoginKept)
       } catch (e: CancellationException) {

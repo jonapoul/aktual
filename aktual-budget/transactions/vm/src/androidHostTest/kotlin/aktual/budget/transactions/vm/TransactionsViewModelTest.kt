@@ -1082,7 +1082,7 @@ class TransactionsViewModelTest {
       viewModel.deleteAccount()
 
       // then
-      assertThat(awaitItem()).isEqualTo(TransactionsEvent.AccountDeleted)
+      assertThat(awaitItem()).isEqualTo(AccountDeleted)
     }
     assertThat(accounts[BANKED]).isNotNull().all {
       prop("tombstone") { it.tombstone }.isEqualTo(true)
