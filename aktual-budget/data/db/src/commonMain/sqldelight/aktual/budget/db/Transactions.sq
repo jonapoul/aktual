@@ -166,14 +166,9 @@ SELECT
   THEN 1 ELSE 0 END AS needsCategory,
   CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
   CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
-  CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE((
-    SELECT json_extract(r.conditions, sjp.date || '.value') LIKE '{%'
-    FROM schedules s
-    JOIN schedules_json_paths sjp ON sjp.schedule_id = s.id
-    JOIN rules r ON r.id = s.rule
-    WHERE s.id = vt.schedule
-  ), 0) END AS scheduleRecurring
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring
   FROM v_transactions_internal_alive AS vt
+  LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
@@ -204,14 +199,9 @@ SELECT
   THEN 1 ELSE 0 END AS needsCategory,
   CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
   CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
-  CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE((
-    SELECT json_extract(r.conditions, sjp.date || '.value') LIKE '{%'
-    FROM schedules s
-    JOIN schedules_json_paths sjp ON sjp.schedule_id = s.id
-    JOIN rules r ON r.id = s.rule
-    WHERE s.id = vt.schedule
-  ), 0) END AS scheduleRecurring
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring
   FROM v_transactions_internal_alive AS vt
+  LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
@@ -244,14 +234,9 @@ SELECT
   THEN 1 ELSE 0 END AS needsCategory,
   CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
   CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
-  CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE((
-    SELECT json_extract(r.conditions, sjp.date || '.value') LIKE '{%'
-    FROM schedules s
-    JOIN schedules_json_paths sjp ON sjp.schedule_id = s.id
-    JOIN rules r ON r.id = s.rule
-    WHERE s.id = vt.schedule
-  ), 0) END AS scheduleRecurring
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring
   FROM v_transactions_internal_alive AS vt
+  LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
@@ -279,14 +264,9 @@ SELECT
   1 AS needsCategory,
   0 AS offBudget,
   0 AS isTransfer,
-  CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE((
-    SELECT json_extract(r.conditions, sjp.date || '.value') LIKE '{%'
-    FROM schedules s
-    JOIN schedules_json_paths sjp ON sjp.schedule_id = s.id
-    JOIN rules r ON r.id = s.rule
-    WHERE s.id = vt.schedule
-  ), 0) END AS scheduleRecurring
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring
   FROM v_transactions_internal_alive AS vt
+  LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
@@ -319,14 +299,9 @@ SELECT
   0 AS needsCategory,
   0 AS offBudget,
   0 AS isTransfer,
-  CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE((
-    SELECT json_extract(r.conditions, sjp.date || '.value') LIKE '{%'
-    FROM schedules s
-    JOIN schedules_json_paths sjp ON sjp.schedule_id = s.id
-    JOIN rules r ON r.id = s.rule
-    WHERE s.id = vt.schedule
-  ), 0) END AS scheduleRecurring
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring
   FROM v_transactions_internal_alive AS vt
+  LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   INNER JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
@@ -376,14 +351,9 @@ SELECT
   THEN 1 ELSE 0 END AS needsCategory,
   CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
   CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
-  CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE((
-    SELECT json_extract(r.conditions, sjp.date || '.value') LIKE '{%'
-    FROM schedules s
-    JOIN schedules_json_paths sjp ON sjp.schedule_id = s.id
-    JOIN rules r ON r.id = s.rule
-    WHERE s.id = vt.schedule
-  ), 0) END AS scheduleRecurring
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring
   FROM v_transactions_internal_alive AS vt
+  LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
@@ -414,13 +384,7 @@ SELECT
   THEN 1 ELSE 0 END AS needsCategory,
   CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
   CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
-  CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE((
-    SELECT json_extract(r.conditions, sjp.date || '.value') LIKE '{%'
-    FROM schedules s
-    JOIN schedules_json_paths sjp ON sjp.schedule_id = s.id
-    JOIN rules r ON r.id = s.rule
-    WHERE s.id = vt.schedule
-  ), 0) END AS scheduleRecurring,
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring,
   vt.cleared,
   vt.reconciled,
   t.parent_id AS parentId,
@@ -428,6 +392,7 @@ SELECT
   vt.payee AS payeeId,
   c.id AS categoryId
   FROM v_transactions_internal_alive AS vt
+  LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   INNER JOIN transactions AS t ON t.id = vt.id
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
@@ -478,15 +443,10 @@ SELECT
   THEN 1 ELSE 0 END AS needsCategory,
   CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
   CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
-  CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE((
-    SELECT json_extract(r.conditions, sjp.date || '.value') LIKE '{%'
-    FROM schedules s
-    JOIN schedules_json_paths sjp ON sjp.schedule_id = s.id
-    JOIN rules r ON r.id = s.rule
-    WHERE s.id = vt.schedule
-  ), 0) END AS scheduleRecurring,
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring,
   t.parent_id AS parentId
   FROM v_transactions_internal_alive AS vt
+  LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   INNER JOIN transactions AS t ON t.id = vt.id
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
