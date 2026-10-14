@@ -21,6 +21,7 @@ import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.redacted
 import aktual.core.ui.stringLong
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -44,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -105,6 +107,7 @@ internal fun LazyListScope.budgetTable(
     if (!group.isCollapsed) {
       items(group.categories, key = { "category-${it.id.value}" }) { category ->
         CategoryItem(
+          modifier = Modifier.animateItem(),
           category = category,
           showSpent = showSpent,
           onBalance = { onAction(OpenSheet(SheetRequest.BalanceSheet(budget.month, category.id))) },
@@ -127,6 +130,7 @@ internal fun LazyListScope.budgetTable(
   if (!income.isCollapsed) {
     items(income.categories, key = { "category-${it.id.value}" }) { category ->
       IncomeItem(
+        modifier = Modifier.animateItem(),
         category = category,
         isTracking = isTracking,
         onEdit = { onAction(OpenSheet(SheetRequest.EditSheet(budget.month, category.id))) },
@@ -452,6 +456,8 @@ internal fun GroupHeaderRow(
       Strings.budgetingGroupCollapse(group.name)
     }
 
+  val rotation by animateFloatAsState(if (group.isCollapsed) COLLAPSED_ROTATION else 0f)
+
   Column(modifier = modifier.fillMaxWidth().background(colors.tableRowHeaderBackground)) {
     HorizontalDivider(color = colors.tableBorder)
     TableRow(
@@ -470,7 +476,7 @@ internal fun GroupHeaderRow(
         verticalAlignment = CenterVertically,
       ) {
         Icon(
-          modifier = Modifier.size(16.dp).rotate(if (group.isCollapsed) COLLAPSED_ROTATION else 0f),
+          modifier = Modifier.size(16.dp).rotate(rotation),
           imageVector = MaterialIcons.ExpandMore,
           contentDescription = null,
           tint = colors.tableRowHeaderText,
