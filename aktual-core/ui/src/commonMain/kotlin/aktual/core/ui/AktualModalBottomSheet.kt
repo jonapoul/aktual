@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 
@@ -59,8 +58,8 @@ fun AktualModalBottomSheet(
     contentColor = colors.pageText,
     dragHandle = {
       Box(modifier = Modifier.fillMaxWidth()) {
-        BottomSheetDefaults.DragHandle(modifier = Modifier.align(Alignment.Center))
-        IconButton(modifier = Modifier.align(Alignment.CenterEnd), onClick = onDismissRequest) {
+        BottomSheetDefaults.DragHandle(modifier = Modifier.align(Center))
+        IconButton(modifier = Modifier.align(CenterEnd), onClick = onDismissRequest) {
           Icon(imageVector = MaterialIcons.Clear, contentDescription = Strings.inputClose)
         }
       }
