@@ -76,7 +76,6 @@ import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
@@ -430,9 +429,7 @@ private fun BudgetPager(
     val month = state.earliest.plus(index, MONTH)
     val budget = state[month]
     val listState = rememberLazyListState()
-    val density = LocalDensity.current
-    val stuck =
-      remember(listState, topPadding, density) { StuckHeaders(listState, topPadding, density) }
+    val stuck = remember(listState, topPadding) { StuckHeaders(listState, topPadding) }
 
     DisposableEffect(month, listState) {
       pageListStates[month] = listState
@@ -562,13 +559,12 @@ private fun PreviewBudgetColumns(
 
 internal object BudgetDS {
   val listPadding = PaddingValues(start = 8.dp, end = 8.dp, top = 8.dp)
-
-  fun listPadding(top: Dp) = PaddingValues(start = 8.dp, end = 8.dp, top = 8.dp + top)
-
   val valueWidth = 104.dp
   val balanceWidth = 96.dp
   val rowHeight = 44.dp
   val headerHeight = 36.dp
   val rowPadding = 12.dp
   val categoryIndent = 32.dp
+
+  fun listPadding(top: Dp) = PaddingValues(start = 8.dp, end = 8.dp, top = 8.dp + top)
 }

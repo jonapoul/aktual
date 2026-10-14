@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.zIndex
@@ -20,11 +19,10 @@ import androidx.compose.ui.zIndex
 internal class StuckHeaders(
   private val listState: LazyListState,
   private val topBar: Dp,
-  private val density: Density,
 ) {
   fun modifier(key: Any): Modifier =
     Modifier.zIndex(1f).graphicsLayer {
-      translationY = listState.layoutInfo.shift(key, with(density) { topBar.roundToPx() })
+      translationY = listState.layoutInfo.shift(key, topBar.roundToPx())
     }
 
   private fun LazyListLayoutInfo.shift(key: Any, topBar: Int): Float {

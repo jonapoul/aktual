@@ -101,8 +101,7 @@ internal fun BudgetColumns(
 
   // The column header and a group header stick below the top bar
   val density = LocalDensity.current
-  val stuck =
-    remember(listState, topPadding, density) { StuckHeaders(listState, topPadding, density) }
+  val stuck = remember(listState, topPadding) { StuckHeaders(listState, topPadding) }
   val stickyHeight = with(density) { (BudgetDS.headerHeight * 2).roundToPx() }
   val topBarHeight = with(density) { topPadding.roundToPx() }
   LaunchedEffect(cursor.selected?.category, columns) {
@@ -155,7 +154,6 @@ private fun LazyListScope.budgetColumns(
 
   // Every month has the same groups and categories
   val template = columns.firstNotNullOfOrNull { it.budget } ?: return
-  val isTracking = state.type == Tracking
 
   for (group in template.groups) {
     stuckHeader(key = "group-${group.id.value}", stuck = stuck) { modifier ->
@@ -209,6 +207,20 @@ private fun LazyListScope.budgetColumns(
   }
 
   val income = template.income ?: return
+  incomeColumns(state, income, columns, layout, cursor, grid, stuck, onAction)
+}
+
+private fun LazyListScope.incomeColumns(
+  state: BudgetState.Loaded,
+  income: GroupRow,
+  columns: ImmutableList<MonthColumn>,
+  layout: ColumnsLayout,
+  cursor: BudgetCursor,
+  grid: BudgetGrid,
+  stuck: StuckHeaders,
+  onAction: BudgetActionHandler,
+) {
+  val isTracking = state.type == Tracking
 
   stuckHeader(key = "group-${income.id.value}", stuck = stuck) { modifier ->
     GroupHeaderRow(
