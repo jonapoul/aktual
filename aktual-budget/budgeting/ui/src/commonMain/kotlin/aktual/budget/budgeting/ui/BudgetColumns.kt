@@ -19,6 +19,7 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.formattedText
+import aktual.core.ui.hazedStickyContent
 import aktual.core.ui.hazedStickyHeader
 import aktual.core.ui.scrollbar
 import aktual.core.ui.stringLong
@@ -298,6 +299,7 @@ private fun SummaryCard(
   Column(
     modifier =
       modifier
+        .hazedStickyContent()
         .background(colors.tableBackground, CardShape)
         .border(
           width = if (isCurrent) 2.dp else 1.dp,

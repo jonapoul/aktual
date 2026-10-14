@@ -19,12 +19,13 @@ fun HazedPullToRefreshBox(
   onRefresh: () -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  contentIsSource: Boolean = true,
   contentAlignment: Alignment = TopStart,
   content: @Composable BoxScope.(PaddingValues) -> Unit,
 ) {
   val state = rememberPullToRefreshState()
   PullToRefreshBox(
-    modifier = modifier.hazedTopBarContent(hazeState, innerPadding),
+    modifier = modifier.hazedTopBarContent(hazeState, innerPadding, isSource = contentIsSource),
     isRefreshing = isRefreshing,
     onRefresh = onRefresh,
     state = state,

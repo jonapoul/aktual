@@ -269,6 +269,7 @@ private fun BudgetScaffold(
         innerPadding = innerPadding,
         isRefreshing = isRefreshing,
         onRefresh = { handler(Refresh) },
+        contentIsSource = false,
       ) { padding ->
         CompositionLocalProvider(LocalStickyHazeState provides hazeState) {
           BudgetContent(

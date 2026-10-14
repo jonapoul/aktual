@@ -140,20 +140,33 @@ fun LazyListState.topBarHazeOffset(): Float =
 
 @Composable
 @ReadOnlyComposable
-fun Modifier.hazedTopBarContent(state: HazedTopBarState, innerPadding: PaddingValues): Modifier {
+fun Modifier.hazedTopBarContent(
+  state: HazedTopBarState,
+  innerPadding: PaddingValues,
+  isSource: Boolean = true,
+): Modifier {
   val layoutDirection = LocalLayoutDirection.current
   return if (state.enabled) {
-    hazeSource(state.hazeState)
-      .padding(
-        PaddingValues(
-          start = innerPadding.calculateStartPadding(layoutDirection),
-          end = innerPadding.calculateEndPadding(layoutDirection),
-          bottom = innerPadding.calculateBottomPadding(),
-        ),
-      )
+    (if (isSource) hazeSource(state.hazeState) else this).padding(
+      PaddingValues(
+        start = innerPadding.calculateStartPadding(layoutDirection),
+        end = innerPadding.calculateEndPadding(layoutDirection),
+        bottom = innerPadding.calculateBottomPadding(),
+      ),
+    )
   } else {
     padding(innerPadding)
   }
+}
+
+/**
+ * Marks a list item as something that scrolls behind the top bar and any [hazedStickyHeader]. The
+ * list itself can't be the source in this case, since a header inside it can't blur its ancestor.
+ */
+@Composable
+fun Modifier.hazedStickyContent(): Modifier {
+  val state = LocalStickyHazeState.current
+  return if (state == null || !state.enabled) this else hazeSource(state.hazeState)
 }
 
 /**
