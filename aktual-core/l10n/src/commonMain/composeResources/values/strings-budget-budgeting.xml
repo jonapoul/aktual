@@ -46,11 +46,11 @@
   <string name="budgeting_edit_cancel">Cancel</string>
   <string name="budgeting_edit_budget">Edit budget for %1$s</string>
   <string name="budgeting_edit_options">Budget options for %1$s</string>
-  <string name="budgeting_copy_last_month">Copy last month's budget</string>
-  <string name="budgeting_average_3">Set to 3 month average</string>
-  <string name="budgeting_average_6">Set to 6 month average</string>
-  <string name="budgeting_average_12">Set to yearly average</string>
-  <string name="budgeting_copy_year_end">Copy to end of year</string>
+  <string name="budgeting_copy_last_month">Copy last month</string>
+  <string name="budgeting_average_3">3 month average</string>
+  <string name="budgeting_average_6">6 month average</string>
+  <string name="budgeting_average_12">Yearly average</string>
+  <string name="budgeting_copy_year_end">Copy to year end</string>
 
   <string name="budgeting_category_open">Open %1$s</string>
   <string name="budgeting_category_history">History</string>
