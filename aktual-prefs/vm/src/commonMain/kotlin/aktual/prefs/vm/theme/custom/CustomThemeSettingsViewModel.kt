@@ -8,7 +8,7 @@ import aktual.core.theme.CustomThemeRepo
 import aktual.core.theme.CustomThemeSummary
 import aktual.di.AppScope
 import aktual.prefs.ThemePreferences
-import aktual.prefs.asStateFlow
+import aktual.prefs.vm.asLoadedStateFlow
 import aktual.prefs.vm.theme.custom.CustomThemeEvent.FailedFetching
 import aktual.prefs.vm.theme.custom.CustomThemeEvent.InspectTheme
 import alakazam.kotlin.requireMessage
@@ -51,7 +51,7 @@ class CustomThemeSettingsViewModel(
   private val mutableFailure = MutableStateFlow<CatalogState.Failed?>(null)
   private val mutableSummaries = MutableStateFlow(persistentListOf<CustomThemeSummary>())
   private val mutableCachedThemes = MutableStateFlow(persistentMapOf<ThemeId, CacheState>())
-  private val selectedTheme = preferences.constantTheme.asStateFlow(viewModelScope)
+  private val selectedTheme = preferences.constantTheme.asLoadedStateFlow(viewModelScope)
 
   private val mutableEvents =
     MutableSharedFlow<CustomThemeEvent>(
