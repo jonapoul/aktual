@@ -19,7 +19,6 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
-import aktual.core.ui.hazedStickyContent
 import aktual.core.ui.hazedStickyHeader
 import aktual.core.ui.redacted
 import aktual.core.ui.stringLong
@@ -153,7 +152,6 @@ private fun SummaryCard(
     modifier =
       modifier
         .fillMaxWidth()
-        .hazedStickyContent()
         .clip(CardShape)
         .background(colors.tableBackground, CardShape)
         .border(1.dp, colors.tableBorder, CardShape)
@@ -272,7 +270,6 @@ internal fun BannerRow(
       modifier
         .fillMaxWidth()
         .height(40.dp)
-        .hazedStickyContent()
         .background(background, CardShape)
         .border(1.dp, border, CardShape)
         .padding(start = 12.dp, end = 4.dp),
@@ -331,7 +328,7 @@ private fun ColumnHeader(
   modifier: Modifier = Modifier,
 ) {
   TableRow(
-    modifier = modifier.hazedStickyContent().background(colors.tableHeaderBackground, TopShape),
+    modifier = modifier.background(colors.tableHeaderBackground, TopShape),
     height = BudgetDS.headerHeight,
   ) {
     HeaderLabel(text = Strings.budgetingColumnCategory, modifier = Modifier.weight(1f))
@@ -373,11 +370,7 @@ private fun ColumnHeader(
 @Composable
 private fun IncomeColumnHeader(isTracking: Boolean, modifier: Modifier = Modifier) {
   TableRow(
-    modifier =
-      modifier
-        .padding(top = 16.dp)
-        .hazedStickyContent()
-        .background(colors.tableHeaderBackground, TopShape),
+    modifier = modifier.padding(top = 16.dp).background(colors.tableHeaderBackground, TopShape),
     height = BudgetDS.headerHeight,
   ) {
     Spacer(modifier = Modifier.weight(1f))
@@ -577,9 +570,7 @@ internal fun CategoryRowLayout(
   amounts: @Composable RowScope.() -> Unit,
 ) {
   val openLabel = Strings.budgetingCategoryOpen(category.name)
-  Column(
-    modifier = modifier.fillMaxWidth().hazedStickyContent().background(colors.tableBackground),
-  ) {
+  Column(modifier = modifier.fillMaxWidth().background(colors.tableBackground)) {
     HorizontalDivider(color = colors.tableBorder)
     TableRow(
       modifier =
