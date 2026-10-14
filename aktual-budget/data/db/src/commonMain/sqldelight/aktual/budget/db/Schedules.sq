@@ -41,6 +41,16 @@ LEFT JOIN schedules_json_paths sjp ON sjp.schedule_id = s.id
 LEFT JOIN rules r ON r.id = s.rule
 LEFT JOIN payee_mapping pm ON pm.id = json_extract(r.conditions, sjp.payee || '.value');
 
+-- Whether each schedule's date condition is a recurring config rather than a single date. Not an
+-- upstream view, so existing databases get it from a migration in MigrateDatabase.kt
+CREATE VIEW IF NOT EXISTS v_schedule_recurring AS
+SELECT
+  s.id AS schedule_id,
+  COALESCE(json_extract(r.conditions, sjp.date || '.value') LIKE '{%', 0) AS recurring
+FROM schedules s
+JOIN schedules_json_paths sjp ON sjp.schedule_id = s.id
+JOIN rules r ON r.id = s.rule;
+
 insert:
   INSERT OR REPLACE
     INTO schedules(id, rule, active, completed, posts_transaction, tombstone, name)

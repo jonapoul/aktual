@@ -97,6 +97,23 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
         """
           .trimIndent(),
       ),
+    // NOT an upstream migration: Aktual's own view, which has no file in
+    // packages/loot-core/migrations.
+    // Existing databases only get new schema through this list, so it creates v_schedule_recurring
+    // (see Schedules.sq). The version is a timestamp after the last upstream migration
+    1791936000000L to
+      listOf(
+        """
+        CREATE VIEW IF NOT EXISTS v_schedule_recurring AS
+        SELECT
+          s.id AS schedule_id,
+          COALESCE(json_extract(r.conditions, sjp.date || '.value') LIKE '{%', 0) AS recurring
+        FROM schedules s
+        JOIN schedules_json_paths sjp ON sjp.schedule_id = s.id
+        JOIN rules r ON r.id = s.rule
+        """
+          .trimIndent(),
+      ),
   )
 
 private const val TAG = "MigrateDatabase"

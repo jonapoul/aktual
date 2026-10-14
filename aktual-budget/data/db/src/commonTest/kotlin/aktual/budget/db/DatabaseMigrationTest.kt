@@ -16,6 +16,7 @@ import alakazam.test.getResourceAsStream
 import app.cash.burst.InterceptTest
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
+import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlDriver
 import assertk.assertThat
 import assertk.assertions.exists
@@ -74,6 +75,7 @@ class DatabaseMigrationTest {
     checkMigration1783004650757(db)
     checkMigration1787013118115(db)
     checkMigration1788468782000(db)
+    checkAktualMigration1791936000000()
   }
 
   // Verify that the file was opened at all
@@ -152,6 +154,18 @@ class DatabaseMigrationTest {
         .get(dataset = "dataset", row = "row", column = "column")
         .awaitAsOneOrNull()
     assertNull(pending)
+  }
+
+  // Not upstream: creates the v_schedule_recurring view, which throws if it doesn't exist
+  private suspend fun checkAktualMigration1791936000000() {
+    driver
+      .executeQuery(
+        identifier = null,
+        sql = "SELECT COUNT(*) FROM v_schedule_recurring",
+        mapper = { cursor -> QueryResult.AsyncValue { cursor.next().await() } },
+        parameters = 0,
+      )
+      .await()
   }
 
   private fun loadDatabaseIntoFile(): File {

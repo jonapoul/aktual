@@ -23,6 +23,7 @@ private val aktualIcons =
   with(AktualIcons) {
     listOf(
       Add,
+      ArrowsSynchronize,
       ArrowThickDown,
       ArrowThickUp,
       Calendar3,

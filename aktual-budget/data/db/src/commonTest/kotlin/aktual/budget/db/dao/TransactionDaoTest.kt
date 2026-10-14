@@ -5,9 +5,13 @@ import aktual.budget.db.Categories
 import aktual.budget.db.Transactions
 import aktual.budget.db.test.buildAccount
 import aktual.budget.db.test.insertAccounts
+import aktual.budget.db.test.insertRule
+import aktual.budget.db.test.insertSchedule
+import aktual.budget.db.test.insertScheduleJsonPaths
 import aktual.budget.db.withoutResult
 import aktual.budget.model.AccountId
 import aktual.budget.model.CategoryId
+import aktual.budget.model.Condition
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -18,6 +22,8 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -336,6 +342,41 @@ internal class TransactionDaoTest {
     assertThat(children.map { it.splitDifference }).containsExactly(null)
   }
 
+  @Test
+  fun `Rows from a schedule say whether it recurs`() = runDaoTest { transactions ->
+    // given
+    insertSchedule("recurring", RECURRING_DATE)
+    insertSchedule("once", ONCE_DATE)
+    transactions.insert("t1", ON_1, CATEGORY, PAYEE, DATE, schedule = "recurring")
+    transactions.insert("t2", ON_1, CATEGORY, PAYEE, DATE, schedule = "once")
+    transactions.insert("t3", ON_1, CATEGORY, PAYEE, DATE)
+
+    // when
+    val rows = transactions.getPaged(limit = 10, offset = 0).rows
+
+    // then
+    assertThat(rows.associate { it.id.toString() to it.scheduleRecurring })
+      .isEqualTo(mapOf("t1" to true, "t2" to false, "t3" to null))
+  }
+
+  private suspend fun BudgetDatabase.insertSchedule(id: String, date: String) {
+    val conditions =
+      Json.decodeFromString(
+        ListSerializer(Condition.serializer()),
+        """[{"op":"isapprox","field":"date","value":$date,"type":"date"}]""",
+      )
+    insertRule(id = "rule-$id", conditions = conditions)
+    insertScheduleJsonPaths(scheduleId = id, payee = 0, account = 0, amount = 0, date = 0)
+    insertSchedule(
+      id = id,
+      ruleId = "rule-$id",
+      completed = false,
+      postsTransaction = true,
+      tombstone = false,
+      name = id,
+    )
+  }
+
   private fun splitError(difference: Long) = buildJsonObject {
     put("type", "SplitTransactionError")
     put("version", 1)
@@ -420,5 +461,7 @@ internal class TransactionDaoTest {
     const val TRANSFER_TO_ON_1 = "transfer-on1"
     const val TRANSFER_TO_ON_2 = "transfer-on2"
     const val TRANSFER_TO_OFF = "transfer-off"
+    const val RECURRING_DATE = """{"start":"2026-01-01","frequency":"weekly","interval":1}"""
+    const val ONCE_DATE = """"2026-01-01""""
   }
 }
