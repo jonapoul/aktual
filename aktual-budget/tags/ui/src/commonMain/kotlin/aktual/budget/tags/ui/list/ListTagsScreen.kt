@@ -26,7 +26,6 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
-import aktual.core.ui.LoadingScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
@@ -38,6 +37,7 @@ import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -195,7 +195,13 @@ private fun ListTagsContent(
   padding: PaddingValues,
 ) {
   when (state) {
-    Loading -> LoadingScreen()
+    Loading ->
+      Column(
+        modifier = Modifier.fillMaxSize().padding(padding),
+        verticalArrangement = Arrangement.spacedBy(ListTagsDS.listItemSpacing),
+      ) {
+        repeat(ListTagsDS.SHIMMER_ITEMS) { ShimmerTagItem() }
+      }
 
     is Failure ->
       FailureScreen(

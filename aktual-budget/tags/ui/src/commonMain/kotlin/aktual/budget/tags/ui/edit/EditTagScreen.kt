@@ -16,31 +16,37 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarState
-import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.TextFieldShape
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
@@ -61,6 +67,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
@@ -69,6 +76,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 @Composable
@@ -176,7 +185,7 @@ private fun EditTagScaffold(
       PageBackground()
 
       when (state) {
-        Loading -> LoadingScreen(modifier = Modifier.padding(innerPadding))
+        Loading -> ShimmerEditTag(modifier = Modifier.padding(innerPadding))
 
         is Editing ->
           EditTagContent(
@@ -346,6 +355,48 @@ private fun EditTagContent(
     }
 
     BottomSpacing()
+  }
+}
+
+// Stands in for the tag, description and colour fields while the tag loads
+@Composable
+private fun ShimmerEditTag(modifier: Modifier = Modifier) {
+  val bar = Modifier.background(colors.pageText, CardShape)
+  val field = Modifier.background(colors.pageText, TextFieldShape)
+  val label = bar.size(width = EditTagDS.shimmerLabelWidth, height = EditTagDS.shimmerLabelHeight)
+
+  Column(
+    modifier =
+      modifier.fillMaxSize().padding(EditTagDS.contentPadding).shimmer(rememberShimmer(Window)),
+    verticalArrangement = Arrangement.spacedBy(EditTagDS.fieldSpacing),
+  ) {
+    repeat(times = 2) {
+      Column(verticalArrangement = Arrangement.spacedBy(EditTagDS.labelSpacing)) {
+        Box(label)
+        Box(field.fillMaxWidth().height(EditTagDS.shimmerFieldHeight))
+      }
+    }
+
+    Column(verticalArrangement = Arrangement.spacedBy(EditTagDS.labelSpacing)) {
+      Box(label)
+      Column(verticalArrangement = Arrangement.spacedBy(EditTagDS.colorPickerSectionSpacing)) {
+        Row(
+          horizontalArrangement = Arrangement.spacedBy(EditTagDS.colorPickerSectionSpacing),
+          verticalAlignment = CenterVertically,
+        ) {
+          Box(field.weight(1f).height(EditTagDS.shimmerFieldHeight))
+          repeat(times = 2) { Box(bar.size(EditTagDS.shimmerIconButtonSize)) }
+        }
+
+        FlowRow(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.spacedBy(EditTagDS.colorPresetSpacing),
+          verticalArrangement = Arrangement.spacedBy(EditTagDS.colorPresetSpacing),
+        ) {
+          repeat(TAG_COLOR_PRESETS.size) { Box(bar.size(EditTagDS.colorPresetSize)) }
+        }
+      }
+    }
   }
 }
 

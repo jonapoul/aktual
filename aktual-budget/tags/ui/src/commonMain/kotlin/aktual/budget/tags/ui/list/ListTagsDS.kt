@@ -14,4 +14,9 @@ internal object ListTagsDS {
   val chipPadding = PaddingValues(horizontal = 7.dp, vertical = 3.dp)
   val numTransactionsPadding = PaddingValues(all = 4.dp)
   const val HIDDEN_ALPHA = 0.5f
+
+  val shimmerChipWidth = 88.dp
+  val shimmerChipHeight = 26.dp
+  val shimmerTextHeight = 15.dp
+  const val SHIMMER_ITEMS = 10
 }

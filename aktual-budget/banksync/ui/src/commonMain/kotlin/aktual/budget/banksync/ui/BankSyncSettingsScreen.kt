@@ -25,11 +25,11 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.LoadingScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
@@ -47,14 +47,22 @@ import aktual.prefs.ui.core.BasicPreferenceItem
 import aktual.prefs.ui.core.BooleanPreferenceItem
 import aktual.prefs.ui.core.PreferenceGroup
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -65,12 +73,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -169,7 +180,7 @@ private fun BankSyncSettingsScaffold(
 
       when (state) {
         Loading -> {
-          LoadingScreen(modifier = Modifier.padding(innerPadding))
+          ShimmerSettings(modifier = Modifier.padding(innerPadding))
         }
         is Failure -> {
           FailureScreen(
@@ -229,6 +240,79 @@ private fun BankSyncSettingsContent(
     UnlinkButton(accountName = state.accountName, onConfirm = { onAction(UnlinkAccount) })
 
     BottomSpacing()
+  }
+}
+
+// Stands in for the field mapping and options groups while the settings load
+@Composable
+private fun ShimmerSettings(modifier: Modifier = Modifier) {
+  val bar = Modifier.background(colors.pageText, CardShape)
+
+  Column(
+    modifier =
+      modifier.fillMaxSize().padding(BankSyncDS.settingsPadding).shimmer(rememberShimmer(Window)),
+    verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsItemSpacing),
+  ) {
+    ShimmerGroup {
+      Box(bar.fillMaxWidth().height(BankSyncDS.shimmerToggleHeight))
+      repeat(BankSyncDS.SHIMMER_MAPPED_FIELDS) {
+        ShimmerGroupRow {
+          Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsLabelSpacing),
+          ) {
+            Box(bar.fillMaxWidth(fraction = 0.4f).height(BankSyncDS.shimmerItemTextHeight))
+            Box(bar.fillMaxWidth().height(BankSyncDS.shimmerDropDownHeight))
+          }
+        }
+      }
+    }
+
+    ShimmerGroup {
+      repeat(BankSyncDS.SHIMMER_OPTIONS) {
+        ShimmerGroupRow {
+          Box(bar.weight(1f).height(BankSyncDS.shimmerItemTextHeight))
+          Box(
+            Modifier.size(
+                width = BankSyncDS.shimmerSwitchWidth,
+                height = BankSyncDS.shimmerSwitchHeight,
+              )
+              .background(colors.pageText, CircleShape),
+          )
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun ShimmerGroup(content: @Composable ColumnScope.() -> Unit) {
+  Column(
+    modifier =
+      Modifier.fillMaxWidth()
+        .background(colors.settingsCardBackground, CardShape)
+        .border(1.dp, colors.settingsCardBorder, CardShape)
+        .padding(BankSyncDS.shimmerGroupPadding),
+    verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsFieldSpacing),
+  ) {
+    Box(
+      Modifier.fillMaxWidth(fraction = 0.3f)
+        .height(BankSyncDS.shimmerItemTextHeight)
+        .background(colors.pageText, CardShape),
+    )
+    content()
+  }
+}
+
+@Composable
+private fun ShimmerGroupRow(content: @Composable RowScope.() -> Unit) {
+  Row(
+    modifier = Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.spacedBy(BankSyncDS.settingsFieldSpacing),
+    verticalAlignment = CenterVertically,
+  ) {
+    Box(Modifier.size(BankSyncDS.shimmerIconSize).background(colors.pageText, CardShape))
+    content()
   }
 }
 

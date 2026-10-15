@@ -3,6 +3,7 @@ package aktual.budget.schedules.ui.search
 import aktual.budget.schedules.ui.list.ListSchedulesDS
 import aktual.budget.schedules.ui.list.ListSchedulesItem
 import aktual.budget.schedules.ui.list.ListSchedulesPreview
+import aktual.budget.schedules.ui.list.ShimmerListSchedulesItem
 import aktual.budget.schedules.vm.search.SearchSchedulesState
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Failure
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Results
@@ -18,7 +19,6 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.LoadingScreen
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.ScrollToTopOnNewQuery
@@ -30,6 +30,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -94,7 +95,7 @@ private fun SearchSchedulesScaffold(
       when (animatedState) {
         NoQuery -> SearchMessage(text = Strings.listSchedulesSearchPrompt)
 
-        Loading -> LoadingScreen()
+        Loading -> ShimmerResults()
 
         NoResults ->
           SearchMessage(
@@ -144,6 +145,15 @@ private fun ResultsList(
     }
 
     item(key = "bottom") { BottomSpacing() }
+  }
+
+@Composable
+private fun ShimmerResults(modifier: Modifier = Modifier) =
+  Column(
+    modifier = modifier.fillMaxSize().padding(ListSchedulesDS.listPadding),
+    verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.listItemSpacing),
+  ) {
+    repeat(times = 10) { ShimmerListSchedulesItem() }
   }
 
 @PortraitPreview

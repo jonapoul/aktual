@@ -25,12 +25,12 @@ import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureCard
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.LoadingScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
@@ -53,6 +53,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -74,6 +75,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.persistentListOf
 
@@ -169,7 +172,7 @@ private fun LinkBankAccountScaffold(
 
       when (state) {
         Loading -> {
-          LoadingScreen(modifier = Modifier.padding(innerPadding))
+          ShimmerLinkBankAccount(modifier = Modifier.padding(innerPadding))
         }
         is Failure -> {
           FailureScreen(
@@ -212,6 +215,28 @@ private fun LinkBankAccountScaffold(
         }
       }
     }
+  }
+}
+
+// Stands in for the header and the account list while the providers load
+@Composable
+private fun ShimmerLinkBankAccount(modifier: Modifier = Modifier) {
+  val bar = Modifier.background(colors.pageText, CardShape)
+
+  Column(
+    modifier = modifier.fillMaxSize().padding(BankSyncDS.listPadding),
+    verticalArrangement = Arrangement.spacedBy(BankSyncDS.listItemSpacing),
+  ) {
+    Column(
+      modifier =
+        Modifier.fillMaxWidth().padding(BankSyncDS.headerPadding).shimmer(rememberShimmer(Window)),
+      verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsItemSpacing),
+    ) {
+      Box(bar.fillMaxWidth(fraction = 0.7f).height(BankSyncDS.shimmerItemTextHeightSmall))
+      Box(bar.fillMaxWidth().height(BankSyncDS.shimmerToggleHeight))
+    }
+
+    repeat(BankSyncDS.SHIMMER_ACCOUNT_ITEMS) { ShimmerBankSyncAccountItem() }
   }
 }
 
@@ -286,7 +311,9 @@ private fun LazyListScope.choosing(
 
   when (val accounts = state.accounts) {
     Loading -> {
-      items(count = 5, key = { "shimmer-$it" }) { ShimmerBankSyncAccountItem() }
+      items(count = BankSyncDS.SHIMMER_ACCOUNT_ITEMS, key = { "shimmer-$it" }) {
+        ShimmerBankSyncAccountItem()
+      }
     }
     is Failure -> {
       item(key = "failure") {

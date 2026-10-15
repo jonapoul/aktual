@@ -36,7 +36,6 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.ListBottomSheet
-import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -59,8 +58,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -88,6 +90,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -211,7 +215,7 @@ private fun EditScheduleScaffold(
       PageBackground()
 
       when (state) {
-        Loading -> LoadingScreen(modifier = Modifier.padding(innerPadding))
+        Loading -> ShimmerSchedule(modifier = Modifier.padding(innerPadding))
 
         is Failure ->
           FailureScreen(
@@ -396,6 +400,75 @@ private fun EditScheduleContent(
   }
 
   EditScheduleSheet(sheet = sheet, state = state, onAction = onAction, onDismiss = { sheet = null })
+}
+
+// Stands in for the header, sentence and upcoming dates while the schedule loads
+@Composable
+private fun ShimmerSchedule(modifier: Modifier = Modifier) {
+  val bar = Modifier.background(colors.pageText, CardShape)
+
+  Column(
+    modifier =
+      modifier
+        .fillMaxSize()
+        .padding(EditScheduleDS.contentPadding)
+        .shimmer(rememberShimmer(Window)),
+    verticalArrangement = Arrangement.spacedBy(EditScheduleDS.sectionSpacing),
+  ) {
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.badgeSpacing),
+    ) {
+      Box(modifier = bar.fillMaxWidth(fraction = 0.5f).height(EditScheduleDS.shimmerHeaderHeight))
+      Box(
+        modifier =
+          bar.size(
+            width = EditScheduleDS.shimmerBadgeWidth,
+            height = EditScheduleDS.shimmerBadgeHeight,
+          ),
+      )
+    }
+
+    Column(verticalArrangement = Arrangement.spacedBy(EditScheduleDS.shimmerSentenceSpacing)) {
+      Box(modifier = bar.fillMaxWidth().height(EditScheduleDS.shimmerSentenceHeight))
+      Box(modifier = bar.fillMaxWidth(fraction = 0.9f).height(EditScheduleDS.shimmerSentenceHeight))
+      Box(modifier = bar.fillMaxWidth(fraction = 0.6f).height(EditScheduleDS.shimmerSentenceHeight))
+    }
+
+    Box(modifier = bar.fillMaxWidth(fraction = 0.7f).height(EditScheduleDS.shimmerTextHeight))
+
+    Column(verticalArrangement = Arrangement.spacedBy(EditScheduleDS.labelSpacing)) {
+      Box(
+        modifier =
+          bar.width(EditScheduleDS.shimmerLabelWidth).height(EditScheduleDS.shimmerTextHeight),
+      )
+
+      Column(
+        modifier =
+          Modifier.fillMaxWidth()
+            .background(colors.tableBackground, CardShape)
+            .border(EditScheduleDS.hairline, colors.tableBorder, CardShape),
+      ) {
+        repeat(EditScheduleDS.SHIMMER_UPCOMING_ROWS) { index ->
+          if (index > 0) HorizontalDivider(color = colors.tableBorder)
+          Row(
+            modifier = Modifier.fillMaxWidth().padding(EditScheduleDS.rowPadding),
+            horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing),
+          ) {
+            Box(
+              modifier =
+                bar.width(EditScheduleDS.shimmerDayWidth).height(EditScheduleDS.shimmerTextHeight),
+            )
+            Box(
+              modifier =
+                bar.width(EditScheduleDS.shimmerDateWidth).height(EditScheduleDS.shimmerTextHeight),
+            )
+          }
+        }
+      }
+    }
+  }
 }
 
 @Composable

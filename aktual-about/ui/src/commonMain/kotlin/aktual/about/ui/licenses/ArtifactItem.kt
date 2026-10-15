@@ -4,13 +4,16 @@ import aktual.about.data.ArtifactDetail
 import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.rememberHighlighted
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
@@ -18,10 +21,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -42,9 +48,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.persistentListOf
 
+/** Keep in sync with [ShimmerArtifactItem] */
 @Composable
 internal fun ArtifactItem(
   artifact: ArtifactDetail,
@@ -113,6 +123,39 @@ internal fun ArtifactItem(
         contentDescription = Strings.licensesItemLaunch,
       )
     }
+  }
+}
+
+/** Keep in sync with [ArtifactItem] */
+@Composable
+internal fun ShimmerArtifactItem(modifier: Modifier = Modifier) {
+  val bar = Modifier.background(colors.pageText, CardShape)
+
+  Row(
+    modifier =
+      modifier
+        .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
+        .background(colors.buttonNormalBackground, CardShape)
+        .border(Hairline, colors.pillBorderDark, CardShape)
+        .padding(Dimens.Large)
+        .shimmer(rememberShimmer(Window)),
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(Dimens.Large),
+  ) {
+    Column(
+      modifier = Modifier.weight(1f),
+      verticalArrangement = Arrangement.spacedBy(ShimmerRowSpacing),
+    ) {
+      Box(bar.fillMaxWidth(fraction = 0.5f).height(ShimmerTitleHeight))
+      repeat(times = 3) {
+        Row(horizontalArrangement = Arrangement.spacedBy(Dimens.Large)) {
+          Box(bar.size(width = ShimmerHeaderWidth, height = ShimmerTextHeight))
+          Box(bar.weight(1f).height(ShimmerTextHeight))
+        }
+      }
+    }
+
+    Box(bar.size(ShimmerButtonSize))
   }
 }
 
@@ -209,6 +252,12 @@ private fun LibraryTableRow(
 private val LineHeight = 15.sp
 private val TextSize = 12.sp
 
+private val ShimmerTitleHeight = 18.dp
+private val ShimmerTextHeight = 12.dp
+private val ShimmerRowSpacing = 3.dp
+private val ShimmerHeaderWidth = 50.dp
+private val ShimmerButtonSize = 40.dp
+
 @Preview
 @Composable
 private fun PreviewArtifactItem(
@@ -222,3 +271,8 @@ private class ArtifactItemProvider :
     FragmentKtx,
     Slf4jApi,
   )
+
+@Preview
+@Composable
+private fun PreviewShimmerArtifactItem(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) { ShimmerArtifactItem() }

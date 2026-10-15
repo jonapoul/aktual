@@ -16,4 +16,9 @@ internal object EditTagDS {
   val colorPresetBorderSelected = 2.dp
   const val COLOR_PICKER_HORIZ_WEIGHT = 0.6f
   const val COLOR_FIELD_PLACEHOLDER_ALPHA = 0.6f
+
+  val shimmerLabelWidth = 80.dp
+  val shimmerLabelHeight = 15.dp
+  val shimmerFieldHeight = 56.dp
+  val shimmerIconButtonSize = 40.dp
 }
