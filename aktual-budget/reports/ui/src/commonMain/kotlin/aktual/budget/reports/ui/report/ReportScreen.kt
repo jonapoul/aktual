@@ -12,6 +12,7 @@ import aktual.budget.reports.ui.charts.rememberChartZoomState
 import aktual.budget.reports.ui.montecarlo.MonteCarloReportScreen
 import aktual.budget.reports.ui.string
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
+import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.report.ReportViewModel
@@ -142,10 +143,10 @@ internal fun ReportScaffold(
         title = {
           Text(
             text =
-              if (state is Loaded) {
-                state.type.string()
-              } else {
-                Strings.reportsDashboardTitle
+              when {
+                data is CustomData && data.title.isNotBlank() -> data.title
+                state is Loaded -> state.type.string()
+                else -> Strings.reportsDashboardTitle
               },
           )
         },
