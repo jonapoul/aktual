@@ -5,6 +5,7 @@ import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.DateRangeType
 import aktual.budget.model.NumberFormatConfig
 import aktual.core.l10n.Strings
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.LocalCurrencyConfig
@@ -152,10 +153,14 @@ internal fun monthStringsMap(): ImmutableMap<Month, String> =
 @Composable
 internal fun rememberMarker(
   markerShape: Shape = RoundedCornerShape(CornerSize(percent = 50)),
+  valueFormatter: DefaultCartesianMarker.ValueFormatter =
+    DefaultCartesianMarker.ValueFormatter.default(),
+  lineCount: Int = 1,
 ): CartesianMarker {
   val label =
     rememberTextComponent(
       style = TextStyle(color = colors.pageText, textAlign = Center),
+      lineCount = lineCount,
       padding = Insets(8.dp, 4.dp),
       minWidth = TextComponent.MinWidth.fixed(40.dp),
     )
@@ -164,7 +169,7 @@ internal fun rememberMarker(
   val guideline = rememberAxisGuidelineComponent()
   return rememberDefaultCartesianMarker(
     label = label,
-    valueFormatter = DefaultCartesianMarker.ValueFormatter.default(),
+    valueFormatter = valueFormatter,
     indicator = { color ->
       LayeredComponent(
         back = ShapeComponent(Fill(color.copy(alpha = 0.15f)), markerShape),
@@ -199,6 +204,21 @@ internal fun rememberMarkerHaptics(compact: Boolean): CartesianMarkerVisibilityL
     }
   }
 }
+
+// Upstream's qualitative colour scale, which wraps around once every colour is used
+internal fun Colors.qualitative(index: Int): Color =
+  listOf(
+      chartQual1,
+      chartQual2,
+      chartQual3,
+      chartQual4,
+      chartQual5,
+      chartQual6,
+      chartQual7,
+      chartQual8,
+      chartQual9,
+    )
+    .let { it[index % it.size] }
 
 private const val MONTHS_PER_YEAR = 12L
 
