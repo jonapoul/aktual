@@ -213,8 +213,6 @@ private class CustomChartProvider :
 private val PREVIEW_START = LocalDate(2025, Month.JANUARY, 1)
 private val PREVIEW_END = LocalDate(2025, Month.JUNE, 30)
 
-internal val PREVIEW_CUSTOM_DATA = previewCustomData(BarGraph, Category, Payment)
-
 // Monthly assets and debts per category, January to June 2025
 private val PREVIEW_AMOUNTS =
   listOf(
@@ -225,6 +223,8 @@ private val PREVIEW_AMOUNTS =
     "Transport" to listOf(0 to -90, 0 to -95, 0 to -110, 0 to -90, 0 to -80, 0 to -120),
     "Holiday" to listOf(0 to 0, 0 to 0, 0 to -650, 0 to 0, 0 to 0, 0 to -2400),
   )
+
+internal val PREVIEW_CUSTOM_DATA = previewCustomData(BarGraph, Category, Payment)
 
 private fun previewCustomData(
   graphType: GraphType,
