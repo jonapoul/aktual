@@ -19,7 +19,11 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.intOrNull
 import logcat.logcat
 
 // From packages/loot-core/src/types/models/dashboard.ts
@@ -87,6 +91,7 @@ data class SpendingReportMeta(
   @SerialName("compareTo") val compareTo: String? = null,
   @SerialName("isLive") val isLive: Boolean? = null,
   @SerialName("mode") val mode: SpendingMode? = null,
+  @SerialName("averageRange") val averageRange: SpendingAverageRange? = null,
 ) : ReportMeta
 
 @Serializable
@@ -258,6 +263,57 @@ enum class SpendingMode {
   @SerialName("budget") Budget,
   @SerialName("average") Average,
   @Fallback Unknown,
+}
+
+// SpendingAverageRange in packages/loot-core/src/types/models/dashboard.ts
+@Immutable
+@Serializable(SpendingAverageRangeSerializer::class)
+sealed interface SpendingAverageRange {
+  data class LastMonths(val months: Int) : SpendingAverageRange
+
+  data object YearToDate : SpendingAverageRange
+
+  data object AllTime : SpendingAverageRange
+
+  companion object {
+    val Default = LastMonths(months = 3)
+    val SupportedMonths = setOf(3, 6, 12)
+  }
+}
+
+// Unknown modes and month counts fall back to the last 3 months, like upstream's
+// normalizeSpendingAverageRange in
+// packages/desktop-client/src/components/reports/spendingAverageRange.ts
+internal object SpendingAverageRangeSerializer : KSerializer<SpendingAverageRange> {
+  private const val LAST_N_MONTHS = "last-n-months"
+  private const val YEAR_TO_DATE = "year-to-date"
+  private const val ALL_TIME = "all-time"
+
+  override val descriptor = JsonObject.serializer().descriptor
+
+  override fun serialize(encoder: Encoder, value: SpendingAverageRange) {
+    val json =
+      when (value) {
+        is LastMonths ->
+          mapOf("mode" to JsonPrimitive(LAST_N_MONTHS), "months" to JsonPrimitive(value.months))
+        YearToDate -> mapOf("mode" to JsonPrimitive(YEAR_TO_DATE))
+        AllTime -> mapOf("mode" to JsonPrimitive(ALL_TIME))
+      }
+    encoder.encodeSerializableValue(JsonObject.serializer(), JsonObject(json))
+  }
+
+  override fun deserialize(decoder: Decoder): SpendingAverageRange {
+    val json = (decoder as JsonDecoder).decodeJsonElement() as? JsonObject
+    val mode = (json?.get("mode") as? JsonPrimitive)?.contentOrNull
+    val months = (json?.get("months") as? JsonPrimitive)?.intOrNull
+    return when (mode) {
+      LAST_N_MONTHS if months in SpendingAverageRange.SupportedMonths ->
+        SpendingAverageRange.LastMonths(checkNotNull(months))
+      YEAR_TO_DATE -> YearToDate
+      ALL_TIME -> AllTime
+      else -> Default
+    }
+  }
 }
 
 @Serializable

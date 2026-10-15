@@ -141,6 +141,34 @@ class ReportMetaSerializationTest {
   }
 
   @Test
+  fun `Spending average range decodes each mode`() {
+    assertThat(averageRange("""{"mode":"last-n-months","months":6}"""))
+      .isEqualTo(SpendingAverageRange.LastMonths(6))
+    assertThat(averageRange("""{"mode":"year-to-date"}""")).isEqualTo(YearToDate)
+    assertThat(averageRange("""{"mode":"all-time"}""")).isEqualTo(AllTime)
+  }
+
+  @Test
+  fun `Unsupported spending average ranges fall back to the last 3 months`() {
+    assertThat(averageRange("""{"mode":"last-n-months","months":5}""")).isEqualTo(Default)
+    assertThat(averageRange("""{"mode":"last-n-months"}""")).isEqualTo(Default)
+    assertThat(averageRange("""{"mode":"next-week"}""")).isEqualTo(Default)
+  }
+
+  @Test
+  fun `Spending meta without an average range decodes`() {
+    val meta = decode<SpendingReportMeta>(Spending, """{"name":"Spending","mode":"average"}""")
+    assertThat(meta.averageRange).isNull()
+  }
+
+  @Test
+  fun `Spending average range round trips`() {
+    val meta = SpendingReportMeta(averageRange = SpendingAverageRange.LastMonths(12))
+    val encoded = json.encodeToJsonElement(SpendingReportMeta.serializer(), meta)
+    assertThat(json.decodeFromJsonElement(SpendingReportMeta.serializer(), encoded)).isEqualTo(meta)
+  }
+
+  @Test
   fun `Age of money meta decodes`() {
     val meta = decode<AgeOfMoneyReportMeta>(AgeOfMoney, """{"name":"AoM","granularity":"weekly"}""")
 
@@ -199,6 +227,9 @@ class ReportMetaSerializationTest {
     val meta = decode<MonteCarloReportMeta>(MonteCarlo, """{"minimumWithdrawal": 100000}""")
     assertThat(meta.toConfig().minimumSpending).isEqualTo(100_000.0)
   }
+
+  private fun averageRange(range: String) =
+    decode<SpendingReportMeta>(Spending, """{"averageRange":$range}""").averageRange
 
   private inline fun <reified T : ReportMeta> decode(type: WidgetType, string: String): T =
     json.decodeFromJsonElement(ReportMeta.serializer(type), json.parseToJsonElement(string)) as T
