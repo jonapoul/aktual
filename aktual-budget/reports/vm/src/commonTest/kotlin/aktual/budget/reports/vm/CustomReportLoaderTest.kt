@@ -17,7 +17,10 @@ import aktual.budget.db.dao.ReportsDao
 import aktual.budget.db.withoutResult
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
+import aktual.budget.model.Condition
 import aktual.budget.model.CustomReportId
+import aktual.budget.model.Field
+import aktual.budget.model.Operator
 import aktual.budget.model.ReportDate
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
@@ -33,6 +36,9 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
 
 class CustomReportLoaderTest {
   @Test
@@ -118,39 +124,8 @@ class CustomReportLoaderTest {
 
   @Test
   fun `Amounts are read from the database`() = runLoaderTest { loader, sync ->
-    sync.row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
-    sync.row(ACCOUNTS, "investing", "name" to "Investing", "offbudget" to true)
-    sync.row(CATEGORY_GROUPS, "spending", "name" to "Spending", "sort_order" to 1L)
-    for ((id, name) in listOf("food" to "Food", "fuel" to "Fuel")) {
-      sync.row(CATEGORIES, id, "name" to name, "cat_group" to "spending", "sort_order" to 1L)
-      sync.row(CATEGORY_MAPPING, id, "transferId" to id)
-    }
-    sync.row(PAYEES, "shop", "name" to "Shop")
-    sync.row(PAYEES, "to-investing", "transfer_acct" to "investing")
-    for (id in listOf("shop", "to-investing")) sync.row(PAYEE_MAPPING, id, "targetId" to id)
-
-    sync.transaction("plain", -1000, category = "food", payee = "shop")
-    sync.transaction("split", -3500, isParent = true)
-    sync.transaction("split-food", -1500, category = "food", parent = "split")
-    sync.transaction("split-fuel", -2000, category = "fuel", parent = "split")
-    sync.transaction("deleted", -5000, category = "food", isDeleted = true)
-    sync.transaction("transfer", -700, payee = "to-investing")
-    sync.transaction("off-budget", -300, category = "food", account = "investing")
-    sync.transaction("income", 900, category = "food")
-    sync.transaction("next-month", -9, category = "food", date = 20260601)
-
-    val report =
-      emptyCustomReport(ID)
-        .copy(
-          name = "Spending",
-          date_static = true,
-          start_date = ReportDate.Date(LocalDate(2026, 5, 1)),
-          end_date = ReportDate.Date(LocalDate(2026, 5, 31)),
-          show_offbudget = true,
-          show_uncategorized = true,
-          show_hidden = true,
-        )
-    insert(report)
+    sync.insertSpending()
+    insert(spendingReport())
 
     loader.custom(CustomReportMeta(ID)).test {
       val data = awaitItem() as CustomData
@@ -165,6 +140,100 @@ class CustomReportLoaderTest {
     }
   }
 
+  @Test
+  fun `Filters keep the transactions matching all conditions`() = runLoaderTest { loader, sync ->
+    sync.insertSpending()
+    val conditions =
+      listOf(
+        condition(Category, OneOf, JsonArray(listOf(JsonPrimitive("food")))),
+        condition(Field.Amount, LessThan, JsonPrimitive(-500)),
+      )
+    insert(spendingReport().copy(conditions = conditions, conditions_op = And))
+
+    loader.custom(CustomReportMeta(ID)).test {
+      val data = awaitItem() as CustomData
+      assertThat(data.groups.map { it.group to it.totals.debts })
+        .containsExactly(CustomGroup.Category(CategoryId("food"), "Food") to Amount(-2500))
+      assertThat(data.totals.assets).isEqualTo(Zero)
+    }
+  }
+
+  @Test
+  fun `Filters keep the transactions matching any condition`() = runLoaderTest { loader, sync ->
+    sync.insertSpending()
+    val conditions =
+      listOf(
+        condition(Payee, Contains, JsonPrimitive("sho")),
+        condition(Transfer, Is, JsonPrimitive(true)),
+      )
+    insert(spendingReport().copy(conditions = conditions, conditions_op = Or))
+
+    loader.custom(CustomReportMeta(ID)).test {
+      val data = awaitItem() as CustomData
+      assertThat(data.groups.map { it.group to it.totals.debts })
+        .containsExactly(
+          CustomGroup.Category(CategoryId("food"), "Food") to Amount(-1000),
+          CustomGroup.Transfers to Amount(-700),
+        )
+    }
+  }
+
+  @Test
+  fun `Saved filter references are ignored`() = runLoaderTest { loader, sync ->
+    sync.insertSpending()
+    val saved = condition(Notes, Is, JsonPrimitive("x")).copy(customName = "Saved")
+    insert(spendingReport().copy(conditions = listOf(saved)))
+
+    loader.custom(CustomReportMeta(ID)).test {
+      val data = awaitItem() as CustomData
+      assertThat(data.groups.map { it.group to it.totals.debts })
+        .containsExactly(
+          CustomGroup.Category(CategoryId("food"), "Food") to Amount(-2500),
+          CustomGroup.Category(CategoryId("fuel"), "Fuel") to Amount(-2000),
+          CustomGroup.Transfers to Amount(-700),
+          CustomGroup.OffBudget to Amount(-300),
+        )
+    }
+  }
+
+  private suspend fun BudgetSyncController.insertSpending() {
+    row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
+    row(ACCOUNTS, "investing", "name" to "Investing", "offbudget" to true)
+    row(CATEGORY_GROUPS, "spending", "name" to "Spending", "sort_order" to 1L)
+    for ((id, name) in listOf("food" to "Food", "fuel" to "Fuel")) {
+      row(CATEGORIES, id, "name" to name, "cat_group" to "spending", "sort_order" to 1L)
+      row(CATEGORY_MAPPING, id, "transferId" to id)
+    }
+    row(PAYEES, "shop", "name" to "Shop")
+    row(PAYEES, "to-investing", "transfer_acct" to "investing")
+    for (id in listOf("shop", "to-investing")) row(PAYEE_MAPPING, id, "targetId" to id)
+
+    transaction("plain", -1000, category = "food", payee = "shop")
+    transaction("split", -3500, isParent = true)
+    transaction("split-food", -1500, category = "food", parent = "split")
+    transaction("split-fuel", -2000, category = "fuel", parent = "split")
+    transaction("deleted", -5000, category = "food", isDeleted = true)
+    transaction("transfer", -700, payee = "to-investing", transfer = "transfer-in")
+    transaction("off-budget", -300, category = "food", account = "investing")
+    transaction("income", 900, category = "food")
+    transaction("next-month", -9, category = "food", date = 20260601)
+  }
+
+  private fun spendingReport() =
+    emptyCustomReport(ID)
+      .copy(
+        name = "Spending",
+        date_static = true,
+        start_date = ReportDate.Date(LocalDate(2026, 5, 1)),
+        end_date = ReportDate.Date(LocalDate(2026, 5, 31)),
+        show_offbudget = true,
+        show_uncategorized = true,
+        show_hidden = true,
+      )
+
+  private fun condition(field: Field, operator: Operator, value: JsonElement) =
+    Condition(field = field, operator = operator, value = value)
+
   private suspend fun BudgetSyncController.transaction(
     id: String,
     amount: Long,
@@ -174,6 +243,7 @@ class CustomReportLoaderTest {
     date: Long = 20260510,
     isParent: Boolean = false,
     parent: String? = null,
+    transfer: String? = null,
     isDeleted: Boolean = false,
   ) =
     row(
@@ -187,6 +257,7 @@ class CustomReportLoaderTest {
       "isParent" to isParent,
       "isChild" to (parent != null),
       "parent_id" to parent,
+      "transferred_id" to transfer,
       "tombstone" to isDeleted,
     )
 

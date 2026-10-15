@@ -6,6 +6,7 @@ import aktual.budget.db.CustomReportAmounts
 import aktual.budget.db.CustomReportCategories
 import aktual.budget.db.CustomReportCategoryGroups
 import aktual.budget.db.CustomReportPayees
+import aktual.budget.db.CustomReportTransactions
 import aktual.budget.db.CustomReports
 import aktual.budget.db.withResult
 import aktual.budget.model.CustomReportId
@@ -55,6 +56,17 @@ class CustomReportsDao(database: BudgetDatabase, private val contexts: Coroutine
   ): Flow<List<CustomReportAmounts>> =
     queries
       .customReportAmounts(divisor, start, end)
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
+
+  fun observeTransactions(
+    start: LocalDate,
+    end: LocalDate,
+    divisor: Long,
+  ): Flow<List<CustomReportTransactions>> =
+    queries
+      .customReportTransactions(divisor, start, end)
       .asFlow()
       .mapToList(contexts.default)
       .distinctUntilChanged()

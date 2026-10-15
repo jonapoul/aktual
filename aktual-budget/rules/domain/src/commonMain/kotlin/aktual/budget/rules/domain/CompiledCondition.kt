@@ -36,7 +36,7 @@ private constructor(
   val field: RuleField,
   val op: Operator,
   val value: ConditionValue,
-  private val options: ConditionOptions?,
+  val options: ConditionOptions?,
 ) {
   // Matches compiles the pattern on every eval upstream and treats an invalid one as no match
   private val regex: Regex? by lazy {
@@ -240,7 +240,7 @@ private constructor(
 
   companion object {
     private val APPROX_DAYS = DatePeriod(days = 2)
-    private val FILTER_TAG = Regex("""#*([^#\s]+)""")
+    internal val FILTER_TAG = Regex("""#*([^#\s]+)""")
     private val RecurJson = Json { ignoreUnknownKeys = true }
     private val ID_MAPPED_OPS = setOf<Operator>(Is, IsNot, OneOf, NotOneOf)
     private val NON_NULLABLE_TYPES = setOf(FieldType.Date, FieldType.Number, FieldType.Boolean)
@@ -420,7 +420,7 @@ private constructor(
 
     // getApproxNumberThreshold in packages/loot-core/src/shared/rules.ts
     @Suppress("MagicNumber")
-    private fun approxNumberThreshold(number: Double): Double =
+    internal fun approxNumberThreshold(number: Double): Double =
       jsRound(abs(number) * 0.075).toDouble()
   }
 }

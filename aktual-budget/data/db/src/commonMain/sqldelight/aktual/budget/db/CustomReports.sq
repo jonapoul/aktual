@@ -75,6 +75,39 @@ LEFT JOIN accounts ta ON ta.id = p.transfer_acct
 WHERE t.is_parent = 0 AND t.amount != 0 AND t.date >= :start AND t.date <= :end
 GROUP BY interval_key, t.account, p.id, c.id, ta.id;
 
+-- The rows customReportAmounts sums, for reports whose filter conditions are matched in memory. Holds
+-- every field a filter can match, plus the names that text conditions on ids match against
+customReportTransactions:
+SELECT
+  CAST(t.date / CAST(:divisor AS INTEGER) AS INTEGER) AS interval_key,
+  t.date,
+  t.amount,
+  t.account,
+  a.name AS account_name,
+  a.offbudget AS off_budget,
+  p.id AS payee,
+  p.name AS payee_name,
+  t.imported_payee,
+  c.id AS category,
+  c.name AS category_name,
+  c.hidden AS category_hidden,
+  g.id AS category_group,
+  g.name AS category_group_name,
+  g.hidden AS category_group_hidden,
+  t.notes,
+  t.cleared,
+  t.reconciled,
+  t.transfer_id,
+  t.is_parent,
+  ta.id AS transfer_account
+FROM v_transactions_internal_alive t
+LEFT JOIN accounts a ON a.id = t.account
+LEFT JOIN categories c ON c.id = t.category
+LEFT JOIN category_groups g ON g.id = c.cat_group
+LEFT JOIN payees p ON p.id = t.payee
+LEFT JOIN accounts ta ON ta.id = p.transfer_acct
+WHERE t.is_parent = 0 AND t.amount != 0 AND t.date >= :start AND t.date <= :end;
+
 -- packages/loot-core/src/server/db/index.ts getCategoriesGrouped(), ordered as
 -- packages/desktop-client/src/components/reports/ReportOptions.ts categoryLists() sorts the flat list
 customReportCategories:
