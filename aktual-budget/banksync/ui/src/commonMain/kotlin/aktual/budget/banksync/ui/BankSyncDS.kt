@@ -28,4 +28,14 @@ internal object BankSyncDS {
   val settingsFieldSpacing = 12.dp
   val settingsLabelSpacing = 6.dp
   val settingsTogglePadding = PaddingValues(6.dp)
+
+  val shimmerToggleHeight = 40.dp
+  val shimmerGroupPadding = 11.dp
+  val shimmerIconSize = 30.dp
+  val shimmerDropDownHeight = 48.dp
+  val shimmerSwitchWidth = 52.dp
+  val shimmerSwitchHeight = 32.dp
+  const val SHIMMER_ACCOUNT_ITEMS = 5
+  const val SHIMMER_MAPPED_FIELDS = 3
+  const val SHIMMER_OPTIONS = 5
 }

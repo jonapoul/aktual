@@ -5,12 +5,15 @@ import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
@@ -24,7 +27,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -34,6 +39,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -65,6 +72,35 @@ internal fun TagItem(
   }
 }
 
+/** Keep in sync with [TagItemRow] */
+@Composable
+internal fun ShimmerTagItem(modifier: Modifier = Modifier) {
+  Column(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .clip(RowShape)
+        .background(colors.tableBackground, RowShape)
+        .border(Hairline, colors.tableBorder, RowShape)
+        .padding(ListTagsDS.itemPadding)
+        .shimmer(rememberShimmer(Window)),
+    verticalArrangement = Arrangement.spacedBy(ListTagsDS.itemContentSpacing),
+  ) {
+    Box(
+      modifier =
+        Modifier.size(width = ListTagsDS.shimmerChipWidth, height = ListTagsDS.shimmerChipHeight)
+          .background(colors.pageText, ListTagsDS.chipShape),
+    )
+    Box(
+      modifier =
+        Modifier.fillMaxWidth(fraction = 0.7f)
+          .height(ListTagsDS.shimmerTextHeight)
+          .background(colors.pageText, CardShape),
+    )
+  }
+}
+
+/** Keep in sync with [ShimmerTagItem] */
 @Composable
 private fun TagItemRow(
   tag: TagItem,
@@ -153,3 +189,8 @@ private fun PreviewTagItem(
   PreviewWithColoredParams(params) {
     TagItem(tag = this, isOpen = false, onOpenChange = {}, onAction = {})
   }
+
+@Preview
+@Composable
+private fun PreviewShimmerTagItem(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) { ShimmerTagItem() }

@@ -11,4 +11,15 @@ internal object EditScheduleDS {
   val sheetSpacing = 16.dp
   val badgeSpacing = 10.dp
   val hairline = 1.dp
+
+  val shimmerHeaderHeight = 32.dp
+  val shimmerBadgeWidth = 56.dp
+  val shimmerBadgeHeight = 24.dp
+  val shimmerSentenceHeight = 20.dp
+  val shimmerSentenceSpacing = 12.dp
+  val shimmerTextHeight = 15.dp
+  val shimmerLabelWidth = 80.dp
+  val shimmerDayWidth = 32.dp
+  val shimmerDateWidth = 96.dp
+  const val SHIMMER_UPCOMING_ROWS = 3
 }

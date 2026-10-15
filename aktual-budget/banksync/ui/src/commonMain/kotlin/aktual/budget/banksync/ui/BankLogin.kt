@@ -75,7 +75,9 @@ internal fun LazyListScope.bankLogin(
 
   when (val banks = login.banks) {
     Loading -> {
-      items(count = 5, key = { "bank-shimmer-$it" }) { ShimmerBankSyncAccountItem() }
+      items(count = BankSyncDS.SHIMMER_ACCOUNT_ITEMS, key = { "bank-shimmer-$it" }) {
+        ShimmerBankSyncAccountItem()
+      }
     }
     is Failure -> {
       item(key = "login-banks-failure") {
