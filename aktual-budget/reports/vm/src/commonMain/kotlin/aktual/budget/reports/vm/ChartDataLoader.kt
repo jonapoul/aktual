@@ -18,6 +18,7 @@ import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.PayeeId
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.WidgetType
+import aktual.budget.rules.domain.TransactionFilter
 import aktual.core.Calendar
 import aktual.core.model.Percent
 import alakazam.kotlin.CoroutineContexts
@@ -86,7 +87,6 @@ internal class ChartDataLoader(
         val reason: UnsupportedReason? =
           when {
             config == null -> InvalidMeta
-            config.conditions.hasFilters() -> Filters
             config.balanceType == Budgeted -> CustomBudgeted
             else -> null
           }
@@ -121,8 +121,18 @@ internal class ChartDataLoader(
     val accounts =
       if (config.groupBy == Account) customReports.observeAccounts() else flowOf(emptyList())
 
+    val filter = TransactionFilter.compile(config.conditions, config.conditionsOp)
+    val amounts =
+      if (filter.isEmpty) {
+        customReports.observeAmounts(query.start, query.end, query.divisor)
+      } else {
+        customReports.observeTransactions(query.start, query.end, query.divisor).map { rows ->
+          filteredAmounts(rows, filter)
+        }
+      }
+
     return combine(
-        customReports.observeAmounts(query.start, query.end, query.divisor),
+        amounts,
         customReports.observeCategories(),
         customReports.observeCategoryGroups(),
         payees,
