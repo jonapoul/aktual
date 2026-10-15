@@ -29,4 +29,6 @@
   <string name="settings_transactions_alternate_rows_unsupported">Your current theme doesn't define an alternate row colour, so this has no effect</string>
   <string name="settings_theme_inspect_sort_by_color">Sort by colour</string>
   <string name="settings_theme_inspect_search_prompt">Enter some text to search property names and colours</string>
+  <string name="reports_custom_uncategorised">Uncategorised</string>
+  <string name="reports_custom_uncategorised_and_off_budget">Uncategorised &amp; Off budget</string>
 </resources>

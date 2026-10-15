@@ -190,5 +190,11 @@
   <string name="reports_text_discard_cancel">Keep editing</string>
   <string name="reports_text_discard_confirm">Discard</string>
 
-  <string name="reports_custom_noop">Custom reports aren't supported yet!</string>
+  <string name="reports_custom_graph_unsupported">This graph type isn't supported yet</string>
+  <string name="reports_custom_empty">No transactions in this period</string>
+  <string name="reports_custom_total">Total</string>
+  <string name="reports_custom_uncategorised">Uncategorized</string>
+  <string name="reports_custom_transfers">Transfers</string>
+  <string name="reports_custom_off_budget">Off budget</string>
+  <string name="reports_custom_uncategorised_and_off_budget">Uncategorized &amp; Off budget</string>
 </resources>
