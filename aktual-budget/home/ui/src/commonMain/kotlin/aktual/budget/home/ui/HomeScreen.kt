@@ -123,7 +123,7 @@ private fun HomeScaffold(
             isEditing = isEditing,
             onAction = onAction,
           ) { card ->
-            HomeCardFor(card = card, state = state, onAction = onAction)
+            HomeCardFor(card = card, state = state, isEditing = isEditing, onAction = onAction)
           }
         }
       }
@@ -151,11 +151,16 @@ private fun HomeScaffold(
 }
 
 @Composable
-private fun HomeCardFor(card: HomeCardType, state: HomeState, onAction: HomeActionHandler) =
+private fun HomeCardFor(
+  card: HomeCardType,
+  state: HomeState,
+  isEditing: Boolean,
+  onAction: HomeActionHandler,
+) =
   when (card) {
     ThisMonth -> ThisMonthCard(state = state.thisMonth, onAction = onAction)
-    Attention -> AttentionCard(state = state.attention, onAction = onAction)
-    Upcoming -> UpcomingCard(state = state.upcoming, onAction = onAction)
+    Attention -> AttentionCard(state = state.attention, onAction = onAction, isEditing = isEditing)
+    Upcoming -> UpcomingCard(state = state.upcoming, onAction = onAction, isEditing = isEditing)
     Accounts -> AccountsCard(state = state.accounts, onAction = onAction)
   }
 
@@ -247,7 +252,7 @@ private fun CardGrid(
       isEditing = isEditing,
       onAction = onAction,
     ) { card ->
-      HomeCardFor(card = card, state = state, onAction = onAction)
+      HomeCardFor(card = card, state = state, isEditing = isEditing, onAction = onAction)
     }
   }
 }

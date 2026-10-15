@@ -63,6 +63,19 @@ internal fun HomeCard(
   )
 }
 
+// Stands in while reordering for a card that has nothing to show, so it's clear what's being moved
+@Composable
+internal fun HiddenCard(message: String, modifier: Modifier = Modifier) {
+  HomeCard(modifier = modifier) {
+    Text(
+      modifier = Modifier.padding(horizontal = CardPadding),
+      text = message,
+      style = typography.bodyMedium,
+      color = colors.pageTextSubdued,
+    )
+  }
+}
+
 // Adds a hover highlight on top of the usual ripple, for desktop and other pointer devices
 @Composable
 internal fun Modifier.hoverClickable(role: Role? = null, onClick: () -> Unit): Modifier {

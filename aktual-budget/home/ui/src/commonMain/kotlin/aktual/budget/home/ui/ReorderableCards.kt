@@ -47,7 +47,7 @@ internal fun ReorderableCards(
       cards.fastForEachIndexed { index, type ->
         key(type) {
           Column(
-            modifier = if (isEditing) Modifier.animateBounds(this@LookaheadScope) else Modifier
+            modifier = if (isEditing) Modifier.animateBounds(this@LookaheadScope) else Modifier,
           ) {
             AnimatedVisibility(
               visible = isEditing,
