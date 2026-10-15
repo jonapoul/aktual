@@ -7,6 +7,7 @@ import aktual.budget.model.UpcomingLength
 import aktual.budget.schedules.domain.Schedule
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 
@@ -17,6 +18,7 @@ data class HomeState(
   val attention: AttentionCardState = Loading,
   val upcoming: UpcomingCardState = Loading,
   val accounts: AccountsCardState = Loading,
+  val cards: ImmutableList<HomeCardType> = HomeCardType.entries.toImmutableList(),
 ) {
   // Nothing to show on any card, as in a brand new budget. A failed month still needs its card
   val isEmpty: Boolean

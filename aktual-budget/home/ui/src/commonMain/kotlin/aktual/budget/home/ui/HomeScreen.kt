@@ -1,8 +1,12 @@
 package aktual.budget.home.ui
 
 import aktual.budget.home.vm.AccountsCardState
+import aktual.budget.home.vm.HomeCardType
 import aktual.budget.home.vm.HomeState
 import aktual.budget.home.vm.HomeViewModel
+import aktual.core.icons.material.Check
+import aktual.core.icons.material.Edit
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.nav.BankSyncNavigator
 import aktual.core.nav.BankSyncSettingsNavigator
@@ -11,6 +15,7 @@ import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.nav.ListSchedulesNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -51,11 +56,16 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun HomeScreen(
@@ -81,6 +91,7 @@ internal fun HomeScreen(
         is OpenSchedule -> editSchedule(action.id)
         OpenSchedules -> schedules()
         Retry -> viewModel.retry()
+        is SwapCards -> viewModel.swap(action.card, action.other)
       }
     },
     modifier = modifier,
@@ -94,17 +105,25 @@ private fun HomeScaffold(
   state: HomeState,
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
+  initialEditing: Boolean = false,
 ) {
+  var isEditing by rememberSaveable { mutableStateOf(initialEditing) }
+  val onToggleEditing = { isEditing = !isEditing }
+
   BoxWithConstraints(modifier = modifier.fillMaxSize()) {
     if (maxWidth < SidePanelMinWidth || state.isEmpty) {
-      HomeContent(state = state) {
+      HomeContent(state = state, isEditing = isEditing, onToggleEditing = onToggleEditing) {
         if (state.isEmpty) {
           OnboardingCard(onAction = onAction)
         } else {
-          ThisMonthCard(state = state.thisMonth, onAction = onAction)
-          AttentionCard(state = state.attention, onAction = onAction)
-          UpcomingCard(state = state.upcoming, onAction = onAction)
-          AccountsCard(state = state.accounts, onAction = onAction)
+          ReorderableCards(
+            cards = state.cards,
+            columns = 1,
+            isEditing = isEditing,
+            onAction = onAction,
+          ) { card ->
+            HomeCardFor(card = card, state = state, onAction = onAction)
+          }
         }
       }
     } else {
@@ -117,8 +136,13 @@ private fun HomeScaffold(
 
         VerticalDivider(color = colors.tableBorder)
 
-        HomeContent(state = state, modifier = Modifier.weight(1f)) {
-          CardGrid(state = state, onAction = onAction)
+        HomeContent(
+          state = state,
+          isEditing = isEditing,
+          onToggleEditing = onToggleEditing,
+          modifier = Modifier.weight(1f),
+        ) {
+          CardGrid(state = state, isEditing = isEditing, onAction = onAction)
         }
       }
     }
@@ -126,8 +150,19 @@ private fun HomeScaffold(
 }
 
 @Composable
+private fun HomeCardFor(card: HomeCardType, state: HomeState, onAction: HomeActionHandler) =
+  when (card) {
+    ThisMonth -> ThisMonthCard(state = state.thisMonth, onAction = onAction)
+    Attention -> AttentionCard(state = state.attention, onAction = onAction)
+    Upcoming -> UpcomingCard(state = state.upcoming, onAction = onAction)
+    Accounts -> AccountsCard(state = state.accounts, onAction = onAction)
+  }
+
+@Composable
 private fun HomeContent(
   state: HomeState,
+  isEditing: Boolean,
+  onToggleEditing: () -> Unit,
   modifier: Modifier = Modifier,
   content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -142,6 +177,15 @@ private fun HomeContent(
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavDrawerIconButton() },
         title = { HomeTitle(budgetName = state.budgetName) },
+        actions = {
+          if (!state.isEmpty) {
+            BareIconButton(
+              imageVector = if (isEditing) MaterialIcons.Check else MaterialIcons.Edit,
+              contentDescription = if (isEditing) Strings.homeReorderDone else Strings.homeReorder,
+              onClick = onToggleEditing,
+            )
+          }
+        },
       )
     },
   ) { innerPadding ->
@@ -183,36 +227,24 @@ private fun AccountsPanel(
   }
 }
 
-// Two columns once there's room for both, capped so the cards don't stretch across a wide monitor
+// Two columns once there's room for both, capped so the cards don't stretch across a wide monitor.
+// Accounts has its own panel here
 @Composable
 private fun CardGrid(
   state: HomeState,
+  isEditing: Boolean,
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
 ) {
+  val cards = remember(state.cards) { state.cards.filter { it != Accounts }.toImmutableList() }
   BoxWithConstraints(modifier = modifier.widthIn(max = CardGridMaxWidth)) {
-    if (maxWidth < TwoColumnMinWidth) {
-      Column(verticalArrangement = Arrangement.spacedBy(Dimens.VeryLarge)) {
-        ThisMonthCard(state = state.thisMonth, onAction = onAction)
-        AttentionCard(state = state.attention, onAction = onAction)
-        UpcomingCard(state = state.upcoming, onAction = onAction)
-      }
-    } else {
-      Row(horizontalArrangement = Arrangement.spacedBy(Dimens.VeryLarge)) {
-        Column(
-          modifier = Modifier.weight(1f),
-          verticalArrangement = Arrangement.spacedBy(Dimens.VeryLarge),
-        ) {
-          ThisMonthCard(state = state.thisMonth, onAction = onAction)
-          AttentionCard(state = state.attention, onAction = onAction)
-        }
-
-        UpcomingCard(
-          modifier = Modifier.weight(1f),
-          state = state.upcoming,
-          onAction = onAction,
-        )
-      }
+    ReorderableCards(
+      cards = cards,
+      columns = if (maxWidth < TwoColumnMinWidth) 1 else 2,
+      isEditing = isEditing,
+      onAction = onAction,
+    ) { card ->
+      HomeCardFor(card = card, state = state, onAction = onAction)
     }
   }
 }
@@ -298,6 +330,24 @@ private fun PreviewDesktopHomeScaffold(
 ) =
   PreviewWithColoredParams(params) {
     HomeScaffold(state = this, onAction = {})
+  }
+
+@PortraitPreview
+@Composable
+private fun PreviewEditingHomeScaffold(
+  @PreviewParameter(WideHomeStateProvider::class) params: ColoredParams<HomeState>,
+) =
+  PreviewWithColoredParams(params) {
+    HomeScaffold(state = this, onAction = {}, initialEditing = true)
+  }
+
+@DesktopPreview
+@Composable
+private fun PreviewEditingDesktopHomeScaffold(
+  @PreviewParameter(WideHomeStateProvider::class) params: ColoredParams<HomeState>,
+) =
+  PreviewWithColoredParams(params) {
+    HomeScaffold(state = this, onAction = {}, initialEditing = true)
   }
 
 @PortraitPreview

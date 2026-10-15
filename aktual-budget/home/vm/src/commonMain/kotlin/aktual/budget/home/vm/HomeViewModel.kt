@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import logcat.logcat
 
 @Stable
@@ -28,7 +29,7 @@ import logcat.logcat
 @ContributesIntoMap(BudgetScope::class)
 class HomeViewModel
 internal constructor(
-  localPreferences: BudgetLocalPreferences,
+  private val localPreferences: BudgetLocalPreferences,
   thisMonthLoader: ThisMonthLoader,
   needsAttentionLoader: NeedsAttentionLoader,
   accountsSummaryLoader: AccountsSummaryLoader,
@@ -41,6 +42,10 @@ internal constructor(
       val budgetNameFlow = remember { localPreferences.observe(DbMetadata.BudgetName) }
       val budgetName by
         budgetNameFlow.collectAsState(initial = localPreferences[DbMetadata.BudgetName])
+
+      val cardOrderFlow = remember { localPreferences.observe(DbMetadata.HomeCardOrder) }
+      val cardOrder by
+        cardOrderFlow.collectAsState(initial = localPreferences[DbMetadata.HomeCardOrder])
 
       val thisMonthFlow =
         remember(retries) {
@@ -75,12 +80,20 @@ internal constructor(
         attention = attention,
         upcoming = upcoming,
         accounts = accounts,
+        cards = remember(cardOrder) { homeCardOrder(cardOrder) },
       )
     }
 
   // Restarts every source. Cards that were fine keep showing what they had
   fun retry() {
     retries++
+  }
+
+  fun swap(card: HomeCardType, other: HomeCardType) {
+    localPreferences.update { meta ->
+      val order = homeCardOrder(meta[DbMetadata.HomeCardOrder]).swapping(card, other)
+      meta.set(DbMetadata.HomeCardOrder, order.map { it.name })
+    }
   }
 
   // A failing source only takes down its own card

@@ -38,6 +38,11 @@
     <fields>;
 }
 
+# Same for the home card order, persisted by HomeCardType.name
+-keepclassmembers enum aktual.budget.home.vm.HomeCardType {
+    <fields>;
+}
+
 # https://www.guardsquare.com/manual/configuration/examples#annotations
 # Annotated interfaces (including methods which are also kept in implementing classes)
 -keepattributes Annotation

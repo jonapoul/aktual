@@ -2,6 +2,12 @@
   <string name="home_title">Home</string>
   <string name="home_retry">Retry</string>
   <string name="home_amount_negative">minus %1$s</string>
+  <string name="home_reorder">Reorder cards</string>
+  <string name="home_reorder_done">Done reordering</string>
+  <string name="home_reorder_up">Move %1$s up</string>
+  <string name="home_reorder_down">Move %1$s down</string>
+  <string name="home_card_this_month">This month</string>
+  <string name="home_card_upcoming">Upcoming</string>
   <string name="home_onboarding_title">Welcome to your budget</string>
   <string name="home_onboarding_message">Add an account to get started. Your budget, upcoming schedules and balances will show up here.</string>
   <plurals name="home_this_month_days_left">
