@@ -1,5 +1,7 @@
 package aktual.prefs.ui.inspect
 
+import aktual.core.icons.material.Delete
+import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.OpenInNew
@@ -9,6 +11,7 @@ import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.InspectThemeNavigator
 import aktual.core.nav.SearchThemeNavigator
 import aktual.core.theme.DarkColors
 import aktual.core.theme.LightColors
@@ -34,6 +37,8 @@ import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.rememberHighlighted
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.prefs.vm.inspect.InspectThemeEvent.Deleted
+import aktual.prefs.vm.inspect.InspectThemeEvent.Duplicated
 import aktual.prefs.vm.inspect.InspectThemeState
 import aktual.prefs.vm.inspect.InspectThemeState.Loaded
 import aktual.prefs.vm.inspect.InspectThemeState.Loading
@@ -41,9 +46,11 @@ import aktual.prefs.vm.inspect.InspectThemeState.NotFound
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.inspect.PropertySorting
 import aktual.prefs.vm.inspect.ThemeProperty
+import aktual.prefs.vm.inspect.ThemeSource
 import aktual.prefs.vm.inspect.toHexString
 import aktual.prefs.vm.theme.properties
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.layout.Box
@@ -66,6 +73,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,17 +92,29 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 fun InspectThemeScreen(
   back: BackNavigator,
   toSearch: SearchThemeNavigator,
+  toInspectTheme: InspectThemeNavigator,
   themeId: ThemeId,
   viewModel: InspectThemeViewModel = metroViewModel(themeId),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val sorting by viewModel.sorting.collectAsStateWithLifecycle()
   var showSortSheet by remember { mutableStateOf(false) }
+  var dialog by remember { mutableStateOf<InspectDialog?>(null) }
+
+  LaunchedEffect(viewModel) {
+    viewModel.events.collect { event ->
+      when (event) {
+        is Duplicated -> toInspectTheme(event.id)
+        Deleted -> back()
+      }
+    }
+  }
 
   InspectThemeScaffold(
     state = state,
     sorting = sorting,
     showSortSheet = showSortSheet,
+    dialog = dialog,
     onAction = { action ->
       when (action) {
         NavBack -> back()
@@ -103,9 +124,25 @@ fun InspectThemeScreen(
         ShowSortSheet -> showSortSheet = true
         DismissSortSheet -> showSortSheet = false
         is SetSorting -> viewModel.setSorting(action.sorting)
+        ShowDuplicateDialog -> dialog = Duplicate
+        ShowDeleteDialog -> dialog = InspectDialog.Delete
+        is EditProperty -> dialog = InspectDialog.Edit(action.property)
+        DismissDialog -> dialog = null
+        is ConfirmDuplicate -> viewModel.duplicate(action.name)
+        ConfirmDelete -> viewModel.delete()
+        is SetColor -> viewModel.setColor(action.name, action.color)
       }
     },
   )
+}
+
+@Immutable
+private sealed interface InspectDialog {
+  data object Duplicate : InspectDialog
+
+  data object Delete : InspectDialog
+
+  @JvmInline value class Edit(val property: ThemeProperty) : InspectDialog
 }
 
 @Composable
@@ -120,6 +157,7 @@ private fun InspectThemeScaffold(
   state: InspectThemeState,
   sorting: PropertySorting,
   showSortSheet: Boolean,
+  dialog: InspectDialog?,
   onAction: InspectThemeActionHandler,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -130,7 +168,7 @@ private fun InspectThemeScaffold(
     when (state) {
       is Loading -> Strings.settingsThemeInspectLoading
       is NotFound -> Strings.settingsThemeInspectNotFound
-      is Loaded -> state.id.value
+      is Loaded -> state.displayName
     }
 
   Scaffold(
@@ -147,7 +185,7 @@ private fun InspectThemeScaffold(
               contentDescription = Strings.settingsThemeInspectSearch,
               onClick = { onAction(OpenSearch) },
             )
-            MoreMenu(state.isCustom, onAction)
+            MoreMenu(state.source, onAction)
           }
         },
       )
@@ -165,10 +203,56 @@ private fun InspectThemeScaffold(
   if (state is Loaded && showSortSheet) {
     PropertySortingBottomSheet(sorting, onAction, sheetState)
   }
+
+  if (state is Loaded) {
+    InspectDialogs(state, dialog, onAction)
+  }
+}
+
+private val Loaded.displayName: String
+  get() = name ?: id.value
+
+@Composable
+private fun InspectDialogs(
+  state: Loaded,
+  dialog: InspectDialog?,
+  onAction: InspectThemeActionHandler,
+) {
+  val onDismiss = { onAction(DismissDialog) }
+  // Each dialog closes itself before passing on its result
+  fun confirm(action: InspectThemeAction) {
+    onAction(DismissDialog)
+    onAction(action)
+  }
+
+  when (dialog) {
+    Duplicate ->
+      DuplicateThemeDialog(
+        themeName = state.displayName,
+        onConfirm = { confirm(ConfirmDuplicate(it)) },
+        onDismiss = onDismiss,
+      )
+
+    InspectDialog.Delete ->
+      DeleteThemeDialog(
+        themeName = state.displayName,
+        onConfirm = { confirm(ConfirmDelete) },
+        onDismiss = onDismiss,
+      )
+
+    is InspectDialog.Edit ->
+      EditPropertyDialog(
+        property = dialog.property,
+        onConfirm = { confirm(SetColor(dialog.property.name, it)) },
+        onDismiss = onDismiss,
+      )
+
+    null -> Unit
+  }
 }
 
 @Composable
-private fun MoreMenu(isCustom: Boolean, onAction: InspectThemeActionHandler) {
+private fun MoreMenu(source: ThemeSource, onAction: InspectThemeActionHandler) {
   var showMenu by remember { mutableStateOf(false) }
 
   BareIconButton(
@@ -188,7 +272,17 @@ private fun MoreMenu(isCustom: Boolean, onAction: InspectThemeActionHandler) {
       leadingIcon = { Icon(MaterialIcons.Sort, contentDescription = sortText) },
     )
 
-    if (isCustom) {
+    val duplicateText = Strings.settingsThemeInspectDuplicate
+    AktualDropdownMenuItem(
+      text = { Text(duplicateText) },
+      onClick = {
+        showMenu = false
+        onAction(ShowDuplicateDialog)
+      },
+      leadingIcon = { Icon(MaterialIcons.Edit, contentDescription = duplicateText) },
+    )
+
+    if (source == Downloaded) {
       val repoText = Strings.settingsThemeInspectOpenRepo
       AktualDropdownMenuItem(
         text = { Text(repoText) },
@@ -197,6 +291,18 @@ private fun MoreMenu(isCustom: Boolean, onAction: InspectThemeActionHandler) {
           onAction(OpenRepo)
         },
         leadingIcon = { Icon(MaterialIcons.OpenInNew, contentDescription = repoText) },
+      )
+    }
+
+    if (source == Local) {
+      val deleteText = Strings.settingsThemeInspectDelete
+      AktualDropdownMenuItem(
+        text = { Text(deleteText) },
+        onClick = {
+          showMenu = false
+          onAction(ShowDeleteDialog)
+        },
+        leadingIcon = { Icon(MaterialIcons.Delete, contentDescription = deleteText) },
       )
     }
   }
@@ -239,8 +345,24 @@ private fun InspectThemeContent(
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(2.dp),
       ) {
+        val isEditable = state.source == Local
+        if (isEditable) {
+          item {
+            Text(
+              modifier = Modifier.padding(bottom = Dimens.Medium),
+              text = Strings.settingsThemeInspectEditHint,
+              style = typography.bodySmall,
+              color = colors.pageTextSubdued,
+            )
+          }
+        }
+
         items(state.properties, key = { it.name }) { property ->
-          ThemePropertyRow(property, modifier = Modifier.animateItem())
+          ThemePropertyRow(
+            property = property,
+            modifier = Modifier.animateItem(),
+            onClick = { onAction(EditProperty(property)) }.takeIf { isEditable },
+          )
         }
 
         item { BottomSpacing() }
@@ -254,9 +376,16 @@ internal fun ThemePropertyRow(
   property: ThemeProperty,
   modifier: Modifier = Modifier,
   query: String = "",
+  onClick: (() -> Unit)? = null,
 ) {
   Row(
-    modifier = modifier.fillMaxWidth().height(Min).background(property.color).padding(4.dp),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .height(Min)
+        .background(property.color)
+        .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+        .padding(4.dp),
     horizontalArrangement = SpaceBetween,
     verticalAlignment = CenterVertically,
   ) {
@@ -286,14 +415,20 @@ private fun PreviewInspectColors(
   @PreviewParameter(InspectThemePreviewProvider::class) params: ColoredParams<InspectThemeState>,
 ) =
   PreviewWithColoredParams(params) {
-    InspectThemeScaffold(state = this, sorting = Default, showSortSheet = false, onAction = {})
+    InspectThemeScaffold(
+      state = this,
+      sorting = Default,
+      showSortSheet = false,
+      dialog = null,
+      onAction = {},
+    )
   }
 
 private class InspectThemePreviewProvider :
   ColoredParameterProvider<InspectThemeState>(
     NotFound(id = ThemeId("username/repo")),
     Loading,
-    Loaded(LightColors.id, false, LightColors.properties()),
-    Loaded(DarkColors.id, false, DarkColors.properties()),
-    Loaded(MidnightColors.id, true, MidnightColors.properties()),
+    Loaded(LightColors.id, null, BuiltIn, LightColors.properties()),
+    Loaded(DarkColors.id, "Dark (copy)", Local, DarkColors.properties()),
+    Loaded(MidnightColors.id, "Midnight", Downloaded, MidnightColors.properties()),
   )

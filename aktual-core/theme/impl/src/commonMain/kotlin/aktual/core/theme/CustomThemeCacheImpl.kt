@@ -5,6 +5,10 @@ import aktual.di.AppScope
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.SingleIn
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
@@ -26,8 +30,13 @@ class CustomThemeCacheImpl(
   private val themesDir = appDirectory.get() / "themes"
   private val summariesFile = themesDir / "summaries.json"
 
+  // Kept outside themesDir so clearing the cache doesn't wipe them
+  private val localThemesDir = appDirectory.get() / "local-themes"
+  private val localThemesVersion = MutableStateFlow(0)
+
   init {
     fileSystem.createDirectory(themesDir)
+    fileSystem.createDirectory(localThemesDir)
   }
 
   private val Path.isDirectory
@@ -48,7 +57,7 @@ class CustomThemeCacheImpl(
             .map { repoFile ->
               CustomThemeRepo(
                 userName = userDir.name,
-                repoName = repoFile.name.removeSuffix(".json"),
+                repoName = repoFile.name.removeSuffix(JSON_SUFFIX),
               )
             }
         }
@@ -91,6 +100,17 @@ class CustomThemeCacheImpl(
     }
   }
 
+  override fun localThemes(): Flow<List<CustomColors>> = localThemesVersion.map { _ ->
+    val repos =
+      withContext(contexts.io) {
+        fileSystem
+          .list(localThemesDir)
+          .filter { it.isRegularFile && it.name.endsWith(JSON_SUFFIX) }
+          .map { CustomThemeRepo.local(it.name.removeSuffix(JSON_SUFFIX)) }
+      }
+    repos.mapNotNull { theme(it) }
+  }
+
   override suspend fun save(summaries: List<CustomThemeSummary>) {
     try {
       val encoded = encode(summaries, SUMMARIES_SERIALIZER)
@@ -110,10 +130,21 @@ class CustomThemeCacheImpl(
       val encoded = encode(theme, THEME_SERIALIZER)
       withContext(contexts.io) { themeFile.parent?.let(fileSystem::createDirectory) }
       write(encoded, themeFile)
+      if (theme.repo.isLocal) localThemesVersion.update { it + 1 }
     } catch (e: IOException) {
       logcat.e(e) { "Failed writing theme to $themeFile" }
     } catch (e: SerializationException) {
       logcat.e(e) { "Failed encoding theme to $themeFile" }
+    }
+  }
+
+  override suspend fun delete(repo: CustomThemeRepo) {
+    val themeFile = repo.themeFile()
+    try {
+      withContext(contexts.io) { fileSystem.delete(themeFile) }
+      if (repo.isLocal) localThemesVersion.update { it + 1 }
+    } catch (e: IOException) {
+      logcat.e(e) { "Failed deleting theme $themeFile" }
     }
   }
 
@@ -138,9 +169,15 @@ class CustomThemeCacheImpl(
   private suspend fun read(path: Path): String =
     withContext(contexts.io) { fileSystem.source(path).buffer().use { it.readUtf8() } }
 
-  private fun CustomThemeRepo.themeFile() = themesDir / userName / "$repoName.json"
+  private fun CustomThemeRepo.themeFile() =
+    if (isLocal) {
+      localThemesDir / "$repoName$JSON_SUFFIX"
+    } else {
+      themesDir / userName / "$repoName$JSON_SUFFIX"
+    }
 
   private companion object {
+    const val JSON_SUFFIX = ".json"
     val SUMMARIES_SERIALIZER = ListSerializer(CustomThemeSummary.serializer())
     val THEME_SERIALIZER = JsonCustomColors.serializer()
   }

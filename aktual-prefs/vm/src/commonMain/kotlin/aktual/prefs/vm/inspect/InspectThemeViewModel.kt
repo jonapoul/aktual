@@ -1,10 +1,18 @@
 package aktual.prefs.vm.inspect
 
 import aktual.core.UrlOpener
+import aktual.core.UuidGenerator
 import aktual.core.model.ThemeId
+import aktual.core.theme.Colors
 import aktual.core.theme.CustomColors
+import aktual.core.theme.CustomThemeCache
+import aktual.core.theme.CustomThemeRepo
 import aktual.core.theme.ThemeResolver
+import aktual.core.theme.toCustomColors
 import aktual.di.AppScope
+import aktual.prefs.ThemePreferences
+import aktual.prefs.vm.inspect.InspectThemeEvent.Deleted
+import aktual.prefs.vm.inspect.InspectThemeEvent.Duplicated
 import aktual.prefs.vm.theme.properties
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
@@ -19,13 +27,17 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import logcat.logcat
 
 @Stable
@@ -34,9 +46,23 @@ class InspectThemeViewModel(
   @Assisted private val themeId: ThemeId,
   private val themeResolver: ThemeResolver,
   private val urlOpener: UrlOpener,
+  private val cache: CustomThemeCache,
+  private val preferences: ThemePreferences,
+  private val uuidGenerator: UuidGenerator,
 ) : ViewModel() {
   private val mutableState = MutableStateFlow<InspectThemeState>(Loading)
   private val mutableSorting = MutableStateFlow<PropertySorting>(Default)
+  private val saveMutex = Mutex()
+  private var colors: Colors? = null
+
+  private val mutableEvents =
+    MutableSharedFlow<InspectThemeEvent>(
+      replay = 0,
+      extraBufferCapacity = 1,
+      onBufferOverflow = DROP_OLDEST,
+    )
+
+  val events: SharedFlow<InspectThemeEvent> = mutableEvents
 
   val sorting: StateFlow<PropertySorting> = mutableSorting.asStateFlow()
 
@@ -67,6 +93,39 @@ class InspectThemeViewModel(
     viewModelScope.launch { loadTheme() }
   }
 
+  // Copies the theme into a new local one, leaving the original untouched
+  fun duplicate(name: String) {
+    val source = colors ?: return
+    viewModelScope.launch {
+      val copy = source.toCustomColors(name, CustomThemeRepo.local(uuidGenerator()))
+      cache.save(copy)
+      mutableEvents.tryEmit(Duplicated(copy.id))
+    }
+  }
+
+  fun setColor(attribute: String, color: Color) {
+    val local = localColors() ?: return
+    val edited = local.toCustomColors(local.name, local.repo, overrides = mapOf(attribute to color))
+    setLoaded(edited)
+    viewModelScope.launch { saveMutex.withLock { cache.save(edited) } }
+  }
+
+  fun delete() {
+    val local = localColors() ?: return
+    viewModelScope.launch {
+      if (preferences.constantTheme.get() == themeId) {
+        preferences.constantTheme.set(null)
+      }
+      saveMutex.withLock { cache.delete(local.repo) }
+      mutableEvents.tryEmit(Deleted)
+    }
+  }
+
+  private fun localColors(): CustomColors? {
+    val custom = colors as? CustomColors
+    return custom?.takeIf { it.repo.isLocal }
+  }
+
   private suspend fun loadTheme() {
     val colors = themeResolver.resolve(themeId)
     if (colors == null) {
@@ -74,9 +133,19 @@ class InspectThemeViewModel(
       mutableState.update { InspectThemeState.NotFound(themeId) }
       return
     }
+    setLoaded(colors)
+  }
 
-    val isCustom = colors is CustomColors
-    mutableState.update { InspectThemeState.Loaded(themeId, isCustom, colors.properties()) }
+  private fun setLoaded(colors: Colors) {
+    this.colors = colors
+    val source: ThemeSource =
+      when {
+        colors !is CustomColors -> BuiltIn
+        colors.repo.isLocal -> Local
+        else -> Downloaded
+      }
+    val name = (colors as? CustomColors)?.name
+    mutableState.update { InspectThemeState.Loaded(themeId, name, source, colors.properties()) }
   }
 
   private fun ImmutableList<ThemeProperty>.sorted(

@@ -15,9 +15,20 @@ data class CustomThemeRepo(
 ) : Comparable<CustomThemeRepo> {
   val id = "$userName/$repoName"
 
+  // Themes copied and edited in-app, rather than downloaded from GitHub
+  val isLocal: Boolean
+    get() = userName == LOCAL_USER_NAME
+
   override fun toString(): String = id
 
   override fun compareTo(other: CustomThemeRepo): Int = toString().compareTo(other.toString())
+
+  companion object {
+    // Not a valid GitHub username, so can't clash with a downloaded theme
+    const val LOCAL_USER_NAME = "@local"
+
+    fun local(repoName: String) = CustomThemeRepo(LOCAL_USER_NAME, repoName)
+  }
 }
 
 fun CustomThemeRepo(string: String): CustomThemeRepo {

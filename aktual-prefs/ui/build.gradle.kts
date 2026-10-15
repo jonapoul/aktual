@@ -9,6 +9,7 @@ kotlin {
     api(project(":aktual-core:nav"))
     api(project(":aktual-core:ui"))
     api(project(":aktual-prefs:vm"))
+    implementation(libs.colorpicker)
     implementation(libs.compose.resources)
     implementation(libs.metrox.viewmodel)
     implementation(libs.shimmer)
