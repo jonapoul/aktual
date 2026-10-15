@@ -273,6 +273,34 @@ class HomeViewModelTest {
       )
     }
 
+  @Test
+  fun `Swapping cards saves and shows the new order`() = runDatabaseTest { scope ->
+    val prefs = TestBudgetLocalPreferences(DbMetadata())
+    val viewModel = createHomeViewModel(scope, CALENDAR, prefs)
+
+    viewModel.state.test {
+      assertThat(awaitSettled().cards)
+        .containsExactly(
+          HomeCardType.ThisMonth,
+          HomeCardType.Attention,
+          HomeCardType.Upcoming,
+          HomeCardType.Accounts,
+        )
+
+      viewModel.swap(Accounts, HomeCardType.ThisMonth)
+      assertThat(awaitItem().cards)
+        .containsExactly(
+          HomeCardType.Accounts,
+          HomeCardType.Attention,
+          HomeCardType.Upcoming,
+          HomeCardType.ThisMonth,
+        )
+      assertThat(prefs[DbMetadata.HomeCardOrder])
+        .isEqualTo(listOf("Accounts", "Attention", "Upcoming", "ThisMonth"))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private companion object {
     val DATE = LocalDate(2026, 1, 1)
     val TODAY = LocalDate(2026, 4, 1)

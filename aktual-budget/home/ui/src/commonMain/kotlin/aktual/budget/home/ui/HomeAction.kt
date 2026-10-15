@@ -1,5 +1,6 @@
 package aktual.budget.home.ui
 
+import aktual.budget.home.vm.HomeCardType
 import aktual.budget.model.AccountId
 import aktual.budget.model.ScheduleId
 import androidx.compose.runtime.Immutable
@@ -21,6 +22,8 @@ internal data object ReviewUncategorised : HomeAction
 internal data object OpenSchedules : HomeAction
 
 internal data object Retry : HomeAction
+
+internal data class SwapCards(val card: HomeCardType, val other: HomeCardType) : HomeAction
 
 @Immutable
 internal fun interface HomeActionHandler {
