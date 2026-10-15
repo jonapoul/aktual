@@ -1,9 +1,11 @@
 package aktual.budget.home.ui
 
 import aktual.budget.home.vm.AccountsCardState
+import aktual.budget.home.vm.AttentionCardState
 import aktual.budget.home.vm.HomeCardType
 import aktual.budget.home.vm.HomeState
 import aktual.budget.home.vm.HomeViewModel
+import aktual.budget.home.vm.UpcomingCardState
 import aktual.core.icons.material.Check
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
@@ -159,8 +161,19 @@ private fun HomeCardFor(
 ) =
   when (card) {
     ThisMonth -> ThisMonthCard(state = state.thisMonth, onAction = onAction)
-    Attention -> AttentionCard(state = state.attention, onAction = onAction, isEditing = isEditing)
-    Upcoming -> UpcomingCard(state = state.upcoming, onAction = onAction, isEditing = isEditing)
+    Attention ->
+      if (isEditing && state.attention.isHidden) {
+        HiddenCard(message = Strings.homeAttentionHidden)
+      } else {
+        AttentionCard(state = state.attention, onAction = onAction)
+      }
+
+    Upcoming ->
+      if (isEditing && state.upcoming.isHidden) {
+        HiddenCard(message = Strings.homeUpcomingHidden)
+      } else {
+        UpcomingCard(state = state.upcoming, onAction = onAction)
+      }
     Accounts -> AccountsCard(state = state.accounts, onAction = onAction)
   }
 
@@ -256,6 +269,13 @@ private fun CardGrid(
     }
   }
 }
+
+// These cards draw nothing while loading or empty
+private val AttentionCardState.isHidden: Boolean
+  get() = this == AttentionCardState.Loading || this == AttentionCardState.Empty
+
+private val UpcomingCardState.isHidden: Boolean
+  get() = this == UpcomingCardState.Loading || this == UpcomingCardState.Empty
 
 private val AccountsPanelWidth = 360.dp
 private val TwoColumnMinWidth = 640.dp

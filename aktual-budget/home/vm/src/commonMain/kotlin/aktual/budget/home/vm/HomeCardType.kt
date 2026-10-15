@@ -19,6 +19,7 @@ internal fun homeCardOrder(saved: List<String>?): ImmutableList<HomeCardType> {
 
 internal fun List<HomeCardType>.swapping(a: HomeCardType, b: HomeCardType): List<HomeCardType> =
   map { card ->
+    @Suppress("ElseCaseInsteadOfExhaustiveWhen")
     when (card) {
       a -> b
       b -> a

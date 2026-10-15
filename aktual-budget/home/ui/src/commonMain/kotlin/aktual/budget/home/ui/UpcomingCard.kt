@@ -58,7 +58,6 @@ internal fun UpcomingCard(
   state: UpcomingCardState,
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
-  isEditing: Boolean = false,
 ) {
   if (state == Failed) {
     HomeCard(modifier = modifier) {
@@ -67,10 +66,7 @@ internal fun UpcomingCard(
     return
   }
 
-  if (state !is Loaded) {
-    if (isEditing) HiddenCard(message = Strings.homeUpcomingHidden, modifier = modifier)
-    return
-  }
+  if (state !is Loaded) return
 
   HomeCard(modifier = modifier) {
     UpcomingHeader(state.length, onSeeAll = { onAction(OpenSchedules) })

@@ -61,7 +61,6 @@ internal fun AttentionCard(
   state: AttentionCardState,
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
-  isEditing: Boolean = false,
 ) {
   if (state == Failed) {
     HomeCard(modifier = modifier) {
@@ -70,10 +69,7 @@ internal fun AttentionCard(
     return
   }
 
-  if (state !is Loaded) {
-    if (isEditing) HiddenCard(message = Strings.homeAttentionHidden, modifier = modifier)
-    return
-  }
+  if (state !is Loaded) return
 
   var showOverspent by rememberSaveable { mutableStateOf(false) }
 
