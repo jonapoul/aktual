@@ -12,7 +12,6 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SearchLicensesNavigator
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
@@ -31,6 +30,7 @@ import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -146,15 +146,20 @@ private fun LicensesContent(
   modifier: Modifier = Modifier,
 ) =
   when (state) {
-    Loading -> LoadingContent(modifier)
+    Loading -> LoadingContent(contentPadding, modifier)
     NoneFound -> NoneFoundContent(modifier)
     is Loaded -> ArtifactList(state.artifacts, contentPadding, listState, onAction, modifier)
     is LicensesState.Error -> ErrorContent(state.errorMessage, onAction, modifier)
   }
 
 @Composable
-private fun LoadingContent(modifier: Modifier = Modifier) {
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Center) { AnimatedLoading() }
+private fun LoadingContent(contentPadding: PaddingValues, modifier: Modifier = Modifier) {
+  Column(
+    modifier = modifier.fillMaxSize().padding(horizontal = 4.dp).padding(contentPadding),
+    verticalArrangement = Arrangement.spacedBy(2.dp),
+  ) {
+    repeat(times = 10) { ShimmerArtifactItem() }
+  }
 }
 
 @Composable
