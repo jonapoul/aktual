@@ -398,6 +398,7 @@ private class FilterCondition(private val condition: CompiledCondition) {
 
 // likePatternToRegex in packages/loot-core/src/platform/server/sqlite/unicodeLike.ts: % is any
 // run of characters, ? is any one character, and a backslash escapes either
+@Suppress("UnnecessaryParentheses")
 internal fun likePatternToRegex(pattern: String): Regex {
   val regex = StringBuilder()
   var i = 0
@@ -405,7 +406,7 @@ internal fun likePatternToRegex(pattern: String): Regex {
     val ch = pattern[i]
     val next = pattern.getOrNull(i + 1)
     when (ch) {
-      '\\' if next == '%' || next == '?' || next == '\\' -> {
+      '\\' if (next == '%' || next == '?' || next == '\\') -> {
         regex.append(Regex.escape(next.toString()))
         i++
       }
