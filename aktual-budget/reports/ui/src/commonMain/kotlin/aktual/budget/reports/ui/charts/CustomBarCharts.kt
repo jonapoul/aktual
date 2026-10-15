@@ -29,7 +29,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastMapIndexed
+import androidx.compose.ui.util.fastMap
 import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.VerticalAxis
@@ -114,14 +114,7 @@ internal fun CustomStackedBarChart(
   modifier: Modifier = Modifier,
 ) {
   val labels = data.intervals.map { it.interval.label(data.config.interval) }.toImmutableList()
-  val stacks =
-    remember(data, legend) {
-      data.intervals.map { interval ->
-        data.groups.zip(legend) { group, bar ->
-          bar.copy(amount = interval.stacked[group.group] ?: Zero)
-        }
-      }
-    }
+  val stacks = remember(data, legend) { customStacks(data, legend) }
 
   val modelProducer = remember { CartesianChartModelProducer() }
   if (isInPreview()) {
@@ -172,27 +165,50 @@ internal fun CustomStackedBarChart(
   )
 }
 
-// packages/desktop-client/src/components/reports/spreadsheets/calculateLegend.ts: groups take the
-// qualitative colours in order, intervals are coloured by whether they're money in or out
 @Composable
 internal fun customBars(data: CustomData): ImmutableList<CustomBar> {
+  val names =
+    if (data.config.groupBy == GroupBy.Interval) {
+      data.intervals.fastMap { it.interval.label(data.config.interval) }
+    } else {
+      data.groups.fastMap { it.group.label() }
+    }
+  return customBars(data, names, colors)
+}
+
+// packages/desktop-client/src/components/reports/spreadsheets/calculateLegend.ts: groups take the
+// qualitative colours in order, intervals are coloured by whether they're money in or out
+internal fun customBars(
+  data: CustomData,
+  names: List<String>,
+  theme: Colors,
+): ImmutableList<CustomBar> {
   val metric = data.config.balanceType.metric
-  val theme = colors
   return if (data.config.groupBy == GroupBy.Interval) {
-      data.intervals.map { item ->
+      data.intervals.mapIndexed { index, item ->
         val amount = item.totals[metric]
-        CustomBar(
-          item.interval.label(data.config.interval),
-          amount,
-          theme.intervalColor(metric, amount),
-        )
+        CustomBar(names[index], amount, theme.intervalColor(metric, amount))
       }
     } else {
-      data.groups.fastMapIndexed { index, item ->
-        CustomBar(item.group.label(), item.totals[metric], theme.qualitative(index))
+      data.groups.mapIndexed { index, item ->
+        CustomBar(names[index], item.totals[metric], theme.qualitative(index))
       }
     }
     .toImmutableList()
+}
+
+// Each interval's stack, with a bar per legend entry
+internal fun customStacks(data: CustomData, legend: List<CustomBar>): List<List<CustomBar>> =
+  data.intervals.map { interval ->
+    data.groups.zip(legend) { group, bar ->
+      bar.copy(amount = interval.stacked[group.group] ?: Zero)
+    }
+  }
+
+// Each group's amounts across the intervals. Stacked bottom up, so the first group goes last
+internal fun stackSeries(stacks: List<List<CustomBar>>): List<List<Double>> {
+  val groups = stacks.firstOrNull()?.size ?: 0
+  return (groups - 1 downTo 0).map { group -> stacks.map { it[group].amount.toDouble() } }
 }
 
 @Composable
@@ -234,7 +250,7 @@ internal fun Amount.plotted(metric: CustomMetric): Amount =
 private fun List<CartesianMarker.Target>.index(): Int = firstOrNull()?.x?.roundToInt() ?: -1
 
 // Upstream's tooltip: each group with money in the interval, then the interval's total
-private fun stackedMarkerText(
+internal fun stackedMarkerText(
   label: String,
   stack: List<CustomBar>,
   totalLabel: String,
@@ -325,16 +341,11 @@ private suspend fun CartesianChartModelProducer.populateBars(
   }
 }
 
-// Stacked bottom up, so the first group's series goes last
 private suspend fun CartesianChartModelProducer.populateStacks(stacks: List<List<CustomBar>>) =
   runTransaction {
-    val groups = stacks.firstOrNull()?.size ?: 0
-    if (groups > 0) {
-      columnSeries {
-        for (group in groups - 1 downTo 0) {
-          series(x = stacks.indices.toList(), y = stacks.map { it[group].amount.toDouble() })
-        }
-      }
+    val series = stackSeries(stacks)
+    if (series.isNotEmpty()) {
+      columnSeries { series.forEach { y -> series(x = stacks.indices.toList(), y = y) } }
     }
   }
 
@@ -356,7 +367,7 @@ private val BAR_THICKNESS = 16.dp
 private const val BAR_LABEL_ROTATION = -35f
 private const val AMOUNT_LABELS = 8
 private const val MAX_AXIS_LABELS = 12
-private const val MAX_MARKER_ROWS = 10
+internal const val MAX_MARKER_ROWS = 10
 
 // The interval label, the "…" when rows are cut and the total
 private const val MARKER_EXTRA_LINES = 3

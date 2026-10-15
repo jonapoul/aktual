@@ -226,7 +226,7 @@ private val PREVIEW_AMOUNTS =
 
 internal val PREVIEW_CUSTOM_DATA = previewCustomData(BarGraph, Category, Payment)
 
-private fun previewCustomData(
+internal fun previewCustomData(
   graphType: GraphType,
   groupBy: GroupBy,
   balanceType: BalanceType,
