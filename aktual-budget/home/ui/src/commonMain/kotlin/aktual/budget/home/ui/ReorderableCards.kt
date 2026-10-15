@@ -9,8 +9,12 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.Dimens
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateBounds
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -43,11 +47,15 @@ internal fun ReorderableCards(
       cards.fastForEachIndexed { index, type ->
         key(type) {
           Column(
-            modifier = if (isEditing) Modifier.animateBounds(this@LookaheadScope) else Modifier,
-            verticalArrangement = Arrangement.spacedBy(Dimens.Large),
+            modifier = if (isEditing) Modifier.animateBounds(this@LookaheadScope) else Modifier
           ) {
-            if (isEditing) {
+            AnimatedVisibility(
+              visible = isEditing,
+              enter = expandVertically() + fadeIn(),
+              exit = shrinkVertically() + fadeOut(),
+            ) {
               ReorderBar(
+                modifier = Modifier.padding(bottom = Dimens.Large),
                 card = type,
                 previous = cards.getOrNull(index - 1),
                 next = cards.getOrNull(index + 1),

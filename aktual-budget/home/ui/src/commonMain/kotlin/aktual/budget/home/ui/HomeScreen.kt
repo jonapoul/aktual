@@ -32,6 +32,7 @@ import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -179,11 +180,13 @@ private fun HomeContent(
         title = { HomeTitle(budgetName = state.budgetName) },
         actions = {
           if (!state.isEmpty) {
-            BareIconButton(
-              imageVector = if (isEditing) MaterialIcons.Check else MaterialIcons.Edit,
-              contentDescription = if (isEditing) Strings.homeReorderDone else Strings.homeReorder,
-              onClick = onToggleEditing,
-            )
+            Crossfade(targetState = isEditing) { editing ->
+              BareIconButton(
+                imageVector = if (editing) MaterialIcons.Check else MaterialIcons.Edit,
+                contentDescription = if (editing) Strings.homeReorderDone else Strings.homeReorder,
+                onClick = onToggleEditing,
+              )
+            }
           }
         },
       )
