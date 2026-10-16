@@ -4,6 +4,7 @@ import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.TAGS
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
+import aktual.budget.model.SortDirection
 import aktual.budget.model.TagId
 import aktual.budget.model.TagSort
 import aktual.budget.model.tagsInNotes
@@ -66,8 +67,7 @@ class ListTagsViewModel(
       val isLoading by mutableIsLoading.collectAsState()
       val failure by mutableFailure.collectAsState()
       val sortField by preferences.sortField.asFlow().collectAsState(TagSort.Field.Default)
-      val sortDirection by
-        preferences.sortDirection.asFlow().collectAsState(TagSort.Direction.Default)
+      val sortDirection by preferences.sortDirection.asFlow().collectAsState(SortDirection.Default)
       @Suppress("BracesOnWhenStatements")
       when {
         isLoading -> Loading
@@ -186,9 +186,6 @@ class ListTagsViewModel(
         Name -> compareBy { it.tag.lowercase() }
         Usage -> compareBy<TagItem> { it.numTransactions }.thenBy { it.tag.lowercase() }
       }
-    return when (direction) {
-      Ascending -> byField
-      Descending -> byField.reversed()
-    }
+    return direction.apply(byField)
   }
 }

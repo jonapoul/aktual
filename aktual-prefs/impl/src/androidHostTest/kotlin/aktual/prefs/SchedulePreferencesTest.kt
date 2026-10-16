@@ -28,4 +28,30 @@ class SchedulePreferencesTest {
       }
     }
   }
+
+  @Test
+  fun `Sort field`() = runTest {
+    val preferences = SchedulePreferencesImpl(buildPreferences(unconfinedDispatcher))
+    with(preferences.sortField) {
+      asFlow().test {
+        assertThatNextEmissionIsEqualTo(NextDate)
+        set(Payee)
+        assertThatNextEmissionIsEqualTo(Payee)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+  }
+
+  @Test
+  fun `Sort direction`() = runTest {
+    val preferences = SchedulePreferencesImpl(buildPreferences(unconfinedDispatcher))
+    with(preferences.sortDirection) {
+      asFlow().test {
+        assertThatNextEmissionIsEqualTo(Ascending)
+        set(Descending)
+        assertThatNextEmissionIsEqualTo(Descending)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+  }
 }

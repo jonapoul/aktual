@@ -31,6 +31,7 @@ import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.SortDialog
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
@@ -123,10 +124,14 @@ private fun ListTagsScaffold(
   var showSortDialog by remember { mutableStateOf(false) }
 
   if (showSortDialog) {
-    TagSortDialog(
-      sort = successState?.sort ?: TagSort.Default,
-      onConfirm = { sort ->
-        onAction(SetSort(sort))
+    val sort = successState?.sort ?: TagSort.Default
+    SortDialog(
+      fields = TagSort.Field.Entries,
+      field = sort.field,
+      direction = sort.direction,
+      fieldLabel = { it.label() },
+      onConfirm = { field, direction ->
+        onAction(SetSort(TagSort(field, direction)))
         showSortDialog = false
       },
       onDismiss = { showSortDialog = false },
@@ -145,7 +150,7 @@ private fun ListTagsScaffold(
           if (successState != null) {
             BareIconButton(
               imageVector = MaterialIcons.Sort,
-              contentDescription = Strings.tagsSort,
+              contentDescription = Strings.sort,
               onClick = { showSortDialog = true },
             )
           }
@@ -277,6 +282,13 @@ private fun TagsList(
     item { BottomSpacing() }
   }
 }
+
+@Composable
+private fun TagSort.Field.label(): String =
+  when (this) {
+    Name -> Strings.tagsSortFieldName
+    Usage -> Strings.tagsSortFieldUsage
+  }
 
 private class ListTagsStateProvider :
   ColoredParameterProvider<ListTagsState>(

@@ -1,6 +1,7 @@
 package aktual.budget.schedules.ui.list
 
 import aktual.budget.model.ScheduleId
+import aktual.budget.model.ScheduleSort
 import aktual.budget.schedules.domain.Schedule
 import androidx.compose.runtime.Immutable
 
@@ -19,6 +20,8 @@ internal data object OpenSearch : ListSchedulesAction
 @JvmInline internal value class Post(val schedule: Schedule) : ListSchedulesAction
 
 internal data object OpenSettings : ListSchedulesAction
+
+@JvmInline internal value class SetSort(val sort: ScheduleSort) : ListSchedulesAction
 
 @Immutable
 internal fun interface ListSchedulesActionHandler {

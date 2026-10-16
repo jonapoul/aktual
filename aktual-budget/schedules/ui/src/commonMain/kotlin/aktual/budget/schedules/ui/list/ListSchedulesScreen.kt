@@ -1,6 +1,7 @@
 package aktual.budget.schedules.ui.list
 
 import aktual.budget.model.ScheduleId
+import aktual.budget.model.ScheduleSort
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.ui.list.ListSchedulesPreview.scheduleA
 import aktual.budget.schedules.ui.list.ListSchedulesPreview.scheduleB
@@ -19,6 +20,7 @@ import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.icons.material.Settings
+import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.nav.ScheduleSettingsNavigator
@@ -40,6 +42,7 @@ import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.SortDialog
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
@@ -117,6 +120,7 @@ internal fun ListSchedulesScreen(
         is Delete -> viewModel.delete(action.schedule)
         is Post -> snackbars.show { showPostUnsupported() }
         OpenSettings -> toSettings()
+        is SetSort -> viewModel.setSort(action.sort)
       }
     },
   )
@@ -130,6 +134,23 @@ private fun ListSchedulesScaffold(
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
+  val successState = state as? Success
+  var showSortDialog by remember { mutableStateOf(false) }
+
+  if (showSortDialog) {
+    val sort = successState?.sort ?: ScheduleSort.Default
+    SortDialog(
+      fields = ScheduleSort.Field.Entries,
+      field = sort.field,
+      direction = sort.direction,
+      fieldLabel = { it.label() },
+      onConfirm = { field, direction ->
+        onAction(SetSort(ScheduleSort(field, direction)))
+        showSortDialog = false
+      },
+      onDismiss = { showSortDialog = false },
+    )
+  }
 
   Scaffold(
     modifier = modifier.fillMaxSize().imePadding(),
@@ -140,7 +161,7 @@ private fun ListSchedulesScaffold(
         navigationIcon = { NavDrawerIconButton() },
         title = { Text(text = Strings.listSchedulesTitle) },
         actions = {
-          if (state is Success) {
+          if (successState != null) {
             BareIconButton(
               imageVector = MaterialIcons.Search,
               contentDescription = Strings.listSchedulesSearch,
@@ -152,7 +173,11 @@ private fun ListSchedulesScaffold(
             contentDescription = Strings.listSchedulesCreate,
             onClick = { onAction(CreateNew) },
           )
-          ListSchedulesMenu(onAction = onAction)
+          ListSchedulesMenu(
+            onAction = onAction,
+            showSort = successState != null,
+            onSort = { showSortDialog = true },
+          )
         },
       )
     },
@@ -281,6 +306,8 @@ private fun ContentSuccess(
 @Composable
 private fun ListSchedulesMenu(
   onAction: ListSchedulesActionHandler,
+  showSort: Boolean,
+  onSort: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var expanded by remember { mutableStateOf(false) }
@@ -298,19 +325,46 @@ private fun ListSchedulesMenu(
           expanded = false
           onAction(action)
         },
+        showSort = showSort,
+        onSort = {
+          expanded = false
+          onSort()
+        },
       )
     }
   }
 }
 
 @Composable
-private fun ListSchedulesMenuItems(onAction: ListSchedulesActionHandler) {
+private fun ListSchedulesMenuItems(
+  onAction: ListSchedulesActionHandler,
+  showSort: Boolean,
+  onSort: () -> Unit,
+) {
+  if (showSort) {
+    AktualDropdownMenuItem(
+      text = Strings.sort,
+      leadingIcon = MaterialIcons.Sort,
+      onClick = onSort,
+    )
+  }
   AktualDropdownMenuItem(
     text = Strings.listSchedulesSettings,
     leadingIcon = MaterialIcons.Settings,
     onClick = { onAction(OpenSettings) },
   )
 }
+
+@Composable
+private fun ScheduleSort.Field.label(): String =
+  when (this) {
+    NextDate -> Strings.listSchedulesSortNextDate
+    Name -> Strings.listSchedulesSortName
+    Payee -> Strings.listSchedulesSortPayee
+    Account -> Strings.listSchedulesSortAccount
+    Amount -> Strings.listSchedulesSortAmount
+    Status -> Strings.listSchedulesSortStatus
+  }
 
 @Preview
 @Composable
@@ -319,7 +373,7 @@ private fun PreviewListSchedulesMenuItems(
 ) =
   PreviewWithColors(colors) {
     Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {
-      ListSchedulesMenuItems(onAction = {})
+      ListSchedulesMenuItems(onAction = {}, showSort = true, onSort = {})
     }
   }
 
@@ -334,7 +388,7 @@ private fun PreviewListSchedulesScaffold(
 
 private class ListSchedulesProvider :
   ColoredParameterProvider<ListSchedulesState>(
-    Success(schedules = persistentListOf(scheduleA, scheduleB)),
+    Success(schedules = persistentListOf(scheduleA, scheduleB), sort = Default),
     Empty,
     Loading,
     Failure("Some problem happened"),

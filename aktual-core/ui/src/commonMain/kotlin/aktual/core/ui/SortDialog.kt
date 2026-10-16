@@ -1,15 +1,10 @@
-package aktual.budget.tags.ui.list
+package aktual.core.ui
 
-import aktual.budget.model.TagSort
+import aktual.budget.model.SortDirection
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
-import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.ColoredParameters
-import aktual.core.ui.NormalTextButton
-import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.radioButton
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,44 +27,48 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
-internal fun TagSortDialog(
-  sort: TagSort,
-  onConfirm: (TagSort) -> Unit,
+fun <F> SortDialog(
+  fields: ImmutableList<F>,
+  field: F,
+  direction: SortDirection,
+  fieldLabel: @Composable (F) -> String,
+  onConfirm: (F, SortDirection) -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var field by remember { mutableStateOf(sort.field) }
-  var direction by remember { mutableStateOf(sort.direction) }
+  var selectedField by remember { mutableStateOf(field) }
+  var selectedDirection by remember { mutableStateOf(direction) }
 
   AktualAlertDialog(
     modifier = modifier,
-    title = Strings.tagsSort,
+    title = Strings.sort,
     onDismissRequest = onDismiss,
     buttons = {
       NormalTextButton(
-        text = Strings.tagsSortApply,
-        onClick = { onConfirm(TagSort(field, direction)) },
+        text = Strings.sortApply,
+        onClick = { onConfirm(selectedField, selectedDirection) },
       )
     },
   ) {
     SortSection(
-      label = Strings.tagsSortField,
-      options = TagSort.Field.Entries,
-      selected = field,
-      name = { it.label() },
-      onSelect = { field = it },
+      label = Strings.sortField,
+      options = fields,
+      selected = selectedField,
+      name = fieldLabel,
+      onSelect = { selectedField = it },
     )
 
     VerticalSpacer(10.dp)
 
     SortSection(
-      label = Strings.tagsSortDirection,
-      options = TagSort.Direction.Entries,
-      selected = direction,
+      label = Strings.sortDirection,
+      options = SortDirection.Entries,
+      selected = selectedDirection,
       name = { it.label() },
-      onSelect = { direction = it },
+      onSelect = { selectedDirection = it },
     )
   }
 }
@@ -116,22 +115,22 @@ private fun SortOptionRow(isSelected: Boolean, onClick: () -> Unit, name: String
 }
 
 @Composable
-private fun TagSort.Field.label(): String =
+private fun SortDirection.label(): String =
   when (this) {
-    Name -> Strings.tagsSortFieldName
-    Usage -> Strings.tagsSortFieldUsage
-  }
-
-@Composable
-private fun TagSort.Direction.label(): String =
-  when (this) {
-    Ascending -> Strings.tagsSortDirectionAscending
-    Descending -> Strings.tagsSortDirectionDescending
+    Ascending -> Strings.sortDirectionAscending
+    Descending -> Strings.sortDirectionDescending
   }
 
 @Preview
 @Composable
-private fun PreviewTagSortDialog(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewSortDialog(@PreviewParameter(ColoredParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
-    TagSortDialog(sort = Default, onConfirm = {}, onDismiss = {})
+    SortDialog(
+      fields = persistentListOf("Name", "Date"),
+      field = "Name",
+      direction = Ascending,
+      fieldLabel = { it },
+      onConfirm = { _, _ -> },
+      onDismiss = {},
+    )
   }
