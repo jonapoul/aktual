@@ -63,7 +63,8 @@ class CustomLineChartsTest {
     assertThat(supported(AreaGraph, Interval)).isTrue()
     assertThat(supported(AreaGraph, Category)).isTrue()
     assertThat(supported(BarLineGraph, Payee)).isTrue()
-    assertThat(supported(TableGraph, Category)).isFalse()
+    assertThat(supported(TableGraph, Category)).isTrue()
+    assertThat(supported(TableGraph, Interval)).isTrue()
     assertThat(supported(DonutGraph, Category)).isFalse()
   }
 

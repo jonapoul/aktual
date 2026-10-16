@@ -2,7 +2,9 @@ package aktual.budget.reports.ui.charts
 
 import aktual.budget.model.Amount
 import aktual.budget.model.BalanceType
+import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
+import aktual.budget.model.CustomReportMode
 import aktual.budget.model.GraphType
 import aktual.budget.model.GroupBy
 import aktual.budget.reports.vm.CustomData
@@ -94,6 +96,8 @@ internal fun CustomChart(
 
       graphType == AreaGraph -> CustomAreaChart(data, compact, chartModifier)
 
+      graphType == TableGraph -> CustomTable(data, compact, chartModifier)
+
       else -> CustomBarLineChart(data, compact, chartModifier)
     }
 
@@ -103,7 +107,7 @@ internal fun CustomChart(
   }
 
 // Stacked bars and lines draw a series per group, so they can't be grouped by interval. Area and
-// bar-line charts always draw the intervals
+// bar-line charts always draw the intervals. A table's interval columns can't hold interval rows
 internal fun CustomReportConfig.isSupported(): Boolean =
   when (graphType) {
     BarGraph,
@@ -111,15 +115,18 @@ internal fun CustomReportConfig.isSupported(): Boolean =
     BarLineGraph -> true
     StackedBarGraph,
     LineGraph -> groupBy != Interval
-    TableGraph,
+    TableGraph -> mode != Time || groupBy != Interval
     DonutGraph,
     Unknown -> false
   }
 
-// ReportOptions disableLegend: area charts have nothing to name, and intervals are named on the
-// axis
+// ReportOptions disableLegend: area charts have nothing to name, intervals are named on the axis
+// and tables name their own rows
 private fun CustomReportConfig.hasLegend(): Boolean =
-  groupBy != Interval && graphType != AreaGraph && graphType != BarLineGraph
+  groupBy != Interval &&
+    graphType != AreaGraph &&
+    graphType != BarLineGraph &&
+    graphType != TableGraph
 
 @Composable
 private fun Message(text: String, color: Color, modifier: Modifier = Modifier) =
@@ -242,7 +249,18 @@ private class CustomChartProvider :
     CustomChartParams(previewCustomData(AreaGraph, Interval, Net), compact = false),
     CustomChartParams(previewCustomData(AreaGraph, Interval, Payment), compact = true),
     CustomChartParams(previewCustomData(BarLineGraph, Interval, Net), compact = false),
+    CustomChartParams(previewCustomData(TableGraph, Category, Payment), compact = false),
     CustomChartParams(previewCustomData(TableGraph, Category, Payment), compact = true),
+    CustomChartParams(previewCustomData(TableGraph, Payee, Net), compact = false),
+    CustomChartParams(previewCustomData(TableGraph, Interval, Net), compact = false),
+    CustomChartParams(
+      previewCustomData(TableGraph, Category, Payment, mode = Time),
+      compact = false,
+    ),
+    CustomChartParams(
+      previewCustomData(TableGraph, Category, Payment, mode = Time),
+      compact = true,
+    ),
   )
 
 private val PREVIEW_START = LocalDate(2025, Month.JANUARY, 1)
@@ -266,6 +284,8 @@ internal fun previewCustomData(
   groupBy: GroupBy,
   balanceType: BalanceType,
   showTrendLines: Boolean = false,
+  mode: CustomReportMode =
+    if (graphType == StackedBarGraph || graphType == LineGraph) Time else Total,
 ): CustomData {
   val metric = balanceType.metric
   val intervals =
@@ -307,7 +327,7 @@ internal fun previewCustomData(
     title = "My Custom Report",
     config =
       CustomReportConfig(
-        mode = if (graphType == StackedBarGraph || graphType == LineGraph) Time else Total,
+        mode = mode,
         groupBy = groupBy,
         balanceType = balanceType,
         graphType = graphType,
@@ -327,8 +347,9 @@ internal fun previewCustomData(
       ),
     range = PREVIEW_START..PREVIEW_END,
     intervals = intervalTotals.toImmutableList(),
+    intervalCount = intervalTotals.size,
     groups = groups.toImmutableList(),
-    categoryGroups = persistentListOf(),
+    categoryGroups = previewCategoryGroups(groups, intervals),
     totals = groups.map { it.totals }.reduce(::plus),
     // Not a real fit, just something to draw
     trends =
@@ -344,6 +365,30 @@ internal fun previewCustomData(
       },
   )
 }
+
+// Salary under income, everything else under expenses
+private fun previewCategoryGroups(
+  categories: List<CustomGroupTotals>,
+  intervals: List<CustomInterval>,
+): ImmutableList<CustomGroupTotals> =
+  categories
+    .groupBy { (it.group as CustomGroup.Category).name == "Salary" }
+    .map { (isIncome, children) ->
+      val name = if (isIncome) "Income" else "Expenses"
+      CustomGroupTotals(
+        group = CustomGroup.Group(CategoryGroupId(name), name),
+        totals = children.map { it.totals }.reduce(::plus),
+        intervals =
+          intervals
+            .mapIndexed { index, interval ->
+              val totals = children.map { it.intervals[index].totals }.reduce(::plus)
+              CustomGroupIntervalTotals(interval, totals, Zero)
+            }
+            .toImmutableList(),
+        categories = children.toImmutableList(),
+      )
+    }
+    .toImmutableList()
 
 private fun previewTotals(assets: Int, debts: Int): CustomTotals {
   val net = assets + debts

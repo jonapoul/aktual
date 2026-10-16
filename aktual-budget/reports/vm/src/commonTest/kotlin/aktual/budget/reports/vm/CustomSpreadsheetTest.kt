@@ -11,6 +11,8 @@ import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.PayeeId
+import aktual.budget.reports.vm.CustomGroup.Uncategorized
+import aktual.budget.reports.vm.CustomGroup.UncategorizedAndOffBudget
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
@@ -74,7 +76,7 @@ class CustomSpreadsheetTest {
         mapOf(
           CustomGroup.OffBudget to Amount(-1200),
           CustomGroup.Transfers to Amount(-200),
-          CustomGroup.Uncategorized to Amount(-100),
+          Uncategorized to Amount(-100),
         ),
       )
   }
@@ -172,6 +174,7 @@ class CustomSpreadsheetTest {
 
     assertThat(sheet.intervals.map { it.interval.start }).containsExactly(date(FEB))
     assertThat(sheet.groups.single().intervals.map { it.interval.start }).containsExactly(date(FEB))
+    assertThat(sheet.intervalCount).isEqualTo(4)
   }
 
   @Test
@@ -293,11 +296,10 @@ class CustomSpreadsheetTest {
       )
 
     assertThat(sheet.groups.map { it.group })
-      .containsExactly(CustomGroup.UncategorizedAndOffBudget, SPENDING_GROUP)
+      .containsExactly(UncategorizedAndOffBudget, SPENDING_GROUP)
     assertThat(sheet.categoryGroups.map { it.group })
-      .containsExactly(CustomGroup.UncategorizedAndOffBudget, SPENDING_GROUP)
-    assertThat(sheet.categoryGroups[0].categories.map { it.group })
-      .containsExactly(CustomGroup.Uncategorized)
+      .containsExactly(UncategorizedAndOffBudget, SPENDING_GROUP)
+    assertThat(sheet.categoryGroups[0].categories.map { it.group }).containsExactly(Uncategorized)
     assertThat(sheet.categoryGroups[1].categories.map { it.group })
       .containsExactly(FUEL_GROUP, FOOD_GROUP)
   }

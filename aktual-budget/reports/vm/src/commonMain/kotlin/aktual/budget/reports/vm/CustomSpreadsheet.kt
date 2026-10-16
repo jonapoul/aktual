@@ -61,6 +61,7 @@ internal data class CustomReportInputs(
 
 internal data class CustomSpreadsheet(
   val intervals: ImmutableList<CustomIntervalTotals>,
+  val intervalCount: Int,
   val groups: ImmutableList<CustomGroupTotals>,
   val categoryGroups: ImmutableList<CustomGroupTotals>,
   val totals: CustomTotals,
@@ -83,7 +84,7 @@ internal fun customSpreadsheet(
 
   val categoryList =
     inputs.categories.map { CustomGroup.Category(it.id, it.name.orEmpty()) } +
-      listOf(CustomGroup.Uncategorized, CustomGroup.OffBudget, CustomGroup.Transfers)
+      listOf<CustomGroup>(Uncategorized, OffBudget, Transfers)
   val groupList =
     inputs.categoryGroups.map { CustomGroup.Group(it.id, it.name.orEmpty()) } +
       CustomGroup.UncategorizedAndOffBudget
@@ -114,6 +115,7 @@ internal fun customSpreadsheet(
 
   return CustomSpreadsheet(
     intervals = trimmedIntervals.toImmutableList(),
+    intervalCount = intervals.size,
     groups = sortedGroups.toImmutableList(),
     categoryGroups =
       categoryGroups(
@@ -140,6 +142,7 @@ internal fun customSpreadsheet(
 private val EMPTY =
   CustomSpreadsheet(
     persistentListOf(),
+    0,
     persistentListOf(),
     persistentListOf(),
     Zero,
