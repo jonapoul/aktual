@@ -11,6 +11,13 @@
   <string name="input_backspace">Backspace</string>
   <string name="input_done">Done</string>
 
+  <string name="sort">Sort</string>
+  <string name="sort_field">Sort by</string>
+  <string name="sort_direction">Order</string>
+  <string name="sort_direction_ascending">Ascending</string>
+  <string name="sort_direction_descending">Descending</string>
+  <string name="sort_apply">Apply</string>
+
   <string name="budget_loaded">Loaded:</string>
   <string name="connection_connected">Connected</string>
   <string name="connection_disconnected">Disconnected</string>

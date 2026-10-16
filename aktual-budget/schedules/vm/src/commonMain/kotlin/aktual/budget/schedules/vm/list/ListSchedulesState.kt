@@ -1,5 +1,6 @@
 package aktual.budget.schedules.vm.list
 
+import aktual.budget.model.ScheduleSort
 import aktual.budget.schedules.domain.Schedule
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
@@ -12,4 +13,5 @@ data object Loading : ListSchedulesState
 
 data object Empty : ListSchedulesState
 
-data class Success(val schedules: ImmutableList<Schedule>) : ListSchedulesState
+data class Success(val schedules: ImmutableList<Schedule>, val sort: ScheduleSort) :
+  ListSchedulesState

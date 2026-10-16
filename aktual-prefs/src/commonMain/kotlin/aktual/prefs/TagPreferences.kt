@@ -1,5 +1,6 @@
 package aktual.prefs
 
+import aktual.budget.model.SortDirection
 import aktual.budget.model.TagSort
 
 interface TagPreferences {
@@ -8,5 +9,5 @@ interface TagPreferences {
   val lastUsedTagColor: NullablePreference<String>
 
   val sortField: Preference<TagSort.Field>
-  val sortDirection: Preference<TagSort.Direction>
+  val sortDirection: Preference<SortDirection>
 }

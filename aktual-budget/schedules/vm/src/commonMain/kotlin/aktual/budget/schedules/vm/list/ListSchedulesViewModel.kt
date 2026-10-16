@@ -4,6 +4,8 @@ import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.DatabaseTables.SCHEDULES
 import aktual.budget.model.LocalChange
+import aktual.budget.model.ScheduleSort
+import aktual.budget.model.SortDirection
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
 import aktual.budget.schedules.domain.Schedule
@@ -40,7 +42,7 @@ class ListSchedulesViewModel
 internal constructor(
   private val loader: SchedulesLoader,
   private val syncController: BudgetSyncController,
-  preferences: SchedulePreferences,
+  private val preferences: SchedulePreferences,
 ) : ViewModel() {
   private val mutableSchedules = MutableStateFlow<ImmutableList<Schedule>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
@@ -62,17 +64,20 @@ internal constructor(
       val isLoading by mutableIsLoading.collectAsState()
       val failure by mutableFailure.collectAsState()
       val includeCompleted by showCompleted.collectAsState()
+      val sortField by preferences.sortField.asFlow().collectAsState(ScheduleSort.Field.Default)
+      val sortDirection by preferences.sortDirection.asFlow().collectAsState(SortDirection.Default)
       val visible =
         if (includeCompleted) {
           schedules
         } else {
-          schedules.filterNot { it.isCompleted }.toImmutableList()
+          schedules.filterNot { it.isCompleted }
         }
+      val sort = ScheduleSort(sortField, sortDirection)
       when {
         isLoading -> Loading
         failure != null -> Failure(failure)
         visible.isEmpty() -> Empty
-        else -> Success(visible)
+        else -> Success(visible.sortedWith(sort.comparator()).toImmutableList(), sort)
       }
     }
 
@@ -137,6 +142,26 @@ internal constructor(
         mutableEvents.tryEmit(ListSchedulesEvent.RestoreFailed(schedule))
       }
     }
+  }
+
+  fun setSort(sort: ScheduleSort) {
+    viewModelScope.launch {
+      preferences.sortField.set(sort.field)
+      preferences.sortDirection.set(sort.direction)
+    }
+  }
+
+  private fun ScheduleSort.comparator(): Comparator<Schedule> {
+    val byField =
+      when (field) {
+        NextDate -> compareBy<Schedule> { it.nextDate }.thenBy { it.status.ordinal }
+        Name -> compareBy(nullsLast()) { it.name?.lowercase() }
+        Payee -> compareBy { it.payeeName.lowercase() }
+        Account -> compareBy { it.accountName.lowercase() }
+        Amount -> compareBy { it.amount }
+        Status -> compareBy { it.status.ordinal }
+      }
+    return direction.apply(byField).thenBy { it.nextDate }
   }
 }
 

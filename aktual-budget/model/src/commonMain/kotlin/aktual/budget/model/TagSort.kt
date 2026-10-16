@@ -5,9 +5,9 @@ import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.toImmutableList
 
 @Immutable
-data class TagSort(val field: Field, val direction: Direction) {
+data class TagSort(val field: Field, val direction: SortDirection) {
   companion object {
-    val Default = TagSort(Field.Default, Direction.Default)
+    val Default = TagSort(Field.Default, SortDirection.Default)
   }
 
   enum class Field(override val value: String) : SerializableByString {
@@ -16,16 +16,6 @@ data class TagSort(val field: Field, val direction: Direction) {
 
     companion object {
       val Default = Name
-      val Entries = entries.toImmutableList()
-    }
-  }
-
-  enum class Direction(override val value: String) : SerializableByString {
-    Ascending("ascending"),
-    Descending("descending");
-
-    companion object {
-      val Default = Ascending
       val Entries = entries.toImmutableList()
     }
   }

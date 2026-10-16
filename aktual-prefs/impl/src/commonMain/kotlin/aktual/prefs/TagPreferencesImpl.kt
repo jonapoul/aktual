@@ -1,5 +1,6 @@
 package aktual.prefs
 
+import aktual.budget.model.SortDirection
 import aktual.budget.model.TagSort
 import aktual.di.AppScope
 import androidx.datastore.core.DataStore
@@ -21,11 +22,11 @@ class TagPreferencesImpl(dataStore: DataStore<Preferences>) : TagPreferences {
       )
       .required()
 
-  override val sortDirection: Preference<TagSort.Direction> =
+  override val sortDirection: Preference<SortDirection> =
     dataStore
       .translated(
         key = stringPreferencesKey("tagSortDirection"),
-        default = TagSort.Direction.Default,
+        default = SortDirection.Default,
         translator = enumStringTranslator(),
       )
       .required()

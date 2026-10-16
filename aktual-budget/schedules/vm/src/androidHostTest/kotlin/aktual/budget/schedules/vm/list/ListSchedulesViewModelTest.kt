@@ -9,6 +9,7 @@ import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.model.LocalChange
+import aktual.budget.model.ScheduleSort
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
 import aktual.budget.schedules.domain.Schedule
@@ -23,10 +24,12 @@ import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
+import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
+import assertk.assertions.prop
 import kotlin.test.AfterTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
@@ -158,6 +161,62 @@ class ListSchedulesViewModelTest {
       assertThat(state).isEqualTo(Empty)
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  @Test
+  fun `Sorts by next date ascending by default`() = runDatabaseTest { scope ->
+    insertSchedule(
+      id = "a",
+      name = "Rent",
+      payee = "Landlord",
+      account = "Checking",
+      nextDate = LocalDate(2026, 5, 3),
+    )
+    insertSchedule(
+      id = "b",
+      name = "Power",
+      payee = "Energy",
+      account = "Checking",
+      nextDate = LocalDate(2026, 5, 2),
+    )
+    val viewModel = createViewModel(scope, TestSyncController())
+
+    viewModel.state.test {
+      assertThat(awaitSuccess()).all {
+        prop(Success::sort).isEqualTo(ScheduleSort(NextDate, Ascending))
+        prop(Success::schedules).extracting(Schedule::name).containsExactly("Power", "Rent")
+      }
+    }
+  }
+
+  @Test
+  fun `setSort persists the choice and re-sorts the list`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking", amount = -50)
+    insertSchedule(id = "b", name = "Power", payee = "Energy", account = "Checking", amount = -10)
+    insertSchedule(id = "c", name = null, payee = "Gym", account = "Checking", amount = -30)
+    val preferences = SchedulePreferencesImpl(scope.buildPreferences())
+    val viewModel = createViewModel(scope, TestSyncController(), preferences)
+    viewModel.state.awaitSchedules()
+
+    viewModel.setSort(ScheduleSort(Payee, Descending))
+    scope.advanceUntilIdle()
+    assertThat(viewModel.state.awaitSchedules())
+      .extracting(Schedule::payeeName)
+      .containsExactly("Landlord", "Gym", "Energy")
+    assertThat(preferences.sortField.get()).isEqualTo(Payee)
+    assertThat(preferences.sortDirection.get()).isEqualTo(Descending)
+
+    viewModel.setSort(ScheduleSort(Amount, Ascending))
+    scope.advanceUntilIdle()
+    assertThat(viewModel.state.awaitSchedules())
+      .extracting(Schedule::name)
+      .containsExactly("Rent", null, "Power")
+
+    viewModel.setSort(ScheduleSort(Name, Ascending))
+    scope.advanceUntilIdle()
+    assertThat(viewModel.state.awaitSchedules())
+      .extracting(Schedule::name)
+      .containsExactly("Power", "Rent", null)
   }
 
   private suspend fun StateFlow<ListSchedulesState>.awaitSchedules(): List<Schedule> {
