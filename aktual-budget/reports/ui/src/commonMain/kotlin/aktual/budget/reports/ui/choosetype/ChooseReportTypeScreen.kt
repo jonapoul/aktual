@@ -1,5 +1,6 @@
 package aktual.budget.reports.ui.choosetype
 
+import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetType
 import aktual.budget.reports.ui.charts.JUL_2025
@@ -19,6 +20,7 @@ import aktual.budget.reports.ui.string
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeDialog
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
+import aktual.budget.reports.vm.choosetype.SavedCustomReport
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Warning
 import aktual.core.l10n.Strings
@@ -69,6 +71,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -83,12 +87,15 @@ fun ChooseReportTypeScreen(
   }
 
   val dialog by viewModel.dialog.collectAsStateWithLifecycle()
+  val savedReports by viewModel.savedReports.collectAsStateWithLifecycle()
 
   ChooseReportTypeScaffold(
     dialog = dialog,
+    savedReports = savedReports,
     onAction = { action ->
       when (action) {
         is Create -> viewModel.createReport(action.type)
+        is AddSavedReport -> viewModel.addSavedReport(action.id)
         ShowDisabledDialog -> viewModel.show(UnsupportedType)
         DismissDialog -> viewModel.hideDialogs()
       }
@@ -106,6 +113,7 @@ private fun chooseReportTypeViewModel(page: DashboardPageId) =
 @Composable
 internal fun ChooseReportTypeScaffold(
   dialog: ChooseReportTypeDialog?,
+  savedReports: ImmutableList<SavedCustomReport>,
   onAction: ChooseReportTypeActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -124,6 +132,7 @@ internal fun ChooseReportTypeScaffold(
     ChooseReportTypeContent(
       modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
       dialog = dialog,
+      savedReports = savedReports,
       contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
       lazyListState = lazyListState,
       onAction = onAction,
@@ -134,6 +143,7 @@ internal fun ChooseReportTypeScaffold(
 @Composable
 private fun ChooseReportTypeContent(
   dialog: ChooseReportTypeDialog?,
+  savedReports: ImmutableList<SavedCustomReport>,
   onAction: ChooseReportTypeActionHandler,
   contentPadding: PaddingValues,
   lazyListState: LazyListState,
@@ -146,6 +156,25 @@ private fun ChooseReportTypeContent(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       contentPadding = contentPadding,
     ) {
+      if (savedReports.isNotEmpty()) {
+        item {
+          Text(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            text = Strings.reportsChooseTypeSavedReports,
+            color = colors.pageTextSubdued,
+            style = typography.titleSmall,
+          )
+        }
+
+        items(savedReports, key = { it.id.value }) { report ->
+          SavedReport(
+            modifier = Modifier.fillMaxWidth(),
+            report = report,
+            onAction = onAction,
+          )
+        }
+      }
+
       items(WidgetType.known) { type ->
         WidgetType(
           modifier = Modifier.fillMaxWidth(),
@@ -160,6 +189,25 @@ private fun ChooseReportTypeContent(
     ChooseReportTypeDialogs(dialog, onAction)
   }
 }
+
+@Composable
+private fun SavedReport(
+  report: SavedCustomReport,
+  onAction: ChooseReportTypeActionHandler,
+  modifier: Modifier = Modifier,
+) =
+  Text(
+    modifier =
+      modifier
+        .clip(CardShape)
+        .background(colors.tableBackground, CardShape)
+        .border(Hairline, colors.pillBorderDark, CardShape)
+        .clickable { onAction(AddSavedReport(report.id)) }
+        .padding(16.dp),
+    text = report.name,
+    color = colors.pageText,
+    style = typography.titleMedium,
+  )
 
 @Composable
 private fun WidgetType(
@@ -254,12 +302,26 @@ private val REPORT_HEIGHT = 250.dp
 private fun PreviewChooseReportTypeScaffold(
   @PreviewParameter(ChooseReportTypeScaffoldParameters::class)
   params: ColoredParams<ChooseReportTypeScaffoldParams>,
-) = PreviewWithColoredParams(params) { ChooseReportTypeScaffold(dialog = dialog, onAction = {}) }
+) =
+  PreviewWithColoredParams(params) {
+    ChooseReportTypeScaffold(dialog = dialog, savedReports = savedReports, onAction = {})
+  }
 
-private data class ChooseReportTypeScaffoldParams(val dialog: ChooseReportTypeDialog?)
+private data class ChooseReportTypeScaffoldParams(
+  val dialog: ChooseReportTypeDialog?,
+  val savedReports: ImmutableList<SavedCustomReport> = persistentListOf(),
+)
 
 private class ChooseReportTypeScaffoldParameters :
   ColoredParameterProvider<ChooseReportTypeScaffoldParams>(
     ChooseReportTypeScaffoldParams(dialog = null),
     ChooseReportTypeScaffoldParams(dialog = UnsupportedType),
+    ChooseReportTypeScaffoldParams(
+      dialog = null,
+      savedReports =
+        persistentListOf(
+          SavedCustomReport(CustomReportId("groceries"), "Groceries by month"),
+          SavedCustomReport(CustomReportId("spending"), "Spending by category"),
+        ),
+    ),
   )

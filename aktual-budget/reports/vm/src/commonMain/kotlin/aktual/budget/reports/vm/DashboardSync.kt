@@ -78,6 +78,11 @@ internal class DashboardSync(
   suspend fun renameCustomReport(id: CustomReportId, name: String) =
     sync.syncChanges(localChange(CUSTOM_REPORTS, id.value, "name", name))
 
+  // packages/loot-core/src/server/reports/app.ts deleteReport(). Other widgets showing the report
+  // are left in place, and show it as missing
+  suspend fun deleteCustomReport(id: CustomReportId) =
+    sync.syncChanges(tombstone(CUSTOM_REPORTS, id.value))
+
   suspend fun insertPage(id: DashboardPageId, name: String) {
     sync.syncChanges(
       localChange(DASHBOARD_PAGES, id.value, "id", id.value),
