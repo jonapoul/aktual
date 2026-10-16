@@ -1,5 +1,6 @@
 package aktual.budget.reports.vm
 
+import aktual.budget.db.FormulaAccounts
 import aktual.budget.db.FormulaCategories
 import aktual.budget.db.FormulaTransactions
 import aktual.budget.db.dao.FormulaDao
@@ -19,12 +20,16 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 
 // packages/desktop-client/src/hooks/useFormulaExecution.ts: the data behind a formula card's query
-// functions, read from the budget
+// functions, read from the budget. Reads are cached, so make one per evaluation
 internal class FormulaQueries(
   private val queries: Map<String, FormulaQuery>,
   private val dao: FormulaDao,
   private val calendar: Calendar,
 ) : FormulaDataSource {
+  private val transactions = hashMapOf<String, List<FormulaTransactions>>()
+  private var accounts: List<FormulaAccounts>? = null
+  private var categories: List<FormulaCategories>? = null
+
   override suspend fun querySum(name: String): Long? = transactions(name)?.sumOf { it.amount }
 
   override suspend fun queryCount(name: String): Long? = transactions(name)?.size?.toLong()
@@ -33,7 +38,7 @@ internal class FormulaQueries(
     val query = queries[name] ?: return null
     val conditions =
       query.conditions.filter { it.customName == null && it.field in CATEGORY_FIELDS }
-    return categoryIds(dao.categories(), conditions, query.conditionsOp)
+    return categoryIds(categories(), conditions, query.conditionsOp)
   }
 
   override suspend fun queryMonths(name: String): YearMonthRange? {
@@ -42,7 +47,7 @@ internal class FormulaQueries(
   }
 
   override suspend fun accountBalance(account: String): Long? {
-    val accounts = dao.accounts()
+    val accounts = accounts()
     val match =
       accounts.firstOrNull { it.id.value == account }
         ?: accounts.firstOrNull { it.name == account }
@@ -50,8 +55,17 @@ internal class FormulaQueries(
     return dao.accountBalance(match.id)
   }
 
+  private suspend fun accounts(): List<FormulaAccounts> =
+    accounts ?: dao.accounts().also { accounts = it }
+
+  private suspend fun categories(): List<FormulaCategories> =
+    categories ?: dao.categories().also { categories = it }
+
   private suspend fun transactions(name: String): List<FormulaTransactions>? {
     val query = queries[name] ?: return null
+    transactions[name]?.let {
+      return it
+    }
     val months = query.months()
     val rows =
       if (months == null) {
@@ -60,7 +74,7 @@ internal class FormulaQueries(
         dao.transactions(months.start.firstDay, months.endInclusive.lastDay)
       }
     val filter = TransactionFilter.compile(query.conditions, query.conditionsOp ?: And)
-    return rows.filter { filter.matches(it.toFilterRow()) }
+    return rows.filter { filter.matches(it.toFilterRow()) }.also { transactions[name] = it }
   }
 
   private fun FormulaQuery.months(): YearMonthRange? = timeFrame?.let {

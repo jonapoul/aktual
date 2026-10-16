@@ -35,6 +35,17 @@ class FormulaQueriesTest {
   }
 
   @Test
+  fun `Each query is read once`() = runSyncedDatabaseTest { _, sync ->
+    sync.insertBudget()
+    val queries = queries("all" to query())
+    assertThat(queries.querySum("all")).isEqualTo(16350L)
+    sync.transaction("later", -350)
+    assertThat(queries.querySum("all")).isEqualTo(16350L)
+    assertThat(queries.queryCount("all")).isEqualTo(7L)
+    assertThat(queries("all" to query()).queryCount("all")).isEqualTo(8L)
+  }
+
+  @Test
   fun `Time frames limit the dates`() = runQueriesTest {
     val queries = queries("may" to query(timeFrame = may()))
     assertThat(queries.querySum("may")).isEqualTo(-3600L)
