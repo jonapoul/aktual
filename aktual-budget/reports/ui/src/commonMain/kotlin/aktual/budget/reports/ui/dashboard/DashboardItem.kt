@@ -7,6 +7,8 @@ import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.vm.ChartData
+import aktual.budget.reports.vm.CustomReportMeta
+import aktual.budget.reports.vm.UnsupportedData
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.dashboard.isRenamable
 import aktual.budget.reports.vm.dashboard.name
@@ -14,13 +16,16 @@ import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.contrastingTextColor
@@ -149,6 +154,16 @@ private fun DashboardItem(
           onAction(Action.Delete(item.id))
         },
         onDismiss = { showDeleteDialog = false },
+        onDeleteReport =
+          if (item.hasSavedReport(chartData)) {
+            {
+              showDeleteDialog = false
+              onOpenChange(false)
+              onAction(Action.DeleteSavedReport(item))
+            }
+          } else {
+            null
+          },
       )
     }
   }
@@ -194,8 +209,20 @@ private fun LoadingChart(modifier: Modifier = Modifier) {
   Box(modifier = modifier.clip(CardShape).shimmer(shimmer).background(colors.tableText))
 }
 
+// A custom report widget shows a saved report, which can be deleted as well as taken off the
+// dashboard. Not once it's already gone
+private fun DashboardItem.hasSavedReport(chartData: ChartData?): Boolean =
+  meta is CustomReportMeta && (chartData as? UnsupportedData)?.reason != MissingReport
+
+// With [onDeleteReport], the confirm button only removes the widget, and another deletes the saved
+// report
 @Composable
-private fun DeleteReportDialogContent(name: String?, onConfirm: () -> Unit, onDismiss: () -> Unit) =
+private fun DeleteReportDialogContent(
+  name: String?,
+  onConfirm: () -> Unit,
+  onDismiss: () -> Unit,
+  onDeleteReport: (() -> Unit)? = null,
+) =
   AktualAlertDialogContent(
     title =
       if (name.isNullOrBlank()) {
@@ -206,11 +233,20 @@ private fun DeleteReportDialogContent(name: String?, onConfirm: () -> Unit, onDi
     highlight = colors.errorText,
     buttons = {
       TextButton(onClick = onDismiss) { Text(Strings.reportsDashboardDeleteReportCancel) }
-      TextButton(onClick = onConfirm) {
-        Text(Strings.reportsDashboardDeleteReportConfirm, color = colors.errorText)
+      if (onDeleteReport == null) {
+        TextButton(onClick = onConfirm) {
+          Text(Strings.reportsDashboardDeleteReportConfirm, color = colors.errorText)
+        }
+      } else {
+        TextButton(onClick = onConfirm) { Text(Strings.reportsDashboardDeleteReportRemove) }
+        TextButton(onClick = onDeleteReport) {
+          Text(Strings.reportsDashboardDeleteReportSaved, color = colors.errorText)
+        }
       }
     },
-    content = {},
+    content = {
+      if (onDeleteReport != null) Text(Strings.reportsDashboardDeleteReportSavedMessage)
+    },
   )
 
 @Preview
@@ -235,6 +271,15 @@ private fun PreviewDeleteReportDialog(
 ) =
   PreviewWithColoredParams(params) {
     DeleteReportDialogContent(name = params.data, onConfirm = {}, onDismiss = {})
+  }
+
+@Preview
+@Composable
+private fun PreviewDeleteSavedReportDialog(
+  @PreviewParameter(ColoredParameters::class) colors: Colors,
+) =
+  PreviewWithColors(colors) {
+    DeleteReportDialogContent(name = null, onConfirm = {}, onDismiss = {}, onDeleteReport = {})
   }
 
 private class DeleteReportDialogProvider : ColoredParameterProvider<String?>("Net worth", null)

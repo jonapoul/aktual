@@ -10,6 +10,7 @@ import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.localChange
+import aktual.budget.model.tombstone
 import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
@@ -104,6 +105,16 @@ class DashboardSyncTest {
 
     assertThat(controller.changes)
       .containsExactly(localChange(CUSTOM_REPORTS, "report", "name", "new"))
+  }
+
+  @Test
+  fun `Delete a custom report`() = runDatabaseTest { scope ->
+    val controller = TestSyncController()
+    val sync = DashboardSync(dao(scope.testScheduler), controller)
+
+    sync.deleteCustomReport(CustomReportId("report"))
+
+    assertThat(controller.changes).containsExactly(tombstone(CUSTOM_REPORTS, "report"))
   }
 
   @Test

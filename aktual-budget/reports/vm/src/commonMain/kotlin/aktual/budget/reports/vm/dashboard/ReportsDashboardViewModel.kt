@@ -127,5 +127,15 @@ internal constructor(
     viewModelScope.launch { sync.deleteWidget(id) }
   }
 
+  // Deletes the saved custom report, and takes this widget off the dashboard with it
+  fun deleteSavedReport(item: DashboardItem) {
+    val meta = item.meta as? CustomReportMeta ?: return
+    logcat.d { "Deleting custom report ${meta.id} shown by ${item.id}" }
+    viewModelScope.launch {
+      sync.deleteCustomReport(meta.id)
+      sync.deleteWidget(item.id)
+    }
+  }
+
   fun observeChartData(item: DashboardItem): Flow<ChartData> = chartDataLoader.load(item.meta)
 }

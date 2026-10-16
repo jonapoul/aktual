@@ -89,6 +89,7 @@ fun ReportsDashboardScreen(
         is OpenItem -> toReport(action.id)
         is Rename -> viewModel.renameReport(action.item, action.name)
         is Delete -> viewModel.deleteReport(action.id)
+        is DeleteSavedReport -> viewModel.deleteSavedReport(action.item)
         is SetSummaryType -> TODO()
         is SetAllTimeDivisor -> TODO()
         is ClickCalendarDay -> TODO()

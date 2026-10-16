@@ -18,6 +18,8 @@ internal sealed interface Action {
 
   @JvmInline value class Delete(val id: WidgetId) : Action
 
+  @JvmInline value class DeleteSavedReport(val item: DashboardItem) : Action
+
   @JvmInline value class SetSummaryType(val type: SummaryChartType) : Action
 
   @JvmInline value class SetAllTimeDivisor(val allTime: Boolean) : Action
