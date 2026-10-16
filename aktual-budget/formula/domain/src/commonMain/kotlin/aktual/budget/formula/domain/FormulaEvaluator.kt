@@ -12,14 +12,14 @@ class FormulaEvaluator internal constructor(private val functions: Map<String, F
     variables: Map<String, FormulaValue> = emptyMap(),
   ): FormulaResult {
     if (!formula.startsWith("=")) {
-      return FormulaResult(ErrorValue(Generic, MISSING_EQUALS_MESSAGE), emptyList())
+      return FormulaResult(ErrorValue(Generic, MissingEquals), emptyList())
     }
 
     val root =
       try {
         FormulaParser.parse(formula)
       } catch (e: FormulaParseException) {
-        return FormulaResult(ErrorValue(Generic, "$PARSE_ERROR_MESSAGE ${e.message}"), emptyList())
+        return FormulaResult(ErrorValue(Generic, e.reason, e.subject), emptyList())
       }
 
     val scope = EvaluationScope(functions, variables.mapKeys { it.key.lowercase() })
@@ -29,11 +29,6 @@ class FormulaEvaluator internal constructor(private val functions: Map<String, F
         else -> result
       }
     return FormulaResult(value, scope.warnings.toList())
-  }
-
-  private companion object {
-    const val MISSING_EQUALS_MESSAGE = "Formula must start with ="
-    const val PARSE_ERROR_MESSAGE = "Parsing error."
   }
 }
 
@@ -51,7 +46,7 @@ internal class EvaluationScope(
     val value = evaluateWithoutPostProcessing(node)
     if (value !is NumberValue) return value
     return when {
-      !value.value.isFinite() -> ErrorValue(Num, NAN_MESSAGE)
+      !value.value.isFinite() -> ErrorValue(Num, NotFinite)
       // Turns -0.0 into 0.0
       value.value == 0.0 -> NumberValue(0.0)
       else -> value
@@ -65,9 +60,7 @@ internal class EvaluationScope(
       is ErrorNode -> ErrorValue(node.type)
       EmptyArgNode -> EmptyValue
       is CellReferenceNode -> if (node.isFormulaCell) ErrorValue(Cycle) else EmptyValue
-      is NamedNode ->
-        variables[node.name.lowercase()]
-          ?: ErrorValue(Name, "Named expression ${node.name} not recognized.")
+      is NamedNode -> variables[node.name.lowercase()] ?: ErrorValue(Name, UnknownName, node.name)
       is CallNode -> call(node)
       is UnaryNode -> unary(node.op, evaluate(node.operand).toScalar())
       is BinaryNode ->
@@ -78,10 +71,8 @@ internal class EvaluationScope(
   private suspend fun call(node: CallNode): FormulaValue {
     val function = functions[node.name]
     if (function != null) return function.call(this, node.args)
-    val message =
-      if (node.name in UPSTREAM_FUNCTION_NAMES) "Function ${node.name} isn't supported yet."
-      else "Function name ${node.name} not recognized."
-    return ErrorValue(Name, message)
+    val isUpstream = node.name in UPSTREAM_FUNCTION_NAMES
+    return ErrorValue(Name, if (isUpstream) UnsupportedFunction else UnknownFunction, node.name)
   }
 
   private fun unary(op: UnaryOp, value: FormulaValue): FormulaValue {
@@ -89,7 +80,7 @@ internal class EvaluationScope(
     return when (op) {
       Plus -> value
       Minus -> coerceToNumber(value).mapNumber { -it }
-      Percent -> coerceToNumber(value).mapNumber { it / 100 }
+      Percent -> coerceToNumber(value).mapNumber { it / PERCENT }
     }
   }
 
@@ -123,14 +114,21 @@ internal class EvaluationScope(
     if (l !is NumberValue) return l
     val r = coerceToNumber(right)
     if (r !is NumberValue) return r
+    if (op == Divide && r.value == 0.0) return ErrorValue(DivByZero)
     val result =
       when (op) {
         Add -> addWithEpsilon(l.value, r.value)
         Subtract -> subtractWithEpsilon(l.value, r.value)
         Multiply -> l.value * r.value
-        Divide -> if (r.value == 0.0) return ErrorValue(DivByZero) else l.value / r.value
+        Divide -> l.value / r.value
         Power -> l.value.pow(r.value)
-        else -> error("Not arithmetic: $op")
+        Equal,
+        NotEqual,
+        Greater,
+        Less,
+        GreaterOrEqual,
+        LessOrEqual,
+        Concat -> error("Not arithmetic: $op")
       }
     return NumberValue(result)
   }
@@ -150,12 +148,12 @@ internal class EvaluationScope(
         } else if (row.size == block.size) {
           row.forEachIndexed { i, cells -> cells += block[i] }
         } else {
-          return ErrorValue(Ref, SIZE_MISMATCH_MESSAGE)
+          return ErrorValue(Ref, ArraySizeMismatch)
         }
       }
       val rows = row.orEmpty()
       if (result.isNotEmpty() && result.first().size != rows.first().size) {
-        return ErrorValue(Ref, SIZE_MISMATCH_MESSAGE)
+        return ErrorValue(Ref, ArraySizeMismatch)
       }
       result += rows
     }
@@ -166,7 +164,6 @@ internal class EvaluationScope(
     if (this is NumberValue) NumberValue(transform(value)) else this
 
   private companion object {
-    const val NAN_MESSAGE = "NaN or infinite value encountered."
-    const val SIZE_MISMATCH_MESSAGE = "Array dimensions mismatched."
+    const val PERCENT = 100
   }
 }

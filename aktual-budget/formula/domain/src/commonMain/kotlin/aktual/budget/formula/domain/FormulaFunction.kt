@@ -35,11 +35,11 @@ internal class FunctionArgs(private val values: List<FormulaValue?>) {
 
   operator fun get(index: Int): FormulaValue? = values.getOrNull(index)
 
-  fun number(index: Int): Double = (values[index] as NumberValue).value
+  fun number(index: Int): Double = (requireNotNull(values[index]) as NumberValue).value
 
-  fun text(index: Int): String = (values[index] as TextValue).value
+  fun text(index: Int): String = (requireNotNull(values[index]) as TextValue).value
 
-  fun boolean(index: Int): Boolean = (values[index] as BooleanValue).value
+  fun boolean(index: Int): Boolean = (requireNotNull(values[index]) as BooleanValue).value
 }
 
 // Port of HyperFormula's FunctionPlugin.runFunction: evaluates every argument, checks the count,
@@ -52,9 +52,6 @@ internal fun formulaFunction(
 ): FormulaFunction = FormulaFunction { scope, args ->
   scope.runFunction(args, params.toList(), repeatLastArgs, expandRanges, body)
 }
-
-internal const val WRONG_ARG_NUMBER_MESSAGE = "Wrong number of arguments."
-private const val WRONG_TYPE_MESSAGE = "Wrong type of argument."
 
 private suspend fun EvaluationScope.runFunction(
   args: List<FormulaNode>,
@@ -78,9 +75,9 @@ private suspend fun EvaluationScope.runFunction(
   if (repeatLastArgs > 0) {
     while (values.size > metadata.size) metadata += params.takeLast(repeatLastArgs)
   }
-  if (values.size > metadata.size) return ErrorValue(NotAvailable, WRONG_ARG_NUMBER_MESSAGE)
+  if (values.size > metadata.size) return ErrorValue(NotAvailable, WrongArgCount)
   val missingAreOptional = metadata.drop(values.size).all { it.optional || it.default != null }
-  if (!missingAreOptional) return ErrorValue(NotAvailable, WRONG_ARG_NUMBER_MESSAGE)
+  if (!missingAreOptional) return ErrorValue(NotAvailable, WrongArgCount)
 
   val coerced = ArrayList<FormulaValue?>(metadata.size)
   for ((index, param) in metadata.withIndex()) {
@@ -92,8 +89,7 @@ private suspend fun EvaluationScope.runFunction(
     }
     val coercedValue = coerceToType(value, param)
     val ignorable = argument?.second == true
-    if (coercedValue == null && !ignorable)
-      return ErrorValue(FormulaErrorType.Value, WRONG_TYPE_MESSAGE)
+    if (coercedValue == null && !ignorable) return ErrorValue(Value, WrongArgType)
     if (coercedValue is ErrorValue && param.type != Scalar) return coercedValue
     coerced += coercedValue
   }
@@ -106,7 +102,7 @@ private fun coerceToType(value: FormulaValue, param: Param): FormulaValue? {
   return when (param.type) {
     Numeric,
     Integral -> coerceToNumberParam(scalar, param)
-    ArgType.Text -> coerceToText(scalar)
+    Text -> coerceToText(scalar)
     Logical -> coerceToBoolean(scalar)
     Scalar,
     NoError,
@@ -120,15 +116,11 @@ private fun coerceToNumberParam(value: FormulaValue, param: Param): FormulaValue
   if (coerced !is NumberValue) return coerced
   val number = coerced.value
   return when {
-    param.maxValue != null && number > param.maxValue -> ErrorValue(Num, VALUE_LARGE_MESSAGE)
-    param.minValue != null && number < param.minValue -> ErrorValue(Num, VALUE_SMALL_MESSAGE)
-    param.lessThan != null && number >= param.lessThan -> ErrorValue(Num, VALUE_LARGE_MESSAGE)
-    param.greaterThan != null && number <= param.greaterThan -> ErrorValue(Num, VALUE_SMALL_MESSAGE)
-    param.type == Integral && number != floor(number) -> ErrorValue(Num, INTEGER_EXPECTED_MESSAGE)
+    param.maxValue != null && number > param.maxValue -> ErrorValue(Num, ValueTooLarge)
+    param.minValue != null && number < param.minValue -> ErrorValue(Num, ValueTooSmall)
+    param.lessThan != null && number >= param.lessThan -> ErrorValue(Num, ValueTooLarge)
+    param.greaterThan != null && number <= param.greaterThan -> ErrorValue(Num, ValueTooSmall)
+    param.type == Integral && number != floor(number) -> ErrorValue(Num, IntegerExpected)
     else -> coerced
   }
 }
-
-private const val VALUE_LARGE_MESSAGE = "Value too large."
-private const val VALUE_SMALL_MESSAGE = "Value too small."
-private const val INTEGER_EXPECTED_MESSAGE = "Value needs to be an integer."

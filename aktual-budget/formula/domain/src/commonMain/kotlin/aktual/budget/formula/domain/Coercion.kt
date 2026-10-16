@@ -11,8 +11,6 @@ import kotlin.math.pow
 internal const val PRECISION_EPSILON = 1e-13
 private const val PRECISION_ROUNDING = 10
 
-internal const val NUMBER_COERCION_MESSAGE = "Value cannot be coerced to number."
-
 internal fun FormulaValue.toScalar(): FormulaValue = if (this is ArrayValue) topLeft else this
 
 internal fun coerceToNumber(value: FormulaValue): FormulaValue =
@@ -22,9 +20,8 @@ internal fun coerceToNumber(value: FormulaValue): FormulaValue =
     is BooleanValue -> NumberValue(if (scalar.value) 1.0 else 0.0)
     EmptyValue -> NumberValue(0.0)
     is TextValue ->
-      textToNumber(scalar.value)?.let(::NumberValue)
-        ?: ErrorValue(FormulaErrorType.Value, NUMBER_COERCION_MESSAGE)
-    is ArrayValue -> error("Unreachable")
+      textToNumber(scalar.value)?.let(::NumberValue) ?: ErrorValue(Value, NumberCoercion)
+    is ArrayValue -> coerceToNumber(scalar.topLeft)
   }
 
 internal fun textToNumber(text: String): Double? {
@@ -32,7 +29,7 @@ internal fun textToNumber(text: String): Double? {
   val trimmed = text.trim()
   if (trimmed.endsWith('%')) {
     parseNumericString(trimmed.dropLast(1).trim())?.let {
-      return it / 100
+      return it / PERCENT
     }
   }
   currencyAmount(trimmed)?.let {
@@ -61,7 +58,7 @@ internal fun coerceToText(value: FormulaValue): FormulaValue =
     is NumberValue -> TextValue(jsNumberToString(scalar.value))
     is BooleanValue -> TextValue(if (scalar.value) "TRUE" else "FALSE")
     EmptyValue -> TextValue("")
-    is ArrayValue -> error("Unreachable")
+    is ArrayValue -> coerceToText(scalar.topLeft)
   }
 
 // Null when the value can't be read as a boolean, which callers report as a wrong type
@@ -78,7 +75,7 @@ internal fun coerceToBoolean(value: FormulaValue): FormulaValue? =
         "" -> BooleanValue(false)
         else -> null
       }
-    is ArrayValue -> error("Unreachable")
+    is ArrayValue -> coerceToBoolean(scalar.topLeft)
   }
 
 // Neither side may be an error or array
@@ -114,7 +111,9 @@ private fun FormulaValue.emptyEquivalent(): FormulaValue =
     is TextValue -> TextValue("")
     is NumberValue -> NumberValue(0.0)
     is BooleanValue -> BooleanValue(false)
-    else -> EmptyValue
+    EmptyValue,
+    is ErrorValue,
+    is ArrayValue -> EmptyValue
   }
 
 private fun FormulaValue.typeOrder(): Int =
@@ -122,9 +121,9 @@ private fun FormulaValue.typeOrder(): Int =
     EmptyValue -> 0
     is NumberValue -> 1
     is TextValue -> 2
-    is BooleanValue -> 3
+    is BooleanValue -> TYPE_ORDER_BOOLEAN
     is ErrorValue,
-    is ArrayValue -> 4
+    is ArrayValue -> TYPE_ORDER_ERROR
   }
 
 internal expect fun compareText(left: String, right: String): Int
@@ -154,12 +153,15 @@ internal fun roundForOutput(value: Double): Double {
   if (value == 0.0) return value
   val magnitude = floor(log10(abs(value)))
   val multiplier = 10.0.pow(PRECISION_ROUNDING - magnitude)
-  return if (value < 0) -jsRound(-value * multiplier) / multiplier
-  else jsRound(value * multiplier) / multiplier
+  return if (value < 0) {
+    -jsRound(-value * multiplier) / multiplier
+  } else {
+    jsRound(value * multiplier) / multiplier
+  }
 }
 
 // JavaScript's Math.round, which rounds halves up rather than to even
-internal fun jsRound(value: Double): Double = floor(value + 0.5)
+internal fun jsRound(value: Double): Double = floor(value + HALF)
 
 // Matches JavaScript's Number.prototype.toString, which is how HyperFormula turns numbers into text
 internal fun jsNumberToString(value: Double): String {
@@ -182,16 +184,21 @@ internal fun jsNumberToString(value: Double): String {
     n in k..MAX_PLAIN_EXPONENT -> digits + "0".repeat(n - k)
     n in 1..MAX_PLAIN_EXPONENT -> digits.substring(0, n) + "." + digits.substring(n)
     n in MIN_PLAIN_EXPONENT..0 -> "0." + "0".repeat(-n) + digits
-    else -> {
-      val e = n - 1
-      val sign = if (e >= 0) "+" else "-"
-      val significand = if (k == 1) digits else digits.first() + "." + digits.substring(1)
-      "${significand}e$sign${abs(e)}"
-    }
+    else -> exponential(digits, exponent = n - 1)
   }
 }
 
+private fun exponential(digits: String, exponent: Int): String {
+  val sign = if (exponent >= 0) "+" else "-"
+  val significand = if (digits.length == 1) digits else digits.first() + "." + digits.substring(1)
+  return "${significand}e$sign${abs(exponent)}"
+}
+
+private const val TYPE_ORDER_BOOLEAN = 3
+private const val TYPE_ORDER_ERROR = 4
 private const val MAX_PLAIN_EXPONENT = 21
 private const val MIN_PLAIN_EXPONENT = -5
 private const val CURRENCY_SYMBOL = "$"
-private val NUMERIC_STRING = Regex("[+-]?((\\.\\d+)|(\\d+(\\.\\d*)?))(e[+-]?\\d+)?")
+private const val PERCENT = 100
+private const val HALF = 0.5
+private val NUMERIC_STRING = Regex("""[+-]?((\.\d+)|(\d+(\.\d*)?))(e[+-]?\d+)?""")

@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber", "ReturnCount")
+
 package aktual.budget.formula.domain
 
 import kotlin.math.floor
@@ -12,10 +14,10 @@ private const val NULL_YEAR = 30
 private const val MIN_YEAR = 1582
 private const val SECONDS_PRECISION = 1000.0
 
-private val QUICK_CHECK = Regex("^[0-9/.\\-: ]+[ap]?m?$")
-private val WHITESPACE = Regex("\\s+")
+private val QUICK_CHECK = Regex("""^[0-9/.\-: ]+[ap]?m?$""")
+private val WHITESPACE = Regex("""\s+""")
 private val DATE_SEPARATOR = Regex("[ /.-]")
-private val SECONDS_ITEM = Regex("^ss(\\.(s+|0+))?$")
+private val SECONDS_ITEM = Regex("""^ss(\.(s+|0+))?$""")
 private val EPOCH = LocalDate(year = 1899, month = 12, day = 30)
 
 private data class DateParts(val year: Int, val month: Int, val day: Int)
@@ -55,7 +57,7 @@ private fun DateParts.withFullYear(): DateParts =
 
 private fun DateParts.isValid(): Boolean {
   if (year < MIN_YEAR || month !in 1..12 || day < 1) return false
-  val leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
+  val leap = year % 4 == 0 && year % 100 != 0 || year % 400 == 0
   val daysInMonth =
     when (month) {
       2 -> if (leap) 29 else 28
@@ -135,7 +137,7 @@ private fun parseTime(items: MutableList<String>, format: String): TimeParts? {
   if (!minutes.isWholeNumber()) return null
   val hoursParsed = jsNumber(items.getOrNull(hourItem) ?: "0")
   if (!hoursParsed.isWholeNumber()) return null
-  if (pm != null && (hoursParsed < 0 || hoursParsed > 12)) return null
+  if (pm != null && hoursParsed !in 0.0..12.0) return null
   val hours = if (pm != null) hoursParsed % 12 + (if (pm) 12 else 0) else hoursParsed
   return TimeParts(hours, minutes, seconds)
 }
@@ -154,8 +156,8 @@ private fun parseDate(items: List<String>, format: String): DateParts? {
   if (!longYear.isNullOrEmpty() && !shortYear.isNullOrEmpty()) return null
   val year = jsNumber(longYear ?: shortYear)
   if (!year.isWholeNumber()) return null
-  if (!longYear.isNullOrEmpty() && (year < 1000 || year > 9999)) return null
-  if (!shortYear.isNullOrEmpty() && (year < 0 || year > 99)) return null
+  if (!longYear.isNullOrEmpty() && year !in 1000.0..9999.0) return null
+  if (!shortYear.isNullOrEmpty() && year !in 0.0..99.0) return null
 
   return DateParts(year.toInt(), month.toInt(), day.toInt())
 }
@@ -163,7 +165,7 @@ private fun parseDate(items: List<String>, format: String): DateParts? {
 // JavaScript's Number(string): blank is 0, anything unparseable is NaN
 private fun jsNumber(text: String?): Double =
   when {
-    text == null -> Double.NaN
+    text == null -> NaN
     text.isBlank() -> 0.0
     else -> text.trim().toDoubleOrNull() ?: Double.NaN
   }

@@ -9,9 +9,9 @@ import kotlinx.coroutines.test.runTest
 class FormulaFunctionTest {
   @Test
   fun `Argument count is checked`() = runTest {
-    assertThat(evaluate("=TRUE(1)")).isError(NotAvailable, WRONG_ARG_NUMBER_MESSAGE)
-    assertThat(evaluate("=ECHO()")).isError(NotAvailable, WRONG_ARG_NUMBER_MESSAGE)
-    assertThat(evaluate("=ECHO(1,2)")).isError(NotAvailable, WRONG_ARG_NUMBER_MESSAGE)
+    assertThat(evaluate("=TRUE(1)")).isError(NotAvailable, WrongArgCount)
+    assertThat(evaluate("=ECHO()")).isError(NotAvailable, WrongArgCount)
+    assertThat(evaluate("=ECHO(1,2)")).isError(NotAvailable, WrongArgCount)
   }
 
   @Test
@@ -27,12 +27,11 @@ class FormulaFunctionTest {
 
   @Test
   fun `Arguments are coerced to their parameter type`() = runTest {
-    assertThat(evaluate("=ADD(\"1\",TRUE())")).isEqualTo(NumberValue(2.0))
-    assertThat(evaluate("=ADD(\"x\")")).isError(FormulaErrorType.Value, NUMBER_COERCION_MESSAGE)
+    assertThat(evaluate("""=ADD("1",TRUE())""")).isEqualTo(NumberValue(2.0))
+    assertThat(evaluate("""=ADD("x")""")).isError(Value, NumberCoercion)
     assertThat(evaluate("=SHOUT(12)")).isEqualTo(TextValue("12!"))
-    assertThat(evaluate("=NEGATE(\"true\")")).isEqualTo(BooleanValue(false))
-    assertThat(evaluate("=NEGATE(\"yes\")"))
-      .isError(FormulaErrorType.Value, "Wrong type of argument.")
+    assertThat(evaluate("""=NEGATE("true")""")).isEqualTo(BooleanValue(false))
+    assertThat(evaluate("""=NEGATE("yes")""")).isError(Value, WrongArgType)
   }
 
   @Test
@@ -50,9 +49,9 @@ class FormulaFunctionTest {
   @Test
   fun `Bounds and integers are checked`() = runTest {
     assertThat(evaluate("=INDEXED(1)")).isEqualTo(NumberValue(1.0))
-    assertThat(evaluate("=INDEXED(0)")).isError(Num, "Value too small.")
-    assertThat(evaluate("=INDEXED(11)")).isError(Num, "Value too large.")
-    assertThat(evaluate("=INDEXED(1.5)")).isError(Num, "Value needs to be an integer.")
+    assertThat(evaluate("=INDEXED(0)")).isError(Num, ValueTooSmall)
+    assertThat(evaluate("=INDEXED(11)")).isError(Num, ValueTooLarge)
+    assertThat(evaluate("=INDEXED(1.5)")).isError(Num, IntegerExpected)
   }
 
   @Test
@@ -65,7 +64,7 @@ class FormulaFunctionTest {
 
   @Test
   fun `Functions can add warnings`() = runTest {
-    val result = FormulaEvaluator(FUNCTIONS).evaluate("=WARN(\"a\")+WARN(\"b\")")
+    val result = FormulaEvaluator(FUNCTIONS).evaluate("""=WARN("a")+WARN("b")""")
     assertThat(result.value).isEqualTo(NumberValue(0.0))
     assertThat(result.warnings).containsExactly(TestWarning("a"), TestWarning("b"))
   }
@@ -84,7 +83,7 @@ class FormulaFunctionTest {
             formulaFunction(Param(Numeric), Param(Numeric, default = NumberValue(2.0))) { args ->
               NumberValue(args.number(0) + args.number(1))
             },
-          "SHOUT" to formulaFunction(Param(ArgType.Text)) { args -> TextValue(args.text(0) + "!") },
+          "SHOUT" to formulaFunction(Param(Text)) { args -> TextValue(args.text(0) + "!") },
           "NEGATE" to formulaFunction(Param(Logical)) { args -> BooleanValue(!args.boolean(0)) },
           "ISERR" to formulaFunction(Param(Scalar)) { args -> BooleanValue(args[0] is ErrorValue) },
           "INDEXED" to
@@ -96,7 +95,7 @@ class FormulaFunctionTest {
               NumberValue((0 until args.size).sumOf { args.number(it) })
             },
           "WARN" to
-            formulaFunction(Param(ArgType.Text)) { args ->
+            formulaFunction(Param(Text)) { args ->
               warn(TestWarning(args.text(0)))
               NumberValue(0.0)
             },

@@ -7,10 +7,10 @@ internal class FormulaParser private constructor(private val tokens: List<Token>
   private var position = 0
 
   private fun parseFormula(): FormulaNode {
-    expect(TokenType.Equals)
+    expect(Equals)
     val node = booleanExpression()
     val extra = peek()
-    if (extra != null) throw FormulaParseException("Unexpected '${extra.image}'")
+    if (extra != null) fail(UnexpectedToken, extra.image)
     return node
   }
 
@@ -25,8 +25,8 @@ internal class FormulaParser private constructor(private val tokens: List<Token>
 
   private fun concatenateExpression(): FormulaNode {
     var left = additionExpression()
-    while (consume(TokenType.Ampersand)) {
-      left = BinaryNode(BinaryOp.Concat, left, additionExpression())
+    while (consume(Ampersand)) {
+      left = BinaryNode(Concat, left, additionExpression())
     }
     return left
   }
@@ -34,12 +34,7 @@ internal class FormulaParser private constructor(private val tokens: List<Token>
   private fun additionExpression(): FormulaNode {
     var left = multiplicationExpression()
     while (true) {
-      val op =
-        when (peek()?.type) {
-          TokenType.Plus -> BinaryOp.Add
-          TokenType.Minus -> BinaryOp.Subtract
-          else -> return left
-        }
+      val op = ADDITIONS[peek()?.type] ?: return left
       position++
       left = BinaryNode(op, left, multiplicationExpression())
     }
@@ -48,12 +43,7 @@ internal class FormulaParser private constructor(private val tokens: List<Token>
   private fun multiplicationExpression(): FormulaNode {
     var left = powerExpression()
     while (true) {
-      val op =
-        when (peek()?.type) {
-          TokenType.Times -> BinaryOp.Multiply
-          TokenType.Divide -> BinaryOp.Divide
-          else -> return left
-        }
+      val op = MULTIPLICATIONS[peek()?.type] ?: return left
       position++
       left = BinaryNode(op, left, powerExpression())
     }
@@ -61,71 +51,85 @@ internal class FormulaParser private constructor(private val tokens: List<Token>
 
   private fun powerExpression(): FormulaNode {
     var left = atomicExpression()
-    while (consume(TokenType.Power)) {
-      left = BinaryNode(BinaryOp.Power, left, atomicExpression())
+    while (consume(Power)) {
+      left = BinaryNode(Power, left, atomicExpression())
     }
     return left
   }
 
   private fun atomicExpression(): FormulaNode =
     when {
-      consume(TokenType.Plus) -> UnaryNode(UnaryOp.Plus, atomicExpression())
-      consume(TokenType.Minus) -> UnaryNode(UnaryOp.Minus, atomicExpression())
-      else -> {
-        val node = positiveAtomicExpression()
-        if (consume(TokenType.Percent)) UnaryNode(UnaryOp.Percent, node) else node
-      }
+      consume(Plus) -> UnaryNode(Plus, atomicExpression())
+      consume(Minus) -> UnaryNode(Minus, atomicExpression())
+      else -> percentExpression(positiveAtomicExpression())
     }
 
+  private fun percentExpression(node: FormulaNode): FormulaNode =
+    if (consume(Percent)) UnaryNode(Percent, node) else node
+
   private fun positiveAtomicExpression(): FormulaNode {
-    val token = next() ?: throw FormulaParseException("Unexpected end of formula")
+    val token = next() ?: fail(UnexpectedEnd)
     return when (token.type) {
-      TokenType.LeftBrace -> arrayExpression()
-      TokenType.LeftParen -> booleanExpression().also { expect(TokenType.RightParen) }
-      TokenType.Procedure -> procedureExpression(token)
-      TokenType.CellReference -> cellReference(token)
-      TokenType.Name -> NamedNode(token.image)
+      LeftBrace -> arrayExpression()
+      LeftParen -> booleanExpression().also { expect(RightParen) }
+      Procedure -> procedureExpression(token)
+      CellReference -> cellReference(token)
+      Name -> NamedNode(token.image)
       TokenType.Number -> NumberNode(token.image.toDouble())
-      TokenType.Text -> TextNode(token.image.substring(1, token.image.length - 1))
-      TokenType.ErrorLiteral -> errorLiteral(token)
-      TokenType.Colon -> throw FormulaParseException(RANGES_UNSUPPORTED)
-      else -> throw FormulaParseException("Unexpected '${token.image}'")
+      Text -> TextNode(token.image.substring(1, token.image.length - 1))
+      ErrorLiteral -> errorLiteral(token)
+      Colon -> fail(CellRange)
+      Plus,
+      Minus,
+      Times,
+      Divide,
+      Power,
+      Equals,
+      NotEqual,
+      Percent,
+      GreaterOrEqual,
+      LessOrEqual,
+      Greater,
+      Less,
+      RightParen,
+      RightBrace,
+      Ampersand,
+      Semicolon,
+      Comma -> fail(UnexpectedToken, token.image)
     }
   }
 
   private fun procedureExpression(token: Token): FormulaNode {
     val name = token.image.dropLast(1).uppercase()
     val args = mutableListOf(argumentOrEmpty())
-    while (consume(TokenType.Comma)) {
+    while (consume(Comma)) {
       args += argumentOrEmpty()
     }
-    expect(TokenType.RightParen)
+    expect(RightParen)
     if (args.size == 1 && args.single() == EmptyArgNode) args.clear()
     return CallNode(name, args)
   }
 
-  private fun argumentOrEmpty(): FormulaNode =
-    when (peek()?.type) {
-      TokenType.Comma,
-      TokenType.RightParen -> EmptyArgNode
-      else -> booleanExpression()
-    }
+  private fun argumentOrEmpty(): FormulaNode {
+    val type = peek()?.type
+    return if (type == Comma || type == RightParen) EmptyArgNode else booleanExpression()
+  }
 
   private fun arrayExpression(): FormulaNode {
     val rows = mutableListOf(mutableListOf(booleanExpression()))
     while (true) {
       when {
-        consume(TokenType.Comma) -> rows.last() += booleanExpression()
-        consume(TokenType.Semicolon) -> rows += mutableListOf(booleanExpression())
+        consume(Comma) -> rows.last() += booleanExpression()
+        consume(Semicolon) -> rows += mutableListOf(booleanExpression())
         else -> break
       }
     }
-    expect(TokenType.RightBrace)
+    expect(RightBrace)
     return ArrayNode(rows)
   }
 
   private fun cellReference(token: Token): FormulaNode {
-    if (peek()?.type == TokenType.Colon) throw FormulaParseException(RANGES_UNSUPPORTED)
+    if (peek()?.type == Colon) fail(CellRange)
     val address = token.image.replace("$", "").uppercase()
     return CellReferenceNode(isFormulaCell = address == "A1")
   }
@@ -134,9 +138,12 @@ internal class FormulaParser private constructor(private val tokens: List<Token>
     val image = token.image.uppercase()
     val type =
       FormulaErrorType.entries.firstOrNull { it.literal == image }
-        ?: throw FormulaParseException("Unknown error literal")
+        ?: fail(UnknownErrorLiteral, token.image)
     return ErrorNode(type)
   }
+
+  private fun fail(reason: ErrorReason, subject: String? = null): Nothing =
+    throw FormulaParseException(reason, subject)
 
   private fun peek(): Token? = tokens.getOrNull(position)
 
@@ -149,15 +156,12 @@ internal class FormulaParser private constructor(private val tokens: List<Token>
   }
 
   private fun expect(type: TokenType) {
-    if (!consume(type)) {
-      val found = peek()?.image?.let { "'$it'" } ?: "end of formula"
-      throw FormulaParseException("Expected $type but found $found")
-    }
+    if (consume(type)) return
+    val found = peek() ?: fail(UnexpectedEnd)
+    fail(UnexpectedToken, found.image)
   }
 
   companion object {
-    private const val RANGES_UNSUPPORTED = "Cell ranges aren't supported"
-
     private val COMPARISONS =
       mapOf(
         TokenType.Equals to BinaryOp.Equal,
@@ -167,6 +171,12 @@ internal class FormulaParser private constructor(private val tokens: List<Token>
         TokenType.GreaterOrEqual to BinaryOp.GreaterOrEqual,
         TokenType.LessOrEqual to BinaryOp.LessOrEqual,
       )
+
+    private val ADDITIONS =
+      mapOf(TokenType.Plus to BinaryOp.Add, TokenType.Minus to BinaryOp.Subtract)
+
+    private val MULTIPLICATIONS =
+      mapOf(TokenType.Times to BinaryOp.Multiply, TokenType.Divide to BinaryOp.Divide)
 
     fun parse(formula: String): FormulaNode =
       FormulaParser(FormulaLexer.tokenize(formula)).parseFormula()
