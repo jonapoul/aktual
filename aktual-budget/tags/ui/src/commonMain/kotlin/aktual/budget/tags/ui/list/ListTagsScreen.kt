@@ -11,6 +11,7 @@ import aktual.budget.tags.vm.list.Success
 import aktual.budget.tags.vm.list.TagItem
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.icons.material.Sort
@@ -18,10 +19,14 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.EditTagNavigator
 import aktual.core.nav.SearchTagsNavigator
 import aktual.core.nav.TransactionsNavigator
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -31,18 +36,22 @@ import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SortDialog
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -57,6 +66,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -149,13 +159,6 @@ private fun ListTagsScaffold(
         actions = {
           if (successState != null) {
             BareIconButton(
-              imageVector = MaterialIcons.Sort,
-              contentDescription = Strings.sort,
-              onClick = { showSortDialog = true },
-            )
-          }
-          if (successState != null) {
-            BareIconButton(
               imageVector = MaterialIcons.Search,
               contentDescription = Strings.tagsSearch,
               onClick = { onAction(OpenSearch) },
@@ -166,6 +169,9 @@ private fun ListTagsScaffold(
             contentDescription = Strings.tagsCreate,
             onClick = { onAction(CreateTag) },
           )
+          if (successState != null) {
+            ListTagsMenu(onSort = { showSortDialog = true })
+          }
         },
       )
     },
@@ -284,6 +290,33 @@ private fun TagsList(
 }
 
 @Composable
+private fun ListTagsMenu(onSort: () -> Unit, modifier: Modifier = Modifier) {
+  var expanded by remember { mutableStateOf(false) }
+
+  Box(modifier = modifier) {
+    BareIconButton(
+      imageVector = MaterialIcons.MoreVert,
+      contentDescription = Strings.tagsMenu,
+      onClick = { expanded = true },
+    )
+
+    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      ListTagsMenuItems(
+        onSort = {
+          expanded = false
+          onSort()
+        },
+      )
+    }
+  }
+}
+
+@Composable
+private fun ListTagsMenuItems(onSort: () -> Unit) {
+  AktualDropdownMenuItem(text = Strings.sort, leadingIcon = MaterialIcons.Sort, onClick = onSort)
+}
+
+@Composable
 private fun TagSort.Field.label(): String =
   when (this) {
     Name -> Strings.tagsSortFieldName
@@ -297,6 +330,15 @@ private class ListTagsStateProvider :
     Loading,
     Failure("Database connection lost"),
   )
+
+@Preview
+@Composable
+private fun PreviewListTagsMenuItems(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
+    Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {
+      ListTagsMenuItems(onSort = {})
+    }
+  }
 
 @PortraitPreview
 @Composable
