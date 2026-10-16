@@ -13,15 +13,18 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 - Limit visibility where possible: make a type `internal` unless another module uses it. A public VM that injects internal types needs an `internal constructor`.
 - Prefer `kotlinx.immutable` collections in the UI layer, not plain `List`/`Set`.
 - Prefer `stateFlow.update { x }` over `stateFlow.value = x`.
-- The project compiles with `-Xcontext-sensitive-resolution` (CSR), so enum entries, sealed subtypes and companion properties of the expected type (`Role.Button`, `Alignment.Center`) can be referenced unqualified when the expected type is known. Always do this instead of qualifying (`PossibleRole.Admin`) or importing the entry. The expected type is known in:
-  - function/constructor arguments, named or positional: `SideNavRail(selectedTab = Transactions)`
-  - `when` branches and `==`/`!=` comparisons: `when (method) { Header -> ... }`, `if (tab == Accounts)`
-  - assertions: `assertThat(role).isEqualTo(Admin)`
-  - typed property/variable assignments, default parameter values and return values of declared-type functions
+- The project compiles with `-Xcontext-sensitive-resolution` (CSR). Write enum entries, sealed subtypes and companion properties unqualified wherever the expected type is known, and don't import the entry. The `RedundantQualifier` detekt rule flags any you miss. Don't qualify just in case.
+  ```kotlin
+  // Unqualified
+  takesRole(Admin); role == Admin; val role: Role = Admin; assertThat(role).isEqualTo(Admin)
+  when (role) { Admin -> 1 }; state is Failure; takesKind(Button)
 
-  The `RedundantQualifier` detekt rule flags qualifiers that can be dropped.
-
-  Qualify only where the name is ambiguous with a type or function in scope, as `LoginMethod.Password` is with the `Password` class and `Role.Checkbox` is with the `Checkbox` composable, or where there is no declared type, as in `override val role = Role.Admin`. Constructor calls of sealed subtypes don't resolve through CSR either, so write `ScheduleDate.Once(date)`, not `Once(date)`.
+  // Must qualify: no expected type, or a constructor call
+  val role = Role.Admin; listOf(Role.Admin); a to Role.Admin
+  val r = if (x) Role.Admin else Role.Basic; takesState(State.Failure("x"))
+  ```
+  - Only a type or function in scope makes a name ambiguous (`LoginMethod.Password` vs the `Password` class, `Role.Checkbox` vs the `Checkbox` composable). Another enum's entry with the same name doesn't count, so `consume(Plus)` and `UnaryNode(Plus, x)` both resolve.
+  - Don't name new enum entries or sealed subtypes after Kotlin types (`Number`, `Any`, `Boolean`, `Error`), since that forces a qualifier at every use.
 - `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` - add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
 - In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.
 - Wrap comments at 100 columns. That is where `ktfmt --google-style` wraps them, not the `max_line_length` of 120 in `.editorconfig`.
