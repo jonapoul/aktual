@@ -1,12 +1,17 @@
 package aktual.budget.reports.vm
 
 import aktual.budget.BudgetSyncController
+import aktual.budget.budgeting.domain.BudgetMonthCalculatorImpl
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.dao.BudgetDao
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.db.dao.DatabaseTables.CATEGORIES
 import aktual.budget.db.dao.DatabaseTables.CATEGORY_GROUPS
 import aktual.budget.db.dao.DatabaseTables.CATEGORY_MAPPING
+import aktual.budget.db.dao.DatabaseTables.ZERO_BUDGETS
 import aktual.budget.db.dao.FormulaDao
+import aktual.budget.db.dao.PreferencesDao
+import aktual.budget.formula.domain.CategoryBudget
 import aktual.budget.formula.domain.FormulaEvaluator
 import aktual.budget.formula.domain.NumberValue
 import aktual.budget.formula.domain.UnknownQuery
@@ -14,11 +19,14 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Field
 import aktual.budget.model.Operator
+import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import kotlin.test.Test
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import kotlinx.serialization.json.JsonArray
@@ -26,6 +34,8 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 
 class FormulaQueriesTest {
+  private var scheduler = TestCoroutineScheduler()
+
   @Test
   fun `Sums and counts every transaction without a filter or time frame`() = runQueriesTest {
     val queries = queries("all" to query())
@@ -142,6 +152,28 @@ class FormulaQueriesTest {
   }
 
   @Test
+  fun `Budget months have the envelope values of each category`() = runQueriesTest {
+    val queries = queries()
+    val april = queries.budgetMonth(YearMonth(2026, 4))
+    assertThat(april["food"])
+      .isEqualTo(
+        CategoryBudget(
+          budgeted = 4000,
+          spent = -50,
+          goal = 3000,
+          balance = 3950,
+          carryover = false,
+        ),
+      )
+    val may = queries.budgetMonth(YearMonth(2026, 5))
+    assertThat(may["food"])
+      .isEqualTo(
+        CategoryBudget(budgeted = 500, spent = -2500, goal = 0, balance = 1950, carryover = true),
+      )
+    assertThat(may["rent"]).isEqualTo(CategoryBudget(0, 0, 0, 0, false))
+  }
+
+  @Test
   fun `Formulas read the queries`() = runQueriesTest {
     val evaluator = FormulaEvaluator({ TODAY }, queries("all" to query()))
     val result = evaluator.evaluate("""=QUERY("all")+BALANCE_OF("Savings")+QUERY("nope")""")
@@ -149,8 +181,17 @@ class FormulaQueriesTest {
     assertThat(result.warnings).containsExactly(UnknownQuery("nope"))
   }
 
-  private fun BudgetDatabase.queries(vararg queries: Pair<String, FormulaQuery>) =
-    FormulaQueries(queries.toMap(), FormulaDao(this), calendar = { TODAY })
+  private fun BudgetDatabase.queries(vararg queries: Pair<String, FormulaQuery>): FormulaQueries {
+    val contexts = TestCoroutineContexts(StandardTestDispatcher(scheduler))
+    val budgets =
+      BudgetMonthCalculatorImpl(
+        budgetDao = BudgetDao(this, contexts),
+        preferencesDao = PreferencesDao(this, contexts),
+        calendar = { TODAY },
+        contexts = contexts,
+      )
+    return FormulaQueries(queries.toMap(), FormulaDao(this), budgets, calendar = { TODAY })
+  }
 
   private fun query(
     vararg conditions: Condition,
@@ -190,6 +231,23 @@ class FormulaQueriesTest {
     transaction("salary", 900, category = "salary")
     transaction("april", -50, category = "food", date = 20260410)
     transaction("savings", 20000, account = "savings", date = 20260410)
+
+    row(
+      ZERO_BUDGETS,
+      "202604-food",
+      "month" to 202604L,
+      "category" to "food",
+      "amount" to 4000L,
+      "goal" to 3000L,
+    )
+    row(
+      ZERO_BUDGETS,
+      "202605-food",
+      "month" to 202605L,
+      "category" to "food",
+      "amount" to 500L,
+      "carryover" to true,
+    )
   }
 
   private suspend fun BudgetSyncController.category(
@@ -213,7 +271,8 @@ class FormulaQueriesTest {
   }
 
   private fun runQueriesTest(action: suspend BudgetDatabase.() -> Unit) =
-    runSyncedDatabaseTest { _, sync ->
+    runSyncedDatabaseTest { scope, sync ->
+      scheduler = scope.testScheduler
       sync.insertBudget()
       action()
     }

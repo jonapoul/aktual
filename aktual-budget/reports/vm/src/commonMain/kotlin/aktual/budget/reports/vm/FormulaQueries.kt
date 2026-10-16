@@ -1,9 +1,11 @@
 package aktual.budget.reports.vm
 
+import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.db.FormulaAccounts
 import aktual.budget.db.FormulaCategories
 import aktual.budget.db.FormulaTransactions
 import aktual.budget.db.dao.FormulaDao
+import aktual.budget.formula.domain.CategoryBudget
 import aktual.budget.formula.domain.FormulaDataSource
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
@@ -12,7 +14,9 @@ import aktual.budget.model.Field
 import aktual.budget.rules.domain.FilterRow
 import aktual.budget.rules.domain.TransactionFilter
 import aktual.core.Calendar
+import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
 import kotlinx.datetime.yearMonth
 import kotlinx.serialization.json.JsonArray
@@ -24,9 +28,11 @@ import kotlinx.serialization.json.JsonPrimitive
 internal class FormulaQueries(
   private val queries: Map<String, FormulaQuery>,
   private val dao: FormulaDao,
+  private val budgets: BudgetMonthCalculator,
   private val calendar: Calendar,
 ) : FormulaDataSource {
   private val transactions = hashMapOf<String, List<FormulaTransactions>>()
+  private val budgetMonths = hashMapOf<YearMonth, Map<String, CategoryBudget>>()
   private var accounts: List<FormulaAccounts>? = null
   private var categories: List<FormulaCategories>? = null
 
@@ -54,6 +60,22 @@ internal class FormulaQueries(
         ?: return null
     return dao.accountBalance(match.id)
   }
+
+  override suspend fun budgetMonth(month: YearMonth): Map<String, CategoryBudget> =
+    budgetMonths.getOrPut(month) {
+      val goals =
+        dao.goals(month).mapNotNull { row -> row.category?.let { it.value to row.goal } }.toMap()
+      budgets.observe(month).first().categories.associate { category ->
+        category.id.value to
+          CategoryBudget(
+            budgeted = category.budgeted.toLong(),
+            spent = category.spent.toLong(),
+            goal = goals[category.id.value] ?: 0L,
+            balance = category.balance.toLong(),
+            carryover = category.carryover,
+          )
+      }
+    }
 
   private suspend fun accounts(): List<FormulaAccounts> =
     accounts ?: dao.accounts().also { accounts = it }

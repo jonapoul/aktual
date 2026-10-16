@@ -1,5 +1,6 @@
 package aktual.budget.formula.domain
 
+import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
 
 // Budget data for the query functions. Amounts are in minor units, and each function returns null
@@ -16,7 +17,18 @@ interface FormulaDataSource {
 
   // [account] is an account id or name
   suspend fun accountBalance(account: String): Long?
+
+  // Envelope budget values by category id, categories without any are left out
+  suspend fun budgetMonth(month: YearMonth): Map<String, CategoryBudget>
 }
+
+data class CategoryBudget(
+  val budgeted: Long,
+  val spent: Long,
+  val goal: Long,
+  val balance: Long,
+  val carryover: Boolean,
+)
 
 data class UnknownQuery(val name: String) : FormulaWarning
 

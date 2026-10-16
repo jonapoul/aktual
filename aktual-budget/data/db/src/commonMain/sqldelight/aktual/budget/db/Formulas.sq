@@ -47,3 +47,10 @@ formulaAccountBalance:
 SELECT IFNULL(SUM(amount), 0) AS total
 FROM v_transactions_internal_alive
 WHERE is_parent = 0 AND account = :account;
+
+-- useFormulaExecution.ts getMonthBudgetData(): the goal-{catId} cells of a month
+formulaGoals:
+SELECT b.category, IFNULL(b.goal, 0) AS goal
+FROM zero_budgets b
+JOIN categories c ON c.id = b.category AND c.tombstone = 0
+WHERE b.month = :month;

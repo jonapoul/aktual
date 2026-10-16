@@ -3,6 +3,7 @@ package aktual.budget.db.dao
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.FormulaAccounts
 import aktual.budget.db.FormulaCategories
+import aktual.budget.db.FormulaGoals
 import aktual.budget.db.FormulaTransactions
 import aktual.budget.db.withResult
 import aktual.budget.model.AccountId
@@ -10,6 +11,7 @@ import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOne
 import dev.zacsweers.metro.Inject
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
 
 @Inject
 class FormulaDao(database: BudgetDatabase) {
@@ -30,5 +32,9 @@ class FormulaDao(database: BudgetDatabase) {
 
   suspend fun accountBalance(account: AccountId): Long = queries.withResult {
     formulaAccountBalance(account).awaitAsOne()
+  }
+
+  suspend fun goals(month: YearMonth): List<FormulaGoals> = queries.withResult {
+    formulaGoals(month).awaitAsList()
   }
 }

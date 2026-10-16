@@ -9,6 +9,7 @@ kotlin {
     api(libs.kotlinx.datetime)
     api(project(":aktual-budget:data:db"))
     api(project(":aktual-core"))
+    implementation(project(":aktual-budget:budgeting:domain"))
     implementation(project(":aktual-budget:formula:domain"))
     implementation(project(":aktual-budget:rules:domain"))
   }
