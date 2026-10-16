@@ -108,6 +108,31 @@ LEFT JOIN payees p ON p.id = t.payee
 LEFT JOIN accounts ta ON ta.id = p.transfer_acct
 WHERE t.is_parent = 0 AND t.amount != 0 AND t.date >= :start AND t.date <= :end;
 
+-- packages/desktop-client/src/components/reports/spreadsheets/budgetDataQuery.ts fetchBudgetData(): each expense
+-- category's budgeted amount per month, from the envelope or tracking budget as :tracking says. Holds the names
+-- category conditions match against. :divisor turns the month into the interval it falls in: 1 for months, 100
+-- for years. The budget columns are cast so the two tables' adapters don't have to match
+customReportBudgets:
+SELECT
+  CAST(b.month / CAST(:divisor AS INTEGER) AS INTEGER) AS interval_key,
+  c.id AS category,
+  c.name AS category_name,
+  c.hidden AS category_hidden,
+  c.cat_group AS category_group,
+  g.name AS category_group_name,
+  g.hidden AS category_group_hidden,
+  b.amount
+FROM (
+  SELECT CAST(month AS INTEGER) AS month, category, CAST(amount AS INTEGER) AS amount
+  FROM zero_budgets WHERE :tracking = 0
+  UNION ALL
+  SELECT CAST(month AS INTEGER) AS month, category, CAST(amount AS INTEGER) AS amount
+  FROM reflect_budgets WHERE :tracking = 1
+) b
+JOIN categories c ON c.id = b.category AND c.tombstone = 0
+LEFT JOIN category_groups g ON g.id = c.cat_group AND g.tombstone = 0
+WHERE c.is_income = 0 AND b.amount != 0 AND b.month >= :start AND b.month <= :end;
+
 -- packages/loot-core/src/server/db/index.ts getCategoriesGrouped(), ordered as
 -- packages/desktop-client/src/components/reports/ReportOptions.ts categoryLists() sorts the flat list
 customReportCategories:

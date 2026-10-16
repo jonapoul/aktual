@@ -1,6 +1,7 @@
 package aktual.budget.reports.vm
 
 import aktual.budget.db.CashFlowByMonth
+import aktual.budget.db.CustomReportAmounts
 import aktual.budget.db.ForecastPostedScheduleTransactions
 import aktual.budget.db.ForecastSchedules
 import aktual.budget.db.ForecastTrackingBudgetTotals
@@ -87,7 +88,7 @@ internal class ChartDataLoader(
         val reason: UnsupportedReason? =
           when {
             config == null -> InvalidMeta
-            config.balanceType == Budgeted -> CustomBudgeted
+            config.balanceType == Budgeted && !config.canShowBudgeted() -> CustomBudgeted
             else -> null
           }
         if (config == null || reason != null) {
@@ -123,12 +124,13 @@ internal class ChartDataLoader(
 
     val filter = TransactionFilter.compile(config.conditions, config.conditionsOp)
     val amounts =
-      if (filter.isEmpty) {
-        customReports.observeAmounts(query.start, query.end, query.divisor)
-      } else {
-        customReports.observeTransactions(query.start, query.end, query.divisor).map { rows ->
-          filteredAmounts(rows, filter)
-        }
+      when {
+        config.balanceType == Budgeted -> observeBudgetAmounts(config, range)
+        filter.isEmpty -> customReports.observeAmounts(query.start, query.end, query.divisor)
+        else ->
+          customReports.observeTransactions(query.start, query.end, query.divisor).map { rows ->
+            filteredAmounts(rows, filter)
+          }
       }
 
     return combine(
@@ -155,6 +157,24 @@ internal class ChartDataLoader(
       }
       .flowOn(contexts.default)
   }
+
+  // packages/desktop-client/src/components/reports/spreadsheets/fetchSpreadsheetQueryData.ts:
+  // budgeted reports read every month of the report's dates from the budget, not transactions
+  private fun observeBudgetAmounts(
+    config: CustomReportConfig,
+    range: LocalDateRange,
+  ): Flow<List<CustomReportAmounts>> =
+    preferences
+      .observe(SyncedPrefKey.Global.BudgetType)
+      .flatMapLatest { budgetType ->
+        customReports.observeBudgets(
+          start = range.start.yearMonth,
+          end = range.endInclusive.yearMonth,
+          divisor = if (config.interval == Yearly) YEAR_MONTH_FACTOR else 1L,
+          isTracking = BudgetType.from(budgetType) == Tracking,
+        )
+      }
+      .map { rows -> budgetAmounts(rows, config.conditions, config.conditionsOp) }
 
   fun text(meta: MarkdownReportMeta): Flow<ChartData> {
     val align: TextAlign = meta.textAlign?.takeIf { it != Unknown } ?: Left
