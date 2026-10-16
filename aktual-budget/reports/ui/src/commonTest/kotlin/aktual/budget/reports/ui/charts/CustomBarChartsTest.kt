@@ -115,6 +115,14 @@ class CustomBarChartsTest {
     assertThat(lines.last()).isEqualTo("Total: 78.00")
   }
 
+  @Test
+  fun `Marker lines match the text of a full stack`() {
+    for (groups in listOf(1, 5, MAX_MARKER_ROWS, MAX_MARKER_ROWS + 2)) {
+      val stack = (1..groups).map { bar("G$it", it) }
+      assertThat(markerLines(groups)).isEqualTo(markerText(stack).lines().size)
+    }
+  }
+
   private fun CustomData.names() = groups.map { (it.group as CustomGroup.Category).name }
 
   private fun bar(name: String, amount: Int) = CustomBar(name, Amount(amount.toDouble()), Red)

@@ -155,10 +155,7 @@ internal fun CustomStackedBarChart(
           if (compact) {
             null
           } else {
-            rememberMarker(
-              valueFormatter = markerFormatter,
-              lineCount = MAX_MARKER_ROWS + MARKER_EXTRA_LINES,
-            )
+            rememberMarker(valueFormatter = markerFormatter, lineCount = markerLines(legend.size))
           },
         markerVisibilityListener = rememberMarkerHaptics(compact),
       ),
@@ -369,5 +366,7 @@ private const val AMOUNT_LABELS = 8
 private const val MAX_AXIS_LABELS = 12
 internal const val MAX_MARKER_ROWS = 10
 
-// The interval label, the "…" when rows are cut and the total
-private const val MARKER_EXTRA_LINES = 3
+// Vico reserves the marker's height above the chart, so size it to the rows the stack can show:
+// the interval label, a row per group, the "…" when rows are cut and the total
+internal fun markerLines(groups: Int): Int =
+  1 + groups.coerceAtMost(MAX_MARKER_ROWS) + (if (groups > MAX_MARKER_ROWS) 1 else 0) + 1
