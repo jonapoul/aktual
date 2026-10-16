@@ -6,7 +6,10 @@ import kotlin.math.pow
 // Evaluates upstream Actual's formulas the way HyperFormula does, as if the formula were the only
 // cell in a sheet. [variables] are HyperFormula's named expressions, looked up case-insensitively
 class FormulaEvaluator internal constructor(private val functions: Map<String, FormulaFunction>) {
-  constructor(calendar: Calendar) : this(builtInFunctions(calendar))
+  constructor(
+    calendar: Calendar,
+    data: FormulaDataSource,
+  ) : this(builtInFunctions(calendar) + queryFunctions(data, calendar))
 
   suspend fun evaluate(
     formula: String,
@@ -37,7 +40,8 @@ internal class EvaluationScope(
   private val functions: Map<String, FormulaFunction>,
   private val variables: Map<String, FormulaValue>,
 ) {
-  val warnings = mutableListOf<FormulaWarning>()
+  // Each warning once, like upstream which looks up each name once
+  val warnings = linkedSetOf<FormulaWarning>()
 
   fun warn(warning: FormulaWarning) {
     warnings += warning

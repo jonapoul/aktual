@@ -1,0 +1,49 @@
+-- packages/desktop-client/src/hooks/useFormulaExecution.ts buildFilteredTransactionsQuery(): the transactions a
+-- formula query sums or counts. Holds every field a filter can match, plus the names that text conditions on ids
+-- match against
+formulaTransactions:
+SELECT
+  t.date,
+  t.amount,
+  t.account,
+  a.name AS account_name,
+  a.offbudget AS off_budget,
+  p.id AS payee,
+  p.name AS payee_name,
+  t.imported_payee,
+  c.id AS category,
+  c.name AS category_name,
+  g.id AS category_group,
+  g.name AS category_group_name,
+  t.notes,
+  t.cleared,
+  t.reconciled,
+  t.transfer_id,
+  t.is_parent
+FROM v_transactions_internal_alive t
+LEFT JOIN accounts a ON a.id = t.account
+LEFT JOIN categories c ON c.id = t.category
+LEFT JOIN category_groups g ON g.id = c.cat_group
+LEFT JOIN payees p ON p.id = t.payee
+WHERE t.is_parent = 0 AND t.date >= :start AND t.date <= :end;
+
+-- useFormulaExecution.ts extractQueryCategories(): the 'get-categories' list, every category in a group
+formulaCategories:
+SELECT c.id, c.name, c.is_income, c.hidden, g.id AS category_group, g.name AS category_group_name
+FROM categories c
+JOIN category_groups g ON g.id = c.cat_group AND g.tombstone = 0
+WHERE c.tombstone = 0
+ORDER BY g.is_income, g.sort_order, g.id, c.sort_order, c.id;
+
+-- packages/desktop-client/src/components/reports/reports/FormulaCard.tsx: the accounts BALANCE_OF can name
+formulaAccounts:
+SELECT id, name
+FROM accounts
+WHERE tombstone = 0
+ORDER BY sort_order, name;
+
+-- useFormulaExecution.ts fetchAccountBalance()
+formulaAccountBalance:
+SELECT IFNULL(SUM(amount), 0) AS total
+FROM v_transactions_internal_alive
+WHERE is_parent = 0 AND account = :account;
