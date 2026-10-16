@@ -59,6 +59,15 @@ enum class ErrorReason {
   UnknownName,
   UnknownFunction,
   UnsupportedFunction,
+  NoConditionMet,
+  NoDefault,
+  DistinctSigns,
+  NegativeCount,
+  NegativeLength,
+  LessThanOne,
+  TextTooLong,
+  InvalidDate,
+  DateOutOfRange,
 }
 
 // Something the formula did that isn't an error but may be a mistake, e.g. naming a missing query

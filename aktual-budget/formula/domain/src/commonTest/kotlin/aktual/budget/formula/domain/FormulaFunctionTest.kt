@@ -76,7 +76,7 @@ class FormulaFunctionTest {
 
   private companion object {
     val FUNCTIONS =
-      CORE_FUNCTIONS +
+      LOGICAL_FUNCTIONS +
         mapOf(
           "ECHO" to formulaFunction(Param(Scalar)) { args -> args[0]!! },
           "ADD" to

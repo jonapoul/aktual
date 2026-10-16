@@ -35,11 +35,18 @@ internal class FunctionArgs(private val values: List<FormulaValue?>) {
 
   operator fun get(index: Int): FormulaValue? = values.getOrNull(index)
 
-  fun number(index: Int): Double = (requireNotNull(values[index]) as NumberValue).value
+  fun value(index: Int): FormulaValue = requireNotNull(values[index])
 
-  fun text(index: Int): String = (requireNotNull(values[index]) as TextValue).value
+  fun number(index: Int): Double = (value(index) as NumberValue).value
 
-  fun boolean(index: Int): Boolean = (requireNotNull(values[index]) as BooleanValue).value
+  fun text(index: Int): String = (value(index) as TextValue).value
+
+  fun boolean(index: Int): Boolean = (value(index) as BooleanValue).value
+
+  // Skips the values left out because they couldn't be coerced
+  fun texts(): List<String> = values.filterIsInstance<TextValue>().map { it.value }
+
+  fun booleans(): List<Boolean> = values.filterIsInstance<BooleanValue>().map { it.value }
 }
 
 // Port of HyperFormula's FunctionPlugin.runFunction: evaluates every argument, checks the count,

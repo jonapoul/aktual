@@ -1,11 +1,12 @@
 package aktual.budget.formula.domain
 
+import aktual.core.Calendar
 import kotlin.math.pow
 
 // Evaluates upstream Actual's formulas the way HyperFormula does, as if the formula were the only
 // cell in a sheet. [variables] are HyperFormula's named expressions, looked up case-insensitively
 class FormulaEvaluator internal constructor(private val functions: Map<String, FormulaFunction>) {
-  constructor() : this(CORE_FUNCTIONS)
+  constructor(calendar: Calendar) : this(builtInFunctions(calendar))
 
   suspend fun evaluate(
     formula: String,
@@ -42,16 +43,18 @@ internal class EvaluationScope(
     warnings += warning
   }
 
-  suspend fun evaluate(node: FormulaNode): FormulaValue {
-    val value = evaluateWithoutPostProcessing(node)
-    if (value !is NumberValue) return value
-    return when {
-      !value.value.isFinite() -> ErrorValue(Num, NotFinite)
-      // Turns -0.0 into 0.0
-      value.value == 0.0 -> NumberValue(0.0)
+  suspend fun evaluate(node: FormulaNode): FormulaValue =
+    when (val value = evaluateWithoutPostProcessing(node)) {
+      is NumberValue ->
+        when {
+          !value.value.isFinite() -> ErrorValue(Num, NotFinite)
+          // Turns -0.0 into 0.0
+          value.value == 0.0 -> NumberValue(0.0)
+          else -> value
+        }
+      is ArrayValue -> if (value.rows.size == 1 && value.rows[0].size == 1) value.topLeft else value
       else -> value
     }
-  }
 
   private suspend fun evaluateWithoutPostProcessing(node: FormulaNode): FormulaValue =
     when (node) {
