@@ -196,6 +196,44 @@ class CustomSpreadsheetTest {
   }
 
   @Test
+  fun `Trend lines fit each group's stacked amounts`() {
+    val sheet =
+      spreadsheet(
+        config = CONFIG.copy(showTrendLines = true),
+        range = date(JAN)..date("2026-03-31"),
+        amounts =
+          listOf(
+            row(JAN, category = FOOD, debts = -100),
+            row(FEB, category = FOOD, debts = -300),
+            row(MAR, category = FOOD, debts = -200),
+            row(FEB, category = FUEL, debts = -600),
+          ),
+      )
+
+    assertThat(sheet.trends)
+      .isEqualTo(
+        mapOf(
+          FOOD_GROUP to CustomTrend(start = Amount(150), end = Amount(250)),
+          FUEL_GROUP to CustomTrend(start = Amount(200), end = Amount(200)),
+        ),
+      )
+  }
+
+  @Test
+  fun `Trend lines are only fitted when the report shows them`() {
+    val amounts = listOf(row(JAN, category = FOOD, debts = -100))
+    assertThat(spreadsheet(amounts = amounts).trends).isEmpty()
+
+    val oneInterval =
+      spreadsheet(
+        config = CONFIG.copy(showTrendLines = true),
+        range = date(JAN)..date("2026-01-31"),
+        amounts = amounts,
+      )
+    assertThat(oneInterval.trends).isEmpty()
+  }
+
+  @Test
   fun `Weekly amounts are grouped by the week they fall in`() {
     val config = CONFIG.copy(interval = Weekly)
     // 2026-01-04 is a Sunday

@@ -149,6 +149,7 @@ internal class ChartDataLoader(
           groups = sheet.groups,
           categoryGroups = sheet.categoryGroups,
           totals = sheet.totals,
+          trends = sheet.trends,
         )
       }
       .flowOn(contexts.default)

@@ -113,7 +113,7 @@ internal fun CustomStackedBarChart(
   compact: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  val labels = data.intervals.map { it.interval.label(data.config.interval) }.toImmutableList()
+  val labels = intervalLabels(data)
   val stacks = remember(data, legend) { customStacks(data, legend) }
 
   val modelProducer = remember { CartesianChartModelProducer() }
@@ -166,7 +166,7 @@ internal fun CustomStackedBarChart(
 internal fun customBars(data: CustomData): ImmutableList<CustomBar> {
   val names =
     if (data.config.groupBy == GroupBy.Interval) {
-      data.intervals.fastMap { it.interval.label(data.config.interval) }
+      intervalLabels(data)
     } else {
       data.groups.fastMap { it.group.label() }
     }
@@ -180,19 +180,33 @@ internal fun customBars(
   names: List<String>,
   theme: Colors,
 ): ImmutableList<CustomBar> {
+  if (data.config.groupBy == GroupBy.Interval) return intervalBars(data, names, theme)
   val metric = data.config.balanceType.metric
-  return if (data.config.groupBy == GroupBy.Interval) {
-      data.intervals.mapIndexed { index, item ->
-        val amount = item.totals[metric]
-        CustomBar(names[index], amount, theme.intervalColor(metric, amount))
-      }
-    } else {
-      data.groups.mapIndexed { index, item ->
-        CustomBar(names[index], item.totals[metric], theme.qualitative(index))
-      }
+  return data.groups
+    .mapIndexed { index, item ->
+      CustomBar(names[index], item.totals[metric], theme.qualitative(index))
     }
     .toImmutableList()
 }
+
+// A bar per interval, whatever the report is grouped by
+internal fun intervalBars(
+  data: CustomData,
+  names: List<String>,
+  theme: Colors,
+): ImmutableList<CustomBar> {
+  val metric = data.config.balanceType.metric
+  return data.intervals
+    .mapIndexed { index, item ->
+      val amount = item.totals[metric]
+      CustomBar(names[index], amount, theme.intervalColor(metric, amount))
+    }
+    .toImmutableList()
+}
+
+@Composable
+internal fun intervalLabels(data: CustomData): ImmutableList<String> =
+  data.intervals.fastMap { it.interval.label(data.config.interval) }.toImmutableList()
 
 // Each interval's stack, with a bar per legend entry
 internal fun customStacks(data: CustomData, legend: List<CustomBar>): List<List<CustomBar>> =
@@ -244,7 +258,7 @@ private fun Colors.intervalColor(metric: CustomMetric, amount: Amount): Color =
 internal fun Amount.plotted(metric: CustomMetric): Amount =
   if (metric == Debts || metric == NetDebts) -this else this
 
-private fun List<CartesianMarker.Target>.index(): Int = firstOrNull()?.x?.roundToInt() ?: -1
+internal fun List<CartesianMarker.Target>.index(): Int = firstOrNull()?.x?.roundToInt() ?: -1
 
 // Upstream's tooltip: each group with money in the interval, then the interval's total
 internal fun stackedMarkerText(
@@ -274,7 +288,7 @@ internal fun stackedMarkerText(
 }
 
 @Composable
-private fun rememberAmountFormatter(): (Amount) -> AnnotatedString {
+internal fun rememberAmountFormatter(): (Amount) -> AnnotatedString {
   val numberFormatConfig = LocalNumberFormatConfig.current
   val currencyConfig = LocalCurrencyConfig.current
   val isPrivacyEnabled = LocalPrivacyEnabled.current
@@ -294,7 +308,7 @@ private fun rememberAmountFormatter(): (Amount) -> AnnotatedString {
 }
 
 @Composable
-private fun amountAxis(compact: Boolean) =
+internal fun amountAxis(compact: Boolean) =
   VerticalAxis.rememberStart(
     line = axisLineComponent(compact),
     guideline = axisGuidelineComponent(compact),
@@ -306,7 +320,7 @@ private fun amountAxis(compact: Boolean) =
 
 // Skips labels when there are too many to fit, the marker still names every bar
 @Composable
-private fun labelAxis(labels: ImmutableList<String>, compact: Boolean, rotationDegrees: Float) =
+internal fun labelAxis(labels: ImmutableList<String>, compact: Boolean, rotationDegrees: Float) =
   HorizontalAxis.rememberBottom(
     line = axisLineComponent(compact),
     guideline = null,
@@ -346,10 +360,10 @@ private suspend fun CartesianChartModelProducer.populateStacks(stacks: List<List
     }
   }
 
-private fun column(color: Color) = LineComponent(fill = Fill(color), thickness = BAR_THICKNESS)
+internal fun column(color: Color) = LineComponent(fill = Fill(color), thickness = BAR_THICKNESS)
 
 // Colours each column of a single series by its x index
-private class IndexedColumns(private val columns: List<LineComponent>) :
+internal class IndexedColumns(private val columns: List<LineComponent>) :
   ColumnCartesianLayer.ColumnProvider {
   override fun getColumn(
     entry: ColumnCartesianLayerModel.Entry,
