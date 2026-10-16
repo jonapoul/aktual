@@ -13,7 +13,6 @@ import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.db.dao.DatabaseTables.PREFERENCES
 import aktual.budget.db.dao.DatabaseTables.REFLECT_BUDGETS
-import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
 import aktual.budget.db.dao.DatabaseTables.ZERO_BUDGETS
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ReportsDao
@@ -332,48 +331,6 @@ class CustomReportLoaderTest {
 
   private fun condition(field: Field, operator: Operator, value: JsonElement) =
     Condition(field = field, operator = operator, value = value)
-
-  private suspend fun BudgetSyncController.transaction(
-    id: String,
-    amount: Long,
-    category: String? = null,
-    payee: String? = null,
-    account: String = "checking",
-    date: Long = 20260510,
-    isParent: Boolean = false,
-    parent: String? = null,
-    transfer: String? = null,
-    isDeleted: Boolean = false,
-  ) =
-    row(
-      TRANSACTIONS,
-      id,
-      "acct" to account,
-      "amount" to amount,
-      "date" to date,
-      "category" to category,
-      "description" to payee,
-      "isParent" to isParent,
-      "isChild" to (parent != null),
-      "parent_id" to parent,
-      "transferred_id" to transfer,
-      "tombstone" to isDeleted,
-    )
-
-  private suspend fun BudgetSyncController.row(
-    dataset: String,
-    id: String,
-    vararg values: Pair<String, Any?>,
-  ) =
-    syncChanges(
-      values.map { (column, value) ->
-        when (value) {
-          is Long -> localChange(dataset, id, column, value)
-          is Boolean -> localChange(dataset, id, column, value)
-          else -> localChange(dataset, id, column, value?.toString())
-        }
-      },
-    )
 
   private suspend fun BudgetDatabase.insert(report: CustomReports) =
     customReportsQueries.withoutResult {
