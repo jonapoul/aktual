@@ -3,6 +3,7 @@ package aktual.budget.db.dao
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.CustomReportAccounts
 import aktual.budget.db.CustomReportAmounts
+import aktual.budget.db.CustomReportBudgets
 import aktual.budget.db.CustomReportCategories
 import aktual.budget.db.CustomReportCategoryGroups
 import aktual.budget.db.CustomReportPayees
@@ -21,6 +22,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.number
 
 @Inject
 class CustomReportsDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
@@ -71,6 +74,23 @@ class CustomReportsDao(database: BudgetDatabase, private val contexts: Coroutine
       .mapToList(contexts.default)
       .distinctUntilChanged()
 
+  fun observeBudgets(
+    start: YearMonth,
+    end: YearMonth,
+    divisor: Long,
+    isTracking: Boolean,
+  ): Flow<List<CustomReportBudgets>> =
+    queries
+      .customReportBudgets(
+        divisor = divisor,
+        tracking = if (isTracking) 1L else 0L,
+        start = start.toLong(),
+        end = end.toLong(),
+      )
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
+
   fun observeCategories(): Flow<List<CustomReportCategories>> =
     queries.customReportCategories().asFlow().mapToList(contexts.default).distinctUntilChanged()
 
@@ -83,3 +103,7 @@ class CustomReportsDao(database: BudgetDatabase, private val contexts: Coroutine
   fun observeAccounts(): Flow<List<CustomReportAccounts>> =
     queries.customReportAccounts().asFlow().mapToList(contexts.default).distinctUntilChanged()
 }
+
+private fun YearMonth.toLong(): Long = year * YEAR_MONTH_FACTOR + month.number
+
+private const val YEAR_MONTH_FACTOR = 100L

@@ -11,7 +11,10 @@ import aktual.budget.db.dao.DatabaseTables.CATEGORY_MAPPING
 import aktual.budget.db.dao.DatabaseTables.CUSTOM_REPORTS
 import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
+import aktual.budget.db.dao.DatabaseTables.PREFERENCES
+import aktual.budget.db.dao.DatabaseTables.REFLECT_BUDGETS
 import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
+import aktual.budget.db.dao.DatabaseTables.ZERO_BUDGETS
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.db.withoutResult
@@ -67,11 +70,83 @@ class CustomReportLoaderTest {
   }
 
   @Test
-  fun `Budgeted report`() = runLoaderTest { loader, _ ->
-    insert(emptyCustomReport(ID).copy(name = "Budget", balance_type = Budgeted))
+  fun `Budgeted report can't be grouped by payee`() = runLoaderTest { loader, _ ->
+    insert(budgetedReport().copy(group_by = Payee))
 
     loader.custom(CustomReportMeta(ID)).test {
       assertThatNextEmissionIsEqualTo(UnsupportedData(CustomBudgeted, Custom, "Budget"))
+    }
+  }
+
+  @Test
+  fun `Budgeted report can't be weekly`() = runLoaderTest { loader, _ ->
+    insert(budgetedReport().copy(interval = Weekly))
+
+    loader.custom(CustomReportMeta(ID)).test {
+      assertThatNextEmissionIsEqualTo(UnsupportedData(CustomBudgeted, Custom, "Budget"))
+    }
+  }
+
+  @Test
+  fun `Budgeted report reads the envelope budget`() = runLoaderTest { loader, sync ->
+    sync.insertSpending()
+    sync.insertBudgets()
+    insert(budgetedReport())
+
+    loader.custom(CustomReportMeta(ID)).test {
+      val data = awaitItem() as CustomData
+      assertThat(data.groups.map { it.group to it.totals.total })
+        .containsExactly(
+          CustomGroup.Category(CategoryId("food"), "Food") to Amount(5000),
+          CustomGroup.Category(CategoryId("fuel"), "Fuel") to Amount(-3000),
+        )
+      assertThat(data.totals.assets).isEqualTo(Amount(5000))
+      assertThat(data.totals.debts).isEqualTo(Amount(-3000))
+    }
+  }
+
+  @Test
+  fun `Budgeted report reads the tracking budget`() = runLoaderTest { loader, sync ->
+    sync.insertSpending()
+    sync.insertBudgets()
+    sync.row(PREFERENCES, "budgetType", "value" to "tracking")
+    insert(budgetedReport())
+
+    loader.custom(CustomReportMeta(ID)).test {
+      val data = awaitItem() as CustomData
+      assertThat(data.groups.map { it.group to it.totals.total })
+        .containsExactly(CustomGroup.Category(CategoryId("food"), "Food") to Amount(1111))
+    }
+  }
+
+  @Test
+  fun `Budgeted report sums yearly`() = runLoaderTest { loader, sync ->
+    sync.insertSpending()
+    sync.insertBudgets()
+    insert(budgetedReport().copy(interval = Yearly))
+
+    loader.custom(CustomReportMeta(ID)).test {
+      val data = awaitItem() as CustomData
+      assertThat(data.intervals.map { it.interval.start to it.totals.total })
+        .containsExactly(LocalDate(2026, 1, 1) to Amount(2000))
+    }
+  }
+
+  @Test
+  fun `Budgeted report only filters by category`() = runLoaderTest { loader, sync ->
+    sync.insertSpending()
+    sync.insertBudgets()
+    val conditions =
+      listOf(
+        condition(Category, Is, JsonPrimitive("fuel")),
+        condition(Payee, Is, JsonPrimitive("shop")),
+      )
+    insert(budgetedReport().copy(conditions = conditions, conditions_op = And))
+
+    loader.custom(CustomReportMeta(ID)).test {
+      val data = awaitItem() as CustomData
+      assertThat(data.groups.map { it.group to it.totals.total })
+        .containsExactly(CustomGroup.Category(CategoryId("fuel"), "Fuel") to Amount(-3000))
     }
   }
 
@@ -220,6 +295,28 @@ class CustomReportLoaderTest {
     transaction("income", 900, category = "food")
     transaction("next-month", -9, category = "food", date = 20260601)
   }
+
+  // A negative budget is unusual, but upstream counts it as debts
+  private suspend fun BudgetSyncController.insertBudgets() {
+    row(CATEGORY_GROUPS, "income", "name" to "Income", "is_income" to true, "sort_order" to 2L)
+    row(CATEGORIES, "salary", "name" to "Salary", "cat_group" to "income", "is_income" to true)
+    row(CATEGORY_MAPPING, "salary", "transferId" to "salary")
+    budget(ZERO_BUDGETS, 202605, "food", 5000)
+    budget(ZERO_BUDGETS, 202605, "fuel", -3000)
+    budget(ZERO_BUDGETS, 202605, "salary", 9000)
+    budget(ZERO_BUDGETS, 202606, "food", 7000)
+    budget(REFLECT_BUDGETS, 202605, "food", 1111)
+  }
+
+  private suspend fun BudgetSyncController.budget(
+    dataset: String,
+    month: Long,
+    category: String,
+    amount: Long,
+  ) = row(dataset, "$month-$category", "month" to month, "category" to category, "amount" to amount)
+
+  private fun budgetedReport() =
+    spendingReport().copy(name = "Budget", balance_type = Budgeted, show_uncategorized = false)
 
   private fun spendingReport() =
     emptyCustomReport(ID)
