@@ -188,7 +188,7 @@ class FormulaEvaluatorTest {
   @Test
   fun `Unknown functions are named errors`() = runTest {
     assertThat(evaluate("=FOO(1)")).isError(Name, UnknownFunction, "FOO")
-    assertThat(evaluate("=sum(1,2)")).isError(Name, UnsupportedFunction, "SUM")
+    assertThat(evaluate("=vlookup(1,2)")).isError(Name, UnsupportedFunction, "VLOOKUP")
     assertThat(evaluate("""=QUERY("a")""")).isError(Name, UnsupportedFunction, "QUERY")
   }
 
@@ -209,9 +209,4 @@ class FormulaEvaluatorTest {
     assertThat(evaluate("=1 ~ 2")).isError(Generic, UnexpectedCharacter, "~")
     assertThat(evaluate("=#FOO!")).isError(Generic, UnknownErrorLiteral, "#FOO!")
   }
-
-  private suspend fun evaluate(
-    formula: String,
-    variables: Map<String, FormulaValue> = emptyMap(),
-  ): FormulaValue = FormulaEvaluator().evaluate(formula, variables).value
 }
