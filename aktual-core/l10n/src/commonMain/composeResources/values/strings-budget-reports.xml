@@ -202,4 +202,16 @@
   <string name="reports_custom_net_assets">Net assets</string>
   <string name="reports_custom_net_debts">Net debts</string>
   <string name="reports_custom_net">Net</string>
+  <string name="reports_custom_table_deposits">Deposits</string>
+  <string name="reports_custom_table_payments">Payments</string>
+  <string name="reports_custom_table_totals">Totals</string>
+  <string name="reports_custom_table_average">Average</string>
+  <string name="reports_custom_table_category">Category</string>
+  <string name="reports_custom_table_group">Group</string>
+  <string name="reports_custom_table_payee">Payee</string>
+  <string name="reports_custom_table_account">Account</string>
+  <string name="reports_custom_table_day">Day</string>
+  <string name="reports_custom_table_week">Week</string>
+  <string name="reports_custom_table_month">Month</string>
+  <string name="reports_custom_table_year">Year</string>
 </resources>

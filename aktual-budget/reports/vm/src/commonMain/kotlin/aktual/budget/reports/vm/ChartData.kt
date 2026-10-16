@@ -298,13 +298,15 @@ enum class UnsupportedReason {
 /**
  * [groups] is what the report is grouped by, and [categoryGroups] each category group with its
  * categories. Both leave out empty groups unless the report shows them, and are sorted as the
- * report asks. [trends] has a line per group when the report shows trend lines.
+ * report asks. [trends] has a line per group when the report shows trend lines. [intervalCount] is
+ * how many intervals the report's dates cover, before any are trimmed.
  */
 data class CustomData(
   val title: String,
   val config: CustomReportConfig,
   val range: LocalDateRange,
   val intervals: ImmutableList<CustomIntervalTotals>,
+  val intervalCount: Int,
   val groups: ImmutableList<CustomGroupTotals>,
   val categoryGroups: ImmutableList<CustomGroupTotals>,
   val totals: CustomTotals,

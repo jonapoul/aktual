@@ -146,6 +146,7 @@ internal class ChartDataLoader(
           config = config,
           range = range,
           intervals = sheet.intervals,
+          intervalCount = sheet.intervalCount,
           groups = sheet.groups,
           categoryGroups = sheet.categoryGroups,
           totals = sheet.totals,

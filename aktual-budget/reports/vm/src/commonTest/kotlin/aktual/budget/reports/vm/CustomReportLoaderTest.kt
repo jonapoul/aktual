@@ -99,6 +99,7 @@ class CustomReportLoaderTest {
                   ),
               ),
             ),
+          intervalCount = 1,
           groups = persistentListOf(),
           categoryGroups = persistentListOf(),
           totals = Zero,
