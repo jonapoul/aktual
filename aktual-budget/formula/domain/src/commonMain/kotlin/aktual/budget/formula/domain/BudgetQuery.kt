@@ -18,6 +18,9 @@ internal fun budgetQueryFunction(data: FormulaDataSource): FormulaFunction =
       start == null || end == null -> {
         ErrorValue(Value, InvalidDate)
       }
+      end.monthIndex() - start.monthIndex() >= MAX_MONTHS -> {
+        ErrorValue(Num, DateOutOfRange)
+      }
       else -> {
         val months = generateSequence(start) { it.plus(1, MONTH) }.takeWhile { it <= end }.toList()
         val categories = categoryIds(args.value(1))
@@ -32,6 +35,11 @@ private val YEAR_MONTH = Regex("""(\d{4})-(\d{2})""")
 
 private const val CENTS = 100.0
 private const val MONTHS_IN_YEAR = 12
+
+// Every month costs a database read, so a typo can't ask for thousands of years
+private const val MAX_MONTHS = 1200
+
+private fun YearMonth.monthIndex(): Int = year * MONTHS_IN_YEAR + month.ordinal
 
 private val NO_BUDGET =
   CategoryBudget(budgeted = 0, spent = 0, goal = 0, balance = 0, carryover = false)

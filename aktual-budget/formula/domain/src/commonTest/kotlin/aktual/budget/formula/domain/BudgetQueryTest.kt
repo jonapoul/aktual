@@ -70,6 +70,16 @@ class BudgetQueryTest {
   }
 
   @Test
+  fun `Ranges over a hundred years are errors`() = runTest {
+    assertThat(evaluate("""=BUDGET_QUERY("spent", CATEGORIES, "0001-01", "9999-12")"""))
+      .isEqualTo(ErrorValue(Num, DateOutOfRange))
+    assertThat(evaluate("""=BUDGET_QUERY("spent", CATEGORIES, "2024-01", "2123-12")"""))
+      .isEqualTo(NumberValue(-86.0))
+    assertThat(evaluate("""=BUDGET_QUERY("spent", CATEGORIES, "2024-01", "2124-01")"""))
+      .isEqualTo(ErrorValue(Num, DateOutOfRange))
+  }
+
+  @Test
   fun `Arguments are required`() = runTest {
     assertThat(evaluate("""=BUDGET_QUERY("spent", CATEGORIES, "2024-01")"""))
       .isEqualTo(ErrorValue(NotAvailable, WrongArgCount))
