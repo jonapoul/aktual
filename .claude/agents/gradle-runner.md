@@ -48,6 +48,17 @@ Test failure details are in `<module-dir>/build/test-results/**/*.xml` and detek
 `<module-dir>/build/reports/detekt/issues.txt`, with every module's findings from the last run
 merged in `build/reports/detekt/all-issues.txt`.
 
+### Helper scripts
+
+`./scripts/detekt.sh`, `compile.sh`, `test.sh` and `lint.sh` aren't wrapped by `gradle-run.sh`. Run
+them directly and filter the output, e.g. `./scripts/detekt.sh 2>&1 | tail -100`. Read detekt
+findings from `build/reports/detekt/all-issues.txt` and test failures from the result XML.
+
+### Output files
+
+Never write output to a file of your own (`> out.txt`, `tee`, `/tmp/...`), not even a scratch one
+you delete afterwards. Everything you need is in the full log or under `build/`.
+
 ### Timeout
 
 Always pass **timeout: 600000** (10 minutes) to the Bash tool for all Gradle commands.
