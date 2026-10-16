@@ -298,7 +298,7 @@ enum class UnsupportedReason {
 /**
  * [groups] is what the report is grouped by, and [categoryGroups] each category group with its
  * categories. Both leave out empty groups unless the report shows them, and are sorted as the
- * report asks.
+ * report asks. [trends] has a line per group when the report shows trend lines.
  */
 data class CustomData(
   val title: String,
@@ -308,4 +308,5 @@ data class CustomData(
   val groups: ImmutableList<CustomGroupTotals>,
   val categoryGroups: ImmutableList<CustomGroupTotals>,
   val totals: CustomTotals,
+  val trends: ImmutableMap<CustomGroup, CustomTrend>,
 ) : ChartData

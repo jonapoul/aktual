@@ -102,6 +102,7 @@ class CustomReportLoaderTest {
           groups = persistentListOf(),
           categoryGroups = persistentListOf(),
           totals = Zero,
+          trends = persistentMapOf(),
         ),
       )
     }

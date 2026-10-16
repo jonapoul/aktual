@@ -12,7 +12,9 @@ import aktual.budget.model.Interval
 import aktual.budget.model.SortBy
 import kotlin.math.abs
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.LocalDate
@@ -62,6 +64,7 @@ internal data class CustomSpreadsheet(
   val groups: ImmutableList<CustomGroupTotals>,
   val categoryGroups: ImmutableList<CustomGroupTotals>,
   val totals: CustomTotals,
+  val trends: ImmutableMap<CustomGroup, CustomTrend>,
 )
 
 // packages/desktop-client/src/components/reports/spreadsheets/custom-spreadsheet.ts
@@ -106,10 +109,12 @@ internal fun customSpreadsheet(
       groups.map { g -> g.intervals.map { it.totals } } + listOf(intervalTotals.map { it.totals }),
     )
   val comparator = comparator(metric, config.sortBy)
+  val trimmedIntervals = intervalTotals.slice(trim)
+  val sortedGroups = groups.map { it.trimmed(trim) }.sortedWith(comparator)
 
   return CustomSpreadsheet(
-    intervals = intervalTotals.slice(trim).toImmutableList(),
-    groups = groups.map { it.trimmed(trim) }.sortedWith(comparator).toImmutableList(),
+    intervals = trimmedIntervals.toImmutableList(),
+    groups = sortedGroups.toImmutableList(),
     categoryGroups =
       categoryGroups(
           calculator,
@@ -123,11 +128,51 @@ internal fun customSpreadsheet(
         .map { it.copy(categories = it.categories.sortedWith(comparator).toImmutableList()) }
         .toImmutableList(),
     totals = totals,
+    trends =
+      if (config.showTrendLines) {
+        trendLines(trimmedIntervals, sortedGroups.map { it.group })
+      } else {
+        persistentMapOf()
+      },
   )
 }
 
 private val EMPTY =
-  CustomSpreadsheet(persistentListOf(), persistentListOf(), persistentListOf(), Zero)
+  CustomSpreadsheet(
+    persistentListOf(),
+    persistentListOf(),
+    persistentListOf(),
+    Zero,
+    persistentMapOf(),
+  )
+
+// packages/desktop-client/src/components/reports/graphs/util/computeTrendLines.ts: a least squares
+// fit through each group's stacked amounts, with the interval index as x
+internal fun trendLines(
+  intervals: List<CustomIntervalTotals>,
+  groups: List<CustomGroup>,
+): ImmutableMap<CustomGroup, CustomTrend> {
+  val n = intervals.size
+  if (n < 2) return persistentMapOf()
+  val sumX = n * (n - 1) / 2.0
+  val sumXSquared = (n - 1) * n * (2 * n - 1) / 6.0
+  val denominator = n * sumXSquared - sumX * sumX
+
+  return groups
+    .associateWith { group ->
+      var sumY = 0.0
+      var sumXY = 0.0
+      intervals.forEachIndexed { x, interval ->
+        val y = interval.stacked[group]?.toDouble() ?: 0.0
+        sumY += y
+        sumXY += x * y
+      }
+      val slope = (n * sumXY - sumX * sumY) / denominator
+      val intercept = (sumY - slope * sumX) / n
+      CustomTrend(start = Amount(intercept), end = Amount(intercept + slope * (n - 1)))
+    }
+    .toImmutableMap()
+}
 
 // grouped-spreadsheet.ts: each category group, holding its categories
 private fun categoryGroups(

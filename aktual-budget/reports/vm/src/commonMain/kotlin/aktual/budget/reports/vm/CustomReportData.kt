@@ -120,3 +120,9 @@ data class CustomGroupTotals(
   val intervals: ImmutableList<CustomGroupIntervalTotals>,
   val categories: ImmutableList<CustomGroupTotals>,
 )
+
+/**
+ * A straight line fitted through one group's amounts, as a stacked chart draws them. [start] is its
+ * value at the first interval and [end] at the last.
+ */
+@Immutable data class CustomTrend(val start: Amount, val end: Amount)

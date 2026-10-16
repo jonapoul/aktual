@@ -197,4 +197,9 @@
   <string name="reports_custom_transfers">Transfers</string>
   <string name="reports_custom_off_budget">Off budget</string>
   <string name="reports_custom_uncategorised_and_off_budget">Uncategorized &amp; Off budget</string>
+  <string name="reports_custom_assets">Assets</string>
+  <string name="reports_custom_debts">Debts</string>
+  <string name="reports_custom_net_assets">Net assets</string>
+  <string name="reports_custom_net_debts">Net debts</string>
+  <string name="reports_custom_net">Net</string>
 </resources>

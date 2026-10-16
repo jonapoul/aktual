@@ -15,6 +15,7 @@ import aktual.budget.reports.vm.CustomMetric
 import aktual.budget.reports.vm.CustomReportConfig
 import aktual.budget.reports.vm.CustomReportDates
 import aktual.budget.reports.vm.CustomTotals
+import aktual.budget.reports.vm.CustomTrend
 import aktual.budget.reports.vm.metric
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.LocalDate
@@ -77,9 +79,8 @@ internal fun CustomChart(
     val bars = customBars(data)
     val chartModifier = Modifier.fillMaxWidth().weight(1f)
     val graphType = data.config.graphType
-    val isIntervalStack = graphType == StackedBarGraph && data.config.groupBy == Interval
     when {
-      graphType != BarGraph && graphType != StackedBarGraph || isIntervalStack ->
+      !data.config.isSupported() ->
         Message(Strings.reportsCustomGraphUnsupported, colors.warningText, chartModifier)
 
       bars.isEmpty() || data.intervals.isEmpty() ->
@@ -87,13 +88,38 @@ internal fun CustomChart(
 
       graphType == BarGraph -> CustomBarChart(data, bars, compact, chartModifier)
 
-      else -> CustomStackedBarChart(data, bars, compact, chartModifier)
+      graphType == StackedBarGraph -> CustomStackedBarChart(data, bars, compact, chartModifier)
+
+      graphType == LineGraph -> CustomLineChart(data, bars, compact, chartModifier)
+
+      graphType == AreaGraph -> CustomAreaChart(data, compact, chartModifier)
+
+      else -> CustomBarLineChart(data, compact, chartModifier)
     }
 
-    if (!compact && data.config.groupBy != Interval && bars.isNotEmpty()) {
+    if (!compact && data.config.hasLegend() && bars.isNotEmpty()) {
       Legend(modifier = Modifier.padding(top = 8.dp).fillMaxWidth(), bars = bars)
     }
   }
+
+// Stacked bars and lines draw a series per group, so they can't be grouped by interval. Area and
+// bar-line charts always draw the intervals
+internal fun CustomReportConfig.isSupported(): Boolean =
+  when (graphType) {
+    BarGraph,
+    AreaGraph,
+    BarLineGraph -> true
+    StackedBarGraph,
+    LineGraph -> groupBy != Interval
+    TableGraph,
+    DonutGraph,
+    Unknown -> false
+  }
+
+// ReportOptions disableLegend: area charts have nothing to name, and intervals are named on the
+// axis
+private fun CustomReportConfig.hasLegend(): Boolean =
+  groupBy != Interval && graphType != AreaGraph && graphType != BarLineGraph
 
 @Composable
 private fun Message(text: String, color: Color, modifier: Modifier = Modifier) =
@@ -207,6 +233,15 @@ private class CustomChartProvider :
     CustomChartParams(previewCustomData(StackedBarGraph, Category, Payment), compact = false),
     CustomChartParams(previewCustomData(StackedBarGraph, Category, Payment), compact = true),
     CustomChartParams(previewCustomData(StackedBarGraph, Category, Net), compact = false),
+    CustomChartParams(previewCustomData(LineGraph, Category, Payment), compact = false),
+    CustomChartParams(previewCustomData(LineGraph, Category, Payment), compact = true),
+    CustomChartParams(
+      previewCustomData(LineGraph, Category, Payment, showTrendLines = true),
+      compact = false,
+    ),
+    CustomChartParams(previewCustomData(AreaGraph, Interval, Net), compact = false),
+    CustomChartParams(previewCustomData(AreaGraph, Interval, Payment), compact = true),
+    CustomChartParams(previewCustomData(BarLineGraph, Interval, Net), compact = false),
     CustomChartParams(previewCustomData(TableGraph, Category, Payment), compact = true),
   )
 
@@ -230,6 +265,7 @@ internal fun previewCustomData(
   graphType: GraphType,
   groupBy: GroupBy,
   balanceType: BalanceType,
+  showTrendLines: Boolean = false,
 ): CustomData {
   val metric = balanceType.metric
   val intervals =
@@ -271,7 +307,7 @@ internal fun previewCustomData(
     title = "My Custom Report",
     config =
       CustomReportConfig(
-        mode = if (graphType == StackedBarGraph) Time else Total,
+        mode = if (graphType == StackedBarGraph || graphType == LineGraph) Time else Total,
         groupBy = groupBy,
         balanceType = balanceType,
         graphType = graphType,
@@ -286,7 +322,7 @@ internal fun previewCustomData(
         conditionsOp = And,
         sortBy = Desc,
         trimIntervals = false,
-        showTrendLines = false,
+        showTrendLines = showTrendLines,
         colorScheme = null,
       ),
     range = PREVIEW_START..PREVIEW_END,
@@ -294,6 +330,18 @@ internal fun previewCustomData(
     groups = groups.toImmutableList(),
     categoryGroups = persistentListOf(),
     totals = groups.map { it.totals }.reduce(::plus),
+    // Not a real fit, just something to draw
+    trends =
+      if (showTrendLines) {
+        groups
+          .associate { group ->
+            val stacked = intervalTotals.map { it.stacked[group.group] ?: Amount.Zero }
+            group.group to CustomTrend(stacked.first(), stacked.average())
+          }
+          .toImmutableMap()
+      } else {
+        persistentMapOf()
+      },
   )
 }
 
@@ -307,6 +355,8 @@ private fun previewTotals(assets: Int, debts: Int): CustomTotals {
     total = Amount(net.toDouble()),
   )
 }
+
+private fun List<Amount>.average(): Amount = Amount(sumOf { it.toDouble() } / size)
 
 private fun plus(a: CustomTotals, b: CustomTotals) =
   CustomTotals(
