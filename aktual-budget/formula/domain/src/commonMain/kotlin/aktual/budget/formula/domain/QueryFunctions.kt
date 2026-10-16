@@ -34,6 +34,7 @@ internal fun queryFunctions(
         if (balance == null) warn(UnknownAccount(account))
         NumberValue((balance ?: 0L) / CENTS)
       },
+    "BUDGET_QUERY" to budgetQueryFunction(data),
   )
 
 private fun queryFunction(body: suspend EvaluationScope.(String) -> FormulaValue): FormulaFunction =

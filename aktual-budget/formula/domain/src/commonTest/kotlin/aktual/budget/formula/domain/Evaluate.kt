@@ -2,6 +2,7 @@ package aktual.budget.formula.domain
 
 import aktual.test.TestCalendar
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
 
 // Serial number 45322
@@ -28,6 +29,7 @@ internal data class FakeQuery(
 internal class FakeFormulaDataSource(
   private val queries: Map<String, FakeQuery> = emptyMap(),
   private val balances: Map<String, Long> = emptyMap(),
+  private val budgets: Map<YearMonth, Map<String, CategoryBudget>> = emptyMap(),
 ) : FormulaDataSource {
   override suspend fun querySum(name: String) = queries[name]?.sum
 
@@ -38,4 +40,6 @@ internal class FakeFormulaDataSource(
   override suspend fun queryMonths(name: String) = queries[name]?.months
 
   override suspend fun accountBalance(account: String) = balances[account]
+
+  override suspend fun budgetMonth(month: YearMonth) = budgets[month].orEmpty()
 }

@@ -68,6 +68,7 @@ enum class ErrorReason {
   TextTooLong,
   InvalidDate,
   DateOutOfRange,
+  InvalidBudgetDimension,
 }
 
 // Something the formula did that isn't an error but may be a mistake, e.g. naming a missing query
