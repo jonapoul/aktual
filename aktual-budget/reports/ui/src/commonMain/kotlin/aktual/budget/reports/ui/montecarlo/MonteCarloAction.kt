@@ -18,6 +18,8 @@ internal sealed interface MonteCarloAction {
 
   data object AddPot : MonteCarloAction
 
+  data class AddInvestmentPhase(val potId: String) : MonteCarloAction
+
   data object AddIncomeStream : MonteCarloAction
 
   data object AddContribution : MonteCarloAction

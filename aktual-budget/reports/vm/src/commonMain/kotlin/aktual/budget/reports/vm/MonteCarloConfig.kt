@@ -55,28 +55,138 @@ val AllocationPreset.presetWeights: AssetWeights?
       Unknown -> null
     }
 
+// MonteCarloInvestmentFields: what a pot (or one of its investment phases) is invested in, and
+// what it costs
+sealed interface McInvestment<T : McInvestment<T>> {
+  val allocationPreset: AllocationPreset
+  val allocationStocks: Double
+  val allocationBonds: Double
+  val allocationCash: Double
+  val expectedReturnMean: Double
+  val returnStdDev: Double
+  val annualFeeFixed: Double
+  val feeAdjustsWithInflation: Boolean
+  val annualFeeRate: Double
+
+  fun withInvestment(
+    allocationPreset: AllocationPreset = this.allocationPreset,
+    allocationStocks: Double = this.allocationStocks,
+    allocationBonds: Double = this.allocationBonds,
+    allocationCash: Double = this.allocationCash,
+    expectedReturnMean: Double = this.expectedReturnMean,
+    returnStdDev: Double = this.returnStdDev,
+    annualFeeFixed: Double = this.annualFeeFixed,
+    feeAdjustsWithInflation: Boolean = this.feeAdjustsWithInflation,
+    annualFeeRate: Double = this.annualFeeRate,
+  ): T
+}
+
 @Immutable
 data class McPot(
   val id: String,
   val name: String = "",
   val startingBalance: Double = 50_000_000.0,
-  val allocationPreset: AllocationPreset = Equity60,
-  val allocationStocks: Double = 0.6,
-  val allocationBonds: Double = 0.4,
-  val allocationCash: Double = 0.0,
-  val expectedReturnMean: Double = 0.06,
-  val returnStdDev: Double = 0.1,
+  override val allocationPreset: AllocationPreset = Equity60,
+  override val allocationStocks: Double = 0.6,
+  override val allocationBonds: Double = 0.4,
+  override val allocationCash: Double = 0.0,
+  override val expectedReturnMean: Double = 0.06,
+  override val returnStdDev: Double = 0.1,
   // Age from which the pot can fund withdrawals; null means immediately
   val accessAge: Int? = null,
   // Account whose live balance supplies the starting balance
   val accountId: AccountId? = null,
   val withdrawalTaxRate: Double = 0.0,
   val taxableFraction: Double = 1.0,
-  val annualFeeFixed: Double = 0.0,
-  val feeAdjustsWithInflation: Boolean = false,
-  val annualFeeRate: Double = 0.0,
+  override val annualFeeFixed: Double = 0.0,
+  override val feeAdjustsWithInflation: Boolean = false,
+  override val annualFeeRate: Double = 0.0,
   val isSurplus: Boolean = false,
-)
+  // Later changes to the pot's investment, by age, in any order
+  val investmentPhases: ImmutableList<McInvestmentPhase> = persistentListOf(),
+) : McInvestment<McPot> {
+  override fun withInvestment(
+    allocationPreset: AllocationPreset,
+    allocationStocks: Double,
+    allocationBonds: Double,
+    allocationCash: Double,
+    expectedReturnMean: Double,
+    returnStdDev: Double,
+    annualFeeFixed: Double,
+    feeAdjustsWithInflation: Boolean,
+    annualFeeRate: Double,
+  ) =
+    copy(
+      allocationPreset = allocationPreset,
+      allocationStocks = allocationStocks,
+      allocationBonds = allocationBonds,
+      allocationCash = allocationCash,
+      expectedReturnMean = expectedReturnMean,
+      returnStdDev = returnStdDev,
+      annualFeeFixed = annualFeeFixed,
+      feeAdjustsWithInflation = feeAdjustsWithInflation,
+      annualFeeRate = annualFeeRate,
+    )
+}
+
+// MonteCarloInvestmentPhase: the pot's investment from fromAge (inclusive). The pot's own fields
+// apply until its first phase begins
+@Immutable
+data class McInvestmentPhase(
+  val id: String,
+  val fromAge: Int,
+  val transition: InvestmentTransition = AtOnce,
+  override val allocationPreset: AllocationPreset,
+  override val allocationStocks: Double,
+  override val allocationBonds: Double,
+  override val allocationCash: Double,
+  override val expectedReturnMean: Double,
+  override val returnStdDev: Double,
+  override val annualFeeFixed: Double,
+  override val feeAdjustsWithInflation: Boolean,
+  override val annualFeeRate: Double,
+) : McInvestment<McInvestmentPhase> {
+  override fun withInvestment(
+    allocationPreset: AllocationPreset,
+    allocationStocks: Double,
+    allocationBonds: Double,
+    allocationCash: Double,
+    expectedReturnMean: Double,
+    returnStdDev: Double,
+    annualFeeFixed: Double,
+    feeAdjustsWithInflation: Boolean,
+    annualFeeRate: Double,
+  ) =
+    copy(
+      allocationPreset = allocationPreset,
+      allocationStocks = allocationStocks,
+      allocationBonds = allocationBonds,
+      allocationCash = allocationCash,
+      expectedReturnMean = expectedReturnMean,
+      returnStdDev = returnStdDev,
+      annualFeeFixed = annualFeeFixed,
+      feeAdjustsWithInflation = feeAdjustsWithInflation,
+      annualFeeRate = annualFeeRate,
+    )
+}
+
+// createMonteCarloInvestmentPhase(): a copy of the source's investment (the pot, or the phase
+// before
+// it), so only the differences need changing
+fun investmentPhase(id: String, source: McInvestment<*>, fromAge: Int) =
+  McInvestmentPhase(
+    id = id,
+    fromAge = fromAge,
+    allocationPreset = source.allocationPreset,
+    allocationStocks = source.allocationStocks,
+    allocationBonds = source.allocationBonds,
+    allocationCash = source.allocationCash,
+    expectedReturnMean = source.expectedReturnMean,
+    returnStdDev = source.returnStdDev,
+    annualFeeFixed = source.annualFeeFixed,
+    feeAdjustsWithInflation = source.feeAdjustsWithInflation,
+    annualFeeRate = source.annualFeeRate,
+  )
 
 // createMonteCarloSurplusPot(): empty cash, immediately accessible, untaxed, fee-free
 fun surplusPot(id: String, name: String = "") =
@@ -175,7 +285,7 @@ data class McConfig(
 }
 
 // getPotAssetWeights(): null means the pot draws normally from its own mean and volatility
-fun McPot.assetWeights(): AssetWeights? =
+fun McInvestment<*>.assetWeights(): AssetWeights? =
   if (allocationPreset == CustomMix) {
     val stocks = allocationStocks.sanitizeShare()
     val bonds = allocationBonds.sanitizeShare()
@@ -191,17 +301,84 @@ fun McPot.assetWeights(): AssetWeights? =
   }
 
 // The sum of a custom mix's shares, which must be 100% for the mix to count
-fun McPot.mixShareTotal(): Double =
+fun McInvestment<*>.mixShareTotal(): Double =
   allocationStocks.sanitizeShare() +
     allocationBonds.sanitizeShare() +
     allocationCash.sanitizeShare()
 
-fun McPot.isMixIncomplete(): Boolean =
+fun McInvestment<*>.isMixIncomplete(): Boolean =
   allocationPreset == CustomMix && abs(mixShareTotal() - 1) >= MIX_TOLERANCE
 
 private fun Double.sanitizeShare() = if (isFinite() && this > 0) this else 0.0
 
 private const val MIX_TOLERANCE = 1e-9
+
+// MonteCarloPotInvestment: what a pot is invested in, and what it costs, in one simulated year
+data class McYearInvestment(
+  // The asset mix for the historical models; null means normal draws
+  val weights: AssetWeights?,
+  val mean: Double,
+  val stdDev: Double,
+  val feeRate: Double,
+  val feeFixed: Double,
+  val feeAdjusts: Boolean,
+)
+
+private fun McInvestment<*>.yearInvestment() =
+  McYearInvestment(
+    weights = assetWeights(),
+    mean = expectedReturnMean,
+    stdDev = max(0.0, returnStdDev),
+    feeRate = annualFeeRate.coerceIn(0.0, MC_MAX_ANNUAL_FEE_RATE),
+    feeFixed = annualFeeFixed.coerceIn(0.0, MC_MAX_AMOUNT),
+    feeAdjusts = feeAdjustsWithInflation,
+  )
+
+// lerpInvestment(): the mix only glides when both ends have one. A glide to or from a hand-typed
+// pot draws normally around the blended return and volatility
+private fun McYearInvestment.lerp(to: McYearInvestment, fraction: Double): McYearInvestment {
+  fun lerp(start: Double, end: Double) = start + (end - start) * fraction
+  val from = weights
+  val target = to.weights
+  return McYearInvestment(
+    weights =
+      if (from != null && target != null) {
+        AssetWeights(
+          stocks = lerp(from.stocks, target.stocks),
+          bonds = lerp(from.bonds, target.bonds),
+          cash = lerp(from.cash, target.cash),
+        )
+      } else {
+        null
+      },
+    mean = lerp(mean, to.mean),
+    stdDev = lerp(stdDev, to.stdDev),
+    feeRate = lerp(feeRate, to.feeRate),
+    feeFixed = lerp(feeFixed, to.feeFixed),
+    feeAdjusts = feeAdjusts,
+  )
+}
+
+// resolveInvestmentPhases(): the phases still ahead, sorted by age. A phase already reached is the
+// pot's starting point instead
+fun McPot.upcomingPhases(currentAge: Int): List<McInvestmentPhase> =
+  investmentPhases.filter { it.fromAge > currentAge }.sortedBy { it.fromAge }
+
+// getPotInvestmentAtAge(): the pot's own fields (or the latest phase already passed) apply from the
+// current age, each later phase takes over at its fromAge, and a gradual phase is approached in a
+// straight line from the previous phase's start, fully in place at its own fromAge
+fun McPot.investmentAt(currentAge: Int, age: Int): McYearInvestment {
+  val base: McInvestment<*> =
+    investmentPhases.filter { it.fromAge <= currentAge }.maxByOrNull { it.fromAge } ?: this
+  val phases = upcomingPhases(currentAge)
+  val activeIndex = phases.indexOfLast { it.fromAge <= age }
+  val active = (if (activeIndex < 0) base else phases[activeIndex]).yearInvestment()
+  val activeStart = if (activeIndex < 0) currentAge else phases[activeIndex].fromAge
+  val next = phases.getOrNull(activeIndex + 1)
+  if (next == null || next.transition != Gradual || next.fromAge <= activeStart) return active
+  val fraction = ((age - activeStart).toDouble() / (next.fromAge - activeStart)).coerceIn(0.0, 1.0)
+  return active.lerp(next.yearInvestment(), fraction)
+}
 
 // resolveSpendingPhases(): sorted by starting age, with a default phase when none are set
 fun List<McSpendingPhase>.resolve(): List<McSpendingPhase> = ifEmpty {
@@ -290,23 +467,53 @@ fun MonteCarloReportMeta.toConfig(): McConfig {
 
 private fun MonteCarloPot.toPot(index: Int): McPot {
   val defaults = McPot(id = id.ifEmpty { "pot-${index + 1}" })
-  return defaults.copy(
-    name = name.orEmpty(),
-    startingBalance = startingBalance?.toDouble() ?: defaults.startingBalance,
-    allocationPreset = allocationPreset?.takeIf { it != Unknown } ?: defaults.allocationPreset,
-    allocationStocks = allocationStocks ?: defaults.allocationStocks,
-    allocationBonds = allocationBonds ?: defaults.allocationBonds,
-    allocationCash = allocationCash ?: defaults.allocationCash,
-    expectedReturnMean = expectedReturnMean ?: defaults.expectedReturnMean,
-    returnStdDev = returnStdDev ?: defaults.returnStdDev,
-    accessAge = accessAge,
-    accountId = accountId,
-    withdrawalTaxRate = withdrawalTaxRate ?: defaults.withdrawalTaxRate,
-    taxableFraction = taxableFraction ?: defaults.taxableFraction,
-    annualFeeFixed = annualFeeFixed?.toDouble() ?: defaults.annualFeeFixed,
-    feeAdjustsWithInflation = feeAdjustsWithInflation ?: defaults.feeAdjustsWithInflation,
-    annualFeeRate = annualFeeRate ?: defaults.annualFeeRate,
-    isSurplus = isSurplus ?: defaults.isSurplus,
+  return defaults
+    .copy(
+      name = name.orEmpty(),
+      startingBalance = startingBalance?.toDouble() ?: defaults.startingBalance,
+      allocationPreset = allocationPreset?.takeIf { it != Unknown } ?: defaults.allocationPreset,
+      allocationStocks = allocationStocks ?: defaults.allocationStocks,
+      allocationBonds = allocationBonds ?: defaults.allocationBonds,
+      allocationCash = allocationCash ?: defaults.allocationCash,
+      expectedReturnMean = expectedReturnMean ?: defaults.expectedReturnMean,
+      returnStdDev = returnStdDev ?: defaults.returnStdDev,
+      accessAge = accessAge,
+      accountId = accountId,
+      withdrawalTaxRate = withdrawalTaxRate ?: defaults.withdrawalTaxRate,
+      taxableFraction = taxableFraction ?: defaults.taxableFraction,
+      annualFeeFixed = annualFeeFixed?.toDouble() ?: defaults.annualFeeFixed,
+      feeAdjustsWithInflation = feeAdjustsWithInflation ?: defaults.feeAdjustsWithInflation,
+      annualFeeRate = annualFeeRate ?: defaults.annualFeeRate,
+      isSurplus = isSurplus ?: defaults.isSurplus,
+    )
+    .let { pot ->
+      // A phase without a start age can't be placed, so it's dropped rather than treated as
+      // already reached, which would override the pot's own settings
+      pot.copy(
+        investmentPhases =
+          investmentPhases
+            .orEmpty()
+            .mapIndexedNotNull { i, phase -> phase.toPhase(i, pot) }
+            .toImmutableList(),
+      )
+    }
+}
+
+private fun InvestmentPhase.toPhase(index: Int, pot: McPot): McInvestmentPhase? {
+  val age = fromAge ?: return null
+  return McInvestmentPhase(
+    id = id.ifEmpty { "phase-${index + 1}" },
+    fromAge = age,
+    transition = transition?.takeIf { it != Unknown } ?: AtOnce,
+    allocationPreset = allocationPreset?.takeIf { it != Unknown } ?: pot.allocationPreset,
+    allocationStocks = allocationStocks ?: pot.allocationStocks,
+    allocationBonds = allocationBonds ?: pot.allocationBonds,
+    allocationCash = allocationCash ?: pot.allocationCash,
+    expectedReturnMean = expectedReturnMean ?: pot.expectedReturnMean,
+    returnStdDev = returnStdDev ?: pot.returnStdDev,
+    annualFeeFixed = annualFeeFixed?.toDouble() ?: pot.annualFeeFixed,
+    feeAdjustsWithInflation = feeAdjustsWithInflation ?: pot.feeAdjustsWithInflation,
+    annualFeeRate = annualFeeRate ?: pot.annualFeeRate,
   )
 }
 
@@ -381,6 +588,7 @@ fun McConfig.toMeta(base: MonteCarloReportMeta): MonteCarloReportMeta =
           feeAdjustsWithInflation = pot.feeAdjustsWithInflation,
           annualFeeRate = pot.annualFeeRate,
           isSurplus = pot.isSurplus,
+          investmentPhases = pot.investmentPhases.map { it.toMeta() },
         )
       },
     withdrawalStrategy = withdrawalStrategy,
@@ -449,6 +657,22 @@ fun McConfig.toMeta(base: MonteCarloReportMeta): MonteCarloReportMeta =
     currentAge = currentAge,
     targetAge = targetAge,
     simulationCount = simulationCount,
+  )
+
+private fun McInvestmentPhase.toMeta() =
+  InvestmentPhase(
+    id = id,
+    fromAge = fromAge,
+    transition = transition,
+    allocationPreset = allocationPreset,
+    allocationStocks = allocationStocks,
+    allocationBonds = allocationBonds,
+    allocationCash = allocationCash,
+    expectedReturnMean = expectedReturnMean,
+    returnStdDev = returnStdDev,
+    annualFeeFixed = annualFeeFixed.toMinor(),
+    feeAdjustsWithInflation = feeAdjustsWithInflation,
+    annualFeeRate = annualFeeRate,
   )
 
 private fun Double.toMinor(): Long = max(0.0, this).roundToLong()

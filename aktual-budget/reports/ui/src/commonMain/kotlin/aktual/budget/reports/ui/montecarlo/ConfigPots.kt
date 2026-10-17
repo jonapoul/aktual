@@ -2,20 +2,26 @@ package aktual.budget.reports.ui.montecarlo
 
 import aktual.budget.model.AccountId
 import aktual.budget.reports.vm.AllocationPreset
+import aktual.budget.reports.vm.InvestmentTransition
 import aktual.budget.reports.vm.MC_MAX_AGE
 import aktual.budget.reports.vm.MC_MAX_ANNUAL_FEE_RATE
 import aktual.budget.reports.vm.MC_MAX_WITHDRAWAL_TAX_RATE
 import aktual.budget.reports.vm.MC_MIN_AGE
 import aktual.budget.reports.vm.McConfig
+import aktual.budget.reports.vm.McInvestment
+import aktual.budget.reports.vm.McInvestmentPhase
 import aktual.budget.reports.vm.McPot
 import aktual.budget.reports.vm.ReturnStats
+import aktual.budget.reports.vm.canAddInvestmentPhase
 import aktual.budget.reports.vm.canRemove
 import aktual.budget.reports.vm.historicalStats
 import aktual.budget.reports.vm.isMixIncomplete
 import aktual.budget.reports.vm.mixShareTotal
 import aktual.budget.reports.vm.montecarlo.MonteCarloAccount
 import aktual.budget.reports.vm.movePot
+import aktual.budget.reports.vm.removeInvestmentPhase
 import aktual.budget.reports.vm.removePot
+import aktual.budget.reports.vm.updateInvestmentPhase
 import aktual.budget.reports.vm.updatePot
 import aktual.budget.reports.vm.withAllocationPreset
 import aktual.budget.reports.vm.withExpectedReturn
@@ -189,6 +195,7 @@ private fun PotCard(
 
     if (isExpanded) {
       PotSettings(pot, usesTaxBands = config.taxModel == Bands, edit = edit)
+      InvestmentPhases(config, pot, onAction, edit)
     }
   }
 }
@@ -196,72 +203,48 @@ private fun PotCard(
 // Historical models derive the pot's returns from its allocation mix, so pots with one show the
 // mix's measured history instead of editable assumptions
 @Composable
-private fun ReturnFields(pot: McPot, stats: ReturnStats?, edit: ((McPot) -> McPot) -> Unit) =
-  FieldRow {
-    LabeledField(
-      label = Strings.monteCarloFieldExpectedReturn,
-      help = Strings.monteCarloHelpExpectedReturn,
-    ) {
-      if (stats != null) {
-        ReadOnlyValue(returnText(stats.mean, pot.expectedReturnMean))
-      } else {
-        PercentField(
-          value = pot.expectedReturnMean,
-          min = MIN_RETURN,
-          onCommit = { mean -> edit { it.withExpectedReturn(mean) } },
-        )
-      }
-    }
-    LabeledField(
-      label = Strings.monteCarloFieldVolatility,
-      help = Strings.monteCarloHelpVolatility,
-    ) {
-      if (stats != null) {
-        ReadOnlyValue(returnText(stats.stdDev, pot.returnStdDev))
-      } else {
-        PercentField(
-          value = pot.returnStdDev,
-          onCommit = { stdDev -> edit { it.withVolatility(stdDev) } },
-        )
-      }
+private fun <T : McInvestment<T>> ReturnFields(
+  pot: T,
+  stats: ReturnStats?,
+  edit: ((T) -> T) -> Unit,
+) = FieldRow {
+  LabeledField(
+    label = Strings.monteCarloFieldExpectedReturn,
+    help = Strings.monteCarloHelpExpectedReturn,
+  ) {
+    if (stats != null) {
+      ReadOnlyValue(returnText(stats.mean, pot.expectedReturnMean))
+    } else {
+      PercentField(
+        value = pot.expectedReturnMean,
+        min = MIN_RETURN,
+        onCommit = { mean -> edit { it.withExpectedReturn(mean) } },
+      )
     }
   }
+  LabeledField(
+    label = Strings.monteCarloFieldVolatility,
+    help = Strings.monteCarloHelpVolatility,
+  ) {
+    if (stats != null) {
+      ReadOnlyValue(returnText(stats.stdDev, pot.returnStdDev))
+    } else {
+      PercentField(
+        value = pot.returnStdDev,
+        onCommit = { stdDev -> edit { it.withVolatility(stdDev) } },
+      )
+    }
+  }
+}
 
 // The access, tax and fee settings upstream keeps in the pot's expandable panel
 @Composable
 private fun PotSettings(pot: McPot, usesTaxBands: Boolean, edit: ((McPot) -> McPot) -> Unit) {
   if (pot.allocationPreset == CustomMix) {
     GroupHeadingWithHelp(Strings.monteCarloGroupAllocation, Strings.monteCarloHelpMix)
-    FieldRow {
-      LabeledField(Strings.monteCarloFieldStocks) {
-        PercentField(
-          value = pot.allocationStocks,
-          onCommit = { share -> edit { it.copy(allocationStocks = share) } },
-        )
-      }
-      LabeledField(Strings.monteCarloFieldBonds) {
-        PercentField(
-          value = pot.allocationBonds,
-          onCommit = { share -> edit { it.copy(allocationBonds = share) } },
-        )
-      }
-      LabeledField(Strings.monteCarloFieldCash) {
-        PercentField(
-          value = pot.allocationCash,
-          onCommit = { share -> edit { it.copy(allocationCash = share) } },
-        )
-      }
-    }
+    MixFields(pot, edit)
     if (pot.isMixIncomplete()) {
-      Text(
-        text =
-          Strings.monteCarloMixIncomplete(
-            formatTrimmedPercent(1.0, places = 0),
-            formatTrimmedPercent(pot.mixShareTotal(), places = MIX_TOTAL_PLACES),
-          ),
-        style = typography.bodyMedium,
-        color = colors.errorText,
-      )
+      MixIncompleteText(Strings.monteCarloMixIncomplete(fullMixText(), mixTotalText(pot)))
     }
   }
 
@@ -298,27 +281,158 @@ private fun PotSettings(pot: McPot, usesTaxBands: Boolean, edit: ((McPot) -> McP
   }
 
   GroupHeading(Strings.monteCarloGroupFees)
+  FeeFields(pot, edit)
+}
+
+@Composable
+private fun <T : McInvestment<T>> MixFields(investment: T, edit: ((T) -> T) -> Unit) = FieldRow {
+  LabeledField(Strings.monteCarloFieldStocks) {
+    PercentField(
+      value = investment.allocationStocks,
+      onCommit = { share -> edit { it.withInvestment(allocationStocks = share) } },
+    )
+  }
+  LabeledField(Strings.monteCarloFieldBonds) {
+    PercentField(
+      value = investment.allocationBonds,
+      onCommit = { share -> edit { it.withInvestment(allocationBonds = share) } },
+    )
+  }
+  LabeledField(Strings.monteCarloFieldCash) {
+    PercentField(
+      value = investment.allocationCash,
+      onCommit = { share -> edit { it.withInvestment(allocationCash = share) } },
+    )
+  }
+}
+
+@Composable
+private fun MixIncompleteText(text: String) =
+  Text(text = text, style = typography.bodyMedium, color = colors.errorText)
+
+private fun fullMixText(): String = formatTrimmedPercent(1.0, places = 0)
+
+private fun mixTotalText(investment: McInvestment<*>): String =
+  formatTrimmedPercent(investment.mixShareTotal(), places = MIX_TOTAL_PLACES)
+
+@Composable
+private fun <T : McInvestment<T>> FeeFields(investment: T, edit: ((T) -> T) -> Unit) {
   FieldRow {
     LabeledField(label = Strings.monteCarloFieldFeeFixed, help = Strings.monteCarloHelpFeeFixed) {
       AmountField(
-        amount = pot.annualFeeFixed,
-        onCommit = { fee -> edit { it.copy(annualFeeFixed = fee) } },
+        amount = investment.annualFeeFixed,
+        onCommit = { fee -> edit { it.withInvestment(annualFeeFixed = fee) } },
       )
     }
     LabeledField(label = Strings.monteCarloFieldFeeRate, help = Strings.monteCarloHelpFeeRate) {
       PercentField(
-        value = pot.annualFeeRate,
+        value = investment.annualFeeRate,
         max = MC_MAX_ANNUAL_FEE_RATE * PERCENT_SCALE,
-        onCommit = { rate -> edit { it.copy(annualFeeRate = rate) } },
+        onCommit = { rate -> edit { it.withInvestment(annualFeeRate = rate) } },
       )
     }
   }
   LabeledCheckbox(
     label = Strings.monteCarloAdjustByInflation,
-    checked = pot.feeAdjustsWithInflation,
-    onCheckedChange = { adjusts -> edit { it.copy(feeAdjustsWithInflation = adjusts) } },
+    checked = investment.feeAdjustsWithInflation,
+    onCheckedChange = { adjusts -> edit { it.withInvestment(feeAdjustsWithInflation = adjusts) } },
   )
 }
+
+// The investment phases from MonteCarloPotConfiguration.tsx, listed by age
+@Composable
+private fun InvestmentPhases(
+  config: McConfig,
+  pot: McPot,
+  onAction: MonteCarloActionHandler,
+  edit: ((McPot) -> McPot) -> Unit,
+) {
+  GroupHeadingWithHelp(
+    Strings.monteCarloGroupInvestmentPhases,
+    Strings.monteCarloHelpInvestmentPhases,
+  )
+  BodyText(Strings.monteCarloInvestmentPhasesFromNow)
+  for (phase in pot.investmentPhases.sortedBy { it.fromAge }) {
+    key(phase.id) {
+      InvestmentPhaseCard(
+        config = config,
+        phase = phase,
+        edit = { transform -> edit { it.updateInvestmentPhase(phase.id, transform) } },
+        onRemove = { edit { it.removeInvestmentPhase(phase.id) } },
+      )
+    }
+  }
+  TonalButton(
+    icon = MaterialIcons.Add,
+    text = Strings.monteCarloInvestmentPhaseAdd,
+    isEnabled = pot.canAddInvestmentPhase(config),
+    onClick = { onAction(MonteCarloAction.AddInvestmentPhase(pot.id)) },
+  )
+}
+
+// MonteCarloInvestmentPhaseRow.tsx: mirrors the pot's own investment controls
+@Composable
+private fun InvestmentPhaseCard(
+  config: McConfig,
+  phase: McInvestmentPhase,
+  edit: ((McInvestmentPhase) -> McInvestmentPhase) -> Unit,
+  onRemove: () -> Unit,
+) =
+  ItemCard(
+    title = Strings.monteCarloInvestmentPhaseTitle(phase.fromAge),
+    actions = {
+      BareIconButton(
+        imageVector = MaterialIcons.Delete,
+        contentDescription = Strings.monteCarloInvestmentPhaseRemove,
+        onClick = onRemove,
+      )
+    },
+  ) {
+    FieldRow {
+      LabeledField(Strings.monteCarloFieldFromAge) {
+        IntField(
+          value = phase.fromAge,
+          min = config.currentAge + 1,
+          max = config.targetAge,
+          onCommit = { age -> edit { it.copy(fromAge = age) } },
+        )
+      }
+      LabeledField(Strings.monteCarloFieldTransition) {
+        AktualExposedDropDownMenu(
+          value = phase.transition,
+          onValueChange = { transition -> edit { it.copy(transition = transition) } },
+          options = TRANSITIONS,
+          string = { it.string() },
+        )
+      }
+    }
+
+    LabeledField(Strings.monteCarloFieldAllocation) {
+      AktualExposedDropDownMenu(
+        value = phase.allocationPreset,
+        onValueChange = { preset -> edit { it.withAllocationPreset(preset) } },
+        options = ALLOCATION_PRESETS,
+        string = { it.string() },
+      )
+    }
+    if (phase.allocationPreset == CustomMix) {
+      MixFields(phase, edit)
+      if (phase.isMixIncomplete()) {
+        MixIncompleteText(Strings.monteCarloPhaseMixIncomplete(fullMixText(), mixTotalText(phase)))
+      }
+    }
+
+    ReturnFields(phase, phase.historicalStats(config.returnModel), edit)
+    FeeFields(phase, edit)
+  }
+
+@Composable
+private fun InvestmentTransition.string(): String =
+  when (this) {
+    Gradual -> Strings.monteCarloTransitionGradual
+    AtOnce,
+    Unknown -> Strings.monteCarloTransitionAtOnce
+  }
 
 @Composable
 private fun LinkedAccountPicker(
@@ -400,6 +514,8 @@ private val ALLOCATION_PRESETS =
     CustomMix,
     Custom,
   )
+
+private val TRANSITIONS = persistentListOf<InvestmentTransition>(AtOnce, Gradual)
 
 private const val MIN_RETURN = -100.0
 private const val MIX_TOTAL_PLACES = 2

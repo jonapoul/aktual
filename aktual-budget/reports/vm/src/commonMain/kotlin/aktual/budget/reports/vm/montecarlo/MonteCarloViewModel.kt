@@ -17,6 +17,8 @@ import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.runMonteCarlo
 import aktual.budget.reports.vm.toConfig
 import aktual.budget.reports.vm.toMeta
+import aktual.budget.reports.vm.updatePot
+import aktual.budget.reports.vm.withInvestmentPhaseAdded
 import aktual.budget.reports.vm.withLiveBalances
 import aktual.budget.reports.vm.withSurplusKept
 import aktual.core.UuidGenerator
@@ -201,6 +203,11 @@ internal constructor(
   fun edit(transform: (McConfig) -> McConfig) = mutableConfig.update { it?.let(transform) }
 
   fun addPot() = edit { it.addPot(uuidGenerator()) }
+
+  fun addInvestmentPhase(potId: String) {
+    val id = uuidGenerator()
+    edit { config -> config.updatePot(potId) { it.withInvestmentPhaseAdded(config, id) } }
+  }
 
   fun addIncomeStream() = edit { it.addIncomeStream(uuidGenerator()) }
 

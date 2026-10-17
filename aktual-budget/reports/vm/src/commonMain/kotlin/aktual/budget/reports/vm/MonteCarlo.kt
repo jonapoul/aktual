@@ -200,8 +200,6 @@ internal fun runMonteCarlo(
   val potCount = pots.size
   val potStartBalances =
     DoubleArray(potCount) { pots[it].startingBalance.coerceIn(0.0, MC_MAX_AMOUNT) }
-  val potMeans = DoubleArray(potCount) { pots[it].expectedReturnMean }
-  val potStdDevs = DoubleArray(potCount) { max(0.0, pots[it].returnStdDev) }
   val strategy = config.withdrawalStrategy
   val previousReturns = DoubleArray(potCount)
   val drainOrder = MutableList(potCount) { it }
@@ -253,12 +251,6 @@ internal fun runMonteCarlo(
     } else {
       incomeTaxRates.any { it > 0 }
     }
-
-  // Fees
-  val potFeeFixed = DoubleArray(potCount) { pots[it].annualFeeFixed.coerceIn(0.0, MC_MAX_AMOUNT) }
-  val potFeeRates =
-    DoubleArray(potCount) { pots[it].annualFeeRate.coerceIn(0.0, MC_MAX_ANNUAL_FEE_RATE) }
-  val hasFees = potFeeFixed.any { it > 0 } || potFeeRates.any { it > 0 }
 
   // Worst-case share of a gross withdrawal lost to tax, to skip the shortfall precheck
   val maxTaxRate =
@@ -423,23 +415,29 @@ internal fun runMonteCarlo(
   val returnModel = config.returnModel
   val historyCount = history.size
 
-  // Pots with an asset mix take that mix's blended return in each historical year
-  val potHistoricalReturns: List<DoubleArray?> = pots.map { pot ->
-    if (returnModel == Normal || returnModel == Unknown) {
-      return@map null
-    }
-    val weights = pot.assetWeights() ?: return@map null
-    DoubleArray(historyCount) { i ->
-      weights.stocks * history[i].stocks +
-        weights.bonds * history[i].bonds +
-        weights.cash * history[i].cash
-    }
-  }
-  val hasNormalDrawPot = potHistoricalReturns.any { it == null }
-
   val inflationMean = config.inflationMean
   val inflationStdDev = if (inflationMean != null) max(0.0, config.inflationStdDev) else 0.0
   val horizonYears = config.horizonYears
+
+  // What each pot is invested in, and what it costs, in every simulated year: the pot's own
+  // settings until its investment phases take over. Historical models blend each year's real
+  // returns by that year's asset mix, and pots without a mix that year draw normally around that
+  // year's mean and volatility
+  val usesHistory = returnModel != Normal && returnModel != Unknown
+  val potInvestmentByYear = pots.map { pot ->
+    Array(horizonYears + 1) { year ->
+      val investment = pot.investmentAt(config.currentAge, config.currentAge + year - 1)
+      if (usesHistory) investment else investment.copy(weights = null)
+    }
+  }
+  // The shared market shock is only drawn in years where some pot draws normally
+  val hasNormalDrawPotByYear =
+    BooleanArray(horizonYears + 1) { year ->
+      year > 0 && potInvestmentByYear.any { it[year].weights == null }
+    }
+  val hasFees = potInvestmentByYear.any { years ->
+    (1..horizonYears).any { years[it].feeRate > 0 || years[it].feeFixed > 0 }
+  }
 
   // The planned spending path in today's money
   val phases = config.spendingPhases.resolve()
@@ -884,17 +882,20 @@ internal fun runMonteCarlo(
             potBalances[surplusPotIndex] += surplusSavedThisYear
           }
 
-          val marketShock = if (hasNormalDrawPot) random.nextNormal() else 0.0
+          val marketShock = if (hasNormalDrawPotByYear[year]) random.nextNormal() else 0.0
 
           total = 0.0
           for (i in 0 until potCount) {
             if (potBalances[i] > 0) {
-              val blended = potHistoricalReturns[i]
+              val investment = potInvestmentByYear[i][year]
+              val weights = investment.weights
               val yearReturn =
-                if (blended != null && historyIndex >= 0) {
-                  blended[historyIndex]
+                if (weights != null && historyIndex >= 0) {
+                  weights.stocks * history[historyIndex].stocks +
+                    weights.bonds * history[historyIndex].bonds +
+                    weights.cash * history[historyIndex].cash
                 } else {
-                  potMeans[i] + potStdDevs[i] * marketShock
+                  investment.mean + investment.stdDev * marketShock
                 }
               captured?.returns?.set(i, yearReturn)
               previousReturns[i] = yearReturn
@@ -925,8 +926,9 @@ internal fun runMonteCarlo(
         if (hasFees && !fundingShortfall && total > 0) {
           for (i in 0 until potCount) {
             if (potBalances[i] <= 0) continue
-            val feeInflation = if (pots[i].feeAdjustsWithInflation) cumulativeInflation else 1.0
-            val fee = potBalances[i] * potFeeRates[i] + potFeeFixed[i] * feeInflation
+            val investment = potInvestmentByYear[i][year]
+            val feeInflation = if (investment.feeAdjusts) cumulativeInflation else 1.0
+            val fee = potBalances[i] * investment.feeRate + investment.feeFixed * feeInflation
             val charged = min(potBalances[i], fee)
             potBalances[i] -= charged
             feesThisYear += charged

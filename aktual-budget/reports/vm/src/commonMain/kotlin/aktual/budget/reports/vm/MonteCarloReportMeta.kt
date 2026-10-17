@@ -50,6 +50,25 @@ data class MonteCarloPot(
   @SerialName("feeAdjustsWithInflation") val feeAdjustsWithInflation: Boolean? = null,
   @SerialName("annualFeeRate") val annualFeeRate: Double? = null,
   @SerialName("isSurplus") val isSurplus: Boolean? = null,
+  @SerialName("investmentPhases") val investmentPhases: List<InvestmentPhase>? = null,
+)
+
+// MonteCarloInvestmentPhaseMeta: what a pot is invested in from a given age. Missing fields fall
+// back to the pot's own
+@Serializable
+data class InvestmentPhase(
+  @SerialName("id") val id: String,
+  @SerialName("fromAge") val fromAge: Int? = null,
+  @SerialName("transition") val transition: InvestmentTransition? = null,
+  @SerialName("allocationPreset") val allocationPreset: AllocationPreset? = null,
+  @SerialName("allocationStocks") val allocationStocks: Double? = null,
+  @SerialName("allocationBonds") val allocationBonds: Double? = null,
+  @SerialName("allocationCash") val allocationCash: Double? = null,
+  @SerialName("expectedReturnMean") val expectedReturnMean: Double? = null,
+  @SerialName("returnStdDev") val returnStdDev: Double? = null,
+  @SerialName("annualFeeFixed") val annualFeeFixed: Long? = null,
+  @SerialName("feeAdjustsWithInflation") val feeAdjustsWithInflation: Boolean? = null,
+  @SerialName("annualFeeRate") val annualFeeRate: Double? = null,
 )
 
 @Serializable
@@ -119,6 +138,15 @@ enum class AllocationPreset {
   @SerialName("cash") Cash,
   @SerialName("custom-mix") CustomMix,
   @SerialName("custom") Custom,
+  @Fallback Unknown,
+}
+
+// How an investment phase takes over from the previous one: switching on the birthday, or gliding
+// there from the previous phase's start age
+@Serializable
+enum class InvestmentTransition {
+  @SerialName("at-once") AtOnce,
+  @SerialName("gradual") Gradual,
   @Fallback Unknown,
 }
 
