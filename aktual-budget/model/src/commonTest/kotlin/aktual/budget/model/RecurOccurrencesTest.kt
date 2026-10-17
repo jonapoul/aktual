@@ -25,11 +25,54 @@ class RecurOccurrencesTest {
   @Test
   fun `Next date moves off the weekend`() {
     // 2026-03-15 is a Sunday
-    val from = parse("2026-02-16")
+    val from = parse("2026-02-17")
     assertThat(MONTHLY.copy(skipWeekend = true, weekendSolveMode = After).nextDate(from))
       .isEqualTo(parse("2026-03-16"))
     assertThat(MONTHLY.copy(skipWeekend = true, weekendSolveMode = Before).nextDate(from))
       .isEqualTo(parse("2026-03-13"))
+  }
+
+  @Test
+  fun `Next date keeps a weekend occurrence moved after the weekend onto the day`() {
+    // 2016-12-31 is a Saturday, moved to Monday 2017-01-02
+    val from = parse("2017-01-01")
+    for (frequency in listOf(RecurFrequency.Weekly, RecurFrequency.Monthly)) {
+      val config =
+        RecurConfig(
+          frequency = frequency,
+          start = parse("2016-12-31"),
+          skipWeekend = true,
+          weekendSolveMode = After,
+        )
+      assertThat(config.nextDate(from)).isEqualTo(parse("2017-01-02"))
+    }
+  }
+
+  @Test
+  fun `Next date keeps a weekend occurrence moved after the weekend onto a later day`() {
+    // 2021-05-22 is a Saturday, moved to Monday 2021-05-24
+    val config =
+      RecurConfig(
+        frequency = Weekly,
+        start = parse("2021-05-22"),
+        skipWeekend = true,
+        weekendSolveMode = After,
+      )
+    assertThat(config.nextDate(from = parse("2021-05-23"))).isEqualTo(parse("2021-05-24"))
+    assertThat(config.nextDate(from = parse("2021-05-25"))).isEqualTo(parse("2021-05-31"))
+  }
+
+  @Test
+  fun `Next date doesn't keep a weekend occurrence moved before the weekend`() {
+    // 2021-05-22 is a Saturday, moved to Friday 2021-05-21
+    val config =
+      RecurConfig(
+        frequency = Weekly,
+        start = parse("2021-05-22"),
+        skipWeekend = true,
+        weekendSolveMode = Before,
+      )
+    assertThat(config.nextDate(from = parse("2021-05-23"))).isEqualTo(parse("2021-05-28"))
   }
 
   @Test

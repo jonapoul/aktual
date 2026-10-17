@@ -143,9 +143,18 @@ fun RecurConfig.adjustForWeekend(date: LocalDate): LocalDate {
   }
 }
 
-// packages/loot-core/src/shared/schedules.ts getNextDate(): the first occurrence on or after the
-// day, or the final one when a limited schedule has run out, moved off a weekend if configured
+// packages/loot-core/src/server/schedules/app.ts getNextDateFrom(): the first occurrence on or
+// after the day, or the final one when a limited schedule has run out, moved off a weekend if
+// configured. An earlier weekend occurrence moved after the weekend onto the day or later comes
+// first.
 fun RecurConfig.nextDate(from: LocalDate): LocalDate? {
+  val next = firstDateFrom(from)
+  val movedOntoDay = movedAfterWeekendOnto(from)
+  return if (movedOntoDay != null && (next == null || movedOntoDay < next)) movedOntoDay else next
+}
+
+// packages/loot-core/src/shared/schedules.ts getNextDate()
+private fun RecurConfig.firstDateFrom(from: LocalDate): LocalDate? {
   for (years in SEARCH_HORIZON_YEARS) {
     val occurrences = occurrences(until = maxOf(from, start).plus(years, YEAR))
     val next = occurrences.dates.firstOrNull { it >= from }
@@ -153,6 +162,18 @@ fun RecurConfig.nextDate(from: LocalDate): LocalDate? {
     if (occurrences.exhausted) return occurrences.dates.lastOrNull()?.let(::adjustForWeekend)
   }
   return null
+}
+
+// Moving after the weekend shifts a date by up to 2 days, so only the 2 days before can land on
+// or after the day
+private fun RecurConfig.movedAfterWeekendOnto(day: LocalDate): LocalDate? {
+  if (skipWeekend != true || weekendSolveMode == Before) return null
+  val earliest = day.minus(2, DAY)
+  return occurrences(until = day)
+    .dates
+    .filter { it >= earliest && it < day }
+    .map(::adjustForWeekend)
+    .firstOrNull { it >= day }
 }
 
 // packages/loot-core/src/server/schedules/app.ts getUpcomingDates()
