@@ -11,6 +11,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.TonalButton
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
@@ -32,7 +33,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -199,28 +199,13 @@ private fun fillTarget(form: TransactionForm, active: ActiveField?) =
 
 @Composable
 private fun AddSplitButton(onClick: () -> Unit) =
-  Row(
-    modifier =
-      Modifier.clip(ChipShape)
-        .clickable(onClick = onClick)
-        .heightIn(min = AddSplitHeight)
-        .padding(AddSplitPadding),
-    verticalAlignment = CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(AddSplitGap),
-  ) {
-    Icon(
-      modifier = Modifier.size(AddSplitIconSize),
-      imageVector = MaterialIcons.Add,
-      contentDescription = null,
-      tint = colors.pageTextPositive,
-    )
-    Text(
-      text = Strings.transactionSplitAdd,
-      fontSize = SplitHeaderSize,
-      fontWeight = SemiBold,
-      color = colors.pageTextPositive,
-    )
-  }
+  TonalButton(
+    modifier = Modifier.height(AddSplitHeight),
+    icon = MaterialIcons.Add,
+    text = Strings.transactionSplitAdd,
+    contentPadding = AddSplitPadding,
+    onClick = onClick,
+  )
 
 @Composable
 private fun PartRow(
@@ -413,9 +398,7 @@ private val CompactFieldPadding = PaddingValues(horizontal = 14.dp, vertical = 8
 private val CompactValueSize = 14.sp
 private val ChipShape = RoundedCornerShape(6.dp)
 private val AddSplitHeight = 32.dp
-private val AddSplitPadding = PaddingValues(horizontal = 6.dp)
-private val AddSplitGap = 2.dp
-private val AddSplitIconSize = 16.dp
+private val AddSplitPadding = PaddingValues(horizontal = 10.dp)
 private val PartRowHeight = 56.dp
 private val PartRowPadding = PaddingValues(start = 8.dp, top = 4.dp, bottom = 4.dp)
 private val PartRowGap = 4.dp
