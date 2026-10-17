@@ -62,9 +62,11 @@ fun List<Condition>.selectedCategories(all: List<CategoryId>): ImmutableSet<Cate
   val condition = firstOrNull { it.field == Category } ?: return all.toImmutableSet()
   val ids = condition.value.ids()
   val operator = condition.operator
-  return when {
-    operator == Is || operator == OneOf -> all.filter { it in ids }
-    operator == IsNot || operator == NotOneOf -> all.filter { it !in ids }
+  return when (operator) {
+    Is,
+    OneOf -> all.filter { it in ids }
+    IsNot,
+    NotOneOf -> all.filter { it !in ids }
     else -> all
   }.toImmutableSet()
 }
