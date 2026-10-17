@@ -20,4 +20,8 @@ internal object Tags {
   const val QuerySheetDelete = "QuerySheetDelete"
   const val QuerySheetDone = "QuerySheetDone"
   const val QueryRow = "QueryRow"
+  const val AddQuery = "AddQuery"
+  const val RenameQuery = "RenameQuery"
+  const val DeleteQuery = "DeleteQuery"
+  const val ConfirmDeleteQuery = "ConfirmDeleteQuery"
 }

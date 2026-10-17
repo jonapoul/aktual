@@ -15,6 +15,11 @@ import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.report.FormulaReportState
 import aktual.budget.reports.vm.report.FormulaReportViewModel
 import aktual.budget.reports.vm.toEdits
+import aktual.budget.reports.vm.withNewQuery
+import aktual.budget.reports.vm.withQuery
+import aktual.budget.reports.vm.withQueryRenamed
+import aktual.budget.reports.vm.withoutQuery
+import aktual.core.icons.material.Add
 import aktual.core.icons.material.Clear
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
@@ -35,6 +40,7 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryIconButton
 import aktual.core.ui.PrimaryTextButton
+import aktual.core.ui.TonalButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -93,11 +99,13 @@ import androidx.compose.ui.unit.em
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.collections.immutable.toImmutableSet
 
 // Views a formula card, and edits it in place. Everything that differs between the two animates
 @Composable
+@Suppress("CyclomaticComplexMethod")
 internal fun FormulaReportScreen(
   id: WidgetId,
   back: BackNavigator,
@@ -116,7 +124,7 @@ internal fun FormulaReportScreen(
   }
 
   val field = page
-  val query = queryName?.let { loaded?.draft?.queries?.get(it) }
+  val openQuery = queryName?.let { name -> loaded?.draft?.queries?.get(name)?.let { name to it } }
   if (field != null && loaded != null && isEditing) {
     FormulaFieldScreen(
       field = field,
@@ -126,14 +134,23 @@ internal fun FormulaReportScreen(
       onChange = { text -> viewModel.edit { it.withText(field, text) } },
       onClose = { page = null },
     )
-  } else if (queryName != null && query != null && isEditing) {
-    val name = queryName.orEmpty()
+  } else if (openQuery != null && isEditing) {
+    val (name, query) = openQuery
     QueryScreen(
       name = name,
       query = query,
       data = queryEditorData,
+      isNameFree = { it !in loaded.draft.queries },
       onChange = { changed ->
-        viewModel.edit { it.copy(queries = (it.queries + (name to changed)).toImmutableMap()) }
+        viewModel.edit { it.withQuery(name, changed) }
+      },
+      onRename = { newName ->
+        viewModel.edit { it.withQueryRenamed(name, newName) }
+        queryName = newName
+      },
+      onDelete = {
+        viewModel.edit { it.withoutQuery(name) }
+        queryName = null
       },
       onClose = { queryName = null },
     )
@@ -155,6 +172,7 @@ internal fun FormulaReportScreen(
           EditColorRule -> page = ColorRule
           EditFontSize -> dialog = FontSize
           is EditQuery -> queryName = action.name
+          AddQuery -> dialog = NewQuery
         }
       },
     )
@@ -165,6 +183,12 @@ internal fun FormulaReportScreen(
     loaded = loaded,
     onDiscard = viewModel::discard,
     onEdit = viewModel::edit,
+    onAddQuery = { name ->
+      queryEditorData?.let { data ->
+        viewModel.edit { it.withNewQuery(name, data.currentMonth) }
+        queryName = name
+      }
+    },
     onDismiss = { dialog = null },
   )
 }
@@ -175,6 +199,7 @@ private fun FormulaDialogs(
   loaded: FormulaReportState.Loaded?,
   onDiscard: () -> Unit,
   onEdit: ((FormulaEdits) -> FormulaEdits) -> Unit,
+  onAddQuery: (String) -> Unit,
   onDismiss: () -> Unit,
 ) {
   when (dialog) {
@@ -215,14 +240,41 @@ private fun FormulaDialogs(
         )
       }
     }
+    NewQuery -> {
+      NewQueryDialog(
+        queries = loaded?.draft?.queries.orEmpty().keys.toImmutableSet(),
+        onConfirm = { name ->
+          onDismiss()
+          onAddQuery(name)
+        },
+        onDismiss = onDismiss,
+      )
+    }
     null -> {}
   }
 }
+
+@Composable
+internal fun NewQueryDialog(
+  queries: ImmutableSet<String>,
+  onConfirm: (String) -> Unit,
+  onDismiss: () -> Unit,
+) =
+  NameDialog(
+    title = Strings.reportsFormulaQueryNew,
+    placeholder = Strings.reportsFormulaQueryName,
+    confirmText = Strings.reportsFormulaQueryCreate,
+    capitalization = None,
+    isValid = { it !in queries },
+    onDismiss = onDismiss,
+    onConfirm = onConfirm,
+  )
 
 private enum class FormulaDialog {
   Discard,
   Name,
   FontSize,
+  NewQuery,
 }
 
 private fun FormulaEdits.text(field: FormulaField): String =
@@ -483,25 +535,41 @@ private fun Settings(
     ShowTitleRow(showTitle = draft.showTitle, isEditing = isEditing, onAction = onAction)
   }
 
-  Section(label = Strings.reportsFormulaViewerQueries(draft.queries.size)) {
-    if (draft.queries.isEmpty()) {
-      SettingRow(onClick = null) {
-        Text(
-          modifier = Modifier.weight(1f),
-          text = Strings.reportsFormulaQueriesEmpty,
-          style = typography.bodyMedium,
-          color = colors.tableHeaderText,
+  // The add button waits for the editor data, which a new query takes its month from
+  Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Section(label = Strings.reportsFormulaViewerQueries(draft.queries.size)) {
+      if (draft.queries.isEmpty()) {
+        SettingRow(onClick = null) {
+          Text(
+            modifier = Modifier.weight(1f),
+            text = Strings.reportsFormulaQueriesEmpty,
+            style = typography.bodyMedium,
+            color = colors.tableHeaderText,
+          )
+        }
+      }
+      draft.queries.entries.forEachIndexed { index, (name, query) ->
+        if (index > 0) Divider()
+        QueryRow(
+          name = name,
+          query = query,
+          names = names,
+          isEditing = isEditing,
+          onClick = open(FormulaReportAction.EditQuery(name)),
         )
       }
     }
-    draft.queries.entries.forEachIndexed { index, (name, query) ->
-      if (index > 0) Divider()
-      QueryRow(
-        name = name,
-        query = query,
-        names = names,
-        isEditing = isEditing,
-        onClick = open(FormulaReportAction.EditQuery(name)),
+    AnimatedVisibility(
+      visible = isEditing,
+      enter = fadeIn() + expandVertically(),
+      exit = fadeOut() + shrinkVertically(),
+    ) {
+      TonalButton(
+        modifier = Modifier.testTag(Tags.AddQuery),
+        icon = MaterialIcons.Add,
+        text = Strings.reportsFormulaQueryAdd,
+        isEnabled = names != null,
+        onClick = { onAction(AddQuery) },
       )
     }
   }

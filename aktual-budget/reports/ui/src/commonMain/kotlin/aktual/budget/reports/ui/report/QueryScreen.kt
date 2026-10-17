@@ -3,27 +3,34 @@ package aktual.budget.reports.ui.report
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.reports.ui.Tags
+import aktual.budget.reports.ui.dashboard.NameDialog
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.newQueryCondition
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.CalendarToday
+import aktual.core.icons.material.Delete
+import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.TonalButton
+import aktual.core.ui.bareIconButton
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.background
@@ -41,6 +48,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -64,11 +72,76 @@ internal fun QueryScreen(
   name: String,
   query: FormulaQuery,
   data: QueryEditorData?,
+  isNameFree: (String) -> Boolean,
   onChange: (FormulaQuery) -> Unit,
+  onRename: (String) -> Unit,
+  onDelete: () -> Unit,
   onClose: () -> Unit,
 ) {
+  var dialog by rememberSaveable { mutableStateOf<QueryDialog?>(null) }
   BackHandler(onBack = onClose)
-  QueryScaffold(name = name, query = query, data = data, onChange = onChange, onBack = onClose)
+  QueryScaffold(
+    name = name,
+    query = query,
+    data = data,
+    onChange = onChange,
+    onRename = { dialog = Rename },
+    onDelete = { dialog = Delete },
+    onBack = onClose,
+  )
+
+  when (dialog) {
+    Rename -> {
+      NameDialog(
+        title = Strings.reportsFormulaQueryRename,
+        placeholder = Strings.reportsFormulaQueryName,
+        confirmText = Strings.reportsFormulaQueryRenameConfirm,
+        initialName = name,
+        capitalization = None,
+        isValid = { it == name || isNameFree(it) },
+        onDismiss = { dialog = null },
+        onConfirm = { newName ->
+          dialog = null
+          if (newName != name) onRename(newName)
+        },
+      )
+    }
+    Delete -> {
+      DeleteQueryDialog(
+        name = name,
+        onConfirm = {
+          dialog = null
+          onDelete()
+        },
+        onDismiss = { dialog = null },
+      )
+    }
+    null -> {}
+  }
+}
+
+private enum class QueryDialog {
+  Rename,
+  Delete,
+}
+
+@Composable
+private fun DeleteQueryDialog(name: String, onConfirm: () -> Unit, onDismiss: () -> Unit) =
+  AktualAlertDialog(
+    title = Strings.reportsFormulaQueryDeleteTitle(name),
+    highlight = colors.errorText,
+    onDismissRequest = onDismiss,
+    buttons = {
+      TextButton(onClick = onDismiss) { Text(Strings.reportsFormulaQueryCancel) }
+      TextButton(modifier = Modifier.testTag(Tags.ConfirmDeleteQuery), onClick = onConfirm) {
+        Text(Strings.reportsFormulaQueryDeleteConditionConfirm, color = colors.errorText)
+      }
+    },
+    content = {},
+  )
+
+private val DELETE_COLORS = IconButtonColorProvider { colors, isPressed ->
+  colors.bareIconButton(isPressed).copy(contentColor = colors.errorText)
 }
 
 @Composable
@@ -77,6 +150,8 @@ internal fun QueryScaffold(
   query: FormulaQuery,
   data: QueryEditorData?,
   onChange: (FormulaQuery) -> Unit,
+  onRename: () -> Unit,
+  onDelete: () -> Unit,
   onBack: () -> Unit,
 ) =
   Scaffold(
@@ -86,6 +161,21 @@ internal fun QueryScaffold(
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton(onClick = onBack) },
         title = { Text(text = name, fontFamily = Monospace) },
+        actions = {
+          BareIconButton(
+            modifier = Modifier.testTag(Tags.RenameQuery),
+            imageVector = MaterialIcons.Edit,
+            contentDescription = Strings.reportsFormulaQueryRename,
+            onClick = onRename,
+          )
+          BareIconButton(
+            modifier = Modifier.padding(end = 4.dp).testTag(Tags.DeleteQuery),
+            imageVector = MaterialIcons.Delete,
+            contentDescription = Strings.reportsFormulaQueryDelete,
+            colors = DELETE_COLORS,
+            onClick = onDelete,
+          )
+        },
       )
     },
   ) { innerPadding ->
@@ -273,6 +363,8 @@ private fun PreviewQueryScaffold(
       query = this,
       data = PREVIEW_QUERY_DATA,
       onChange = {},
+      onRename = {},
+      onDelete = {},
       onBack = {},
     )
   }

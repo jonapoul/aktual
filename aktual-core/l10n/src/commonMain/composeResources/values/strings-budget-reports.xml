@@ -255,7 +255,6 @@
   <string name="reports_formula_editor_show_title">Show title</string>
   <string name="reports_formula_editor_save">Save</string>
   <string name="reports_formula_queries">Queries</string>
-  <string name="reports_formula_queries_help">Use a query in the formula by its name, like QUERY("expenses") or QUERY_COUNT("expenses").</string>
   <string name="reports_formula_queries_empty">No queries yet</string>
   <string name="reports_formula_query_add">Add query</string>
   <string name="reports_formula_query_new">New query</string>
@@ -264,10 +263,11 @@
   <string name="reports_formula_query_rename">Rename query</string>
   <string name="reports_formula_query_rename_confirm">Rename</string>
   <string name="reports_formula_query_delete">Delete query</string>
+  <string name="reports_formula_query_delete_title">Delete %1$s?</string>
+  <string name="reports_formula_query_cancel">Cancel</string>
   <string name="reports_formula_query_match_all">Match all</string>
   <string name="reports_formula_query_match_any">Match any</string>
   <string name="reports_formula_query_add_condition">Add condition</string>
-  <string name="reports_formula_query_delete_condition">Delete condition</string>
   <string name="reports_formula_query_unsupported_condition">This condition can't be edited in Aktual yet: %1$s</string>
   <string name="reports_formula_query_nothing">Nothing</string>
   <string name="reports_formula_query_text">Text</string>

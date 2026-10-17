@@ -1,24 +1,15 @@
 package aktual.budget.reports.ui.report
 
-import aktual.budget.model.Condition
 import aktual.budget.reports.ui.montecarlo.CommitTextField
 import aktual.budget.reports.ui.montecarlo.NumberField
 import aktual.budget.reports.vm.ConditionValueKind
-import aktual.budget.reports.vm.QUERY_FIELDS
-import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.QueryEntity
-import aktual.budget.reports.vm.editableKind
-import aktual.budget.reports.vm.entities
-import aktual.budget.reports.vm.newQueryCondition
-import aktual.budget.reports.vm.queryOperators
 import aktual.budget.reports.vm.toDayOrNull
-import aktual.budget.reports.vm.withOperator
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Search
 import aktual.core.l10n.Strings
-import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
@@ -26,7 +17,6 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSheetListItem
-import aktual.core.ui.CardShape
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.TonalButton
 import aktual.core.ui.scrollbar
@@ -66,63 +56,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
-
-@Composable
-internal fun QueryConditionEditor(
-  condition: Condition,
-  data: QueryEditorData,
-  onChange: (Condition) -> Unit,
-  onDelete: () -> Unit,
-  modifier: Modifier = Modifier,
-) =
-  Column(
-    modifier = modifier.fillMaxWidth().background(colors.pillBackground, CardShape).padding(8.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-  ) {
-    val kind = condition.editableKind()
-    Row(verticalAlignment = CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-      if (kind == null) {
-        val summary = "${condition.field.label()} ${condition.operator.label()} ${condition.value}"
-        Text(
-          modifier = Modifier.weight(1f),
-          text = Strings.reportsFormulaQueryUnsupportedCondition(summary),
-          style = typography.bodySmall,
-          color = colors.pageTextSubdued,
-        )
-      } else {
-        AktualExposedDropDownMenu(
-          modifier = Modifier.weight(1f),
-          value = condition.field,
-          onValueChange = { field -> onChange(newQueryCondition(field)) },
-          options = QUERY_FIELDS,
-          string = { field -> field.label() },
-          textStyle = typography.bodySmall,
-        )
-        AktualExposedDropDownMenu(
-          modifier = Modifier.weight(1f),
-          value = condition.operator,
-          onValueChange = { op -> onChange(condition.withOperator(op)) },
-          options = queryOperators(condition.field),
-          string = { op -> op.label() },
-          textStyle = typography.bodySmall,
-        )
-      }
-      ConfirmDeleteButton(
-        contentDescription = Strings.reportsFormulaQueryDeleteCondition,
-        onDelete = onDelete,
-      )
-    }
-
-    if (kind != null) {
-      ConditionValue(
-        kind = kind,
-        value = condition.value,
-        entities = data.entities(condition.field),
-        names = data.names,
-        onChange = { value -> onChange(condition.copy(value = value)) },
-      )
-    }
-  }
 
 @Composable
 internal fun ConditionValue(
