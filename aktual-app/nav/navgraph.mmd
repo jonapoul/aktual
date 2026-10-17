@@ -32,7 +32,6 @@ flowchart TD
     createTransaction["Create Transaction"]
     reportsDashboard["Reports Dashboard"]
     report["Report"]
-    editFormulaReport["Edit Formula Report"]
     createReport["Create Report"]
     searchReports["Search Reports"]
     listTags["List Tags"]
@@ -115,7 +114,6 @@ flowchart TD
   reportsDashboard --tap create--> createReport
   reportsDashboard --tap search--> searchReports
   searchReports --tap report--> report
-  report --tap edit formula--> editFormulaReport
 
   listTags --tap add--> createTag
   listTags --tap view transactions--> tagTransactions

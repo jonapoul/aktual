@@ -14,6 +14,9 @@ sealed interface ReportState {
   // Monte Carlo reports have their own page, with its own view model
   data object MonteCarlo : ReportState
 
+  // So do formula cards, which switch between viewing and editing in place
+  data object Formula : ReportState
+
   data class Loaded(val type: WidgetType, val item: DashboardItem, val data: ChartData) :
     ReportState
 }

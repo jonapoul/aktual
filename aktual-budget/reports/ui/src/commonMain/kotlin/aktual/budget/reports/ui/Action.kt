@@ -30,8 +30,6 @@ internal sealed interface Action {
 
   @JvmInline value class SetUnsavedText(val hasUnsavedText: Boolean) : Action
 
-  data object EditReport : Action
-
   data object CreateNewReport : Action
 
   data object OpenSearch : Action

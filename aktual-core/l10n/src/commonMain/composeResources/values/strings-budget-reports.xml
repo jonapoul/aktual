@@ -295,6 +295,17 @@
   <string name="reports_formula_editor_report">Report</string>
   <string name="reports_formula_editor_name">Name</string>
   <string name="reports_formula_editor_discard_message">Your changes to this report will be lost.</string>
+  <string name="reports_formula_editor_done">Done</string>
+  <string name="reports_formula_editor_formula_placeholder">=SUM(1, 2, 3)</string>
+  <string name="reports_formula_editor_evaluates_to">Evaluates to</string>
+  <string name="reports_formula_editor_color_formula_help">Returns a color for the result. RESULT is the formula's value, and theme_ names like theme_numberPositive are theme colors.</string>
+  <string name="reports_formula_editor_font_static">Static</string>
+  <string name="reports_formula_editor_static_size">Size</string>
+  <string name="reports_formula_editor_cancel">Cancel</string>
+  <string name="reports_formula_editor_apply">Apply</string>
+  <string name="reports_formula_editor_functions">Functions</string>
+  <string name="reports_formula_editor_variables">Variables</string>
+  <string name="reports_formula_editor_theme_colors">Theme colors</string>
   <plurals name="reports_formula_editor_conditions">
     <item quantity="one">%1$d condition</item>
     <item quantity="other">%1$d conditions</item>

@@ -9,4 +9,9 @@ internal object Tags {
   const val CloseEditor = "CloseEditor"
   const val SaveReport = "SaveReport"
   const val ShowTitle = "ShowTitle"
+  const val FormulaField = "FormulaField"
+  const val FormulaResult = "FormulaResult"
+  const val FormulaDone = "FormulaDone"
+  const val FontSizeField = "FontSizeField"
+  const val ApplyFontSize = "ApplyFontSize"
 }
