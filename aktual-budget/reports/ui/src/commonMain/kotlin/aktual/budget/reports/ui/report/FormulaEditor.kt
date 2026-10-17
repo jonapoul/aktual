@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,7 +37,7 @@ internal fun FormulaEditor(
   val formula = rememberTextFieldState(meta.formula.orEmpty())
   val colorFormula = rememberTextFieldState(meta.colorFormula.orEmpty())
   var mode by remember { mutableStateOf(meta.fontSizeMode.orDynamic()) }
-  var size by remember { mutableStateOf(meta.staticFontSize ?: DEFAULT_STATIC_SIZE) }
+  var size by remember { mutableDoubleStateOf(meta.staticFontSize ?: DEFAULT_STATIC_SIZE) }
   var showTitle by remember { mutableStateOf(meta.showTitle != false) }
 
   Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
