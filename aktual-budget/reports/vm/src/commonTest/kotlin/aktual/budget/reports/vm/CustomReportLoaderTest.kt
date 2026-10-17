@@ -3,7 +3,6 @@ package aktual.budget.reports.vm
 import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.CustomReports
-import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.db.dao.DatabaseTables.CATEGORIES
 import aktual.budget.db.dao.DatabaseTables.CATEGORY_GROUPS
@@ -14,8 +13,6 @@ import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.db.dao.DatabaseTables.PREFERENCES
 import aktual.budget.db.dao.DatabaseTables.REFLECT_BUDGETS
 import aktual.budget.db.dao.DatabaseTables.ZERO_BUDGETS
-import aktual.budget.db.dao.PreferencesDao
-import aktual.budget.db.dao.ReportsDao
 import aktual.budget.db.withoutResult
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
@@ -341,14 +338,7 @@ class CustomReportLoaderTest {
     action: suspend BudgetDatabase.(ChartDataLoader, BudgetSyncController) -> Unit,
   ) = runSyncedDatabaseTest { scope, sync ->
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
-    val loader =
-      ChartDataLoader(
-        ReportsDao(this, contexts),
-        CustomReportsDao(this, contexts),
-        PreferencesDao(this, contexts),
-        calendar = { TODAY },
-        contexts = contexts,
-      )
+    val loader = chartDataLoader(contexts, calendar = { TODAY })
     action(loader, sync)
   }
 

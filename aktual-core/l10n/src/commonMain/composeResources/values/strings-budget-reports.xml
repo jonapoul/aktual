@@ -218,4 +218,34 @@
   <string name="reports_custom_table_week">Week</string>
   <string name="reports_custom_table_month">Month</string>
   <string name="reports_custom_table_year">Year</string>
+  <string name="reports_formula_missing_equals">Formula must start with =</string>
+  <string name="reports_formula_unexpected_character">Unexpected character %1$s</string>
+  <string name="reports_formula_unexpected_token">Unexpected token in the formula</string>
+  <string name="reports_formula_unexpected_end">The formula ends too soon</string>
+  <string name="reports_formula_unknown_error_literal">Unknown error value</string>
+  <string name="reports_formula_cell_range">Cell ranges aren't supported</string>
+  <string name="reports_formula_number_coercion">Expected a number</string>
+  <string name="reports_formula_wrong_arg_count">Wrong number of arguments</string>
+  <string name="reports_formula_wrong_arg_type">Wrong type of argument</string>
+  <string name="reports_formula_value_too_large">Value is too large</string>
+  <string name="reports_formula_value_too_small">Value is too small</string>
+  <string name="reports_formula_integer_expected">Expected a whole number</string>
+  <string name="reports_formula_not_finite">The result isn't a finite number</string>
+  <string name="reports_formula_array_size_mismatch">Array sizes don't match</string>
+  <string name="reports_formula_unknown_name">Unknown name %1$s</string>
+  <string name="reports_formula_unknown_function">Unknown function %1$s</string>
+  <string name="reports_formula_unsupported_function">%1$s isn't supported yet</string>
+  <string name="reports_formula_no_condition_met">No condition was met</string>
+  <string name="reports_formula_no_default">No default value</string>
+  <string name="reports_formula_distinct_signs">Values must have the same sign</string>
+  <string name="reports_formula_negative_count">Count can't be negative</string>
+  <string name="reports_formula_negative_length">Length can't be negative</string>
+  <string name="reports_formula_less_than_one">Value must be at least 1</string>
+  <string name="reports_formula_text_too_long">Text is too long</string>
+  <string name="reports_formula_invalid_date">Invalid date</string>
+  <string name="reports_formula_date_out_of_range">Date is out of range</string>
+  <string name="reports_formula_invalid_budget_dimension">Unknown budget value %1$s</string>
+  <string name="reports_formula_decimals_out_of_range">Decimals must be between 0 and 100</string>
+  <string name="reports_formula_warning_unknown_query">No query named %1$s</string>
+  <string name="reports_formula_warning_unknown_account">No account named %1$s</string>
 </resources>
