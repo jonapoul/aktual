@@ -5,6 +5,8 @@ package aktual.budget.formula
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.ln
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 
 // Port of the matching functions in HyperFormula's FinancialPlugin. Like upstream, a type argument
@@ -81,13 +83,17 @@ internal val FINANCIAL_FUNCTIONS: Map<String, FormulaFunction> =
       formulaFunction(Param(Numeric), Param(Anything), repeatLastArgs = 1) { args ->
         exactNumbers((1 until args.size).map(args::value)) { npv(args.number(0), it) }
       },
+    "MIRR" to
+      formulaFunction(Param(Range), Param(Numeric), Param(Numeric)) { args ->
+        exactNumbers(listOf(args.array(0))) { mirr(it, args.number(1), args.number(2)) }
+      },
+    "FVSCHEDULE" to
+      formulaFunction(Param(Numeric), Param(Range)) { args ->
+        fvSchedule(args.number(0), args.array(1).rows.flatten())
+      },
     "XNPV" to
       formulaFunction(Param(Numeric, greaterThan = -1.0), Param(Range), Param(Range)) { args ->
-        xnpv(
-          args.number(0),
-          (args.value(1) as ArrayValue).rows.flatten(),
-          (args.value(2) as ArrayValue).rows.flatten(),
-        )
+        xnpv(args.number(0), args.array(1).rows.flatten(), args.array(2).rows.flatten())
       },
   )
 
@@ -274,6 +280,34 @@ private fun npv(rate: Double, values: List<Double>): FormulaValue {
     total /= 1 + rate
   }
   return NumberValue(total)
+}
+
+private fun mirr(values: List<Double>, financeRate: Double, reinvestRate: Double): FormulaValue {
+  if (values.none { it > 0 } || values.none { it < 0 }) return ErrorValue(DivByZero)
+  val positive = npv(reinvestRate, values.map { max(it, 0.0) })
+  if (positive !is NumberValue) return positive
+  val negative = npv(financeRate, values.map { min(it, 0.0) })
+  if (negative !is NumberValue) return negative
+  val n = values.size
+  val growth = -positive.value * (1 + reinvestRate).pow(n) / negative.value / (1 + financeRate)
+  return NumberValue(growth.pow(1.0 / (n - 1)) - 1)
+}
+
+private fun fvSchedule(principal: Double, rates: List<FormulaValue>): FormulaValue {
+  rates
+    .firstOrNull { it is ErrorValue }
+    ?.let {
+      return it
+    }
+  var value = principal
+  for (rate in rates) {
+    if (rate is NumberValue) {
+      value *= 1 + rate.value
+    } else if (rate != EmptyValue) {
+      return ErrorValue(Value, NumberCoercion)
+    }
+  }
+  return NumberValue(value)
 }
 
 private fun xnpv(

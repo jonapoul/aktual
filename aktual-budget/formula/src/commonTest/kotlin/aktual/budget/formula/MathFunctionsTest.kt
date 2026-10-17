@@ -129,4 +129,52 @@ class MathFunctionsTest {
   fun `PI is rounded like upstream's`() = runTest {
     assertThat(evaluate("=PI()")).isEqualTo(NumberValue(3.1415926536))
   }
+
+  @Test
+  fun `SUMPRODUCT multiplies arrays together`() = runTest {
+    assertThat(evaluate("=SUMPRODUCT({1,2,3},{4,5,6})")).isEqualTo(NumberValue(32.0))
+    assertThat(evaluate("=SUMPRODUCT({1,2;3,4},{1,2;3,4})")).isEqualTo(NumberValue(30.0))
+    assertThat(evaluate("""=SUMPRODUCT({1,"x",3},{4,5,6})""")).isEqualTo(NumberValue(22.0))
+    assertThat(evaluate("=SUMPRODUCT({1,TRUE()},{2,3})")).isEqualTo(NumberValue(5.0))
+    assertThat(evaluate("=SUMPRODUCT(2,3)")).isEqualTo(NumberValue(6.0))
+    assertThat(evaluate("=SUMPRODUCT({1,2,3})")).isEqualTo(NumberValue(6.0))
+  }
+
+  @Test
+  fun `SUMPRODUCT needs arrays of the same size`() = runTest {
+    assertThat(evaluate("=SUMPRODUCT({1,2},{4,5,6})")).isError(Value, ArraySizeMismatch)
+    assertThat(evaluate("=SUMPRODUCT({1,2;3,4},{1,2,3,4})")).isError(Value, ArraySizeMismatch)
+    assertThat(evaluate("=SUMPRODUCT({1,#DIV/0!},{2,3})")).isError(DivByZero)
+  }
+
+  @Test
+  fun `SUMSQ adds up squares`() = runTest {
+    assertThat(evaluate("=SUMSQ(1,2,{3,4})")).isEqualTo(NumberValue(30.0))
+    assertThat(evaluate("""=SUMSQ("3",{"3",TRUE()})""")).isEqualTo(NumberValue(9.0))
+    assertThat(evaluate("=SUMSQ(-1.5)")).isEqualTo(NumberValue(2.25))
+    assertThat(evaluate("=SUMSQ()")).isError(NotAvailable, WrongArgCount)
+  }
+
+  @Test
+  fun `MINA MAXA and AVERAGEA count booleans and text`() = runTest {
+    assertThat(evaluate("""=MAXA({1,TRUE(),"x"},-5)""")).isEqualTo(NumberValue(1.0))
+    assertThat(evaluate("""=MINA({1,TRUE(),"x"},5)""")).isEqualTo(NumberValue(0.0))
+    assertThat(evaluate("""=AVERAGEA({1,TRUE(),"x"})""")).isEqualTo(NumberValue(0.66666666667))
+    assertThat(evaluate("=MAXA({-1,-2})")).isEqualTo(NumberValue(-1.0))
+    assertThat(evaluate("=MINA(TRUE(),2)")).isEqualTo(NumberValue(1.0))
+    assertThat(evaluate("""=MAXA("x")""")).isError(Value, NumberCoercion)
+    assertThat(evaluate("""=AVERAGEA({"x"})""")).isError(Value, NumberCoercion)
+    assertThat(evaluate("=MAXA()")).isError(NotAvailable, WrongArgCount)
+  }
+
+  @Test
+  fun `SIN COS and TAN take radians`() = runTest {
+    assertThat(evaluate("=SIN(1)")).isEqualTo(NumberValue(0.84147098481))
+    assertThat(evaluate("=COS(1)")).isEqualTo(NumberValue(0.54030230587))
+    assertThat(evaluate("=TAN(1)")).isEqualTo(NumberValue(1.5574077247))
+    assertThat(evaluate("=SIN(PI()/2)")).isEqualTo(NumberValue(1.0))
+    assertThat(evaluate("=COS(0)")).isEqualTo(NumberValue(1.0))
+    assertThat(evaluate("=TAN(-0.5)")).isEqualTo(NumberValue(-0.54630248984))
+    assertThat(evaluate("""=SIN("x")""")).isError(Value, NumberCoercion)
+  }
 }

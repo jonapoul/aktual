@@ -43,6 +43,8 @@ internal class FunctionArgs(private val values: List<FormulaValue?>) {
 
   fun boolean(index: Int): Boolean = (value(index) as BooleanValue).value
 
+  fun array(index: Int): ArrayValue = value(index) as ArrayValue
+
   // Skips the values left out because they couldn't be coerced
   fun texts(): List<String> = values.filterIsInstance<TextValue>().map { it.value }
 

@@ -132,4 +132,22 @@ class TextFunctionsTest {
     assertThat(evaluate("""=EXACT("a","a")""")).isEqualTo(BooleanValue(true))
     assertThat(evaluate("""=EXACT(1,"1")""")).isEqualTo(BooleanValue(true))
   }
+
+  @Test
+  fun `CHAR gives the character for a code`() = runTest {
+    assertThat(evaluate("=CHAR(65)")).isEqualTo(TextValue("A"))
+    assertThat(evaluate("=CHAR(65.9)")).isEqualTo(TextValue("A"))
+    assertThat(evaluate("=CHAR(255.5)")).isEqualTo(TextValue("ÿ"))
+    assertThat(evaluate("=CHAR(32)")).isEqualTo(TextValue(" "))
+    assertThat(evaluate("=CHAR(0)")).isError(Value, CharacterCodeOutOfRange)
+    assertThat(evaluate("=CHAR(256)")).isError(Value, CharacterCodeOutOfRange)
+  }
+
+  @Test
+  fun `CODE gives the code of the first character`() = runTest {
+    assertThat(evaluate("""=CODE("A")""")).isEqualTo(NumberValue(65.0))
+    assertThat(evaluate("""=CODE("abc")""")).isEqualTo(NumberValue(97.0))
+    assertThat(evaluate("=CODE(5)")).isEqualTo(NumberValue(53.0))
+    assertThat(evaluate("""=CODE("")""")).isError(Value, NoText)
+  }
 }

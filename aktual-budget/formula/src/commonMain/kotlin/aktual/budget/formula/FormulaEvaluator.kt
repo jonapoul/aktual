@@ -26,6 +26,7 @@ class FormulaEvaluator internal constructor(private val functions: Map<String, F
       } catch (e: FormulaParseException) {
         return FormulaResult(ErrorValue(Generic, e.reason, e.subject), emptyList())
       }
+    if (root.refersToFormulaCell()) return FormulaResult(ErrorValue(Cycle), emptyList())
 
     val scope = EvaluationScope(functions, variables.mapKeys { it.key.lowercase() })
     val value =
@@ -67,7 +68,7 @@ internal class EvaluationScope(
       is TextNode -> TextValue(node.value)
       is ErrorNode -> ErrorValue(node.type)
       EmptyArgNode -> EmptyValue
-      is CellReferenceNode -> if (node.isFormulaCell) ErrorValue(Cycle) else EmptyValue
+      is CellReferenceNode -> EmptyValue
       is NamedNode -> variables[node.name.lowercase()] ?: ErrorValue(Name, UnknownName, node.name)
       is CallNode -> call(node)
       is UnaryNode -> unary(node.op, evaluate(node.operand).toScalar())

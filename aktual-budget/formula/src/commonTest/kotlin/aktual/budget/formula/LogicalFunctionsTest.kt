@@ -97,4 +97,12 @@ class LogicalFunctionsTest {
     assertThat(evaluate("""=CHOOSE(1.5,"a","b")""")).isError(Num, IntegerExpected)
     assertThat(evaluate("=CHOOSE(1)")).isError(NotAvailable, WrongArgCount)
   }
+
+  @Test
+  fun `ISREF checks for reference errors`() = runTest {
+    assertThat(evaluate("=ISREF(#REF!)")).isEqualTo(BooleanValue(true))
+    assertThat(evaluate("=ISREF(1)")).isEqualTo(BooleanValue(false))
+    assertThat(evaluate("=ISREF(B2)")).isEqualTo(BooleanValue(false))
+    assertThat(evaluate("=ISREF(#N/A)")).isEqualTo(BooleanValue(false))
+  }
 }

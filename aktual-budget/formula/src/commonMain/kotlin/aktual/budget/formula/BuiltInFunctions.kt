@@ -8,4 +8,6 @@ internal fun builtInFunctions(calendar: Calendar): Map<String, FormulaFunction> 
     TEXT_FUNCTIONS +
     INFO_FUNCTIONS +
     FINANCIAL_FUNCTIONS +
+    CONDITIONAL_FUNCTIONS +
+    LOOKUP_FUNCTIONS +
     dateFunctions(calendar)
