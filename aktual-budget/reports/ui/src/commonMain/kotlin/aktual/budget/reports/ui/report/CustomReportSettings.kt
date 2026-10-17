@@ -320,7 +320,7 @@ private fun CustomSheets(
   onDismiss: () -> Unit,
 ) {
   when (sheet) {
-    Graph ->
+    Graph -> {
       OptionSheet(
         title = Strings.reportsCustomEditorGraph,
         options = draft.graphOptions,
@@ -330,7 +330,8 @@ private fun CustomSheets(
         onSelect = { graph -> edit { it.withGraphType(graph) } },
         onDismiss = onDismiss,
       )
-    Split ->
+    }
+    Split -> {
       OptionSheet(
         title = Strings.reportsCustomEditorSplit,
         options = CUSTOM_GROUP_BYS,
@@ -340,7 +341,8 @@ private fun CustomSheets(
         onSelect = { groupBy -> edit { it.withGroupBy(groupBy) } },
         onDismiss = onDismiss,
       )
-    Type ->
+    }
+    Type -> {
       OptionSheet(
         title = Strings.reportsCustomEditorType,
         options = CUSTOM_BALANCE_TYPES,
@@ -350,7 +352,8 @@ private fun CustomSheets(
         onSelect = { type -> edit { it.withBalanceType(type) } },
         onDismiss = onDismiss,
       )
-    Interval ->
+    }
+    Interval -> {
       OptionSheet(
         title = Strings.reportsCustomEditorInterval,
         options = CUSTOM_INTERVALS,
@@ -360,7 +363,8 @@ private fun CustomSheets(
         onSelect = { interval -> edit { it.withInterval(interval) } },
         onDismiss = onDismiss,
       )
-    Sort ->
+    }
+    Sort -> {
       OptionSheet(
         title = Strings.reportsCustomEditorSort,
         options = CUSTOM_SORT_BYS,
@@ -370,6 +374,7 @@ private fun CustomSheets(
         onSelect = { sort -> edit { it.copy(sortBy = sort) } },
         onDismiss = onDismiss,
       )
+    }
     Range -> {
       val live = draft.dates as? Live
       if (live != null) {

@@ -28,13 +28,14 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 
 // packages/desktop-client/src/components/reports/CategorySelector.tsx. Hidden categories are only
 // listed when the report shows them
 @Composable
 internal fun CategorySheet(
   groups: ImmutableList<CategoryGroupChoice>,
-  selected: Set<CategoryId>,
+  selected: ImmutableSet<CategoryId>,
   showHidden: Boolean,
   onChange: (Set<CategoryId>) -> Unit,
   onDismiss: () -> Unit,

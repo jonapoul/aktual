@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily.Companion.Monospace
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.toImmutableList
 
 // Edits one query of the draft in place, so back keeps the changes until the report is saved
 @Composable
@@ -199,7 +200,7 @@ private fun QueryContent(
     verticalArrangement = Arrangement.spacedBy(22.dp),
   ) {
     ConditionsEditor(
-      conditions = query.conditions,
+      conditions = query.conditions.toImmutableList(),
       conditionsOp = if (query.conditionsOp == Or) Or else And,
       data = data,
       onChange = { conditions, op ->

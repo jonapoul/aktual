@@ -8,9 +8,12 @@ import aktual.budget.model.Condition
 import aktual.budget.model.Operator
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 @Immutable data class CategoryChoice(val id: CategoryId, val name: String, val isHidden: Boolean)
@@ -55,16 +58,15 @@ fun List<Condition>.hasComplexCategoryCondition(): Boolean {
 }
 
 // CustomReport.tsx useSelectedCategories(): every category unless a category condition narrows it
-fun List<Condition>.selectedCategories(all: List<CategoryId>): Set<CategoryId> {
-  val condition = firstOrNull { it.field == Category } ?: return all.toSet()
+fun List<Condition>.selectedCategories(all: List<CategoryId>): ImmutableSet<CategoryId> {
+  val condition = firstOrNull { it.field == Category } ?: return all.toImmutableSet()
   val ids = condition.value.ids()
-  return when (condition.operator) {
-    Is,
-    OneOf -> all.filter { it in ids }
-    IsNot,
-    NotOneOf -> all.filter { it !in ids }
+  val operator = condition.operator
+  return when {
+    operator == Is || operator == OneOf -> all.filter { it in ids }
+    operator == IsNot || operator == NotOneOf -> all.filter { it !in ids }
     else -> all
-  }.toSet()
+  }.toImmutableSet()
 }
 
 // CustomReport.tsx setSelectedCategories(): selecting everything removes the condition, a "not one
@@ -107,7 +109,7 @@ private fun JsonElement.ids(): Set<CategoryId> =
   when (this) {
       is JsonArray -> mapNotNull { (it as? JsonPrimitive)?.takeIf { p -> p.isString } }
       is JsonPrimitive -> listOfNotNull(takeIf { isString })
-      else -> emptyList()
+      is JsonObject -> emptyList()
     }
     .map { CategoryId(it.content) }
     .toSet()

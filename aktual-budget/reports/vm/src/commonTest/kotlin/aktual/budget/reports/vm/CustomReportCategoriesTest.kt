@@ -2,7 +2,6 @@ package aktual.budget.reports.vm
 
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
-import aktual.budget.model.Field
 import aktual.budget.model.Operator
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -76,7 +75,7 @@ class CustomReportCategoriesTest {
   }
 
   private fun condition(operator: Operator, value: JsonElement) =
-    Condition(field = Field.Category, operator = operator, value = value, type = Id)
+    Condition(field = Category, operator = operator, value = value, type = Id)
 
   private fun ids(vararg ids: String) = JsonArray(ids.map { JsonPrimitive(it) })
 

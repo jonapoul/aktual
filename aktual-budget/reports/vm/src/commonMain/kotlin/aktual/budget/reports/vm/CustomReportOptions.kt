@@ -55,14 +55,14 @@ fun CustomReportConfig.isGroupByEnabled(option: GroupBy): Boolean {
 
 // CustomReport.tsx disabledItems('type'): bar graphs of intervals allow every type
 fun CustomReportConfig.isBalanceTypeEnabled(option: BalanceType): Boolean =
-  (graphType == BarGraph && groupBy == GroupBy.Interval) || option !in rules().disabledBalanceTypes
+  graphType == BarGraph && groupBy == GroupBy.Interval || option !in rules().disabledBalanceTypes
 
 fun CustomReportConfig.isIntervalEnabled(option: Interval): Boolean =
-  balanceType != Budgeted || (option != Daily && option != Weekly)
+  balanceType != Budgeted || option != Daily && option != Weekly
 
 // ReportSidebar.tsx disableSort
 val CustomReportConfig.showsSort: Boolean
-  get() = graphType == TableGraph || (groupBy != GroupBy.Interval && !rules().disableSort)
+  get() = graphType == TableGraph || groupBy != GroupBy.Interval && !rules().disableSort
 
 // Only ranges ending in the past can be stretched to include the current period
 val CustomReportConfig.canIncludeCurrent: Boolean
@@ -80,7 +80,12 @@ fun CustomReportConfig.withMode(mode: CustomReportMode): CustomReportConfig {
     when (graphType) {
       BarGraph,
       StackedBarGraph -> barGraph(mode)
-      else -> graphType
+      AreaGraph,
+      BarLineGraph,
+      DonutGraph,
+      LineGraph,
+      TableGraph,
+      Unknown -> graphType
     }
   val graph = if (swapped in disabledGraphs(mode)) TableGraph else swapped
   return copy(mode = mode, graphType = graph).withAllowedGroupBy().withAllowedBalanceType()
@@ -117,7 +122,7 @@ fun CustomReportConfig.withInterval(option: Interval): CustomReportConfig {
 }
 
 fun CustomReportConfig.withDateRange(type: DateRangeType): CustomReportConfig {
-  val includeCurrent = (dates as? Live)?.includeCurrent ?: true
+  val includeCurrent = (dates as? Live)?.includeCurrent != false
   return copy(dates = CustomReportDates.Live(type, includeCurrent))
 }
 
@@ -143,7 +148,7 @@ fun CustomReportConfig.withLiveDates(): CustomReportConfig =
 fun CustomReportConfig.withStaticMonths(start: YearMonth, end: YearMonth): CustomReportConfig =
   copy(dates = CustomReportDates.Static(start.firstDay, maxOf(start, end).lastDay))
 
-private class GraphRules(
+private data class GraphRules(
   val disabledGroupBys: Set<GroupBy>,
   val defaultGroupBy: GroupBy,
   val disabledBalanceTypes: Set<BalanceType>,

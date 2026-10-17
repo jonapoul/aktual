@@ -2,7 +2,6 @@ package aktual.budget.reports.vm
 
 import aktual.budget.model.DateRangeType
 import aktual.budget.model.GraphType
-import aktual.budget.model.GroupBy
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -54,7 +53,7 @@ class CustomReportOptionsTest {
 
   @Test
   fun `Switching mode replaces a graph the new mode can't draw`() {
-    val area = DEFAULT.copy(graphType = AreaGraph, groupBy = GroupBy.Interval)
+    val area = DEFAULT.copy(graphType = AreaGraph, groupBy = Interval)
     assertThat(area.withMode(Time)).all {
       prop(CustomReportConfig::graphType).isEqualTo(TableGraph)
       prop(CustomReportConfig::groupBy).isEqualTo(Category)
@@ -64,9 +63,9 @@ class CustomReportOptionsTest {
   @Test
   fun `Area graphs are always split by interval`() {
     val area = DEFAULT.withGraphType(AreaGraph)
-    assertThat(area.groupBy).isEqualTo(GroupBy.Interval)
+    assertThat(area.groupBy).isEqualTo(Interval)
     assertThat(area.isGroupByEnabled(Category)).isFalse()
-    assertThat(area.isGroupByEnabled(GroupBy.Interval)).isTrue()
+    assertThat(area.isGroupByEnabled(Interval)).isTrue()
   }
 
   @Test
@@ -145,9 +144,9 @@ class CustomReportOptionsTest {
   @Test
   fun `Sort is hidden for interval splits and time graphs`() {
     assertThat(DEFAULT.showsSort).isTrue()
-    assertThat(DEFAULT.copy(groupBy = GroupBy.Interval).showsSort).isFalse()
+    assertThat(DEFAULT.copy(groupBy = Interval).showsSort).isFalse()
     assertThat(DEFAULT.withMode(Time).showsSort).isFalse()
-    assertThat(DEFAULT.copy(groupBy = GroupBy.Interval, graphType = TableGraph).showsSort).isTrue()
+    assertThat(DEFAULT.copy(groupBy = Interval, graphType = TableGraph).showsSort).isTrue()
   }
 
   @Test
