@@ -12,6 +12,7 @@ import aktual.budget.reports.vm.removeSpendingPhase
 import aktual.budget.reports.vm.removeTaxBand
 import aktual.budget.reports.vm.updateSpendingPhase
 import aktual.budget.reports.vm.updateTaxBand
+import aktual.core.icons.material.Add
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
@@ -19,7 +20,7 @@ import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.NormalTextButton
+import aktual.core.ui.TonalButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
@@ -37,7 +38,11 @@ internal fun SpendingTab(config: McConfig, onAction: MonteCarloActionHandler) {
   config.spendingPhases.fastForEachIndexed { index, phase ->
     key(phase.id) { PhaseCard(config, phase, index, onAction) }
   }
-  NormalTextButton(text = Strings.monteCarloPhaseAdd, onClick = { onAction(AddSpendingPhase) })
+  TonalButton(
+    icon = MaterialIcons.Add,
+    text = Strings.monteCarloPhaseAdd,
+    onClick = { onAction(AddSpendingPhase) },
+  )
 
   LabeledField(
     label = Strings.monteCarloFieldWithdrawalOrder,
@@ -342,7 +347,11 @@ internal fun TaxTab(config: McConfig, onAction: MonteCarloActionHandler) {
   config.taxBands.fastForEachIndexed { index, band ->
     key(band.id) { TaxBandRow(config, band, index, onAction) }
   }
-  NormalTextButton(text = Strings.monteCarloBandAdd, onClick = { onAction(AddTaxBand) })
+  TonalButton(
+    icon = MaterialIcons.Add,
+    text = Strings.monteCarloBandAdd,
+    onClick = { onAction(AddTaxBand) },
+  )
 }
 
 @Composable

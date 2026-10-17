@@ -10,6 +10,7 @@ import aktual.budget.reports.vm.removeIncomeStream
 import aktual.budget.reports.vm.updateContribution
 import aktual.budget.reports.vm.updateIncomeStream
 import aktual.budget.reports.vm.withSource
+import aktual.core.icons.material.Add
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
@@ -17,7 +18,7 @@ import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.NormalTextButton
+import aktual.core.ui.TonalButton
 import aktual.core.ui.redacted
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +35,11 @@ internal fun IncomeTab(config: McConfig, onAction: MonteCarloActionHandler) {
     key(stream.id) { IncomeCard(config, stream, index, onAction) }
   }
 
-  NormalTextButton(text = Strings.monteCarloIncomeAdd, onClick = { onAction(AddIncomeStream) })
+  TonalButton(
+    icon = MaterialIcons.Add,
+    text = Strings.monteCarloIncomeAdd,
+    onClick = { onAction(AddIncomeStream) },
+  )
 }
 
 @Composable
@@ -114,7 +119,8 @@ internal fun ContributionsTab(config: McConfig, onAction: MonteCarloActionHandle
     key(contribution.id) { ContributionCard(config, contribution, index, onAction) }
   }
 
-  NormalTextButton(
+  TonalButton(
+    icon = MaterialIcons.Add,
     text = Strings.monteCarloContributionAdd,
     onClick = { onAction(AddContribution) },
   )

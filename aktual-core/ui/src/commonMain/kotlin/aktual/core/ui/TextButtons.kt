@@ -174,15 +174,16 @@ fun TonalButton(
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
   icon: ImageVector? = null,
+  contentPadding: PaddingValues = DefaultButtonPadding,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
   val colors = AktualTheme.colors
   val border = colors.buttonPrimaryBorder.disabledIf(!isEnabled)
   BasicTextButton(
     text = text,
-    modifier =
-      modifier.fillMaxWidth().heightIn(min = TonalButtonHeight).border(1.dp, border, ButtonShape),
+    modifier = modifier.heightIn(min = TonalButtonHeight).border(1.dp, border, ButtonShape),
     isEnabled = isEnabled,
+    contentPadding = contentPadding,
     interactionSource = interactionSource,
     style = typography.buttonTextStyle,
     prefix =
@@ -322,7 +323,13 @@ private fun PreviewTonal(
     val isEnabled = this
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       TonalButton(text = "Tonal", isEnabled = isEnabled, onClick = {})
-      TonalButton(text = "Add item", icon = MaterialIcons.Add, isEnabled = isEnabled, onClick = {})
+      TonalButton(
+        modifier = Modifier.fillMaxWidth(),
+        text = "Add item",
+        icon = MaterialIcons.Add,
+        isEnabled = isEnabled,
+        onClick = {},
+      )
     }
   }
 

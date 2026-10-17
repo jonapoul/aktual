@@ -22,6 +22,7 @@ import aktual.budget.reports.vm.withExpectedReturn
 import aktual.budget.reports.vm.withLinkedAccount
 import aktual.budget.reports.vm.withStartingBalance
 import aktual.budget.reports.vm.withVolatility
+import aktual.core.icons.material.Add
 import aktual.core.icons.material.ArrowDropDown
 import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.Delete
@@ -31,7 +32,7 @@ import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.NormalTextButton
+import aktual.core.ui.TonalButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -64,7 +65,11 @@ internal fun PotsTab(
     }
   }
 
-  NormalTextButton(text = Strings.monteCarloPotAdd, onClick = { onAction(AddPot) })
+  TonalButton(
+    icon = MaterialIcons.Add,
+    text = Strings.monteCarloPotAdd,
+    onClick = { onAction(AddPot) },
+  )
 }
 
 // The surplus pot holds whatever the plan didn't spend, as cash, immediately accessible, untaxed

@@ -565,7 +565,7 @@ private fun Settings(
       exit = fadeOut() + shrinkVertically(),
     ) {
       TonalButton(
-        modifier = Modifier.testTag(Tags.AddQuery),
+        modifier = Modifier.fillMaxWidth().testTag(Tags.AddQuery),
         icon = MaterialIcons.Add,
         text = Strings.reportsFormulaQueryAdd,
         isEnabled = names != null,

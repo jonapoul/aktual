@@ -244,7 +244,7 @@ private fun QueryContent(
         }
       }
       TonalButton(
-        modifier = Modifier.testTag(Tags.AddCondition),
+        modifier = Modifier.fillMaxWidth().testTag(Tags.AddCondition),
         icon = MaterialIcons.Add,
         text = Strings.reportsFormulaQueryAddCondition,
         onClick = {

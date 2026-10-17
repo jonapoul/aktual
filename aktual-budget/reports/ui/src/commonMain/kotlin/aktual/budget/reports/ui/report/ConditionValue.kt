@@ -164,6 +164,7 @@ private fun EntityListPicker(
 
     var showSheet by remember { mutableStateOf(false) }
     TonalButton(
+      modifier = Modifier.fillMaxWidth(),
       icon = MaterialIcons.Add,
       text = Strings.reportsFormulaQueryChoose,
       onClick = { showSheet = true },
