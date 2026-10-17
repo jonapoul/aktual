@@ -183,7 +183,7 @@ include(
   ":aktual-budget:data:impl",
   ":aktual-budget:data:proto",
   ":aktual-budget:demo",
-  ":aktual-budget:formula:domain",
+  ":aktual-budget:formula",
   ":aktual-budget:home:ui",
   ":aktual-budget:home:vm",
   ":aktual-budget:list:ui",

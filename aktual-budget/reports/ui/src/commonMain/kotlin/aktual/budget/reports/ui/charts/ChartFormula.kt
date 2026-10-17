@@ -2,11 +2,11 @@
 
 package aktual.budget.reports.ui.charts
 
-import aktual.budget.formula.domain.ErrorReason.InternalError
-import aktual.budget.formula.domain.ErrorValue
-import aktual.budget.formula.domain.FormulaWarning
-import aktual.budget.formula.domain.UnknownAccount
-import aktual.budget.formula.domain.UnknownQuery
+import aktual.budget.formula.ErrorReason.InternalError
+import aktual.budget.formula.ErrorValue
+import aktual.budget.formula.FormulaWarning
+import aktual.budget.formula.UnknownAccount
+import aktual.budget.formula.UnknownQuery
 import aktual.budget.model.Amount
 import aktual.budget.reports.vm.FORMULA_THEME_PREFIX
 import aktual.budget.reports.vm.FormulaData
@@ -153,6 +153,12 @@ private fun ErrorValue.message(): String {
       DateOutOfRange -> Strings.reportsFormulaDateOutOfRange
       InvalidBudgetDimension -> Strings.reportsFormulaInvalidBudgetDimension(subject)
       DecimalsOutOfRange -> Strings.reportsFormulaDecimalsOutOfRange
+      BadMode -> Strings.reportsFormulaBadMode
+      StartAfterEnd -> Strings.reportsFormulaStartAfterEnd
+      NoValues -> Strings.reportsFormulaNoValues
+      SelectorTooLarge -> Strings.reportsFormulaSelectorTooLarge
+      StartOutOfRange -> Strings.reportsFormulaStartOutOfRange
+      PatternNotFound -> Strings.reportsFormulaPatternNotFound
       InternalError -> Strings.reportsFormulaInternalError(subject)
     }
   return "${type.literal}\n$text"

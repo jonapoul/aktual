@@ -5,8 +5,8 @@ import aktual.budget.db.FormulaAccounts
 import aktual.budget.db.FormulaCategories
 import aktual.budget.db.FormulaTransactions
 import aktual.budget.db.dao.FormulaDao
-import aktual.budget.formula.domain.CategoryBudget
-import aktual.budget.formula.domain.FormulaDataSource
+import aktual.budget.formula.CategoryBudget
+import aktual.budget.formula.FormulaDataSource
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp

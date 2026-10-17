@@ -1,7 +1,7 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.formula.domain.FormulaValue
-import aktual.budget.formula.domain.TextValue
+import aktual.budget.formula.FormulaValue
+import aktual.budget.formula.TextValue
 import aktual.core.theme.LightColors
 import aktual.core.theme.attributes
 

@@ -11,10 +11,10 @@ import aktual.budget.db.dao.DatabaseTables.CATEGORY_MAPPING
 import aktual.budget.db.dao.DatabaseTables.ZERO_BUDGETS
 import aktual.budget.db.dao.FormulaDao
 import aktual.budget.db.dao.PreferencesDao
-import aktual.budget.formula.domain.CategoryBudget
-import aktual.budget.formula.domain.FormulaEvaluator
-import aktual.budget.formula.domain.NumberValue
-import aktual.budget.formula.domain.UnknownQuery
+import aktual.budget.formula.CategoryBudget
+import aktual.budget.formula.FormulaEvaluator
+import aktual.budget.formula.NumberValue
+import aktual.budget.formula.UnknownQuery
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Field

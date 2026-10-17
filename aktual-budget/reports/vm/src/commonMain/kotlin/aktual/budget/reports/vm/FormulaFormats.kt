@@ -1,7 +1,7 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.formula.domain.FormulaFormat
-import aktual.budget.formula.domain.NARROW_NO_BREAK_SPACE
+import aktual.budget.formula.FormulaFormat
+import aktual.budget.formula.NARROW_NO_BREAK_SPACE
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.NumberFormatConfig
