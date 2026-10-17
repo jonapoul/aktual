@@ -33,6 +33,24 @@ internal fun dateFunctions(calendar: Calendar): Map<String, FormulaFunction> =
       monthShift { date, months ->
         SerialDates.truncateDayInMonth(SerialDates.offsetMonth(date, months))
       },
+    "DAYS360" to
+      formulaFunction(
+        Param(Numeric, minValue = 0.0),
+        Param(Numeric, minValue = 0.0),
+        Param(Logical, default = BooleanValue(false)),
+      ) { args ->
+        NumberValue(SerialDates.days360(args.number(0), args.number(1), args.boolean(2)))
+      },
+    "YEARFRAC" to
+      formulaFunction(
+        Param(Numeric, minValue = 0.0),
+        Param(Numeric, minValue = 0.0),
+        Param(Integral, default = NumberValue(0.0), minValue = 0.0, maxValue = 4.0),
+      ) { args ->
+        val first = truncate(args.number(0))
+        val second = truncate(args.number(1))
+        NumberValue(yearFrac(minOf(first, second), maxOf(first, second), args.number(2).toInt()))
+      },
   )
 
 private fun date(year: Double, month: Double, day: Double): FormulaValue {
@@ -56,6 +74,18 @@ private fun monthShift(shift: (SimpleDate, Double) -> SimpleDate): FormulaFuncti
   formulaFunction(Param(Numeric, minValue = 0.0), Param(Numeric)) { args ->
     val shifted = shift(SerialDates.numberToDate(args.number(0)), args.number(1))
     dateValue(SerialDates.dateToNumber(shifted))
+  }
+
+@Suppress("MagicNumber")
+private fun yearFrac(start: Double, end: Double, basis: Int): Double =
+  when (basis) {
+    0 -> SerialDates.days360(start, end, european = false) / 360
+    1 ->
+      (end - start) /
+        SerialDates.yearLength(SerialDates.numberToDate(start), SerialDates.numberToDate(end))
+    2 -> (end - start) / 360
+    3 -> (end - start) / 365
+    else -> SerialDates.days360(start, end, european = true) / 360
   }
 
 private fun dateValue(number: Double): FormulaValue =
