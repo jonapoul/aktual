@@ -75,4 +75,26 @@ class LogicalFunctionsTest {
     assertThat(evaluate("=ISBLANK(,)")).isError(NotAvailable, WrongArgCount)
     assertThat(evaluate("=ISERROR({1/0,1})")).isEqualTo(BooleanValue(true))
   }
+
+  @Test
+  fun `ISNA and ISLOGICAL check the value's type`() = runTest {
+    assertThat(evaluate("=ISNA(#N/A)")).isEqualTo(BooleanValue(true))
+    assertThat(evaluate("=ISNA(#VALUE!)")).isEqualTo(BooleanValue(false))
+    assertThat(evaluate("=ISNA(1)")).isEqualTo(BooleanValue(false))
+    assertThat(evaluate("=ISLOGICAL(TRUE())")).isEqualTo(BooleanValue(true))
+    assertThat(evaluate("=ISLOGICAL(1)")).isEqualTo(BooleanValue(false))
+    assertThat(evaluate("""=ISLOGICAL("TRUE")""")).isEqualTo(BooleanValue(false))
+  }
+
+  @Test
+  fun `CHOOSE picks an argument by index`() = runTest {
+    assertThat(evaluate("""=CHOOSE(2,"a","b","c")""")).isEqualTo(TextValue("b"))
+    assertThat(evaluate("""=CHOOSE("2","a","b")""")).isEqualTo(TextValue("b"))
+    assertThat(evaluate("""=CHOOSE(2,#N/A,"b")""")).isEqualTo(TextValue("b"))
+    assertThat(evaluate("""=CHOOSE(1,#N/A,"b")""")).isError(NotAvailable)
+    assertThat(evaluate("""=CHOOSE(4,"a","b","c")""")).isError(Num, SelectorTooLarge)
+    assertThat(evaluate("""=CHOOSE(0,"a")""")).isError(Num, ValueTooSmall)
+    assertThat(evaluate("""=CHOOSE(1.5,"a","b")""")).isError(Num, IntegerExpected)
+    assertThat(evaluate("=CHOOSE(1)")).isError(NotAvailable, WrongArgCount)
+  }
 }

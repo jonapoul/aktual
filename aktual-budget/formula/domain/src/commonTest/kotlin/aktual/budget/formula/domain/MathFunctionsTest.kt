@@ -72,4 +72,61 @@ class MathFunctionsTest {
     assertThat(evaluate("=CEILING(0,0)")).isEqualTo(NumberValue(0.0))
     assertThat(evaluate("=CEILING(1,0)")).isError(DivByZero)
   }
+
+  @Test
+  fun `COUNTA counts every value that isn't empty`() = runTest {
+    assertThat(evaluate("""=COUNTA(1,"x",TRUE(),{1,"a",""})""")).isEqualTo(NumberValue(6.0))
+    assertThat(evaluate("=COUNTA(1,,2)")).isEqualTo(NumberValue(3.0))
+    assertThat(evaluate("=COUNTA(#N/A)")).isEqualTo(NumberValue(1.0))
+    assertThat(evaluate("=COUNTA({1,#N/A})")).isEqualTo(NumberValue(2.0))
+  }
+
+  @Test
+  fun `COUNTBLANK counts empty arguments`() = runTest {
+    assertThat(evaluate("""=COUNTBLANK(1,"",{1,""})""")).isEqualTo(NumberValue(0.0))
+    assertThat(evaluate("=COUNTBLANK(1,,2)")).isEqualTo(NumberValue(1.0))
+  }
+
+  @Test
+  fun `VAR, VARP, STDEV and STDEVP measure spread`() = runTest {
+    assertThat(evaluate("=VAR(1,2,3,4)")).isEqualTo(NumberValue(1.6666666667))
+    assertThat(evaluate("=VARP(1,2,3,4)")).isEqualTo(NumberValue(1.25))
+    assertThat(evaluate("=STDEV(1,2,3,4)")).isEqualTo(NumberValue(1.2909944487))
+    assertThat(evaluate("=STDEVP(1,2,3,4)")).isEqualTo(NumberValue(1.1180339887))
+    assertThat(evaluate("=STDEVP(0.1,0.2,0.3)")).isEqualTo(NumberValue(0.081649658093))
+    assertThat(evaluate("""=STDEV({1,2,"x",TRUE()},"3")""")).isEqualTo(NumberValue(1.0))
+    assertThat(evaluate("=VAR(1)")).isError(DivByZero)
+    assertThat(evaluate("""=VAR("x")""")).isError(Value, NumberCoercion)
+  }
+
+  @Test
+  fun `MEDIAN is the middle number`() = runTest {
+    assertThat(evaluate("=MEDIAN(3,1,2)")).isEqualTo(NumberValue(2.0))
+    assertThat(evaluate("=MEDIAN(4,1,3,2)")).isEqualTo(NumberValue(2.5))
+    assertThat(evaluate("""=MEDIAN({5,"x",TRUE()},1)""")).isEqualTo(NumberValue(3.0))
+    assertThat(evaluate("""=MEDIAN("3",1)""")).isEqualTo(NumberValue(2.0))
+    assertThat(evaluate("=MEDIAN(TRUE(),3)")).isEqualTo(NumberValue(2.0))
+    assertThat(evaluate("""=MEDIAN("x",1)""")).isError(Value, NumberCoercion)
+    assertThat(evaluate("""=MEDIAN({"x"})""")).isError(Value, NumberCoercion)
+    assertThat(evaluate("""=MEDIAN({1,#N/A},"x")""")).isError(Value, NumberCoercion)
+  }
+
+  @Test
+  fun `EXP, LN, LOG and LOG10 are exponents and logarithms`() = runTest {
+    assertThat(evaluate("=EXP(1)")).isEqualTo(NumberValue(2.7182818285))
+    assertThat(evaluate("=LN(10)")).isEqualTo(NumberValue(2.302585093))
+    assertThat(evaluate("=LOG(100)")).isEqualTo(NumberValue(2.0))
+    assertThat(evaluate("=LOG(8,2)")).isEqualTo(NumberValue(3.0))
+    assertThat(evaluate("=LOG10(1000)")).isEqualTo(NumberValue(3.0))
+    assertThat(evaluate("=LN(0)")).isError(Num, NotFinite)
+    assertThat(evaluate("=LN(-1)")).isError(Num, NotFinite)
+    assertThat(evaluate("=LOG(8,1)")).isError(Num, NotFinite)
+    assertThat(evaluate("=LOG(0)")).isError(Num, ValueTooSmall)
+    assertThat(evaluate("=LOG10(0)")).isError(Num, NotFinite)
+  }
+
+  @Test
+  fun `PI is rounded like upstream's`() = runTest {
+    assertThat(evaluate("=PI()")).isEqualTo(NumberValue(3.1415926536))
+  }
 }

@@ -153,6 +153,12 @@ private fun ErrorValue.message(): String {
       DateOutOfRange -> Strings.reportsFormulaDateOutOfRange
       InvalidBudgetDimension -> Strings.reportsFormulaInvalidBudgetDimension(subject)
       DecimalsOutOfRange -> Strings.reportsFormulaDecimalsOutOfRange
+      BadMode -> Strings.reportsFormulaBadMode
+      StartAfterEnd -> Strings.reportsFormulaStartAfterEnd
+      NoValues -> Strings.reportsFormulaNoValues
+      SelectorTooLarge -> Strings.reportsFormulaSelectorTooLarge
+      StartOutOfRange -> Strings.reportsFormulaStartOutOfRange
+      PatternNotFound -> Strings.reportsFormulaPatternNotFound
       InternalError -> Strings.reportsFormulaInternalError(subject)
     }
   return "${type.literal}\n$text"

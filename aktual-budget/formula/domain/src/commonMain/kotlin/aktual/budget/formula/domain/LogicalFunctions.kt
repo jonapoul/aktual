@@ -44,6 +44,15 @@ internal val LOGICAL_FUNCTIONS: Map<String, FormulaFunction> =
         val value = args.value(0)
         if (value is ErrorValue && value.type == NotAvailable) args.value(1) else value
       },
+    "CHOOSE" to
+      formulaFunction(Param(Integral, minValue = 1.0), Param(Scalar), repeatLastArgs = 1) { args ->
+        val selector = args.number(0)
+        if (selector > args.size - 1) {
+          ErrorValue(Num, SelectorTooLarge)
+        } else {
+          args.value(selector.toInt())
+        }
+      },
   )
 
 private fun switch(args: FunctionArgs): FormulaValue {

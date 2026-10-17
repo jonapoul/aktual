@@ -117,4 +117,82 @@ class DateFunctionsTest {
     assertThat(evaluate("=YEARFRAC(1,2,1.5)")).isError(Num, IntegerExpected)
     assertThat(evaluate("=YEARFRAC(-1,2)")).isError(Num, ValueTooSmall)
   }
+
+  @Test
+  fun `NOW is the calendar's date and time`() = runTest {
+    assertThat(evaluate("=NOW()")).isEqualTo(NumberValue(45322.521007))
+  }
+
+  @Test
+  fun `WEEKDAY numbers days from the start the type picks`() = runTest {
+    assertThat(evaluate("=WEEKDAY(DATE(2024,1,31))")).isEqualTo(NumberValue(4.0))
+    assertThat(evaluate("=WEEKDAY(DATE(2024,1,31),2)")).isEqualTo(NumberValue(3.0))
+    assertThat(evaluate("=WEEKDAY(DATE(2024,1,31),3)")).isEqualTo(NumberValue(2.0))
+    assertThat(evaluate("=WEEKDAY(DATE(2024,1,31),17)")).isEqualTo(NumberValue(4.0))
+    assertThat(evaluate("=WEEKDAY(0)")).isEqualTo(NumberValue(7.0))
+    assertThat(evaluate("=WEEKDAY(DATE(2024,1,31),4)")).isError(Num, BadMode)
+    assertThat(evaluate("=WEEKDAY(DATE(2024,1,31),1.5)")).isError(Num, BadMode)
+  }
+
+  @Test
+  fun `WEEKNUM counts weeks from the start of the year`() = runTest {
+    assertThat(evaluate("=WEEKNUM(DATE(2024,1,31))")).isEqualTo(NumberValue(5.0))
+    assertThat(evaluate("=WEEKNUM(DATE(2024,12,31),2)")).isEqualTo(NumberValue(53.0))
+    assertThat(evaluate("=WEEKNUM(1,3)")).isError(Num, BadMode)
+  }
+
+  @Test
+  fun `WEEKNUM with type 21 is the ISO week`() = runTest {
+    assertThat(evaluate("=WEEKNUM(DATE(2021,1,1),21)")).isEqualTo(NumberValue(53.0))
+    assertThat(evaluate("=WEEKNUM(DATE(2024,12,30),21)")).isEqualTo(NumberValue(53.0))
+    assertThat(evaluate("=WEEKNUM(DATE(2024,6,15),21)")).isEqualTo(NumberValue(24.0))
+  }
+
+  @Test
+  fun `DATEDIF counts whole units between dates`() = runTest {
+    assertThat(evaluate("""=DATEDIF(DATE(2020,3,15),DATE(2024,1,10),"D")"""))
+      .isEqualTo(NumberValue(1396.0))
+    assertThat(evaluate("""=DATEDIF(DATE(2020,3,15),DATE(2024,1,10),"M")"""))
+      .isEqualTo(NumberValue(45.0))
+    assertThat(evaluate("""=DATEDIF(DATE(2020,3,15),DATE(2024,1,10),"Y")"""))
+      .isEqualTo(NumberValue(3.0))
+    assertThat(evaluate("""=DATEDIF(DATE(2020,3,15),DATE(2024,1,10),"YM")"""))
+      .isEqualTo(NumberValue(9.0))
+    assertThat(evaluate("""=DATEDIF(DATE(2020,3,15),DATE(2024,1,10),"MD")"""))
+      .isEqualTo(NumberValue(26.0))
+    assertThat(evaluate("""=DATEDIF(DATE(2020,3,15),DATE(2024,1,10),"YD")"""))
+      .isEqualTo(NumberValue(301.0))
+    assertThat(evaluate("""=DATEDIF(DATE(2020,1,10),DATE(2024,3,15),"YD")"""))
+      .isEqualTo(NumberValue(65.0))
+    assertThat(evaluate("""=DATEDIF(DATE(2024,1,31),DATE(2024,3,1),"MD")"""))
+      .isEqualTo(NumberValue(-1.0))
+    assertThat(evaluate("""=DATEDIF(1.9,3.1,"D")""")).isEqualTo(NumberValue(2.0))
+  }
+
+  @Test
+  fun `DATEDIF rejects reversed dates and unknown units`() = runTest {
+    assertThat(evaluate("""=DATEDIF(2,1,"D")""")).isError(Num, StartAfterEnd)
+    assertThat(evaluate("""=DATEDIF(1,2,"d")""")).isError(Num, BadMode)
+  }
+
+  @Test
+  fun `NETWORKDAYS counts weekdays that aren't holidays`() = runTest {
+    assertThat(evaluate("=NETWORKDAYS(DATE(2024,1,1),DATE(2024,1,31))"))
+      .isEqualTo(NumberValue(23.0))
+    assertThat(evaluate("=NETWORKDAYS(DATE(2024,1,31),DATE(2024,1,1))"))
+      .isEqualTo(NumberValue(-23.0))
+    assertThat(evaluate("=NETWORKDAYS(DATE(2024,1,6),DATE(2024,1,7))")).isEqualTo(NumberValue(0.0))
+    assertThat(
+        evaluate(
+          "=NETWORKDAYS(DATE(2024,1,1),DATE(2024,1,31),{DATE(2024,1,1),DATE(2024,1,6),DATE(2024,1,1)})",
+        ),
+      )
+      .isEqualTo(NumberValue(22.0))
+    assertThat(evaluate("=NETWORKDAYS(DATE(2024,1,1),DATE(2024,1,31),DATE(2024,1,2))"))
+      .isEqualTo(NumberValue(22.0))
+    assertThat(evaluate("""=NETWORKDAYS(DATE(2024,1,1),DATE(2024,1,31),{"x"})"""))
+      .isError(Value, WrongArgType)
+    assertThat(evaluate("""=NETWORKDAYS(DATE(2024,1,1),DATE(2024,1,31),"x")"""))
+      .isError(Value, WrongArgType)
+  }
 }

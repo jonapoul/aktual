@@ -28,6 +28,12 @@ internal object SerialDates {
 
   fun dateToNumber(date: SimpleDate): Double = dateToNumberFromZero(date) - NULL_DATE
 
+  // Days since year zero, so modulo 7 gives the day of the week
+  fun toAbsolute(number: Double): Double = number + NULL_DATE
+
+  fun timeToNumber(time: SimpleTime): Double =
+    ((time.seconds / 60 + time.minutes) / 60 + time.hours) / 24
+
   fun withinBounds(number: Double): Double? = number.takeIf { it in 0.0..MAX_DATE }
 
   fun numberToDate(number: Double): SimpleDate {
@@ -118,7 +124,7 @@ internal object SerialDates {
       else -> 365.0
     }
 
-  private fun daysInMonth(year: Double, month: Double): Double =
+  fun daysInMonth(year: Double, month: Double): Double =
     if (isLeapYear(year) && month == 2.0) 29.0 else DAYS_IN_MONTH.at(month - 1)
 
   private fun dateToNumberFromZero(date: SimpleDate): Double {
@@ -126,8 +132,7 @@ internal object SerialDates {
     return 365 * date.year + DAYS_BEFORE_MONTH.at(date.month - 1) + date.day - 1 + leapYears
   }
 
-  private fun leapYearsCount(year: Double): Double =
-    floor(year / 4) - floor(year / 100) + floor(year / 400)
+  fun leapYearsCount(year: Double): Double = floor(year / 4) - floor(year / 100) + floor(year / 400)
 
   private fun leapDaysCount(date: SimpleDate): Double =
     leapYearsCount(

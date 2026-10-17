@@ -10,4 +10,11 @@ internal val INFO_FUNCTIONS: Map<String, FormulaFunction> =
     "ISNUMBER" to
       formulaFunction(Param(Scalar)) { args -> BooleanValue(args.value(0) is NumberValue) },
     "ISTEXT" to formulaFunction(Param(Scalar)) { args -> BooleanValue(args.value(0) is TextValue) },
+    "ISLOGICAL" to
+      formulaFunction(Param(Scalar)) { args -> BooleanValue(args.value(0) is BooleanValue) },
+    "ISNA" to
+      formulaFunction(Param(Scalar)) { args ->
+        val value = args.value(0)
+        BooleanValue(value is ErrorValue && value.type == NotAvailable)
+      },
   )

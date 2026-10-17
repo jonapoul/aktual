@@ -126,6 +126,30 @@ private fun FormulaValue.typeOrder(): Int =
     is ArrayValue -> TYPE_ORDER_ERROR
   }
 
+// Port of ArithmeticHelper.coerceNumbersExactRanges: plain values are coerced to numbers, while
+// arrays only keep the numbers they hold. Gives the first error instead, checking plain values
+// first
+internal inline fun exactNumbers(
+  values: List<FormulaValue>,
+  use: (List<Double>) -> FormulaValue,
+): FormulaValue {
+  val coerced = values.map { if (it is ArrayValue) it else coerceToNumber(it) }
+  coerced
+    .firstOrNull { it is ErrorValue }
+    ?.let {
+      return it
+    }
+  val numbers = mutableListOf<Double>()
+  for (value in coerced) {
+    val elements = if (value is ArrayValue) value.rows.flatten() else listOf(value)
+    for (element in elements) {
+      if (element is ErrorValue) return element
+      if (element is NumberValue) numbers += element.value
+    }
+  }
+  return use(numbers)
+}
+
 internal expect fun compareText(left: String, right: String): Int
 
 internal fun floatCompare(left: Double, right: Double): Int {

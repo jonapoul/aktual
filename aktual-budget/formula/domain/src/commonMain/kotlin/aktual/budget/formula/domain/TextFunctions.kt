@@ -69,6 +69,59 @@ internal val TEXT_FUNCTIONS: Map<String, FormulaFunction> =
       formulaFunction(Param(Numeric), Param(Text)) { args ->
         TextValue(formatNumber(args.number(0), args.text(1)))
       },
+    "FIND" to
+      formulaFunction(Param(Text), Param(Text), Param(Numeric, default = NumberValue(1.0))) { args
+        ->
+        val text = args.text(1)
+        val start = args.number(2)
+        if (start < 1 || start > text.length) {
+          ErrorValue(Value, StartOutOfRange)
+        } else {
+          // Upstream's check misses most failed searches, which then give start - 1
+          val index = jsSubstring(text, start - 1).indexOf(args.text(0)) + start
+          if (index > 0) NumberValue(index) else ErrorValue(Value, PatternNotFound)
+        }
+      },
+    "SEARCH" to
+      formulaFunction(Param(Text), Param(Text), Param(Numeric, default = NumberValue(1.0))) { args
+        ->
+        val text = args.text(1)
+        val start = args.number(2)
+        if (start < 1 || start > text.length) {
+          ErrorValue(Value, StartOutOfRange)
+        } else {
+          val index = search(args.text(0).lowercase(), jsSubstring(text, start - 1).lowercase())
+          if (index > -1) NumberValue(index + start) else ErrorValue(Value, PatternNotFound)
+        }
+      },
+    "REPLACE" to
+      formulaFunction(Param(Text), Param(Numeric), Param(Numeric), Param(Text)) { args ->
+        val text = args.text(0)
+        val start = args.number(1)
+        val count = args.number(2)
+        when {
+          start < 1 -> ErrorValue(Value, LessThanOne)
+          count < 0 -> ErrorValue(Value, NegativeLength)
+          else ->
+            TextValue(
+              jsSubstring(text, 0.0, start - 1) +
+                args.text(3) +
+                jsSubstring(text, start + count - 1),
+            )
+        }
+      },
+    "PROPER" to
+      formulaFunction(Param(Text)) { args ->
+        TextValue(
+          args.text(0).replace(LETTERS) {
+            it.value[0].uppercase() + it.value.substring(1).lowercase()
+          },
+        )
+      },
+    "EXACT" to
+      formulaFunction(Param(Text), Param(Text)) { args ->
+        BooleanValue(args.text(0) == args.text(1))
+      },
   )
 
 // Upstream would throw a RangeError instead
@@ -77,6 +130,10 @@ private const val MAX_TEXT_LENGTH = 1_000_000
 private val LEADING_SPACES = Regex("^ +")
 private val TRAILING_SPACES = Regex(" +$")
 private val SPACES = Regex(" +")
+private val LETTERS = Regex("\\p{L}+")
+private val WILDCARDS = setOf('*', '?')
+private val REGEX_SPECIAL =
+  setOf('{', '}', '[', ']', '(', ')', '<', '>', '=', '.', '+', '-', ',', '\\', '$', '^', '!')
 
 private fun trimSpaces(text: String): String =
   text.replace(LEADING_SPACES, "").replace(TRAILING_SPACES, "").replace(SPACES, " ")
@@ -97,12 +154,41 @@ private fun jsSlice(text: String, start: Double, end: Double = text.length.toDou
 }
 
 // JavaScript's String.substring
-private fun jsSubstring(text: String, start: Double, end: Double): String {
+private fun jsSubstring(text: String, start: Double, end: Double = text.length.toDouble()): String {
   fun index(position: Double): Int =
     truncate(position).coerceIn(0.0, text.length.toDouble()).toInt()
   val from = index(start)
   val to = index(end)
   return text.substring(min(from, to), max(from, to))
+}
+
+// Port of SEARCH's matching with upstream's config: "*" and "?" are wildcards unless escaped with
+// "~". Accents are only stripped from the pattern, like upstream
+private fun search(pattern: String, text: String): Int {
+  if (pattern.none { it in WILDCARDS }) return text.indexOf(pattern)
+  val normalized = stripAccents(pattern)
+  val regex = buildString {
+    var i = 0
+    while (i < normalized.length) {
+      val char = normalized[i]
+      val next = normalized.getOrNull(i + 1)
+      when {
+        char == '~' ->
+          if (next == null) {
+            append('~')
+          } else {
+            if (next in WILDCARDS || next in REGEX_SPECIAL) append('\\')
+            append(next)
+            i++
+          }
+        char in WILDCARDS -> append('.').append(char)
+        char in REGEX_SPECIAL -> append('\\').append(char)
+        else -> append(char.lowercase())
+      }
+      i++
+    }
+  }
+  return Regex(regex).find(text)?.range?.first ?: -1
 }
 
 // JavaScript's String.replace with a global regex of the escaped search text, including the "$"
@@ -177,3 +263,6 @@ private fun replaceOccurrence(
     position = index + search.length
   }
 }
+
+// Decomposes the text and drops the combining accents
+internal expect fun stripAccents(text: String): String

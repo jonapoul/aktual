@@ -2,15 +2,18 @@ package aktual.budget.formula.domain
 
 import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.math.exp
 import kotlin.math.floor
+import kotlin.math.ln
+import kotlin.math.log10
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.math.truncate
 
-// Ports of HyperFormula's NumericAggregationPlugin, RoundingPlugin and the single function plugins
-// (ABS, MOD, POWER, SIGN, SQRT)
+// Ports of HyperFormula's NumericAggregationPlugin, RoundingPlugin, MedianPlugin, CountBlankPlugin,
+// LogarithmPlugin and the single function plugins (ABS, EXP, MOD, PI, POWER, SIGN, SQRT)
 internal val MATH_FUNCTIONS: Map<String, FormulaFunction> =
   mapOf(
     "SUM" to aggregate(::strictlyNumbers) { NumberValue(it.fold(0.0, ::addWithEpsilon)) },
@@ -29,6 +32,31 @@ internal val MATH_FUNCTIONS: Map<String, FormulaFunction> =
       aggregate(::strictlyNumbers) {
         if (it.isEmpty()) ErrorValue(DivByZero) else NumberValue(it.sum() / it.size)
       },
+    "COUNTA" to
+      aggregate({ NumberValue(if (it == EmptyValue) 0.0 else 1.0) }) { NumberValue(it.sum()) },
+    "COUNTBLANK" to
+      formulaFunction(Param(Scalar), repeatLastArgs = 1, expandRanges = true) { args ->
+        NumberValue((0 until args.size).count { args[it] == EmptyValue }.toDouble())
+      },
+    "VAR" to moments { it.sampleVariance() },
+    "VARP" to moments { it.populationVariance() },
+    "STDEV" to moments { it.sampleVariance()?.let(::sqrt) },
+    "STDEVP" to moments { it.populationVariance()?.let(::sqrt) },
+    "MEDIAN" to
+      formulaFunction(Param(Anything), repeatLastArgs = 1) { args ->
+        exactNumbers((0 until args.size).map(args::value), ::median)
+      },
+    "EXP" to formulaFunction(Param(Numeric)) { args -> NumberValue(exp(args.number(0))) },
+    "LN" to formulaFunction(Param(Numeric)) { args -> NumberValue(ln(args.number(0))) },
+    "LOG" to
+      formulaFunction(
+        Param(Numeric, greaterThan = 0.0),
+        Param(Numeric, default = NumberValue(10.0), greaterThan = 0.0),
+      ) { args ->
+        NumberValue(ln(args.number(0)) / ln(args.number(1)))
+      },
+    "LOG10" to formulaFunction(Param(Numeric)) { args -> NumberValue(log10(args.number(0))) },
+    "PI" to formulaFunction { NumberValue(PI) },
     "ABS" to formulaFunction(Param(Numeric)) { args -> NumberValue(abs(args.number(0))) },
     "SQRT" to formulaFunction(Param(Numeric)) { args -> NumberValue(sqrt(args.number(0))) },
     "POWER" to
@@ -85,6 +113,33 @@ private fun aggregate(
   reduce(numbers)
 }
 
+// Sums kept in the same order as upstream's MomentsAggregate, so rounding matches
+private class Moments(numbers: List<Double>) {
+  private val count = numbers.size
+  private val sum = numbers.fold(0.0) { total, number -> total + number }
+  private val sumOfSquares = numbers.fold(0.0) { total, number -> total + number * number }
+
+  fun sampleVariance(): Double? =
+    if (count > 1) (sumOfSquares - sum * sum / count) / (count - 1) else null
+
+  fun populationVariance(): Double? =
+    if (count > 0) (sumOfSquares - sum * sum / count) / count else null
+}
+
+private fun moments(result: (Moments) -> Double?): FormulaFunction =
+  aggregate(::strictlyNumbers) { numbers ->
+    result(Moments(numbers))?.let(::NumberValue) ?: ErrorValue(DivByZero)
+  }
+
+private fun median(numbers: List<Double>): FormulaValue {
+  if (numbers.isEmpty()) return ErrorValue(Num, NoValues)
+  val sorted = numbers.sorted()
+  val middle = sorted.size / 2
+  return NumberValue(
+    if (sorted.size % 2 == 0) (sorted[middle - 1] + sorted[middle]) / 2 else sorted[middle],
+  )
+}
+
 private fun strictlyNumbers(value: FormulaValue): FormulaValue? = value.takeIf {
   it is NumberValue || it is ErrorValue
 }
@@ -115,3 +170,6 @@ private fun significance(round: (Double) -> Double): FormulaFunction =
       else -> NumberValue(round(value / significance) * significance)
     }
   }
+
+// Upstream rounds pi to 14 decimal places
+private const val PI = 3.14159265358979

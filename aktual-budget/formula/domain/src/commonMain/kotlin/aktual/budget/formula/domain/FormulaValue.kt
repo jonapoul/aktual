@@ -70,6 +70,12 @@ enum class ErrorReason {
   DateOutOfRange,
   InvalidBudgetDimension,
   DecimalsOutOfRange,
+  BadMode,
+  StartAfterEnd,
+  NoValues,
+  SelectorTooLarge,
+  StartOutOfRange,
+  PatternNotFound,
   // The evaluator itself failed, which is a bug rather than a mistake in the formula
   InternalError,
 }

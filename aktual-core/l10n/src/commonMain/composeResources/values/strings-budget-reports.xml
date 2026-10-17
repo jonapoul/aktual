@@ -246,6 +246,12 @@
   <string name="reports_formula_date_out_of_range">Date is out of range</string>
   <string name="reports_formula_invalid_budget_dimension">Unknown budget value %1$s</string>
   <string name="reports_formula_decimals_out_of_range">Decimals must be between 0 and 100</string>
+  <string name="reports_formula_bad_mode">Unknown mode</string>
+  <string name="reports_formula_start_after_end">Start can't be after the end</string>
+  <string name="reports_formula_no_values">Needs at least one number</string>
+  <string name="reports_formula_selector_too_large">Index is larger than the number of choices</string>
+  <string name="reports_formula_start_out_of_range">Start position is outside the text</string>
+  <string name="reports_formula_pattern_not_found">Text not found</string>
   <string name="reports_formula_internal_error">The formula could not be evaluated because of a bug in Aktual: %1$s</string>
   <string name="reports_formula_warning_unknown_query">No query named %1$s</string>
   <string name="reports_formula_warning_unknown_account">No account named %1$s</string>

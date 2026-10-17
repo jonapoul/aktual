@@ -2,11 +2,15 @@ package aktual.budget.formula.domain
 
 import aktual.test.TestCalendar
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
 
 // Serial number 45322
 internal val TODAY = LocalDate(year = 2024, month = 1, day = 31)
+
+// With TODAY, serial number 45322.52100694...
+internal val NOW = LocalTime(hour = 12, minute = 30, second = 15)
 
 internal suspend fun evaluate(
   formula: String,
@@ -18,7 +22,8 @@ internal suspend fun evaluateWithWarnings(
   variables: Map<String, FormulaValue> = emptyMap(),
   data: FormulaDataSource = FakeFormulaDataSource(),
   format: FormulaFormat = FormulaFormat(),
-): FormulaResult = FormulaEvaluator(TestCalendar(TODAY), data, format).evaluate(formula, variables)
+): FormulaResult =
+  FormulaEvaluator(TestCalendar(TODAY, NOW), data, format).evaluate(formula, variables)
 
 internal data class FakeQuery(
   val sum: Long = 0,

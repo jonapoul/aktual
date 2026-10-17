@@ -189,7 +189,7 @@ class FormulaEvaluatorTest {
   fun `Unknown functions are named errors`() = runTest {
     assertThat(evaluate("=FOO(1)")).isError(Name, UnknownFunction, "FOO")
     assertThat(evaluate("=vlookup(1,2)")).isError(Name, UnsupportedFunction, "VLOOKUP")
-    assertThat(evaluate("""=PI()""")).isError(Name, UnsupportedFunction, "PI")
+    assertThat(evaluate("=SIN(1)")).isError(Name, UnsupportedFunction, "SIN")
   }
 
   @Test
