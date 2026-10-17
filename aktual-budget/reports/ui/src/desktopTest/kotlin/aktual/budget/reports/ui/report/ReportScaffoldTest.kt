@@ -6,8 +6,7 @@ import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.report.ReportState
-import aktual.core.theme.DarkColors
-import aktual.core.ui.PreviewWithColors
+import aktual.test.setPreviewContent
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
@@ -18,7 +17,7 @@ class ReportScaffoldTest {
   @Test
   fun `Reset zoom button shows in the top bar while zoomed`() = runComposeUiTest {
     // given
-    setContent { PreviewWithColors(DarkColors) { ReportScaffold(state = STATE, onAction = {}) } }
+    setPreviewContent { ReportScaffold(state = STATE, onAction = {}) }
     onNodeWithTag(Tags.ResetZoom).assertDoesNotExist()
 
     // when zooming
@@ -42,7 +41,7 @@ class ReportScaffoldTest {
   @Test
   fun `Info button shows the chart explanation`() = runComposeUiTest {
     // given
-    setContent { PreviewWithColors(DarkColors) { ReportScaffold(state = STATE, onAction = {}) } }
+    setPreviewContent { ReportScaffold(state = STATE, onAction = {}) }
     onNodeWithTag(Tags.ChartInfoSheet).assertDoesNotExist()
 
     // when

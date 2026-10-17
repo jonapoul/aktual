@@ -4,8 +4,7 @@ import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.charts.PREVIEW_FORMULA_DATA
 import aktual.budget.reports.vm.report.FormulaReportState
 import aktual.budget.reports.vm.toEdits
-import aktual.core.theme.DarkColors
-import aktual.core.ui.PreviewWithColors
+import aktual.test.setPreviewContent
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.onNodeWithTag
@@ -22,10 +21,8 @@ class FormulaReportScaffoldTest {
   @Test
   fun `Save is disabled without changes`() = runComposeUiTest {
     // when
-    setContent {
-      PreviewWithColors(DarkColors) {
-        FormulaReportScaffold(state = state(hasChanges = false), onAction = {})
-      }
+    setPreviewContent {
+      FormulaReportScaffold(state = state(hasChanges = false), onAction = {})
     }
 
     // then
@@ -36,10 +33,8 @@ class FormulaReportScaffoldTest {
   fun `Save and close send their actions while editing`() = runComposeUiTest {
     // given
     val actions = mutableListOf<FormulaReportAction>()
-    setContent {
-      PreviewWithColors(DarkColors) {
-        FormulaReportScaffold(state = state(hasChanges = true), onAction = { actions += it })
-      }
+    setPreviewContent {
+      FormulaReportScaffold(state = state(hasChanges = true), onAction = { actions += it })
     }
 
     // when
@@ -54,10 +49,8 @@ class FormulaReportScaffoldTest {
   fun `Tapping show title turns it off`() = runComposeUiTest {
     // given
     val actions = mutableListOf<FormulaReportAction>()
-    setContent {
-      PreviewWithColors(DarkColors) {
-        FormulaReportScaffold(state = state(hasChanges = false), onAction = { actions += it })
-      }
+    setPreviewContent {
+      FormulaReportScaffold(state = state(hasChanges = false), onAction = { actions += it })
     }
 
     // when
@@ -72,10 +65,8 @@ class FormulaReportScaffoldTest {
   fun `Setting rows open their editors`() = runComposeUiTest {
     // given
     val actions = mutableListOf<FormulaReportAction>()
-    setContent {
-      PreviewWithColors(DarkColors) {
-        FormulaReportScaffold(state = state(hasChanges = false), onAction = { actions += it })
-      }
+    setPreviewContent {
+      FormulaReportScaffold(state = state(hasChanges = false), onAction = { actions += it })
     }
 
     // when
@@ -97,10 +88,8 @@ class FormulaReportScaffoldTest {
   @Test
   fun `Editing shows the name row and query counts`() = runComposeUiTest {
     // when
-    setContent {
-      PreviewWithColors(DarkColors) {
-        FormulaReportScaffold(state = state(hasChanges = false), onAction = {})
-      }
+    setPreviewContent {
+      FormulaReportScaffold(state = state(hasChanges = false), onAction = {})
     }
 
     // then
@@ -113,10 +102,8 @@ class FormulaReportScaffoldTest {
   fun `Query rows open their query while editing`() = runComposeUiTest {
     // given
     val actions = mutableListOf<FormulaReportAction>()
-    setContent {
-      PreviewWithColors(DarkColors) {
-        FormulaReportScaffold(state = state(hasChanges = false), onAction = { actions += it })
-      }
+    setPreviewContent {
+      FormulaReportScaffold(state = state(hasChanges = false), onAction = { actions += it })
     }
 
     // when
@@ -129,10 +116,8 @@ class FormulaReportScaffoldTest {
   @Test
   fun `Add query waits for the editor data`() = runComposeUiTest {
     // when
-    setContent {
-      PreviewWithColors(DarkColors) {
-        FormulaReportScaffold(state = state(hasChanges = false), onAction = {})
-      }
+    setPreviewContent {
+      FormulaReportScaffold(state = state(hasChanges = false), onAction = {})
     }
 
     // then
@@ -143,14 +128,12 @@ class FormulaReportScaffoldTest {
   fun `Add query sends its action while editing`() = runComposeUiTest {
     // given
     val actions = mutableListOf<FormulaReportAction>()
-    setContent {
-      PreviewWithColors(DarkColors) {
-        FormulaReportScaffold(
-          state = state(hasChanges = false),
-          queryEditorData = PREVIEW_QUERY_DATA,
-          onAction = { actions += it },
-        )
-      }
+    setPreviewContent {
+      FormulaReportScaffold(
+        state = state(hasChanges = false),
+        queryEditorData = PREVIEW_QUERY_DATA,
+        onAction = { actions += it },
+      )
     }
 
     // when

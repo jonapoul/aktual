@@ -3,8 +3,11 @@ package aktual.test
 import aktual.core.theme.Colors
 import aktual.core.theme.DarkColors
 import aktual.core.theme.LocalColors
+import aktual.core.ui.PreviewWithColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.test.ComposeUiTest
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
@@ -26,3 +29,9 @@ fun ComposeContentTestRule.setThemedContent(
   colors: Colors = DarkColors,
   content: @Composable () -> Unit,
 ) = setContent { CompositionLocalProvider(LocalColors provides colors, content = content) }
+
+@OptIn(ExperimentalTestApi::class)
+fun ComposeUiTest.setPreviewContent(colors: Colors = DarkColors, content: @Composable () -> Unit) =
+  setContent {
+    PreviewWithColors(colors, content = content)
+  }
