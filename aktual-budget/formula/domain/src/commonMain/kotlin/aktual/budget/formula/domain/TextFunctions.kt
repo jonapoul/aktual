@@ -123,27 +123,39 @@ private fun replaceAll(text: String, search: String, replacement: String): Strin
   if (position < text.length) append(text, position, text.length)
 }
 
-private fun substitution(text: String, index: Int, match: String, replacement: String): String =
-  buildString {
-    var i = 0
-    while (i < replacement.length) {
-      val char = replacement[i]
-      val next = replacement.getOrNull(i + 1)
-      if (char != '$' || next == null) {
-        append(char)
-        i++
-        continue
-      }
-      when (next) {
-        '$' -> append('$')
-        '&' -> append(match)
-        '`' -> append(text, 0, index)
-        '\'' -> append(text, index + match.length, text.length)
-        else -> append(char).append(next)
-      }
-      i += 2
+// JavaScript's String.replace patterns, where [groups] are the match's capture groups
+internal fun substitution(
+  text: String,
+  index: Int,
+  match: String,
+  replacement: String,
+  groups: List<String> = emptyList(),
+): String = buildString {
+  var i = 0
+  while (i < replacement.length) {
+    val char = replacement[i]
+    val next = replacement.getOrNull(i + 1)
+    if (char != '$' || next == null) {
+      append(char)
+      i++
+      continue
     }
+    val twoDigits = replacement.getOrNull(i + 2)?.takeIf { next.isDigit() && it.isDigit() }
+    val twoDigitGroup = twoDigits?.let { "$next$it".toInt() }?.takeIf { it in 1..groups.size }
+    val oneDigitGroup = next.digitToIntOrNull()?.takeIf { it in 1..groups.size }
+    val group = twoDigitGroup ?: oneDigitGroup
+    when {
+      group != null -> append(groups[group - 1])
+      next == '$' -> append('$')
+      next == '&' -> append(match)
+      next == '`' -> append(text, 0, index)
+      next == '\'' -> append(text, index + match.length, text.length)
+      else -> append(char).append(next)
+    }
+    i += 2
+    if (twoDigitGroup != null) i++
   }
+}
 
 // Empty search text matches at the start forever, so upstream only returns for whole occurrences
 private fun replaceOccurrence(

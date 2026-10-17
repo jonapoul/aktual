@@ -17,7 +17,8 @@ internal suspend fun evaluateWithWarnings(
   formula: String,
   variables: Map<String, FormulaValue> = emptyMap(),
   data: FormulaDataSource = FakeFormulaDataSource(),
-): FormulaResult = FormulaEvaluator(TestCalendar(TODAY), data).evaluate(formula, variables)
+  format: FormulaFormat = FormulaFormat(),
+): FormulaResult = FormulaEvaluator(TestCalendar(TODAY), data, format).evaluate(formula, variables)
 
 internal data class FakeQuery(
   val sum: Long = 0,
