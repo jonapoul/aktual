@@ -55,6 +55,16 @@ internal class DashboardSync(
       "text_align" to DbJson.encodeToJsonElement(TextAlign.serializer(), align),
     )
 
+  suspend fun setFormula(id: WidgetId, edits: FormulaEdits) =
+    patchMeta(
+      id,
+      "formula" to JsonPrimitive(edits.formula),
+      "colorFormula" to JsonPrimitive(edits.colorFormula),
+      "fontSizeMode" to DbJson.encodeToJsonElement(FontSizeMode.serializer(), edits.fontSizeMode),
+      "staticFontSize" to JsonPrimitive(edits.staticFontSize),
+      "showTitle" to JsonPrimitive(edits.showTitle),
+    )
+
   // Writes the plan's settings over the stored meta, like upstream's save. Nulls are written out,
   // since a missing inflationMean means upstream's default rather than no inflation
   suspend fun setMonteCarloConfig(id: WidgetId, meta: MonteCarloReportMeta) {

@@ -13,6 +13,7 @@ import aktual.budget.reports.ui.montecarlo.MonteCarloReportScreen
 import aktual.budget.reports.ui.string
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.CustomData
+import aktual.budget.reports.vm.FormulaReportMeta
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.report.ReportViewModel
@@ -34,11 +35,13 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -84,6 +87,7 @@ fun ReportScreen(
         NavBack -> if (hasUnsavedText) showDiscardDialog = true else back()
         is SaveText -> viewModel.saveText(action.content, action.align)
         is SetUnsavedText -> hasUnsavedText = action.hasUnsavedText
+        is SaveFormula -> viewModel.saveFormula(action.edits)
         else -> Unit
       }
     },
@@ -207,15 +211,48 @@ private fun ReportContent(
     // Shown by MonteCarloReportScreen instead
     MonteCarlo -> Box(modifier = modifier)
 
-    is Loaded ->
+    is Loaded -> LoadedContent(state, zoom, onAction, modifier)
+  }
+
+@Composable
+private fun LoadedContent(
+  state: ReportState.Loaded,
+  zoom: ChartZoomState,
+  onAction: ActionListener,
+  modifier: Modifier = Modifier,
+) {
+  val meta = state.item.meta as? FormulaReportMeta
+  if (meta == null) {
+    ReportChart(
+      modifier = modifier.background(colors.tableBackground, CardShape).padding(8.dp),
+      data = state.data,
+      compact = false,
+      onAction = onAction,
+      zoom = zoom,
+    )
+  } else {
+    Column(modifier = modifier.verticalScrollWithBar()) {
       ReportChart(
-        modifier = modifier.background(colors.tableBackground, CardShape).padding(8.dp),
+        modifier =
+          Modifier.fillMaxWidth()
+            .height(FORMULA_CARD_HEIGHT)
+            .background(colors.tableBackground, CardShape)
+            .padding(8.dp),
         data = state.data,
         compact = false,
         onAction = onAction,
         zoom = zoom,
       )
+      FormulaEditor(
+        modifier = Modifier.padding(top = 16.dp),
+        meta = meta,
+        onAction = onAction,
+      )
+    }
   }
+}
+
+private val FORMULA_CARD_HEIGHT = 160.dp
 
 @PortraitPreview
 @Composable
