@@ -100,26 +100,24 @@ internal class ChartDataLoader(
 
   // packages/desktop-client/src/components/reports/reports/GetCardData.tsx
   fun custom(meta: CustomReportMeta): Flow<ChartData> =
-    combine(
-        customReports.observe(meta.id),
+    customReports.observe(meta.id).flatMapLatest { report ->
+      val config = report?.toConfig()
+      when {
+        report == null || report.tombstone == true -> flowOf(unsupportedData(meta, MissingReport))
+        config == null -> flowOf(UnsupportedData(InvalidMeta, Custom, report.name))
+        else -> custom(report.name.orEmpty(), config)
+      }
+    }
+
+  // Draws [config] whether or not it's saved, so the editor can preview its draft
+  fun custom(title: String, config: CustomReportConfig): Flow<ChartData> {
+    if (config.balanceType == Budgeted && !config.canShowBudgeted()) {
+      return flowOf(UnsupportedData(CustomBudgeted, Custom, title.ifEmpty { null }))
+    }
+    return combine(
         dao.observeTransactionDateBounds(),
         preferences.observe(SyncedPrefKey.Global.FirstDayOfWeekIdx),
-      ) { report, bounds, firstDayOfWeek ->
-        if (report == null || report.tombstone == true) {
-          return@combine flowOf(unsupportedData(meta, MissingReport))
-        }
-
-        val config = report.toConfig()
-        val reason: UnsupportedReason? =
-          when {
-            config == null -> InvalidMeta
-            config.balanceType == Budgeted && !config.canShowBudgeted() -> CustomBudgeted
-            else -> null
-          }
-        if (config == null || reason != null) {
-          return@combine flowOf(UnsupportedData(reason ?: InvalidMeta, Custom, report.name))
-        }
-
+      ) { bounds, firstDayOfWeek ->
         val today = calendar.today()
         // Upstream treats an unset preference as Sunday
         val firstDay = FirstDayOfWeek.from(firstDayOfWeek) ?: Sunday
@@ -131,9 +129,10 @@ internal class ChartDataLoader(
             latestTransaction = bounds.latest ?: today,
             firstDayOfWeek = firstDay,
           )
-        customData(report.name.orEmpty(), config, range, firstDay)
+        customData(title, config, range, firstDay)
       }
       .flatMapLatest { it }
+  }
 
   private fun customData(
     title: String,
@@ -535,7 +534,7 @@ internal class ChartDataLoader(
                   accountId = row.account.value,
                   accountName = row.account_name.orEmpty(),
                 )
-              },
+              }
             ),
           categoryOrder = budgetOrder(rows),
           params = params,
@@ -776,6 +775,13 @@ internal class ChartDataLoader(
   private inline fun List<CashFlowByMonth>.total(predicate: (CashFlowByMonth) -> Boolean): Amount =
     Amount(filter(predicate).sumOf { it.total })
 
+  private data class ScheduleInputs(
+    val accounts: List<AccountId>,
+    val schedules: List<ForecastSchedules>,
+    val posted: List<ForecastPostedScheduleTransactions>,
+    val transferPayees: List<ForecastTransferPayees>,
+  )
+
   private companion object {
     const val YEAR_MONTH_FACTOR = 100L
     const val DEFAULT_SAFE_WITHDRAWAL_RATE = 0.04
@@ -787,10 +793,3 @@ internal class ChartDataLoader(
     const val RESULT_VARIABLE = "RESULT"
   }
 }
-
-private data class ScheduleInputs(
-  val accounts: List<AccountId>,
-  val schedules: List<ForecastSchedules>,
-  val posted: List<ForecastPostedScheduleTransactions>,
-  val transferPayees: List<ForecastTransferPayees>,
-)

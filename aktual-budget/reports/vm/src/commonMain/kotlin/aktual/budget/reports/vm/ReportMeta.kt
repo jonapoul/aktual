@@ -193,14 +193,15 @@ data class AgeOfMoneyReportMeta(
   @SerialName("granularity") val granularity: AgeOfMoneyGranularity? = null,
 ) : ReportMeta
 
-@Serializable
 @Immutable
+@Serializable
 data class FormulaQuery(
   @SerialName("conditions") val conditions: List<Condition>,
   @SerialName("conditionsOp") val conditionsOp: ConditionOp?,
   @SerialName("timeFrame") val timeFrame: TimeFrame?,
 )
 
+@Immutable
 @Serializable
 data class TimeFrame(
   @SerialName("start") @Serializable(LenientYearMonthSerializer::class) val start: YearMonth,

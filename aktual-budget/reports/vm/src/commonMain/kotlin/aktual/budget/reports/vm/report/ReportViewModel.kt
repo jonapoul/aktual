@@ -1,8 +1,10 @@
 package aktual.budget.reports.vm.report
 
+import aktual.budget.db.Dashboard
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.ChartDataLoader
+import aktual.budget.reports.vm.CustomReportMeta
 import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.FormulaReportMeta
 import aktual.budget.reports.vm.MonteCarloReportMeta
@@ -19,6 +21,7 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -35,30 +38,34 @@ internal constructor(
   @Assisted private val id: WidgetId,
   dashboardDao: DashboardDao,
   private val sync: DashboardSync,
-  chartDataLoader: ChartDataLoader,
-  decoder: DashboardItemDecoder,
+  private val chartDataLoader: ChartDataLoader,
+  private val decoder: DashboardItemDecoder,
 ) : ViewModel() {
   val state: StateFlow<ReportState> =
     dashboardDao
       .observeById(id)
-      .flatMapLatest { widget ->
-        val type = widget?.type
-        val item = widget?.let(decoder::decode)
-        if (type == null || item == null) {
-          flowOf(ReportState.NotFound)
-        } else if (item.meta is MonteCarloReportMeta) {
-          flowOf(ReportState.MonteCarlo)
-        } else if (item.meta is FormulaReportMeta) {
-          flowOf(ReportState.Formula)
-        } else {
-          chartDataLoader.load(item.meta).map { data -> ReportState.Loaded(type, item, data) }
-        }
-      }
+      .flatMapLatest(::toReportState)
       .stateIn(viewModelScope, Eagerly, initialValue = Loading)
 
   fun saveText(content: String, align: TextAlign) {
     logcat.d { "Saving text for $id" }
     viewModelScope.launch { sync.setWidgetText(id, content, align) }
+  }
+
+  private fun toReportState(widget: Dashboard?): Flow<ReportState> {
+    val type = widget?.type
+    val item = widget?.let(decoder::decode)
+    return if (type == null || item == null) {
+      flowOf(NotFound)
+    } else if (item.meta is MonteCarloReportMeta) {
+      flowOf(MonteCarlo)
+    } else if (item.meta is FormulaReportMeta) {
+      flowOf(Formula)
+    } else if (item.meta is CustomReportMeta) {
+      flowOf(Custom)
+    } else {
+      chartDataLoader.load(item.meta).map { data -> ReportState.Loaded(type, item, data) }
+    }
   }
 
   @AssistedFactory

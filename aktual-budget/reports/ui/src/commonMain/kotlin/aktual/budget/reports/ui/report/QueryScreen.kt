@@ -1,21 +1,16 @@
 package aktual.budget.reports.ui.report
 
-import aktual.budget.model.Condition
-import aktual.budget.model.ConditionOp
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.dashboard.NameDialog
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
-import aktual.budget.reports.vm.newQueryCondition
-import aktual.core.icons.material.Add
 import aktual.core.icons.material.CalendarToday
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
-import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
@@ -29,7 +24,6 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.TonalButton
 import aktual.core.ui.bareIconButton
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
@@ -38,12 +32,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -59,12 +50,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily.Companion.Monospace
-import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEachIndexed
-import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.persistentListOf
 
 // Edits one query of the draft in place, so back keeps the changes until the report is saved
 @Composable
@@ -201,7 +188,6 @@ private fun QueryContent(
   onChange: (FormulaQuery) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var conditionIndex by rememberSaveable { mutableStateOf<Int?>(null) }
   var showTimeFrame by rememberSaveable { mutableStateOf(false) }
 
   Column(
@@ -212,47 +198,14 @@ private fun QueryContent(
         .padding(horizontal = 16.dp, vertical = 4.dp),
     verticalArrangement = Arrangement.spacedBy(22.dp),
   ) {
-    Column {
-      SectionLabel(Strings.reportsFormulaQueryMatch)
-      AktualSlidingToggleButton(
-        modifier = Modifier.fillMaxWidth(),
-        selected = if (query.conditionsOp == Or) Or else And,
-        options = CONDITION_OPS,
-        onSelect = { op -> onChange(query.copy(conditionsOp = op)) },
-        string = { op ->
-          if (op == Or) Strings.reportsFormulaQueryMatchAny else Strings.reportsFormulaQueryMatchAll
-        },
-      )
-    }
-
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-      Column {
-        SectionLabel(Strings.reportsFormulaQueryConditions)
-        if (query.conditions.isNotEmpty()) {
-          Column(
-            modifier = Modifier.fillMaxWidth().background(colors.tableBackground, CardShape),
-          ) {
-            query.conditions.fastForEachIndexed { index, condition ->
-              if (index > 0) Divider()
-              ConditionRow(
-                condition = condition,
-                names = data.names,
-                onClick = { conditionIndex = index },
-              )
-            }
-          }
-        }
-      }
-      TonalButton(
-        modifier = Modifier.fillMaxWidth().testTag(Tags.AddCondition),
-        icon = MaterialIcons.Add,
-        text = Strings.reportsFormulaQueryAddCondition,
-        onClick = {
-          conditionIndex = query.conditions.size
-          onChange(query.copy(conditions = query.conditions + newQueryCondition(Payee)))
-        },
-      )
-    }
+    ConditionsEditor(
+      conditions = query.conditions,
+      conditionsOp = if (query.conditionsOp == Or) Or else And,
+      data = data,
+      onChange = { conditions, op ->
+        onChange(query.copy(conditions = conditions, conditionsOp = op))
+      },
+    )
 
     Column {
       SectionLabel(Strings.reportsFormulaQueryTimeFrame)
@@ -260,24 +213,6 @@ private fun QueryContent(
     }
 
     BottomSpacing()
-  }
-
-  val index = conditionIndex
-  val condition = index?.let(query.conditions::getOrNull)
-  if (index != null && condition != null) {
-    ConditionSheet(
-      condition = condition,
-      data = data,
-      onChange = { changed ->
-        val conditions = query.conditions.toMutableList().apply { set(index, changed) }
-        onChange(query.copy(conditions = conditions))
-      },
-      onDelete = {
-        val conditions = query.conditions.toMutableList().apply { removeAt(index) }
-        onChange(query.copy(conditions = conditions))
-      },
-      onDismiss = { conditionIndex = null },
-    )
   }
 
   if (showTimeFrame) {
@@ -289,37 +224,6 @@ private fun QueryContent(
     )
   }
 }
-
-@Composable
-private fun ConditionRow(
-  condition: Condition,
-  names: ImmutableMap<String, String>,
-  onClick: () -> Unit,
-) =
-  SettingRow(modifier = Modifier.testTag(Tags.ConditionRow), onClick = onClick) {
-    Text(
-      modifier = Modifier.width(FIELD_WIDTH),
-      text = condition.field.label().replaceFirstChar { it.titlecase() },
-      style = typography.bodyMedium,
-      color = colors.tableHeaderText,
-    )
-    Text(
-      modifier =
-        Modifier.background(colors.pillBackground, OPERATOR_SHAPE)
-          .padding(horizontal = 8.dp, vertical = 2.dp),
-      text = condition.operator.label(),
-      style = typography.bodySmall,
-      color = colors.pillText,
-    )
-    Text(
-      modifier = Modifier.weight(1f),
-      text = condition.valueLabel(names).orEmpty(),
-      style = typography.bodyMedium,
-      color = colors.tableText,
-      maxLines = 1,
-      overflow = Ellipsis,
-    )
-  }
 
 @Composable
 private fun TimeFrameRow(timeFrame: TimeFrame?, onClick: () -> Unit) =
@@ -347,10 +251,6 @@ private fun TimeFrameRow(timeFrame: TimeFrame?, onClick: () -> Unit) =
       }
     }
   }
-
-internal val CONDITION_OPS = persistentListOf(ConditionOp.And, ConditionOp.Or)
-private val FIELD_WIDTH = 72.dp
-private val OPERATOR_SHAPE = RoundedCornerShape(6.dp)
 
 @PortraitPreview
 @Composable

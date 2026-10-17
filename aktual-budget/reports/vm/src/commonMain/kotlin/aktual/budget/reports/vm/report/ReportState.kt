@@ -17,6 +17,9 @@ sealed interface ReportState {
   // So do formula cards, which switch between viewing and editing in place
   data object Formula : ReportState
 
+  // And custom reports, which have an editor
+  data object Custom : ReportState
+
   data class Loaded(val type: WidgetType, val item: DashboardItem, val data: ChartData) :
     ReportState
 }
