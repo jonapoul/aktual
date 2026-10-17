@@ -43,6 +43,7 @@ private val materialIcons =
       CalendarToday,
       CalendarViewWeek,
       Check,
+      ChevronRight,
       Clear,
       ClearAll,
       Cloud,

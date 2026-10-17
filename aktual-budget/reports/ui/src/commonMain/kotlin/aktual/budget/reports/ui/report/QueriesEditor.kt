@@ -337,7 +337,7 @@ private class QueriesEditorProvider :
   )
 
 @Suppress("MagicNumber", "StringLiteralDuplication")
-private val PREVIEW_QUERY_DATA =
+internal val PREVIEW_QUERY_DATA =
   QueryEditorData(
     accounts = persistentListOf(QueryEntity("checking", "Checking")),
     categories = persistentListOf(QueryEntity("food", "Food")),

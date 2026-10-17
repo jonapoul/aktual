@@ -33,6 +33,8 @@ internal sealed interface Action {
 
   @JvmInline value class SaveFormula(val edits: FormulaEdits) : Action
 
+  data object EditReport : Action
+
   data object CreateNewReport : Action
 
   data object OpenSearch : Action

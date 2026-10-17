@@ -5,4 +5,5 @@ internal object Tags {
   const val ResetZoom = "ResetZoom"
   const val ChartInfo = "ChartInfo"
   const val ChartInfoSheet = "ChartInfoSheet"
+  const val EditReport = "EditReport"
 }

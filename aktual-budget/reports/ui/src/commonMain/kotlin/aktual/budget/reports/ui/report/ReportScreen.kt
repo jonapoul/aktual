@@ -6,6 +6,7 @@ import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.charts.ChartInfoSheet
 import aktual.budget.reports.ui.charts.ChartZoomState
 import aktual.budget.reports.ui.charts.PREVIEW_AGE_OF_MONEY_DATA
+import aktual.budget.reports.ui.charts.PREVIEW_FORMULA_DATA
 import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.ui.charts.info
 import aktual.budget.reports.ui.charts.rememberChartZoomState
@@ -13,11 +14,13 @@ import aktual.budget.reports.ui.montecarlo.MonteCarloReportScreen
 import aktual.budget.reports.ui.string
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.CustomData
+import aktual.budget.reports.vm.FormulaData
 import aktual.budget.reports.vm.FormulaReportMeta
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.report.ReportViewModel
+import aktual.core.icons.material.Edit
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ZoomOut
@@ -35,6 +38,7 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PrimaryIconButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -51,6 +55,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -85,8 +90,10 @@ fun ReportScreen(
 
   var hasUnsavedText by rememberSaveable { mutableStateOf(false) }
   var showDiscardDialog by remember { mutableStateOf(false) }
+  var isEditing by rememberSaveable { mutableStateOf(false) }
 
   BackHandler(enabled = hasUnsavedText) { showDiscardDialog = true }
+  BackHandler(enabled = isEditing) { isEditing = false }
 
   // Only loaded for formula cards, which are the only ones with queries
   val isFormula = (state as? Loaded)?.item?.meta is FormulaReportMeta
@@ -96,14 +103,31 @@ fun ReportScreen(
   ReportScaffold(
     state = state,
     queryEditorData = queryEditorData,
+    isEditing = isEditing,
     onAction = { action ->
       @Suppress("ElseCaseInsteadOfExhaustiveWhen")
       when (action) {
-        NavBack -> if (hasUnsavedText) showDiscardDialog = true else back()
-        is SaveText -> viewModel.saveText(action.content, action.align)
-        is SetUnsavedText -> hasUnsavedText = action.hasUnsavedText
-        is SaveFormula -> viewModel.saveFormula(action.edits)
-        else -> Unit
+        NavBack -> {
+          when {
+            isEditing -> isEditing = false
+            hasUnsavedText -> showDiscardDialog = true
+            else -> back()
+          }
+        }
+        is SaveText -> {
+          viewModel.saveText(action.content, action.align)
+        }
+        is SetUnsavedText -> {
+          hasUnsavedText = action.hasUnsavedText
+        }
+        is SaveFormula -> {
+          viewModel.saveFormula(action.edits)
+          isEditing = false
+        }
+        EditReport -> {
+          isEditing = true
+        }
+        else -> {}
       }
     },
   )
@@ -144,6 +168,7 @@ internal fun ReportScaffold(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   queryEditorData: QueryEditorData? = null,
+  isEditing: Boolean = false,
 ) {
   val data = (state as? Loaded)?.data
   val zoom = rememberChartZoomState(data)
@@ -168,6 +193,7 @@ internal fun ReportScaffold(
             text =
               when {
                 data is CustomData && data.title.isNotBlank() -> data.title
+                data is FormulaData && !data.title.isNullOrBlank() -> data.title.orEmpty()
                 state is Loaded -> state.type.string()
                 else -> Strings.reportsDashboardTitle
               },
@@ -190,6 +216,16 @@ internal fun ReportScaffold(
               onClick = { showInfo = true },
             )
           }
+          if (data is FormulaData && !isEditing) {
+            PrimaryIconButton(
+              modifier = Modifier.padding(horizontal = 8.dp).testTag(Tags.EditReport),
+              imageVector = MaterialIcons.Edit,
+              contentDescription = Strings.reportsFormulaViewerEdit,
+              size = 20.dp,
+              shape = CircleShape,
+              onClick = { onAction(EditReport) },
+            )
+          }
         },
       )
     },
@@ -202,6 +238,7 @@ internal fun ReportScaffold(
         scrollState = scrollState,
         state = state,
         queryEditorData = queryEditorData,
+        isEditing = isEditing,
         zoom = zoom,
         onAction = onAction,
       )
@@ -214,6 +251,7 @@ internal fun ReportScaffold(
 private fun ReportContent(
   state: ReportState,
   queryEditorData: QueryEditorData?,
+  isEditing: Boolean,
   contentPadding: PaddingValues,
   scrollState: ScrollState,
   zoom: ChartZoomState,
@@ -221,7 +259,8 @@ private fun ReportContent(
   modifier: Modifier = Modifier,
 ) {
   val meta = (state as? Loaded)?.item?.meta as? FormulaReportMeta
-  if (state is Loaded && meta != null) {
+  val formulaData = (state as? Loaded)?.data as? FormulaData
+  if (meta != null && formulaData != null) {
     val deleteState = rememberConfirmDeleteState()
     CompositionLocalProvider(LocalConfirmDeleteState provides deleteState) {
       Column(
@@ -238,17 +277,27 @@ private fun ReportContent(
               .height(FORMULA_CARD_HEIGHT)
               .background(colors.tableBackground, CardShape)
               .padding(8.dp),
-          data = state.data,
+          data = formulaData,
           compact = false,
           onAction = onAction,
           zoom = zoom,
         )
-        FormulaEditor(
-          modifier = Modifier.padding(top = 16.dp),
-          meta = meta,
-          queryEditorData = queryEditorData,
-          onAction = onAction,
-        )
+        if (isEditing) {
+          FormulaEditor(
+            modifier = Modifier.padding(top = 16.dp),
+            meta = meta,
+            queryEditorData = queryEditorData,
+            onAction = onAction,
+          )
+        } else {
+          FormulaViewer(
+            modifier = Modifier.padding(top = 20.dp),
+            meta = meta,
+            data = formulaData,
+            queryEditorData = queryEditorData,
+            onEdit = { onAction(EditReport) },
+          )
+        }
         BottomSpacing()
       }
     }
@@ -299,6 +348,11 @@ private class ReportScaffoldProvider :
       type = AgeOfMoney,
       item = DashboardItem(id = WidgetId("preview"), x = 0, y = 0, meta = AgeOfMoneyReportMeta()),
       data = PREVIEW_AGE_OF_MONEY_DATA,
+    ),
+    ReportState.Loaded(
+      type = Formula,
+      item = DashboardItem(id = WidgetId("preview"), x = 0, y = 0, meta = PREVIEW_FORMULA_META),
+      data = PREVIEW_FORMULA_DATA,
     ),
     Loading,
     NotFound,

@@ -283,7 +283,7 @@ private fun EntitySheet(
   }
 
 @Composable
-private fun ImmutableMap<String, String>.nameOf(id: String): String =
+internal fun ImmutableMap<String, String>.nameOf(id: String): String =
   get(id) ?: Strings.reportsFormulaQueryUnknown
 
 private val NOTHING = QueryEntity(id = "", name = "")
