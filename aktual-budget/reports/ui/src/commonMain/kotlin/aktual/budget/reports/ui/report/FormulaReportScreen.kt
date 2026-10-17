@@ -105,6 +105,7 @@ import kotlinx.collections.immutable.toImmutableSet
 
 // Views a formula card, and edits it in place. Everything that differs between the two animates
 @Composable
+@Suppress("CyclomaticComplexMethod")
 internal fun FormulaReportScreen(
   id: WidgetId,
   back: BackNavigator,
