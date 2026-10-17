@@ -71,22 +71,20 @@ internal fun FormulaChart(
       data.resolveColor() ?: if (data.output is Failure) colors.errorText else colors.pageText
     val style = typography.displayLarge.copy(textAlign = Center, lineHeight = 1.em)
     Box(modifier = Modifier.weight(1f).fillMaxWidth().padding(8.dp), contentAlignment = Center) {
-      when {
-        data.fontSizeMode == Static ->
-          Text(
-            text = text.redacted(),
-            color = color,
-            style = style.copy(fontSize = data.staticFontSize.sp),
-          )
-
-        else ->
-          ScaleToFitText(
-            modifier = Modifier.fillMaxSize(),
-            text = text,
-            style = style,
-            maxLines = text.lines().size,
-            color = color,
-          )
+      if (data.fontSizeMode == Static) {
+        Text(
+          text = text.redacted(),
+          color = color,
+          style = style.copy(fontSize = data.staticFontSize.sp),
+        )
+      } else {
+        ScaleToFitText(
+          modifier = Modifier.fillMaxSize(),
+          text = text,
+          style = style,
+          maxLines = text.lines().size,
+          color = color,
+        )
       }
     }
 
@@ -171,7 +169,7 @@ private fun FormulaWarning.message(): String? =
 @Preview
 @Composable
 private fun PreviewFormulaChart(
-  @PreviewParameter(FormulaChartProvider::class) params: ColoredParams<FormulaChartParams>,
+  @PreviewParameter(FormulaChartProvider::class) params: ColoredParams<FormulaChartParams>
 ) =
   PreviewWithColoredParams(params) {
     FormulaChart(
@@ -204,7 +202,7 @@ private class FormulaChartProvider :
           warnings = listOf(UnknownQuery("Groceries")),
         ),
       )
-      .map(::FormulaChartParams),
+      .map(::FormulaChartParams)
   )
 
 private fun formulaPreview(
