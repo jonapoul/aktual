@@ -14,6 +14,7 @@ import aktual.budget.reports.ui.string
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.FormulaReportMeta
+import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.report.ReportViewModel
@@ -79,8 +80,14 @@ fun ReportScreen(
 
   BackHandler(enabled = hasUnsavedText) { showDiscardDialog = true }
 
+  // Only loaded for formula cards, which are the only ones with queries
+  val isFormula = (state as? Loaded)?.item?.meta is FormulaReportMeta
+  val queryEditorData =
+    if (isFormula) viewModel.queryEditorData.collectAsStateWithLifecycle().value else null
+
   ReportScaffold(
     state = state,
+    queryEditorData = queryEditorData,
     onAction = { action ->
       @Suppress("ElseCaseInsteadOfExhaustiveWhen")
       when (action) {
@@ -128,6 +135,7 @@ internal fun ReportScaffold(
   state: ReportState,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
+  queryEditorData: QueryEditorData? = null,
 ) {
   val data = (state as? Loaded)?.data
   val zoom = rememberChartZoomState(data)
@@ -181,6 +189,7 @@ internal fun ReportScaffold(
         ReportContent(
           modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).fillMaxWidth().weight(1f),
           state = state,
+          queryEditorData = queryEditorData,
           zoom = zoom,
           onAction = onAction,
         )
@@ -193,6 +202,7 @@ internal fun ReportScaffold(
 @Composable
 private fun ReportContent(
   state: ReportState,
+  queryEditorData: QueryEditorData?,
   zoom: ChartZoomState,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
@@ -211,12 +221,13 @@ private fun ReportContent(
     // Shown by MonteCarloReportScreen instead
     MonteCarlo -> Box(modifier = modifier)
 
-    is Loaded -> LoadedContent(state, zoom, onAction, modifier)
+    is Loaded -> LoadedContent(state, queryEditorData, zoom, onAction, modifier)
   }
 
 @Composable
 private fun LoadedContent(
   state: ReportState.Loaded,
+  queryEditorData: QueryEditorData?,
   zoom: ChartZoomState,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
@@ -246,6 +257,7 @@ private fun LoadedContent(
       FormulaEditor(
         modifier = Modifier.padding(top = 16.dp),
         meta = meta,
+        queryEditorData = queryEditorData,
         onAction = onAction,
       )
     }

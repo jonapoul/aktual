@@ -17,8 +17,10 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.window.DialogProperties
@@ -31,6 +33,8 @@ internal fun NameDialog(
   onConfirm: (String) -> Unit,
   onDismiss: () -> Unit,
   initialName: String = "",
+  capitalization: KeyboardCapitalization = Sentences,
+  isValid: NameValidator = AlwaysValid,
 ) =
   AktualAlertDialog(
     onDismissRequest = onDismiss,
@@ -43,8 +47,19 @@ internal fun NameDialog(
       state = rememberTextFieldState(initialName),
       onConfirm = onConfirm,
       onDismiss = onDismiss,
+      capitalization = capitalization,
+      isValid = isValid,
     )
   }
+
+@Immutable
+internal fun interface NameValidator {
+  operator fun invoke(value: String): Boolean
+
+  companion object {
+    val AlwaysValid = NameValidator { true }
+  }
+}
 
 @Composable
 private fun NameDialogContent(
@@ -54,9 +69,11 @@ private fun NameDialogContent(
   state: TextFieldState,
   onConfirm: (String) -> Unit,
   onDismiss: () -> Unit,
+  capitalization: KeyboardCapitalization = Sentences,
+  isValid: NameValidator = AlwaysValid,
 ) {
   val name = state.text.trim().toString()
-  val enabled = name.isNotEmpty()
+  val enabled = name.isNotEmpty() && isValid(name)
   AktualAlertDialogContent(
     title = title,
     buttons = {
@@ -75,7 +92,7 @@ private fun NameDialogContent(
         state = state,
         placeholderText = placeholder,
         singleLine = true,
-        keyboardOptions = KeyboardOptions(capitalization = Sentences, imeAction = Done),
+        keyboardOptions = KeyboardOptions(capitalization = capitalization, imeAction = Done),
         onKeyboardAction = { if (enabled) onConfirm(name) },
       )
     },
