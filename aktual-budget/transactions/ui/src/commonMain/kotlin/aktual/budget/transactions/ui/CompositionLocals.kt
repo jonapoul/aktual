@@ -1,5 +1,3 @@
-@file:Suppress("ComposeCompositionLocalUsage")
-
 package aktual.budget.transactions.ui
 
 import aktual.budget.model.TransactionsDensity

@@ -1,5 +1,3 @@
-@file:Suppress("ComposeCompositionLocalUsage")
-
 package aktual.core.ui
 
 import aktual.budget.model.Amount
