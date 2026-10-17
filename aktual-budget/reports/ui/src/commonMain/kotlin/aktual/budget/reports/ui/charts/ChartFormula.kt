@@ -2,6 +2,7 @@
 
 package aktual.budget.reports.ui.charts
 
+import aktual.budget.formula.domain.ErrorReason.InternalError
 import aktual.budget.formula.domain.ErrorValue
 import aktual.budget.formula.domain.FormulaWarning
 import aktual.budget.formula.domain.UnknownAccount
@@ -155,6 +156,7 @@ private fun ErrorValue.message(): String {
       DateOutOfRange -> Strings.reportsFormulaDateOutOfRange
       InvalidBudgetDimension -> Strings.reportsFormulaInvalidBudgetDimension(subject)
       DecimalsOutOfRange -> Strings.reportsFormulaDecimalsOutOfRange
+      InternalError -> Strings.reportsFormulaInternalError(subject)
     }
   return "${type.literal}\n$text"
 }

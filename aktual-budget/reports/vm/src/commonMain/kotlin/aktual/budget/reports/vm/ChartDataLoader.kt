@@ -15,6 +15,7 @@ import aktual.budget.db.dao.ReportsDao
 import aktual.budget.formula.domain.ArrayValue
 import aktual.budget.formula.domain.BooleanValue
 import aktual.budget.formula.domain.EmptyValue
+import aktual.budget.formula.domain.ErrorReason.InternalError
 import aktual.budget.formula.domain.ErrorValue
 import aktual.budget.formula.domain.FormulaEvaluator
 import aktual.budget.formula.domain.FormulaFormat
@@ -40,9 +41,11 @@ import aktual.prefs.FormatPreferences
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
 import kotlin.math.roundToLong
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -59,6 +62,7 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.yearMonth
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
+import logcat.logcat
 
 @Inject
 @Suppress("LargeClass")
@@ -200,7 +204,7 @@ internal class ChartDataLoader(
   // packages/desktop-client/src/components/reports/reports/FormulaCard.tsx
   fun formula(meta: FormulaReportMeta): Flow<ChartData> =
     combine(formulaDao.observeChanges(), formulaFormats()) { _, format -> format }
-      .mapLatest { format -> evaluateFormula(meta, format) }
+      .mapLatest { format -> evaluateFormulaSafely(meta, format) }
       .flowOn(contexts.default)
 
   private fun formulaFormats(): Flow<FormulaFormat> =
@@ -214,6 +218,31 @@ internal class ChartDataLoader(
       formulaFormat(
         numberFormat = NumberFormatConfig(numberFormat, hideFraction),
         currency = CurrencyConfig(currency, position, includeSpace),
+      )
+    }
+
+  // A bug in the evaluator should show on the card, not crash the app
+  @Suppress("TooGenericExceptionCaught")
+  private suspend fun evaluateFormulaSafely(
+    meta: FormulaReportMeta,
+    format: FormulaFormat,
+  ): FormulaData =
+    try {
+      evaluateFormula(meta, format)
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Throwable) {
+      logcat.e { "Failed evaluating formula ${meta.formula}: ${e.stackTraceToString()}" }
+      val cause = generateSequence(e) { it.cause }.last()
+      val subject = "${cause::class.simpleName}: ${cause.message}"
+      FormulaData(
+        title = meta.name,
+        showTitle = meta.showTitle != false,
+        output = FormulaOutput.Failure(ErrorValue(Generic, InternalError, subject)),
+        color = null,
+        fontSizeMode = meta.fontSizeMode?.takeIf { it != Unknown } ?: Dynamic,
+        staticFontSize = meta.staticFontSize?.takeIf { it > 0 } ?: DEFAULT_FONT_SIZE,
+        warnings = persistentListOf(),
       )
     }
 
