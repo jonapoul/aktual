@@ -79,6 +79,10 @@ fun ReportScreen(
     FormulaReportScreen(id = id, back = back)
     return
   }
+  if (state == Custom) {
+    CustomReportScreen(id = id, back = back)
+    return
+  }
 
   var hasUnsavedText by rememberSaveable { mutableStateOf(false) }
   var showDiscardDialog by remember { mutableStateOf(false) }
@@ -225,7 +229,8 @@ private fun ReportContent(
 
       // Shown by their own screens instead
       MonteCarlo,
-      Formula -> Box(modifier = contentModifier)
+      Formula,
+      Custom -> Box(modifier = contentModifier)
 
       is Loaded ->
         ReportChart(

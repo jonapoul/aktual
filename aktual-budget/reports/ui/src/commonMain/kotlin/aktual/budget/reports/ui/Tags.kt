@@ -24,4 +24,10 @@ internal object Tags {
   const val RenameQuery = "RenameQuery"
   const val DeleteQuery = "DeleteQuery"
   const val ConfirmDeleteQuery = "ConfirmDeleteQuery"
+  const val RevertReport = "RevertReport"
+  const val CustomSetting = "CustomSetting"
+  const val CustomOption = "CustomOption"
+  const val CustomSwitch = "CustomSwitch"
+  const val CategoryCheckbox = "CategoryCheckbox"
+  const val GroupCheckbox = "GroupCheckbox"
 }
