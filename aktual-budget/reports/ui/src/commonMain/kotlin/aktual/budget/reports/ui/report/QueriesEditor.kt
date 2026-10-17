@@ -1,10 +1,12 @@
 package aktual.budget.reports.ui.report
 
+import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.reports.ui.dashboard.NameDialog
 import aktual.budget.reports.ui.montecarlo.LabeledField
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.QueryEditorData
+import aktual.budget.reports.vm.QueryEntity
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.TimeFrameMode
 import aktual.budget.reports.vm.newQueryCondition
@@ -19,7 +21,10 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.YearMonthPicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,13 +41,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 // packages/desktop-client/src/components/formula/QueryManager.tsx
 @Composable
@@ -258,3 +271,61 @@ private fun newQuery(data: QueryEditorData) =
 private val CONDITION_OPS = persistentListOf(ConditionOp.And, ConditionOp.Or)
 
 private val TIME_FRAME_MODES = TimeFrameMode.entries.filter { it != Unknown }.toImmutableList()
+
+@Preview
+@Composable
+private fun PreviewQueriesEditor(
+  @PreviewParameter(QueriesEditorProvider::class)
+  params: ColoredParams<ImmutableMap<String, FormulaQuery>>,
+) =
+  PreviewWithColoredParams(params) {
+    QueriesEditor(
+      modifier = Modifier.padding(8.dp),
+      queries = this,
+      data = PREVIEW_QUERY_DATA,
+      onChange = {},
+    )
+  }
+
+@Suppress("MagicNumber", "StringLiteralDuplication")
+private class QueriesEditorProvider :
+  ColoredParameterProvider<ImmutableMap<String, FormulaQuery>>(
+    persistentMapOf(),
+    persistentMapOf(
+      "groceries" to
+        FormulaQuery(
+          conditions =
+            listOf(
+              Condition(Category, OneOf, JsonArray(listOf(JsonPrimitive("food")))),
+              Condition(Amount, LessThan, JsonPrimitive(-1000)),
+              Condition(Date, Is, buildJsonObject { put("frequency", "monthly") }),
+            ),
+          conditionsOp = And,
+          timeFrame = TimeFrame(YearMonth(2025, 1), YearMonth(2025, 6), Static),
+        ),
+      "income" to
+        FormulaQuery(
+          conditions = listOf(Condition(Payee, Is, JsonPrimitive("employer"))),
+          conditionsOp = Or,
+          timeFrame = null,
+        ),
+    ),
+  )
+
+@Suppress("MagicNumber", "StringLiteralDuplication")
+private val PREVIEW_QUERY_DATA =
+  QueryEditorData(
+    accounts = persistentListOf(QueryEntity("checking", "Checking")),
+    categories = persistentListOf(QueryEntity("food", "Food")),
+    categoryGroups = persistentListOf(QueryEntity("bills", "Bills")),
+    payees = persistentListOf(QueryEntity("employer", "Employer")),
+    currentMonth = YearMonth(2025, 6),
+    months = YearMonthRange(YearMonth(2024, 1), YearMonth(2025, 6)),
+    names =
+      persistentMapOf(
+        "checking" to "Checking",
+        "food" to "Food",
+        "bills" to "Bills",
+        "employer" to "Employer",
+      ),
+  )
