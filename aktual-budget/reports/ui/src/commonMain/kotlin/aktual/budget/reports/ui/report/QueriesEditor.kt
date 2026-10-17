@@ -65,15 +65,18 @@ internal fun QueriesEditor(
   modifier: Modifier = Modifier,
 ) {
   var showAddDialog by remember { mutableStateOf(false) }
+  val addedNames = remember { mutableSetOf<String>() }
 
   LabeledField(
     modifier = modifier,
     label = Strings.reportsFormulaQueries,
     help = Strings.reportsFormulaQueriesHelp,
   ) {
-    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    // Each item holds its own spacing, so a removed one takes its gap with it as it shrinks
+    Column(modifier = Modifier.fillMaxWidth()) {
       if (queries.isEmpty()) {
         Text(
+          modifier = Modifier.padding(bottom = 8.dp),
           text = Strings.reportsFormulaQueriesEmpty,
           style = typography.bodyMedium,
           color = colors.pageTextSubdued,
@@ -82,15 +85,21 @@ internal fun QueriesEditor(
 
       queries.forEach { (name, query) ->
         key(name) {
-          QueryCard(
-            name = name,
-            query = query,
-            data = data,
-            isNameFree = { it !in queries },
-            onChange = { onChange((queries + (name to it)).toImmutableMap()) },
-            onRename = { newName -> onChange(queries.renamed(name, newName)) },
-            onDelete = { onChange((queries - name).toImmutableMap()) },
-          )
+          RemovableItem(
+            isNew = name in addedNames,
+            onRemove = { onChange((queries - name).toImmutableMap()) },
+          ) { remove ->
+            QueryCard(
+              modifier = Modifier.padding(bottom = 8.dp),
+              name = name,
+              query = query,
+              data = data,
+              isNameFree = { it !in queries },
+              onChange = { onChange((queries + (name to it)).toImmutableMap()) },
+              onRename = { newName -> onChange(queries.renamed(name, newName)) },
+              onDelete = remove,
+            )
+          }
         }
       }
 
@@ -112,6 +121,7 @@ internal fun QueriesEditor(
       onDismiss = { showAddDialog = false },
       onConfirm = { name ->
         showAddDialog = false
+        addedNames += name
         onChange((queries + (name to newQuery(data))).toImmutableMap())
       },
     )
@@ -127,11 +137,13 @@ private fun QueryCard(
   onChange: (FormulaQuery) -> Unit,
   onRename: (String) -> Unit,
   onDelete: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   var showRenameDialog by remember { mutableStateOf(false) }
+  val conditionKeys = remember { ItemKeys(query.conditions.size) }
 
   Column(
-    modifier = Modifier.fillMaxWidth().background(colors.tableBackground, CardShape).padding(12.dp),
+    modifier = modifier.fillMaxWidth().background(colors.tableBackground, CardShape).padding(12.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     Row(verticalAlignment = CenterVertically) {
@@ -147,36 +159,50 @@ private fun QueryCard(
       )
     }
 
-    AktualSlidingToggleButton(
-      modifier = Modifier.fillMaxWidth(),
-      selected = if (query.conditionsOp == Or) Or else And,
-      options = CONDITION_OPS,
-      onSelect = { op -> onChange(query.copy(conditionsOp = op)) },
-      string = { op ->
-        if (op == Or) Strings.reportsFormulaQueryMatchAny else Strings.reportsFormulaQueryMatchAll
-      },
-    )
-
-    query.conditions.fastForEachIndexed { index, condition ->
-      QueryConditionEditor(
-        condition = condition,
-        data = data,
-        onChange = { changed ->
-          val conditions = query.conditions.toMutableList().apply { set(index, changed) }
-          onChange(query.copy(conditions = conditions))
+    Column {
+      AktualSlidingToggleButton(
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        selected = if (query.conditionsOp == Or) Or else And,
+        options = CONDITION_OPS,
+        onSelect = { op -> onChange(query.copy(conditionsOp = op)) },
+        string = { op ->
+          if (op == Or) Strings.reportsFormulaQueryMatchAny else Strings.reportsFormulaQueryMatchAll
         },
-        onDelete = {
-          val conditions = query.conditions.toMutableList().apply { removeAt(index) }
-          onChange(query.copy(conditions = conditions))
+      )
+
+      query.conditions.fastForEachIndexed { index, condition ->
+        key(conditionKeys[index]) {
+          RemovableItem(
+            isNew = conditionKeys.isNew(index),
+            onRemove = {
+              conditionKeys.removed(index)
+              val conditions = query.conditions.toMutableList().apply { removeAt(index) }
+              onChange(query.copy(conditions = conditions))
+            },
+          ) { remove ->
+            QueryConditionEditor(
+              modifier = Modifier.padding(bottom = 8.dp),
+              condition = condition,
+              data = data,
+              onChange = { changed ->
+                val conditions = query.conditions.toMutableList().apply { set(index, changed) }
+                onChange(query.copy(conditions = conditions))
+              },
+              onDelete = remove,
+            )
+          }
+        }
+      }
+
+      NormalTextButton(
+        modifier = Modifier.fillMaxWidth(),
+        text = Strings.reportsFormulaQueryAddCondition,
+        onClick = {
+          conditionKeys.added()
+          onChange(query.copy(conditions = query.conditions + newQueryCondition(Payee)))
         },
       )
     }
-
-    NormalTextButton(
-      modifier = Modifier.fillMaxWidth(),
-      text = Strings.reportsFormulaQueryAddCondition,
-      onClick = { onChange(query.copy(conditions = query.conditions + newQueryCondition(Payee))) },
-    )
 
     TimeFrameEditor(
       timeFrame = query.timeFrame,
