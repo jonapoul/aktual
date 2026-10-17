@@ -67,7 +67,19 @@ fun List<Condition>.selectedCategories(all: List<CategoryId>): ImmutableSet<Cate
     OneOf -> all.filter { it in ids }
     IsNot,
     NotOneOf -> all.filter { it !in ids }
-    else -> all
+    Contains,
+    DoesNotContain,
+    GreaterThan,
+    GreaterThanOrEquals,
+    HasAnyTag,
+    HasTags,
+    IsApprox,
+    IsBetween,
+    LessThan,
+    LessThanOrEquals,
+    Matches,
+    OffBudget,
+    OnBudget -> all
   }.toImmutableSet()
 }
 
