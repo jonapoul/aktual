@@ -169,7 +169,7 @@ private fun FormulaWarning.message(): String? =
 @Preview
 @Composable
 private fun PreviewFormulaChart(
-  @PreviewParameter(FormulaChartProvider::class) params: ColoredParams<FormulaChartParams>
+  @PreviewParameter(FormulaChartProvider::class) params: ColoredParams<FormulaChartParams>,
 ) =
   PreviewWithColoredParams(params) {
     FormulaChart(
@@ -202,7 +202,7 @@ private class FormulaChartProvider :
           warnings = listOf(UnknownQuery("Groceries")),
         ),
       )
-      .map(::FormulaChartParams)
+      .map(::FormulaChartParams),
   )
 
 private fun formulaPreview(
