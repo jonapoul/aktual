@@ -1,25 +1,30 @@
 package aktual.budget.reports.ui.report
 
 import aktual.budget.model.Condition
+import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.charts.PREVIEW_FORMULA_DATA
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.FormulaReportMeta
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
+import aktual.budget.reports.vm.report.FormulaReportState
+import aktual.budget.reports.vm.toEdits
 import aktual.core.theme.DarkColors
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.ui.test.ComposeUiTest
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import assertk.assertThat
-import assertk.assertions.isEqualTo
+import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import kotlin.test.Test
 import kotlinx.datetime.YearMonth
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 
-class FormulaViewerTest {
+class FormulaReportViewingTest {
   @Test
   fun `Empty card shows defaults`() = runComposeUiTest {
     // when
@@ -91,29 +96,51 @@ class FormulaViewerTest {
   }
 
   @Test
-  fun `Tapping a row opens the editor`() = runComposeUiTest {
+  fun `Rows don't open editors while viewing`() = runComposeUiTest {
     // given
-    var edits = 0
-    setViewer(FormulaReportMeta(formula = "=1"), onEdit = { edits++ })
+    val actions = mutableListOf<FormulaReportAction>()
+    setViewer(FormulaReportMeta(formula = "=1"), onAction = { actions += it })
 
     // when
     onNodeWithText("=1").performClick()
+    onNodeWithText("Font size").performClick()
+    onNodeWithTag(Tags.ShowTitle).performClick()
 
     // then
-    assertThat(edits).isEqualTo(1)
+    assertThat(actions).isEmpty()
+    onNodeWithText("Name").assertDoesNotExist()
+  }
+
+  @Test
+  fun `Edit button starts editing`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<FormulaReportAction>()
+    setViewer(FormulaReportMeta(), onAction = { actions += it })
+    onNodeWithTag(Tags.SaveReport).assertDoesNotExist()
+
+    // when
+    onNodeWithTag(Tags.EditReport).performClick()
+
+    // then
+    assertThat(actions).containsExactly(FormulaReportAction.StartEditing)
   }
 
   private fun ComposeUiTest.setViewer(
     meta: FormulaReportMeta,
     data: QueryEditorData? = PREVIEW_QUERY_DATA,
-    onEdit: () -> Unit = {},
+    onAction: (FormulaReportAction) -> Unit = {},
   ) = setContent {
     PreviewWithColors(DarkColors) {
-      FormulaViewer(
-        meta = meta,
-        data = PREVIEW_FORMULA_DATA,
+      FormulaReportScaffold(
+        state =
+          FormulaReportState.Loaded(
+            draft = meta.toEdits(),
+            preview = PREVIEW_FORMULA_DATA,
+            isEditing = false,
+            hasChanges = false,
+          ),
         queryEditorData = data,
-        onEdit = onEdit,
+        onAction = onAction,
       )
     }
   }

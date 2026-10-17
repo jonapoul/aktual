@@ -2,7 +2,7 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.charts.PREVIEW_FORMULA_DATA
-import aktual.budget.reports.vm.report.EditFormulaReportState
+import aktual.budget.reports.vm.report.FormulaReportState
 import aktual.budget.reports.vm.toEdits
 import aktual.core.theme.DarkColors
 import aktual.core.ui.PreviewWithColors
@@ -17,13 +17,13 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isFalse
 import kotlin.test.Test
 
-class EditFormulaReportScaffoldTest {
+class FormulaReportScaffoldTest {
   @Test
   fun `Save is disabled without changes`() = runComposeUiTest {
     // when
     setContent {
       PreviewWithColors(DarkColors) {
-        EditFormulaReportScaffold(state = state(hasChanges = false), onAction = {})
+        FormulaReportScaffold(state = state(hasChanges = false), onAction = {})
       }
     }
 
@@ -32,12 +32,12 @@ class EditFormulaReportScaffoldTest {
   }
 
   @Test
-  fun `Save and close send their actions`() = runComposeUiTest {
+  fun `Save and close send their actions while editing`() = runComposeUiTest {
     // given
-    val actions = mutableListOf<EditFormulaAction>()
+    val actions = mutableListOf<FormulaReportAction>()
     setContent {
       PreviewWithColors(DarkColors) {
-        EditFormulaReportScaffold(state = state(hasChanges = true), onAction = { actions += it })
+        FormulaReportScaffold(state = state(hasChanges = true), onAction = { actions += it })
       }
     }
 
@@ -46,16 +46,16 @@ class EditFormulaReportScaffoldTest {
     onNodeWithTag(Tags.CloseEditor).performClick()
 
     // then
-    assertThat(actions).containsExactly(EditFormulaAction.Save, EditFormulaAction.Close)
+    assertThat(actions).containsExactly(FormulaReportAction.Save, FormulaReportAction.StopEditing)
   }
 
   @Test
   fun `Tapping show title turns it off`() = runComposeUiTest {
     // given
-    val actions = mutableListOf<EditFormulaAction>()
+    val actions = mutableListOf<FormulaReportAction>()
     setContent {
       PreviewWithColors(DarkColors) {
-        EditFormulaReportScaffold(state = state(hasChanges = false), onAction = { actions += it })
+        FormulaReportScaffold(state = state(hasChanges = false), onAction = { actions += it })
       }
     }
 
@@ -63,17 +63,17 @@ class EditFormulaReportScaffoldTest {
     onNodeWithTag(Tags.ShowTitle).performClick()
 
     // then
-    val edit = actions.single() as EditFormulaAction.Edit
+    val edit = actions.single() as FormulaReportAction.Edit
     assertThat(edit.transform(DRAFT).showTitle).isFalse()
   }
 
   @Test
   fun `Setting rows open their editors`() = runComposeUiTest {
     // given
-    val actions = mutableListOf<EditFormulaAction>()
+    val actions = mutableListOf<FormulaReportAction>()
     setContent {
       PreviewWithColors(DarkColors) {
-        EditFormulaReportScaffold(state = state(hasChanges = false), onAction = { actions += it })
+        FormulaReportScaffold(state = state(hasChanges = false), onAction = { actions += it })
       }
     }
 
@@ -86,17 +86,33 @@ class EditFormulaReportScaffoldTest {
     // then
     assertThat(actions)
       .containsExactly(
-        EditFormulaAction.EditName,
-        EditFormulaAction.EditFormula,
-        EditFormulaAction.EditColorRule,
-        EditFormulaAction.EditFontSize,
+        FormulaReportAction.EditName,
+        FormulaReportAction.EditFormula,
+        FormulaReportAction.EditColorRule,
+        FormulaReportAction.EditFontSize,
       )
   }
 
+  @Test
+  fun `Editing shows the name row and query counts`() = runComposeUiTest {
+    // when
+    setContent {
+      PreviewWithColors(DarkColors) {
+        FormulaReportScaffold(state = state(hasChanges = false), onAction = {})
+      }
+    }
+
+    // then
+    onNodeWithText("Name").assertExists()
+    onNodeWithText("3 conditions").assertExists()
+    onNodeWithTag(Tags.EditReport).assertDoesNotExist()
+  }
+
   private fun state(hasChanges: Boolean) =
-    EditFormulaReportState.Loaded(
+    FormulaReportState.Loaded(
       draft = DRAFT,
       preview = PREVIEW_FORMULA_DATA,
+      isEditing = true,
       hasChanges = hasChanges,
     )
 

@@ -7,6 +7,8 @@ import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.FormulaData
 import aktual.budget.reports.vm.FormulaEdits
 import aktual.budget.reports.vm.FormulaReportMeta
+import aktual.budget.reports.vm.QueryEditorData
+import aktual.budget.reports.vm.QueryEditorDataLoader
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.toEdits
 import aktual.budget.reports.vm.withEdits
@@ -23,10 +25,10 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -35,16 +37,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
-// Holds a formula card's settings as a draft, which only reaches the card when saved
+// Shows a formula card, and edits its settings as a draft which only reaches the card when saved
 @Stable
 @AssistedInject
 @OptIn(ExperimentalCoroutinesApi::class)
-class EditFormulaReportViewModel
+class FormulaReportViewModel
 internal constructor(
   @Assisted private val id: WidgetId,
   dashboardDao: DashboardDao,
   decoder: DashboardItemDecoder,
   chartDataLoader: ChartDataLoader,
+  queryEditorDataLoader: QueryEditorDataLoader,
   private val sync: DashboardSync,
   private val budgetScope: BudgetCoroutineScope,
 ) : ViewModel() {
@@ -57,7 +60,9 @@ internal constructor(
       }
       .stateIn(viewModelScope, Eagerly, Loading)
 
-  // Taken from the saved meta once, and only changed by the user from then on
+  private val isEditing = MutableStateFlow(false)
+
+  // Follows the saved card while viewing, and only changes with the user's edits while editing
   private val draft = MutableStateFlow<FormulaEdits?>(null)
 
   private val preview: StateFlow<FormulaData?> =
@@ -70,45 +75,66 @@ internal constructor(
       }
       .stateIn(viewModelScope, Eagerly, initialValue = null)
 
-  val state: StateFlow<EditFormulaReportState> =
-    combine(saved, draft, preview) { saved, draft, preview ->
+  val state: StateFlow<FormulaReportState> =
+    combine(saved, draft, preview, isEditing) { saved, draft, preview, isEditing ->
         when (saved) {
-          Loading -> EditFormulaReportState.Loading
-          NotFound -> EditFormulaReportState.NotFound
+          Loading -> FormulaReportState.Loading
+          NotFound -> FormulaReportState.NotFound
           is Found ->
             if (draft == null) {
-              EditFormulaReportState.Loading
+              FormulaReportState.Loading
             } else {
-              EditFormulaReportState.Loaded(
+              FormulaReportState.Loaded(
                 draft = draft,
                 preview = preview,
-                hasChanges = draft != saved.meta.toEdits(),
+                isEditing = isEditing,
+                hasChanges = isEditing && draft != saved.meta.toEdits(),
               )
             }
         }
       }
       .stateIn(viewModelScope, Eagerly, Loading)
 
+  // Null until loaded, and only loaded while something shows query conditions
+  val queryEditorData: StateFlow<QueryEditorData?> =
+    queryEditorDataLoader
+      .load()
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
+
   init {
     viewModelScope.launch {
-      val found = saved.first { it != Loading } as? SavedMeta.Found ?: return@launch
-      draft.update { found.meta.toEdits() }
+      saved.collect { saved ->
+        if (saved is Found && !isEditing.value) draft.update { saved.meta.toEdits() }
+      }
     }
   }
 
-  // Applied to the draft as it is now, so edits made in quick succession don't overwrite each other
-  fun edit(transform: (FormulaEdits) -> FormulaEdits) = draft.update { it?.let(transform) }
+  fun startEditing() = isEditing.update { true }
 
-  // Run in the budget's scope, so the write finishes after the editor closes
+  // Applied to the draft as it is now, so edits made in quick succession don't overwrite each other
+  fun edit(transform: (FormulaEdits) -> FormulaEdits) {
+    if (isEditing.value) draft.update { it?.let(transform) }
+  }
+
+  // Run in the budget's scope, so the write finishes even if the screen closes straight after. The
+  // draft keeps the saved values until the card's update comes back
   fun save() {
     val edits = draft.value ?: return
     logcat.d { "Saving formula for $id" }
+    isEditing.update { false }
     budgetScope.launch { sync.setFormula(id, edits) }
+  }
+
+  fun discard() {
+    isEditing.update { false }
+    val meta = (saved.value as? Found)?.meta ?: return
+    draft.update { meta.toEdits() }
   }
 
   // Read straight from the draft, since the state can lag behind an edit made just before leaving
   fun hasUnsavedChanges(): Boolean {
-    val meta = (saved.value as? SavedMeta.Found)?.meta ?: return false
+    if (!isEditing.value) return false
+    val meta = (saved.value as? Found)?.meta ?: return false
     val edits = draft.value ?: return false
     return edits != meta.toEdits()
   }
@@ -117,7 +143,7 @@ internal constructor(
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)
   interface Factory : ManualViewModelAssistedFactory {
-    fun create(id: WidgetId): EditFormulaReportViewModel
+    fun create(id: WidgetId): FormulaReportViewModel
   }
 
   private sealed interface SavedMeta {
@@ -126,5 +152,9 @@ internal constructor(
     data object NotFound : SavedMeta
 
     data class Found(val meta: FormulaReportMeta) : SavedMeta
+  }
+
+  private companion object {
+    const val STOP_TIMEOUT_MS = 5_000L
   }
 }

@@ -54,8 +54,6 @@ data class CreateTransactionNavRoute(
 
 @Serializable data class ReportNavRoute(val id: WidgetId) : BudgetNavKey.Reports
 
-@Serializable data class EditFormulaReportNavRoute(val id: WidgetId) : BudgetNavKey.Reports
-
 @Serializable data class CreateReportNavRoute(val page: DashboardPageId) : BudgetNavKey.Reports
 
 @Serializable data object SearchReportsNavRoute : BudgetNavKey.Reports

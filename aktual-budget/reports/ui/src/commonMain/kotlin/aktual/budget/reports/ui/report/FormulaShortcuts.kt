@@ -115,11 +115,7 @@ private fun ShortcutChip(
     Text(
       text = text,
       style = typography.labelMedium.copy(fontFamily = Monospace),
-      color =
-        when {
-          tint != null -> tint
-          else -> colors.tableText
-        },
+      color = tint ?: colors.tableText,
     )
   }
 }

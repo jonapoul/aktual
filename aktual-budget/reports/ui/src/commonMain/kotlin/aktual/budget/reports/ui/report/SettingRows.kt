@@ -7,6 +7,13 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,22 +39,26 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 
-// Rows shared by the formula card's viewer and editor
+// Rows of the formula card's settings
 
 @Composable
 internal fun Section(label: String, content: @Composable ColumnScope.() -> Unit) = Column {
-  Text(
-    modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 8.dp),
-    text = label.uppercase(),
-    style = typography.labelMedium.copy(fontWeight = SemiBold, letterSpacing = 0.08.em),
-    color = colors.tableHeaderText,
-  )
+  AnimatedContent(targetState = label, transitionSpec = { fadeIn() togetherWith fadeOut() }) { text
+    ->
+    Text(
+      modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 8.dp),
+      text = text.uppercase(),
+      style = typography.labelMedium.copy(fontWeight = SemiBold, letterSpacing = 0.08.em),
+      color = colors.tableHeaderText,
+    )
+  }
   Column(
     modifier = Modifier.fillMaxWidth().clip(CardShape).background(colors.tableBackground),
     content = content,
   )
 }
 
+// The chevron slides in and out with [showChevron], so rows can change between viewing and editing
 @Composable
 internal fun SettingRow(
   onClick: (() -> Unit)?,
@@ -64,18 +75,24 @@ internal fun SettingRow(
         .then(if (onClick == null) Modifier else Modifier.clickable(onClick = onClick))
         .padding(start = 16.dp, end = 12.dp, top = 10.dp, bottom = 10.dp),
     verticalAlignment = verticalAlignment,
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
   ) {
-    content()
-    if (showChevron) {
+    Row(
+      modifier = Modifier.weight(1f),
+      verticalAlignment = verticalAlignment,
+      horizontalArrangement = Arrangement.spacedBy(12.dp),
+      content = content,
+    )
+    AnimatedVisibility(
+      visible = showChevron,
+      enter = fadeIn() + expandHorizontally(),
+      exit = fadeOut() + shrinkHorizontally(),
+    ) {
       Icon(
-        modifier = Modifier.size(CHEVRON_SIZE),
+        modifier = Modifier.padding(start = 12.dp).size(CHEVRON_SIZE),
         imageVector = MaterialIcons.ChevronRight,
         contentDescription = null,
         tint = colors.tableHeaderText,
       )
-    } else if (onClick == null) {
-      Box(modifier = Modifier.size(CHEVRON_SIZE))
     }
   }
 
