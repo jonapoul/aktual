@@ -60,7 +60,7 @@ internal object FormulaLexer {
       TokenType.LeftParen to Regex("""\("""),
       TokenType.RightParen to Regex("""\)"""),
       TokenType.LeftBrace to Regex("""\{"""),
-      TokenType.RightBrace to Regex("""\}"""),
+      TokenType.RightBrace to Regex("}"),
       TokenType.Procedure to Regex("""[$LETTER][$NON_RESERVED]*\("""),
       TokenType.Colon to Regex(":"),
       TokenType.Number to Regex("""((\.\d+)|(\d+(\.\d*)?))(e[+-]?\d+)?"""),

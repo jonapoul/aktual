@@ -22,7 +22,7 @@ private val DATE_FORMAT =
         "dd|DD|d|D|mm|MM|m|M|YYYY|YY|yyyy|yy|HH|hh|H|h",
         """ss(\.(0+|s+))?|s""",
         "AM/PM|am/pm|A/P|a/p",
-        """\[mm\]|\[MM\]|\[hh\]|\[HH\]""",
+        """\[mm]|\[MM]|\[hh]|\[HH]""",
       )
       .joinToString(separator = "|", prefix = "(", postfix = ")"),
   )
