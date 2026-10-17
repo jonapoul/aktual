@@ -13,6 +13,8 @@ import aktual.budget.model.WidgetType
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import dev.zacsweers.metro.Inject
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -63,6 +65,7 @@ internal class DashboardSync(
       "fontSizeMode" to DbJson.encodeToJsonElement(FontSizeMode.serializer(), edits.fontSizeMode),
       "staticFontSize" to JsonPrimitive(edits.staticFontSize),
       "showTitle" to JsonPrimitive(edits.showTitle),
+      "queries" to DbJson.encodeToJsonElement(QUERIES_SERIALIZER, edits.queries),
     )
 
   // Writes the plan's settings over the stored meta, like upstream's save. Nulls are written out,
@@ -116,6 +119,8 @@ internal class DashboardSync(
     WidgetType.serializer().descriptor.getElementName(ordinal)
 
   private companion object {
+    val QUERIES_SERIALIZER = MapSerializer(String.serializer(), FormulaQuery.serializer())
+
     val ExplicitNullsJson = Json {
       encodeDefaults = true
       explicitNulls = true

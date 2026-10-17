@@ -21,4 +21,9 @@ class CategoryGroupDao(database: BudgetDatabase) {
   suspend fun getAllActive(): List<GetAllActive> = queries.withResult {
     getAllActive().awaitAsList()
   }
+
+  // Hidden groups included
+  suspend fun nameMap(): Map<CategoryGroupId, String?> = queries.withResult {
+    getAllNames().awaitAsList().associate { it.id to it.name }
+  }
 }

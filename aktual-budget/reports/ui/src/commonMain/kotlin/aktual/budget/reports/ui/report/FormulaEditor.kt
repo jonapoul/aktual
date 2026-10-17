@@ -8,6 +8,7 @@ import aktual.budget.reports.ui.montecarlo.NumberField
 import aktual.budget.reports.vm.FontSizeMode
 import aktual.budget.reports.vm.FormulaEdits
 import aktual.budget.reports.vm.FormulaReportMeta
+import aktual.budget.reports.vm.QueryEditorData
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
@@ -27,10 +28,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableMap
 
 @Composable
 internal fun FormulaEditor(
   meta: FormulaReportMeta,
+  queryEditorData: QueryEditorData?,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
@@ -39,6 +42,7 @@ internal fun FormulaEditor(
   var mode by remember { mutableStateOf(meta.fontSizeMode.orDynamic()) }
   var size by remember { mutableDoubleStateOf(meta.staticFontSize ?: DEFAULT_STATIC_SIZE) }
   var showTitle by remember { mutableStateOf(meta.showTitle != false) }
+  var queries by remember { mutableStateOf(meta.queries.toImmutableMap()) }
 
   Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
     LabeledField(label = Strings.reportsFormulaEditorFormula) {
@@ -92,6 +96,10 @@ internal fun FormulaEditor(
       onCheckedChange = { showTitle = it },
     )
 
+    if (queryEditorData != null) {
+      QueriesEditor(queries = queries, data = queryEditorData, onChange = { queries = it })
+    }
+
     TextButton(
       modifier = Modifier.fillMaxWidth(),
       onClick = {
@@ -103,6 +111,7 @@ internal fun FormulaEditor(
               fontSizeMode = mode,
               staticFontSize = size,
               showTitle = showTitle,
+              queries = queries,
             ),
           ),
         )

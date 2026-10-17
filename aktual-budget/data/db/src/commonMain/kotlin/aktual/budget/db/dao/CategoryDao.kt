@@ -55,4 +55,9 @@ class CategoryDao(database: BudgetDatabase) {
   suspend fun getAllActiveGrouped(): List<GetAllActiveGrouped> = queries.withResult {
     getAllActiveGrouped().awaitAsList()
   }
+
+  // Hidden categories included
+  suspend fun nameMap(): Map<CategoryId, String?> = queries.withResult {
+    getAllNames().awaitAsList().associate { it.id to it.name }
+  }
 }

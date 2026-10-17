@@ -22,6 +22,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import kotlin.test.Test
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
@@ -106,6 +107,7 @@ class DashboardSyncTest {
         fontSizeMode = Static,
         staticFontSize = 40.0,
         showTitle = false,
+        queries = persistentMapOf("spent" to FormulaQuery(emptyList(), And, timeFrame = null)),
       ),
     )
 
@@ -115,7 +117,7 @@ class DashboardSyncTest {
         json(
           """{"name":"Card","formula":"=2","queries":{},"extra":1,""" +
             """"colorFormula":"=\"red\"","fontSizeMode":"static","staticFontSize":40.0,""" +
-            """"showTitle":false}""",
+            """"showTitle":false,"queries":{"spent":{"conditions":[],"conditionsOp":"and"}}}""",
         ),
       )
   }

@@ -2,6 +2,8 @@
 # https://mrmans0n.github.io/compose-rules/detekt/
 # This is a separate file because build-logic doesn't known about the compose plugin and fails parsing the config file
 Compose:
+  ComposeCompositionLocalUsage:
+    active: false
   CompositionLocalAllowlist:
     active: false
   ComposableNestingDepth:
