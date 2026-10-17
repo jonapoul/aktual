@@ -106,7 +106,7 @@ private fun FormulaOutput.displayString(): String =
 
 // A theme_* placeholder or a CSS colour. Anything else is ignored, like upstream's invalid colours
 @Composable
-private fun FormulaData.resolveColor(): Color? {
+internal fun FormulaData.resolveColor(): Color? {
   val value = color ?: return null
   val theme = colors
   return remember(value, theme) {

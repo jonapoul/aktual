@@ -96,7 +96,8 @@ fun ReportsDashboardScreen(
         // Text and formulas are only edited from the report screen
         is SaveText,
         is SaveFormula,
-        is SetUnsavedText -> Unit
+        is SetUnsavedText,
+        EditReport -> Unit
         CreateNewReport -> viewModel.createReport()
         OpenSearch -> toSearch()
         is SelectPage -> viewModel.selectPage(action.id)

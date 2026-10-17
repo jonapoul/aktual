@@ -31,4 +31,5 @@
   <string name="settings_theme_inspect_search_prompt">Enter some text to search property names and colors</string>
   <string name="reports_custom_uncategorised">Uncategorized</string>
   <string name="reports_custom_uncategorised_and_off_budget">Uncategorized &amp; Off budget</string>
+  <string name="reports_formula_viewer_color_rule">Color rule</string>
 </resources>

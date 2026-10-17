@@ -285,4 +285,14 @@
   <string name="reports_formula_query_time_frame">Time frame</string>
   <string name="reports_formula_query_start">Start</string>
   <string name="reports_formula_query_end">End</string>
+  <string name="reports_formula_viewer_edit">Edit report</string>
+  <string name="reports_formula_viewer_appearance">Appearance</string>
+  <string name="reports_formula_viewer_color_rule">Color rule</string>
+  <string name="reports_formula_viewer_not_set">Not set</string>
+  <string name="reports_formula_viewer_static_size">Static · %1$s</string>
+  <string name="reports_formula_viewer_on">On</string>
+  <string name="reports_formula_viewer_off">Off</string>
+  <string name="reports_formula_viewer_queries">Queries · %1$d</string>
+  <string name="reports_formula_viewer_no_conditions">No conditions</string>
+  <string name="reports_formula_viewer_more_conditions">+%1$d</string>
 </resources>
