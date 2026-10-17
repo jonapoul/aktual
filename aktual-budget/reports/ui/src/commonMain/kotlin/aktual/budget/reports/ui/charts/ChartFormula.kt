@@ -45,9 +45,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.toImmutableList
 
-private val ERROR_MAX_FONT_SIZE = 28.sp
-private val DEFAULT_MAX_FONT_SIZE = 100.sp
-
 // packages/desktop-client/src/components/reports/FormulaResult.tsx
 @Composable
 internal fun FormulaChart(
@@ -74,23 +71,22 @@ internal fun FormulaChart(
       data.resolveColor() ?: if (data.output is Failure) colors.errorText else colors.pageText
     val style = typography.displayLarge.copy(textAlign = Center, lineHeight = 1.em)
     Box(modifier = Modifier.weight(1f).fillMaxWidth().padding(8.dp), contentAlignment = Center) {
-      // Error messages are long, so they wrap and shrink to fit whatever the font settings say
-      if (data.output is Failure || data.fontSizeMode != Static) {
-        val isFailure = data.output is Failure
-        ScaleToFitText(
-          modifier = Modifier.fillMaxSize(),
-          text = text,
-          style = style,
-          maxLines = if (isFailure) MAX_VALUE else text.lines().size,
-          color = color,
-          maxTextSize = if (isFailure) ERROR_MAX_FONT_SIZE else DEFAULT_MAX_FONT_SIZE,
-        )
-      } else {
-        Text(
-          text = text.redacted(),
-          color = color,
-          style = style.copy(fontSize = data.staticFontSize.sp),
-        )
+      when {
+        data.fontSizeMode == Static ->
+          Text(
+            text = text.redacted(),
+            color = color,
+            style = style.copy(fontSize = data.staticFontSize.sp),
+          )
+
+        else ->
+          ScaleToFitText(
+            modifier = Modifier.fillMaxSize(),
+            text = text,
+            style = style,
+            maxLines = text.lines().size,
+            color = color,
+          )
       }
     }
 
