@@ -287,7 +287,8 @@ private fun Condition.summary(names: ImmutableMap<String, String>): String {
       NoValue -> null
       null -> value.toString()
     }
-  return listOfNotNull(field.label(), operator.label(), value).joinToString(" ")
+  val field = field.label().replaceFirstChar { it.titlecase() }
+  return listOfNotNull(field, operator.label(), value).joinToString(" ")
 }
 
 // A query with no time frame isn't filtered by date, so it shows as all time
