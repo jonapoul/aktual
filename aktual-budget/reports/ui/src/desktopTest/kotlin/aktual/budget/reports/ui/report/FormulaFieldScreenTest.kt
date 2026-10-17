@@ -5,8 +5,7 @@ import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.charts.PREVIEW_FORMULA_DATA
 import aktual.budget.reports.vm.FormulaData
 import aktual.budget.reports.vm.FormulaOutput
-import aktual.core.theme.DarkColors
-import aktual.core.ui.PreviewWithColors
+import aktual.test.setPreviewContent
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -84,8 +83,8 @@ class FormulaFieldScreenTest {
     assertThat(changes.last()).isEqualTo("=SUM(\"groceries\")")
   }
 
-  private fun ComposeUiTest.setScreen(preview: FormulaData = PREVIEW_FORMULA_DATA) = setContent {
-    PreviewWithColors(DarkColors) {
+  private fun ComposeUiTest.setScreen(preview: FormulaData = PREVIEW_FORMULA_DATA) =
+    setPreviewContent {
       FormulaFieldScreen(
         field = Formula,
         initialText = INITIAL,
@@ -95,7 +94,6 @@ class FormulaFieldScreenTest {
         onClose = { closed = true },
       )
     }
-  }
 
   private companion object {
     const val INITIAL = "=SUM(1, 2)"

@@ -1,8 +1,7 @@
 package aktual.budget.budgeting.ui
 
 import aktual.budget.model.CategoryId
-import aktual.core.theme.DarkColors
-import aktual.core.ui.PreviewWithColors
+import aktual.test.setPreviewContent
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.getOrNull
@@ -139,15 +138,13 @@ class BudgetColumnsTest {
   @Test
   fun `Confirming a month action applies it`() = runComposeUiTest {
     // given
-    setContent {
-      PreviewWithColors(DarkColors) {
-        BudgetSheets(
-          request = SheetRequest.ConfirmMonthSheet(october, Average6),
-          state = previewColumns(count = 2),
-          onAction = { actions += it },
-          onDismiss = {},
-        )
-      }
+    setPreviewContent {
+      BudgetSheets(
+        request = SheetRequest.ConfirmMonthSheet(october, Average6),
+        state = previewColumns(count = 2),
+        onAction = { actions += it },
+        onDismiss = {},
+      )
     }
 
     // when
@@ -170,14 +167,12 @@ class BudgetColumnsTest {
   private fun ComposeUiTest.table(): SemanticsNodeInteraction = onNodeWithTag(BudgetTags.Columns)
 
   private fun runColumnsTest(test: ComposeUiTest.() -> Unit) = runComposeUiTest {
-    setContent {
-      PreviewWithColors(DarkColors) {
-        BudgetColumns(
-          state = previewColumns(count = 2),
-          listState = rememberLazyListState(),
-          onAction = { actions += it },
-        )
-      }
+    setPreviewContent {
+      BudgetColumns(
+        state = previewColumns(count = 2),
+        listState = rememberLazyListState(),
+        onAction = { actions += it },
+      )
     }
     test()
   }

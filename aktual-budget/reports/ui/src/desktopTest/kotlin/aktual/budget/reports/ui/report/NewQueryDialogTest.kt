@@ -1,7 +1,6 @@
 package aktual.budget.reports.ui.report
 
-import aktual.core.theme.DarkColors
-import aktual.core.ui.PreviewWithColors
+import aktual.test.setPreviewContent
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasSetTextAction
@@ -44,13 +43,11 @@ class NewQueryDialogTest {
     assertThat(created).isEmpty()
   }
 
-  private fun ComposeUiTest.setDialog() = setContent {
-    PreviewWithColors(DarkColors) {
-      NewQueryDialog(
-        queries = persistentSetOf("groceries"),
-        onConfirm = { created += it },
-        onDismiss = {},
-      )
-    }
+  private fun ComposeUiTest.setDialog() = setPreviewContent {
+    NewQueryDialog(
+      queries = persistentSetOf("groceries"),
+      onConfirm = { created += it },
+      onDismiss = {},
+    )
   }
 }

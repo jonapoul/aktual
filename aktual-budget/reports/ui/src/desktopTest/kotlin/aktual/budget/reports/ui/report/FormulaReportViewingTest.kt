@@ -9,8 +9,7 @@ import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.report.FormulaReportState
 import aktual.budget.reports.vm.toEdits
-import aktual.core.theme.DarkColors
-import aktual.core.ui.PreviewWithColors
+import aktual.test.setPreviewContent
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -129,20 +128,18 @@ class FormulaReportViewingTest {
     meta: FormulaReportMeta,
     data: QueryEditorData? = PREVIEW_QUERY_DATA,
     onAction: (FormulaReportAction) -> Unit = {},
-  ) = setContent {
-    PreviewWithColors(DarkColors) {
-      FormulaReportScaffold(
-        state =
-          FormulaReportState.Loaded(
-            draft = meta.toEdits(),
-            preview = PREVIEW_FORMULA_DATA,
-            isEditing = false,
-            hasChanges = false,
-          ),
-        queryEditorData = data,
-        onAction = onAction,
-      )
-    }
+  ) = setPreviewContent {
+    FormulaReportScaffold(
+      state =
+        FormulaReportState.Loaded(
+          draft = meta.toEdits(),
+          preview = PREVIEW_FORMULA_DATA,
+          isEditing = false,
+          hasChanges = false,
+        ),
+      queryEditorData = data,
+      onAction = onAction,
+    )
   }
 
   private companion object {

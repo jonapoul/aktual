@@ -3,8 +3,7 @@ package aktual.budget.reports.ui.report
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.charts.PREVIEW_FORMULA_DATA
 import aktual.budget.reports.vm.FontSizeMode
-import aktual.core.theme.DarkColors
-import aktual.core.ui.PreviewWithColors
+import aktual.test.setPreviewContent
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -20,16 +19,14 @@ class FontSizeDialogTest {
   @Test
   fun `Applies a typed static size`() = runComposeUiTest {
     // given
-    setContent {
-      PreviewWithColors(DarkColors) {
-        FontSizeDialog(
-          initialMode = Dynamic,
-          initialSize = 32.0,
-          preview = PREVIEW_FORMULA_DATA,
-          onApply = { mode, size -> applied = mode to size },
-          onDismiss = {},
-        )
-      }
+    setPreviewContent {
+      FontSizeDialog(
+        initialMode = Dynamic,
+        initialSize = 32.0,
+        preview = PREVIEW_FORMULA_DATA,
+        onApply = { mode, size -> applied = mode to size },
+        onDismiss = {},
+      )
     }
 
     // when
@@ -44,16 +41,14 @@ class FontSizeDialogTest {
   @Test
   fun `Ignores a typed size out of range`() = runComposeUiTest {
     // given
-    setContent {
-      PreviewWithColors(DarkColors) {
-        FontSizeDialog(
-          initialMode = Static,
-          initialSize = 32.0,
-          preview = PREVIEW_FORMULA_DATA,
-          onApply = { mode, size -> applied = mode to size },
-          onDismiss = {},
-        )
-      }
+    setPreviewContent {
+      FontSizeDialog(
+        initialMode = Static,
+        initialSize = 32.0,
+        preview = PREVIEW_FORMULA_DATA,
+        onApply = { mode, size -> applied = mode to size },
+        onDismiss = {},
+      )
     }
 
     // when

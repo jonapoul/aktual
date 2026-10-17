@@ -1,8 +1,7 @@
 package aktual.budget.reports.ui.charts
 
 import aktual.budget.reports.ui.Tags
-import aktual.core.theme.DarkColors
-import aktual.core.ui.PreviewWithColors
+import aktual.test.setPreviewContent
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ComposeUiTest
@@ -67,21 +66,18 @@ class ChartZoomGestureTest {
     assertThat(zoom.range).isNull()
   }
 
-  private fun ComposeUiTest.setChart() = setContent {
-    PreviewWithColors(DarkColors) {
-      ZoomableChart(state = zoom, enabled = true, modifier = Modifier.size(400.dp)) { chartModifier
-        ->
-        CartesianChartHost(
-          modifier = chartModifier,
-          model = MODEL,
-          scrollState = rememberVicoScrollState(scrollEnabled = false),
-          chart =
-            rememberCartesianChart(
-              rememberLineCartesianLayer(),
-              decorations = listOf(rememberChartZoomDecoration(zoom)),
-            ),
-        )
-      }
+  private fun ComposeUiTest.setChart() = setPreviewContent {
+    ZoomableChart(state = zoom, enabled = true, modifier = Modifier.size(400.dp)) { chartModifier ->
+      CartesianChartHost(
+        modifier = chartModifier,
+        model = MODEL,
+        scrollState = rememberVicoScrollState(scrollEnabled = false),
+        chart =
+          rememberCartesianChart(
+            rememberLineCartesianLayer(),
+            decorations = listOf(rememberChartZoomDecoration(zoom)),
+          ),
+      )
     }
   }
 

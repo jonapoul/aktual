@@ -4,8 +4,7 @@ import aktual.budget.budgeting.vm.BudgetState
 import aktual.budget.budgeting.vm.BudgetSummary
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
-import aktual.core.theme.DarkColors
-import aktual.core.ui.PreviewWithColors
+import aktual.test.setPreviewContent
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -92,10 +91,8 @@ class BudgetSheetsTest {
     state: BudgetState.Loaded = previewColumns(count = 2),
     test: ComposeUiTest.() -> Unit,
   ) = runComposeUiTest {
-    setContent {
-      PreviewWithColors(DarkColors) {
-        BudgetSheets(request = request, state = state, onAction = { actions += it }, onDismiss = {})
-      }
+    setPreviewContent {
+      BudgetSheets(request = request, state = state, onAction = { actions += it }, onDismiss = {})
     }
     test()
   }

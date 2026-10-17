@@ -5,8 +5,7 @@ import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
-import aktual.core.theme.DarkColors
-import aktual.core.ui.PreviewWithColors
+import aktual.test.setPreviewContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -229,8 +228,8 @@ class QueryScreenTest {
     assertThat(deleted).isFalse()
   }
 
-  private fun ComposeUiTest.setScreen(data: QueryEditorData? = PREVIEW_QUERY_DATA) = setContent {
-    PreviewWithColors(DarkColors) {
+  private fun ComposeUiTest.setScreen(data: QueryEditorData? = PREVIEW_QUERY_DATA) =
+    setPreviewContent {
       QueryScreen(
         name = "groceries",
         query = query,
@@ -242,7 +241,6 @@ class QueryScreenTest {
         onClose = { closed = true },
       )
     }
-  }
 
   private companion object {
     val TAKEN = setOf("groceries", "income")
