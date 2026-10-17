@@ -2,8 +2,10 @@ package aktual.budget.reports.vm
 
 import assertk.all
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.index
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isNull
 import assertk.assertions.prop
 import kotlin.test.Test
@@ -366,6 +368,84 @@ class MonteCarloTest {
     )
 
   @Test
+  fun `Investment phases with a historical model match upstream`() =
+    assertMatchesUpstream(
+      meta = INVESTMENT_PHASES_HISTORICAL,
+      successRate = 0.73,
+      medianEndingBalance = 36748184,
+      medianDepletionYear = 29,
+      simulationCount = 2000,
+      middle =
+        McPercentileBand(
+          year = 17,
+          p5 = 25526418,
+          p10 = 34615709,
+          p25 = 55565369,
+          p30 = 62428471,
+          p50 = 92113376,
+          p70 = 125688624,
+          p75 = 138442573,
+          p90 = 188684680,
+        ),
+      last =
+        McPercentileBand(
+          year = 35,
+          p5 = 0,
+          p10 = 0,
+          p25 = 0,
+          p30 = 3955405,
+          p50 = 36748184,
+          p70 = 79027063,
+          p75 = 94239167,
+          p90 = 157125678,
+        ),
+      medianTotalWithdrawn = 122500000,
+      earliestDepletionYear = 16,
+      latestDepletionYear = 35,
+      worstRanked = listOf(1511, 652, 797, 378, 926),
+      worstRunPathSum = 495222197L,
+    )
+
+  @Test
+  fun `Gradual investment phase with the normal model matches upstream`() =
+    assertMatchesUpstream(
+      meta = INVESTMENT_PHASES_NORMAL,
+      successRate = 0.3984,
+      medianEndingBalance = 0,
+      medianDepletionYear = 25,
+      simulationCount = 5000,
+      middle =
+        McPercentileBand(
+          year = 15,
+          p5 = 9776174,
+          p10 = 13620586,
+          p25 = 21450564,
+          p30 = 23557903,
+          p50 = 31861642,
+          p70 = 41948155,
+          p75 = 45043100,
+          p90 = 58887113,
+        ),
+      last =
+        McPercentileBand(
+          year = 30,
+          p5 = 0,
+          p10 = 0,
+          p25 = 0,
+          p30 = 0,
+          p50 = 0,
+          p70 = 5700313,
+          p75 = 9103827,
+          p90 = 25534473,
+        ),
+      medianTotalWithdrawn = 70069950,
+      earliestDepletionYear = 13,
+      latestDepletionYear = 30,
+      worstRanked = listOf(368, 4245, 235, 2810, 4518),
+      worstRunPathSum = 313236617L,
+    )
+
+  @Test
   fun `Always succeeds with no withdrawals`() {
     val result =
       runMonteCarlo(
@@ -440,11 +520,62 @@ class MonteCarloTest {
   @Test
   fun `Config survives a round trip through the meta`() {
     for (plan in
-      listOf(GUARDRAILS_LOCKED_POT, BOUNDARIES_TAX_BANDS, INCOME_CONTRIBUTIONS_SURPLUS)) {
+      listOf(
+        GUARDRAILS_LOCKED_POT,
+        BOUNDARIES_TAX_BANDS,
+        INCOME_CONTRIBUTIONS_SURPLUS,
+        INVESTMENT_PHASES_HISTORICAL,
+      )) {
       val meta = decode(plan)
       val config = meta.toConfig()
       assertThat(config.toMeta(meta).toConfig()).isEqualTo(config)
     }
+  }
+
+  @Test
+  fun `Investment phases without a start age are dropped`() {
+    val pot = decode(INVESTMENT_PHASES_HISTORICAL).toConfig().pots[1]
+    assertThat(pot.investmentPhases.map(McInvestmentPhase::id)).containsExactly("b1", "b2")
+  }
+
+  @Test
+  fun `Investment phase fields fall back to the pot's own`() {
+    val phase = decode(INVESTMENT_PHASES_HISTORICAL).toConfig().pots[0].investmentPhases[0]
+    assertThat(phase).all {
+      prop(McInvestmentPhase::transition).isEqualTo(Gradual)
+      prop(McInvestmentPhase::allocationPreset).isEqualTo(Equity60)
+      prop(McInvestmentPhase::annualFeeRate).isEqualTo(0.003)
+      prop(McInvestmentPhase::feeAdjustsWithInflation).isFalse()
+    }
+  }
+
+  @Test
+  fun `Investment at an age follows the pot's phases`() {
+    val pot =
+      McPot(
+        id = "a",
+        allocationPreset = Equity100,
+        investmentPhases =
+          persistentListOf(
+            investmentPhase("cash", surplusPot("s"), fromAge = 80),
+            investmentPhase("glide", McPot(id = "b", allocationPreset = Equity40), fromAge = 70)
+              .copy(transition = Gradual),
+          ),
+      )
+
+    // The pot's own mix until the glide starts at the current age, then halfway there at 65
+    assertThat(pot.investmentAt(currentAge = 60, age = 60).weights)
+      .isEqualTo(AssetWeights(stocks = 1.0, bonds = 0.0, cash = 0.0))
+    assertThat(pot.investmentAt(currentAge = 60, age = 65).weights)
+      .isEqualTo(AssetWeights(stocks = 0.7, bonds = 0.3, cash = 0.0))
+    assertThat(pot.investmentAt(currentAge = 60, age = 75).weights)
+      .isEqualTo(AssetWeights(stocks = 0.4, bonds = 0.6, cash = 0.0))
+    // At once, on the birthday
+    assertThat(pot.investmentAt(currentAge = 60, age = 80).weights)
+      .isEqualTo(AssetWeights(stocks = 0.0, bonds = 0.0, cash = 1.0))
+    // A phase already reached is the starting point
+    assertThat(pot.investmentAt(currentAge = 72, age = 72).weights)
+      .isEqualTo(AssetWeights(stocks = 0.4, bonds = 0.6, cash = 0.0))
   }
 
   private fun decode(meta: String): MonteCarloReportMeta =

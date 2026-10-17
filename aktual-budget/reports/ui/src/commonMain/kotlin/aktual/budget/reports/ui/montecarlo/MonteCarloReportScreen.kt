@@ -92,6 +92,7 @@ fun MonteCarloReportScreen(
         is Rename -> viewModel.rename(action.name)
         is Edit -> viewModel.edit(action.transform)
         AddPot -> viewModel.addPot()
+        is AddInvestmentPhase -> viewModel.addInvestmentPhase(action.potId)
         AddIncomeStream -> viewModel.addIncomeStream()
         AddContribution -> viewModel.addContribution()
         AddSpendingPhase -> viewModel.addSpendingPhase()

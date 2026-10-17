@@ -2,6 +2,8 @@ package aktual.budget.reports.ui.montecarlo
 
 import aktual.budget.reports.vm.McConfig
 import aktual.budget.reports.vm.McRunDetailRow
+import aktual.budget.reports.vm.McYearInvestment
+import aktual.budget.reports.vm.investmentAt
 import aktual.budget.reports.vm.montecarlo.MonteCarloRunDetail
 import aktual.core.icons.material.ArrowDropDown
 import aktual.core.icons.material.ArrowRight
@@ -41,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -456,6 +459,8 @@ private fun PotTable(
 ) =
   Column(modifier = modifier) {
     val hasSurplusPot = config.pots.any { it.isSurplus }
+    // Only worth a column when something changes over the plan
+    val hasInvestmentPhases = config.pots.any { it.investmentPhases.isNotEmpty() }
     Row(
       modifier = Modifier.padding(bottom = 4.dp),
       horizontalArrangement = Arrangement.spacedBy(CELL_SPACING),
@@ -463,6 +468,16 @@ private fun PotTable(
     ) {
       GroupHeading(Strings.monteCarloDetailPot, Modifier.width(POT_NAME_WIDTH))
       PotHeading(Strings.monteCarloDetailPotStart)
+      if (hasInvestmentPhases) {
+        Row(
+          modifier = Modifier.width(ALLOCATION_WIDTH),
+          horizontalArrangement = Arrangement.spacedBy(4.dp),
+          verticalAlignment = CenterVertically,
+        ) {
+          GroupHeading(Strings.monteCarloDetailPotAllocation)
+          HelpTooltip(Strings.monteCarloDetailHelpAllocation)
+        }
+      }
       if (hasContributions) {
         PotHeading(
           Strings.monteCarloDetailPotContributed,
@@ -495,6 +510,14 @@ private fun PotTable(
           textAlign = Start,
         )
         AmountCell(row.potStartBalances.getOrElse(i) { 0 }.money())
+        if (hasInvestmentPhases) {
+          val age = config.currentAge + row.year - 1
+          TableCell(
+            allocationText(pot.investmentAt(config.currentAge, age)),
+            Modifier.width(ALLOCATION_WIDTH),
+            textAlign = Start,
+          )
+        }
         if (hasContributions) {
           val surplus = if (pot.isSurplus) row.surplusSaved else 0
           AmountCell((row.potContributions.getOrElse(i) { 0 } + surplus).money())
@@ -519,6 +542,29 @@ private fun PotTable(
     }
   }
 
+// "72% stocks, 28% bonds" for a mix (only the parts the pot holds), or the return a pot without one
+// draws around
+@Composable
+private fun allocationText(investment: McYearInvestment): String {
+  val weights = investment.weights
+  if (weights == null) {
+    return Strings.monteCarloDetailAllocationCustom(formatPercent(investment.mean, places = 1))
+  }
+  fun percent(share: Double) = (share * PERCENT).roundToInt()
+  return buildList {
+    percent(weights.stocks)
+      .takeIf { it > 0 }
+      ?.let { add(Strings.monteCarloDetailAllocationStocks("$it%")) }
+    percent(weights.bonds)
+      .takeIf { it > 0 }
+      ?.let { add(Strings.monteCarloDetailAllocationBonds("$it%")) }
+    percent(weights.cash)
+      .takeIf { it > 0 }
+      ?.let { add(Strings.monteCarloDetailAllocationCash("$it%")) }
+  }
+    .joinToString()
+}
+
 @Composable
 private fun PotHeading(text: String, help: String? = null) =
   Row(
@@ -538,4 +584,6 @@ private val AGE_WIDTH = 40.dp
 private val AMOUNT_WIDTH = 110.dp
 private val RATE_WIDTH = 80.dp
 private val POT_NAME_WIDTH = 120.dp
+private val ALLOCATION_WIDTH = 160.dp
+private const val PERCENT = 100
 private val TEXT_MAX_WIDTH = 720.dp

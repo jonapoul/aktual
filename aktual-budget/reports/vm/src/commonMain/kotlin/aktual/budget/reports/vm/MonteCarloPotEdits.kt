@@ -1,6 +1,7 @@
 package aktual.budget.reports.vm
 
 import aktual.budget.model.AccountId
+import kotlin.math.min
 import kotlinx.collections.immutable.toImmutableList
 
 // The pot edits behind upstream's MonteCarloConfiguration.tsx and MonteCarloPotConfiguration.tsx
@@ -73,37 +74,67 @@ fun McPot.withLinkedAccount(accountId: AccountId?, accountNames: Map<AccountId, 
   return copy(accountId = accountId, name = if (fillsName) newName else name)
 }
 
-fun McPot.withAllocationPreset(preset: AllocationPreset): McPot {
+// getAllocationChange(), for a pot or one of its investment phases
+fun <T : McInvestment<T>> T.withAllocationPreset(preset: AllocationPreset): T {
   if (preset == CustomMix) {
     // Seed the mix from the preset being left, so tweaking a preset starts from its shares
     val weights = if (allocationPreset == CustomMix) null else assetWeights()
-    return copy(
+    return withInvestment(
       allocationPreset = preset,
       allocationStocks = weights?.stocks ?: allocationStocks,
       allocationBonds = weights?.bonds ?: allocationBonds,
       allocationCash = weights?.cash ?: allocationCash,
     )
   }
-  val stats = preset.presetStats ?: return copy(allocationPreset = preset)
-  return copy(
+  val stats = preset.presetStats ?: return withInvestment(allocationPreset = preset)
+  return withInvestment(
     allocationPreset = preset,
     expectedReturnMean = stats.mean,
     returnStdDev = stats.stdDev,
   )
 }
 
-fun McPot.withExpectedReturn(mean: Double): McPot =
-  copy(expectedReturnMean = mean, allocationPreset = detachedPreset())
+fun <T : McInvestment<T>> T.withExpectedReturn(mean: Double): T =
+  withInvestment(expectedReturnMean = mean, allocationPreset = detachedPreset())
 
-fun McPot.withVolatility(stdDev: Double): McPot =
-  copy(returnStdDev = stdDev, allocationPreset = detachedPreset())
+fun <T : McInvestment<T>> T.withVolatility(stdDev: Double): T =
+  withInvestment(returnStdDev = stdDev, allocationPreset = detachedPreset())
 
 // Typing a value only detaches a real preset. A custom mix keeps its mix, since these are its
 // random-model inputs
-private fun McPot.detachedPreset(): AllocationPreset =
+private fun McInvestment<*>.detachedPreset(): AllocationPreset =
   if (allocationPreset == CustomMix) CustomMix else Custom
+
+// Once a phase starts at the plan's end there is nowhere later to put another one
+fun McPot.canAddInvestmentPhase(config: McConfig): Boolean =
+  upcomingPhases(config.currentAge).lastOrNull().let { it == null || it.fromAge < config.targetAge }
+
+// Starts from the latest phase so only the differences need changing, ten years on (or at the
+// plan's end if that's sooner)
+fun McPot.withInvestmentPhaseAdded(config: McConfig, id: String): McPot {
+  val latest = upcomingPhases(config.currentAge).lastOrNull()
+  val fromAge = min(config.targetAge, (latest?.fromAge ?: config.currentAge) + PHASE_GAP_YEARS)
+  return copy(
+    investmentPhases =
+      (investmentPhases + investmentPhase(id, latest ?: this, fromAge)).toImmutableList(),
+  )
+}
+
+fun McPot.updateInvestmentPhase(
+  id: String,
+  transform: (McInvestmentPhase) -> McInvestmentPhase,
+): McPot =
+  copy(
+    investmentPhases =
+      investmentPhases.map { if (it.id == id) transform(it) else it }.toImmutableList(),
+  )
+
+fun McPot.removeInvestmentPhase(id: String): McPot =
+  copy(investmentPhases = investmentPhases.filterNot { it.id == id }.toImmutableList())
+
+private const val PHASE_GAP_YEARS = 10
 
 // Historical models take real blended returns for pots with an asset mix, so those show what the
 // mix actually measured rather than an ignored assumption
-fun McPot.historicalStats(returnModel: ReturnModel): ReturnStats? =
+fun McInvestment<*>.historicalStats(returnModel: ReturnModel): ReturnStats? =
   if (returnModel.isHistorical) assetWeights()?.let(::historicalMixStats) else null

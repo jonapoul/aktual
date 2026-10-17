@@ -279,6 +279,37 @@ class MonteCarloEditsTest {
     assertThat(config.contributions).isEmpty()
   }
 
+  @Test
+  fun `A new investment phase copies the latest one, ten years on`() {
+    val config = McConfig(currentAge = 60, targetAge = 90)
+    val pot = McPot(id = "a", allocationPreset = Equity100)
+
+    val first = pot.withInvestmentPhaseAdded(config, id = "p1")
+    val second =
+      first
+        .updateInvestmentPhase("p1") { it.withAllocationPreset(Cash) }
+        .withInvestmentPhaseAdded(config, id = "p2")
+
+    assertThat(first.investmentPhases.single()).all {
+      prop(McInvestmentPhase::fromAge).isEqualTo(70)
+      prop(McInvestmentPhase::allocationPreset).isEqualTo(Equity100)
+    }
+    assertThat(second.investmentPhases[1]).all {
+      prop(McInvestmentPhase::fromAge).isEqualTo(80)
+      prop(McInvestmentPhase::allocationPreset).isEqualTo(Cash)
+    }
+  }
+
+  @Test
+  fun `No investment phase can be added after one at the plan's end`() {
+    val config = McConfig(currentAge = 60, targetAge = 65)
+    val pot = McPot(id = "a").withInvestmentPhaseAdded(config, id = "p1")
+
+    assertThat(pot.investmentPhases.single().fromAge).isEqualTo(65)
+    assertThat(pot.canAddInvestmentPhase(config)).isFalse()
+    assertThat(pot.removeInvestmentPhase("p1").canAddInvestmentPhase(config)).isTrue()
+  }
+
   private companion object {
     val ACCOUNT_1 = AccountId("account-1")
     val ACCOUNT_2 = AccountId("account-2")

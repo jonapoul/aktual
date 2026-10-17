@@ -314,3 +314,118 @@ internal const val INFLATION_DISABLED =
   }
 
   """
+
+@Language("JSON")
+internal const val INVESTMENT_PHASES_HISTORICAL =
+  """
+  {
+    "returnModel": "historical-bootstrap",
+    "simulationCount": 2000,
+    "pots": [
+      {
+        "id": "a",
+        "startingBalance": 60000000,
+        "allocationPreset": "equity-100",
+        "annualFeeRate": 0.005,
+        "investmentPhases": [
+          {
+            "id": "a1",
+            "fromAge": 65,
+            "transition": "gradual",
+            "allocationPreset": "equity-60",
+            "annualFeeRate": 0.003
+          },
+          {
+            "id": "a2",
+            "fromAge": 80,
+            "allocationPreset": "cash",
+            "annualFeeFixed": 20000,
+            "feeAdjustsWithInflation": true
+          }
+        ]
+      },
+      {
+        "id": "b",
+        "startingBalance": 30000000,
+        "allocationPreset": "custom",
+        "expectedReturnMean": 0.05,
+        "returnStdDev": 0.08,
+        "investmentPhases": [
+          {
+            "id": "b1",
+            "fromAge": 50,
+            "allocationPreset": "custom-mix",
+            "allocationStocks": 0.5,
+            "allocationBonds": 0.5,
+            "allocationCash": 0
+          },
+          {
+            "id": "b2",
+            "fromAge": 70,
+            "transition": "gradual",
+            "allocationPreset": "custom",
+            "expectedReturnMean": 0.03,
+            "returnStdDev": 0.02
+          },
+          {
+            "id": "b3",
+            "allocationPreset": "equity-100"
+          }
+        ]
+      }
+    ],
+    "spendingPhases": [
+      {
+        "id": "p1",
+        "annualWithdrawal": 3500000
+      }
+    ],
+    "currentAge": 60,
+    "targetAge": 95
+  }
+
+  """
+
+@Language("JSON")
+internal const val INVESTMENT_PHASES_NORMAL =
+  """
+  {
+    "returnModel": "normal",
+    "pots": [
+      {
+        "id": "a",
+        "startingBalance": 50000000,
+        "allocationPreset": "custom",
+        "expectedReturnMean": 0.07,
+        "returnStdDev": 0.15,
+        "investmentPhases": [
+          {
+            "id": "a1",
+            "fromAge": 70,
+            "transition": "gradual",
+            "allocationPreset": "custom",
+            "expectedReturnMean": 0.04,
+            "returnStdDev": 0.05,
+            "annualFeeRate": 0.01
+          }
+        ]
+      },
+      {
+        "id": "b",
+        "startingBalance": 10000000,
+        "allocationPreset": "cash",
+        "expectedReturnMean": 0.03,
+        "returnStdDev": 0.015
+      }
+    ],
+    "spendingPhases": [
+      {
+        "id": "p1",
+        "annualWithdrawal": 2500000
+      }
+    ],
+    "currentAge": 62,
+    "targetAge": 92
+  }
+
+  """

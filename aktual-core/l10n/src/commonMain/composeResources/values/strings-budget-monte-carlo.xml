@@ -116,6 +116,12 @@
   <string name="monte_carlo_detail_pot_tax_paid">Tax paid</string>
   <string name="monte_carlo_detail_pot_fees">Fees</string>
   <string name="monte_carlo_detail_pot_end">End balance</string>
+  <string name="monte_carlo_detail_pot_allocation">Allocation</string>
+  <string name="monte_carlo_detail_help_allocation">What the pot was invested in that year, following its investment phases.</string>
+  <string name="monte_carlo_detail_allocation_custom">Custom, %1$s return</string>
+  <string name="monte_carlo_detail_allocation_stocks">%1$s stocks</string>
+  <string name="monte_carlo_detail_allocation_bonds">%1$s bonds</string>
+  <string name="monte_carlo_detail_allocation_cash">%1$s cash</string>
   <string name="monte_carlo_detail_help_contributed">For the %1$s pot this is the money the plan didn’t spend that year, saved into it before growth.</string>
   <string name="monte_carlo_detail_help_tax_paid">With tax bands, the year’s tax is worked out on all pots’ taxable income together, then shared here in proportion to each pot’s taxable income - so every taxable pound bears the year’s average rate, even from a small pot. With a flat rate per pot, each pot’s tax is exact.</string>
   <string name="monte_carlo_detail_help_fees">Charged at the end of the year, on the pot’s balance after that year’s growth but before the fee itself is deducted - so the end balance is the post-growth balance minus this fee.</string>
@@ -293,6 +299,16 @@
   <string name="monte_carlo_help_fee_fixed">The sum of all fixed yearly costs on this pot - e.g. adviser or platform fees - charged at the end of each year.</string>
   <string name="monte_carlo_field_fee_rate">Balance fee (%)</string>
   <string name="monte_carlo_help_fee_rate">A yearly percentage of the pot’s end-of-year balance - e.g. fund or platform charges.</string>
+  <string name="monte_carlo_group_investment_phases">Investment phases</string>
+  <string name="monte_carlo_help_investment_phases">Change what this pot is invested in - its allocation or return and volatility, and its fees - from a given age. The settings above apply until the first phase begins.\n\nAt once switches on that birthday. Gradually moves there in a straight line from the previous phase’s start age, arriving at the age you set - the classic glide path, such as moving to a 60/40 split of stocks and bonds by 65. The cost of switching investments isn’t modelled.</string>
+  <string name="monte_carlo_investment_phases_from_now">From now: the settings above.</string>
+  <string name="monte_carlo_investment_phase_title">From age %1$d</string>
+  <string name="monte_carlo_investment_phase_add">Add investment phase</string>
+  <string name="monte_carlo_investment_phase_remove">Remove investment phase</string>
+  <string name="monte_carlo_field_transition">Transition</string>
+  <string name="monte_carlo_transition_at_once">At once</string>
+  <string name="monte_carlo_transition_gradual">Gradually from the previous phase</string>
+  <string name="monte_carlo_phase_mix_incomplete">The allocation must total %1$s - currently %2$s. Until it does, this phase uses its expected return and volatility instead of the mix.</string>
 
   <!-- Income -->
   <string name="monte_carlo_field_income_name">Income name</string>
