@@ -123,6 +123,16 @@ fun Colors.normalButton(
   )
 
 @Composable
+fun Colors.tonalButton(isPressed: Boolean): ButtonColors =
+  ButtonDefaults.buttonColors(
+    containerColor =
+      buttonPrimaryBackground.copy(alpha = if (isPressed) ALPHA_TONAL_PRESSED else ALPHA_TONAL),
+    disabledContainerColor = buttonPrimaryBackground.copy(alpha = ALPHA_TONAL_DISABLED),
+    contentColor = pageTextPositive,
+    disabledContentColor = pageTextPositive.disabled,
+  )
+
+@Composable
 fun Colors.errorButton(isPressed: Boolean): ButtonColors =
   ButtonDefaults.buttonColors(
     containerColor = if (isPressed) errorBorder else errorBackground,
@@ -231,3 +241,6 @@ val Color.disabled: Color
 @Stable fun Color.disabledIf(condition: Boolean): Color = if (condition) disabled else this
 
 private const val ALPHA_DISABLED = 0.38f
+private const val ALPHA_TONAL = 0.18f
+private const val ALPHA_TONAL_PRESSED = 0.3f
+private const val ALPHA_TONAL_DISABLED = 0.07f

@@ -11,6 +11,7 @@ import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.TimeFrameMode
 import aktual.budget.reports.vm.newQueryCondition
 import aktual.budget.reports.vm.renamed
+import aktual.core.icons.material.Add
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
@@ -22,8 +23,8 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.TonalButton
 import aktual.core.ui.YearMonthPicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -103,8 +104,8 @@ internal fun QueriesEditor(
         }
       }
 
-      NormalTextButton(
-        modifier = Modifier.fillMaxWidth(),
+      TonalButton(
+        icon = MaterialIcons.Add,
         text = Strings.reportsFormulaQueryAdd,
         onClick = { showAddDialog = true },
       )
@@ -194,8 +195,8 @@ private fun QueryCard(
         }
       }
 
-      NormalTextButton(
-        modifier = Modifier.fillMaxWidth(),
+      TonalButton(
+        icon = MaterialIcons.Add,
         text = Strings.reportsFormulaQueryAddCondition,
         onClick = {
           conditionKeys.added()
