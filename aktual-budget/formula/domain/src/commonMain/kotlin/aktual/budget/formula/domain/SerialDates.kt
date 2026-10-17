@@ -84,6 +84,40 @@ internal object SerialDates {
   fun truncateDayInMonth(date: SimpleDate): SimpleDate =
     date.copy(day = minOf(date.day, DAYS_IN_MONTH.at(date.month - 1)))
 
+  // Days between two dates counting every month as 30 days. The US method also moves the end of
+  // February to the 30th
+  fun days360(startNumber: Double, endNumber: Double, european: Boolean): Double {
+    var start = numberToDate(startNumber)
+    var end = numberToDate(endNumber)
+    if (european) {
+      start = start.copy(day = minOf(30.0, start.day))
+      end = end.copy(day = minOf(30.0, end.day))
+    } else {
+      if (start.day == 31.0) start = start.copy(day = 30.0)
+      if (start.day == 30.0 && end.day == 31.0) end = end.copy(day = 30.0)
+      if (start.month == 2.0 && start.day == daysInMonth(start.year, start.month)) {
+        start = start.copy(day = 30.0)
+        if (end.month == 2.0 && end.day == daysInMonth(end.year, end.month)) {
+          end = end.copy(day = 30.0)
+        }
+      }
+    }
+    return 360 * (end.year - start.year) + 30 * (end.month - start.month) + end.day - start.day
+  }
+
+  // Average year length between two dates, for YEARFRAC's actual/actual basis
+  fun yearLength(start: SimpleDate, end: SimpleDate): Double =
+    when {
+      start.year == end.year -> if (isLeapYear(start.year)) 366.0 else 365.0
+      start.year + 1 != end.year ||
+        start.month < end.month ||
+        start.month == end.month && start.day < end.day ->
+        (leapYearsCount(end.year) - leapYearsCount(start.year - 1)) / (end.year - start.year + 1) +
+          365
+      leapDaysCount(end) != leapDaysCount(start.copy(day = start.day - 1)) -> 366.0
+      else -> 365.0
+    }
+
   private fun daysInMonth(year: Double, month: Double): Double =
     if (isLeapYear(year) && month == 2.0) 29.0 else DAYS_IN_MONTH.at(month - 1)
 
@@ -94,6 +128,11 @@ internal object SerialDates {
 
   private fun leapYearsCount(year: Double): Double =
     floor(year / 4) - floor(year / 100) + floor(year / 400)
+
+  private fun leapDaysCount(date: SimpleDate): Double =
+    leapYearsCount(
+      if (date.month > 2 || date.month == 2.0 && date.day >= 29) date.year else date.year - 1,
+    )
 
   private fun isLeapYear(year: Double): Boolean =
     year % 4 == 0.0 && (year % 100 != 0.0 || year % 400 == 0.0)
