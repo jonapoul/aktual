@@ -8,15 +8,13 @@ import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Text
@@ -40,7 +38,7 @@ internal fun FormulaShortcuts(
   text: TextFieldState,
   queryNames: ImmutableList<String>,
 ) =
-  Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+  Column(verticalArrangement = spacedBy(12.dp)) {
     when (field) {
       Formula -> {
         if (queryNames.isNotEmpty()) {
@@ -72,7 +70,7 @@ internal fun FormulaShortcuts(
           val theme = colors.attributes()
           THEME_COLORS.fastForEach { name ->
             val variable = "$FORMULA_THEME_PREFIX$name"
-            ShortcutChip(text = variable, dot = theme[name], onClick = { text.insert(variable) })
+            ShortcutChip(text = variable, tint = theme[name], onClick = { text.insert(variable) })
           }
         }
       }
@@ -80,8 +78,8 @@ internal fun FormulaShortcuts(
   }
 
 @Composable
-private fun ShortcutGroup(label: String, chips: @Composable () -> Unit) =
-  Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+private fun ShortcutGroup(label: String, content: @Composable FlowRowScope.() -> Unit) =
+  Column(verticalArrangement = spacedBy(8.dp)) {
     Text(
       modifier = Modifier.padding(horizontal = 4.dp),
       text = label.uppercase(),
@@ -89,11 +87,10 @@ private fun ShortcutGroup(label: String, chips: @Composable () -> Unit) =
       color = colors.tableHeaderText,
     )
     FlowRow(
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      chips()
-    }
+      horizontalArrangement = spacedBy(4.dp),
+      verticalArrangement = spacedBy(4.dp),
+      content = content,
+    )
   }
 
 @Composable
@@ -101,7 +98,7 @@ private fun ShortcutChip(
   text: String,
   onClick: () -> Unit,
   highlight: Boolean = false,
-  dot: Color? = null,
+  tint: Color? = null,
 ) {
   val accent = colors.buttonPrimaryBackground
   Row(
@@ -113,15 +110,16 @@ private fun ShortcutChip(
         .clickable(onClick = onClick)
         .padding(horizontal = 12.dp),
     verticalAlignment = CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    horizontalArrangement = spacedBy(8.dp),
   ) {
-    if (dot != null) {
-      Box(modifier = Modifier.size(10.dp).background(dot, CircleShape))
-    }
     Text(
       text = text,
-      style = typography.bodySmall.copy(fontFamily = Monospace),
-      color = colors.tableText,
+      style = typography.labelMedium.copy(fontFamily = Monospace),
+      color =
+        when {
+          tint != null -> tint
+          else -> colors.tableText
+        },
     )
   }
 }
