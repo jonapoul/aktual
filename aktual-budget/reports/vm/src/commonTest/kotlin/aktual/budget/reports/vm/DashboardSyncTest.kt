@@ -102,6 +102,7 @@ class DashboardSyncTest {
     setFormula(
       WIDGET,
       FormulaEdits(
+        name = "Renamed",
         formula = "=2",
         colorFormula = "=\"red\"",
         fontSizeMode = Static,
@@ -115,9 +116,43 @@ class DashboardSyncTest {
     assertThat(meta)
       .isEqualTo(
         json(
-          """{"name":"Card","formula":"=2","queries":{},"extra":1,""" +
+          """{"name":"Renamed","formula":"=2","queries":{},"extra":1,""" +
             """"colorFormula":"=\"red\"","fontSizeMode":"static","staticFontSize":40.0,""" +
             """"showTitle":false,"queries":{"spent":{"conditions":[],"conditionsOp":"and"}}}""",
+        ),
+      )
+  }
+
+  @Test
+  fun `Setting a formula without a name keeps the stored one`() = runSyncTest { dao ->
+    dao.insert(
+      WIDGET,
+      page = PAGE_1,
+      type = Formula,
+      x = 0,
+      y = 0,
+      meta = json("""{"formula":"=1"}"""),
+    )
+
+    setFormula(
+      WIDGET,
+      FormulaEdits(
+        name = null,
+        formula = "=2",
+        colorFormula = "",
+        fontSizeMode = Dynamic,
+        staticFontSize = 32.0,
+        showTitle = true,
+        queries = persistentMapOf(),
+      ),
+    )
+
+    val meta = dao.observeByPage(PAGE_1).first().single().meta
+    assertThat(meta)
+      .isEqualTo(
+        json(
+          """{"formula":"=2","colorFormula":"","fontSizeMode":"dynamic","staticFontSize":32.0,""" +
+            """"showTitle":true,"queries":{}}""",
         ),
       )
   }

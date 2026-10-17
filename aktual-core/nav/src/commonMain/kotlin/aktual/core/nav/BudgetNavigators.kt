@@ -56,6 +56,11 @@ class ReportNavigator(private val stack: NavStack<BudgetNavKey>) {
 }
 
 @Immutable
+class EditFormulaReportNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke(id: WidgetId) = stack.push(EditFormulaReportNavRoute(id))
+}
+
+@Immutable
 class CreateReportNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke(page: DashboardPageId) = stack.push(CreateReportNavRoute(page))
 }

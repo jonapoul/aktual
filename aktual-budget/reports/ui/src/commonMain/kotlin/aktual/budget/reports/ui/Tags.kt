@@ -6,4 +6,7 @@ internal object Tags {
   const val ChartInfo = "ChartInfo"
   const val ChartInfoSheet = "ChartInfoSheet"
   const val EditReport = "EditReport"
+  const val CloseEditor = "CloseEditor"
+  const val SaveReport = "SaveReport"
+  const val ShowTitle = "ShowTitle"
 }

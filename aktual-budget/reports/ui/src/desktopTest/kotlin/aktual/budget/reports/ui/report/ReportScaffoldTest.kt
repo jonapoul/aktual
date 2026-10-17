@@ -74,19 +74,6 @@ class ReportScaffoldTest {
   }
 
   @Test
-  fun `Edit button is hidden while editing`() = runComposeUiTest {
-    // when
-    setContent {
-      PreviewWithColors(DarkColors) {
-        ReportScaffold(state = FORMULA_STATE, onAction = {}, isEditing = true)
-      }
-    }
-
-    // then
-    onNodeWithTag(Tags.EditReport).assertDoesNotExist()
-  }
-
-  @Test
   fun `Edit button only shows for formula cards`() = runComposeUiTest {
     // when
     setContent { PreviewWithColors(DarkColors) { ReportScaffold(state = STATE, onAction = {}) } }
