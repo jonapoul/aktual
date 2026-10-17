@@ -6,6 +6,7 @@ import aktual.budget.model.Field
 import aktual.budget.reports.ui.charts.PREVIEW_FORMULA_DATA
 import aktual.budget.reports.ui.charts.resolveColor
 import aktual.budget.reports.vm.ConditionValueKind
+import aktual.budget.reports.vm.DEFAULT_STATIC_FONT_SIZE
 import aktual.budget.reports.vm.FormulaData
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.FormulaReportMeta
@@ -13,45 +14,32 @@ import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.TimeFrameMode
 import aktual.budget.reports.vm.editableKind
-import aktual.core.icons.material.ChevronRight
-import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.stringShort
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily.Companion.Monospace
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.datetime.YearMonth
 import kotlinx.serialization.json.JsonArray
@@ -74,7 +62,7 @@ internal fun FormulaViewer(
 ) =
   Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
     Section(label = Strings.reportsFormulaEditorFormula) {
-      ViewerRow(modifier = Modifier.heightIn(min = 52.dp), onClick = onEdit) {
+      SettingRow(modifier = Modifier.heightIn(min = 52.dp), onClick = onEdit) {
         val formula = meta.formula?.takeIf { it.isNotBlank() }
         if (formula == null) {
           Text(
@@ -110,7 +98,13 @@ internal fun FormulaViewer(
       }
       Divider()
       ValueRow(label = Strings.reportsFormulaEditorFontSize, onClick = onEdit) {
-        Value(text = meta.fontSizeString())
+        Value(
+          text =
+            fontSizeString(
+              mode = meta.fontSizeMode ?: Dynamic,
+              size = meta.staticFontSize ?: DEFAULT_STATIC_FONT_SIZE,
+            ),
+        )
       }
       Divider()
       ValueRow(label = Strings.reportsFormulaEditorShowTitle, onClick = null) {
@@ -127,7 +121,7 @@ internal fun FormulaViewer(
 
     Section(label = Strings.reportsFormulaViewerQueries(meta.queries.size)) {
       if (meta.queries.isEmpty()) {
-        ViewerRow(onClick = onEdit) {
+        SettingRow(onClick = onEdit) {
           Text(
             modifier = Modifier.weight(1f),
             text = Strings.reportsFormulaQueriesEmpty,
@@ -145,84 +139,13 @@ internal fun FormulaViewer(
   }
 
 @Composable
-private fun Section(label: String, content: @Composable ColumnScope.() -> Unit) = Column {
-  Text(
-    modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 8.dp),
-    text = label.uppercase(),
-    style = typography.labelMedium.copy(fontWeight = SemiBold, letterSpacing = 0.08.em),
-    color = colors.tableHeaderText,
-  )
-  Column(
-    modifier = Modifier.fillMaxWidth().clip(CardShape).background(colors.tableBackground),
-    content = content,
-  )
-}
-
-@Composable
-private fun ViewerRow(
-  onClick: (() -> Unit)?,
-  modifier: Modifier = Modifier,
-  verticalAlignment: Alignment.Vertical = CenterVertically,
-  content: @Composable RowScope.() -> Unit,
-) =
-  Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .heightIn(min = 56.dp)
-        .then(if (onClick == null) Modifier else Modifier.clickable(onClick = onClick))
-        .padding(start = 16.dp, end = 12.dp, top = 10.dp, bottom = 10.dp),
-    verticalAlignment = verticalAlignment,
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
-  ) {
-    content()
-    if (onClick == null) {
-      Box(modifier = Modifier.size(CHEVRON_SIZE))
-    } else {
-      Icon(
-        modifier = Modifier.size(CHEVRON_SIZE),
-        imageVector = MaterialIcons.ChevronRight,
-        contentDescription = null,
-        tint = colors.tableHeaderText,
-      )
-    }
-  }
-
-@Composable
-private fun ValueRow(
-  label: String,
-  onClick: (() -> Unit)?,
-  value: @Composable RowScope.() -> Unit,
-) =
-  ViewerRow(onClick = onClick) {
-    Text(text = label, style = typography.bodyLarge, color = colors.tableText)
-    Row(
-      modifier = Modifier.weight(1f),
-      horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
-      verticalAlignment = CenterVertically,
-      content = value,
-    )
-  }
-
-@Composable
-private fun Value(text: String, monospace: Boolean = false) =
-  Text(
-    text = text,
-    style =
-      if (monospace) typography.bodySmall.copy(fontFamily = Monospace) else typography.bodyMedium,
-    color = colors.tableHeaderText,
-    maxLines = 1,
-    overflow = Ellipsis,
-  )
-
-@Composable
 private fun QueryRow(
   name: String,
   query: FormulaQuery,
   names: ImmutableMap<String, String>?,
   onClick: () -> Unit,
 ) =
-  ViewerRow(onClick = onClick, verticalAlignment = Top) {
+  SettingRow(onClick = onClick, verticalAlignment = Top) {
     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
       Text(
         text = name,
@@ -240,24 +163,6 @@ private fun QueryRow(
 @Composable
 private fun QueryDetail(text: String) =
   Text(text = text, style = typography.bodySmall, color = colors.tableHeaderText)
-
-@Composable
-private fun Divider() =
-  Box(
-    modifier =
-      Modifier.padding(horizontal = 16.dp)
-        .fillMaxWidth()
-        .height(1.dp)
-        .background(colors.tableBorder),
-  )
-
-@Composable
-private fun FormulaReportMeta.fontSizeString(): String {
-  if (fontSizeMode != Static) return Strings.reportsFormulaEditorFontDynamic
-  val size = staticFontSize ?: DEFAULT_STATIC_SIZE
-  val text = if (size % 1.0 == 0.0) size.toLong().toString() else size.toString()
-  return Strings.reportsFormulaViewerStaticSize(text)
-}
 
 @Composable
 private fun FormulaQuery.conditionsSummary(names: ImmutableMap<String, String>): String {
@@ -302,10 +207,8 @@ private fun TimeFrame?.label(): String {
   }
 }
 
-private val CHEVRON_SIZE = 20.dp
 private const val MAX_SUMMARY_CONDITIONS = 2
 private const val SEPARATOR = " · "
-private const val DEFAULT_STATIC_SIZE = 32.0
 
 @Preview
 @Composable

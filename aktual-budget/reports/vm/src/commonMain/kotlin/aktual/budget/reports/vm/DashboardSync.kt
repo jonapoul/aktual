@@ -60,6 +60,7 @@ internal class DashboardSync(
   suspend fun setFormula(id: WidgetId, edits: FormulaEdits) =
     patchMeta(
       id,
+      "name" to JsonPrimitive(edits.name),
       "formula" to JsonPrimitive(edits.formula),
       "colorFormula" to JsonPrimitive(edits.colorFormula),
       "fontSizeMode" to DbJson.encodeToJsonElement(FontSizeMode.serializer(), edits.fontSizeMode),

@@ -2,6 +2,7 @@ package aktual.budget.reports.ui
 
 import aktual.budget.reports.ui.choosetype.ChooseReportTypeScreen
 import aktual.budget.reports.ui.dashboard.ReportsDashboardScreen
+import aktual.budget.reports.ui.report.EditFormulaReportScreen
 import aktual.budget.reports.ui.report.ReportScreen
 import aktual.budget.reports.ui.search.SearchReportsScreen
 import aktual.core.nav.BackNavigator
@@ -10,6 +11,8 @@ import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.CreateReportNavRoute
 import aktual.core.nav.CreateReportNavigator
+import aktual.core.nav.EditFormulaReportNavRoute
+import aktual.core.nav.EditFormulaReportNavigator
 import aktual.core.nav.NavStack
 import aktual.core.nav.ReportNavRoute
 import aktual.core.nav.ReportNavigator
@@ -40,7 +43,15 @@ class ReportsNavEntryContributor : BudgetNavEntryContributor {
     }
 
     budgetEntry<ReportNavRoute> { route ->
-      ReportScreen(id = route.id, back = BackNavigator(stack))
+      ReportScreen(
+        id = route.id,
+        back = BackNavigator(stack),
+        toEdit = EditFormulaReportNavigator(stack),
+      )
+    }
+
+    budgetEntry<EditFormulaReportNavRoute> { route ->
+      EditFormulaReportScreen(id = route.id, back = BackNavigator(stack))
     }
 
     budgetEntry<CreateReportNavRoute> { route ->

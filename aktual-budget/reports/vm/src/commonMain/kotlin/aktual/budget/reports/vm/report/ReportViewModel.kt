@@ -4,7 +4,6 @@ import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.ChartDataLoader
 import aktual.budget.reports.vm.DashboardSync
-import aktual.budget.reports.vm.FormulaEdits
 import aktual.budget.reports.vm.MonteCarloReportMeta
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.QueryEditorDataLoader
@@ -67,11 +66,6 @@ internal constructor(
   fun saveText(content: String, align: TextAlign) {
     logcat.d { "Saving text for $id" }
     viewModelScope.launch { sync.setWidgetText(id, content, align) }
-  }
-
-  fun saveFormula(edits: FormulaEdits) {
-    logcat.d { "Saving formula for $id" }
-    viewModelScope.launch { sync.setFormula(id, edits) }
   }
 
   private companion object {

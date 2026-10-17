@@ -17,6 +17,7 @@ import aktual.core.nav.CreateRuleNavRoute
 import aktual.core.nav.CreateScheduleNavRoute
 import aktual.core.nav.CreateTagNavRoute
 import aktual.core.nav.CreateTransactionNavRoute
+import aktual.core.nav.EditFormulaReportNavRoute
 import aktual.core.nav.EditRuleNavRoute
 import aktual.core.nav.EditScheduleNavRoute
 import aktual.core.nav.EditTagNavRoute
@@ -58,6 +59,7 @@ class BudgetNavKeyStackSaverTest {
         BudgetCategoryNavRoute(CategoryId("category"), YearMonth(2026, 10)),
         ReportsListNavRoute,
         ReportNavRoute(WidgetId("widget")),
+        EditFormulaReportNavRoute(WidgetId("widget")),
         CreateReportNavRoute(DashboardPageId("page")),
         SearchReportsNavRoute,
         ListRulesNavRoute,

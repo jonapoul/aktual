@@ -95,7 +95,6 @@ fun ReportsDashboardScreen(
         is ClickCalendarDay -> TODO()
         // Text and formulas are only edited from the report screen
         is SaveText,
-        is SaveFormula,
         is SetUnsavedText,
         EditReport -> Unit
         CreateNewReport -> viewModel.createReport()

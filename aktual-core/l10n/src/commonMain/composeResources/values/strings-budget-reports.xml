@@ -295,4 +295,13 @@
   <string name="reports_formula_viewer_queries">Queries · %1$d</string>
   <string name="reports_formula_viewer_no_conditions">No conditions</string>
   <string name="reports_formula_viewer_more_conditions">+%1$d</string>
+  <string name="reports_formula_editor_close">Close editor</string>
+  <string name="reports_formula_editor_preview">Preview</string>
+  <string name="reports_formula_editor_report">Report</string>
+  <string name="reports_formula_editor_name">Name</string>
+  <string name="reports_formula_editor_discard_message">Your changes to this report will be lost.</string>
+  <plurals name="reports_formula_editor_conditions">
+    <item quantity="one">%1$d condition</item>
+    <item quantity="other">%1$d conditions</item>
+  </plurals>
 </resources>

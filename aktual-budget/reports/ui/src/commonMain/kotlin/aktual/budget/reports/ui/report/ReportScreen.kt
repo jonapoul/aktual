@@ -26,6 +26,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ZoomOut
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.EditFormulaReportNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
@@ -62,7 +63,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -80,6 +80,7 @@ import kotlinx.collections.immutable.persistentListOf
 fun ReportScreen(
   id: WidgetId,
   back: BackNavigator,
+  toEdit: EditFormulaReportNavigator,
   viewModel: ReportViewModel = reportViewModel(id),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -90,10 +91,8 @@ fun ReportScreen(
 
   var hasUnsavedText by rememberSaveable { mutableStateOf(false) }
   var showDiscardDialog by remember { mutableStateOf(false) }
-  var isEditing by rememberSaveable { mutableStateOf(false) }
 
   BackHandler(enabled = hasUnsavedText) { showDiscardDialog = true }
-  BackHandler(enabled = isEditing) { isEditing = false }
 
   // Only loaded for formula cards, which are the only ones with queries
   val isFormula = (state as? Loaded)?.item?.meta is FormulaReportMeta
@@ -103,16 +102,11 @@ fun ReportScreen(
   ReportScaffold(
     state = state,
     queryEditorData = queryEditorData,
-    isEditing = isEditing,
     onAction = { action ->
       @Suppress("ElseCaseInsteadOfExhaustiveWhen")
       when (action) {
         NavBack -> {
-          when {
-            isEditing -> isEditing = false
-            hasUnsavedText -> showDiscardDialog = true
-            else -> back()
-          }
+          if (hasUnsavedText) showDiscardDialog = true else back()
         }
         is SaveText -> {
           viewModel.saveText(action.content, action.align)
@@ -120,12 +114,8 @@ fun ReportScreen(
         is SetUnsavedText -> {
           hasUnsavedText = action.hasUnsavedText
         }
-        is SaveFormula -> {
-          viewModel.saveFormula(action.edits)
-          isEditing = false
-        }
         EditReport -> {
-          isEditing = true
+          toEdit(id)
         }
         else -> {}
       }
@@ -133,7 +123,8 @@ fun ReportScreen(
   )
 
   if (showDiscardDialog) {
-    DiscardTextDialog(
+    DiscardChangesDialog(
+      message = Strings.reportsTextDiscardMessage,
       onDiscard = {
         showDiscardDialog = false
         back()
@@ -144,7 +135,7 @@ fun ReportScreen(
 }
 
 @Composable
-private fun DiscardTextDialog(onDiscard: () -> Unit, onCancel: () -> Unit) =
+internal fun DiscardChangesDialog(message: String, onDiscard: () -> Unit, onCancel: () -> Unit) =
   AktualAlertDialog(
     title = Strings.reportsTextDiscardTitle,
     highlight = colors.warningText,
@@ -155,7 +146,7 @@ private fun DiscardTextDialog(onDiscard: () -> Unit, onCancel: () -> Unit) =
         Text(Strings.reportsTextDiscardConfirm, color = colors.warningText)
       }
     },
-    content = { Text(Strings.reportsTextDiscardMessage) },
+    content = { Text(message) },
   )
 
 @Composable
@@ -168,7 +159,6 @@ internal fun ReportScaffold(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   queryEditorData: QueryEditorData? = null,
-  isEditing: Boolean = false,
 ) {
   val data = (state as? Loaded)?.data
   val zoom = rememberChartZoomState(data)
@@ -216,7 +206,7 @@ internal fun ReportScaffold(
               onClick = { showInfo = true },
             )
           }
-          if (data is FormulaData && !isEditing) {
+          if (data is FormulaData) {
             PrimaryIconButton(
               modifier = Modifier.padding(horizontal = 8.dp).testTag(Tags.EditReport),
               imageVector = MaterialIcons.Edit,
@@ -238,7 +228,6 @@ internal fun ReportScaffold(
         scrollState = scrollState,
         state = state,
         queryEditorData = queryEditorData,
-        isEditing = isEditing,
         zoom = zoom,
         onAction = onAction,
       )
@@ -251,7 +240,6 @@ internal fun ReportScaffold(
 private fun ReportContent(
   state: ReportState,
   queryEditorData: QueryEditorData?,
-  isEditing: Boolean,
   contentPadding: PaddingValues,
   scrollState: ScrollState,
   zoom: ChartZoomState,
@@ -261,45 +249,32 @@ private fun ReportContent(
   val meta = (state as? Loaded)?.item?.meta as? FormulaReportMeta
   val formulaData = (state as? Loaded)?.data as? FormulaData
   if (meta != null && formulaData != null) {
-    val deleteState = rememberConfirmDeleteState()
-    CompositionLocalProvider(LocalConfirmDeleteState provides deleteState) {
-      Column(
+    Column(
+      modifier =
+        modifier
+          .verticalScrollWithBar(scrollState)
+          .padding(contentPadding)
+          .padding(CONTENT_PADDING),
+    ) {
+      ReportChart(
         modifier =
-          modifier
-            .disarmDeletesOnTap(deleteState)
-            .verticalScrollWithBar(scrollState)
-            .padding(contentPadding)
-            .padding(CONTENT_PADDING),
-      ) {
-        ReportChart(
-          modifier =
-            Modifier.fillMaxWidth()
-              .height(FORMULA_CARD_HEIGHT)
-              .background(colors.tableBackground, CardShape)
-              .padding(8.dp),
-          data = formulaData,
-          compact = false,
-          onAction = onAction,
-          zoom = zoom,
-        )
-        if (isEditing) {
-          FormulaEditor(
-            modifier = Modifier.padding(top = 16.dp),
-            meta = meta,
-            queryEditorData = queryEditorData,
-            onAction = onAction,
-          )
-        } else {
-          FormulaViewer(
-            modifier = Modifier.padding(top = 20.dp),
-            meta = meta,
-            data = formulaData,
-            queryEditorData = queryEditorData,
-            onEdit = { onAction(EditReport) },
-          )
-        }
-        BottomSpacing()
-      }
+          Modifier.fillMaxWidth()
+            .height(FORMULA_CARD_HEIGHT)
+            .background(colors.tableBackground, CardShape)
+            .padding(8.dp),
+        data = formulaData,
+        compact = false,
+        onAction = onAction,
+        zoom = zoom,
+      )
+      FormulaViewer(
+        modifier = Modifier.padding(top = 20.dp),
+        meta = meta,
+        data = formulaData,
+        queryEditorData = queryEditorData,
+        onEdit = { onAction(EditReport) },
+      )
+      BottomSpacing()
     }
     return
   }

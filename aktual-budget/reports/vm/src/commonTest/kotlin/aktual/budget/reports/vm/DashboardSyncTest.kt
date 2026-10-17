@@ -102,6 +102,7 @@ class DashboardSyncTest {
     setFormula(
       WIDGET,
       FormulaEdits(
+        name = "Renamed",
         formula = "=2",
         colorFormula = "=\"red\"",
         fontSizeMode = Static,
@@ -115,7 +116,7 @@ class DashboardSyncTest {
     assertThat(meta)
       .isEqualTo(
         json(
-          """{"name":"Card","formula":"=2","queries":{},"extra":1,""" +
+          """{"name":"Renamed","formula":"=2","queries":{},"extra":1,""" +
             """"colorFormula":"=\"red\"","fontSizeMode":"static","staticFontSize":40.0,""" +
             """"showTitle":false,"queries":{"spent":{"conditions":[],"conditionsOp":"and"}}}""",
         ),
