@@ -205,6 +205,12 @@ private class FormulaChartProvider :
       .map(::FormulaChartParams),
   )
 
+internal val PREVIEW_FORMULA_DATA =
+  formulaPreview(
+    FormulaOutput.Money(Amount(123456)),
+    color = "${FORMULA_THEME_PREFIX}numberPositive",
+  )
+
 private fun formulaPreview(
   output: FormulaOutput,
   color: String? = null,
