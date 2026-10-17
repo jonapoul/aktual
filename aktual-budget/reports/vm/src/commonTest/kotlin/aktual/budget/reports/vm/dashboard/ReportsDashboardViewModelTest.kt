@@ -3,18 +3,15 @@ package aktual.budget.reports.vm.dashboard
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Dashboard_pages
 import aktual.budget.db.DbJson
-import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
-import aktual.budget.db.dao.PreferencesDao
-import aktual.budget.db.dao.ReportsDao
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
-import aktual.budget.reports.vm.ChartDataLoader
 import aktual.budget.reports.vm.CustomReportMeta
 import aktual.budget.reports.vm.DashboardSync
+import aktual.budget.reports.vm.chartDataLoader
 import aktual.budget.reports.vm.emptyCustomReport
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.test.TestBudgetLocalPreferences
@@ -108,14 +105,7 @@ class ReportsDashboardViewModelTest {
     val sync = DashboardSync(dao, controller)
     val viewModel =
       ReportsDashboardViewModel(
-        chartDataLoader =
-          ChartDataLoader(
-            ReportsDao(this, contexts),
-            CustomReportsDao(this, contexts),
-            PreferencesDao(this, contexts),
-            calendar = { LocalDate(2026, 1, 1) },
-            contexts = contexts,
-          ),
+        chartDataLoader = chartDataLoader(contexts, calendar = { LocalDate(2026, 1, 1) }),
         dashboardDao = dao,
         sync = sync,
         pages =

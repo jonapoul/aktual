@@ -8,6 +8,7 @@ import aktual.budget.reports.vm.CashFlowData
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.CrossoverData
 import aktual.budget.reports.vm.CustomData
+import aktual.budget.reports.vm.FormulaData
 import aktual.budget.reports.vm.MonteCarloData
 import aktual.budget.reports.vm.NetWorthData
 import aktual.budget.reports.vm.SankeyData
@@ -82,6 +83,7 @@ internal fun ChartData.info(): ImmutableList<ChartInfo> =
 
     is CalendarData,
     is CustomData,
+    is FormulaData,
     is SankeyData,
     is SummaryData,
     is TextData,

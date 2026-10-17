@@ -10,8 +10,10 @@ kotlin {
     api(project(":aktual-budget:data:db"))
     api(project(":aktual-core"))
     implementation(project(":aktual-budget:budgeting:domain"))
-    implementation(project(":aktual-budget:formula:domain"))
+    api(project(":aktual-budget:formula:domain"))
     implementation(project(":aktual-budget:rules:domain"))
+    implementation(project(":aktual-core:theme"))
+    implementation(project(":aktual-prefs"))
   }
 
   commonTestDependencies {

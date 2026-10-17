@@ -1,5 +1,6 @@
 package aktual.budget.reports.vm
 
+import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.db.CashFlowByMonth
 import aktual.budget.db.CustomReportAmounts
 import aktual.budget.db.ForecastPostedScheduleTransactions
@@ -8,20 +9,34 @@ import aktual.budget.db.ForecastTrackingBudgetTotals
 import aktual.budget.db.ForecastTransferPayees
 import aktual.budget.db.SankeyCategoryTotals
 import aktual.budget.db.dao.CustomReportsDao
+import aktual.budget.db.dao.FormulaDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ReportsDao
+import aktual.budget.formula.domain.ArrayValue
+import aktual.budget.formula.domain.BooleanValue
+import aktual.budget.formula.domain.EmptyValue
+import aktual.budget.formula.domain.ErrorValue
+import aktual.budget.formula.domain.FormulaEvaluator
+import aktual.budget.formula.domain.FormulaFormat
+import aktual.budget.formula.domain.FormulaValue
+import aktual.budget.formula.domain.NumberValue
+import aktual.budget.formula.domain.TextValue
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
+import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.FirstDayOfWeek
+import aktual.budget.model.NumberFormatConfig
 import aktual.budget.model.PayeeId
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.WidgetType
 import aktual.budget.rules.domain.TransactionFilter
 import aktual.core.Calendar
 import aktual.core.model.Percent
+import aktual.prefs.CurrencyPreferences
+import aktual.prefs.FormatPreferences
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
 import kotlin.math.roundToLong
@@ -35,6 +50,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
@@ -45,11 +61,16 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 
 @Inject
+@Suppress("LargeClass")
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ChartDataLoader(
   private val dao: ReportsDao,
   private val customReports: CustomReportsDao,
   private val preferences: PreferencesDao,
+  private val formulaDao: FormulaDao,
+  private val budgets: BudgetMonthCalculator,
+  private val formatPreferences: FormatPreferences,
+  private val currencyPreferences: CurrencyPreferences,
   private val calendar: Calendar,
   private val contexts: CoroutineContexts,
 ) {
@@ -59,6 +80,7 @@ internal class ChartDataLoader(
       is BalanceForecastReportMeta -> balanceForecast(meta)
       is CashFlowReportMeta -> cashFlow(meta)
       is CrossoverReportMeta -> crossover(meta)
+      is FormulaReportMeta -> formula(meta)
       is CustomReportMeta -> custom(meta)
       is MarkdownReportMeta -> text(meta)
       is MonteCarloReportMeta -> monteCarlo(meta)
@@ -66,7 +88,6 @@ internal class ChartDataLoader(
       is SankeyReportMeta -> sankey(meta)
       is BudgetAnalysisReportMeta,
       is CalendarReportMeta,
-      is FormulaReportMeta,
       is SpendingReportMeta,
       is SummaryReportMeta -> unsupported(meta, ReportType)
       is UnsupportedReportMeta ->
@@ -175,6 +196,77 @@ internal class ChartDataLoader(
         )
       }
       .map { rows -> budgetAmounts(rows, config.conditions, config.conditionsOp) }
+
+  // packages/desktop-client/src/components/reports/reports/FormulaCard.tsx
+  fun formula(meta: FormulaReportMeta): Flow<ChartData> =
+    combine(formulaDao.observeChanges(), formulaFormats()) { _, format -> format }
+      .mapLatest { format -> evaluateFormula(meta, format) }
+      .flowOn(contexts.default)
+
+  private fun formulaFormats(): Flow<FormulaFormat> =
+    combine(
+      formatPreferences.numberFormat.asFlow(),
+      formatPreferences.hideFraction.asFlow(),
+      currencyPreferences.currency.asFlow(),
+      currencyPreferences.symbolPosition.asFlow(),
+      currencyPreferences.spaceBetweenAmountAndSymbol.asFlow(),
+    ) { numberFormat, hideFraction, currency, position, includeSpace ->
+      formulaFormat(
+        numberFormat = NumberFormatConfig(numberFormat, hideFraction),
+        currency = CurrencyConfig(currency, position, includeSpace),
+      )
+    }
+
+  private suspend fun evaluateFormula(meta: FormulaReportMeta, format: FormulaFormat): FormulaData {
+    val evaluator =
+      FormulaEvaluator(
+        calendar,
+        FormulaQueries(meta.queries, formulaDao, budgets, calendar),
+        format,
+      )
+    val result = evaluator.evaluate(meta.formula.orEmpty().ifEmpty { DEFAULT_FORMULA })
+
+    val colorFormula = meta.colorFormula.orEmpty()
+    val color =
+      if (colorFormula.isEmpty()) {
+        null
+      } else {
+        val variables = FORMULA_THEME_VARIABLES + (RESULT_VARIABLE to result.value.asVariable())
+        (evaluator.evaluate(colorFormula, variables).value as? TextValue)?.value?.takeIf {
+          it.isNotEmpty()
+        }
+      }
+
+    return FormulaData(
+      title = meta.name,
+      showTitle = meta.showTitle != false,
+      output = result.value.toOutput(),
+      color = color,
+      fontSizeMode = meta.fontSizeMode?.takeIf { it != Unknown } ?: Dynamic,
+      staticFontSize = meta.staticFontSize?.takeIf { it > 0 } ?: DEFAULT_FONT_SIZE,
+      warnings = result.warnings.toImmutableList(),
+    )
+  }
+
+  private fun FormulaValue.asVariable(): FormulaValue =
+    when (this) {
+      is NumberValue,
+      is TextValue -> this
+      is BooleanValue -> TextValue(value.toString())
+      is ErrorValue,
+      EmptyValue,
+      is ArrayValue -> NumberValue(0.0)
+    }
+
+  private fun FormulaValue.toOutput(): FormulaOutput =
+    when (this) {
+      is NumberValue -> FormulaOutput.Money(Amount(value))
+      is TextValue -> FormulaOutput.Text(value)
+      is BooleanValue -> FormulaOutput.Text(value.toString())
+      is ErrorValue -> FormulaOutput.Failure(this)
+      EmptyValue -> FormulaOutput.Text("")
+      is ArrayValue -> topLeft.toOutput()
+    }
 
   fun text(meta: MarkdownReportMeta): Flow<ChartData> {
     val align: TextAlign = meta.textAlign?.takeIf { it != Unknown } ?: Left
@@ -661,6 +753,9 @@ internal class ChartDataLoader(
     const val DEFAULT_FORECAST_MONTHS = 12
     const val PERCENT_TENTHS = 1000.0
     const val TENTHS = 10.0
+    const val DEFAULT_FORMULA = "=SUM(1, 2, 3)"
+    const val DEFAULT_FONT_SIZE = 32.0
+    const val RESULT_VARIABLE = "RESULT"
   }
 }
 

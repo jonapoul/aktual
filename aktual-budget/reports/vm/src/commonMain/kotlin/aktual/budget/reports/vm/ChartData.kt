@@ -1,5 +1,7 @@
 package aktual.budget.reports.vm
 
+import aktual.budget.formula.domain.ErrorValue
+import aktual.budget.formula.domain.FormulaWarning
 import aktual.budget.model.Amount
 import aktual.budget.model.WidgetType
 import aktual.core.model.Percent
@@ -278,6 +280,29 @@ sealed interface SpendingComparison {
 }
 
 data class TextData(val content: String, val align: TextAlign = Left) : ChartData
+
+/**
+ * [color] is the colour formula's result, a CSS colour or a `theme_<name>` placeholder (see
+ * [FORMULA_THEME_PREFIX]), and null if there's no valid one
+ */
+data class FormulaData(
+  val title: String?,
+  val showTitle: Boolean,
+  val output: FormulaOutput,
+  val color: String?,
+  val fontSizeMode: FontSizeMode,
+  val staticFontSize: Double,
+  val warnings: ImmutableList<FormulaWarning>,
+) : ChartData
+
+@Immutable
+sealed interface FormulaOutput {
+  data class Money(val amount: Amount) : FormulaOutput
+
+  data class Text(val value: String) : FormulaOutput
+
+  data class Failure(val error: ErrorValue) : FormulaOutput
+}
 
 data class UnsupportedData(
   val reason: UnsupportedReason,
