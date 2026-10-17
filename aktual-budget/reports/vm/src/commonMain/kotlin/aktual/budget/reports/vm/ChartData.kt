@@ -1,7 +1,7 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.formula.domain.ErrorValue
-import aktual.budget.formula.domain.FormulaWarning
+import aktual.budget.formula.ErrorValue
+import aktual.budget.formula.FormulaWarning
 import aktual.budget.model.Amount
 import aktual.budget.model.WidgetType
 import aktual.core.model.Percent

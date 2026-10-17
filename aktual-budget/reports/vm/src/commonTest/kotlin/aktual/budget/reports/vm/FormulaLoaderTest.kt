@@ -1,7 +1,7 @@
 package aktual.budget.reports.vm
 
 import aktual.budget.db.BudgetDatabase
-import aktual.budget.formula.domain.ErrorValue
+import aktual.budget.formula.ErrorValue
 import aktual.budget.model.Amount
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.test.TestCoroutineContexts

@@ -1,6 +1,6 @@
 package aktual.budget.reports.ui.report
 
-import aktual.budget.formula.domain.ErrorValue
+import aktual.budget.formula.ErrorValue
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.charts.PREVIEW_FORMULA_DATA
 import aktual.budget.reports.vm.FormulaData
