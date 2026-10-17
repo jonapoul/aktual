@@ -2,6 +2,7 @@
 
 package aktual.budget.reports.ui.charts
 
+import aktual.budget.formula.domain.ErrorReason.InternalError
 import aktual.budget.formula.domain.ErrorValue
 import aktual.budget.formula.domain.FormulaWarning
 import aktual.budget.formula.domain.UnknownAccount
@@ -70,23 +71,20 @@ internal fun FormulaChart(
       data.resolveColor() ?: if (data.output is Failure) colors.errorText else colors.pageText
     val style = typography.displayLarge.copy(textAlign = Center, lineHeight = 1.em)
     Box(modifier = Modifier.weight(1f).fillMaxWidth().padding(8.dp), contentAlignment = Center) {
-      when (data.fontSizeMode) {
-        Static ->
-          Text(
-            text = text.redacted(),
-            color = color,
-            style = style.copy(fontSize = data.staticFontSize.sp),
-          )
-
-        Dynamic,
-        Unknown ->
-          ScaleToFitText(
-            modifier = Modifier.fillMaxSize(),
-            text = text,
-            style = style,
-            maxLines = text.lines().size,
-            color = color,
-          )
+      if (data.fontSizeMode == Static) {
+        Text(
+          text = text.redacted(),
+          color = color,
+          style = style.copy(fontSize = data.staticFontSize.sp),
+        )
+      } else {
+        ScaleToFitText(
+          modifier = Modifier.fillMaxSize(),
+          text = text,
+          style = style,
+          maxLines = text.lines().size,
+          color = color,
+        )
       }
     }
 
@@ -155,6 +153,7 @@ private fun ErrorValue.message(): String {
       DateOutOfRange -> Strings.reportsFormulaDateOutOfRange
       InvalidBudgetDimension -> Strings.reportsFormulaInvalidBudgetDimension(subject)
       DecimalsOutOfRange -> Strings.reportsFormulaDecimalsOutOfRange
+      InternalError -> Strings.reportsFormulaInternalError(subject)
     }
   return "${type.literal}\n$text"
 }

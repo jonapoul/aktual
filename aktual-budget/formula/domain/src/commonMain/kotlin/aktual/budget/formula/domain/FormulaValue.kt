@@ -70,6 +70,8 @@ enum class ErrorReason {
   DateOutOfRange,
   InvalidBudgetDimension,
   DecimalsOutOfRange,
+  // The evaluator itself failed, which is a bug rather than a mistake in the formula
+  InternalError,
 }
 
 // Something the formula did that isn't an error but may be a mistake, e.g. naming a missing query
