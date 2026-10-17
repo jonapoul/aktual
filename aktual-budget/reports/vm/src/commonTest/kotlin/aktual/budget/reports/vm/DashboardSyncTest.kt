@@ -88,6 +88,39 @@ class DashboardSyncTest {
   }
 
   @Test
+  fun `Setting a formula keeps other values`() = runSyncTest { dao ->
+    dao.insert(
+      WIDGET,
+      page = PAGE_1,
+      type = Formula,
+      x = 0,
+      y = 0,
+      meta = json("""{"name":"Card","formula":"=1","queries":{},"extra":1}"""),
+    )
+
+    setFormula(
+      WIDGET,
+      FormulaEdits(
+        formula = "=2",
+        colorFormula = "=\"red\"",
+        fontSizeMode = Static,
+        staticFontSize = 40.0,
+        showTitle = false,
+      ),
+    )
+
+    val meta = dao.observeByPage(PAGE_1).first().single().meta
+    assertThat(meta)
+      .isEqualTo(
+        json(
+          """{"name":"Card","formula":"=2","queries":{},"extra":1,""" +
+            """"colorFormula":"=\"red\"","fontSizeMode":"static","staticFontSize":40.0,""" +
+            """"showTitle":false}""",
+        ),
+      )
+  }
+
+  @Test
   fun `Delete a widget`() = runSyncTest { dao ->
     dao.insert(WIDGET, page = PAGE_1, type = NetWorth, x = 0, y = 0, meta = null)
 
