@@ -16,23 +16,31 @@ import aktual.budget.reports.vm.withOperator
 import aktual.core.icons.material.Clear
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Search
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
+import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.CardShape
-import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.scrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -230,24 +238,46 @@ private fun EntityListPicker(
     }
   }
 
+// A list sheet with a search field, since there can be hundreds of payees
 @Composable
 private fun EntitySheet(
   selected: QueryEntity,
   options: ImmutableList<QueryEntity>,
   onSelect: (QueryEntity) -> Unit,
   onDismiss: () -> Unit,
-) {
-  val nothing = Strings.reportsFormulaQueryNothing
-  ListBottomSheet(
-    value = selected,
-    options = options,
-    onDismiss = onDismiss,
-    onSelect = onSelect,
-    sheetState = rememberBottomSheetState(initialValue = Hidden),
-    string = { entity -> if (entity == NOTHING) nothing else entity.name },
-    key = QueryEntity::id,
-  )
-}
+) =
+  AktualModalBottomSheet(onDismissRequest = onDismiss) {
+    val search = rememberTextFieldState()
+    val query = search.text.toString().trim()
+    val nothing = Strings.reportsFormulaQueryNothing
+    val filtered =
+      remember(options, query) {
+        options.filter { it == NOTHING || it.name.contains(query, ignoreCase = true) }
+      }
+
+    AktualTextField(
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+      state = search,
+      placeholderText = Strings.reportsFormulaQuerySearch,
+      singleLine = true,
+      clearable = true,
+      leadingIcon = { Icon(MaterialIcons.Search, contentDescription = null) },
+    )
+
+    val listState = rememberLazyListState()
+    LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
+      items(filtered, key = QueryEntity::id) { entity ->
+        BottomSheetListItem(
+          label = if (entity == NOTHING) nothing else entity.name,
+          isSelected = entity == selected,
+          onClick = {
+            onSelect(entity)
+            onDismiss()
+          },
+        )
+      }
+    }
+  }
 
 @Composable
 private fun ImmutableList<QueryEntity>.nameOf(id: String): String =

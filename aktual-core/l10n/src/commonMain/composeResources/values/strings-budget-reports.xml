@@ -278,6 +278,7 @@
   <string name="reports_formula_query_text">Text</string>
   <string name="reports_formula_query_date">YYYY-MM-DD</string>
   <string name="reports_formula_query_choose">Choose</string>
+  <string name="reports_formula_query_search">Search</string>
   <string name="reports_formula_query_unknown">Unknown</string>
   <string name="reports_formula_query_true">True</string>
   <string name="reports_formula_query_false">False</string>
