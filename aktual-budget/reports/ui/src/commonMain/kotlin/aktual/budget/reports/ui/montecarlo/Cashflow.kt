@@ -134,7 +134,7 @@ private fun YearBreakdown(
   }
 
 @Composable
-private fun BreakdownRow(
+internal fun BreakdownRow(
   label: String,
   amount: String,
   color: Color?,
@@ -165,7 +165,7 @@ private fun BreakdownRow(
   }
 
 @Composable
-private fun LegendGroup(heading: String, series: ImmutableList<CashflowSeries>, config: McConfig) =
+internal fun LegendGroup(heading: String, series: ImmutableList<CashflowSeries>, config: McConfig) =
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
     GroupHeading(heading)
     FlowRow(
@@ -185,7 +185,7 @@ private fun LegendGroup(heading: String, series: ImmutableList<CashflowSeries>, 
   }
 
 @Composable
-private fun Swatch(color: Color, size: Dp = 10.dp) =
+internal fun Swatch(color: Color, size: Dp = 10.dp) =
   Box(modifier = Modifier.size(size).background(color, SwatchShape))
 
 private val SwatchShape = RoundedCornerShape(2.dp)

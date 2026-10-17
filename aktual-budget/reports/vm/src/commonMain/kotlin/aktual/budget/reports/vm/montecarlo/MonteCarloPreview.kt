@@ -16,7 +16,8 @@ fun previewMonteCarloState(
   val simulation = simulate(config, deflate = true)
   val detailRun =
     when (resultsView) {
-      Cashflow -> simulation.runAt(Median)
+      Cashflow,
+      Pots -> simulation.runAt(Median)
       Runs -> selectedRun?.let(simulation::runAt)
       Chart -> null
     }

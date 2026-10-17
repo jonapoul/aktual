@@ -283,7 +283,8 @@ internal constructor(
     if (simulation == null) return null
     val index =
       when (view) {
-        Cashflow -> simulation.runAt(percentile)
+        Cashflow,
+        Pots -> simulation.runAt(percentile)
         Runs -> selectedRun
         Chart -> null
       }
@@ -328,6 +329,7 @@ internal constructor(
         index = index,
         rows = rows.toImmutableList(),
         cashflow = buildCashflowChart(rows, simulation.config, CHART_PALETTE_SIZE),
+        potBalances = buildPotBalancesChart(rows, simulation.config, CHART_PALETTE_SIZE),
       )
     }
   }

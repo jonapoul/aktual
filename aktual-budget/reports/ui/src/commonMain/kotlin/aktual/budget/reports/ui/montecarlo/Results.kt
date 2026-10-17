@@ -143,6 +143,7 @@ private fun ResultsViews(
       when (state.resultsView) {
         Chart -> Strings.monteCarloHeadingPerformance
         Cashflow -> Strings.monteCarloHeadingCashflow
+        Pots -> Strings.monteCarloHeadingPotBalances
         Runs -> Strings.monteCarloHeadingRuns
       },
     section = Results,
@@ -163,6 +164,10 @@ private fun ResultsViews(
 
       Cashflow -> {
         CashflowView(state, onAction)
+      }
+
+      Pots -> {
+        PotBalancesView(state, onAction)
       }
 
       Runs -> {

@@ -30,7 +30,7 @@ sealed interface MonteCarloState {
     val results: MonteCarloResults?,
     // The run picked from the runs table, if any
     val selectedRun: Int?,
-    // The cashflow view's run, or the selected run in the runs view
+    // The cashflow and pots views' run, or the selected run in the runs view
     val runDetail: MonteCarloRunDetail?,
   ) : MonteCarloState
 }
@@ -54,6 +54,7 @@ enum class MonteCarloSection {
 enum class MonteCarloResultsView {
   Chart,
   Cashflow,
+  Pots,
   Runs,
 }
 
@@ -67,7 +68,8 @@ enum class MonteCarloGraphView {
 }
 
 // Points along the worst-first ranking of runs, shared by the runs table's jumps and the cashflow
-// view's scenario picker so both land on the same runs
+// and
+// pots views' scenario picker so all land on the same runs
 enum class RunPercentile(val fraction: Double) {
   Worst(fraction = 0.0),
   P25(fraction = 0.25),
@@ -123,7 +125,8 @@ data class MonteCarloRun(
 
 data class MonteCarloRunDetail(
   val index: Int,
-  // Includes the unfunded years after a failure, which only the cashflow chart shows
+  // Includes the unfunded years after a failure, which only the charts show
   val rows: ImmutableList<McRunDetailRow>,
   val cashflow: CashflowChart,
+  val potBalances: PotBalancesChart,
 )

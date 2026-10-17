@@ -28,6 +28,7 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -168,6 +169,23 @@ class MonteCarloViewModelTest {
       cancelAndIgnoreRemainingEvents()
     }
   }
+
+  @Test
+  fun `The pots view charts the picked run's pot balances`() =
+    runMonteCarloTest { viewModel, _, _ ->
+      viewModel.state.test {
+        awaitLoaded { it.results != null }
+        viewModel.setResultsView(Pots)
+        viewModel.setCashflowPercentile(Worst)
+        val loaded = awaitLoaded { it.runDetail != null && it.cashflowPercentile == Worst }
+        val detail = assertNotNull(loaded.runDetail)
+        assertThat(detail.potBalances).all {
+          transform { it.series.size }.isEqualTo(loaded.config.pots.size)
+          transform { chart -> chart.years.map { it.year } }.isEqualTo(detail.rows.map { it.year })
+        }
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
 
   private suspend fun ReceiveTurbine<MonteCarloState>.awaitLoaded(
     predicate: (MonteCarloState.Loaded) -> Boolean,
