@@ -11,8 +11,10 @@ import aktual.core.Calendar
 import androidx.compose.runtime.Immutable
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.YearMonth
@@ -31,6 +33,9 @@ data class QueryEditorData(
   val payees: ImmutableList<QueryEntity>,
   val currentMonth: YearMonth,
   val months: YearMonthRange,
+  // Every entity's name by id, including hidden categories and closed accounts that saved
+  // conditions can still point to
+  val names: ImmutableMap<String, String>,
 )
 
 fun QueryEditorData.entities(field: Field): ImmutableList<QueryEntity> =
@@ -79,8 +84,17 @@ internal class QueryEditorDataLoader(
         payees = payees.getAllActive().entities({ it.id.toString() }, { it.name }),
         currentMonth = current,
         months = YearMonthRange(earliest, latest),
+        names = names(),
       )
     }
+
+  private suspend fun names(): ImmutableMap<String, String> = buildMap {
+    accounts.nameMap().forEach { (id, name) -> name?.let { put(id.toString(), it) } }
+    categories.nameMap().forEach { (id, name) -> name?.let { put(id.toString(), it) } }
+    categoryGroups.nameMap().forEach { (id, name) -> name?.let { put(id.toString(), it) } }
+    payees.getAllActive().forEach { row -> row.name?.let { put(row.id.toString(), it) } }
+  }
+    .toImmutableMap()
 
   private inline fun <T> List<T>.entities(
     id: (T) -> String,

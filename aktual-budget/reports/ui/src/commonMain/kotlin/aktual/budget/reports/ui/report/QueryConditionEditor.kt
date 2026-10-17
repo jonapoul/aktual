@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlin.math.roundToLong
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.json.JsonArray
@@ -114,6 +115,7 @@ internal fun QueryConditionEditor(
         kind = kind,
         value = condition.value,
         entities = data.entities(condition.field),
+        names = data.names,
         onChange = { value -> onChange(condition.copy(value = value)) },
       )
     }
@@ -124,12 +126,13 @@ private fun ConditionValue(
   kind: ConditionValueKind,
   value: JsonElement,
   entities: ImmutableList<QueryEntity>,
+  names: ImmutableMap<String, String>,
   onChange: (JsonElement) -> Unit,
 ) {
   when (kind) {
-    Entity -> EntityPicker(value, entities, onChange)
+    Entity -> EntityPicker(value, entities, names, onChange)
 
-    EntityList -> EntityListPicker(value as JsonArray, entities, onChange)
+    EntityList -> EntityListPicker(value as JsonArray, entities, names, onChange)
 
     ConditionValueKind.Text ->
       CommitTextField(
@@ -176,13 +179,14 @@ private fun ConditionValue(
 private fun EntityPicker(
   value: JsonElement,
   entities: ImmutableList<QueryEntity>,
+  names: ImmutableMap<String, String>,
   onChange: (JsonElement) -> Unit,
 ) {
   var showSheet by remember { mutableStateOf(false) }
   val id = value.jsonPrimitive.contentOrNull
   NormalTextButton(
     modifier = Modifier.fillMaxWidth(),
-    text = if (id == null) Strings.reportsFormulaQueryNothing else entities.nameOf(id),
+    text = if (id == null) Strings.reportsFormulaQueryNothing else names.nameOf(id),
     onClick = { showSheet = true },
   )
 
@@ -202,6 +206,7 @@ private fun EntityPicker(
 private fun EntityListPicker(
   value: JsonArray,
   entities: ImmutableList<QueryEntity>,
+  names: ImmutableMap<String, String>,
   onChange: (JsonElement) -> Unit,
 ) =
   Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -210,7 +215,7 @@ private fun EntityListPicker(
       Row(verticalAlignment = CenterVertically) {
         Text(
           modifier = Modifier.weight(1f),
-          text = entities.nameOf(id),
+          text = names.nameOf(id),
           style = typography.bodyMedium,
         )
         BareIconButton(
@@ -280,8 +285,8 @@ private fun EntitySheet(
   }
 
 @Composable
-private fun ImmutableList<QueryEntity>.nameOf(id: String): String =
-  firstOrNull { it.id == id }?.name ?: Strings.reportsFormulaQueryUnknown
+private fun ImmutableMap<String, String>.nameOf(id: String): String =
+  get(id) ?: Strings.reportsFormulaQueryUnknown
 
 private val NOTHING = QueryEntity(id = "", name = "")
 private val FLAGS = persistentListOf(true, false)

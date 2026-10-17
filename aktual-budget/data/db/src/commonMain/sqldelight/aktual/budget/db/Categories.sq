@@ -47,6 +47,8 @@ getNames: SELECT name FROM categories WHERE id IN ?;
 
 getAllActive: SELECT id, name FROM categories WHERE tombstone = 0 AND hidden = 0 ORDER BY sort_order, name;
 
+getAllNames: SELECT id, name FROM categories WHERE tombstone = 0;
+
 -- Visible categories under their groups, in the order upstream's category picker lists them
 getAllActiveGrouped:
 SELECT c.id, c.name, g.id AS groupId, g.name AS groupName
