@@ -126,6 +126,40 @@ class FormulaReportScaffoldTest {
     assertThat(actions).containsExactly(FormulaReportAction.EditQuery("income"))
   }
 
+  @Test
+  fun `Add query waits for the editor data`() = runComposeUiTest {
+    // when
+    setContent {
+      PreviewWithColors(DarkColors) {
+        FormulaReportScaffold(state = state(hasChanges = false), onAction = {})
+      }
+    }
+
+    // then
+    onNodeWithTag(Tags.AddQuery).performScrollTo().assertIsNotEnabled()
+  }
+
+  @Test
+  fun `Add query sends its action while editing`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<FormulaReportAction>()
+    setContent {
+      PreviewWithColors(DarkColors) {
+        FormulaReportScaffold(
+          state = state(hasChanges = false),
+          queryEditorData = PREVIEW_QUERY_DATA,
+          onAction = { actions += it },
+        )
+      }
+    }
+
+    // when
+    onNodeWithTag(Tags.AddQuery).performScrollTo().performClick()
+
+    // then
+    assertThat(actions).containsExactly(FormulaReportAction.AddQuery)
+  }
+
   private fun state(hasChanges: Boolean) =
     FormulaReportState.Loaded(
       draft = DRAFT,

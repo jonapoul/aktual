@@ -5,6 +5,8 @@ import aktual.budget.model.Condition
 import aktual.budget.model.Field
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.FormulaReportMeta
+import aktual.budget.reports.vm.QueryEditorData
+import aktual.budget.reports.vm.QueryEntity
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.TimeFrameMode
 import aktual.budget.reports.vm.editableKind
@@ -13,7 +15,10 @@ import aktual.core.ui.formattedString
 import aktual.core.ui.stringShort
 import androidx.compose.runtime.Composable
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.YearMonthRange
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.boolean
@@ -98,5 +103,23 @@ internal val PREVIEW_FORMULA_META =
             conditionsOp = Or,
             timeFrame = null,
           ),
+      ),
+  )
+
+@Suppress("MagicNumber", "StringLiteralDuplication")
+internal val PREVIEW_QUERY_DATA =
+  QueryEditorData(
+    accounts = persistentListOf(QueryEntity("checking", "Checking")),
+    categories = persistentListOf(QueryEntity("food", "Food")),
+    categoryGroups = persistentListOf(QueryEntity("bills", "Bills")),
+    payees = persistentListOf(QueryEntity("employer", "Employer")),
+    currentMonth = YearMonth(2025, 6),
+    months = YearMonthRange(YearMonth(2024, 1), YearMonth(2025, 6)),
+    names =
+      persistentMapOf(
+        "checking" to "Checking",
+        "food" to "Food",
+        "bills" to "Bills",
+        "employer" to "Employer",
       ),
   )

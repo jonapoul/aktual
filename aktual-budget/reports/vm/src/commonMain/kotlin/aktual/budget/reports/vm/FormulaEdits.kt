@@ -3,6 +3,7 @@ package aktual.budget.reports.vm
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.datetime.YearMonth
 
 @Immutable
 data class FormulaEdits(
@@ -37,5 +38,25 @@ fun FormulaReportMeta.withEdits(edits: FormulaEdits) =
     showTitle = edits.showTitle,
     queries = edits.queries,
   )
+
+// Upstream starts a new query on the current month, moving with time
+fun FormulaEdits.withNewQuery(name: String, month: YearMonth): FormulaEdits =
+  withQuery(
+    name,
+    FormulaQuery(
+      conditions = emptyList(),
+      conditionsOp = And,
+      timeFrame = TimeFrame(month, month, SlidingWindow),
+    ),
+  )
+
+fun FormulaEdits.withQuery(name: String, query: FormulaQuery): FormulaEdits =
+  copy(queries = (queries + (name to query)).toImmutableMap())
+
+fun FormulaEdits.withQueryRenamed(from: String, to: String): FormulaEdits =
+  copy(queries = queries.renamed(from, to))
+
+fun FormulaEdits.withoutQuery(name: String): FormulaEdits =
+  copy(queries = (queries - name).toImmutableMap())
 
 const val DEFAULT_STATIC_FONT_SIZE = 32.0

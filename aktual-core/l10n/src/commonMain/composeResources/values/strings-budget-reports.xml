@@ -264,6 +264,8 @@
   <string name="reports_formula_query_rename">Rename query</string>
   <string name="reports_formula_query_rename_confirm">Rename</string>
   <string name="reports_formula_query_delete">Delete query</string>
+  <string name="reports_formula_query_delete_title">Delete %1$s?</string>
+  <string name="reports_formula_query_cancel">Cancel</string>
   <string name="reports_formula_query_match_all">Match all</string>
   <string name="reports_formula_query_match_any">Match any</string>
   <string name="reports_formula_query_add_condition">Add condition</string>
