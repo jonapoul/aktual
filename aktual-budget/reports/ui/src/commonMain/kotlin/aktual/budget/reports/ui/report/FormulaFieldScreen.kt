@@ -58,6 +58,8 @@ import androidx.compose.ui.text.font.FontFamily.Companion.Monospace
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 // Edits one of the card's formulas in the draft, so the preview follows the text as it's typed.
 // Back puts the text back as it was when the screen opened
@@ -66,6 +68,7 @@ internal fun FormulaFieldScreen(
   field: FormulaField,
   initialText: String,
   preview: FormulaData?,
+  queryNames: ImmutableList<String>,
   onChange: (String) -> Unit,
   onClose: () -> Unit,
 ) {
@@ -84,6 +87,7 @@ internal fun FormulaFieldScreen(
     field = field,
     text = text,
     preview = preview,
+    queryNames = queryNames,
     onBack = cancel,
     onDone = onClose,
   )
@@ -94,6 +98,7 @@ private fun FormulaFieldScaffold(
   field: FormulaField,
   text: TextFieldState,
   preview: FormulaData?,
+  queryNames: ImmutableList<String>,
   onBack: () -> Unit,
   onDone: () -> Unit,
 ) =
@@ -149,6 +154,7 @@ private fun FormulaFieldScaffold(
         }
 
         Result(preview)
+        FormulaShortcuts(field = field, text = text, queryNames = queryNames)
       }
     }
   }
@@ -235,6 +241,7 @@ private fun PreviewFormulaFieldScaffold(
       field = field,
       text = rememberTextFieldState(text),
       preview = preview,
+      queryNames = PREVIEW_FORMULA_META.queries.keys.toImmutableList(),
       onBack = {},
       onDone = {},
     )

@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun EditFormulaReportScreen(
@@ -85,6 +86,7 @@ fun EditFormulaReportScreen(
       field = field,
       initialText = loaded.draft.text(field),
       preview = loaded.preview,
+      queryNames = loaded.draft.queries.keys.toImmutableList(),
       onChange = { text -> viewModel.edit { it.withText(field, text) } },
       onClose = { page = null },
     )
@@ -170,7 +172,7 @@ private fun FormulaEdits.withText(field: FormulaField, text: String): FormulaEdi
 @Composable
 private fun editFormulaReportViewModel(id: WidgetId) =
   assistedMetroViewModel<EditFormulaReportViewModel, EditFormulaReportViewModel.Factory>(
-    key = id.value
+    key = id.value,
   ) {
     create(id)
   }
@@ -260,7 +262,7 @@ private fun PreviewCard(state: EditFormulaReportState.Loaded) {
             style = Stroke(width = 1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(DASHES)),
           )
         }
-        .padding(8.dp)
+        .padding(8.dp),
   ) {
     Text(
       modifier = Modifier.padding(4.dp),
@@ -282,7 +284,7 @@ private fun Settings(draft: FormulaEdits, onAction: (EditFormulaAction) -> Unit)
   Section(label = Strings.reportsFormulaEditorReport) {
     ValueRow(label = Strings.reportsFormulaEditorName, onClick = { onAction(EditName) }) {
       Value(
-        text = draft.name.takeUnless { it.isNullOrBlank() } ?: Strings.reportsFormulaViewerNotSet
+        text = draft.name.takeUnless { it.isNullOrBlank() } ?: Strings.reportsFormulaViewerNotSet,
       )
     }
     Divider()
@@ -361,7 +363,7 @@ private fun QueryRow(name: String, query: FormulaQuery) =
       color = colors.tableText,
     )
     Value(
-      text = Plurals.reportsFormulaEditorConditions(query.conditions.size, query.conditions.size)
+      text = Plurals.reportsFormulaEditorConditions(query.conditions.size, query.conditions.size),
     )
   }
 
@@ -372,7 +374,7 @@ private val DASHES = floatArrayOf(12f, 8f)
 @PortraitPreview
 @Composable
 private fun PreviewEditFormulaReportScaffold(
-  @PreviewParameter(EditFormulaReportProvider::class) params: ColoredParams<EditFormulaReportState>
+  @PreviewParameter(EditFormulaReportProvider::class) params: ColoredParams<EditFormulaReportState>,
 ) = PreviewWithColoredParams(params) { EditFormulaReportScaffold(state = this, onAction = {}) }
 
 private class EditFormulaReportProvider :

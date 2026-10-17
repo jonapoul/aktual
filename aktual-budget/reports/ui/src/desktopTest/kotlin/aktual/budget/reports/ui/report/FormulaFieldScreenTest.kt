@@ -12,12 +12,14 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.v2.runComposeUiTest
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isTrue
 import kotlin.test.Test
+import kotlinx.collections.immutable.persistentListOf
 
 class FormulaFieldScreenTest {
   private val changes = mutableListOf<String>()
@@ -67,12 +69,28 @@ class FormulaFieldScreenTest {
     onNodeWithText("#ERROR!\nThe formula ends too soon").assertExists()
   }
 
+  @Test
+  fun `Shortcuts insert at the cursor`() = runComposeUiTest {
+    // given
+    setScreen()
+    onNodeWithTag(Tags.FormulaField).performTextReplacement("=")
+
+    // when
+    onNodeWithText("SUM()").performScrollTo().performClick()
+    onNodeWithText("\"groceries\"").performScrollTo().performClick()
+
+    // then
+    waitForIdle()
+    assertThat(changes.last()).isEqualTo("=SUM(\"groceries\")")
+  }
+
   private fun ComposeUiTest.setScreen(preview: FormulaData = PREVIEW_FORMULA_DATA) = setContent {
     PreviewWithColors(DarkColors) {
       FormulaFieldScreen(
         field = Formula,
         initialText = INITIAL,
         preview = preview,
+        queryNames = persistentListOf("groceries"),
         onChange = { changes += it },
         onClose = { closed = true },
       )

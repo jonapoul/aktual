@@ -33,4 +33,5 @@
   <string name="reports_custom_uncategorised_and_off_budget">Uncategorized &amp; Off budget</string>
   <string name="reports_formula_viewer_color_rule">Color rule</string>
   <string name="reports_formula_editor_color_formula_help">Returns a color for the result. RESULT is the formula's value, and theme_ names like theme_numberPositive are theme colors.</string>
+  <string name="reports_formula_editor_theme_colors">Theme colors</string>
 </resources>
