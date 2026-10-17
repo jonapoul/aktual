@@ -60,13 +60,17 @@ internal class DashboardSync(
   suspend fun setFormula(id: WidgetId, edits: FormulaEdits) =
     patchMeta(
       id,
-      "name" to JsonPrimitive(edits.name),
-      "formula" to JsonPrimitive(edits.formula),
-      "colorFormula" to JsonPrimitive(edits.colorFormula),
-      "fontSizeMode" to DbJson.encodeToJsonElement(FontSizeMode.serializer(), edits.fontSizeMode),
-      "staticFontSize" to JsonPrimitive(edits.staticFontSize),
-      "showTitle" to JsonPrimitive(edits.showTitle),
-      "queries" to DbJson.encodeToJsonElement(QUERIES_SERIALIZER, edits.queries),
+      listOfNotNull(
+          edits.name?.let { "name" to JsonPrimitive(it) },
+          "formula" to JsonPrimitive(edits.formula),
+          "colorFormula" to JsonPrimitive(edits.colorFormula),
+          "fontSizeMode" to
+            DbJson.encodeToJsonElement(FontSizeMode.serializer(), edits.fontSizeMode),
+          "staticFontSize" to JsonPrimitive(edits.staticFontSize),
+          "showTitle" to JsonPrimitive(edits.showTitle),
+          "queries" to DbJson.encodeToJsonElement(QUERIES_SERIALIZER, edits.queries),
+        )
+        .toMap(),
     )
 
   // Writes the plan's settings over the stored meta, like upstream's save. Nulls are written out,

@@ -250,13 +250,8 @@
   <string name="reports_formula_warning_unknown_query">No query named %1$s</string>
   <string name="reports_formula_warning_unknown_account">No account named %1$s</string>
   <string name="reports_formula_editor_formula">Formula</string>
-  <string name="reports_formula_editor_formula_placeholder">=SUM(1, 2, 3)</string>
-  <string name="reports_formula_editor_color_formula">Color formula</string>
-  <string name="reports_formula_editor_color_formula_help">Returns a color for the result. RESULT is the formula's value, and theme_ names like theme_numberPositive are theme colors.</string>
   <string name="reports_formula_editor_font_size">Font size</string>
   <string name="reports_formula_editor_font_dynamic">Dynamic</string>
-  <string name="reports_formula_editor_font_static">Static</string>
-  <string name="reports_formula_editor_static_size">Size</string>
   <string name="reports_formula_editor_show_title">Show title</string>
   <string name="reports_formula_editor_save">Save</string>
   <string name="reports_formula_queries">Queries</string>

@@ -6,7 +6,8 @@ import kotlinx.collections.immutable.toImmutableMap
 
 @Immutable
 data class FormulaEdits(
-  val name: String,
+  // Null leaves the stored name as it is
+  val name: String?,
   val formula: String,
   val colorFormula: String,
   val fontSizeMode: FontSizeMode,
@@ -17,7 +18,7 @@ data class FormulaEdits(
 
 fun FormulaReportMeta.toEdits() =
   FormulaEdits(
-    name = name.orEmpty(),
+    name = name,
     formula = formula.orEmpty(),
     colorFormula = colorFormula.orEmpty(),
     fontSizeMode = if (fontSizeMode == Static) Static else Dynamic,
@@ -28,7 +29,7 @@ fun FormulaReportMeta.toEdits() =
 
 fun FormulaReportMeta.withEdits(edits: FormulaEdits) =
   copy(
-    name = edits.name,
+    name = edits.name ?: name,
     formula = edits.formula,
     colorFormula = edits.colorFormula,
     fontSizeMode = edits.fontSizeMode,

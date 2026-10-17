@@ -124,6 +124,40 @@ class DashboardSyncTest {
   }
 
   @Test
+  fun `Setting a formula without a name keeps the stored one`() = runSyncTest { dao ->
+    dao.insert(
+      WIDGET,
+      page = PAGE_1,
+      type = Formula,
+      x = 0,
+      y = 0,
+      meta = json("""{"formula":"=1"}"""),
+    )
+
+    setFormula(
+      WIDGET,
+      FormulaEdits(
+        name = null,
+        formula = "=2",
+        colorFormula = "",
+        fontSizeMode = Dynamic,
+        staticFontSize = 32.0,
+        showTitle = true,
+        queries = persistentMapOf(),
+      ),
+    )
+
+    val meta = dao.observeByPage(PAGE_1).first().single().meta
+    assertThat(meta)
+      .isEqualTo(
+        json(
+          """{"formula":"=2","colorFormula":"","fontSizeMode":"dynamic","staticFontSize":32.0,""" +
+            """"showTitle":true,"queries":{}}""",
+        ),
+      )
+  }
+
+  @Test
   fun `Delete a widget`() = runSyncTest { dao ->
     dao.insert(WIDGET, page = PAGE_1, type = NetWorth, x = 0, y = 0, meta = null)
 

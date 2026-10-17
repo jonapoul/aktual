@@ -224,7 +224,9 @@ private fun Settings(draft: FormulaEdits, onAction: (EditFormulaAction) -> Unit)
   // Rows that open a sub-editor have no click handler until those screens exist
   Section(label = Strings.reportsFormulaEditorReport) {
     ValueRow(label = Strings.reportsFormulaEditorName, onClick = null) {
-      Value(text = draft.name.ifBlank { Strings.reportsFormulaViewerNotSet })
+      Value(
+        text = draft.name.takeUnless { it.isNullOrBlank() } ?: Strings.reportsFormulaViewerNotSet,
+      )
     }
     Divider()
     ValueRow(label = Strings.reportsFormulaEditorFormula, onClick = null) {
