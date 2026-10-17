@@ -4,6 +4,7 @@ import aktual.budget.model.WidgetId
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.charts.FormulaChart
 import aktual.budget.reports.ui.charts.PREVIEW_FORMULA_DATA
+import aktual.budget.reports.ui.dashboard.NameDialog
 import aktual.budget.reports.vm.FormulaEdits
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.report.EditFormulaReportState
@@ -52,7 +53,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -74,45 +75,102 @@ fun EditFormulaReportScreen(
   viewModel: EditFormulaReportViewModel = editFormulaReportViewModel(id),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  var showDiscardDialog by remember { mutableStateOf(false) }
-  val hasChanges = (state as? EditFormulaReportState.Loaded)?.hasChanges == true
+  var page by rememberSaveable { mutableStateOf<FormulaField?>(null) }
+  var dialog by rememberSaveable { mutableStateOf<EditorDialog?>(null) }
+  val loaded = state as? EditFormulaReportState.Loaded
 
-  BackHandler(enabled = hasChanges) { showDiscardDialog = true }
+  val field = page
+  if (field != null && loaded != null) {
+    FormulaFieldScreen(
+      field = field,
+      initialText = loaded.draft.text(field),
+      preview = loaded.preview,
+      onChange = { text -> viewModel.edit { it.withText(field, text) } },
+      onClose = { page = null },
+    )
+  } else {
+    BackHandler(enabled = loaded?.hasChanges == true) { dialog = Discard }
 
-  EditFormulaReportScaffold(
-    state = state,
-    onAction = { action ->
-      when (action) {
-        Close -> {
-          if (viewModel.hasUnsavedChanges()) showDiscardDialog = true else back()
+    EditFormulaReportScaffold(
+      state = state,
+      onAction = { action ->
+        when (action) {
+          Close -> if (viewModel.hasUnsavedChanges()) dialog = Discard else back()
+          Save -> viewModel.save().also { back() }
+          is Edit -> viewModel.edit(action.transform)
+          EditName -> dialog = Name
+          EditFormula -> page = Formula
+          EditColorRule -> page = ColorRule
+          EditFontSize -> dialog = FontSize
         }
-        Save -> {
-          viewModel.save()
-          back()
-        }
-        is Edit -> {
-          viewModel.edit(action.transform)
-        }
-      }
-    },
-  )
-
-  if (showDiscardDialog) {
-    DiscardChangesDialog(
-      message = Strings.reportsFormulaEditorDiscardMessage,
-      onDiscard = {
-        showDiscardDialog = false
-        back()
       },
-      onCancel = { showDiscardDialog = false },
     )
   }
+
+  when (dialog) {
+    Discard -> {
+      DiscardChangesDialog(
+        message = Strings.reportsFormulaEditorDiscardMessage,
+        onDiscard = {
+          dialog = null
+          back()
+        },
+        onCancel = { dialog = null },
+      )
+    }
+    Name -> {
+      NameDialog(
+        title = Strings.reportsDashboardRenameReport,
+        placeholder = Strings.reportsDashboardReportName,
+        confirmText = Strings.reportsDashboardNameSave,
+        initialName = loaded?.draft?.name.orEmpty(),
+        onConfirm = { name ->
+          viewModel.edit { it.copy(name = name) }
+          dialog = null
+        },
+        onDismiss = { dialog = null },
+      )
+    }
+    FontSize -> {
+      if (loaded != null) {
+        FontSizeDialog(
+          initialMode = loaded.draft.fontSizeMode,
+          initialSize = loaded.draft.staticFontSize,
+          preview = loaded.preview,
+          onApply = { mode, size ->
+            viewModel.edit { it.copy(fontSizeMode = mode, staticFontSize = size) }
+            dialog = null
+          },
+          onDismiss = { dialog = null },
+        )
+      }
+    }
+    null -> {}
+  }
 }
+
+private enum class EditorDialog {
+  Discard,
+  Name,
+  FontSize,
+}
+
+private fun FormulaEdits.text(field: FormulaField): String =
+  when (field) {
+    Formula -> formula
+    ColorRule -> colorFormula
+  }
+
+private fun FormulaEdits.withText(field: FormulaField, text: String): FormulaEdits =
+  when (field) {
+    Formula -> copy(formula = text)
+    ColorRule -> copy(colorFormula = text)
+  }
 
 @Composable
 private fun editFormulaReportViewModel(id: WidgetId) =
   assistedMetroViewModel<EditFormulaReportViewModel, EditFormulaReportViewModel.Factory>(
-    key = id.value,
+    key = id.value
   ) {
     create(id)
   }
@@ -202,7 +260,7 @@ private fun PreviewCard(state: EditFormulaReportState.Loaded) {
             style = Stroke(width = 1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(DASHES)),
           )
         }
-        .padding(8.dp),
+        .padding(8.dp)
   ) {
     Text(
       modifier = Modifier.padding(4.dp),
@@ -221,25 +279,24 @@ private fun PreviewCard(state: EditFormulaReportState.Loaded) {
 
 @Composable
 private fun Settings(draft: FormulaEdits, onAction: (EditFormulaAction) -> Unit) {
-  // Rows that open a sub-editor have no click handler until those screens exist
   Section(label = Strings.reportsFormulaEditorReport) {
-    ValueRow(label = Strings.reportsFormulaEditorName, onClick = null) {
+    ValueRow(label = Strings.reportsFormulaEditorName, onClick = { onAction(EditName) }) {
       Value(
-        text = draft.name.takeUnless { it.isNullOrBlank() } ?: Strings.reportsFormulaViewerNotSet,
+        text = draft.name.takeUnless { it.isNullOrBlank() } ?: Strings.reportsFormulaViewerNotSet
       )
     }
     Divider()
-    ValueRow(label = Strings.reportsFormulaEditorFormula, onClick = null) {
+    ValueRow(label = Strings.reportsFormulaEditorFormula, onClick = { onAction(EditFormula) }) {
       FormulaValue(draft.formula)
     }
   }
 
   Section(label = Strings.reportsFormulaViewerAppearance) {
-    ValueRow(label = Strings.reportsFormulaViewerColorRule, onClick = null) {
+    ValueRow(label = Strings.reportsFormulaViewerColorRule, onClick = { onAction(EditColorRule) }) {
       FormulaValue(draft.colorFormula)
     }
     Divider()
-    ValueRow(label = Strings.reportsFormulaEditorFontSize, onClick = null) {
+    ValueRow(label = Strings.reportsFormulaEditorFontSize, onClick = { onAction(EditFontSize) }) {
       Value(text = fontSizeString(draft.fontSizeMode, draft.staticFontSize))
     }
     Divider()
@@ -261,6 +318,7 @@ private fun Settings(draft: FormulaEdits, onAction: (EditFormulaAction) -> Unit)
     }
   }
 
+  // Query rows open nothing until the query screen exists
   Section(label = Strings.reportsFormulaQueries) {
     if (draft.queries.isEmpty()) {
       SettingRow(onClick = null) {
@@ -303,7 +361,7 @@ private fun QueryRow(name: String, query: FormulaQuery) =
       color = colors.tableText,
     )
     Value(
-      text = Plurals.reportsFormulaEditorConditions(query.conditions.size, query.conditions.size),
+      text = Plurals.reportsFormulaEditorConditions(query.conditions.size, query.conditions.size)
     )
   }
 
@@ -314,7 +372,7 @@ private val DASHES = floatArrayOf(12f, 8f)
 @PortraitPreview
 @Composable
 private fun PreviewEditFormulaReportScaffold(
-  @PreviewParameter(EditFormulaReportProvider::class) params: ColoredParams<EditFormulaReportState>,
+  @PreviewParameter(EditFormulaReportProvider::class) params: ColoredParams<EditFormulaReportState>
 ) = PreviewWithColoredParams(params) { EditFormulaReportScaffold(state = this, onAction = {}) }
 
 private class EditFormulaReportProvider :

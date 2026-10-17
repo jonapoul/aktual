@@ -9,6 +9,7 @@ import aktual.core.ui.PreviewWithColors
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import assertk.assertThat
@@ -64,6 +65,32 @@ class EditFormulaReportScaffoldTest {
     // then
     val edit = actions.single() as EditFormulaAction.Edit
     assertThat(edit.transform(DRAFT).showTitle).isFalse()
+  }
+
+  @Test
+  fun `Setting rows open their editors`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<EditFormulaAction>()
+    setContent {
+      PreviewWithColors(DarkColors) {
+        EditFormulaReportScaffold(state = state(hasChanges = false), onAction = { actions += it })
+      }
+    }
+
+    // when
+    onNodeWithText("Name").performClick()
+    onNodeWithText("Formula").performClick()
+    onNodeWithText("rule", substring = true).performClick()
+    onNodeWithText("Font size").performClick()
+
+    // then
+    assertThat(actions)
+      .containsExactly(
+        EditFormulaAction.EditName,
+        EditFormulaAction.EditFormula,
+        EditFormulaAction.EditColorRule,
+        EditFormulaAction.EditFontSize,
+      )
   }
 
   private fun state(hasChanges: Boolean) =

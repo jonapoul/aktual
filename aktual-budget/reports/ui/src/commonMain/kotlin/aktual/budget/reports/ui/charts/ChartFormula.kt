@@ -97,7 +97,7 @@ internal fun FormulaChart(
   }
 
 @Composable
-private fun FormulaOutput.displayString(): String =
+internal fun FormulaOutput.displayString(): String =
   when (this) {
     is Money -> amount.formattedString()
     is Text -> value
@@ -159,7 +159,7 @@ private fun ErrorValue.message(): String {
 }
 
 @Composable
-private fun FormulaWarning.message(): String? =
+internal fun FormulaWarning.message(): String? =
   when (this) {
     is UnknownQuery -> Strings.reportsFormulaWarningUnknownQuery(name)
     is UnknownAccount -> Strings.reportsFormulaWarningUnknownAccount(account)
