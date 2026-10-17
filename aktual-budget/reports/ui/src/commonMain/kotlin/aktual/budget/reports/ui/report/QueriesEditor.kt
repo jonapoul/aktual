@@ -11,7 +11,6 @@ import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.TimeFrameMode
 import aktual.budget.reports.vm.newQueryCondition
 import aktual.budget.reports.vm.renamed
-import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
@@ -142,10 +141,9 @@ private fun QueryCard(
         contentDescription = Strings.reportsFormulaQueryRename,
         onClick = { showRenameDialog = true },
       )
-      BareIconButton(
-        imageVector = MaterialIcons.Delete,
+      ConfirmDeleteButton(
         contentDescription = Strings.reportsFormulaQueryDelete,
-        onClick = onDelete,
+        onDelete = onDelete,
       )
     }
 

@@ -14,7 +14,6 @@ import aktual.budget.reports.vm.queryOperators
 import aktual.budget.reports.vm.toDayOrNull
 import aktual.budget.reports.vm.withOperator
 import aktual.core.icons.material.Clear
-import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Search
 import aktual.core.l10n.Strings
@@ -103,10 +102,9 @@ internal fun QueryConditionEditor(
           textStyle = typography.bodySmall,
         )
       }
-      BareIconButton(
-        imageVector = MaterialIcons.Delete,
+      ConfirmDeleteButton(
         contentDescription = Strings.reportsFormulaQueryDeleteCondition,
-        onClick = onDelete,
+        onDelete = onDelete,
       )
     }
 

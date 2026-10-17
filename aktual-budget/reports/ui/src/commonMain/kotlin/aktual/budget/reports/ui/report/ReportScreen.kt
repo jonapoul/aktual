@@ -57,6 +57,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -221,31 +222,35 @@ private fun ReportContent(
 ) {
   val meta = (state as? Loaded)?.item?.meta as? FormulaReportMeta
   if (state is Loaded && meta != null) {
-    Column(
-      modifier =
-        modifier
-          .verticalScrollWithBar(scrollState)
-          .padding(contentPadding)
-          .padding(CONTENT_PADDING),
-    ) {
-      ReportChart(
+    val deleteState = rememberConfirmDeleteState()
+    CompositionLocalProvider(LocalConfirmDeleteState provides deleteState) {
+      Column(
         modifier =
-          Modifier.fillMaxWidth()
-            .height(FORMULA_CARD_HEIGHT)
-            .background(colors.tableBackground, CardShape)
-            .padding(8.dp),
-        data = state.data,
-        compact = false,
-        onAction = onAction,
-        zoom = zoom,
-      )
-      FormulaEditor(
-        modifier = Modifier.padding(top = 16.dp),
-        meta = meta,
-        queryEditorData = queryEditorData,
-        onAction = onAction,
-      )
-      BottomSpacing()
+          modifier
+            .disarmDeletesOnTap(deleteState)
+            .verticalScrollWithBar(scrollState)
+            .padding(contentPadding)
+            .padding(CONTENT_PADDING),
+      ) {
+        ReportChart(
+          modifier =
+            Modifier.fillMaxWidth()
+              .height(FORMULA_CARD_HEIGHT)
+              .background(colors.tableBackground, CardShape)
+              .padding(8.dp),
+          data = state.data,
+          compact = false,
+          onAction = onAction,
+          zoom = zoom,
+        )
+        FormulaEditor(
+          modifier = Modifier.padding(top = 16.dp),
+          meta = meta,
+          queryEditorData = queryEditorData,
+          onAction = onAction,
+        )
+        BottomSpacing()
+      }
     }
     return
   }
