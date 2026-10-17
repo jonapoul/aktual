@@ -318,7 +318,6 @@
     <item quantity="other">%1$d conditions</item>
   </plurals>
   <string name="reports_custom_editor_display">Display</string>
-  <string name="reports_custom_editor_mode">Mode</string>
   <string name="reports_custom_editor_mode_total">Total</string>
   <string name="reports_custom_editor_mode_time">Time</string>
   <string name="reports_custom_editor_graph">Graph</string>
