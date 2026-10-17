@@ -280,6 +280,13 @@
   <string name="reports_formula_query_time_frame">Time frame</string>
   <string name="reports_formula_query_start">Start</string>
   <string name="reports_formula_query_end">End</string>
+  <string name="reports_formula_query_match">Match</string>
+  <string name="reports_formula_query_conditions">Conditions</string>
+  <string name="reports_formula_query_edit_condition">Edit condition</string>
+  <string name="reports_formula_query_field">Field</string>
+  <string name="reports_formula_query_operator">Operator</string>
+  <string name="reports_formula_query_delete_condition_confirm">Delete</string>
+  <string name="reports_formula_query_remove">Remove %1$s</string>
   <string name="reports_formula_viewer_edit">Edit report</string>
   <string name="reports_formula_viewer_appearance">Appearance</string>
   <string name="reports_formula_viewer_color_rule">Color rule</string>

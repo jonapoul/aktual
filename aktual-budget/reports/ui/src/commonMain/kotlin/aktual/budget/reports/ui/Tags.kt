@@ -14,4 +14,10 @@ internal object Tags {
   const val FormulaDone = "FormulaDone"
   const val FontSizeField = "FontSizeField"
   const val ApplyFontSize = "ApplyFontSize"
+  const val AddCondition = "AddCondition"
+  const val ConditionRow = "ConditionRow"
+  const val TimeFrameRow = "TimeFrameRow"
+  const val QuerySheetDelete = "QuerySheetDelete"
+  const val QuerySheetDone = "QuerySheetDone"
+  const val QueryRow = "QueryRow"
 }

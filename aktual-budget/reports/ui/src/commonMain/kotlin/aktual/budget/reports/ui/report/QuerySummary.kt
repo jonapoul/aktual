@@ -34,26 +34,27 @@ internal fun FormulaQuery.conditionsSummary(names: ImmutableMap<String, String>)
 
 @Composable
 private fun Condition.summary(names: ImmutableMap<String, String>): String {
-  val value =
-    when (editableKind()) {
-      Entity -> value.jsonPrimitive.contentOrNull?.let { names.nameOf(it) }
-      EntityList ->
-        (value as JsonArray).map { names.nameOf(it.jsonPrimitive.content) }.joinToString()
-      Text,
-      Day -> value.jsonPrimitive.content
-      Money -> Amount(value.jsonPrimitive.long).formattedString()
-      Flag ->
-        if (value.jsonPrimitive.boolean) {
-          Strings.reportsFormulaQueryTrue
-        } else {
-          Strings.reportsFormulaQueryFalse
-        }
-      NoValue -> null
-      null -> value.toString()
-    }
   val field = field.label().replaceFirstChar { it.titlecase() }
-  return listOfNotNull(field, operator.label(), value).joinToString(" ")
+  return listOfNotNull(field, operator.label(), valueLabel(names)).joinToString(" ")
 }
+
+@Composable
+internal fun Condition.valueLabel(names: ImmutableMap<String, String>): String? =
+  when (editableKind()) {
+    Entity -> value.jsonPrimitive.contentOrNull?.let { names.nameOf(it) }
+    EntityList -> (value as JsonArray).map { names.nameOf(it.jsonPrimitive.content) }.joinToString()
+    Text,
+    Day -> value.jsonPrimitive.content
+    Money -> Amount(value.jsonPrimitive.long).formattedString()
+    Flag ->
+      if (value.jsonPrimitive.boolean) {
+        Strings.reportsFormulaQueryTrue
+      } else {
+        Strings.reportsFormulaQueryFalse
+      }
+    NoValue -> null
+    null -> value.toString()
+  }
 
 // A query with no time frame isn't filtered by date, so it shows as all time
 @Composable

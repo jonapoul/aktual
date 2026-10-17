@@ -45,18 +45,22 @@ import androidx.compose.ui.unit.em
 internal fun Section(label: String, content: @Composable ColumnScope.() -> Unit) = Column {
   AnimatedContent(targetState = label, transitionSpec = { fadeIn() togetherWith fadeOut() }) { text
     ->
-    Text(
-      modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 8.dp),
-      text = text.uppercase(),
-      style = typography.labelMedium.copy(fontWeight = SemiBold, letterSpacing = 0.08.em),
-      color = colors.tableHeaderText,
-    )
+    SectionLabel(text)
   }
   Column(
     modifier = Modifier.fillMaxWidth().clip(CardShape).background(colors.tableBackground),
     content = content,
   )
 }
+
+@Composable
+internal fun SectionLabel(text: String) =
+  Text(
+    modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 8.dp),
+    text = text.uppercase(),
+    style = typography.labelMedium.copy(fontWeight = SemiBold, letterSpacing = 0.08.em),
+    color = colors.tableHeaderText,
+  )
 
 // The chevron slides in and out with [showChevron], so rows can change between viewing and editing
 @Composable

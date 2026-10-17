@@ -22,4 +22,6 @@ internal sealed interface FormulaReportAction {
   data object EditColorRule : FormulaReportAction
 
   data object EditFontSize : FormulaReportAction
+
+  @JvmInline value class EditQuery(val name: String) : FormulaReportAction
 }
