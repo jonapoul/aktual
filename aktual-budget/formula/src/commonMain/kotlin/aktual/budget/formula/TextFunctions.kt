@@ -122,10 +122,25 @@ internal val TEXT_FUNCTIONS: Map<String, FormulaFunction> =
       formulaFunction(Param(Text), Param(Text)) { args ->
         BooleanValue(args.text(0) == args.text(1))
       },
+    "CHAR" to
+      formulaFunction(Param(Numeric)) { args ->
+        val code = args.number(0)
+        if (code < 1 || code >= CHAR_CODE_LIMIT) {
+          ErrorValue(Value, CharacterCodeOutOfRange)
+        } else {
+          TextValue(truncate(code).toInt().toChar().toString())
+        }
+      },
+    "CODE" to
+      formulaFunction(Param(Text)) { args ->
+        val text = args.text(0)
+        if (text.isEmpty()) ErrorValue(Value, NoText) else NumberValue(text[0].code.toDouble())
+      },
   )
 
 // Upstream would throw a RangeError instead
 private const val MAX_TEXT_LENGTH = 1_000_000
+private const val CHAR_CODE_LIMIT = 256
 
 private val LEADING_SPACES = Regex("^ +")
 private val TRAILING_SPACES = Regex(" +$")
@@ -162,33 +177,35 @@ private fun jsSubstring(text: String, start: Double, end: Double = text.length.t
   return text.substring(min(from, to), max(from, to))
 }
 
-// Port of SEARCH's matching with upstream's config: "*" and "?" are wildcards unless escaped with
-// "~". Accents are only stripped from the pattern, like upstream
+// Port of SEARCH's matching with upstream's config. Accents are only stripped from the pattern,
+// like
+// upstream
 private fun search(pattern: String, text: String): Int {
   if (pattern.none { it in WILDCARDS }) return text.indexOf(pattern)
-  val normalized = stripAccents(pattern)
-  val regex = buildString {
-    var i = 0
-    while (i < normalized.length) {
-      val char = normalized[i]
-      val next = normalized.getOrNull(i + 1)
-      when {
-        char == '~' ->
-          if (next == null) {
-            append('~')
-          } else {
-            if (next in WILDCARDS || next in REGEX_SPECIAL) append('\\')
-            append(next)
-            i++
-          }
-        char in WILDCARDS -> append('.').append(char)
-        char in REGEX_SPECIAL -> append('\\').append(char)
-        else -> append(char.lowercase())
-      }
-      i++
+  return Regex(wildcardRegex(stripAccents(pattern))).find(text)?.range?.first ?: -1
+}
+
+// Port of escapeNonWildcards: "*" and "?" are wildcards unless escaped with "~"
+internal fun wildcardRegex(pattern: String): String = buildString {
+  var i = 0
+  while (i < pattern.length) {
+    val char = pattern[i]
+    val next = pattern.getOrNull(i + 1)
+    when {
+      char == '~' ->
+        if (next == null) {
+          append('~')
+        } else {
+          if (next in WILDCARDS || next in REGEX_SPECIAL) append('\\')
+          append(next)
+          i++
+        }
+      char in WILDCARDS -> append('.').append(char)
+      char in REGEX_SPECIAL -> append('\\').append(char)
+      else -> append(char.lowercase())
     }
+    i++
   }
-  return Regex(regex).find(text)?.range?.first ?: -1
 }
 
 // JavaScript's String.replace with a global regex of the escaped search text, including the "$"

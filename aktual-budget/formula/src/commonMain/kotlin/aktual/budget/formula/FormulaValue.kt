@@ -26,7 +26,16 @@ data class ArrayValue(val rows: List<List<FormulaValue>>) : FormulaValue {
 
   val topLeft: FormulaValue
     get() = rows.first().first()
+
+  val height: Int
+    get() = rows.size
+
+  val width: Int
+    get() = rows.first().size
 }
+
+internal fun ArrayValue.hasSizeOf(other: ArrayValue): Boolean =
+  height == other.height && width == other.width
 
 enum class FormulaErrorType(val literal: String) {
   Cycle("#CYCLE!"),
@@ -76,6 +85,10 @@ enum class ErrorReason {
   SelectorTooLarge,
   StartOutOfRange,
   PatternNotFound,
+  BadCriterion,
+  ValueNotFound,
+  CharacterCodeOutOfRange,
+  NoText,
   // The evaluator itself failed, which is a bug rather than a mistake in the formula
   InternalError,
 }

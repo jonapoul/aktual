@@ -159,6 +159,10 @@ private fun ErrorValue.message(): String {
       SelectorTooLarge -> Strings.reportsFormulaSelectorTooLarge
       StartOutOfRange -> Strings.reportsFormulaStartOutOfRange
       PatternNotFound -> Strings.reportsFormulaPatternNotFound
+      BadCriterion -> Strings.reportsFormulaBadCriterion
+      ValueNotFound -> Strings.reportsFormulaValueNotFound
+      CharacterCodeOutOfRange -> Strings.reportsFormulaCharacterCodeOutOfRange
+      NoText -> Strings.reportsFormulaNoText
       InternalError -> Strings.reportsFormulaInternalError(subject)
     }
   return "${type.literal}\n$text"

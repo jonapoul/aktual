@@ -175,6 +175,13 @@ class FormulaEvaluatorTest {
   }
 
   @Test
+  fun `Referring to the formula's own cell anywhere is a cycle`() = runTest {
+    assertThat(evaluate("=IF(FALSE(),A1,1)")).isError(Cycle)
+    assertThat(evaluate("=IFERROR(A1,5)")).isError(Cycle)
+    assertThat(evaluate("=ISREF(A1)")).isError(Cycle)
+  }
+
+  @Test
   fun `Variables are looked up ignoring case`() = runTest {
     val variables = mapOf("RESULT" to NumberValue(5.0), "theme_x" to TextValue("#ff0000"))
     assertThat(evaluate("=RESULT*2", variables)).isEqualTo(NumberValue(10.0))
@@ -188,8 +195,8 @@ class FormulaEvaluatorTest {
   @Test
   fun `Unknown functions are named errors`() = runTest {
     assertThat(evaluate("=FOO(1)")).isError(Name, UnknownFunction, "FOO")
-    assertThat(evaluate("=vlookup(1,2)")).isError(Name, UnsupportedFunction, "VLOOKUP")
-    assertThat(evaluate("=SIN(1)")).isError(Name, UnsupportedFunction, "SIN")
+    assertThat(evaluate("=xlookup(1,2)")).isError(Name, UnsupportedFunction, "XLOOKUP")
+    assertThat(evaluate("=ACOS(1)")).isError(Name, UnsupportedFunction, "ACOS")
   }
 
   @Test

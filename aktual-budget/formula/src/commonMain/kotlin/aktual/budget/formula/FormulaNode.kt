@@ -45,3 +45,19 @@ internal enum class BinaryOp {
   Divide,
   Power,
 }
+
+// Upstream treats the whole formula as a cycle when anything in it refers to its own cell, even
+// where that part isn't evaluated
+internal fun FormulaNode.refersToFormulaCell(): Boolean =
+  when (this) {
+    is CellReferenceNode -> isFormulaCell
+    is CallNode -> args.any { it.refersToFormulaCell() }
+    is UnaryNode -> operand.refersToFormulaCell()
+    is BinaryNode -> left.refersToFormulaCell() || right.refersToFormulaCell()
+    is ArrayNode -> rows.any { row -> row.any { it.refersToFormulaCell() } }
+    is NumberNode,
+    is TextNode,
+    is ErrorNode,
+    EmptyArgNode,
+    is NamedNode -> false
+  }

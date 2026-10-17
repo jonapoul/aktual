@@ -110,4 +110,23 @@ class FinancialFunctionsTest {
       )
       .isEqualTo(NumberValue(18.740617367))
   }
+
+  @Test
+  fun `MIRR is the return with different finance and reinvestment rates`() = runTest {
+    assertThat(evaluate("=MIRR({-100,30,40,50},0.1,0.12)")).isEqualTo(NumberValue(0.098156692446))
+    assertThat(evaluate("""=MIRR({-100,30,"x",40},0.1,0.1)"""))
+      .isEqualTo(NumberValue(-0.14559962547))
+    assertThat(evaluate("=MIRR({100,30},0.1,0.12)")).isError(DivByZero)
+    assertThat(evaluate("=MIRR({-100,30,40},-1,0.1)")).isError(DivByZero)
+    assertThat(evaluate("=MIRR({-100,30,#DIV/0!},0.1,0.1)")).isError(DivByZero)
+  }
+
+  @Test
+  fun `FVSCHEDULE applies each rate in turn`() = runTest {
+    assertThat(evaluate("=FVSCHEDULE(100,{0.1,0.2})")).isEqualTo(NumberValue(132.0))
+    assertThat(evaluate("=FVSCHEDULE(100,0.5)")).isEqualTo(NumberValue(150.0))
+    assertThat(evaluate("""=FVSCHEDULE(100,{0.1,"x"})""")).isError(Value, NumberCoercion)
+    assertThat(evaluate("=FVSCHEDULE(100,{0.1,TRUE()})")).isError(Value, NumberCoercion)
+    assertThat(evaluate("=FVSCHEDULE(100,{0.1,#DIV/0!})")).isError(DivByZero)
+  }
 }

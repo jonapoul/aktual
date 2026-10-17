@@ -2,6 +2,7 @@ package aktual.budget.formula
 
 import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.math.cos
 import kotlin.math.exp
 import kotlin.math.floor
 import kotlin.math.ln
@@ -9,11 +10,15 @@ import kotlin.math.log10
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlin.math.tan
 import kotlin.math.truncate
 
 // Ports of HyperFormula's NumericAggregationPlugin, RoundingPlugin, MedianPlugin, CountBlankPlugin,
-// LogarithmPlugin and the single function plugins (ABS, EXP, MOD, PI, POWER, SIGN, SQRT)
+// LogarithmPlugin, SumprodPlugin, TrigonometryPlugin and the single function plugins (ABS, EXP,
+// MOD,
+// PI, POWER, SIGN, SQRT)
 internal val MATH_FUNCTIONS: Map<String, FormulaFunction> =
   mapOf(
     "SUM" to aggregate(::strictlyNumbers) { NumberValue(it.fold(0.0, ::addWithEpsilon)) },
@@ -31,6 +36,26 @@ internal val MATH_FUNCTIONS: Map<String, FormulaFunction> =
     "AVERAGE" to
       aggregate(::strictlyNumbers) {
         if (it.isEmpty()) ErrorValue(DivByZero) else NumberValue(it.sum() / it.size)
+      },
+    "SUMSQ" to
+      aggregate(::strictlyNumbers) {
+        NumberValue(it.fold(0.0) { total, number -> addWithEpsilon(total, number.pow(2)) })
+      },
+    "MINA" to
+      aggregate(::numbersBooleans) {
+        NumberValue(zeroForInfinite(it.fold(Double.POSITIVE_INFINITY, ::min)))
+      },
+    "MAXA" to
+      aggregate(::numbersBooleans) {
+        NumberValue(zeroForInfinite(it.fold(Double.NEGATIVE_INFINITY, ::max)))
+      },
+    "AVERAGEA" to
+      aggregate(::numbersBooleans) {
+        if (it.isEmpty()) ErrorValue(DivByZero) else NumberValue(it.sum() / it.size)
+      },
+    "SUMPRODUCT" to
+      formulaFunction(Param(Range), repeatLastArgs = 1) { args ->
+        sumProduct((0 until args.size).map(args::array))
       },
     "COUNTA" to
       aggregate({ NumberValue(if (it == EmptyValue) 0.0 else 1.0) }) { NumberValue(it.sum()) },
@@ -57,6 +82,9 @@ internal val MATH_FUNCTIONS: Map<String, FormulaFunction> =
       },
     "LOG10" to formulaFunction(Param(Numeric)) { args -> NumberValue(log10(args.number(0))) },
     "PI" to formulaFunction { NumberValue(PI) },
+    "SIN" to formulaFunction(Param(Numeric)) { args -> NumberValue(sin(args.number(0))) },
+    "COS" to formulaFunction(Param(Numeric)) { args -> NumberValue(cos(args.number(0))) },
+    "TAN" to formulaFunction(Param(Numeric)) { args -> NumberValue(tan(args.number(0))) },
     "ABS" to formulaFunction(Param(Numeric)) { args -> NumberValue(abs(args.number(0))) },
     "SQRT" to formulaFunction(Param(Numeric)) { args -> NumberValue(sqrt(args.number(0))) },
     "POWER" to
@@ -142,6 +170,36 @@ private fun median(numbers: List<Double>): FormulaValue {
 
 private fun strictlyNumbers(value: FormulaValue): FormulaValue? = value.takeIf {
   it is NumberValue || it is ErrorValue
+}
+
+// Booleans count as numbers and text as 0, but only in arrays since plain arguments are coerced to
+// numbers first
+private fun numbersBooleans(value: FormulaValue): FormulaValue? =
+  when (value) {
+    is BooleanValue -> NumberValue(if (value.value) 1.0 else 0.0)
+    is NumberValue,
+    is ErrorValue -> value
+    is TextValue -> NumberValue(0.0)
+    EmptyValue,
+    is ArrayValue -> null
+  }
+
+// Values that aren't numbers make their product 0, but errors still stop the sum
+private fun sumProduct(arrays: List<ArrayValue>): FormulaValue {
+  if (arrays.any { !it.hasSizeOf(arrays[0]) }) return ErrorValue(Value, ArraySizeMismatch)
+  val columns = arrays.map { it.rows.flatten() }
+  var total = 0.0
+  for (i in columns[0].indices) {
+    var product = 1.0
+    for (column in columns) {
+      val value = column[i]
+      if (value is ErrorValue) return value
+      val number = coerceToNumber(value)
+      product = if (number is NumberValue) product * number.value else 0.0
+    }
+    total += product
+  }
+  return NumberValue(total)
 }
 
 private fun zeroForInfinite(value: Double): Double = if (value.isFinite()) value else 0.0

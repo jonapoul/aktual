@@ -252,6 +252,10 @@
   <string name="reports_formula_selector_too_large">Index is larger than the number of choices</string>
   <string name="reports_formula_start_out_of_range">Start position is outside the text</string>
   <string name="reports_formula_pattern_not_found">Text not found</string>
+  <string name="reports_formula_bad_criterion">Criterion isn't valid</string>
+  <string name="reports_formula_value_not_found">Value not found</string>
+  <string name="reports_formula_character_code_out_of_range">Character code must be from 1 to 255</string>
+  <string name="reports_formula_no_text">Text can't be empty</string>
   <string name="reports_formula_internal_error">The formula could not be evaluated because of a bug in Aktual: %1$s</string>
   <string name="reports_formula_warning_unknown_query">No query named %1$s</string>
   <string name="reports_formula_warning_unknown_account">No account named %1$s</string>

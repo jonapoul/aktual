@@ -17,4 +17,9 @@ internal val INFO_FUNCTIONS: Map<String, FormulaFunction> =
         val value = args.value(0)
         BooleanValue(value is ErrorValue && value.type == NotAvailable)
       },
+    "ISREF" to
+      formulaFunction(Param(Scalar)) { args ->
+        val value = args.value(0)
+        BooleanValue(value is ErrorValue && (value.type == Ref || value.type == Cycle))
+      },
   )
