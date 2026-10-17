@@ -2,16 +2,26 @@
 
 package aktual.core.ui
 
+import aktual.core.icons.material.Add
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.ui.AktualTheme.typography
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -23,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -157,6 +168,38 @@ fun NormalTextButton(
 }
 
 @Composable
+fun TonalButton(
+  text: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  isEnabled: Boolean = true,
+  icon: ImageVector? = null,
+  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+) {
+  val colors = AktualTheme.colors
+  val border = colors.buttonPrimaryBorder.disabledIf(!isEnabled)
+  BasicTextButton(
+    text = text,
+    modifier =
+      modifier.fillMaxWidth().heightIn(min = TonalButtonHeight).border(1.dp, border, ButtonShape),
+    isEnabled = isEnabled,
+    interactionSource = interactionSource,
+    style = typography.buttonTextStyle,
+    prefix =
+      icon?.let { vector ->
+        {
+          Icon(imageVector = vector, contentDescription = null, modifier = Modifier.size(18.dp))
+          Spacer(Modifier.width(8.dp))
+        }
+      },
+    onClick = onClick,
+    colors = { pressed -> colors.tonalButton(pressed) },
+  )
+}
+
+private val TonalButtonHeight = 48.dp
+
+@Composable
 @NonRestartableComposable
 fun BareTextButton(
   text: String,
@@ -268,6 +311,19 @@ private fun PreviewNormal(
 ) =
   PreviewWithColoredParams(params) {
     NormalTextButton(text = "Normal", isEnabled = this, onClick = {})
+  }
+
+@Preview
+@Composable
+private fun PreviewTonal(
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
+) =
+  PreviewWithColoredParams(params) {
+    val isEnabled = this
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      TonalButton(text = "Tonal", isEnabled = isEnabled, onClick = {})
+      TonalButton(text = "Add item", icon = MaterialIcons.Add, isEnabled = isEnabled, onClick = {})
+    }
   }
 
 @Preview
