@@ -1,14 +1,12 @@
 package aktual.budget.reports.ui.report
 
 import aktual.budget.model.Condition
-import aktual.budget.model.ConditionOp
 import aktual.budget.reports.ui.dashboard.NameDialog
 import aktual.budget.reports.ui.montecarlo.LabeledField
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.QueryEntity
 import aktual.budget.reports.vm.TimeFrame
-import aktual.budget.reports.vm.TimeFrameMode
 import aktual.budget.reports.vm.newQueryCondition
 import aktual.budget.reports.vm.renamed
 import aktual.core.icons.material.Add
@@ -48,7 +46,6 @@ import androidx.compose.ui.util.fastForEachIndexed
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
@@ -292,10 +289,6 @@ private fun newQuery(data: QueryEditorData) =
     conditionsOp = And,
     timeFrame = TimeFrame(data.currentMonth, data.currentMonth, SlidingWindow),
   )
-
-private val CONDITION_OPS = persistentListOf(ConditionOp.And, ConditionOp.Or)
-
-private val TIME_FRAME_MODES = TimeFrameMode.entries.filter { it != Unknown }.toImmutableList()
 
 @Preview
 @Composable

@@ -11,6 +11,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.v2.runComposeUiTest
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -106,6 +107,23 @@ class FormulaReportScaffoldTest {
     onNodeWithText("Name").assertExists()
     onNodeWithText("3 conditions").assertExists()
     onNodeWithTag(Tags.EditReport).assertDoesNotExist()
+  }
+
+  @Test
+  fun `Query rows open their query while editing`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<FormulaReportAction>()
+    setContent {
+      PreviewWithColors(DarkColors) {
+        FormulaReportScaffold(state = state(hasChanges = false), onAction = { actions += it })
+      }
+    }
+
+    // when
+    onNodeWithText("income").performScrollTo().performClick()
+
+    // then
+    assertThat(actions).containsExactly(FormulaReportAction.EditQuery("income"))
   }
 
   private fun state(hasChanges: Boolean) =

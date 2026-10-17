@@ -94,6 +94,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 
 // Views a formula card, and edits it in place. Everything that differs between the two animates
 @Composable
@@ -105,6 +106,7 @@ internal fun FormulaReportScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   val queryEditorData by viewModel.queryEditorData.collectAsStateWithLifecycle()
   var page by rememberSaveable { mutableStateOf<FormulaField?>(null) }
+  var queryName by rememberSaveable { mutableStateOf<String?>(null) }
   var dialog by rememberSaveable { mutableStateOf<FormulaDialog?>(null) }
   val loaded = state as? FormulaReportState.Loaded
   val isEditing = loaded?.isEditing == true
@@ -114,6 +116,7 @@ internal fun FormulaReportScreen(
   }
 
   val field = page
+  val query = queryName?.let { loaded?.draft?.queries?.get(it) }
   if (field != null && loaded != null && isEditing) {
     FormulaFieldScreen(
       field = field,
@@ -122,6 +125,17 @@ internal fun FormulaReportScreen(
       queryNames = loaded.draft.queries.keys.toImmutableList(),
       onChange = { text -> viewModel.edit { it.withText(field, text) } },
       onClose = { page = null },
+    )
+  } else if (queryName != null && query != null && isEditing) {
+    val name = queryName.orEmpty()
+    QueryScreen(
+      name = name,
+      query = query,
+      data = queryEditorData,
+      onChange = { changed ->
+        viewModel.edit { it.copy(queries = (it.queries + (name to changed)).toImmutableMap()) }
+      },
+      onClose = { queryName = null },
     )
   } else {
     BackHandler(enabled = isEditing) { stopEditing() }
@@ -140,20 +154,38 @@ internal fun FormulaReportScreen(
           EditFormula -> page = Formula
           EditColorRule -> page = ColorRule
           EditFontSize -> dialog = FontSize
+          is EditQuery -> queryName = action.name
         }
       },
     )
   }
 
+  FormulaDialogs(
+    dialog = dialog,
+    loaded = loaded,
+    onDiscard = viewModel::discard,
+    onEdit = viewModel::edit,
+    onDismiss = { dialog = null },
+  )
+}
+
+@Composable
+private fun FormulaDialogs(
+  dialog: FormulaDialog?,
+  loaded: FormulaReportState.Loaded?,
+  onDiscard: () -> Unit,
+  onEdit: ((FormulaEdits) -> FormulaEdits) -> Unit,
+  onDismiss: () -> Unit,
+) {
   when (dialog) {
     Discard -> {
       DiscardChangesDialog(
         message = Strings.reportsFormulaEditorDiscardMessage,
         onDiscard = {
-          dialog = null
-          viewModel.discard()
+          onDismiss()
+          onDiscard()
         },
-        onCancel = { dialog = null },
+        onCancel = onDismiss,
       )
     }
     Name -> {
@@ -163,10 +195,10 @@ internal fun FormulaReportScreen(
         confirmText = Strings.reportsDashboardNameSave,
         initialName = loaded?.draft?.name.orEmpty(),
         onConfirm = { name ->
-          viewModel.edit { it.copy(name = name) }
-          dialog = null
+          onEdit { it.copy(name = name) }
+          onDismiss()
         },
-        onDismiss = { dialog = null },
+        onDismiss = onDismiss,
       )
     }
     FontSize -> {
@@ -176,10 +208,10 @@ internal fun FormulaReportScreen(
           initialSize = loaded.draft.staticFontSize,
           preview = loaded.preview,
           onApply = { mode, size ->
-            viewModel.edit { it.copy(fontSizeMode = mode, staticFontSize = size) }
-            dialog = null
+            onEdit { it.copy(fontSizeMode = mode, staticFontSize = size) }
+            onDismiss()
           },
-          onDismiss = { dialog = null },
+          onDismiss = onDismiss,
         )
       }
     }
@@ -451,7 +483,6 @@ private fun Settings(
     ShowTitleRow(showTitle = draft.showTitle, isEditing = isEditing, onAction = onAction)
   }
 
-  // Query rows open nothing until the query screen exists
   Section(label = Strings.reportsFormulaViewerQueries(draft.queries.size)) {
     if (draft.queries.isEmpty()) {
       SettingRow(onClick = null) {
@@ -465,7 +496,13 @@ private fun Settings(
     }
     draft.queries.entries.forEachIndexed { index, (name, query) ->
       if (index > 0) Divider()
-      QueryRow(name = name, query = query, names = names, isEditing = isEditing)
+      QueryRow(
+        name = name,
+        query = query,
+        names = names,
+        isEditing = isEditing,
+        onClick = open(FormulaReportAction.EditQuery(name)),
+      )
     }
   }
 }
@@ -531,8 +568,9 @@ private fun QueryRow(
   query: FormulaQuery,
   names: ImmutableMap<String, String>?,
   isEditing: Boolean,
+  onClick: (() -> Unit)?,
 ) =
-  SettingRow(onClick = null) {
+  SettingRow(modifier = Modifier.testTag(Tags.QueryRow), onClick = onClick) {
     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
       Text(
         text = name,
