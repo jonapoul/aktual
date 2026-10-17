@@ -69,6 +69,7 @@ enum class ErrorReason {
   InvalidDate,
   DateOutOfRange,
   InvalidBudgetDimension,
+  DecimalsOutOfRange,
 }
 
 // Something the formula did that isn't an error but may be a mistake, e.g. naming a missing query

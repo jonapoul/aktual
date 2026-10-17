@@ -9,7 +9,8 @@ class FormulaEvaluator internal constructor(private val functions: Map<String, F
   constructor(
     calendar: Calendar,
     data: FormulaDataSource,
-  ) : this(builtInFunctions(calendar) + queryFunctions(data, calendar))
+    format: FormulaFormat = FormulaFormat(),
+  ) : this(builtInFunctions(calendar) + queryFunctions(data, calendar) + formatFunctions(format))
 
   suspend fun evaluate(
     formula: String,
