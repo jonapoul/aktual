@@ -35,15 +35,22 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -141,6 +148,8 @@ internal fun ReportScaffold(
   val zoom = rememberChartZoomState(data)
   val info = data?.info() ?: persistentListOf()
   var showInfo by remember { mutableStateOf(false) }
+  val hazeState = rememberHazedTopBarState()
+  val scrollState = rememberScrollState()
 
   if (showInfo) {
     ChartInfoSheet(info = info, onDismiss = { showInfo = false })
@@ -150,6 +159,7 @@ internal fun ReportScaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
+        modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton(onClick = { onAction(NavBack) }) },
         title = {
@@ -185,64 +195,39 @@ internal fun ReportScaffold(
   ) { innerPadding ->
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()
-      Column(modifier = Modifier.padding(innerPadding).padding(horizontal = 8.dp)) {
-        ReportContent(
-          modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).fillMaxWidth().weight(1f),
-          state = state,
-          queryEditorData = queryEditorData,
-          zoom = zoom,
-          onAction = onAction,
-        )
-        BottomSpacing()
-      }
+      ReportContent(
+        modifier = Modifier.hazedTopBarContent(hazeState, innerPadding).fillMaxSize(),
+        contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
+        scrollState = scrollState,
+        state = state,
+        queryEditorData = queryEditorData,
+        zoom = zoom,
+        onAction = onAction,
+      )
     }
   }
 }
 
+// Formula cards scroll behind the top and bottom bars. Other charts fill the space between them
 @Composable
 private fun ReportContent(
   state: ReportState,
   queryEditorData: QueryEditorData?,
-  zoom: ChartZoomState,
-  onAction: ActionListener,
-  modifier: Modifier = Modifier,
-) =
-  when (state) {
-    Loading ->
-      Box(modifier = modifier, contentAlignment = Center) {
-        CircularProgressIndicator(color = colors.pageText)
-      }
-
-    NotFound ->
-      Box(modifier = modifier, contentAlignment = Center) {
-        Text(text = Strings.reportsNotFound, color = colors.pageText)
-      }
-
-    // Shown by MonteCarloReportScreen instead
-    MonteCarlo -> Box(modifier = modifier)
-
-    is Loaded -> LoadedContent(state, queryEditorData, zoom, onAction, modifier)
-  }
-
-@Composable
-private fun LoadedContent(
-  state: ReportState.Loaded,
-  queryEditorData: QueryEditorData?,
+  contentPadding: PaddingValues,
+  scrollState: ScrollState,
   zoom: ChartZoomState,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
-  val meta = state.item.meta as? FormulaReportMeta
-  if (meta == null) {
-    ReportChart(
-      modifier = modifier.background(colors.tableBackground, CardShape).padding(8.dp),
-      data = state.data,
-      compact = false,
-      onAction = onAction,
-      zoom = zoom,
-    )
-  } else {
-    Column(modifier = modifier.verticalScrollWithBar()) {
+  val meta = (state as? Loaded)?.item?.meta as? FormulaReportMeta
+  if (state is Loaded && meta != null) {
+    Column(
+      modifier =
+        modifier
+          .verticalScrollWithBar(scrollState)
+          .padding(contentPadding)
+          .padding(CONTENT_PADDING),
+    ) {
       ReportChart(
         modifier =
           Modifier.fillMaxWidth()
@@ -260,10 +245,41 @@ private fun LoadedContent(
         queryEditorData = queryEditorData,
         onAction = onAction,
       )
+      BottomSpacing()
     }
+    return
+  }
+
+  Column(modifier = modifier.padding(contentPadding).padding(CONTENT_PADDING)) {
+    val contentModifier = Modifier.fillMaxWidth().weight(1f)
+    when (state) {
+      Loading ->
+        Box(modifier = contentModifier, contentAlignment = Center) {
+          CircularProgressIndicator(color = colors.pageText)
+        }
+
+      NotFound ->
+        Box(modifier = contentModifier, contentAlignment = Center) {
+          Text(text = Strings.reportsNotFound, color = colors.pageText)
+        }
+
+      // Shown by MonteCarloReportScreen instead
+      MonteCarlo -> Box(modifier = contentModifier)
+
+      is Loaded ->
+        ReportChart(
+          modifier = contentModifier.background(colors.tableBackground, CardShape).padding(8.dp),
+          data = state.data,
+          compact = false,
+          onAction = onAction,
+          zoom = zoom,
+        )
+    }
+    BottomSpacing()
   }
 }
 
+private val CONTENT_PADDING = 8.dp
 private val FORMULA_CARD_HEIGHT = 160.dp
 
 @PortraitPreview
