@@ -78,9 +78,10 @@ internal fun CustomChart(
       }
     }
 
-    val bars = customBars(data)
-    val chartModifier = Modifier.fillMaxWidth().weight(1f)
     val graphType = data.config.graphType
+    val metric = data.config.balanceType.metric
+    val bars = customBars(data).let { if (graphType == DonutGraph) it.donutSlices(metric) else it }
+    val chartModifier = Modifier.fillMaxWidth().weight(1f)
     when {
       !data.config.isSupported() ->
         Message(Strings.reportsCustomGraphUnsupported, colors.warningText, chartModifier)
@@ -98,6 +99,8 @@ internal fun CustomChart(
 
       graphType == TableGraph -> CustomTable(data, compact, chartModifier)
 
+      graphType == DonutGraph -> CustomDonutChart(bars, metric, compact, chartModifier)
+
       else -> CustomBarLineChart(data, compact, chartModifier)
     }
 
@@ -112,18 +115,18 @@ internal fun CustomReportConfig.isSupported(): Boolean =
   when (graphType) {
     BarGraph,
     AreaGraph,
-    BarLineGraph -> true
+    BarLineGraph,
+    DonutGraph -> true
     StackedBarGraph,
     LineGraph -> groupBy != Interval
     TableGraph -> mode != Time || groupBy != Interval
-    DonutGraph,
     Unknown -> false
   }
 
 // ReportOptions disableLegend: area charts have nothing to name, intervals are named on the axis
-// and tables name their own rows
+// (except on a donut, which has none) and tables name their own rows
 private fun CustomReportConfig.hasLegend(): Boolean =
-  groupBy != Interval &&
+  (groupBy != Interval || graphType == DonutGraph) &&
     graphType != AreaGraph &&
     graphType != BarLineGraph &&
     graphType != TableGraph
@@ -249,6 +252,9 @@ private class CustomChartProvider :
     CustomChartParams(previewCustomData(AreaGraph, Interval, Net), compact = false),
     CustomChartParams(previewCustomData(AreaGraph, Interval, Payment), compact = true),
     CustomChartParams(previewCustomData(BarLineGraph, Interval, Net), compact = false),
+    CustomChartParams(previewCustomData(DonutGraph, Category, Payment), compact = false),
+    CustomChartParams(previewCustomData(DonutGraph, Category, Payment), compact = true),
+    CustomChartParams(previewCustomData(DonutGraph, Interval, Payment), compact = false),
     CustomChartParams(previewCustomData(TableGraph, Category, Payment), compact = false),
     CustomChartParams(previewCustomData(TableGraph, Category, Payment), compact = true),
     CustomChartParams(previewCustomData(TableGraph, Payee, Net), compact = false),

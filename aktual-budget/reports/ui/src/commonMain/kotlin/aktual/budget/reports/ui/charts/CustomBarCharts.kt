@@ -174,18 +174,26 @@ internal fun customBars(data: CustomData): ImmutableList<CustomBar> {
 }
 
 // packages/desktop-client/src/components/reports/spreadsheets/calculateLegend.ts: groups take the
-// qualitative colours in order, intervals are coloured by whether they're money in or out
+// qualitative colours in order, intervals are coloured by whether they're money in or out. A
+// donut's intervals are slices, so they take the qualitative colours too
 internal fun customBars(
   data: CustomData,
   names: List<String>,
   theme: Colors,
 ): ImmutableList<CustomBar> {
-  if (data.config.groupBy == GroupBy.Interval) return intervalBars(data, names, theme)
+  val groupBy = data.config.groupBy
+  if (groupBy == GroupBy.Interval && data.config.graphType != DonutGraph) {
+    return intervalBars(data, names, theme)
+  }
   val metric = data.config.balanceType.metric
-  return data.groups
-    .mapIndexed { index, item ->
-      CustomBar(names[index], item.totals[metric], theme.qualitative(index))
+  val totals =
+    if (groupBy == GroupBy.Interval) {
+      data.intervals.map { it.totals }
+    } else {
+      data.groups.map { it.totals }
     }
+  return totals
+    .mapIndexed { index, item -> CustomBar(names[index], item[metric], theme.qualitative(index)) }
     .toImmutableList()
 }
 
