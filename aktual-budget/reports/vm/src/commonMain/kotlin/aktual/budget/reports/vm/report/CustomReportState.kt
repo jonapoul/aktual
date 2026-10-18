@@ -17,13 +17,14 @@ sealed interface CustomReportState {
 
   // The draft is null when the saved report can't be read, so it can't be edited either. It keeps
   // its changes after the editor closes, until they're reverted. The preview is null until the
-  // draft's first chart loads
+  // draft's first chart loads. A new report has no name until it's first saved
   data class Loaded(
     val name: String,
     val draft: CustomReportConfig?,
     val preview: ChartData?,
     val isEditing: Boolean,
     val hasChanges: Boolean,
+    val isNew: Boolean = false,
   ) : CustomReportState
 }
 

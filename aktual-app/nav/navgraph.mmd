@@ -33,6 +33,7 @@ flowchart TD
     reportsDashboard["Reports Dashboard"]
     report["Report"]
     createReport["Create Report"]
+    newCustomReport["New Custom Report"]
     searchReports["Search Reports"]
     listTags["List Tags"]
     createTag["Create Tag"]
@@ -112,6 +113,9 @@ flowchart TD
 
   reportsDashboard --tap report--> report
   reportsDashboard --tap create--> createReport
+  createReport --tap custom--> newCustomReport
+  createReport --tap type--> report
+  newCustomReport --save--> report
   reportsDashboard --tap search--> searchReports
   searchReports --tap report--> report
 

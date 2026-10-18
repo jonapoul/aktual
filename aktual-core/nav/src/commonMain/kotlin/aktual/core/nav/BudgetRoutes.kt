@@ -56,6 +56,8 @@ data class CreateTransactionNavRoute(
 
 @Serializable data class CreateReportNavRoute(val page: DashboardPageId) : BudgetNavKey.Reports
 
+@Serializable data class NewCustomReportNavRoute(val page: DashboardPageId) : BudgetNavKey.Reports
+
 @Serializable data object SearchReportsNavRoute : BudgetNavKey.Reports
 
 @Serializable data object ListRulesNavRoute : BudgetNavKey.Rules

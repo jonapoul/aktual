@@ -9,12 +9,11 @@ import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.ChartDataLoader
 import aktual.budget.reports.vm.CustomReportConfig
 import aktual.budget.reports.vm.CustomReportMeta
+import aktual.budget.reports.vm.CustomReportSync
 import aktual.budget.reports.vm.QueryEditorDataLoader
-import aktual.budget.reports.vm.categoryGroupChoices
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.report.CustomReportState.Loaded
 import aktual.budget.reports.vm.toConfig
-import aktual.budget.tags.domain.toTagLabels
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -38,9 +37,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import logcat.logcat
 
-// Shows a custom report, and edits its config as a draft that the chart previews. Saving the draft
-// to the report isn't supported yet, so it can only be reverted
+// Shows a custom report, and edits its config as a draft that the chart previews until it's saved
+// or reverted
 @Stable
 @AssistedInject
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -54,6 +54,7 @@ internal constructor(
   tagsDao: TagsDao,
   private val chartDataLoader: ChartDataLoader,
   queryEditorDataLoader: QueryEditorDataLoader,
+  private val sync: CustomReportSync,
 ) : ViewModel() {
   private val saved: StateFlow<SavedReport> =
     dashboardDao
@@ -80,18 +81,7 @@ internal constructor(
 
   // Null until loaded, and only loaded while the editor is open
   val editorData: StateFlow<CustomReportEditorData?> =
-    combine(
-        queryEditorDataLoader.load(),
-        budgetDao.observeCategoryGroups(),
-        budgetDao.observeCategories(),
-        tagsDao.observeTags(),
-      ) { query, groups, categories, tags ->
-        CustomReportEditorData(
-          query = query,
-          categories = categoryGroupChoices(groups, categories),
-          tags = tags.toTagLabels(),
-        )
-      }
+    customReportEditorData(queryEditorDataLoader, budgetDao, tagsDao)
       .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), null)
 
   init {
@@ -118,6 +108,19 @@ internal constructor(
   fun revert() {
     val config = (saved.value as? Found)?.config ?: return
     draft.update { config }
+  }
+
+  // Writes the changed columns, and closes the editor. The saved report then follows the draft
+  fun save() {
+    val saved = saved.value as? Found ?: return
+    val config = saved.config ?: return
+    val draft = draft.value ?: return
+    if (draft == config) return
+    isEditing.update { false }
+    viewModelScope.launch {
+      logcat.d { "Saving custom report ${saved.meta.id}" }
+      sync.update(saved.meta.id, config, draft)
+    }
   }
 
   // Read straight from the draft, since the state can lag behind an edit made just before leaving

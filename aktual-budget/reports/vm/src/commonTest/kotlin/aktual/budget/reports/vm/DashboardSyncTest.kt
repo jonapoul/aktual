@@ -45,6 +45,37 @@ class DashboardSyncTest {
   }
 
   @Test
+  fun `Add the first widget to a page`() = runSyncTest { dao ->
+    addWidget(WIDGET, PAGE_1, NetWorth, JsonObject(emptyMap()))
+
+    val row = dao.observeByPage(PAGE_1).first().single()
+    assertThat(row.x).isEqualTo(0L)
+    assertThat(row.y).isEqualTo(0L)
+  }
+
+  @Test
+  fun `Add a widget after the last one on the row`() = runSyncTest { dao ->
+    dao.insert(WidgetId("a"), page = PAGE_1, type = NetWorth, x = 0, y = 2, meta = null)
+
+    addWidget(WIDGET, PAGE_1, NetWorth, JsonObject(emptyMap()))
+
+    val row = dao.observeByPage(PAGE_1).first().single { it.id == WIDGET }
+    assertThat(row.x).isEqualTo(4L)
+    assertThat(row.y).isEqualTo(2L)
+  }
+
+  @Test
+  fun `Add a widget on a new row when the last one is full`() = runSyncTest { dao ->
+    dao.insert(WidgetId("a"), page = PAGE_1, type = NetWorth, x = 8, y = 2, meta = null)
+
+    addWidget(WIDGET, PAGE_1, NetWorth, JsonObject(emptyMap()))
+
+    val row = dao.observeByPage(PAGE_1).first().single { it.id == WIDGET }
+    assertThat(row.x).isEqualTo(0L)
+    assertThat(row.y).isEqualTo(4L)
+  }
+
+  @Test
   fun `Renaming keeps values we don't recognise`() = runSyncTest { dao ->
     dao.insert(
       WIDGET,

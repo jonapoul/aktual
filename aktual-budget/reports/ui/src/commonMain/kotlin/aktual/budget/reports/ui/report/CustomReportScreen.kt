@@ -34,6 +34,7 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryIconButton
+import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.animation.AnimatedContent
@@ -100,6 +101,7 @@ internal fun CustomReportScreen(
         StartEditing -> viewModel.startEditing()
         StopEditing -> viewModel.stopEditing()
         Revert -> viewModel.revert()
+        Save -> viewModel.save()
         is Edit -> viewModel.edit(action.transform)
       }
     },
@@ -211,6 +213,7 @@ private fun CustomReportTopBar(
             when {
               isEditing -> Strings.reportsFormulaViewerEdit
               name != null -> name
+              loaded?.isNew == true -> Strings.reportsCustomEditorNew
               else -> WidgetType.Custom.string()
             },
         )
@@ -228,6 +231,14 @@ private fun CustomReportTopBar(
         TextButton(modifier = Modifier.testTag(Tags.RevertReport), onClick = { onAction(Revert) }) {
           Text(Strings.reportsCustomEditorRevert)
         }
+      }
+      if (loaded?.draft != null && (loaded.hasChanges || loaded.isNew)) {
+        PrimaryTextButton(
+          modifier = Modifier.padding(end = 8.dp).testTag(Tags.SaveReport),
+          text = Strings.reportsFormulaEditorSave,
+          shape = CircleShape,
+          onClick = { onAction(Save) },
+        )
       }
       if (!isEditing && zoom.range != null) {
         BareIconButton(

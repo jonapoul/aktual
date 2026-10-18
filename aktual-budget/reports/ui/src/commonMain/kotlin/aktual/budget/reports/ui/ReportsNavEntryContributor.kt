@@ -2,6 +2,7 @@ package aktual.budget.reports.ui
 
 import aktual.budget.reports.ui.choosetype.ChooseReportTypeScreen
 import aktual.budget.reports.ui.dashboard.ReportsDashboardScreen
+import aktual.budget.reports.ui.report.NewCustomReportScreen
 import aktual.budget.reports.ui.report.ReportScreen
 import aktual.budget.reports.ui.search.SearchReportsScreen
 import aktual.core.nav.BackNavigator
@@ -11,6 +12,8 @@ import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.CreateReportNavRoute
 import aktual.core.nav.CreateReportNavigator
 import aktual.core.nav.NavStack
+import aktual.core.nav.NewCustomReportNavRoute
+import aktual.core.nav.NewCustomReportNavigator
 import aktual.core.nav.ReportNavRoute
 import aktual.core.nav.ReportNavigator
 import aktual.core.nav.ReportsListNavRoute
@@ -47,7 +50,25 @@ class ReportsNavEntryContributor : BudgetNavEntryContributor {
       ChooseReportTypeScreen(
         page = route.page,
         back = BackNavigator(stack),
-        toReport = ReportNavigator(stack),
+        // The chooser is done once a report is made, so back from it goes to the dashboard
+        toReport = { id ->
+          stack.pop()
+          ReportNavigator(stack)(id)
+        },
+        toNewCustomReport = NewCustomReportNavigator(stack),
+      )
+    }
+
+    budgetEntry<NewCustomReportNavRoute> { route ->
+      NewCustomReportScreen(
+        page = route.page,
+        back = BackNavigator(stack),
+        // Leaves the chooser too
+        toSavedReport = { id ->
+          stack.pop()
+          stack.pop()
+          ReportNavigator(stack)(id)
+        },
       )
     }
   }

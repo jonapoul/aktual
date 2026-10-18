@@ -13,6 +13,8 @@ internal sealed interface CustomReportAction {
 
   data object Revert : CustomReportAction
 
+  data object Save : CustomReportAction
+
   @JvmInline
   value class Edit(val transform: (CustomReportConfig) -> CustomReportConfig) : CustomReportAction
 }
