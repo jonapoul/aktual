@@ -17,7 +17,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
   ```kotlin
   // Unqualified
   takesRole(Admin); role == Admin; val role: Role = Admin; assertThat(role).isEqualTo(Admin)
-  when (role) { Admin -> 1 }; state is Failure; takesKind(Button)
+  when (role) { Admin -> 1 }; state is Failure; takesKind(Button); listOf<Role>(Admin, Basic)
 
   // Must qualify: no expected type, or a constructor call
   val role = Role.Admin; listOf(Role.Admin); a to Role.Admin
