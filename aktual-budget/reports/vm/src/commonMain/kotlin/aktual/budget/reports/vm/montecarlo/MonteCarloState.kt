@@ -68,8 +68,7 @@ enum class MonteCarloGraphView {
 }
 
 // Points along the worst-first ranking of runs, shared by the runs table's jumps and the cashflow
-// and
-// pots views' scenario picker so all land on the same runs
+// and pots views' scenario picker so all land on the same runs
 enum class RunPercentile(val fraction: Double) {
   Worst(fraction = 0.0),
   P25(fraction = 0.25),
