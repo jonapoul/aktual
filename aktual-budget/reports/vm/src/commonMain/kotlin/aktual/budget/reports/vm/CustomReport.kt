@@ -55,7 +55,31 @@ data class CustomReportConfig(
   val colorScheme: String?,
   // Only used when split by tag
   val tagScope: CustomTagScope = All,
-)
+) {
+  companion object {
+    // packages/desktop-client/src/components/reports/ReportOptions.ts defaultReport
+    val Default =
+      CustomReportConfig(
+        mode = Total,
+        groupBy = Category,
+        balanceType = Payment,
+        graphType = BarGraph,
+        interval = Monthly,
+        dates = CustomReportDates.Live(Last6Months, includeCurrent = true),
+        showEmpty = false,
+        showOffBudget = false,
+        showHidden = true,
+        showUncategorized = true,
+        selectedCategories = persistentListOf(),
+        conditions = persistentListOf(),
+        conditionsOp = And,
+        sortBy = Desc,
+        trimIntervals = false,
+        showTrendLines = false,
+        colorScheme = null,
+      )
+  }
+}
 
 // CustomReportTagScope: which tags a report split by tag buckets transactions by
 @Immutable
