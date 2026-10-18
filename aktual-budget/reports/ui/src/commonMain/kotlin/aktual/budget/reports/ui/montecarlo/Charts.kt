@@ -32,30 +32,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.dp
-import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianDrawingContext
-import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
-import com.patrykandpatrick.vico.multiplatform.cartesian.axis.VerticalAxis
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianValueFormatter
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.ColumnCartesianLayerModel
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.columnSeries
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.lineSeries
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.ColumnCartesianLayer
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.LineCartesianLayer
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberColumnCartesianLayer
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLine
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLineCartesianLayer
-import com.patrykandpatrick.vico.multiplatform.cartesian.marker.CartesianMarker
-import com.patrykandpatrick.vico.multiplatform.cartesian.marker.CartesianMarkerController
-import com.patrykandpatrick.vico.multiplatform.cartesian.marker.CartesianMarkerVisibilityListener
-import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
-import com.patrykandpatrick.vico.multiplatform.common.DashedShape
-import com.patrykandpatrick.vico.multiplatform.common.Fill
-import com.patrykandpatrick.vico.multiplatform.common.component.LineComponent
-import com.patrykandpatrick.vico.multiplatform.common.component.rememberLineComponent
-import com.patrykandpatrick.vico.multiplatform.common.data.ExtraStore
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.CartesianDrawingContext
+import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianValueFormatter
+import com.patrykandpatrick.vico.compose.cartesian.data.ColumnCartesianLayerModel
+import com.patrykandpatrick.vico.compose.cartesian.data.columnModel
+import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
+import com.patrykandpatrick.vico.compose.cartesian.layer.ColumnCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarkerController
+import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarkerVisibilityListener
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.compose.common.DashedShape
+import com.patrykandpatrick.vico.compose.common.Fill
+import com.patrykandpatrick.vico.compose.common.component.LineComponent
+import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import com.patrykandpatrick.vico.compose.common.data.ExtraStore
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.runBlocking
@@ -148,7 +148,7 @@ private suspend fun CartesianChartModelProducer.populateFan(
   view: MonteCarloGraphView,
 ) = runTransaction {
   val ages = bands.map { it.age }
-  lineSeries {
+  lineModel {
     if (view == All) {
       series(x = ages, y = bands.map { it.p90.toDouble() })
       series(x = ages, y = bands.map { it.p50.toDouble() })
@@ -231,7 +231,7 @@ internal fun DepletionHistogram(
 private suspend fun CartesianChartModelProducer.populateHistogram(
   depletions: List<MonteCarloDepletion>,
 ) = runTransaction {
-  columnSeries { series(x = depletions.map { it.age }, y = depletions.map { it.count }) }
+  columnModel { series(x = depletions.map { it.age }, y = depletions.map { it.count }) }
 }
 
 // MonteCarloCashflowGraph: money in stacked above zero, money out below. Years after the plan ran
@@ -342,7 +342,7 @@ private suspend fun CartesianChartModelProducer.populatePotBalances(chart: PotBa
   runTransaction {
     if (chart.years.isEmpty() || chart.series.isEmpty()) return@runTransaction
     val ages = chart.years.map { it.age }
-    lineSeries {
+    lineModel {
       for (i in chart.series.indices.reversed()) {
         series(
           x = ages,
@@ -355,7 +355,7 @@ private suspend fun CartesianChartModelProducer.populatePotBalances(chart: PotBa
 private suspend fun CartesianChartModelProducer.populateCashflow(chart: CashflowChart) =
   runTransaction {
     val ages = chart.years.map { it.age }
-    columnSeries {
+    columnModel {
       chart.series.indices.forEach { i ->
         series(x = ages, y = chart.years.map { Amount(it.amounts[i]).toDouble() })
       }
@@ -389,16 +389,15 @@ private class CashflowColumns(
 ) : ColumnCartesianLayer.ColumnProvider {
   override fun getColumn(
     entry: ColumnCartesianLayerModel.Entry,
-    seriesIndex: Int,
     extraStore: ExtraStore,
   ): LineComponent =
-    if (dimsAfterDepletion[seriesIndex] && entry.x in depletedAges) {
-      dimmed[seriesIndex]
+    if (dimsAfterDepletion[entry.seriesIndex] && entry.x in depletedAges) {
+      dimmed[entry.seriesIndex]
     } else {
-      columns[seriesIndex]
+      columns[entry.seriesIndex]
     }
 
-  override fun getWidestSeriesColumn(seriesIndex: Int, extraStore: ExtraStore) =
+  override fun getWidestSeriesColumn(seriesKey: Any, seriesIndex: Int, extraStore: ExtraStore) =
     columns[seriesIndex]
 }
 

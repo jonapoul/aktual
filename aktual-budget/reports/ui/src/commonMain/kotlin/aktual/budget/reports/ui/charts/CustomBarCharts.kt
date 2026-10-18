@@ -30,22 +30,22 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastMap
-import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
-import com.patrykandpatrick.vico.multiplatform.cartesian.axis.VerticalAxis
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianValueFormatter
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.ColumnCartesianLayerModel
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.columnSeries
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.ColumnCartesianLayer
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberColumnCartesianLayer
-import com.patrykandpatrick.vico.multiplatform.cartesian.marker.CartesianMarker
-import com.patrykandpatrick.vico.multiplatform.cartesian.marker.DefaultCartesianMarker
-import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
-import com.patrykandpatrick.vico.multiplatform.common.Fill
-import com.patrykandpatrick.vico.multiplatform.common.component.LineComponent
-import com.patrykandpatrick.vico.multiplatform.common.data.ExtraStore
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianValueFormatter
+import com.patrykandpatrick.vico.compose.cartesian.data.ColumnCartesianLayerModel
+import com.patrykandpatrick.vico.compose.cartesian.data.columnModel
+import com.patrykandpatrick.vico.compose.cartesian.layer.ColumnCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.marker.DefaultCartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.compose.common.Fill
+import com.patrykandpatrick.vico.compose.common.component.LineComponent
+import com.patrykandpatrick.vico.compose.common.data.ExtraStore
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -174,18 +174,26 @@ internal fun customBars(data: CustomData): ImmutableList<CustomBar> {
 }
 
 // packages/desktop-client/src/components/reports/spreadsheets/calculateLegend.ts: groups take the
-// qualitative colours in order, intervals are coloured by whether they're money in or out
+// qualitative colours in order, intervals are coloured by whether they're money in or out. A
+// donut's intervals are slices, so they take the qualitative colours too
 internal fun customBars(
   data: CustomData,
   names: List<String>,
   theme: Colors,
 ): ImmutableList<CustomBar> {
-  if (data.config.groupBy == GroupBy.Interval) return intervalBars(data, names, theme)
+  val groupBy = data.config.groupBy
+  if (groupBy == GroupBy.Interval && data.config.graphType != DonutGraph) {
+    return intervalBars(data, names, theme)
+  }
   val metric = data.config.balanceType.metric
-  return data.groups
-    .mapIndexed { index, item ->
-      CustomBar(names[index], item.totals[metric], theme.qualitative(index))
+  val totals =
+    if (groupBy == GroupBy.Interval) {
+      data.intervals.map { it.totals }
+    } else {
+      data.groups.map { it.totals }
     }
+  return totals
+    .mapIndexed { index, item -> CustomBar(names[index], item[metric], theme.qualitative(index)) }
     .toImmutableList()
 }
 
@@ -348,7 +356,7 @@ private suspend fun CartesianChartModelProducer.populateBars(
   metric: CustomMetric,
 ) = runTransaction {
   if (bars.isNotEmpty()) {
-    columnSeries {
+    columnModel {
       series(x = bars.indices.toList(), y = bars.map { it.amount.plotted(metric).toDouble() })
     }
   }
@@ -358,7 +366,7 @@ private suspend fun CartesianChartModelProducer.populateStacks(stacks: List<List
   runTransaction {
     val series = stackSeries(stacks)
     if (series.isNotEmpty()) {
-      columnSeries { series.forEach { y -> series(x = stacks.indices.toList(), y = y) } }
+      columnModel { series.forEach { y -> series(x = stacks.indices.toList(), y = y) } }
     }
   }
 
@@ -369,11 +377,11 @@ internal class IndexedColumns(private val columns: List<LineComponent>) :
   ColumnCartesianLayer.ColumnProvider {
   override fun getColumn(
     entry: ColumnCartesianLayerModel.Entry,
-    seriesIndex: Int,
     extraStore: ExtraStore,
   ): LineComponent = columns[entry.x.roundToInt().coerceIn(columns.indices)]
 
-  override fun getWidestSeriesColumn(seriesIndex: Int, extraStore: ExtraStore) = columns.first()
+  override fun getWidestSeriesColumn(seriesKey: Any, seriesIndex: Int, extraStore: ExtraStore) =
+    columns.first()
 }
 
 private val BAR_THICKNESS = 16.dp

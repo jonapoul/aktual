@@ -30,20 +30,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
-import com.patrykandpatrick.vico.multiplatform.cartesian.axis.VerticalAxis
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.lineSeries
-import com.patrykandpatrick.vico.multiplatform.cartesian.decoration.Decoration
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.LineCartesianLayer
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLine
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLineCartesianLayer
-import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
-import com.patrykandpatrick.vico.multiplatform.common.DashedShape
-import com.patrykandpatrick.vico.multiplatform.common.Fill
-import com.patrykandpatrick.vico.multiplatform.common.component.rememberLineComponent
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
+import com.patrykandpatrick.vico.compose.cartesian.decoration.Decoration
+import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.compose.common.DashedShape
+import com.patrykandpatrick.vico.compose.common.Fill
+import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Month.APRIL
@@ -153,11 +153,11 @@ private fun Chart(
               LineCartesianLayer.LineProvider.series(
                 LineCartesianLayer.rememberLine(
                   fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberPositive)),
-                  pointConnector = LineCartesianLayer.PointConnector.cubic(),
+                  interpolator = LineCartesianLayer.Interpolator.cubic(),
                 ),
                 LineCartesianLayer.rememberLine(
                   fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberNegative)),
-                  pointConnector = LineCartesianLayer.PointConnector.cubic(),
+                  interpolator = LineCartesianLayer.Interpolator.cubic(),
                 ),
                 LineCartesianLayer.rememberLine(
                   fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberNegative)),
@@ -212,7 +212,7 @@ private suspend fun CartesianChartModelProducer.populate(data: CrossoverData, zo
       data.items.mapNotNull { (month, datum) ->
         datum.adjustedExpenses?.let { month.monthNumber() to it.toDouble() }
       }
-    lineSeries {
+    lineModel {
       series(x = months, y = data.items.values.map { it.investmentIncome.toDouble() }, zoom = zoom)
       series(x = months, y = data.items.values.map { it.expenses.toDouble() }, zoom = zoom)
       if (adjusted.isNotEmpty()) {

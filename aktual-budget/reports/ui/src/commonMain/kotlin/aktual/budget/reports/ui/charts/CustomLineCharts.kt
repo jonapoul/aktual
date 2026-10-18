@@ -19,22 +19,22 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.columnSeries
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.lineSeries
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.LineCartesianLayer
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.LineCartesianLayer.AreaFill
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.LineCartesianLayer.LineFill
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.LineCartesianLayer.LineProvider
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.LineCartesianLayer.LineStroke
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberColumnCartesianLayer
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLine
-import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLineCartesianLayer
-import com.patrykandpatrick.vico.multiplatform.cartesian.marker.DefaultCartesianMarker
-import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
-import com.patrykandpatrick.vico.multiplatform.common.Fill
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.compose.cartesian.data.columnModel
+import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
+import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer.AreaFill
+import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer.LineFill
+import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer.LineProvider
+import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer.LineStroke
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.marker.DefaultCartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.compose.common.Fill
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.runBlocking
@@ -314,17 +314,17 @@ private suspend fun CartesianChartModelProducer.populateLines(
       stacks.map { it[group].amount.toDouble() }
     }
   if (series.isNotEmpty()) {
-    lineSeries { series.forEach { y -> series(x = x, y = y) } }
+    lineModel { series.forEach { y -> series(x = x, y = y) } }
   }
   if (trends.isNotEmpty()) {
-    lineSeries { trends.forEach { y -> series(x = x, y = y) } }
+    lineModel { trends.forEach { y -> series(x = x, y = y) } }
   }
 }
 
 private suspend fun CartesianChartModelProducer.populateArea(values: List<Double>) =
   runTransaction {
     if (values.isNotEmpty()) {
-      lineSeries { series(x = values.indices.toList(), y = values) }
+      lineModel { series(x = values.indices.toList(), y = values) }
     }
   }
 
@@ -332,8 +332,8 @@ private suspend fun CartesianChartModelProducer.populateBarLine(values: List<Dou
   runTransaction {
     if (values.isNotEmpty()) {
       val x = values.indices.toList()
-      columnSeries { series(x = x, y = values) }
-      lineSeries { series(x = x, y = values) }
+      columnModel { series(x = x, y = values) }
+      lineModel { series(x = x, y = values) }
     }
   }
 

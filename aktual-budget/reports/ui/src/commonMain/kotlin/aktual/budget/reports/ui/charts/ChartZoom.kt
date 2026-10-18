@@ -21,15 +21,15 @@ import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
-import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianDrawingContext
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianLayerRangeProvider
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.ColumnCartesianLayerModel
-import com.patrykandpatrick.vico.multiplatform.cartesian.data.LineCartesianLayerModel
-import com.patrykandpatrick.vico.multiplatform.cartesian.decoration.Decoration
-import com.patrykandpatrick.vico.multiplatform.common.Fill
-import com.patrykandpatrick.vico.multiplatform.common.component.ShapeComponent
-import com.patrykandpatrick.vico.multiplatform.common.data.ExtraStore
+import com.patrykandpatrick.vico.compose.cartesian.CartesianDrawingContext
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianLayerRangeProvider
+import com.patrykandpatrick.vico.compose.cartesian.data.ColumnCartesianLayerModel
+import com.patrykandpatrick.vico.compose.cartesian.data.LineCartesianLayerModel
+import com.patrykandpatrick.vico.compose.cartesian.decoration.Decoration
+import com.patrykandpatrick.vico.compose.common.Fill
+import com.patrykandpatrick.vico.compose.common.component.ShapeComponent
+import com.patrykandpatrick.vico.compose.common.data.ExtraStore
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -136,7 +136,9 @@ internal fun rememberChartZoomDecoration(state: ChartZoomState): Decoration {
 
 /**
  * Hosts a chart with zoom gestures. [content] should apply the passed modifier to its
- * CartesianChartHost, so pointer positions line up with the chart canvas.
+ * CartesianChartHost, so pointer positions line up with the chart canvas. The gestures sit on this
+ * box rather than the host, since the host swaps its layout node once the model loads, which would
+ * cancel a selection in progress
  */
 @Composable
 internal fun ZoomableChart(
@@ -144,13 +146,13 @@ internal fun ZoomableChart(
   enabled: Boolean,
   modifier: Modifier = Modifier,
   content: @Composable BoxScope.(Modifier) -> Unit,
-) =
-  Box(modifier = modifier.testTag(Tags.ZoomableChart)) {
-    val haptics = LocalHapticFeedback.current
-    content(
-      if (enabled) Modifier.fillMaxSize().zoomGestures(state, haptics) else Modifier.fillMaxSize(),
-    )
+) {
+  val haptics = LocalHapticFeedback.current
+  val gestures = if (enabled) Modifier.zoomGestures(state, haptics) else Modifier
+  Box(modifier = modifier.testTag(Tags.ZoomableChart).then(gestures)) {
+    content(Modifier.fillMaxSize())
   }
+}
 
 private fun Modifier.zoomGestures(state: ChartZoomState, haptics: HapticFeedback): Modifier =
   pointerInput(state, haptics) {
