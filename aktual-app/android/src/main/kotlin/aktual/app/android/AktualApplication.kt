@@ -1,7 +1,6 @@
 package aktual.app.android
 
 import aktual.core.logging.AktualAndroidLogcatLogger
-import aktual.core.logging.AndroidLogStorage
 import aktual.core.logging.KermitFileLogger
 import android.app.Application
 import android.os.StrictMode
@@ -31,7 +30,7 @@ class AktualApplication : Application(), MetroApplication {
 
     super.onCreate()
 
-    val logStorage = AndroidLogStorage(context = this)
+    val logStorage = graph.logStorage
     val minPriority = LogPriority.VERBOSE
     with(LogcatLogger) {
       install()

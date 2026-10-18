@@ -13,4 +13,9 @@ kotlin {
     implementation(libs.androidx.compose.annotation)
     implementation(project(":aktual-core:l10n"))
   }
+
+  androidMainDependencies {
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core)
+  }
 }

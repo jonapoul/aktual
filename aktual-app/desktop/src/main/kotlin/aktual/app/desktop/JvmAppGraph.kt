@@ -1,5 +1,6 @@
 package aktual.app.desktop
 
+import aktual.core.logging.LogStorage
 import aktual.core.model.BuildConfig
 import aktual.di.AppGraph
 import aktual.di.AppScope
@@ -14,6 +15,7 @@ interface JvmAppGraph : AppGraph {
   val buildConfig: BuildConfig
   val windowPreferences: WindowStatePreferences
   val clock: Clock
+  val logStorage: LogStorage
   val initialiser: RunLevelInitialiser
   val runLevelState: RunLevelState
 }

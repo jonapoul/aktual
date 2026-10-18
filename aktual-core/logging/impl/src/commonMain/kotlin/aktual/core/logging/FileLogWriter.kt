@@ -5,9 +5,8 @@ import co.touchlab.kermit.LogWriter
 import co.touchlab.kermit.Severity
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
+import logcat.LogPriority
 import okio.FileSystem
 import okio.buffer
 
@@ -18,16 +17,17 @@ internal class FileLogWriter(
   private val fileSystem: FileSystem,
 ) : LogWriter() {
   private val logDirectory = storage.directory()
+  private var hasDirectory = false
 
   override fun log(severity: Severity, message: String, tag: String, throwable: Throwable?) {
     try {
       val time = clock.now()
       val localTime = time.toLocalDateTime(timeZone.get())
 
-      val timestamp = LOG_FORMAT.format(localTime)
-      val logLine = "$timestamp / ${severity.char()} / $message\n"
+      val logLine = LogFileFormat.format(localTime, severity.priority(), tag, message) + "\n"
 
-      val logFile = logDirectory / FILENAME_FORMAT.format(localTime)
+      ensureDirectory()
+      val logFile = logDirectory / LogFileFormat.fileName(localTime.date)
       fileSystem.appendingSink(logFile).buffer().use { sink -> sink.writeUtf8(logLine) }
 
       @Suppress("MagicNumber")
@@ -39,6 +39,12 @@ internal class FileLogWriter(
     }
   }
 
+  private fun ensureDirectory() {
+    if (hasDirectory) return
+    fileSystem.createDirectories(logDirectory)
+    hasDirectory = true
+  }
+
   private fun cleanOldLogs() =
     try {
       val now = clock.now()
@@ -47,7 +53,7 @@ internal class FileLogWriter(
       fileSystem
         .list(logDirectory)
         .asSequence()
-        .filter { it.name.startsWith("log-") && it.name.endsWith(".log") }
+        .filter { LogFileFormat.isLogFile(it.name) }
         .forEach { file ->
           val modified = fileSystem.metadataOrNull(file)?.lastModifiedAtMillis
           if (modified != null && modified < cutoffTime) {
@@ -61,42 +67,14 @@ internal class FileLogWriter(
   private companion object {
     val MAX_HISTORY = 30.days
 
-    // "2025-10-24 16:19:12.175"
-    val LOG_FORMAT = LocalDateTime.Format {
-      year()
-      char('-')
-      monthNumber()
-      char('-')
-      day()
-      char(' ')
-      hour()
-      char(':')
-      minute()
-      char(':')
-      second()
-      char('.')
-      secondFraction(minLength = 3, maxLength = 3)
-    }
-
-    // "log-2025-02-07.log"
-    val FILENAME_FORMAT = LocalDateTime.Format {
-      chars("log-")
-      year()
-      char('-')
-      monthNumber()
-      char('-')
-      day()
-      chars(".log")
-    }
-
-    private fun Severity.char(): Char =
+    private fun Severity.priority(): LogPriority =
       when (this) {
-        Verbose -> 'V'
-        Debug -> 'D'
-        Info -> 'I'
-        Warn -> 'W'
-        Severity.Error -> 'E'
-        Assert -> 'A'
+        Verbose -> VERBOSE
+        Debug -> DEBUG
+        Info -> INFO
+        Warn -> WARN
+        Severity.Error -> ERROR
+        Assert -> ASSERT
       }
   }
 }

@@ -1,5 +1,6 @@
 package aktual.app.android
 
+import aktual.core.logging.LogStorage
 import aktual.core.model.BuildConfig
 import aktual.di.AppGraph
 import aktual.di.AppScope
@@ -13,6 +14,7 @@ import dev.zacsweers.metrox.android.MetroAppComponentProviders
 interface AndroidAppGraph : AppGraph, MetroAppComponentProviders {
   val buildConfig: BuildConfig
   val initialiser: RunLevelInitialiser
+  val logStorage: LogStorage
 
   @DependencyGraph.Factory
   fun interface Factory {

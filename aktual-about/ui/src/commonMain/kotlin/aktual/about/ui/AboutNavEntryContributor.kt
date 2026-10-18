@@ -3,6 +3,8 @@ package aktual.about.ui
 import aktual.about.ui.info.InfoScreen
 import aktual.about.ui.licenses.LicensesScreen
 import aktual.about.ui.licenses.search.SearchLicensesScreen
+import aktual.about.ui.logs.LogDayScreen
+import aktual.about.ui.logs.LogsScreen
 import aktual.about.ui.storage.ManageStorageScreen
 import aktual.about.vm.StorageNavEvent
 import aktual.core.nav.BackNavigator
@@ -10,6 +12,10 @@ import aktual.core.nav.BudgetNavRailNavRoute
 import aktual.core.nav.InfoNavRoute
 import aktual.core.nav.LicensesNavRoute
 import aktual.core.nav.LicensesNavigator
+import aktual.core.nav.LogDayNavRoute
+import aktual.core.nav.LogDayNavigator
+import aktual.core.nav.LogsNavRoute
+import aktual.core.nav.LogsNavigator
 import aktual.core.nav.ManageStorageNavRoute
 import aktual.core.nav.ManageStorageNavigator
 import aktual.core.nav.NavEntryContributor
@@ -29,8 +35,13 @@ class AboutNavEntryContributor : NavEntryContributor {
         back = BackNavigator(stack),
         toLicenses = LicensesNavigator(stack),
         toManageStorage = ManageStorageNavigator(stack),
+        toLogs = LogsNavigator(stack),
       )
     }
+
+    entry<LogsNavRoute> { LogsScreen(back = BackNavigator(stack), toDay = LogDayNavigator(stack)) }
+
+    entry<LogDayNavRoute> { route -> LogDayScreen(date = route.date, back = BackNavigator(stack)) }
 
     entry<LicensesNavRoute> {
       LicensesScreen(back = BackNavigator(stack), toSearch = SearchLicensesNavigator(stack))

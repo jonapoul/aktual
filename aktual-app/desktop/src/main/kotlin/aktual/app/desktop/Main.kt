@@ -4,7 +4,6 @@ import aktual.app.nav.AktualAppContent
 import aktual.app.nav.rememberBackStack
 import aktual.core.l10n.Drawables
 import aktual.core.l10n.Strings
-import aktual.core.logging.JvmLogStorage
 import aktual.core.logging.KermitFileLogger
 import aktual.core.logging.TimestampedPrintStreamLogger
 import aktual.core.ui.LoadingScreenIfNull
@@ -37,7 +36,7 @@ fun main() {
   @Suppress("InjectDispatcher")
   CoroutineScope(Dispatchers.Default).launch { graph.initialiser(graph) }
 
-  val logStorage = JvmLogStorage()
+  val logStorage = graph.logStorage
   val minPriority = LogPriority.VERBOSE
   with(LogcatLogger) {
     install()
