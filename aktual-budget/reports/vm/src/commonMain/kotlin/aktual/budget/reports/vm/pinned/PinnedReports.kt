@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.update
 import logcat.logcat
 
 // Reports shown on the home page, saved locally like the home card order. Pins whose report has
-// since been deleted are skipped, and dropped on the next change
+// since been deleted or can't be shown are skipped, and dropped on the next change
 interface PinnedReports {
   val ids: Flow<List<WidgetId>>
 
@@ -69,7 +69,7 @@ internal constructor(
 ) : PinnedReports {
   override val ids: Flow<List<WidgetId>> =
     combine(prefs.observe(DbMetadata.HomeReports), dashboardDao.observeAll()) { saved, widgets ->
-        val live = widgets.mapTo(HashSet()) { it.id }
+        val live = widgets.pinnableIds()
         saved.orEmpty().mapNotNull { WidgetId(it).takeIf { id -> id in live } }
       }
       .distinctUntilChanged()
@@ -127,7 +127,7 @@ internal constructor(
   }
 
   private suspend fun edit(change: (List<WidgetId>) -> List<WidgetId>) {
-    val live = dashboardDao.observeAll().first().mapTo(HashSet()) { it.id }
+    val live = dashboardDao.observeAll().first().pinnableIds()
     prefs.update { meta ->
       val ids =
         meta[DbMetadata.HomeReports].orEmpty().mapNotNull {
@@ -136,6 +136,10 @@ internal constructor(
       meta.set(DbMetadata.HomeReports, change(ids).map { it.value })
     }
   }
+
+  // Widgets with no type can't be shown, so they shouldn't take up a slot either
+  private fun List<Dashboard>.pinnableIds(): Set<WidgetId> =
+    mapNotNullTo(HashSet()) { widget -> widget.id.takeIf { widget.type != null } }
 
   private fun Dashboard.toPinned(
     names: Map<CustomReportId, String>,

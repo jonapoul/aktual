@@ -1,5 +1,6 @@
 package aktual.budget.reports.vm.pinned
 
+import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Dashboard_pages
 import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
@@ -83,6 +84,30 @@ class PinnedReportsTest {
   }
 
   @Test
+  fun `Reports with no type don't take a slot`() = runPinnedTest { pinned, _, prefs ->
+    dashboardQueries.withoutResult {
+      insert(
+        id = UNTYPED,
+        type = null,
+        width = 4,
+        height = 2,
+        x = 0,
+        y = 0,
+        meta = null,
+        dashboard_page_id = PAGE_1.id,
+      )
+    }
+    pinned.pin(A)
+    pinned.pin(UNTYPED)
+    pinned.pin(B)
+
+    pinned.ids.test { assertThatNextEmissionIsEqualTo(listOf(A, B)) }
+
+    pinned.pin(C)
+    assertThat(prefs[DbMetadata.HomeReports]).isEqualTo(listOf("a", "b", "c"))
+  }
+
+  @Test
   fun `Pinned reports load their charts`() = runPinnedTest { pinned, _, _ ->
     pinned.pin(B)
     pinned.pin(A)
@@ -114,7 +139,8 @@ class PinnedReportsTest {
   private fun summary(id: WidgetId) = ReportSummary(id, Markdown, name = null)
 
   private fun runPinnedTest(
-    action: suspend (PinnedReports, DashboardSync, TestBudgetLocalPreferences) -> Unit,
+    action:
+      suspend BudgetDatabase.(PinnedReports, DashboardSync, TestBudgetLocalPreferences) -> Unit,
   ) = runSyncedDatabaseTest { scope, controller ->
     dashboardPagesQueries.withoutResult {
       insert(Dashboard_pages(PAGE_1.id, PAGE_1.name, tombstone = false))
@@ -147,5 +173,6 @@ class PinnedReportsTest {
     val B = WidgetId("b")
     val C = WidgetId("c")
     val D = WidgetId("d")
+    val UNTYPED = WidgetId("untyped")
   }
 }
