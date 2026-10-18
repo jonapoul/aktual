@@ -16,6 +16,8 @@ internal data object OpenSourceCode : InfoAction
 
 internal data object ManageStorage : InfoAction
 
+internal data object ViewLogs : InfoAction
+
 @Immutable
 internal fun interface InfoActionHandler {
   operator fun invoke(action: InfoAction)

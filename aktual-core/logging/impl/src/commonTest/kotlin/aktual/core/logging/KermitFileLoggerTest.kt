@@ -61,9 +61,27 @@ class KermitFileLoggerTest {
 
     assertThat(lines)
       .hasSize(3)
-      .atIndex(0) { isEqualTo("2026-02-07 16:15:22.572 / I / Hello world") }
-      .atIndex(1) { isEqualTo("2026-02-07 16:15:22.572 / D / This is just on the edge") }
-      .atIndex(2) { isEqualTo("2026-02-07 16:15:22.572 / E / Here's an error") }
+      .atIndex(0) { isEqualTo("2026-02-07 16:15:22.572 / I / KermitFileLoggerTest / Hello world") }
+      .atIndex(1) {
+        isEqualTo("2026-02-07 16:15:22.572 / D / KermitFileLoggerTest / This is just on the edge")
+      }
+      .atIndex(2) {
+        isEqualTo("2026-02-07 16:15:22.572 / E / KermitFileLoggerTest / Here's an error")
+      }
+  }
+
+  @Test
+  fun `Create the log directory if missing`() {
+    // given
+    val storage = TestLogStorage(temporaryFolder.root / "missing" / "logs")
+    LogcatLogger.loggers += KermitFileLogger(storage = storage, minPriority = DEBUG, clock = clock)
+
+    // when
+    logcat.i { "Hello world" }
+
+    // then
+    val logFile = fileSystem.list(storage.directory()).first()
+    assertThat(logFile.name).isEqualTo("log-2026-02-07.log")
   }
 }
 

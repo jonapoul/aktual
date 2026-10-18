@@ -41,7 +41,7 @@
   <string name="licenses_sort_by_name">Sort by name</string>
   <string name="licenses_sort_by_license">Sort by license</string>
 
-  <string name="storage_toolbar">Manage Storage</string>
+  <string name="storage_toolbar">Manage storage</string>
   <string name="storage_total">Total Storage</string>
   <string name="storage_percent">%1$s of your device storage</string>
   <string name="storage_budgets">Budgets</string>
@@ -61,4 +61,69 @@
   <string name="storage_cancel">Cancel</string>
   <string name="storage_confirm_delete">Delete</string>
   <string name="storage_confirm_clear">Clear</string>
+  <string name="info_logs">View logs</string>
+  <string name="logs_toolbar">Logs</string>
+  <string name="logs_summary_title">Stored on this device</string>
+  <string name="logs_summary_retention">Kept for 30 days</string>
+  <string name="logs_daily_header">Daily logs</string>
+  <string name="logs_today">Today</string>
+  <string name="logs_yesterday">Yesterday</string>
+  <string name="logs_empty">No logs yet</string>
+  <string name="logs_delete_all">Delete all</string>
+  <string name="logs_delete_title">Delete All Logs?</string>
+  <string name="logs_delete_message">This will delete every log file on this device.</string>
+  <string name="logs_cancel">Cancel</string>
+  <string name="logs_delete">Delete</string>
+  <string name="logs_export">Export</string>
+  <string name="logs_search">Search</string>
+  <string name="logs_search_placeholder">Search tag or message</string>
+  <string name="logs_search_close">Close search</string>
+  <string name="logs_level_verbose">Verbose</string>
+  <string name="logs_level_debug">Debug</string>
+  <string name="logs_level_info">Info</string>
+  <string name="logs_level_warn">Warn</string>
+  <string name="logs_level_error">Error</string>
+  <string name="logs_level_assert">Assert</string>
+  <string name="logs_live_following">Live - following new lines</string>
+  <string name="logs_live">Live</string>
+  <string name="logs_pause">Pause</string>
+  <string name="logs_resume">Resume</string>
+  <string name="logs_no_matches">No matching lines</string>
+  <string name="logs_files">Files</string>
+  <string name="logs_levels">Levels</string>
+  <string name="logs_tags">Tags</string>
+  <string name="logs_tags_hint">Click a tag in the table to filter by it</string>
+  <string name="logs_tag_remove">Remove %1$s filter</string>
+  <string name="logs_column_time">Time</string>
+  <string name="logs_column_level">Level</string>
+  <string name="logs_column_tag">Tag</string>
+  <string name="logs_column_message">Message</string>
+  <string name="logs_copy">Copy</string>
+  <string name="logs_select_line">Select a line to see it in full</string>
+  <string name="logs_export_title">Export Logs</string>
+  <string name="logs_export_include">What to include</string>
+  <string name="logs_export_shown">Shown lines</string>
+  <string name="logs_export_day">This day</string>
+  <string name="logs_export_today">Today</string>
+  <string name="logs_export_last_week">Last 7 days</string>
+  <string name="logs_export_all">All (30 days)</string>
+  <string name="logs_export_share">Share</string>
+  <string name="logs_export_save">Save to file</string>
+  <string name="logs_export_copy">Copy to clipboard</string>
+  <plurals name="logs_summary_files">
+    <item quantity="one">%1$d file</item>
+    <item quantity="other">%1$d files</item>
+  </plurals>
+  <plurals name="logs_errors">
+    <item quantity="one">%1$d error</item>
+    <item quantity="other">%1$d errors</item>
+  </plurals>
+  <plurals name="logs_live_paused">
+    <item quantity="one">Paused - %1$d new line</item>
+    <item quantity="other">Paused - %1$d new lines</item>
+  </plurals>
+  <plurals name="logs_matches">
+    <item quantity="one">%1$d matching line</item>
+    <item quantity="other">%1$d matching lines</item>
+  </plurals>
 </resources>

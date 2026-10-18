@@ -11,6 +11,7 @@ import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.LicensesNavigator
+import aktual.core.nav.LogsNavigator
 import aktual.core.nav.ManageStorageNavigator
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
@@ -69,6 +70,7 @@ fun InfoScreen(
   back: BackNavigator,
   toLicenses: LicensesNavigator,
   toManageStorage: ManageStorageNavigator,
+  toLogs: LogsNavigator,
   viewModel: AboutViewModel = metroViewModel(),
 ) {
   val buildState by viewModel.buildState.collectAsStateWithLifecycle()
@@ -105,6 +107,7 @@ fun InfoScreen(
         NavBack -> back()
         ViewLicenses -> toLicenses()
         ManageStorage -> toManageStorage()
+        ViewLogs -> toLogs()
       }
     },
   )

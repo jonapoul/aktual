@@ -80,6 +80,14 @@ private fun ManageStorageButton(onAction: InfoActionHandler, modifier: Modifier 
   )
 
 @Composable
+private fun LogsButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
+  NormalTextButton(
+    modifier = modifier,
+    text = Strings.infoLogs,
+    onClick = { onAction(ViewLogs) },
+  )
+
+@Composable
 private fun InfoButtonsColumn(onAction: InfoActionHandler) =
   Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
     val buttonModifier = Modifier.fillMaxWidth()
@@ -88,6 +96,7 @@ private fun InfoButtonsColumn(onAction: InfoActionHandler) =
     ReportButton(onAction, buttonModifier)
     LicensesButton(onAction, buttonModifier)
     ManageStorageButton(onAction, buttonModifier)
+    LogsButton(onAction, buttonModifier)
   }
 
 @Composable
@@ -116,6 +125,7 @@ private fun InfoButtonsGrid(onAction: InfoActionHandler) =
       horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),
     ) {
       ManageStorageButton(onAction, Modifier.weight(1f))
+      LogsButton(onAction, Modifier.weight(1f))
     }
   }
 
@@ -130,6 +140,7 @@ private fun InfoButtonsRow(onAction: InfoActionHandler) =
     ReportButton(onAction, Modifier.weight(1f))
     LicensesButton(onAction, Modifier.weight(1f))
     ManageStorageButton(onAction, Modifier.weight(1f))
+    LogsButton(onAction, Modifier.weight(1f))
   }
 
 private val HORIZONTAL_SPACING = 8.dp

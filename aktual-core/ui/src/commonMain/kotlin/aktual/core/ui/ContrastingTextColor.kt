@@ -1,10 +1,12 @@
 package aktual.core.ui
 
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 
 // pick black or white text for legibility on [this], using the brightness formula from
 // https://www.w3.org/TR/AERT/#color-contrast - adapted from upstream's getTagCSSColors in
 // packages/desktop-client/src/hooks/useTagCSS.ts
+@Stable
 @Suppress("MagicNumber")
 fun Color.contrastingTextColor(): Color {
   val brightness = (red * 299 + green * 587 + blue * 114) * 255 / 1000
