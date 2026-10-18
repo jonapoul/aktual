@@ -1,5 +1,6 @@
 package aktual.budget.reports.ui.dashboard
 
+import aktual.budget.model.CustomReportId
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
@@ -53,6 +54,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -65,6 +68,7 @@ internal fun DashboardItem(
   onOpenChange: (Boolean) -> Unit,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
+  customReportNames: ImmutableMap<CustomReportId, String> = persistentMapOf(),
 ) {
   val flow = remember(item) { observer(item) }
   val chartData by flow.collectAsStateWithLifecycle(initialValue = null)
@@ -78,6 +82,7 @@ internal fun DashboardItem(
     onOpenChange = onOpenChange,
     onAction = onAction,
     modifier = modifier,
+    customReportNames = customReportNames,
   )
 }
 
@@ -91,6 +96,7 @@ private fun DashboardItem(
   onOpenChange: (Boolean) -> Unit,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
+  customReportNames: ImmutableMap<CustomReportId, String> = persistentMapOf(),
 ) {
   var showRenameDialog by remember { mutableStateOf(false) }
   var showDeleteDialog by remember { mutableStateOf(false) }
@@ -155,6 +161,11 @@ private fun DashboardItem(
       placeholder = Strings.reportsDashboardReportName,
       confirmText = Strings.reportsDashboardNameSave,
       initialName = item.name.orEmpty(),
+      error = { name ->
+        val meta = item.meta as? CustomReportMeta
+        val taken = meta != null && customReportNames.any { (id, n) -> n == name && id != meta.id }
+        if (taken) Strings.reportsCustomEditorNameTaken else null
+      },
       onConfirm = { name ->
         showRenameDialog = false
         onOpenChange(false)

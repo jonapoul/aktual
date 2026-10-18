@@ -1,5 +1,6 @@
 package aktual.budget.reports.ui.dashboard
 
+import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.ui.ActionListener
@@ -63,8 +64,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.flow.flowOf
 
@@ -80,6 +83,7 @@ fun ReportsDashboardScreen(
   val content by viewModel.content.collectAsStateWithLifecycle()
   val pinnedIds by viewModel.pinnedIds.collectAsStateWithLifecycle()
   val canPin by viewModel.canPin.collectAsStateWithLifecycle()
+  val customReportNames by viewModel.customReportNames.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
   val pinnedMessage = Strings.reportsDashboardPinned
 
@@ -96,6 +100,7 @@ fun ReportsDashboardScreen(
     items = content.items,
     pinnedIds = pinnedIds,
     canPin = canPin,
+    customReportNames = customReportNames,
     observer = viewModel::observeChartData,
     onAction = { action ->
       when (action) {
@@ -132,6 +137,7 @@ internal fun ReportsDashboardScaffold(
   canPin: Boolean,
   observer: DashboardItemObserver,
   onAction: ActionListener,
+  customReportNames: ImmutableMap<CustomReportId, String> = persistentMapOf(),
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberPageListState(selectedPage?.id)
@@ -172,6 +178,7 @@ internal fun ReportsDashboardScaffold(
         items = items,
         pinnedIds = pinnedIds,
         canPin = canPin,
+        customReportNames = customReportNames,
         observer = observer,
         listState = listState,
         onAction = onAction,
@@ -210,6 +217,7 @@ private fun ReportsDashboardContent(
   items: ImmutableList<DashboardItem>?,
   pinnedIds: ImmutableSet<WidgetId>,
   canPin: Boolean,
+  customReportNames: ImmutableMap<CustomReportId, String>,
   observer: DashboardItemObserver,
   listState: LazyListState,
   onAction: ActionListener,
@@ -224,6 +232,7 @@ private fun ReportsDashboardContent(
         items = items,
         pinnedIds = pinnedIds,
         canPin = canPin,
+        customReportNames = customReportNames,
         observer = observer,
         listState = listState,
         onAction = onAction,
@@ -264,6 +273,7 @@ private fun ContentList(
   items: ImmutableList<DashboardItem>,
   pinnedIds: ImmutableSet<WidgetId>,
   canPin: Boolean,
+  customReportNames: ImmutableMap<CustomReportId, String>,
   observer: DashboardItemObserver,
   listState: LazyListState,
   onAction: ActionListener,
@@ -285,6 +295,7 @@ private fun ContentList(
         item = item,
         isPinned = item.id in pinnedIds,
         canPin = canPin,
+        customReportNames = customReportNames,
         observer = observer,
         isOpen = openItemId == item.id,
         onOpenChange = { open ->

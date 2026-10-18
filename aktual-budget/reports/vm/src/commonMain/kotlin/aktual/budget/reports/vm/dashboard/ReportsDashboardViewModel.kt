@@ -1,6 +1,8 @@
 package aktual.budget.reports.vm.dashboard
 
+import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
+import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
@@ -12,6 +14,7 @@ import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.ChartDataLoader
 import aktual.budget.reports.vm.CrossoverReportMeta
 import aktual.budget.reports.vm.CustomReportMeta
+import aktual.budget.reports.vm.CustomReportSync
 import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.FormulaReportMeta
 import aktual.budget.reports.vm.MarkdownReportMeta
@@ -30,10 +33,13 @@ import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -57,6 +63,8 @@ internal constructor(
   private val pages: DashboardPages,
   decoder: DashboardItemDecoder,
   private val pinned: PinnedReports,
+  private val customReports: CustomReportSync,
+  customReportsDao: CustomReportsDao,
 ) : ViewModel() {
   private val createReportChannel = Channel<DashboardPageId>()
   val createReportEvents: Flow<DashboardPageId> = createReportChannel.receiveAsFlow()
@@ -89,6 +97,13 @@ internal constructor(
     pinned.ids
       .map { it.size < MAX_PINNED_REPORTS }
       .stateIn(viewModelScope, Eagerly, initialValue = false)
+
+  // A custom report can't be renamed to another's name
+  val customReportNames: StateFlow<ImmutableMap<CustomReportId, String>> =
+    customReportsDao
+      .observeNames()
+      .map { it.toImmutableMap() }
+      .stateIn(viewModelScope, Eagerly, initialValue = persistentMapOf())
 
   fun selectPage(id: DashboardPageId) = pages.select(id)
 
@@ -133,8 +148,17 @@ internal constructor(
         is UnsupportedReportMeta -> logcat.w { "Can't rename ${item.id}: $meta" }
 
         // Named, but it's stored in a separate table
-        is CustomReportMeta -> sync.renameCustomReport(meta.id, name)
+        is CustomReportMeta -> renameCustomReport(meta.id, name)
       }
+    }
+  }
+
+  private suspend fun renameCustomReport(id: CustomReportId, name: String) {
+    val error = customReports.validateName(name, id)
+    if (error == null) {
+      sync.renameCustomReport(id, name)
+    } else {
+      logcat.w { "Can't rename $id to '$name': $error" }
     }
   }
 
