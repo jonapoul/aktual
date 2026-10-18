@@ -189,7 +189,7 @@ private fun layers(data: BudgetAnalysisData): Layers {
     if (data.balanceOnly) {
       emptyList()
     } else {
-      listOf(Series.Budgeted, Series.Spent, Series.Overspending)
+      listOf<Series>(Budgeted, Spent, Overspending)
     }
   val balances = if (data.showBalance || data.balanceOnly) listOf(Series.Balance) else emptyList()
   return if (data.graphType == Bar && !data.balanceOnly) {

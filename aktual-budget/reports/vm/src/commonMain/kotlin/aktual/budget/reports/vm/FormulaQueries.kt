@@ -181,7 +181,7 @@ internal class FormulaQueries(
     )
 
   private companion object {
-    val CATEGORY_FIELDS = setOf(Field.Category, Field.CategoryGroup)
+    val CATEGORY_FIELDS = setOf<Field>(Category, CategoryGroup)
     const val MIN_YEAR = 1
     const val MAX_YEAR = 9999
   }

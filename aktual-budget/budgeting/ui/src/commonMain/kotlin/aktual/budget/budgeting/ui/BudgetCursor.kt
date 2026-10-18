@@ -172,8 +172,7 @@ private fun KeyEvent.cursorTarget(selected: BudgetCell, grid: BudgetGrid): Curso
   return if (moved == null) Stay else CursorTarget.Select(moved)
 }
 
-private val ArrowKeys =
-  setOf(Key.DirectionUp, Key.DirectionDown, Key.DirectionLeft, Key.DirectionRight)
+private val ArrowKeys = setOf<Key>(DirectionUp, DirectionDown, DirectionLeft, DirectionRight)
 
 // packages/desktop-client/src/components/budget/envelope/EnvelopeBudgetComponents.tsx BudgetedCell
 @Composable

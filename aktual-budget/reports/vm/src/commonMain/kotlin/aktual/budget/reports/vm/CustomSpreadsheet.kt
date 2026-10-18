@@ -214,7 +214,7 @@ private fun categoryGroups(
           if (group is Group) {
             categoriesByGroup[group.id].orEmpty().mapNotNull { namedCategories[it.id] }
           } else {
-            listOf(CustomGroup.Uncategorized, CustomGroup.Transfers, CustomGroup.OffBudget)
+            listOf<CustomGroup>(Uncategorized, Transfers, OffBudget)
           }
         calculator
           .group(group, sums.byGroup[group.key])

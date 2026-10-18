@@ -142,7 +142,7 @@ internal class BudgetCategoryFilter(conditions: List<Condition>, private val op:
   )
 
   private companion object {
-    val FIELDS = setOf(Field.Category, Field.CategoryGroup)
+    val FIELDS = setOf<Field>(Category, CategoryGroup)
 
     // Upstream skips longer patterns, so they match everything
     const val MAX_PATTERN = 256
