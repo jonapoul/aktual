@@ -16,6 +16,7 @@ import aktual.budget.model.WidgetId
 import aktual.budget.model.localChange
 import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.CustomReportConfig
+import aktual.budget.reports.vm.CustomReportSync
 import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.QueryEditorDataLoader
 import aktual.budget.reports.vm.chartDataLoader
@@ -129,6 +130,27 @@ class CustomReportViewModelTest {
   }
 
   @Test
+  fun `Saving writes the draft to the report`() = runCustomTest {
+    viewModel.state.test {
+      awaitLoaded { it.preview != null }
+      viewModel.startEditing()
+      viewModel.edit { it.withMode(Time) }
+      awaitLoaded { it.hasChanges }
+
+      viewModel.save()
+      val saved = awaitLoaded { !it.hasChanges }
+      assertThat(saved).all {
+        prop(Loaded::isEditing).isFalse()
+        transform { it.draft?.mode }.isEqualTo(Time)
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertThat(customReports[REPORT]?.mode).isEqualTo(Time)
+    assertThat(viewModel.hasUnsavedChanges()).isFalse()
+  }
+
+  @Test
   fun `Follows changes to the saved report`() = runCustomTest {
     viewModel.state.test {
       awaitLoaded { it.preview != null }
@@ -205,6 +227,7 @@ class CustomReportViewModelTest {
         tagsDao = TagsDao(this, contexts),
         chartDataLoader = chartDataLoader(contexts, calendar),
         queryEditorDataLoader = QueryEditorDataLoader(this, ReportsDao(this, contexts), calendar),
+        sync = CustomReportSync(customReports, controller, calendar),
       )
     try {
       Harness(viewModel, customReports, controller, scope).action()

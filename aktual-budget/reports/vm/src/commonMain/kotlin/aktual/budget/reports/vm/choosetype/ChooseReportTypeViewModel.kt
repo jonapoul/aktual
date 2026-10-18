@@ -80,7 +80,7 @@ internal constructor(
 
   fun createReport(type: WidgetType) {
     if (type == Custom) {
-      logcat.w { "Can't create a custom report yet" }
+      logcat.w { "Custom reports are created by NewCustomReportViewModel" }
       return
     }
 
