@@ -5,12 +5,13 @@ import aktual.budget.db.Dashboard
 import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.CustomReportId
-import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadata.Companion.HomeReports
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.ChartDataLoader
 import aktual.budget.reports.vm.ReportMeta
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
+import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.dashboard.DashboardPages
 import aktual.budget.reports.vm.dashboard.displayName
 import aktual.budget.reports.vm.pinned.PinnedReports.Companion.MAX_PINNED_REPORTS
@@ -66,7 +67,7 @@ internal constructor(
   private val chartDataLoader: ChartDataLoader,
 ) : PinnedReports {
   override val ids: Flow<List<WidgetId>> =
-    combine(prefs.observe(DbMetadata.HomeReports), dashboardDao.observeAll()) { saved, widgets ->
+    combine(prefs.observe(HomeReports), dashboardDao.observeAll()) { saved, widgets ->
         val live = widgets.pinnableIds()
         saved.orEmpty().mapNotNull { WidgetId(it).takeIf { id -> id in live } }
       }
@@ -87,7 +88,7 @@ internal constructor(
         charts.update { loaded -> loaded.filterKeys(metas::contains) }
         metas.forEach { meta ->
           loaders.getOrPut(meta) {
-            launch {
+            this@channelFlow.launch {
               chartDataLoader.load(meta).collect { data ->
                 charts.update { loaded -> loaded + (meta to data) }
               }
@@ -113,19 +114,7 @@ internal constructor(
       .distinctUntilChanged()
 
   override fun observeChoices(): Flow<ImmutableList<ReportPage>> =
-    combine(pages.all, dashboardDao.observeAll(), customReportsDao.observeNames()) {
-      pages,
-      widgets,
-      names ->
-      val byPage = widgets.groupBy { it.dashboard_page_id }
-      pages
-        .map { page ->
-          val reports = byPage[page.id].orEmpty().mapNotNull { it.toPinned(names)?.first }
-          ReportPage(page, reports.toImmutableList())
-        }
-        .filter { it.reports.isNotEmpty() }
-        .toImmutableList()
-    }
+    combine(pages.all, dashboardDao.observeAll(), customReportsDao.observeNames(), ::reportPages)
 
   override suspend fun pin(id: WidgetId) = edit { ids ->
     if (id in ids || ids.size >= MAX_PINNED_REPORTS) {
@@ -142,14 +131,29 @@ internal constructor(
     if (new in ids) ids else ids.map { if (it == old) new else it }
   }
 
+  private fun reportPages(
+    pages: List<DashboardPage>,
+    widgets: List<Dashboard>,
+    names: Map<CustomReportId, String>
+  ): ImmutableList<ReportPage> {
+    val byPage = widgets.groupBy { it.dashboard_page_id }
+    return pages
+      .map { page ->
+        val reports = byPage[page.id].orEmpty().mapNotNull { it.toPinned(names)?.first }
+        ReportPage(page, reports.toImmutableList())
+      }
+      .filter { it.reports.isNotEmpty() }
+      .toImmutableList()
+  }
+
   private suspend fun edit(change: (List<WidgetId>) -> List<WidgetId>) {
     val live = dashboardDao.observeAll().first().pinnableIds()
     prefs.update { meta ->
       val ids =
-        meta[DbMetadata.HomeReports].orEmpty().mapNotNull {
+        meta[HomeReports].orEmpty().mapNotNull {
           WidgetId(it).takeIf { id -> id in live }
         }
-      meta.set(DbMetadata.HomeReports, change(ids).map { it.value })
+      meta.set(HomeReports, change(ids).map { it.value })
     }
   }
 
