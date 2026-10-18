@@ -5,12 +5,14 @@ import aktual.budget.db.CustomReportAmounts
 import aktual.budget.db.CustomReportCategories
 import aktual.budget.db.CustomReportCategoryGroups
 import aktual.budget.db.CustomReportPayees
+import aktual.budget.db.CustomReportTags
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.PayeeId
+import aktual.budget.model.TagId
 import aktual.budget.reports.vm.CustomGroup.Uncategorized
 import aktual.budget.reports.vm.CustomGroup.UncategorizedAndOffBudget
 import assertk.assertThat
@@ -18,6 +20,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateRange
 
@@ -345,6 +348,90 @@ class CustomSpreadsheetTest {
   }
 
   @Test
+  fun `Splitting by tag buckets each transaction by the exact set of tags in its notes`() {
+    val sheet =
+      spreadsheet(
+        config = CONFIG.copy(groupBy = Tag),
+        tagged =
+          listOf(
+            tagged(row(JAN, category = FOOD, debts = -100), "Lunch #work"),
+            tagged(row(FEB, category = FOOD, debts = -200), "#work ##escaped #trip #unknown"),
+            tagged(row(FEB, category = FUEL, debts = -400), "#trip #work"),
+            tagged(row(FEB, category = FUEL, debts = -800), "#Work is a different tag"),
+            tagged(row(FEB, category = FUEL, debts = -1600), null),
+          ),
+      )
+
+    assertThat(sheet.groups.associate { it.group to it.totals.debts })
+      .isEqualTo(
+        mapOf(
+          WORK_BUCKET to Amount(-100),
+          TRIP_AND_WORK_BUCKET to Amount(-600),
+          CustomGroup.Untagged to Amount(-2400),
+        ),
+      )
+  }
+
+  @Test
+  fun `A tag scope ignores the other tags, and hidden tags are never in scope`() {
+    val sheet =
+      spreadsheet(
+        config =
+          CONFIG.copy(groupBy = Tag, tagScope = CustomTagScope.Selected(persistentListOf(TRIP))),
+        tags = TAGS + CustomReportTags(TagId("hidden"), "hidden", true),
+        tagged =
+          listOf(
+            tagged(row(JAN, category = FOOD, debts = -100), "#work"),
+            tagged(row(JAN, category = FOOD, debts = -200), "#trip #work #hidden"),
+          ),
+      )
+
+    assertThat(sheet.groups.associate { it.group to it.totals.debts })
+      .isEqualTo(
+        mapOf(
+          CustomGroup.TagSet(persistentListOf(TRIP), persistentListOf("trip")) to Amount(-200),
+          CustomGroup.Untagged to Amount(-100),
+        ),
+      )
+  }
+
+  @Test
+  fun `Splitting by tag with empty rows lists every tag and the untagged bucket`() {
+    val sheet = spreadsheet(config = CONFIG.copy(groupBy = Tag, showEmpty = true))
+
+    assertThat(sheet.groups.map { it.group })
+      .containsExactly(
+        WORK_BUCKET,
+        CustomGroup.TagSet(persistentListOf(TRIP), persistentListOf("trip")),
+        CustomGroup.Untagged,
+      )
+  }
+
+  @Test
+  fun `Tags in a bucket are ordered by name, numbers by value`() {
+    val tags =
+      listOf(
+        CustomReportTags(TagId("b10"), "b10", false),
+        CustomReportTags(TagId("b9"), "b9", false),
+        CustomReportTags(TagId("a"), "A", false),
+      )
+    val sheet =
+      spreadsheet(
+        config = CONFIG.copy(groupBy = Tag),
+        tags = tags,
+        tagged = listOf(tagged(row(JAN, category = FOOD, debts = -100), "#b10 #A #b9")),
+      )
+
+    assertThat(sheet.groups.single().group)
+      .isEqualTo(
+        CustomGroup.TagSet(
+          persistentListOf(TagId("a"), TagId("b9"), TagId("b10")),
+          persistentListOf("A", "b9", "b10"),
+        ),
+      )
+  }
+
+  @Test
   fun `Monthly and yearly queries cover whole months and years`() {
     val range = date("2026-01-15")..date("2026-03-10")
     assertThat(customReportQuery(Monthly, range))
@@ -361,6 +448,8 @@ class CustomSpreadsheetTest {
     firstDayOfWeek: FirstDayOfWeek = Sunday,
     amounts: List<CustomReportAmounts> = emptyList(),
     payees: List<CustomReportPayees> = listOf(CustomReportPayees(SHOP, "Shop")),
+    tagged: List<TaggedAmounts> = emptyList(),
+    tags: List<CustomReportTags> = TAGS,
   ) =
     customSpreadsheet(
       config = config,
@@ -377,6 +466,8 @@ class CustomSpreadsheetTest {
               CustomReportAccounts(CHECKING, "Checking"),
               CustomReportAccounts(SAVINGS, "Savings"),
             ),
+          tagged = tagged,
+          tags = tags,
         ),
     )
 
@@ -393,6 +484,13 @@ class CustomSpreadsheetTest {
     val CHECKING = AccountId("checking")
     val SAVINGS = AccountId("savings")
     val SHOP = PayeeId("shop")
+    val WORK = TagId("work")
+    val TRIP = TagId("trip")
+
+    val TAGS = listOf(CustomReportTags(WORK, "work", false), CustomReportTags(TRIP, "trip", null))
+    val WORK_BUCKET = CustomGroup.TagSet(persistentListOf(WORK), persistentListOf("work"))
+    val TRIP_AND_WORK_BUCKET =
+      CustomGroup.TagSet(persistentListOf(TRIP, WORK), persistentListOf("trip", "work"))
 
     val FOOD_GROUP = CustomGroup.Category(FOOD, "Food")
     val FUEL_GROUP = CustomGroup.Category(FUEL, "Fuel")
@@ -431,6 +529,8 @@ class CustomSpreadsheetTest {
         netDebts = Amount(netDebts),
         total = Amount(assets + debts),
       )
+
+    fun tagged(amounts: CustomReportAmounts, notes: String?) = TaggedAmounts(amounts, notes)
 
     fun row(
       key: Long,

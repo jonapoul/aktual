@@ -7,6 +7,7 @@ import aktual.budget.db.CustomReportBudgets
 import aktual.budget.db.CustomReportCategories
 import aktual.budget.db.CustomReportCategoryGroups
 import aktual.budget.db.CustomReportPayees
+import aktual.budget.db.CustomReportTags
 import aktual.budget.db.CustomReportTransactions
 import aktual.budget.db.CustomReports
 import aktual.budget.db.withResult
@@ -102,6 +103,9 @@ class CustomReportsDao(database: BudgetDatabase, private val contexts: Coroutine
 
   fun observeAccounts(): Flow<List<CustomReportAccounts>> =
     queries.customReportAccounts().asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  fun observeTags(): Flow<List<CustomReportTags>> =
+    queries.customReportTags().asFlow().mapToList(contexts.default).distinctUntilChanged()
 }
 
 private fun YearMonth.toLong(): Long = year * YEAR_MONTH_FACTOR + month.number

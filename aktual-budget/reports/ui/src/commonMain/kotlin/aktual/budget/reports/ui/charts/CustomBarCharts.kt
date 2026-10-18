@@ -233,6 +233,8 @@ internal fun CustomGroup.label(): String =
     Transfers -> Strings.reportsCustomTransfers
     OffBudget -> Strings.reportsCustomOffBudget
     UncategorizedAndOffBudget -> Strings.reportsCustomUncategorisedAndOffBudget
+    is TagSet -> names.joinToString(" + ") { "#$it" }
+    Untagged -> Strings.reportsCustomUntagged
   }
 
 // ReportOptions.ts getIntervalFormat(): days and weeks follow the date format preference

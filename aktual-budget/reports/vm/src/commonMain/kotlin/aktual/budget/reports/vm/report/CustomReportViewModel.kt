@@ -23,6 +23,7 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -81,8 +82,19 @@ internal constructor(
         queryEditorDataLoader.load(),
         budgetDao.observeCategoryGroups(),
         budgetDao.observeCategories(),
-      ) { query, groups, categories ->
-        CustomReportEditorData(query, categoryGroupChoices(groups, categories))
+        customReports.observeTags(),
+      ) { query, groups, categories, tags ->
+        CustomReportEditorData(
+          query = query,
+          categories = categoryGroupChoices(groups, categories),
+          tags =
+            tags
+              .asSequence()
+              .filter { it.hidden != true }
+              .map { TagChoice(it.id, it.tag) }
+              .sortedBy { it.name.lowercase() }
+              .toImmutableList(),
+        )
       }
       .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), null)
 

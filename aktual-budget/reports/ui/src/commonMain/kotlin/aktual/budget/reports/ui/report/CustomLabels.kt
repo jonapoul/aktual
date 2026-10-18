@@ -39,6 +39,7 @@ internal fun GroupBy.label(): String =
     Payee -> Strings.reportsCustomEditorSplitPayee
     Account -> Strings.reportsCustomEditorSplitAccount
     GroupBy.Interval -> Strings.reportsCustomEditorSplitInterval
+    Tag -> Strings.reportsCustomEditorSplitTag
     Unknown -> Strings.reportsCustomEditorUnknown
   }
 

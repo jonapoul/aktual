@@ -104,7 +104,7 @@ internal fun CategorySheet(
   }
 
 @Composable
-private fun CheckRow(
+internal fun CheckRow(
   text: String,
   isBold: Boolean,
   modifier: Modifier = Modifier,

@@ -6,6 +6,7 @@ import aktual.budget.model.BalanceType
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.model.TagId
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
@@ -34,6 +35,15 @@ sealed interface CustomGroup {
 
   /** The category group holding [Uncategorized], [Transfers] and [OffBudget] */
   data object UncategorizedAndOffBudget : CustomGroup
+
+  /**
+   * Transactions tagged with exactly these of the report's tags, sorted by name. Tags outside the
+   * report's scope don't count
+   */
+  data class TagSet(val ids: ImmutableList<TagId>, val names: ImmutableList<String>) : CustomGroup
+
+  /** Transactions with none of the report's tags */
+  data object Untagged : CustomGroup
 }
 
 /**

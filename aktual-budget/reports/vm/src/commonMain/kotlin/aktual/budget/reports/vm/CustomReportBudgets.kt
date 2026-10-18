@@ -13,7 +13,10 @@ import kotlinx.serialization.json.JsonPrimitive
 // Upstream's sidebar only offers budgeted amounts grouped by category or group, monthly or yearly.
 // Budgets have no payee or account, and are keyed by month, so anything else would come out empty
 internal fun CustomReportConfig.canShowBudgeted(): Boolean =
-  groupBy != Payee && groupBy != Account && (interval == Monthly || interval == Yearly)
+  groupBy != Payee &&
+    groupBy != Account &&
+    groupBy != Tag &&
+    (interval == Monthly || interval == Yearly)
 
 // packages/desktop-client/src/components/reports/spreadsheets/budgetDataQuery.ts fetchBudgetData():
 // each budget as the amounts row a transaction would make, positive budgets as assets and negative

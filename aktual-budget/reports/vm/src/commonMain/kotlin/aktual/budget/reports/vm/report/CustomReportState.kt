@@ -1,11 +1,13 @@
 package aktual.budget.reports.vm.report
 
+import aktual.budget.model.TagId
 import aktual.budget.reports.vm.CategoryGroupChoice
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.CustomReportConfig
 import aktual.budget.reports.vm.QueryEditorData
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 sealed interface CustomReportState {
@@ -25,9 +27,13 @@ sealed interface CustomReportState {
   ) : CustomReportState
 }
 
-// What the editor picks categories and filters from
+// What the editor picks categories, tags and filters from
 @Immutable
 data class CustomReportEditorData(
   val query: QueryEditorData,
   val categories: ImmutableList<CategoryGroupChoice>,
+  // The visible tags a split by tag can be scoped to, by name
+  val tags: ImmutableList<TagChoice> = persistentListOf(),
 )
+
+data class TagChoice(val id: TagId, val name: String)

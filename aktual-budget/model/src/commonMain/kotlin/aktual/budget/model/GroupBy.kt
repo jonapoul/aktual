@@ -12,5 +12,6 @@ enum class GroupBy {
   @SerialName("Group") Group,
   @SerialName("Interval") Interval,
   @SerialName("Payee") Payee,
+  @SerialName("Tag") Tag,
   @Fallback Unknown,
 }

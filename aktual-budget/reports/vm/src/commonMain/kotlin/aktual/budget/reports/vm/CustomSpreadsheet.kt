@@ -5,11 +5,13 @@ import aktual.budget.db.CustomReportAmounts
 import aktual.budget.db.CustomReportCategories
 import aktual.budget.db.CustomReportCategoryGroups
 import aktual.budget.db.CustomReportPayees
+import aktual.budget.db.CustomReportTags
 import aktual.budget.model.Amount
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.GroupBy
 import aktual.budget.model.Interval
 import aktual.budget.model.SortBy
+import aktual.budget.model.tagNamesInNotes
 import kotlin.math.abs
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
@@ -57,7 +59,13 @@ internal data class CustomReportInputs(
   val categoryGroups: List<CustomReportCategoryGroups>,
   val payees: List<CustomReportPayees>,
   val accounts: List<CustomReportAccounts>,
+  // Only for reports split by tag, which sum these in place of [amounts]
+  val tagged: List<TaggedAmounts> = emptyList(),
+  val tags: List<CustomReportTags> = emptyList(),
 )
+
+/** A transaction's amounts, with the notes its tags are read from */
+internal data class TaggedAmounts(val amounts: CustomReportAmounts, val notes: String?)
 
 internal data class CustomSpreadsheet(
   val intervals: ImmutableList<CustomIntervalTotals>,
@@ -78,7 +86,9 @@ internal fun customSpreadsheet(
   inputs: CustomReportInputs,
 ): CustomSpreadsheet {
   val intervals = intervals(config.interval, range, firstDayOfWeek)
-  val sums = sumAmounts(config, intervals, firstDayOfWeek, inputs.amounts)
+  val indexOf = intervalIndexer(config, intervals, firstDayOfWeek)
+  val amounts = if (config.groupBy == Tag) inputs.tagged.map { it.amounts } else inputs.amounts
+  val sums = sumAmounts(intervals.size, indexOf, amounts)
   val metric = config.balanceType.metric
   val calculator = GroupCalculator(intervals, metric, config.showEmpty)
 
@@ -98,6 +108,14 @@ internal fun customSpreadsheet(
       Payee -> inputs.payees.map { CustomGroup.Payee(it.id, it.name.orEmpty()) } to sums.byPayee
       Account ->
         inputs.accounts.map { CustomGroup.Account(it.id, it.name.orEmpty()) } to sums.byAccount
+      Tag ->
+        sumTags(
+          intervals.size,
+          indexOf,
+          inputs.tagged,
+          config.tagScope.resolve(inputs.tags),
+          config.showEmpty,
+        )
       Unknown -> emptyList<CustomGroup>() to sums.byCategory
     }
   if (items.isEmpty()) return EMPTY
@@ -379,6 +397,8 @@ private val CustomGroup.sortName: String
       Transfers -> "Transfers"
       Uncategorized -> "Uncategorized"
       UncategorizedAndOffBudget -> "Uncategorized & Off budget"
+      is TagSet -> names.joinToString(" + ") { "#$it" }
+      Untagged -> "Untagged"
     }
 
 // What a group's amounts are summed under: its ID, or the made-up group itself
@@ -392,7 +412,9 @@ private val CustomGroup.key: Any
       OffBudget,
       Transfers,
       Uncategorized,
-      UncategorizedAndOffBudget -> this
+      UncategorizedAndOffBudget,
+      is TagSet,
+      Untagged -> this
     }
 
 private class IntervalSums(size: Int) {
@@ -413,17 +435,27 @@ private class Sums(private val size: Int) {
   }
 }
 
-private fun sumAmounts(
+// The interval a row's amounts fall in, or null for rows the report doesn't show
+private fun intervalIndexer(
   config: CustomReportConfig,
   intervals: List<CustomInterval>,
   firstDayOfWeek: FirstDayOfWeek,
+): (CustomReportAmounts) -> Int? {
+  val indices = intervals.withIndex().associate { (index, interval) -> interval.start to index }
+  return { row ->
+    val key = row.interval_key?.takeIf { config.isShown(row) }
+    key?.let { indices[intervalStart(config.interval, it, firstDayOfWeek)] }
+  }
+}
+
+private fun sumAmounts(
+  size: Int,
+  indexOf: (CustomReportAmounts) -> Int?,
   rows: List<CustomReportAmounts>,
 ): Sums {
-  val indices = intervals.withIndex().associate { (index, interval) -> interval.start to index }
-  val sums = Sums(intervals.size)
+  val sums = Sums(size)
   for (row in rows) {
-    val key = row.interval_key?.takeIf { config.isShown(row) }
-    val index = key?.let { indices[intervalStart(config.interval, it, firstDayOfWeek)] } ?: continue
+    val index = indexOf(row) ?: continue
 
     // filterHiddenItems.ts: categorised on-budget amounts go to their category, the rest to one of
     // the made-up categories
@@ -446,6 +478,80 @@ private fun sumAmounts(
     sums.add(sums.byAccount, row.account, index, row)
   }
   return sums
+}
+
+// packages/desktop-client/src/components/reports/spreadsheets/tagGroups.ts groupQueryDataByTags():
+// each row goes to the bucket of exactly the scope's tags in its notes. Showing empty rows lists
+// every single-tag bucket and the untagged one even without amounts
+private fun sumTags(
+  size: Int,
+  indexOf: (CustomReportAmounts) -> Int?,
+  rows: List<TaggedAmounts>,
+  scope: List<CustomReportTags>,
+  showEmpty: Boolean,
+): Pair<List<CustomGroup>, Map<Any, IntervalSums>> {
+  val tagsByName = scope.associateBy { it.tag }
+  val buckets = LinkedHashSet<CustomGroup>()
+  if (showEmpty) {
+    scope.forEach { buckets += tagBucket(listOf(it)) }
+    buckets += CustomGroup.Untagged
+  }
+
+  val sums = Sums(size)
+  val byBucket = HashMap<Any, IntervalSums>()
+  for (row in rows) {
+    val index = indexOf(row.amounts) ?: continue
+    val bucket = tagBucket(tagNamesInNotes(row.notes.orEmpty()).mapNotNull(tagsByName::get))
+    buckets += bucket
+    sums.add(byBucket, bucket, index, row.amounts)
+  }
+  return buckets.toList() to byBucket
+}
+
+private fun tagBucket(tags: List<CustomReportTags>): CustomGroup {
+  if (tags.isEmpty()) return Untagged
+  val sorted =
+    tags.sortedWith(
+      compareBy<CustomReportTags, String>(TagNameOrder) { it.tag }.thenBy { it.id.value },
+    )
+  return CustomGroup.TagSet(
+    ids = sorted.map { it.id }.toImmutableList(),
+    names = sorted.map { it.tag }.toImmutableList(),
+  )
+}
+
+// tagScope.ts resolveTagScope(): the visible tags in scope, a selection keeping its own order
+internal fun CustomTagScope.resolve(tags: List<CustomReportTags>): List<CustomReportTags> {
+  val visible = tags.filter { it.hidden != true }
+  return when (this) {
+    All -> visible
+    is Selected -> visible.associateBy { it.id }.let { byId -> tagIds.mapNotNull(byId::get) }
+  }
+}
+
+// Intl.Collator('en', { numeric: true }): case-insensitive, with runs of digits compared as
+// numbers.
+// Names equal that way fall back to an exact comparison
+private object TagNameOrder : Comparator<String> {
+  private val chunks = Regex("""\d+|\D+""")
+
+  override fun compare(a: String, b: String): Int {
+    val left = chunks.findAll(a).map { it.value }.toList()
+    val right = chunks.findAll(b).map { it.value }.toList()
+    for (i in 0 until minOf(left.size, right.size)) {
+      val x = left[i]
+      val y = right[i]
+      val result =
+        if (x.first().isDigit() && y.first().isDigit()) {
+          x.trimStart('0').length.compareTo(y.trimStart('0').length).takeIf { it != 0 }
+            ?: x.trimStart('0').compareTo(y.trimStart('0'))
+        } else {
+          x.compareTo(y, ignoreCase = true)
+        }
+      if (result != 0) return result
+    }
+    return left.size.compareTo(right.size).takeIf { it != 0 } ?: a.compareTo(b)
+  }
 }
 
 // packages/desktop-client/src/components/reports/spreadsheets/filterHiddenItems.ts
