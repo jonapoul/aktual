@@ -121,6 +121,22 @@ class PinnedReportsTest {
   }
 
   @Test
+  fun `Pinning another report keeps loaded charts`() = runPinnedTest { pinned, _, _ ->
+    pinned.pin(A)
+
+    pinned.observe().test {
+      var reports = awaitItem()
+      while (reports.any { it.data == null }) reports = awaitItem()
+
+      pinned.pin(B)
+      do {
+        reports = awaitItem()
+        assertThat(reports.first().data).isEqualTo(TextData("a"))
+      } while (reports.size < 2 || reports[1].data == null)
+    }
+  }
+
+  @Test
   fun `Choices list every report by page, as the dashboard orders them`() =
     runPinnedTest { pinned, _, _ ->
       pinned.observeChoices().test {
