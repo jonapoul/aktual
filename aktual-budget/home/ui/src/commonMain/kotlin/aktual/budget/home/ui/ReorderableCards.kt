@@ -24,13 +24,16 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -38,13 +41,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.LookaheadScope
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
@@ -52,6 +61,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.center
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.toOffset
 import androidx.compose.ui.util.fastForEachIndexed
@@ -67,15 +77,24 @@ internal fun ReorderableCards(
   cards: ImmutableList<HomeCardType>,
   columns: Int,
   isEditing: Boolean,
+  scrollArea: AutoScrollArea,
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
   card: @Composable (HomeCardType) -> Unit,
 ) {
   val scope = rememberCoroutineScope()
   val haptics = LocalHapticFeedback.current
+  val density = LocalDensity.current
   val drag =
     remember(cards) { CardDragState(cards, scope) { order -> onAction(ReorderCards(order)) } }
   val order = drag.order
+
+  LaunchedEffect(drag, drag.held) {
+    val held = drag.held ?: return@LaunchedEffect
+    with(density) {
+      drag.autoScroll(held, scrollArea, AutoScrollEdge.toPx(), AutoScrollSpeed.toPx())
+    }
+  }
 
   LookaheadScope {
     CardColumns(
@@ -84,7 +103,7 @@ internal fun ReorderableCards(
       spacing = Dimens.VeryLarge,
       dragged = order.indexOf(drag.dragged).takeIf { it >= 0 },
       dragPosition = { drag.position.round() },
-      onPlaced = { slots -> drag.place(order, slots) },
+      onPlaced = { slots, coordinates -> drag.place(order, slots, coordinates) },
     ) {
       order.fastForEachIndexed { index, type ->
         key(type) {
@@ -124,8 +143,10 @@ internal fun ReorderableCards(
                   modifier =
                     Modifier.matchParentSize().pointerInput(drag, type) {
                       detectDragGesturesAfterLongPress(
-                        onDragStart = {
-                          if (drag.pickUp(type)) haptics.performHapticFeedback(LongPress)
+                        onDragStart = { offset ->
+                          // The card sits below the reorder bar, so its offset is the difference
+                          val grabY = drag.heightOf(type) - size.height + offset.y
+                          if (drag.pickUp(type, grabY)) haptics.performHapticFeedback(LongPress)
                         },
                         onDragEnd = { drag.drop(type) },
                         onDragCancel = { drag.drop(type) },
@@ -158,22 +179,33 @@ private class CardDragState(
   var dragged by mutableStateOf<HomeCardType?>(null)
     private set
 
+  // The dragged card while it's under a finger, before it settles into its slot
+  var held by mutableStateOf<HomeCardType?>(null)
+    private set
+
   var position by mutableStateOf<Offset>(Zero)
     private set
 
   private var slots = emptyMap<HomeCardType, IntRect>()
   private var slotsOrder: List<HomeCardType>? = null
+  private var coordinates: LayoutCoordinates? = null
+  private var grabY = 0f
 
-  fun place(order: List<HomeCardType>, slots: List<IntRect>) {
+  fun place(order: List<HomeCardType>, slots: List<IntRect>, coordinates: LayoutCoordinates?) {
     this.slots = order.zip(slots).toMap()
     slotsOrder = order
+    if (coordinates != null) this.coordinates = coordinates
   }
 
-  fun pickUp(card: HomeCardType): Boolean {
+  fun heightOf(card: HomeCardType): Int = slots[card]?.height ?: 0
+
+  fun pickUp(card: HomeCardType, grabY: Float): Boolean {
     val slot = slots[card]
     if (dragged != null || slot == null) return false
     position = slot.topLeft.toOffset()
+    this.grabY = grabY
     dragged = card
+    held = card
     return true
   }
 
@@ -195,8 +227,35 @@ private class CardDragState(
     if (isPastMiddle) order = order.removingAt(from).addingAt(to, card)
   }
 
+  // Scrolls faster the further past the edge the finger is. The card moves with the content so it
+  // stays under the finger
+  suspend fun autoScroll(card: HomeCardType, area: AutoScrollArea, edge: Float, speed: Float) {
+    var lastFrame = withFrameNanos { it }
+    while (held == card) {
+      val frame = withFrameNanos { it }
+      val seconds = (frame - lastFrame) / NANOS_PER_SECOND
+      lastFrame = frame
+      val factor = edgeFactor(area.viewport, edge)
+      if (factor != 0f) {
+        val scrolled = area.scrollState.scrollBy(factor * speed * seconds)
+        dragBy(card, Offset(0f, scrolled))
+      }
+    }
+  }
+
+  private fun edgeFactor(viewport: Rect, edge: Float): Float {
+    val coordinates = coordinates?.takeIf { it.isAttached } ?: return 0f
+    val y = coordinates.positionInWindow().y + position.y + grabY
+    return when {
+      y < viewport.top + edge -> -((viewport.top + edge - y) / edge).coerceAtMost(1f)
+      y > viewport.bottom - edge -> ((y - viewport.bottom + edge) / edge).coerceAtMost(1f)
+      else -> 0f
+    }
+  }
+
   fun drop(card: HomeCardType) {
-    if (dragged != card) return
+    if (held != card) return
+    held = null
     val slot = slots[card]
     scope.launch {
       if (slot != null) {
@@ -237,6 +296,22 @@ private const val DRAGGED_SCALE = 1.03f
 private const val WIGGLE_DEGREES = 0.5f
 private const val WIGGLE_MILLIS = 140
 private const val WIGGLE_STAGGER_MILLIS = 60
+private const val NANOS_PER_SECOND = 1_000_000_000f
+private val AutoScrollEdge = 64.dp
+private val AutoScrollSpeed = 1000.dp
+
+// The scrolling area holding the cards, which a dragged card scrolls when held near its edges.
+// The viewport is in window coordinates, leaving out any bars drawn over the content
+@Stable
+internal class AutoScrollArea(val scrollState: ScrollState) {
+  var viewport: Rect = Zero
+    private set
+
+  fun place(coordinates: LayoutCoordinates, topInset: Float, bottomInset: Float) {
+    val bounds = coordinates.boundsInWindow()
+    viewport = bounds.copy(top = bounds.top + topInset, bottom = bounds.bottom - bottomInset)
+  }
+}
 
 @Composable
 private fun ReorderBar(
@@ -293,7 +368,7 @@ private fun CardColumns(
   spacing: Dp,
   dragged: Int?,
   dragPosition: () -> IntOffset,
-  onPlaced: (List<IntRect>) -> Unit,
+  onPlaced: (List<IntRect>, LayoutCoordinates?) -> Unit,
   modifier: Modifier = Modifier,
   content: @Composable () -> Unit,
 ) {
@@ -316,6 +391,7 @@ private fun CardColumns(
         placeables.mapIndexed { index, placeable ->
           IntRect(positions[index], IntSize(placeable.width, placeable.height))
         },
+        coordinates,
       )
       placeables.fastForEachIndexed { index, placeable ->
         if (index == dragged) {
