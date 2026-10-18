@@ -103,7 +103,7 @@ class LogEntriesViewModelTest {
   @Test
   fun `Export shown lines`() = runTest {
     every { repository.watch(YESTERDAY) } returns flowOf(listOf(INFO_LINE, ERROR_LINE))
-    coEvery { repository.files() } returns emptyList()
+    coEvery { repository.dates() } returns emptyList()
     val viewModel = buildViewModel(YESTERDAY)
 
     viewModel.state.test {

@@ -1,6 +1,5 @@
 package aktual.about.vm.logs
 
-import aktual.about.data.LogFile
 import aktual.about.data.LogsRepository
 import aktual.core.logging.LogFileFormat
 import aktual.core.logging.LogLine
@@ -38,7 +37,7 @@ internal class LogExporter(private val repository: LogsRepository) {
   }
 
   private suspend fun datesSince(cutoff: LocalDate?): List<LocalDate> =
-    repository.files().map(LogFile::date).filter { cutoff == null || it >= cutoff }
+    repository.dates().filter { cutoff == null || it >= cutoff }
 
   private companion object {
     const val LAST_WEEK_DAYS = 7

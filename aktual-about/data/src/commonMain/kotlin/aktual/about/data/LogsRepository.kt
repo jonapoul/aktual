@@ -46,6 +46,13 @@ class LogsRepository(
         .sortedByDescending { it.date }
     }
 
+  suspend fun dates(): List<LocalDate> =
+    withContext(contexts.io) {
+      val dir = storage.directory()
+      if (!fileSystem.exists(dir)) return@withContext emptyList()
+      fileSystem.list(dir).mapNotNull { LogFileFormat.parseFileName(it.name) }.sortedDescending()
+    }
+
   // Emits every line in the date's file, then again whenever it grows. Only today's file grows
   fun watch(date: LocalDate): Flow<List<LogLine>> = flow {
     val path = path(date)
@@ -61,9 +68,12 @@ class LogsRepository(
       }
       if (size > offset || first) {
         val (text, read) = readFrom(path, offset)
-        offset += read
-        lines += LogFileFormat.parse(text)
-        emit(lines.toList())
+        // Nothing new until the logger finishes its current line
+        if (read > 0 || first) {
+          offset += read
+          lines += LogFileFormat.parse(text)
+          emit(lines.toList())
+        }
         first = false
       }
       val isToday = date == today()

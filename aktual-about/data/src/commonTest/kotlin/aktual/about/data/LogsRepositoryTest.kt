@@ -46,6 +46,15 @@ class LogsRepositoryTest {
   }
 
   @Test
+  fun `List dates newest first`() = runTest {
+    write("log-2026-10-17.log", "$TS / I / Api / Old\n")
+    write("log-2026-10-18.log", "$TS / I / Api / New\n")
+    write("other.txt", "ignored")
+
+    assertThat(repository().dates()).isEqualToList(TODAY, YESTERDAY)
+  }
+
+  @Test
   fun `Watch an older file emits once`() = runTest {
     write("log-2026-10-17.log", "$TS / W / Api / Slow\n")
 

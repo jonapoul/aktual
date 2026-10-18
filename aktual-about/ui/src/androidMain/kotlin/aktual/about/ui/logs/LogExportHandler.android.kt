@@ -43,7 +43,9 @@ private class AndroidLogExportHandler(
     scope.launch {
       val uri =
         withContext(Dispatchers.IO) {
+          // Logs can hold server details, so don't leave old exports lying around
           val dir = File(context.cacheDir, EXPORT_DIR).apply { mkdirs() }
+          dir.listFiles()?.forEach(File::delete)
           val file = File(dir, export.fileName).apply { writeText(export.text) }
           FileProvider.getUriForFile(context, "${context.packageName}.logs", file)
         }
