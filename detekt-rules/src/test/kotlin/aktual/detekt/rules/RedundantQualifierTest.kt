@@ -351,6 +351,75 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
     assertNotReported("fun foo(set: Boolean) = takesKind(if (set) Kind.Button else Kind.Checkbox)")
 
   @Test
+  fun `reports enum entries that decide a collection's type`() =
+    assertReported(
+      "fun foo() = listOf(Role.Admin, Role.Basic)",
+      "listOf(Role.Admin, Role.Basic)" to "listOf<Role>(Admin, Basic)",
+    )
+
+  @Test
+  fun `reports sealed objects that decide a collection's type`() =
+    assertReported(
+      "fun foo() = setOf(State.Loading, State.Idle)",
+      "setOf(State.Loading, State.Idle)" to "setOf<State>(Loading, Idle)",
+    )
+
+  @Test
+  fun `reports companion properties that decide a collection's type`() =
+    assertReported(
+      "fun foo() = setOf(Kind.Button, Kind.Checkbox)",
+      "setOf(Kind.Button, Kind.Checkbox)" to "setOf<Kind>(Button, Checkbox)",
+    )
+
+  @Test
+  fun `reports enum entries split over lines`() =
+    assertReported(
+      """
+      fun foo() =
+        setOf(
+          Role.Admin,
+          Role.Basic,
+        )
+      """
+        .trimIndent(),
+      "setOf(\n    Role.Admin,\n    Role.Basic,\n  )" to "setOf<Role>(Admin, Basic)",
+    )
+
+  @Test
+  fun `reports enum entries that decide a generic function's type`() =
+    assertReported(
+      "fun foo() = both(Role.Admin, Role.Basic)",
+      "both(Role.Admin, Role.Basic)" to "both<Role>(Admin, Basic)",
+    )
+
+  @Test
+  fun `does not report entries of different types`() =
+    assertNotReported("fun foo() = listOf(Role.Admin, Method.Header)")
+
+  @Test
+  fun `does not report when one argument is unqualified`() =
+    assertNotReported("fun foo() = listOf(Role.Admin, makeRole())")
+
+  @Test
+  fun `does not report when one argument is a constructor call`() =
+    assertNotReported("""fun foo() = listOf(State.Loading, State.Failure("x"))""")
+
+  @Test
+  fun `does not report when one entry is shadowed`() =
+    assertNotReported(
+      "fun foo() = listOf(Method.Password, Method.Header)",
+      "listOf(Method.Password, Method.Header)" to "listOf<Method>(Password, Header)",
+    )
+
+  @Test
+  fun `does not report when the expected type widens the collection`() =
+    assertNotReported("val roles: MutableList<Any> = mutableListOf(Role.Admin, Role.Basic)")
+
+  @Test
+  fun `does not report a function with more than one type parameter`() =
+    assertNotReported("fun foo() = pairOf(Role.Admin, Role.Basic)")
+
+  @Test
   fun `does not report when CSR is off`() =
     assertThat(
         lint("$PREAMBLE\nfun foo() = takesRole(Role.Admin)", LanguageVersionSettingsImpl.DEFAULT),
@@ -360,10 +429,9 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
   // Checks the findings, then that the code still compiles once they're applied
   private fun assertReported(@Language("kotlin") code: String, vararg fixes: Pair<String, String>) {
     val source = PREAMBLE + "\n" + code.trimIndent()
-    val expected = fixes.map { (from, to) ->
-      "'$from' can be written as '$to', the expected type is known"
-    }
-    assertThat(lint(source).map { it.message }).containsExactly(*expected.toTypedArray())
+    val expected = fixes.map { (from, to) -> "'$from' can be written as '$to'" }
+    val messages = lint(source).map { it.message.substringBeforeLast("', ") + "'" }
+    assertThat(messages).containsExactly(*expected.toTypedArray())
     compile(fixes.fold(source) { acc, (from, to) -> acc.replace(from, to) })
   }
 
@@ -422,6 +490,7 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
 
       sealed interface State {
         data object Loading : State
+        data object Idle : State
         data class Failure(val reason: String) : State
         companion object {
           val Default: State = Loading
@@ -479,6 +548,10 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
       fun takesState(state: State) = state
 
       fun takesMethod(method: Method) = method
+
+      fun <T> both(first: T, second: T) = first to second
+
+      fun <A, B> pairOf(first: A, second: B) = first to second
       """
         .trimIndent()
   }
