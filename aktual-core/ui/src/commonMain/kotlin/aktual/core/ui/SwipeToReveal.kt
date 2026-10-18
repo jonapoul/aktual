@@ -200,6 +200,7 @@ private fun SwipeButton(
         },
       text = action.text,
       color = action.foreground,
+      textAlign = Center,
     )
   }
 }

@@ -88,16 +88,9 @@ fun TransactionsScreen(
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        AccountDeleted -> {
-          snackbars.show { showSnackbar(deleted) }
-          back()
-        }
-        AccountDeletedBankLoginKept -> {
-          showLoginKept = true
-        }
-        DeleteAccountFailed -> {
-          snackbars.show { showSnackbar(deleteFailed) }
-        }
+        AccountDeleted -> snackbars.show(message = deleted).also { back() }
+        AccountDeletedBankLoginKept -> showLoginKept = true
+        DeleteAccountFailed -> snackbars.show(message = deleteFailed)
       }
     }
   }

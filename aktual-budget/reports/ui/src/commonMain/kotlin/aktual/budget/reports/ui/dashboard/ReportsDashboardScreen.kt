@@ -87,7 +87,7 @@ fun ReportsDashboardScreen(
 
   fun pin(id: WidgetId) {
     viewModel.pinReport(id)
-    snackbars.show(key = PINNED_SNACKBAR) { showSnackbar(pinnedMessage) }
+    snackbars.show(key = PINNED_SNACKBAR, message = pinnedMessage)
   }
 
   ReportsDashboardScaffold(

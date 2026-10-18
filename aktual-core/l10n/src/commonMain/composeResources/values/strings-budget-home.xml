@@ -12,7 +12,7 @@
   <string name="home_upcoming_hidden">Hidden while no schedules are coming up</string>
   <string name="home_card_reports">Reports</string>
   <string name="home_reports_hidden">Hidden while no reports are pinned. Swipe a report on the reports page to pin it here</string>
-  <string name="home_reports_manage">Manage pinned reports</string>
+  <string name="home_reports_manage">Manage</string>
   <string name="home_reports_failed">Couldn't load pinned reports</string>
   <plurals name="home_reports_sheet_message">
     <item quantity="one">Pin up to %1$d report to your home page</item>

@@ -33,6 +33,8 @@ internal constructor(
     keyed[key] = job
     job.invokeOnCompletion { if (keyed[key] === job) keyed.remove(key) }
   }
+
+  fun show(key: Any? = null, message: String) = show(key) { showSnackbar(message) }
 }
 
 val LocalSnackbars = staticCompositionLocalOf<Snackbars> { error("No Snackbars provided") }

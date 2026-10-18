@@ -17,7 +17,6 @@ import aktual.budget.reports.vm.pinned.ReportPage
 import aktual.budget.reports.vm.pinned.ReportSummary
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.Clear
-import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.SwapHoriz
 import aktual.core.l10n.Plurals
@@ -47,6 +46,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
@@ -132,7 +132,7 @@ private fun ReportsHeader(onManage: (() -> Unit)?, modifier: Modifier = Modifier
   Row(
     modifier = modifier.fillMaxWidth().padding(horizontal = CardPadding),
     horizontalArrangement = spacedBy(12.dp),
-    verticalAlignment = CenterVertically,
+    verticalAlignment = Alignment.Top,
   ) {
     Text(
       modifier = Modifier.weight(1f).semantics { heading() },
@@ -145,11 +145,7 @@ private fun ReportsHeader(onManage: (() -> Unit)?, modifier: Modifier = Modifier
     )
 
     if (onManage != null) {
-      BareIconButton(
-        imageVector = MaterialIcons.Edit,
-        contentDescription = Strings.homeReportsManage,
-        onClick = onManage,
-      )
+      BareTextButton(text = Strings.homeReportsManage, onClick = onManage)
     }
   }
 }
