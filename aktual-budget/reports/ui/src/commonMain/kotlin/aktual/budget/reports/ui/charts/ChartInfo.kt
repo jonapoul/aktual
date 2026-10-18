@@ -3,6 +3,7 @@ package aktual.budget.reports.ui.charts
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.AgeOfMoneyData
 import aktual.budget.reports.vm.BalanceForecastData
+import aktual.budget.reports.vm.BudgetAnalysisData
 import aktual.budget.reports.vm.CalendarData
 import aktual.budget.reports.vm.CashFlowData
 import aktual.budget.reports.vm.ChartData
@@ -58,6 +59,12 @@ internal fun ChartData.info(): ImmutableList<ChartInfo> =
               Strings.reportsBalanceForecastHow
             },
         ),
+      )
+
+    is BudgetAnalysisData ->
+      persistentListOf(
+        ChartInfo(Strings.reportsBudgetAnalysisChartTitle, Strings.reportsBudgetAnalysisChart),
+        ChartInfo(Strings.reportsBudgetAnalysisSummaryTitle, Strings.reportsBudgetAnalysisSummary),
       )
 
     is CashFlowData ->

@@ -103,6 +103,8 @@ data class BudgetAnalysisReportMeta(
   @SerialName("interval") val interval: Interval? = null,
   @SerialName("graphType") val graphType: GraphType? = null,
   @SerialName("showBalance") val showBalance: Boolean? = null,
+  @SerialName("balanceOnly") val balanceOnly: Boolean? = null,
+  @SerialName("showHiddenCategories") val showHiddenCategories: Boolean? = null,
 ) : ReportMeta
 
 @Serializable
