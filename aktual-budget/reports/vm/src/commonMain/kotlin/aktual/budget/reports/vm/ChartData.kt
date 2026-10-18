@@ -46,6 +46,29 @@ enum class AgeOfMoneyTrend {
   Stable,
 }
 
+data class BudgetAnalysisData(
+  val title: String?,
+  val items: ImmutableMap<YearMonth, BudgetAnalysisDatum>,
+  val graphType: GraphType,
+  val showBalance: Boolean,
+  val balanceOnly: Boolean,
+) : ChartData {
+  val totalBudgeted: Amount =
+    items.values.fold(Amount.Zero) { total, datum -> total + datum.budgeted }
+  val totalSpent: Amount = items.values.fold(Amount.Zero) { total, datum -> total + datum.spent }
+  val totalOverspendingAdjustment: Amount =
+    items.values.fold(Amount.Zero) { total, datum -> total + datum.overspendingAdjustment }
+  val endingBalance: Amount = items.values.lastOrNull()?.balance ?: Amount.Zero
+}
+
+// Spending is negative. overspendingAdjustment is positive, the amount reset from last month
+data class BudgetAnalysisDatum(
+  val budgeted: Amount,
+  val spent: Amount,
+  val overspendingAdjustment: Amount,
+  val balance: Amount,
+)
+
 data class CrossoverData(
   val title: String?,
   val items: ImmutableMap<YearMonth, CrossoverDatum>,

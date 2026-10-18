@@ -82,6 +82,7 @@ internal class ChartDataLoader(
     when (meta) {
       is AgeOfMoneyReportMeta -> ageOfMoney(meta)
       is BalanceForecastReportMeta -> balanceForecast(meta)
+      is BudgetAnalysisReportMeta -> budgetAnalysis(meta)
       is CashFlowReportMeta -> cashFlow(meta)
       is CrossoverReportMeta -> crossover(meta)
       is FormulaReportMeta -> formula(meta)
@@ -90,7 +91,6 @@ internal class ChartDataLoader(
       is MonteCarloReportMeta -> monteCarlo(meta)
       is NetWorthReportMeta -> netWorth(meta)
       is SankeyReportMeta -> sankey(meta)
-      is BudgetAnalysisReportMeta,
       is CalendarReportMeta,
       is SpendingReportMeta,
       is SummaryReportMeta -> unsupported(meta, ReportType)
@@ -318,6 +318,31 @@ internal class ChartDataLoader(
 
   // packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.tsx
   // cashFlowByDate()
+  // packages/desktop-client/src/components/reports/reports/BudgetAnalysisCard.tsx
+  fun budgetAnalysis(meta: BudgetAnalysisReportMeta): Flow<ChartData> {
+    val range =
+      resolveTimeRange(
+        timeFrame = meta.timeFrame,
+        default = null,
+        today = calendar.today(),
+        latestTransaction = null,
+      )
+    val params =
+      BudgetAnalysisParams(
+        title = meta.name,
+        conditions = meta.conditions.orEmpty(),
+        conditionsOp = meta.conditionsOp ?: And,
+        showHiddenCategories = meta.showHiddenCategories == true,
+        graphType = meta.graphType?.takeIf { it != Unknown } ?: Bar,
+        showBalance = meta.showBalance != false,
+        balanceOnly = meta.balanceOnly == true,
+      )
+    return budgets
+      .observeRange(range.start.minusMonth()..range.endInclusive)
+      .map { months -> calculateBudgetAnalysis(months, params) }
+      .flowOn(contexts.default)
+  }
+
   fun cashFlow(meta: CashFlowReportMeta): Flow<ChartData> {
     if (meta.conditions.hasFilters()) return unsupported(meta, Filters)
 

@@ -7,6 +7,7 @@ import aktual.budget.reports.ui.charts.JUL_2025
 import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_AGE_OF_MONEY_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_BALANCE_FORECAST_DATA
+import aktual.budget.reports.ui.charts.PREVIEW_BUDGET_ANALYSIS_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CROSSOVER_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CUSTOM_DATA
@@ -215,7 +216,6 @@ private fun WidgetType(
 }
 
 @Stable
-@Suppress("NotImplementedDeclaration")
 private fun WidgetType.sampleData(): ChartData =
   when (this) {
     NetWorth -> PREVIEW_NET_WORTH_DATA
@@ -225,7 +225,7 @@ private fun WidgetType.sampleData(): ChartData =
     Markdown -> PREVIEW_SHORT_TEXT_DATA
     Summary -> PER_TRANSACTION_DATA
     Calendar -> THREE_MONTHS
-    BudgetAnalysis -> TODO("https://github.com/jonapoul/aktual/issues/839")
+    BudgetAnalysis -> PREVIEW_BUDGET_ANALYSIS_DATA
     Formula -> PREVIEW_FORMULA_DATA
     Crossover -> PREVIEW_CROSSOVER_DATA
     Sankey -> PREVIEW_SANKEY_DATA
@@ -238,7 +238,6 @@ private fun WidgetType.sampleData(): ChartData =
 @Stable
 private fun WidgetType.isEnabled(): Boolean =
   when (this) {
-    BudgetAnalysis,
     Unknown -> false
 
     NetWorth,
@@ -250,6 +249,7 @@ private fun WidgetType.isEnabled(): Boolean =
     Custom,
     Formula,
     Crossover,
+    BudgetAnalysis,
     Sankey,
     BalanceForecast,
     MonteCarlo,

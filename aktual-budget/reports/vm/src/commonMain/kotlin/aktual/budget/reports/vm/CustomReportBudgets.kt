@@ -3,6 +3,8 @@ package aktual.budget.reports.vm
 import aktual.budget.db.CustomReportAmounts
 import aktual.budget.db.CustomReportBudgets
 import aktual.budget.model.AccountId
+import aktual.budget.model.CategoryGroupId
+import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Field
@@ -27,40 +29,50 @@ internal fun budgetAmounts(
   conditionsOp: ConditionOp,
 ): List<CustomReportAmounts> {
   val filter = BudgetCategoryFilter(conditions, conditionsOp)
-  return rows.filter(filter::matches).map { row ->
-    val amount = row.amount ?: 0L
-    CustomReportAmounts(
-      interval_key = row.interval_key,
-      category = row.category,
-      category_hidden = row.category_hidden,
-      category_group = row.category_group,
-      category_group_hidden = row.category_group_hidden,
-      account = NO_ACCOUNT,
-      off_budget = false,
-      payee = null,
-      transfer_account = null,
-      assets = amount.coerceAtLeast(0L),
-      debts = amount.coerceAtMost(0L),
-    )
-  }
+  return rows
+    .filter { row ->
+      filter.matches(row.category, row.category_name, row.category_group, row.category_group_name)
+    }
+    .map { row ->
+      val amount = row.amount ?: 0L
+      CustomReportAmounts(
+        interval_key = row.interval_key,
+        category = row.category,
+        category_hidden = row.category_hidden,
+        category_group = row.category_group,
+        category_group_hidden = row.category_group_hidden,
+        account = NO_ACCOUNT,
+        off_budget = false,
+        payee = null,
+        transfer_account = null,
+        assets = amount.coerceAtLeast(0L),
+        debts = amount.coerceAtMost(0L),
+      )
+    }
 }
 
 private val NO_ACCOUNT = AccountId("")
 
 // budgetDataQuery.ts filterCategoriesByConditions(): budgets only have a category to match, so only
 // category and category group conditions count. If any of those can't be read, nothing is filtered
-private class BudgetCategoryFilter(conditions: List<Condition>, private val op: ConditionOp) {
+internal class BudgetCategoryFilter(conditions: List<Condition>, private val op: ConditionOp) {
   private val conditions: List<Condition>? =
     conditions
       .filter { it.customName == null && it.field in FIELDS }
       .takeIf { list -> list.all { it.isSupported() } }
 
-  fun matches(row: CustomReportBudgets): Boolean {
+  fun matches(
+    category: CategoryId,
+    categoryName: String?,
+    group: CategoryGroupId?,
+    groupName: String?,
+  ): Boolean {
     if (conditions.isNullOrEmpty()) return true
+    val target = Target(category, categoryName, group, groupName)
     return if (op == Or) {
-      conditions.any { it.matches(row) }
+      conditions.any { it.matches(target) }
     } else {
-      conditions.all { it.matches(row) }
+      conditions.all { it.matches(target) }
     }
   }
 
@@ -85,10 +97,10 @@ private class BudgetCategoryFilter(conditions: List<Condition>, private val op: 
       OnBudget -> false
     }
 
-  private fun Condition.matches(row: CustomReportBudgets): Boolean {
+  private fun Condition.matches(target: Target): Boolean {
     val isGroup = field == CategoryGroup
-    val key = if (isGroup) row.category_group?.value.orEmpty() else row.category.value
-    val text = if (isGroup) row.category_group_name ?: key else row.category_name.orEmpty()
+    val key = if (isGroup) target.group?.value.orEmpty() else target.category.value
+    val text = if (isGroup) target.groupName ?: key else target.categoryName.orEmpty()
     val string = value.string()
     return when (operator) {
       Is -> key == string
@@ -121,6 +133,13 @@ private class BudgetCategoryFilter(conditions: List<Condition>, private val op: 
 
   private fun JsonElement.strings(): List<String>? =
     (this as? JsonArray)?.map { it.string() ?: return null }
+
+  private data class Target(
+    val category: CategoryId,
+    val categoryName: String?,
+    val group: CategoryGroupId?,
+    val groupName: String?,
+  )
 
   private companion object {
     val FIELDS = setOf(Field.Category, Field.CategoryGroup)
