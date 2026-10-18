@@ -23,6 +23,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -89,9 +90,10 @@ internal constructor(
         metas.forEach { meta ->
           loaders.getOrPut(meta) {
             this@channelFlow.launch {
-              chartDataLoader.load(meta).collect { data ->
-                charts.update { loaded -> loaded + (meta to data) }
-              }
+              chartDataLoader
+                .load(meta)
+                .catch { e -> logcat.e(e) { "Failed loading pinned chart $meta" } }
+                .collect { data -> charts.update { loaded -> loaded + (meta to data) } }
             }
           }
         }

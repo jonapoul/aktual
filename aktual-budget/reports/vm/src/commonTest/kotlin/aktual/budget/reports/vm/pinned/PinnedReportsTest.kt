@@ -5,16 +5,20 @@ import aktual.budget.db.Dashboard_pages
 import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.db.withoutResult
+import aktual.budget.model.Currency
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.DashboardSync
+import aktual.budget.reports.vm.TestCurrencyPreferences
 import aktual.budget.reports.vm.TextData
 import aktual.budget.reports.vm.chartDataLoader
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.dashboard.DashboardPages
 import aktual.budget.reports.vm.runSyncedDatabaseTest
+import aktual.prefs.CurrencyPreferences
+import aktual.prefs.Preference
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.test.TestCoroutineContexts
@@ -24,6 +28,8 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.buildJsonObject
@@ -137,6 +143,23 @@ class PinnedReportsTest {
   }
 
   @Test
+  fun `A chart that fails to load doesn't stop the others`() =
+    runPinnedTest(currencyPreferences = BrokenCurrencyPreferences) { pinned, sync, _ ->
+      val meta = buildJsonObject { put("formula", "=1") }
+      sync.insertWidget(FORMULA, PAGE_2.id, Formula, x = 0, y = 1, meta = meta)
+      pinned.pin(FORMULA)
+      pinned.pin(A)
+
+      pinned.observe().test {
+        var reports = awaitItem()
+        while (reports.size < 2 || reports[1].data == null) reports = awaitItem()
+        assertThat(reports.map { it.summary.id to it.data })
+          .containsExactly(FORMULA to null, A to TextData("a"))
+        expectNoEvents()
+      }
+    }
+
+  @Test
   fun `Choices list every report by page, as the dashboard orders them`() =
     runPinnedTest { pinned, _, _ ->
       pinned.observeChoices().test {
@@ -155,6 +178,7 @@ class PinnedReportsTest {
   private fun summary(id: WidgetId) = ReportSummary(id, Markdown, name = null)
 
   private fun runPinnedTest(
+    currencyPreferences: CurrencyPreferences = TestCurrencyPreferences,
     action:
       suspend BudgetDatabase.(PinnedReports, DashboardSync, TestBudgetLocalPreferences) -> Unit,
   ) = runSyncedDatabaseTest { scope, controller ->
@@ -177,7 +201,12 @@ class PinnedReportsTest {
         customReportsDao = CustomReportsDao(this, contexts),
         pages = DashboardPages(dao = dao, sync = sync, prefs = prefs, uuidGenerator = { "unused" }),
         decoder = DashboardItemDecoder(),
-        chartDataLoader = chartDataLoader(contexts, calendar = { LocalDate(2026, 1, 1) }),
+        chartDataLoader =
+          chartDataLoader(
+            contexts = contexts,
+            calendar = { LocalDate(2026, 1, 1) },
+            currencyPreferences = currencyPreferences,
+          ),
       )
     action(pinned, sync, prefs)
   }
@@ -190,5 +219,13 @@ class PinnedReportsTest {
     val C = WidgetId("c")
     val D = WidgetId("d")
     val UNTYPED = WidgetId("untyped")
+    val FORMULA = WidgetId("formula")
+  }
+
+  private object BrokenCurrencyPreferences : CurrencyPreferences by TestCurrencyPreferences {
+    override val currency =
+      object : Preference<Currency> by TestCurrencyPreferences.currency {
+        override fun asFlow(): Flow<Currency> = flow { error("Broken") }
+      }
   }
 }
