@@ -18,6 +18,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.todayIn
 import okio.ByteString.Companion.encodeUtf8
 import okio.FileSystem
+import okio.IOException
 import okio.Path
 import okio.buffer
 
@@ -107,9 +108,14 @@ class LogsRepository(
   private fun readFrom(path: Path, offset: Long): Pair<String, Long> {
     if (!fileSystem.exists(path)) return "" to 0L
     val bytes =
-      fileSystem.source(path).buffer().use { source ->
-        source.skip(offset)
-        source.readByteString()
+      try {
+        fileSystem.source(path).buffer().use { source ->
+          source.skip(offset)
+          source.readByteString()
+        }
+      } catch (_: IOException) {
+        // Deleted or truncated since the size check, so pick it up on the next poll
+        return "" to 0L
       }
     val end = bytes.lastIndexOf(NEWLINE) + 1
     return bytes.substring(0, end).utf8() to end.toLong()

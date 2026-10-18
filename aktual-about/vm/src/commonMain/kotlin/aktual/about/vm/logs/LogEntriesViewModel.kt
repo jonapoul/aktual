@@ -97,10 +97,12 @@ internal constructor(
 
   private fun buildState(
     lines: List<LogLine>?,
-    paused: Int?,
+    pausedCount: Int?,
     filters: LogFilters,
   ): LogEntriesState {
     if (lines == null) return Loading
+    // The file can shrink while paused, e.g. when deleted
+    val paused = pausedCount?.coerceAtMost(lines.size)
     val visible = if (paused == null) lines else lines.take(paused)
 
     val query = filters.query.trim()
