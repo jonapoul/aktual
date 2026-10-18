@@ -26,3 +26,10 @@ internal fun List<HomeCardType>.swapping(a: HomeCardType, b: HomeCardType): List
       else -> card
     }
   }
+
+// Puts the given cards into the slots they already fill, in their new order. Cards not given stay
+// where they are
+internal fun List<HomeCardType>.reordering(cards: List<HomeCardType>): List<HomeCardType> {
+  val remaining = cards.iterator()
+  return map { card -> if (card in cards) remaining.next() else card }
+}

@@ -326,6 +326,30 @@ class HomeViewModelTest {
     }
   }
 
+  @Test
+  fun `Reordering cards saves and shows the new order`() = runDatabaseTest { scope ->
+    val prefs = TestBudgetLocalPreferences(DbMetadata())
+    val viewModel = createHomeViewModel(scope, CALENDAR, prefs)
+
+    viewModel.state.test {
+      awaitSettled()
+
+      viewModel.reorder(
+        listOf(HomeCardType.Upcoming, HomeCardType.ThisMonth, HomeCardType.Attention),
+      )
+      assertThat(awaitItem().cards)
+        .containsExactly(
+          HomeCardType.Upcoming,
+          HomeCardType.ThisMonth,
+          HomeCardType.Attention,
+          HomeCardType.Accounts,
+        )
+      assertThat(prefs[DbMetadata.HomeCardOrder])
+        .isEqualTo(listOf("Upcoming", "ThisMonth", "Attention", "Accounts"))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private companion object {
     val DATE = LocalDate(2026, 1, 1)
     val TODAY = LocalDate(2026, 4, 1)

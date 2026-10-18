@@ -64,6 +64,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -95,6 +97,7 @@ internal fun HomeScreen(
         OpenSchedules -> schedules()
         Retry -> viewModel.retry()
         is SwapCards -> viewModel.swap(action.card, action.other)
+        is ReorderCards -> viewModel.reorder(action.cards)
       }
     },
     modifier = modifier,
@@ -112,10 +115,17 @@ private fun HomeScaffold(
 ) {
   var isEditing by rememberSaveable { mutableStateOf(initialEditing) }
   val onToggleEditing = { isEditing = !isEditing }
+  val scrollState = rememberScrollState()
+  val scrollArea = remember(scrollState) { AutoScrollArea(scrollState) }
 
   BoxWithConstraints(modifier = modifier.fillMaxSize()) {
     if (maxWidth < SidePanelMinWidth || state.isEmpty) {
-      HomeContent(state = state, isEditing = isEditing, onToggleEditing = onToggleEditing) {
+      HomeContent(
+        state = state,
+        isEditing = isEditing,
+        scrollArea = scrollArea,
+        onToggleEditing = onToggleEditing,
+      ) {
         if (state.isEmpty) {
           OnboardingCard(onAction = onAction)
         } else {
@@ -123,6 +133,7 @@ private fun HomeScaffold(
             cards = state.cards,
             columns = 1,
             isEditing = isEditing,
+            scrollArea = scrollArea,
             onAction = onAction,
           ) { card ->
             HomeCardFor(card = card, state = state, isEditing = isEditing, onAction = onAction)
@@ -142,10 +153,16 @@ private fun HomeScaffold(
         HomeContent(
           state = state,
           isEditing = isEditing,
+          scrollArea = scrollArea,
           onToggleEditing = onToggleEditing,
           modifier = Modifier.weight(1f),
         ) {
-          CardGrid(state = state, isEditing = isEditing, onAction = onAction)
+          CardGrid(
+            state = state,
+            isEditing = isEditing,
+            scrollArea = scrollArea,
+            onAction = onAction,
+          )
         }
       }
     }
@@ -181,12 +198,13 @@ private fun HomeCardFor(
 private fun HomeContent(
   state: HomeState,
   isEditing: Boolean,
+  scrollArea: AutoScrollArea,
   onToggleEditing: () -> Unit,
   modifier: Modifier = Modifier,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val hazeState = rememberHazedTopBarState()
-  val scrollState = rememberScrollState()
+  val scrollState = scrollArea.scrollState
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
@@ -210,6 +228,10 @@ private fun HomeContent(
       )
     },
   ) { innerPadding ->
+    val density = LocalDensity.current
+    val topInset = with(density) { innerPadding.calculateTopPadding().toPx() }
+    val bottomInset = with(density) { innerPadding.calculateBottomPadding().toPx() }
+
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()
 
@@ -217,6 +239,7 @@ private fun HomeContent(
         modifier =
           Modifier.fillMaxSize()
             .hazedTopBarContent(hazeState, innerPadding)
+            .onGloballyPositioned { scrollArea.place(it, topInset, bottomInset) }
             .verticalScrollWithBar(scrollState)
             .padding(hazedTopBarContentPadding(hazeState, innerPadding))
             .padding(Dimens.VeryLarge),
@@ -254,6 +277,7 @@ private fun AccountsPanel(
 private fun CardGrid(
   state: HomeState,
   isEditing: Boolean,
+  scrollArea: AutoScrollArea,
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -263,6 +287,7 @@ private fun CardGrid(
       cards = cards,
       columns = if (maxWidth < TwoColumnMinWidth) 1 else 2,
       isEditing = isEditing,
+      scrollArea = scrollArea,
       onAction = onAction,
     ) { card ->
       HomeCardFor(card = card, state = state, isEditing = isEditing, onAction = onAction)
