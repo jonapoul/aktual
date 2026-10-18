@@ -19,6 +19,7 @@ import aktual.budget.reports.vm.montecarlo.CashflowChart
 import aktual.budget.reports.vm.montecarlo.MonteCarloDepletion
 import aktual.budget.reports.vm.montecarlo.MonteCarloFanBand
 import aktual.budget.reports.vm.montecarlo.MonteCarloGraphView
+import aktual.budget.reports.vm.montecarlo.PotBalancesChart
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.isInPreview
@@ -29,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianDrawingContext
@@ -284,6 +286,72 @@ internal fun CashflowBars(
   )
 }
 
+// MonteCarloPotBalancesGraph: each pot's end-of-year balance as stacked areas, topped by the plan's
+// total. Vico doesn't stack lines, so each band is the running total up to that pot, drawn from the
+// top down with opaque fills so the lower pots cover the higher ones. Tapping a year selects it
+@Composable
+internal fun PotBalancesAreas(
+  chart: PotBalancesChart,
+  onSelectAge: (Int?) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val modelProducer = remember { CartesianChartModelProducer() }
+  if (isInPreview()) {
+    runBlocking { modelProducer.populatePotBalances(chart) }
+  } else {
+    LaunchedEffect(chart) { modelProducer.populatePotBalances(chart) }
+  }
+
+  val theme = colors
+  val lineProvider =
+    remember(chart, theme) {
+      LineCartesianLayer.LineProvider.series(
+        chart.series.reversed().map { series ->
+          val color = seriesColor(series.colorIndex, theme)
+          LineCartesianLayer.Line(
+            fill = LineCartesianLayer.LineFill.single(Fill(color)),
+            areaFill =
+              LineCartesianLayer.AreaFill.single(
+                Fill(lerp(theme.tableBackground, color, AREA_FILL_OPACITY)),
+              ),
+            stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 1.dp),
+          )
+        },
+      )
+    }
+
+  CartesianChartHost(
+    modifier = modifier,
+    modelProducer = modelProducer,
+    scrollState = rememberVicoScrollState(scrollEnabled = false),
+    animationSpec = chartAnimationSpec(compact = false),
+    chart =
+      rememberCartesianChart(
+        rememberLineCartesianLayer(lineProvider = lineProvider),
+        startAxis = amountAxis(),
+        bottomAxis = ageAxis(chart.years.size),
+        marker = rememberGuidelineMarker(),
+        markerController = CartesianMarkerController.rememberToggleOnTap(),
+        markerVisibilityListener = rememberSelectionListener(onSelectAge),
+      ),
+  )
+}
+
+// The running totals, highest first to match the reversed lines
+private suspend fun CartesianChartModelProducer.populatePotBalances(chart: PotBalancesChart) =
+  runTransaction {
+    if (chart.years.isEmpty() || chart.series.isEmpty()) return@runTransaction
+    val ages = chart.years.map { it.age }
+    lineSeries {
+      for (i in chart.series.indices.reversed()) {
+        series(
+          x = ages,
+          y = chart.years.map { year -> Amount(year.balances.take(i + 1).sum()).toDouble() },
+        )
+      }
+    }
+  }
+
 private suspend fun CartesianChartModelProducer.populateCashflow(chart: CashflowChart) =
   runTransaction {
     val ages = chart.years.map { it.age }
@@ -396,6 +464,7 @@ private fun rememberSelectionListener(
 
 private const val FOCUSED_ALPHA = 0.08f
 private const val UNFUNDED_ALPHA = 0.45f
+private const val AREA_FILL_OPACITY = 0.6f
 private const val AMOUNT_LABELS = 8
 private const val WHOLE_STEP = 1.0
 private val COLUMN_THICKNESS = 10.dp

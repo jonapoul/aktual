@@ -10,6 +10,7 @@ import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.unaryPlus
+import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareTextButton
@@ -35,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -114,7 +116,7 @@ internal fun RunDetailView(
       )
     }
 
-    CashflowGraph(chart = detail.cashflow, config = config)
+    RunCharts(detail, config)
 
     BodyText(totalsText(rows))
 
@@ -575,6 +577,36 @@ private fun PotHeading(text: String, help: String? = null) =
     GroupHeading(text)
     help?.let { HelpTooltip(it) }
   }
+
+// One of the run's charts at a time keeps the table within reach
+@Composable
+private fun RunCharts(detail: MonteCarloRunDetail, config: McConfig) {
+  var chart by rememberSaveable { mutableStateOf(RunChart.Cashflow) }
+  AktualSlidingToggleButton(
+    selected = chart,
+    options = RUN_CHARTS,
+    onSelect = { chart = it },
+    string = { it.string() },
+  )
+  when (chart) {
+    Cashflow -> CashflowGraph(chart = detail.cashflow, config = config)
+    Pots -> PotBalancesGraph(chart = detail.potBalances, config = config)
+  }
+}
+
+private enum class RunChart {
+  Cashflow,
+  Pots,
+}
+
+@Composable
+private fun RunChart.string(): String =
+  when (this) {
+    Cashflow -> Strings.monteCarloViewCashflow
+    Pots -> Strings.monteCarloViewPots
+  }
+
+private val RUN_CHARTS = RunChart.entries.toImmutableList()
 
 // Start, withdrawal, spent, growth and end balance
 private const val BASE_AMOUNT_COLUMNS = 5

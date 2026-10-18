@@ -270,6 +270,7 @@ private class MonteCarloScaffoldProvider :
   ColoredParameterProvider<MonteCarloState>(
     previewMonteCarloState(),
     previewMonteCarloState(resultsView = Cashflow),
+    previewMonteCarloState(resultsView = Pots),
     previewMonteCarloState(resultsView = Runs),
     previewMonteCarloState(
       collapsedSections =

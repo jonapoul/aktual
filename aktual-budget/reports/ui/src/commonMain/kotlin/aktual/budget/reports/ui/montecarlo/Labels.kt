@@ -87,6 +87,7 @@ internal fun MonteCarloResultsView.string(): String =
   when (this) {
     Chart -> Strings.monteCarloViewChart
     Cashflow -> Strings.monteCarloViewCashflow
+    Pots -> Strings.monteCarloViewPots
     Runs -> Strings.monteCarloViewRuns
   }
 

@@ -23,9 +23,11 @@
   <!-- Results views -->
   <string name="monte_carlo_view_chart">Chart</string>
   <string name="monte_carlo_view_cashflow">Cashflow</string>
+  <string name="monte_carlo_view_pots">Pots</string>
   <string name="monte_carlo_view_runs">Runs</string>
   <string name="monte_carlo_heading_performance">Portfolio performance</string>
   <string name="monte_carlo_heading_cashflow">Cashflow</string>
+  <string name="monte_carlo_heading_pot_balances">Pot balances</string>
   <string name="monte_carlo_heading_runs">Simulation runs</string>
 
   <!-- Fan chart -->
@@ -59,6 +61,12 @@
   <string name="monte_carlo_cashflow_saved">Saved</string>
   <string name="monte_carlo_cashflow_after_depletion">The pots had already run out - this spending went unfunded.</string>
   <string name="monte_carlo_cashflow_unspent">Unspent income: %1$s - it leaves the plan.</string>
+
+  <!-- Pot balances chart -->
+  <string name="monte_carlo_pot_balances_desc">What each pot was worth at the end of every year of this simulated run, stacked to the plan’s total - locked pots and the surplus pot included. Tap a year for its breakdown.</string>
+  <string name="monte_carlo_pot_balances_total">Total</string>
+  <string name="monte_carlo_pot_balances_pots">Pots</string>
+  <string name="monte_carlo_pot_balances_after_depletion">The pots had run out by this year.</string>
 
   <!-- Labels -->
   <string name="monte_carlo_pot_surplus">Surplus cash</string>
