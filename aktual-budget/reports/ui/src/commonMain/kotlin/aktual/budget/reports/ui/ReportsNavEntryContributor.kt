@@ -50,7 +50,11 @@ class ReportsNavEntryContributor : BudgetNavEntryContributor {
       ChooseReportTypeScreen(
         page = route.page,
         back = BackNavigator(stack),
-        toReport = ReportNavigator(stack),
+        // The chooser is done once a report is made, so back from it goes to the dashboard
+        toReport = { id ->
+          stack.pop()
+          ReportNavigator(stack)(id)
+        },
         toNewCustomReport = NewCustomReportNavigator(stack),
       )
     }
@@ -59,7 +63,9 @@ class ReportsNavEntryContributor : BudgetNavEntryContributor {
       NewCustomReportScreen(
         page = route.page,
         back = BackNavigator(stack),
+        // Leaves the chooser too
         toSavedReport = { id ->
+          stack.pop()
           stack.pop()
           ReportNavigator(stack)(id)
         },

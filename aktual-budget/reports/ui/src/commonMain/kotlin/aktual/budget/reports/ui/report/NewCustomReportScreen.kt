@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,7 +35,8 @@ internal fun NewCustomReportScreen(
   val loaded = state as? CustomReportState.Loaded
   val isEditing = loaded?.isEditing == true
 
-  LaunchedEffect(Unit) { viewModel.savedEvent.collectLatest(toSavedReport) }
+  val currentToSavedReport by rememberUpdatedState(toSavedReport)
+  LaunchedEffect(Unit) { viewModel.savedEvent.collectLatest { currentToSavedReport(it) } }
 
   val leave = { if (viewModel.hasUnsavedChanges()) showDiscard = true else back() }
 

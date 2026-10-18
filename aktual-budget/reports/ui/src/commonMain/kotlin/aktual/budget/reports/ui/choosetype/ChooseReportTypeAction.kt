@@ -1,14 +1,13 @@
 package aktual.budget.reports.ui.choosetype
 
-import aktual.budget.model.CustomReportId
 import aktual.budget.model.WidgetType
 import androidx.compose.runtime.Immutable
 
 @Immutable internal sealed interface ChooseReportTypeAction
 
-@JvmInline internal value class Create(val type: WidgetType) : ChooseReportTypeAction
+internal data object Back : ChooseReportTypeAction
 
-@JvmInline internal value class AddSavedReport(val id: CustomReportId) : ChooseReportTypeAction
+@JvmInline internal value class Create(val type: WidgetType) : ChooseReportTypeAction
 
 internal data object ShowDisabledDialog : ChooseReportTypeAction
 
