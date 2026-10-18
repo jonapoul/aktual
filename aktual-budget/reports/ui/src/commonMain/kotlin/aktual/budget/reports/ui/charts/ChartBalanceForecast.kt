@@ -39,7 +39,7 @@ import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianValueFormatter
-import com.patrykandpatrick.vico.compose.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
 import com.patrykandpatrick.vico.compose.cartesian.decoration.Decoration
 import com.patrykandpatrick.vico.compose.cartesian.decoration.HorizontalLine
 import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
@@ -306,7 +306,7 @@ private suspend fun CartesianChartModelProducer.populate(data: BalanceForecastDa
   runTransaction {
     zoomTo(zoom)
     if (data.items.isEmpty()) return@runTransaction
-    lineSeries {
+    lineModel {
       series(
         x = data.items.keys.indices.toList(),
         y = data.items.values.map { it.toDouble() },

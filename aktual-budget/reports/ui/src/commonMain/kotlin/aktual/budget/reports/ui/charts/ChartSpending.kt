@@ -48,7 +48,7 @@ import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianValueFormatter
-import com.patrykandpatrick.vico.compose.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
 import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
@@ -273,9 +273,9 @@ private suspend fun CartesianChartModelProducer.populate(data: SpendingData, zoo
 
     runTransaction {
       zoomTo(zoom)
-      lineSeries { series(x = xValues.take(targetAmounts.size), y = targetAmounts, zoom = zoom) }
+      lineModel { series(x = xValues.take(targetAmounts.size), y = targetAmounts, zoom = zoom) }
 
-      lineSeries {
+      lineModel {
         series(x = xValues.take(comparisonAmounts.size), y = comparisonAmounts, zoom = zoom)
       }
     }

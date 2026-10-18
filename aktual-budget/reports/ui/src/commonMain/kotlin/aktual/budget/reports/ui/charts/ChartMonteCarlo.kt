@@ -45,7 +45,7 @@ import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianValueFormatter
-import com.patrykandpatrick.vico.compose.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
 import com.patrykandpatrick.vico.compose.cartesian.decoration.Decoration
 import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
@@ -303,7 +303,7 @@ private suspend fun CartesianChartModelProducer.populate(data: MonteCarloData, z
   runTransaction {
     zoomTo(zoom)
     val ages = data.bands.map { it.age }
-    lineSeries {
+    lineModel {
       series(x = ages, y = data.bands.map { it.p90.toDouble() }, zoom = zoom)
       series(x = ages, y = data.bands.map { it.p50.toDouble() }, zoom = zoom)
       series(x = ages, y = data.bands.map { it.p10.toDouble() }, zoom = zoom)

@@ -40,8 +40,8 @@ import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.compose.cartesian.data.columnSeries
-import com.patrykandpatrick.vico.compose.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.compose.cartesian.data.columnModel
+import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
 import com.patrykandpatrick.vico.compose.cartesian.layer.ColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
@@ -251,11 +251,11 @@ private suspend fun CartesianChartModelProducer.populate(data: CashFlowData, zoo
     runTransaction {
       zoomTo(zoom)
 
-      columnSeries { series(x = months, y = values.map { it.income.toDouble() }, zoom = zoom) }
+      columnModel { series(x = months, y = values.map { it.income.toDouble() }, zoom = zoom) }
 
-      columnSeries { series(x = months, y = values.map { it.expenses.toDouble() }, zoom = zoom) }
+      columnModel { series(x = months, y = values.map { it.expenses.toDouble() }, zoom = zoom) }
 
-      lineSeries { series(x = months, y = values.map { it.balance.toDouble() }, zoom = zoom) }
+      lineModel { series(x = months, y = values.map { it.balance.toDouble() }, zoom = zoom) }
     }
   }
 

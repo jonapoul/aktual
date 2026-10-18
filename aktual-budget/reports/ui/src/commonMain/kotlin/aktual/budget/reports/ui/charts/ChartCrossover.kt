@@ -34,7 +34,7 @@ import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.compose.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
 import com.patrykandpatrick.vico.compose.cartesian.decoration.Decoration
 import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
@@ -153,11 +153,11 @@ private fun Chart(
               LineCartesianLayer.LineProvider.series(
                 LineCartesianLayer.rememberLine(
                   fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberPositive)),
-                  pointConnector = LineCartesianLayer.PointConnector.cubic(),
+                  interpolator = LineCartesianLayer.Interpolator.cubic(),
                 ),
                 LineCartesianLayer.rememberLine(
                   fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberNegative)),
-                  pointConnector = LineCartesianLayer.PointConnector.cubic(),
+                  interpolator = LineCartesianLayer.Interpolator.cubic(),
                 ),
                 LineCartesianLayer.rememberLine(
                   fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberNegative)),
@@ -212,7 +212,7 @@ private suspend fun CartesianChartModelProducer.populate(data: CrossoverData, zo
       data.items.mapNotNull { (month, datum) ->
         datum.adjustedExpenses?.let { month.monthNumber() to it.toDouble() }
       }
-    lineSeries {
+    lineModel {
       series(x = months, y = data.items.values.map { it.investmentIncome.toDouble() }, zoom = zoom)
       series(x = months, y = data.items.values.map { it.expenses.toDouble() }, zoom = zoom)
       if (adjusted.isNotEmpty()) {

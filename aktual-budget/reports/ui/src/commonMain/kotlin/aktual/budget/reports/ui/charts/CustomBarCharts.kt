@@ -36,7 +36,7 @@ import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.compose.cartesian.data.ColumnCartesianLayerModel
-import com.patrykandpatrick.vico.compose.cartesian.data.columnSeries
+import com.patrykandpatrick.vico.compose.cartesian.data.columnModel
 import com.patrykandpatrick.vico.compose.cartesian.layer.ColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarker
@@ -348,7 +348,7 @@ private suspend fun CartesianChartModelProducer.populateBars(
   metric: CustomMetric,
 ) = runTransaction {
   if (bars.isNotEmpty()) {
-    columnSeries {
+    columnModel {
       series(x = bars.indices.toList(), y = bars.map { it.amount.plotted(metric).toDouble() })
     }
   }
@@ -358,7 +358,7 @@ private suspend fun CartesianChartModelProducer.populateStacks(stacks: List<List
   runTransaction {
     val series = stackSeries(stacks)
     if (series.isNotEmpty()) {
-      columnSeries { series.forEach { y -> series(x = stacks.indices.toList(), y = y) } }
+      columnModel { series.forEach { y -> series(x = stacks.indices.toList(), y = y) } }
     }
   }
 
@@ -369,11 +369,11 @@ internal class IndexedColumns(private val columns: List<LineComponent>) :
   ColumnCartesianLayer.ColumnProvider {
   override fun getColumn(
     entry: ColumnCartesianLayerModel.Entry,
-    seriesIndex: Int,
     extraStore: ExtraStore,
   ): LineComponent = columns[entry.x.roundToInt().coerceIn(columns.indices)]
 
-  override fun getWidestSeriesColumn(seriesIndex: Int, extraStore: ExtraStore) = columns.first()
+  override fun getWidestSeriesColumn(seriesKey: Any, seriesIndex: Int, extraStore: ExtraStore) =
+    columns.first()
 }
 
 private val BAR_THICKNESS = 16.dp
