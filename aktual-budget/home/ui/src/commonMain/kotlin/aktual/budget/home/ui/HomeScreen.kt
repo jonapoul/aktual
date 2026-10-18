@@ -95,6 +95,7 @@ internal fun HomeScreen(
         OpenSchedules -> schedules()
         Retry -> viewModel.retry()
         is SwapCards -> viewModel.swap(action.card, action.other)
+        is ReorderCards -> viewModel.reorder(action.cards)
       }
     },
     modifier = modifier,

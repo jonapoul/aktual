@@ -101,6 +101,13 @@ internal constructor(
     }
   }
 
+  fun reorder(cards: List<HomeCardType>) {
+    localPreferences.update { meta ->
+      val order = homeCardOrder(meta[DbMetadata.HomeCardOrder]).reordering(cards)
+      meta.set(DbMetadata.HomeCardOrder, order.map { it.name })
+    }
+  }
+
   // A failing source only takes down its own card
   private fun <S> Flow<S>.orFailed(card: String, failed: S): Flow<S> = catch { e ->
     logcat.e(e) { "Failed loading $card card" }

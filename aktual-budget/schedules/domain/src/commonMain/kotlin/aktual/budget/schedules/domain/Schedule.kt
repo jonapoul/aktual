@@ -7,8 +7,10 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.UpcomingLength
+import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
 
+@Immutable
 data class Schedule(
   val id: ScheduleId,
   val name: String?,

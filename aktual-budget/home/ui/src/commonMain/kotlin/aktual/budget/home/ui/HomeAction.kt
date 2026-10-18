@@ -4,6 +4,7 @@ import aktual.budget.home.vm.HomeCardType
 import aktual.budget.model.AccountId
 import aktual.budget.model.ScheduleId
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
 
 internal sealed interface HomeAction
 
@@ -24,6 +25,8 @@ internal data object OpenSchedules : HomeAction
 internal data object Retry : HomeAction
 
 internal data class SwapCards(val card: HomeCardType, val other: HomeCardType) : HomeAction
+
+@JvmInline internal value class ReorderCards(val cards: ImmutableList<HomeCardType>) : HomeAction
 
 @Immutable
 internal fun interface HomeActionHandler {

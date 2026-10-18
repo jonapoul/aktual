@@ -1,5 +1,6 @@
 package aktual.budget.model
 
+import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -11,6 +12,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 // packages/loot-core/src/shared/schedules.ts
+@Immutable
 @Serializable(UpcomingLengthSerializer::class)
 sealed interface UpcomingLength {
   data object OneMonth : UpcomingLength
