@@ -8,6 +8,7 @@ enum class HomeCardType {
   Attention,
   Upcoming,
   Accounts,
+  Reports,
 }
 
 // Saved names that don't match a card are dropped, and cards missing from the saved order go at

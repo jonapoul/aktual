@@ -2,6 +2,11 @@ package aktual.budget.home.vm
 
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.WidgetId
+import aktual.budget.reports.vm.pinned.PinnedReport
+import aktual.budget.reports.vm.pinned.PinnedReports
+import aktual.budget.reports.vm.pinned.PinnedReports.Companion.MAX_PINNED_REPORTS
+import aktual.budget.reports.vm.pinned.ReportPage
 import aktual.core.model.unaryPlus
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
@@ -15,6 +20,8 @@ import androidx.lifecycle.viewModelScope
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +29,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import logcat.logcat
 
 @Stable
@@ -34,6 +42,7 @@ internal constructor(
   needsAttentionLoader: NeedsAttentionLoader,
   accountsSummaryLoader: AccountsSummaryLoader,
   upcomingSchedulesLoader: UpcomingSchedulesLoader,
+  private val pinnedReports: PinnedReports,
 ) : ViewModel() {
   private var retries by mutableIntStateOf(0)
 
@@ -74,10 +83,23 @@ internal constructor(
         }
       val upcoming by upcomingFlow.collectAsState(initial = Loading)
 
+      val reportsFlow =
+        remember(retries) {
+          pinnedReports.observe().map { it.toCardState() }.orFailed("reports", Failed)
+        }
+      val reports by reportsFlow.collectAsState(initial = Loading)
+
+      val reportChoicesFlow = remember(retries) { pinnedReports.observeChoices().orNoChoices() }
+      val reportChoices by reportChoicesFlow.collectAsState(initial = persistentListOf())
+
       // Cards all load together rather than popping in one at a time. Retries keep the old values,
       // so this only holds them back on the first load
       val isLoading =
-        thisMonth == Loading || attention == Loading || upcoming == Loading || accounts == Loading
+        thisMonth == Loading ||
+          attention == Loading ||
+          upcoming == Loading ||
+          accounts == Loading ||
+          reports == Loading
 
       HomeState(
         budgetName = budgetName,
@@ -85,6 +107,8 @@ internal constructor(
         attention = if (isLoading) Loading else attention,
         upcoming = if (isLoading) Loading else upcoming,
         accounts = if (isLoading) Loading else accounts,
+        reports = if (isLoading) Loading else reports,
+        reportChoices = reportChoices,
         cards = remember(cardOrder) { homeCardOrder(cardOrder) },
       )
     }
@@ -108,10 +132,28 @@ internal constructor(
     }
   }
 
+  fun pinReport(id: WidgetId) {
+    viewModelScope.launch { pinnedReports.pin(id) }
+  }
+
+  fun unpinReport(id: WidgetId) {
+    viewModelScope.launch { pinnedReports.unpin(id) }
+  }
+
+  fun replaceReport(old: WidgetId, new: WidgetId) {
+    viewModelScope.launch { pinnedReports.replace(old, new) }
+  }
+
   // A failing source only takes down its own card
   private fun <S> Flow<S>.orFailed(card: String, failed: S): Flow<S> = catch { e ->
     logcat.e(e) { "Failed loading $card card" }
     emit(failed)
+  }
+
+  // Picking is a nicety, so a failure just leaves nothing to pick
+  private fun Flow<ImmutableList<ReportPage>>.orNoChoices() = catch { e ->
+    logcat.e(e) { "Failed loading report choices" }
+    emit(persistentListOf())
   }
 
   private fun ThisMonth.toCardState(): ThisMonthCardState =
@@ -162,6 +204,13 @@ internal constructor(
         hiddenCount = (schedules.size - MAX_UPCOMING_ROWS).coerceAtLeast(0),
         total = total,
       )
+    }
+
+  private fun List<PinnedReport>.toCardState(): ReportsCardState =
+    if (isEmpty()) {
+      Empty
+    } else {
+      ReportsCardState.Loaded(toImmutableList(), canPinMore = size < MAX_PINNED_REPORTS)
     }
 
   // Closed accounts aren't shown on the card

@@ -11,6 +11,7 @@ import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
+import aktual.budget.reports.vm.pinned.PinnedReports
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
@@ -27,6 +28,7 @@ internal fun BudgetDatabase.createHomeViewModel(
   calendar: TestCalendar,
   prefs: TestBudgetLocalPreferences = TestBudgetLocalPreferences(DbMetadata()),
   accountsCard: BudgetDatabase = this,
+  pinnedReports: PinnedReports = FakePinnedReports(),
 ): HomeViewModel {
   Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
   val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
@@ -59,6 +61,7 @@ internal fun BudgetDatabase.createHomeViewModel(
       ),
     accountsSummaryLoader = AccountsSummaryLoader(AccountDao(accountsCard)),
     upcomingSchedulesLoader = UpcomingSchedulesLoader(schedulesLoader, calendar),
+    pinnedReports = pinnedReports,
   )
 }
 
@@ -80,4 +83,9 @@ internal suspend fun ReceiveTurbine<HomeState>.awaitSettled(): HomeState {
 }
 
 private val HomeState.isSettled: Boolean
-  get() = thisMonth != Loading && attention != Loading && accounts != Loading && upcoming != Loading
+  get() =
+    thisMonth != Loading &&
+      attention != Loading &&
+      accounts != Loading &&
+      upcoming != Loading &&
+      reports != Loading

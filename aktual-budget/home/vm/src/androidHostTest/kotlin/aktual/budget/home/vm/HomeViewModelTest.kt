@@ -310,6 +310,7 @@ class HomeViewModelTest {
           HomeCardType.Attention,
           HomeCardType.Upcoming,
           HomeCardType.Accounts,
+          HomeCardType.Reports,
         )
 
       viewModel.swap(Accounts, HomeCardType.ThisMonth)
@@ -319,9 +320,10 @@ class HomeViewModelTest {
           HomeCardType.Attention,
           HomeCardType.Upcoming,
           HomeCardType.ThisMonth,
+          HomeCardType.Reports,
         )
       assertThat(prefs[DbMetadata.HomeCardOrder])
-        .isEqualTo(listOf("Accounts", "Attention", "Upcoming", "ThisMonth"))
+        .isEqualTo(listOf("Accounts", "Attention", "Upcoming", "ThisMonth", "Reports"))
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -343,9 +345,10 @@ class HomeViewModelTest {
           HomeCardType.ThisMonth,
           HomeCardType.Attention,
           HomeCardType.Accounts,
+          HomeCardType.Reports,
         )
       assertThat(prefs[DbMetadata.HomeCardOrder])
-        .isEqualTo(listOf("Upcoming", "ThisMonth", "Attention", "Accounts"))
+        .isEqualTo(listOf("Upcoming", "ThisMonth", "Attention", "Accounts", "Reports"))
       cancelAndIgnoreRemainingEvents()
     }
   }

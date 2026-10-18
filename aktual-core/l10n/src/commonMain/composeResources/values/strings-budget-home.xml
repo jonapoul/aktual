@@ -10,6 +10,21 @@
   <string name="home_card_upcoming">Upcoming</string>
   <string name="home_attention_hidden">Hidden while nothing needs attention</string>
   <string name="home_upcoming_hidden">Hidden while no schedules are coming up</string>
+  <string name="home_card_reports">Reports</string>
+  <string name="home_reports_hidden">Hidden while no reports are pinned. Swipe a report on the reports page to pin it here</string>
+  <string name="home_reports_manage">Manage pinned reports</string>
+  <string name="home_reports_failed">Couldn't load pinned reports</string>
+  <plurals name="home_reports_sheet_message">
+    <item quantity="one">Pin up to %1$d report to your home page</item>
+    <item quantity="other">Pin up to %1$d reports to your home page</item>
+  </plurals>
+  <string name="home_reports_sheet_title">Pinned reports</string>
+  <string name="home_reports_add">Add a report</string>
+  <string name="home_reports_swap">Swap %1$s for another report</string>
+  <string name="home_reports_remove">Remove %1$s</string>
+  <string name="home_reports_choose">Choose a report</string>
+  <string name="home_reports_back">Back</string>
+  <string name="home_reports_none_to_choose">There are no other reports to pin. Create one on the reports page</string>
   <string name="home_onboarding_title">Welcome to your budget</string>
   <string name="home_onboarding_message">Add an account to get started. Your budget, upcoming schedules and balances will show up here.</string>
   <plurals name="home_this_month_days_left">

@@ -3,6 +3,7 @@ package aktual.budget.reports.vm.dashboard
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Dashboard_pages
 import aktual.budget.db.DbJson
+import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
@@ -13,6 +14,7 @@ import aktual.budget.reports.vm.CustomReportMeta
 import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.chartDataLoader
 import aktual.budget.reports.vm.emptyCustomReport
+import aktual.budget.reports.vm.pinned.PinnedReportsImpl
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.assertThatNextEmission
@@ -103,19 +105,26 @@ class ReportsDashboardViewModelTest {
     val contexts = TestCoroutineContexts(dispatcher)
     val dao = DashboardDao(this, contexts)
     val sync = DashboardSync(dao, controller)
+    val loader = chartDataLoader(contexts, calendar = { LocalDate(2026, 1, 1) })
+    val prefs = TestBudgetLocalPreferences()
+    val dashboardPages =
+      DashboardPages(dao = dao, sync = sync, prefs = prefs, uuidGenerator = { "unused" })
     val viewModel =
       ReportsDashboardViewModel(
-        chartDataLoader = chartDataLoader(contexts, calendar = { LocalDate(2026, 1, 1) }),
+        chartDataLoader = loader,
         dashboardDao = dao,
         sync = sync,
-        pages =
-          DashboardPages(
-            dao = dao,
-            sync = sync,
-            prefs = TestBudgetLocalPreferences(),
-            uuidGenerator = { "unused" },
-          ),
+        pages = dashboardPages,
         decoder = DashboardItemDecoder(),
+        pinned =
+          PinnedReportsImpl(
+            prefs = prefs,
+            dashboardDao = dao,
+            customReportsDao = CustomReportsDao(this, contexts),
+            pages = dashboardPages,
+            decoder = DashboardItemDecoder(),
+            chartDataLoader = loader,
+          ),
       )
     try {
       action(viewModel, sync)

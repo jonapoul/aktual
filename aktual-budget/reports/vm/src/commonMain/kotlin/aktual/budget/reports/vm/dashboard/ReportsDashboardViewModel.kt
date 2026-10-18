@@ -21,6 +21,8 @@ import aktual.budget.reports.vm.SankeyReportMeta
 import aktual.budget.reports.vm.SpendingReportMeta
 import aktual.budget.reports.vm.SummaryReportMeta
 import aktual.budget.reports.vm.UnsupportedReportMeta
+import aktual.budget.reports.vm.pinned.PinnedReports
+import aktual.budget.reports.vm.pinned.PinnedReports.Companion.MAX_PINNED_REPORTS
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -28,8 +30,11 @@ import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,6 +56,7 @@ internal constructor(
   private val sync: DashboardSync,
   private val pages: DashboardPages,
   decoder: DashboardItemDecoder,
+  private val pinned: PinnedReports,
 ) : ViewModel() {
   private val createReportChannel = Channel<DashboardPageId>()
   val createReportEvents: Flow<DashboardPageId> = createReportChannel.receiveAsFlow()
@@ -73,6 +79,16 @@ internal constructor(
         }
       }
       .stateIn(viewModelScope, Eagerly, initialValue = DashboardContent(page = null, items = null))
+
+  val pinnedIds: StateFlow<ImmutableSet<WidgetId>> =
+    pinned.ids
+      .map { it.toImmutableSet() }
+      .stateIn(viewModelScope, Eagerly, initialValue = persistentSetOf())
+
+  val canPin: StateFlow<Boolean> =
+    pinned.ids
+      .map { it.size < MAX_PINNED_REPORTS }
+      .stateIn(viewModelScope, Eagerly, initialValue = false)
 
   fun selectPage(id: DashboardPageId) = pages.select(id)
 
@@ -120,6 +136,16 @@ internal constructor(
         is CustomReportMeta -> sync.renameCustomReport(meta.id, name)
       }
     }
+  }
+
+  fun pinReport(id: WidgetId) {
+    logcat.d { "Pinning report $id to home" }
+    viewModelScope.launch { pinned.pin(id) }
+  }
+
+  fun unpinReport(id: WidgetId) {
+    logcat.d { "Unpinning report $id from home" }
+    viewModelScope.launch { pinned.unpin(id) }
   }
 
   fun deleteReport(id: WidgetId) {
