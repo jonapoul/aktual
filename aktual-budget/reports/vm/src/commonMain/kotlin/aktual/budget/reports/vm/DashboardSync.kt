@@ -26,6 +26,12 @@ internal class DashboardSync(
   private val dao: DashboardDao,
   private val sync: BudgetSyncController,
 ) {
+  // Places the widget after the last one on the page
+  suspend fun addWidget(id: WidgetId, page: DashboardPageId, type: WidgetType, meta: JsonObject) {
+    val (x, y) = newWidgetPosition(page)
+    insertWidget(id, page, type, x, y, meta)
+  }
+
   suspend fun insertWidget(
     id: WidgetId,
     page: DashboardPageId,
@@ -118,6 +124,24 @@ internal class DashboardSync(
     val widgets = dao.widgetIds(id).map { widget -> tombstone(DASHBOARD, widget.value) }
     sync.syncChanges(listOf(tombstone(DASHBOARD_PAGES, id.value)) + widgets)
     return true
+  }
+
+  private suspend fun newWidgetPosition(page: DashboardPageId): Pair<Long, Long> {
+    val positions = dao.getPositionAndSize(page)
+    if (positions.isEmpty()) return 0L to 0L
+
+    val highest = positions.maxWith(compareBy({ it.y }, { it.x }))
+    val x = highest.x ?: 0L
+    val y = highest.y ?: 0L
+    val w = highest.width ?: 0L
+
+    return if (x + w >= DashboardDao.MAX_WIDTH) {
+      // start of the next row down
+      0L to y + DashboardDao.DEFAULT_HEIGHT
+    } else {
+      // next column over on the same row
+      x + DashboardDao.DEFAULT_WIDTH to y
+    }
   }
 
   private fun WidgetType.serialName(): String =

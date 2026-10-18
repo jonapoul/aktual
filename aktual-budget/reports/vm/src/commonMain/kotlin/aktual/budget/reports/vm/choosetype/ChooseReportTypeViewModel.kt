@@ -2,7 +2,6 @@ package aktual.budget.reports.vm.choosetype
 
 import aktual.budget.db.DbJson
 import aktual.budget.db.dao.CustomReportsDao
-import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
@@ -45,7 +44,6 @@ class ChooseReportTypeViewModel
 internal constructor(
   @Assisted private val page: DashboardPageId,
   private val uuidGenerator: UuidGenerator,
-  private val dashboardDao: DashboardDao,
   private val sync: DashboardSync,
   customReportsDao: CustomReportsDao,
 ) : ViewModel() {
@@ -99,30 +97,9 @@ internal constructor(
     job?.cancel()
     job = viewModelScope.launch {
       val widgetId = uuidGenerator(::WidgetId)
-      val (x, y) = newWidgetPosition()
-      logcat.d { "Creating $type report $widgetId on page $page at ($x, $y)" }
-      sync.insertWidget(widgetId, page, type, x, y, meta)
+      logcat.d { "Creating $type report $widgetId on page $page" }
+      sync.addWidget(widgetId, page, type, meta)
       shouldNavigateChannel.send(ShouldNavigateEvent(widgetId))
-    }
-  }
-
-  private data class Coords(val x: Long = 0, val y: Long = 0)
-
-  private suspend fun newWidgetPosition(): Coords {
-    val positions = dashboardDao.getPositionAndSize(page)
-    if (positions.isEmpty()) return Coords()
-
-    val highest = positions.maxWith(compareBy({ it.y }, { it.x }))
-    val x = highest.x ?: 0L
-    val y = highest.y ?: 0L
-    val w = highest.width ?: 0L
-
-    return if (x + w >= DashboardDao.MAX_WIDTH) {
-      // start of the next row down
-      Coords(y = y + DashboardDao.DEFAULT_HEIGHT)
-    } else {
-      // next column over on the same row
-      Coords(x = x + DashboardDao.DEFAULT_WIDTH, y = y)
     }
   }
 

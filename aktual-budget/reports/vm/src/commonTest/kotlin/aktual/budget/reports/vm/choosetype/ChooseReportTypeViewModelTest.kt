@@ -70,7 +70,6 @@ class ChooseReportTypeViewModelTest {
       ChooseReportTypeViewModel(
         page = PAGE,
         uuidGenerator = { WIDGET.value },
-        dashboardDao = dao,
         sync = DashboardSync(dao, controller),
         customReportsDao = CustomReportsDao(this, contexts),
       )
