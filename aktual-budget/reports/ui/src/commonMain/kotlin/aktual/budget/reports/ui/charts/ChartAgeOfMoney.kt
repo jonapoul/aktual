@@ -210,7 +210,7 @@ private fun Chart(
                       ),
                     ),
                   pointProvider = if (compact) null else rememberPointProvider(),
-                  interpolator = LineCartesianLayer.Interpolator.cubic(),
+                  interpolator = LineCartesianLayer.Interpolator.catmullRom(),
                 ),
               ),
           ),

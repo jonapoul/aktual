@@ -153,11 +153,11 @@ private fun Chart(
               LineCartesianLayer.LineProvider.series(
                 LineCartesianLayer.rememberLine(
                   fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberPositive)),
-                  interpolator = LineCartesianLayer.Interpolator.cubic(),
+                  interpolator = LineCartesianLayer.Interpolator.catmullRom(),
                 ),
                 LineCartesianLayer.rememberLine(
                   fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberNegative)),
-                  interpolator = LineCartesianLayer.Interpolator.cubic(),
+                  interpolator = LineCartesianLayer.Interpolator.catmullRom(),
                 ),
                 LineCartesianLayer.rememberLine(
                   fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsNumberNegative)),
