@@ -185,6 +185,7 @@ private fun HomeCardFor(
 ) =
   when (card) {
     ThisMonth -> ThisMonthCard(state = state.thisMonth, onAction = onAction)
+
     Attention ->
       if (isEditing && state.attention.isHidden) {
         HiddenCard(message = Strings.homeAttentionHidden)
@@ -198,7 +199,9 @@ private fun HomeCardFor(
       } else {
         UpcomingCard(state = state.upcoming, onAction = onAction)
       }
+
     Accounts -> AccountsCard(state = state.accounts, onAction = onAction)
+
     Reports ->
       if (isEditing && state.reports.isHidden) {
         HiddenCard(message = Strings.homeReportsHidden)

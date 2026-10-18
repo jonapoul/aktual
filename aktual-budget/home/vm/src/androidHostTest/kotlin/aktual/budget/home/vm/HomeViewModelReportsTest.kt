@@ -1,5 +1,6 @@
 package aktual.budget.home.vm
 
+import aktual.budget.home.vm.ReportsCardState.Loaded
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.pinned.PinnedReport
 import aktual.budget.reports.vm.pinned.ReportSummary
@@ -36,7 +37,7 @@ class HomeViewModelReportsTest {
     viewModel.state.test {
       assertThat(awaitSettled().reports)
         .isEqualTo(
-          ReportsCardState.Loaded(persistentListOf(pinned("a"), pinned("b")), canPinMore = true),
+          Loaded(persistentListOf(pinned("a"), pinned("b")), canPinMore = true),
         )
       cancelAndIgnoreRemainingEvents()
     }
@@ -48,10 +49,7 @@ class HomeViewModelReportsTest {
     val viewModel = createHomeViewModel(scope, CALENDAR, pinnedReports = pinned)
 
     viewModel.state.test {
-      assertThat(awaitSettled().reports)
-        .isInstanceOf<ReportsCardState.Loaded>()
-        .prop(ReportsCardState.Loaded::canPinMore)
-        .isFalse()
+      assertThat(awaitSettled().reports).isInstanceOf<Loaded>().prop(Loaded::canPinMore).isFalse()
       cancelAndIgnoreRemainingEvents()
     }
   }

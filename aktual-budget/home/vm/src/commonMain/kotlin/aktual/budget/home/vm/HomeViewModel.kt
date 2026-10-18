@@ -1,7 +1,8 @@
 package aktual.budget.home.vm
 
 import aktual.budget.BudgetLocalPreferences
-import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadata.Companion.BudgetName
+import aktual.budget.model.DbMetadata.Companion.HomeCardOrder
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.pinned.PinnedReport
 import aktual.budget.reports.vm.pinned.PinnedReports
@@ -48,13 +49,11 @@ internal constructor(
 
   val state: StateFlow<HomeState> =
     viewModelScope.launchMolecule(Immediate) {
-      val budgetNameFlow = remember { localPreferences.observe(DbMetadata.BudgetName) }
-      val budgetName by
-        budgetNameFlow.collectAsState(initial = localPreferences[DbMetadata.BudgetName])
+      val budgetNameFlow = remember { localPreferences.observe(BudgetName) }
+      val budgetName by budgetNameFlow.collectAsState(initial = localPreferences[BudgetName])
 
-      val cardOrderFlow = remember { localPreferences.observe(DbMetadata.HomeCardOrder) }
-      val cardOrder by
-        cardOrderFlow.collectAsState(initial = localPreferences[DbMetadata.HomeCardOrder])
+      val cardOrderFlow = remember { localPreferences.observe(HomeCardOrder) }
+      val cardOrder by cardOrderFlow.collectAsState(initial = localPreferences[HomeCardOrder])
 
       val thisMonthFlow =
         remember(retries) {
@@ -120,15 +119,15 @@ internal constructor(
 
   fun swap(card: HomeCardType, other: HomeCardType) {
     localPreferences.update { meta ->
-      val order = homeCardOrder(meta[DbMetadata.HomeCardOrder]).swapping(card, other)
-      meta.set(DbMetadata.HomeCardOrder, order.map { it.name })
+      val order = homeCardOrder(meta[HomeCardOrder]).swapping(card, other)
+      meta.set(HomeCardOrder, order.map { it.name })
     }
   }
 
   fun reorder(cards: List<HomeCardType>) {
     localPreferences.update { meta ->
-      val order = homeCardOrder(meta[DbMetadata.HomeCardOrder]).reordering(cards)
-      meta.set(DbMetadata.HomeCardOrder, order.map { it.name })
+      val order = homeCardOrder(meta[HomeCardOrder]).reordering(cards)
+      meta.set(HomeCardOrder, order.map { it.name })
     }
   }
 
