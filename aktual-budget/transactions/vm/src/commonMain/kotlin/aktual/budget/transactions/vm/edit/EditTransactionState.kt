@@ -5,11 +5,11 @@ import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
+import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.vm.Transaction
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -108,11 +108,8 @@ data class TransactionOptions(
   val categoryGroups: ImmutableList<CategoryGroupOptions>,
   val accounts: ImmutableList<EntityOption<AccountId>>,
   // What the notes can be tagged with, without the hidden ones
-  val tags: ImmutableList<TagOption> = persistentListOf(),
+  val tags: ImmutableList<TagLabel> = persistentListOf(),
 )
-
-// A null color shows in the theme's tag colors
-@Immutable data class TagOption(val tag: String, val color: Color?)
 
 @Immutable
 sealed interface EditTransactionState {

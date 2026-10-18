@@ -8,6 +8,7 @@ import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.db.dao.DatabaseTables.CUSTOM_REPORTS
 import aktual.budget.db.dao.ReportsDao
+import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.withoutResult
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
@@ -201,6 +202,7 @@ class CustomReportViewModelTest {
         decoder = DashboardItemDecoder(),
         customReports = customReports,
         budgetDao = BudgetDao(this, contexts),
+        tagsDao = TagsDao(this, contexts),
         chartDataLoader = chartDataLoader(contexts, calendar),
         queryEditorDataLoader = QueryEditorDataLoader(this, ReportsDao(this, contexts), calendar),
       )

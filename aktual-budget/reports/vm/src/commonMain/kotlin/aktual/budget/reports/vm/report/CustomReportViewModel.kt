@@ -3,6 +3,7 @@ package aktual.budget.reports.vm.report
 import aktual.budget.db.dao.BudgetDao
 import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
+import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.ChartDataLoader
@@ -13,6 +14,7 @@ import aktual.budget.reports.vm.categoryGroupChoices
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.report.CustomReportState.Loaded
 import aktual.budget.reports.vm.toConfig
+import aktual.budget.tags.domain.toTagLabels
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -23,7 +25,6 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,6 +51,7 @@ internal constructor(
   decoder: DashboardItemDecoder,
   customReports: CustomReportsDao,
   budgetDao: BudgetDao,
+  tagsDao: TagsDao,
   private val chartDataLoader: ChartDataLoader,
   queryEditorDataLoader: QueryEditorDataLoader,
 ) : ViewModel() {
@@ -82,18 +84,12 @@ internal constructor(
         queryEditorDataLoader.load(),
         budgetDao.observeCategoryGroups(),
         budgetDao.observeCategories(),
-        customReports.observeTags(),
+        tagsDao.observeTags(),
       ) { query, groups, categories, tags ->
         CustomReportEditorData(
           query = query,
           categories = categoryGroupChoices(groups, categories),
-          tags =
-            tags
-              .asSequence()
-              .filter { it.hidden != true }
-              .map { TagChoice(it.id, it.tag) }
-              .sortedBy { it.name.lowercase() }
-              .toImmutableList(),
+          tags = tags.toTagLabels(),
         )
       }
       .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), null)

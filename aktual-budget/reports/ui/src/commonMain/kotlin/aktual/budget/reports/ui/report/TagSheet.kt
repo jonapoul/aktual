@@ -1,10 +1,11 @@
 package aktual.budget.reports.ui.report
 
 import aktual.budget.model.TagId
-import aktual.budget.reports.vm.report.TagChoice
+import aktual.budget.tags.domain.TagLabel
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.TagChip
 import aktual.core.ui.checkbox
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.selection.toggleable
@@ -22,7 +23,7 @@ import kotlinx.collections.immutable.ImmutableSet
 // tag
 @Composable
 internal fun TagSheet(
-  tags: ImmutableList<TagChoice>,
+  tags: ImmutableList<TagLabel>,
   selected: ImmutableSet<TagId>,
   onChange: (Set<TagId>) -> Unit,
   onDismiss: () -> Unit,
@@ -47,11 +48,11 @@ internal fun TagSheet(
                 onChange(if (checked) selected + tag.id else selected - tag.id)
               },
             ),
-          text = "#${tag.name}",
-          isBold = false,
-        ) {
-          Checkbox(checked = isChecked, onCheckedChange = null, colors = colors.checkbox())
-        }
+          checkbox = {
+            Checkbox(checked = isChecked, onCheckedChange = null, colors = colors.checkbox())
+          },
+          label = { TagChip(text = tag.name, color = tag.color) },
+        )
       }
     }
   }

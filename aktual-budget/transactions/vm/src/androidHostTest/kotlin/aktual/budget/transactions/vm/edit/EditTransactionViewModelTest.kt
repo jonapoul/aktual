@@ -28,7 +28,8 @@ import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.rules.domain.TransactionRulesLoader
-import aktual.budget.tags.vm.TagCreator
+import aktual.budget.tags.domain.TagCreator
+import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.domain.LastTransaction
 import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.domain.TransactionFields
@@ -942,7 +943,8 @@ class EditTransactionViewModelTest {
 
       var tags = awaitEdit().options.tags
       while (tags.size < 2) tags = awaitEdit().options.tags
-      assertThat(tags).containsExactly(TagOption("Bills", null), TagOption("food", Red))
+      assertThat(tags)
+        .containsExactly(TagLabel(TagId("b"), "Bills", null), TagLabel(TagId("f"), "food", Red))
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -962,7 +964,7 @@ class EditTransactionViewModelTest {
       viewModel.createTag("food")
       var tags = awaitEdit().options.tags
       while (tags.isEmpty()) tags = awaitEdit().options.tags
-      assertThat(tags).containsExactly(TagOption("food", null))
+      assertThat(tags.map { it.name to it.color }).containsExactly("food" to null)
       assertThat(sync.calls)
         .containsExactly(
           listOf(

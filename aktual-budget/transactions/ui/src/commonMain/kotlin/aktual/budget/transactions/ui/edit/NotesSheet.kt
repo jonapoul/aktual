@@ -1,7 +1,7 @@
 package aktual.budget.transactions.ui.edit
 
+import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.vm.edit.NotesEdit
-import aktual.budget.transactions.vm.edit.TagOption
 import aktual.budget.transactions.vm.edit.TagQuery
 import aktual.budget.transactions.vm.edit.canCreate
 import aktual.budget.transactions.vm.edit.complete
@@ -17,7 +17,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.EditorSheet
-import aktual.core.ui.contrastingTextColor
+import aktual.core.ui.TagChip
+import aktual.core.ui.TagChipShape
 import aktual.core.ui.keyboardFocusRequester
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,7 +30,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -42,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
@@ -55,7 +54,7 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 internal fun NotesSheet(
   notes: String?,
-  tags: ImmutableList<TagOption>,
+  tags: ImmutableList<TagLabel>,
   onDismiss: () -> Unit,
   onSave: (String) -> Unit,
   onCreateTag: (String) -> Unit,
@@ -91,7 +90,7 @@ internal fun NotesSheet(
           }
           val first = matches?.firstOrNull()
           when {
-            first != null -> select(query, first.tag)
+            first != null -> select(query, first.name)
             canCreate -> create(query)
             else -> return@onPreviewKeyEvent false
           }
@@ -109,8 +108,12 @@ internal fun NotesSheet(
         horizontalArrangement = Arrangement.spacedBy(NotesSheetDS.chipSpacing),
         verticalAlignment = CenterVertically,
       ) {
-        items(matches.orEmpty(), key = { it.tag }) { option ->
-          TagChip(tag = option.tag, color = option.color, onClick = { select(query, option.tag) })
+        items(matches.orEmpty(), key = { it.id.value }) { option ->
+          TagChip(
+            text = option.name,
+            color = option.color,
+            onClick = { select(query, option.name) },
+          )
         }
 
         if (canCreate) {
@@ -134,27 +137,11 @@ private fun InsertHashButton(text: TextFieldState, focusRequester: FocusRequeste
   )
 
 @Composable
-private fun TagChip(tag: String, color: Color?, onClick: (() -> Unit)? = null) =
-  Text(
-    text = "#$tag",
-    modifier =
-      Modifier.clip(NotesSheetDS.chipShape)
-        .background(color ?: colors.noteTagBackground, NotesSheetDS.chipShape)
-        .then(if (onClick == null) Modifier else Modifier.clickable(onClick = onClick))
-        .padding(NotesSheetDS.chipPadding),
-    style = typography.bodyMedium,
-    fontWeight = SemiBold,
-    color = color?.contrastingTextColor() ?: colors.noteTagText,
-    maxLines = 1,
-    overflow = Ellipsis,
-  )
-
-@Composable
 private fun CreateTagChip(name: String, onClick: () -> Unit) =
   Row(
     modifier =
-      Modifier.clip(NotesSheetDS.chipShape)
-        .background(colors.noticeBackground, NotesSheetDS.chipShape)
+      Modifier.clip(TagChipShape)
+        .background(colors.noticeBackground, TagChipShape)
         .clickable(onClick = onClick)
         .padding(NotesSheetDS.createPadding),
     horizontalArrangement = Arrangement.spacedBy(NotesSheetDS.createSpacing),
@@ -172,7 +159,7 @@ private fun CreateTagChip(name: String, onClick: () -> Unit) =
       color = colors.noticeTextDark,
       maxLines = 1,
     )
-    TagChip(tag = name, color = null)
+    TagChip(text = name, color = null)
   }
 
 // Replaces the text the edit covers, leaving the cursor after what it put in
@@ -182,8 +169,6 @@ private fun TextFieldState.applyEdit(change: NotesEdit) = edit {
 }
 
 private object NotesSheetDS {
-  val chipShape = RoundedCornerShape(size = 16.dp)
-  val chipPadding = PaddingValues(horizontal = 7.dp, vertical = 3.dp)
   val chipSpacing = 4.dp
   val createPadding = PaddingValues(start = 9.dp, top = 2.dp, end = 2.dp, bottom = 2.dp)
   val createSpacing = 4.dp

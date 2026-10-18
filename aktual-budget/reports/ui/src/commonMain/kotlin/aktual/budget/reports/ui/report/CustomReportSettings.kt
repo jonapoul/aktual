@@ -21,7 +21,6 @@ import aktual.budget.reports.vm.isGraphEnabled
 import aktual.budget.reports.vm.isGroupByEnabled
 import aktual.budget.reports.vm.isIntervalEnabled
 import aktual.budget.reports.vm.report.CustomReportEditorData
-import aktual.budget.reports.vm.report.TagChoice
 import aktual.budget.reports.vm.selectedCategories
 import aktual.budget.reports.vm.showsSort
 import aktual.budget.reports.vm.withBalanceType
@@ -36,6 +35,7 @@ import aktual.budget.reports.vm.withSelectedCategories
 import aktual.budget.reports.vm.withStaticDates
 import aktual.budget.reports.vm.withStaticMonths
 import aktual.budget.reports.vm.withTagScope
+import aktual.budget.tags.domain.TagLabel
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
@@ -421,7 +421,7 @@ private fun CustomSheets(
           tags = editorData.tags,
           selected = draft.selectedTags(editorData),
           onChange = { selected ->
-            edit { it.withTagScope(selected, editorData.tags.map(TagChoice::id)) }
+            edit { it.withTagScope(selected, editorData.tags.map(TagLabel::id)) }
           },
           onDismiss = onDismiss,
         )

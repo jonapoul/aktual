@@ -17,8 +17,9 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
+import aktual.core.ui.TagChip
+import aktual.core.ui.TagChipShape
 import aktual.core.ui.contrastingTextColor
-import aktual.core.ui.rememberHighlighted
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -36,7 +37,6 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.valentinilk.shimmer.rememberShimmer
@@ -89,7 +89,7 @@ internal fun ShimmerTagItem(modifier: Modifier = Modifier) {
     Box(
       modifier =
         Modifier.size(width = ListTagsDS.shimmerChipWidth, height = ListTagsDS.shimmerChipHeight)
-          .background(colors.pageText, ListTagsDS.chipShape),
+          .background(colors.pageText, TagChipShape),
     )
     Box(
       modifier =
@@ -151,32 +151,6 @@ private fun TagItemRow(
       }
     }
   }
-}
-
-@Composable
-internal fun TagChip(
-  text: String,
-  color: Color?,
-  modifier: Modifier = Modifier,
-  query: String = "",
-) {
-  // upstream falls back to the theme's note-tag colors when a tag has no explicit color
-  val background = color ?: colors.noteTagBackground
-  val textColor = color?.contrastingTextColor() ?: colors.noteTagText
-
-  Text(
-    text = rememberHighlighted("#$text", query),
-    modifier =
-      modifier
-        .clip(ListTagsDS.chipShape)
-        .background(background, ListTagsDS.chipShape)
-        .padding(ListTagsDS.chipPadding),
-    style = typography.bodyMedium,
-    fontWeight = SemiBold,
-    color = textColor,
-    maxLines = 1,
-    overflow = Ellipsis,
-  )
 }
 
 private class TagItemProvider : ColoredParameterProvider<TagItem>(TagsPreview.all)

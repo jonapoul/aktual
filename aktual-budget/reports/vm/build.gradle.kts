@@ -7,9 +7,8 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.kotlinx.datetime)
-    api(project(":aktual-budget:data:db"))
     api(project(":aktual-budget:formula"))
-    api(project(":aktual-core"))
+    api(project(":aktual-budget:tags:domain"))
     implementation(project(":aktual-budget:budgeting:domain"))
     implementation(project(":aktual-budget:rules:domain"))
     implementation(project(":aktual-core:theme"))
