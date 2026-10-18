@@ -61,6 +61,58 @@ class CustomReportScaffoldTest {
   }
 
   @Test
+  fun `Saving is offered once there are changes`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<CustomReportAction>()
+    setContent {
+      PreviewWithColors(DarkColors) {
+        CustomReportScaffold(
+          state = state(isEditing = false, hasChanges = true),
+          onAction = { actions += it },
+        )
+      }
+    }
+
+    // when
+    onNodeWithTag(Tags.SaveReport).performClick()
+
+    // then
+    assertThat(actions).containsExactly(CustomReportAction.Save)
+  }
+
+  @Test
+  fun `Saving isn't offered without changes`() = runComposeUiTest {
+    setContent {
+      PreviewWithColors(DarkColors) {
+        CustomReportScaffold(state = state(isEditing = true), onAction = {})
+      }
+    }
+
+    onNodeWithTag(Tags.SaveReport).assertDoesNotExist()
+  }
+
+  @Test
+  fun `New reports can be saved before any changes`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<CustomReportAction>()
+    setContent {
+      PreviewWithColors(DarkColors) {
+        CustomReportScaffold(
+          state = state(isEditing = false).copy(name = "", isNew = true),
+          onAction = { actions += it },
+        )
+      }
+    }
+
+    // when
+    onNodeWithText("New custom report").assertExists()
+    onNodeWithTag(Tags.SaveReport).performClick()
+
+    // then
+    assertThat(actions).containsExactly(CustomReportAction.Save)
+  }
+
+  @Test
   fun `Picking a graph applies its rules`() = runComposeUiTest {
     // given
     val actions = mutableListOf<CustomReportAction>()

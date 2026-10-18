@@ -396,5 +396,8 @@
   <string name="reports_custom_editor_revert">Revert</string>
   <string name="reports_custom_editor_unsaved">Unsaved changes</string>
   <string name="reports_custom_editor_discard_message">Your changes to this report will be lost.</string>
+  <string name="reports_custom_editor_new">New custom report</string>
+  <string name="reports_custom_editor_save_new">Save report</string>
+  <string name="reports_custom_editor_name_taken">There is already a report with this name</string>
   <string name="reports_custom_editor_unreadable">This report can't be edited in Aktual</string>
 </resources>

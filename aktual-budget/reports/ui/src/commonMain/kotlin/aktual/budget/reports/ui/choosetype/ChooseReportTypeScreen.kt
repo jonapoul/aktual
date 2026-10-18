@@ -26,6 +26,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Warning
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.NewCustomReportNavigator
 import aktual.core.nav.ReportNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -81,6 +82,7 @@ fun ChooseReportTypeScreen(
   page: DashboardPageId,
   @Suppress("unused") back: BackNavigator,
   toReport: ReportNavigator,
+  toNewCustomReport: NewCustomReportNavigator,
   viewModel: ChooseReportTypeViewModel = chooseReportTypeViewModel(page),
 ) {
   LaunchedEffect(Unit) {
@@ -95,6 +97,7 @@ fun ChooseReportTypeScreen(
     savedReports = savedReports,
     onAction = { action ->
       when (action) {
+        is Create if action.type == Custom -> toNewCustomReport(page)
         is Create -> viewModel.createReport(action.type)
         is AddSavedReport -> viewModel.addSavedReport(action.id)
         ShowDisabledDialog -> viewModel.show(UnsupportedType)
