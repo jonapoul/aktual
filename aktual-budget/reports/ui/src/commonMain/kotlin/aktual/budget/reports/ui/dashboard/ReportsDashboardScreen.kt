@@ -20,6 +20,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColoredParams
@@ -79,8 +80,15 @@ fun ReportsDashboardScreen(
   val content by viewModel.content.collectAsStateWithLifecycle()
   val pinnedIds by viewModel.pinnedIds.collectAsStateWithLifecycle()
   val canPin by viewModel.canPin.collectAsStateWithLifecycle()
+  val snackbars = LocalSnackbars.current
+  val pinnedMessage = Strings.reportsDashboardPinned
 
   LaunchedEffect(viewModel) { viewModel.createReportEvents.collect(toCreateReport::invoke) }
+
+  fun pin(id: WidgetId) {
+    viewModel.pinReport(id)
+    snackbars.show(key = PINNED_SNACKBAR) { showSnackbar(pinnedMessage) }
+  }
 
   ReportsDashboardScaffold(
     pages = pages,
@@ -96,7 +104,7 @@ fun ReportsDashboardScreen(
         is Rename -> viewModel.renameReport(action.item, action.name)
         is Delete -> viewModel.deleteReport(action.id)
         is DeleteSavedReport -> viewModel.deleteSavedReport(action.item)
-        is Pin -> viewModel.pinReport(action.id)
+        is Pin -> pin(action.id)
         is Unpin -> viewModel.unpinReport(action.id)
         is SetSummaryType -> TODO()
         is SetAllTimeDivisor -> TODO()
@@ -179,6 +187,8 @@ private fun rememberPageListState(page: DashboardPageId?): LazyListState {
   val states = rememberSaveable(saver = PageListStatesSaver) { mutableMapOf() }
   return remember(page) { states.getOrPut(page?.value.orEmpty()) { LazyListState() } }
 }
+
+private const val PINNED_SNACKBAR = "pinned"
 
 private val PageListStatesSaver: Saver<MutableMap<String, LazyListState>, Any> =
   mapSaver(

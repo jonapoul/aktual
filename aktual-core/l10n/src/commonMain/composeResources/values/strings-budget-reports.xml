@@ -5,6 +5,7 @@
   <string name="reports_dashboard_delete">Delete</string>
   <string name="reports_dashboard_pin">Pin to home</string>
   <string name="reports_dashboard_unpin">Unpin from home</string>
+  <string name="reports_dashboard_pinned">Pinned to home</string>
   <string name="reports_dashboard_empty">No reports on this dashboard</string>
   <string name="reports_not_found">This report doesn't exist</string>
   <string name="reports_reset_zoom">Reset zoom</string>

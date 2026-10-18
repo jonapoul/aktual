@@ -134,7 +134,7 @@ internal constructor(
   private fun reportPages(
     pages: List<DashboardPage>,
     widgets: List<Dashboard>,
-    names: Map<CustomReportId, String>
+    names: Map<CustomReportId, String>,
   ): ImmutableList<ReportPage> {
     val byPage = widgets.groupBy { it.dashboard_page_id }
     return pages
