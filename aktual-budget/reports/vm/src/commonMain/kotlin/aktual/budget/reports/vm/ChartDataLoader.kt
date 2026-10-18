@@ -316,8 +316,6 @@ internal class ChartDataLoader(
     return flowOf(TextData(meta.content, align))
   }
 
-  // packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.tsx
-  // cashFlowByDate()
   // packages/desktop-client/src/components/reports/reports/BudgetAnalysisCard.tsx
   fun budgetAnalysis(meta: BudgetAnalysisReportMeta): Flow<ChartData> {
     val range =
@@ -343,6 +341,8 @@ internal class ChartDataLoader(
       .flowOn(contexts.default)
   }
 
+  // packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.tsx
+  // cashFlowByDate()
   fun cashFlow(meta: CashFlowReportMeta): Flow<ChartData> {
     if (meta.conditions.hasFilters()) return unsupported(meta, Filters)
 
