@@ -19,17 +19,23 @@ import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareTextButton
+import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -49,31 +55,54 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 private val RowMinHeight = 48.dp
 private val IconSize = 20.dp
+private const val SHIMMER_ROWS = 2
 
-// Only shown when there's something to act on
+// Only shown when there's something to act on, or while loading
 @Composable
 internal fun AttentionCard(
   state: AttentionCardState,
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  if (state == Failed) {
-    HomeCard(modifier = modifier) {
-      CardError(message = Strings.homeAttentionFailed, onAction = onAction)
-    }
-    return
-  }
-
-  if (state !is Loaded) return
+  if (state == Empty) return
 
   var showOverspent by rememberSaveable { mutableStateOf(false) }
 
   HomeCard(modifier = modifier) {
+    when (state) {
+      Empty -> Unit
+      Loading -> ShimmerAttention()
+      Failed -> CardError(message = Strings.homeAttentionFailed, onAction = onAction)
+      is Loaded ->
+        AttentionContent(
+          state = state,
+          onAction = onAction,
+          onShowOverspent = { showOverspent = true },
+        )
+    }
+  }
+
+  val overspent = (state as? Loaded)?.items?.firstNotNullOfOrNull { it as? Overspent }
+  if (showOverspent && overspent != null) {
+    OverspentSheet(categories = overspent.categories, onDismiss = { showOverspent = false })
+  }
+}
+
+@Composable
+private fun AttentionContent(
+  state: Loaded,
+  onAction: HomeActionHandler,
+  onShowOverspent: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier = modifier.fillMaxWidth()) {
     Text(
       modifier = Modifier.padding(horizontal = CardPadding).semantics { heading() },
       text = Strings.homeAttentionTitle,
@@ -85,13 +114,34 @@ internal fun AttentionCard(
     )
 
     state.items.fastForEach { item ->
-      AttentionRow(item = item, onAction = onAction, onShowOverspent = { showOverspent = true })
+      AttentionRow(item = item, onAction = onAction, onShowOverspent = onShowOverspent)
     }
   }
+}
 
-  val overspent = state.items.firstNotNullOfOrNull { it as? Overspent }
-  if (showOverspent && overspent != null) {
-    OverspentSheet(categories = overspent.categories, onDismiss = { showOverspent = false })
+// Keep this in sync with AttentionRow
+@Composable
+private fun ShimmerAttention(modifier: Modifier = Modifier) {
+  val bar = Modifier.background(colors.tableText, CardShape)
+
+  Column(
+    modifier =
+      modifier.fillMaxWidth().padding(horizontal = CardPadding).shimmer(rememberShimmer(Window)),
+  ) {
+    Box(modifier = bar.width(120.dp).height(16.dp))
+
+    repeat(SHIMMER_ROWS) {
+      Row(
+        modifier = Modifier.fillMaxWidth().heightIn(min = RowMinHeight),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = CenterVertically,
+      ) {
+        Box(modifier = Modifier.size(IconSize).background(colors.tableText, CircleShape))
+        Box(modifier = bar.width(160.dp).height(16.dp))
+        Box(modifier = Modifier.weight(1f))
+        Box(modifier = bar.width(48.dp).height(16.dp))
+      }
+    }
   }
 }
 
@@ -317,6 +367,7 @@ private class AttentionCardStateProvider :
         AttentionItem.OverdueSchedules(count = 3),
       ),
     ),
+    Loading,
     Failed,
   )
 

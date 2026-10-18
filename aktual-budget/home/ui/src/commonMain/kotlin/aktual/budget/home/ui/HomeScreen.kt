@@ -270,12 +270,12 @@ private fun CardGrid(
   }
 }
 
-// These cards draw nothing while loading or empty
+// These cards draw nothing when empty
 private val AttentionCardState.isHidden: Boolean
-  get() = this == Loading || this == Empty
+  get() = this == Empty
 
 private val UpcomingCardState.isHidden: Boolean
-  get() = this == Loading || this == Empty
+  get() = this == Empty
 
 private val AccountsPanelWidth = 360.dp
 private val TwoColumnMinWidth = 640.dp

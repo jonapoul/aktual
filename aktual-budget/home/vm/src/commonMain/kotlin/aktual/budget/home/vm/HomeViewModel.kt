@@ -74,12 +74,17 @@ internal constructor(
         }
       val upcoming by upcomingFlow.collectAsState(initial = Loading)
 
+      // Cards all load together rather than popping in one at a time. Retries keep the old values,
+      // so this only holds them back on the first load
+      val isLoading =
+        thisMonth == Loading || attention == Loading || upcoming == Loading || accounts == Loading
+
       HomeState(
         budgetName = budgetName,
-        thisMonth = thisMonth,
-        attention = attention,
-        upcoming = upcoming,
-        accounts = accounts,
+        thisMonth = if (isLoading) Loading else thisMonth,
+        attention = if (isLoading) Loading else attention,
+        upcoming = if (isLoading) Loading else upcoming,
+        accounts = if (isLoading) Loading else accounts,
         cards = remember(cardOrder) { homeCardOrder(cardOrder) },
       )
     }

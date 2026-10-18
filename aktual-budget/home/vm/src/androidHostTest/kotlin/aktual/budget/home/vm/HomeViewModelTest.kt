@@ -98,6 +98,31 @@ class HomeViewModelTest {
   }
 
   @Test
+  fun `Cards load together`() = runDatabaseTest { scope ->
+    insertAccount("a")
+    val viewModel = createHomeViewModel(scope, CALENDAR)
+
+    viewModel.state.test {
+      var state = awaitItem()
+      while (state.accounts == Loading) {
+        assertThat(state).all {
+          prop(HomeState::thisMonth).isEqualTo(Loading)
+          prop(HomeState::attention).isEqualTo(Loading)
+          prop(HomeState::upcoming).isEqualTo(Loading)
+        }
+        state = awaitItem()
+      }
+
+      assertThat(state).all {
+        prop(HomeState::thisMonth).isInstanceOf<ThisMonthCardState.Loaded>()
+        prop(HomeState::attention).isEqualTo(Empty)
+        prop(HomeState::upcoming).isEqualTo(Empty)
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `A failing source only fails its own card`() = runDatabaseTest { scope ->
     insertAccount("a")
     val viewModel = createHomeViewModel(scope, CALENDAR, accountsCard = closedDatabase())
