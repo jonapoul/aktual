@@ -1,4 +1,4 @@
-package aktual.budget.tags.vm
+package aktual.budget.tags.domain
 
 import androidx.compose.ui.graphics.Color
 import kotlin.math.roundToInt

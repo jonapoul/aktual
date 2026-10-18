@@ -1,6 +1,5 @@
 package aktual.budget.transactions.vm.edit
 
-import aktual.budget.db.GetTags
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
@@ -13,8 +12,9 @@ import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.LoadedRules
 import aktual.budget.rules.domain.RuleTransaction
 import aktual.budget.rules.domain.TransactionRulesLoader
-import aktual.budget.tags.vm.TagCreator
-import aktual.budget.tags.vm.toColorOrNull
+import aktual.budget.tags.domain.TagCreator
+import aktual.budget.tags.domain.TagLabel
+import aktual.budget.tags.domain.toTagLabels
 import aktual.budget.transactions.domain.LastTransaction
 import aktual.budget.transactions.domain.LoadedTransaction
 import aktual.budget.transactions.domain.NewTransaction
@@ -111,10 +111,10 @@ internal constructor(
   private var isDeleted = false
 
   // Followed, so a tag created from the notes is offered straight away
-  private val tags: StateFlow<ImmutableList<TagOption>> =
+  private val tags: StateFlow<ImmutableList<TagLabel>> =
     tagsDao
       .observeTags()
-      .map { rows -> rows.toTagOptions() }
+      .map { rows -> rows.toTagLabels() }
       .catch { e ->
         logcat.w(e) { "Failed loading tags" }
         emit(persistentListOf())
@@ -162,7 +162,7 @@ internal constructor(
     failure: Failure?,
     draft: TransactionDraft?,
     newPayees: Map<PayeeId, String>,
-    tags: ImmutableList<TagOption>,
+    tags: ImmutableList<TagLabel>,
     isWorking: Boolean,
   ): EditTransactionState {
     if (failure != null) return failure
@@ -211,7 +211,7 @@ internal constructor(
     draft: TransactionDraft,
     entities: Entities,
     newPayees: Map<PayeeId, String>,
-    tags: ImmutableList<TagOption>,
+    tags: ImmutableList<TagLabel>,
     saved: Saved?,
   ): TransactionForm {
     val fields = draft.fields
@@ -704,15 +704,6 @@ internal constructor(
     val others = transfers.filter { entities.transferAccounts[it.id] != account }
     return if (others.size == transfers.size) this else copy(transfers = others.toImmutableList())
   }
-
-  private fun List<GetTags>.toTagOptions(): ImmutableList<TagOption> =
-    asSequence()
-      .filter { it.hidden != true }
-      .mapNotNull { row ->
-        row.tag?.let { TagOption(tag = it, color = row.color?.toColorOrNull()) }
-      }
-      .sortedBy { it.tag.lowercase() }
-      .toImmutableList()
 
   private fun TransactionFields.toRuleTransaction() =
     RuleTransaction(

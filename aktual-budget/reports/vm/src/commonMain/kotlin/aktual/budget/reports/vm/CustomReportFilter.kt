@@ -33,6 +33,33 @@ internal fun filteredAmounts(
       )
     }
 
+// Each matching transaction with its notes, for reports split by tag
+internal fun taggedAmounts(
+  rows: List<CustomReportTransactions>,
+  filter: TransactionFilter,
+): List<TaggedAmounts> =
+  rows
+    .filter { filter.isEmpty || filter.matches(it.toFilterRow()) }
+    .map { row ->
+      TaggedAmounts(
+        amounts =
+          CustomReportAmounts(
+            interval_key = row.interval_key,
+            category = row.category,
+            category_hidden = row.category_hidden,
+            category_group = row.category_group,
+            category_group_hidden = row.category_group_hidden,
+            account = row.account,
+            off_budget = row.off_budget,
+            payee = row.payee,
+            transfer_account = row.transfer_account,
+            assets = row.amount.coerceAtLeast(0),
+            debts = row.amount.coerceAtMost(0),
+          ),
+        notes = row.notes,
+      )
+    }
+
 private fun CustomReportTransactions.toFilterRow() =
   FilterRow(
     date = date,

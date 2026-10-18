@@ -7,9 +7,9 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.TagId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
+import aktual.budget.tags.domain.toColorOrNull
+import aktual.budget.tags.domain.toHex
 import aktual.budget.tags.vm.list.toTagItem
-import aktual.budget.tags.vm.toColorOrNull
-import aktual.budget.tags.vm.toHex
 import aktual.core.UuidGenerator
 import aktual.di.BudgetScope
 import aktual.prefs.TagPreferences

@@ -1,7 +1,6 @@
 package aktual.budget.tags.ui.search
 
 import aktual.budget.tags.ui.list.ListTagsDS
-import aktual.budget.tags.ui.list.TagChip
 import aktual.budget.tags.ui.list.TagsPreview
 import aktual.budget.tags.vm.list.TagItem
 import aktual.budget.tags.vm.search.SearchTagsState
@@ -25,6 +24,7 @@ import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.ScrollToTopOnNewQuery
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SearchScaffold
+import aktual.core.ui.TagChip
 import aktual.core.ui.rememberHighlighted
 import aktual.core.ui.scrollbar
 import aktual.core.ui.searchResultCard
@@ -163,9 +163,8 @@ private fun ResultItem(
 
     TagChip(
       modifier = Modifier.widthIn(max = 160.dp).alpha(alpha),
-      text = tag.tag,
+      text = rememberHighlighted("#${tag.tag}", query),
       color = tag.color,
-      query = query,
     )
 
     Text(

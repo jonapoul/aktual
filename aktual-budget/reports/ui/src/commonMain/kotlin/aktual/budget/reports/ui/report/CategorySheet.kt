@@ -10,6 +10,7 @@ import aktual.core.ui.checkbox
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -104,11 +105,25 @@ internal fun CategorySheet(
   }
 
 @Composable
-private fun CheckRow(
+internal fun CheckRow(
   text: String,
   isBold: Boolean,
   modifier: Modifier = Modifier,
-  checkbox: @Composable () -> Unit,
+  checkbox: @Composable RowScope.() -> Unit,
+) =
+  CheckRow(modifier = modifier, checkbox = checkbox) {
+    Text(
+      text = text,
+      style = if (isBold) typography.titleSmall else typography.bodyLarge,
+      color = colors.pageText,
+    )
+  }
+
+@Composable
+internal fun CheckRow(
+  checkbox: @Composable RowScope.() -> Unit,
+  modifier: Modifier = Modifier,
+  label: @Composable RowScope.() -> Unit,
 ) {
   Row(
     modifier = modifier.fillMaxWidth().heightIn(min = 44.dp),
@@ -116,10 +131,6 @@ private fun CheckRow(
     horizontalArrangement = spacedBy(8.dp),
   ) {
     checkbox()
-    Text(
-      text = text,
-      style = if (isBold) typography.titleSmall else typography.bodyLarge,
-      color = colors.pageText,
-    )
+    label()
   }
 }

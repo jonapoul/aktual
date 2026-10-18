@@ -2,6 +2,7 @@ package aktual.budget.reports.vm
 
 import aktual.budget.model.DateRangeType
 import aktual.budget.model.GraphType
+import aktual.budget.model.TagId
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -10,6 +11,7 @@ import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 
@@ -102,6 +104,22 @@ class CustomReportOptionsTest {
     assertThat(budgeted.isGroupByEnabled(Payee)).isFalse()
     assertThat(budgeted.isIntervalEnabled(Weekly)).isFalse()
     assertThat(budgeted.isIntervalEnabled(Yearly)).isTrue()
+  }
+
+  @Test
+  fun `Budgeted can't split by tag`() {
+    assertThat(DEFAULT.copy(balanceType = Budgeted).isGroupByEnabled(Tag)).isFalse()
+    assertThat(DEFAULT.copy(groupBy = Tag).withBalanceType(Budgeted).groupBy).isEqualTo(Category)
+    assertThat(DEFAULT.isGroupByEnabled(Tag)).isTrue()
+  }
+
+  @Test
+  fun `Picking none or every tag covers all tags`() {
+    val visible = listOf(TagId("a"), TagId("b"), TagId("c"))
+    assertThat(DEFAULT.withTagScope(setOf(TagId("c"), TagId("a")), visible).tagScope)
+      .isEqualTo(CustomTagScope.Selected(persistentListOf(TagId("a"), TagId("c"))))
+    assertThat(DEFAULT.withTagScope(emptySet(), visible).tagScope).isEqualTo(All)
+    assertThat(DEFAULT.withTagScope(visible.toSet(), visible).tagScope).isEqualTo(All)
   }
 
   @Test

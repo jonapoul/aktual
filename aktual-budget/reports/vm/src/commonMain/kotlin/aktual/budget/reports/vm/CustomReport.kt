@@ -13,6 +13,7 @@ import aktual.budget.model.Interval
 import aktual.budget.model.ReportDate
 import aktual.budget.model.SelectedCategory
 import aktual.budget.model.SortBy
+import aktual.budget.model.TagId
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -26,6 +27,11 @@ import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.yearMonth
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 
 /** A row of the `custom_reports` table, with defaults filled in and unreadable values rejected */
 @Immutable
@@ -47,7 +53,17 @@ data class CustomReportConfig(
   val trimIntervals: Boolean,
   val showTrendLines: Boolean,
   val colorScheme: String?,
+  // Only used when split by tag
+  val tagScope: CustomTagScope = All,
 )
+
+// CustomReportTagScope: which tags a report split by tag buckets transactions by
+@Immutable
+sealed interface CustomTagScope {
+  data object All : CustomTagScope
+
+  data class Selected(val tagIds: ImmutableList<TagId>) : CustomTagScope
+}
 
 @Immutable
 sealed interface CustomReportDates {
@@ -98,7 +114,24 @@ internal fun CustomReports.toConfig(): CustomReportConfig? {
     trimIntervals = trim_intervals == true,
     showTrendLines = show_trend_lines == true,
     colorScheme = color_scheme,
+    tagScope = metadata?.get("tagScope").toTagScope(),
   )
+}
+
+// packages/desktop-client/src/components/reports/tagScope.ts normalizeTagScope(): anything but a
+// non-empty selection covers all tags
+private fun JsonElement?.toTagScope(): CustomTagScope {
+  val scope = this as? JsonObject ?: return All
+  val mode = (scope["mode"] as? JsonPrimitive)?.contentOrNull
+  val ids =
+    (scope["tagIds"] as? JsonArray)
+      ?.mapNotNull { (it as? JsonPrimitive)?.contentOrNull?.let(::TagId) }
+      .orEmpty()
+  return if (mode == "selected" && ids.isNotEmpty()) {
+    CustomTagScope.Selected(ids.toImmutableList())
+  } else {
+    All
+  }
 }
 
 private fun CustomReports.dates(): CustomReportDates? =

@@ -293,6 +293,7 @@ internal fun customTableRows(
     CategoryGroup,
     Payee,
     Account,
+    Tag,
     Unknown -> data.groups.map { data.amountsRow(it, name) }
   }.toImmutableList()
 
@@ -342,6 +343,7 @@ private fun GroupBy.name(): String =
     CategoryGroup -> Strings.reportsCustomTableGroup
     Payee -> Strings.reportsCustomTablePayee
     Account -> Strings.reportsCustomTableAccount
+    Tag -> Strings.reportsCustomTableTag
     GroupBy.Interval,
     Unknown -> ""
   }

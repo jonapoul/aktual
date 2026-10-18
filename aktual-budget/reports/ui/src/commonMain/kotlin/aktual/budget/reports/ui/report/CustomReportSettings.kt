@@ -34,6 +34,8 @@ import aktual.budget.reports.vm.withMode
 import aktual.budget.reports.vm.withSelectedCategories
 import aktual.budget.reports.vm.withStaticDates
 import aktual.budget.reports.vm.withStaticMonths
+import aktual.budget.reports.vm.withTagScope
+import aktual.budget.tags.domain.TagLabel
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
@@ -56,7 +58,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.YearMonthRange
 import kotlinx.datetime.yearMonth
@@ -77,7 +81,7 @@ internal fun CustomReportSettings(
   }
 
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(20.dp)) {
-    DisplaySection(draft = draft, edit = edit, open = { sheet = it })
+    DisplaySection(draft = draft, editorData = editorData, edit = edit, open = { sheet = it })
     DatesSection(draft = draft, preview = preview, editorData = editorData, edit = edit) {
       sheet = it
     }
@@ -116,11 +120,13 @@ private enum class CustomSheet {
   Sort,
   Range,
   Categories,
+  TagScope,
 }
 
 @Composable
 private fun DisplaySection(
   draft: CustomReportConfig,
+  editorData: CustomReportEditorData?,
   edit: ((CustomReportConfig) -> CustomReportConfig) -> Unit,
   open: (CustomSheet) -> Unit,
 ) =
@@ -141,6 +147,12 @@ private fun DisplaySection(
     Divider()
     SettingValueRow(Strings.reportsCustomEditorSplit, draft.groupBy.label()) {
       open(Split)
+    }
+    if (draft.groupBy == Tag && editorData != null) {
+      Divider()
+      SettingValueRow(Strings.reportsCustomEditorTags, tagScopeLabel(draft, editorData)) {
+        open(TagScope)
+      }
     }
     Divider()
     SettingValueRow(Strings.reportsCustomEditorType, draft.balanceType.label()) {
@@ -403,9 +415,40 @@ private fun CustomSheets(
         )
       }
     }
+    TagScope -> {
+      if (editorData != null) {
+        TagSheet(
+          tags = editorData.tags,
+          selected = draft.selectedTags(editorData),
+          onChange = { selected ->
+            edit { it.withTagScope(selected, editorData.tags.map(TagLabel::id)) }
+          },
+          onDismiss = onDismiss,
+        )
+      }
+    }
     null -> {}
   }
 }
+
+// TagScopeSelector.tsx summary
+@Composable
+private fun tagScopeLabel(draft: CustomReportConfig, editorData: CustomReportEditorData): String {
+  val selected = draft.selectedTags(editorData)
+  return when {
+    selected.isEmpty() -> Strings.reportsCustomEditorTagsAll
+    selected.size == 1 -> "#${editorData.tags.first { it.id in selected }.name}"
+    else -> Strings.reportsCustomEditorTagsSome(selected.size)
+  }
+}
+
+// The scope's tags that still exist; none means all
+private fun CustomReportConfig.selectedTags(editorData: CustomReportEditorData) =
+  when (val scope = tagScope) {
+    All -> persistentSetOf()
+    is Selected ->
+      scope.tagIds.filter { id -> editorData.tags.any { it.id == id } }.toImmutableSet()
+  }
 
 @Composable
 private fun SettingValueRow(label: String, value: String, onClick: () -> Unit) =

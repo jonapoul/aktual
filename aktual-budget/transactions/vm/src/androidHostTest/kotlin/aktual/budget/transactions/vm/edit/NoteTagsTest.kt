@@ -1,5 +1,7 @@
 package aktual.budget.transactions.vm.edit
 
+import aktual.budget.model.TagId
+import aktual.budget.tags.domain.TagLabel
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
@@ -34,7 +36,7 @@ class NoteTagsTest {
 
   @Test
   fun `Tags match ignoring case, shortest and then earliest first`() {
-    assertThat(TAGS.matching(TagQuery(0, 3, "OO")).map { it.tag })
+    assertThat(TAGS.matching(TagQuery(0, 3, "OO")).map { it.name })
       .containsExactly("food", "foods", "Lagoon")
   }
 
@@ -62,10 +64,10 @@ class NoteTagsTest {
   private companion object {
     val TAGS =
       persistentListOf(
-        TagOption("Lagoon", null),
-        TagOption("food", null),
-        TagOption("foods", null),
-        TagOption("bills", null),
+        TagLabel(TagId("Lagoon"), "Lagoon", null),
+        TagLabel(TagId("food"), "food", null),
+        TagLabel(TagId("foods"), "foods", null),
+        TagLabel(TagId("bills"), "bills", null),
       )
   }
 }

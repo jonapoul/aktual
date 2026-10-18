@@ -1,5 +1,6 @@
 package aktual.budget.transactions.vm.edit
 
+import aktual.budget.tags.domain.TagLabel
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -19,22 +20,22 @@ fun tagQuery(notes: String, cursor: Int): TagQuery? {
 
 // As upstream's useFilteredTags, though by substring rather than fuzzily: shorter tags first, then
 // those matching nearer their start. A lone '#' offers every tag
-fun ImmutableList<TagOption>.matching(query: TagQuery): ImmutableList<TagOption> {
+fun ImmutableList<TagLabel>.matching(query: TagQuery): ImmutableList<TagLabel> {
   if (query.name.isEmpty()) return take(MAX_TAGS).toImmutableList()
   return asSequence()
     .mapNotNull { option ->
-      val index = option.tag.indexOf(query.name, ignoreCase = true)
+      val index = option.name.indexOf(query.name, ignoreCase = true)
       if (index < 0) null else option to index
     }
-    .sortedWith(compareBy({ it.first.tag.length }, { it.second }))
+    .sortedWith(compareBy({ it.first.name.length }, { it.second }))
     .take(MAX_TAGS)
     .map { it.first }
     .toImmutableList()
 }
 
 // No tag has exactly the name typed
-fun ImmutableList<TagOption>.canCreate(query: TagQuery): Boolean =
-  query.name.isNotEmpty() && none { it.tag == query.name }
+fun ImmutableList<TagLabel>.canCreate(query: TagQuery): Boolean =
+  query.name.isNotEmpty() && none { it.name == query.name }
 
 // Replaces the notes from start to end with text, leaving the cursor after it
 @Immutable data class NotesEdit(val start: Int, val end: Int, val text: String)

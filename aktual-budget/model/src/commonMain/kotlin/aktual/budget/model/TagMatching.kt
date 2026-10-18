@@ -12,5 +12,11 @@ private val TAG_TOKEN = Regex("""(?<!#)#([^#\s]+)""")
 fun tagsInNotes(notes: String): Set<String> =
   TAG_TOKEN.findAll(notes).mapTo(mutableSetOf()) { it.groupValues[1].lowercase() }
 
+// extractTagsFromText() in packages/loot-core/src/shared/tags.ts: the distinct tag names in
+// [notes],
+// in the order they first appear. Unlike [tagsInNotes] this is case-sensitive, as tag identity is
+fun tagNamesInNotes(notes: String): List<String> =
+  TAG_TOKEN.findAll(notes).map { it.groupValues[1] }.distinct().toList()
+
 // Whether [notes] references the tag named [tag] (case-insensitive).
 fun notesContainTag(notes: String, tag: String): Boolean = tag.lowercase() in tagsInNotes(notes)

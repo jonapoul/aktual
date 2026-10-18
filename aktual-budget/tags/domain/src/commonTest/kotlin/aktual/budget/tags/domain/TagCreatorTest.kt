@@ -1,4 +1,4 @@
-package aktual.budget.tags.vm
+package aktual.budget.tags.domain
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.DatabaseTables.TAGS
@@ -13,12 +13,9 @@ import alakazam.test.standardDispatcher
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import kotlin.test.Test
 import kotlinx.coroutines.test.TestScope
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class TagCreatorTest {
   @Test
   fun `A new tag gets a new id`() = runDatabaseTest { scope ->
@@ -62,6 +59,16 @@ class TagCreatorTest {
 
   private fun BudgetDatabase.creator(scope: TestScope, sync: TestSyncController) =
     TagCreator(tagsDao = tagsDao(scope), uuidGenerator = { GENERATED_ID }, syncController = sync)
+
+  private suspend fun BudgetDatabase.insertTag(
+    id: String,
+    tag: String,
+    color: String? = null,
+    description: String? = null,
+  ) = tagsQueries.insert(id = TagId(id), tag = tag, color = color, description = description)
+
+  private suspend fun BudgetDatabase.tombstoneTag(id: String) =
+    tagsQueries.setTombstone(tombstone = true, id = TagId(id))
 
   private companion object {
     const val GENERATED_ID = "generated-id"

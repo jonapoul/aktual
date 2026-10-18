@@ -1,6 +1,7 @@
 package aktual.budget.reports.vm
 
 import aktual.budget.model.ReportDate
+import aktual.budget.model.TagId
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
@@ -12,6 +13,8 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month.JULY
 import kotlinx.datetime.Month.SEPTEMBER
 import kotlinx.datetime.YearMonth
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 
 class CustomReportConfigTest {
   @Test
@@ -136,6 +139,23 @@ class CustomReportConfigTest {
     assertThat(report.copy(sort_by = Unknown).toConfig()).isNull()
     assertThat(report.copy(conditions_op = Unknown).toConfig()).isNull()
     assertThat(report.copy(date_range = Unknown).toConfig()).isNull()
+  }
+
+  @Test
+  fun `A tag scope is read from the metadata`() {
+    fun scopeOf(metadata: String?) =
+      emptyCustomReport()
+        .copy(group_by = Tag, metadata = metadata?.let { Json.parseToJsonElement(it).jsonObject })
+        .toConfig()
+        ?.tagScope
+
+    assertThat(scopeOf("""{"tagScope":{"mode":"selected","tagIds":["a","b"]}}"""))
+      .isEqualTo(CustomTagScope.Selected(persistentListOf(TagId("a"), TagId("b"))))
+    assertThat(scopeOf("""{"tagScope":{"mode":"all"}}""")).isEqualTo(All)
+    // normalizeTagScope(): an empty selection covers all tags
+    assertThat(scopeOf("""{"tagScope":{"mode":"selected","tagIds":[]}}""")).isEqualTo(All)
+    assertThat(scopeOf("""{"other":1}""")).isEqualTo(All)
+    assertThat(scopeOf(null)).isEqualTo(All)
   }
 
   @Test

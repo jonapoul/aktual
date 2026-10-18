@@ -201,6 +201,7 @@
   <string name="reports_custom_transfers">Transfers</string>
   <string name="reports_custom_off_budget">Off budget</string>
   <string name="reports_custom_uncategorised_and_off_budget">Uncategorized &amp; Off budget</string>
+  <string name="reports_custom_untagged">Untagged</string>
   <string name="reports_custom_assets">Assets</string>
   <string name="reports_custom_debts">Debts</string>
   <string name="reports_custom_net_assets">Net assets</string>
@@ -214,6 +215,7 @@
   <string name="reports_custom_table_group">Group</string>
   <string name="reports_custom_table_payee">Payee</string>
   <string name="reports_custom_table_account">Account</string>
+  <string name="reports_custom_table_tag">Tag</string>
   <string name="reports_custom_table_day">Day</string>
   <string name="reports_custom_table_week">Week</string>
   <string name="reports_custom_table_month">Month</string>
@@ -345,6 +347,7 @@
   <string name="reports_custom_editor_split_payee">Payee</string>
   <string name="reports_custom_editor_split_account">Account</string>
   <string name="reports_custom_editor_split_interval">Interval</string>
+  <string name="reports_custom_editor_split_tag">Tag</string>
   <string name="reports_custom_editor_type">Type</string>
   <string name="reports_custom_editor_type_payment">Payment</string>
   <string name="reports_custom_editor_type_deposit">Deposit</string>
@@ -379,6 +382,10 @@
   <string name="reports_custom_editor_categories">Categories</string>
   <string name="reports_custom_editor_categories_all">All</string>
   <string name="reports_custom_editor_categories_some">%1$d of %2$d</string>
+  <string name="reports_custom_editor_tags">Tags</string>
+  <string name="reports_custom_editor_tags_all">All tags</string>
+  <string name="reports_custom_editor_tags_some">%1$d tags</string>
+  <string name="reports_custom_editor_tags_hint">Leave empty to include all tags.</string>
   <string name="reports_custom_editor_categories_complex">Remove the category filters to choose categories here</string>
   <string name="reports_custom_editor_select_all">Select all</string>
   <string name="reports_custom_editor_select_none">Select none</string>

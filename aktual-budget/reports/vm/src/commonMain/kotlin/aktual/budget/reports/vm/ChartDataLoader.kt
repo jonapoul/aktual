@@ -147,14 +147,28 @@ internal class ChartDataLoader(
       if (config.groupBy == Account) customReports.observeAccounts() else flowOf(emptyList())
 
     val filter = TransactionFilter.compile(config.conditions, config.conditionsOp)
+    val isTagSplit = config.groupBy == Tag && config.balanceType != Budgeted
     val amounts =
       when {
         config.balanceType == Budgeted -> observeBudgetAmounts(config, range)
+        // Split by tag, the transactions are summed with their notes instead
+        isTagSplit -> flowOf(emptyList())
         filter.isEmpty -> customReports.observeAmounts(query.start, query.end, query.divisor)
         else ->
           customReports.observeTransactions(query.start, query.end, query.divisor).map { rows ->
             filteredAmounts(rows, filter)
           }
+      }
+    val tagged =
+      if (isTagSplit) {
+        combine(
+          customReports.observeTransactions(query.start, query.end, query.divisor),
+          customReports.observeTags(),
+        ) { rows, tags ->
+          taggedAmounts(rows, filter) to tags
+        }
+      } else {
+        flowOf(emptyList<TaggedAmounts>() to emptyList())
       }
 
     return combine(
@@ -165,6 +179,7 @@ internal class ChartDataLoader(
         accounts,
         ::CustomReportInputs,
       )
+      .combine(tagged) { inputs, (rows, tags) -> inputs.copy(tagged = rows, tags = tags) }
       .map { inputs ->
         val sheet = customSpreadsheet(config, range, firstDayOfWeek, inputs)
         CustomData(

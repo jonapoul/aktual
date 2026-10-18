@@ -1,4 +1,4 @@
-package aktual.budget.tags.vm
+package aktual.budget.tags.domain
 
 import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.TAGS
@@ -26,13 +26,11 @@ class TagCreator(
     tagsDao.insert(id = id, tag = tag, color = none, description = none)
     val row = id.toString()
     syncController.syncChanges(
-      listOf(
-        localChange(TAGS, row, "id", row),
-        localChange(TAGS, row, "tag", tag),
-        localChange(TAGS, row, "color", none),
-        localChange(TAGS, row, "description", none),
-        untombstone(TAGS, row),
-      ),
+      localChange(TAGS, row, "id", row),
+      localChange(TAGS, row, "tag", tag),
+      localChange(TAGS, row, "color", none),
+      localChange(TAGS, row, "description", none),
+      untombstone(TAGS, row),
     )
     return id
   }

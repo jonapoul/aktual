@@ -1,10 +1,10 @@
-package aktual.budget.tags.vm
+package aktual.budget.tags.domain
 
 import androidx.compose.ui.graphics.Color
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
-import org.junit.Test
+import kotlin.test.Test
 
 class TagColorTest {
   @Test

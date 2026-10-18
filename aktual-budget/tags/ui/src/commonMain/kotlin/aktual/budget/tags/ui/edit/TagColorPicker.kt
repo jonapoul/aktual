@@ -1,7 +1,7 @@
 package aktual.budget.tags.ui.edit
 
-import aktual.budget.tags.vm.toColorOrNull
-import aktual.budget.tags.vm.toHex
+import aktual.budget.tags.domain.toColorOrNull
+import aktual.budget.tags.domain.toHex
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Shuffle
 import aktual.core.icons.material.Tune

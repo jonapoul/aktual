@@ -7,6 +7,7 @@ import aktual.budget.model.GraphType
 import aktual.budget.model.GroupBy
 import aktual.budget.model.Interval
 import aktual.budget.model.SortBy
+import aktual.budget.model.TagId
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -26,6 +27,7 @@ val CUSTOM_GROUP_BYS =
     Payee,
     Account,
     GroupBy.Interval,
+    Tag,
   )
 
 val CUSTOM_BALANCE_TYPES =
@@ -49,7 +51,7 @@ val CustomReportConfig.graphOptions: ImmutableList<GraphType>
 fun CustomReportConfig.isGraphEnabled(graph: GraphType): Boolean = graph !in disabledGraphs(mode)
 
 fun CustomReportConfig.isGroupByEnabled(option: GroupBy): Boolean {
-  val budgetedOnly = balanceType == Budgeted && (option == Payee || option == Account)
+  val budgetedOnly = balanceType == Budgeted && option in NOT_BUDGETED_GROUP_BYS
   return !budgetedOnly && option !in rules().disabledGroupBys
 }
 
@@ -99,11 +101,11 @@ fun CustomReportConfig.withGraphType(graph: GraphType): CustomReportConfig =
 fun CustomReportConfig.withGroupBy(option: GroupBy): CustomReportConfig =
   copy(groupBy = option).withAllowedBalanceType().withDefaultSort()
 
-// ReportSidebar.tsx onChangeBalanceType(): budgets have no payee or account, and are monthly
+// ReportSidebar.tsx onChangeBalanceType(): budgets have no payee, account or tag, and are monthly
 fun CustomReportConfig.withBalanceType(option: BalanceType): CustomReportConfig {
   var config = copy(balanceType = option)
   if (option == Budgeted) {
-    if (groupBy == Payee || groupBy == Account) config = config.withGroupBy(Category)
+    if (groupBy in NOT_BUDGETED_GROUP_BYS) config = config.withGroupBy(Category)
     if (interval == Daily || interval == Weekly) config = config.withInterval(Monthly)
   }
   return config
@@ -119,6 +121,22 @@ fun CustomReportConfig.withInterval(option: Interval): CustomReportConfig {
       dates
     }
   return copy(interval = option, dates = newDates)
+}
+
+// TagScopeSelector.tsx applyScope(): the picked tags in the order they're listed. None, or every
+// one, covers all tags
+fun CustomReportConfig.withTagScope(
+  selected: Set<TagId>,
+  visible: List<TagId>,
+): CustomReportConfig {
+  val ids = visible.filter { it in selected }
+  val scope =
+    if (ids.isEmpty() || ids.size == visible.size) {
+      CustomTagScope.All
+    } else {
+      CustomTagScope.Selected(ids.toImmutableList())
+    }
+  return copy(tagScope = scope)
 }
 
 fun CustomReportConfig.withDateRange(type: DateRangeType): CustomReportConfig {
@@ -242,6 +260,8 @@ private fun DateRangeType.intervals(): Set<Interval> =
     AllTime -> setOf(Weekly, Monthly, Yearly)
     Unknown -> emptySet()
   }
+
+private val NOT_BUDGETED_GROUP_BYS = setOf<GroupBy>(Payee, Account, Tag)
 
 // disabledList.ts currentIntervalOptions lists the ranges that can't include the current period
 private val INCLUDE_CURRENT_RANGES =

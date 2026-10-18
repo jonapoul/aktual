@@ -3,7 +3,7 @@ package aktual.budget.tags.vm.list
 import aktual.budget.db.GetTag
 import aktual.budget.db.GetTags
 import aktual.budget.model.TagId
-import aktual.budget.tags.vm.toColorOrNull
+import aktual.budget.tags.domain.toColorOrNull
 
 internal fun GetTags.toTagItem(numTransactions: Int = 0): TagItem? =
   toTagItem(id, tag, color, description, hidden, numTransactions)

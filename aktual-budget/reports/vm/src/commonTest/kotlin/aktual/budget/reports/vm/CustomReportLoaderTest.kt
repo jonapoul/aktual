@@ -12,6 +12,8 @@ import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.db.dao.DatabaseTables.PREFERENCES
 import aktual.budget.db.dao.DatabaseTables.REFLECT_BUDGETS
+import aktual.budget.db.dao.DatabaseTables.TAGS
+import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
 import aktual.budget.db.dao.DatabaseTables.ZERO_BUDGETS
 import aktual.budget.db.withoutResult
 import aktual.budget.model.Amount
@@ -21,6 +23,7 @@ import aktual.budget.model.CustomReportId
 import aktual.budget.model.Field
 import aktual.budget.model.Operator
 import aktual.budget.model.ReportDate
+import aktual.budget.model.TagId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.test.assertThatNextEmission
@@ -266,6 +269,45 @@ class CustomReportLoaderTest {
           CustomGroup.Transfers to Amount(-700),
           CustomGroup.OffBudget to Amount(-300),
         )
+    }
+  }
+
+  @Test
+  fun `Split by tag buckets the filtered transactions by their notes`() =
+    runLoaderTest { loader, sync ->
+      sync.insertSpending()
+      sync.row(TAGS, "work", "tag" to "work")
+      sync.row(TAGS, "trip", "tag" to "trip")
+      sync.row(TRANSACTIONS, "plain", "notes" to "#work")
+      sync.row(TRANSACTIONS, "split-food", "notes" to "#trip #work")
+      sync.row(TRANSACTIONS, "split-fuel", "notes" to "#trip")
+      val conditions = listOf(condition(Category, OneOf, JsonArray(listOf(JsonPrimitive("food")))))
+      insert(spendingReport().copy(group_by = Tag, conditions = conditions))
+
+      loader.custom(CustomReportMeta(ID)).test {
+        val data = awaitItem() as CustomData
+        assertThat(data.groups.associate { it.group to it.totals.debts })
+          .isEqualTo(
+            mapOf(
+              CustomGroup.TagSet(persistentListOf(TagId("work")), persistentListOf("work")) to
+                Amount(-1000),
+              CustomGroup.TagSet(
+                persistentListOf(TagId("trip"), TagId("work")),
+                persistentListOf("trip", "work"),
+              ) to Amount(-1500),
+              CustomGroup.Untagged to Amount(-300),
+            ),
+          )
+        assertThat(data.totals.assets).isEqualTo(Amount(900))
+      }
+    }
+
+  @Test
+  fun `Budgeted report can't be split by tag`() = runLoaderTest { loader, _ ->
+    insert(budgetedReport().copy(group_by = Tag))
+
+    loader.custom(CustomReportMeta(ID)).test {
+      assertThatNextEmissionIsEqualTo(UnsupportedData(CustomBudgeted, Custom, "Budget"))
     }
   }
 
