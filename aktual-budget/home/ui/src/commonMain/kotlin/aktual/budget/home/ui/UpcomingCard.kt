@@ -25,9 +25,12 @@ import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -44,6 +47,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
@@ -52,23 +57,32 @@ import kotlinx.datetime.plus
 private val RowMinHeight = 56.dp
 private val BadgeWidth = 44.dp
 
-// Shows nothing until there's something upcoming, so the card doesn't flash in and out
+// Shows nothing when there's nothing upcoming
 @Composable
 internal fun UpcomingCard(
   state: UpcomingCardState,
   onAction: HomeActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  if (state == Failed) {
-    HomeCard(modifier = modifier) {
-      CardError(message = Strings.homeUpcomingFailed, onAction = onAction)
-    }
-    return
-  }
-
-  if (state !is Loaded) return
+  if (state == Empty) return
 
   HomeCard(modifier = modifier) {
+    when (state) {
+      Empty -> Unit
+      Loading -> ShimmerUpcoming()
+      Failed -> CardError(message = Strings.homeUpcomingFailed, onAction = onAction)
+      is Loaded -> UpcomingContent(state, onAction)
+    }
+  }
+}
+
+@Composable
+private fun UpcomingContent(
+  state: Loaded,
+  onAction: HomeActionHandler,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier = modifier.fillMaxWidth()) {
     UpcomingHeader(state.length, onSeeAll = { onAction(OpenSchedules) })
 
     state.schedules.fastForEach { schedule ->
@@ -87,6 +101,42 @@ internal fun UpcomingCard(
   }
 }
 
+// Keep this in sync with UpcomingHeader and UpcomingRow
+@Composable
+private fun ShimmerUpcoming(modifier: Modifier = Modifier) {
+  val bar = Modifier.background(colors.tableText, CardShape)
+
+  Column(modifier = modifier.fillMaxWidth().shimmer(rememberShimmer(Window))) {
+    Row(
+      modifier = Modifier.fillMaxWidth().padding(horizontal = CardPadding),
+      horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+      Box(modifier = bar.width(140.dp).height(16.dp))
+      Box(modifier = bar.width(48.dp).height(16.dp))
+    }
+
+    repeat(SHIMMER_ROWS) {
+      Row(
+        modifier =
+          Modifier.fillMaxWidth()
+            .heightIn(min = RowMinHeight)
+            .padding(horizontal = CardPadding, vertical = 6.dp),
+        horizontalArrangement = spacedBy(12.dp),
+        verticalAlignment = CenterVertically,
+      ) {
+        Box(modifier = bar.width(BadgeWidth).height(40.dp))
+
+        Column(modifier = Modifier.weight(1f), verticalArrangement = spacedBy(6.dp)) {
+          Box(modifier = bar.width(120.dp).height(16.dp))
+          Box(modifier = bar.width(160.dp).height(12.dp))
+        }
+
+        Box(modifier = bar.width(64.dp).height(16.dp))
+      }
+    }
+  }
+}
+
 @Composable
 private fun UpcomingHeader(
   length: UpcomingLength,
@@ -95,7 +145,7 @@ private fun UpcomingHeader(
 ) {
   Row(
     modifier = modifier.fillMaxWidth().padding(horizontal = CardPadding),
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
+    horizontalArrangement = spacedBy(12.dp),
     verticalAlignment = Top,
   ) {
     Text(
@@ -139,12 +189,12 @@ private fun UpcomingRow(
         .heightIn(min = RowMinHeight)
         .hoverClickable(onClick = onClick)
         .padding(horizontal = CardPadding, vertical = 6.dp),
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
+    horizontalArrangement = spacedBy(12.dp),
     verticalAlignment = CenterVertically,
   ) {
     DateBadge(schedule.nextDate)
 
-    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Column(modifier = Modifier.weight(1f), verticalArrangement = spacedBy(2.dp)) {
       Text(
         text = schedule.name?.takeIf { it.isNotBlank() } ?: schedule.payeeName,
         style = typography.bodyLarge,
@@ -234,7 +284,7 @@ private fun MoreRow(count: Int, onClick: () -> Unit, modifier: Modifier = Modifi
 private fun TotalRow(total: Amount, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier.fillMaxWidth().padding(horizontal = CardPadding).padding(top = 8.dp),
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
+    horizontalArrangement = spacedBy(12.dp),
     verticalAlignment = CenterVertically,
   ) {
     Text(
@@ -252,6 +302,7 @@ private fun TotalRow(total: Amount, modifier: Modifier = Modifier) {
 }
 
 private const val WEEKDAY_LENGTH = 3
+private const val SHIMMER_ROWS = 3
 
 @Preview
 @Composable
@@ -270,6 +321,7 @@ private class UpcomingCardStateProvider :
   ColoredParameterProvider<UpcomingCardState>(
     PREVIEW_UPCOMING,
     PREVIEW_UPCOMING.copy(length = CurrentMonth, hiddenCount = 3),
+    Loading,
     Failed,
   )
 
