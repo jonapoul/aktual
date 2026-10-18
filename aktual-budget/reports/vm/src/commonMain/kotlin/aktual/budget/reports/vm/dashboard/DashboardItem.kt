@@ -1,5 +1,6 @@
 package aktual.budget.reports.vm.dashboard
 
+import aktual.budget.model.CustomReportId
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.BalanceForecastReportMeta
@@ -18,6 +19,8 @@ import aktual.budget.reports.vm.SpendingReportMeta
 import aktual.budget.reports.vm.SummaryReportMeta
 import aktual.budget.reports.vm.UnsupportedReportMeta
 import androidx.compose.runtime.Immutable
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 
 @Immutable
 data class DashboardItem(
@@ -52,3 +55,12 @@ val DashboardItem.name: String?
       is MarkdownReportMeta,
       is UnsupportedReportMeta -> null
     }
+
+// As [name], also looking up custom reports and the raw meta of ones that failed to decode
+internal fun DashboardItem.displayName(customReportNames: Map<CustomReportId, String>): String? =
+  @Suppress("ElseCaseInsteadOfExhaustiveWhen")
+  when (val meta = meta) {
+    is CustomReportMeta -> customReportNames[meta.id]
+    is UnsupportedReportMeta -> (meta.raw["name"] as? JsonPrimitive)?.contentOrNull
+    else -> name
+  }

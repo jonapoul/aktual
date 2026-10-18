@@ -2,6 +2,7 @@ package aktual.budget.home.vm
 
 import aktual.budget.home.vm.HomeCardType.Accounts
 import aktual.budget.home.vm.HomeCardType.Attention
+import aktual.budget.home.vm.HomeCardType.Reports
 import aktual.budget.home.vm.HomeCardType.ThisMonth
 import aktual.budget.home.vm.HomeCardType.Upcoming
 import assertk.assertThat
@@ -12,19 +13,19 @@ internal class HomeCardTypeTest {
   @Test
   fun `No saved order gives the default`() {
     assertThat(homeCardOrder(saved = null))
-      .containsExactly(ThisMonth, Attention, Upcoming, Accounts)
+      .containsExactly(ThisMonth, Attention, Upcoming, Accounts, Reports)
   }
 
   @Test
   fun `Saved order is kept`() {
-    assertThat(homeCardOrder(listOf("Accounts", "Upcoming", "Attention", "ThisMonth")))
-      .containsExactly(Accounts, Upcoming, Attention, ThisMonth)
+    assertThat(homeCardOrder(listOf("Reports", "Accounts", "Upcoming", "Attention", "ThisMonth")))
+      .containsExactly(Reports, Accounts, Upcoming, Attention, ThisMonth)
   }
 
   @Test
   fun `Unknown and repeated names are dropped and missing cards go at the end`() {
     assertThat(homeCardOrder(listOf("Upcoming", "Removed", "Upcoming", "Accounts")))
-      .containsExactly(Upcoming, Accounts, ThisMonth, Attention)
+      .containsExactly(Upcoming, Accounts, ThisMonth, Attention, Reports)
   }
 
   @Test

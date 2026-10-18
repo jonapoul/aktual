@@ -129,6 +129,7 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
     val BudgetMonthCount: Key<Int> = IntKey("budget.monthCount")
     val MobileShowSpentColumn: Key<Boolean> = BoolKey("mobile.showSpentColumn")
     val HomeCardOrder: Key<List<String>> = ListKey("home.cardOrder")
+    val HomeReports: Key<List<String>> = ListKey("home.reports")
     val CloudFileId: Key<BudgetId> = TypedKey("cloudFileId", ::BudgetId)
     val GroupId: Key<String> = StringKey("groupId")
     val Id: Key<String> = StringKey("id")
@@ -147,6 +148,7 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
         BudgetMonthCount.name -> BudgetMonthCount
         MobileShowSpentColumn.name -> MobileShowSpentColumn
         HomeCardOrder.name -> HomeCardOrder
+        HomeReports.name -> HomeReports
         CloudFileId.name -> CloudFileId
         GroupId.name -> GroupId
         Id.name -> Id

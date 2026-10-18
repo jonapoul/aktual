@@ -84,6 +84,7 @@ private val materialIcons =
       Pause,
       PlayArrow,
       PostAdd,
+      PushPin,
       ReceiptLong,
       Refresh,
       Save,

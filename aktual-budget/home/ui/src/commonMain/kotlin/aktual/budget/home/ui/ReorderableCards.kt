@@ -366,6 +366,7 @@ private fun HomeCardType.label(): String =
     Attention -> Strings.homeAttentionTitle
     Upcoming -> Strings.homeCardUpcoming
     Accounts -> Strings.homeAccountsTitle
+    Reports -> Strings.homeCardReports
   }
 
 // Fills the first column before the second. Empty cards take no space, including their gap. The

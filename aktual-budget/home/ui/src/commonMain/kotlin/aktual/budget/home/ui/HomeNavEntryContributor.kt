@@ -10,6 +10,7 @@ import aktual.core.nav.HomeNavRoute
 import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.nav.ListSchedulesNavigator
 import aktual.core.nav.NavStack
+import aktual.core.nav.ReportNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.di.BudgetScope
 import androidx.navigation3.runtime.NavKey
@@ -29,6 +30,7 @@ class HomeNavEntryContributor : BudgetNavEntryContributor {
         linkBankAccount = LinkBankAccountNavigator(stack),
         schedules = ListSchedulesNavigator(stack),
         editSchedule = EditScheduleNavigator(stack),
+        report = ReportNavigator(stack),
       )
     }
   }

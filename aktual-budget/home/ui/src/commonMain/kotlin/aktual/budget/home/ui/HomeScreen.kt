@@ -5,6 +5,7 @@ import aktual.budget.home.vm.AttentionCardState
 import aktual.budget.home.vm.HomeCardType
 import aktual.budget.home.vm.HomeState
 import aktual.budget.home.vm.HomeViewModel
+import aktual.budget.home.vm.ReportsCardState
 import aktual.budget.home.vm.UpcomingCardState
 import aktual.core.icons.material.Check
 import aktual.core.icons.material.Edit
@@ -15,6 +16,7 @@ import aktual.core.nav.BankSyncSettingsNavigator
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.nav.ListSchedulesNavigator
+import aktual.core.nav.ReportNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
@@ -80,6 +82,7 @@ internal fun HomeScreen(
   linkBankAccount: LinkBankAccountNavigator,
   schedules: ListSchedulesNavigator,
   editSchedule: EditScheduleNavigator,
+  report: ReportNavigator,
   modifier: Modifier = Modifier,
   viewModel: HomeViewModel = metroViewModel(),
 ) {
@@ -96,6 +99,10 @@ internal fun HomeScreen(
         is OpenSchedule -> editSchedule(action.id)
         OpenSchedules -> schedules()
         Retry -> viewModel.retry()
+        is OpenReport -> report(action.id)
+        is PinReport -> viewModel.pinReport(action.id)
+        is UnpinReport -> viewModel.unpinReport(action.id)
+        is ReplaceReport -> viewModel.replaceReport(action.old, action.new)
         is SwapCards -> viewModel.swap(action.card, action.other)
         is ReorderCards -> viewModel.reorder(action.cards)
       }
@@ -178,6 +185,7 @@ private fun HomeCardFor(
 ) =
   when (card) {
     ThisMonth -> ThisMonthCard(state = state.thisMonth, onAction = onAction)
+
     Attention ->
       if (isEditing && state.attention.isHidden) {
         HiddenCard(message = Strings.homeAttentionHidden)
@@ -191,7 +199,15 @@ private fun HomeCardFor(
       } else {
         UpcomingCard(state = state.upcoming, onAction = onAction)
       }
+
     Accounts -> AccountsCard(state = state.accounts, onAction = onAction)
+
+    Reports ->
+      if (isEditing && state.reports.isHidden) {
+        HiddenCard(message = Strings.homeReportsHidden)
+      } else {
+        ReportsCard(state = state.reports, choices = state.reportChoices, onAction = onAction)
+      }
   }
 
 @Composable
@@ -302,6 +318,9 @@ private val AttentionCardState.isHidden: Boolean
 private val UpcomingCardState.isHidden: Boolean
   get() = this == Empty
 
+private val ReportsCardState.isHidden: Boolean
+  get() = this == Empty
+
 private val AccountsPanelWidth = 360.dp
 private val TwoColumnMinWidth = 640.dp
 private val SidePanelMinWidth = AccountsPanelWidth + 400.dp
@@ -332,6 +351,8 @@ private val PREVIEW_HOME =
     attention = PREVIEW_ATTENTION,
     upcoming = PREVIEW_UPCOMING,
     accounts = AccountsCardState.Loaded(PREVIEW_ACCOUNTS),
+    reports = PREVIEW_REPORTS,
+    reportChoices = PREVIEW_REPORT_CHOICES,
   )
 
 private class HomeStateProvider :
@@ -344,6 +365,7 @@ private class HomeStateProvider :
       attention = Empty,
       upcoming = Empty,
       accounts = Empty,
+      reports = Empty,
     ),
     HomeState(
       budgetName = PREVIEW_BUDGET_NAME,
@@ -351,6 +373,7 @@ private class HomeStateProvider :
       attention = Failed,
       upcoming = Failed,
       accounts = Failed,
+      reports = Failed,
     ),
   )
 

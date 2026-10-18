@@ -4,14 +4,12 @@ import aktual.budget.db.Dashboard
 import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.CustomReportId
-import aktual.budget.reports.vm.CustomReportMeta
 import aktual.budget.reports.vm.FormulaReportMeta
 import aktual.budget.reports.vm.MarkdownReportMeta
-import aktual.budget.reports.vm.UnsupportedReportMeta
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.dashboard.DashboardPages
-import aktual.budget.reports.vm.dashboard.name
+import aktual.budget.reports.vm.dashboard.displayName
 import aktual.budget.reports.vm.search.SearchReportsState.Results
 import aktual.core.snippet
 import aktual.di.BudgetScope
@@ -32,8 +30,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.contentOrNull
 
 @Stable
 @AssistedInject
@@ -82,13 +78,7 @@ internal constructor(
           SearchReportsItem(
             id = item.id,
             type = type,
-            name =
-              @Suppress("ElseCaseInsteadOfExhaustiveWhen")
-              when (meta) {
-                is CustomReportMeta -> customReportNames[meta.id]
-                is UnsupportedReportMeta -> (meta.raw["name"] as? JsonPrimitive)?.contentOrNull
-                else -> item.name
-              },
+            name = item.displayName(customReportNames),
             content =
               @Suppress("ElseCaseInsteadOfExhaustiveWhen")
               when (meta) {

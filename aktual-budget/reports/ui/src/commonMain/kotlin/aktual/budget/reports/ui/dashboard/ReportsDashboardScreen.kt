@@ -20,6 +20,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColoredParams
@@ -62,7 +63,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
@@ -75,13 +78,24 @@ fun ReportsDashboardScreen(
 ) {
   val pages by viewModel.allPages.collectAsStateWithLifecycle()
   val content by viewModel.content.collectAsStateWithLifecycle()
+  val pinnedIds by viewModel.pinnedIds.collectAsStateWithLifecycle()
+  val canPin by viewModel.canPin.collectAsStateWithLifecycle()
+  val snackbars = LocalSnackbars.current
+  val pinnedMessage = Strings.reportsDashboardPinned
 
   LaunchedEffect(viewModel) { viewModel.createReportEvents.collect(toCreateReport::invoke) }
+
+  fun pin(id: WidgetId) {
+    viewModel.pinReport(id)
+    snackbars.show(key = PINNED_SNACKBAR, message = pinnedMessage)
+  }
 
   ReportsDashboardScaffold(
     pages = pages,
     selectedPage = content.page,
     items = content.items,
+    pinnedIds = pinnedIds,
+    canPin = canPin,
     observer = viewModel::observeChartData,
     onAction = { action ->
       when (action) {
@@ -90,6 +104,8 @@ fun ReportsDashboardScreen(
         is Rename -> viewModel.renameReport(action.item, action.name)
         is Delete -> viewModel.deleteReport(action.id)
         is DeleteSavedReport -> viewModel.deleteSavedReport(action.item)
+        is Pin -> pin(action.id)
+        is Unpin -> viewModel.unpinReport(action.id)
         is SetSummaryType -> TODO()
         is SetAllTimeDivisor -> TODO()
         is ClickCalendarDay -> TODO()
@@ -112,6 +128,8 @@ internal fun ReportsDashboardScaffold(
   pages: ImmutableList<DashboardPage>,
   selectedPage: DashboardPage?,
   items: ImmutableList<DashboardItem>?,
+  pinnedIds: ImmutableSet<WidgetId>,
+  canPin: Boolean,
   observer: DashboardItemObserver,
   onAction: ActionListener,
 ) {
@@ -152,6 +170,8 @@ internal fun ReportsDashboardScaffold(
         modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
         contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
         items = items,
+        pinnedIds = pinnedIds,
+        canPin = canPin,
         observer = observer,
         listState = listState,
         onAction = onAction,
@@ -167,6 +187,8 @@ private fun rememberPageListState(page: DashboardPageId?): LazyListState {
   val states = rememberSaveable(saver = PageListStatesSaver) { mutableMapOf() }
   return remember(page) { states.getOrPut(page?.value.orEmpty()) { LazyListState() } }
 }
+
+private const val PINNED_SNACKBAR = "pinned"
 
 private val PageListStatesSaver: Saver<MutableMap<String, LazyListState>, Any> =
   mapSaver(
@@ -186,6 +208,8 @@ private val PageListStatesSaver: Saver<MutableMap<String, LazyListState>, Any> =
 @Composable
 private fun ReportsDashboardContent(
   items: ImmutableList<DashboardItem>?,
+  pinnedIds: ImmutableSet<WidgetId>,
+  canPin: Boolean,
   observer: DashboardItemObserver,
   listState: LazyListState,
   onAction: ActionListener,
@@ -198,6 +222,8 @@ private fun ReportsDashboardContent(
     else ->
       ContentList(
         items = items,
+        pinnedIds = pinnedIds,
+        canPin = canPin,
         observer = observer,
         listState = listState,
         onAction = onAction,
@@ -236,6 +262,8 @@ private fun ContentEmpty(onAction: ActionListener, modifier: Modifier = Modifier
 @Composable
 private fun ContentList(
   items: ImmutableList<DashboardItem>,
+  pinnedIds: ImmutableSet<WidgetId>,
+  canPin: Boolean,
   observer: DashboardItemObserver,
   listState: LazyListState,
   onAction: ActionListener,
@@ -255,6 +283,8 @@ private fun ContentList(
       DashboardItem(
         modifier = Modifier.animateItem(),
         item = item,
+        isPinned = item.id in pinnedIds,
+        canPin = canPin,
         observer = observer,
         isOpen = openItemId == item.id,
         onOpenChange = { open ->
@@ -284,6 +314,8 @@ private fun PreviewReportsDashboardScaffold(
       pages = pages,
       selectedPage = pages.firstOrNull(),
       items = items,
+      pinnedIds = persistentSetOf(),
+      canPin = true,
       observer = { if (chartData == null) flowOf() else flowOf(chartData) },
       onAction = {},
     )

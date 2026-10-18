@@ -15,6 +15,7 @@ import aktual.budget.reports.vm.dashboard.name
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.PushPin
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
@@ -52,11 +53,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun DashboardItem(
   item: DashboardItem,
+  isPinned: Boolean,
+  canPin: Boolean,
   observer: DashboardItemObserver,
   isOpen: Boolean,
   onOpenChange: (Boolean) -> Unit,
@@ -69,6 +72,8 @@ internal fun DashboardItem(
   DashboardItem(
     item = item,
     chartData = chartData,
+    isPinned = isPinned,
+    canPin = canPin,
     isOpen = isOpen,
     onOpenChange = onOpenChange,
     onAction = onAction,
@@ -80,6 +85,8 @@ internal fun DashboardItem(
 private fun DashboardItem(
   item: DashboardItem,
   chartData: ChartData?,
+  isPinned: Boolean,
+  canPin: Boolean,
   isOpen: Boolean,
   onOpenChange: (Boolean) -> Unit,
   onAction: ActionListener,
@@ -105,14 +112,27 @@ private fun DashboardItem(
       onClick = { showDeleteDialog = true },
     )
 
-  // Swiping still works while loading, so a chart that never loads can be deleted
-  SwipeToReveal(
-    actions =
-      if (item.isRenamable) {
-        persistentListOf(renameAction, deleteAction)
-      } else {
-        persistentListOf(deleteAction)
+  val pinAction =
+    SwipeAction(
+      text = if (isPinned) Strings.reportsDashboardUnpin else Strings.reportsDashboardPin,
+      icon = MaterialIcons.PushPin,
+      background = lerp(colors.tableBackground, Black, fraction = 0.2f),
+      foreground = colors.tableText,
+      onClick = {
+        onOpenChange(false)
+        onAction(if (isPinned) Action.Unpin(item.id) else Action.Pin(item.id))
       },
+    )
+
+  // Swiping still works while loading, so a chart that never loads can be deleted. The home page
+  // only has room for a few reports, so pinning goes once it's full
+  SwipeToReveal(
+    actions = buildList {
+        if (isPinned || canPin) add(pinAction)
+        if (item.isRenamable) add(renameAction)
+        add(deleteAction)
+      }
+        .toImmutableList(),
     isOpen = isOpen,
     onOpenChange = onOpenChange,
     modifier = modifier,
@@ -196,8 +216,8 @@ private fun ReportCard(
     }
   }
 
-private val ChartHeight = 200.dp
-private val ChartPadding = 8.dp
+internal val ChartHeight = 200.dp
+internal val ChartPadding = 8.dp
 
 @Composable
 internal fun ShimmerDashboardItem(modifier: Modifier = Modifier) =
@@ -258,6 +278,8 @@ private fun PreviewReportDashboardItem(
     DashboardItem(
       item = item,
       chartData = chartData,
+      isPinned = false,
+      canPin = true,
       isOpen = false,
       onOpenChange = {},
       onAction = {},

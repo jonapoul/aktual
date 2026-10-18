@@ -4,9 +4,12 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.BankSyncStatus
 import aktual.budget.model.UpcomingLength
+import aktual.budget.reports.vm.pinned.PinnedReport
+import aktual.budget.reports.vm.pinned.ReportPage
 import aktual.budget.schedules.domain.Schedule
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
@@ -18,11 +21,19 @@ data class HomeState(
   val attention: AttentionCardState = Loading,
   val upcoming: UpcomingCardState = Loading,
   val accounts: AccountsCardState = Loading,
+  val reports: ReportsCardState = Loading,
+  // Every report that could be pinned, for picking one
+  val reportChoices: ImmutableList<ReportPage> = persistentListOf(),
   val cards: ImmutableList<HomeCardType> = HomeCardType.entries.toImmutableList(),
 ) {
   // Nothing to show on any card, as in a brand new budget. A failed month still needs its card
   val isEmpty: Boolean
-    get() = thisMonth != Failed && attention == Empty && upcoming == Empty && accounts == Empty
+    get() =
+      thisMonth != Failed &&
+        attention == Empty &&
+        upcoming == Empty &&
+        accounts == Empty &&
+        reports == Empty
 }
 
 @Immutable
@@ -117,4 +128,16 @@ sealed interface AccountsCardState {
   // hide
   data class Loaded(val summary: AccountsSummary, val recent: AccountsSummary? = null) :
     AccountsCardState
+}
+
+@Immutable
+sealed interface ReportsCardState {
+  data object Loading : ReportsCardState
+
+  data object Empty : ReportsCardState
+
+  data object Failed : ReportsCardState
+
+  data class Loaded(val reports: ImmutableList<PinnedReport>, val canPinMore: Boolean) :
+    ReportsCardState
 }

@@ -4,9 +4,15 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.withoutResult
 import aktual.budget.home.vm.AccountsCardState.Loaded
+import aktual.budget.home.vm.HomeCardType.Accounts
+import aktual.budget.home.vm.HomeCardType.Attention
+import aktual.budget.home.vm.HomeCardType.Reports
+import aktual.budget.home.vm.HomeCardType.ThisMonth
+import aktual.budget.home.vm.HomeCardType.Upcoming
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadata.Companion.HomeCardOrder
 import aktual.budget.model.SyncedPrefKey.Global.UpcomingScheduledTransactionLength
 import aktual.budget.model.UpcomingLength
 import aktual.test.TestBudgetLocalPreferences
@@ -305,23 +311,13 @@ class HomeViewModelTest {
 
     viewModel.state.test {
       assertThat(awaitSettled().cards)
-        .containsExactly(
-          HomeCardType.ThisMonth,
-          HomeCardType.Attention,
-          HomeCardType.Upcoming,
-          HomeCardType.Accounts,
-        )
+        .containsExactly(ThisMonth, Attention, Upcoming, Accounts, Reports)
 
-      viewModel.swap(Accounts, HomeCardType.ThisMonth)
+      viewModel.swap(Accounts, ThisMonth)
       assertThat(awaitItem().cards)
-        .containsExactly(
-          HomeCardType.Accounts,
-          HomeCardType.Attention,
-          HomeCardType.Upcoming,
-          HomeCardType.ThisMonth,
-        )
-      assertThat(prefs[DbMetadata.HomeCardOrder])
-        .isEqualTo(listOf("Accounts", "Attention", "Upcoming", "ThisMonth"))
+        .containsExactly(Accounts, Attention, Upcoming, ThisMonth, Reports)
+      assertThat(prefs[HomeCardOrder])
+        .isEqualTo(listOf("Accounts", "Attention", "Upcoming", "ThisMonth", "Reports"))
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -334,18 +330,11 @@ class HomeViewModelTest {
     viewModel.state.test {
       awaitSettled()
 
-      viewModel.reorder(
-        listOf(HomeCardType.Upcoming, HomeCardType.ThisMonth, HomeCardType.Attention),
-      )
+      viewModel.reorder(listOf(Upcoming, ThisMonth, Attention))
       assertThat(awaitItem().cards)
-        .containsExactly(
-          HomeCardType.Upcoming,
-          HomeCardType.ThisMonth,
-          HomeCardType.Attention,
-          HomeCardType.Accounts,
-        )
-      assertThat(prefs[DbMetadata.HomeCardOrder])
-        .isEqualTo(listOf("Upcoming", "ThisMonth", "Attention", "Accounts"))
+        .containsExactly(Upcoming, ThisMonth, Attention, Accounts, Reports)
+      assertThat(prefs[HomeCardOrder])
+        .isEqualTo(listOf("Upcoming", "ThisMonth", "Attention", "Accounts", "Reports"))
       cancelAndIgnoreRemainingEvents()
     }
   }
