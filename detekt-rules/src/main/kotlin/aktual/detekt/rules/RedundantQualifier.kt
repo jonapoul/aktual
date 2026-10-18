@@ -71,12 +71,14 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * - `is` checks against a sealed subtype: `state is State.Failure`
  * - lambda results where the call already fixes the return type: `flow.update { State.Loading }`
  * - properties in the companion of the expected type: `clickable(role = Role.Button)`
+ * - two or more arguments of one type that decide a generic type, as a type argument would give
+ *   them an expected type: `listOf(Role.Admin, Role.Basic)` can be `listOf<Role>(Admin, Basic)`
  *
  * Not reported, because the plain name wouldn't compile or would mean something else:
  * - overloads that disagree on the parameter type: `YearMonth(2025, Month.JANUARY)`
  * - names shadowed by another class, property or function in scope, like a `Password` class next to
  *   `LoginMethod.Password`, or a `Button` composable next to `Role.Button`
- * - arguments that decide a generic type themselves: `listOf(Role.Admin)`, `x to Role.Admin`,
+ * - other arguments that decide a generic type themselves: `listOf(Role.Admin)`, `x to Role.Admin`,
  *   `associateWith { Role.Admin }`
  * - elvis operands: `role ?: Role.Admin`
  * - sealed subtypes and companion properties in an `if`/`when` passed as an argument, where another
@@ -115,7 +117,51 @@ internal class RedundantQualifier(config: Config) :
       if (!expected.isClass(owner)) return@analyze
       if (symbol !is KaEnumEntrySymbol && isArgumentBranch(expression)) return@analyze
       if (isShadowed(expression, symbol)) return@analyze
-      report(expression, selector.getReferencedName())
+      report(expression, selector.getReferencedName(), "the expected type is known")
+    }
+  }
+
+  override fun visitCallExpression(expression: KtCallExpression) {
+    super.visitCallExpression(expression)
+    if (!enabled || expression.typeArgumentList != null) return
+
+    val callee = expression.calleeExpression as? KtNameReferenceExpression ?: return
+    val arguments = expression.valueArguments
+    if (arguments.size < 2) return
+    val qualified = arguments.map { argument ->
+      if (argument.isNamed() || argument.getSpreadElement() != null) return
+      argument.getArgumentExpression() as? KtDotQualifiedExpression ?: return
+    }
+    val names = qualified.map { it.selectorExpression as? KtNameReferenceExpression ?: return }
+    val receiver = qualified.map { it.receiverExpression.text }.distinct().singleOrNull() ?: return
+
+    analyze(expression) {
+      val resolved = expression.resolveToCall()?.successfulFunctionCallOrNull() ?: return@analyze
+      if (resolved.typeArgumentsMapping.size != 1) return@analyze
+
+      val owner =
+        names
+          .map { name ->
+            val symbol = name.mainReference.resolveToSymbol() ?: return@analyze
+            if (isShadowed(name, symbol)) return@analyze
+            owner(symbol) ?: return@analyze
+          }
+          .distinct()
+          .singleOrNull() ?: return@analyze
+      if (!qualifiesWith(qualified.first(), owner)) return@analyze
+
+      val decided = qualified.all { argument ->
+        val signature = resolved.valueArgumentMapping[argument] ?: return@all false
+        val declared = signature.symbol.returnType
+        declared is KaTypeParameterType &&
+          isDecidedByArgument(declared.symbol, resolved.symbol) &&
+          signature.returnType.isClass(owner)
+      }
+      if (!decided) return@analyze
+
+      val replacement =
+        "${callee.text}<$receiver>(${names.joinToString { it.getReferencedName() }})"
+      report(expression, replacement, "a type argument gives the names an expected type")
     }
   }
 
@@ -141,17 +187,35 @@ internal class RedundantQualifier(config: Config) :
         if (subject is KtWhenExpression) subjectType(subject) else subject.expressionType
       if (expected?.isClass(owner) != true) return@analyze
       if (isShadowed(typeReference, symbol)) return@analyze
-      report(typeReference, name.getReferencedName())
+      report(typeReference, name.getReferencedName(), "the expected type is known")
     }
   }
 
-  private fun report(element: KtElement, name: String) =
+  private fun report(element: KtElement, replacement: String, reason: String) =
     report(
       Finding(
         entity = Entity.from(element),
-        message = "'${element.text}' can be written as '$name', the expected type is known",
+        message = "'${element.text}' can be written as '$replacement', $reason",
       ),
     )
+
+  // Whether the qualifier names the class itself, like `Role` in `Role.Admin` or `model.Role` in
+  // `model.Role.Admin`. In `Kind.Button` the `Kind` resolves to the companion, not the class
+  private fun KaSession.qualifiesWith(
+    expression: KtDotQualifiedExpression,
+    owner: KaNamedClassSymbol,
+  ): Boolean {
+    val receiver = expression.receiverExpression
+    val name =
+      ((receiver as? KtDotQualifiedExpression)?.selectorExpression ?: receiver)
+        as? KtNameReferenceExpression ?: return false
+    if (name.getReferencedName() != owner.name.asString()) return false
+    val symbol = name.mainReference.resolveToSymbol()
+    return symbol == owner ||
+      symbol is KaNamedClassSymbol &&
+        symbol.classKind == COMPANION_OBJECT &&
+        symbol.containingDeclaration == owner
+  }
 
   // The type whose scope the symbol is found in, if it's one CSR looks in
   private fun KaSession.owner(symbol: KaSymbol): KaNamedClassSymbol? {

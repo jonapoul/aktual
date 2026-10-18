@@ -458,11 +458,11 @@ private fun GroupedItems.itemsFor(
 }
 
 private val SOURCE_COLORED =
-  setOf(
-    SankeyLayer.IncomePayee,
-    SankeyLayer.IncomeCategory,
-    SankeyLayer.Account,
-    SankeyLayer.CategoryGroup,
+  setOf<SankeyLayer>(
+    IncomePayee,
+    IncomeCategory,
+    Account,
+    CategoryGroup,
   )
 
 private fun nodeColor(key: String, node: GraphNode): SankeyColor =

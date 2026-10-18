@@ -35,7 +35,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentListOf
 
-private val EditorModes = persistentListOf(EditorMode.Write, EditorMode.Rendered)
+private val EditorModes = persistentListOf<EditorMode>(Write, Rendered)
 
 @Composable
 internal fun TextEditorToolbar(

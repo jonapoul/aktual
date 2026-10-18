@@ -261,12 +261,12 @@ private fun CredentialField(
 
 // The Enable Banking key is a whole .pem file, so it's shown to check it pasted in properly
 private val SecretCredentials =
-  setOf(
-    ProviderCredential.GoCardlessSecretKey,
-    ProviderCredential.SimpleFinToken,
-    ProviderCredential.PluggyAiClientSecret,
-    ProviderCredential.AkahuAppToken,
-    ProviderCredential.AkahuUserToken,
+  setOf<ProviderCredential>(
+    GoCardlessSecretKey,
+    SimpleFinToken,
+    PluggyAiClientSecret,
+    AkahuAppToken,
+    AkahuUserToken,
   )
 
 @Composable

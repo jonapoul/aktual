@@ -142,7 +142,7 @@ private fun Condition(
   }
 }
 
-private val DUPE_FIELDS = setOf(Field.Acct, Field.Description, Field.ImportedDescription)
+private val DUPE_FIELDS = setOf<Field>(Acct, Description, ImportedDescription)
 
 private val VISIBLE_FIELDS = Field.entries.minus(DUPE_FIELDS).toImmutableList()
 

@@ -36,7 +36,7 @@ class RecurOccurrencesTest {
   fun `Next date keeps a weekend occurrence moved after the weekend onto the day`() {
     // 2016-12-31 is a Saturday, moved to Monday 2017-01-02
     val from = parse("2017-01-01")
-    for (frequency in listOf(RecurFrequency.Weekly, RecurFrequency.Monthly)) {
+    for (frequency in listOf<RecurFrequency>(Weekly, Monthly)) {
       val config =
         RecurConfig(
           frequency = frequency,
