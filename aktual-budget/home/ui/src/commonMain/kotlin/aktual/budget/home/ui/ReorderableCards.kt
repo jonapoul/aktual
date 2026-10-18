@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -88,6 +89,9 @@ internal fun ReorderableCards(
   val drag =
     remember(cards) { CardDragState(cards, scope) { order -> onAction(ReorderCards(order)) } }
   val order = drag.order
+
+  // The drag gesture goes when editing stops, without always reporting that it was cancelled
+  SideEffect(isEditing) { if (!isEditing) drag.dropHeld() }
 
   LaunchedEffect(drag, drag.held) {
     val held = drag.held ?: return@LaunchedEffect
@@ -251,6 +255,10 @@ private class CardDragState(
       y > viewport.bottom - edge -> ((y - viewport.bottom + edge) / edge).coerceAtMost(1f)
       else -> 0f
     }
+  }
+
+  fun dropHeld() {
+    held?.let(::drop)
   }
 
   fun drop(card: HomeCardType) {
