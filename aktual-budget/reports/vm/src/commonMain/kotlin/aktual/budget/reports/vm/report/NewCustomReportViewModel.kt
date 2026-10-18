@@ -82,7 +82,7 @@ internal constructor(
           draft = draft,
           preview = preview,
           isEditing = isEditing,
-          hasChanges = draft != CustomReportConfig.Default,
+          hasChanges = draft != Default,
           isNew = true,
         )
       }
@@ -111,9 +111,9 @@ internal constructor(
     if (isEditing.value) draft.update(transform)
   }
 
-  fun revert() = draft.update { CustomReportConfig.Default }
+  fun revert() = draft.update { Default }
 
-  fun hasUnsavedChanges(): Boolean = draft.value != CustomReportConfig.Default
+  fun hasUnsavedChanges(): Boolean = draft.value != Default
 
   fun save(name: String) {
     if (job?.isActive == true) return

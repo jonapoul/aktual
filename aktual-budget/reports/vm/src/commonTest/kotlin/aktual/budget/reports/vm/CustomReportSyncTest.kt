@@ -43,7 +43,7 @@ class CustomReportSyncTest {
     val controller = TestSyncController()
     val sync = customReportSync(scope.testScheduler, controller)
 
-    sync.insert(ID, "Spending", CustomReportConfig.Default)
+    sync.insert(ID, "Spending", Default)
 
     assertThat(controller.changes.toRow()).isEqualTo(UPSTREAM_DEFAULT.toRow() + TOMBSTONE)
   }
@@ -69,7 +69,7 @@ class CustomReportSyncTest {
       controller.syncChanges(UPSTREAM_STATIC.toChanges("static"))
       val dao = dao(scope.testScheduler)
 
-      assertThat(dao[CustomReportId("default")]?.toConfig()).isEqualTo(CustomReportConfig.Default)
+      assertThat(dao[CustomReportId("default")]?.toConfig()).isEqualTo(Default)
       assertThat(dao[CustomReportId("static")]?.toConfig()).isEqualTo(STATIC_CONFIG)
     }
 
@@ -78,11 +78,11 @@ class CustomReportSyncTest {
     val dao = dao(scope.testScheduler)
     val sync = CustomReportSync(dao, controller, CALENDAR)
 
-    sync.insert(ID, "Spending", CustomReportConfig.Default)
+    sync.insert(ID, "Spending", Default)
     sync.insert(CustomReportId("other"), "Tags", STATIC_CONFIG)
 
     assertThat(dao[ID]?.name).isEqualTo("Spending")
-    assertThat(dao[ID]?.toConfig()).isEqualTo(CustomReportConfig.Default)
+    assertThat(dao[ID]?.toConfig()).isEqualTo(Default)
     assertThat(dao[CustomReportId("other")]?.toConfig()).isEqualTo(STATIC_CONFIG)
   }
 
@@ -106,7 +106,7 @@ class CustomReportSyncTest {
     val controller = TestSyncController()
     val sync = customReportSync(scope.testScheduler, controller)
 
-    sync.update(ID, CustomReportConfig.Default, CustomReportConfig.Default)
+    sync.update(ID, Default, Default)
 
     assertThat(controller.changes).isEqualTo(emptyList())
   }
@@ -164,7 +164,7 @@ class CustomReportSyncTest {
   fun `Names must not be used by another report`() = runSyncedDatabaseTest { scope, controller ->
     val dao = dao(scope.testScheduler)
     val sync = CustomReportSync(dao, controller, CALENDAR)
-    sync.insert(ID, "Spending", CustomReportConfig.Default)
+    sync.insert(ID, "Spending", Default)
 
     assertThat(sync.validateName("Spending")).isEqualTo(Taken)
     assertThat(sync.validateName("Spending", CustomReportId("other"))).isEqualTo(Taken)
@@ -176,7 +176,7 @@ class CustomReportSyncTest {
   fun `Deleted reports free up their name`() = runSyncedDatabaseTest { scope, controller ->
     val dao = dao(scope.testScheduler)
     val sync = CustomReportSync(dao, controller, CALENDAR)
-    sync.insert(ID, "Spending", CustomReportConfig.Default)
+    sync.insert(ID, "Spending", Default)
     controller.syncChanges(listOf(tombstone(CUSTOM_REPORTS, ID.value)))
 
     assertThat(sync.validateName("Spending")).isNull()

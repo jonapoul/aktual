@@ -49,7 +49,7 @@ class NewCustomReportViewModelTest {
   fun `Starts editing upstream's default report`() = runNewTest {
     val state = viewModel.state.first { it is Loaded } as Loaded
     assertThat(state).all {
-      prop(Loaded::draft).isEqualTo(CustomReportConfig.Default)
+      prop(Loaded::draft).isEqualTo(Default)
       prop(Loaded::isEditing).isTrue()
       prop(Loaded::isNew).isTrue()
     }
@@ -92,7 +92,7 @@ class NewCustomReportViewModelTest {
     assertThat(dashboard.observeByPage(PAGE).first()).isEmpty()
   }
 
-  private class Harness(
+  private data class Harness(
     val database: BudgetDatabase,
     val viewModel: NewCustomReportViewModel,
     val customReports: CustomReportsDao,
