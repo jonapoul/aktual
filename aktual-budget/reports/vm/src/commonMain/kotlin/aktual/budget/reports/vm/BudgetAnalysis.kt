@@ -92,7 +92,7 @@ private inline fun BudgetMonth.totals(include: (CategoryMonth) -> Boolean): Mont
     }
     budgeted += category.budgeted
     spent += category.spent
-    if (category.carryover || (this is Envelope && category.balance > Zero)) {
+    if (category.carryover || this is Envelope && category.balance > Zero) {
       carryover += category.balance
     } else if (this is Envelope) {
       overspending += category.balance
