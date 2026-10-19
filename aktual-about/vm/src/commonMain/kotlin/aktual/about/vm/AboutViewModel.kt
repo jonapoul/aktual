@@ -108,6 +108,7 @@ class AboutViewModel(
 
     checkUpdatesJob = viewModelScope.launch {
       val state = githubRepository.fetchLatestRelease()
+      logcat.d { "fetchLatestRelease -> $state" }
       mutableCheckUpdatesState.update {
         when (state) {
           NoNewUpdate -> NoUpdateFound
