@@ -86,6 +86,13 @@ internal class DashboardSync(
     patchMeta(id, (encoded as JsonObject).filterKeys { it in MONTE_CARLO_CONFIG_KEYS })
   }
 
+  // Leaves the name and anything unmodelled as they are, like upstream's save
+  suspend fun setBudgetAnalysis(id: WidgetId, settings: BudgetAnalysisSettings) {
+    val meta = BudgetAnalysisReportMeta().withSettings(settings)
+    val encoded = DbJson.encodeToJsonElement(BudgetAnalysisReportMeta.serializer(), meta)
+    patchMeta(id, (encoded as JsonObject).filterKeys { it in BUDGET_ANALYSIS_KEYS })
+  }
+
   private suspend fun patchMeta(id: WidgetId, vararg values: Pair<String, JsonElement>) =
     patchMeta(id, values.toMap())
 
@@ -154,6 +161,17 @@ internal class DashboardSync(
       encodeDefaults = true
       explicitNulls = true
     }
+
+    val BUDGET_ANALYSIS_KEYS =
+      setOf(
+        "conditions",
+        "conditionsOp",
+        "timeFrame",
+        "graphType",
+        "showBalance",
+        "balanceOnly",
+        "showHiddenCategories",
+      )
 
     // The meta keys the Monte Carlo configuration owns, leaving the name and anything unmodelled
     val MONTE_CARLO_CONFIG_KEYS =

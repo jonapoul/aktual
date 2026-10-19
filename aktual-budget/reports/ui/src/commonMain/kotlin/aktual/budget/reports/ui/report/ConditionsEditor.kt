@@ -2,7 +2,9 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
+import aktual.budget.model.Field
 import aktual.budget.reports.ui.Tags
+import aktual.budget.reports.vm.QUERY_FIELDS
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.newQueryCondition
 import aktual.core.icons.material.Add
@@ -42,6 +44,7 @@ internal fun ConditionsEditor(
   data: QueryEditorData,
   onChange: (List<Condition>, ConditionOp) -> Unit,
   modifier: Modifier = Modifier,
+  fields: ImmutableList<Field> = QUERY_FIELDS,
 ) {
   var conditionIndex by rememberSaveable { mutableStateOf<Int?>(null) }
 
@@ -81,7 +84,8 @@ internal fun ConditionsEditor(
         text = Strings.reportsFormulaQueryAddCondition,
         onClick = {
           conditionIndex = conditions.size
-          onChange(conditions + newQueryCondition(Payee), conditionsOp)
+          val field: Field = if (Payee in fields) Payee else fields.first()
+          onChange(conditions + newQueryCondition(field), conditionsOp)
         },
       )
     }
@@ -93,6 +97,7 @@ internal fun ConditionsEditor(
     ConditionSheet(
       condition = condition,
       data = data,
+      fields = fields,
       onChange = { changed ->
         onChange(conditions.toMutableList().apply { set(index, changed) }, conditionsOp)
       },

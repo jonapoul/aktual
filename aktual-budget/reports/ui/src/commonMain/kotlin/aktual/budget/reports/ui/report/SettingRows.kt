@@ -1,5 +1,6 @@
 package aktual.budget.reports.ui.report
 
+import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.FontSizeMode
 import aktual.core.icons.material.ChevronRight
 import aktual.core.icons.material.MaterialIcons
@@ -7,6 +8,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.switch
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
@@ -28,12 +30,14 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily.Companion.Monospace
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
@@ -115,6 +119,38 @@ internal fun ValueRow(
       horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
       verticalAlignment = CenterVertically,
       content = value,
+    )
+  }
+
+@Composable
+internal fun SettingValueRow(label: String, value: String, onClick: () -> Unit) =
+  ValueRow(modifier = Modifier.testTag(Tags.CustomSetting), label = label, onClick = onClick) {
+    Value(text = value)
+  }
+
+@Composable
+internal fun SwitchRow(
+  label: String,
+  isChecked: Boolean,
+  isEnabled: Boolean = true,
+  onChange: (Boolean) -> Unit,
+) =
+  SettingRow(
+    modifier = Modifier.testTag(Tags.CustomSwitch),
+    onClick = { onChange(!isChecked) }.takeIf { isEnabled },
+    showChevron = false,
+  ) {
+    Text(
+      modifier = Modifier.weight(1f),
+      text = label,
+      style = typography.bodyLarge,
+      color = if (isEnabled) colors.tableText else colors.tableHeaderText,
+    )
+    Switch(
+      checked = isChecked,
+      onCheckedChange = onChange,
+      enabled = isEnabled,
+      colors = colors.switch(),
     )
   }
 

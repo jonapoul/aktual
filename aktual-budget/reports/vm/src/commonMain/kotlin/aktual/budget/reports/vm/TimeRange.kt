@@ -43,6 +43,10 @@ internal fun resolveTimeRange(
   }
 }
 
+// What a report with no saved time frame shows
+internal fun defaultTimeFrame(current: YearMonth): TimeFrame =
+  TimeFrame(current.minus(DEFAULT_WINDOW_MONTHS, MONTH), current, SlidingWindow)
+
 private fun slidingWindow(start: YearMonth, end: YearMonth, current: YearMonth): YearMonthRange {
   val offset = start.monthsUntil(end)
   return if (start > end) {

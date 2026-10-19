@@ -105,6 +105,8 @@
   <string name="reports_budget_analysis_chart">Budgeted is the amount you allocated each month, and spent is your actual spending. The overspending adjustment is what was reset from categories without rollover. Balance is your cumulative budget performance, starting with any prior balance, and respects the rollover settings of each category.</string>
   <string name="reports_budget_analysis_summary_title">Understanding the budget summary</string>
   <string name="reports_budget_analysis_summary">The balance starts from the month before your selected period. Budgeted, spent and overspending adjustments show totals over the period. Ending balance shows the final balance at period end. You can filter by categories to track changes in a specific area.</string>
+  <string name="reports_budget_analysis_show_balance">Show balance</string>
+  <string name="reports_budget_analysis_balance_only">Balance only</string>
 
   <string name="reports_crossover_years">%1$s years</string>
   <string name="reports_crossover_none">N/A</string>

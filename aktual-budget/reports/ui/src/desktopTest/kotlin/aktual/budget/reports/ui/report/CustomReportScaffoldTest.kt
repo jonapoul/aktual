@@ -33,7 +33,7 @@ class CustomReportScaffoldTest {
     // then
     onAllNodesWithTag(Tags.CustomSetting).assertCountEquals(0)
     onNodeWithTag(Tags.RevertReport).assertDoesNotExist()
-    assertThat(actions).containsExactly(CustomReportAction.StartEditing)
+    assertThat(actions).containsExactly(ReportEditorAction.StartEditing)
   }
 
   @Test
@@ -52,7 +52,7 @@ class CustomReportScaffoldTest {
     onNodeWithTag(Tags.CloseEditor).performClick()
 
     // then
-    assertThat(actions).containsExactly(CustomReportAction.Revert, CustomReportAction.StopEditing)
+    assertThat(actions).containsExactly(ReportEditorAction.Revert, ReportEditorAction.StopEditing)
   }
 
   @Test
@@ -70,7 +70,7 @@ class CustomReportScaffoldTest {
     onNodeWithTag(Tags.SaveReport).performClick()
 
     // then
-    assertThat(actions).containsExactly(CustomReportAction.Save)
+    assertThat(actions).containsExactly(ReportEditorAction.Save)
   }
 
   @Test
@@ -98,7 +98,7 @@ class CustomReportScaffoldTest {
     onNodeWithTag(Tags.SaveReport).performClick()
 
     // then
-    assertThat(actions).containsExactly(CustomReportAction.Save)
+    assertThat(actions).containsExactly(ReportEditorAction.Save)
   }
 
   @Test

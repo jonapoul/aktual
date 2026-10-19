@@ -3,6 +3,7 @@ package aktual.budget.reports.vm.report
 import aktual.budget.db.Dashboard
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.WidgetId
+import aktual.budget.reports.vm.BudgetAnalysisReportMeta
 import aktual.budget.reports.vm.ChartDataLoader
 import aktual.budget.reports.vm.CustomReportMeta
 import aktual.budget.reports.vm.DashboardSync
@@ -55,16 +56,14 @@ internal constructor(
   private fun toReportState(widget: Dashboard?): Flow<ReportState> {
     val type = widget?.type
     val item = widget?.let(decoder::decode)
-    return if (type == null || item == null) {
-      flowOf(NotFound)
-    } else if (item.meta is MonteCarloReportMeta) {
-      flowOf(MonteCarlo)
-    } else if (item.meta is FormulaReportMeta) {
-      flowOf(Formula)
-    } else if (item.meta is CustomReportMeta) {
-      flowOf(Custom)
-    } else {
-      chartDataLoader.load(item.meta).map { data -> ReportState.Loaded(type, item, data) }
+    if (type == null || item == null) return flowOf(NotFound)
+
+    return when (val meta = item.meta) {
+      is MonteCarloReportMeta -> flowOf(MonteCarlo)
+      is FormulaReportMeta -> flowOf(Formula)
+      is CustomReportMeta -> flowOf(Custom)
+      is BudgetAnalysisReportMeta -> flowOf(BudgetAnalysis)
+      else -> chartDataLoader.load(meta).map { data -> ReportState.Loaded(type, item, data) }
     }
   }
 
