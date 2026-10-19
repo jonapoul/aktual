@@ -1,6 +1,7 @@
 package aktual.budget.reports.ui.report
 
 import aktual.budget.model.Condition
+import aktual.budget.model.Field
 import aktual.budget.reports.vm.QUERY_FIELDS
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.editableKind
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.ImmutableList
 
 // Edits one condition of a query in place. Conditions the editor can't show can only be deleted
 @Composable
@@ -29,6 +31,7 @@ internal fun ConditionSheet(
   onChange: (Condition) -> Unit,
   onDelete: () -> Unit,
   onDismiss: () -> Unit,
+  fields: ImmutableList<Field> = QUERY_FIELDS,
 ) =
   QuerySheet(
     title = Strings.reportsFormulaQueryEditCondition,
@@ -51,7 +54,7 @@ internal fun ConditionSheet(
             modifier = Modifier.fillMaxWidth(),
             value = condition.field,
             onValueChange = { field -> onChange(newQueryCondition(field)) },
-            options = QUERY_FIELDS,
+            options = fields,
             string = { field -> field.label() },
             textStyle = typography.bodyMedium,
           )

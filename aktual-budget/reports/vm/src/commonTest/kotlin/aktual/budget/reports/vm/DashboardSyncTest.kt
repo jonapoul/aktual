@@ -22,10 +22,12 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import kotlin.test.Test
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.datetime.YearMonth
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 
@@ -184,6 +186,42 @@ class DashboardSyncTest {
         json(
           """{"formula":"=2","colorFormula":"","fontSizeMode":"dynamic","staticFontSize":32.0,""" +
             """"showTitle":true,"queries":{}}""",
+        ),
+      )
+  }
+
+  @Test
+  fun `Setting budget analysis settings keeps other values`() = runSyncTest { dao ->
+    dao.insert(
+      WIDGET,
+      page = PAGE_1,
+      type = BudgetAnalysis,
+      x = 0,
+      y = 0,
+      meta = json("""{"name":"Analysis","interval":"Monthly","showBalance":true,"extra":1}"""),
+    )
+
+    setBudgetAnalysis(
+      WIDGET,
+      BudgetAnalysisSettings(
+        timeFrame = TimeFrame(YearMonth(2025, 1), YearMonth(2025, 6), Static),
+        conditions = persistentListOf(),
+        conditionsOp = Or,
+        graphType = Line,
+        showBalance = false,
+        balanceOnly = true,
+        showHiddenCategories = true,
+      ),
+    )
+
+    val meta = dao.observeByPage(PAGE_1).first().single().meta
+    assertThat(meta)
+      .isEqualTo(
+        json(
+          """{"name":"Analysis","interval":"Monthly","showBalance":false,"extra":1,""" +
+            """"conditions":[],"conditionsOp":"or",""" +
+            """"timeFrame":{"start":"2025-01","end":"2025-06","mode":"static"},""" +
+            """"graphType":"Line","balanceOnly":true,"showHiddenCategories":true}""",
         ),
       )
   }

@@ -41,13 +41,11 @@ import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.YearMonthPicker
-import aktual.core.ui.switch
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -448,38 +446,6 @@ private fun CustomReportConfig.selectedTags(editorData: CustomReportEditorData) 
     All -> persistentSetOf()
     is Selected ->
       scope.tagIds.filter { id -> editorData.tags.any { it.id == id } }.toImmutableSet()
-  }
-
-@Composable
-private fun SettingValueRow(label: String, value: String, onClick: () -> Unit) =
-  ValueRow(modifier = Modifier.testTag(Tags.CustomSetting), label = label, onClick = onClick) {
-    Value(text = value)
-  }
-
-@Composable
-private fun SwitchRow(
-  label: String,
-  isChecked: Boolean,
-  isEnabled: Boolean = true,
-  onChange: (Boolean) -> Unit,
-) =
-  SettingRow(
-    modifier = Modifier.testTag(Tags.CustomSwitch),
-    onClick = { onChange(!isChecked) }.takeIf { isEnabled },
-    showChevron = false,
-  ) {
-    Text(
-      modifier = Modifier.weight(1f),
-      text = label,
-      style = typography.bodyLarge,
-      color = if (isEnabled) colors.tableText else colors.tableHeaderText,
-    )
-    Switch(
-      checked = isChecked,
-      onCheckedChange = onChange,
-      enabled = isEnabled,
-      colors = colors.switch(),
-    )
   }
 
 private fun CustomReportEditorData.allCategories() = categories.flatMap { group ->

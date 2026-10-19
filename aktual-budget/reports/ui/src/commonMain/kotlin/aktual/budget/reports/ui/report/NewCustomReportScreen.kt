@@ -49,11 +49,11 @@ internal fun NewCustomReportScreen(
     editorData = editorData,
     onAction = { action ->
       when (action) {
-        Back -> leave()
-        StartEditing -> viewModel.startEditing()
-        StopEditing -> viewModel.stopEditing()
-        Revert -> viewModel.revert()
-        Save -> showSave = true
+        ReportEditorAction.Back -> leave()
+        ReportEditorAction.StartEditing -> viewModel.startEditing()
+        ReportEditorAction.StopEditing -> viewModel.stopEditing()
+        ReportEditorAction.Revert -> viewModel.revert()
+        ReportEditorAction.Save -> showSave = true
         is Edit -> viewModel.edit(action.transform)
       }
     },

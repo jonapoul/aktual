@@ -20,6 +20,9 @@ sealed interface ReportState {
   // And custom reports, which have an editor
   data object Custom : ReportState
 
+  // And budget analysis reports, which have settings
+  data object BudgetAnalysis : ReportState
+
   data class Loaded(val type: WidgetType, val item: DashboardItem, val data: ChartData) :
     ReportState
 }
