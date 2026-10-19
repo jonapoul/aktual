@@ -119,6 +119,56 @@ class BudgetAnalysisTest {
     assertThat(data.totalSpent).isEqualTo(Amount(-900))
   }
 
+  @Test
+  fun `Tracking budgets reset positive balances without carryover`() {
+    val data =
+      calculate(
+        trackingMonth(DEC, food(budgeted = 100, spent = -60, balance = 40)),
+        trackingMonth(JAN, food(budgeted = 100, spent = -80, balance = 20)),
+        trackingMonth(FEB, food(budgeted = 100, spent = -100, balance = 0)),
+      )
+
+    assertThat(data.items[JAN])
+      .isEqualTo(
+        BudgetAnalysisDatum(
+          budgeted = Amount(100),
+          spent = Amount(-80),
+          overspendingAdjustment = Zero,
+          balance = Amount(20),
+        ),
+      )
+    assertThat(data.items[FEB]?.balance).isEqualTo(Zero)
+  }
+
+  @Test
+  fun `Tracking budgets carry balances with carryover`() {
+    val data =
+      calculate(
+        trackingMonth(DEC, food(budgeted = 100, spent = -60, balance = 40, carryover = true)),
+        trackingMonth(JAN, food(budgeted = 100, spent = -150, balance = -10, carryover = true)),
+        trackingMonth(FEB, food(budgeted = 100, spent = -50, balance = 40, carryover = true)),
+      )
+
+    assertThat(data.items[JAN]?.balance).isEqualTo(Amount(-10))
+    assertThat(data.items[FEB]?.balance).isEqualTo(Amount(40))
+    assertThat(data.totalOverspendingAdjustment).isEqualTo(Zero)
+  }
+
+  @Test
+  fun `Tracking budgets reset overspending without an adjustment`() {
+    val data =
+      calculate(
+        trackingMonth(DEC),
+        trackingMonth(JAN, food(budgeted = 100, spent = -150, balance = -50)),
+        trackingMonth(FEB, food(budgeted = 100, spent = -100, balance = 0)),
+      )
+
+    assertThat(data.items[JAN]?.balance).isEqualTo(Amount(-50))
+    assertThat(data.items[FEB]?.overspendingAdjustment).isEqualTo(Zero)
+    assertThat(data.items[FEB]?.balance).isEqualTo(Zero)
+    assertThat(data.totalOverspendingAdjustment).isEqualTo(Zero)
+  }
+
   private fun calculate(vararg months: BudgetMonth, params: BudgetAnalysisParams = PARAMS) =
     calculateBudgetAnalysis(months.toList(), params)
 
@@ -133,6 +183,17 @@ class BudgetAnalysisTest {
       fromLastMonth = Zero,
       lastMonthOverspent = Zero,
       buffered = Zero,
+      categories = categories.toList().toImmutableList(),
+    )
+
+  private fun trackingMonth(month: YearMonth, vararg categories: CategoryMonth) =
+    BudgetMonth.Tracking(
+      month = month,
+      budgeted = Zero,
+      spent = Zero,
+      balance = Zero,
+      income = Zero,
+      incomeBudgeted = Zero,
       categories = categories.toList().toImmutableList(),
     )
 
