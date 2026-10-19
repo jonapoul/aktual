@@ -15,6 +15,7 @@ sealed interface ManageStorageState {
     val percentTotalStorage: Percent,
     val budgets: ImmutableList<BudgetStorageItem>,
     val cacheSize: Bytes,
+    val logsSize: Bytes,
     val otherSize: Bytes,
     val dialog: StorageDialog = None,
   ) : ManageStorageState

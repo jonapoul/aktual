@@ -182,7 +182,7 @@ private fun ManageStorageLoadedContent(
   onAction: ManageStorageActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val sliceCount = state.budgets.size + 2 // +cache +other
+  val sliceCount = state.budgets.size + 3 // +cache +logs +other
   val colors = rememberDistinctColors(count = sliceCount.coerceAtLeast(1))
 
   if (isCompactWidth()) {
@@ -282,9 +282,15 @@ private fun CacheSummary(
     )
 
     LegendRow(
+      label = Strings.storageLogs,
+      size = state.logsSize.toString(),
+      color = colors[state.budgets.size + 1],
+    )
+
+    LegendRow(
       label = Strings.storageOther,
       size = state.otherSize.toString(),
-      color = colors[state.budgets.size + 1],
+      color = colors[state.budgets.size + 2],
     )
   }
 }
@@ -372,8 +378,12 @@ private fun rememberSlices(
         color = colors[state.budgets.size],
       )
       +PieSlice(
-        value = state.otherSize.numBytes.toFloat().coerceAtLeast(minimumValue = 0.001f),
+        value = state.logsSize.numBytes.toFloat().coerceAtLeast(minimumValue = 0.001f),
         color = colors[state.budgets.size + 1],
+      )
+      +PieSlice(
+        value = state.otherSize.numBytes.toFloat().coerceAtLeast(minimumValue = 0.001f),
+        color = colors[state.budgets.size + 2],
       )
     }
       .toImmutableList()
@@ -517,6 +527,7 @@ private val PreviewLoadedState =
         BudgetStorageItem(id = BudgetId("3"), name = "Savings Tracker", size = 5_242_880L.bytes),
       ),
     cacheSize = 3_145_728L.bytes,
+    logsSize = 1_048_576L.bytes,
     otherSize = 2_097_152L.bytes,
   )
 
