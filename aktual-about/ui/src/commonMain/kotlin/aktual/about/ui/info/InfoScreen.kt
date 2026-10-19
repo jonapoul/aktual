@@ -74,19 +74,14 @@ fun InfoScreen(
   viewModel: AboutViewModel = metroViewModel(),
 ) {
   val buildState by viewModel.buildState.collectAsStateWithLifecycle()
-
+  val checkUpdatesState by viewModel.checkUpdatesState.collectAsStateWithLifecycle()
   val onCancel = { viewModel.cancelUpdateCheck() }
 
-  val checkUpdatesState by viewModel.checkUpdatesState.collectAsStateWithLifecycle()
   when (val state = checkUpdatesState) {
     Inactive -> noOp()
-
     Checking -> CheckUpdatesLoadingDialog(onCancel)
-
     NoUpdateFound -> NoUpdateFoundDialog(onCancel)
-
     is Failed -> UpdateCheckFailedDialog(state.cause, onCancel)
-
     is UpdateFound ->
       UpdateFoundDialog(
         currentVersion = buildState.versions.app,

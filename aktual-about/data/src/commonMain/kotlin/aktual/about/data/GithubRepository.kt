@@ -1,5 +1,6 @@
 package aktual.about.data
 
+import aktual.about.data.LatestReleaseState.UpdateAvailable
 import aktual.core.model.BuildConfig
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
@@ -27,22 +28,17 @@ class GithubRepository(
 
       val latest = releases.maxByOrNull { it.publishedAt }
       return when {
-        releases.isEmpty() || latest == null -> {
-          NoReleases
-        }
+        releases.isEmpty() || latest == null -> NoReleases
 
-        buildConfig.versionName == latest.clippedVersion() -> {
-          NoNewUpdate
-        }
+        buildConfig.versionName == latest.clippedVersion() -> NoNewUpdate
 
-        else -> {
+        else ->
           if (latest.publishedAt > buildConfig.buildTime) {
-            LatestReleaseState.UpdateAvailable(latest)
+            UpdateAvailable(latest)
           } else {
             // It's the same version as current (or earlier?)
             NoNewUpdate
           }
-        }
       }
     } catch (e: CancellationException) {
       throw e
