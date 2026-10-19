@@ -3,7 +3,6 @@ package aktual.budget.reports.ui.report
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.ui.dashboard.NameDialog
-import aktual.budget.reports.vm.report.CustomReportState
 import aktual.budget.reports.vm.report.NewCustomReportViewModel
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -32,7 +31,7 @@ internal fun NewCustomReportScreen(
   val takenNames by viewModel.takenNames.collectAsStateWithLifecycle()
   var showDiscard by rememberSaveable { mutableStateOf(false) }
   var showSave by rememberSaveable { mutableStateOf(false) }
-  val loaded = state as? CustomReportState.Loaded
+  val loaded = state as? Loaded
   val isEditing = loaded?.isEditing == true
 
   val currentToSavedReport by rememberUpdatedState(toSavedReport)

@@ -64,7 +64,7 @@ internal class BankLoginModel(
 
   /** Starts logging in to [bankId], unless a login's already under way. */
   fun logIn(bankId: String) {
-    val banks = mutableState.value.banks as? LoginBanks.Loaded ?: return
+    val banks = mutableState.value.banks as? Loaded ?: return
     val bank = banks.items.firstOrNull { it.id == bankId } ?: return
     if (loginJob?.isActive == true) return
     loginJob = scope.launch {
@@ -82,7 +82,7 @@ internal class BankLoginModel(
 
   /** Opens the login page again, in case the browser didn't open the first time. */
   fun reopen() {
-    val link = (mutableState.value.status as? BankLoginStatus.Waiting)?.link ?: return
+    val link = (mutableState.value.status as? Waiting)?.link ?: return
     scope.launch { openBrowser(link) }
   }
 

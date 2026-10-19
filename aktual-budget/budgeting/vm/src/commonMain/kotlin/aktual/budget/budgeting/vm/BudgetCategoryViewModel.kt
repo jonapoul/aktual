@@ -71,7 +71,7 @@ class BudgetCategoryViewModel(
 
   // Only months in the history can be picked
   fun select(month: YearMonth) {
-    val loaded = state.value as? BudgetCategoryState.Loaded ?: return
+    val loaded = state.value as? Loaded ?: return
     if (loaded.history.any { it.month == month }) selected.update { month }
   }
 

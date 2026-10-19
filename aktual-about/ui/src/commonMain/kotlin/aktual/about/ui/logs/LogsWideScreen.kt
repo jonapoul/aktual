@@ -88,7 +88,7 @@ internal fun LogsWideScaffold(
   modifier: Modifier = Modifier,
 ) {
   var showExport by remember { mutableStateOf(false) }
-  val loaded = entries as? LogEntriesState.Loaded
+  val loaded = entries as? Loaded
 
   Column(modifier = modifier.fillMaxSize().background(colors.pageBackground)) {
     WideToolbar(

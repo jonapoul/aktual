@@ -189,7 +189,7 @@ private fun BudgetScaffold(
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
   val pageListStates = remember { PageListStates() }
-  val visibleMonth by rememberUpdatedState((state as? BudgetState.Loaded)?.month)
+  val visibleMonth by rememberUpdatedState((state as? Loaded)?.month)
   var showMonthPicker by remember { mutableStateOf(false) }
   var sheet by remember { mutableStateOf<SheetRequest?>(null) }
   val latestOnAction by rememberUpdatedState(onAction)

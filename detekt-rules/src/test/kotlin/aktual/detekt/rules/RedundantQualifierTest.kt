@@ -163,6 +163,18 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
     assertReported("fun foo(state: State) = state is State.Failure", "State.Failure" to "Failure")
 
   @Test
+  fun `reports sealed subtype in a cast`() =
+    assertReported("fun foo(state: State) = state as State.Failure", "State.Failure" to "Failure")
+
+  @Test
+  fun `reports sealed subtype in a safe cast`() =
+    assertReported("fun foo(state: State) = state as? State.Failure", "State.Failure" to "Failure")
+
+  @Test
+  fun `does not report a cast from a supertype`() =
+    assertNotReported("fun foo(state: Any) = state as State.Failure", "State.Failure" to "Failure")
+
+  @Test
   fun `does not report an unqualified entry`() = assertNotReported("fun foo() = takesRole(Admin)")
 
   @Test

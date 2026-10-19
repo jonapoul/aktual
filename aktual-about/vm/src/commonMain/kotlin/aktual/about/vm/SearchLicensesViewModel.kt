@@ -1,7 +1,6 @@
 package aktual.about.vm
 
 import aktual.about.data.ArtifactDetail
-import aktual.about.data.LicensesLoadState
 import aktual.about.data.LicensesRepository
 import aktual.about.vm.SearchLicensesState.Results
 import aktual.core.UrlOpener
@@ -38,7 +37,7 @@ class SearchLicensesViewModel(
 
   init {
     viewModelScope.launch {
-      val loaded = (licensesRepository.loadLicenses() as? LicensesLoadState.Success)?.libraries
+      val loaded = (licensesRepository.loadLicenses() as? Success)?.libraries
       artifacts.update { loaded.orEmpty() }
     }
   }

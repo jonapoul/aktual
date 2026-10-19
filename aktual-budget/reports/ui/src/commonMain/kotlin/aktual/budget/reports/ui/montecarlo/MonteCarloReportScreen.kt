@@ -64,7 +64,7 @@ fun MonteCarloReportScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   var showDiscardDialog by remember { mutableStateOf(false) }
-  val hasChanges = (state as? MonteCarloState.Loaded)?.hasChanges == true
+  val hasChanges = (state as? Loaded)?.hasChanges == true
   val focusManager = LocalFocusManager.current
   val scope = rememberCoroutineScope()
 
@@ -154,7 +154,7 @@ internal fun MonteCarloScaffold(
         title = {
           Text(
             text =
-              (state as? MonteCarloState.Loaded)?.title?.takeIf { it.isNotEmpty() }
+              (state as? Loaded)?.title?.takeIf { it.isNotEmpty() }
                 ?: Strings.reportsChooseTypeMonteCarlo,
           )
         },

@@ -31,6 +31,7 @@ import org.jetbrains.kotlin.analysis.api.types.KaTypeParameterType
 import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtBinaryExpressionWithTypeRHS
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtCallableDeclaration
@@ -68,7 +69,8 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * - function and constructor arguments, named or positional: `takesRole(Role.Admin)`
  * - `when` branches and `==`/`!=`: `when (role) { Role.Admin -> ... }`, `role == Role.Admin`
  * - typed property initialisers, assignments, default parameter values and return values
- * - `is` checks against a sealed subtype: `state is State.Failure`
+ * - `is` checks and `as`/`as?` casts to a sealed subtype: `state is State.Failure`, `state as
+ *   State.Failure`
  * - lambda results where the call already fixes the return type: `flow.update { State.Loading }`
  * - properties in the companion of the expected type: `clickable(role = Role.Button)`
  * - two or more arguments of one type that decide a generic type, as a type argument would give
@@ -176,6 +178,7 @@ internal class RedundantQualifier(config: Config) :
     val subject =
       when (val parent = typeReference.parent) {
         is KtIsExpression -> parent.leftHandSide
+        is KtBinaryExpressionWithTypeRHS -> parent.left
         is KtWhenConditionIsPattern -> parent.getStrictParentOfType<KtWhenExpression>()
         else -> null
       } ?: return

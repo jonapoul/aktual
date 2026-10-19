@@ -561,7 +561,7 @@ internal class BudgetWriterTest {
       calculator.observe(month).first().categories.single { it.id == category }.budgeted
 
     suspend fun envelope(month: YearMonth): BudgetMonth.Envelope =
-      calculator.observe(month).first() as BudgetMonth.Envelope
+      calculator.observe(month).first() as Envelope
 
     suspend fun balance(month: YearMonth, category: CategoryId): Amount =
       envelope(month).categories.single { it.id == category }.balance

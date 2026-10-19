@@ -86,10 +86,10 @@ private class FilterCondition(private val condition: CompiledCondition) {
   private val value = condition.value
 
   private val text: String
-    get() = (value as ConditionValue.Text).value ?: "null"
+    get() = (value as Text).value ?: "null"
 
   private val list: List<String?>
-    get() = (value as ConditionValue.TextList).values
+    get() = (value as TextList).values
 
   private val likeRegex: Regex by lazy { likePatternToRegex(normalise("%$text%")) }
 
@@ -107,7 +107,7 @@ private class FilterCondition(private val condition: CompiledCondition) {
 
   // A recurring date only matches its first occurrences
   private val recurDates: Set<LocalDate> by lazy {
-    val config = ((value as ConditionValue.DateMatch).value as DateValue.Recur).config
+    val config = ((value as DateMatch).value as Recur).config
     config.occurrences(until = config.searchEnd()).dates.sorted().take(RECUR_DATE_BOUNDS).toSet()
   }
 
@@ -208,8 +208,8 @@ private class FilterCondition(private val condition: CompiledCondition) {
   private fun matchesId(row: FilterRow): Boolean {
     val id = row.id()
     return when (op) {
-      Is -> matchesIdSpecialCases(row) && id == (value as ConditionValue.Text).value
-      IsNot -> matchesIdSpecialCases(row) && id.isNot((value as ConditionValue.Text).value)
+      Is -> matchesIdSpecialCases(row) && id == (value as Text).value
+      IsNot -> matchesIdSpecialCases(row) && id.isNot((value as Text).value)
       OneOf -> id in list
       NotOneOf -> list.isNotEmpty() && list.all { id.isNot(it) }
       Contains -> like(row.name())
@@ -236,7 +236,7 @@ private class FilterCondition(private val condition: CompiledCondition) {
   // conditionSpecialCases in transaction-rules.ts: "category is nothing" leaves out transfers and
   // split parents, "category is not nothing" leaves out split parents
   private fun matchesIdSpecialCases(row: FilterRow): Boolean {
-    if (field != Category || (value as ConditionValue.Text).value != null) return true
+    if (field != Category || (value as Text).value != null) return true
     return when (op) {
       Is -> !row.isTransfer && !row.isParent
       IsNot -> !row.isParent
@@ -302,7 +302,7 @@ private class FilterCondition(private val condition: CompiledCondition) {
 
   @Suppress("CyclomaticComplexMethod")
   private fun matchesDate(date: LocalDate): Boolean {
-    val value = (value as ConditionValue.DateMatch).value
+    val value = (value as DateMatch).value
     return when (op) {
       Is ->
         when (value) {

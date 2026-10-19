@@ -39,7 +39,7 @@ internal class NeedsAttentionLoader(
 internal fun AccountsSummary.failedAccounts(): ImmutableList<FailedAccount> =
   (onBudget.accounts + offBudget.accounts)
     .mapNotNull { account ->
-      val state = account.syncState as? AccountSyncState.Failed
+      val state = account.syncState as? Failed
       state?.let { FailedAccount(account.id, account.name, it.status) }
     }
     .toImmutableList()

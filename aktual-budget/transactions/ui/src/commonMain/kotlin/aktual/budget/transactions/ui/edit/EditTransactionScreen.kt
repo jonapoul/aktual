@@ -197,8 +197,8 @@ private fun EditTransactionScaffold(
   onAction: EditTransactionActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val loaded = state as? EditTransactionState.Loaded
-  val form = (loaded?.mode as? TransactionEditMode.Editing)?.form
+  val loaded = state as? Loaded
+  val form = (loaded?.mode as? Editing)?.form
   val isEditing = form != null
   val isCreating = loaded?.mode is Create
   var dialog by remember { mutableStateOf<TransactionDialog?>(null) }
@@ -302,7 +302,7 @@ private fun EditTransactionTopBar(
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val loaded = state as? EditTransactionState.Loaded
+  val loaded = state as? Loaded
   val isEditing = loaded?.mode is Editing
   val isCreating = loaded?.mode is Create || state is Empty
   TopAppBar(

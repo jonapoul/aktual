@@ -50,7 +50,7 @@ class BudgetNavRailViewModel(
       val budgetNameFlow = remember { localPreferences.observe(DbMetadata.BudgetName) }
       val budgetName by
         budgetNameFlow.collectAsState(initial = localPreferences[DbMetadata.BudgetName])
-      val serverHost = (server as? BudgetServer.Remote)?.url?.baseUrl
+      val serverHost = (server as? Remote)?.url?.baseUrl
       DrawerHeaderState(budgetName = budgetName, serverHost = serverHost)
     }
 

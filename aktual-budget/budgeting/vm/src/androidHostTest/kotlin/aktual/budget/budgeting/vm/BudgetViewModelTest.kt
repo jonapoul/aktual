@@ -474,7 +474,7 @@ class BudgetViewModelTest {
   fun `Each change can be undone`() = runBudgetTest { viewModel, _ ->
     viewModel.events.test {
       viewModel.setZero(YearMonth(2026, 4))
-      val updated = awaitItem() as BudgetEvent.Updated
+      val updated = awaitItem() as Updated
 
       viewModel.undo(updated.token)
       testScheduler.advanceUntilIdle()
@@ -487,9 +487,9 @@ class BudgetViewModelTest {
   fun `Only the latest change can be undone`() = runBudgetTest { viewModel, _ ->
     viewModel.events.test {
       viewModel.setZero(YearMonth(2026, 4))
-      val first = awaitItem() as BudgetEvent.Updated
+      val first = awaitItem() as Updated
       viewModel.copyPreviousMonth(YearMonth(2026, 4))
-      val second = awaitItem() as BudgetEvent.Updated
+      val second = awaitItem() as Updated
 
       viewModel.undo(first.token)
       viewModel.undo(second.token)

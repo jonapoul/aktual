@@ -56,7 +56,7 @@ internal inline fun <T> timingOut(block: () -> T): T? =
   }
 
 internal fun BudgetServer.remote(): BudgetServer.Remote =
-  checkNotNull(this as? BudgetServer.Remote) { "No server for bank sync" }
+  checkNotNull(this as? Remote) { "No server for bank sync" }
 
 // packages/sync-server/src/app.ts
 internal fun AccountSyncSource.serverPath(): String =

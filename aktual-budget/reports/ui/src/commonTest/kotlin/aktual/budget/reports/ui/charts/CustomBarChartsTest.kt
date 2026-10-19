@@ -2,7 +2,6 @@ package aktual.budget.reports.ui.charts
 
 import aktual.budget.model.Amount
 import aktual.budget.reports.vm.CustomData
-import aktual.budget.reports.vm.CustomGroup
 import aktual.core.theme.Colors
 import androidx.compose.ui.text.AnnotatedString
 import assertk.all
@@ -123,7 +122,7 @@ class CustomBarChartsTest {
     }
   }
 
-  private fun CustomData.names() = groups.map { (it.group as CustomGroup.Category).name }
+  private fun CustomData.names() = groups.map { (it.group as Category).name }
 
   private fun bar(name: String, amount: Int) = CustomBar(name, Amount(amount.toDouble()), Red)
 

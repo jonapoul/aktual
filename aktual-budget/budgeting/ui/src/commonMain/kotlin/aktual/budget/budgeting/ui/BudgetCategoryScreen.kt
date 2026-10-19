@@ -120,7 +120,7 @@ private fun BudgetCategoryScaffold(
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton(onClick = onBack) },
         title = {
-          val loaded = state as? BudgetCategoryState.Loaded
+          val loaded = state as? Loaded
           Column {
             Text(
               text = loaded?.name ?: Strings.budgetingTitle,

@@ -144,7 +144,7 @@ class BankSyncImporter(
 
     // createNewPayees()
     val usedPayees =
-      added.mapNotNull { it.payee }.toSet() + updates.mapNotNull { (it.payee as? Patch.To)?.value }
+      added.mapNotNull { it.payee }.toSet() + updates.mapNotNull { (it.payee as? To)?.value }
     for ((id, name) in rules.createdPayees) {
       if (id in usedPayees) insertPayee(name, id = id)
     }
