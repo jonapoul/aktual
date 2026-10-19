@@ -67,8 +67,10 @@ internal data class BudgetAnalysisParams(
   val balanceOnly: Boolean,
 )
 
-// summarizeMonthCategories(). Positive balances always carry over, negative ones only with rollover
-// overspending on. Otherwise they're reset, and show as next month's overspending adjustment
+// summarizeMonthCategories(). On envelope budgets positive balances always carry over, negative
+// ones only with rollover overspending on. Otherwise they're reset, and show as next month's
+// overspending adjustment. On tracking budgets any balance only carries over with carryover on,
+// otherwise it's reset with no adjustment. Follows upstream's unmerged actualbudget/actual#8751
 private data class MonthTotals(
   val budgeted: Amount,
   val spent: Amount,
@@ -90,9 +92,9 @@ private inline fun BudgetMonth.totals(include: (CategoryMonth) -> Boolean): Mont
     }
     budgeted += category.budgeted
     spent += category.spent
-    if (category.balance > Zero || category.carryover) {
+    if (category.carryover || this is Envelope && category.balance > Zero) {
       carryover += category.balance
-    } else {
+    } else if (this is Envelope) {
       overspending += category.balance
     }
   }
