@@ -160,12 +160,10 @@ internal fun ReportEditorContent(
 // For the settings below the preview, filling the rest of the screen
 @Composable
 context(scope: ColumnScope)
-internal fun Modifier.editorSettingsModifier(): Modifier = with(scope) {
-  fillMaxWidth()
-    .weight(1f)
-    .verticalScrollWithBar(rememberScrollState())
-    .padding(top = 20.dp)
-}
+internal fun Modifier.editorSettingsModifier(): Modifier =
+  with(scope) {
+    fillMaxWidth().weight(1f).verticalScrollWithBar(rememberScrollState()).padding(top = 20.dp)
+  }
 
 @Composable
 private fun ChartCard(
