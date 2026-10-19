@@ -13,7 +13,7 @@
   <string name="info_checking_updates_cancel">Cancel</string>
   <string name="info_checking_updates_loading">Checking for updates…</string>
   <string name="info_no_update_title">No New Updates</string>
-  <string name="info_no_update_message">You currently have the latest version of Aktual Android installed.</string>
+  <string name="info_no_update_message">You currently have the latest version installed.</string>
   <string name="info_no_update_ok">OK</string>
   <string name="info_check_failed_title">Update Check Failed</string>
   <string name="info_check_failed_ok">OK</string>

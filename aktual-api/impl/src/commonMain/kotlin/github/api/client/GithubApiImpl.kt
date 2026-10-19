@@ -24,7 +24,7 @@ class GithubApiImpl(@param:GithubClient private val client: HttpClient) : Github
         url {
           protocol = HTTPS
           host = GITHUB_URL
-          path("/repos/$user/$repo/releases/latest")
+          path("/repos/$user/$repo/releases")
         }
         parameter("per_page", perPage)
         parameter("page", pageNumber)

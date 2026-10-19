@@ -108,16 +108,13 @@ class AboutViewModel(
 
     checkUpdatesJob = viewModelScope.launch {
       val state = githubRepository.fetchLatestRelease()
+      logcat.d { "fetchLatestRelease -> $state" }
       mutableCheckUpdatesState.update {
         when (state) {
           NoNewUpdate -> NoUpdateFound
-
           NoReleases -> NoUpdateFound
-
           PrivateRepo -> CheckUpdatesState.Failed(cause = "Repo inaccessible")
-
           is Failure -> CheckUpdatesState.Failed(state.errorMessage)
-
           is UpdateAvailable ->
             CheckUpdatesState.UpdateFound(
               version = state.release.versionName,

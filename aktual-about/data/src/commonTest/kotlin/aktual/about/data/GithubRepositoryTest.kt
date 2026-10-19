@@ -45,7 +45,7 @@ class GithubRepositoryTest {
     val request = mockEngine.requestHistory.last()
 
     // Then
-    val expected = "https://api.github.com/repos/jonapoul/aktual/releases/latest?per_page=1"
+    val expected = "https://api.github.com/repos/jonapoul/aktual/releases?per_page=1"
     assertThat(request.url.toString()).isEqualTo(expected)
     assertThat(request.url.protocol).isEqualTo(HTTPS)
   }
