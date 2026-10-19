@@ -36,7 +36,7 @@ class GithubApiTest {
     githubApi.getReleases(user = "abc", repo = "123")
 
     // then
-    assertThatRequestUrlEquals("https://api.github.com/repos/abc/123/releases/latest")
+    assertThatRequestUrlEquals("https://api.github.com/repos/abc/123/releases")
   }
 
   @Test
@@ -49,7 +49,7 @@ class GithubApiTest {
 
     // then
     assertThatRequestUrlEquals(
-      "https://api.github.com/repos/abc/123/releases/latest?per_page=420&page=69",
+      "https://api.github.com/repos/abc/123/releases?per_page=420&page=69",
     )
   }
 
@@ -62,7 +62,7 @@ class GithubApiTest {
     githubApi.getReleases(user = "abc", repo = "123", perPage = null, pageNumber = 69)
 
     // then
-    assertThatRequestUrlEquals("https://api.github.com/repos/abc/123/releases/latest?page=69")
+    assertThatRequestUrlEquals("https://api.github.com/repos/abc/123/releases?page=69")
   }
 
   private fun assertThatRequestUrlEquals(expected: String) =
