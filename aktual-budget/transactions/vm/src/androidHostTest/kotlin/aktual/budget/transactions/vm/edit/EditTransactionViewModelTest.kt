@@ -367,7 +367,7 @@ class EditTransactionViewModelTest {
       // Nothing since the save has left edit mode or touched the draft
       val modes =
         cancelAndConsumeRemainingEvents().filterIsInstance<Event.Item<EditTransactionState>>().map {
-          (it.value as? EditTransactionState.Loaded)?.mode
+          (it.value as? Loaded)?.mode
         }
       assertThat(modes).each { mode ->
         mode

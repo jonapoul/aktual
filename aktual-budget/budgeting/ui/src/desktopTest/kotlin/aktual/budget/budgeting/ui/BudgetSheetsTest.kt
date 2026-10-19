@@ -1,7 +1,6 @@
 package aktual.budget.budgeting.ui
 
 import aktual.budget.budgeting.vm.BudgetState
-import aktual.budget.budgeting.vm.BudgetSummary
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.test.setPreviewContent
@@ -79,7 +78,7 @@ class BudgetSheetsTest {
       months =
         state.months
           .map { month ->
-            val summary = month.summary as BudgetSummary.Envelope
+            val summary = month.summary as Envelope
             month.copy(summary = summary.copy(toBudget = Amount(-10.0)))
           }
           .toImmutableList(),

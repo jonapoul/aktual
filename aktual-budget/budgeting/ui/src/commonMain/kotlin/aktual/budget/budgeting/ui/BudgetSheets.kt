@@ -90,7 +90,7 @@ internal fun BudgetSheets(
 ) {
   val budget = state[request.month] ?: return
   val month = request.month
-  val envelope = budget.summary as? BudgetSummary.Envelope
+  val envelope = budget.summary as? Envelope
 
   when (request) {
     is EditSheet ->
@@ -379,7 +379,7 @@ private fun MonthBudget.pickOptions(
   toBudgetIf: ((Amount) -> Boolean)? = null,
   filter: (CategoryRow) -> Boolean,
 ): ImmutableList<PickOption> = buildList {
-  val toBudget = (summary as? BudgetSummary.Envelope)?.toBudget
+  val toBudget = (summary as? Envelope)?.toBudget
   if (toBudget != null && toBudgetIf?.invoke(toBudget) == true) {
     +PickOption(id = null, name = Strings.budgetingToBudget, balance = toBudget)
   }

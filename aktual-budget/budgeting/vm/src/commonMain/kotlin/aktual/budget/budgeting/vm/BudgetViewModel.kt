@@ -115,7 +115,7 @@ class BudgetViewModel(
     syncStateHolder.map { it == Syncing }.stateIn(viewModelScope, Eagerly, initialValue = false)
 
   private val loaded: BudgetState.Loaded?
-    get() = state.value as? BudgetState.Loaded
+    get() = state.value as? Loaded
 
   fun refresh() = syncController.schedule()
 
@@ -269,7 +269,7 @@ class BudgetViewModel(
       }
       .scan<Update, Source>(Loading) { previous, update ->
         when (update) {
-          is Moved -> (previous as? Source.Data)?.copy(window = update.window) ?: previous
+          is Moved -> (previous as? Data)?.copy(window = update.window) ?: previous
           is Fetched -> update.data
         }
       }

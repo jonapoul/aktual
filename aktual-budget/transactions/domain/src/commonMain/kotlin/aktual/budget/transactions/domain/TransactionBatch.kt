@@ -116,7 +116,7 @@ internal constructor(
     u.date?.let(::checkDate)
     val category = if (clearsCategory(u)) Patch.To(null) else u.category
     // As insert() does, isChild follows parentId unless the caller sets it
-    val isChild = u.isChild ?: (u.parentId as? Patch.To)?.let { it.value != null }
+    val isChild = u.isChild ?: (u.parentId as? To)?.let { it.value != null }
     val columns =
       listOf(
         "acct" to u.account?.value?.messageValue(),
@@ -264,7 +264,7 @@ internal constructor(
 
   private suspend fun clearsCategory(u: TransactionUpdate): Boolean {
     if (u.isParent == true || u.account != null && isOffBudget(u.account)) return true
-    if ((u.category as? Patch.To)?.value == null) return false
+    if ((u.category as? To)?.value == null) return false
     val stored = transactionDao.row(u.id)
     val isParent = u.isParent ?: batchIsParent[u.id] ?: stored?.isParent
     val account = u.account ?: batchAccounts[u.id] ?: stored?.acct

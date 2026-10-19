@@ -159,7 +159,7 @@ private fun EditScheduleScaffold(
   onAction: EditScheduleActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val loaded = state as? EditScheduleState.Loaded
+  val loaded = state as? Loaded
   var dialog by remember { mutableStateOf<Dialog?>(null) }
 
   // Backing out of an edit drops back to viewing the schedule, checking first if that would lose

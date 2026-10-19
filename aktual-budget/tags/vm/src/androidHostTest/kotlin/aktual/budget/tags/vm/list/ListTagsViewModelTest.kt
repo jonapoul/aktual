@@ -144,7 +144,7 @@ class ListTagsViewModelTest {
       viewModel.delete(TagId("groceries-id"))
       val event = awaitItem()
       assertThat(event).isInstanceOf(ListTagsEvent.Deleted::class)
-      deleted = event as ListTagsEvent.Deleted
+      deleted = event as Deleted
     }
 
     // undoing puts it back where it was

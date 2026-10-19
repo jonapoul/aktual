@@ -4,7 +4,6 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.dao.TransactionNotes
 import aktual.budget.db.dao.TransactionRow
-import aktual.budget.model.AccountSpec
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
@@ -23,7 +22,7 @@ internal class TransactionsPagingSource(
   // source is created whenever the data is invalidated.
   private var filteredIds: FilteredIds? = null
 
-  private val accountId = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id
+  private val accountId = (spec.accountSpec as? SpecificAccount)?.id
 
   override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Transaction> =
     try {

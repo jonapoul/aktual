@@ -243,7 +243,7 @@ private fun groupOtherNodes(graph: Graph, topN: Int, global: Boolean): GroupedIt
 
 private fun moveToOther(graph: Graph, key: String, global: Boolean, grouped: GroupedItems) {
   val node = graph[key] ?: return
-  val name = (node.label as? SankeyLabel.Text)?.value ?: key
+  val name = (node.label as? Text)?.value ?: key
   fun addGrouped(from: String, to: String, value: Long) {
     val items = grouped.getOrPut(from to to) { LinkedHashMap() }
     items[name] = (items[name] ?: 0L) + value

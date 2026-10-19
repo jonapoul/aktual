@@ -116,7 +116,7 @@ internal fun FormulaReportScreen(
   var page by rememberSaveable { mutableStateOf<FormulaField?>(null) }
   var queryName by rememberSaveable { mutableStateOf<String?>(null) }
   var dialog by rememberSaveable { mutableStateOf<FormulaDialog?>(null) }
-  val loaded = state as? FormulaReportState.Loaded
+  val loaded = state as? Loaded
   val isEditing = loaded?.isEditing == true
 
   val stopEditing = {
@@ -304,7 +304,7 @@ internal fun FormulaReportScaffold(
 ) {
   val hazeState = rememberHazedTopBarState()
   val scrollState = rememberScrollState()
-  val loaded = state as? FormulaReportState.Loaded
+  val loaded = state as? Loaded
 
   Scaffold(
     modifier = modifier.fillMaxSize(),

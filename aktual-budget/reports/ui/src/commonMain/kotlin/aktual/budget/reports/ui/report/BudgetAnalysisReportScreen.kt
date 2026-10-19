@@ -57,7 +57,7 @@ internal fun BudgetAnalysisReportScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   val editorData by viewModel.queryEditorData.collectAsStateWithLifecycle()
   var showDiscard by rememberSaveable { mutableStateOf(false) }
-  val loaded = state as? BudgetAnalysisState.Loaded
+  val loaded = state as? Loaded
   val isEditing = loaded?.isEditing == true
 
   val leave = { if (viewModel.hasUnsavedChanges()) showDiscard = true else back() }
@@ -108,7 +108,7 @@ internal fun BudgetAnalysisScaffold(
   modifier: Modifier = Modifier,
   editorData: QueryEditorData? = null,
 ) {
-  val loaded = state as? BudgetAnalysisState.Loaded
+  val loaded = state as? Loaded
   val preview = loaded?.preview
   val zoom = rememberChartZoomState(preview)
   var showInfo by remember { mutableStateOf(false) }

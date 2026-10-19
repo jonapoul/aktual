@@ -195,12 +195,11 @@ private fun rememberScheduleSentence(
       is Once -> Token(date.date.formatted(), When, strongColor)
       is Recurring -> Token(date.config.start.formatted(), When, strongColor)
     }
-  val repeatToken =
-    (date as? ScheduleDate.Recurring)?.let { Token(it.config.repeatText(), When, strongColor) }
+  val repeatToken = (date as? Recurring)?.let { Token(it.config.repeatText(), When, strongColor) }
   val template = sentence.replace(WHEN, whenTemplate)
 
   val weekend =
-    (date as? ScheduleDate.Recurring)
+    (date as? Recurring)
       ?.config
       ?.takeIf { it.skipWeekend == true }
       ?.let { config ->

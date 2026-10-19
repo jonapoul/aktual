@@ -498,7 +498,7 @@ class LinkBankAccountViewModelTest {
   // Skips past the banks loading
   private suspend fun ReceiveTurbine<LinkBankAccountState>.awaitLogin(): BankLogin {
     while (true) {
-      val login = ((awaitItem() as? LinkBankAccountState.Choosing)?.accounts as? NeedsLogin)?.login
+      val login = ((awaitItem() as? Choosing)?.accounts as? NeedsLogin)?.login
       if (login != null && login.banks != Loading) return login
     }
   }

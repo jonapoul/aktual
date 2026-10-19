@@ -50,7 +50,7 @@ internal fun CustomReportScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   val editorData by viewModel.editorData.collectAsStateWithLifecycle()
   var showDiscard by rememberSaveable { mutableStateOf(false) }
-  val loaded = state as? CustomReportState.Loaded
+  val loaded = state as? Loaded
   val isEditing = loaded?.isEditing == true
 
   val leave = { if (viewModel.hasUnsavedChanges()) showDiscard = true else back() }

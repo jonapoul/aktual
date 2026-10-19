@@ -64,5 +64,5 @@ class BudgetSyncApiImpl(
   }
 
   private fun remote(): BudgetServer.Remote =
-    checkNotNull(server as? BudgetServer.Remote) { "No server to sync with" }
+    checkNotNull(server as? Remote) { "No server to sync with" }
 }

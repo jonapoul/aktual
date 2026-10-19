@@ -192,7 +192,7 @@ internal constructor(
 
   init {
     viewModelScope.launch {
-      val found = saved.first { it != Loading } as? SavedMeta.Found ?: return@launch
+      val found = saved.first { it != Loading } as? Found ?: return@launch
       mutableConfig.update { found.meta.toConfig() }
     }
   }
@@ -244,7 +244,7 @@ internal constructor(
   }
 
   fun save() {
-    val meta = (saved.value as? SavedMeta.Found)?.meta ?: return
+    val meta = (saved.value as? Found)?.meta ?: return
     val edited = mutableConfig.value ?: return
     logcat.d { "Saving Monte Carlo config for $id" }
     viewModelScope.launch {
@@ -258,14 +258,14 @@ internal constructor(
 
   // Read straight from the plan, since the state can lag behind an edit made just before leaving
   fun hasUnsavedChanges(): Boolean {
-    val meta = (saved.value as? SavedMeta.Found)?.meta ?: return false
+    val meta = (saved.value as? Found)?.meta ?: return false
     val edited = mutableConfig.value ?: return false
     return edited != meta.toConfig()
   }
 
   // Throws away unsaved edits
   fun reset() {
-    val meta = (saved.value as? SavedMeta.Found)?.meta ?: return
+    val meta = (saved.value as? Found)?.meta ?: return
     mutableConfig.update { meta.toConfig() }
   }
 

@@ -121,7 +121,7 @@ class HomeViewModelThisMonthTest {
   private suspend fun ReceiveTurbine<HomeState>.awaitThisMonth(): ThisMonthCardState.Loaded {
     var state = awaitItem()
     while (state.thisMonth == Loading) state = awaitItem()
-    return state.thisMonth as ThisMonthCardState.Loaded
+    return state.thisMonth as Loaded
   }
 
   private fun runThisMonthTest(

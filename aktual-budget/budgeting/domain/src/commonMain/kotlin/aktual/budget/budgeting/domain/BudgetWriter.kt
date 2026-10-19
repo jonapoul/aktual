@@ -300,7 +300,7 @@ class BudgetWriterImpl(
     )
 
   private suspend fun envelope(month: YearMonth): BudgetMonth.Envelope? =
-    calculator.observe(month).first() as? BudgetMonth.Envelope
+    calculator.observe(month).first() as? Envelope
 
   // addMovementNotes(). Not translated, since the note is synced
   private suspend fun Batch.movementNote(

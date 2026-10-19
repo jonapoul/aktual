@@ -68,7 +68,7 @@ val CustomReportConfig.showsSort: Boolean
 
 // Only ranges ending in the past can be stretched to include the current period
 val CustomReportConfig.canIncludeCurrent: Boolean
-  get() = (dates as? CustomReportDates.Live)?.type in INCLUDE_CURRENT_RANGES
+  get() = (dates as? Live)?.type in INCLUDE_CURRENT_RANGES
 
 val CustomReportConfig.canShowTrendLines: Boolean
   get() = graphType == LineGraph

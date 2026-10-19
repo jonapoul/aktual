@@ -378,7 +378,7 @@ private fun previewCategoryGroups(
   intervals: List<CustomInterval>,
 ): ImmutableList<CustomGroupTotals> =
   categories
-    .groupBy { (it.group as CustomGroup.Category).name == "Salary" }
+    .groupBy { (it.group as Category).name == "Salary" }
     .map { (isIncome, children) ->
       val name = if (isIncome) "Income" else "Expenses"
       CustomGroupTotals(

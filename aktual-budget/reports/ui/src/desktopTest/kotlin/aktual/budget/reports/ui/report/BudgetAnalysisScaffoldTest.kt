@@ -51,7 +51,7 @@ class BudgetAnalysisScaffoldTest {
     onNodeWithText("Line").performClick()
 
     // then
-    val edit = actions.single() as BudgetAnalysisAction.Edit
+    val edit = actions.single() as Edit
     assertThat(edit.transform(SETTINGS).graphType).isEqualTo(Line)
   }
 
@@ -67,7 +67,7 @@ class BudgetAnalysisScaffoldTest {
     onNodeWithText("Show balance").performScrollTo().performClick()
 
     // then
-    val edit = actions.single() as BudgetAnalysisAction.Edit
+    val edit = actions.single() as Edit
     assertThat(edit.transform(SETTINGS).showBalance).isFalse()
   }
 

@@ -57,7 +57,7 @@ class FormulaReportScaffoldTest {
     onNodeWithTag(Tags.ShowTitle).performClick()
 
     // then
-    val edit = actions.single() as FormulaReportAction.Edit
+    val edit = actions.single() as Edit
     assertThat(edit.transform(DRAFT).showTitle).isFalse()
   }
 
