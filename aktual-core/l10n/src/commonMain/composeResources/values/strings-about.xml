@@ -46,6 +46,7 @@
   <string name="storage_percent">%1$s of your device storage</string>
   <string name="storage_budgets">Budgets</string>
   <string name="storage_cache">Cache</string>
+  <string name="storage_logs">Logs</string>
   <string name="storage_other">Other</string>
   <string name="storage_clear_all_files">Clear All Files</string>
   <string name="storage_clear_cache">Clear Cache</string>

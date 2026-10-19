@@ -6,6 +6,7 @@ import aktual.budget.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.core.AppDirectory
+import aktual.core.logging.LogStorage
 import aktual.core.model.Bytes
 import aktual.core.model.Percent
 import aktual.core.model.bytes
@@ -45,6 +46,7 @@ import okio.Path
 class ManageStorageViewModel(
   private val files: BudgetFiles,
   private val appDirectory: AppDirectory,
+  private val logStorage: LogStorage,
   private val contexts: CoroutineContexts,
   private val customThemeCache: CustomThemeCache,
   private val runLevelState: RunLevelState,
@@ -182,9 +184,16 @@ class ManageStorageViewModel(
 
     val budgetsTotal = budgetItems.sumOf { it.size.numBytes }.bytes
     val cacheSize = (directorySize(tmpDir).numBytes + directorySize(themesDir).numBytes).bytes
-    val totalSize = directorySize(root)
+    val logsDir = logStorage.directory().normalized()
+    val logsSize = directorySize(logsDir)
+    // On Windows the logs sit in APPDATA, outside the app directory
+    val logsOutsideRoot = !logsDir.startsWith(root.normalized())
+    val rootSize = directorySize(root)
+    val totalSize = if (logsOutsideRoot) (rootSize.numBytes + logsSize.numBytes).bytes else rootSize
     val otherSize =
-      (totalSize.numBytes - budgetsTotal.numBytes - cacheSize.numBytes).coerceAtLeast(0L).bytes
+      (totalSize.numBytes - budgetsTotal.numBytes - cacheSize.numBytes - logsSize.numBytes)
+        .coerceAtLeast(0L)
+        .bytes
     val deviceTotalStorage = File(root.toString()).totalSpace.bytes
 
     return Loaded(
@@ -193,6 +202,7 @@ class ManageStorageViewModel(
         Percent(numerator = totalSize.numBytes, denominator = deviceTotalStorage.numBytes),
       budgets = budgetItems,
       cacheSize = cacheSize,
+      logsSize = logsSize,
       otherSize = otherSize,
     )
   }
@@ -205,3 +215,6 @@ class ManageStorageViewModel(
       .bytes
   }
 }
+
+private fun Path.startsWith(other: Path): Boolean =
+  this == other || generateSequence(parent) { it.parent }.any { it == other }
