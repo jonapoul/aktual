@@ -87,6 +87,7 @@
   <string name="settings_currency">Currency</string>
   <string name="settings_currency_desc">These affect how amounts are displayed throughout the application. Changing the currency will affect the number format, symbol position, and whether fractions are shown. These can be adjusted after the currency is set.</string>
   <string name="settings_currency_default">Default currency</string>
+  <string name="settings_currency_search">Search currencies</string>
   <string name="settings_currency_symbol_position">Symbol Position</string>
   <string name="settings_currency_symbol_position_before">Before amount (e.g. %1$s)</string>
   <string name="settings_currency_symbol_position_after">After amount (e.g. %1$s)</string>

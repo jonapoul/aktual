@@ -269,6 +269,7 @@ private fun AccountSheet(
     sheetState = rememberBottomSheetState(Hidden),
     string = { it.name },
     key = { it.id.toString() },
+    searchPlaceholder = Strings.searchAccounts,
   )
 
 // As upstream's category picker, typing filters the categories by their name or their group's.

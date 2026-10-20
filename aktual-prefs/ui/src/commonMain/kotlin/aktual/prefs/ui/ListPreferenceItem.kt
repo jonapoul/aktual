@@ -42,6 +42,8 @@ internal fun <E : Enum<E>> ListPreferenceItem(
   icon: ImageVector?,
   modifier: Modifier = Modifier,
   includeBackground: Boolean = true,
+  searchPlaceholder: String? = null,
+  searchTerms: (E) -> List<String> = { emptyList() },
 ) {
   if (!preference.visible) return
   ListPreferenceItem(
@@ -56,6 +58,8 @@ internal fun <E : Enum<E>> ListPreferenceItem(
     icon = icon,
     modifier = modifier,
     includeBackground = includeBackground,
+    searchPlaceholder = searchPlaceholder,
+    searchTerms = searchTerms,
   )
 }
 
@@ -74,6 +78,8 @@ internal fun <E : Enum<E>> ListPreferenceItem(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   includeBackground: Boolean = true,
+  searchPlaceholder: String? = null,
+  searchTerms: (E) -> List<String> = { emptyList() },
 ) {
   var showSheet by remember { mutableStateOf(false) }
   val sheetState = rememberBottomSheetState(initialValue = Hidden)
@@ -124,6 +130,8 @@ internal fun <E : Enum<E>> ListPreferenceItem(
       string = optionString,
       trailingContent = optionSuffix,
       key = { it.ordinal },
+      searchPlaceholder = searchPlaceholder,
+      searchTerms = searchTerms,
     )
   }
 }

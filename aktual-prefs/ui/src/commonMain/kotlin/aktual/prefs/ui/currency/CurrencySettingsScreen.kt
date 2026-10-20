@@ -55,6 +55,8 @@ private fun CurrencySettingsScaffold(state: CurrencySettingsState, onBack: () ->
         icon = MaterialIcons.CurrencyPound,
         title = Strings.settingsCurrencyDefault,
         subtitle = null,
+        searchPlaceholder = Strings.settingsCurrencySearch,
+        searchTerms = { c -> listOf(c.code, c.symbol) },
       )
     }
     item {
