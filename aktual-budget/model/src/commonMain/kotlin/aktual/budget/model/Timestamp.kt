@@ -3,6 +3,12 @@ package aktual.budget.model
 import alakazam.kotlin.SimpleSerializer
 import kotlin.time.Clock
 import kotlin.time.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.char
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 
 /** Corresponds to packages/crdt/src/crdt/timestamp.ts#Timestamp */
@@ -14,7 +20,8 @@ data class Timestamp(val instant: Instant, val counter: Long, val node: String) 
   override fun toString(): String {
     val counter = counter.toString(radix = 16).uppercase()
     return listOf(
-        instant.toString(),
+        // Always with millis, like JS's toISOString(), so timestamps compare correctly as strings
+        "${instant.toLocalDateTime(TimeZone.UTC).format(INSTANT_FORMAT)}Z",
         (BASE_COUNTER + counter).removeRange(startIndex = 0, endIndex = counter.length),
         "$BASE_NODE$node".removeRange(startIndex = 0, endIndex = 16),
       )
@@ -29,6 +36,18 @@ data class Timestamp(val instant: Instant, val counter: Long, val node: String) 
     const val MAX_COUNTER = 0xFFFF
     private const val MAX_NODE_LENGTH = 16
     private const val SEPARATOR = "-"
+
+    private val INSTANT_FORMAT = LocalDateTime.Format {
+      date(LocalDate.Formats.ISO)
+      char('T')
+      hour()
+      char(':')
+      minute()
+      char(':')
+      second()
+      char('.')
+      secondFraction(fixedLength = 3)
+    }
 
     const val BASE_NODE = "0000000000000000"
 
