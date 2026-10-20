@@ -3,7 +3,6 @@ package aktual.about.vm
 import aktual.about.data.ArtifactDetail
 import aktual.about.data.LicensesRepository
 import aktual.about.vm.SearchLicensesState.Results
-import aktual.core.UrlOpener
 import aktual.di.AppScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -22,10 +21,7 @@ import kotlinx.coroutines.launch
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class SearchLicensesViewModel(
-  private val licensesRepository: LicensesRepository,
-  private val urlOpener: UrlOpener,
-) : ViewModel() {
+class SearchLicensesViewModel(private val licensesRepository: LicensesRepository) : ViewModel() {
   private val mutableQuery = MutableStateFlow("")
   private val artifacts = MutableStateFlow<List<ArtifactDetail>>(emptyList())
 
@@ -40,10 +36,6 @@ class SearchLicensesViewModel(
       val loaded = (licensesRepository.loadLicenses() as? Success)?.libraries
       artifacts.update { loaded.orEmpty() }
     }
-  }
-
-  fun openUrl(url: String) {
-    urlOpener(url)
   }
 
   fun setQuery(query: String) {

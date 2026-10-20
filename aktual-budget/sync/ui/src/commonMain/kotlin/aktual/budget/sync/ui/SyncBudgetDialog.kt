@@ -61,6 +61,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -94,6 +95,7 @@ fun SyncBudgetDialog(
     onDismissRequest()
   }
 
+  val uriHandler = LocalUriHandler.current
   val stepStates by viewModel.stepStates.collectAsStateWithLifecycle()
   val passwordState by viewModel.passwordState.collectAsStateWithLifecycle()
   val overallState by viewModel.overallState.collectAsStateWithLifecycle()
@@ -114,7 +116,7 @@ fun SyncBudgetDialog(
         Retry -> viewModel.start()
         ConfirmKeyPassword -> viewModel.confirmKeyPassword()
         is EnterKeyPassword -> viewModel.enterKeyPassword(action.input)
-        LearnMore -> viewModel.learnMore()
+        LearnMore -> uriHandler.openUri(LEARN_MORE_URL)
         Cancel -> invalidateAndDismiss()
       }
     },
@@ -219,6 +221,9 @@ private fun ColumnScope.SyncBudgetDialogContent(
 }
 
 private val ITEM_SIZE = 24.dp
+
+private const val LEARN_MORE_URL =
+  "https://actualbudget.org/docs/getting-started/sync/#end-to-end-encryption"
 
 @Composable
 private fun SyncStepState(state: SyncStepState, modifier: Modifier = Modifier) {

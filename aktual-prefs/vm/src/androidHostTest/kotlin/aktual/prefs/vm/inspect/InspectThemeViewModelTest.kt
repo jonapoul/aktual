@@ -58,7 +58,6 @@ class InspectThemeViewModelTest {
     return InspectThemeViewModel(
       themeId = id,
       themeResolver = resolver,
-      urlOpener = {},
       cache = cache,
       preferences = preferences,
       uuidGenerator = { "abc" },

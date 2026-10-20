@@ -32,7 +32,7 @@ class SearchLicensesViewModelTest {
   ): SearchLicensesViewModel {
     Dispatchers.setMain(standardDispatcher)
     coEvery { repository.loadLicenses() } returns Success(artifacts)
-    return SearchLicensesViewModel(repository, urlOpener = {})
+    return SearchLicensesViewModel(repository)
   }
 
   @AfterTest
@@ -67,7 +67,7 @@ class SearchLicensesViewModelTest {
   fun `Failing to load gives no results`() = runTest {
     Dispatchers.setMain(standardDispatcher)
     coEvery { repository.loadLicenses() } returns Failure("something broke")
-    val viewModel = SearchLicensesViewModel(repository, urlOpener = {})
+    val viewModel = SearchLicensesViewModel(repository)
 
     viewModel.state.test {
       assertThatNextEmissionIsEqualTo(NoQuery)

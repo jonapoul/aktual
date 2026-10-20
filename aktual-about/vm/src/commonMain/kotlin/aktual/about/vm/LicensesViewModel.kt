@@ -2,7 +2,6 @@ package aktual.about.vm
 
 import aktual.about.data.LicensesLoadState
 import aktual.about.data.LicensesRepository
-import aktual.core.UrlOpener
 import aktual.di.AppScope
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -23,10 +22,7 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class LicensesViewModel(
-  private val licensesRepository: LicensesRepository,
-  private val urlOpener: UrlOpener,
-) : ViewModel() {
+class LicensesViewModel(private val licensesRepository: LicensesRepository) : ViewModel() {
   private val mutableState = MutableStateFlow<LicensesState>(Loading)
   private val mutableSorting = MutableStateFlow<LicenseSorting>(ByArtifact)
 
@@ -67,11 +63,6 @@ class LicensesViewModel(
     } else {
       LicensesState.Loaded(libraries.toImmutableList())
     }
-
-  fun openUrl(url: String) {
-    logcat.d { "openUrl $url" }
-    urlOpener(url)
-  }
 
   fun setSorting(sorting: LicenseSorting) {
     logcat.d { "setSorting $sorting" }

@@ -10,6 +10,7 @@ import aktual.budget.sync.ui.SyncBudgetDialog
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
+import aktual.core.model.ServerUrl
 import aktual.core.nav.BudgetNavRailNavigator
 import aktual.core.nav.ChangePasswordNavigator
 import aktual.core.nav.InfoNavigator
@@ -48,6 +49,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,6 +67,7 @@ fun ListBudgetsScreen(
   toBudget: BudgetNavRailNavigator,
   viewModel: ListBudgetsViewModel = metroViewModel(),
 ) {
+  val uriHandler = LocalUriHandler.current
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -130,7 +134,7 @@ fun ListBudgetsScreen(
         OpenAbout -> toInfo()
         OpenSettings -> toSettings()
         OpenServerMetrics -> toMetrics()
-        OpenInBrowser -> viewModel.open(serverUrl)
+        OpenInBrowser -> serverUrl?.openIn(uriHandler)
         Reload -> viewModel.retry()
         is Delete -> budgetToDelete = action.budget
         is Open -> viewModel.openBudget(action.budget)
@@ -138,6 +142,8 @@ fun ListBudgetsScreen(
     },
   )
 }
+
+private fun ServerUrl.openIn(uriHandler: UriHandler) = uriHandler.openUri(toString())
 
 @Composable
 internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: ListBudgetsActionHandler) {

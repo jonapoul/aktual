@@ -33,6 +33,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,6 +45,7 @@ internal fun SearchLicensesScreen(
   back: BackNavigator,
   viewModel: SearchLicensesViewModel = metroViewModel(),
 ) {
+  val uriHandler = LocalUriHandler.current
   val query by viewModel.query.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -54,7 +56,7 @@ internal fun SearchLicensesScreen(
       when (action) {
         NavBack -> back()
         is SetQuery -> viewModel.setQuery(action.query)
-        is LaunchUrl -> viewModel.openUrl(action.url)
+        is LaunchUrl -> uriHandler.openUri(action.url)
       }
     },
   )

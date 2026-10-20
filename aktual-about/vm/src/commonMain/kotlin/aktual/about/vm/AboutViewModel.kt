@@ -1,7 +1,6 @@
 package aktual.about.vm
 
 import aktual.about.data.GithubRepository
-import aktual.core.UrlOpener
 import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
@@ -41,7 +40,6 @@ class AboutViewModel(
   @Assisted private val savedState: SavedStateHandle,
   private val buildConfig: BuildConfig,
   private val githubRepository: GithubRepository,
-  private val urlOpener: UrlOpener,
   aktualVersionsStateHolder: AktualVersionsStateHolder,
 ) : ViewModel() {
   @AssistedFactory
@@ -65,6 +63,9 @@ class AboutViewModel(
 
   private var checkUpdatesJob: Job? = null
 
+  val repoUrl: String = buildConfig.repoUrl
+  val reportIssueUrl: String = "${buildConfig.repoUrl}/issues/new"
+
   init {
     savedState.setSavedStateProvider(KEY_CHECK_UPDATES) {
       encodeToSavedState(mutableCheckUpdatesState.value)
@@ -86,19 +87,6 @@ class AboutViewModel(
       is Failed,
       is UpdateFound -> restored
     }
-  }
-
-  fun openRepo() {
-    openUrl(url = buildConfig.repoUrl)
-  }
-
-  fun reportIssues() {
-    openUrl(url = "${buildConfig.repoUrl}/issues/new")
-  }
-
-  fun openUrl(url: String) {
-    logcat.d { "openUrl $url" }
-    urlOpener(url)
   }
 
   fun fetchLatestRelease() {

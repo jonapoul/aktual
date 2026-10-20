@@ -9,7 +9,6 @@ import aktual.budget.model.BudgetId
 import aktual.budget.sync.vm.SyncStep.DownloadingDatabase
 import aktual.budget.sync.vm.SyncStep.FetchingFileInfo
 import aktual.budget.sync.vm.SyncStep.ValidatingDatabase
-import aktual.core.UrlOpener
 import aktual.core.model.Password
 import aktual.core.model.Percent
 import aktual.di.LoggedInScope
@@ -53,7 +52,6 @@ class SyncBudgetViewModel(
   private val decrypter: FileDecrypter,
   private val importer: DatabaseImporter,
   private val files: BudgetFiles,
-  private val urlOpener: UrlOpener,
   private val keyFetcher: KeyFetcher,
   private val keyPreferences: KeyPreferences,
   private val runLevelController: RunLevelController,
@@ -108,11 +106,6 @@ class SyncBudgetViewModel(
   }
 
   fun dismissKeyPasswordDialog() = mutablePasswordState.update { Inactive }
-
-  fun learnMore() {
-    logcat.v { "learnMore" }
-    urlOpener(LEARN_MORE_URL)
-  }
 
   fun confirmKeyPassword() {
     logcat.v { "confirmKeyPassword" }
@@ -321,9 +314,6 @@ class SyncBudgetViewModel(
   )
 
   private companion object {
-    const val LEARN_MORE_URL =
-      "https://actualbudget.org/docs/getting-started/sync/#end-to-end-encryption"
-
     fun defaultStates() =
       persistentMapOf(
         FetchingFileInfo to SyncStepState.NotStarted,
