@@ -12,9 +12,11 @@ import kotlinx.datetime.LocalDate
 
 internal data object NavigateBack : EditTransactionAction
 
-internal data object StartEditing : EditTransactionAction
+// Throws away any changes and closes
+internal data object DiscardChanges : EditTransactionAction
 
-internal data object StopEditing : EditTransactionAction
+// Puts a saved transaction back to what's saved
+internal data object RevertChanges : EditTransactionAction
 
 internal data object SaveTransaction : EditTransactionAction
 

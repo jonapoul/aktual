@@ -16,6 +16,7 @@ import kotlinx.collections.immutable.toImmutableList
 
 // What the editor opens: a saved transaction, or a new one starting in the account or category of
 // the list it was added from
+@Immutable
 sealed interface EditTransactionTarget {
   data class Existing(val id: TransactionId) : EditTransactionTarget
 
@@ -23,17 +24,14 @@ sealed interface EditTransactionTarget {
     EditTransactionTarget
 }
 
+// A saved transaction is always open for editing, and a new one is being created
 @Immutable
 sealed interface TransactionEditMode {
-  data object View : TransactionEditMode
+  val form: TransactionForm
 
-  sealed interface Editing : TransactionEditMode {
-    val form: TransactionForm
-  }
+  data class Edit(override val form: TransactionForm) : TransactionEditMode
 
-  data class Edit(override val form: TransactionForm) : Editing
-
-  data class Create(override val form: TransactionForm) : Editing
+  data class Create(override val form: TransactionForm) : TransactionEditMode
 }
 
 @Immutable
@@ -139,7 +137,6 @@ sealed interface EditTransactionState {
       get() =
         !isWorking &&
           when (mode) {
-            View -> false
             is Edit -> mode.form.hasChanges && mode.form.splitRemaining == null
             is Create -> mode.form.draft.account != null && mode.form.splitRemaining == null
           }

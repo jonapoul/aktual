@@ -75,8 +75,9 @@ import kotlinx.collections.immutable.persistentListOf
 
 internal fun TextFieldState.isValidAmount(): Boolean = evaluateAmountInput(text.toString()) != null
 
-// The edit artboards of option A: the amount up top, typed with the docked keypad, then a card of
-// rows that each open a picker. A split lists its parts under them, with amounts of their own
+// The amount up top, typed with the docked keypad, then a card of rows that each open a picker. A
+// saved transaction opens straight into this, so anything on it can be changed in place. A split
+// lists its parts under them, with amounts of their own
 @Composable
 internal fun EditTransactionForm(
   form: TransactionForm,
@@ -86,6 +87,8 @@ internal fun EditTransactionForm(
   scrollState: ScrollState,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
+  // The account's balance after the saved transaction, if it's been saved
+  balance: Amount? = null,
 ) {
   val draft = form.draft
   val amountText = fieldState.amountText
@@ -171,6 +174,8 @@ internal fun EditTransactionForm(
             onClick = { onAction(SplitTransaction) },
           )
         }
+
+        balance?.let { BalanceAfter(it) }
       }
 
       // Leaves room to scroll the fields clear of the keypad

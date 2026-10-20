@@ -102,7 +102,8 @@ internal constructor(
   private val mutableSaved = MutableStateFlow<Saved?>(null)
   private val mutableEntities = MutableStateFlow<Entities?>(null)
   private val mutableFailure = MutableStateFlow<Failure?>(null)
-  // The edits in progress, or null when viewing
+  // The edits in progress. Null for a saved transaction that hasn't been changed, so it follows
+  // what's saved
   private val mutableDraft = MutableStateFlow<TransactionDraft?>(null)
   // Payees added by name, or by a rule, which aren't created until the transaction is saved
   private val mutableNewPayees = MutableStateFlow<Map<PayeeId, String>>(emptyMap())
@@ -167,7 +168,7 @@ internal constructor(
   ): EditTransactionState {
     if (failure != null) return failure
     if (entities == null) return Loading
-    val form = draft?.let { form(it, entities, newPayees, tags, saved) }
+    val form = (draft ?: saved?.draft)?.let { form(it, entities, newPayees, tags, saved) }
     return when (target) {
       is Existing -> existingState(saved, form, isWorking)
       is New -> newState(entities, form, isWorking)
@@ -179,11 +180,10 @@ internal constructor(
     form: TransactionForm?,
     isWorking: Boolean,
   ): EditTransactionState {
-    if (saved == null) return Loading
-    val mode: TransactionEditMode = if (form == null) View else TransactionEditMode.Edit(form)
+    if (saved == null || form == null) return Loading
     return EditTransactionState.Loaded(
       saved = saved.details,
-      mode = mode,
+      mode = TransactionEditMode.Edit(form),
       isWorking = isWorking,
     )
   }
@@ -306,7 +306,8 @@ internal constructor(
     mutableDraft.update { draft }
   }
 
-  private suspend fun follow(target: EditTransactionTarget.Existing) =
+  private suspend fun follow(target: EditTransactionTarget.Existing) {
+    viewModelScope.launch { loadPayeeLookup() }
     loader.observe(target.id).collect { loaded ->
       if (loaded != null) {
         mutableFailure.update { null }
@@ -315,6 +316,7 @@ internal constructor(
         mutableFailure.update { NotFound }
       }
     }
+  }
 
   // As upstream's TransactionEdit.tsx, a new transaction takes its date and account from the last
   // one added, unless the list it was added from has an account of its own
@@ -381,12 +383,6 @@ internal constructor(
     )
   }
 
-  fun startEditing() {
-    val saved = mutableSaved.value ?: return
-    mutableDraft.update { saved.draft }
-    if (rules == null) viewModelScope.launch { loadPayeeLookup() }
-  }
-
   // A saved transaction only uses the rules' payees, to add one by name, so it's viewed and
   // edited without them if they fail to load
   private suspend fun loadPayeeLookup() {
@@ -399,17 +395,22 @@ internal constructor(
     }
   }
 
-  // Throws away any edits, unless they're being saved. There's nothing to go back to for a new
-  // transaction, so that closes instead
-  fun stopEditing() {
+  // Throws away any edits and closes, unless they're being saved
+  fun discard() {
     if (mutableIsWorking.value) return
-    when (target) {
-      is Existing -> closeDraft()
-      is New -> mutableEvents.tryEmit(Discarded)
-    }
+    if (target is Existing) closeDraft()
+    mutableEvents.tryEmit(Discarded)
+  }
+
+  // Puts a saved transaction back to what's saved, staying on it
+  fun revert() {
+    if (mutableIsWorking.value || target !is Existing) return
+    closeDraft()
   }
 
   private fun closeDraft() = mutableDraft.update { null }
+
+  private fun currentDraft(): TransactionDraft? = mutableDraft.value ?: mutableSaved.value?.draft
 
   // The amount changes with every key typed, so rules wait for commitAmount()
   fun setAmount(amount: Amount) {
@@ -505,7 +506,7 @@ internal constructor(
   // Rules aren't run on a split's parts
   private fun updateSplit(change: (TransactionDraft) -> TransactionDraft) {
     if (mutableIsWorking.value) return
-    val draft = change(mutableDraft.value ?: return)
+    val draft = change(currentDraft() ?: return)
     mutableDraft.update { draft }
   }
 
@@ -521,7 +522,7 @@ internal constructor(
     makeCopy: (TransactionFields) -> TransactionFields,
   ) {
     if (mutableIsWorking.value) return
-    val current = mutableDraft.value ?: return
+    val current = currentDraft() ?: return
     val updated = current.withFields(makeCopy(current.fields))
     val runsRules = field != null && target is New
     val draft = if (runsRules) withRules(updated, field) else updated

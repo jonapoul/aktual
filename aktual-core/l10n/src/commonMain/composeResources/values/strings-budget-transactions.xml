@@ -54,7 +54,6 @@
   <string name="transaction_notes">Notes</string>
   <string name="transaction_none">None</string>
   <string name="transaction_cleared">Cleared</string>
-  <string name="transaction_uncleared">Uncleared</string>
   <string name="transaction_reconciled">Reconciled</string>
   <string name="transaction_split_into">Split into %1$d</string>
   <string name="transaction_split_add">Add split</string>
@@ -70,11 +69,9 @@
   <string name="transaction_balance_after">Balance after</string>
   <string name="transaction_payee">Payee</string>
   <string name="transaction_date">Date</string>
-  <string name="transaction_edit">Edit</string>
   <string name="transaction_more">More</string>
   <string name="transaction_delete">Delete</string>
-  <string name="transaction_edit_title">Edit transaction</string>
-  <string name="transaction_stop_editing">Stop editing</string>
+  <string name="transaction_revert">Undo changes</string>
   <string name="transaction_save">Save</string>
   <string name="transaction_expense">Expense</string>
   <string name="transaction_income">Income</string>
