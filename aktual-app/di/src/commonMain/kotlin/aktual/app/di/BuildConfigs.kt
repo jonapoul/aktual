@@ -15,4 +15,5 @@ fun buildConfig(isDebug: Boolean) =
     buildTime = Instant.fromEpochMilliseconds(BUILD_TIME_MS),
     defaultPassword = DEFAULT_PASSWORD?.let(::Password) ?: Password.Empty,
     defaultServerUrl = DEFAULT_URL?.let(::ServerUrl),
+    isPrerelease = IS_PRERELEASE,
   )

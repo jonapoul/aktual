@@ -37,6 +37,10 @@ buildConfig {
   buildConfigField("GIT_HASH", gitVersionHash())
   buildConfigField("VERSION_CODE", gitVersionCode())
   buildConfigField("VERSION_NAME", gitVersionDate())
+  buildConfigField(
+    "IS_PRERELEASE",
+    providers.gradleProperty("aktual.prerelease").map(String::toBoolean).orElse(false),
+  )
 
   with(localProperties()) {
     buildConfigField("DEFAULT_PASSWORD", getOptional("aktual.defaultPassword"))
