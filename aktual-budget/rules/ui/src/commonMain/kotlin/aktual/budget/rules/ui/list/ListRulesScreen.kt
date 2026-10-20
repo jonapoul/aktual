@@ -206,6 +206,7 @@ private fun CollapsingHeader(
     modifier =
       modifier
         .fillMaxWidth()
+        .padding(horizontal = 4.dp)
         .clipToBounds()
         .layout { measurable, constraints ->
           val placeable = measurable.measure(constraints)
