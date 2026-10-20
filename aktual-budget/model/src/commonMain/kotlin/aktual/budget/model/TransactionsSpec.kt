@@ -10,7 +10,12 @@ data class TransactionsSpec(
   val accountSpec: AccountSpec = AllAccounts,
   val tagSpec: TagSpec = AllTags,
   val categorySpec: CategorySpec = AllCategories,
+  // Overrides the other specs when set
+  val filtered: FilteredSpec? = null,
 )
+
+// A list drilled down to from a report
+data class FilteredSpec(val title: String, val filter: ConditionsFilter)
 
 sealed interface AccountSpec {
   data object AllAccounts : AccountSpec

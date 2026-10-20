@@ -498,9 +498,9 @@ class CustomSpreadsheetTest {
 
     val CATEGORIES =
       listOf(
-        CustomReportCategories(FOOD, "Food", SPENDING, 1.0),
-        CustomReportCategories(FUEL, "Fuel", SPENDING, 2.0),
-        CustomReportCategories(SALARY, "Salary", INCOME, 1.0),
+        CustomReportCategories(FOOD, "Food", SPENDING, 1.0, false, false),
+        CustomReportCategories(FUEL, "Fuel", SPENDING, 2.0, false, false),
+        CustomReportCategories(SALARY, "Salary", INCOME, 1.0, false, false),
       )
     val GROUPS =
       listOf(

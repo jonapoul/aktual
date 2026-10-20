@@ -2,6 +2,7 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.CategorySpec
+import aktual.budget.model.FilteredSpec
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.ui.edit.EditTransactionScreen
@@ -16,6 +17,7 @@ import aktual.core.nav.BudgetNavigator
 import aktual.core.nav.CategoryTransactionsNavRoute
 import aktual.core.nav.CreateTransactionNavRoute
 import aktual.core.nav.EditTransactionNavigator
+import aktual.core.nav.FilteredTransactionsNavRoute
 import aktual.core.nav.NavStack
 import aktual.core.nav.TransactionNavRoute
 import aktual.core.nav.TransactionSettingsNavigator
@@ -70,6 +72,15 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
         openTransaction = EditTransactionNavigator(stack),
         spec = TransactionsSpec(accountSpec = AccountSpec.Group(route.group)),
         isRoot = stack.isRootedAt(route),
+      )
+    }
+
+    budgetEntry<FilteredTransactionsNavRoute> { route ->
+      TransactionsScreen(
+        back = BackNavigator(stack),
+        toSettings = TransactionSettingsNavigator(appStack),
+        openTransaction = EditTransactionNavigator(stack),
+        spec = TransactionsSpec(filtered = FilteredSpec(route.title, route.filter)),
       )
     }
 

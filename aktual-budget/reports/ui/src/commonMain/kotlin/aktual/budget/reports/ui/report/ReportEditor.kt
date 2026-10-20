@@ -1,5 +1,6 @@
 package aktual.budget.reports.ui.report
 
+import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.charts.ChartZoomState
 import aktual.budget.reports.ui.charts.ReportChart
@@ -139,6 +140,7 @@ internal fun ReportEditorContent(
   isEditing: Boolean,
   zoom: ChartZoomState,
   modifier: Modifier = Modifier,
+  onChartAction: ActionListener = ActionListener {},
   below: @Composable ColumnScope.() -> Unit,
 ) =
   Column(modifier = modifier.padding(CONTENT_PADDING)) {
@@ -152,6 +154,7 @@ internal fun ReportEditorContent(
       preview = preview,
       isEditing = isEditing,
       zoom = zoom,
+      onAction = onChartAction,
     )
     below()
     BottomSpacing()
@@ -170,6 +173,7 @@ private fun ChartCard(
   preview: ChartData?,
   isEditing: Boolean,
   zoom: ChartZoomState,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) =
   Box(modifier = modifier.background(colors.tableBackground, CardShape).padding(8.dp)) {
@@ -180,7 +184,7 @@ private fun ChartCard(
         modifier = Modifier.fillMaxSize(),
         data = preview,
         compact = isEditing,
-        onAction = {},
+        onAction = onAction,
         zoom = zoom,
       )
     }

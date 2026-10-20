@@ -3,6 +3,7 @@ package aktual.core.nav
 import aktual.budget.model.AccountGroup
 import aktual.budget.model.AccountId
 import aktual.budget.model.CategoryId
+import aktual.budget.model.ConditionsFilter
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
@@ -39,6 +40,11 @@ data class AccountGroupTransactionsNavRoute(val group: AccountGroup) : BudgetNav
 
 @Serializable
 data class CategoryTransactionsNavRoute(val category: CategoryId, val month: YearMonth) :
+  BudgetNavKey.Transactions
+
+// A report's group or interval, drilled down to
+@Serializable
+data class FilteredTransactionsNavRoute(val title: String, val filter: ConditionsFilter) :
   BudgetNavKey.Transactions
 
 @Serializable data class TransactionNavRoute(val id: TransactionId) : BudgetNavKey.Transactions

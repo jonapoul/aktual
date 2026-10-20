@@ -118,13 +118,14 @@ class TransactionsViewModel(
     }
 
   // A filtered list only holds part of each account, so it has no balance to show
-  val showBalance: Boolean = spec.tagSpec is AllTags && spec.categorySpec == AllCategories
+  val showBalance: Boolean =
+    spec.tagSpec is AllTags && spec.categorySpec == AllCategories && spec.filtered == null
 
   val balance: StateFlow<Amount?> =
     if (showBalance) {
       observeBalance().map(::Amount).stateIn(viewModelScope, Eagerly, initialValue = null)
     } else {
-      MutableStateFlow<Amount?>(null)
+      MutableStateFlow(null)
     }
 
   // A tag list shows the matching parts of each split, with nothing to toggle
@@ -143,13 +144,16 @@ class TransactionsViewModel(
       .cachedIn(viewModelScope)
 
   init {
-    // A tag-filtered screen titles itself after the tag, then an uncategorised or category one
-    // after
-    // that filter; otherwise the title follows the account.
+    // A report's drilled down list has the title it was given. A tag-filtered screen titles itself
+    // after the tag, then an uncategorised or category one after that filter; otherwise the title
+    // follows the account.
     val tagSpec = spec.tagSpec
     val accountSpec = spec.accountSpec
     val categorySpec = spec.categorySpec
+    val filtered = spec.filtered
     when {
+      filtered != null -> mutableLoadedAccount.update { LoadedAccount.Filtered(filtered.title) }
+
       tagSpec is TagSpec.SpecificTag ->
         viewModelScope.launch {
           val name = tagsDao.getTag(tagSpec.id)?.tag

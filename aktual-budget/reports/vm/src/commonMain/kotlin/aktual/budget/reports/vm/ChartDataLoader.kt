@@ -45,6 +45,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -192,6 +193,12 @@ internal class ChartDataLoader(
           categoryGroups = sheet.categoryGroups,
           totals = sheet.totals,
           trends = sheet.trends,
+          hiddenCategories =
+            inputs.categories
+              .filter { it.hidden || it.group_hidden == true }
+              .map { it.id }
+              .toImmutableSet(),
+          tagScope = config.tagScope.resolve(inputs.tags).map { it.tag }.toImmutableList(),
         )
       }
       .flowOn(contexts.default)

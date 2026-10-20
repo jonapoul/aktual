@@ -1,6 +1,7 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.GetFilterRows
 import aktual.budget.db.NotesContainingHash
 import aktual.budget.db.Transactions
 import aktual.budget.db.withResult
@@ -186,6 +187,10 @@ class TransactionDao(database: BudgetDatabase) {
     queries.withResult {
       getUncategorisedIdsAndNotes(account, ::transactionNotes).awaitAsList()
     }
+
+  suspend fun getFilterRows(): List<GetFilterRows> = queries.withResult {
+    getFilterRows().awaitAsList()
+  }
 
   suspend fun getIdsAndNotesByCategory(
     category: CategoryId,

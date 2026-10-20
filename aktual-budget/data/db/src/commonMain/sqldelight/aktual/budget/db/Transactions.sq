@@ -570,6 +570,36 @@ SELECT vt.id, vt.notes, vt.is_child AS isChild, t.parent_id AS parentId
     (:account IS NULL OR a.id = :account)
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
 
+-- Every live transaction but split parents, with what a filter's conditions can match, as
+-- customReportTransactions has them. In list order
+getFilterRows:
+SELECT
+  vt.id,
+  vt.date,
+  vt.amount,
+  vt.account,
+  a.name AS account_name,
+  a.offbudget AS off_budget,
+  p.id AS payee,
+  p.name AS payee_name,
+  vt.imported_payee,
+  c.id AS category,
+  c.name AS category_name,
+  g.id AS category_group,
+  g.name AS category_group_name,
+  vt.notes,
+  vt.cleared,
+  vt.reconciled,
+  vt.transfer_id,
+  vt.is_parent
+FROM v_transactions_internal_alive AS vt
+LEFT JOIN accounts AS a ON a.id = vt.account
+LEFT JOIN categories AS c ON c.id = vt.category
+LEFT JOIN category_groups AS g ON g.id = c.cat_group
+LEFT JOIN payees AS p ON p.id = vt.payee
+WHERE vt.is_parent = 0
+ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
+
 -- notes of every live transaction containing a '#', for aggregating per-tag transaction counts
 notesContainingHash:
 SELECT notes FROM v_transactions WHERE notes LIKE '%#%';

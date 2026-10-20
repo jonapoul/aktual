@@ -4,6 +4,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.GroupBy
 import aktual.budget.model.Interval
 import aktual.budget.reports.vm.CustomData
+import aktual.budget.reports.vm.CustomDrilldown
 import aktual.budget.reports.vm.CustomGroup
 import aktual.budget.reports.vm.CustomGroupTotals
 import aktual.budget.reports.vm.CustomTotals
@@ -17,6 +18,7 @@ import aktual.core.ui.horizontalScrollWithBar
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -49,13 +51,19 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 import kotlin.math.roundToLong
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 // packages/desktop-client/src/components/reports/graphs/tableGraph/ReportTable.tsx: a row per group
 // under a header, with the totals at the bottom. The name column stays put while the amounts scroll
 // sideways together
 @Composable
-internal fun CustomTable(data: CustomData, compact: Boolean, modifier: Modifier = Modifier) {
+internal fun CustomTable(
+  data: CustomData,
+  compact: Boolean,
+  modifier: Modifier = Modifier,
+  onDrilldown: OnDrilldown? = null,
+) {
   val headers = customTableHeaders(data)
   val names = buildMap {
     data.groups.forEach { put(it.group, it.group.label()) }
@@ -109,7 +117,7 @@ internal fun CustomTable(data: CustomData, compact: Boolean, modifier: Modifier 
       ) {
         items(rows) { row ->
           when (row) {
-            is Amounts -> AmountsRow(row, widths, rowHeight, textStyle, scroll)
+            is Amounts -> AmountsRow(row, widths, rowHeight, textStyle, scroll, onDrilldown)
             Gap -> Spacer(modifier = Modifier.height(GAP_HEIGHT))
           }
         }
@@ -122,6 +130,7 @@ internal fun CustomTable(data: CustomData, compact: Boolean, modifier: Modifier 
         height = rowHeight,
         textStyle = textStyle,
         scroll = scroll,
+        onDrilldown = onDrilldown,
         isTotals = true,
         showScrollbar = !compact,
       )
@@ -138,6 +147,7 @@ private fun AmountsRow(
   height: Dp,
   textStyle: TextStyle,
   scroll: ScrollState,
+  onDrilldown: OnDrilldown?,
   isTotals: Boolean = false,
   showScrollbar: Boolean = false,
 ) {
@@ -157,12 +167,19 @@ private fun AmountsRow(
     showScrollbar = showScrollbar,
   ) {
     row.amounts.fastForEachIndexed { index, amount ->
+      val drilldown = row.drilldowns.getOrNull(index)
       TableCell(
         text = amount.formattedText(),
         width = widths.amount,
         style = textStyle,
         color = if (isTotals) colors.amountColor(amount) else textColor,
         isBold = isHeader || index >= boldFrom,
+        onClick =
+          if (onDrilldown != null && drilldown != null && amount != Zero) {
+            { onDrilldown(drilldown) }
+          } else {
+            null
+          },
       )
     }
   }
@@ -213,9 +230,13 @@ private fun TableCell(
   style: TextStyle,
   color: Color,
   isBold: Boolean,
+  onClick: (() -> Unit)? = null,
 ) =
   Text(
-    modifier = Modifier.width(width).padding(horizontal = CELL_PADDING),
+    modifier =
+      Modifier.width(width)
+        .then(if (onClick == null) Modifier else Modifier.clickable(onClick = onClick))
+        .padding(horizontal = CELL_PADDING),
     text = text,
     style = style,
     color = color,
@@ -235,10 +256,12 @@ private fun Colors.amountColor(amount: Amount): Color =
 
 @Immutable
 internal sealed interface CustomTableRow {
+  // [drilldowns] holds what each of [amounts] drills down to
   data class Amounts(
     val name: String,
     val amounts: ImmutableList<Amount>,
     val isGroupHeader: Boolean = false,
+    val drilldowns: ImmutableList<CustomDrilldown> = persistentListOf(),
   ) : CustomTableRow
 
   // The space upstream leaves after each category group's categories
@@ -286,6 +309,7 @@ internal fun customTableRows(
         CustomTableRow.Amounts(
           name = intervalNames[index],
           amounts = data.amounts(interval.totals, listOf(interval.totals)),
+          drilldowns = data.drilldowns(CustomDrilldown(interval = interval.interval)),
         )
       }
 
@@ -299,7 +323,11 @@ internal fun customTableRows(
 
 // ReportTableTotals.tsx
 internal fun customTableTotals(data: CustomData, name: String) =
-  CustomTableRow.Amounts(name, data.amounts(data.totals, data.intervals.map { it.totals }))
+  CustomTableRow.Amounts(
+    name = name,
+    amounts = data.amounts(data.totals, data.intervals.map { it.totals }),
+    drilldowns = data.drilldowns(CustomDrilldown()),
+  )
 
 private fun CustomData.amountsRow(
   group: CustomGroupTotals,
@@ -310,6 +338,7 @@ private fun CustomData.amountsRow(
     name = name(group.group),
     amounts = amounts(group.totals, group.intervals.map { it.totals }),
     isGroupHeader = isGroupHeader,
+    drilldowns = drilldowns(CustomDrilldown(group = group.group)),
   )
 
 // ReportTableRow.tsx: the same columns as the header. The average is over every interval in the
@@ -333,6 +362,19 @@ private fun CustomData.amounts(
       Amount((total.toLong().toDouble() / intervalCount).roundToLong())
     }
   return (middle + total + average).toImmutableList()
+}
+
+// What each of amounts()' columns drills down to, from what the whole row covers
+private fun CustomData.drilldowns(row: CustomDrilldown): ImmutableList<CustomDrilldown> {
+  val middle =
+    when {
+      // An interval's row has the one interval column
+      config.mode == Time && row.interval != null -> listOf(row)
+      config.mode == Time -> intervals.map { row.copy(interval = it.interval) }
+      config.balanceType.metric == Total -> listOf(row.copy(flow = In), row.copy(flow = Out))
+      else -> emptyList()
+    }
+  return (middle + row + row).toImmutableList()
 }
 
 @Composable

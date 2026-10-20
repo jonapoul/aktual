@@ -2,6 +2,7 @@ package aktual.budget.reports.ui.charts
 
 import aktual.budget.model.Amount
 import aktual.budget.reports.vm.CustomData
+import aktual.budget.reports.vm.CustomDrilldown
 import aktual.budget.reports.vm.CustomMetric
 import aktual.budget.reports.vm.CustomTotals
 import aktual.budget.reports.vm.metric
@@ -31,7 +32,9 @@ import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer.Line
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarker
 import com.patrykandpatrick.vico.compose.cartesian.marker.DefaultCartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.marker.LineCartesianLayerMarkerTarget
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
@@ -49,6 +52,7 @@ internal fun CustomLineChart(
   legend: ImmutableList<CustomBar>,
   compact: Boolean,
   modifier: Modifier = Modifier,
+  onDrilldown: OnDrilldown? = null,
 ) {
   val labels = intervalLabels(data)
   val stacks = remember(data, legend) { customStacks(data, legend) }
@@ -94,6 +98,12 @@ internal fun CustomLineChart(
             rememberMarker(valueFormatter = markerFormatter, lineCount = markerLines(legend.size))
           },
         markerVisibilityListener = rememberMarkerHaptics(compact),
+        markerController =
+          rememberDrilldownController(
+            onDrilldown?.let { onTap ->
+              { y, targets -> lineDrilldown(data, legend, y, targets)?.let(onTap) }
+            },
+          ),
       ),
   )
 }
@@ -105,6 +115,7 @@ internal fun CustomAreaChart(
   data: CustomData,
   compact: Boolean,
   modifier: Modifier = Modifier,
+  onDrilldown: OnDrilldown? = null,
 ) {
   val metric = data.config.balanceType.metric
   val labels = intervalLabels(data)
@@ -161,6 +172,7 @@ internal fun CustomAreaChart(
             rememberMarker(valueFormatter = markerFormatter, lineCount = rows.size + 1)
           },
         markerVisibilityListener = rememberMarkerHaptics(compact),
+        markerController = rememberDrilldownController(onDrilldown?.let(data::intervalTap)),
       ),
   )
 }
@@ -173,6 +185,7 @@ internal fun CustomBarLineChart(
   data: CustomData,
   compact: Boolean,
   modifier: Modifier = Modifier,
+  onDrilldown: OnDrilldown? = null,
 ) {
   val metric = data.config.balanceType.metric
   val labels = intervalLabels(data)
@@ -225,8 +238,27 @@ internal fun CustomBarLineChart(
             rememberMarker(valueFormatter = markerFormatter, lineCount = rows.size + 1)
           },
         markerVisibilityListener = rememberMarkerHaptics(compact),
+        markerController = rememberDrilldownController(onDrilldown?.let(data::intervalTap)),
       ),
   )
+}
+
+// The group of the line nearest a tap, in the tapped interval
+internal fun lineDrilldown(
+  data: CustomData,
+  legend: List<CustomBar>,
+  y: Float,
+  targets: List<CartesianMarker.Target>,
+): CustomDrilldown? {
+  val interval = data.intervals.getOrNull(targets.index())?.interval ?: return null
+  val series = targets.filterIsInstance<LineCartesianLayerMarkerTarget>().firstOrNull()?.seriesAt(y)
+  val group = series?.let { legend.getOrNull(it) }?.drilldown?.group
+  return CustomDrilldown(group = group, interval = interval)
+}
+
+// Every group in the tapped interval
+private fun CustomData.intervalTap(onDrilldown: OnDrilldown): OnChartTap = { _, targets ->
+  intervals.getOrNull(targets.index())?.let { onDrilldown(CustomDrilldown(interval = it.interval)) }
 }
 
 // Each group's trend line, as a value per interval. Empty unless the report shows trend lines

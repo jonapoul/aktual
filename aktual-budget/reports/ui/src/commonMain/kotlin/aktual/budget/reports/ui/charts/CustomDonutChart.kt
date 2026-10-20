@@ -3,10 +3,13 @@ package aktual.budget.reports.ui.charts
 import aktual.budget.reports.vm.CustomMetric
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.isInPreview
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import com.patrykandpatrick.vico.compose.common.Fill
@@ -32,6 +35,7 @@ internal fun CustomDonutChart(
   metric: CustomMetric,
   compact: Boolean,
   modifier: Modifier = Modifier,
+  onDrilldown: OnDrilldown? = null,
 ) {
   val modelProducer = remember { PieChartModelProducer() }
   if (isInPreview()) {
@@ -63,8 +67,24 @@ internal fun CustomDonutChart(
       )
     }
 
+  val values = remember(slices, metric) { slices.map { it.amount.plotted(metric).toDouble() } }
+  val tapModifier =
+    if (onDrilldown == null) {
+      Modifier
+    } else {
+      Modifier.pointerInput(slices, values, onDrilldown) {
+        detectTapGestures { tap ->
+          val center = Offset(size.width / 2f, size.height / 2f)
+          val radius = minOf(size.width, size.height) / 2f
+          if ((tap - center).getDistance() <= radius) {
+            sliceAt(tap, center, values)?.let { onDrilldown(slices[it].drilldown) }
+          }
+        }
+      }
+    }
+
   PieChartHost(
-    modifier = modifier,
+    modifier = modifier.then(tapModifier),
     modelProducer = modelProducer,
     animationSpec = chartAnimationSpec(compact),
     chart =

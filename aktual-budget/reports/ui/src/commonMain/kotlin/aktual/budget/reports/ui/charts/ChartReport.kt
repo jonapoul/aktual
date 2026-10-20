@@ -1,5 +1,6 @@
 package aktual.budget.reports.ui.charts
 
+import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.vm.AgeOfMoneyData
 import aktual.budget.reports.vm.BalanceForecastData
@@ -43,6 +44,7 @@ internal fun ReportChart(
     is SpendingData -> SpendingChart(data, compact, modifier, includeHeader, zoom)
     is FormulaData -> FormulaChart(data, compact, modifier, includeHeader)
     is TextData -> TextChart(data, compact, onAction, modifier)
-    is CustomData -> CustomChart(data, compact, modifier, includeHeader)
+    is CustomData ->
+      CustomChart(data, compact, modifier, includeHeader) { onAction(Action.DrillDown(it)) }
     is UnsupportedData -> UnsupportedChart(data, modifier)
   }

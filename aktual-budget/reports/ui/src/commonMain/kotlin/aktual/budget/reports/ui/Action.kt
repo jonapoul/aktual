@@ -3,6 +3,7 @@ package aktual.budget.reports.ui
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.CalendarDay
+import aktual.budget.reports.vm.CustomDrilldown
 import aktual.budget.reports.vm.SummaryChartType
 import aktual.budget.reports.vm.TextAlign
 import aktual.budget.reports.vm.dashboard.DashboardItem
@@ -29,6 +30,8 @@ internal sealed interface Action {
   @JvmInline value class SetAllTimeDivisor(val allTime: Boolean) : Action
 
   @JvmInline value class ClickCalendarDay(val day: CalendarDay) : Action
+
+  @JvmInline value class DrillDown(val drilldown: CustomDrilldown) : Action
 
   data class SaveText(val content: String, val align: TextAlign) : Action
 

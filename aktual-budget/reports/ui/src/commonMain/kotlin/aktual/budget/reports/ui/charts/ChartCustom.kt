@@ -8,6 +8,7 @@ import aktual.budget.model.CustomReportMode
 import aktual.budget.model.GraphType
 import aktual.budget.model.GroupBy
 import aktual.budget.reports.vm.CustomData
+import aktual.budget.reports.vm.CustomDrilldown
 import aktual.budget.reports.vm.CustomGroup
 import aktual.budget.reports.vm.CustomGroupIntervalTotals
 import aktual.budget.reports.vm.CustomGroupTotals
@@ -18,6 +19,7 @@ import aktual.budget.reports.vm.CustomReportConfig
 import aktual.budget.reports.vm.CustomReportDates
 import aktual.budget.reports.vm.CustomTotals
 import aktual.budget.reports.vm.CustomTrend
+import aktual.budget.reports.vm.canDrillDown
 import aktual.budget.reports.vm.metric
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
@@ -68,6 +70,7 @@ internal fun CustomChart(
   compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
+  onDrilldown: OnDrilldown? = null,
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {
@@ -82,6 +85,8 @@ internal fun CustomChart(
     val metric = data.config.balanceType.metric
     val bars = customBars(data).let { if (graphType == DonutGraph) it.donutSlices(metric) else it }
     val chartModifier = Modifier.fillMaxWidth().weight(1f)
+    // As upstream, cards on the dashboard and the editor's preview don't drill down
+    val drilldown = onDrilldown?.takeIf { !compact && data.canDrillDown }
     when {
       !data.config.isSupported() ->
         Message(Strings.reportsCustomGraphUnsupported, colors.warningText, chartModifier)
@@ -89,19 +94,20 @@ internal fun CustomChart(
       bars.isEmpty() || data.intervals.isEmpty() ->
         Message(Strings.reportsCustomEmpty, colors.pageTextSubdued, chartModifier)
 
-      graphType == BarGraph -> CustomBarChart(data, bars, compact, chartModifier)
+      graphType == BarGraph -> CustomBarChart(data, bars, compact, chartModifier, drilldown)
 
-      graphType == StackedBarGraph -> CustomStackedBarChart(data, bars, compact, chartModifier)
+      graphType == StackedBarGraph ->
+        CustomStackedBarChart(data, bars, compact, chartModifier, drilldown)
 
-      graphType == LineGraph -> CustomLineChart(data, bars, compact, chartModifier)
+      graphType == LineGraph -> CustomLineChart(data, bars, compact, chartModifier, drilldown)
 
-      graphType == AreaGraph -> CustomAreaChart(data, compact, chartModifier)
+      graphType == AreaGraph -> CustomAreaChart(data, compact, chartModifier, drilldown)
 
-      graphType == TableGraph -> CustomTable(data, compact, chartModifier)
+      graphType == TableGraph -> CustomTable(data, compact, chartModifier, drilldown)
 
-      graphType == DonutGraph -> CustomDonutChart(bars, metric, compact, chartModifier)
+      graphType == DonutGraph -> CustomDonutChart(bars, metric, compact, chartModifier, drilldown)
 
-      else -> CustomBarLineChart(data, compact, chartModifier)
+      else -> CustomBarLineChart(data, compact, chartModifier, drilldown)
     }
 
     if (!compact && data.config.hasLegend() && bars.isNotEmpty()) {
@@ -172,8 +178,16 @@ private fun RegularHeader(
     )
   }
 
-/** One bar of a bar chart, or one legend entry of a stacked bar chart */
-@Immutable internal data class CustomBar(val name: String, val amount: Amount, val color: Color)
+/**
+ * One bar of a bar chart, or one legend entry of a stacked bar chart, and what it drills down to
+ */
+@Immutable
+internal data class CustomBar(
+  val name: String,
+  val amount: Amount,
+  val color: Color,
+  val drilldown: CustomDrilldown = CustomDrilldown(),
+)
 
 // packages/desktop-client/src/components/reports/ReportLegend.tsx
 @Composable

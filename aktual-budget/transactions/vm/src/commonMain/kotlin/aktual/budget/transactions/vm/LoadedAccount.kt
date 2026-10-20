@@ -19,6 +19,9 @@ sealed interface LoadedAccount {
 
   @JvmInline value class SpecificTag(val tag: String) : LoadedAccount
 
+  // A list drilled down to from a report
+  @JvmInline value class Filtered(val title: String) : LoadedAccount
+
   // A null month covers every month
   data class SpecificCategory(val name: String, val month: YearMonth?) : LoadedAccount
 }
