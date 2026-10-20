@@ -3,6 +3,7 @@ package aktual.core.ui
 import aktual.core.icons.material.Check
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Search
+import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.clickable
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -55,18 +57,10 @@ fun <T : Any> ListBottomSheet(
   ) {
     val searchState = rememberTextFieldState()
     val query = searchState.text.toString().trim()
-    val labels = options.map { string(it) }
+    val labels = if (query.isEmpty()) emptyList() else options.map { string(it) }
     val filtered =
-      remember(options, labels, query) {
-        if (query.isEmpty()) {
-          options
-        } else {
-          options
-            .filterIndexed { i, item ->
-              (searchTerms(item) + labels[i]).any { it.contains(query, ignoreCase = true) }
-            }
-            .toImmutableList()
-        }
+      remember(options, labels, query, searchTerms) {
+        filterOptions(options, labels, query, searchTerms)
       }
 
     if (searchPlaceholder != null) {
@@ -78,6 +72,15 @@ fun <T : Any> ListBottomSheet(
         clearable = true,
         leadingIcon = { BottomSheetIcon(MaterialIcons.Search) },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+      )
+    }
+
+    if (filtered.isEmpty() && query.isNotEmpty()) {
+      Text(
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        text = Strings.searchNoResults,
+        color = colors.pageTextSubdued,
+        textAlign = TextAlign.Center,
       )
     }
 
@@ -100,6 +103,22 @@ fun <T : Any> ListBottomSheet(
     }
   }
 }
+
+internal fun <T : Any> filterOptions(
+  options: ImmutableList<T>,
+  labels: List<String>,
+  query: String,
+  searchTerms: (T) -> List<String>,
+): ImmutableList<T> =
+  if (query.isEmpty()) {
+    options
+  } else {
+    options
+      .filterIndexed { i, item ->
+        (searchTerms(item) + labels[i]).any { it.contains(query, ignoreCase = true) }
+      }
+      .toImmutableList()
+  }
 
 @Composable
 fun BottomSheetListItem(

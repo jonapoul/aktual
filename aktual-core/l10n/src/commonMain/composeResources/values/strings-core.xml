@@ -15,6 +15,7 @@
   <string name="search_accounts">Search accounts</string>
   <string name="search_categories">Search categories</string>
   <string name="search_category_groups">Search category groups</string>
+  <string name="search_no_results">No results</string>
 
   <string name="sort">Sort</string>
   <string name="sort_field">Sort by</string>
