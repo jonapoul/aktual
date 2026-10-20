@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -80,7 +79,7 @@ fun <T : Any> ListBottomSheet(
         modifier = Modifier.fillMaxWidth().padding(16.dp),
         text = Strings.searchNoResults,
         color = colors.pageTextSubdued,
-        textAlign = TextAlign.Center,
+        textAlign = Center,
       )
     }
 
