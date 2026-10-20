@@ -16,6 +16,7 @@ import kotlinx.collections.immutable.toImmutableList
 
 // What the editor opens: a saved transaction, or a new one starting in the account or category of
 // the list it was added from
+@Immutable
 sealed interface EditTransactionTarget {
   data class Existing(val id: TransactionId) : EditTransactionTarget
 

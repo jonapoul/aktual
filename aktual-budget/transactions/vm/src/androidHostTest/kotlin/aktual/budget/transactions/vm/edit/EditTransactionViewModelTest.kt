@@ -38,6 +38,8 @@ import aktual.budget.transactions.domain.TransactionWriter
 import aktual.budget.transactions.vm.DATE_1
 import aktual.budget.transactions.vm.DATE_2
 import aktual.budget.transactions.vm.asParent
+import aktual.budget.transactions.vm.edit.EditTransactionState.Loaded
+import aktual.budget.transactions.vm.edit.TransactionEditMode.Edit
 import aktual.budget.transactions.vm.insertAccount
 import aktual.budget.transactions.vm.insertCategory
 import aktual.budget.transactions.vm.insertPayee
@@ -96,7 +98,7 @@ class EditTransactionViewModelTest {
 
     viewModel.state.test {
       assertThat(awaitLoaded()).all {
-        prop(EditTransactionState.Loaded::saved)
+        prop(Loaded::saved)
           .isEqualTo(
             TransactionDetails(
               transaction =
@@ -105,14 +107,11 @@ class EditTransactionViewModelTest {
               reconciled = false,
             ),
           )
-        prop(EditTransactionState.Loaded::canSave).isFalse()
-        prop(EditTransactionState.Loaded::mode)
-          .isInstanceOf<TransactionEditMode.Edit>()
-          .prop(TransactionEditMode.Edit::form)
-          .all {
-            prop(TransactionForm::draft).isEqualTo(SAVED)
-            prop(TransactionForm::hasChanges).isFalse()
-          }
+        prop(Loaded::canSave).isFalse()
+        prop(Loaded::mode).isInstanceOf<Edit>().prop(Edit::form).all {
+          prop(TransactionForm::draft).isEqualTo(SAVED)
+          prop(TransactionForm::hasChanges).isFalse()
+        }
       }
       cancelAndIgnoreRemainingEvents()
     }
@@ -276,8 +275,8 @@ class EditTransactionViewModelTest {
       val states =
         cancelAndConsumeRemainingEvents().filterIsInstance<Event.Item<EditTransactionState>>()
       val last = states.lastOrNull()?.value ?: initial
-      assertThat(last).isInstanceOf<EditTransactionState.Loaded>().all {
-        prop(EditTransactionState.Loaded::isWorking).isFalse()
+      assertThat(last).isInstanceOf<Loaded>().all {
+        prop(Loaded::isWorking).isFalse()
         prop("hasChanges") { it.mode.form.hasChanges }.isFalse()
       }
       assertThat(sync.calls)
@@ -372,8 +371,8 @@ class EditTransactionViewModelTest {
       assertThat(modes).each { mode ->
         mode
           .isNotNull()
-          .isInstanceOf<TransactionEditMode.Edit>()
-          .prop(TransactionEditMode.Edit::form)
+          .isInstanceOf<Edit>()
+          .prop(Edit::form)
           .prop(TransactionForm::draft)
           .isEqualTo(SAVED.copy(cleared = false))
       }
@@ -434,21 +433,18 @@ class EditTransactionViewModelTest {
 
       var loaded = awaitLoaded()
       assertThat(loaded.canSave).isFalse()
-      assertThat(loaded.mode)
-        .isInstanceOf<TransactionEditMode.Edit>()
-        .prop(TransactionEditMode.Edit::form)
-        .all {
-          prop(TransactionForm::draft).isEqualTo(SAVED.copy(payee = null))
-          // The split has no payee of its own now, so its parts' one stands in
-          prop(TransactionForm::payeeName).isEqualTo("Argos")
-          prop(TransactionForm::splitRemaining).isEqualTo(Amount(123.45))
-          prop(TransactionForm::parts)
-            .extracting { it.part }
-            .containsExactly(
-              SplitPart(TransactionId("part-1"), Zero, PayeeId("a"), CategoryId("a"), null, -1),
-              SplitPart(TransactionId("part-2"), Zero, PayeeId("a"), CategoryId("a"), null, -2),
-            )
-        }
+      assertThat(loaded.mode).isInstanceOf<Edit>().prop(Edit::form).all {
+        prop(TransactionForm::draft).isEqualTo(SAVED.copy(payee = null))
+        // The split has no payee of its own now, so its parts' one stands in
+        prop(TransactionForm::payeeName).isEqualTo("Argos")
+        prop(TransactionForm::splitRemaining).isEqualTo(Amount(123.45))
+        prop(TransactionForm::parts)
+          .extracting { it.part }
+          .containsExactly(
+            SplitPart(TransactionId("part-1"), Zero, PayeeId("a"), CategoryId("a"), null, -1),
+            SplitPart(TransactionId("part-2"), Zero, PayeeId("a"), CategoryId("a"), null, -2),
+          )
+      }
 
       // Saving does nothing while the parts don't add up
       viewModel.save()
@@ -1021,8 +1017,7 @@ class EditTransactionViewModelTest {
     return mode.form
   }
 
-  private suspend fun ReceiveTurbine<EditTransactionState>.awaitLoaded():
-    EditTransactionState.Loaded {
+  private suspend fun ReceiveTurbine<EditTransactionState>.awaitLoaded(): Loaded {
     var state = awaitItem()
     while (state !is Loaded) state = awaitItem()
     return state
