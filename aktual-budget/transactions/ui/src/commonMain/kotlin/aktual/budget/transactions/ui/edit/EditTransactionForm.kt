@@ -3,6 +3,7 @@ package aktual.budget.transactions.ui.edit
 import aktual.budget.model.Amount
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toInputText
+import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.ui.tabularFigures
 import aktual.budget.transactions.vm.edit.TransactionForm
@@ -71,6 +72,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 internal fun TextFieldState.isValidAmount(): Boolean = evaluateAmountInput(text.toString()) != null
@@ -140,7 +142,11 @@ internal fun EditTransactionForm(
         SplitParts(form = form, fieldState = fieldState, isIncome = isIncome, onAction = onAction)
 
         DetailCard {
-          NotesRow(notes = draft.notes, onClick = { fieldState.edit(Notes) })
+          NotesRow(
+            notes = draft.notes,
+            tags = form.options.tags,
+            onClick = { fieldState.edit(Notes) },
+          )
           CardDivider()
           StatusRow(draft = draft, onUnlock = onUnlock, onAction = onAction)
         }
@@ -321,20 +327,35 @@ private fun FieldsCard(
       onClick = { onEdit(Date) },
     )
     CardDivider()
-    NotesRow(notes = draft.notes, onClick = { onEdit(Notes) })
+    NotesRow(notes = draft.notes, tags = form.options.tags, onClick = { onEdit(Notes) })
     CardDivider()
     StatusRow(draft = draft, onUnlock = onUnlock, onAction = onAction)
   }
 }
 
 @Composable
-private fun NotesRow(notes: String?, onClick: () -> Unit) =
+private fun NotesRow(notes: String?, tags: ImmutableList<TagLabel>, onClick: () -> Unit) {
+  val text = notes?.takeIf { it.isNotBlank() }
   FieldRow(
     label = Strings.transactionNotes,
-    value = notes?.takeIf { it.isNotBlank() },
+    value = text,
     showChevron = false,
     onClick = onClick,
+    valueContent =
+      text?.let { str ->
+        { modifier ->
+          TaggedNotes(
+            modifier = modifier,
+            notes = str,
+            tags = tags,
+            fontSize = ValueSize,
+            color = colors.pageText,
+            maxLines = 2,
+          )
+        }
+      },
   )
+}
 
 @Composable
 private fun StatusRow(
@@ -417,6 +438,7 @@ internal fun FieldRow(
   showChevron: Boolean = true,
   minHeight: Dp = FieldRowHeight,
   labelWidth: Dp = FieldLabelWidth,
+  valueContent: (@Composable (Modifier) -> Unit)? = null,
 ) =
   Row(
     modifier =
@@ -433,15 +455,19 @@ internal fun FieldRow(
       fontSize = FieldLabelSize,
       color = colors.pageTextSubdued,
     )
-    Text(
-      modifier = Modifier.weight(1f),
-      text = value ?: Strings.transactionNone,
-      fontSize = ValueSize,
-      color = if (value == null || !enabled) colors.pageTextSubdued else colors.pageText,
-      fontStyle = if (value == null) Italic else null,
-      maxLines = 2,
-      overflow = Ellipsis,
-    )
+    if (valueContent != null) {
+      valueContent(Modifier.weight(1f))
+    } else {
+      Text(
+        modifier = Modifier.weight(1f),
+        text = value ?: Strings.transactionNone,
+        fontSize = ValueSize,
+        color = if (value == null || !enabled) colors.pageTextSubdued else colors.pageText,
+        fontStyle = if (value == null) Italic else null,
+        maxLines = 2,
+        overflow = Ellipsis,
+      )
+    }
     if (showChevron && enabled) {
       Icon(
         modifier = Modifier.size(ChevronSize).rotate(degrees = -90f),

@@ -7,6 +7,7 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
+import androidx.compose.runtime.Immutable
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonObject
@@ -70,6 +71,7 @@ data class TransactionUpdate(
 )
 
 // The fields of a transaction that its editor changes
+@Immutable
 data class TransactionFields(
   val account: AccountId?,
   val date: LocalDate,

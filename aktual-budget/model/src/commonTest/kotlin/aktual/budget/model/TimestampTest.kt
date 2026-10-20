@@ -13,12 +13,13 @@ import kotlinx.coroutines.test.runTest
 @Burst
 class TimestampTest {
   @Test
-  fun `Parse and stringify`(case: TestCase = burstValues(TEST_CASE_1, TEST_CASE_2)) = runTest {
-    val parsed = Timestamp.parse(case.string)
-    assertThat(parsed).isEqualTo(case.timestamp)
-    val stringified = parsed.toString()
-    assertThat(stringified).isEqualTo(case.string)
-  }
+  fun `Parse and stringify`(case: TestCase = burstValues(TEST_CASE_1, TEST_CASE_2, TEST_CASE_3)) =
+    runTest {
+      val parsed = Timestamp.parse(case.string)
+      assertThat(parsed).isEqualTo(case.timestamp)
+      val stringified = parsed.toString()
+      assertThat(stringified).isEqualTo(case.string)
+    }
 
   data class TestCase(val string: String, val timestamp: Timestamp)
 
@@ -38,6 +39,12 @@ class TimestampTest {
       TestCase(
         string = "9999-12-31T23:59:59.999Z-FFFF-FFFFFFFFFFFFFFFF",
         timestamp = MAXIMUM,
+      )
+
+    val TEST_CASE_3 =
+      TestCase(
+        string = "2024-03-16T18:14:09.000Z-0000-0000000000000000",
+        timestamp = Timestamp.fromMilliseconds(millis = 1_710_612_849_000),
       )
   }
 }

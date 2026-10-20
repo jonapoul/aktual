@@ -2,6 +2,7 @@ package aktual.budget.transactions.ui.edit
 
 import aktual.budget.model.Amount
 import aktual.budget.model.toSignedInputText
+import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.ui.tabularFigures
 import aktual.budget.transactions.vm.edit.SplitPartForm
 import aktual.budget.transactions.vm.edit.TransactionForm
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachIndexed
+import kotlinx.collections.immutable.ImmutableList
 
 // The split edit artboard of option A: a smaller total, since the parts' amounts matter more
 @Composable
@@ -171,6 +173,7 @@ internal fun SplitParts(
           part = part,
           isOffBudget = form.isOffBudget,
           isIncome = isIncome,
+          tags = form.options.tags,
           fieldState = fieldState,
           onAction = onAction,
         )
@@ -212,6 +215,7 @@ private fun PartRow(
   part: SplitPartForm,
   isOffBudget: Boolean,
   isIncome: Boolean,
+  tags: ImmutableList<TagLabel>,
   fieldState: EditFieldState,
   onAction: EditTransactionActionHandler,
 ) {
@@ -250,6 +254,7 @@ private fun PartRow(
           placeholder = Strings.transactionSplitAddNote,
           label = Strings.transactionNotes,
           fontSize = PartDetailSize,
+          tags = tags,
           onClick = { fieldState.edit(Notes, id) },
         )
       }
@@ -285,19 +290,32 @@ private fun PartText(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
-) =
-  Text(
-    modifier =
-      modifier
-        .clip(ChipShape)
-        .clickable(enabled = enabled, onClickLabel = label, onClick = onClick)
-        .padding(PartTextPadding),
-    text = text ?: placeholder,
-    fontSize = fontSize,
-    color = if (text == null || !enabled) colors.pageTextSubdued else colors.pageText,
-    maxLines = 1,
-    overflow = Ellipsis,
-  )
+  tags: ImmutableList<TagLabel>? = null,
+) {
+  val textModifier =
+    modifier
+      .clip(ChipShape)
+      .clickable(enabled = enabled, onClickLabel = label, onClick = onClick)
+      .padding(PartTextPadding)
+  if (text != null && tags != null) {
+    TaggedNotes(
+      modifier = textModifier,
+      notes = text,
+      tags = tags,
+      fontSize = fontSize,
+      color = if (enabled) colors.pageText else colors.pageTextSubdued,
+    )
+  } else {
+    Text(
+      modifier = textModifier,
+      text = text ?: placeholder,
+      fontSize = fontSize,
+      color = if (text == null || !enabled) colors.pageTextSubdued else colors.pageText,
+      maxLines = 1,
+      overflow = Ellipsis,
+    )
+  }
+}
 
 // shown is the amount from the split's side, so a part of an expense reads as positive
 @Composable
