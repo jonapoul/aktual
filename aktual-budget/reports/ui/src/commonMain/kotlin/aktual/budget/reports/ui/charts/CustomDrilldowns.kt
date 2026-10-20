@@ -27,8 +27,7 @@ internal typealias OnDrilldown = (CustomDrilldown) -> Unit
 internal typealias OnChartTap = (y: Float, targets: List<CartesianMarker.Target>) -> Unit
 
 // Shows the marker while pressed, as Vico does by default, and passes a quick tap to [onTap]. A
-// press
-// held long enough to read the marker isn't a tap
+// press held long enough to read the marker isn't a tap
 @Composable
 internal fun rememberDrilldownController(onTap: OnChartTap?): CartesianMarkerController {
   if (onTap == null) return CartesianMarkerController.rememberShowOnPress()

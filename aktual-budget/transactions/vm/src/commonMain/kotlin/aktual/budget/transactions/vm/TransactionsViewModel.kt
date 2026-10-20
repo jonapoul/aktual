@@ -125,7 +125,7 @@ class TransactionsViewModel(
     if (showBalance) {
       observeBalance().map(::Amount).stateIn(viewModelScope, Eagerly, initialValue = null)
     } else {
-      MutableStateFlow<Amount?>(null)
+      MutableStateFlow(null)
     }
 
   // A tag list shows the matching parts of each split, with nothing to toggle
