@@ -41,6 +41,7 @@ internal fun ConditionValueEditor(
         isEnabled = isEnabled,
         onValueChange = emit,
         fetchEntities = { it.payees() },
+        searchPlaceholder = Strings.searchPayees,
       )
 
     Account,
@@ -52,6 +53,7 @@ internal fun ConditionValueEditor(
         isEnabled = isEnabled,
         onValueChange = emit,
         fetchEntities = { it.accounts() },
+        searchPlaceholder = Strings.searchAccounts,
       )
 
     Category ->
@@ -62,6 +64,7 @@ internal fun ConditionValueEditor(
         isEnabled = isEnabled,
         onValueChange = emit,
         fetchEntities = { it.categories() },
+        searchPlaceholder = Strings.searchCategories,
       )
 
     CategoryGroup ->
@@ -72,6 +75,7 @@ internal fun ConditionValueEditor(
         isEnabled = isEnabled,
         onValueChange = emit,
         fetchEntities = { it.categoryGroups() },
+        searchPlaceholder = Strings.searchCategoryGroups,
       )
 
     Amount ->

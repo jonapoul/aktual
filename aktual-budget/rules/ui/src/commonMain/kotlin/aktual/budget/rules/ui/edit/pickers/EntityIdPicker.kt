@@ -47,6 +47,7 @@ internal fun EntityIdPicker(
   isEnabled: Boolean,
   onValueChange: (JsonElement) -> Unit,
   fetchEntities: suspend (EntityListFetcher) -> ImmutableList<EntitySummary>,
+  searchPlaceholder: String,
   modifier: Modifier = Modifier,
 ) {
   val nameFetcher = LocalNameFetcher.current
@@ -106,6 +107,7 @@ internal fun EntityIdPicker(
       sheetState = sheetState,
       string = { it.name },
       key = EntitySummary::id,
+      searchPlaceholder = searchPlaceholder,
     )
   }
 }

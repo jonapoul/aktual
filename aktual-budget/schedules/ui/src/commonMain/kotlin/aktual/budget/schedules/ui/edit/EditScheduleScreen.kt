@@ -497,6 +497,7 @@ private fun EditScheduleSheet(
       EntitySheet(
         selected = state.form.payee ?: PayeeId(""),
         options = state.payees,
+        searchPlaceholder = Strings.searchPayees,
         onDismiss = onDismiss,
         onSelect = { onAction(SetPayee(it)) },
       )
@@ -505,6 +506,7 @@ private fun EditScheduleSheet(
       EntitySheet(
         selected = state.form.account ?: AccountId(""),
         options = state.accounts,
+        searchPlaceholder = Strings.searchAccounts,
         onDismiss = onDismiss,
         onSelect = { onAction(SetAccount(it)) },
       )
@@ -517,6 +519,7 @@ private fun EditScheduleSheet(
 private fun <T : Any> EntitySheet(
   selected: T,
   options: ImmutableList<NamedEntity<T>>,
+  searchPlaceholder: String,
   onDismiss: () -> Unit,
   onSelect: (T) -> Unit,
 ) {
@@ -529,6 +532,7 @@ private fun <T : Any> EntitySheet(
     sheetState = sheetState,
     string = { it.name },
     key = { it.id.toString() },
+    searchPlaceholder = searchPlaceholder,
   )
 }
 
