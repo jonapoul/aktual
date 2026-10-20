@@ -2,6 +2,7 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
+import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.vm.Transaction
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
@@ -38,7 +39,9 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.flow.Flow
 
@@ -54,6 +57,7 @@ internal fun Transactions(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   alternateRowColours: Boolean = false,
+  tags: ImmutableList<TagLabel> = persistentListOf(),
 ) {
   val refresh = pagingItems.loadState.refresh
   when {
@@ -68,6 +72,7 @@ internal fun Transactions(
         expanded = expanded,
         splitsPinnedOpen = splitsPinnedOpen,
         alternateRowColours = alternateRowColours,
+        tags = tags,
         onAction = onAction,
       )
     }
@@ -136,6 +141,7 @@ private fun TransactionsFilled(
   expanded: ImmutableSet<TransactionId>,
   splitsPinnedOpen: Boolean,
   alternateRowColours: Boolean,
+  tags: ImmutableList<TagLabel>,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
@@ -187,6 +193,7 @@ private fun TransactionsFilled(
               LedgerRow(
                 transaction = transaction,
                 showDate = showDate,
+                tags = tags,
                 parts = parts,
                 onToggleSplit = onToggleSplit,
                 onOpen = onOpen,

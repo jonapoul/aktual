@@ -49,6 +49,7 @@ internal data class LedgerDimens(
   val childAmountSize: TextUnit,
   val balanceSize: TextUnit = 12.sp,
   val showAccount: Boolean = false,
+  val showNotes: Boolean = false,
   val showBalance: Boolean = true,
 )
 
@@ -72,6 +73,7 @@ internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
         childRowHeight = 36.dp,
         childAmountSize = 14.sp,
         showAccount = true,
+        showNotes = true,
       )
 
     Compact ->

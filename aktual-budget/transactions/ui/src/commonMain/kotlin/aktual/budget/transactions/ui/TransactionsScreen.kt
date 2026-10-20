@@ -6,6 +6,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
+import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
 import aktual.budget.transactions.vm.Transaction
@@ -53,7 +54,9 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.flow.Flow
 
@@ -73,6 +76,7 @@ fun TransactionsScreen(
   val isBankSyncing by viewModel.isBankSyncing.collectAsStateWithLifecycle()
   val expanded by viewModel.expanded.collectAsStateWithLifecycle()
   val alternateRowColours by viewModel.alternateRowColours.collectAsStateWithLifecycle()
+  val tags by viewModel.tags.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
@@ -106,6 +110,7 @@ fun TransactionsScreen(
     expanded = expanded,
     splitsPinnedOpen = viewModel.splitsPinnedOpen,
     alternateRowColours = alternateRowColours,
+    tags = tags,
     onAction = { action ->
       when (action) {
         NavBack -> back()
@@ -167,6 +172,7 @@ internal fun TransactionsScaffold(
   expanded: ImmutableSet<TransactionId> = persistentSetOf(),
   splitsPinnedOpen: Boolean = false,
   alternateRowColours: Boolean = false,
+  tags: ImmutableList<TagLabel> = persistentListOf(),
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -214,6 +220,7 @@ internal fun TransactionsScaffold(
             expanded = expanded,
             splitsPinnedOpen = splitsPinnedOpen,
             alternateRowColours = alternateRowColours,
+            tags = tags,
             onAction = onAction,
           )
         }

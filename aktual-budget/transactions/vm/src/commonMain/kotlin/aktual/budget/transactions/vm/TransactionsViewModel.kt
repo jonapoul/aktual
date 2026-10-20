@@ -17,6 +17,8 @@ import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
+import aktual.budget.tags.domain.TagLabel
+import aktual.budget.tags.domain.toTagLabels
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
@@ -41,8 +43,10 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -51,6 +55,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -98,6 +103,17 @@ class TransactionsViewModel(
     prefs
       .map { meta -> meta[TransactionDensityKey] ?: Default }
       .stateIn(viewModelScope, Eagerly, initialValue = prefs[TransactionDensityKey] ?: Default)
+
+  // Colours the #tags in each row's notes
+  val tags: StateFlow<ImmutableList<TagLabel>> =
+    tagsDao
+      .observeTags()
+      .map { rows -> rows.toTagLabels() }
+      .catch { e ->
+        logcat.w(e) { "Failed loading tags" }
+        emit(persistentListOf())
+      }
+      .stateIn(viewModelScope, Eagerly, persistentListOf())
 
   val alternateRowColours: StateFlow<Boolean> =
     transactionPreferences.alternateRowColours.asStateFlow(viewModelScope)

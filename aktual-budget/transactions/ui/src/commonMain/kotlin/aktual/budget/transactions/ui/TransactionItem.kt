@@ -3,6 +3,8 @@ package aktual.budget.transactions.ui
 import aktual.budget.model.Amount
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
+import aktual.budget.tags.domain.TagLabel
+import aktual.budget.transactions.ui.edit.TaggedNotes
 import aktual.budget.transactions.vm.SpecialCategory
 import aktual.budget.transactions.vm.Transaction
 import aktual.core.icons.AktualIcons
@@ -63,6 +65,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
@@ -72,6 +76,7 @@ internal fun LedgerRow(
   transaction: Transaction,
   showDate: Boolean,
   modifier: Modifier = Modifier,
+  tags: ImmutableList<TagLabel> = persistentListOf(),
   parts: SplitParts = Collapsed,
   onToggleSplit: () -> Unit = {},
   onOpen: () -> Unit = {},
@@ -96,6 +101,15 @@ internal fun LedgerRow(
     Column(modifier = Modifier.weight(1f).padding(vertical = dimens.rowVertical)) {
       PayeeText(transaction, dimens)
       SecondLine(transaction, dimens, parts)
+      val notes = transaction.notes
+      if (dimens.showNotes && !notes.isNullOrBlank()) {
+        TaggedNotes(
+          notes = notes,
+          tags = tags,
+          fontSize = dimens.secondLineSize,
+          color = colors.pageTextLight,
+        )
+      }
     }
 
     Column(
@@ -528,7 +542,7 @@ private fun BalanceText(balance: Amount?, dimens: LedgerDimens, modifier: Modifi
     modifier = modifier,
     text = balance?.formattedText() ?: AnnotatedString(""),
     fontSize = dimens.balanceSize,
-    color = colors.pageTextSubdued,
+    color = colors.pageTextLight,
     textAlign = End,
     style = tabularFigures(),
     overflow = Ellipsis,
