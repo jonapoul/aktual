@@ -89,25 +89,31 @@ class EditTransactionViewModelTest {
   }
 
   @Test
-  fun `A transaction opens in view mode`() = runDatabaseTest { scope ->
+  fun `A transaction opens ready to edit`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
     val viewModel = createViewModel(scope, id = "t")
 
     viewModel.state.test {
-      assertThat(awaitLoaded())
-        .isEqualTo(
-          EditTransactionState.Loaded(
-            saved =
-              TransactionDetails(
-                transaction =
-                  transaction("t", account = "a", category = "a", payee = "a", balance = 123.45),
-                cleared = true,
-                reconciled = false,
-              ),
-            mode = View,
-          ),
-        )
+      assertThat(awaitLoaded()).all {
+        prop(EditTransactionState.Loaded::saved)
+          .isEqualTo(
+            TransactionDetails(
+              transaction =
+                transaction("t", account = "a", category = "a", payee = "a", balance = 123.45),
+              cleared = true,
+              reconciled = false,
+            ),
+          )
+        prop(EditTransactionState.Loaded::canSave).isFalse()
+        prop(EditTransactionState.Loaded::mode)
+          .isInstanceOf<TransactionEditMode.Edit>()
+          .prop(TransactionEditMode.Edit::form)
+          .all {
+            prop(TransactionForm::draft).isEqualTo(SAVED)
+            prop(TransactionForm::hasChanges).isFalse()
+          }
+      }
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -150,7 +156,11 @@ class EditTransactionViewModelTest {
       transactions.insertTransaction("p2", "a", "c", "b", amount = 40.0, parent = "p")
       scope.advanceUntilIdle()
 
-      assertThat(awaitLoaded().saved?.transaction?.children?.size).isEqualTo(2)
+      // An unchanged transaction's form follows too
+      var loaded = awaitLoaded()
+      while (loaded.mode.form.parts.size != 2) loaded = awaitLoaded()
+      assertThat(loaded.saved?.transaction?.children?.size).isEqualTo(2)
+      assertThat(loaded.mode.form.hasChanges).isFalse()
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -169,15 +179,12 @@ class EditTransactionViewModelTest {
   }
 
   @Test
-  fun `Editing starts from what's saved`() = runDatabaseTest { scope ->
+  fun `The form starts from what's saved`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
     val viewModel = createViewModel(scope, id = "t")
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
-
       assertThat(awaitEdit()).all {
         prop(TransactionForm::draft).isEqualTo(SAVED)
         prop(TransactionForm::payeeName).isEqualTo("Argos")
@@ -201,9 +208,6 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "t")
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
-
       assertThat(awaitEdit().options).all {
         prop(TransactionOptions::payees)
           .extracting { it.name }
@@ -222,15 +226,13 @@ class EditTransactionViewModelTest {
   }
 
   @Test
-  fun `Edits change the draft until they're discarded`() = runDatabaseTest { scope ->
+  fun `Edits change the draft until they're reverted`() = runDatabaseTest { scope ->
     insertEntities()
     AccountDao(this).insert(id = AccountId("d"), name = "Mortgage", offBudget = true)
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
     val viewModel = createViewModel(scope, id = "t")
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
       awaitEdit()
 
       viewModel.setPayee(null)
@@ -246,35 +248,38 @@ class EditTransactionViewModelTest {
         prop(TransactionForm::hasChanges).isTrue()
       }
 
-      viewModel.stopEditing()
-      var loaded = awaitLoaded()
-      while (loaded.mode != View) loaded = awaitLoaded()
-
-      viewModel.startEditing()
-      assertThat(awaitEdit().draft).isEqualTo(SAVED)
+      viewModel.revert()
+      edit = awaitEdit()
+      while (edit.hasChanges) edit = awaitEdit()
+      assertThat(edit.draft).isEqualTo(SAVED)
       cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
-  fun `Saving writes the changed fields and goes back to viewing`() = runDatabaseTest { scope ->
+  fun `Saving writes the changed fields and leaves nothing unsaved`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
     val sync = FakeSyncController()
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
-      awaitEdit()
+      val initial = awaitLoaded()
 
       viewModel.setAmount(Amount(-25.0))
       viewModel.setCategory(null)
       viewModel.setNotes("Lunch")
       viewModel.save()
+      scope.advanceUntilIdle()
 
-      var loaded = awaitLoaded()
-      while (loaded.mode != View) loaded = awaitLoaded()
+      // The form follows what's saved again, which can conflate back to how it started
+      val states =
+        cancelAndConsumeRemainingEvents().filterIsInstance<Event.Item<EditTransactionState>>()
+      val last = states.lastOrNull()?.value ?: initial
+      assertThat(last).isInstanceOf<EditTransactionState.Loaded>().all {
+        prop(EditTransactionState.Loaded::isWorking).isFalse()
+        prop("hasChanges") { it.mode.form.hasChanges }.isFalse()
+      }
       assertThat(sync.calls)
         .containsExactly(
           listOf(
@@ -283,42 +288,41 @@ class EditTransactionViewModelTest {
             LocalChange(TRANSACTIONS, "t", "notes", MessageValue.String("Lunch")),
           ),
         )
-      cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
-  fun `Edits can't be discarded or changed while they're being saved`() = runDatabaseTest { scope ->
-    insertEntities()
-    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val gate = CompletableDeferred<Unit>()
-    val sync = FakeSyncController(gate = gate)
-    val viewModel = createViewModel(scope, id = "t", sync = sync)
+  fun `Edits can't be discarded, reverted or changed while they're being saved`() =
+    runDatabaseTest { scope ->
+      insertEntities()
+      TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+      val gate = CompletableDeferred<Unit>()
+      val sync = FakeSyncController(gate = gate)
+      val viewModel = createViewModel(scope, id = "t", sync = sync)
 
-    viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
-      awaitEdit()
+      viewModel.state.test {
+        awaitEdit()
 
-      viewModel.setNotes("Lunch")
-      viewModel.save()
-      var loaded = awaitLoaded()
-      while (!loaded.isWorking) loaded = awaitLoaded()
+        viewModel.setNotes("Lunch")
+        viewModel.save()
+        var loaded = awaitLoaded()
+        while (!loaded.isWorking) loaded = awaitLoaded()
 
-      viewModel.stopEditing()
-      viewModel.setNotes("Dinner")
-      scope.advanceUntilIdle()
-      expectNoEvents()
+        viewModel.discard()
+        viewModel.revert()
+        viewModel.setNotes("Dinner")
+        scope.advanceUntilIdle()
+        expectNoEvents()
 
-      gate.complete(Unit)
-      while (loaded.mode != View) loaded = awaitLoaded()
-      assertThat(sync.calls)
-        .containsExactly(
-          listOf(LocalChange(TRANSACTIONS, "t", "notes", MessageValue.String("Lunch"))),
-        )
-      cancelAndIgnoreRemainingEvents()
+        gate.complete(Unit)
+        while (loaded.isWorking || loaded.mode.form.hasChanges) loaded = awaitLoaded()
+        assertThat(sync.calls)
+          .containsExactly(
+            listOf(LocalChange(TRANSACTIONS, "t", "notes", MessageValue.String("Lunch"))),
+          )
+        cancelAndIgnoreRemainingEvents()
+      }
     }
-  }
 
   @Test
   fun `Saving without changes writes nothing`() = runDatabaseTest { scope ->
@@ -328,14 +332,12 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
       awaitEdit()
 
       viewModel.save()
+      scope.advanceUntilIdle()
 
-      var loaded = awaitLoaded()
-      while (loaded.mode != View) loaded = awaitLoaded()
+      expectNoEvents()
       assertThat(sync.calls).isEmpty()
       cancelAndIgnoreRemainingEvents()
     }
@@ -349,8 +351,6 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
       awaitEdit()
       viewModel.setCleared(false)
       assertThat(awaitEdit().draft).isEqualTo(SAVED.copy(cleared = false))
@@ -406,9 +406,6 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "p")
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
-
       assertThat(awaitEdit()).all {
         prop(TransactionForm::payeeName).isEqualTo("Argos")
         prop(TransactionForm::splitRemaining).isNull()
@@ -431,8 +428,6 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
       awaitEdit()
 
       viewModel.split()
@@ -463,7 +458,7 @@ class EditTransactionViewModelTest {
       assertThat(loaded.canSave).isTrue()
 
       viewModel.save()
-      while (loaded.mode != View) loaded = awaitLoaded()
+      while (loaded.isWorking || loaded.mode.form.hasChanges) loaded = awaitLoaded()
       val columns = setOf("amount", "description", "isParent", "parent_id")
       assertThat(sync.calls.single().filter { it.column in columns })
         .containsExactly(
@@ -488,8 +483,6 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "p", sync = sync)
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
       awaitEdit()
 
       viewModel.addSplit()
@@ -521,7 +514,7 @@ class EditTransactionViewModelTest {
 
       viewModel.save()
       var loaded = awaitLoaded()
-      while (loaded.mode != View) loaded = awaitLoaded()
+      while (loaded.isWorking || loaded.mode.form.hasChanges) loaded = awaitLoaded()
       assertThat(sync.calls.single().filter { it.column in setOf("amount", "parent_id") })
         .containsExactly(
           localChange(TRANSACTIONS, "p2", "amount", 3000L),
@@ -543,8 +536,6 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "p", sync = sync)
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
       awaitEdit()
 
       viewModel.removeSplit(TransactionId("p1"))
@@ -555,7 +546,7 @@ class EditTransactionViewModelTest {
 
       viewModel.save()
       var loaded = awaitLoaded()
-      while (loaded.mode != View) loaded = awaitLoaded()
+      while (loaded.isWorking || loaded.mode.form.hasChanges) loaded = awaitLoaded()
       assertThat(sync.calls)
         .containsExactly(
           listOf(
@@ -574,8 +565,6 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "p")
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
       awaitEdit()
 
       viewModel.setPartCategory(TransactionId("p1"), CategoryId("a"))
@@ -642,8 +631,6 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "t")
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
       assertThat(awaitEdit()).all {
         prop(TransactionForm::payeeName).isEqualTo("Barclays")
         prop(TransactionForm::isTransfer).isTrue()
@@ -671,8 +658,6 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "p")
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
       awaitEdit()
 
       viewModel.setAccount(AccountId("b"))
@@ -829,8 +814,6 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "t")
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
       awaitEdit()
 
       viewModel.setPayee(PayeeId("b"))
@@ -920,7 +903,28 @@ class EditTransactionViewModelTest {
         cancelAndIgnoreRemainingEvents()
       }
       viewModel.setNotes("Lunch")
-      viewModel.stopEditing()
+      viewModel.discard()
+
+      assertThatNextEmissionIsEqualTo(Discarded)
+      assertThat(sync.calls).isEmpty()
+    }
+  }
+
+  @Test
+  fun `Discarding a saved transaction's edits closes without writing`() = runDatabaseTest { scope ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitEdit()
+        viewModel.setNotes("Lunch")
+        assertThat(awaitEdit().hasChanges).isTrue()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.discard()
 
       assertThatNextEmissionIsEqualTo(Discarded)
       assertThat(sync.calls).isEmpty()
@@ -938,9 +942,6 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "t")
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
-
       var tags = awaitEdit().options.tags
       while (tags.size < 2) tags = awaitEdit().options.tags
       assertThat(tags)
@@ -957,8 +958,6 @@ class EditTransactionViewModelTest {
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.state.test {
-      awaitLoaded()
-      viewModel.startEditing()
       awaitEdit()
 
       viewModel.createTag("food")

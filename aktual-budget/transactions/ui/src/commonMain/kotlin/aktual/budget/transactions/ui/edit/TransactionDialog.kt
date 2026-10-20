@@ -52,7 +52,7 @@ internal fun EditTransactionDialogs(
         highlight = colors.warningText,
         onConfirm = {
           dismiss()
-          onAction(StopEditing)
+          onAction(DiscardChanges)
         },
         onCancel = dismiss,
       )

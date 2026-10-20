@@ -105,6 +105,7 @@ private val materialIcons =
       Timer,
       Title,
       Tune,
+      Undo,
       Visibility,
       VisibilityOff,
       Warning,

@@ -11,9 +11,6 @@ import aktual.budget.transactions.ui.TRANSACTION_OFF_BUDGET
 import aktual.budget.transactions.ui.TRANSACTION_SPLIT_UNBALANCED
 import aktual.budget.transactions.ui.TRANSACTION_TRANSFER
 import aktual.budget.transactions.ui.color
-import aktual.budget.transactions.ui.label
-import aktual.budget.transactions.ui.payeeLabel
-import aktual.budget.transactions.ui.scheduleIcon
 import aktual.budget.transactions.ui.tabularFigures
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.edit.EditTransactionError
@@ -25,20 +22,12 @@ import aktual.budget.transactions.vm.edit.TransactionDetails
 import aktual.budget.transactions.vm.edit.TransactionEditMode
 import aktual.budget.transactions.vm.edit.TransactionForm
 import aktual.budget.transactions.vm.edit.TransactionOptions
-import aktual.core.icons.AktualIcons
-import aktual.core.icons.LeftArrow2
-import aktual.core.icons.RightArrow2
-import aktual.core.icons.Split
-import aktual.core.icons.Tag
-import aktual.core.icons.material.AccountBalanceWallet
 import aktual.core.icons.material.ArrowBack
 import aktual.core.icons.material.ArrowRight
-import aktual.core.icons.material.Clear
 import aktual.core.icons.material.Delete
-import aktual.core.icons.material.Edit
-import aktual.core.icons.material.FormatListBulleted
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
+import aktual.core.icons.material.Undo
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualDropdownMenu
@@ -46,7 +35,6 @@ import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
@@ -56,17 +44,15 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryTextButton
-import aktual.core.ui.formatted
-import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
-import aktual.core.ui.redacted
 import aktual.core.ui.rememberHazedTopBarState
-import aktual.core.ui.stringLong
 import aktual.core.ui.transparentTopAppBarColors
-import androidx.compose.foundation.ScrollState
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -80,18 +66,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -99,13 +80,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
@@ -141,8 +118,8 @@ internal fun EditTransactionScreen(
     onAction = { action ->
       when (action) {
         NavigateBack -> back()
-        StartEditing -> viewModel.startEditing()
-        StopEditing -> viewModel.stopEditing()
+        DiscardChanges -> viewModel.discard()
+        RevertChanges -> viewModel.revert()
         SaveTransaction -> viewModel.save()
         DeleteTransaction -> viewModel.delete()
         UnlockReconciled -> viewModel.unlockReconciled()
@@ -198,28 +175,24 @@ private fun EditTransactionScaffold(
   modifier: Modifier = Modifier,
 ) {
   val loaded = state as? Loaded
-  val form = (loaded?.mode as? Editing)?.form
-  val isEditing = form != null
+  val form = loaded?.mode?.form
+  val isLoaded = form != null
   val isCreating = loaded?.mode is Create
   var dialog by remember { mutableStateOf<TransactionDialog?>(null) }
   // A new transaction starts with the keypad open
   val fieldState =
-    remember(isEditing) {
-      EditFieldState(if (isCreating) ActiveField(EditField.Amount) else null)
-    }
+    remember(isLoaded) { EditFieldState(if (isCreating) ActiveField(EditField.Amount) else null) }
   val isAmountValid = !fieldState.isTypingAmount || fieldState.amountText.isValidAmount()
 
-  // Backing out of an edit drops back to viewing the transaction, or closes a new one, checking
-  // first if that would lose any changes
+  // Backing out checks first if that would lose any changes
   fun onBack() {
     when {
       loaded?.isWorking == true -> Unit
-      form == null -> onAction(NavigateBack)
-      form.hasChanges -> dialog = ConfirmDiscard
-      else -> onAction(StopEditing)
+      form?.hasChanges == true -> dialog = ConfirmDiscard
+      else -> onAction(NavigateBack)
     }
   }
-  BackHandler(enabled = isEditing) { onBack() }
+  BackHandler(enabled = form?.hasChanges == true) { onBack() }
 
   val hazeState = rememberHazedTopBarState()
   val scrollState = rememberScrollState()
@@ -232,7 +205,7 @@ private fun EditTransactionScaffold(
         state = state,
         canSave = loaded?.canSave == true && isAmountValid,
         onBack = { onBack() },
-        onEdit = { onAction(StartEditing) },
+        onRevert = { onAction(RevertChanges) },
         onSave = {
           val confirm = saveDialog(form, loaded?.saved)
           if (confirm == null) onAction(SaveTransaction) else dialog = confirm
@@ -252,26 +225,16 @@ private fun EditTransactionScaffold(
         is Empty -> NothingToCreateWith(state, onAction, Modifier.padding(innerPadding))
 
         is Loaded ->
-          if (form == null) {
-            state.saved?.let { saved ->
-              TransactionContent(
-                modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
-                details = saved,
-                scrollState = scrollState,
-                contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
-              )
-            }
-          } else {
-            EditTransactionForm(
-              modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
-              form = form,
-              fieldState = fieldState,
-              onUnlock = { dialog = ConfirmReconciledUnlock },
-              onAction = onAction,
-              scrollState = scrollState,
-              contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
-            )
-          }
+          EditTransactionForm(
+            modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
+            form = state.mode.form,
+            fieldState = fieldState,
+            balance = state.saved?.transaction?.balance,
+            onUnlock = { dialog = ConfirmReconciledUnlock },
+            onAction = onAction,
+            scrollState = scrollState,
+            contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
+          )
       }
 
       if (form != null) {
@@ -297,41 +260,24 @@ private fun EditTransactionTopBar(
   state: EditTransactionState,
   canSave: Boolean,
   onBack: () -> Unit,
-  onEdit: () -> Unit,
+  onRevert: () -> Unit,
   onSave: () -> Unit,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val loaded = state as? Loaded
-  val isEditing = loaded?.mode is Editing
   val isCreating = loaded?.mode is Create || state is Empty
   TopAppBar(
     modifier = modifier,
     colors = colors.transparentTopAppBarColors(),
-    navigationIcon = {
-      if (isEditing) {
-        IconButton(onClick = onBack, enabled = !loaded.isWorking) {
-          Icon(
-            imageVector = MaterialIcons.Clear,
-            contentDescription = Strings.transactionStopEditing,
-          )
-        }
-      } else {
-        NavBackIconButton(onClick = onBack)
-      }
-    },
-    title = {
-      when {
-        isCreating -> Text(text = Strings.transactionCreateTitle)
-        isEditing -> Text(text = Strings.transactionEditTitle)
-      }
-    },
+    navigationIcon = { NavBackIconButton(onClick = onBack) },
+    title = { if (isCreating) Text(text = Strings.transactionCreateTitle) },
     actions = {
       if (loaded != null) {
         TopBarActions(
           state = loaded,
           canSave = canSave,
-          onEdit = onEdit,
+          onRevert = onRevert,
           onSave = onSave,
           onDelete = onDelete,
         )
@@ -360,13 +306,16 @@ private fun deleteDialog(saved: TransactionDetails?): TransactionDialog =
 private fun TopBarActions(
   state: EditTransactionState.Loaded,
   canSave: Boolean,
-  onEdit: () -> Unit,
+  onRevert: () -> Unit,
   onSave: () -> Unit,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val mode = state.mode
+  val hasChanges = mode.form.hasChanges
   Row(modifier = modifier, verticalAlignment = CenterVertically) {
-    if (state.mode is Editing) {
+    // A saved transaction only offers saving once it's been changed
+    AnimatedVisibility(visible = mode is Create || hasChanges, enter = fadeIn(), exit = fadeOut()) {
       PrimaryTextButton(
         modifier = Modifier.padding(end = SaveInset),
         text = Strings.transactionSave,
@@ -374,14 +323,9 @@ private fun TopBarActions(
         shape = SaveShape,
         onClick = onSave,
       )
-    } else {
-      BareIconButton(
-        imageVector = MaterialIcons.Edit,
-        contentDescription = Strings.transactionEdit,
-        enabled = !state.isWorking,
-        onClick = onEdit,
-      )
+    }
 
+    if (mode is Edit) {
       Box {
         var expanded by remember { mutableStateOf(false) }
         BareIconButton(
@@ -391,6 +335,16 @@ private fun TopBarActions(
           onClick = { expanded = true },
         )
         AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+          if (hasChanges) {
+            AktualDropdownMenuItem(
+              text = Strings.transactionRevert,
+              leadingIcon = MaterialIcons.Undo,
+              onClick = {
+                expanded = false
+                onRevert()
+              },
+            )
+          }
           AktualDropdownMenuItem(
             text = Strings.transactionDelete,
             leadingIcon = MaterialIcons.Delete,
@@ -405,7 +359,7 @@ private fun TopBarActions(
   }
 }
 
-// Stands in for the hero and the details card while the transaction loads
+// Stands in for the amount and the fields card while the transaction loads
 @Composable
 private fun ShimmerTransaction(modifier: Modifier = Modifier) {
   val bar = Modifier.background(colors.tableText, ShimmerBarShape)
@@ -419,10 +373,8 @@ private fun ShimmerTransaction(modifier: Modifier = Modifier) {
       horizontalAlignment = CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(HeroSpacing),
     ) {
-      Box(modifier = Modifier.size(AvatarSize).background(colors.tableText, CircleShape))
-      Box(modifier = bar.size(width = ShimmerPayeeWidth, height = ShimmerTextHeight))
+      Box(modifier = bar.size(width = ShimmerToggleWidth, height = ShimmerToggleHeight))
       Box(modifier = bar.size(width = ShimmerAmountWidth, height = ShimmerAmountHeight))
-      Box(modifier = bar.size(width = ShimmerDateWidth, height = ShimmerTextHeight))
     }
 
     DetailCard {
@@ -431,10 +383,10 @@ private fun ShimmerTransaction(modifier: Modifier = Modifier) {
         Row(
           modifier = Modifier.fillMaxWidth().padding(RowPadding),
           verticalAlignment = CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(RowIconGap),
+          horizontalArrangement = Arrangement.spacedBy(RowGap),
         ) {
-          Box(modifier = bar.size(RowIconSize))
-          Box(modifier = bar.weight(1f).height(ShimmerRowHeight))
+          Box(modifier = bar.size(width = ShimmerLabelWidth, height = ShimmerTextHeight))
+          Box(modifier = bar.weight(1f).height(ShimmerTextHeight))
         }
       }
     }
@@ -500,162 +452,6 @@ private fun NothingToCreateWith(
       )
   }
 
-// Option A of the transaction editor designs: the payee and amount up top, the rest in cards
-// under them. A split lists its parts first, in place of the category
-@Composable
-private fun TransactionContent(
-  details: TransactionDetails,
-  scrollState: ScrollState,
-  contentPadding: PaddingValues,
-  modifier: Modifier = Modifier,
-) {
-  val transaction = details.transaction
-  val isSplit = transaction.children.isNotEmpty()
-  Column(
-    modifier =
-      modifier
-        .fillMaxSize()
-        .verticalScroll(scrollState)
-        .padding(contentPadding)
-        .padding(horizontal = CardInset),
-    verticalArrangement = Arrangement.spacedBy(CardSpacing),
-  ) {
-    Hero(details)
-
-    if (isSplit) {
-      SplitParts(transaction)
-      DetailCard {
-        AccountRow(transaction)
-        CardDivider()
-        NotesRow(transaction)
-      }
-    } else {
-      DetailCard {
-        DetailRow(AktualIcons.Tag, Strings.transactionCategory) { CategoryValue(transaction) }
-        CardDivider()
-        AccountRow(transaction)
-        CardDivider()
-        NotesRow(transaction)
-      }
-
-      transaction.balance?.let { BalanceAfter(it) }
-    }
-
-    BottomSpacing()
-  }
-}
-
-@Composable
-private fun Hero(details: TransactionDetails, modifier: Modifier = Modifier) {
-  val transaction = details.transaction
-  val payee = transaction.payeeText()
-  Column(
-    modifier = modifier.fillMaxWidth().padding(HeroPadding),
-    horizontalAlignment = CenterHorizontally,
-    verticalArrangement = Arrangement.spacedBy(HeroSpacing),
-  ) {
-    Avatar(initial = transaction.payee?.firstOrNull { it.isLetterOrDigit() })
-
-    Row(
-      verticalAlignment = CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(IconGap),
-    ) {
-      transaction.scheduleIcon()?.let { icon ->
-        Icon(
-          modifier = Modifier.size(TransferIconSize),
-          imageVector = icon,
-          contentDescription = null,
-          tint = colors.pageText,
-        )
-      }
-      transaction.transferIcon()?.let { icon ->
-        Icon(
-          modifier = Modifier.size(TransferIconSize),
-          imageVector = icon,
-          contentDescription = null,
-          tint = colors.pageText,
-        )
-      }
-      Text(
-        text = payee ?: Strings.transactionsSplitNoPayee,
-        fontSize = PayeeSize,
-        fontWeight = SemiBold,
-        fontStyle = if (payee == null) Italic else null,
-        color = if (payee == null) colors.pageTextLight else colors.pageText,
-        textAlign = Center,
-      )
-    }
-
-    Text(
-      text = transaction.amount.formattedText(includeSign = true),
-      fontSize = HeroAmountSize,
-      fontWeight = Bold,
-      letterSpacing = HeroAmountTracking,
-      color = transaction.amount.heroColor(),
-      style = tabularFigures(),
-      maxLines = 1,
-    )
-
-    Row(
-      verticalAlignment = CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(PillGap),
-    ) {
-      Text(
-        text = "${transaction.date.dayOfWeek.stringLong()} ${transaction.date.formatted()}",
-        fontSize = DateSize,
-        color = colors.pageTextLight,
-      )
-      StatusPill(details)
-    }
-  }
-}
-
-@Composable
-private fun Avatar(initial: Char?, modifier: Modifier = Modifier) =
-  Box(
-    modifier = modifier.size(AvatarSize).background(colors.mobileHeaderBackground, CircleShape),
-    contentAlignment = Center,
-  ) {
-    if (initial != null) {
-      Text(
-        text = initial.uppercase(),
-        fontSize = AvatarTextSize,
-        fontWeight = Bold,
-        color = colors.mobileHeaderText,
-      )
-    } else {
-      Icon(
-        modifier = Modifier.size(AvatarIconSize),
-        imageVector = AktualIcons.Split,
-        contentDescription = null,
-        tint = colors.mobileHeaderText,
-      )
-    }
-  }
-
-@Composable
-private fun StatusPill(details: TransactionDetails, modifier: Modifier = Modifier) {
-  val isCleared = details.cleared || details.reconciled
-  Text(
-    modifier =
-      modifier
-        .background(
-          color = if (isCleared) colors.noticeBackgroundLight else colors.pillBackground,
-          shape = PillShape,
-        )
-        .padding(PillPadding),
-    text =
-      when {
-        details.reconciled -> Strings.transactionReconciled
-        details.cleared -> Strings.transactionCleared
-        else -> Strings.transactionUncleared
-      },
-    fontSize = PillTextSize,
-    fontWeight = SemiBold,
-    color = if (isCleared) colors.noticeText else colors.pillText,
-  )
-}
-
 @Composable
 internal inline fun DetailCard(content: @Composable ColumnScope.() -> Unit) =
   Column(
@@ -666,67 +462,7 @@ internal inline fun DetailCard(content: @Composable ColumnScope.() -> Unit) =
 @Composable internal fun CardDivider() = HorizontalDivider(color = colors.tableBorder)
 
 @Composable
-private fun DetailRow(icon: ImageVector, label: String, value: @Composable () -> Unit) =
-  Row(
-    modifier = Modifier.fillMaxWidth().padding(RowPadding),
-    verticalAlignment = CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(RowIconGap),
-  ) {
-    Icon(
-      modifier = Modifier.size(RowIconSize),
-      imageVector = icon,
-      contentDescription = null,
-      tint = colors.pageTextSubdued,
-    )
-    Column(verticalArrangement = Arrangement.spacedBy(LabelGap)) {
-      Text(text = label, fontSize = LabelSize, color = colors.pageTextSubdued)
-      value()
-    }
-  }
-
-@Composable
-private fun AccountRow(transaction: Transaction) =
-  DetailRow(MaterialIcons.AccountBalanceWallet, Strings.transactionAccount) {
-    Value(transaction.account)
-  }
-
-@Composable
-private fun NotesRow(transaction: Transaction) =
-  DetailRow(MaterialIcons.FormatListBulleted, Strings.transactionNotes) {
-    Value(transaction.notes?.takeIf { it.isNotBlank() })
-  }
-
-// A missing value reads as "None", as upstream's mobile editor shows it
-@Composable
-private fun Value(text: String?, color: Color = colors.pageText) =
-  Text(
-    text = text ?: Strings.transactionNone,
-    fontSize = ValueSize,
-    color = if (text == null) colors.pageTextSubdued else color,
-    fontStyle = if (text == null) Italic else null,
-  )
-
-// What the list shows in place of the category, so a transfer and an off budget transaction read
-// the same here
-@Composable
-private fun CategoryValue(transaction: Transaction) =
-  Value(text = transaction.categoryText(), color = transaction.categoryColor())
-
-@Composable
-private fun Transaction.categoryText(): String? =
-  when {
-    specialCategory != null -> specialCategory?.label()
-    needsCategory -> Strings.transactionsNeedsCategory
-    else -> category
-  }
-
-@Composable
-@ReadOnlyComposable
-private fun Transaction.categoryColor(): Color =
-  if (specialCategory == null && needsCategory) colors.warningText else colors.pageText
-
-@Composable
-private fun BalanceAfter(balance: Amount, modifier: Modifier = Modifier) =
+internal fun BalanceAfter(balance: Amount, modifier: Modifier = Modifier) =
   Row(
     modifier =
       modifier
@@ -750,148 +486,31 @@ private fun BalanceAfter(balance: Amount, modifier: Modifier = Modifier) =
     )
   }
 
-@Composable
-private fun SplitParts(parent: Transaction, modifier: Modifier = Modifier) =
-  Column(modifier = modifier.fillMaxWidth()) {
-    Row(
-      modifier = Modifier.padding(SplitHeaderPadding),
-      verticalAlignment = CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(SplitHeaderGap),
-    ) {
-      Icon(
-        modifier = Modifier.size(SplitIconSize),
-        imageVector = AktualIcons.Split,
-        contentDescription = null,
-        tint = colors.pageTextLight,
-      )
-      Text(
-        text = Strings.transactionSplitInto(parent.totalChildren).uppercase(),
-        fontSize = SplitHeaderSize,
-        fontWeight = SemiBold,
-        letterSpacing = SplitHeaderTracking,
-        color = colors.pageTextLight,
-      )
-    }
-
-    DetailCard {
-      parent.children.fastForEachIndexed { index, child ->
-        if (index > 0) CardDivider()
-        SplitPartRow(child)
-      }
-
-      val remaining = parent.splitRemaining
-      if (remaining != null) {
-        CardDivider()
-        Text(
-          modifier = Modifier.fillMaxWidth().padding(PartPadding),
-          text = Strings.transactionsSplitRemaining(remaining.formattedString()).redacted(),
-          fontSize = ValueSize,
-          fontWeight = SemiBold,
-          color = colors.warningText,
-          textAlign = End,
-        )
-      }
-    }
-  }
-
-@Composable
-private fun SplitPartRow(child: Transaction) =
-  Row(
-    modifier = Modifier.fillMaxWidth().padding(PartPadding),
-    verticalAlignment = CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(PartGap),
-  ) {
-    Box(
-      modifier =
-        Modifier.size(width = PartBarWidth, height = PartBarHeight)
-          .background(colors.buttonPrimaryBackground, PartBarShape),
-    )
-
-    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(LabelGap)) {
-      CategoryValue(child)
-      val subtitle = child.partSubtitle()
-      if (subtitle != null) {
-        Text(text = subtitle, fontSize = LabelSize, color = colors.pageTextLight)
-      }
-    }
-
-    Text(
-      text = child.amount.formattedText(includeSign = true),
-      fontSize = ValueSize,
-      color = child.amount.heroColor(),
-      style = tabularFigures(),
-    )
-  }
-
-// A part's payee, then its notes
-@Composable
-private fun Transaction.partSubtitle(): AnnotatedString? {
-  val notes = notes?.takeIf { it.isNotBlank() }
-  val text = listOfNotNull(payeeLabel(), notes).joinToString(" · ")
-  return if (text.isEmpty()) null else AnnotatedString(text)
-}
-
-@Composable
-private fun Transaction.payeeText(): String? =
-  if (split == Parent && payee == null) null else payeeLabel()
-
-private fun Transaction.transferIcon(): ImageVector? =
-  when (transfer) {
-    To -> AktualIcons.RightArrow2
-    From -> AktualIcons.LeftArrow2
-    null -> null
-  }
-
-// Outgoing money is red here, where the list leaves it plain
-@ReadOnlyComposable
-@Composable
-private fun Amount.heroColor(): Color = if (this < Zero) colors.numberNegative else color()
-
 internal val CardInset = 16.dp
 internal val CardSpacing = 12.dp
 internal val DetailCardShape = RoundedCornerShape(10.dp)
-private val HeroPadding = PaddingValues(start = 8.dp, top = 12.dp, end = 8.dp, bottom = 10.dp)
-private val HeroSpacing = 8.dp
-private val AvatarSize = 56.dp
-private val AvatarIconSize = 24.dp
-private val AvatarTextSize = 22.sp
-private val PayeeSize = 18.sp
+private val HeroPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 4.dp)
+private val HeroSpacing = 10.dp
 internal val HeroAmountSize = 44.sp
 internal val HeroAmountTracking = (-1).sp
 private val DateSize = 14.sp
 private val SaveShape = RoundedCornerShape(percent = 50)
 private val SaveInset = 8.dp
-private val PillGap = 8.dp
-private val PillShape = RoundedCornerShape(12.dp)
-private val PillPadding = PaddingValues(horizontal = 10.dp, vertical = 3.dp)
-private val PillTextSize = 12.sp
-private val TransferIconSize = 16.dp
-private val IconGap = 6.dp
-private val RowPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp)
-private val RowIconSize = 20.dp
-private val RowIconGap = 14.dp
-private val LabelGap = 2.dp
-private val LabelSize = 12.sp
+private val RowPadding = PaddingValues(horizontal = 16.dp, vertical = 15.dp)
+private val RowGap = 12.dp
 internal val ValueSize = 15.sp
 private val BalancePadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
 internal val SplitHeaderPadding = PaddingValues(start = 4.dp, bottom = 8.dp)
-private val SplitHeaderGap = 8.dp
-private val SplitIconSize = 16.dp
 internal val SplitHeaderSize = 13.sp
 internal val SplitHeaderTracking = 1.sp
-private val PartPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
-private val PartGap = 12.dp
-private val PartBarWidth = 4.dp
-private val PartBarHeight = 32.dp
-private val PartBarShape = RoundedCornerShape(2.dp)
 private val ShimmerBarShape = RoundedCornerShape(4.dp)
-private val ShimmerPayeeWidth = 140.dp
+private val ShimmerToggleWidth = 200.dp
+private val ShimmerToggleHeight = 30.dp
 private val ShimmerAmountWidth = 180.dp
 private val ShimmerAmountHeight = 44.dp
-private val ShimmerDateWidth = 200.dp
+private val ShimmerLabelWidth = 72.dp
 private val ShimmerTextHeight = 18.dp
-private val ShimmerRowHeight = 32.dp
-private const val SHIMMER_ROWS = 3
+private const val SHIMMER_ROWS = 6
 
 @PortraitPreview
 @Composable
@@ -905,16 +524,24 @@ private fun PreviewEditTransactionScaffold(
 
 private fun previewLoaded(
   transaction: Transaction,
-  cleared: Boolean = true,
-  reconciled: Boolean = false,
-  mode: TransactionEditMode = View,
+  form: TransactionForm = previewForm(transaction),
 ) =
   EditTransactionState.Loaded(
-    saved = TransactionDetails(transaction, cleared = cleared, reconciled = reconciled),
-    mode = mode,
+    saved =
+      TransactionDetails(
+        transaction,
+        cleared = form.draft.cleared,
+        reconciled = form.draft.reconciled,
+      ),
+    mode = TransactionEditMode.Edit(form),
   )
 
-private fun previewForm(transaction: Transaction, reconciled: Boolean = false) =
+private fun previewForm(
+  transaction: Transaction,
+  cleared: Boolean = true,
+  reconciled: Boolean = false,
+  hasChanges: Boolean = false,
+) =
   TransactionForm(
     draft =
       TransactionFields(
@@ -924,7 +551,7 @@ private fun previewForm(transaction: Transaction, reconciled: Boolean = false) =
         payee = PayeeId("payee"),
         category = CategoryId("category"),
         notes = transaction.notes,
-        cleared = true,
+        cleared = cleared,
         reconciled = reconciled,
       ),
     payeeName = transaction.payee,
@@ -932,7 +559,7 @@ private fun previewForm(transaction: Transaction, reconciled: Boolean = false) =
     accountName = transaction.account,
     isOffBudget = transaction.specialCategory == OffBudget,
     isTransfer = transaction.specialCategory == Transfer,
-    hasChanges = true,
+    hasChanges = hasChanges,
     options =
       TransactionOptions(
         payees = persistentListOf(),
@@ -943,7 +570,7 @@ private fun previewForm(transaction: Transaction, reconciled: Boolean = false) =
   )
 
 private val PREVIEW_SPLIT_FORM =
-  previewForm(TRANSACTION_SPLIT_UNBALANCED)
+  previewForm(TRANSACTION_SPLIT_UNBALANCED, hasChanges = true)
     .copy(
       parts =
         TRANSACTION_SPLIT_UNBALANCED.children
@@ -990,19 +617,13 @@ private class EditTransactionStateProvider :
     Loading,
     EditTransactionState.Failure.NotFound,
     previewLoaded(TRANSACTION_1),
-    previewLoaded(TRANSACTION_TRANSFER.copy(notes = null), reconciled = true),
-    previewLoaded(TRANSACTION_OFF_BUDGET, cleared = false),
-    previewLoaded(TRANSACTION_SPLIT_UNBALANCED),
-    previewLoaded(TRANSACTION_1, mode = TransactionEditMode.Edit(previewForm(TRANSACTION_1))),
+    previewLoaded(TRANSACTION_1, previewForm(TRANSACTION_1, hasChanges = true)),
     previewLoaded(
-      TRANSACTION_OFF_BUDGET,
-      reconciled = true,
-      mode = TransactionEditMode.Edit(previewForm(TRANSACTION_OFF_BUDGET, reconciled = true)),
+      TRANSACTION_TRANSFER.copy(notes = null),
+      previewForm(TRANSACTION_TRANSFER.copy(notes = null), reconciled = true),
     ),
-    previewLoaded(
-      TRANSACTION_SPLIT_UNBALANCED,
-      mode = TransactionEditMode.Edit(PREVIEW_SPLIT_FORM),
-    ),
+    previewLoaded(TRANSACTION_OFF_BUDGET, previewForm(TRANSACTION_OFF_BUDGET, cleared = false)),
+    previewLoaded(TRANSACTION_SPLIT_UNBALANCED, PREVIEW_SPLIT_FORM),
     EditTransactionState.Loaded(
       saved = null,
       mode = TransactionEditMode.Create(PREVIEW_NEW),
