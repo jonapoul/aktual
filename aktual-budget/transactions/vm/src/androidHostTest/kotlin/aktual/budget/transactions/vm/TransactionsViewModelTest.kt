@@ -22,6 +22,7 @@ import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.localChange
+import aktual.budget.tags.domain.TagLabel
 import aktual.di.AppGraph
 import aktual.di.AppScope
 import aktual.di.RunLevelController
@@ -153,6 +154,22 @@ class TransactionsViewModelTest {
     factory =
       viewModelFactory.createManuallyAssistedFactory(TransactionsViewModel.Factory::class).invoke()
     viewModel = factory.create(TransactionsSpec(spec))
+  }
+
+  @Test
+  fun `Tags follow the database`() = runTest {
+    buildViewModel(AllAccounts)
+
+    viewModel.tags.test {
+      assertThat(awaitItem()).isEmpty()
+
+      tags.insert(id = TagId("f"), tag = "food", color = "#FF0000", description = null)
+      tags.insert(id = TagId("b"), tag = "Bills", color = null, description = null)
+      var labels = awaitItem()
+      while (labels.size < 2) labels = awaitItem()
+      assertThat(labels)
+        .containsExactly(TagLabel(TagId("b"), "Bills", null), TagLabel(TagId("f"), "food", Red))
+    }
   }
 
   @Test
