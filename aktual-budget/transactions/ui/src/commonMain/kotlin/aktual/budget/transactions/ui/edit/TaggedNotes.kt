@@ -85,7 +85,7 @@ private fun taggedText(
     tagRangesInNotes(notes).fastForEach { range ->
       append(notes.substring(index, range.first))
       val token = notes.substring(range)
-      val tagColor = tags.firstOrNull { it.name == token.drop(1) }?.color
+      val tagColor = tags.firstOrNull { it.name.equals(token.drop(1), ignoreCase = true) }?.color
       val start = length
       append(CHIP_PADDING)
       withStyle(
