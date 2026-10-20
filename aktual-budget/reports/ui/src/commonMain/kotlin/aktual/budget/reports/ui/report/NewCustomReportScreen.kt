@@ -6,6 +6,7 @@ import aktual.budget.reports.ui.dashboard.NameDialog
 import aktual.budget.reports.vm.report.NewCustomReportViewModel
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +25,7 @@ internal fun NewCustomReportScreen(
   page: DashboardPageId,
   back: BackNavigator,
   toSavedReport: (WidgetId) -> Unit,
+  toTransactions: TransactionsNavigator,
   viewModel: NewCustomReportViewModel = newCustomReportViewModel(page),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -38,6 +40,7 @@ internal fun NewCustomReportScreen(
   LaunchedEffect(Unit) { viewModel.savedEvent.collectLatest { currentToSavedReport(it) } }
 
   val leave = { if (viewModel.hasUnsavedChanges()) showDiscard = true else back() }
+  val drillDown = rememberDrilldown(loaded?.preview, toTransactions)
 
   BackHandler(enabled = isEditing || loaded?.hasChanges == true) {
     if (isEditing) viewModel.stopEditing() else leave()
@@ -54,6 +57,7 @@ internal fun NewCustomReportScreen(
         ReportEditorAction.Revert -> viewModel.revert()
         ReportEditorAction.Save -> showSave = true
         is Edit -> viewModel.edit(action.transform)
+        is DrillDown -> drillDown(action.drilldown)
       }
     },
   )

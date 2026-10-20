@@ -3,12 +3,15 @@ package aktual.budget.reports.vm
 import aktual.budget.formula.ErrorValue
 import aktual.budget.formula.FormulaWarning
 import aktual.budget.model.Amount
+import aktual.budget.model.CategoryId
 import aktual.budget.model.WidgetType
 import aktual.core.model.Percent
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.YearMonth
@@ -359,4 +362,7 @@ data class CustomData(
   val categoryGroups: ImmutableList<CustomGroupTotals>,
   val totals: CustomTotals,
   val trends: ImmutableMap<CustomGroup, CustomTrend>,
+  // What a drilled down list needs to leave out the rows the report doesn't show
+  val hiddenCategories: ImmutableSet<CategoryId> = persistentSetOf(),
+  val tagScope: ImmutableList<String> = persistentListOf(),
 ) : ChartData

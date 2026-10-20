@@ -4,6 +4,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.GroupBy
 import aktual.budget.model.Interval
 import aktual.budget.reports.vm.CustomData
+import aktual.budget.reports.vm.CustomDrilldown
 import aktual.budget.reports.vm.CustomGroup
 import aktual.budget.reports.vm.CustomInterval
 import aktual.budget.reports.vm.CustomMetric
@@ -40,6 +41,7 @@ import com.patrykandpatrick.vico.compose.cartesian.data.columnModel
 import com.patrykandpatrick.vico.compose.cartesian.layer.ColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.marker.ColumnCartesianLayerMarkerTarget
 import com.patrykandpatrick.vico.compose.cartesian.marker.DefaultCartesianMarker
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
@@ -59,6 +61,7 @@ internal fun CustomBarChart(
   bars: ImmutableList<CustomBar>,
   compact: Boolean,
   modifier: Modifier = Modifier,
+  onDrilldown: OnDrilldown? = null,
 ) {
   val metric = data.config.balanceType.metric
   val modelProducer = remember { CartesianChartModelProducer() }
@@ -100,6 +103,12 @@ internal fun CustomBarChart(
         marker =
           if (compact) null else rememberMarker(valueFormatter = markerFormatter, lineCount = 2),
         markerVisibilityListener = rememberMarkerHaptics(compact),
+        markerController =
+          rememberDrilldownController(
+            onDrilldown?.let { onTap ->
+              { _, targets -> bars.getOrNull(targets.index())?.let { onTap(it.drilldown) } }
+            },
+          ),
       ),
   )
 }
@@ -112,6 +121,7 @@ internal fun CustomStackedBarChart(
   legend: ImmutableList<CustomBar>,
   compact: Boolean,
   modifier: Modifier = Modifier,
+  onDrilldown: OnDrilldown? = null,
 ) {
   val labels = intervalLabels(data)
   val stacks = remember(data, legend) { customStacks(data, legend) }
@@ -158,6 +168,12 @@ internal fun CustomStackedBarChart(
             rememberMarker(valueFormatter = markerFormatter, lineCount = markerLines(legend.size))
           },
         markerVisibilityListener = rememberMarkerHaptics(compact),
+        markerController =
+          rememberDrilldownController(
+            onDrilldown?.let { onTap ->
+              { y, targets -> stackDrilldown(data, legend, y, targets)?.let(onTap) }
+            },
+          ),
       ),
   )
 }
@@ -192,8 +208,16 @@ internal fun customBars(
     } else {
       data.groups.map { it.totals }
     }
+  val drilldowns =
+    if (groupBy == GroupBy.Interval) {
+      data.intervals.map { CustomDrilldown(interval = it.interval) }
+    } else {
+      data.groups.map { CustomDrilldown(group = it.group) }
+    }
   return totals
-    .mapIndexed { index, item -> CustomBar(names[index], item[metric], theme.qualitative(index)) }
+    .mapIndexed { index, item ->
+      CustomBar(names[index], item[metric], theme.qualitative(index), drilldowns[index])
+    }
     .toImmutableList()
 }
 
@@ -207,7 +231,8 @@ internal fun intervalBars(
   return data.intervals
     .mapIndexed { index, item ->
       val amount = item.totals[metric]
-      CustomBar(names[index], amount, theme.intervalColor(metric, amount))
+      val drilldown = CustomDrilldown(interval = item.interval)
+      CustomBar(names[index], amount, theme.intervalColor(metric, amount), drilldown)
     }
     .toImmutableList()
 }
@@ -223,6 +248,20 @@ internal fun customStacks(data: CustomData, legend: List<CustomBar>): List<List<
       bar.copy(amount = interval.stacked[group.group] ?: Zero)
     }
   }
+
+// The group and interval of the stacked column under a tap. Series run in reverse legend order
+internal fun stackDrilldown(
+  data: CustomData,
+  legend: List<CustomBar>,
+  y: Float,
+  targets: List<CartesianMarker.Target>,
+): CustomDrilldown? {
+  val interval = data.intervals.getOrNull(targets.index())?.interval ?: return null
+  val series =
+    targets.filterIsInstance<ColumnCartesianLayerMarkerTarget>().firstOrNull()?.seriesAt(y)
+  val group = series?.let { legend.getOrNull(legend.lastIndex - it) }?.drilldown?.group
+  return CustomDrilldown(group = group, interval = interval)
+}
 
 // Each group's amounts across the intervals. Stacked bottom up, so the first group goes last
 internal fun stackSeries(stacks: List<List<CustomBar>>): List<List<Double>> {

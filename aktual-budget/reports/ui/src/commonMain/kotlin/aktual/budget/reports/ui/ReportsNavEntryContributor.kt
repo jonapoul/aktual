@@ -19,6 +19,7 @@ import aktual.core.nav.ReportNavigator
 import aktual.core.nav.ReportsListNavRoute
 import aktual.core.nav.SearchReportsNavRoute
 import aktual.core.nav.SearchReportsNavigator
+import aktual.core.nav.TransactionsNavigator
 import aktual.di.BudgetScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
@@ -43,7 +44,11 @@ class ReportsNavEntryContributor : BudgetNavEntryContributor {
     }
 
     budgetEntry<ReportNavRoute> { route ->
-      ReportScreen(id = route.id, back = BackNavigator(stack))
+      ReportScreen(
+        id = route.id,
+        back = BackNavigator(stack),
+        toTransactions = TransactionsNavigator(stack),
+      )
     }
 
     budgetEntry<CreateReportNavRoute> { route ->
@@ -69,6 +74,7 @@ class ReportsNavEntryContributor : BudgetNavEntryContributor {
           stack.pop()
           ReportNavigator(stack)(id)
         },
+        toTransactions = TransactionsNavigator(stack),
       )
     }
   }

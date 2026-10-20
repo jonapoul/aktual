@@ -13,6 +13,7 @@ import aktual.budget.reports.vm.report.CustomReportState
 import aktual.budget.reports.vm.report.CustomReportViewModel
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
@@ -45,6 +46,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 internal fun CustomReportScreen(
   id: WidgetId,
   back: BackNavigator,
+  toTransactions: TransactionsNavigator,
   viewModel: CustomReportViewModel = customReportViewModel(id),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -54,6 +56,7 @@ internal fun CustomReportScreen(
   val isEditing = loaded?.isEditing == true
 
   val leave = { if (viewModel.hasUnsavedChanges()) showDiscard = true else back() }
+  val drillDown = rememberDrilldown(loaded?.preview, toTransactions)
 
   BackHandler(enabled = isEditing || loaded?.hasChanges == true) {
     if (isEditing) viewModel.stopEditing() else leave()
@@ -70,6 +73,7 @@ internal fun CustomReportScreen(
         ReportEditorAction.Revert -> viewModel.revert()
         ReportEditorAction.Save -> viewModel.save()
         is Edit -> viewModel.edit(action.transform)
+        is DrillDown -> drillDown(action.drilldown)
       }
     },
   )
@@ -173,6 +177,9 @@ private fun CustomReportContent(
     preview = state.preview,
     isEditing = isEditing,
     zoom = zoom,
+    onChartAction = { action ->
+      if (action is DrillDown) onAction(CustomReportAction.DrillDown(action.drilldown))
+    },
   ) {
     if (isEditing) {
       CustomReportSettings(

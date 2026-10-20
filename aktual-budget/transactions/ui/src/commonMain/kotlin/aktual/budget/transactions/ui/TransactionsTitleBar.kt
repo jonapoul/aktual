@@ -63,6 +63,7 @@ internal fun TransactionsTitleBar(
           Closed -> Strings.transactionsTitleClosed
         }
       is SpecificTag -> "#${loadedAccount.tag}"
+      is Filtered -> loadedAccount.title
       is SpecificCategory ->
         loadedAccount.month?.let {
           Strings.transactionsCategoryTitle(loadedAccount.name, it.stringLong())
@@ -185,6 +186,7 @@ private class TransactionsTitleBarProvider :
     LoadedAccount.Group(OnBudget),
     LoadedAccount.SpecificTag("groceries"),
     LoadedAccount.SpecificCategory("Groceries", PREVIEW_MONTH),
+    LoadedAccount.Filtered("Groceries · Mar 26"),
   )
 
 private val PREVIEW_MONTH = YearMonth(2026, 10)

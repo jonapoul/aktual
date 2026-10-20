@@ -635,5 +635,5 @@ internal fun weekStart(date: LocalDate, firstDayOfWeek: FirstDayOfWeek): LocalDa
 private const val DAY_DIVISOR = 1L
 private const val MONTH_DIVISOR = 100L
 private const val YEAR_DIVISOR = 10_000L
-private const val LAST_DAY_OF_DECEMBER = 31
+internal const val LAST_DAY_OF_DECEMBER = 31
 internal const val DAYS_PER_WEEK = 7

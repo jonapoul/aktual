@@ -21,6 +21,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ZoomOut
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
@@ -68,6 +69,7 @@ import kotlinx.collections.immutable.persistentListOf
 fun ReportScreen(
   id: WidgetId,
   back: BackNavigator,
+  toTransactions: TransactionsNavigator,
   viewModel: ReportViewModel = reportViewModel(id),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -80,7 +82,7 @@ fun ReportScreen(
     return
   }
   if (state == Custom) {
-    CustomReportScreen(id = id, back = back)
+    CustomReportScreen(id = id, back = back, toTransactions = toTransactions)
     return
   }
   if (state == BudgetAnalysis) {

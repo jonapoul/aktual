@@ -114,9 +114,10 @@ fun ReportsDashboardScreen(
         is SetSummaryType -> TODO()
         is SetAllTimeDivisor -> TODO()
         is ClickCalendarDay -> TODO()
-        // Text is only edited from the report screen
+        // Text is only edited, and custom reports only drilled into, from the report screen
         is SaveText,
-        is SetUnsavedText -> Unit
+        is SetUnsavedText,
+        is DrillDown -> Unit
         CreateNewReport -> viewModel.createReport()
         OpenSearch -> toSearch()
         is SelectPage -> viewModel.selectPage(action.id)

@@ -3,6 +3,7 @@ package aktual.core.nav
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.CategoryId
+import aktual.budget.model.ConditionsFilter
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
@@ -35,6 +36,9 @@ class TransactionsNavigator(private val stack: NavStack<BudgetNavKey>) {
 
   operator fun invoke(category: CategoryId, month: YearMonth) =
     stack.push(CategoryTransactionsNavRoute(category, month))
+
+  operator fun invoke(title: String, filter: ConditionsFilter) =
+    stack.push(FilteredTransactionsNavRoute(title, filter))
 }
 
 @Immutable

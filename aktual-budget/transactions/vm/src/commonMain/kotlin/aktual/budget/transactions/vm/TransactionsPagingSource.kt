@@ -1,13 +1,18 @@
 package aktual.budget.transactions.vm
 
+import aktual.budget.db.GetFilterRows
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.dao.TransactionNotes
 import aktual.budget.db.dao.TransactionRow
+import aktual.budget.model.Amount
+import aktual.budget.model.ConditionsFilter
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.notesContainTag
+import aktual.budget.rules.domain.ConditionsMatcher
+import aktual.budget.rules.domain.FilterRow
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import kotlinx.coroutines.CancellationException
@@ -22,6 +27,9 @@ internal class TransactionsPagingSource(
   // source is created whenever the data is invalidated.
   private var filteredIds: FilteredIds? = null
 
+  // The same for a report's drilled down list, whose conditions are matched in memory
+  private var filterIds: List<TransactionId>? = null
+
   private val accountId = (spec.accountSpec as? SpecificAccount)?.id
 
   override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Transaction> =
@@ -35,27 +43,34 @@ internal class TransactionsPagingSource(
       val offset = start.toLong()
       val limit = size.toLong()
 
+      val filtered = spec.filtered
+      val tagSpec = spec.tagSpec
       val transactions =
-        when (val tagSpec = spec.tagSpec) {
-          AllTags -> {
-            loadPage(limit, offset)
+        when {
+          // As category lists, a report's drilled down list has no balance and shows split parts
+          filtered != null -> {
+            val ids = filterIds ?: loadFilterIds(filtered.filter).also { filterIds = it }
+            transactionDao.getByIds(ids.page(offset, limit)).map {
+              it.toTransaction(balance = null)
+            }
           }
 
           // A running balance means little over a subset of the account, so tag lists have none
-          is SpecificTag -> {
-            val filtered = filteredIds ?: loadFilteredIds(tagSpec.id).also { filteredIds = it }
-            val ids = filtered.ids
-            val from = offset.toInt().coerceIn(0, ids.size)
-            val to = (from + limit.toInt()).coerceAtMost(ids.size)
-            val rows = transactionDao.getByIds(ids.subList(from, to))
+          tagSpec is SpecificTag -> {
+            val tagged = filteredIds ?: loadFilteredIds(tagSpec.id).also { filteredIds = it }
+            val rows = transactionDao.getByIds(tagged.ids.page(offset, limit))
             val children = childrenOf(rows)
             rows.map { row ->
               row.toTransaction(
                 balance = null,
                 children = children[row.id].orEmpty(),
-                shownChildren = filtered.children,
+                shownChildren = tagged.children,
               )
             }
+          }
+
+          else -> {
+            loadPage(limit, offset)
           }
         }
 
@@ -135,6 +150,17 @@ internal class TransactionsPagingSource(
     }
   }
 
+  private suspend fun loadFilterIds(filter: ConditionsFilter): List<TransactionId> {
+    val matcher = ConditionsMatcher(filter)
+    return transactionDao.getFilterRows().filter { matcher.matches(it.toFilterRow()) }.map { it.id }
+  }
+
+  private fun List<TransactionId>.page(offset: Long, limit: Long): List<TransactionId> {
+    val from = offset.toInt().coerceIn(0, size)
+    val to = (from + limit.toInt()).coerceAtMost(size)
+    return subList(from, to)
+  }
+
   // A split takes one slot, as its parent, if the parent or any of its children match
   private fun groupSplits(
     rows: List<TransactionNotes>,
@@ -162,3 +188,24 @@ internal class TransactionsPagingSource(
       anchorPage?.let { it.prevKey ?: 0 }
     }
 }
+
+private fun GetFilterRows.toFilterRow() =
+  FilterRow(
+    date = date,
+    amount = Amount(amount),
+    account = account,
+    accountName = account_name,
+    offBudget = off_budget == true,
+    payee = payee,
+    payeeName = payee_name,
+    importedPayee = imported_payee?.value,
+    category = category,
+    categoryName = category_name,
+    categoryGroup = category_group,
+    categoryGroupName = category_group_name,
+    notes = notes,
+    cleared = cleared == true,
+    reconciled = reconciled == true,
+    isTransfer = transfer_id != null,
+    isParent = is_parent == true,
+  )
