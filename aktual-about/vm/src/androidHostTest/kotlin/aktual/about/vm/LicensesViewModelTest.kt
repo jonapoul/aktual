@@ -8,14 +8,11 @@ import aktual.about.data.LicensesLoadState.Success
 import aktual.about.data.LicensesRepository
 import aktual.about.vm.LicensesState.Error
 import aktual.about.vm.LicensesState.Loaded
-import aktual.core.UrlOpener
 import aktual.test.assertThatNextEmissionIsEqualTo
 import app.cash.turbine.TurbineTestContext
 import app.cash.turbine.test
 import io.mockk.coEvery
-import io.mockk.confirmVerified
 import io.mockk.mockk
-import io.mockk.verify
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlinx.collections.immutable.toImmutableList
@@ -30,12 +27,10 @@ class LicensesViewModelTest {
 
   // mock
   private lateinit var repository: LicensesRepository
-  private lateinit var urlOpener: UrlOpener
 
   @BeforeTest
   fun before() {
     repository = mockk(relaxed = true)
-    urlOpener = mockk(relaxed = true)
   }
 
   @Test
@@ -82,18 +77,6 @@ class LicensesViewModelTest {
   }
 
   @Test
-  fun `Open URL`() = runTest {
-    // When
-    val url = "www.website.com/whatever"
-    buildViewModel()
-    viewModel.openUrl(url)
-
-    // Then
-    verify(exactly = 1) { urlOpener(url) }
-    confirmVerified(urlOpener)
-  }
-
-  @Test
   fun `Sort licenses`() = runTest {
     // Given libraries in their default order
     val apple = EXAMPLE_MODEL.copy(artifactId = "a", name = "apple", spdxLicenses = setOf(MIT))
@@ -122,7 +105,7 @@ class LicensesViewModelTest {
   }
 
   private fun buildViewModel() {
-    viewModel = LicensesViewModel(licensesRepository = repository, urlOpener = urlOpener)
+    viewModel = LicensesViewModel(licensesRepository = repository)
   }
 
   private suspend fun TurbineTestContext<LicensesState>.assertLoaded(

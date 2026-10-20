@@ -58,6 +58,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -73,6 +74,7 @@ fun InfoScreen(
   toLogs: LogsNavigator,
   viewModel: AboutViewModel = metroViewModel(),
 ) {
+  val uriHandler = LocalUriHandler.current
   val buildState by viewModel.buildState.collectAsStateWithLifecycle()
   val checkUpdatesState by viewModel.checkUpdatesState.collectAsStateWithLifecycle()
   val onCancel = { viewModel.cancelUpdateCheck() }
@@ -88,7 +90,7 @@ fun InfoScreen(
         latestVersion = state.version,
         latestUrl = state.url,
         onDismiss = onCancel,
-        onOpenUrl = { url -> viewModel.openUrl(url) },
+        onOpenUrl = uriHandler::openUri,
       )
   }
 
@@ -96,8 +98,8 @@ fun InfoScreen(
     buildState = buildState,
     onAction = { action ->
       when (action) {
-        OpenSourceCode -> viewModel.openRepo()
-        ReportIssue -> viewModel.reportIssues()
+        OpenSourceCode -> uriHandler.openUri(viewModel.repoUrl)
+        ReportIssue -> uriHandler.openUri(viewModel.reportIssueUrl)
         CheckUpdates -> viewModel.fetchLatestRelease()
         NavBack -> back()
         ViewLicenses -> toLicenses()

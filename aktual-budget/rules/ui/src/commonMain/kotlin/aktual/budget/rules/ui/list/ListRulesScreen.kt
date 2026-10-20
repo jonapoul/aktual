@@ -79,6 +79,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -98,6 +99,7 @@ fun ListRulesScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   val checkboxes by viewModel.checkboxes.collectAsStateWithLifecycle()
   var pendingDelete by remember { mutableStateOf<ImmutableSet<RuleId>?>(null) }
+  val uriHandler = LocalUriHandler.current
 
   CompositionLocalProvider(LocalNameFetcher provides viewModel.nameFetcher) {
     ListRulesScaffold(
@@ -111,7 +113,7 @@ fun ListRulesScreen(
           is Delete -> pendingDelete = persistentSetOf(action.id)
           is DeleteMultiple -> pendingDelete = action.ids
           is Edit -> editRule(action.id)
-          is OpenUrl -> TODO()
+          is OpenUrl -> uriHandler.openUri(action.url)
           is Check -> viewModel.check(action.id)
           is Uncheck -> viewModel.uncheck(action.id)
           UncheckAll -> viewModel.uncheckAll()
@@ -204,6 +206,7 @@ private fun CollapsingHeader(
     modifier =
       modifier
         .fillMaxWidth()
+        .padding(horizontal = 4.dp)
         .clipToBounds()
         .layout { measurable, constraints ->
           val placeable = measurable.measure(constraints)

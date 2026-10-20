@@ -49,6 +49,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -62,6 +63,7 @@ fun LicensesScreen(
   toSearch: SearchLicensesNavigator,
   viewModel: LicensesViewModel = metroViewModel(),
 ) {
+  val uriHandler = LocalUriHandler.current
   val licensesState by viewModel.licensesState.collectAsStateWithLifecycle()
   val sorting by viewModel.sorting.collectAsStateWithLifecycle()
   var showSortSheet by remember { mutableStateOf(false) }
@@ -78,7 +80,7 @@ fun LicensesScreen(
         ShowSortSheet -> showSortSheet = true
         DismissSortSheet -> showSortSheet = false
         is SetSorting -> viewModel.setSorting(action.sorting)
-        is LaunchUrl -> viewModel.openUrl(action.url)
+        is LaunchUrl -> uriHandler.openUri(action.url)
       }
     },
   )

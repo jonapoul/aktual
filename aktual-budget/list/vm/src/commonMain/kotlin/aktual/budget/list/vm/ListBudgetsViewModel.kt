@@ -10,7 +10,6 @@ import aktual.budget.list.vm.ListBudgetsState.Success
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.directoryId
-import aktual.core.UrlOpener
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.di.LoggedInScope
@@ -51,7 +50,6 @@ class ListBudgetsViewModel(
   private val files: BudgetFiles,
   private val contexts: CoroutineContexts,
   private val syncApi: SyncApi,
-  private val urlOpener: UrlOpener,
   private val appPreferences: AppPreferences,
   private val runLevels: RunLevelController,
 ) : ViewModel() {
@@ -181,11 +179,6 @@ class ListBudgetsViewModel(
         applyReconcile(lastUserFiles)
       }
     }
-  }
-
-  fun open(serverUrl: ServerUrl?) {
-    val url = serverUrl?.toString() ?: return
-    urlOpener(url)
   }
 
   fun logOut() {

@@ -3,7 +3,6 @@ package aktual.about.vm
 import aktual.about.data.GithubRepository
 import aktual.about.data.LatestReleaseState.UpdateAvailable
 import aktual.about.vm.CheckUpdatesState.UpdateFound
-import aktual.core.UrlOpener
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.test.TestBuildConfig
 import aktual.test.TestInstant
@@ -12,9 +11,7 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import github.api.model.GithubRelease
 import io.mockk.coEvery
-import io.mockk.confirmVerified
 import io.mockk.mockk
-import io.mockk.verify
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -29,12 +26,10 @@ class AboutViewModelTest {
 
   // mock
   private lateinit var repository: GithubRepository
-  private lateinit var urlOpener: UrlOpener
 
   @Before
   fun before() {
     repository = mockk()
-    urlOpener = mockk(relaxed = true)
     aktualVersionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
 
     viewModel =
@@ -42,7 +37,6 @@ class AboutViewModelTest {
         savedState = SavedStateHandle(),
         buildConfig = TestBuildConfig,
         githubRepository = repository,
-        urlOpener = urlOpener,
         aktualVersionsStateHolder = aktualVersionsStateHolder,
       )
   }
@@ -79,25 +73,5 @@ class AboutViewModelTest {
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
     }
-  }
-
-  @Test
-  fun `Open issues page`() = runTest {
-    // When
-    viewModel.reportIssues()
-
-    // Then
-    verify(exactly = 1) { urlOpener("https://github.com/jonapoul/aktual/issues/new") }
-    confirmVerified(urlOpener)
-  }
-
-  @Test
-  fun `Open repo page`() = runTest {
-    // When
-    viewModel.openRepo()
-
-    // Then
-    verify(exactly = 1) { urlOpener("https://github.com/jonapoul/aktual") }
-    confirmVerified(urlOpener)
   }
 }

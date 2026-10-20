@@ -82,6 +82,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -96,6 +97,7 @@ fun InspectThemeScreen(
   themeId: ThemeId,
   viewModel: InspectThemeViewModel = metroViewModel(themeId),
 ) {
+  val uriHandler = LocalUriHandler.current
   val state by viewModel.state.collectAsStateWithLifecycle()
   val sorting by viewModel.sorting.collectAsStateWithLifecycle()
   var showSortSheet by remember { mutableStateOf(false) }
@@ -119,7 +121,7 @@ fun InspectThemeScreen(
       when (action) {
         NavBack -> back()
         OpenSearch -> toSearch(themeId)
-        OpenRepo -> viewModel.openRepo()
+        OpenRepo -> uriHandler.openUri(viewModel.repoUrl)
         Retry -> viewModel.retry()
         ShowSortSheet -> showSortSheet = true
         DismissSortSheet -> showSortSheet = false

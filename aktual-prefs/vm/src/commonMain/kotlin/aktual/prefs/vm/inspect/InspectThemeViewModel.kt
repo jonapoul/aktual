@@ -1,6 +1,5 @@
 package aktual.prefs.vm.inspect
 
-import aktual.core.UrlOpener
 import aktual.core.UuidGenerator
 import aktual.core.model.ThemeId
 import aktual.core.theme.Colors
@@ -45,7 +44,6 @@ import logcat.logcat
 class InspectThemeViewModel(
   @Assisted private val themeId: ThemeId,
   private val themeResolver: ThemeResolver,
-  private val urlOpener: UrlOpener,
   private val cache: CustomThemeCache,
   private val preferences: ThemePreferences,
   private val uuidGenerator: UuidGenerator,
@@ -80,9 +78,7 @@ class InspectThemeViewModel(
     retry()
   }
 
-  fun openRepo() {
-    urlOpener("https://github.com/${themeId.value}")
-  }
+  val repoUrl: String = "https://github.com/${themeId.value}"
 
   fun setSorting(sorting: PropertySorting) {
     mutableSorting.update { sorting }
