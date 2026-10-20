@@ -1,6 +1,7 @@
 package aktual.budget.model
 
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEmpty
 import assertk.assertions.isFalse
@@ -67,8 +68,15 @@ class TagMatchingTest {
   @Test
   fun `Tag containing regex-special characters`() {
     // Upstream has a "#$Bug_Test" case; '$' must be treated literally
-    assertThat(tagsInNotes("Follow up #\$Bug_Test issue")).containsExactlyInAnyOrder("\$bug_test")
-    assertThat(notesContainTag("Follow up #\$Bug_Test issue", "\$bug_test")).isTrue()
+    assertThat(tagsInNotes($$"Follow up #$Bug_Test issue")).containsExactlyInAnyOrder($$"$bug_test")
+    assertThat(notesContainTag($$"Follow up #$Bug_Test issue", $$"$bug_test")).isTrue()
+  }
+
+  @Test
+  fun `Tag ranges include the hash`() {
+    assertThat(tagRangesInNotes("lunch #food#travel ##no #x"))
+      .containsExactly(6..10, 11..17, 24..25)
+    assertThat(tagRangesInNotes("no tags")).isEmpty()
   }
 
   @Test

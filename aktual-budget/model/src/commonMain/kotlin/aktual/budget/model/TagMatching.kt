@@ -18,5 +18,9 @@ fun tagsInNotes(notes: String): Set<String> =
 fun tagNamesInNotes(notes: String): List<String> =
   TAG_TOKEN.findAll(notes).map { it.groupValues[1] }.distinct().toList()
 
+// Where each tag token sits in [notes], including its leading '#'
+fun tagRangesInNotes(notes: String): List<IntRange> =
+  TAG_TOKEN.findAll(notes).map { it.range }.toList()
+
 // Whether [notes] references the tag named [tag] (case-insensitive).
 fun notesContainTag(notes: String, tag: String): Boolean = tag.lowercase() in tagsInNotes(notes)
