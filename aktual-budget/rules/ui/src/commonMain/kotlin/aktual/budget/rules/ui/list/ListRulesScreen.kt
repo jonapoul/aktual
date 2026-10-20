@@ -69,6 +69,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -341,6 +344,9 @@ private fun ContentSuccess(
   Column(modifier) {
     // Pass the top inset as the LazyColumn's contentPadding (not Modifier.padding on the Column)
     // so items rest below the bar but scroll up *behind* it, which is what reveals the haze.
+    // only one row may be swiped open at a time - opening another closes the previous one
+    var openId by remember { mutableStateOf<RuleId?>(null) }
+
     LazyColumn(
       modifier = Modifier.scrollbar(listState).weight(1f),
       state = listState,
@@ -352,6 +358,15 @@ private fun ContentSuccess(
           modifier = Modifier.animateItem(),
           rule = rule,
           checkboxes = checkboxes,
+          isOpen = openId == rule.id,
+          onOpenChange = { open ->
+            openId =
+              when {
+                open -> rule.id
+                openId == rule.id -> null
+                else -> openId
+              }
+          },
           onAction = onAction,
         )
       }

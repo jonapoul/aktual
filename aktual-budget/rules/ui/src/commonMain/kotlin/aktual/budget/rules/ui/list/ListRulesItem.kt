@@ -9,17 +9,12 @@ import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.list.CheckboxesState
 import aktual.budget.rules.vm.list.CheckboxesState.Active
 import aktual.budget.rules.vm.list.CheckboxesState.Inactive
-import aktual.core.icons.material.DeleteForever
-import aktual.core.icons.material.Edit
+import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
-import aktual.core.ui.AktualDropdownMenu
-import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
@@ -28,7 +23,10 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
+import aktual.core.ui.SwipeAction
+import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.checkbox
+import aktual.core.ui.contrastingTextColor
 import aktual.core.ui.isCompactWidth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -48,10 +46,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -65,11 +59,45 @@ import androidx.compose.ui.util.fastForEachIndexed
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+
+@Composable
+internal fun ListRulesItem(
+  rule: Rule,
+  checkboxes: CheckboxesState,
+  isOpen: Boolean,
+  onOpenChange: (Boolean) -> Unit,
+  onAction: ListRulesActionHandler,
+  modifier: Modifier = Modifier,
+) {
+  val deleteBackground = colors.errorText
+  SwipeToReveal(
+    actions =
+      persistentListOf(
+        SwipeAction(
+          text = Strings.rulesItemDelete,
+          icon = MaterialIcons.Delete,
+          background = deleteBackground,
+          foreground = deleteBackground.contrastingTextColor(),
+          onClick = {
+            onOpenChange(false)
+            onAction(Delete(rule.id))
+          },
+        ),
+      ),
+    isOpen = isOpen,
+    onOpenChange = onOpenChange,
+    modifier = modifier,
+    shape = RowShape,
+  ) {
+    ListRulesItemRow(rule = rule, checkboxes = checkboxes, onAction = onAction)
+  }
+}
 
 /** Keep this in sync with [ShimmerListRulesItem] */
 @Composable
-internal fun ListRulesItem(
+private fun ListRulesItemRow(
   rule: Rule,
   checkboxes: CheckboxesState,
   onAction: ListRulesActionHandler,
@@ -101,37 +129,6 @@ internal fun ListRulesItem(
       }
 
       ItemContent(rule)
-
-      var showMenu by remember { mutableStateOf(false) }
-
-      Box {
-        BareIconButton(
-          imageVector = MaterialIcons.MoreVert,
-          contentDescription = Strings.rulesItemMenu,
-          onClick = { showMenu = true },
-        )
-
-        val onDismiss = { showMenu = false }
-
-        AktualDropdownMenu(expanded = showMenu, onDismissRequest = onDismiss) {
-          AktualDropdownMenuItem(
-            text = Strings.rulesItemEdit,
-            leadingIcon = MaterialIcons.Edit,
-            onClick = {
-              onDismiss()
-              onAction(Edit(rule.id))
-            },
-          )
-          AktualDropdownMenuItem(
-            text = Strings.rulesItemDelete,
-            leadingIcon = MaterialIcons.DeleteForever,
-            onClick = {
-              onDismiss()
-              onAction(Delete(rule.id))
-            },
-          )
-        }
-      }
     }
 
     if (rule.stage.showBadge()) {
@@ -247,7 +244,7 @@ private fun ListRulesItemActions(
   }
 }
 
-/** Keep this in sync with [ListRulesItem] */
+/** Keep this in sync with [ListRulesItemRow] */
 @Composable
 internal fun ShimmerListRulesItem(
   checkboxes: CheckboxesState,
@@ -299,17 +296,6 @@ internal fun ShimmerListRulesItem(
             .background(colors.pageText, CardShape),
       )
     }
-
-    Box(
-      modifier = Modifier.size(LocalMinimumInteractiveComponentSize.current),
-      contentAlignment = Center,
-    ) {
-      Box(
-        modifier =
-          Modifier.size(LocalMinimumInteractiveComponentSize.current / 2)
-            .background(colors.pageText, CardShape),
-      )
-    }
   }
 }
 
@@ -333,16 +319,27 @@ private fun PreviewListRulesItem(
   @PreviewParameter(ListRulesItemProvider::class) params: ColoredParams<ListRulesItemParams>,
 ) =
   PreviewWithColoredParams(params) {
-    ListRulesItem(rule = item, checkboxes = checkboxes, onAction = {})
+    ListRulesItem(
+      rule = item,
+      checkboxes = checkboxes,
+      isOpen = isOpen,
+      onOpenChange = {},
+      onAction = {},
+    )
   }
 
-private data class ListRulesItemParams(val item: Rule, val checkboxes: CheckboxesState = Inactive)
+private data class ListRulesItemParams(
+  val item: Rule,
+  val checkboxes: CheckboxesState = Inactive,
+  val isOpen: Boolean = false,
+)
 
 private class ListRulesItemProvider :
   ColoredParameterProvider<ListRulesItemParams>(
     ListRulesItemParams(item = PreviewRule1),
     ListRulesItemParams(item = PreviewRule1.copy(stage = Pre)),
     ListRulesItemParams(item = PreviewRule2.copy(stage = Post)),
+    ListRulesItemParams(item = PreviewRule1, isOpen = true),
     ListRulesItemParams(item = PreviewRule2, checkboxes = Active(persistentSetOf(PreviewRule2.id))),
   )
 
