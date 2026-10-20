@@ -12,6 +12,14 @@
 
   <string name="rules_item_delete">Delete</string>
 
+  <plurals name="rules_delete_dialog_title">
+    <item quantity="one">Delete %1$d rule?</item>
+    <item quantity="other">Delete %1$d rules?</item>
+  </plurals>
+  <string name="rules_delete_dialog_message">This can't be undone.</string>
+  <string name="rules_delete_dialog_cancel">Cancel</string>
+  <string name="rules_delete_dialog_confirm">Delete</string>
+
   <string name="rules_header_text">Rules are always run in the order that you see them.</string>
   <string name="rules_header_learn_more">Learn more</string>
 

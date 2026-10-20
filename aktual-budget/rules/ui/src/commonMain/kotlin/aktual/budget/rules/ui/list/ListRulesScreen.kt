@@ -97,6 +97,7 @@ fun ListRulesScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val checkboxes by viewModel.checkboxes.collectAsStateWithLifecycle()
+  var pendingDelete by remember { mutableStateOf<ImmutableSet<RuleId>?>(null) }
 
   CompositionLocalProvider(LocalNameFetcher provides viewModel.nameFetcher) {
     ListRulesScaffold(
@@ -107,8 +108,8 @@ fun ListRulesScreen(
         when (action) {
           Reload -> viewModel.reload()
           CreateNew -> editRule()
-          is Delete -> viewModel.delete(action.id)
-          is DeleteMultiple -> viewModel.delete(action.ids)
+          is Delete -> pendingDelete = persistentSetOf(action.id)
+          is DeleteMultiple -> pendingDelete = action.ids
           is Edit -> editRule(action.id)
           is OpenUrl -> TODO()
           is Check -> viewModel.check(action.id)
@@ -118,6 +119,17 @@ fun ListRulesScreen(
           EnableCheckboxes -> viewModel.showCheckboxes()
         }
       },
+    )
+  }
+
+  pendingDelete?.let { ids ->
+    DeleteRulesDialog(
+      count = ids.size,
+      onConfirm = {
+        viewModel.delete(ids)
+        pendingDelete = null
+      },
+      onDismiss = { pendingDelete = null },
     )
   }
 }
