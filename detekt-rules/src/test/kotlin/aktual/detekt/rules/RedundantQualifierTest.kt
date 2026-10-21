@@ -324,6 +324,72 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
     assertNotReported("fun foo(any: Any?) = any ?: Role.Admin", "Role.Admin" to "Admin")
 
   @Test
+  fun `reports enum entry in a comparison`() =
+    assertReported("fun foo(role: Role) = role > Role.Admin", "Role.Admin" to "Admin")
+
+  @Test
+  fun `reports enum entry in an identity check`() =
+    assertReported("fun foo(role: Role) = role === Role.Admin", "Role.Admin" to "Admin")
+
+  @Test
+  fun `reports enum entry in an in check`() =
+    assertReported("fun foo(roles: Set<Role>) = Role.Admin in roles", "Role.Admin" to "Admin")
+
+  @Test
+  fun `reports enum entry in an infix call`() =
+    assertReported("fun foo(role: Role) = role sameAs Role.Admin", "Role.Admin" to "Admin")
+
+  @Test
+  fun `reports companion property as an operator argument`() =
+    assertReported("fun foo(kind: Kind) = kind + Kind.Button", "Kind.Button" to "Button")
+
+  @Test
+  fun `does not report the receiver of an operator call`() =
+    assertNotReported("fun foo(kind: Kind) = Kind.Button + kind", "Kind.Button" to "Button")
+
+  @Test
+  fun `does not report a compound assignment`() =
+    assertNotReported(
+      "fun foo(roles: MutableList<Role>) { roles += Role.Admin }",
+      "Role.Admin" to "Admin",
+    )
+
+  @Test
+  fun `reports enum entry as a Java argument`() =
+    assertReported(
+      "fun foo(unit: java.util.concurrent.TimeUnit) = unit.convert(1, java.util.concurrent.TimeUnit.SECONDS)",
+      "java.util.concurrent.TimeUnit.SECONDS" to "SECONDS",
+    )
+
+  @Test
+  fun `reports a lambda result with a declared function type`() =
+    assertReported(
+      """
+      val factory: () -> Role = { Role.Admin }
+
+      fun foo(factory: () -> Role = { Role.Basic }) = factory()
+      """
+        .trimIndent(),
+      "Role.Admin" to "Admin",
+      "Role.Basic" to "Basic",
+    )
+
+  @Test
+  fun `does not report a lambda result with no declared type`() =
+    assertNotReported("val factory = { Role.Admin }", "Role.Admin" to "Admin")
+
+  @Test
+  fun `reports enum entry as a try result`() =
+    assertReported(
+      "fun foo(): Role = try { makeRole() } catch (e: Exception) { Role.Admin }",
+      "Role.Admin" to "Admin",
+    )
+
+  @Test
+  fun `reports enum entry in parentheses`() =
+    assertReported("val role: Role = (Role.Admin)", "Role.Admin" to "Admin")
+
+  @Test
   fun `does not report a lambda result that decides the type`() =
     assertNotReported("fun foo() = listOf(1).associateWith { Role.Admin }", "Role.Admin" to "Admin")
 
@@ -549,6 +615,10 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
       }
 
       fun takesKind(kind: Kind?) = kind
+
+      operator fun Kind.plus(other: Kind) = Kind(value + other.value)
+
+      infix fun Role.sameAs(other: Role) = this == other
 
       sealed interface Patch<out T> {
         data object Keep : Patch<Nothing>

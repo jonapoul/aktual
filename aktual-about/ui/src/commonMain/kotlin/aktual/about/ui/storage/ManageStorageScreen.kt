@@ -9,7 +9,6 @@ import aktual.budget.model.BudgetId
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
-import aktual.core.model.Bytes
 import aktual.core.model.bytes
 import aktual.core.model.percent
 import aktual.core.model.unaryPlus
@@ -357,7 +356,7 @@ private fun PieChart(
   colors: ImmutableList<Color>,
   modifier: Modifier = Modifier,
 ) {
-  if (state.totalSize > Bytes.Zero) {
+  if (state.totalSize > Zero) {
     val slices = rememberSlices(state, colors)
     PieChart(slices = slices, modifier = modifier)
   }

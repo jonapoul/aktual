@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.analysis.api.symbols.KaSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaTypeParameterSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.markers.KaNamedSymbol
 import org.jetbrains.kotlin.analysis.api.types.KaClassType
+import org.jetbrains.kotlin.analysis.api.types.KaFlexibleType
 import org.jetbrains.kotlin.analysis.api.types.KaFunctionType
 import org.jetbrains.kotlin.analysis.api.types.KaType
 import org.jetbrains.kotlin.analysis.api.types.KaTypeParameterType
@@ -35,6 +36,7 @@ import org.jetbrains.kotlin.psi.KtBinaryExpressionWithTypeRHS
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtCallableDeclaration
+import org.jetbrains.kotlin.psi.KtCatchClause
 import org.jetbrains.kotlin.psi.KtContainerNodeForControlStructureBody
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtElement
@@ -49,6 +51,7 @@ import org.jetbrains.kotlin.psi.KtPackageDirective
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import org.jetbrains.kotlin.psi.KtReturnExpression
+import org.jetbrains.kotlin.psi.KtTryExpression
 import org.jetbrains.kotlin.psi.KtTypeReference
 import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.kotlin.psi.KtValueArgument
@@ -67,11 +70,14 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  *
  * Reported:
  * - function and constructor arguments, named or positional: `takesRole(Role.Admin)`
- * - `when` branches and `==`/`!=`: `when (role) { Role.Admin -> ... }`, `role == Role.Admin`
+ * - `when` branches and equality checks: `when (role) { Role.Admin -> ... }`, `role == Role.Admin`
+ * - operator and infix arguments: `amount > Amount.Zero`, `Role.Admin in roles`
  * - typed property initialisers, assignments, default parameter values and return values
  * - `is` checks and `as`/`as?` casts to a sealed subtype: `state is State.Failure`, `state as
  *   State.Failure`
  * - lambda results where the call already fixes the return type: `flow.update { State.Loading }`
+ * - lambda results with a declared function type: `val f: () -> Role = { Role.Admin }`
+ * - `try`/`catch` results with a known type
  * - the right side of an elvis: `role ?: Role.Admin`
  * - properties in the companion of the expected type: `clickable(role = Role.Button)`
  * - two or more arguments of one type that decide a generic type, as a type argument would give
@@ -88,6 +94,8 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * - anything with no expected type, or a supertype as the expected type: `val role = Role.Admin`,
  *   `val any: Any = Role.Admin`, `override val role = Role.Admin`, `val role = if (x) Role.Admin
  *   else Role.Basic`
+ * - compound assignments: `roles += Role.Admin`
+ * - SAM constructor lambdas and `by lazy {}` initialisers: `RoleSource { Role.Admin }`
  *
  * These checks are conservative, so some qualifiers that could be dropped are missed. Imports of
  * entries and companion properties aren't looked at.
@@ -243,10 +251,12 @@ internal class RedundantQualifier(config: Config) :
       is KtWhenConditionWithExpression ->
         parent.getStrictParentOfType<KtWhenExpression>()?.let { subjectType(it) }
       is KtValueArgument -> argumentType(parent, expression)
+      is KtParenthesizedExpression -> expectedType(parent)
       else ->
-        expression.expectedType?.takeUnless {
-          isUntypedDeclaration(expression) || isInferredLambdaResult(expression)
-        }
+        tryResultType(expression)
+          ?: expression.expectedType?.takeUnless {
+            isUntypedDeclaration(expression) || isInferredLambdaResult(expression)
+          }
     }
 
   // `override val role = Role.Admin` and `val role = if (x) Role.Admin else Role.Basic` take their
@@ -274,9 +284,28 @@ internal class RedundantQualifier(config: Config) :
       KtTokens.EQ -> operand.expectedType
       // The right side of `role ?: Role.Admin` takes its expected type from the left
       KtTokens.ELVIS -> if (binary.right == operand) binary.left?.expressionType else null
-      // Infix calls don't pass an expected type down the way a plain argument does
-      else -> null
+      // `roles += Role.Admin` doesn't pass an expected type down
+      in KtTokens.AUGMENTED_ASSIGNMENTS -> null
+      // Operators and infix calls, like `amount > Amount.Zero` or `Role.Admin in roles`
+      else -> {
+        val resolved = binary.resolveToCall()?.successfulFunctionCallOrNull()
+        val signature = resolved?.valueArgumentMapping?.get(operand)
+        signature?.returnType?.takeUnless { isInferred(binary, operand) { type -> type } }
+      }
     }
+
+  // The result of a `try` or `catch` block takes the expected type of the whole `try`
+  private fun KaSession.tryResultType(expression: KtExpression): KaType? {
+    val block = expression.parent as? KtBlockExpression ?: return null
+    if (block.statements.lastOrNull() != expression) return null
+    val tryExpression =
+      when (val parent = block.parent) {
+        is KtTryExpression -> parent.takeIf { it.tryBlock == block }
+        is KtCatchClause -> parent.parent as? KtTryExpression
+        else -> null
+      }
+    return tryExpression?.let { expectedType(it) }
+  }
 
   // In `update(if (x) Patch.To(1) else Keep)` the other branch narrows the expected type to
   // `Patch.To<Int>` and `Keep` no longer fits. Enum entries all share one type, so they are fine
@@ -294,7 +323,9 @@ internal class RedundantQualifier(config: Config) :
     this is KtContainerNodeForControlStructureBody ||
       this is KtWhenEntry ||
       this is KtIfExpression ||
-      this is KtWhenExpression
+      this is KtWhenExpression ||
+      this is KtTryExpression ||
+      this is KtCatchClause
 
   private fun KaSession.subjectType(whenExpression: KtWhenExpression): KaType? =
     whenExpression.subjectVariable?.returnType ?: whenExpression.subjectExpression?.expressionType
@@ -307,7 +338,9 @@ internal class RedundantQualifier(config: Config) :
 
   private fun KaSession.isInferredLambdaResult(expression: KtExpression): Boolean {
     val lambda = lambdaReturning(expression) ?: return false
-    val call = (lambda.parent as? KtValueArgument)?.let(::callOf) ?: return true
+    // `val f: () -> Role = { Role.Admin }` takes the result type from the declaration
+    val argument = lambda.parent as? KtValueArgument ?: return isUntypedDeclaration(lambda)
+    val call = callOf(argument) ?: return true
     return isInferred(call, lambda) { type -> (type as? KaFunctionType)?.returnType }
   }
 
@@ -332,7 +365,7 @@ internal class RedundantQualifier(config: Config) :
   // Whether the type comes from the argument itself, as it does for T in `listOf(Role.Admin)`, or
   // can't be pinned down because overloads disagree about it. CSR has no expected type in both
   private fun KaSession.isInferred(
-    call: KtCallExpression,
+    call: KtElement,
     argument: KtExpression,
     select: (KaType) -> KaType?,
   ): Boolean {
@@ -352,7 +385,7 @@ internal class RedundantQualifier(config: Config) :
       }
 
     return overloadsDisagree ||
-      call.typeArgumentList == null &&
+      (call as? KtCallExpression)?.typeArgumentList == null &&
         declared is KaTypeParameterType &&
         isDecidedByArgument(declared.symbol, resolved.symbol)
   }
@@ -362,7 +395,7 @@ internal class RedundantQualifier(config: Config) :
   private fun failsElsewhere(info: KaCallCandidateInfo, argument: KtExpression): Boolean {
     val diagnostic = (info as? KaInapplicableCallCandidateInfo)?.diagnostic
     val psi = (diagnostic as? KaDiagnosticWithPsi<*>)?.psi ?: return false
-    return !PsiTreeUtil.isAncestor(argument.parent, psi, false)
+    return !PsiTreeUtil.isAncestor(argument.parent as? KtValueArgument ?: argument, psi, false)
   }
 
   // `Assert<T>.isEqualTo(expected: T)` gets T from its receiver, not the argument
@@ -381,8 +414,9 @@ internal class RedundantQualifier(config: Config) :
       else -> false
     }
 
+  // Java parameters have platform types like `TimeUnit!`
   private fun KaType.isClass(symbol: KaClassLikeSymbol): Boolean =
-    (this as? KaClassType)?.symbol == symbol
+    ((this as? KaFlexibleType)?.lowerBound ?: this).let { (it as? KaClassType)?.symbol == symbol }
 
   // A plain name that already means something else here wins over CSR
   private fun KaSession.isShadowed(position: KtElement, target: KaSymbol): Boolean {
@@ -394,6 +428,6 @@ internal class RedundantQualifier(config: Config) :
   }
 
   private companion object {
-    val EQUALITY = setOf(KtTokens.EQEQ, KtTokens.EXCLEQ)
+    val EQUALITY = setOf(KtTokens.EQEQ, KtTokens.EXCLEQ, KtTokens.EQEQEQ, KtTokens.EXCLEQEQEQ)
   }
 }
