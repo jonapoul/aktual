@@ -87,6 +87,36 @@ class AppLockManagerTest {
     }
 
   @Test
+  fun `Handles lifecycle events again after a cancelled prompt`() =
+    runManagerTest(enabled = true, timeout = Seconds30) { manager ->
+      manager.state.test {
+        assertThatNextEmissionIsEqualTo(Locked)
+        manager.onAuthenticated()
+        assertThatNextEmissionIsEqualTo(Unlocked)
+
+        manager.onAuthenticationStarted()
+        manager.onAuthenticationFailed()
+        manager.backgroundFor(30.seconds)
+        assertThatNextEmissionIsEqualTo(Locked)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `Locks when the clock moves backwards`() =
+    runManagerTest(enabled = true, timeout = Minutes15) { manager ->
+      manager.state.test {
+        assertThatNextEmissionIsEqualTo(Locked)
+        manager.onAuthenticated()
+        assertThatNextEmissionIsEqualTo(Unlocked)
+
+        manager.backgroundFor((-1).seconds)
+        assertThatNextEmissionIsEqualTo(Locked)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
   fun `Locks immediately on foreground`() =
     runManagerTest(enabled = true) { manager ->
       manager.state.test {

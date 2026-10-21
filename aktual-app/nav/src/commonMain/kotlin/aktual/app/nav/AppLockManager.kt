@@ -64,7 +64,8 @@ class AppLockManager(
     val since = backgroundedAt ?: return
     backgroundedAt = null
     val elapsed = clock.now() - since
-    if (isEnabled.value && elapsed >= timeout.value.duration) {
+    // Negative if the system clock was moved back, so don't trust it
+    if (isEnabled.value && (elapsed.isNegative() || elapsed >= timeout.value.duration)) {
       logcat.d { "Locking after $elapsed in background" }
       mutableState.update { Locked }
     }
