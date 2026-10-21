@@ -128,6 +128,7 @@ Default new code to `commonMain`; reach for `androidMain` / `desktopMain` only w
 
 ## Sub-CLAUDE.mds
 
+- [aktual-app/desktop](aktual-app/desktop/CLAUDE.md) - building desktop releases
 - [aktual-app/nav](aktual-app/nav/CLAUDE.md) - navigation architecture
 - [aktual-core/l10n](aktual-core/l10n/CLAUDE.md) - localization
 - [aktual-core/icons](aktual-core/icons/CLAUDE.md) - custom + Material icons
