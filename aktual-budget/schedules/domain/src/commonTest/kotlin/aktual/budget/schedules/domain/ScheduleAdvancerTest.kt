@@ -370,6 +370,22 @@ class ScheduleAdvancerTest {
   }
 
   @Test
+  fun `Successful sync after a failed one clears the unposted flag`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
+    val advancer = advancer(scope)
+
+    advancer.hasUnposted.test {
+      assertThat(awaitItem()).isFalse()
+      advancer.onSyncCompleted(Failed)
+      assertThatNextEmissionIsEqualTo(true)
+
+      advancer.onSyncCompleted(Succeeded)
+      assertThatNextEmissionIsEqualTo(false)
+    }
+    assertThat(posted("date")).containsExactly(MessageValue.Number(20260315))
+  }
+
+  @Test
   fun `Dismissing unposted schedules stops flagging them`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
     val advancer = advancer(scope)

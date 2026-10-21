@@ -96,7 +96,7 @@ internal constructor(
     if (budgetPrefs[LastScheduleRun] == today) return
 
     val result = tryAdvance(today, canPost = outcome == Succeeded) ?: return
-    if (result.unposted && !dismissed) mutableHasUnposted.update { true }
+    mutableHasUnposted.update { result.unposted && !dismissed }
     // Only mark the day as done when sync and advancing succeeded, so a failure gets retried. Sync
     // events are collected one at a time, so the one our own changes cause waits for this
     if (outcome == Succeeded) budgetPrefs.update { it.set(LastScheduleRun, today) }
