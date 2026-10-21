@@ -36,4 +36,16 @@ class SystemUiPreferencesImpl(dataStore: DataStore<Preferences>) : SystemUiPrefe
     dataStore
       .boolean(key = booleanPreferencesKey("hidePreviewInAppSwitcher"), default = true)
       .required()
+
+  override val appLockEnabled: Preference<Boolean> =
+    dataStore.boolean(key = booleanPreferencesKey("appLockEnabled"), default = false).required()
+
+  override val appLockTimeout: Preference<AppLockTimeout> =
+    dataStore
+      .translated(
+        key = intPreferencesKey("appLockTimeout"),
+        default = AppLockTimeout.Default,
+        translator = enumOrdinalTranslator(),
+      )
+      .required()
 }

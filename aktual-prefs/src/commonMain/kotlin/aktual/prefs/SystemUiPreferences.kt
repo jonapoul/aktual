@@ -9,4 +9,6 @@ interface SystemUiPreferences {
   val hazeRadius: Preference<Float>
   val hazeAlpha: Preference<Float>
   val hidePreviewInAppSwitcher: Preference<Boolean>
+  val appLockEnabled: Preference<Boolean>
+  val appLockTimeout: Preference<AppLockTimeout>
 }
