@@ -66,7 +66,7 @@ class GithubRepositoryTest {
   }
 
   @Test
-  fun `Pre-releases and drafts are skipped`() = runTest {
+  fun `Release builds skip pre-releases and drafts`() = runTest {
     // Given
     buildRepo()
     mockEngine += { respondJson(GithubResponses.LIST_RELEASES_WITH_PRERELEASE_200) }
@@ -79,9 +79,9 @@ class GithubRepositoryTest {
   }
 
   @Test
-  fun `Pre-release builds are offered pre-releases`() = runTest {
+  fun `Debug builds are offered pre-releases`() = runTest {
     // Given
-    buildRepo(TestBuildConfig.copy(isPrerelease = true))
+    buildRepo(TestBuildConfig.copy(isDebug = true))
     mockEngine += { respondJson(GithubResponses.LIST_RELEASES_WITH_PRERELEASE_200) }
 
     // When
@@ -107,7 +107,7 @@ class GithubRepositoryTest {
     // Given
     val drafts =
       """[{"name": "v3.0.0", "published_at": null, "html_url": "x", "tag_name": "3.0.0", "draft": true}]"""
-    buildRepo(TestBuildConfig.copy(isPrerelease = true))
+    buildRepo(TestBuildConfig.copy(isDebug = true))
     mockEngine += { respondJson(drafts) }
 
     // When

@@ -12,7 +12,6 @@ data class BuildConfig(
   val buildTime: Instant,
   val defaultPassword: Password,
   val defaultServerUrl: ServerUrl?,
-  val isPrerelease: Boolean = false,
   val repoName: String = REPO_NAME,
   val repoUrl: String = "https://github.com/${REPO_NAME}",
 )

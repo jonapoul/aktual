@@ -64,3 +64,8 @@
 -dontwarn org.openjsse.**
 # The public suffix resource path is built from this class's simple name
 -keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+
+# Marks this as a release build, see DesktopBuildConfigContainer
+-assumevalues class aktual.app.desktop.DesktopBuildConfigContainer {
+    boolean isRelease() return true;
+}

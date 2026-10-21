@@ -12,5 +12,8 @@ import dev.zacsweers.metro.SingleIn
 object DesktopBuildConfigContainer {
   @Provides
   @SingleIn(AppScope::class)
-  fun buildConfig(): BuildConfig = aktual.app.di.buildConfig(isDebug = false)
+  fun buildConfig(): BuildConfig = aktual.app.di.buildConfig(isDebug = !isRelease())
+
+  // Rewritten to return true by proguard-rules.pro, which only applies to release builds
+  @JvmStatic private fun isRelease(): Boolean = false
 }

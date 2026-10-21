@@ -27,10 +27,10 @@ class GithubRepository(
           githubApi.getReleases(user = "jonapoul", repo = "aktual", perPage = PAGE_SIZE)
         }
 
-      // Pre-releases are only offered to builds that are pre-releases themselves
+      // Pre-releases are only offered to debug builds
       val latest =
         releases
-          .filter { !it.isDraft && (buildConfig.isPrerelease || !it.isPrerelease) }
+          .filter { !it.isDraft && (buildConfig.isDebug || !it.isPrerelease) }
           .maxByOrNull { it.publishedAt ?: Instant.DISTANT_PAST }
       val publishedAt = latest?.publishedAt
       return when {
