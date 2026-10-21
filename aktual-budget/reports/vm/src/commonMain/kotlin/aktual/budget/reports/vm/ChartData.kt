@@ -61,7 +61,7 @@ data class BudgetAnalysisData(
   val totalSpent: Amount = items.values.fold(Amount.Zero) { total, datum -> total + datum.spent }
   val totalOverspendingAdjustment: Amount =
     items.values.fold(Amount.Zero) { total, datum -> total + datum.overspendingAdjustment }
-  val endingBalance: Amount = items.values.lastOrNull()?.balance ?: Amount.Zero
+  val endingBalance: Amount = items.values.lastOrNull()?.balance ?: Zero
 }
 
 // Spending is negative. overspendingAdjustment is positive, the amount reset from last month

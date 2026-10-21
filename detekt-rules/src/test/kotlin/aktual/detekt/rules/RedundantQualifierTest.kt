@@ -290,8 +290,38 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
     assertNotReported("fun foo() = 1 to Role.Admin", "Role.Admin" to "Admin")
 
   @Test
-  fun `does not report an elvis operand`() =
-    assertNotReported("fun foo(role: Role?): Role = role ?: Role.Admin")
+  fun `reports an elvis operand with a known type`() =
+    assertReported("fun foo(role: Role?): Role = role ?: Role.Admin", "Role.Admin" to "Admin")
+
+  @Test
+  fun `reports an elvis operand as an argument`() =
+    assertReported("fun foo(role: Role?) = takesRole(role ?: Role.Admin)", "Role.Admin" to "Admin")
+
+  @Test
+  fun `reports sealed object as an elvis operand`() =
+    assertReported(
+      "fun foo(patch: Patch<Int>?) = takesPatch(patch ?: Patch.Keep)",
+      "Patch.Keep" to "Keep",
+    )
+
+  @Test
+  fun `reports companion property as an elvis operand`() =
+    assertReported(
+      "fun foo(kind: Kind?) = takesKind(kind ?: Kind.Button)",
+      "Kind.Button" to "Button",
+    )
+
+  @Test
+  fun `reports an elvis operand with no expected type`() =
+    assertReported("fun foo(role: Role?) = role ?: Role.Admin", "Role.Admin" to "Admin")
+
+  @Test
+  fun `reports an elvis operand in an argument that decides the type`() =
+    assertReported("fun foo(role: Role?) = listOf(role ?: Role.Admin)", "Role.Admin" to "Admin")
+
+  @Test
+  fun `does not report an elvis operand of another type`() =
+    assertNotReported("fun foo(any: Any?) = any ?: Role.Admin", "Role.Admin" to "Admin")
 
   @Test
   fun `does not report a lambda result that decides the type`() =

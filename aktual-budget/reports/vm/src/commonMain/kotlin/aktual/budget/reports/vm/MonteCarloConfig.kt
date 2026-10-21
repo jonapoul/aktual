@@ -384,7 +384,7 @@ fun McPot.investmentAt(currentAge: Int, age: Int): McYearInvestment {
 fun List<McSpendingPhase>.resolve(): List<McSpendingPhase> = ifEmpty {
   listOf(McSpendingPhase())
 }
-  .sortedBy { it.fromAge ?: Int.MIN_VALUE }
+  .sortedBy { it.fromAge ?: MIN_VALUE }
 
 // getActiveSpendingPhase(): the last phase that has started, or the earliest before any has
 fun List<McSpendingPhase>.activeAt(age: Int): McSpendingPhase {

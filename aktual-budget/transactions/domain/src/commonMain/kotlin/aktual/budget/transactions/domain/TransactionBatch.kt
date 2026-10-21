@@ -319,5 +319,5 @@ private fun LocalDate.messageValue(): MessageValue =
 private fun <T : Any> Patch<T?>.messageValue(encode: (T) -> MessageValue): MessageValue? =
   when (this) {
     Keep -> null
-    is To -> value?.let(encode) ?: MessageValue.Null
+    is To -> value?.let(encode) ?: Null
   }

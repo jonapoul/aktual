@@ -52,8 +52,7 @@ class ServerUrlViewModel(
 ) : ViewModel() {
   private val mutableIsLoading = ResettableStateFlow(value = false)
   private val mutableBaseUrl = MutableStateFlow(buildConfig.defaultServerUrl?.baseUrl.orEmpty())
-  private val mutableProtocol =
-    MutableStateFlow(buildConfig.defaultServerUrl?.protocol ?: Protocol.Https)
+  private val mutableProtocol = MutableStateFlow(buildConfig.defaultServerUrl?.protocol ?: Https)
   private val mutableConfirmResult = ResettableStateFlow<ConfirmResult?>(value = null)
   private val mutableNavDestination = Channel<NavDestination>()
 

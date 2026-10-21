@@ -72,6 +72,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * - `is` checks and `as`/`as?` casts to a sealed subtype: `state is State.Failure`, `state as
  *   State.Failure`
  * - lambda results where the call already fixes the return type: `flow.update { State.Loading }`
+ * - the right side of an elvis: `role ?: Role.Admin`
  * - properties in the companion of the expected type: `clickable(role = Role.Button)`
  * - two or more arguments of one type that decide a generic type, as a type argument would give
  *   them an expected type: `listOf(Role.Admin, Role.Basic)` can be `listOf<Role>(Admin, Basic)`
@@ -82,7 +83,6 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  *   `LoginMethod.Password`, or a `Button` composable next to `Role.Button`
  * - other arguments that decide a generic type themselves: `listOf(Role.Admin)`, `x to Role.Admin`,
  *   `associateWith { Role.Admin }`
- * - elvis operands: `role ?: Role.Admin`
  * - sealed subtypes and companion properties in an `if`/`when` passed as an argument, where another
  *   branch can narrow the expected type: `update(if (x) Patch.To(1) else Patch.Keep)`
  * - anything with no expected type, or a supertype as the expected type: `val role = Role.Admin`,
@@ -272,7 +272,9 @@ internal class RedundantQualifier(config: Config) :
     when (binary.operationToken) {
       in EQUALITY -> (if (binary.left == operand) binary.right else binary.left)?.expressionType
       KtTokens.EQ -> operand.expectedType
-      // Infix calls and elvis don't pass an expected type down the way a plain argument does
+      // The right side of `role ?: Role.Admin` takes its expected type from the left
+      KtTokens.ELVIS -> if (binary.right == operand) binary.left?.expressionType else null
+      // Infix calls don't pass an expected type down the way a plain argument does
       else -> null
     }
 

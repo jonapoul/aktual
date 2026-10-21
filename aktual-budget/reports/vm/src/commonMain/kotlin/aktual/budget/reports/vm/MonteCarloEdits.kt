@@ -17,7 +17,7 @@ fun clampAmount(amount: Double): Double = amount.coerceIn(0.0, MC_MAX_AMOUNT)
 
 // sortMonteCarloSpendingPhases(): by starting age, with the no-age phase first
 fun List<McSpendingPhase>.sortedByAge(): List<McSpendingPhase> = sortedBy {
-  it.fromAge ?: Int.MIN_VALUE
+  it.fromAge ?: MIN_VALUE
 }
 
 fun McConfig.addSpendingPhase(id: String): McConfig {

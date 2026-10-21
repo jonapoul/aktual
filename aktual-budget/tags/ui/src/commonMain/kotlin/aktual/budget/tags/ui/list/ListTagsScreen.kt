@@ -134,7 +134,7 @@ private fun ListTagsScaffold(
   var showSortDialog by remember { mutableStateOf(false) }
 
   if (showSortDialog) {
-    val sort = successState?.sort ?: TagSort.Default
+    val sort = successState?.sort ?: Default
     SortDialog(
       fields = TagSort.Field.Entries,
       field = sort.field,
