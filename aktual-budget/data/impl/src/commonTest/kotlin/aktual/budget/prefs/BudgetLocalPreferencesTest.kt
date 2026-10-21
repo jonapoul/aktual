@@ -25,6 +25,11 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
+import okio.FileSystem
+import okio.ForwardingFileSystem
+import okio.IOException
+import okio.Path
+import okio.Sink
 
 class BudgetLocalPreferencesTest {
   @InterceptTest val temporaryFolder = CoTemporaryFolder()
@@ -123,6 +128,24 @@ class BudgetLocalPreferencesTest {
     // then
     advanceUntilIdle()
     assertThat(files.readMetadata(BUDGET_ID)?.get(DbMetadata.BudgetName)).isEqualTo("Hello World")
+  }
+
+  @Test
+  fun `Failing to write metadata keeps the update`() = runTest {
+    // given
+    files = BudgetFiles(FailingSinkFileSystem(files.fileSystem), files.directoryPath)
+    buildPreferences(TEST_METADATA)
+
+    // when
+    preferences.update { existing -> existing + (DbMetadata.BudgetName to "Hello World") }
+
+    // then
+    advanceUntilIdle()
+    assertThat(preferences.value[DbMetadata.BudgetName]).isEqualTo("Hello World")
+  }
+
+  private class FailingSinkFileSystem(delegate: FileSystem) : ForwardingFileSystem(delegate) {
+    override fun sink(file: Path, mustCreate: Boolean): Sink = throw IOException("No such file")
   }
 
   private fun fileModificationTime(): Long = files.metadata(BUDGET_ID).toFile().lastModified()

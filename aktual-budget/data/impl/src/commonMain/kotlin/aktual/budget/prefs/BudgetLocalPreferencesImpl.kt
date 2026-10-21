@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import logcat.logcat
+import okio.IOException
 
 @OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 @SingleIn(BudgetScope::class)
@@ -44,7 +46,12 @@ private constructor(
     if (updated && expect != update) {
       coroutineScope.launch(contexts.io) {
         writeMutex.withLock {
-          files.writeMetadata(id, update)
+          try {
+            files.writeMetadata(id, update)
+          } catch (e: IOException) {
+            // The budget's directory can be deleted while this is pending, e.g. closing the demo
+            logcat.e(e) { "Failed writing metadata for $id" }
+          }
         }
       }
     }
