@@ -2,8 +2,7 @@ plugins { id("aktual.module.kotlin") }
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-budget:data:db"))
-    api(project(":aktual-core"))
+    api(project(":aktual-budget:rules:domain"))
     compileOnly(libs.androidx.compose.annotation)
     implementation(project(":aktual-core:logging"))
   }

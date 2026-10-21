@@ -33,6 +33,7 @@ import aktual.budget.model.NumberFormatConfig
 import aktual.budget.model.PayeeId
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.WidgetType
+import aktual.budget.model.parseScheduleAmount
 import aktual.budget.rules.domain.TransactionFilter
 import aktual.core.Calendar
 import aktual.core.model.Percent

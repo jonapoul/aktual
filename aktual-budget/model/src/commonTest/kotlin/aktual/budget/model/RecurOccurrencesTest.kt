@@ -3,6 +3,7 @@ package aktual.budget.model
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate.Companion.parse
 
@@ -85,6 +86,24 @@ class RecurOccurrencesTest {
   fun `Next date after the end date is the last occurrence`() {
     val config = MONTHLY.copy(endMode = OnDate, endDate = parse("2026-02-20"))
     assertThat(config.nextDate(from = parse("2026-06-01"))).isEqualTo(parse("2026-02-15"))
+  }
+
+  @Test
+  fun `Next date after an occurrence is the following one`() {
+    assertThat(MONTHLY.nextDateAfter(parse("2026-02-15"))).isEqualTo(parse("2026-03-15"))
+  }
+
+  @Test
+  fun `Next date after a date moved off the weekend skips the occurrence it came from`() {
+    // 2026-03-15 is a Sunday, moved to Monday 2026-03-16
+    val config = MONTHLY.copy(skipWeekend = true, weekendSolveMode = After)
+    assertThat(config.nextDateAfter(parse("2026-03-16"))).isEqualTo(parse("2026-04-15"))
+  }
+
+  @Test
+  fun `Next date after the last of a limited count is null`() {
+    val config = MONTHLY.copy(endMode = AfterNOccurrences, endOccurrences = 3)
+    assertThat(config.nextDateAfter(parse("2026-03-15"))).isNull()
   }
 
   @Test

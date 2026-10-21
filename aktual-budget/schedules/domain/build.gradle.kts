@@ -6,6 +6,7 @@ kotlin {
     api(project(":aktual-core"))
     compileOnly(libs.androidx.compose.annotation)
     implementation(libs.kotlinx.serialization.json)
+    implementation(project(":aktual-budget:transactions:domain"))
     implementation(project(":aktual-core:logging"))
   }
 
