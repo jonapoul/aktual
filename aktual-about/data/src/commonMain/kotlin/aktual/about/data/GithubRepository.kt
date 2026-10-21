@@ -9,7 +9,6 @@ import github.api.model.GithubRelease
 import io.ktor.client.plugins.ResponseException
 import io.ktor.serialization.JsonConvertException
 import java.io.IOException
-import kotlin.time.Instant
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
@@ -31,7 +30,7 @@ class GithubRepository(
       val latest =
         releases
           .filter { !it.isDraft && (buildConfig.isDebug || !it.isPrerelease) }
-          .maxByOrNull { it.publishedAt ?: Instant.DISTANT_PAST }
+          .maxByOrNull { it.publishedAt ?: DISTANT_PAST }
       val publishedAt = latest?.publishedAt
       return when {
         latest == null || publishedAt == null -> NoReleases

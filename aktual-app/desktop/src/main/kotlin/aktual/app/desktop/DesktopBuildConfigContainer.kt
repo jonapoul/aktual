@@ -15,5 +15,5 @@ object DesktopBuildConfigContainer {
   fun buildConfig(): BuildConfig = aktual.app.di.buildConfig(isDebug = !isRelease())
 
   // Rewritten to return true by proguard-rules.pro, which only applies to release builds
-  @JvmStatic private fun isRelease(): Boolean = false
+  @Suppress("FunctionOnlyReturningConstant") @JvmStatic private fun isRelease(): Boolean = false
 }
