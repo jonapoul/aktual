@@ -21,7 +21,6 @@ import aktual.budget.model.tombstone
 import aktual.core.UuidGenerator
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.number
 import kotlinx.serialization.json.JsonObject
 
 /**
@@ -309,11 +308,6 @@ private fun Boolean.trueOrSkip(): MessageValue? = if (this) MessageValue.Number(
 private fun Amount.messageValue(): MessageValue = MessageValue.Number(toLong())
 
 private fun JsonObject.encode(): String = DbJson.encodeToString(JsonObject.serializer(), this)
-
-// Dates are stored as integers like 20261001, see toDateRepr() in loot-core
-@Suppress("MagicNumber")
-private fun LocalDate.messageValue(): MessageValue =
-  MessageValue.Number(year * 10_000L + month.number * 100L + day)
 
 // Null means there's no change to send
 private fun <T : Any> Patch<T?>.messageValue(encode: (T) -> MessageValue): MessageValue? =

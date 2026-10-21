@@ -9,12 +9,12 @@ import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.LocalChange
-import aktual.budget.model.MessageValue
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.ScheduleNextDateId
 import aktual.budget.model.localChange
+import aktual.budget.model.messageValue
 import aktual.budget.model.nextDate
 import aktual.budget.model.serialName
 import aktual.budget.model.tombstone
@@ -24,7 +24,6 @@ import aktual.core.model.unaryPlus
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.number
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JsonPrimitive
 import logcat.logcat
@@ -69,9 +68,9 @@ internal class ScheduleWriter(
       +localChange(RULES, rule, TOMBSTONE, false)
 
       +localChange(SCHEDULES_NEXT_DATE, next, "schedule_id", schedule)
-      +LocalChange(SCHEDULES_NEXT_DATE, next, "local_next_date", nextDate.dateValue())
+      +LocalChange(SCHEDULES_NEXT_DATE, next, "local_next_date", nextDate.messageValue())
       +localChange(SCHEDULES_NEXT_DATE, next, "local_next_date_ts", now)
-      +LocalChange(SCHEDULES_NEXT_DATE, next, "base_next_date", nextDate.dateValue())
+      +LocalChange(SCHEDULES_NEXT_DATE, next, "base_next_date", nextDate.messageValue())
       +localChange(SCHEDULES_NEXT_DATE, next, "base_next_date_ts", now)
       +localChange(SCHEDULES_NEXT_DATE, next, TOMBSTONE, false)
 
@@ -145,11 +144,11 @@ internal class ScheduleWriter(
     return buildList {
       if (existing == null) {
         +localChange(SCHEDULES_NEXT_DATE, row, "schedule_id", id.toString())
-        +LocalChange(SCHEDULES_NEXT_DATE, row, "local_next_date", nextDate.dateValue())
+        +LocalChange(SCHEDULES_NEXT_DATE, row, "local_next_date", nextDate.messageValue())
         +localChange(SCHEDULES_NEXT_DATE, row, "local_next_date_ts", now)
         +localChange(SCHEDULES_NEXT_DATE, row, TOMBSTONE, false)
       }
-      +LocalChange(SCHEDULES_NEXT_DATE, row, "base_next_date", nextDate.dateValue())
+      +LocalChange(SCHEDULES_NEXT_DATE, row, "base_next_date", nextDate.messageValue())
       +localChange(SCHEDULES_NEXT_DATE, row, "base_next_date_ts", now)
     }
   }
@@ -181,15 +180,6 @@ private fun List<RuleAction>.encode(): String =
   DbJson.encodeToString(ListSerializer(RuleAction.serializer()), this)
 
 private fun Condition.withoutType(): Condition = copy(type = null)
-
-// Dates are stored as integers like 20261001, see toDateRepr() in loot-core
-@Suppress("MagicNumber")
-private fun LocalDate?.dateValue(): MessageValue =
-  if (this == null) {
-    Null
-  } else {
-    MessageValue.Number(year * 10_000L + month.number * 100L + day)
-  }
 
 // getNextDate() for either kind of date
 internal fun ScheduleDate.nextDate(today: LocalDate): LocalDate? =

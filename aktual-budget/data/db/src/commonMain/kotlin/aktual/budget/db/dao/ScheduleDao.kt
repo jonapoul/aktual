@@ -1,6 +1,7 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.GetBaseNextDate
 import aktual.budget.db.TransactionDatesFromDate
 import aktual.budget.db.schedules.GetAllActive
 import aktual.budget.db.withResult
@@ -42,8 +43,10 @@ class ScheduleDao(database: BudgetDatabase) {
     getIdByName(name).awaitAsList().firstOrNull()
   }
 
-  suspend fun nextDateId(id: ScheduleId): ScheduleNextDateId? = nextDates.withResult {
-    getBaseNextDate(id).awaitAsList().firstOrNull()?.id
+  suspend fun nextDateId(id: ScheduleId): ScheduleNextDateId? = baseNextDate(id)?.id
+
+  suspend fun baseNextDate(id: ScheduleId): GetBaseNextDate? = nextDates.withResult {
+    getBaseNextDate(id).awaitAsList().firstOrNull()
   }
 
   // schedules_json_paths isn't synced, so it's kept up to date locally whenever a schedule's rule
