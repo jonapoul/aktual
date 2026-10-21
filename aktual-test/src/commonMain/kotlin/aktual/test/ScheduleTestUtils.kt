@@ -26,6 +26,7 @@ suspend fun BudgetDatabase.insertSchedule(
   dateConditionIndex: Int = 2,
   completed: Boolean = false,
   date: String = "\"$nextDate\"",
+  postsTransaction: Boolean = false,
 ) {
   val payeeId = PayeeId("$id-payee")
   val accountId = AccountId("$id-account")
@@ -92,7 +93,7 @@ suspend fun BudgetDatabase.insertSchedule(
     rule = ruleId,
     active = true,
     completed = completed,
-    posts_transaction = false,
+    posts_transaction = postsTransaction,
     tombstone = false,
     name = name,
   )

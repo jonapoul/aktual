@@ -14,7 +14,6 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
-import assertk.assertions.isNull
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month.FEBRUARY
@@ -233,13 +232,6 @@ class BalanceForecastTest {
           LocalDate(2026, 3, 1) to Amount(1100L),
         ),
       )
-  }
-
-  @Test
-  fun `Amounts between two values use the rounded average`() {
-    assertThat(parseScheduleAmount("-1500")).isEqualTo(-1500L)
-    assertThat(parseScheduleAmount("""{"num1":-1000,"num2":-2001}""")).isEqualTo(-1500L)
-    assertThat(parseScheduleAmount(null)).isNull()
   }
 
   @Test

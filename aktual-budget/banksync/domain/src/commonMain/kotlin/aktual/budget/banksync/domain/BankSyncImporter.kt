@@ -19,6 +19,7 @@ import aktual.budget.transactions.domain.Patch
 import aktual.budget.transactions.domain.TransactionBatch
 import aktual.budget.transactions.domain.TransactionUpdate
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.transactions.domain.toNewTransactions
 import aktual.core.Calendar
 import aktual.core.UuidGenerator
 import dev.zacsweers.metro.Inject
@@ -37,11 +38,9 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
-import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.put
 import logcat.logcat
 
 data class BankSyncDownload(
@@ -324,48 +323,13 @@ class BankSyncImporter(
     return updates
   }
 
-  // The insert branch of reconcileTransactions(), with makeSplitTransaction() for splits
-  private fun newTransactions(transaction: Matched): List<NewTransaction> {
-    val t = transaction.rules
-    val children = t.subtransactions
-    val isSplit = children.isNotEmpty()
-    val id = uuidGenerator(::TransactionId)
-    val difference = t.amount.toLong() - children.sumOf { it.amount.toLong() }
-    val parent =
-      NewTransaction(
-        id = id,
-        account = t.account,
-        date = t.date,
-        amount = t.amount,
-        payee = t.payee,
-        category = t.category,
-        notes = t.notes,
-        importedId = transaction.importedId,
-        importedPayee = t.importedPayee,
-        cleared = t.cleared,
-        reconciled = t.reconciled,
-        schedule = t.schedule,
-        isParent = isSplit,
-        error = if (isSplit && difference != 0L) splitError(difference) else null,
-        rawSyncedData = transaction.raw,
-      )
-    return listOf(parent) +
-      children.mapIndexed { index, child ->
-        NewTransaction(
-          id = uuidGenerator(::TransactionId),
-          account = t.account,
-          date = t.date,
-          amount = child.amount,
-          payee = child.payee,
-          category = child.category,
-          notes = child.notes,
-          cleared = t.cleared,
-          reconciled = t.reconciled,
-          parentId = id,
-          sortOrder = -index.toLong(),
-        )
-      }
-  }
+  // The insert branch of reconcileTransactions()
+  private fun newTransactions(transaction: Matched): List<NewTransaction> =
+    transaction.rules.toNewTransactions(
+      newId = { uuidGenerator(::TransactionId) },
+      importedId = transaction.importedId,
+      rawSyncedData = transaction.raw,
+    )
 
   private data class Options(
     val account: AccountId,
@@ -418,12 +382,6 @@ internal fun startingBalance(
 
 private fun BankSyncTransaction.decimalAmount(): Double =
   amount?.toDoubleOrNull() ?: throw IllegalArgumentException("Invalid amount: $amount")
-
-private fun splitError(difference: Long): JsonObject = buildJsonObject {
-  put("type", "SplitTransactionError")
-  put("version", 1)
-  put("difference", difference)
-}
 
 private fun <T> patch(old: T?, new: T?): Patch<T?> = if (old == new) Keep else Patch.To(new)
 

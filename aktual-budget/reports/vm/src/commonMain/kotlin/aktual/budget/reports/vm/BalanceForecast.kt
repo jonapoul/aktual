@@ -7,7 +7,6 @@ import aktual.budget.model.RecurConfig
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.adjustForWeekend
 import aktual.budget.model.occurrences
-import kotlin.math.floor
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.LocalDate
@@ -16,13 +15,9 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.yearMonth
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.long
 
 private const val MAX_OCCURRENCE_ITERATIONS = 10_000
 internal const val POSTED_LOOKBACK_DAYS = 2
-private const val HALF = 0.5
 
 // A skipped weekend can pull an occurrence back by up to two days, so expand a little past the end
 private const val WEEKEND_MARGIN_DAYS = 3
@@ -71,23 +66,6 @@ internal fun parseScheduleDate(raw: String?): ScheduleDate? {
     } else {
       ScheduleDate.Single(LocalDate.parse(raw))
     }
-  }
-    .getOrNull()
-}
-
-// packages/loot-core/src/shared/schedules.ts getScheduledAmount(). _amount is either a number or
-// an {"num1":..,"num2":..} object for "is between" amounts, which uses the average
-internal fun parseScheduleAmount(raw: String?): Long? {
-  raw ?: return null
-  raw.toLongOrNull()?.let {
-    return it
-  }
-  return runCatching {
-    val obj = lenientJson.parseToJsonElement(raw).jsonObject
-    val num1 = obj.getValue("num1").jsonPrimitive.long
-    val num2 = obj.getValue("num2").jsonPrimitive.long
-    // Math.round() rounds halves up
-    floor((num1 + num2).toDouble() / 2 + HALF).toLong()
   }
     .getOrNull()
 }

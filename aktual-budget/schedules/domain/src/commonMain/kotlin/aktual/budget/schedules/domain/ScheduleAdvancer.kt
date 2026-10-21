@@ -11,6 +11,7 @@ import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.db.schedules.GetAllActive
 import aktual.budget.model.AccountId
+import aktual.budget.model.Amount
 import aktual.budget.model.DbMetadata.Companion.LastScheduleRun
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
@@ -21,6 +22,9 @@ import aktual.budget.model.UpcomingLength
 import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
 import aktual.budget.model.nextDate
+import aktual.budget.model.nextDateAfter
+import aktual.budget.model.parseScheduleAmount
+import aktual.budget.rules.domain.RuleTransaction
 import aktual.core.Calendar
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
@@ -43,9 +47,9 @@ import kotlinx.serialization.json.JsonPrimitive
 import logcat.logcat
 
 /**
- * Moves paid schedules along after a budget sync, at most once a day. Mirrors
- * advanceSchedulesService() in packages/loot-core/src/server/schedules/app.ts, without posting
- * transactions yet.
+ * Moves schedules along after a budget sync, at most once a day: posts the transactions of due and
+ * missed schedules that post them, then moves paid schedules on. Mirrors advanceSchedulesService()
+ * in packages/loot-core/src/server/schedules/app.ts.
  */
 @SingleIn(BudgetScope::class)
 @ContributesIntoSet(BudgetScope::class, binding<@ForScope(BudgetScope::class) Initializable>())
@@ -57,6 +61,7 @@ internal constructor(
   private val syncController: BudgetSyncController,
   private val syncEvents: SyncEvents,
   private val budgetPrefs: BudgetLocalPreferences,
+  private val poster: SchedulePoster,
   private val scope: BudgetCoroutineScope,
   private val calendar: Calendar,
 ) : Initializable {
@@ -68,12 +73,11 @@ internal constructor(
     val today = calendar.today()
     if (budgetPrefs[LastScheduleRun] == today) return
 
-    // Only mark the day as done when sync succeeded, so a failed sync gets retried. This happens
-    // before advancing, since syncing our own changes completes another sync
-    if (outcome == Succeeded) budgetPrefs.update { it.set(LastScheduleRun, today) }
-
     try {
-      advance(today)
+      advance(today, canPost = outcome == Succeeded)
+      // Only mark the day as done when sync and advancing succeeded, so a failure gets retried.
+      // Sync events are collected one at a time, so the one our own changes cause waits for this
+      if (outcome == Succeeded) budgetPrefs.update { it.set(LastScheduleRun, today) }
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
@@ -83,39 +87,103 @@ internal constructor(
     }
   }
 
-  private suspend fun advance(today: LocalDate) {
+  private suspend fun advance(today: LocalDate, canPost: Boolean) {
     val openAccounts = accountDao.getAllActive().mapTo(mutableSetOf()) { it.id }
     val rows =
       scheduleDao.getAll().filter { row ->
         row.completed != true && row._account?.let(::AccountId) in openAccounts
       }
-    val latestTxDates = scheduleDao.latestTransactionDates(rows.minFromDate(today))
-    val globalLength = preferencesDao[UpcomingScheduledTransactionLength].toUpcomingLength()
+    val run =
+      Run(
+        today = today,
+        canPost = canPost,
+        posting = poster.batch(),
+        latestTxDates = scheduleDao.latestTransactionDates(rows.minFromDate(today)).toMutableMap(),
+        globalLength = preferencesDao[UpcomingScheduledTransactionLength].toUpcomingLength(),
+      )
 
-    val changes = rows.flatMap { row -> advance(row, today, latestTxDates, globalLength) }
+    val changes = rows.flatMap { row -> advance(row, run) }
+    run.posting.post()
     if (changes.isNotEmpty()) {
       syncController.syncChanges(changes)
       logcat.i { "Advanced schedules: ${changes.map { it.row }.distinct()}" }
     }
   }
 
-  private suspend fun advance(
-    row: GetAllActive,
-    today: LocalDate,
-    latestTxDates: Map<ScheduleId, LocalDate>,
-    globalLength: UpcomingLength?,
-  ): List<LocalChange> {
+  private suspend fun advance(row: GetAllActive, run: Run): List<LocalChange> {
     val nextDate = row.next_date ?: return emptyList()
-    if (row.status(nextDate, today, latestTxDates, globalLength) != Paid) return emptyList()
+    val status = run.status(row, nextDate)
+    val date = row.parseDate()
+    val recurring = (date as? Recurring)?.config
 
-    return when (val date = row.parseDate()) {
-      is Recurring -> moveNextDate(row, nextDate, date.config.nextDate(from = today))
-      is Once -> if (date.date < today) complete(row) else emptyList()
+    val posts = row.posts_transaction == true && (status != Paid || recurring != null)
+    if (posts && status in Postable) return postDue(row, nextDate, status, recurring, run)
+    if (status != Paid) return emptyList()
+
+    return when (date) {
+      is Recurring -> moveNextDate(row, nextDate, date.config.nextDate(from = run.today))
+      is Once -> if (date.date < run.today) complete(row) else emptyList()
       null -> emptyList()
     }
   }
 
-  // setNextDate() without reset or advance
+  // Posts the schedule's transaction for each date until it's caught up, stopping at today so
+  // today's isn't skipped
+  private suspend fun postDue(
+    row: GetAllActive,
+    nextDate: LocalDate,
+    status: ScheduleStatus,
+    recurring: RecurConfig?,
+    run: Run,
+  ): List<LocalChange> {
+    var date = nextDate
+    var current = status
+    while (current in Postable) {
+      date = postAndMoveOn(row, date, current, recurring, run) ?: break
+      current = run.status(row, date)
+    }
+    return moveNextDate(row, nextDate, date)
+  }
+
+  // Posts for [date] unless it's paid, then gives the date after it, or null to stop at [date]
+  private suspend fun postAndMoveOn(
+    row: GetAllActive,
+    date: LocalDate,
+    status: ScheduleStatus,
+    recurring: RecurConfig?,
+    run: Run,
+  ): LocalDate? {
+    if (status == Paid) {
+      if (date == run.today) return null
+    } else {
+      if (!run.canPost) {
+        logcat.w { "Not posting schedule ${row.id}, sync failed" }
+        return null
+      }
+      run.addTransaction(row, date)
+      if (status == Due) return null
+    }
+    return recurring?.nextDateAfter(date)
+  }
+
+  // postTransactionForSchedule(), with the rules run as addTransactions() does
+  private suspend fun Run.addTransaction(row: GetAllActive, date: LocalDate) {
+    val account = row._account?.let(::AccountId) ?: return
+    val transaction =
+      RuleTransaction(
+        account = account,
+        date = date,
+        amount = Amount(parseScheduleAmount(row._amount) ?: 0L),
+        payee = row._payee,
+        schedule = row.id,
+        cleared = false,
+      )
+    val result = posting.add(transaction) ?: return
+    val schedule = result.schedule ?: return
+    latestTxDates[schedule] = maxOf(latestTxDates[schedule] ?: result.date, result.date)
+  }
+
+  // setNextDate() without reset
   private suspend fun moveNextDate(
     row: GetAllActive,
     nextDate: LocalDate,
@@ -156,9 +224,26 @@ internal constructor(
       .getOrNull()
   }
 
+  // State of one run. Posted transactions only go out at the end, so the transaction dates are
+  // kept up to date here as each one is posted
+  private class Run(
+    val today: LocalDate,
+    val canPost: Boolean,
+    val posting: SchedulePoster.Batch,
+    val latestTxDates: MutableMap<ScheduleId, LocalDate>,
+    val globalLength: UpcomingLength?,
+  ) {
+    fun status(row: GetAllActive, nextDate: LocalDate): ScheduleStatus =
+      row.status(nextDate, today, latestTxDates, globalLength)
+  }
+
   private sealed interface ScheduleDate {
     data class Once(val date: LocalDate) : ScheduleDate
 
     data class Recurring(val config: RecurConfig) : ScheduleDate
+  }
+
+  private companion object {
+    val Postable = setOf<ScheduleStatus>(Paid, Due, Missed)
   }
 }

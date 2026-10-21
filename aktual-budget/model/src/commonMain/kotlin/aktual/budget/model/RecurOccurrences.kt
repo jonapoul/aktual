@@ -9,6 +9,7 @@ import kotlinx.datetime.yearMonth
 
 private const val MAX_RECUR_PERIODS = 100_000
 private const val DAYS_PER_WEEK = 7
+private const val MAX_ADVANCE_ATTEMPTS = 7
 
 // How far past the start to look for occurrences, widening once for sparse configs (e.g. every 10
 // years)
@@ -153,13 +154,28 @@ fun RecurConfig.nextDate(from: LocalDate): LocalDate? {
   return if (movedOntoDay != null && (next == null || movedOntoDay < next)) movedOntoDay else next
 }
 
+// packages/loot-core/src/shared/schedules.ts getNextDateAfter(): the next date later than [after],
+// moved off a weekend if configured, or null once a limited schedule has run out
+fun RecurConfig.nextDateAfter(after: LocalDate): LocalDate? {
+  var from = after.minus(1, DAY)
+  repeat(MAX_ADVANCE_ATTEMPTS) {
+    val occurrence = firstDateFrom(from, skipWeekend = false)
+    if (occurrence == null || occurrence < from) return null
+    val next = firstDateFrom(from)
+    if (next != null && next > after) return next
+    from = occurrence.plus(1, DAY)
+  }
+  return null
+}
+
 // packages/loot-core/src/shared/schedules.ts getNextDate()
-private fun RecurConfig.firstDateFrom(from: LocalDate): LocalDate? {
+private fun RecurConfig.firstDateFrom(from: LocalDate, skipWeekend: Boolean = true): LocalDate? {
+  val adjust: (LocalDate) -> LocalDate = if (skipWeekend) ::adjustForWeekend else { date -> date }
   for (years in SEARCH_HORIZON_YEARS) {
     val occurrences = occurrences(until = maxOf(from, start).plus(years, YEAR))
     val next = occurrences.dates.firstOrNull { it >= from }
-    if (next != null) return adjustForWeekend(next)
-    if (occurrences.exhausted) return occurrences.dates.lastOrNull()?.let(::adjustForWeekend)
+    if (next != null) return adjust(next)
+    if (occurrences.exhausted) return occurrences.dates.lastOrNull()?.let(adjust)
   }
   return null
 }
