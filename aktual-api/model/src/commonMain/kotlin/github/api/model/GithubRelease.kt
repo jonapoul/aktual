@@ -17,6 +17,10 @@ data class GithubRelease(
 
   // The name of the tag, e.g. "v1.2.3"
   @SerialName("tag_name") val tagName: String,
+
+  // Whether the release is marked as a pre-release, i.e. not ready for production
   @SerialName("prerelease") val isPrerelease: Boolean = false,
+
+  // Whether the release is an unpublished draft. Only visible to users with push access
   @SerialName("draft") val isDraft: Boolean = false,
 )
