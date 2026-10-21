@@ -115,7 +115,7 @@ Inside `kotlin { ... }`: `commonMainDependencies`, `desktopMainDependencies`, `a
 
 ## Multiplatform
 
-Default new code to `commonMain`; reach for `androidMain` / `desktopMain` only when truly platform-specific.
+Default new code to `commonMain`. Code that only needs JDK APIs (`java.text`, `java.math`, ...) goes in `jvmSharedMain`, which both targets compile. Reach for `androidMain` / `desktopMain` only when truly platform-specific.
 
 ## Gotchas
 
