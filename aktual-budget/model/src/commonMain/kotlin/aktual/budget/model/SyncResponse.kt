@@ -2,6 +2,8 @@ package aktual.budget.model
 
 import java.util.stream.IntStream
 import kotlin.String as KString
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 
@@ -38,6 +40,11 @@ fun Boolean?.messageValue(): MessageValue =
     false -> MessageValue.Number(0)
     null -> Null
   }
+
+// Dates are stored as integers like 20261001, see toDateRepr() in loot-core
+@Suppress("MagicNumber")
+fun LocalDate?.messageValue(): MessageValue =
+  if (this == null) Null else MessageValue.Number(year * 10_000L + month.number * 100L + day)
 
 sealed interface MessageValue {
   @JvmInline value class Number(val value: Long) : MessageValue

@@ -2,6 +2,7 @@ package aktual.budget.sync.domain
 
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.BudgetSyncController
+import aktual.budget.SyncEvents
 import aktual.budget.SyncStateHolder
 import aktual.budget.db.dao.SyncDao
 import aktual.budget.model.DbMetadata.Companion.CloudFileId
@@ -40,6 +41,7 @@ internal constructor(
   private val prefs: AppPreferences,
   private val syncDao: SyncDao,
   private val budgetMetadata: BudgetLocalPreferences,
+  private val syncEvents: SyncEvents,
 ) : BudgetSyncController, Initializable, Closeable {
   private var syncJob: Job? = null
   private var inactiveJob: Job? = null
@@ -87,12 +89,14 @@ internal constructor(
   private suspend fun scheduleSync() {
     if (budgetMetadata[CloudFileId] == null) {
       logcat.d { "Local-only budget, skipping sync" }
+      syncEvents.complete(Succeeded)
       return
     }
 
     val token = prefs.token.get()
     if (token == null) {
       update(NoToken)
+      syncEvents.complete(Failed)
       scheduleInactive()
       return
     }
@@ -100,8 +104,15 @@ internal constructor(
     logcat.i { "Sync started" }
     update(Syncing)
     when (val result = syncer.sync()) {
-      is Success -> update(Inactive)
-      is SyncResult.Error -> update(SyncFailed(result.toString()))
+      is Success -> {
+        update(Inactive)
+        syncEvents.complete(Succeeded)
+      }
+
+      is SyncResult.Error -> {
+        update(SyncFailed(result.toString()))
+        syncEvents.complete(Failed)
+      }
     }
     scheduleInactive()
   }

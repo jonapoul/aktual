@@ -45,7 +45,7 @@ class SchedulesLoader(
 ) {
   suspend fun load(): ImmutableList<Schedule> {
     val rows = scheduleDao.getAll()
-    val latestTxDates = scheduleDao.latestTransactionDates(rows.minFromDate())
+    val latestTxDates = scheduleDao.latestTransactionDates(rows.minFromDate(calendar.today()))
     val globalLength = preferencesDao[UpcomingScheduledTransactionLength].toUpcomingLength()
     return toSchedules(rows, latestTxDates, globalLength)
   }
@@ -55,7 +55,7 @@ class SchedulesLoader(
       .observeAll()
       .flatMapLatest { rows ->
         combine(
-          scheduleDao.observeLatestTransactionDates(rows.minFromDate()),
+          scheduleDao.observeLatestTransactionDates(rows.minFromDate(calendar.today())),
           preferencesDao.observe(UpcomingScheduledTransactionLength),
         ) { latestTxDates, globalLength ->
           toSchedules(rows, latestTxDates, globalLength.toUpcomingLength())
@@ -79,10 +79,6 @@ class SchedulesLoader(
     val globalLength = preferencesDao[UpcomingScheduledTransactionLength].toUpcomingLength()
     return toSchedule(row, today, payeeNames, accountNames, latestTxDates, globalLength)
   }
-
-  // Fetch transactions for all schedules in one query using the earliest possible fromDate
-  private fun List<GetAllActive>.minFromDate(): LocalDate =
-    mapNotNull { it.next_date }.minOrNull()?.minus(value = 2, unit = DAY) ?: calendar.today()
 
   private suspend fun toSchedules(
     rows: List<GetAllActive>,
@@ -120,11 +116,6 @@ class SchedulesLoader(
       row._amountOp?.let { runCatching { Operator.parse(it) as? AmountOperator }.getOrNull() }
         ?: IsApprox
 
-    // Fixed date (op = 'is'): check from next_date; recurring: look back 2 days
-    val dateCondOp = row._conditions?.firstOrNull { it.field == Date }?.operator
-    val txFromDate = if (dateCondOp == Is) nextDate else nextDate.minus(value = 2, unit = DAY)
-    val hasTransaction = latestTxDates[row.id]?.let { it >= txFromDate } == true
-
     val customUpcomingLength = row.custom_upcoming_length
 
     return Schedule(
@@ -142,34 +133,8 @@ class SchedulesLoader(
       amount = amount,
       amountOp = amountOp,
       date = parseDateField(row._date, nextDate),
-      status =
-        scheduleStatus(
-          nextDate = nextDate,
-          isCompleted = row.completed == true,
-          hasTransaction = hasTransaction,
-          upcomingLength = customUpcomingLength ?: globalLength ?: DefaultUpcomingLength,
-          today = today,
-        ),
+      status = row.status(nextDate, today, latestTxDates, globalLength),
     )
-  }
-
-  // Mirrors getStatus() in packages/loot-core/src/shared/schedules.ts
-  private fun scheduleStatus(
-    nextDate: LocalDate,
-    isCompleted: Boolean,
-    hasTransaction: Boolean,
-    upcomingLength: UpcomingLength,
-    today: LocalDate,
-  ): ScheduleStatus {
-    val upcomingDays = upcomingLength.upcomingDays(today)
-    return when {
-      isCompleted -> Completed
-      hasTransaction -> Paid
-      nextDate == today -> Due
-      nextDate > today && nextDate <= today.plus(value = upcomingDays, unit = DAY) -> Upcoming
-      nextDate < today -> Missed
-      else -> Scheduled
-    }
   }
 
   // _date is either a plain "YYYY-MM-DD" or a RecurConfig JSON object {"start":"YYYY-MM-DD",...}
@@ -193,10 +158,37 @@ class SchedulesLoader(
   }
 }
 
+// Fetch transactions for all schedules in one query using the earliest possible fromDate
+internal fun List<GetAllActive>.minFromDate(today: LocalDate): LocalDate =
+  mapNotNull { it.next_date }.minOrNull()?.minus(value = 2, unit = DAY) ?: today
+
+// Mirrors getStatus() in packages/loot-core/src/shared/schedules.ts
+internal fun GetAllActive.status(
+  nextDate: LocalDate,
+  today: LocalDate,
+  latestTxDates: Map<ScheduleId, LocalDate>,
+  globalLength: UpcomingLength?,
+): ScheduleStatus {
+  // Fixed date (op = 'is'): check from next_date; recurring: look back 2 days
+  val dateCondOp = _conditions?.firstOrNull { it.field == Date }?.operator
+  val txFromDate = if (dateCondOp == Is) nextDate else nextDate.minus(value = 2, unit = DAY)
+  val hasTransaction = latestTxDates[id]?.let { it >= txFromDate } == true
+  val upcomingLength = custom_upcoming_length ?: globalLength ?: DefaultUpcomingLength
+  val upcomingDays = upcomingLength.upcomingDays(today)
+  return when {
+    completed == true -> Completed
+    hasTransaction -> Paid
+    nextDate == today -> Due
+    nextDate > today && nextDate <= today.plus(value = upcomingDays, unit = DAY) -> Upcoming
+    nextDate < today -> Missed
+    else -> Scheduled
+  }
+}
+
 // DEFAULT_UPCOMING_SCHEDULE_DAYS in packages/loot-core/src/shared/schedules.ts
 val DefaultUpcomingLength: UpcomingLength = UpcomingLength.Days(count = 7)
 
-private fun String?.toUpcomingLength(): UpcomingLength? =
+internal fun String?.toUpcomingLength(): UpcomingLength? =
   this?.let { runCatching { UpcomingLength.decode(it) }.getOrNull() }
 
 // Missed, due and upcoming schedules up to the end of the window, soonest first

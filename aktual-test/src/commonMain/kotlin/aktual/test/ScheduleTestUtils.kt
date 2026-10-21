@@ -13,7 +13,8 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
-// Inserts a fixed-date schedule with its own payee, account and rule
+// Inserts a schedule with its own payee, account and rule. The date condition's value is fixed to
+// the next date unless [date] passes other JSON, like a recurring config
 @Suppress("LongParameterList")
 suspend fun BudgetDatabase.insertSchedule(
   id: String,
@@ -24,6 +25,7 @@ suspend fun BudgetDatabase.insertSchedule(
   amount: Long = -1000,
   dateConditionIndex: Int = 2,
   completed: Boolean = false,
+  date: String = "\"$nextDate\"",
 ) {
   val payeeId = PayeeId("$id-payee")
   val accountId = AccountId("$id-account")
@@ -55,7 +57,7 @@ suspend fun BudgetDatabase.insertSchedule(
     [
       {"op": "is", "field": "description", "value": "${payeeId.value}"},
       {"op": "is", "field": "acct", "value": "${accountId.value}"},
-      {"op": "is", "field": "date", "value": "$nextDate"},
+      {"op": "is", "field": "date", "value": $date},
       {"op": "is", "field": "amount", "value": $amount}
     ]
     """
