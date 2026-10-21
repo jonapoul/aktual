@@ -17,9 +17,12 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.androidHostTestDependencies
 import org.gradle.kotlin.dsl.commonMainDependencies
 import org.gradle.kotlin.dsl.commonTestDependencies
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.androidJvm
 
 class ModuleKotlin : ProjectPlugin {
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
   override fun Project.applyTo() {
     with(pluginManager) {
       apply(KotlinMultiplatformPluginWrapper::class)
@@ -32,7 +35,14 @@ class ModuleKotlin : ProjectPlugin {
     }
 
     kotlin {
-      applyDefaultHierarchyTemplate()
+      applyDefaultHierarchyTemplate {
+        common {
+          group("jvmShared") {
+            withJvm()
+            withCompilations { it.platformType == androidJvm }
+          }
+        }
+      }
 
       jvm("desktop")
 

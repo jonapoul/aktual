@@ -10,7 +10,7 @@ Gradle convention plugins that centralize build config. Included build - `settin
 
 | ID | What it sets up |
 |----|-----------------|
-| `aktual.module.kotlin` | KMP (desktop + android) with default hierarchy, Android library target, coroutines, test deps |
+| `aktual.module.kotlin` | KMP (desktop + android) with default hierarchy plus a `jvmShared` group over both targets, Android library target, coroutines, test deps |
 | `aktual.module.compose` | `kotlin` + Compose compiler/resources + Material3 + compose test deps |
 | `aktual.module.viewmodel` | `kotlin` + Compose compiler + Molecule + lifecycle-viewmodel + Metro DI |
 | `aktual.module.di` | `kotlin` + Metro DI (no Compose) |
