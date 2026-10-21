@@ -81,7 +81,7 @@ class BudgetMonthCalculatorImpl(
       budgetDao.observeEnvelopeMonths(),
     ) { groups, categories, spent, budgets, budgetMonths ->
       val buffered = budgetMonths.mapNotNull { row ->
-        row.id.value.toYearMonthOrNull()?.let { it to (row.buffered ?: Amount.Zero) }
+        row.id.value.toYearMonthOrNull()?.let { it to (row.buffered ?: Zero) }
       }
       budgetData(groups, categories, spent, budgets, buffered.toMap())
         .envelopeMonths(start, months)

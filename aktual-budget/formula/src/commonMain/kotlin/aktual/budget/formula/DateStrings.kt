@@ -167,7 +167,7 @@ private fun jsNumber(text: String?): Double =
   when {
     text == null -> NaN
     text.isBlank() -> 0.0
-    else -> text.trim().toDoubleOrNull() ?: Double.NaN
+    else -> text.trim().toDoubleOrNull() ?: NaN
   }
 
 private fun Double.isWholeNumber(): Boolean = isFinite() && this == floor(this)

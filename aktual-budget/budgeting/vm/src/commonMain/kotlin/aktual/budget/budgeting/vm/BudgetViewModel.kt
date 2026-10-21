@@ -228,7 +228,7 @@ class BudgetViewModel(
     description: String,
     action: suspend BudgetWriter.(Amount) -> UndoToken?,
   ): Boolean {
-    val amount = evaluateAmountInput(input)?.takeIf { it > Amount.Zero } ?: return false
+    val amount = evaluateAmountInput(input)?.takeIf { it > Zero } ?: return false
     write(description) { action(amount) }
     return true
   }
@@ -378,7 +378,7 @@ class BudgetViewModel(
     if (overspent.isNotEmpty()) {
       +Banner.Overspent(count = overspent.size, total = overspent.sumOf { it.balance })
     }
-    if (this@banners is Envelope && toBudget < Amount.Zero) {
+    if (this@banners is Envelope && toBudget < Zero) {
       +Banner.Overbudgeted(toBudget)
     }
   }
@@ -423,7 +423,7 @@ class BudgetViewModel(
     return categories.filter { category ->
       !category.isIncome &&
         !category.carryover &&
-        category.balance < Amount.Zero &&
+        category.balance < Zero &&
         (this is Envelope || !category.isHidden && category.group !in hiddenGroups)
     }
   }

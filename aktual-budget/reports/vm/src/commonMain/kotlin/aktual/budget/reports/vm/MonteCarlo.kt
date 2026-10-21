@@ -583,7 +583,7 @@ internal fun runMonteCarlo(
     potFundedPlannedTodayByYear[year] = max(0.0, plannedTodayByYear[year] - spendable)
   }
   val firstSpendingYear =
-    (1..horizonYears).firstOrNull { potFundedPlannedTodayByYear[it] > 0 } ?: Int.MAX_VALUE
+    (1..horizonYears).firstOrNull { potFundedPlannedTodayByYear[it] > 0 } ?: MAX_VALUE
 
   val shouldDeflate = deflate && inflationMean != null
   // Sequence replay runs one scenario per historical start year

@@ -27,7 +27,7 @@ internal fun resolveTimeRange(
   val current = today.yearMonth
   val start = timeFrame?.start ?: default?.start ?: current.minus(DEFAULT_WINDOW_MONTHS, MONTH)
   val end = timeFrame?.end ?: default?.end ?: current
-  val mode = timeFrame?.mode ?: default?.mode ?: TimeFrameMode.SlidingWindow
+  val mode = timeFrame?.mode ?: default?.mode ?: SlidingWindow
 
   return when (mode) {
     Full -> start..maxOf(latestTransaction?.yearMonth ?: current, current)

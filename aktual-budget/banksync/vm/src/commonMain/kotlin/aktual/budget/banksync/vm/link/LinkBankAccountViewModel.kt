@@ -116,9 +116,7 @@ class LinkBankAccountViewModel(
             providers = loaded,
             selected = source,
             accounts =
-              accounts[source]?.state
-                ?: login?.let(ExternalAccounts::NeedsLogin)
-                ?: ExternalAccounts.Loading,
+              accounts[source]?.state ?: login?.let(ExternalAccounts::NeedsLogin) ?: Loading,
             isLinking = isLinking,
           )
       }

@@ -35,7 +35,7 @@ internal class PasswordChanger(
       ChangePasswordResult.HttpFailure(e.response.status.value, body.reason.reason)
     } catch (e: IOException) {
       logcat.e(e) { "Network failure changing password" }
-      ChangePasswordResult.NetworkFailure
+      NetworkFailure
     } catch (e: Exception) {
       logcat.e(e) { "Failed changing password" }
       ChangePasswordResult.OtherFailure(e.requireMessage())
