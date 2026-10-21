@@ -1,5 +1,6 @@
 package aktual.about.data
 
+import aktual.core.model.BuildConfig
 import aktual.test.GithubResponses
 import aktual.test.TestBuildConfig
 import aktual.test.emptyMockEngine
@@ -45,7 +46,7 @@ class GithubRepositoryTest {
     val request = mockEngine.requestHistory.last()
 
     // Then
-    val expected = "https://api.github.com/repos/jonapoul/aktual/releases?per_page=1"
+    val expected = "https://api.github.com/repos/jonapoul/aktual/releases?per_page=20"
     assertThat(request.url.toString()).isEqualTo(expected)
     assertThat(request.url.protocol).isEqualTo(HTTPS)
   }
@@ -61,17 +62,59 @@ class GithubRepositoryTest {
 
     // Then
     assertThat(TestBuildConfig.versionName).isEqualTo("1.2.3")
+    assertThat(state).isEqualTo(LatestReleaseState.UpdateAvailable(STABLE))
+  }
+
+  @Test
+  fun `Release builds skip pre-releases and drafts`() = runTest {
+    // Given
+    buildRepo()
+    mockEngine += { respondJson(GithubResponses.LIST_RELEASES_WITH_PRERELEASE_200) }
+
+    // When
+    val state = githubRepository.fetchLatestRelease()
+
+    // Then
+    assertThat(state).isEqualTo(LatestReleaseState.UpdateAvailable(STABLE))
+  }
+
+  @Test
+  fun `Debug builds are offered pre-releases`() = runTest {
+    // Given
+    buildRepo(TestBuildConfig.copy(isDebug = true))
+    mockEngine += { respondJson(GithubResponses.LIST_RELEASES_WITH_PRERELEASE_200) }
+
+    // When
+    val state = githubRepository.fetchLatestRelease()
+
+    // Then
     assertThat(state)
       .isEqualTo(
         LatestReleaseState.UpdateAvailable(
           GithubRelease(
-            versionName = "v2.3.4",
-            publishedAt = Instant.parse("2024-03-30T09:57:02Z"),
-            htmlUrl = "https://github.com/jonapoul/aktual/releases/tag/2.3.4",
-            tagName = "2.3.4",
+            versionName = "v2.4.0-beta",
+            publishedAt = Instant.parse("2024-04-10T09:00:00Z"),
+            htmlUrl = "https://github.com/jonapoul/aktual/releases/tag/2.4.0-beta",
+            tagName = "2.4.0-beta",
+            isPrerelease = true,
           ),
         ),
       )
+  }
+
+  @Test
+  fun `Only drafts means no releases`() = runTest {
+    // Given
+    val drafts =
+      """[{"name": "v3.0.0", "published_at": null, "html_url": "x", "tag_name": "3.0.0", "draft": true}]"""
+    buildRepo(TestBuildConfig.copy(isDebug = true))
+    mockEngine += { respondJson(drafts) }
+
+    // When
+    val state = githubRepository.fetchLatestRelease()
+
+    // Then
+    assertThat(state).isEqualTo(NoReleases)
   }
 
   @Test
@@ -165,13 +208,23 @@ class GithubRepositoryTest {
       .contains("HTTP error 405")
   }
 
-  private fun TestScope.buildRepo() {
+  private fun TestScope.buildRepo(buildConfig: BuildConfig = TestBuildConfig) {
     mockEngine = emptyMockEngine()
     githubRepository =
       GithubRepository(
         contexts = TestCoroutineContexts(standardDispatcher),
-        buildConfig = TestBuildConfig,
+        buildConfig = buildConfig,
         githubApi = GithubApiImpl(client = testHttpClient(mockEngine, GithubJson)),
+      )
+  }
+
+  private companion object {
+    val STABLE =
+      GithubRelease(
+        versionName = "v2.3.4",
+        publishedAt = Instant.parse("2024-03-30T09:57:02Z"),
+        htmlUrl = "https://github.com/jonapoul/aktual/releases/tag/2.3.4",
+        tagName = "2.3.4",
       )
   }
 }

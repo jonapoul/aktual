@@ -23,17 +23,22 @@ class GithubRepository(
     try {
       val releases =
         withContext(contexts.io) {
-          githubApi.getReleases(user = "jonapoul", repo = "aktual", perPage = 1)
+          githubApi.getReleases(user = "jonapoul", repo = "aktual", perPage = PAGE_SIZE)
         }
 
-      val latest = releases.maxByOrNull { it.publishedAt }
+      // Pre-releases are only offered to debug builds
+      val latest =
+        releases
+          .filter { !it.isDraft && (buildConfig.isDebug || !it.isPrerelease) }
+          .maxByOrNull { it.publishedAt ?: DISTANT_PAST }
+      val publishedAt = latest?.publishedAt
       return when {
-        releases.isEmpty() || latest == null -> NoReleases
+        latest == null || publishedAt == null -> NoReleases
 
         buildConfig.versionName == latest.clippedVersion() -> NoNewUpdate
 
         else ->
-          if (latest.publishedAt > buildConfig.buildTime) {
+          if (publishedAt > buildConfig.buildTime) {
             UpdateAvailable(latest)
           } else {
             // It's the same version as current (or earlier?)
@@ -72,5 +77,8 @@ class GithubRepository(
 
   private companion object {
     val ANY_LETTER = "[a-zA-z]".toRegex()
+
+    // Releases come newest first, with pre-releases and drafts among them
+    const val PAGE_SIZE = 20
   }
 }
