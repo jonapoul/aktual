@@ -124,7 +124,7 @@ class AppLockManagerTest {
         manager.onAuthenticated()
         assertThatNextEmissionIsEqualTo(Unlocked)
 
-        manager.backgroundFor(Duration.ZERO)
+        manager.backgroundFor(ZERO)
         assertThatNextEmissionIsEqualTo(Locked)
         cancelAndIgnoreRemainingEvents()
       }
