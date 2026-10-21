@@ -6,6 +6,7 @@ import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.localChange
+import aktual.budget.schedules.domain.UnpostedSchedules
 import aktual.core.model.BudgetServer
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.di.BudgetScope
@@ -41,6 +42,7 @@ class BudgetNavRailViewModel(
   private val sync: BudgetSyncController,
   accountDao: AccountDao,
   private val appPreferences: AppPreferences,
+  private val unpostedSchedules: UnpostedSchedules,
 ) : ViewModel() {
   val budgetNavEntryContributors: ImmutableSet<BudgetNavEntryContributor> =
     contributors.toImmutableSet()
@@ -60,6 +62,12 @@ class BudgetNavRailViewModel(
       .map { rows -> rows.toDrawerAccounts() }
       .catch { e -> logcat.e(e) { "Failed loading accounts" } }
       .stateIn(viewModelScope, Eagerly, initialValue = DrawerAccounts())
+
+  val hasUnpostedSchedules: StateFlow<Boolean> = unpostedSchedules.hasUnposted
+
+  fun postUnpostedSchedules() = unpostedSchedules.post()
+
+  fun dismissUnpostedSchedules() = unpostedSchedules.dismiss()
 
   fun setPrivacyMode(isEnabled: Boolean) {
     viewModelScope.launch { appPreferences.isPrivacyEnabled.set(isEnabled) }

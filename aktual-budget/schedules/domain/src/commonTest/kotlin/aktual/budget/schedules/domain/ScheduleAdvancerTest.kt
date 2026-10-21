@@ -34,15 +34,18 @@ import aktual.di.BudgetCoroutineScope
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
 import aktual.test.TestSyncController
+import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
 import alakazam.test.TestClock
 import alakazam.test.TestCoroutineContexts
+import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isNull
 import kotlin.test.Test
 import kotlin.time.Instant
@@ -323,6 +326,81 @@ class ScheduleAdvancerTest {
 
     assertThat(syncController.changes)
       .containsExactly(LocalChange(SCHEDULES, "a", "completed", MessageValue.Number(1)))
+  }
+
+  @Test
+  fun `Failed sync with schedules to post flags them as unposted`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
+    val advancer = advancer(scope)
+
+    advancer.hasUnposted.test {
+      assertThat(awaitItem()).isFalse()
+      advancer.onSyncCompleted(Failed)
+      assertThatNextEmissionIsEqualTo(true)
+    }
+  }
+
+  @Test
+  fun `Failed sync with nothing to post doesn't flag anything`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", nextDate = MARCH_15)
+    val advancer = advancer(scope)
+
+    advancer.hasUnposted.test {
+      assertThat(awaitItem()).isFalse()
+      advancer.onSyncCompleted(Failed)
+      expectNoEvents()
+    }
+  }
+
+  @Test
+  fun `Posting unposted schedules posts them despite the failed sync`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
+    val advancer = advancer(scope)
+
+    advancer.hasUnposted.test {
+      assertThat(awaitItem()).isFalse()
+      advancer.onSyncCompleted(Failed)
+      assertThatNextEmissionIsEqualTo(true)
+
+      advancer.post()
+      assertThatNextEmissionIsEqualTo(false)
+      scope.runCurrent()
+      assertThat(posted("date")).containsExactly(MessageValue.Number(20260315))
+    }
+  }
+
+  @Test
+  fun `Successful sync after a failed one clears the unposted flag`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
+    val advancer = advancer(scope)
+
+    advancer.hasUnposted.test {
+      assertThat(awaitItem()).isFalse()
+      advancer.onSyncCompleted(Failed)
+      assertThatNextEmissionIsEqualTo(true)
+
+      advancer.onSyncCompleted(Succeeded)
+      assertThatNextEmissionIsEqualTo(false)
+    }
+    assertThat(posted("date")).containsExactly(MessageValue.Number(20260315))
+  }
+
+  @Test
+  fun `Dismissing unposted schedules stops flagging them`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
+    val advancer = advancer(scope)
+
+    advancer.hasUnposted.test {
+      assertThat(awaitItem()).isFalse()
+      advancer.onSyncCompleted(Failed)
+      assertThatNextEmissionIsEqualTo(true)
+
+      advancer.dismiss()
+      assertThatNextEmissionIsEqualTo(false)
+      advancer.onSyncCompleted(Failed)
+      expectNoEvents()
+    }
+    assertThat(posted("date")).isEmpty()
   }
 
   private suspend fun BudgetDatabase.insertSchedule(
