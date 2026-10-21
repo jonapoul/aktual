@@ -11,6 +11,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncResponse
 import aktual.budget.model.localChange
+import aktual.budget.schedules.domain.UnpostedSchedules
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
@@ -31,6 +32,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.LocalDate
 import okio.ByteString
@@ -44,6 +46,7 @@ class BudgetNavRailViewModelTest {
     TestBudgetLocalPreferences(DbMetadata(budgetName = "Household", cloudFileId = BUDGET_ID))
   private val sync = TestSyncController()
   private val api = TestBudgetSyncApi()
+  private val unpostedSchedules = TestUnpostedSchedules()
 
   @Test
   fun `Renaming updates the server, the local name and the sync log`() = runDatabaseTest { scope ->
@@ -180,7 +183,16 @@ class BudgetNavRailViewModelTest {
       sync = sync,
       accountDao = AccountDao(this),
       appPreferences = appPreferences,
+      unpostedSchedules = unpostedSchedules,
     )
+
+  private class TestUnpostedSchedules : UnpostedSchedules {
+    override val hasUnposted = MutableStateFlow(false)
+
+    override fun post() = Unit
+
+    override fun dismiss() = Unit
+  }
 
   private class TestBudgetSyncApi : BudgetSyncApi {
     val renames = mutableListOf<Pair<BudgetId, String>>()

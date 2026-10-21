@@ -167,6 +167,11 @@
     <item quantity="one">%1$d time</item>
     <item quantity="other">%1$d times</item>
   </plurals>
+  <string name="schedules_unposted_title">Post transactions?</string>
+  <string name="schedules_unposted_message">Some schedules are due to post their transactions. Usually these are posted automatically, but syncing failed. To avoid duplicate transactions, you can choose whether to post them now.</string>
+  <string name="schedules_unposted_devices">Other devices may have already posted these. If you use more than one device, only do this on one of them or you'll get duplicate transactions.</string>
+  <string name="schedules_unposted_later">Decide later</string>
+  <string name="schedules_unposted_post">Post transactions</string>
   <string name="recur_end_until">until %1$s</string>
   <string name="recur_with_end">%1$s, %2$s</string>
   <string name="recur_weekend_after">%1$s (after weekend)</string>

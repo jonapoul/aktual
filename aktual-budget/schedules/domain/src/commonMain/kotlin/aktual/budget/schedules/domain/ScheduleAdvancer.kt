@@ -29,6 +29,7 @@ import aktual.core.Calendar
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.Initializable
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.ForScope
 import dev.zacsweers.metro.SingleIn
@@ -36,8 +37,13 @@ import dev.zacsweers.metro.binding
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -52,6 +58,7 @@ import logcat.logcat
  * in packages/loot-core/src/server/schedules/app.ts.
  */
 @SingleIn(BudgetScope::class)
+@ContributesBinding(BudgetScope::class, binding<UnpostedSchedules>())
 @ContributesIntoSet(BudgetScope::class, binding<@ForScope(BudgetScope::class) Initializable>())
 class ScheduleAdvancer
 internal constructor(
@@ -64,30 +71,50 @@ internal constructor(
   private val poster: SchedulePoster,
   private val scope: BudgetCoroutineScope,
   private val calendar: Calendar,
-) : Initializable {
+) : Initializable, UnpostedSchedules {
+  private val mutex = Mutex()
+  private val mutableHasUnposted = MutableStateFlow(false)
+  override val hasUnposted: StateFlow<Boolean> = mutableHasUnposted.asStateFlow()
+  private var dismissed = false
+
   override fun initialize() {
     scope.launch { syncEvents.completed.collect(::onSyncCompleted) }
+  }
+
+  override fun post() {
+    mutableHasUnposted.update { false }
+    scope.launch { tryAdvance(calendar.today(), canPost = true) }
+  }
+
+  override fun dismiss() {
+    dismissed = true
+    mutableHasUnposted.update { false }
   }
 
   internal suspend fun onSyncCompleted(outcome: SyncOutcome) {
     val today = calendar.today()
     if (budgetPrefs[LastScheduleRun] == today) return
 
+    val result = tryAdvance(today, canPost = outcome == Succeeded) ?: return
+    if (result.unposted && !dismissed) mutableHasUnposted.update { true }
+    // Only mark the day as done when sync and advancing succeeded, so a failure gets retried. Sync
+    // events are collected one at a time, so the one our own changes cause waits for this
+    if (outcome == Succeeded) budgetPrefs.update { it.set(LastScheduleRun, today) }
+  }
+
+  private suspend fun tryAdvance(today: LocalDate, canPost: Boolean): Run? =
     try {
-      advance(today, canPost = outcome == Succeeded)
-      // Only mark the day as done when sync and advancing succeeded, so a failure gets retried.
-      // Sync events are collected one at a time, so the one our own changes cause waits for this
-      if (outcome == Succeeded) budgetPrefs.update { it.set(LastScheduleRun, today) }
+      mutex.withLock { advance(today, canPost) }
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
       // The database closes with the budget, which can happen while this is still running
       currentCoroutineContext().ensureActive()
       logcat.e(e) { "Failed advancing schedules" }
+      null
     }
-  }
 
-  private suspend fun advance(today: LocalDate, canPost: Boolean) {
+  private suspend fun advance(today: LocalDate, canPost: Boolean): Run {
     val openAccounts = accountDao.getAllActive().mapTo(mutableSetOf()) { it.id }
     val rows =
       scheduleDao.getAll().filter { row ->
@@ -108,6 +135,7 @@ internal constructor(
       syncController.syncChanges(changes)
       logcat.i { "Advanced schedules: ${changes.map { it.row }.distinct()}" }
     }
+    return run
   }
 
   private suspend fun advance(row: GetAllActive, run: Run): List<LocalChange> {
@@ -158,6 +186,7 @@ internal constructor(
     } else {
       if (!run.canPost) {
         logcat.w { "Not posting schedule ${row.id}, sync failed" }
+        run.unposted = true
         return null
       }
       run.addTransaction(row, date)
@@ -233,6 +262,8 @@ internal constructor(
     val latestTxDates: MutableMap<ScheduleId, LocalDate>,
     val globalLength: UpcomingLength?,
   ) {
+    var unposted = false
+
     fun status(row: GetAllActive, nextDate: LocalDate): ScheduleStatus =
       row.status(nextDate, today, latestTxDates, globalLength)
   }

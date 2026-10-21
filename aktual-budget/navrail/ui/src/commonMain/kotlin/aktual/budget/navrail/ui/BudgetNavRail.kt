@@ -125,6 +125,7 @@ internal fun BudgetNavRail(
   val contributors = viewModel.budgetNavEntryContributors
   val headerState by viewModel.headerState.collectAsState()
   val accounts by viewModel.accounts.collectAsState()
+  val hasUnpostedSchedules by viewModel.hasUnpostedSchedules.collectAsState()
 
   val tabStacks = rememberTabStacks()
   val transactionsStack = tabStacks.getValue(Transactions)
@@ -222,6 +223,13 @@ internal fun BudgetNavRail(
         viewModel.rename(name)
       },
       onDismiss = { showRenameDialog = false },
+    )
+  }
+
+  if (hasUnpostedSchedules) {
+    UnpostedSchedulesDialog(
+      onPost = viewModel::postUnpostedSchedules,
+      onDismiss = viewModel::dismissUnpostedSchedules,
     )
   }
 }
