@@ -109,7 +109,7 @@ class EditRuleViewModel(
               id = rule.id,
               stage = rule.stage ?: Default,
               conditions = rule.conditions.orEmpty().toImmutableList(),
-              conditionsOp = rule.conditions_op ?: ConditionOp.Default,
+              conditionsOp = rule.conditions_op ?: Default,
               actions = rule.actions.orEmpty().toImmutableList(),
             )
           mutableRule.update { model }

@@ -18,9 +18,10 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
   // Unqualified
   takesRole(Admin); role == Admin; val role: Role = Admin; assertThat(role).isEqualTo(Admin)
   when (role) { Admin -> 1 }; state is Failure; state as Failure; takesKind(Button); listOf<Role>(Admin, Basic)
+  role ?: Admin; amount > Zero; Admin in roles; val f: () -> Role = { Admin }
 
   // Must qualify: no expected type, or a constructor call
-  val role = Role.Admin; listOf(Role.Admin); a to Role.Admin
+  val role = Role.Admin; listOf(Role.Admin); a to Role.Admin; roles += Role.Admin
   val r = if (x) Role.Admin else Role.Basic; takesState(State.Failure("x"))
   ```
   - Only a type or function in scope makes a name ambiguous (`LoginMethod.Password` vs the `Password` class, `Role.Checkbox` vs the `Checkbox` composable). Another enum's entry with the same name doesn't count, so `consume(Plus)` and `UnaryNode(Plus, x)` both resolve.

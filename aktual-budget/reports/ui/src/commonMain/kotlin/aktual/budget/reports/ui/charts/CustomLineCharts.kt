@@ -342,7 +342,7 @@ private suspend fun CartesianChartModelProducer.populateLines(
 ) = runTransaction {
   val x = stacks.indices.toList()
   val series =
-    (stacks.firstOrNull()?.indices ?: IntRange.EMPTY).map { group ->
+    (stacks.firstOrNull()?.indices ?: EMPTY).map { group ->
       stacks.map { it[group].amount.toDouble() }
     }
   if (series.isNotEmpty()) {

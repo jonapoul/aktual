@@ -250,7 +250,7 @@ private fun TableCell(
 private fun Colors.amountColor(amount: Amount): Color =
   when {
     amount == Zero -> reportsNumberNeutral
-    amount > Amount.Zero -> reportsNumberPositive
+    amount > Zero -> reportsNumberPositive
     else -> reportsNumberNegative
   }
 

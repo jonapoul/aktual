@@ -63,7 +63,7 @@ class ServerPinger(
       throw e
     } catch (e: Exception) {
       logcat.w(e) { "Failed pinging server" }
-      PingState.Failure
+      Failure
     }
   }
 

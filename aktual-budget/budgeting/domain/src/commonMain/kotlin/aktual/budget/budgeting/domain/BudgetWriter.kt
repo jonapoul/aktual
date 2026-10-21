@@ -138,7 +138,7 @@ class BudgetWriterImpl(
   override suspend fun copySinglePreviousMonth(month: YearMonth, category: CategoryId): UndoToken? {
     val type = type()
     val previous = budgetDao.budgetsInMonth(type, month.previous())
-    val amount = previous.firstOrNull { it.category == category }?.amount ?: Amount.Zero
+    val amount = previous.firstOrNull { it.category == category }?.amount ?: Zero
     return send(type) { set(month, category, amount) }
   }
 
@@ -159,8 +159,7 @@ class BudgetWriterImpl(
   override suspend fun copyUntilYearEnd(month: YearMonth, category: CategoryId): UndoToken? {
     val type = type()
     val amount =
-      budgetDao.budgetsInMonth(type, month).firstOrNull { it.category == category }?.amount
-        ?: Amount.Zero
+      budgetDao.budgetsInMonth(type, month).firstOrNull { it.category == category }?.amount ?: Zero
     val end = minOf(YearMonth(month.year, Month.DECEMBER), bounds().endInclusive)
     return send(type) {
       for (future in month.next()..end) set(future, category, amount)
@@ -290,7 +289,7 @@ class BudgetWriterImpl(
       .observeEnvelopeMonths()
       .first()
       .firstOrNull { it.id.value == month.toString() }
-      ?.buffered ?: Amount.Zero
+      ?.buffered ?: Zero
 
   // setBuffer()
   private fun Batch.setBuffer(month: YearMonth, previous: Amount, amount: Amount) =
@@ -455,10 +454,10 @@ private fun Amount?.orDefault(default: Amount): Amount = this?.takeIf { it != Ze
 
 // Upstream's budget-* and leftover-* cells, which are zero for unknown categories
 private fun BudgetMonth.Envelope.budgeted(id: CategoryId): Amount =
-  categories.firstOrNull { it.id == id }?.budgeted ?: Amount.Zero
+  categories.firstOrNull { it.id == id }?.budgeted ?: Zero
 
 private fun BudgetMonth.Envelope.balance(id: CategoryId): Amount =
-  categories.firstOrNull { it.id == id }?.balance ?: Amount.Zero
+  categories.firstOrNull { it.id == id }?.balance ?: Zero
 
 private fun BudgetMonth.Envelope.name(id: CategoryId): String =
   categories.firstOrNull { it.id == id }?.name.orEmpty()

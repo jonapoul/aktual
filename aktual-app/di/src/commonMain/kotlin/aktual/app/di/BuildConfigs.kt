@@ -13,6 +13,6 @@ fun buildConfig(isDebug: Boolean) =
     versionName = VERSION_NAME,
     gitHash = GIT_HASH.substring(startIndex = 0, endIndex = 8),
     buildTime = Instant.fromEpochMilliseconds(BUILD_TIME_MS),
-    defaultPassword = DEFAULT_PASSWORD?.let(::Password) ?: Password.Empty,
+    defaultPassword = DEFAULT_PASSWORD?.let(::Password) ?: Empty,
     defaultServerUrl = DEFAULT_URL?.let(::ServerUrl),
   )

@@ -138,7 +138,7 @@ private fun ListSchedulesScaffold(
   var showSortDialog by remember { mutableStateOf(false) }
 
   if (showSortDialog) {
-    val sort = successState?.sort ?: ScheduleSort.Default
+    val sort = successState?.sort ?: Default
     SortDialog(
       fields = ScheduleSort.Field.Entries,
       field = sort.field,

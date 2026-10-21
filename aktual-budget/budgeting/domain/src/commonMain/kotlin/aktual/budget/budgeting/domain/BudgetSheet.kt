@@ -116,8 +116,8 @@ private fun BudgetData.envelopeMonth(
   val previousById = previous.categories.associateBy { it.id }
   val rows = categories.map { category ->
     val key = MonthCategory(month, category.id)
-    val budgeted = budgets[key]?.amount ?: Amount.Zero
-    val spent = spent[key] ?: Amount.Zero
+    val budgeted = budgets[key]?.amount ?: Zero
+    val spent = spent[key] ?: Zero
     val carried =
       previousById[category.id]?.let {
         if (it.carryover) it.balance else maxOf(it.balance, Amount.Zero)
@@ -126,7 +126,7 @@ private fun BudgetData.envelopeMonth(
       budgeted = budgeted,
       spent = spent,
       // Income categories have no balance, what they receive goes to the month's funds
-      balance = if (category.isIncome) Zero else budgeted + spent + (carried ?: Amount.Zero),
+      balance = if (category.isIncome) Zero else budgeted + spent + (carried ?: Zero),
       carryover = budgets[key]?.carryover == true,
     )
   }
@@ -146,7 +146,7 @@ private fun BudgetData.envelopeMonth(
   val budgeted = expenses.sumOf { it.budgeted }
 
   // Holding an income category for next month buffers what it received, unless an amount was set
-  val manualBuffer = buffered[month] ?: Amount.Zero
+  val manualBuffer = buffered[month] ?: Zero
   val buffer =
     if (manualBuffer != Zero) {
       manualBuffer
@@ -204,9 +204,9 @@ private fun BudgetData.trackingMonth(
   val previousById = previous.categories.associateBy { it.id }
   val rows = categories.map { category ->
     val key = MonthCategory(month, category.id)
-    val budgeted = budgets[key]?.amount ?: Amount.Zero
-    val spent = spent[key] ?: Amount.Zero
-    val carried = previousById[category.id]?.takeIf { it.carryover }?.balance ?: Amount.Zero
+    val budgeted = budgets[key]?.amount ?: Zero
+    val spent = spent[key] ?: Zero
+    val carried = previousById[category.id]?.takeIf { it.carryover }?.balance ?: Zero
     category.toMonth(
       budgeted = budgeted,
       spent = spent,

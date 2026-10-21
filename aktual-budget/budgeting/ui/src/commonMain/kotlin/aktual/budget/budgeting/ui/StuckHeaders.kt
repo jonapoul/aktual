@@ -32,7 +32,7 @@ internal class StuckHeaders(
     var next: LazyListItemInfo? = null
     visibleItemsInfo.fastForEach { other ->
       val isLaterHeader = other.index > item.index && other.contentType == StickyHeader
-      if (isLaterHeader && other.index < next?.index ?: Int.MAX_VALUE) next = other
+      if (isLaterHeader && other.index < next?.index ?: MAX_VALUE) next = other
     }
 
     val top = top(item)

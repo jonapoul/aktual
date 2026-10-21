@@ -101,13 +101,13 @@ sealed interface CustomReportDates {
 // from packages/desktop-client/src/components/reports/ReportOptions.ts defaultReport. Returns null
 // if the row holds a value we don't understand, so we don't draw a chart from a guess.
 internal fun CustomReports.toConfig(): CustomReportConfig? {
-  val mode = mode ?: CustomReportMode.Total
-  val groupBy = group_by ?: GroupBy.Category
-  val balanceType = balance_type ?: BalanceType.Payment
-  val graphType = graph_type ?: GraphType.BarGraph
-  val interval = interval ?: Interval.Monthly
-  val sortBy = sort_by ?: SortBy.Desc
-  val conditionsOp = conditions_op ?: ConditionOp.Default
+  val mode = mode ?: Total
+  val groupBy = group_by ?: Category
+  val balanceType = balance_type ?: Payment
+  val graphType = graph_type ?: BarGraph
+  val interval = interval ?: Monthly
+  val sortBy = sort_by ?: Desc
+  val conditionsOp = conditions_op ?: Default
   val dates = dates() ?: return null
 
   val hasUnknown =
@@ -165,7 +165,7 @@ private fun CustomReports.dates(): CustomReportDates? =
     CustomReportDates.Static(start.date, end.lastDay())
   } else {
     // getLiveRange() treats a missing range like "All time"
-    val type = date_range ?: DateRangeType.AllTime
+    val type = date_range ?: AllTime
     if (type == Unknown) {
       null
     } else {

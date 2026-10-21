@@ -376,7 +376,7 @@ internal fun previewCustomData(
       if (showTrendLines) {
         groups
           .associate { group ->
-            val stacked = intervalTotals.map { it.stacked[group.group] ?: Amount.Zero }
+            val stacked = intervalTotals.map { it.stacked[group.group] ?: Zero }
             group.group to CustomTrend(stacked.first(), stacked.average())
           }
           .toImmutableMap()
