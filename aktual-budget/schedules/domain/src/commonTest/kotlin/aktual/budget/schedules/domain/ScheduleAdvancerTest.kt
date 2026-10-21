@@ -282,9 +282,34 @@ class ScheduleAdvancerTest {
         override fun schedule() = Unit
       }
 
-    advancer(scope, writerSync = failingSync).onSyncCompleted(Succeeded)
+    advancer(scope, sync = failingSync).onSyncCompleted(Succeeded)
 
     assertThat(budgetPrefs[LastScheduleRun]).isNull()
+  }
+
+  @Test
+  fun `Sync our own changes complete doesn't post again`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
+    // Only completes once, so posting twice fails the test rather than looping
+    var completed = false
+    val completingSync =
+      object : BudgetSyncController {
+        override suspend fun syncChanges(changes: List<LocalChange>) {
+          syncController.syncChanges(changes)
+          if (!completed) {
+            completed = true
+            syncEvents.complete(Succeeded)
+          }
+        }
+
+        override fun schedule() = Unit
+      }
+    advancer(scope, BudgetCoroutineScope(scope.backgroundScope), sync = completingSync).initialize()
+
+    syncEvents.complete(Succeeded)
+    scope.runCurrent()
+
+    assertThat(posted("date")).containsExactly(MessageValue.Number(20260315))
   }
 
   @Test
@@ -378,7 +403,7 @@ class ScheduleAdvancerTest {
   private fun BudgetDatabase.advancer(
     scope: TestScope,
     coroutineScope: BudgetCoroutineScope = BudgetCoroutineScope(scope),
-    writerSync: BudgetSyncController = syncController,
+    sync: BudgetSyncController = syncController,
   ): ScheduleAdvancer {
     var nextId = 1
     val uuidGenerator = UuidGenerator { "id-${nextId++}" }
@@ -387,7 +412,7 @@ class ScheduleAdvancerTest {
       accountDao = AccountDao(this),
       preferencesDao =
         PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))),
-      syncController = syncController,
+      syncController = sync,
       syncEvents = syncEvents,
       budgetPrefs = budgetPrefs,
       poster =
@@ -400,7 +425,7 @@ class ScheduleAdvancerTest {
             ),
           transactionWriter =
             TransactionWriter(
-              syncController = writerSync,
+              syncController = sync,
               accountDao = AccountDao(this),
               categoryDao = CategoryDao(this),
               payeeDao = PayeeDao(this),

@@ -75,8 +75,8 @@ internal constructor(
 
     try {
       advance(today, canPost = outcome == Succeeded)
-      // Only mark the day as done when sync and advancing succeeded, so a failure gets retried. The
-      // sync our own changes start completes after this returns, so it sees the day as done
+      // Only mark the day as done when sync and advancing succeeded, so a failure gets retried.
+      // Sync events are collected one at a time, so the one our own changes cause waits for this
       if (outcome == Succeeded) budgetPrefs.update { it.set(LastScheduleRun, today) }
     } catch (e: CancellationException) {
       throw e
