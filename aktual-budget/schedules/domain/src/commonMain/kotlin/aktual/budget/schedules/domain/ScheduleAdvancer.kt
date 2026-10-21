@@ -73,12 +73,11 @@ internal constructor(
     val today = calendar.today()
     if (budgetPrefs[LastScheduleRun] == today) return
 
-    // Only mark the day as done when sync succeeded, so a failed sync gets retried. This happens
-    // before advancing, since syncing our own changes completes another sync
-    if (outcome == Succeeded) budgetPrefs.update { it.set(LastScheduleRun, today) }
-
     try {
       advance(today, canPost = outcome == Succeeded)
+      // Only mark the day as done when sync and advancing succeeded, so a failure gets retried. The
+      // sync our own changes start completes after this returns, so it sees the day as done
+      if (outcome == Succeeded) budgetPrefs.update { it.set(LastScheduleRun, today) }
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {

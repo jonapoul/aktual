@@ -1,11 +1,13 @@
 package aktual.budget.schedules.domain
 
+import aktual.budget.BudgetSyncController
 import aktual.budget.SyncEvents
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Rules
 import aktual.budget.db.Transactions
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
+import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.SCHEDULES
 import aktual.budget.db.dao.DatabaseTables.SCHEDULES_NEXT_DATE
 import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
@@ -38,6 +40,7 @@ import alakazam.test.TestClock
 import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
@@ -147,7 +150,10 @@ class ScheduleAdvancerTest {
   fun `Missed schedule that posts adds its transaction through the rules`() =
     runDatabaseTest { scope ->
       insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
-      insertNotesRule(payee = "a-payee", notes = "Rent")
+      insertRule(
+        payee = "a-payee",
+        actions = """[{"op": "set", "field": "notes", "value": "Rent"}]""",
+      )
 
       advancer(scope).onSyncCompleted(Succeeded)
 
@@ -215,6 +221,73 @@ class ScheduleAdvancerTest {
   }
 
   @Test
+  fun `Rule that deletes the transaction stops it posting`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
+    insertRule(payee = "a-payee", actions = """[{"op": "delete-transaction", "value": ""}]""")
+
+    advancer(scope).onSyncCompleted(Succeeded)
+
+    assertThat(posted("date")).isEmpty()
+  }
+
+  @Test
+  fun `Payee a rule creates is added with the transaction`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
+    insertRule(
+      payee = "a-payee",
+      actions = """[{"op": "set", "field": "payee_name", "value": "Landlord"}]""",
+    )
+
+    advancer(scope).onSyncCompleted(Succeeded)
+
+    val payee = syncController.changes.single { it.dataset == PAYEES && it.column == "name" }
+    assertThat(payee.value).isEqualTo(MessageValue.String("Landlord"))
+    assertThat(posted("description")).containsExactly(MessageValue.String(payee.row))
+  }
+
+  @Test
+  fun `Rule that splits the transaction posts its parts`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
+    insertRule(
+      payee = "a-payee",
+      actions =
+        """
+        [
+          {"op": "set-split-amount", "value": 60, "options": {"splitIndex": 1, "method": "fixed-percent"}},
+          {"op": "set-split-amount", "value": null, "options": {"splitIndex": 2, "method": "remainder"}}
+        ]
+        """
+          .trimIndent(),
+    )
+
+    advancer(scope).onSyncCompleted(Succeeded)
+
+    assertThat(posted("amount"))
+      .containsExactly(
+        MessageValue.Number(-1000),
+        MessageValue.Number(-600),
+        MessageValue.Number(-400),
+      )
+    assertThat(posted("isParent")).containsExactly(MessageValue.Number(1))
+    assertThat(posted("parent_id")).hasSize(2)
+  }
+
+  @Test
+  fun `Failed posting doesn't count as today's run`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
+    val failingSync =
+      object : BudgetSyncController {
+        override suspend fun syncChanges(changes: List<LocalChange>) = error("Sync failed")
+
+        override fun schedule() = Unit
+      }
+
+    advancer(scope, writerSync = failingSync).onSyncCompleted(Succeeded)
+
+    assertThat(budgetPrefs[LastScheduleRun]).isNull()
+  }
+
+  @Test
   fun `Runs when a sync completes`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", nextDate = MARCH_15)
     insertTransaction(schedule = "a", date = MARCH_15)
@@ -243,22 +316,18 @@ class ScheduleAdvancerTest {
       postsTransaction = postsTransaction,
     )
 
-  private suspend fun BudgetDatabase.insertNotesRule(payee: String, notes: String) =
+  private suspend fun BudgetDatabase.insertRule(payee: String, actions: String) =
     RulesDao(this)
       .insert(
         Rules(
-          id = RuleId("notes"),
+          id = RuleId("rule"),
           stage = null,
           conditions =
             Json.decodeFromString(
               ListSerializer(Condition.serializer()),
               """[{"op": "is", "field": "description", "value": "$payee"}]""",
             ),
-          actions =
-            Json.decodeFromString(
-              ListSerializer(RuleAction.serializer()),
-              """[{"op": "set", "field": "notes", "value": "$notes"}]""",
-            ),
+          actions = Json.decodeFromString(ListSerializer(RuleAction.serializer()), actions),
           tombstone = false,
           conditions_op = null,
         ),
@@ -309,6 +378,7 @@ class ScheduleAdvancerTest {
   private fun BudgetDatabase.advancer(
     scope: TestScope,
     coroutineScope: BudgetCoroutineScope = BudgetCoroutineScope(scope),
+    writerSync: BudgetSyncController = syncController,
   ): ScheduleAdvancer {
     var nextId = 1
     val uuidGenerator = UuidGenerator { "id-${nextId++}" }
@@ -330,7 +400,7 @@ class ScheduleAdvancerTest {
             ),
           transactionWriter =
             TransactionWriter(
-              syncController = syncController,
+              syncController = writerSync,
               accountDao = AccountDao(this),
               categoryDao = CategoryDao(this),
               payeeDao = PayeeDao(this),
