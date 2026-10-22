@@ -3,6 +3,7 @@ package aktual.budget.home.vm
 import aktual.budget.db.GetAllWithBalances
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
+import aktual.budget.model.AccountSyncState
 import aktual.budget.model.Amount
 import aktual.budget.model.BankSyncStatus
 import assertk.Assert

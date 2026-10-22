@@ -2,14 +2,14 @@ package aktual.budget.home.ui
 
 import aktual.budget.home.vm.AccountBalance
 import aktual.budget.home.vm.AccountSection
-import aktual.budget.home.vm.AccountSyncState
-import aktual.budget.home.vm.AccountSyncState.Failed
-import aktual.budget.home.vm.AccountSyncState.Ok
 import aktual.budget.home.vm.AccountsCardState
 import aktual.budget.home.vm.AccountsCardState.Loaded
 import aktual.budget.home.vm.AccountsSummary
 import aktual.budget.home.vm.mostRecentlyActive
 import aktual.budget.model.AccountId
+import aktual.budget.model.AccountSyncState
+import aktual.budget.model.AccountSyncState.Failed
+import aktual.budget.model.AccountSyncState.Ok
 import aktual.budget.model.Amount
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
@@ -200,15 +200,7 @@ private fun AccountRow(
       overflow = Ellipsis,
     )
 
-    if (account.syncState is Failed) {
-      val description = Strings.homeAccountsSyncFailed
-      Box(
-        modifier =
-          Modifier.size(SyncDotSize).background(colors.errorText, CircleShape).semantics {
-            contentDescription = description
-          },
-      )
-    }
+    SyncDot(account.syncState)
 
     AmountText(
       amount = account.balance,
@@ -216,6 +208,23 @@ private fun AccountRow(
       color = if (account.balance < Zero) colors.numberNegative else colors.pageText,
     )
   }
+}
+
+@Composable
+private fun SyncDot(state: AccountSyncState, modifier: Modifier = Modifier) {
+  val (color, description) =
+    when (state) {
+      NotLinked -> return
+      is Ok -> colors.sidebarItemBackgroundPositive to Strings.bankSyncIndicatorOk
+      is Failed -> colors.sidebarItemBackgroundFailed to Strings.bankSyncIndicatorFailed
+    }
+
+  Box(
+    modifier =
+      modifier.size(SyncDotSize).background(color, CircleShape).semantics {
+        contentDescription = description
+      },
+  )
 }
 
 // Keep this in sync with AccountRow

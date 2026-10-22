@@ -2,6 +2,9 @@ package aktual.budget.navrail.ui
 
 import aktual.budget.model.AccountGroup
 import aktual.budget.model.AccountId
+import aktual.budget.model.AccountSyncState
+import aktual.budget.model.AccountSyncState.Failed
+import aktual.budget.model.AccountSyncState.Ok
 import aktual.budget.model.Amount
 import aktual.budget.navrail.vm.DrawerAccount
 import aktual.budget.navrail.vm.DrawerAccountSection
@@ -79,6 +82,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -289,8 +293,27 @@ private fun AccountItem(
       overflow = Ellipsis,
     )
 
+    SyncDot(account.syncState)
+
     BalanceText(amount = account.balance, style = typography.bodyMedium, color = color)
   }
+}
+
+@Composable
+private fun SyncDot(state: AccountSyncState, modifier: Modifier = Modifier) {
+  val (color, description) =
+    when (state) {
+      NotLinked -> return
+      is Ok -> colors.sidebarItemBackgroundPositive to Strings.bankSyncIndicatorOk
+      is Failed -> colors.sidebarItemBackgroundFailed to Strings.bankSyncIndicatorFailed
+    }
+
+  Box(
+    modifier =
+      modifier.size(SyncDotSize).background(color, CircleShape).semantics {
+        contentDescription = description
+      },
+  )
 }
 
 @Composable
@@ -328,6 +351,7 @@ private fun AccountGroup.label(): String =
 private const val COLLAPSED_ROTATION = -90f
 
 private val AccountItemHeight = 36.dp
+private val SyncDotSize = 8.dp
 
 // Lines account names up with the labels of the items above, past their icons
 private val AccountNameIndent = 52.dp
@@ -541,7 +565,8 @@ private val PREVIEW_ACCOUNTS =
       section(
         account("Current Account", 2_431.18),
         account("Joint Account", 1_204.50),
-        account("Credit Card", -642.37),
+        account("Easy Saver", 8_500.00, Ok(lastSync = null)),
+        account("Credit Card", -642.37, Failed(ReauthRequired)),
       ),
     offBudget = section(account("Stocks ISA", 14_220.91), account("Car Loan", -6_300.00)),
     closed = section(account("Old Savings", 0.0)),
@@ -553,5 +578,5 @@ private fun section(vararg accounts: DrawerAccount) =
     total = accounts.fold(Amount.Zero) { sum, account -> sum + account.balance },
   )
 
-private fun account(name: String, balance: Double) =
-  DrawerAccount(id = AccountId(name), name = name, balance = Amount(balance))
+private fun account(name: String, balance: Double, syncState: AccountSyncState = NotLinked) =
+  DrawerAccount(id = AccountId(name), name = name, balance = Amount(balance), syncState = syncState)

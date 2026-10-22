@@ -3,6 +3,7 @@ package aktual.budget.navrail.vm
 import aktual.budget.db.GetAllWithBalances
 import aktual.budget.model.AccountGroup
 import aktual.budget.model.AccountId
+import aktual.budget.model.AccountSyncState
 import aktual.budget.model.Amount
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
@@ -33,7 +34,13 @@ data class DrawerAccountSection(
   val total: Amount = Zero,
 )
 
-@Immutable data class DrawerAccount(val id: AccountId, val name: String, val balance: Amount)
+@Immutable
+data class DrawerAccount(
+  val id: AccountId,
+  val name: String,
+  val balance: Amount,
+  val syncState: AccountSyncState = NotLinked,
+)
 
 internal fun List<GetAllWithBalances>.toDrawerAccounts(): DrawerAccounts {
   val (closed, open) = partition { it.closed == true }
@@ -46,7 +53,15 @@ internal fun List<GetAllWithBalances>.toDrawerAccounts(): DrawerAccounts {
 }
 
 private fun List<GetAllWithBalances>.toSection(): DrawerAccountSection {
-  val accounts = map { DrawerAccount(it.id, it.name.orEmpty(), Amount(it.balance)) }
+  val accounts = map {
+    DrawerAccount(
+      id = it.id,
+      name = it.name.orEmpty(),
+      balance = Amount(it.balance),
+      syncState =
+        AccountSyncState(it.account_sync_source, it.account_id, it.bank_sync_status, it.last_sync),
+    )
+  }
   return DrawerAccountSection(
     accounts = accounts.toImmutableList(),
     total = accounts.fold(Amount.Zero) { sum, account -> sum + account.balance },

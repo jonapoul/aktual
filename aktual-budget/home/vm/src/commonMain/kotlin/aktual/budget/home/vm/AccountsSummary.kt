@@ -1,9 +1,8 @@
 package aktual.budget.home.vm
 
 import aktual.budget.model.AccountId
+import aktual.budget.model.AccountSyncState
 import aktual.budget.model.Amount
-import aktual.budget.model.BankSyncStatus
-import kotlin.time.Instant
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
@@ -39,11 +38,3 @@ fun AccountsSummary.mostRecentlyActive(limit: Int): AccountsSummary? {
 
 private fun AccountSection.only(ids: Set<AccountId>) =
   copy(accounts = accounts.filter { it.id in ids }.toImmutableList())
-
-sealed interface AccountSyncState {
-  data object NotLinked : AccountSyncState
-
-  data class Ok(val lastSync: Instant?) : AccountSyncState
-
-  data class Failed(val status: BankSyncStatus) : AccountSyncState
-}
