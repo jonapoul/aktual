@@ -10,8 +10,8 @@ import aktual.core.nav.NavEntryContributor
 import aktual.core.theme.ThemeResolver
 import aktual.di.AppScope
 import aktual.di.RunLevelState
+import aktual.prefs.SecurityPreferences
 import aktual.prefs.SystemUiPreferences
-import aktual.prefs.asStateFlow
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,6 +19,8 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 
 @Stable
 @ViewModelKey
@@ -32,6 +34,7 @@ class AktualActivityViewModel(
   initialRouteUseCase: InitialRouteUseCase,
   bottomBarStateUseCase: BottomBarStateUseCase,
   systemUiPreferences: SystemUiPreferences,
+  securityPreferences: SecurityPreferences,
   val runLevels: RunLevelState,
 ) :
   RootViewModel(
@@ -44,7 +47,14 @@ class AktualActivityViewModel(
     bottomBarStateUseCase = bottomBarStateUseCase,
     runLevels = runLevels,
   ) {
-  // hides the app's contents in the recent-apps switcher (and blocks screenshots) when true
-  val hidePreviewInAppSwitcher: StateFlow<Boolean> =
-    systemUiPreferences.hidePreviewInAppSwitcher.asStateFlow(viewModelScope)
+  // hides the app's contents in the recent-apps switcher (and blocks screenshots) when true. Forced
+  // on by the app lock, since the recents snapshot is taken before the lock screen can draw
+  val secureWindow: StateFlow<Boolean> =
+    combine(
+        systemUiPreferences.hidePreviewInAppSwitcher.asFlow(),
+        securityPreferences.appLockEnabled.asFlow(),
+      ) { hidePreview, lockEnabled ->
+        hidePreview || lockEnabled
+      }
+      .stateIn(viewModelScope, Eagerly, initialValue = true)
 }

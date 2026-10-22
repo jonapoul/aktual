@@ -10,10 +10,10 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class SystemUiPreferencesTest {
+class SecurityPreferencesTest {
   @Test
   fun `App lock enabled`() = runTest {
-    val preferences = SystemUiPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    val preferences = SecurityPreferencesImpl(buildPreferences(unconfinedDispatcher))
     with(preferences.appLockEnabled) {
       asFlow().test {
         assertThatNextEmissionIsEqualTo(false)
@@ -26,7 +26,7 @@ class SystemUiPreferencesTest {
 
   @Test
   fun `App lock timeout`() = runTest {
-    val preferences = SystemUiPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    val preferences = SecurityPreferencesImpl(buildPreferences(unconfinedDispatcher))
     with(preferences.appLockTimeout) {
       asFlow().test {
         assertThatNextEmissionIsEqualTo(Immediately)

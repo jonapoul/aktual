@@ -80,4 +80,9 @@
   <string name="year_month_picker_save">Save</string>
   <string name="year_month_picker_cancel">Cancel</string>
   <string name="year_month_picker_out_of_range">Out of range: must be from %1$s to %2$s inclusive</string>
+
+  <string name="app_lock_title">Aktual is locked</string>
+  <string name="app_lock_unlock">Unlock</string>
+  <string name="app_lock_prompt_title">Unlock Aktual</string>
+  <string name="app_lock_prompt_subtitle">Use your fingerprint, face or screen lock</string>
 </resources>

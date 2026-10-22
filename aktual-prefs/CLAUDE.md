@@ -4,7 +4,7 @@ Preferences and settings, split into `vm` (state) and `ui` (Compose). `ui:core` 
 
 ## Adding a new setting
 
-1. **Declare it.** Pick the right interface in `aktual-prefs/src/.../` - `AppPreferences`, `CurrencyPreferences`, `FormatPreferences`, `SystemUiPreferences`, or `ThemePreferences` - and add `val myPref: Preference<T>`. Implement in the matching `*PreferencesImpl.kt` using `dataStore.boolean/float/int/string/translated(...).required()`.
+1. **Declare it.** Pick the right interface in `aktual-prefs/src/.../` - `AppPreferences`, `CurrencyPreferences`, `FormatPreferences`, `SecurityPreferences`, `SystemUiPreferences`, or `ThemePreferences` - and add `val myPref: Preference<T>`. Implement in the matching `*PreferencesImpl.kt` using `dataStore.boolean/float/int/string/translated(...).required()`.
 
 1. **Feed a config (if needed).** If the pref contributes to a config object (e.g. `BlurConfig`, `FormatConfig`), update the corresponding use case in `aktual-app/nav/src/commonMain/.../UseCases.kt`.
 

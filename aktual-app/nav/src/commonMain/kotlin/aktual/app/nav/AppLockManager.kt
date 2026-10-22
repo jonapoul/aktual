@@ -2,8 +2,9 @@ package aktual.app.nav
 
 import aktual.di.AppCoroutineScope
 import aktual.di.AppScope
-import aktual.prefs.SystemUiPreferences
+import aktual.prefs.SecurityPreferences
 import aktual.prefs.asStateFlow
+import androidx.compose.runtime.Stable
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
@@ -22,11 +23,12 @@ enum class AppLockState {
 }
 
 @Inject
+@Stable
 @SingleIn(AppScope::class)
 class AppLockManager(
-  private val preferences: SystemUiPreferences,
+  private val preferences: SecurityPreferences,
   private val clock: Clock,
-  scope: AppCoroutineScope,
+  private val scope: AppCoroutineScope,
 ) {
   private val mutableState = MutableStateFlow(AppLockState.Unknown)
   val state: StateFlow<AppLockState> = mutableState.asStateFlow()
@@ -48,6 +50,10 @@ class AppLockManager(
             !enabled -> Unlocked
             state == Unknown -> Locked
             else -> state
+          }.also { newValue ->
+            if (newValue != state) {
+              logcat.d { "AppLockManager state $state -> $newValue" }
+            }
           }
         }
       }
@@ -55,11 +61,13 @@ class AppLockManager(
   }
 
   fun onBackground() {
+    logcat.d { "onBackground" }
     if (isAuthenticating) return
     backgroundedAt = clock.now()
   }
 
   fun onForeground() {
+    logcat.d { "onForeground" }
     if (isAuthenticating) return
     val since = backgroundedAt ?: return
     backgroundedAt = null
@@ -72,15 +80,25 @@ class AppLockManager(
   }
 
   fun onAuthenticationStarted() {
+    logcat.d { "onAuthenticationStarted" }
     isAuthenticating = true
   }
 
   fun onAuthenticated() {
+    logcat.d { "onAuthenticated" }
     isAuthenticating = false
     mutableState.update { Unlocked }
   }
 
   fun onAuthenticationFailed() {
+    logcat.d { "onAuthenticationFailed" }
     isAuthenticating = false
+  }
+
+  // For when the device no longer has a screen lock, so we can't authenticate
+  fun disable() {
+    logcat.w { "Disabling app lock" }
+    isAuthenticating = false
+    scope.launch { preferences.appLockEnabled.set(false) }
   }
 }
