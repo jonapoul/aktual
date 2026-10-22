@@ -179,12 +179,14 @@ private fun KeyEvent.toKeypadInput(): KeypadInput? {
   return keypadInput(key, utf16CodePoint.toChar())
 }
 
-// A hardware key as the keypad key it stands for, with operators typed as the keypad's symbols
+// A hardware key as the keypad key it stands for, with operators typed as the keypad's symbols and
+// a comma as its decimal point
 internal fun keypadInput(key: Key, char: Char): KeypadInput? =
   when {
     key == Backspace -> Backspace
     key == Enter || key == NumPadEnter -> Done
-    char in '0'..'9' || char == '.' || char == ',' -> KeypadInput.Append(char.toString())
+    char in '0'..'9' -> KeypadInput.Append(char.toString())
+    char == '.' || char == ',' -> KeypadInput.Append(DECIMAL_POINT)
     else -> HARDWARE_OPERATORS[char]?.let(KeypadInput::Append)
   }
 

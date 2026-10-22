@@ -6,11 +6,11 @@ import kotlin.test.assertNull
 
 class KeypadInputTest {
   @Test
-  fun `Digits and separators are typed as they are`() {
+  fun `Digits are typed as they are, and either separator as a point`() {
     assertEquals(KeypadInput.Append("7"), keypadInput(Seven, '7'))
     assertEquals(KeypadInput.Append("3"), keypadInput(NumPad3, '3'))
     assertEquals(KeypadInput.Append("."), keypadInput(Period, '.'))
-    assertEquals(KeypadInput.Append(","), keypadInput(Comma, ','))
+    assertEquals(KeypadInput.Append("."), keypadInput(Comma, ','))
   }
 
   @Test
