@@ -344,6 +344,13 @@ jobs:
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
 
+            **Context**:
+            Before reviewing, read the PR description and all existing discussion:
+               gh pr view $PR_NUMBER --comments
+               gh api graphql -F owner=${{ github.repository_owner }} -F name=${{ github.event.repository.name }} -F pr=${{ github.event.pull_request.number }} -f query='query($owner: String!, $name: String!, $pr: Int!) { repository(owner: $owner, name: $name) { pullRequest(number: $pr) { reviewThreads(first: 100) { nodes { isResolved path line comments(first: 50) { nodes { author { login } body } } } } } } }'
+
+            Don't raise a point that's already been made in an earlier comment, even if it was on a different line or worded differently. A point is settled if its thread is resolved (with or without a reply), or if the author replied to explain a decision (e.g. intentional behaviour, or work deferred to another issue). Don't raise settled points again unless the new diff changes the reasoning. Respect scope that the PR description or replies say is deliberately left out.
+
             **Code Review**:
             Use `gh pr diff $PR_NUMBER` to get the diff, then submit a review with inline comments on specific lines where you find:
             - Potential bugs or issues
