@@ -27,6 +27,7 @@ import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.BudgetTab
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.theme.Colors
+import aktual.core.ui.AccountSyncDot
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
@@ -82,7 +83,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -293,27 +293,10 @@ private fun AccountItem(
       overflow = Ellipsis,
     )
 
-    SyncDot(account.syncState)
+    AccountSyncDot(account.syncState)
 
     BalanceText(amount = account.balance, style = typography.bodyMedium, color = color)
   }
-}
-
-@Composable
-private fun SyncDot(state: AccountSyncState, modifier: Modifier = Modifier) {
-  val (color, description) =
-    when (state) {
-      NotLinked -> return
-      is Ok -> colors.sidebarItemBackgroundPositive to Strings.bankSyncIndicatorOk
-      is Failed -> colors.sidebarItemBackgroundFailed to Strings.bankSyncIndicatorFailed
-    }
-
-  Box(
-    modifier =
-      modifier.size(SyncDotSize).background(color, CircleShape).semantics {
-        contentDescription = description
-      },
-  )
 }
 
 @Composable
@@ -351,7 +334,6 @@ private fun AccountGroup.label(): String =
 private const val COLLAPSED_ROTATION = -90f
 
 private val AccountItemHeight = 36.dp
-private val SyncDotSize = 8.dp
 
 // Lines account names up with the labels of the items above, past their icons
 private val AccountNameIndent = 52.dp

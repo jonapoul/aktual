@@ -12,6 +12,7 @@ import aktual.budget.model.AccountSyncState.Failed
 import aktual.budget.model.AccountSyncState.Ok
 import aktual.budget.model.Amount
 import aktual.core.l10n.Strings
+import aktual.core.ui.AccountSyncDot
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
@@ -30,9 +31,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,7 +41,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -57,7 +55,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 
 private val RowMinHeight = 48.dp
-private val SyncDotSize = 8.dp
 
 @Composable
 internal fun AccountsCard(
@@ -200,7 +197,7 @@ private fun AccountRow(
       overflow = Ellipsis,
     )
 
-    SyncDot(account.syncState)
+    AccountSyncDot(account.syncState)
 
     AmountText(
       amount = account.balance,
@@ -208,23 +205,6 @@ private fun AccountRow(
       color = if (account.balance < Zero) colors.numberNegative else colors.pageText,
     )
   }
-}
-
-@Composable
-private fun SyncDot(state: AccountSyncState, modifier: Modifier = Modifier) {
-  val (color, description) =
-    when (state) {
-      NotLinked -> return
-      is Ok -> colors.sidebarItemBackgroundPositive to Strings.bankSyncIndicatorOk
-      is Failed -> colors.sidebarItemBackgroundFailed to Strings.bankSyncIndicatorFailed
-    }
-
-  Box(
-    modifier =
-      modifier.size(SyncDotSize).background(color, CircleShape).semantics {
-        contentDescription = description
-      },
-  )
 }
 
 // Keep this in sync with AccountRow
