@@ -135,8 +135,11 @@ class BudgetNavRailViewModelTest {
     val viewModel = viewModel(None, scope)
 
     viewModel.accounts.test {
-      assertThat(awaitLoaded().onBudget.accounts.map { it.syncState })
-        .containsExactly(NotLinked, AccountSyncState.Ok(lastSync = null))
+      assertThat(awaitLoaded().onBudget.accounts.map { it.name to it.syncState })
+        .containsExactly(
+          "linked" to AccountSyncState.Ok(lastSync = null),
+          "unlinked" to AccountSyncState.NotLinked,
+        )
       cancelAndIgnoreRemainingEvents()
     }
   }

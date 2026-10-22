@@ -53,13 +53,18 @@ internal fun List<GetAllWithBalances>.toDrawerAccounts(): DrawerAccounts {
 }
 
 private fun List<GetAllWithBalances>.toSection(): DrawerAccountSection {
-  val accounts = map {
+  val accounts = map { row ->
     DrawerAccount(
-      id = it.id,
-      name = it.name.orEmpty(),
-      balance = Amount(it.balance),
+      id = row.id,
+      name = row.name.orEmpty(),
+      balance = Amount(row.balance),
       syncState =
-        AccountSyncState(it.account_sync_source, it.account_id, it.bank_sync_status, it.last_sync),
+        AccountSyncState(
+          row.account_sync_source,
+          row.account_id,
+          row.bank_sync_status,
+          row.last_sync,
+        ),
     )
   }
   return DrawerAccountSection(
