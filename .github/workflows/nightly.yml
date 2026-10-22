@@ -127,21 +127,50 @@ jobs:
         with:
           path: dist
           merge-multiple: true
-      - name: Create draft release
+      - name: Update the nightly draft release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           SHA: ${{ github.sha }}
         run: |
-          # Drop previous nightly drafts so they don't pile up
-          gh release list --json tagName,isDraft \
-            --jq '.[] | select(.isDraft and (.tagName | startswith("nightly-"))) | .tagName' \
-            | xargs -r -n1 gh release delete --yes
+          TAG="nightly"
+          TITLE="Nightly $(date -u +%Y-%m-%d)"
+          NOTES="Nightly build of $SHA"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            # Asset names include the build date, so clear out the old ones rather than clobbering
+            gh release view "$TAG" --json assets --jq '.assets[].name' \
+              | xargs -r -n1 gh release delete-asset "$TAG" --yes
+            gh release edit "$TAG" --target "$SHA" --title "$TITLE" --notes "$NOTES"
+            gh release upload "$TAG" dist/*
+          else
+            gh release create "$TAG" dist/* \
+              --draft \
+              --prerelease \
+              --target "$SHA" \
+              --title "$TITLE" \
+              --notes "$NOTES"
+          fi
 
-          TAG="nightly-$(date -u +%Y%m%d)"
-          gh release create "$TAG" dist/* \
-            --draft \
-            --prerelease \
-            --target "$SHA" \
-            --title "Nightly $(date -u +%Y-%m-%d)" \
-            --notes "Nightly build of $SHA"
+  flag-failure:
+    needs: [ check, android, desktop, release ]
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Open an issue, or comment on the open one
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SHA: ${{ github.sha }}
+        run: |
+          TITLE="Nightly build is failing"
+          EXISTING=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number,title \
+            --jq ".[] | select(.title == \"$TITLE\") | .number" | head -1)
+          BODY="Failed on $SHA: $RUN_URL"
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$BODY"
+          else
+            gh issue create --title "$TITLE" --label bug --body "$BODY"
+          fi
