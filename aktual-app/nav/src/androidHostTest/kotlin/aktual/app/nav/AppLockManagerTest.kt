@@ -2,13 +2,15 @@ package aktual.app.nav
 
 import aktual.di.AppCoroutineScope
 import aktual.prefs.AppLockTimeout
-import aktual.prefs.SystemUiPreferences
-import aktual.prefs.SystemUiPreferencesImpl
+import aktual.prefs.SecurityPreferences
+import aktual.prefs.SecurityPreferencesImpl
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
 import alakazam.test.TestClock
 import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isFalse
 import kotlin.test.Test
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -22,7 +24,7 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class AppLockManagerTest {
-  private lateinit var preferences: SystemUiPreferences
+  private lateinit var preferences: SecurityPreferences
   private var now = Instant.fromEpochMilliseconds(0)
 
   private fun runManagerTest(
@@ -30,7 +32,7 @@ class AppLockManagerTest {
     timeout: AppLockTimeout = Default,
     testBody: suspend TestScope.(AppLockManager) -> Unit,
   ): TestResult = runTest {
-    preferences = SystemUiPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    preferences = SecurityPreferencesImpl(buildPreferences(unconfinedDispatcher))
     preferences.appLockEnabled.set(enabled)
     preferences.appLockTimeout.set(timeout)
     val scope =
@@ -199,6 +201,35 @@ class AppLockManagerTest {
         assertThatNextEmissionIsEqualTo(Locked)
         preferences.appLockEnabled.set(false)
         assertThatNextEmissionIsEqualTo(Unlocked)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `Disabling from the manager unlocks and clears the pref`() =
+    runManagerTest(enabled = true) { manager ->
+      manager.state.test {
+        assertThatNextEmissionIsEqualTo(Locked)
+        manager.disable()
+        assertThatNextEmissionIsEqualTo(Unlocked)
+        assertThat(preferences.appLockEnabled.get()).isFalse()
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `Disabling clears an unfinished prompt`() =
+    runManagerTest(enabled = true) { manager ->
+      manager.state.test {
+        assertThatNextEmissionIsEqualTo(Locked)
+        // The prompt never reports back
+        manager.onAuthenticationStarted()
+        preferences.appLockEnabled.set(false)
+        assertThatNextEmissionIsEqualTo(Unlocked)
+
+        preferences.appLockEnabled.set(true)
+        manager.backgroundFor(1.seconds)
+        assertThatNextEmissionIsEqualTo(Locked)
         cancelAndIgnoreRemainingEvents()
       }
     }

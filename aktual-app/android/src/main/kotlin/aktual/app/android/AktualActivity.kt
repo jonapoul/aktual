@@ -1,13 +1,15 @@
 package aktual.app.android
 
 import aktual.app.nav.AktualAppContent
+import aktual.app.nav.AppLockContent
+import aktual.app.nav.AppLockManager
 import aktual.app.nav.rememberBackStack
 import aktual.core.ui.LoadingScreenIfNull
 import aktual.di.AppScope
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
-import android.view.WindowManager
+import android.view.WindowManager.LayoutParams.FLAG_SECURE
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -20,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dev.zacsweers.metro.ContributesIntoMap
@@ -30,9 +33,23 @@ import kotlinx.coroutines.launch
 
 @ActivityKey
 @ContributesIntoMap(AppScope::class, binding<Activity>())
-class AktualActivity(override val defaultViewModelProviderFactory: MetroViewModelFactory) :
-  ComponentActivity() {
+class AktualActivity(
+  override val defaultViewModelProviderFactory: MetroViewModelFactory,
+  private val appLockManager: AppLockManager,
+) : ComponentActivity() {
   private val viewModel by viewModels<AktualActivityViewModel>()
+
+  private val authenticator = AppLockAuthenticator(activity = this, onResult = ::onAuthResult)
+
+  override fun onStart() {
+    super.onStart()
+    appLockManager.onForeground()
+  }
+
+  override fun onStop() {
+    super.onStop()
+    if (!isChangingConfigurations) appLockManager.onBackground()
+  }
 
   override fun onDestroy() {
     super.onDestroy()
@@ -41,7 +58,7 @@ class AktualActivity(override val defaultViewModelProviderFactory: MetroViewMode
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    installSplashScreen()
+    installSplashScreen().setKeepOnScreenCondition { appLockManager.state.value == Unknown }
 
     val transparent = Color.Transparent.value.toInt()
     enableEdgeToEdge(
@@ -50,28 +67,64 @@ class AktualActivity(override val defaultViewModelProviderFactory: MetroViewMode
     )
 
     // toggle FLAG_SECURE so the app's contents are hidden in the recents switcher (and screenshots
-    // are blocked) according to the user's preference. The flow seeds with the default (true), so
-    // we're secure-by-default until DataStore reports otherwise
+    // are blocked) according to the user's preferences. The flow seeds with true, so we're
+    // secure-by-default until DataStore reports otherwise
     lifecycleScope.launch {
       repeatOnLifecycle(STARTED) {
-        viewModel.hidePreviewInAppSwitcher.collect { hide ->
-          if (hide) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-          } else {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-          }
+        viewModel.secureWindow.collect { secure ->
+          if (secure) window.addFlags(FLAG_SECURE) else window.clearFlags(FLAG_SECURE)
         }
       }
     }
 
-    setContent { Content(viewModel) }
+    setContent { Content(viewModel, appLockManager, onUnlock = ::unlock) }
+  }
+
+  private fun unlock(title: String, subtitle: String) {
+    when (authenticator.canAuthenticate()) {
+      Available -> {
+        appLockManager.onAuthenticationStarted()
+        authenticator.authenticate(title, subtitle)
+      }
+
+      // Never leave the user stuck behind a lock they can't open
+      Unavailable -> {
+        appLockManager.disable()
+      }
+    }
+  }
+
+  private fun onAuthResult(result: AuthResult) {
+    when (result) {
+      Success -> appLockManager.onAuthenticated()
+      Cancelled -> appLockManager.onAuthenticationFailed()
+      Unavailable -> appLockManager.disable()
+      is Failed -> appLockManager.onAuthenticationFailed()
+    }
   }
 }
 
 @Composable
 @Suppress("ViewModelForwarding")
 @SuppressLint("ComposeViewModelForwarding")
-private fun Content(viewModel: AktualActivityViewModel) {
+private fun Content(
+  viewModel: AktualActivityViewModel,
+  appLockManager: AppLockManager,
+  onUnlock: (title: String, subtitle: String) -> Unit,
+) {
+  val lockState by appLockManager.state.collectAsStateWithLifecycle()
+  when (lockState) {
+    // The splash screen stays up until we know
+    Unknown -> Unit
+    Locked -> AppLockContent(viewModel, onUnlock)
+    Unlocked -> UnlockedContent(viewModel)
+  }
+}
+
+@Composable
+@Suppress("ViewModelForwarding")
+@SuppressLint("ComposeViewModelForwarding")
+private fun UnlockedContent(viewModel: AktualActivityViewModel) {
   val viewModelFactory by remember {
     viewModel.runLevels.viewModelFactory()
   }

@@ -153,6 +153,7 @@ dependencies {
   implementation(libs.androidx.activity.core)
   implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.annotation)
+  implementation(libs.androidx.biometric)
   implementation(libs.androidx.compose.annotation)
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.lifecycle.viewmodel)

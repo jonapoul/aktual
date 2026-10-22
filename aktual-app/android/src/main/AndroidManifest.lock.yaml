@@ -4,6 +4,8 @@ main:
   permissions:
   - android.permission.ACCESS_NETWORK_STATE
   - android.permission.INTERNET
+  - android.permission.USE_BIOMETRIC
+  - android.permission.USE_FINGERPRINT
   libraries:
   - androidx.window.extensions:
       required: false
@@ -53,4 +55,4 @@ variants:
     namespace: dev.jonpoulton.aktual.app
     permissions:
     - dev.jonpoulton.aktual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
-fingerprint: 3cf4b0f9efa5433e56c05e0d5f1d0538
+fingerprint: aab2bc0235d58789efb7928af662d846
