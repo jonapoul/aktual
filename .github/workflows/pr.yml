@@ -71,6 +71,7 @@ jobs:
               - '!.github/upstream-*/**'
               - '!.github/workflows/check-upstream-changes.yml'
               - '!.github/workflows/main.yml'
+              - '!.github/workflows/nightly.yml'
               - '!config/betterleaks.toml'
 
   validate-renovate:

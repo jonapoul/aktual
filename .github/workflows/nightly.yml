@@ -1,0 +1,147 @@
+name: Nightly
+
+on:
+  # 2am daily
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: 'nightly'
+  cancel-in-progress: true
+
+env:
+  GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+  S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+  S3_BUILD_CACHE_BUCKET: ${{ secrets.S3_BUILD_CACHE_BUCKET }}
+  S3_BUILD_CACHE_ENDPOINT: ${{ secrets.S3_BUILD_CACHE_ENDPOINT }}
+  S3_BUILD_CACHE_SECRET_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_KEY }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      should-build: ${{ steps.check.outputs.should-build }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      # Skip scheduled runs when nothing landed on main since the last one
+      - id: check
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT" != "schedule" ] || [ -n "$(git log --since='24 hours ago' --oneline)" ]; then
+            echo "should-build=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should-build=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  android:
+    needs: check
+    if: ${{ needs.check.outputs.should-build == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      - name: Set up signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > release.keystore
+          {
+            echo "aktual.keyFile=release.keystore"
+            echo "aktual.keyFilePassword=$KEYSTORE_PASSWORD"
+            echo "aktual.keyAlias=$KEY_ALIAS"
+            echo "aktual.keyPassword=$KEY_PASSWORD"
+          } > local.properties
+      - run: ./gradlew :aktual-app:android:assembleRelease
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: android
+          path: aktual-app/android/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+  desktop:
+    needs: check
+    if: ${{ needs.check.outputs.should-build == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            tasks: packageReleaseDeb
+          - os: macos-latest
+            tasks: packageReleaseDmg
+          - os: windows-latest
+            tasks: packageReleaseMsi packageReleaseExe
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      # ProGuard doesn't support the config cache, which can't be disabled with isolated projects on
+      - env:
+          TASKS: ${{ matrix.tasks }}
+        run: |
+          ./gradlew $(printf ':aktual-app:desktop:%s ' $TASKS) \
+            --no-configuration-cache -Dorg.gradle.unsafe.isolated-projects=false
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: desktop-${{ runner.os }}
+          path: aktual-app/desktop/build/compose/binaries/main-release/*/aktual-desktop-*
+          if-no-files-found: error
+
+  release:
+    needs: [ android, desktop ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          # Drop previous nightly drafts so they don't pile up
+          gh release list --json tagName,isDraft \
+            --jq '.[] | select(.isDraft and (.tagName | startswith("nightly-"))) | .tagName' \
+            | xargs -r -n1 gh release delete --yes
+
+          TAG="nightly-$(date -u +%Y%m%d)"
+          gh release create "$TAG" dist/* \
+            --draft \
+            --prerelease \
+            --target "$SHA" \
+            --title "Nightly $(date -u +%Y-%m-%d)" \
+            --notes "Nightly build of $SHA"
