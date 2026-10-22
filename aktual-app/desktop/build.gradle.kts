@@ -113,7 +113,7 @@ val artifactArch =
 
 tasks.withType<AbstractJPackageTask>().configureEach {
   doLast {
-    val ext = targetFormat.fileExt
+    val ext = targetFormat.fileExt.removePrefix(".")
     val destDir = destinationDir.get().asFile
     val candidates = destDir.listFiles { f -> f.extension.equals(ext, ignoreCase = true) }.orEmpty()
     val produced = candidates.singleOrNull()
