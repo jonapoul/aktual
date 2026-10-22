@@ -9,6 +9,8 @@
   <string name="bank_sync_unknown_bank">Unknown bank</string>
   <string name="bank_sync_last_sync">Last bank sync: %1$s</string>
   <string name="bank_sync_never_synced">Never synced with your bank</string>
+  <string name="bank_sync_indicator_ok">Bank sync working</string>
+  <string name="bank_sync_indicator_failed">Bank sync failed</string>
   <string name="bank_sync_just_now">just now</string>
   <plurals name="bank_sync_minutes_ago">
     <item quantity="one">%1$d minute ago</item>

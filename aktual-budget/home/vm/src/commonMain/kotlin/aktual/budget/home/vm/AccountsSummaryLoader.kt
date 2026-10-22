@@ -2,6 +2,7 @@ package aktual.budget.home.vm
 
 import aktual.budget.db.GetAllWithBalances
 import aktual.budget.db.dao.AccountDao
+import aktual.budget.model.AccountSyncState
 import aktual.budget.model.Amount
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.toImmutableList
@@ -34,16 +35,6 @@ private fun GetAllWithBalances.toAccountBalance() =
     id = id,
     name = name.orEmpty(),
     balance = Amount(balance),
-    syncState = syncState(),
+    syncState = AccountSyncState(account_sync_source, account_id, bank_sync_status, last_sync),
     lastActivity = last_activity,
   )
-
-// Upstream treats an account as linked if it has a sync source, and unlinking clears both
-private fun GetAllWithBalances.syncState(): AccountSyncState {
-  val status = bank_sync_status
-  return when {
-    account_sync_source == null || account_id == null -> NotLinked
-    status != null && status.isFailure -> AccountSyncState.Failed(status)
-    else -> AccountSyncState.Ok(last_sync)
-  }
-}

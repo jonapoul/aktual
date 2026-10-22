@@ -6,6 +6,8 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.withoutResult
 import aktual.budget.model.AccountId
+import aktual.budget.model.AccountSyncSource
+import aktual.budget.model.AccountSyncState
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
@@ -126,6 +128,22 @@ class BudgetNavRailViewModelTest {
     }
   }
 
+  @Test
+  fun `Linked accounts carry their sync state`() = runDatabaseTest { scope ->
+    insertAccount("unlinked")
+    insertAccount("linked", syncSource = SimpleFin)
+    val viewModel = viewModel(None, scope)
+
+    viewModel.accounts.test {
+      assertThat(awaitLoaded().onBudget.accounts.map { it.name to it.syncState })
+        .containsExactly(
+          "linked" to AccountSyncState.Ok(lastSync = null),
+          "unlinked" to AccountSyncState.NotLinked,
+        )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private suspend fun ReceiveTurbine<DrawerAccounts>.awaitLoaded(): DrawerAccounts {
     var item = awaitItem()
     while (item == DrawerAccounts()) item = awaitItem()
@@ -141,18 +159,21 @@ class BudgetNavRailViewModelTest {
       total = accounts.fold(Amount.Zero) { sum, account -> sum + account.balance },
     )
 
-  private suspend fun BudgetDatabase.insertAccount(id: String, offBudget: Boolean = false) =
-    accountsQueries.withoutResult {
-      insert(
-        id = AccountId(id),
-        account_id = null,
-        name = id,
-        official_name = null,
-        bank = null,
-        offbudget = offBudget,
-        account_sync_source = null,
-      )
-    }
+  private suspend fun BudgetDatabase.insertAccount(
+    id: String,
+    offBudget: Boolean = false,
+    syncSource: AccountSyncSource? = null,
+  ) = accountsQueries.withoutResult {
+    insert(
+      id = AccountId(id),
+      account_id = syncSource?.let { "remote-$id" },
+      name = id,
+      official_name = null,
+      bank = null,
+      offbudget = offBudget,
+      account_sync_source = syncSource,
+    )
+  }
 
   @Test
   fun `Privacy mode is saved to the app preferences`() = runDatabaseTest { scope ->

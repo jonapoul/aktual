@@ -2,6 +2,9 @@ package aktual.budget.navrail.ui
 
 import aktual.budget.model.AccountGroup
 import aktual.budget.model.AccountId
+import aktual.budget.model.AccountSyncState
+import aktual.budget.model.AccountSyncState.Failed
+import aktual.budget.model.AccountSyncState.Ok
 import aktual.budget.model.Amount
 import aktual.budget.navrail.vm.DrawerAccount
 import aktual.budget.navrail.vm.DrawerAccountSection
@@ -24,6 +27,7 @@ import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.BudgetTab
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.theme.Colors
+import aktual.core.ui.AccountSyncDot
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
@@ -289,6 +293,8 @@ private fun AccountItem(
       overflow = Ellipsis,
     )
 
+    AccountSyncDot(account.syncState)
+
     BalanceText(amount = account.balance, style = typography.bodyMedium, color = color)
   }
 }
@@ -541,7 +547,8 @@ private val PREVIEW_ACCOUNTS =
       section(
         account("Current Account", 2_431.18),
         account("Joint Account", 1_204.50),
-        account("Credit Card", -642.37),
+        account("Easy Saver", 8_500.00, Ok(lastSync = null)),
+        account("Credit Card", -642.37, Failed(ReauthRequired)),
       ),
     offBudget = section(account("Stocks ISA", 14_220.91), account("Car Loan", -6_300.00)),
     closed = section(account("Old Savings", 0.0)),
@@ -553,5 +560,5 @@ private fun section(vararg accounts: DrawerAccount) =
     total = accounts.fold(Amount.Zero) { sum, account -> sum + account.balance },
   )
 
-private fun account(name: String, balance: Double) =
-  DrawerAccount(id = AccountId(name), name = name, balance = Amount(balance))
+private fun account(name: String, balance: Double, syncState: AccountSyncState = NotLinked) =
+  DrawerAccount(id = AccountId(name), name = name, balance = Amount(balance), syncState = syncState)
