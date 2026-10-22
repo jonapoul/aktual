@@ -1,0 +1,205 @@
+name: Nightly
+
+on:
+  # 2am daily
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: 'nightly'
+  cancel-in-progress: false
+
+env:
+  GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+  S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+  S3_BUILD_CACHE_BUCKET: ${{ secrets.S3_BUILD_CACHE_BUCKET }}
+  S3_BUILD_CACHE_ENDPOINT: ${{ secrets.S3_BUILD_CACHE_ENDPOINT }}
+  S3_BUILD_CACHE_SECRET_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_KEY }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Reading draft releases needs write access
+    permissions:
+      contents: write
+    outputs:
+      should-build: ${{ steps.check.outputs.should-build }}
+    steps:
+      # Skip scheduled runs when the nightly release already has this commit
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          SHA: ${{ github.sha }}
+        run: |
+          LAST=$(gh release view nightly --json targetCommitish --jq .targetCommitish 2> /dev/null || true)
+          if [ "$EVENT" != "schedule" ] || [ "$LAST" != "$SHA" ]; then
+            echo "should-build=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should-build=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  android:
+    needs: check
+    if: ${{ needs.check.outputs.should-build == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      - name: Set up signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          for name in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Signing secret $name is missing"
+              exit 1
+            fi
+          done
+          echo "$KEYSTORE_BASE64" | base64 --decode > release.keystore
+          {
+            echo "aktual.keyFile=release.keystore"
+            echo "aktual.keyFilePassword=$KEYSTORE_PASSWORD"
+            echo "aktual.keyAlias=$KEY_ALIAS"
+            echo "aktual.keyPassword=$KEY_PASSWORD"
+          } > local.properties
+      - run: ./gradlew :aktual-app:android:assembleRelease
+      - run: |
+          mkdir out
+          cp aktual-app/android/build/outputs/apk/release/*.apk out/
+          cp aktual-app/android/build/outputs/mapping/release/mapping.txt out/aktual-android-mapping.txt
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: android
+          path: out/*
+          if-no-files-found: error
+
+  desktop:
+    needs: check
+    if: ${{ needs.check.outputs.should-build == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            tasks: packageReleaseDeb
+          - os: macos-latest
+            tasks: packageReleaseDmg
+          - os: windows-latest
+            tasks: packageReleaseMsi packageReleaseExe
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      # ProGuard doesn't support the config cache, which can't be disabled with isolated projects on
+      - env:
+          TASKS: ${{ matrix.tasks }}
+        run: |
+          ./gradlew $(printf ':aktual-app:desktop:%s ' $TASKS) \
+            --no-configuration-cache -Dorg.gradle.unsafe.isolated-projects=false
+      # Flatten the per-format folders so the release gets files rather than directories
+      - run: |
+          OS=$(echo "$RUNNER_OS" | tr '[:upper:]' '[:lower:]')
+          mkdir out
+          cp aktual-app/desktop/build/compose/binaries/main-release/*/aktual-desktop-* out/
+          cp aktual-app/desktop/build/outputs/mapping.txt "out/aktual-desktop-$OS-mapping.txt"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: desktop-${{ runner.os }}
+          path: out/*
+          if-no-files-found: error
+
+  release:
+    needs: [ check, android, desktop ]
+    # Publish whatever built, even if one platform failed. flag-failure still reports the failure
+    if: ${{ !cancelled() && needs.check.outputs.should-build == 'true' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Update the nightly draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          TAG="nightly"
+          TITLE="Nightly $(date -u +%Y-%m-%d)"
+          NOTES="Nightly build of $SHA"
+          shopt -s nullglob
+          FILES=(dist/*)
+          if [ ${#FILES[@]} -eq 0 ]; then
+            echo "::error::No build outputs to release"
+            exit 1
+          fi
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" "${FILES[@]}" --clobber
+            # Asset names include the build date, so delete the ones this build didn't replace
+            KEEP=$(printf '%s\n' "${FILES[@]##*/}")
+            gh release view "$TAG" --json assets --jq '.assets[].name' \
+              | grep -vxF "$KEEP" \
+              | xargs -r -n1 gh release delete-asset "$TAG" --yes
+            gh release edit "$TAG" --target "$SHA" --title "$TITLE" --notes "$NOTES"
+          else
+            gh release create "$TAG" "${FILES[@]}" \
+              --draft \
+              --prerelease \
+              --target "$SHA" \
+              --title "$TITLE" \
+              --notes "$NOTES"
+          fi
+
+  flag-failure:
+    needs: [ check, android, desktop, release ]
+    if: ${{ failure() && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Open an issue, or comment on the open one
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SHA: ${{ github.sha }}
+        run: |
+          TITLE="Nightly build is failing"
+          EXISTING=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number,title \
+            --jq ".[] | select(.title == \"$TITLE\") | .number" | head -1)
+          BODY="Failed on $SHA: $RUN_URL"
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$BODY"
+          else
+            gh issue create --title "$TITLE" --label bug --body "$BODY"
+          fi

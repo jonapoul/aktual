@@ -11,6 +11,7 @@ on:
       - '!.github/renovate.json5'
       - '!.github/upstream-*/**'
       - '!.github/workflows/check-upstream-changes.yml'
+      - '!.github/workflows/nightly.yml'
       - '!.github/workflows/pr.yml'
       - '!config/betterleaks.toml'
 
