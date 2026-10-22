@@ -4,6 +4,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +18,20 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.isAltPressed
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isMetaPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -93,7 +107,8 @@ private fun operatorKeys(): List<Pair<String, String>> =
 
 /**
  * A calculator keypad typing an amount into [state], for a screen that shows the amount itself in
- * place of a text field. Each row of keys ends in one of [AmountField]'s operator keys.
+ * place of a text field. Each row of keys ends in one of [AmountField]'s operator keys. It takes
+ * focus while shown, so a hardware keyboard types into it too.
  */
 @Composable
 fun AmountKeypad(
@@ -103,8 +118,24 @@ fun AmountKeypad(
   canFinish: Boolean = true,
 ) {
   val operators = operatorKeys()
+  val focusRequester = remember { FocusRequester() }
+  LaunchedEffect(focusRequester) { focusRequester.requestFocus() }
+
   Column(
-    modifier = modifier,
+    // Previewed, so Enter means Done even while one of the keys has focus from being clicked
+    modifier =
+      modifier
+        .onPreviewKeyEvent { event ->
+          when (val input = event.toKeypadInput()) {
+            null -> return@onPreviewKeyEvent false
+            is Append -> state.edit { append(input.text) }
+            Backspace -> state.edit { if (length > 0) replace(length - 1, length, "") }
+            Done -> if (canFinish) onDone()
+          }
+          true
+        }
+        .focusRequester(focusRequester)
+        .focusable(),
     verticalArrangement = Arrangement.spacedBy(AmountFieldDS.keypadSpacing),
   ) {
     DIGIT_ROWS.fastForEachIndexed { index, digits ->
@@ -133,6 +164,29 @@ fun AmountKeypad(
     )
   }
 }
+
+internal sealed interface KeypadInput {
+  data class Append(val text: String) : KeypadInput
+
+  data object Backspace : KeypadInput
+
+  data object Done : KeypadInput
+}
+
+private fun KeyEvent.toKeypadInput(): KeypadInput? {
+  val isShortcut = isCtrlPressed || isMetaPressed || isAltPressed
+  if (type != KeyDown || isShortcut) return null
+  return keypadInput(key, utf16CodePoint.toChar())
+}
+
+// A hardware key as the keypad key it stands for, with operators typed as the keypad's symbols
+internal fun keypadInput(key: Key, char: Char): KeypadInput? =
+  when {
+    key == Backspace -> Backspace
+    key == Enter || key == NumPadEnter -> Done
+    char in '0'..'9' || char == '.' || char == ',' -> KeypadInput.Append(char.toString())
+    else -> HARDWARE_OPERATORS[char]?.let(KeypadInput::Append)
+  }
 
 @Composable
 private fun RowScope.OperatorKey(operator: Pair<String, String>, state: TextFieldState) {
@@ -199,4 +253,5 @@ private const val ZERO_PLACEHOLDER = "0.00"
 private const val DECIMAL_POINT = "."
 private const val ZERO = "0"
 private const val BACKSPACE = "⌫"
+private val HARDWARE_OPERATORS = mapOf('+' to "+", '-' to "−", '*' to "×", '/' to "÷")
 private val DIGIT_ROWS = listOf(listOf("1", "2", "3"), listOf("4", "5", "6"), listOf("7", "8", "9"))
