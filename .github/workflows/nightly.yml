@@ -166,22 +166,17 @@ jobs:
             echo "::error::No build outputs to release"
             exit 1
           fi
+          # Recreate rather than edit, since the token can't move a release's target onto a commit
+          # that changes workflow files
           if gh release view "$TAG" > /dev/null 2>&1; then
-            gh release upload "$TAG" "${FILES[@]}" --clobber
-            # Asset names include the build date, so delete the ones this build didn't replace
-            KEEP=$(printf '%s\n' "${FILES[@]##*/}")
-            gh release view "$TAG" --json assets --jq '.assets[].name' \
-              | grep -vxF "$KEEP" \
-              | xargs -r -n1 gh release delete-asset "$TAG" --yes
-            gh release edit "$TAG" --target "$SHA" --title "$TITLE" --notes "$NOTES"
-          else
-            gh release create "$TAG" "${FILES[@]}" \
-              --draft \
-              --prerelease \
-              --target "$SHA" \
-              --title "$TITLE" \
-              --notes "$NOTES"
+            gh release delete "$TAG" --yes
           fi
+          gh release create "$TAG" "${FILES[@]}" \
+            --draft \
+            --prerelease \
+            --target "$SHA" \
+            --title "$TITLE" \
+            --notes "$NOTES"
 
   flag-failure:
     needs: [ check, android, desktop, release ]
