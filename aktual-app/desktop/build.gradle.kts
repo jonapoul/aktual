@@ -59,7 +59,7 @@ compose.desktop {
       packageName = "Aktual Desktop"
       packageVersion = gitVersionDate.get()
       description = "Desktop app for the Actual budgeting software"
-      licenseFile = rootProject.isolated.projectDirectory.file("LICENSE")
+      licenseFile = rootProject.isolated.projectDirectory.file("LICENSE.txt")
 
       // JDK modules
       modules("java.sql")
