@@ -45,6 +45,7 @@ class AppLockManager(
   init {
     scope.launch {
       preferences.appLockEnabled.asFlow().collect { enabled ->
+        if (!enabled) isAuthenticating = false
         mutableState.update { state ->
           when {
             !enabled -> Unlocked

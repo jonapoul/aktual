@@ -218,6 +218,23 @@ class AppLockManagerTest {
     }
 
   @Test
+  fun `Disabling clears an unfinished prompt`() =
+    runManagerTest(enabled = true) { manager ->
+      manager.state.test {
+        assertThatNextEmissionIsEqualTo(Locked)
+        // The prompt never reports back
+        manager.onAuthenticationStarted()
+        preferences.appLockEnabled.set(false)
+        assertThatNextEmissionIsEqualTo(Unlocked)
+
+        preferences.appLockEnabled.set(true)
+        manager.backgroundFor(1.seconds)
+        assertThatNextEmissionIsEqualTo(Locked)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
   fun `Enabling doesn't lock until the next foreground`() =
     runManagerTest(enabled = false) { manager ->
       manager.state.test {
