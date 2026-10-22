@@ -16,14 +16,16 @@ import logcat.logcat
 
 internal enum class AuthAvailability {
   Available,
-  NoneEnrolled,
-  Unsupported,
+  Unavailable,
 }
 
 internal sealed interface AuthResult {
   data object Success : AuthResult
 
   data object Cancelled : AuthResult
+
+  // No screen lock is set up, or the device can't authenticate at all
+  data object Unavailable : AuthResult
 
   data class Failed(val code: Int, val message: CharSequence) : AuthResult
 }
@@ -40,10 +42,9 @@ internal class AppLockAuthenticator(
 
   fun canAuthenticate(): AuthAvailability =
     when (BiometricManager.from(activity).canAuthenticate(AUTHENTICATORS)) {
-      BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> NoneEnrolled
-      BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE,
-      BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> Unsupported
-      // Other errors may be temporary, so try anyway and let the prompt report them
+      BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED,
+      BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> Unavailable
+      // Other errors may be temporary or OEM quirks, so try anyway and let the prompt report them
       else -> Available
     }
 
@@ -64,6 +65,8 @@ internal class AppLockAuthenticator(
           BiometricPrompt.ERROR_USER_CANCELED,
           BiometricPrompt.ERROR_CANCELED,
           BiometricPrompt.ERROR_NEGATIVE_BUTTON -> Cancelled
+          BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL,
+          BiometricPrompt.ERROR_HW_NOT_PRESENT -> Unavailable
           else -> AuthResult.Failed(errorCode, errString)
         }
       is CustomFallbackSelected -> Cancelled

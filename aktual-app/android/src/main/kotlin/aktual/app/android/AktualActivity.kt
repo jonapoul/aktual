@@ -88,8 +88,7 @@ class AktualActivity(
       }
 
       // Never leave the user stuck behind a lock they can't open
-      NoneEnrolled,
-      Unsupported -> {
+      Unavailable -> {
         appLockManager.disable()
       }
     }
@@ -99,6 +98,7 @@ class AktualActivity(
     when (result) {
       Success -> appLockManager.onAuthenticated()
       Cancelled -> appLockManager.onAuthenticationFailed()
+      Unavailable -> appLockManager.disable()
       is Failed -> appLockManager.onAuthenticationFailed()
     }
   }
