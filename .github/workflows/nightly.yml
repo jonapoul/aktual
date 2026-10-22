@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: 'nightly'
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
@@ -24,19 +24,22 @@ jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    # Reading draft releases needs write access
+    permissions:
+      contents: write
     outputs:
       should-build: ${{ steps.check.outputs.should-build }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-          fetch-depth: 0
-      # Skip scheduled runs when nothing landed on main since the last one
+      # Skip scheduled runs when the nightly release already has this commit
       - id: check
         env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           EVENT: ${{ github.event_name }}
+          SHA: ${{ github.sha }}
         run: |
-          if [ "$EVENT" != "schedule" ] || [ -n "$(git log --since='24 hours ago' --oneline)" ]; then
+          LAST=$(gh release view nightly --json targetCommitish --jq .targetCommitish 2> /dev/null || true)
+          if [ "$EVENT" != "schedule" ] || [ "$LAST" != "$SHA" ]; then
             echo "should-build=true" >> "$GITHUB_OUTPUT"
           else
             echo "should-build=false" >> "$GITHUB_OUTPUT"
@@ -63,6 +66,12 @@ jobs:
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
+          for name in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Signing secret $name is missing"
+              exit 1
+            fi
+          done
           echo "$KEYSTORE_BASE64" | base64 --decode > release.keystore
           {
             echo "aktual.keyFile=release.keystore"
@@ -71,10 +80,14 @@ jobs:
             echo "aktual.keyPassword=$KEY_PASSWORD"
           } > local.properties
       - run: ./gradlew :aktual-app:android:assembleRelease
+      - run: |
+          mkdir out
+          cp aktual-app/android/build/outputs/apk/release/*.apk out/
+          cp aktual-app/android/build/outputs/mapping/release/mapping.txt out/aktual-android-mapping.txt
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: android
-          path: aktual-app/android/build/outputs/apk/release/*.apk
+          path: out/*
           if-no-files-found: error
 
   desktop:
@@ -110,14 +123,22 @@ jobs:
         run: |
           ./gradlew $(printf ':aktual-app:desktop:%s ' $TASKS) \
             --no-configuration-cache -Dorg.gradle.unsafe.isolated-projects=false
+      # Flatten the per-format folders so the release gets files rather than directories
+      - run: |
+          OS=$(echo "$RUNNER_OS" | tr '[:upper:]' '[:lower:]')
+          mkdir out
+          cp aktual-app/desktop/build/compose/binaries/main-release/*/aktual-desktop-* out/
+          cp aktual-app/desktop/build/outputs/mapping.txt "out/aktual-desktop-$OS-mapping.txt"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: desktop-${{ runner.os }}
-          path: aktual-app/desktop/build/compose/binaries/main-release/*/aktual-desktop-*
+          path: out/*
           if-no-files-found: error
 
   release:
-    needs: [ android, desktop ]
+    needs: [ check, android, desktop ]
+    # Publish whatever built, even if one platform failed. flag-failure still reports the failure
+    if: ${{ !cancelled() && needs.check.outputs.should-build == 'true' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -136,14 +157,22 @@ jobs:
           TAG="nightly"
           TITLE="Nightly $(date -u +%Y-%m-%d)"
           NOTES="Nightly build of $SHA"
+          shopt -s nullglob
+          FILES=(dist/*)
+          if [ ${#FILES[@]} -eq 0 ]; then
+            echo "::error::No build outputs to release"
+            exit 1
+          fi
           if gh release view "$TAG" > /dev/null 2>&1; then
-            # Asset names include the build date, so clear out the old ones rather than clobbering
+            gh release upload "$TAG" "${FILES[@]}" --clobber
+            # Asset names include the build date, so delete the ones this build didn't replace
+            KEEP=$(printf '%s\n' "${FILES[@]##*/}")
             gh release view "$TAG" --json assets --jq '.assets[].name' \
+              | grep -vxF "$KEEP" \
               | xargs -r -n1 gh release delete-asset "$TAG" --yes
             gh release edit "$TAG" --target "$SHA" --title "$TITLE" --notes "$NOTES"
-            gh release upload "$TAG" dist/*
           else
-            gh release create "$TAG" dist/* \
+            gh release create "$TAG" "${FILES[@]}" \
               --draft \
               --prerelease \
               --target "$SHA" \
@@ -153,7 +182,7 @@ jobs:
 
   flag-failure:
     needs: [ check, android, desktop, release ]
-    if: ${{ failure() }}
+    if: ${{ failure() && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     permissions:
       issues: write
