@@ -330,7 +330,8 @@ private class ScrollbarNode(
     val totalSize = scrollbarState.totalSize
     val viewportSize = scrollbarState.viewportSize
     val maxScroll = (totalSize - viewportSize).coerceAtLeast(0)
-    return (normalizedPosition * maxScroll).toInt().coerceIn(0, maxScroll)
+    val fraction = if (scrollbarState.isReversed) 1f - normalizedPosition else normalizedPosition
+    return (fraction * maxScroll).toInt().coerceIn(0, maxScroll)
   }
 
   private fun scrollToPosition(position: Offset, bounds: IntSize, animated: Boolean) {
@@ -387,12 +388,14 @@ internal data class ScrollbarState(private val delegate: ScrollableDelegate) {
   val orientation: Orientation
     get() = delegate.orientation
 
-  val scrollPosition: Float by derivedStateOf {
-    delegate.scrollPosition divByOrZero delegate.totalSize
-  }
-
   val scrollbarSize: Float by derivedStateOf {
     with(delegate) { if (viewportSize >= totalSize) 0f else viewportSize divByOrZero totalSize }
+  }
+
+  // Where the thumb starts along the track, flipped for reversed layouts that scroll from the end
+  val scrollPosition: Float by derivedStateOf {
+    val position = delegate.scrollPosition divByOrZero delegate.totalSize
+    if (delegate.isReversed) 1f - position - scrollbarSize else position
   }
 
   val totalSize: Int
@@ -403,6 +406,9 @@ internal data class ScrollbarState(private val delegate: ScrollableDelegate) {
 
   val scrollPositionPx: Int
     get() = delegate.scrollPosition
+
+  val isReversed: Boolean
+    get() = delegate.isReversed
 
   constructor(state: LazyListState) : this(LazyListStateScrollableDelegate(state))
 
@@ -424,6 +430,7 @@ internal data class ScrollbarState(private val delegate: ScrollableDelegate) {
 
 internal sealed interface ScrollableDelegate : ScrollableState {
   val orientation: Orientation
+  val isReversed: Boolean
   val scrollPosition: Int
   val viewportSize: Int
   val totalSize: Int
@@ -435,6 +442,9 @@ private data class LazyListStateScrollableDelegate(private val lazyListState: La
   ScrollableDelegate, ScrollableState by lazyListState {
   override val orientation
     get() = lazyListState.layoutInfo.orientation
+
+  override val isReversed
+    get() = lazyListState.layoutInfo.reverseLayout
 
   override val viewportSize by derivedStateOf {
     with(lazyListState.layoutInfo) {
@@ -471,6 +481,8 @@ private data class ScrollStateScrollableDelegate(
   private val scrollState: ScrollState,
   override val orientation: Orientation,
 ) : ScrollableDelegate, ScrollableState by scrollState {
+  override val isReversed = false
+
   override val scrollPosition: Int
     get() = scrollState.value
 

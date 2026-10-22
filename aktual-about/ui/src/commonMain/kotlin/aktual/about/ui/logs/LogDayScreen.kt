@@ -41,8 +41,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.HorizontalDivider
@@ -221,26 +219,23 @@ private fun LogLines(
     return
   }
 
-  val listState = rememberLazyListState()
-  val isToday = state.date == state.today
-  LaunchedEffect(state.date) {
-    if (isToday) listState.scrollToItem(state.lines.lastIndex)
-  }
-  LaunchedEffect(state.lines.size) {
-    if (state.live == Following) listState.animateScrollToItem(state.lines.lastIndex)
-  }
+  val listState = rememberLogListState(state)
 
   LazyColumn(
     modifier = Modifier.fillMaxSize().scrollbar(listState),
     state = listState,
+    reverseLayout = true,
+    verticalArrangement = Arrangement.Top,
   ) {
-    itemsIndexed(state.lines) { _, line ->
-      LogLineRow(line = line, query = query, onTagClick = { onAction(AddTag(it)) })
-      HorizontalDivider(color = colors.cardBackground)
-    }
-
     // The live bar already leaves room at the bottom
     if (state.live == None) item { BottomSpacing() }
+
+    reversedLogLines(state.lines) { _, line ->
+      Column(modifier = Modifier.animateItem()) {
+        LogLineRow(line = line, query = query, onTagClick = { onAction(AddTag(it)) })
+        HorizontalDivider(color = colors.cardBackground)
+      }
+    }
   }
 }
 
