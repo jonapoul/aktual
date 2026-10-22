@@ -1,5 +1,6 @@
 package aktual.app.android
 
+import android.content.Context
 import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.biometric.AuthenticationRequest.Biometric.Fallback.DeviceCredential
@@ -31,22 +32,16 @@ internal sealed interface AuthResult {
 }
 
 // Must be created before the activity is started, since it registers for activity results
-internal class AppLockAuthenticator(
+internal class BiometricAuthenticator(
   private val activity: ComponentActivity,
   onResult: (AuthResult) -> Unit,
 ) {
   private val launcher = activity.registerForAuthenticationResult { result ->
-    logcat.d { "AppLockAuthenticator result = $result" }
+    logcat.d { "BiometricAuthenticator result = $result" }
     onResult(result.toAuthResult())
   }
 
-  fun canAuthenticate(): AuthAvailability =
-    when (BiometricManager.from(activity).canAuthenticate(AUTHENTICATORS)) {
-      BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED,
-      BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> Unavailable
-      // Other errors may be temporary or OEM quirks, so try anyway and let the prompt report them
-      else -> Available
-    }
+  fun canAuthenticate(): AuthAvailability = canAuthenticate(activity)
 
   fun authenticate(title: String, subtitle: String) {
     val request =
@@ -72,11 +67,19 @@ internal class AppLockAuthenticator(
       is CustomFallbackSelected -> Cancelled
     }
 
-  private companion object {
+  companion object {
     // BIOMETRIC_STRONG with DEVICE_CREDENTIAL isn't supported before API 30
-    val IS_STRONG_SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+    private val IS_STRONG_SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
-    val AUTHENTICATORS =
+    private val AUTHENTICATORS =
       (if (IS_STRONG_SUPPORTED) BIOMETRIC_STRONG else BIOMETRIC_WEAK) or DEVICE_CREDENTIAL
+
+    fun canAuthenticate(context: Context): AuthAvailability =
+      when (BiometricManager.from(context).canAuthenticate(AUTHENTICATORS)) {
+        BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED,
+        BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> Unavailable
+        // Other errors may be temporary or OEM quirks, so try anyway and let the prompt report them
+        else -> Available
+      }
   }
 }

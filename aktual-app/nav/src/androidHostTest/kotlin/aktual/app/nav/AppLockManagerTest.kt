@@ -218,6 +218,33 @@ class AppLockManagerTest {
     }
 
   @Test
+  fun `Unavailable stays locked until the user has seen why`() =
+    runManagerTest(enabled = true) { manager ->
+      manager.state.test {
+        assertThatNextEmissionIsEqualTo(Locked)
+        manager.onUnavailable()
+        expectNoEvents()
+
+        manager.disable()
+        assertThatNextEmissionIsEqualTo(Unlocked)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `Unavailable flag is cleared on disable`() =
+    runManagerTest(enabled = true) { manager ->
+      manager.isUnavailable.test {
+        assertThatNextEmissionIsEqualTo(false)
+        manager.onUnavailable()
+        assertThatNextEmissionIsEqualTo(true)
+        manager.disable()
+        assertThatNextEmissionIsEqualTo(false)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
   fun `Disabling clears an unfinished prompt`() =
     runManagerTest(enabled = true) { manager ->
       manager.state.test {

@@ -104,4 +104,14 @@
   <string name="settings_ui_blur_alpha">Blur alpha</string>
   <string name="settings_ui_hide_preview">Hide preview in app switcher</string>
   <string name="settings_ui_hide_preview_desc">Hide app contents in the recents screen. Also blocks screenshots and screen recording.</string>
+  <string name="settings_security">Security</string>
+  <string name="settings_security_app_lock">App lock</string>
+  <string name="settings_security_app_lock_desc">Ask for your fingerprint, face or screen lock when opening the app. Also hides app contents in the recents screen.</string>
+  <string name="settings_security_app_lock_unavailable">Set up a screen lock in your device settings to use this</string>
+  <string name="settings_security_timeout">Lock after</string>
+  <string name="settings_security_timeout_immediately">Immediately</string>
+  <string name="settings_security_timeout_seconds_30">30 seconds</string>
+  <string name="settings_security_timeout_minutes_1">1 minute</string>
+  <string name="settings_security_timeout_minutes_5">5 minutes</string>
+  <string name="settings_security_timeout_minutes_15">15 minutes</string>
 </resources>
