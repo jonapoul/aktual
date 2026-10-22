@@ -6,6 +6,7 @@ import aktual.core.icons.material.CurrencyPound
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Numbers
 import aktual.core.icons.material.ReceiptLong
+import aktual.core.icons.material.Security
 import aktual.core.icons.material.ThemeRoutine
 import aktual.core.icons.material.Tune
 import aktual.core.l10n.Strings
@@ -13,6 +14,7 @@ import aktual.core.nav.BackNavigator
 import aktual.core.nav.CurrencySettingsNavigator
 import aktual.core.nav.FormatSettingsNavigator
 import aktual.core.nav.ScheduleSettingsNavigator
+import aktual.core.nav.SecuritySettingsNavigator
 import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavigator
 import aktual.core.nav.TransactionSettingsNavigator
@@ -21,6 +23,7 @@ import aktual.core.ui.ColoredParameters
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.prefs.ui.SettingsListScaffold
+import aktual.prefs.vm.security.ShouldShowSecuritySettings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewParameter
 
@@ -31,6 +34,7 @@ fun SettingsScreen(
   toScheduleSettings: ScheduleSettingsNavigator,
   toTransactionSettings: TransactionSettingsNavigator,
   toSystemUiSettings: SystemUiSettingsNavigator,
+  toSecuritySettings: SecuritySettingsNavigator,
   toFormatSettings: FormatSettingsNavigator,
   toCurrencySettings: CurrencySettingsNavigator,
 ) {
@@ -42,6 +46,7 @@ fun SettingsScreen(
         NavToScheduleSettings -> toScheduleSettings()
         NavToTransactionSettings -> toTransactionSettings()
         NavToSystemUiSettings -> toSystemUiSettings()
+        NavToSecuritySettings -> toSecuritySettings()
         NavToFormatSettings -> toFormatSettings()
         NavToCurrencySettings -> toCurrencySettings()
       }
@@ -83,6 +88,15 @@ private fun SettingsScaffold(onAction: SettingsActionHandler) {
         icon = MaterialIcons.Tune,
         onClick = { onAction(NavToSystemUiSettings) },
       )
+    }
+    if (ShouldShowSecuritySettings) {
+      item {
+        SubSettingsItem(
+          title = Strings.settingsSecurity,
+          icon = MaterialIcons.Security,
+          onClick = { onAction(NavToSecuritySettings) },
+        )
+      }
     }
     item {
       SubSettingsItem(

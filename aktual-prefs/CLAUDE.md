@@ -8,7 +8,7 @@ Preferences and settings, split into `vm` (state) and `ui` (Compose). `ui:core` 
 
 1. **Feed a config (if needed).** If the pref contributes to a config object (e.g. `BlurConfig`, `FormatConfig`), update the corresponding use case in `aktual-app/nav/src/commonMain/.../UseCases.kt`.
 
-1. **Add to state.** Each settings screen has its own `*SettingsState` under `aktual-prefs/vm/.../<screen>/` (`systemui`, `format`, `currency`, `schedules`, `transactions`). Add a field using the appropriate wrapper:
+1. **Add to state.** Each settings screen has its own `*SettingsState` under `aktual-prefs/vm/.../<screen>/` (`systemui`, `security`, `format`, `currency`, `schedules`, `transactions`). Add a field using the appropriate wrapper:
    - `BooleanPreference` - toggle
    - `SliderPreference` - float slider (wrap in a factory for range; see `HazeRadiusPreference`)
    - `ListPreference<T>` - enum dropdown
@@ -33,3 +33,7 @@ The root `SettingsScreen` only lists links to the other settings screens.
 1. New navigator + route in `aktual-core:nav`'s `SettingsNavigators.kt` / `SettingsRoutes.kt`.
 1. New `*SettingsScreen.kt` under `aktual-prefs/ui/`, built on `SettingsListScaffold`, and an `entry` in `SettingsNavEntryContributor`.
 1. A `SubSettingsItem` in `SettingsScreen.kt` with its `SettingsAction`, and update `aktual-app/nav/navgraph.mmd`.
+
+## Security settings
+
+The app lock toggle needs a successful unlock before it's saved. The VM can't show the system prompt, so it calls `AppLockAuthenticator` (bound per platform in `aktual-app:android` / `aktual-app:desktop`). On Android, `AndroidAppLockAuthenticator` passes the request to `AktualActivity`, which shows the prompt and reports the result back.

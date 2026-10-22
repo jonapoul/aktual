@@ -3,6 +3,8 @@ package aktual.app.android
 import aktual.app.nav.AktualAppContent
 import aktual.app.nav.AppLockContent
 import aktual.app.nav.AppLockManager
+import aktual.app.nav.AppLockPrompt
+import aktual.app.nav.rememberAppLockPrompt
 import aktual.app.nav.rememberBackStack
 import aktual.core.ui.LoadingScreenIfNull
 import aktual.di.AppScope
@@ -17,9 +19,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,10 +40,11 @@ import kotlinx.coroutines.launch
 class AktualActivity(
   override val defaultViewModelProviderFactory: MetroViewModelFactory,
   private val appLockManager: AppLockManager,
+  private val appLockAuthenticator: AndroidAppLockAuthenticator,
 ) : ComponentActivity() {
   private val viewModel by viewModels<AktualActivityViewModel>()
 
-  private val authenticator = AppLockAuthenticator(activity = this, onResult = ::onAuthResult)
+  private val authenticator = BiometricAuthenticator(activity = this, onResult = ::onAuthResult)
 
   override fun onStart() {
     super.onStart()
@@ -77,28 +82,41 @@ class AktualActivity(
       }
     }
 
-    setContent { Content(viewModel, appLockManager, onUnlock = ::unlock) }
+    setContent {
+      Content(
+        viewModel = viewModel,
+        appLockManager = appLockManager,
+        appLockAuthenticator = appLockAuthenticator,
+        onUnlock = ::unlock,
+      )
+    }
   }
 
-  private fun unlock(title: String, subtitle: String) {
+  private fun unlock(prompt: AppLockPrompt) {
     when (authenticator.canAuthenticate()) {
       Available -> {
         appLockManager.onAuthenticationStarted()
-        authenticator.authenticate(title, subtitle)
+        authenticator.authenticate(prompt.title, prompt.subtitle)
       }
 
-      // Never leave the user stuck behind a lock they can't open
       Unavailable -> {
-        appLockManager.disable()
+        onAuthResult(Unavailable)
       }
     }
   }
 
   private fun onAuthResult(result: AuthResult) {
+    // A request from settings, not the lock screen
+    if (appLockAuthenticator.onResult(success = result == Success)) {
+      appLockManager.onAuthenticationFailed()
+      return
+    }
+
     when (result) {
       Success -> appLockManager.onAuthenticated()
       Cancelled -> appLockManager.onAuthenticationFailed()
-      Unavailable -> appLockManager.disable()
+      // Never leave the user stuck behind a lock they can't open
+      Unavailable -> appLockManager.onUnavailable()
       is Failed -> appLockManager.onAuthenticationFailed()
     }
   }
@@ -110,14 +128,33 @@ class AktualActivity(
 private fun Content(
   viewModel: AktualActivityViewModel,
   appLockManager: AppLockManager,
-  onUnlock: (title: String, subtitle: String) -> Unit,
+  appLockAuthenticator: AndroidAppLockAuthenticator,
+  onUnlock: (AppLockPrompt) -> Unit,
 ) {
+  val prompt = rememberAppLockPrompt()
+  val currentOnUnlock by rememberUpdatedState(onUnlock)
+  LaunchedEffect(appLockAuthenticator, prompt) {
+    appLockAuthenticator.requests.collect { currentOnUnlock(prompt) }
+  }
+
   val lockState by appLockManager.state.collectAsStateWithLifecycle()
+  val isUnavailable by appLockManager.isUnavailable.collectAsStateWithLifecycle()
   when (lockState) {
     // The splash screen stays up until we know
-    Unknown -> Unit
-    Locked -> AppLockContent(viewModel, onUnlock)
-    Unlocked -> UnlockedContent(viewModel)
+    Unknown -> {}
+
+    Locked -> {
+      AppLockContent(
+        viewModel = viewModel,
+        isUnavailable = isUnavailable,
+        onUnlock = onUnlock,
+        onDisable = appLockManager::disable,
+      )
+    }
+
+    Unlocked -> {
+      UnlockedContent(viewModel)
+    }
   }
 }
 

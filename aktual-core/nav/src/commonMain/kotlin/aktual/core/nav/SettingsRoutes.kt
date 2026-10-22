@@ -20,6 +20,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object SystemUiSettingsNavRoute : NavKey
 
+@Serializable data object SecuritySettingsNavRoute : NavKey
+
 @Serializable data object FormatSettingsNavRoute : NavKey
 
 @Serializable data object CurrencySettingsNavRoute : NavKey

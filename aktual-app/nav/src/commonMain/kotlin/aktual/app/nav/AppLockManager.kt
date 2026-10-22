@@ -33,6 +33,10 @@ class AppLockManager(
   private val mutableState = MutableStateFlow(AppLockState.Unknown)
   val state: StateFlow<AppLockState> = mutableState.asStateFlow()
 
+  // Set when the device no longer has a screen lock, so we show why the lock is turning off
+  private val mutableIsUnavailable = MutableStateFlow(false)
+  val isUnavailable: StateFlow<Boolean> = mutableIsUnavailable.asStateFlow()
+
   private val isEnabled = preferences.appLockEnabled.asStateFlow(scope)
   private val timeout = preferences.appLockTimeout.asStateFlow(scope)
 
@@ -96,10 +100,17 @@ class AppLockManager(
     isAuthenticating = false
   }
 
-  // For when the device no longer has a screen lock, so we can't authenticate
+  fun onUnavailable() {
+    logcat.w { "onUnavailable" }
+    isAuthenticating = false
+    mutableIsUnavailable.update { true }
+  }
+
+  // Called once the user has seen why the lock is turning off
   fun disable() {
     logcat.w { "Disabling app lock" }
     isAuthenticating = false
+    mutableIsUnavailable.update { false }
     scope.launch { preferences.appLockEnabled.set(false) }
   }
 }

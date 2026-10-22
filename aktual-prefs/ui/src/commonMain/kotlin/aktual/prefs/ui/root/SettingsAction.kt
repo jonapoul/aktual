@@ -14,6 +14,8 @@ internal data object NavToTransactionSettings : SettingsAction
 
 internal data object NavToSystemUiSettings : SettingsAction
 
+internal data object NavToSecuritySettings : SettingsAction
+
 internal data object NavToFormatSettings : SettingsAction
 
 internal data object NavToCurrencySettings : SettingsAction

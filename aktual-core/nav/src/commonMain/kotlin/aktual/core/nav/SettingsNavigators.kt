@@ -45,6 +45,11 @@ class SystemUiSettingsNavigator(private val stack: NavStack<NavKey>) {
 }
 
 @Immutable
+class SecuritySettingsNavigator(private val stack: NavStack<NavKey>) {
+  operator fun invoke() = stack.push(SecuritySettingsNavRoute)
+}
+
+@Immutable
 class FormatSettingsNavigator(private val stack: NavStack<NavKey>) {
   operator fun invoke() = stack.push(FormatSettingsNavRoute)
 }
