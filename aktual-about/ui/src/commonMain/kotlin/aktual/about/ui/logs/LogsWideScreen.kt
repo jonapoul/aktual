@@ -44,8 +44,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -57,7 +55,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -371,16 +368,15 @@ private fun WideRows(
   onSelect: (LogLine) -> Unit,
   onAction: LogsActionHandler,
 ) {
-  val listState = rememberLazyListState()
-  LaunchedEffect(state.date) {
-    if (state.date == state.today) listState.scrollToItem(state.lines.lastIndex)
-  }
-  LaunchedEffect(state.lines.size) {
-    if (state.live == Following) listState.animateScrollToItem(state.lines.lastIndex)
-  }
+  val listState = rememberLogListState(state)
 
-  LazyColumn(modifier = Modifier.fillMaxSize().scrollbar(listState), state = listState) {
-    itemsIndexed(state.lines) { index, line ->
+  LazyColumn(
+    modifier = Modifier.fillMaxSize().scrollbar(listState),
+    state = listState,
+    reverseLayout = true,
+    verticalArrangement = Arrangement.Top,
+  ) {
+    reversedLogLines(state.lines) { index, line ->
       val background: Color =
         when {
           line == selected -> colors.tableRowBackgroundHighlight
@@ -389,7 +385,8 @@ private fun WideRows(
         }
       Row(
         modifier =
-          Modifier.fillMaxWidth()
+          Modifier.animateItem()
+            .fillMaxWidth()
             .height(28.dp)
             .background(background)
             .clickable { onSelect(line) }
