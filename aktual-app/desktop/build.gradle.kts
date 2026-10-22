@@ -113,6 +113,8 @@ val artifactArch =
 
 tasks.withType<AbstractJPackageTask>().configureEach {
   doLast {
+    // The app image is a folder, and fileExt throws for it
+    if (targetFormat == TargetFormat.AppImage) return@doLast
     val ext = targetFormat.fileExt.removePrefix(".")
     val destDir = destinationDir.get().asFile
     val candidates = destDir.listFiles { f -> f.extension.equals(ext, ignoreCase = true) }.orEmpty()

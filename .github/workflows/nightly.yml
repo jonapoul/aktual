@@ -125,7 +125,7 @@ jobs:
             --no-configuration-cache -Dorg.gradle.unsafe.isolated-projects=false
       # jpackage only writes its errors to these files
       - if: ${{ failure() }}
-        run: tail -n +1 aktual-app/desktop/build/compose/logs/*/*.txt
+        run: tail -n +1 aktual-app/desktop/build/compose/logs/*/*.txt || true
       # Flatten the per-format folders so the release gets files rather than directories
       - run: |
           OS=$(echo "$RUNNER_OS" | tr '[:upper:]' '[:lower:]')
