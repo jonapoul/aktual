@@ -325,9 +325,15 @@ private fun TopBarActions(
 ) {
   val mode = state.mode
   val hasChanges = mode.form.hasChanges
+  // A transaction deleted elsewhere can only have its draft thrown away
+  val isGone = state.changedElsewhere == Deleted
   Row(modifier = modifier, verticalAlignment = CenterVertically) {
     // A saved transaction only offers saving once it's been changed
-    AnimatedVisibility(visible = mode is Create || hasChanges, enter = fadeIn(), exit = fadeOut()) {
+    AnimatedVisibility(
+      visible = mode is Create || hasChanges && !isGone,
+      enter = fadeIn(),
+      exit = fadeOut(),
+    ) {
       PrimaryTextButton(
         modifier = Modifier.padding(end = SaveInset),
         text = Strings.transactionSave,
@@ -337,8 +343,7 @@ private fun TopBarActions(
       )
     }
 
-    // A transaction deleted elsewhere can only have its draft thrown away
-    if (mode is Edit && state.changedElsewhere != Deleted) {
+    if (mode is Edit && !isGone) {
       Box {
         var expanded by remember { mutableStateOf(false) }
         BareIconButton(
