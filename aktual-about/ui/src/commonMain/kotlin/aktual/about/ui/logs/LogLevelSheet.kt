@@ -41,10 +41,11 @@ import logcat.LogPriority
 @Composable
 internal fun LogFilters.levelsSummary(): String =
   Strings.logsLevelsSummary(
-    LogPriority.entries
-      .filter { it in priorities }
-      .joinToString { it.letter.toString() }
-      .ifEmpty { Strings.logsLevelsNone },
+    when {
+      priorities.containsAll(LogPriority.entries) -> Strings.logsLevelsAll
+      priorities.isEmpty() -> Strings.logsLevelsNone
+      else -> LogPriority.entries.filter { it in priorities }.joinToString { it.letter.toString() }
+    },
   )
 
 @Composable
