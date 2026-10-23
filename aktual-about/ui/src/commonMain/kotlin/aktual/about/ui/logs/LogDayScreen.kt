@@ -43,6 +43,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -221,19 +222,21 @@ private fun LogLines(
 
   val listState = rememberLogListState(state)
 
-  LazyColumn(
-    modifier = Modifier.fillMaxSize().scrollbar(listState),
-    state = listState,
-    reverseLayout = true,
-    verticalArrangement = Arrangement.Top,
-  ) {
-    // The live bar already leaves room at the bottom
-    if (state.live == None) item { BottomSpacing() }
+  SelectionContainer {
+    LazyColumn(
+      modifier = Modifier.fillMaxSize().scrollbar(listState),
+      state = listState,
+      reverseLayout = true,
+      verticalArrangement = Arrangement.Top,
+    ) {
+      // The live bar already leaves room at the bottom
+      if (state.live == None) item { BottomSpacing() }
 
-    reversedLogLines(state.lines) { _, line ->
-      Column(modifier = Modifier.animateItem()) {
-        LogLineRow(line = line, query = query, onTagClick = { onAction(AddTag(it)) })
-        HorizontalDivider(color = colors.cardBackground)
+      reversedLogLines(state.lines) { _, line ->
+        Column(modifier = Modifier.animateItem()) {
+          LogLineRow(line = line, query = query, onTagClick = { onAction(AddTag(it)) })
+          HorizontalDivider(color = colors.cardBackground)
+        }
       }
     }
   }

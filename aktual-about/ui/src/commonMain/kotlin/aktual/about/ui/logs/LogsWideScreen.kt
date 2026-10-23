@@ -452,13 +452,14 @@ private fun DetailPane(line: LogLine?) {
       modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
       verticalAlignment = CenterVertically,
     ) {
-      Text(
-        modifier = Modifier.weight(1f),
-        text =
-          "${line.timestamp.time.timeString()} · ${line.priority.label()} · ${line.tag.orEmpty()}",
-        style = typography.labelMedium,
-        color = colors.pageTextLight,
-      )
+      SelectionContainer(modifier = Modifier.weight(1f)) {
+        Text(
+          text =
+            "${line.timestamp.time.timeString()} · ${line.priority.label()} · ${line.tag.orEmpty()}",
+          style = typography.labelMedium,
+          color = colors.pageTextLight,
+        )
+      }
       NormalTextButton(
         text = Strings.logsCopy,
         onClick = {
