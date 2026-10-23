@@ -162,7 +162,7 @@ private fun WideToolbar(
               .background(
                 if (isFollowing) colors.numberPositive else colors.pageTextSubdued,
                 CircleShape,
-              ),
+              )
         )
         Text(text = Strings.logsLive, style = typography.labelLarge, color = colors.pageTextLight)
       }
@@ -280,9 +280,13 @@ private fun SidebarFile(
       modifier = Modifier.weight(1f),
       text = file.date.dayLabel(today),
       style = typography.bodyMedium,
-      color = colors.pageText,
+      color = if (isSelected) colors.tableRowBackgroundHighlightText else colors.pageText,
     )
-    Text(text = file.size.toString(), style = typography.labelSmall, color = colors.pageTextLight)
+    Text(
+      text = file.size.toString(),
+      style = typography.labelSmall,
+      color = if (isSelected) colors.tableRowBackgroundHighlightText else colors.pageTextLight,
+    )
   }
 
 @Composable
