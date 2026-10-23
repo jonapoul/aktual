@@ -469,6 +469,37 @@ class EditTransactionViewModelTest {
     }
 
   @Test
+  fun `Saving a new payee isn't a change made elsewhere`() = runSyncedTest { scope, database ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    // Holds the save open once it's written, so what it wrote is seen before it finishes
+    val gate = CompletableDeferred<Unit>()
+    val sync = FakeSyncController(gate = gate, appliedTo = database)
+    val viewModel = createViewModel(scope, id = "t", sync = sync, savedUuid = "saved")
+
+    viewModel.state.test {
+      awaitEdit()
+      viewModel.createPayee("Deli")
+      awaitEdit()
+
+      viewModel.save()
+      scope.advanceUntilIdle()
+      gate.complete(Unit)
+      scope.advanceUntilIdle()
+
+      val states =
+        cancelAndConsumeRemainingEvents()
+          .asSequence()
+          .filterIsInstance<Event.Item<EditTransactionState>>()
+          .map { it.value }
+          .filterIsInstance<Loaded>()
+          .toList()
+      assertThat(states.map { it.changedElsewhere }).each { it.isNull() }
+      assertThat(states.last().mode.form.draft.payee).isEqualTo(PayeeId("saved"))
+    }
+  }
+
+  @Test
   fun `A transaction deleted elsewhere keeps its draft, which can't be saved`() =
     runSyncedTest { scope, elsewhere ->
       insertEntities()
@@ -1219,6 +1250,7 @@ class EditTransactionViewModelTest {
     sync: FakeSyncController = FakeSyncController(),
     target: EditTransactionTarget = EditTransactionTarget.Existing(TransactionId(id)),
     lastTransaction: LastTransaction = LastTransaction(),
+    savedUuid: String = "uuid",
   ): EditTransactionViewModel {
     Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     val tags = tagsDao(scope)
@@ -1237,7 +1269,7 @@ class EditTransactionViewModelTest {
           categoryDao = categoryDao,
           payeeDao = payeeDao,
           transactionDao = transactionDao,
-          uuidGenerator = { "uuid" },
+          uuidGenerator = { savedUuid },
           clock = Clock.System,
         ),
       rulesLoader =
@@ -1260,14 +1292,16 @@ class EditTransactionViewModelTest {
   private fun BudgetDatabase.tagsDao(scope: TestScope) =
     TagsDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
 
-  // Records the changes it's sent, without applying them to the database
+  // Records the changes it's sent, without applying them to the database unless it's given one
   private class FakeSyncController(
     private val failure: Exception? = null,
     private val gate: CompletableDeferred<Unit>? = null,
+    private val appliedTo: SyncDao? = null,
   ) : BudgetSyncController {
     val calls = mutableListOf<List<LocalChange>>()
 
     override suspend fun syncChanges(changes: List<LocalChange>) {
+      appliedTo?.sendMessages(changes)
       gate?.await()
       failure?.let { throw it }
       calls += changes

@@ -338,7 +338,8 @@ internal constructor(
     loader.observe(target.id).collect { loaded ->
       if (loaded != null) {
         val saved = loaded.toSaved()
-        rebaseDraft(onto = saved)
+        // What the draft's own save writes, like a new payee's ID, isn't a change made elsewhere
+        if (!mutableIsWorking.value) rebaseDraft(onto = saved)
         mutableSaved.update { saved }
         mutableIsGone.update { false }
       } else if (!isDeleted) {
