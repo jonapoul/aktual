@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -64,13 +65,14 @@ internal fun LogLineRow(
         }
       }
 
-    Text(
-      modifier = Modifier.weight(1f),
-      text = text,
-      fontFamily = Monospace,
-      fontSize = LineFontSize,
-      lineHeight = LineHeight,
-    )
+    SelectionContainer(modifier = Modifier.weight(1f)) {
+      Text(
+        text = text,
+        fontFamily = Monospace,
+        fontSize = LineFontSize,
+        lineHeight = LineHeight,
+      )
+    }
   }
 
 internal fun AnnotatedString.Builder.appendHighlighted(
