@@ -10,7 +10,6 @@ import aktual.core.ui.ColoredParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -96,14 +97,18 @@ internal fun LogLevelRow(
       modifier
         .fillMaxWidth()
         .heightIn(min = 32.dp)
-        .clickable { onAction(TogglePriority(priority)) }
+        .toggleable(
+          value = isChecked,
+          role = Role.Checkbox,
+          onValueChange = { onAction(TogglePriority(priority)) },
+        )
         .padding(end = 8.dp),
     verticalAlignment = CenterVertically,
     horizontalArrangement = spacedBy(8.dp),
   ) {
     Checkbox(
       checked = isChecked,
-      onCheckedChange = { onAction(TogglePriority(priority)) },
+      onCheckedChange = null,
       colors = CheckboxDefaults.colors(checkedColor = colors.checkboxBackgroundSelected),
     )
     Box(modifier = Modifier.size(8.dp).background(priority.foreground(colors), CircleShape))
