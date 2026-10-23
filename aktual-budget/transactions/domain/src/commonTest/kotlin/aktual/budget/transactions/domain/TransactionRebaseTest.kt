@@ -143,6 +143,15 @@ class TransactionRebaseTest {
       .isEqualTo(RebasedDraft(withPart4, hasConflicts = true))
   }
 
+  @Test
+  fun `A split that stops adding up keeps the draft's amounts as a conflict`() {
+    val total = FIELDS.copy(payee = null, category = null, amount = Amount(-5000L))
+    val saved = TransactionDraft(total, listOf(PART_1.copy(amount = Amount(-4000L)), PART_2))
+    val draft = TransactionDraft(total, listOf(PART_1, PART_2.copy(amount = Amount(-1790L))))
+
+    assertThat(rebase(SPLIT, saved, draft)).isEqualTo(RebasedDraft(draft, hasConflicts = true))
+  }
+
   private companion object {
     val ID = TransactionId("t")
 

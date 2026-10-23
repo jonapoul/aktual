@@ -19,7 +19,18 @@ fun rebase(base: TransactionDraft, saved: TransactionDraft, draft: TransactionDr
   val merger = Merger()
   val fields = merger.fields(base.fields, saved.fields, draft.fields)
   val parts = merger.parts(base.parts, saved.parts, draft.parts)
-  return RebasedDraft(TransactionDraft(fields, parts), merger.hasConflicts)
+  val rebased = TransactionDraft(fields, parts)
+
+  // The amounts are merged one by one, so a split that adds up on both sides can stop adding up,
+  // e.g. when both changed its amount the same way and made up for it on different parts. The
+  // draft's split is kept as it was then
+  if (saved.splitDifference == null && rebased.splitDifference != draft.splitDifference) {
+    return RebasedDraft(
+      TransactionDraft(fields.copy(amount = draft.fields.amount), draft.parts),
+      hasConflicts = true,
+    )
+  }
+  return RebasedDraft(rebased, merger.hasConflicts)
 }
 
 private class Merger {
