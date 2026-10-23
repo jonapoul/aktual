@@ -73,6 +73,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -193,6 +194,16 @@ private fun EditTransactionScaffold(
     }
   }
   BackHandler(enabled = form?.hasChanges == true) { onBack() }
+
+  // A conflict that turns up while a save is being confirmed has to be confirmed first
+  val isConflicting = loaded?.changedElsewhere == Conflicting
+  SideEffect(isConflicting) {
+    if (
+      isConflicting && (dialog == ConfirmReconciledSave || dialog == ConfirmReconciledTransferSave)
+    ) {
+      dialog = ConfirmOverwrite
+    }
+  }
 
   val hazeState = rememberHazedTopBarState()
   val scrollState = rememberScrollState()
