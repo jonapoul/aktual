@@ -52,6 +52,8 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -89,9 +91,11 @@ internal fun LogDayScaffold(
   var showLevels by remember(state is Loaded) { mutableStateOf(false) }
   val listState = (state as? Loaded)?.let { rememberLogListState(it) }
   val scope = rememberCoroutineScope()
+  val snackbarHostState = remember { SnackbarHostState() }
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
+    snackbarHost = { SnackbarHost(snackbarHostState) },
     topBar = {
       LogDayTopBar(
         state = state,
@@ -131,7 +135,16 @@ internal fun LogDayScaffold(
               color = colors.pageTextLight,
             )
           }
-          LogLines(state, checkNotNull(listState), filters.query, onAction)
+          LogLines(
+            state = state,
+            listState = checkNotNull(listState),
+            query = filters.query,
+            onAction = onAction,
+            onTagLongClick = { tag ->
+              snackbarHostState.currentSnackbarData?.dismiss()
+              scope.launch { snackbarHostState.showSnackbar(tag) }
+            },
+          )
         }
       }
     }
@@ -272,6 +285,7 @@ private fun LogLines(
   listState: LazyListState,
   query: String,
   onAction: LogsActionHandler,
+  onTagLongClick: (String) -> Unit,
 ) {
   if (state.lines.isEmpty()) {
     SearchMessage(text = Strings.logsNoMatches)
@@ -289,7 +303,12 @@ private fun LogLines(
 
     reversedLogLines(state.lines) { _, line ->
       Column(modifier = Modifier.animateItem()) {
-        LogLineRow(line = line, query = query, onTagClick = { onAction(AddTag(it)) })
+        LogLineRow(
+          line = line,
+          query = query,
+          onTagClick = { onAction(AddTag(it)) },
+          onTagLongClick = onTagLongClick,
+        )
         HorizontalDivider(color = colors.cardBackground)
       }
     }

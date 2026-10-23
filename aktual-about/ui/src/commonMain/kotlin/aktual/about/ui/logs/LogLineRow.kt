@@ -2,7 +2,7 @@ package aktual.about.ui.logs
 
 import aktual.core.logging.LogLine
 import aktual.core.ui.AktualTheme.colors
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +25,7 @@ internal fun LogLineRow(
   line: LogLine,
   query: String,
   onTagClick: (String) -> Unit,
+  onTagLongClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) =
   Row(
@@ -45,13 +46,18 @@ internal fun LogLineRow(
 
     val tag = line.tag
     if (tag != null) {
+      val isEllipsized = tag.length > MAX_TAG_LENGTH
       val tagText =
         remember(tag, query, highlight) {
-          val shown = if (tag.length > MAX_TAG_LENGTH) tag.take(MAX_TAG_LENGTH) + "…" else tag
+          val shown = if (isEllipsized) tag.take(MAX_TAG_LENGTH) + "…" else tag
           buildAnnotatedString { appendHighlighted(shown, query, highlight) }
         }
       Text(
-        modifier = Modifier.clickable { onTagClick(tag) },
+        modifier =
+          Modifier.combinedClickable(
+            onClick = { onTagClick(tag) },
+            onLongClick = { onTagLongClick(tag) }.takeIf { isEllipsized },
+          ),
         text = tagText,
         color = colors.pageTextPositive,
         fontFamily = Monospace,
