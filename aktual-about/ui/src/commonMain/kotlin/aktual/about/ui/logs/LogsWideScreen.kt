@@ -45,6 +45,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -418,35 +419,43 @@ private fun DetailPane(line: LogLine?) {
       return@Column
     }
 
-    Row(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-      verticalAlignment = CenterVertically,
-    ) {
-      SelectionContainer(modifier = Modifier.weight(1f)) {
+    SelectionContainer {
+      Column {
+        Row(
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+          verticalAlignment = CenterVertically,
+        ) {
+          Text(
+            modifier = Modifier.weight(1f),
+            text =
+              "${line.timestamp.time.timeString()} · ${line.priority.label()} · ${line.tag.orEmpty()}",
+            style = typography.labelMedium,
+            color = colors.pageTextLight,
+          )
+          DisableSelection {
+            NormalTextButton(
+              text = Strings.logsCopy,
+              onClick = {
+                scope.launch {
+                  clipboard.setClipEntry(plainTextClipEntry(LogFileFormat.format(line)))
+                }
+              },
+            )
+          }
+        }
+        HorizontalDivider(color = colors.tableBorder)
         Text(
-          text =
-            "${line.timestamp.time.timeString()} · ${line.priority.label()} · ${line.tag.orEmpty()}",
-          style = typography.labelMedium,
-          color = colors.pageTextLight,
+          modifier =
+            Modifier.fillMaxSize()
+              .verticalScroll(rememberScrollState())
+              .padding(horizontal = 16.dp, vertical = 10.dp),
+          text = line.message,
+          color = line.priority.messageColor(colors),
+          fontFamily = Monospace,
+          fontSize = 12.sp,
+          lineHeight = 18.sp,
         )
       }
-      NormalTextButton(
-        text = Strings.logsCopy,
-        onClick = {
-          scope.launch { clipboard.setClipEntry(plainTextClipEntry(LogFileFormat.format(line))) }
-        },
-      )
-    }
-    HorizontalDivider(color = colors.tableBorder)
-    SelectionContainer(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-      Text(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-        text = line.message,
-        color = line.priority.messageColor(colors),
-        fontFamily = Monospace,
-        fontSize = 12.sp,
-        lineHeight = 18.sp,
-      )
     }
   }
 }
