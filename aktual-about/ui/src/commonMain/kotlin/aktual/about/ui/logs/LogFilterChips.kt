@@ -35,6 +35,7 @@ internal fun LogFilterChips(
       isSelected = true,
       onClick = onOpenLevels,
       trailingIcon = MaterialIcons.ArrowDropDown,
+      role = Button,
     )
 
     for (tag in filters.tags) {

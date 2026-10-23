@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -36,6 +37,7 @@ internal fun LogChip(
   modifier: Modifier = Modifier,
   contentDescription: String? = null,
   trailingIcon: ImageVector? = null,
+  role: Role? = null,
 ) {
   val background = if (isSelected) colors.pillBackgroundSelected else colors.pillBackground
   val border = if (isSelected) colors.pillBackgroundSelected else colors.pillBorder
@@ -43,13 +45,13 @@ internal fun LogChip(
     modifier =
       modifier
         .semantics {
-          selected = isSelected
+          if (role == null) selected = isSelected
           if (contentDescription != null) this.contentDescription = contentDescription
         }
         .clip(ChipShape)
         .background(background, ChipShape)
         .border(1.dp, border, ChipShape)
-        .clickable(onClick = onClick)
+        .clickable(role = role, onClick = onClick)
         .heightIn(min = 28.dp)
         .padding(horizontal = 10.dp, vertical = 4.dp),
     contentAlignment = Center,
