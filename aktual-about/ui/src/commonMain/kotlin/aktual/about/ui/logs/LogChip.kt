@@ -9,13 +9,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -30,6 +35,7 @@ internal fun LogChip(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   contentDescription: String? = null,
+  trailingIcon: ImageVector? = null,
 ) {
   val background = if (isSelected) colors.pillBackgroundSelected else colors.pillBackground
   val border = if (isSelected) colors.pillBackgroundSelected else colors.pillBorder
@@ -48,12 +54,18 @@ internal fun LogChip(
         .padding(horizontal = 10.dp, vertical = 4.dp),
     contentAlignment = Center,
   ) {
-    Text(
-      text = text,
-      style = typography.labelLarge,
-      color = if (isSelected) colors.pillTextSelected else colors.pillText,
-      maxLines = 1,
-    )
+    val color = if (isSelected) colors.pillTextSelected else colors.pillText
+    Row(verticalAlignment = CenterVertically) {
+      Text(text = text, style = typography.labelLarge, color = color, maxLines = 1)
+      if (trailingIcon != null) {
+        Icon(
+          modifier = Modifier.size(18.dp),
+          imageVector = trailingIcon,
+          contentDescription = null,
+          tint = color,
+        )
+      }
+    }
   }
 }
 

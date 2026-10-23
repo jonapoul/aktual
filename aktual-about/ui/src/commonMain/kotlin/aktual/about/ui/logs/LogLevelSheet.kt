@@ -34,13 +34,17 @@ import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
 import logcat.LogPriority
 
-/** Selected levels as their letters, e.g. "DIWEA", for the button that opens [LogLevelSheet]. */
+/**
+ * Selected levels as letters, e.g. "Levels: D, I, W", for the button that opens [LogLevelSheet].
+ */
 @Composable
 internal fun LogFilters.levelsSummary(): String =
-  LogPriority.entries
-    .filter { it in priorities }
-    .joinToString(separator = "") { it.letter.toString() }
-    .ifEmpty { Strings.logsLevelsNone }
+  Strings.logsLevelsSummary(
+    LogPriority.entries
+      .filter { it in priorities }
+      .joinToString { it.letter.toString() }
+      .ifEmpty { Strings.logsLevelsNone },
+  )
 
 @Composable
 internal fun LogLevelSheet(
