@@ -232,21 +232,21 @@ private fun LogLines(
 
   val listState = rememberLogListState(state)
 
-  SelectionContainer {
-    LazyColumn(
-      modifier = Modifier.fillMaxSize().scrollbar(listState),
-      state = listState,
-      reverseLayout = true,
-      verticalArrangement = Arrangement.Top,
-    ) {
-      // The live bar already leaves room at the bottom
-      if (state.live == None) item { BottomSpacing() }
+  LazyColumn(
+    modifier = Modifier.fillMaxSize().scrollbar(listState),
+    state = listState,
+    reverseLayout = true,
+    verticalArrangement = Arrangement.Top,
+  ) {
+    // The live bar already leaves room at the bottom
+    if (state.live == None) item { BottomSpacing() }
 
-      reversedLogLines(state.lines) { _, line ->
-        Column(modifier = Modifier.animateItem()) {
+    reversedLogLines(state.lines) { _, line ->
+      Column(modifier = Modifier.animateItem()) {
+        SelectionContainer {
           LogLineRow(line = line, query = query, onTagClick = { onAction(AddTag(it)) })
-          HorizontalDivider(color = colors.cardBackground)
         }
+        HorizontalDivider(color = colors.cardBackground)
       }
     }
   }
