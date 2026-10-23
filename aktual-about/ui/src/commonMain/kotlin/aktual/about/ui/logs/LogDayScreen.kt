@@ -5,8 +5,11 @@ import aktual.about.vm.logs.LogEntriesState
 import aktual.about.vm.logs.LogExportScope
 import aktual.about.vm.logs.LogExportScope.Day
 import aktual.about.vm.logs.LogFilters
+import aktual.core.icons.material.ArrowDownward
+import aktual.core.icons.material.ArrowUpward
 import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Pause
 import aktual.core.icons.material.PlayArrow
 import aktual.core.icons.material.Search
@@ -14,6 +17,8 @@ import aktual.core.icons.material.Share
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.logging.LogLine
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -41,6 +46,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.HorizontalDivider
@@ -53,6 +59,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -64,6 +71,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import logcat.LogPriority
@@ -79,6 +87,8 @@ internal fun LogDayScaffold(
   var isSearching by rememberSaveable { mutableStateOf(filters.query.isNotEmpty()) }
   var showExport by remember { mutableStateOf(false) }
   var showLevels by remember(state is Loaded) { mutableStateOf(false) }
+  val listState = (state as? Loaded)?.let { rememberLogListState(it) }
+  val scope = rememberCoroutineScope()
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
@@ -93,6 +103,11 @@ internal fun LogDayScaffold(
           onAction(SetQuery(""))
         },
         onExport = { showExport = true },
+        onScrollToTop = {
+          if (state is Loaded && state.live == Following) onAction(Pause)
+          listState?.let { scope.launch { it.scrollToItem(it.layoutInfo.totalItemsCount - 1) } }
+        },
+        onScrollToBottom = { listState?.let { scope.launch { it.scrollToItem(0) } } },
         onAction = onAction,
       )
     },
@@ -116,7 +131,7 @@ internal fun LogDayScaffold(
               color = colors.pageTextLight,
             )
           }
-          LogLines(state, filters.query, onAction)
+          LogLines(state, checkNotNull(listState), filters.query, onAction)
         }
       }
     }
@@ -156,6 +171,8 @@ private fun LogDayTopBar(
   onSearch: () -> Unit,
   onCloseSearch: () -> Unit,
   onExport: () -> Unit,
+  onScrollToTop: () -> Unit,
+  onScrollToBottom: () -> Unit,
   onAction: LogsActionHandler,
 ) {
   TopAppBar(
@@ -189,8 +206,39 @@ private fun LogDayTopBar(
         contentDescription = Strings.logsExport,
         onClick = onExport,
       )
+      LogDayMenu(onScrollToTop, onScrollToBottom)
     },
   )
+}
+
+@Composable
+private fun LogDayMenu(onScrollToTop: () -> Unit, onScrollToBottom: () -> Unit) {
+  var expanded by remember { mutableStateOf(false) }
+  Box {
+    BareIconButton(
+      imageVector = MaterialIcons.MoreVert,
+      contentDescription = Strings.logsMenu,
+      onClick = { expanded = true },
+    )
+    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      AktualDropdownMenuItem(
+        text = Strings.logsGoToTop,
+        leadingIcon = MaterialIcons.ArrowUpward,
+        onClick = {
+          expanded = false
+          onScrollToTop()
+        },
+      )
+      AktualDropdownMenuItem(
+        text = Strings.logsGoToBottom,
+        leadingIcon = MaterialIcons.ArrowDownward,
+        onClick = {
+          expanded = false
+          onScrollToBottom()
+        },
+      )
+    }
+  }
 }
 
 @Composable
@@ -221,6 +269,7 @@ internal fun LogSearchField(
 @Composable
 private fun LogLines(
   state: LogEntriesState.Loaded,
+  listState: LazyListState,
   query: String,
   onAction: LogsActionHandler,
 ) {
@@ -228,8 +277,6 @@ private fun LogLines(
     SearchMessage(text = Strings.logsNoMatches)
     return
   }
-
-  val listState = rememberLogListState(state)
 
   LazyColumn(
     modifier = Modifier.fillMaxSize().scrollbar(listState),
