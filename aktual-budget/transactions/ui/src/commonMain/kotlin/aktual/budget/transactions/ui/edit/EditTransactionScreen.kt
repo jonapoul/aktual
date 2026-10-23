@@ -207,7 +207,12 @@ private fun EditTransactionScaffold(
         onBack = { onBack() },
         onRevert = { onAction(RevertChanges) },
         onSave = {
-          val confirm = saveDialog(form, loaded?.saved)
+          val confirm =
+            if (loaded?.changedElsewhere == Conflicting) {
+              ConfirmOverwrite
+            } else {
+              saveDialog(form, loaded?.saved)
+            }
           if (confirm == null) onAction(SaveTransaction) else dialog = confirm
         },
         onDelete = { dialog = deleteDialog(loaded?.saved) },
@@ -230,6 +235,7 @@ private fun EditTransactionScaffold(
             form = state.mode.form,
             fieldState = fieldState,
             balance = state.saved?.transaction?.balance,
+            changedElsewhere = state.changedElsewhere,
             onUnlock = { dialog = ConfirmReconciledUnlock },
             onAction = onAction,
             scrollState = scrollState,
@@ -246,7 +252,13 @@ private fun EditTransactionScaffold(
         )
       }
 
-      EditTransactionDialogs(dialog = dialog, onAction = onAction, onShow = { dialog = it })
+      EditTransactionDialogs(
+        dialog = dialog,
+        onAction = onAction,
+        onShow = { dialog = it },
+        // The reconciled checks still come after it
+        afterOverwrite = { saveDialog(form, loaded?.saved) },
+      )
 
       if (error != null) {
         EditTransactionErrorDialog(error = error, onDismiss = { onAction(DismissError) })
@@ -325,7 +337,8 @@ private fun TopBarActions(
       )
     }
 
-    if (mode is Edit) {
+    // A transaction deleted elsewhere can only have its draft thrown away
+    if (mode is Edit && state.changedElsewhere != Deleted) {
       Box {
         var expanded by remember { mutableStateOf(false) }
         BareIconButton(
@@ -618,6 +631,10 @@ private class EditTransactionStateProvider :
     EditTransactionState.Failure.NotFound,
     previewLoaded(TRANSACTION_1),
     previewLoaded(TRANSACTION_1, previewForm(TRANSACTION_1, hasChanges = true)),
+    previewLoaded(TRANSACTION_1, previewForm(TRANSACTION_1, hasChanges = true))
+      .copy(changedElsewhere = Conflicting),
+    previewLoaded(TRANSACTION_1, previewForm(TRANSACTION_1, hasChanges = true))
+      .copy(changedElsewhere = Deleted),
     previewLoaded(
       TRANSACTION_TRANSFER.copy(notes = null),
       previewForm(TRANSACTION_TRANSFER.copy(notes = null), reconciled = true),

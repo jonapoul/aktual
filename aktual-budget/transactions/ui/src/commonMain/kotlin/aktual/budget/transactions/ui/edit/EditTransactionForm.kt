@@ -6,6 +6,7 @@ import aktual.budget.model.toInputText
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.ui.tabularFigures
+import aktual.budget.transactions.vm.edit.ChangedElsewhere
 import aktual.budget.transactions.vm.edit.TransactionForm
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Split
@@ -18,6 +19,7 @@ import aktual.core.ui.AmountKeypad
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.RootOverlayContent
+import aktual.core.ui.WarningBanner
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedText
 import aktual.core.ui.isInPreview
@@ -77,6 +79,16 @@ import kotlinx.collections.immutable.persistentListOf
 
 internal fun TextFieldState.isValidAmount(): Boolean = evaluateAmountInput(text.toString()) != null
 
+@Composable
+private fun ChangedElsewhereBanner(change: ChangedElsewhere) =
+  WarningBanner(
+    text =
+      when (change) {
+        Conflicting -> Strings.transactionChangedElsewhere
+        Deleted -> Strings.transactionDeletedElsewhere
+      },
+  )
+
 // The amount up top, typed with the docked keypad, then a card of rows that each open a picker. A
 // saved transaction opens straight into this, so anything on it can be changed in place. A split
 // lists its parts under them, with amounts of their own
@@ -91,6 +103,7 @@ internal fun EditTransactionForm(
   modifier: Modifier = Modifier,
   // The account's balance after the saved transaction, if it's been saved
   balance: Amount? = null,
+  changedElsewhere: ChangedElsewhere? = null,
 ) {
   val draft = form.draft
   val amountText = fieldState.amountText
@@ -127,6 +140,8 @@ internal fun EditTransactionForm(
           .padding(horizontal = CardInset),
       verticalArrangement = Arrangement.spacedBy(CardSpacing),
     ) {
+      changedElsewhere?.let { ChangedElsewhereBanner(it) }
+
       if (form.isSplit) {
         SplitTotal(
           amount = draft.amount,

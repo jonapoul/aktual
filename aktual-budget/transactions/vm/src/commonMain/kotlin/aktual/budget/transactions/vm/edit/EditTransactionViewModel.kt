@@ -29,6 +29,7 @@ import aktual.budget.transactions.domain.addPart
 import aktual.budget.transactions.domain.applyRuleChanges
 import aktual.budget.transactions.domain.fillRemaining
 import aktual.budget.transactions.domain.isEmpty
+import aktual.budget.transactions.domain.rebase
 import aktual.budget.transactions.domain.split
 import aktual.budget.transactions.domain.splitDifference
 import aktual.budget.transactions.domain.toNewTransaction
@@ -109,6 +110,10 @@ internal constructor(
   private val mutableNewPayees = MutableStateFlow<Map<PayeeId, String>>(emptyMap())
   private val mutableIsWorking = MutableStateFlow(false)
   private val mutableError = MutableStateFlow<EditTransactionError?>(null)
+  // Whether a saved transaction has gone, other than by deleting it here
+  private val mutableIsGone = MutableStateFlow(false)
+  // Whether what's saved changed under the draft in a way that saving it overwrites
+  private val mutableHasConflicts = MutableStateFlow(false)
   private var isDeleted = false
 
   // Followed, so a tag created from the notes is offered straight away
@@ -150,7 +155,24 @@ internal constructor(
       val newPayees by mutableNewPayees.collectAsState()
       val isWorking by mutableIsWorking.collectAsState()
       val tagOptions by tags.collectAsState()
-      buildState(saved, entities, failure, draft, newPayees, tagOptions, isWorking)
+      val isGone by mutableIsGone.collectAsState()
+      val hasConflicts by mutableHasConflicts.collectAsState()
+      val changedElsewhere =
+        when {
+          isGone -> ChangedElsewhere.Deleted
+          hasConflicts -> ChangedElsewhere.Conflicting
+          else -> null
+        }
+      buildState(
+        saved = saved,
+        entities = entities,
+        failure = failure,
+        draft = draft,
+        newPayees = newPayees,
+        tags = tagOptions,
+        isWorking = isWorking,
+        changedElsewhere = changedElsewhere,
+      )
     }
 
   init {
@@ -165,12 +187,15 @@ internal constructor(
     newPayees: Map<PayeeId, String>,
     tags: ImmutableList<TagLabel>,
     isWorking: Boolean,
+    changedElsewhere: ChangedElsewhere?,
   ): EditTransactionState {
     if (failure != null) return failure
+    // A draft stays open when its transaction's deleted elsewhere, so it isn't lost
+    if (changedElsewhere == Deleted && draft == null) return Failure.NotFound
     if (entities == null) return Loading
     val form = (draft ?: saved?.draft)?.let { form(it, entities, newPayees, tags, saved) }
     return when (target) {
-      is Existing -> existingState(saved, form, isWorking)
+      is Existing -> existingState(saved, form, isWorking, changedElsewhere)
       is New -> newState(entities, form, isWorking)
     }
   }
@@ -179,12 +204,14 @@ internal constructor(
     saved: Saved?,
     form: TransactionForm?,
     isWorking: Boolean,
+    changedElsewhere: ChangedElsewhere?,
   ): EditTransactionState {
     if (saved == null || form == null) return Loading
     return EditTransactionState.Loaded(
       saved = saved.details,
       mode = TransactionEditMode.Edit(form),
       isWorking = isWorking,
+      changedElsewhere = changedElsewhere,
     )
   }
 
@@ -310,12 +337,24 @@ internal constructor(
     viewModelScope.launch { loadPayeeLookup() }
     loader.observe(target.id).collect { loaded ->
       if (loaded != null) {
-        mutableFailure.update { null }
-        mutableSaved.update { loaded.toSaved() }
+        val saved = loaded.toSaved()
+        rebaseDraft(onto = saved)
+        mutableSaved.update { saved }
+        mutableIsGone.update { false }
       } else if (!isDeleted) {
-        mutableFailure.update { NotFound }
+        mutableIsGone.update { true }
       }
     }
+  }
+
+  // Moves an open draft onto what's now saved, so it only changes what the user has changed
+  private fun rebaseDraft(onto: Saved) {
+    val draft = mutableDraft.value ?: return
+    val base = mutableSaved.value?.draft ?: return
+    if (base == onto.draft) return
+    val rebased = rebase(base, onto.draft, draft)
+    if (rebased.hasConflicts) mutableHasConflicts.update { true }
+    mutableDraft.update { rebased.draft }
   }
 
   // As upstream's TransactionEdit.tsx, a new transaction takes its date and account from the last
@@ -408,7 +447,10 @@ internal constructor(
     closeDraft()
   }
 
-  private fun closeDraft() = mutableDraft.update { null }
+  private fun closeDraft() {
+    mutableDraft.update { null }
+    mutableHasConflicts.update { false }
+  }
 
   private fun currentDraft(): TransactionDraft? = mutableDraft.value ?: mutableSaved.value?.draft
 
@@ -570,6 +612,7 @@ internal constructor(
 
   private fun saveEdits(target: EditTransactionTarget.Existing, draft: TransactionDraft) {
     val saved = mutableSaved.value ?: return
+    if (mutableIsGone.value) return
     val id = saved.details.transaction.id
     if (transactionDiff(id, saved.draft, draft) == null) {
       closeDraft()
@@ -640,7 +683,7 @@ internal constructor(
 
   fun delete() {
     val saved = mutableSaved.value ?: return
-    if (mutableIsWorking.value) return
+    if (mutableIsWorking.value || mutableIsGone.value) return
 
     mutableIsWorking.update { true }
     viewModelScope.launch {

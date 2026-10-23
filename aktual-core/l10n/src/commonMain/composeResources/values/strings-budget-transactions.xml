@@ -93,6 +93,11 @@
   <string name="transaction_reconciled_transfer_save">This transfer has a linked transaction in another account that is reconciled. Editing it may bring that account’s reconciliation out of balance.</string>
   <string name="transaction_reconciled_transfer_delete">This transfer has a linked transaction in another account that is reconciled. Deleting it may bring that account’s reconciliation out of balance.</string>
   <string name="transaction_reconciled_confirm">Confirm</string>
+  <string name="transaction_changed_elsewhere">This transaction was changed elsewhere while you were editing it. Saving replaces some of those changes with yours.</string>
+  <string name="transaction_deleted_elsewhere">This transaction was deleted elsewhere while you were editing it, so your changes can’t be saved.</string>
+  <string name="transaction_overwrite_title">Overwrite changes?</string>
+  <string name="transaction_overwrite_message">This transaction was changed elsewhere since you started editing it. Saving replaces some of those changes with yours.</string>
+  <string name="transaction_overwrite_confirm">Overwrite</string>
   <string name="transaction_error_saving">Couldn’t save transaction</string>
   <string name="transaction_error_deleting">Couldn’t delete transaction</string>
   <string name="transaction_error_creating_tag">Couldn’t create tag</string>
