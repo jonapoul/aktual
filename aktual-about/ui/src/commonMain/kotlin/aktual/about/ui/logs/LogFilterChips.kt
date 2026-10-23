@@ -27,8 +27,8 @@ internal fun LogFilterChips(
 ) {
   FlowRow(
     modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp),
-    horizontalArrangement = Arrangement.spacedBy(4.dp),
-    verticalArrangement = Arrangement.spacedBy(4.dp),
+    horizontalArrangement = Arrangement.spacedBy(2.dp),
+    verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     LogChip(
       text = filters.levelsSummary(),
@@ -57,7 +57,12 @@ private fun PreviewLogFilterChips(@PreviewParameter(ColoredParameters::class) co
         LogFilters(
           query = "something",
           priorities = persistentSetOf(INFO, WARN),
-          tags = persistentSetOf("holiday", "shopping"),
+          tags =
+            persistentSetOf(
+              "holiday",
+              "shopping",
+              "something-else-really-long-like-this-to-test-ellipsizing-of-pills",
+            ),
         ),
       onAction = {},
       onOpenLevels = {},

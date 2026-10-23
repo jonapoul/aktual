@@ -56,7 +56,14 @@ internal fun LogChip(
   ) {
     val color = if (isSelected) colors.pillTextSelected else colors.pillText
     Row(verticalAlignment = CenterVertically) {
-      Text(text = text, style = typography.labelLarge, color = color, maxLines = 1)
+      Text(
+        text = text,
+        style = typography.labelLarge,
+        color = color,
+        maxLines = 1,
+        overflow = Ellipsis,
+      )
+
       if (trailingIcon != null) {
         Icon(
           modifier = Modifier.size(18.dp),
@@ -74,7 +81,7 @@ private val ChipShape = RoundedCornerShape(16.dp)
 @Preview
 @Composable
 private fun PreviewLogChip(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
 ) =
   PreviewWithColoredParams(params) {
     LogChip(
