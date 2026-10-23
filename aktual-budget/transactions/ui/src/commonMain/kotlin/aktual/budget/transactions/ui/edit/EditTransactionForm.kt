@@ -3,9 +3,11 @@ package aktual.budget.transactions.ui.edit
 import aktual.budget.model.Amount
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toInputText
+import aktual.budget.model.toSignedInputText
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.ui.tabularFigures
+import aktual.budget.transactions.vm.edit.ChangedElsewhere
 import aktual.budget.transactions.vm.edit.TransactionForm
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Split
@@ -18,6 +20,7 @@ import aktual.core.ui.AmountKeypad
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.RootOverlayContent
+import aktual.core.ui.WarningBanner
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedText
 import aktual.core.ui.isInPreview
@@ -50,6 +53,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,6 +81,16 @@ import kotlinx.collections.immutable.persistentListOf
 
 internal fun TextFieldState.isValidAmount(): Boolean = evaluateAmountInput(text.toString()) != null
 
+@Composable
+private fun ChangedElsewhereBanner(change: ChangedElsewhere) =
+  WarningBanner(
+    text =
+      when (change) {
+        Conflicting -> Strings.transactionChangedElsewhere
+        Deleted -> Strings.transactionDeletedElsewhere
+      },
+  )
+
 // The amount up top, typed with the docked keypad, then a card of rows that each open a picker. A
 // saved transaction opens straight into this, so anything on it can be changed in place. A split
 // lists its parts under them, with amounts of their own
@@ -91,6 +105,7 @@ internal fun EditTransactionForm(
   modifier: Modifier = Modifier,
   // The account's balance after the saved transaction, if it's been saved
   balance: Amount? = null,
+  changedElsewhere: ChangedElsewhere? = null,
 ) {
   val draft = form.draft
   val amountText = fieldState.amountText
@@ -103,6 +118,7 @@ internal fun EditTransactionForm(
   val isIncome = if (draft.amount == Zero) zeroIsIncome else draft.amount > Zero
 
   TypedAmountEffect(fieldState = fieldState, isIncome = isIncome, onAction = onAction)
+  RetypeAmountEffect(form = form, fieldState = fieldState, isIncome = isIncome)
   if (isTypingTotal) {
     DisposableEffect(Unit) { onDispose { onAction(CommitAmount) } }
   }
@@ -127,6 +143,8 @@ internal fun EditTransactionForm(
           .padding(horizontal = CardInset),
       verticalArrangement = Arrangement.spacedBy(CardSpacing),
     ) {
+      changedElsewhere?.let { ChangedElsewhereBanner(it) }
+
       if (form.isSplit) {
         SplitTotal(
           amount = draft.amount,
@@ -225,6 +243,36 @@ private fun TypedAmountEffect(
           latestOnAction(SetPartAmount(part, amount.negatedIf(!latestIsIncome)))
         }
       }
+  }
+}
+
+// When the amount being typed changes in the draft some other way, e.g. by a sync, the text
+// follows it, so the next key doesn't write the old amount back. Text that had already moved on
+// from the old amount is being typed, so it's left alone
+@Composable
+private fun RetypeAmountEffect(
+  form: TransactionForm,
+  fieldState: EditFieldState,
+  isIncome: Boolean,
+) {
+  val active = fieldState.active?.takeIf { it.field == EditField.Amount } ?: return
+  val part = active.part
+  val amount =
+    if (part == null) form.draft.amount else form.parts.find { it.part.id == part }?.part?.amount
+  var previous by remember(active) { mutableStateOf(amount) }
+  SideEffect(active, amount) {
+    val before = previous
+    previous = amount
+    if (amount == null || before == null || amount == before) return@SideEffect
+    val typed = evaluateAmountInput(fieldState.amountText.text.toString()) ?: return@SideEffect
+    if (part == null) {
+      // The total is typed unsigned
+      if (typed == before.abs() && typed != amount.abs()) {
+        fieldState.typeAmount(amount.toInputText())
+      }
+    } else if (typed.negatedIf(!isIncome) == before) {
+      fieldState.typeAmount(amount.negatedIf(!isIncome).toSignedInputText(), part)
+    }
   }
 }
 

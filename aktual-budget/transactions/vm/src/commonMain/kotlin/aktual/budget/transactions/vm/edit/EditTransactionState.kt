@@ -131,16 +131,29 @@ sealed interface EditTransactionState {
     val saved: TransactionDetails?,
     val mode: TransactionEditMode,
     val isWorking: Boolean = false,
+    // Set while a draft is open on a saved transaction that's changed elsewhere since
+    val changedElsewhere: ChangedElsewhere? = null,
   ) : EditTransactionState {
-    // A split can't be saved until its parts add up
+    // A split can't be saved until its parts add up, nor can a transaction that's gone
     val canSave: Boolean
       get() =
         !isWorking &&
           when (mode) {
-            is Edit -> mode.form.hasChanges && mode.form.splitRemaining == null
+            is Edit ->
+              mode.form.hasChanges &&
+                mode.form.splitRemaining == null &&
+                changedElsewhere != Deleted
             is Create -> mode.form.draft.account != null && mode.form.splitRemaining == null
           }
   }
+}
+
+// How a saved transaction changed elsewhere, e.g. by a sync, while a draft of it was open. Fields
+// the draft hasn't changed follow what's saved, so only a conflict is overwritten by saving
+enum class ChangedElsewhere {
+  // Something the draft changed was changed elsewhere too
+  Conflicting,
+  Deleted,
 }
 
 @Immutable

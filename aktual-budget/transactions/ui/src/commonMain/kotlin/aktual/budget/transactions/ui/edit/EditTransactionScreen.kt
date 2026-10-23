@@ -73,6 +73,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -194,6 +195,16 @@ private fun EditTransactionScaffold(
   }
   BackHandler(enabled = form?.hasChanges == true) { onBack() }
 
+  // A conflict that turns up while a save is being confirmed has to be confirmed first
+  val isConflicting = loaded?.changedElsewhere == Conflicting
+  SideEffect(isConflicting) {
+    if (
+      isConflicting && (dialog == ConfirmReconciledSave || dialog == ConfirmReconciledTransferSave)
+    ) {
+      dialog = ConfirmOverwrite
+    }
+  }
+
   val hazeState = rememberHazedTopBarState()
   val scrollState = rememberScrollState()
 
@@ -207,7 +218,12 @@ private fun EditTransactionScaffold(
         onBack = { onBack() },
         onRevert = { onAction(RevertChanges) },
         onSave = {
-          val confirm = saveDialog(form, loaded?.saved)
+          val confirm =
+            if (loaded?.changedElsewhere == Conflicting) {
+              ConfirmOverwrite
+            } else {
+              saveDialog(form, loaded?.saved)
+            }
           if (confirm == null) onAction(SaveTransaction) else dialog = confirm
         },
         onDelete = { dialog = deleteDialog(loaded?.saved) },
@@ -230,6 +246,7 @@ private fun EditTransactionScaffold(
             form = state.mode.form,
             fieldState = fieldState,
             balance = state.saved?.transaction?.balance,
+            changedElsewhere = state.changedElsewhere,
             onUnlock = { dialog = ConfirmReconciledUnlock },
             onAction = onAction,
             scrollState = scrollState,
@@ -246,7 +263,13 @@ private fun EditTransactionScaffold(
         )
       }
 
-      EditTransactionDialogs(dialog = dialog, onAction = onAction, onShow = { dialog = it })
+      EditTransactionDialogs(
+        dialog = dialog,
+        onAction = onAction,
+        onShow = { dialog = it },
+        // The reconciled checks still come after it
+        afterOverwrite = { saveDialog(form, loaded?.saved) },
+      )
 
       if (error != null) {
         EditTransactionErrorDialog(error = error, onDismiss = { onAction(DismissError) })
@@ -313,9 +336,15 @@ private fun TopBarActions(
 ) {
   val mode = state.mode
   val hasChanges = mode.form.hasChanges
+  // A transaction deleted elsewhere can only have its draft thrown away
+  val isGone = state.changedElsewhere == Deleted
   Row(modifier = modifier, verticalAlignment = CenterVertically) {
     // A saved transaction only offers saving once it's been changed
-    AnimatedVisibility(visible = mode is Create || hasChanges, enter = fadeIn(), exit = fadeOut()) {
+    AnimatedVisibility(
+      visible = mode is Create || hasChanges && !isGone,
+      enter = fadeIn(),
+      exit = fadeOut(),
+    ) {
       PrimaryTextButton(
         modifier = Modifier.padding(end = SaveInset),
         text = Strings.transactionSave,
@@ -325,7 +354,7 @@ private fun TopBarActions(
       )
     }
 
-    if (mode is Edit) {
+    if (mode is Edit && !isGone) {
       Box {
         var expanded by remember { mutableStateOf(false) }
         BareIconButton(
@@ -618,6 +647,10 @@ private class EditTransactionStateProvider :
     EditTransactionState.Failure.NotFound,
     previewLoaded(TRANSACTION_1),
     previewLoaded(TRANSACTION_1, previewForm(TRANSACTION_1, hasChanges = true)),
+    previewLoaded(TRANSACTION_1, previewForm(TRANSACTION_1, hasChanges = true))
+      .copy(changedElsewhere = Conflicting),
+    previewLoaded(TRANSACTION_1, previewForm(TRANSACTION_1, hasChanges = true))
+      .copy(changedElsewhere = Deleted),
     previewLoaded(
       TRANSACTION_TRANSFER.copy(notes = null),
       previewForm(TRANSACTION_TRANSFER.copy(notes = null), reconciled = true),

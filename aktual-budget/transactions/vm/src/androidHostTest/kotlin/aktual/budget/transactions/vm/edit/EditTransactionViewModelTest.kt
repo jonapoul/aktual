@@ -3,6 +3,7 @@ package aktual.budget.transactions.vm.edit
 import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Rules
+import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.DatabaseTables.PAYEES
@@ -12,10 +13,12 @@ import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.RuleContextDao
 import aktual.budget.db.dao.RulesDao
+import aktual.budget.db.dao.SyncDao
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
+import aktual.budget.model.BudgetId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
 import aktual.budget.model.LocalChange
@@ -47,6 +50,7 @@ import aktual.budget.transactions.vm.insertTransaction
 import aktual.budget.transactions.vm.transaction
 import aktual.test.TestCalendar
 import aktual.test.assertThatNextEmissionIsEqualTo
+import aktual.test.inMemoryDriverFactory
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.Event
@@ -75,6 +79,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonPrimitive
@@ -397,6 +402,160 @@ class EditTransactionViewModelTest {
       assertThat(sync.calls).containsExactly(listOf(tombstone(TRANSACTIONS, "t")))
     }
   }
+
+  @Test
+  fun `Saving after a change elsewhere only writes what was edited`() =
+    runSyncedTest { scope, elsewhere ->
+      insertEntities()
+      TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+      val sync = FakeSyncController()
+      val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+      viewModel.state.test {
+        awaitEdit()
+        viewModel.setNotes("Lunch")
+        awaitEdit()
+
+        elsewhere.sendMessages(listOf(localChange(TRANSACTIONS, "t", "amount", -5000L)))
+        scope.advanceUntilIdle()
+
+        // The draft follows what it hasn't changed
+        var loaded = awaitLoaded()
+        while (loaded.mode.form.draft.amount != Amount(-50.0)) loaded = awaitLoaded()
+        assertThat(loaded).all {
+          prop(Loaded::changedElsewhere).isNull()
+          prop("draft") { it.mode.form.draft }
+            .isEqualTo(SAVED.copy(amount = Amount(-50.0), notes = "Lunch"))
+        }
+
+        viewModel.save()
+        scope.advanceUntilIdle()
+        assertThat(sync.calls)
+          .containsExactly(
+            listOf(LocalChange(TRANSACTIONS, "t", "notes", MessageValue.String("Lunch"))),
+          )
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `A field changed both here and elsewhere is a conflict until reverted`() =
+    runSyncedTest { scope, elsewhere ->
+      insertEntities()
+      TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+      val viewModel = createViewModel(scope, id = "t")
+
+      viewModel.state.test {
+        awaitEdit()
+        viewModel.setPayee(PayeeId("b"))
+        awaitEdit()
+
+        elsewhere.sendMessages(listOf(localChange(TRANSACTIONS, "t", "description", "c")))
+        scope.advanceUntilIdle()
+
+        var loaded = awaitLoaded()
+        while (loaded.changedElsewhere == null) loaded = awaitLoaded()
+        assertThat(loaded).all {
+          prop(Loaded::changedElsewhere).isEqualTo(Conflicting)
+          prop(Loaded::canSave).isTrue()
+          prop("payee") { it.mode.form.draft.payee }.isEqualTo(PayeeId("b"))
+        }
+
+        viewModel.revert()
+        while (loaded.changedElsewhere != null) loaded = awaitLoaded()
+        assertThat(loaded.mode.form.draft.payee).isEqualTo(PayeeId("c"))
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `Saving a new payee isn't a change made elsewhere`() = runSyncedTest { scope, database ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    // Holds the save open once it's written, so what it wrote is seen before it finishes
+    val gate = CompletableDeferred<Unit>()
+    val sync = FakeSyncController(gate = gate, appliedTo = database)
+    val viewModel = createViewModel(scope, id = "t", sync = sync, savedUuid = "saved")
+
+    viewModel.state.test {
+      awaitEdit()
+      viewModel.createPayee("Deli")
+      awaitEdit()
+
+      viewModel.save()
+      scope.advanceUntilIdle()
+      gate.complete(Unit)
+      scope.advanceUntilIdle()
+
+      val states =
+        cancelAndConsumeRemainingEvents()
+          .asSequence()
+          .filterIsInstance<Event.Item<EditTransactionState>>()
+          .map { it.value }
+          .filterIsInstance<Loaded>()
+          .toList()
+      assertThat(states.map { it.changedElsewhere }).each { it.isNull() }
+      assertThat(states.last().mode.form.draft.payee).isEqualTo(PayeeId("saved"))
+    }
+  }
+
+  @Test
+  fun `A transaction deleted elsewhere keeps its draft, which can't be saved`() =
+    runSyncedTest { scope, elsewhere ->
+      insertEntities()
+      TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+      val sync = FakeSyncController()
+      val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+      viewModel.state.test {
+        awaitEdit()
+        viewModel.setNotes("Lunch")
+        awaitEdit()
+
+        elsewhere.sendMessages(listOf(tombstone(TRANSACTIONS, "t")))
+        scope.advanceUntilIdle()
+
+        var loaded = awaitLoaded()
+        while (loaded.changedElsewhere == null) loaded = awaitLoaded()
+        assertThat(loaded).all {
+          prop(Loaded::changedElsewhere).isEqualTo(Deleted)
+          prop(Loaded::canSave).isFalse()
+          prop("notes") { it.mode.form.draft.notes }.isEqualTo("Lunch")
+        }
+
+        viewModel.save()
+        viewModel.delete()
+        scope.advanceUntilIdle()
+        assertThat(sync.calls).isEmpty()
+
+        // Without its draft, there's nothing left to show
+        viewModel.revert()
+        var state = awaitItem()
+        while (state is Loaded) state = awaitItem()
+        assertThat(state).isEqualTo(EditTransactionState.Failure.NotFound)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `A transaction deleted elsewhere without a draft isn't found`() =
+    runSyncedTest { scope, elsewhere ->
+      insertEntities()
+      TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+      val viewModel = createViewModel(scope, id = "t")
+
+      viewModel.state.test {
+        awaitEdit()
+
+        elsewhere.sendMessages(listOf(tombstone(TRANSACTIONS, "t")))
+        scope.advanceUntilIdle()
+
+        var state = awaitItem()
+        while (state is Loaded) state = awaitItem()
+        assertThat(state).isEqualTo(EditTransactionState.Failure.NotFound)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
 
   @Test
   fun `A split is edited with its parts`() = runDatabaseTest { scope ->
@@ -1005,6 +1164,15 @@ class EditTransactionViewModelTest {
     }
   }
 
+  // Like runDatabaseTest, with a SyncDao that makes changes as a sync would
+  private fun runSyncedTest(action: suspend BudgetDatabase.(TestScope, SyncDao) -> Unit) = runTest {
+    val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
+    driver.use {
+      val database = buildDatabase(driver)
+      action(database, this, SyncDao(database, driver, Clock.System))
+    }
+  }
+
   private suspend fun ReceiveTurbine<EditTransactionState>.awaitEdit(): TransactionForm {
     var mode = awaitLoaded().mode
     while (mode !is Edit) mode = awaitLoaded().mode
@@ -1082,6 +1250,7 @@ class EditTransactionViewModelTest {
     sync: FakeSyncController = FakeSyncController(),
     target: EditTransactionTarget = EditTransactionTarget.Existing(TransactionId(id)),
     lastTransaction: LastTransaction = LastTransaction(),
+    savedUuid: String = "uuid",
   ): EditTransactionViewModel {
     Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     val tags = tagsDao(scope)
@@ -1100,7 +1269,7 @@ class EditTransactionViewModelTest {
           categoryDao = categoryDao,
           payeeDao = payeeDao,
           transactionDao = transactionDao,
-          uuidGenerator = { "uuid" },
+          uuidGenerator = { savedUuid },
           clock = Clock.System,
         ),
       rulesLoader =
@@ -1123,14 +1292,16 @@ class EditTransactionViewModelTest {
   private fun BudgetDatabase.tagsDao(scope: TestScope) =
     TagsDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
 
-  // Records the changes it's sent, without applying them to the database
+  // Records the changes it's sent, without applying them to the database unless it's given one
   private class FakeSyncController(
     private val failure: Exception? = null,
     private val gate: CompletableDeferred<Unit>? = null,
+    private val appliedTo: SyncDao? = null,
   ) : BudgetSyncController {
     val calls = mutableListOf<List<LocalChange>>()
 
     override suspend fun syncChanges(changes: List<LocalChange>) {
+      appliedTo?.sendMessages(changes)
       gate?.await()
       failure?.let { throw it }
       calls += changes

@@ -12,6 +12,8 @@ import androidx.compose.ui.graphics.Color
 internal enum class TransactionDialog {
   ConfirmDelete,
   ConfirmDiscard,
+  // Shown before saving over changes made elsewhere since editing started
+  ConfirmOverwrite,
   // As upstream's confirm-transaction-edit modal, shown before changing a reconciled transaction
   ConfirmReconciledSave,
   ConfirmReconciledUnlock,
@@ -26,6 +28,7 @@ internal fun EditTransactionDialogs(
   dialog: TransactionDialog?,
   onAction: EditTransactionActionHandler,
   onShow: (TransactionDialog?) -> Unit,
+  afterOverwrite: () -> TransactionDialog? = { null },
 ) {
   val dismiss = { onShow(null) }
   when (dialog) {
@@ -53,6 +56,25 @@ internal fun EditTransactionDialogs(
         onConfirm = {
           dismiss()
           onAction(DiscardChanges)
+        },
+        onCancel = dismiss,
+      )
+
+    ConfirmOverwrite ->
+      ConfirmDialog(
+        title = Strings.transactionOverwriteTitle,
+        message = Strings.transactionOverwriteMessage,
+        confirm = Strings.transactionOverwriteConfirm,
+        cancel = Strings.transactionSheetCancel,
+        highlight = colors.warningText,
+        onConfirm = {
+          val next = afterOverwrite()
+          if (next == null) {
+            dismiss()
+            onAction(SaveTransaction)
+          } else {
+            onShow(next)
+          }
         },
         onCancel = dismiss,
       )
