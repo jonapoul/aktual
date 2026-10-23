@@ -55,7 +55,7 @@ internal fun LogLevelSheet(
   onDismiss: () -> Unit,
 ) {
   // Toggles go straight to the VM, so the list behind the sheet filters live
-  AktualModalBottomSheet(onDismissRequest = onDismiss) {
+  AktualModalBottomSheet(onDismissRequest = onDismiss, blurBackground = false) {
     LogLevelSheetContent(filters, counts, onAction)
   }
 }
