@@ -27,12 +27,14 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.SearchMessage
+import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -101,7 +103,9 @@ internal fun LogDayScaffold(
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
-    snackbarHost = { SnackbarHost(snackbarHostState) },
+    snackbarHost = {
+      LogDaySnackbarHost(snackbarHostState, hasLiveBar = state is Loaded && state.live != None)
+    },
     topBar = {
       // Reversed list, so lines are behind the bar whenever it can still scroll towards the top
       Column(
@@ -193,6 +197,19 @@ private fun LogMatchCount(count: Int) =
     text = Plurals.logsMatches(count, count),
     style = typography.labelMedium,
     color = colors.pageTextLight,
+  )
+
+@Composable
+private fun LogDaySnackbarHost(hostState: SnackbarHostState, hasLiveBar: Boolean) =
+  SnackbarHost(
+    hostState = hostState,
+    // The live bar already includes the bottom spacing
+    modifier =
+      if (hasLiveBar) {
+        Modifier
+      } else {
+        Modifier.padding(bottom = LocalBottomSpacing.current + bottomNavBarPadding())
+      },
   )
 
 @Composable
