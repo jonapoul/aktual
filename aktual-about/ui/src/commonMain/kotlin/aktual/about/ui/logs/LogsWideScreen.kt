@@ -163,7 +163,7 @@ private fun WideToolbar(
               .background(
                 if (isFollowing) colors.numberPositive else colors.pageTextSubdued,
                 CircleShape,
-              )
+              ),
         )
         Text(text = Strings.logsLive, style = typography.labelLarge, color = colors.pageTextLight)
       }

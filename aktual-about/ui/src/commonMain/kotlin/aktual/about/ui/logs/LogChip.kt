@@ -83,7 +83,7 @@ private val ChipShape = RoundedCornerShape(16.dp)
 @Preview
 @Composable
 private fun PreviewLogChip(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
 ) =
   PreviewWithColoredParams(params) {
     LogChip(
