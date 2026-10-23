@@ -38,7 +38,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -48,8 +47,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -211,11 +208,11 @@ private fun WideSidebar(
 
     SidebarSection(Strings.logsLevels) {
       for (priority in LogPriority.entries) {
-        SidebarLevel(
-          priority,
-          priority in filters.priorities,
-          entries?.counts?.get(priority) ?: 0,
-          onAction,
+        LogLevelRow(
+          priority = priority,
+          isChecked = priority in filters.priorities,
+          count = entries?.counts?.get(priority) ?: 0,
+          onAction = onAction,
         )
       }
     }
@@ -286,37 +283,6 @@ private fun SidebarFile(
       color = colors.pageText,
     )
     Text(text = file.size.toString(), style = typography.labelSmall, color = colors.pageTextLight)
-  }
-
-@Composable
-private fun SidebarLevel(
-  priority: LogPriority,
-  isChecked: Boolean,
-  count: Int,
-  onAction: LogsActionHandler,
-) =
-  Row(
-    modifier =
-      Modifier.fillMaxWidth()
-        .heightIn(min = 32.dp)
-        .clickable { onAction(TogglePriority(priority)) }
-        .padding(end = 8.dp),
-    verticalAlignment = CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
-  ) {
-    Checkbox(
-      checked = isChecked,
-      onCheckedChange = { onAction(TogglePriority(priority)) },
-      colors = CheckboxDefaults.colors(checkedColor = colors.checkboxBackgroundSelected),
-    )
-    Box(modifier = Modifier.size(8.dp).background(priority.foreground(colors), CircleShape))
-    Text(
-      modifier = Modifier.weight(1f),
-      text = priority.label(),
-      style = typography.bodyMedium,
-      color = colors.pageText,
-    )
-    Text(text = count.toString(), style = typography.labelSmall, color = colors.pageTextLight)
   }
 
 @Composable

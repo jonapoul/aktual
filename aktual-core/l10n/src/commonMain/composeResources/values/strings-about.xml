@@ -92,6 +92,7 @@
   <string name="logs_no_matches">No matching lines</string>
   <string name="logs_files">Files</string>
   <string name="logs_levels">Levels</string>
+  <string name="logs_levels_none">None</string>
   <string name="logs_tags">Tags</string>
   <string name="logs_tags_hint">Click a tag in the table to filter by it</string>
   <string name="logs_tag_remove">Remove %1$s filter</string>

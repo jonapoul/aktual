@@ -79,6 +79,7 @@ internal fun LogDayScaffold(
 ) {
   var isSearching by rememberSaveable { mutableStateOf(filters.query.isNotEmpty()) }
   var showExport by remember { mutableStateOf(false) }
+  var showLevels by remember { mutableStateOf(false) }
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
@@ -105,7 +106,7 @@ internal fun LogDayScaffold(
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()
       Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-        LogFilterChips(filters, onAction)
+        LogFilterChips(filters, onAction, onOpenLevels = { showLevels = true })
         HorizontalDivider(color = colors.tableBorder)
         if (state is Loaded) {
           if (filters.query.isNotBlank()) {
@@ -120,6 +121,15 @@ internal fun LogDayScaffold(
         }
       }
     }
+  }
+
+  if (showLevels && state is Loaded) {
+    LogLevelSheet(
+      filters = filters,
+      counts = state.counts,
+      onAction = onAction,
+      onDismiss = { showLevels = false },
+    )
   }
 
   if (showExport && state is Loaded) {

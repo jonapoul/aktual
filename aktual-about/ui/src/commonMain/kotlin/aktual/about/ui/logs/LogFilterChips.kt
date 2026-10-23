@@ -15,12 +15,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentSetOf
-import logcat.LogPriority
 
 @Composable
 internal fun LogFilterChips(
   filters: LogFilters,
   onAction: LogsActionHandler,
+  onOpenLevels: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   FlowRow(
@@ -28,13 +28,12 @@ internal fun LogFilterChips(
     horizontalArrangement = Arrangement.spacedBy(4.dp),
     verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
-    for (priority in LogPriority.entries) {
-      LogChip(
-        text = priority.label(),
-        isSelected = priority in filters.priorities,
-        onClick = { onAction(TogglePriority(priority)) },
-      )
-    }
+    LogChip(
+      text = filters.levelsSummary(),
+      isSelected = true,
+      onClick = onOpenLevels,
+      contentDescription = Strings.logsLevels,
+    )
 
     for (tag in filters.tags) {
       LogChip(
@@ -59,5 +58,6 @@ private fun PreviewLogFilterChips(@PreviewParameter(ColoredParameters::class) co
           tags = persistentSetOf("holiday", "shopping"),
         ),
       onAction = {},
+      onOpenLevels = {},
     )
   }
