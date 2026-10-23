@@ -33,12 +33,17 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.SearchMessage
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -92,28 +97,43 @@ internal fun LogDayScaffold(
   val listState = (state as? Loaded)?.let { rememberLogListState(it) }
   val scope = rememberCoroutineScope()
   val snackbarHostState = remember { SnackbarHostState() }
+  val hazeState = rememberHazedTopBarState()
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
     snackbarHost = { SnackbarHost(snackbarHostState) },
     topBar = {
-      LogDayTopBar(
-        state = state,
-        isSearching = isSearching,
-        initialQuery = filters.query,
-        onSearch = { isSearching = true },
-        onCloseSearch = {
-          isSearching = false
-          onAction(SetQuery(""))
-        },
-        onExport = { showExport = true },
-        onScrollToTop = {
-          if (state is Loaded && state.live == Following) onAction(Pause)
-          listState?.let { scope.launch { it.scrollToItem(it.layoutInfo.totalItemsCount - 1) } }
-        },
-        onScrollToBottom = { listState?.let { scope.launch { it.scrollToItem(0) } } },
-        onAction = onAction,
-      )
+      // Reversed list, so lines are behind the bar whenever it can still scroll towards the top
+      Column(
+        modifier =
+          Modifier.hazedTopBar(
+            hazeState,
+            scrollOffset = { if (listState?.canScrollForward == true) MAX_VALUE else 0f },
+          ),
+      ) {
+        LogDayTopBar(
+          state = state,
+          isSearching = isSearching,
+          initialQuery = filters.query,
+          onSearch = { isSearching = true },
+          onCloseSearch = {
+            isSearching = false
+            onAction(SetQuery(""))
+          },
+          onExport = { showExport = true },
+          onScrollToTop = {
+            if (state is Loaded && state.live == Following) onAction(Pause)
+            listState?.let {
+              scope.launch { it.scrollToItem(it.layoutInfo.totalItemsCount - 1) }
+            }
+          },
+          onScrollToBottom = { listState?.let { scope.launch { it.scrollToItem(0) } } },
+          onAction = onAction,
+        )
+        LogFilterChips(filters, onAction, onOpenLevels = { if (state is Loaded) showLevels = true })
+        HorizontalDivider(color = colors.tableBorder)
+        if (state is Loaded && filters.query.isNotBlank()) LogMatchCount(state.lines.size)
+      }
     },
     bottomBar = {
       if (state is Loaded && state.live != None) {
@@ -123,29 +143,19 @@ internal fun LogDayScaffold(
   ) { innerPadding ->
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()
-      Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-        LogFilterChips(filters, onAction, onOpenLevels = { if (state is Loaded) showLevels = true })
-        HorizontalDivider(color = colors.tableBorder)
-        if (state is Loaded) {
-          if (filters.query.isNotBlank()) {
-            Text(
-              modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-              text = Plurals.logsMatches(state.lines.size, state.lines.size),
-              style = typography.labelMedium,
-              color = colors.pageTextLight,
-            )
-          }
-          LogLines(
-            state = state,
-            listState = checkNotNull(listState),
-            query = filters.query,
-            onAction = onAction,
-            onTagLongClick = { tag ->
-              snackbarHostState.currentSnackbarData?.dismiss()
-              scope.launch { snackbarHostState.showSnackbar(tag) }
-            },
-          )
-        }
+      if (state is Loaded) {
+        LogLines(
+          modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
+          contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
+          state = state,
+          listState = checkNotNull(listState),
+          query = filters.query,
+          onAction = onAction,
+          onTagLongClick = { tag ->
+            snackbarHostState.currentSnackbarData?.dismiss()
+            scope.launch { snackbarHostState.showSnackbar(tag) }
+          },
+        )
       }
     }
   }
@@ -175,6 +185,15 @@ internal fun LogDayScaffold(
     )
   }
 }
+
+@Composable
+private fun LogMatchCount(count: Int) =
+  Text(
+    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+    text = Plurals.logsMatches(count, count),
+    style = typography.labelMedium,
+    color = colors.pageTextLight,
+  )
 
 @Composable
 private fun LogDayTopBar(
@@ -286,14 +305,17 @@ private fun LogLines(
   query: String,
   onAction: LogsActionHandler,
   onTagLongClick: (String) -> Unit,
+  contentPadding: PaddingValues,
+  modifier: Modifier = Modifier,
 ) {
   if (state.lines.isEmpty()) {
-    SearchMessage(text = Strings.logsNoMatches)
+    SearchMessage(modifier = modifier.padding(contentPadding), text = Strings.logsNoMatches)
     return
   }
 
   LazyColumn(
-    modifier = Modifier.fillMaxSize().scrollbar(listState),
+    modifier = modifier.fillMaxSize().scrollbar(listState),
+    contentPadding = contentPadding,
     state = listState,
     reverseLayout = true,
     verticalArrangement = Arrangement.Top,
