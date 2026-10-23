@@ -104,8 +104,8 @@
   <string name="logs_column_message">Message</string>
   <string name="logs_copy">Copy</string>
   <string name="logs_menu">More options</string>
-  <string name="logs_go_to_top">Go to top</string>
-  <string name="logs_go_to_bottom">Go to bottom</string>
+  <string name="logs_go_to_top">Go to oldest</string>
+  <string name="logs_go_to_bottom">Go to newest</string>
   <string name="logs_select_line">Select a line to see it in full</string>
   <string name="logs_export_title">Export Logs</string>
   <string name="logs_export_include">What to include</string>
