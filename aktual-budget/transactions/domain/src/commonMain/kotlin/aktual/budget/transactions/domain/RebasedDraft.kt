@@ -74,11 +74,12 @@ private class Merger {
       hasConflicts = true
     }
 
-    // Parts added elsewhere join the draft's, unless it's no longer split
+    // Parts added elsewhere join the draft's, unless it's no longer split or added its own, since
+    // then the two sets of parts wouldn't add up
     val added = saved.filter { it.id !in baseParts }
     return when {
       added.isEmpty() -> kept
-      draft.isEmpty() -> kept.also { hasConflicts = true }
+      draft.isEmpty() || draft.any { it.id !in baseParts } -> kept.also { hasConflicts = true }
       else -> kept + added
     }
   }

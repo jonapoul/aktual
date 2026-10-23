@@ -121,6 +121,28 @@ class TransactionRebaseTest {
     assertThat(rebase(SPLIT, saved, draft)).isEqualTo(RebasedDraft(draft, hasConflicts = true))
   }
 
+  @Test
+  fun `Parts added both ways keep the draft's as a conflict`() {
+    val saved = PLAIN.copy(parts = listOf(PART_1, PART_2))
+    val draft =
+      PLAIN.copy(
+        parts =
+          listOf(
+            SplitPart(TransactionId("p3"), Amount(-4000L), sortOrder = -1),
+            SplitPart(TransactionId("p4"), Amount(-210L), sortOrder = -2),
+          ),
+      )
+
+    assertThat(rebase(PLAIN, saved, draft)).isEqualTo(RebasedDraft(draft, hasConflicts = true))
+
+    val part3 = SplitPart(TransactionId("p3"), Amount(-500L), sortOrder = -3)
+    val part4 = SplitPart(TransactionId("p4"), Amount(-700L), sortOrder = -3)
+    val withPart3 = SPLIT.copy(parts = SPLIT.parts + part3)
+    val withPart4 = SPLIT.copy(parts = SPLIT.parts + part4)
+    assertThat(rebase(SPLIT, withPart3, withPart4))
+      .isEqualTo(RebasedDraft(withPart4, hasConflicts = true))
+  }
+
   private companion object {
     val ID = TransactionId("t")
 
