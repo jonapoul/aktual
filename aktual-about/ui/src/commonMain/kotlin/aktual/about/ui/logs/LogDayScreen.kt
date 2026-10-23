@@ -128,10 +128,10 @@ internal fun LogDayScaffold(
           onScrollToTop = {
             if (state is Loaded && state.live == Following) onAction(Pause)
             listState?.let {
-              scope.launch { it.scrollToItem(it.layoutInfo.totalItemsCount - 1) }
+              scope.launch { it.animateScrollToItem(it.layoutInfo.totalItemsCount - 1) }
             }
           },
-          onScrollToBottom = { listState?.let { scope.launch { it.scrollToItem(0) } } },
+          onScrollToBottom = { listState?.let { scope.launch { it.animateScrollToItem(0) } } },
           onAction = onAction,
         )
         LogFilterChips(filters, onAction, onOpenLevels = { if (state is Loaded) showLevels = true })
