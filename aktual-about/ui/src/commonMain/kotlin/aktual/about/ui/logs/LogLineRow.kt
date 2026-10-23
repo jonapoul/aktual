@@ -2,6 +2,7 @@ package aktual.about.ui.logs
 
 import aktual.core.logging.LogLine
 import aktual.core.ui.AktualTheme.colors
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,16 +10,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,30 +41,33 @@ internal fun LogLineRow(
 
     LogLetterBadge(priority = line.priority, fontSize = LineFontSize)
 
-    val tag = line.tag
-    val tagColor = colors.pageTextPositive
-    val messageColor = line.priority.messageColor(colors)
     val highlight = colors.pillBackgroundSelected
-    val currentOnTagClick by rememberUpdatedState(onTagClick)
-    val text =
-      remember(line, query, tagColor, messageColor, highlight) {
-        buildAnnotatedString {
-          if (tag != null) {
-            val link = LinkAnnotation.Clickable(tag) { currentOnTagClick(tag) }
-            withLink(link) {
-              withStyle(SpanStyle(color = tagColor)) { appendHighlighted(tag, query, highlight) }
-            }
-            append(' ')
-          }
-          withStyle(SpanStyle(color = messageColor)) {
-            appendHighlighted(line.message, query, highlight)
-          }
+
+    val tag = line.tag
+    if (tag != null) {
+      val tagText =
+        remember(tag, query, highlight) {
+          buildAnnotatedString { appendHighlighted(tag, query, highlight) }
         }
+      Text(
+        modifier = Modifier.clickable { onTagClick(tag) },
+        text = tagText,
+        color = colors.pageTextPositive,
+        fontFamily = Monospace,
+        fontSize = LineFontSize,
+        lineHeight = LineHeight,
+      )
+    }
+
+    val message =
+      remember(line.message, query, highlight) {
+        buildAnnotatedString { appendHighlighted(line.message, query, highlight) }
       }
 
     SelectionContainer(modifier = Modifier.weight(1f)) {
       Text(
-        text = text,
+        text = message,
+        color = line.priority.messageColor(colors),
         fontFamily = Monospace,
         fontSize = LineFontSize,
         lineHeight = LineHeight,
