@@ -47,7 +47,8 @@ internal fun LogLineRow(
     if (tag != null) {
       val tagText =
         remember(tag, query, highlight) {
-          buildAnnotatedString { appendHighlighted(tag, query, highlight) }
+          val shown = if (tag.length > MAX_TAG_LENGTH) tag.take(MAX_TAG_LENGTH) + "…" else tag
+          buildAnnotatedString { appendHighlighted(shown, query, highlight) }
         }
       Text(
         modifier = Modifier.clickable { onTagClick(tag) },
@@ -98,5 +99,6 @@ internal fun AnnotatedString.Builder.appendHighlighted(
 }
 
 private const val TIME_LENGTH = 8
+private const val MAX_TAG_LENGTH = 15
 private val LineFontSize = 11.5.sp
 private val LineHeight = 16.sp
