@@ -1,6 +1,8 @@
 package aktual.about.ui.logs
 
 import aktual.about.vm.logs.LogFilters
+import aktual.core.icons.material.ArrowDropDown
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.ColoredParameters
@@ -15,26 +17,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentSetOf
-import logcat.LogPriority
 
 @Composable
 internal fun LogFilterChips(
   filters: LogFilters,
   onAction: LogsActionHandler,
+  onOpenLevels: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   FlowRow(
     modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp),
-    horizontalArrangement = Arrangement.spacedBy(4.dp),
-    verticalArrangement = Arrangement.spacedBy(4.dp),
+    horizontalArrangement = Arrangement.spacedBy(2.dp),
+    verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
-    for (priority in LogPriority.entries) {
-      LogChip(
-        text = priority.label(),
-        isSelected = priority in filters.priorities,
-        onClick = { onAction(TogglePriority(priority)) },
-      )
-    }
+    LogChip(
+      text = filters.levelsSummary(),
+      isSelected = true,
+      onClick = onOpenLevels,
+      trailingIcon = MaterialIcons.ArrowDropDown,
+      role = Button,
+    )
 
     for (tag in filters.tags) {
       LogChip(
@@ -56,8 +58,14 @@ private fun PreviewLogFilterChips(@PreviewParameter(ColoredParameters::class) co
         LogFilters(
           query = "something",
           priorities = persistentSetOf(INFO, WARN),
-          tags = persistentSetOf("holiday", "shopping"),
+          tags =
+            persistentSetOf(
+              "holiday",
+              "shopping",
+              "something-else-really-long-like-this-to-test-ellipsizing-of-pills",
+            ),
         ),
       onAction = {},
+      onOpenLevels = {},
     )
   }

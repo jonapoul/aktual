@@ -38,7 +38,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -46,10 +45,9 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -211,11 +209,11 @@ private fun WideSidebar(
 
     SidebarSection(Strings.logsLevels) {
       for (priority in LogPriority.entries) {
-        SidebarLevel(
-          priority,
-          priority in filters.priorities,
-          entries?.counts?.get(priority) ?: 0,
-          onAction,
+        LogLevelRow(
+          priority = priority,
+          isChecked = priority in filters.priorities,
+          count = entries?.counts?.get(priority) ?: 0,
+          onAction = onAction,
         )
       }
     }
@@ -283,40 +281,13 @@ private fun SidebarFile(
       modifier = Modifier.weight(1f),
       text = file.date.dayLabel(today),
       style = typography.bodyMedium,
-      color = colors.pageText,
+      color = if (isSelected) colors.tableRowBackgroundHighlightText else colors.pageText,
     )
-    Text(text = file.size.toString(), style = typography.labelSmall, color = colors.pageTextLight)
-  }
-
-@Composable
-private fun SidebarLevel(
-  priority: LogPriority,
-  isChecked: Boolean,
-  count: Int,
-  onAction: LogsActionHandler,
-) =
-  Row(
-    modifier =
-      Modifier.fillMaxWidth()
-        .heightIn(min = 32.dp)
-        .clickable { onAction(TogglePriority(priority)) }
-        .padding(end = 8.dp),
-    verticalAlignment = CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
-  ) {
-    Checkbox(
-      checked = isChecked,
-      onCheckedChange = { onAction(TogglePriority(priority)) },
-      colors = CheckboxDefaults.colors(checkedColor = colors.checkboxBackgroundSelected),
-    )
-    Box(modifier = Modifier.size(8.dp).background(priority.foreground(colors), CircleShape))
     Text(
-      modifier = Modifier.weight(1f),
-      text = priority.label(),
-      style = typography.bodyMedium,
-      color = colors.pageText,
+      text = file.size.toString(),
+      style = typography.labelSmall,
+      color = if (isSelected) colors.tableRowBackgroundHighlightText else colors.pageTextLight,
     )
-    Text(text = count.toString(), style = typography.labelSmall, color = colors.pageTextLight)
   }
 
 @Composable
@@ -448,34 +419,43 @@ private fun DetailPane(line: LogLine?) {
       return@Column
     }
 
-    Row(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-      verticalAlignment = CenterVertically,
-    ) {
-      Text(
-        modifier = Modifier.weight(1f),
-        text =
-          "${line.timestamp.time.timeString()} · ${line.priority.label()} · ${line.tag.orEmpty()}",
-        style = typography.labelMedium,
-        color = colors.pageTextLight,
-      )
-      NormalTextButton(
-        text = Strings.logsCopy,
-        onClick = {
-          scope.launch { clipboard.setClipEntry(plainTextClipEntry(LogFileFormat.format(line))) }
-        },
-      )
-    }
-    HorizontalDivider(color = colors.tableBorder)
-    SelectionContainer(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-      Text(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-        text = line.message,
-        color = line.priority.messageColor(colors),
-        fontFamily = Monospace,
-        fontSize = 12.sp,
-        lineHeight = 18.sp,
-      )
+    SelectionContainer {
+      Column {
+        Row(
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+          verticalAlignment = CenterVertically,
+        ) {
+          Text(
+            modifier = Modifier.weight(1f),
+            text =
+              "${line.timestamp.time.timeString()} · ${line.priority.label()} · ${line.tag.orEmpty()}",
+            style = typography.labelMedium,
+            color = colors.pageTextLight,
+          )
+          DisableSelection {
+            NormalTextButton(
+              text = Strings.logsCopy,
+              onClick = {
+                scope.launch {
+                  clipboard.setClipEntry(plainTextClipEntry(LogFileFormat.format(line)))
+                }
+              },
+            )
+          }
+        }
+        HorizontalDivider(color = colors.tableBorder)
+        Text(
+          modifier =
+            Modifier.fillMaxSize()
+              .verticalScroll(rememberScrollState())
+              .padding(horizontal = 16.dp, vertical = 10.dp),
+          text = line.message,
+          color = line.priority.messageColor(colors),
+          fontFamily = Monospace,
+          fontSize = 12.sp,
+          lineHeight = 18.sp,
+        )
+      }
     }
   }
 }

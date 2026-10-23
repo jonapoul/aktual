@@ -24,19 +24,21 @@ import androidx.compose.ui.platform.LocalDensity
 
 /**
  * A wrapper around [ModalBottomSheet] that signals [DialogBlurState] so the background blur overlay
- * animates in while this sheet is showing.
+ * animates in while this sheet is showing. Pass [blurBackground] as false to keep the content
+ * behind the sheet readable.
  */
 @Composable
 fun AktualModalBottomSheet(
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
   sheetState: SheetState = rememberBottomSheetState(initialValue = Hidden),
+  blurBackground: Boolean = true,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val dialogBlurState = LocalDialogBlurState.current
-  DisposableEffect(Unit) {
-    dialogBlurState.activeDialogCount++
-    onDispose { dialogBlurState.activeDialogCount-- }
+  DisposableEffect(blurBackground) {
+    if (blurBackground) dialogBlurState.activeDialogCount++
+    onDispose { if (blurBackground) dialogBlurState.activeDialogCount-- }
   }
 
   val density = LocalDensity.current

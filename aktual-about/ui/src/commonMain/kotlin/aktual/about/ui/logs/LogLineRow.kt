@@ -2,22 +2,20 @@ package aktual.about.ui.logs
 
 import aktual.core.logging.LogLine
 import aktual.core.ui.AktualTheme.colors
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,6 +25,7 @@ internal fun LogLineRow(
   line: LogLine,
   query: String,
   onTagClick: (String) -> Unit,
+  onTagLongClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) =
   Row(
@@ -43,34 +42,44 @@ internal fun LogLineRow(
 
     LogLetterBadge(priority = line.priority, fontSize = LineFontSize)
 
-    val tag = line.tag
-    val tagColor = colors.pageTextPositive
-    val messageColor = line.priority.messageColor(colors)
     val highlight = colors.pillBackgroundSelected
-    val currentOnTagClick by rememberUpdatedState(onTagClick)
-    val text =
-      remember(line, query, tagColor, messageColor, highlight) {
-        buildAnnotatedString {
-          if (tag != null) {
-            val link = LinkAnnotation.Clickable(tag) { currentOnTagClick(tag) }
-            withLink(link) {
-              withStyle(SpanStyle(color = tagColor)) { appendHighlighted(tag, query, highlight) }
-            }
-            append(' ')
-          }
-          withStyle(SpanStyle(color = messageColor)) {
-            appendHighlighted(line.message, query, highlight)
-          }
+
+    val tag = line.tag
+    if (tag != null) {
+      val isEllipsized = tag.length > MAX_TAG_LENGTH
+      val tagText =
+        remember(tag, query, highlight) {
+          val shown = if (isEllipsized) tag.take(MAX_TAG_LENGTH) + "…" else tag
+          buildAnnotatedString { appendHighlighted(shown, query, highlight) }
         }
+      Text(
+        modifier =
+          Modifier.combinedClickable(
+            onClick = { onTagClick(tag) },
+            onLongClick = { onTagLongClick(tag) }.takeIf { isEllipsized },
+          ),
+        text = tagText,
+        color = colors.pageTextPositive,
+        fontFamily = Monospace,
+        fontSize = LineFontSize,
+        lineHeight = LineHeight,
+      )
+    }
+
+    val message =
+      remember(line.message, query, highlight) {
+        buildAnnotatedString { appendHighlighted(line.message, query, highlight) }
       }
 
-    Text(
-      modifier = Modifier.weight(1f),
-      text = text,
-      fontFamily = Monospace,
-      fontSize = LineFontSize,
-      lineHeight = LineHeight,
-    )
+    SelectionContainer(modifier = Modifier.weight(1f)) {
+      Text(
+        text = message,
+        color = line.priority.messageColor(colors),
+        fontFamily = Monospace,
+        fontSize = LineFontSize,
+        lineHeight = LineHeight,
+      )
+    }
   }
 
 internal fun AnnotatedString.Builder.appendHighlighted(
@@ -96,5 +105,6 @@ internal fun AnnotatedString.Builder.appendHighlighted(
 }
 
 private const val TIME_LENGTH = 8
+private const val MAX_TAG_LENGTH = 15
 private val LineFontSize = 11.5.sp
 private val LineHeight = 16.sp

@@ -67,6 +67,13 @@
   <string name="week_fri">F</string>
   <string name="week_sat">S</string>
   <string name="week_sun">S</string>
+  <string name="week_mon_short">Mon</string>
+  <string name="week_tue_short">Tue</string>
+  <string name="week_wed_short">Wed</string>
+  <string name="week_thu_short">Thu</string>
+  <string name="week_fri_short">Fri</string>
+  <string name="week_sat_short">Sat</string>
+  <string name="week_sun_short">Sun</string>
 
   <string name="week_monday">Monday</string>
   <string name="week_tuesday">Tuesday</string>

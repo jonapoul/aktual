@@ -92,6 +92,9 @@
   <string name="logs_no_matches">No matching lines</string>
   <string name="logs_files">Files</string>
   <string name="logs_levels">Levels</string>
+  <string name="logs_levels_none">None</string>
+  <string name="logs_levels_all">All</string>
+  <string name="logs_levels_summary">Levels: %1$s</string>
   <string name="logs_tags">Tags</string>
   <string name="logs_tags_hint">Click a tag in the table to filter by it</string>
   <string name="logs_tag_remove">Remove %1$s filter</string>
@@ -100,6 +103,9 @@
   <string name="logs_column_tag">Tag</string>
   <string name="logs_column_message">Message</string>
   <string name="logs_copy">Copy</string>
+  <string name="logs_menu">More options</string>
+  <string name="logs_go_to_top">Go to oldest</string>
+  <string name="logs_go_to_bottom">Go to newest</string>
   <string name="logs_select_line">Select a line to see it in full</string>
   <string name="logs_export_title">Export Logs</string>
   <string name="logs_export_include">What to include</string>

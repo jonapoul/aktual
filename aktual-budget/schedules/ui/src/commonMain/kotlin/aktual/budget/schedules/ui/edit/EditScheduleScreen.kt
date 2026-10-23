@@ -45,7 +45,7 @@ import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
-import aktual.core.ui.stringShort
+import aktual.core.ui.stringInitial
 import aktual.core.ui.switch
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.ScrollState
@@ -638,7 +638,7 @@ private fun UpcomingDates(dates: ImmutableList<LocalDate>, modifier: Modifier = 
           horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing),
         ) {
           Text(
-            text = date.dayOfWeek.stringShort(),
+            text = date.dayOfWeek.stringInitial(),
             style = typography.bodyMedium,
             color = colors.pageTextSubdued,
           )
