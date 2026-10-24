@@ -1,10 +1,12 @@
 package aktual.budget.reports.vm.choosetype
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.DbJson
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.DashboardSync
+import aktual.budget.reports.vm.MarkdownReportMeta
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.test.TestCoroutineContexts
@@ -31,6 +33,18 @@ class ChooseReportTypeViewModelTest {
     val widget = dao.observeByPage(PAGE).first().single()
     assertThat(widget.id).isEqualTo(WIDGET)
     assertThat(widget.type).isEqualTo(NetWorth)
+  }
+
+  @Test
+  fun `Markdown reports are created with empty content`() = runChooseTest { viewModel, dao ->
+    viewModel.shouldNavigateEvent.test {
+      viewModel.createReport(Markdown)
+      assertThatNextEmissionIsEqualTo(ChooseReportTypeViewModel.ShouldNavigateEvent(WIDGET))
+    }
+
+    val meta = checkNotNull(dao.meta(WIDGET))
+    assertThat(DbJson.decodeFromJsonElement(MarkdownReportMeta.serializer(), meta))
+      .isEqualTo(MarkdownReportMeta(content = ""))
   }
 
   @Test
