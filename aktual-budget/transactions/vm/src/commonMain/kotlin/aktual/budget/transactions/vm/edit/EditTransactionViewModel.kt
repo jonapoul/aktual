@@ -270,7 +270,7 @@ internal constructor(
   ): EditTransactionState =
     when {
       entities.options.accounts.isEmpty() -> EditTransactionState.Empty.NoAccounts
-      entities.options.categoryGroups.all { group -> group.categories.all { it.isHidden } } ->
+      entities.options.categoryGroups.all { it.categories.isEmpty() } ->
         EditTransactionState.Empty.NoCategories
       form == null -> Loading
       else ->

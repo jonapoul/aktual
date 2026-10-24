@@ -945,6 +945,21 @@ class EditTransactionViewModelTest {
   }
 
   @Test
+  fun `A new transaction can pick a category that's hidden`() = runDatabaseTest { scope ->
+    AccountDao(this).insertAccount(AccountId("a"), "Amex")
+    insertHiddenCategory("d", "Drinks")
+    val viewModel = createViewModel(scope, target = EditTransactionTarget.New())
+
+    viewModel.state.test {
+      assertThat(awaitCreate().options).all {
+        prop(TransactionOptions::hasHiddenCategories).isTrue()
+        prop(TransactionOptions::categoryGroups).isEmpty()
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Rules fill in what a new transaction is missing`() = runDatabaseTest { scope ->
     insertEntities()
     insertCategoryRule(payee = "a", category = "b")
