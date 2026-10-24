@@ -59,7 +59,7 @@ internal fun BudgetMonthCalculator.observeBalances(
     .map { budget -> budget.categories.filter { !it.isIncome }.associate { it.id to it.balance } }
     .distinctUntilChanged()
     .catch { e ->
-      logcat.w(e) { "Failed loading category balances for $month" }
+      logcat.w("BudgetMonthCalculator", e) { "Failed loading category balances for $month" }
       emit(emptyMap())
     }
 }
