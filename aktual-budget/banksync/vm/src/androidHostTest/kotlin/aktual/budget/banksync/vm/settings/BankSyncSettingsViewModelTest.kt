@@ -14,8 +14,11 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.BankSyncDao
+import aktual.budget.db.dao.CategoryDao
+import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.SyncDao
+import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
@@ -23,6 +26,7 @@ import aktual.budget.model.SyncedPrefKey.PerAccount.CustomSyncMappings
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportNotes
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportTransactions
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncUpdateDates
+import aktual.budget.transactions.domain.TransactionWriter
 import aktual.di.BudgetCoroutineScope
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestCoroutineContexts
@@ -263,6 +267,16 @@ class BankSyncSettingsViewModelTest {
           api = api,
           accountDao = AccountDao(database),
           dao = BankSyncDao(database),
+          writer =
+            TransactionWriter(
+              syncController = this,
+              accountDao = AccountDao(database),
+              categoryDao = CategoryDao(database),
+              payeeDao = PayeeDao(database),
+              transactionDao = TransactionDao(database),
+              uuidGenerator = { Uuid.random().toString() },
+              clock = Clock.System,
+            ),
           syncController = this,
           bankSync = FakeBankSyncController(),
           uuidGenerator = { Uuid.random().toString() },

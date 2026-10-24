@@ -10,6 +10,7 @@ import assertk.all
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
@@ -101,6 +102,7 @@ internal class BankAccountLinkerTest {
     api.responses["ACT-1"] = success(balance = 123456)
 
     val created = linker(api).create(SimpleFin, EXTERNAL, offBudget = false)
+    assertThat(syncCalls).hasSize(1)
     val sent = lastSync()
     runBackground()
 
@@ -116,6 +118,8 @@ internal class BankAccountLinkerTest {
     assertThat(payee.value).isEqualTo(string(created.value))
     assertThat(sent.filter { it.row == payee.row && it.column == "name" }.map { it.value })
       .containsExactly(string(""))
+    assertThat(sent.filter { it.dataset == "payee_mapping" }.map { it.row to it.value })
+      .containsExactly(payee.row to string(payee.row))
     assertThat(api.requests.map { it.second.accountId }).containsExactly("ACT-1")
   }
 

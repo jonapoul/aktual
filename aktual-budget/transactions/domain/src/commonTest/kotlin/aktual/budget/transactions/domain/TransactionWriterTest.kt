@@ -8,12 +8,14 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.BankSyncStatus
 import aktual.budget.model.CategoryId
+import aktual.budget.model.LocalChange
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import assertk.all
 import assertk.assertFailure
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.containsOnly
@@ -513,6 +515,66 @@ internal class TransactionWriterTest {
 
     assertThat(payee.category).isEqualTo(CategoryId("income"))
     assertThat(transactionDao.row(id)?.category).isNull()
+  }
+
+  @Test
+  fun `Create an account with its transfer payee and starting balance`() = runWriterTest {
+    insertCategory(STARTING_BALANCES, name = "Starting Balances", isIncome = true)
+
+    val id = writer.write {
+      createAccount("Savings", offBudget = false, balance = Amount(10_000), date = DATE)
+    }
+
+    assertThat(syncCalls).hasSize(1)
+    assertThat(accountDao[id]).isNotNull().all {
+      prop("name") { it.name }.isEqualTo("Savings")
+      prop("offbudget") { it.offbudget }.isEqualTo(false)
+      prop("closed") { it.closed }.isEqualTo(false)
+      prop("sort_order") { it.sort_order }.isEqualTo(16384.0)
+    }
+    val payee = checkNotNull(payeeDao.transferPayee(id))
+    assertThat(payeeDao[payee]?.name).isEqualTo("")
+    val mappings = lastSync().filter { it.dataset == PAYEE_MAPPING }.map { it.row to it.value }
+    assertThat(mappings).contains(payee.value to string(payee.value))
+    val transaction = TransactionId(lastSync().first { it.dataset == TRANSACTIONS }.row)
+    assertThat(transactionDao.row(transaction)).isNotNull().all {
+      prop("acct") { it.acct }.isEqualTo(id)
+      prop("starting_balance_flag") { it.starting_balance_flag }.isEqualTo(true)
+      prop("category") { it.category }.isEqualTo(STARTING_BALANCES)
+      prop("amount") { it.amount }.isEqualTo(Amount(10_000))
+      prop("date") { it.date }.isEqualTo(DATE)
+    }
+  }
+
+  @Test
+  fun `An off-budget account's starting balance gets no category`() = runWriterTest {
+    insertCategory(STARTING_BALANCES, name = "Starting Balances", isIncome = true)
+
+    writer.write {
+      createAccount("House", offBudget = true, balance = Amount(500), date = DATE)
+    }
+
+    val transaction = TransactionId(lastSync().first { it.dataset == TRANSACTIONS }.row)
+    assertThat(transactionDao.row(transaction)?.category).isNull()
+  }
+
+  @Test
+  fun `A zero balance adds no starting balance`() = runWriterTest {
+    writer.write { createAccount("Cash", offBudget = false, balance = Zero, date = DATE) }
+
+    assertThat(lastSync().filter { it.dataset == TRANSACTIONS }).isEmpty()
+  }
+
+  @Test
+  fun `New accounts go after the others on or off budget`() = runWriterTest {
+    insertAccount(ACCOUNT)
+    syncChanges(listOf(LocalChange(ACCOUNTS, ACCOUNT.value, "sort_order", number(20000))))
+
+    val onBudget = writer.write { insertAccount("On", offBudget = false) }
+    val offBudget = writer.write { insertAccount("Off", offBudget = true) }
+
+    assertThat(accountDao[onBudget]?.sort_order).isEqualTo(36384.0)
+    assertThat(accountDao[offBudget]?.sort_order).isEqualTo(16384.0)
   }
 
   @Test

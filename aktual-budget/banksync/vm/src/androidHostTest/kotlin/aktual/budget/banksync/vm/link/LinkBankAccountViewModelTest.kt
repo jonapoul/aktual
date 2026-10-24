@@ -25,13 +25,17 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.BankSyncDao
+import aktual.budget.db.dao.CategoryDao
+import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.SyncDao
+import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
 import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
+import aktual.budget.transactions.domain.TransactionWriter
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
@@ -462,6 +466,16 @@ class LinkBankAccountViewModelTest {
           api = api,
           accountDao = AccountDao(database),
           dao = BankSyncDao(database),
+          writer =
+            TransactionWriter(
+              syncController = this,
+              accountDao = AccountDao(database),
+              categoryDao = CategoryDao(database),
+              payeeDao = PayeeDao(database),
+              transactionDao = TransactionDao(database),
+              uuidGenerator = { Uuid.random().toString() },
+              clock = Clock.System,
+            ),
           syncController = this,
           bankSync = controller,
           uuidGenerator = { Uuid.random().toString() },
