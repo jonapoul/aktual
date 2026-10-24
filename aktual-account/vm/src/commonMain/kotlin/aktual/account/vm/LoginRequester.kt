@@ -64,8 +64,8 @@ class LoginRequester(
 
   private fun FailureReason.toLoginResult(): LoginResult.Failure =
     when (this) {
-      TokenExpired -> LoginResult.TokenExpired
-      InvalidPassword -> LoginResult.InvalidPassword
+      TokenExpired -> TokenExpired
+      InvalidPassword -> InvalidPassword
       else -> LoginResult.OtherFailure(reason)
     }
 

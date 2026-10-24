@@ -4,14 +4,13 @@ import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
-import dev.detekt.api.Config
 import dev.detekt.api.Finding
 import dev.detekt.test.lint
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Test
 
 internal class InjectedRawCoroutineScopeTest {
-  private val rule = InjectedRawCoroutineScope(Config.empty)
+  private val rule = InjectedRawCoroutineScope(empty)
 
   @Test
   fun `reports raw scope in an Inject class`() =

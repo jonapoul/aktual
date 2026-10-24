@@ -118,7 +118,7 @@ private fun PreviewSystemUiSettingsScaffold(
       state =
         SystemUiSettingsState(
           showStatusBar = BooleanPreference(true),
-          appBarEffect = ListPreference(BarEffect.Blur),
+          appBarEffect = ListPreference(Blur),
           hazeDialogs = BooleanPreference(true),
           hazeRadiusDp = HazeRadiusPreference(5f),
           hazeAlpha = HazeAlphaPreference(0.5f),

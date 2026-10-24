@@ -227,7 +227,7 @@ class BudgetWriterImpl(
     category: CategoryId,
   ): UndoToken? {
     val sheet = envelope(month) ?: return null
-    val clamped = maxOf(minOf(amount, sheet.toBudget), Amount.Zero)
+    val clamped = maxOf(minOf(amount, sheet.toBudget), Zero)
     return send(Envelope) { set(month, category, sheet.budgeted(category) + clamped) }
   }
 

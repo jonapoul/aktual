@@ -4,7 +4,6 @@ import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
-import dev.detekt.api.Config
 import dev.detekt.api.Finding
 import dev.detekt.test.junit.KotlinCoreEnvironmentTest
 import dev.detekt.test.utils.KotlinAnalysisApiEngine
@@ -15,7 +14,7 @@ import org.junit.jupiter.api.Test
 
 @KotlinCoreEnvironmentTest
 internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentContainer) {
-  private val rule = InvalidComposeLazyKey(Config.empty)
+  private val rule = InvalidComposeLazyKey(empty)
 
   @Test
   fun `does not report when key returns Int`() =
@@ -26,7 +25,7 @@ internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentConta
         items(list, key = { it.intVal }) {}
       }
     """
-          .trimIndent(),
+          .trimIndent()
       )
       .isEmpty()
 
@@ -39,7 +38,7 @@ internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentConta
         items(list, key = { it.longVal }) {}
       }
     """
-          .trimIndent(),
+          .trimIndent()
       )
       .isEmpty()
 
@@ -52,7 +51,7 @@ internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentConta
         items(list, key = { it.stringVal }) {}
       }
     """
-          .trimIndent(),
+          .trimIndent()
       )
       .isEmpty()
 
@@ -65,7 +64,7 @@ internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentConta
         items(list) {}
       }
     """
-          .trimIndent(),
+          .trimIndent()
       )
       .isEmpty()
 
@@ -78,7 +77,7 @@ internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentConta
         items(list, key = { it.enumVal }) {}
       }
     """
-          .trimIndent(),
+          .trimIndent()
       )
       .isEmpty()
 
@@ -91,7 +90,7 @@ internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentConta
         items(list, key = { it.dataClassVal }) {}
       }
     """
-          .trimIndent(),
+          .trimIndent()
       )
       .hasSize(1)
 
@@ -104,7 +103,7 @@ internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentConta
         items(list, key = { it.valueClassVal }) {}
       }
     """
-          .trimIndent(),
+          .trimIndent()
       )
       .hasSize(1)
 
@@ -117,7 +116,7 @@ internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentConta
         items(list, key = { it.interfaceVal }) {}
       }
     """
-          .trimIndent(),
+          .trimIndent()
       )
       .hasSize(1)
 
@@ -130,7 +129,7 @@ internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentConta
         items(list, key = { it.objectVal }) {}
       }
     """
-          .trimIndent(),
+          .trimIndent()
       )
       .hasSize(1)
 
@@ -143,7 +142,7 @@ internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentConta
         items(list, key = { it }) {}
       }
     """
-          .trimIndent(),
+          .trimIndent()
       )
       .hasSize(1)
 

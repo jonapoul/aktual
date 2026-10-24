@@ -164,8 +164,8 @@ private fun PreviewCurrencySettingsScaffold(
       onBack = {},
       state =
         CurrencySettingsState(
-          currency = ListPreference(Currency.PoundSterling),
-          symbolPosition = ListPreference(CurrencySymbolPosition.BeforeAmount),
+          currency = ListPreference(PoundSterling),
+          symbolPosition = ListPreference(BeforeAmount),
           spaceBetweenAmountAndSymbol = BooleanPreference(true),
         ),
     )

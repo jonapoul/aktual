@@ -23,9 +23,9 @@ class KeypadInputTest {
 
   @Test
   fun `Backspace and Enter`() {
-    assertEquals(KeypadInput.Backspace, keypadInput(Backspace, '\b'))
-    assertEquals(KeypadInput.Done, keypadInput(Enter, '\n'))
-    assertEquals(KeypadInput.Done, keypadInput(NumPadEnter, '\n'))
+    assertEquals(Backspace, keypadInput(Backspace, '\b'))
+    assertEquals(Done, keypadInput(Enter, '\n'))
+    assertEquals(Done, keypadInput(NumPadEnter, '\n'))
   }
 
   @Test

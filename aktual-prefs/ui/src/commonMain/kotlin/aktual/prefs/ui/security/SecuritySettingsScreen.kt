@@ -88,12 +88,12 @@ private class SecuritySettingsProvider :
   ColoredParameterProvider<SecuritySettingsState>(
     SecuritySettingsState(
       appLockEnabled = BooleanPreference(true),
-      appLockTimeout = ListPreference(AppLockTimeout.Minutes1),
+      appLockTimeout = ListPreference(Minutes1),
       isScreenLockAvailable = true,
     ),
     SecuritySettingsState(
       appLockEnabled = BooleanPreference(false, enabled = false),
-      appLockTimeout = ListPreference(AppLockTimeout.Immediately, enabled = false),
+      appLockTimeout = ListPreference(Immediately, enabled = false),
       isScreenLockAvailable = false,
     ),
   )
