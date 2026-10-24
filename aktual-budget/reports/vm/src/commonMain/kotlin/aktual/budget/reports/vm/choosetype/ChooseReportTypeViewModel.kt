@@ -76,7 +76,7 @@ internal constructor(
     }
   }
 
-  @Suppress("ElseCaseInsteadOfExhaustiveWhen")
+  @Suppress("ElseCaseInsteadOfExhaustiveWhen", "UseIfInsteadOfWhen")
   private fun buildEmptyMetadata(type: WidgetType): JsonObject =
     when (type) {
       // Upstream requires content on markdown widgets
