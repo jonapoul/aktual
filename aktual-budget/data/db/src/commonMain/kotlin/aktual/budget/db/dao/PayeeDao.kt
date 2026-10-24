@@ -11,6 +11,7 @@ import aktual.budget.model.PayeeId
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import dev.zacsweers.metro.Inject
+import kotlinx.datetime.LocalDate
 
 @Inject
 class PayeeDao(database: BudgetDatabase) {
@@ -54,6 +55,11 @@ class PayeeDao(database: BudgetDatabase) {
 
   suspend fun getAllWithTransfer(): List<GetAllWithTransfer> = queries.withResult {
     getAllWithTransfer().awaitAsList()
+  }
+
+  // As upstream's getCommonPayees, the IDs of the payees used most since this date, most used first
+  suspend fun common(since: LocalDate, limit: Long): List<PayeeId> = queries.withResult {
+    getCommon(since, limit).awaitAsList().map { it.id }
   }
 
   // The account this payee transfers to, null if it's an ordinary payee

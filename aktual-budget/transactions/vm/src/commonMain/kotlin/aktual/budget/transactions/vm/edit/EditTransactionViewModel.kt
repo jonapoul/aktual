@@ -462,38 +462,8 @@ internal constructor(
     )
   }
 
-  private suspend fun loadEntities(): EditorEntities {
-    val allPayees = payeeDao.getAllWithTransfer()
-    val transferAccounts =
-      allPayees.mapNotNull { row -> row.transfer_acct?.let { row.id to it } }.toMap()
-    val payees = allPayees.mapNotNull { row -> row.name?.let { EntityOption(row.id, it) } }
-    val groups = categoryDao.getAllGrouped().toCategoryGroups()
-    val accounts = accountDao.getAllWithStatus()
-    val closed = accounts.filter { it.closed == true }.map { it.id }.toSet()
-    return EditorEntities(
-      options =
-        TransactionOptions(
-          payees = payees.filter { it.id !in transferAccounts }.toImmutableList(),
-          // As upstream, there's no starting a transfer to a closed account
-          transfers =
-            payees
-              .filter { transferAccounts[it.id]?.let { id -> id !in closed } == true }
-              .toImmutableList(),
-          categoryGroups = groups.toImmutableList(),
-          hasHiddenCategories = groups.any { group -> group.categories.any { it.isHidden } },
-          accounts =
-            accounts
-              .filter { it.closed != true }
-              .mapNotNull { row -> row.name?.let { EntityOption(row.id, it) } }
-              .toImmutableList(),
-        ),
-      payeeNames = payees.associate { it.id to it.name },
-      categoryNames = groups.flatMap { it.categories }.associate { it.id to it.name },
-      accountNames = accounts.mapNotNull { row -> row.name?.let { row.id to it } }.toMap(),
-      offBudget = accounts.filter { it.offbudget == true }.map { it.id }.toSet(),
-      transferAccounts = transferAccounts,
-    )
-  }
+  private suspend fun loadEntities() =
+    loadEditorEntities(payeeDao, categoryDao, accountDao, calendar.today())
 
   // A saved transaction only uses the rules' payees, to add one by name, so it's viewed and
   // edited without them if they fail to load

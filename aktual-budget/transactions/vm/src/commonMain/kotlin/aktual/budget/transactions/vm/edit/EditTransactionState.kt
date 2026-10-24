@@ -113,11 +113,14 @@ fun ImmutableList<CategoryGroupOptions>.matching(
 // What the editor's pickers offer
 @Immutable
 data class TransactionOptions(
+  // Without the suggested ones
   val payees: ImmutableList<EntityOption<PayeeId>>,
   // The payees that transfer to another account, named after it
   val transfers: ImmutableList<EntityOption<PayeeId>>,
   val categoryGroups: ImmutableList<CategoryGroupOptions>,
   val accounts: ImmutableList<EntityOption<AccountId>>,
+  // The favourite payees then the most used ones, shown before the rest
+  val suggestedPayees: ImmutableList<EntityOption<PayeeId>> = persistentListOf(),
   // What the notes can be tagged with, without the hidden ones
   val tags: ImmutableList<TagLabel> = persistentListOf(),
   // Hidden categories are only in categoryGroups while they're shown, as the budget's
