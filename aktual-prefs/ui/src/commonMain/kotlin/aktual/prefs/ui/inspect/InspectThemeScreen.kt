@@ -127,7 +127,7 @@ fun InspectThemeScreen(
         DismissSortSheet -> showSortSheet = false
         is SetSorting -> viewModel.setSorting(action.sorting)
         ShowDuplicateDialog -> dialog = Duplicate
-        ShowDeleteDialog -> dialog = InspectDialog.Delete
+        ShowDeleteDialog -> dialog = Delete
         is EditProperty -> dialog = InspectDialog.Edit(action.property)
         DismissDialog -> dialog = null
         is ConfirmDuplicate -> viewModel.duplicate(action.name)
@@ -235,14 +235,14 @@ private fun InspectDialogs(
         onDismiss = onDismiss,
       )
 
-    InspectDialog.Delete ->
+    Delete ->
       DeleteThemeDialog(
         themeName = state.displayName,
         onConfirm = { confirm(ConfirmDelete) },
         onDismiss = onDismiss,
       )
 
-    is InspectDialog.Edit ->
+    is Edit ->
       EditPropertyDialog(
         property = dialog.property,
         onConfirm = { confirm(SetColor(dialog.property.name, it)) },

@@ -4,7 +4,6 @@ import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
-import dev.detekt.api.Config
 import dev.detekt.api.Finding
 import dev.detekt.test.junit.KotlinCoreEnvironmentTest
 import dev.detekt.test.utils.KotlinAnalysisApiEngine
@@ -15,7 +14,7 @@ import org.junit.jupiter.api.Test
 
 @KotlinCoreEnvironmentTest
 internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentContainer) {
-  private val rule = InvalidComposeLazyKey(Config.empty)
+  private val rule = InvalidComposeLazyKey(empty)
 
   @Test
   fun `does not report when key returns Int`() =

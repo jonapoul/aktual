@@ -10,7 +10,6 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.occurrences
 import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -377,11 +376,11 @@ private class FilterCondition(private val condition: CompiledCondition) {
   private fun RecurConfig.searchEnd(): LocalDate {
     val periods = RECUR_SEARCH_PERIODS * (interval ?: 1).coerceAtLeast(1)
     return when (frequency) {
-      Daily -> start.plus(periods, DateTimeUnit.DAY)
-      Weekly -> start.plus(periods, DateTimeUnit.WEEK)
-      Monthly -> start.plus(periods, DateTimeUnit.MONTH)
+      Daily -> start.plus(periods, DAY)
+      Weekly -> start.plus(periods, WEEK)
+      Monthly -> start.plus(periods, MONTH)
       Yearly,
-      Unknown -> start.plus(periods, DateTimeUnit.YEAR)
+      Unknown -> start.plus(periods, YEAR)
     }
   }
 

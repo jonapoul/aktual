@@ -262,7 +262,7 @@ private class LoginScaffoldProvider :
     LoginScaffoldParams(
       password = Dummy,
       isLoading = true,
-      loginFailure = LoginResult.InvalidPassword,
+      loginFailure = InvalidPassword,
     ),
     LoginScaffoldParams(loginMethods = ALL_METHODS, selectedLoginMethod = LoginMethod.Password),
     LoginScaffoldParams(

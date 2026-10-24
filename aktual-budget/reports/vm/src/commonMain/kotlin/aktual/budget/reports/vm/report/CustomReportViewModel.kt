@@ -46,7 +46,7 @@ import logcat.logcat
 @OptIn(ExperimentalCoroutinesApi::class)
 class CustomReportViewModel
 internal constructor(
-  @Assisted private val id: WidgetId,
+  @Assisted id: WidgetId,
   dashboardDao: DashboardDao,
   decoder: DashboardItemDecoder,
   customReports: CustomReportsDao,

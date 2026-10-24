@@ -85,8 +85,7 @@ class TransactionRuleChangesTest {
           TransactionField.Cleared,
         ),
       )
-    assertThat(TransactionField.entries.filter(filled::isEmpty))
-      .isEqualTo(listOf(TransactionField.Notes))
+    assertThat(TransactionField.entries.filter(filled::isEmpty)).isEqualTo(listOf(Notes))
   }
 
   private companion object {

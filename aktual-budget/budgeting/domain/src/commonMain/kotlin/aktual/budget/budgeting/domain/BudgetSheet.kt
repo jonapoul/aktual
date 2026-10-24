@@ -120,7 +120,7 @@ private fun BudgetData.envelopeMonth(
     val spent = spent[key] ?: Zero
     val carried =
       previousById[category.id]?.let {
-        if (it.carryover) it.balance else maxOf(it.balance, Amount.Zero)
+        if (it.carryover) it.balance else maxOf(it.balance, Zero)
       }
     category.toMonth(
       budgeted = budgeted,
@@ -142,7 +142,7 @@ private fun BudgetData.envelopeMonth(
       .mapNotNull { previousById[it.id] }
       .filter { !it.carryover }
       .toList()
-      .sumOf { minOf(it.balance, Amount.Zero) }
+      .sumOf { minOf(it.balance, Zero) }
   val budgeted = expenses.sumOf { it.budgeted }
 
   // Holding an income category for next month buffers what it received, unless an amount was set

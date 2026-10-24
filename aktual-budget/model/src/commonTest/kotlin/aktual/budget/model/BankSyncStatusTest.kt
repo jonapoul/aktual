@@ -12,15 +12,15 @@ class BankSyncStatusTest {
   fun `Encode and decode`(
     status: BankSyncStatus =
       burstValues(
-        BankSyncStatus.Ok,
-        BankSyncStatus.Pending,
-        BankSyncStatus.SyncRequested,
-        BankSyncStatus.Failed,
-        BankSyncStatus.ReauthRequired,
-        BankSyncStatus.AttentionRequired,
-        BankSyncStatus.RateLimitExceeded,
-        BankSyncStatus.TimedOut,
-        BankSyncStatus.AccountMissing,
+        Ok,
+        Pending,
+        SyncRequested,
+        Failed,
+        ReauthRequired,
+        AttentionRequired,
+        RateLimitExceeded,
+        TimedOut,
+        AccountMissing,
         BankSyncStatus.Other("something-else"),
       ),
   ) {

@@ -26,7 +26,6 @@ import dev.zacsweers.metro.Inject
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.time.Clock
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
@@ -279,8 +278,8 @@ class BankSyncImporter(
       dao.fuzzyCandidates(
         account = options.account,
         amount = transaction.amount.toLong(),
-        from = date.minus(FUZZY_DAYS, DateTimeUnit.DAY),
-        to = date.plus(FUZZY_DAYS, DateTimeUnit.DAY),
+        from = date.minus(FUZZY_DAYS, DAY),
+        to = date.plus(FUZZY_DAYS, DAY),
         // Both having different imported_ids means they're different transactions
         onlyWithoutImportedId = options.strictIdChecking && !importedId.isNullOrEmpty(),
       )

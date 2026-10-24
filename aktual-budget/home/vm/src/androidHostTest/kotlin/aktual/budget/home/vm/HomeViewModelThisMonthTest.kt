@@ -75,7 +75,7 @@ class HomeViewModelThisMonthTest {
             incomeBudgeted = Amount(280_000L),
           )
         var state = awaitThisMonth()
-        while (state !is ThisMonthCardState.Tracking) state = awaitThisMonth()
+        while (state !is Tracking) state = awaitThisMonth()
         assertThat(state).isEqualTo(expected)
         assertThat(state.remaining).isEqualTo(Amount(-5_000L))
         cancelAndIgnoreRemainingEvents()

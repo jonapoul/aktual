@@ -12,11 +12,11 @@ class AccountSyncSourceTest {
   fun `Encode and decode`(
     source: AccountSyncSource =
       burstValues(
-        AccountSyncSource.SimpleFin,
-        AccountSyncSource.GoCardless,
-        AccountSyncSource.PluggyAi,
-        AccountSyncSource.Akahu,
-        AccountSyncSource.EnableBanking,
+        SimpleFin,
+        GoCardless,
+        PluggyAi,
+        Akahu,
+        EnableBanking,
         AccountSyncSource.Other("something-else"),
       ),
   ) {
