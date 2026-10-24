@@ -13,6 +13,7 @@ import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.DeletedAccountNavigator
 import aktual.core.nav.EditTransactionNavigator
 import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.ui.AktualAlertDialog
@@ -64,6 +65,7 @@ import kotlinx.coroutines.flow.Flow
 fun TransactionsScreen(
   back: BackNavigator,
   toSettings: TransactionSettingsNavigator,
+  accountDeleted: DeletedAccountNavigator,
   openTransaction: EditTransactionNavigator,
   spec: TransactionsSpec,
   isRoot: Boolean = false,
@@ -91,7 +93,7 @@ fun TransactionsScreen(
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        AccountDeleted -> snackbars.show(message = deleted).also { back() }
+        AccountDeleted -> snackbars.show(message = deleted).also { accountDeleted() }
         AccountDeletedBankLoginKept -> showLoginKept = true
         DeleteAccountFailed -> snackbars.show(message = deleteFailed)
       }
@@ -133,7 +135,7 @@ fun TransactionsScreen(
     BankLoginKeptDialog(
       onDismiss = {
         showLoginKept = false
-        back()
+        accountDeleted()
       },
     )
   }
