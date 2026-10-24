@@ -341,6 +341,7 @@ private fun CategorySheet(
                 category.name
               },
             isSelected = category.id == selected,
+            labelColor = if (category.isHidden) colors.pageTextSubdued else Unspecified,
             trailingContent = category.balance?.let { balance -> { CategoryBalance(balance) } },
             onClick = {
               onSelect(category.id)

@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -128,11 +129,12 @@ fun BottomSheetListItem(
   enabled: Boolean = true,
   leadingContent: (@Composable () -> Unit)? = null,
   trailingContent: (@Composable () -> Unit)? = null,
+  labelColor: Color = Unspecified,
 ) {
   ListItem(
     modifier = modifier.clickable(enabled, onClick = onClick),
     leadingContent = leadingContent,
-    headlineContent = { Text(text = label) },
+    headlineContent = { Text(text = label, color = labelColor) },
     trailingContent =
       if (isSelected || trailingContent != null) {
         {
