@@ -223,6 +223,7 @@ internal constructor(
       newPayees = mutableNewPayees.value.map { (id, name) -> NewPayeeSnapshot(id, name) },
       emptied = emptied,
       hasConflicts = mutableHasConflicts.value,
+      hasUncommittedAmount = hasUncommittedAmount,
     )
 
   private fun buildState(
@@ -399,6 +400,7 @@ internal constructor(
     mutableDraft.update { snapshot.draft?.toDraft() }
     mutableNewPayees.update { snapshot.newPayees.associate { payee -> payee.id to payee.name } }
     mutableHasConflicts.update { snapshot.hasConflicts }
+    hasUncommittedAmount = snapshot.hasUncommittedAmount
   }
 
   private suspend fun follow(target: EditTransactionTarget.Existing) {

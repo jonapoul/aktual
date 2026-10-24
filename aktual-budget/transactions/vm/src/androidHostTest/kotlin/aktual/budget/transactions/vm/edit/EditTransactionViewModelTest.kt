@@ -1310,6 +1310,34 @@ class EditTransactionViewModelTest {
   }
 
   @Test
+  fun `An amount typed before the process died still runs the rules`() = runDatabaseTest { scope ->
+    insertEntities()
+    val savedState = SavedStateHandle()
+    val first =
+      createViewModel(scope, target = EditTransactionTarget.New(), savedState = savedState)
+    first.state.test {
+      awaitCreate()
+      first.setPayee(PayeeId("a"))
+      awaitCreate()
+      first.setAmount(Amount(-5.0))
+      awaitCreate()
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    insertCategoryRule(payee = "a", category = "b")
+    val saved = savedState.savedStateProvider().saveState().read { getSavedState("draft") }
+    val restored = SavedStateHandle(mapOf("draft" to saved))
+    val second = createViewModel(scope, target = EditTransactionTarget.New(), savedState = restored)
+
+    second.state.test {
+      assertThat(awaitCreate().draft.category).isNull()
+      second.commitAmount()
+      assertThat(awaitCreate().draft.category).isEqualTo(CategoryId("b"))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `A saved state that can't be read is ignored`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")

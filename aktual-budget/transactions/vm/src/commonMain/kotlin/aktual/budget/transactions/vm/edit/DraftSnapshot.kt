@@ -28,6 +28,8 @@ internal data class EditorSnapshot(
   val newPayees: List<NewPayeeSnapshot> = emptyList(),
   val emptied: Set<TransactionField> = emptySet(),
   val hasConflicts: Boolean = false,
+  // An amount typed that rules haven't run on yet
+  val hasUncommittedAmount: Boolean = false,
 )
 
 @Serializable internal data class NewPayeeSnapshot(val id: PayeeId, val name: String)
