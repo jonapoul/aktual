@@ -3,6 +3,7 @@ package aktual.budget.reports.vm
 import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.db.CashFlowByMonth
 import aktual.budget.db.CustomReportAmounts
+import aktual.budget.db.CustomReportTransactions
 import aktual.budget.db.ForecastPostedScheduleTransactions
 import aktual.budget.db.ForecastSchedules
 import aktual.budget.db.ForecastTrackingBudgetTotals
@@ -93,9 +94,9 @@ internal class ChartDataLoader(
       is MonteCarloReportMeta -> monteCarlo(meta)
       is NetWorthReportMeta -> netWorth(meta)
       is SankeyReportMeta -> sankey(meta)
+      is SummaryReportMeta -> summary(meta)
       is CalendarReportMeta,
-      is SpendingReportMeta,
-      is SummaryReportMeta -> unsupported(meta, ReportType)
+      is SpendingReportMeta -> unsupported(meta, ReportType)
       is UnsupportedReportMeta ->
         unsupported(meta, if (meta.type == Unknown) ReportType else InvalidMeta)
     }
@@ -385,6 +386,53 @@ internal class ChartDataLoader(
       }
     }
   }
+
+  // packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts
+  // summarySpreadsheet()
+  fun summary(meta: SummaryReportMeta): Flow<ChartData> {
+    val content = parseSummaryContent(meta.content)
+    val filter = TransactionFilter.compile(meta.conditions.orEmpty(), meta.conditionsOp ?: And)
+    return dao
+      .observeTransactionDateBounds()
+      .flatMapLatest { bounds ->
+        val today = calendar.today()
+        val range =
+          resolveTimeRange(
+            timeFrame = meta.timeFrame,
+            default = null,
+            today = today,
+            latestTransaction = bounds.latest,
+          )
+        val params = SummaryParams(meta.name.orEmpty(), range.start, range.endInclusive, content)
+        val start = range.start.firstDay
+        val end = range.endInclusive.lastDay
+        val amounts = customReports.observeTransactions(start, end, divisor = 1L)
+        val divisorAmounts =
+          if (content.chartType == Percentage) {
+            val divisorFilter =
+              TransactionFilter.compile(content.divisorConditions.orEmpty(), content.divisorOp)
+            val allTime = content.divisorAllTimeDateRange == true
+            customReports
+              .observeTransactions(
+                start = if (allTime) ALL_TIME_START else start,
+                end = if (allTime) ALL_TIME_END else end,
+                divisor = 1L,
+              )
+              .map { rows -> rows.amountsMatching(divisorFilter) }
+          } else {
+            flowOf(emptyList())
+          }
+        combine(amounts, divisorAmounts) { rows, divisor ->
+          calculateSummary(params, rows.amountsMatching(filter), divisor)
+        }
+      }
+      .flowOn(contexts.default)
+  }
+
+  private fun List<CustomReportTransactions>.amountsMatching(filter: TransactionFilter) = filter {
+    filter.matches(it.toFilterRow())
+  }
+    .map { it.amount }
 
   // packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts
   // createSpreadsheet()
