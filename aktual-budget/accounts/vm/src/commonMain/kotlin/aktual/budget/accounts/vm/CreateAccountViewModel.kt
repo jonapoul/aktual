@@ -17,11 +17,12 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -46,13 +47,9 @@ class CreateAccountViewModel(
   private val mutableIsSaving = MutableStateFlow(false)
   private val mutableSaveError = MutableStateFlow<String?>(null)
 
-  private val mutableEvents =
-    MutableSharedFlow<CreateAccountEvent>(
-      replay = 0,
-      extraBufferCapacity = 1,
-      onBufferOverflow = DROP_OLDEST,
-    )
-  val events: SharedFlow<CreateAccountEvent> = mutableEvents.asSharedFlow()
+  // Buffered, so the event waits for the screen if it's stopped when the account is created
+  private val eventChannel = Channel<CreateAccountEvent>(BUFFERED)
+  val events: Flow<CreateAccountEvent> = eventChannel.receiveAsFlow()
 
   val state: StateFlow<CreateAccountState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -120,13 +117,13 @@ class CreateAccountViewModel(
     viewModelScope.launch {
       try {
         val id = writer.write { createAccount(name, offBudget, amount, calendar.today()) }
-        mutableEvents.tryEmit(CreateAccountEvent.Created(id))
+        // Stays saving, so it can't be created twice before the screen closes
+        eventChannel.send(CreateAccountEvent.Created(id))
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {
         logcat.e(e) { "Failed creating account $name" }
         mutableSaveError.update { e.requireMessage() }
-      } finally {
         mutableIsSaving.update { false }
       }
     }

@@ -23,12 +23,14 @@ import assertk.all
 import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.containsExactly
+import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import kotlin.test.AfterTest
 import kotlin.time.Clock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
@@ -114,6 +116,24 @@ class CreateAccountViewModelTest {
     }
     assertThat(sync.changes.values(TRANSACTIONS, "amount"))
       .containsExactly(MessageValue.Number(-12050))
+  }
+
+  @Test
+  fun `Created waits for the screen, and creating again does nothing`() = runDatabaseTest { scope ->
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync)
+    viewModel.setName("Savings")
+
+    viewModel.create()
+    scope.advanceUntilIdle()
+    viewModel.create()
+    scope.advanceUntilIdle()
+
+    viewModel.events.test {
+      assertThatNextEmissionIsEqualTo(CreateAccountEvent.Created(AccountId("id-1")))
+      expectNoEvents()
+    }
+    assertThat(sync.changes.values(ACCOUNTS, "name")).hasSize(1)
   }
 
   @Test
