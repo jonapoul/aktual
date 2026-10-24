@@ -1,0 +1,13 @@
+<resources>
+  <string name="accounts_create_title">Create account</string>
+  <string name="accounts_create_name">Name</string>
+  <string name="accounts_create_name_placeholder">e.g. Bank, Savings, Credit Card, Cash</string>
+  <string name="accounts_create_name_duplicate">Name %1$s already exists.</string>
+  <string name="accounts_create_off_budget">Off budget</string>
+  <string name="accounts_create_off_budget_hint">Off-budget accounts (like investments, loans, or your house) are tracked but not part of your spending budget. This cannot be changed later.</string>
+  <string name="accounts_create_balance">Starting balance</string>
+  <string name="accounts_create_balance_invalid">Balance must be a number</string>
+  <string name="accounts_create_submit">Create</string>
+  <string name="accounts_create_failure_title">Couldn't create account</string>
+  <string name="accounts_create_failure_dismiss">OK</string>
+</resources>

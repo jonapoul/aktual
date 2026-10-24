@@ -172,6 +172,8 @@ include(
   ":aktual-app:ui-app",
   ":aktual-app:ui-budget",
   ":aktual-budget",
+  ":aktual-budget:accounts:ui",
+  ":aktual-budget:accounts:vm",
   ":aktual-budget:banksync:domain",
   ":aktual-budget:banksync:ui",
   ":aktual-budget:banksync:vm",
