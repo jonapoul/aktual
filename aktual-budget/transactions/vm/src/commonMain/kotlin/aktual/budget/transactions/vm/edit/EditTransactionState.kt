@@ -2,6 +2,7 @@ package aktual.budget.transactions.vm.edit
 
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
+import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
@@ -92,6 +93,7 @@ data class CategoryGroupOptions(
   val name: String?,
   val categories: ImmutableList<CategoryOption>,
   val isHidden: Boolean = false,
+  val id: CategoryGroupId? = null,
 )
 
 // What the category picker lists for a search: the categories whose name has it, under their

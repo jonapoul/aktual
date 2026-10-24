@@ -34,6 +34,7 @@ internal fun List<GetAllGrouped>.toCategoryGroups(): List<CategoryGroupOptions> 
           }
           .toImmutableList(),
       isHidden = groupHidden,
+      id = rows.first().groupId,
     )
   }
 

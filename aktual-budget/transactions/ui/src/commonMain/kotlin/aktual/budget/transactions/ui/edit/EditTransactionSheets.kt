@@ -258,9 +258,9 @@ private fun PayeeSheet(
   }
 
 @Composable
-private fun GroupHeader(name: String) =
+private fun GroupHeader(name: String, modifier: Modifier = Modifier) =
   Text(
-    modifier = Modifier.fillMaxWidth().padding(GroupHeaderPadding),
+    modifier = modifier.fillMaxWidth().padding(GroupHeaderPadding),
     text = name,
     fontSize = GroupHeaderSize,
     fontWeight = SemiBold,
@@ -337,8 +337,9 @@ private fun CategorySheet(
     val listState = rememberLazyListState()
     LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
       if (name.isEmpty()) {
-        item {
+        item(key = NONE_KEY) {
           BottomSheetListItem(
+            modifier = Modifier.animateItem(),
             label = Strings.transactionNone,
             isSelected = selected == null,
             onClick = {
@@ -352,11 +353,17 @@ private fun CategorySheet(
       matches.fastForEach { group ->
         val groupName = group.name
         if (groupName != null) {
-          item { GroupHeader(if (group.isHidden) hiddenName(groupName) else groupName) }
+          item(key = group.id.toString()) {
+            GroupHeader(
+              name = if (group.isHidden) hiddenName(groupName) else groupName,
+              modifier = Modifier.animateItem(),
+            )
+          }
         }
 
         items(group.categories, key = { it.id.toString() }) { category ->
           BottomSheetListItem(
+            modifier = Modifier.animateItem(),
             // A hidden group already says so
             label =
               if (category.isHidden && !group.isHidden) {
@@ -439,3 +446,4 @@ private val GroupHeaderPadding =
 private val GroupHeaderSize = 13.sp
 private val BalanceSize = 14.sp
 private val SearchPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+private const val NONE_KEY = "none"
