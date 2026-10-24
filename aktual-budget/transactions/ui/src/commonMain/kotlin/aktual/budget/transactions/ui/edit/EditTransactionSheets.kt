@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -81,6 +82,7 @@ internal fun EditTransactionSheet(
       PayeeSheet(
         selected = draft.payee,
         options = form.options.payees,
+        suggested = form.options.suggestedPayees,
         transfers = form.options.transfers,
         onDismiss = onDismiss,
         onSelect = { onAction(SetPayee(it)) },
@@ -136,6 +138,7 @@ private fun PartSheet(
       PayeeSheet(
         selected = part.payee,
         options = form.options.payees,
+        suggested = form.options.suggestedPayees,
         transfers = form.options.transfers,
         onDismiss = onDismiss,
         onSelect = { onAction(SetPartPayee(part.id, it)) },
@@ -167,11 +170,13 @@ private fun PartSheet(
   }
 
 // As upstream's payee picker: "None" is only offered when there's a payee to remove, typing a
-// name that no payee has offers to create it, and the accounts to transfer to come last
+// name that no payee has offers to create it, the suggested payees come first and the accounts to
+// transfer to come last
 @Composable
 private fun PayeeSheet(
   selected: PayeeId?,
   options: ImmutableList<EntityOption<PayeeId>>,
+  suggested: ImmutableList<EntityOption<PayeeId>>,
   transfers: ImmutableList<EntityOption<PayeeId>>,
   onDismiss: () -> Unit,
   onSelect: (PayeeId?) -> Unit,
@@ -187,6 +192,10 @@ private fun PayeeSheet(
       remember(options, name) {
         options.filter { it.name.contains(name, ignoreCase = true) }.toImmutableList()
       }
+    val suggestedMatches =
+      remember(suggested, name) {
+        suggested.filter { it.name.contains(name, ignoreCase = true) }.toImmutableList()
+      }
     val transferMatches =
       remember(transfers, name) {
         transfers.filter { it.name.contains(name, ignoreCase = true) }.toImmutableList()
@@ -194,6 +203,7 @@ private fun PayeeSheet(
     val isNew =
       name.isNotEmpty() &&
         matches.none { it.name.equals(name, ignoreCase = true) } &&
+        suggestedMatches.none { it.name.equals(name, ignoreCase = true) } &&
         transferMatches.none { it.name.equals(name, ignoreCase = true) }
 
     AktualTextField(
@@ -234,32 +244,40 @@ private fun PayeeSheet(
         }
       }
 
-      items(matches, key = { it.id.toString() }) { payee ->
-        BottomSheetListItem(
-          label = payee.name,
-          isSelected = payee.id == selected,
-          onClick = {
-            onSelect(payee.id)
-            onDismiss()
-          },
-        )
+      // The rest only need a header to tell them from the suggestions
+      if (suggestedMatches.isNotEmpty()) {
+        item { GroupHeader(Strings.transactionPayeeSuggested) }
+        payeeItems(suggestedMatches, selected, onSelect, onDismiss)
+        if (matches.isNotEmpty()) {
+          item { GroupHeader(Strings.transactionPayeeAll) }
+        }
       }
+
+      payeeItems(matches, selected, onSelect, onDismiss)
 
       if (transferMatches.isNotEmpty()) {
         item { GroupHeader(Strings.transactionsTransfer) }
       }
 
-      items(transferMatches, key = { it.id.toString() }) { payee ->
-        BottomSheetListItem(
-          label = payee.name,
-          isSelected = payee.id == selected,
-          onClick = {
-            onSelect(payee.id)
-            onDismiss()
-          },
-        )
-      }
+      payeeItems(transferMatches, selected, onSelect, onDismiss)
     }
+  }
+
+private fun LazyListScope.payeeItems(
+  payees: ImmutableList<EntityOption<PayeeId>>,
+  selected: PayeeId?,
+  onSelect: (PayeeId?) -> Unit,
+  onDismiss: () -> Unit,
+) =
+  items(payees, key = { it.id.toString() }) { payee ->
+    BottomSheetListItem(
+      label = payee.name,
+      isSelected = payee.id == selected,
+      onClick = {
+        onSelect(payee.id)
+        onDismiss()
+      },
+    )
   }
 
 @Composable

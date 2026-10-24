@@ -115,6 +115,8 @@
   <string name="transaction_category_show_hidden">Show hidden categories</string>
   <string name="transaction_category_hide_hidden">Hide hidden categories</string>
   <string name="transaction_payee_create">Create payee “%1$s”</string>
+  <string name="transaction_payee_suggested">Suggested payees</string>
+  <string name="transaction_payee_all">Payees</string>
   <string name="transaction_notes_add_tag">Add tag</string>
   <string name="transaction_notes_create_tag">Create tag</string>
 </resources>

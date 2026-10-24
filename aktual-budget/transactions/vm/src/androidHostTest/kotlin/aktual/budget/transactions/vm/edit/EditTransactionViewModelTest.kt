@@ -20,6 +20,7 @@ import aktual.budget.db.dao.RulesDao
 import aktual.budget.db.dao.SyncDao
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
+import aktual.budget.db.withoutResult
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
@@ -238,6 +239,36 @@ class EditTransactionViewModelTest {
       cancelAndIgnoreRemainingEvents()
     }
   }
+
+  @Test
+  fun `The favourite then most used payees are suggested before the rest`() =
+    runDatabaseTest { scope ->
+      insertEntities()
+      with(PayeeDao(this)) {
+        insertPayee(PayeeId("d"), "Dunelm")
+        insertPayee(PayeeId("e"), "Esso")
+      }
+      payeesQueries.withoutResult {
+        insert(PayeeId("d"), "Dunelm", null, false, null, favorite = true, learn_categories = null)
+      }
+      with(TransactionDao(this)) {
+        insertTransaction("t", account = "a", category = "a", payee = "c", date = TODAY)
+        insertTransaction("t2", account = "a", category = "a", payee = "c", date = TODAY)
+        insertTransaction("t3", account = "a", category = "a", payee = "b", date = TODAY)
+        insertTransaction("t4", account = "a", category = "a", payee = "a", date = DATE_1)
+      }
+      val viewModel = createViewModel(scope, id = "t")
+
+      viewModel.state.test {
+        assertThat(awaitEdit().options).all {
+          prop(TransactionOptions::suggestedPayees)
+            .extracting { it.name }
+            .containsExactly("Dunelm", "B&Q", "Co-op")
+          prop(TransactionOptions::payees).extracting { it.name }.containsExactly("Argos", "Esso")
+        }
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
 
   @Test
   fun `Edits change the draft until they're reverted`() = runDatabaseTest { scope ->

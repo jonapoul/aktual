@@ -29,7 +29,18 @@ getAllActive: SELECT id, name FROM v_payees WHERE tombstone = 0 ORDER BY name;
 
 -- With the account each transfer payee stands in for
 getAllWithTransfer:
-SELECT id, name, transfer_acct FROM v_payees WHERE tombstone = 0 ORDER BY name;
+SELECT id, name, transfer_acct, favorite FROM v_payees WHERE tombstone = 0 ORDER BY name;
+
+-- db/index.ts getCommonPayees(): the payees used most since a date. Upstream's transfer payees
+-- have no name of their own, so they're never among them
+getCommon:
+SELECT p.id, p.name
+  FROM payees p
+  INNER JOIN v_transactions_internal_alive t ON t.payee = p.id
+  WHERE LENGTH(p.name) > 0 AND p.tombstone = 0 AND p.transfer_acct IS NULL AND t.date > :since
+  GROUP BY p.id
+  ORDER BY COUNT(*) DESC, p.name COLLATE NOCASE
+  LIMIT :limit;
 
 -- transactions/transfer.ts getTransferredAccount(), with the payee resolved through payee_mapping
 -- as the transaction views do
