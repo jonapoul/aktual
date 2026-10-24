@@ -166,9 +166,8 @@ private fun EditTransactionViewModel.onSplitAction(action: SplitAction) =
 private fun editTransactionViewModel(target: EditTransactionTarget) =
   assistedMetroViewModel<EditTransactionViewModel, EditTransactionViewModel.Factory>(
     key = target.toString(),
-  ) { extras ->
-    create(target, extras.createSavedStateHandle())
-  }
+    createViewModel = { extras -> create(target, extras.createSavedStateHandle()) },
+  )
 
 @Composable
 private fun EditTransactionScaffold(
