@@ -20,9 +20,12 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.ListBottomSheet
+import aktual.core.ui.NormalIconButton
 import aktual.core.ui.formattedText
 import aktual.core.ui.scrollbar
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,6 +45,7 @@ import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -302,13 +306,33 @@ private fun CategorySheet(
     val groups = options.categoryGroups
     val matches = remember(groups, name) { groups.matching(name) }
 
-    AktualTextField(
+    Row(
       modifier = Modifier.fillMaxWidth().padding(SearchPadding),
-      state = query,
-      placeholderText = Strings.transactionCategorySearch,
-      singleLine = true,
-      clearable = true,
-    )
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      verticalAlignment = CenterVertically,
+    ) {
+      AktualTextField(
+        modifier = Modifier.weight(1f),
+        state = query,
+        placeholderText = Strings.transactionCategorySearch,
+        singleLine = true,
+        clearable = true,
+      )
+
+      if (options.hasHiddenCategories) {
+        val showHidden = options.showHiddenCategories
+        NormalIconButton(
+          imageVector = if (showHidden) MaterialIcons.VisibilityOff else MaterialIcons.Visibility,
+          contentDescription =
+            if (showHidden) {
+              Strings.transactionCategoryHideHidden
+            } else {
+              Strings.transactionCategoryShowHidden
+            },
+          onClick = onToggleHiding,
+        )
+      }
+    }
 
     val listState = rememberLazyListState()
     LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
@@ -347,27 +371,6 @@ private fun CategorySheet(
               onSelect(category.id)
               onDismiss()
             },
-          )
-        }
-      }
-
-      if (options.hasHiddenCategories) {
-        item {
-          val showHidden = options.showHiddenCategories
-          BottomSheetListItem(
-            label =
-              if (showHidden) {
-                Strings.transactionCategoryHideHidden
-              } else {
-                Strings.transactionCategoryShowHidden
-              },
-            isSelected = false,
-            leadingContent = {
-              BottomSheetIcon(
-                if (showHidden) MaterialIcons.VisibilityOff else MaterialIcons.Visibility,
-              )
-            },
-            onClick = onToggleHiding,
           )
         }
       }
