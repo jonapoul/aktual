@@ -503,7 +503,7 @@ private fun ShowAs(
   modifier: Modifier = Modifier,
 ) =
   Row(modifier = modifier.wrapContentSize(), verticalAlignment = CenterVertically) {
-    Text(text = Strings.reportsSummaryShowAs)
+    Text(text = Strings.reportsSummaryShowAs, color = colors.pageText)
 
     HorizontalSpacer(5.dp)
 
@@ -536,11 +536,16 @@ private fun SumColumn(range: DateRange) =
     modifier = Modifier.wrapContentSize(),
     horizontalAlignment = CenterHorizontally,
   ) {
-    range.start?.let { Text(text = string(it)) }
+    range.start?.let { Text(text = string(it), color = colors.pageTextSubdued) }
 
-    Icon(modifier = Modifier.size(50.dp), imageVector = AktualIcons.Sum, contentDescription = null)
+    Icon(
+      modifier = Modifier.size(50.dp),
+      imageVector = AktualIcons.Sum,
+      contentDescription = null,
+      tint = colors.pageText,
+    )
 
-    range.end?.let { Text(text = string(it)) }
+    range.end?.let { Text(text = string(it), color = colors.pageTextSubdued) }
   }
 
 @Composable
@@ -559,7 +564,11 @@ private fun DivisorCheckbox(
 
     HorizontalSpacer(4.dp)
 
-    Text(modifier = Modifier.weight(1f), text = Strings.reportsSummaryAllTimeDivisor)
+    Text(
+      modifier = Modifier.weight(1f),
+      text = Strings.reportsSummaryAllTimeDivisor,
+      color = colors.pageText,
+    )
   }
 }
 
@@ -570,6 +579,7 @@ private fun FilterDisplay() =
       modifier = Modifier.size(50.dp),
       imageVector = AktualIcons.OpenBracket,
       contentDescription = null,
+      tint = colors.pageText,
     )
 
     // TODO handle filtering here https://github.com/jonapoul/aktual/issues/361
@@ -579,12 +589,18 @@ private fun FilterDisplay() =
       modifier = Modifier.size(50.dp),
       imageVector = AktualIcons.CloseBracket,
       contentDescription = null,
+      tint = colors.pageText,
     )
   }
 
 @Composable
 private fun Equals(modifier: Modifier = Modifier) =
-  Icon(modifier = modifier.size(50.dp), imageVector = AktualIcons.Equals, contentDescription = null)
+  Icon(
+    modifier = modifier.size(50.dp),
+    imageVector = AktualIcons.Equals,
+    contentDescription = null,
+    tint = colors.pageText,
+  )
 
 // E.g. "Jan 24"
 @Composable
