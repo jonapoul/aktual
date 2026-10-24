@@ -1,6 +1,7 @@
 plugins {
   id("aktual.module.viewmodel")
   id("aktual.convention.db-test")
+  alias(libs.plugins.kotlin.serialization)
 }
 
 buildConfig {
@@ -21,6 +22,7 @@ kotlin {
     api(libs.compose.uiGraphics)
     api(libs.kotlinx.datetime)
     api(project(":aktual-budget:banksync:domain"))
+    api(project(":aktual-budget:budgeting:domain"))
     api(project(":aktual-budget:tags:domain"))
     api(project(":aktual-prefs"))
   }

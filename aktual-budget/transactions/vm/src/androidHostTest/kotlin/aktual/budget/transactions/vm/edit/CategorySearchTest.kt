@@ -56,7 +56,7 @@ class CategorySearchTest {
     fun group(name: String?, vararg categories: String) =
       CategoryGroupOptions(
         name = name,
-        categories = categories.map { EntityOption(CategoryId(it), it) }.toImmutableList(),
+        categories = categories.map { CategoryOption(CategoryId(it), it) }.toImmutableList(),
       )
   }
 }

@@ -2,6 +2,7 @@ package aktual.budget.transactions.vm.edit
 
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
+import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
@@ -76,11 +77,23 @@ data class TransactionDetails(
 
 @Immutable data class EntityOption<T : Any>(val id: T, val name: String)
 
+@Immutable
+data class CategoryOption(
+  val id: CategoryId,
+  val name: String,
+  // Whether it, or its group, is hidden
+  val isHidden: Boolean = false,
+  // What's left in it in the transaction's month. As upstream, income categories have none
+  val balance: Amount? = null,
+)
+
 // A null name holds the categories that have no group
 @Immutable
 data class CategoryGroupOptions(
   val name: String?,
-  val categories: ImmutableList<EntityOption<CategoryId>>,
+  val categories: ImmutableList<CategoryOption>,
+  val isHidden: Boolean = false,
+  val id: CategoryGroupId? = null,
 )
 
 // What the category picker lists for a search: the categories whose name has it, under their
@@ -107,6 +120,10 @@ data class TransactionOptions(
   val accounts: ImmutableList<EntityOption<AccountId>>,
   // What the notes can be tagged with, without the hidden ones
   val tags: ImmutableList<TagLabel> = persistentListOf(),
+  // Hidden categories are only in categoryGroups while they're shown, as the budget's
+  // budget.showHiddenCategories has it
+  val hasHiddenCategories: Boolean = false,
+  val showHiddenCategories: Boolean = false,
 )
 
 @Immutable

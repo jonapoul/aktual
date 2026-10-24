@@ -49,12 +49,13 @@ getAllActive: SELECT id, name FROM categories WHERE tombstone = 0 AND hidden = 0
 
 getAllNames: SELECT id, name FROM categories WHERE tombstone = 0;
 
--- Visible categories under their groups, in the order upstream's category picker lists them
-getAllActiveGrouped:
-SELECT c.id, c.name, g.id AS groupId, g.name AS groupName
+-- Categories under their groups, hidden ones included, in the order upstream's category picker
+-- lists them
+getAllGrouped:
+SELECT c.id, c.name, c.hidden, g.id AS groupId, g.name AS groupName, g.hidden AS groupHidden
   FROM categories c
   LEFT JOIN category_groups g ON g.id = c.cat_group
-  WHERE c.tombstone = 0 AND c.hidden = 0 AND IFNULL(g.tombstone, 0) = 0 AND IFNULL(g.hidden, 0) = 0
+  WHERE c.tombstone = 0 AND IFNULL(g.tombstone, 0) = 0
   ORDER BY g.is_income, g.sort_order, g.id, c.sort_order, c.id;
 
 isIncome: SELECT is_income FROM categories WHERE id = ?;

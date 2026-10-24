@@ -1,16 +1,20 @@
 package aktual.budget.transactions.vm.edit
 
 import aktual.budget.BudgetSyncController
+import aktual.budget.budgeting.domain.BudgetMonthCalculatorImpl
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.Categories
 import aktual.budget.db.Rules
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.BudgetDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.db.dao.DatabaseTables.TAGS
 import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.RuleContextDao
 import aktual.budget.db.dao.RulesDao
 import aktual.budget.db.dao.SyncDao
@@ -21,6 +25,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
+import aktual.budget.model.DbMetadata.Companion.BudgetShowHiddenCategories
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
@@ -35,6 +40,7 @@ import aktual.budget.tags.domain.TagCreator
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.domain.LastTransaction
 import aktual.budget.transactions.domain.SplitPart
+import aktual.budget.transactions.domain.TransactionDraft
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.domain.TransactionLoader
 import aktual.budget.transactions.domain.TransactionWriter
@@ -48,11 +54,15 @@ import aktual.budget.transactions.vm.insertCategory
 import aktual.budget.transactions.vm.insertPayee
 import aktual.budget.transactions.vm.insertTransaction
 import aktual.budget.transactions.vm.transaction
+import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.inMemoryDriverFactory
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
+import androidx.lifecycle.SavedStateHandle
+import androidx.savedstate.read
+import androidx.savedstate.serialization.encodeToSavedState
 import app.cash.turbine.Event
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -935,6 +945,21 @@ class EditTransactionViewModelTest {
   }
 
   @Test
+  fun `A new transaction can pick a category that's hidden`() = runDatabaseTest { scope ->
+    AccountDao(this).insertAccount(AccountId("a"), "Amex")
+    insertHiddenCategory("d", "Drinks")
+    val viewModel = createViewModel(scope, target = EditTransactionTarget.New())
+
+    viewModel.state.test {
+      assertThat(awaitCreate().options).all {
+        prop(TransactionOptions::hasHiddenCategories).isTrue()
+        prop(TransactionOptions::categoryGroups).isEmpty()
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Rules fill in what a new transaction is missing`() = runDatabaseTest { scope ->
     insertEntities()
     insertCategoryRule(payee = "a", category = "b")
@@ -1173,6 +1198,200 @@ class EditTransactionViewModelTest {
     }
   }
 
+  @Test
+  fun `Hidden categories are only offered while they're shown`() = runDatabaseTest { scope ->
+    insertEntities()
+    insertHiddenCategory("d", "Drinks")
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val prefs = TestBudgetLocalPreferences()
+    val viewModel = createViewModel(scope, id = "t", prefs = prefs)
+
+    viewModel.state.test {
+      assertThat(awaitEdit().options).all {
+        prop(TransactionOptions::hasHiddenCategories).isTrue()
+        prop(TransactionOptions::showHiddenCategories).isFalse()
+        prop(TransactionOptions::categoryGroups)
+          .extracting { group -> group.categories.map { it.name } }
+          .containsExactly(listOf("Additional", "Building", "Car"))
+      }
+
+      viewModel.toggleHiddenCategories()
+
+      var form = awaitEdit()
+      while (!form.options.showHiddenCategories) form = awaitEdit()
+      assertThat(form.options.categoryGroups)
+        .extracting { group -> group.categories.map { it.name to it.isHidden } }
+        .containsExactly(
+          listOf("Additional" to false, "Building" to false, "Car" to false, "Drinks" to true),
+        )
+      cancelAndIgnoreRemainingEvents()
+    }
+    assertThat(prefs.value[BudgetShowHiddenCategories]).isEqualTo(true)
+  }
+
+  @Test
+  fun `Categories show their balance in the transaction's month while they're picked`() = runTest {
+    val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
+    driver.use {
+      val database = buildDatabase(driver)
+      BUDGET.forEach { sql -> driver.execute(identifier = null, sql = sql, parameters = 0).await() }
+      AccountDao(database).insertAccount(AccountId("a"), "Amex")
+      PayeeDao(database).insertPayee(PayeeId("a"), "Argos")
+      TransactionDao(database)
+        .insertTransaction("t", account = "a", category = "food", payee = "a", amount = -40.0)
+      val viewModel = database.createViewModel(this, id = "t")
+
+      viewModel.state.test {
+        val closed = awaitEdit()
+        assertThat(closed.options.categoryGroups.flatMap { it.categories }.map { it.balance })
+          .each { it.isNull() }
+        testScheduler.advanceUntilIdle()
+        expectNoEvents()
+
+        viewModel.setPickingCategory(true)
+
+        // Income categories have no balance
+        assertThat(awaitBalances { it != Zero })
+          .containsExactly("Food" to Amount(10.0), "Rent" to Amount.Zero, "Salary" to null)
+
+        // Before the transaction and its budget
+        viewModel.setDate(LocalDate(2025, 5, 31))
+
+        assertThat(awaitBalances { it == Zero })
+          .containsExactly("Food" to Amount.Zero, "Rent" to Amount.Zero, "Salary" to null)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+  }
+
+  @Test
+  fun `An edit outlives the process`() = runDatabaseTest { scope ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val savedState = SavedStateHandle()
+    val first = createViewModel(scope, id = "t", savedState = savedState)
+    first.state.test {
+      awaitEdit()
+      // The rules, which add a payee by name, load alongside
+      scope.advanceUntilIdle()
+      first.setNotes("Lunch")
+      first.createPayee("Tesco")
+      awaitEdit()
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    val restored = savedState.afterProcessDeath()
+    val second = createViewModel(scope, id = "t", savedState = restored)
+
+    second.state.test {
+      assertThat(awaitEdit()).all {
+        prop(TransactionForm::draft).isEqualTo(SAVED.copy(notes = "Lunch", payee = PayeeId("uuid")))
+        prop(TransactionForm::payeeName).isEqualTo("Tesco")
+        prop(TransactionForm::hasChanges).isTrue()
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `A new transaction outlives the process`() = runDatabaseTest { scope ->
+    insertEntities()
+    val draft = NEW.copy(account = AccountId("b"), amount = Amount(-5.0))
+    val snapshot =
+      EditorSnapshot(
+        draft = TransactionDraft(draft).toSnapshot(),
+        base = TransactionDraft(NEW).toSnapshot(),
+      )
+    val savedState = SavedStateHandle(mapOf("draft" to encodeToSavedState(snapshot)))
+    val viewModel =
+      createViewModel(scope, target = EditTransactionTarget.New(), savedState = savedState)
+
+    viewModel.state.test {
+      assertThat(awaitCreate()).all {
+        prop(TransactionForm::draft).isEqualTo(draft)
+        prop(TransactionForm::hasChanges).isTrue()
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `An amount typed before the process died still runs the rules`() = runDatabaseTest { scope ->
+    insertEntities()
+    val savedState = SavedStateHandle()
+    val first =
+      createViewModel(scope, target = EditTransactionTarget.New(), savedState = savedState)
+    first.state.test {
+      awaitCreate()
+      first.setPayee(PayeeId("a"))
+      awaitCreate()
+      first.setAmount(Amount(-5.0))
+      awaitCreate()
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    insertCategoryRule(payee = "a", category = "b")
+    val restored = savedState.afterProcessDeath()
+    val second = createViewModel(scope, target = EditTransactionTarget.New(), savedState = restored)
+
+    second.state.test {
+      assertThat(awaitCreate().draft.category).isNull()
+      second.commitAmount()
+      assertThat(awaitCreate().draft.category).isEqualTo(CategoryId("b"))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `A saved state that can't be read is ignored`() = runDatabaseTest { scope ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val savedState = SavedStateHandle(mapOf("draft" to encodeToSavedState(listOf("junk"))))
+    val viewModel = createViewModel(scope, id = "t", savedState = savedState)
+
+    viewModel.state.test {
+      assertThat(awaitEdit()).all {
+        prop(TransactionForm::draft).isEqualTo(SAVED)
+        prop(TransactionForm::hasChanges).isFalse()
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  // As the saved state's restored after the process is killed. savedStateProvider() is restricted
+  // to androidx.lifecycle, but there's no public way to save a handle on its own
+  @Suppress("RestrictedApi")
+  private fun SavedStateHandle.afterProcessDeath(): SavedStateHandle {
+    val saved = savedStateProvider().saveState().read { getSavedState("draft") }
+    return SavedStateHandle(mapOf("draft" to saved))
+  }
+
+  private suspend fun ReceiveTurbine<EditTransactionState>.awaitBalances(
+    until: (Amount) -> Boolean,
+  ): List<Pair<String, Amount?>> {
+    while (true) {
+      val categories = awaitEdit().options.categoryGroups.flatMap { it.categories }
+      val first = categories.firstOrNull()?.balance
+      if (first != null && until(first)) return categories.map { it.name to it.balance }
+    }
+  }
+
+  private suspend fun BudgetDatabase.insertHiddenCategory(id: String, name: String) =
+    categoriesQueries.insert(
+      Categories(
+        id = CategoryId(id),
+        name = name,
+        is_income = false,
+        cat_group = null,
+        sort_order = null,
+        tombstone = false,
+        hidden = true,
+        goal_def = null,
+        template_settings = null,
+        cleanup_def = null,
+      ),
+    )
+
   private suspend fun ReceiveTurbine<EditTransactionState>.awaitEdit(): TransactionForm {
     var mode = awaitLoaded().mode
     while (mode !is Edit) mode = awaitLoaded().mode
@@ -1251,8 +1470,11 @@ class EditTransactionViewModelTest {
     target: EditTransactionTarget = EditTransactionTarget.Existing(TransactionId(id)),
     lastTransaction: LastTransaction = LastTransaction(),
     savedUuid: String = "uuid",
+    savedState: SavedStateHandle = SavedStateHandle(),
+    prefs: TestBudgetLocalPreferences = TestBudgetLocalPreferences(),
   ): EditTransactionViewModel {
     Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
+    val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val tags = tagsDao(scope)
     val accountDao = AccountDao(this)
     val categoryDao = CategoryDao(this)
@@ -1261,6 +1483,7 @@ class EditTransactionViewModelTest {
     var nextPart = 1
     return EditTransactionViewModel(
       target = target,
+      savedState = savedState,
       loader = TransactionLoader(transactionDao),
       writer =
         TransactionWriter(
@@ -1285,6 +1508,14 @@ class EditTransactionViewModelTest {
       categoryDao = categoryDao,
       uuidGenerator = { "part-${nextPart++}" },
       tagCreator = TagCreator(tagsDao = tags, uuidGenerator = { "tag" }, syncController = sync),
+      localPreferences = prefs,
+      budgetCalculator =
+        BudgetMonthCalculatorImpl(
+          budgetDao = BudgetDao(this, contexts),
+          preferencesDao = PreferencesDao(this, contexts),
+          calendar = TestCalendar(TODAY),
+          contexts = contexts,
+        ),
       tagsDao = tags,
     )
   }
@@ -1325,6 +1556,16 @@ class EditTransactionViewModelTest {
       )
 
     val TODAY = LocalDate(2026, 10, 11)
+
+    // Food has 50.00 budgeted in June 2025
+    @Suppress("MaxLineLength")
+    val BUDGET =
+      listOf(
+        "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('usual', 'Usual', 0, 1), ('income', 'Income', 1, 2)",
+        "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('food', 'Food', 0, 'usual', 1), ('rent', 'Rent', 0, 'usual', 2), ('salary', 'Salary', 1, 'income', 1)",
+        "INSERT INTO category_mapping(id, transferId) VALUES ('food', 'food'), ('rent', 'rent'), ('salary', 'salary')",
+        "INSERT INTO zero_budgets(id, month, category, amount) VALUES ('202506-food', 202506, 'food', 5000)",
+      )
 
     // What insertTransaction() gives a row on DATE_1
     val SORT_ORDER = DATE_1.toEpochDays().days.inWholeMilliseconds
