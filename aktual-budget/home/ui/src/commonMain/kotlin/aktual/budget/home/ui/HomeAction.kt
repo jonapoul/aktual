@@ -13,6 +13,8 @@ internal sealed interface HomeAction
 
 internal data object OpenBankSync : HomeAction
 
+internal data object AddAccount : HomeAction
+
 @JvmInline internal value class OpenBankSyncSettings(val id: AccountId) : HomeAction
 
 @JvmInline internal value class LinkBankAccount(val id: AccountId) : HomeAction

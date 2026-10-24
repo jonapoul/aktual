@@ -10,6 +10,7 @@ import aktual.budget.navrail.vm.DrawerAccount
 import aktual.budget.navrail.vm.DrawerAccountSection
 import aktual.budget.navrail.vm.DrawerAccounts
 import aktual.budget.navrail.vm.DrawerHeaderState
+import aktual.core.icons.material.Add
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.ExpandMore
 import aktual.core.icons.material.Info
@@ -115,6 +116,7 @@ internal fun ColumnScope.BudgetSidebarContent(
   transactionsRoot: BudgetNavKey?,
   onSelectTab: (BudgetTab) -> Unit,
   onOpenTransactions: (BudgetNavKey.Transactions) -> Unit,
+  onAddAccount: () -> Unit,
   onRename: () -> Unit,
   onSetPrivacyMode: (Boolean) -> Unit,
   onAction: BudgetNavActionHandler,
@@ -159,6 +161,8 @@ internal fun ColumnScope.BudgetSidebarContent(
         onOpenTransactions = onOpenTransactions,
       )
     }
+
+    DrawerItem(icon = MaterialIcons.Add, label = Strings.accountsAddTitle, onClick = onAddAccount)
   }
 
   HorizontalDivider(
@@ -534,6 +538,7 @@ private fun PreviewBudgetDrawerSheet(@PreviewParameter(ColoredParameters::class)
         transactionsRoot = AccountTransactionsNavRoute(AccountId("Joint Account")),
         onSelectTab = {},
         onOpenTransactions = {},
+        onAddAccount = {},
         onRename = {},
         onSetPrivacyMode = {},
         onAction = {},
