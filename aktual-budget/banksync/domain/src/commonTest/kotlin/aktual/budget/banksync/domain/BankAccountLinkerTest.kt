@@ -10,6 +10,7 @@ import assertk.all
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
@@ -101,7 +102,8 @@ internal class BankAccountLinkerTest {
     api.responses["ACT-1"] = success(balance = 123456)
 
     val created = linker(api).create(SimpleFin, EXTERNAL, offBudget = false)
-    val sent = messages()
+    assertThat(syncCalls).hasSize(1)
+    val sent = lastSync()
     runBackground()
 
     assertThat(account(created)).all {

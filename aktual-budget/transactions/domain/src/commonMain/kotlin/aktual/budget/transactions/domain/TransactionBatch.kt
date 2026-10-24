@@ -276,6 +276,11 @@ internal constructor(
     return id
   }
 
+  // Changes built elsewhere, like a bank link, to go out with the rest of the batch
+  fun add(changes: Collection<LocalChange>) {
+    this.changes += changes
+  }
+
   /** db.update('accounts', ...) with any of the bank sync fields. */
   fun updateAccount(update: AccountUpdate) {
     val columns =

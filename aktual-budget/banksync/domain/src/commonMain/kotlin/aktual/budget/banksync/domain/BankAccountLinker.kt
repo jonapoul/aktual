@@ -58,11 +58,11 @@ class BankAccountLinker(
     offBudget: Boolean,
   ): AccountId {
     val account = writer.write {
-      insertAccount(external.name, offBudget).also { insertPayee(name = "", transferAccount = it) }
+      val id = insertAccount(external.name, offBudget)
+      insertPayee(name = "", transferAccount = id)
+      add(buildList { addLink(id, source, external) })
+      id
     }
-    val changes = mutableListOf<LocalChange>()
-    changes.addLink(account, source, external)
-    syncController.syncChanges(changes)
     scope.launch { bankSync.sync(setOf(account)) }
     return account
   }
