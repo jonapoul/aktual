@@ -456,7 +456,7 @@ internal constructor(
     val transferAccounts =
       allPayees.mapNotNull { row -> row.transfer_acct?.let { row.id to it } }.toMap()
     val payees = allPayees.mapNotNull { row -> row.name?.let { EntityOption(row.id, it) } }
-    val groups = categoryDao.getAllActiveGrouped().toCategoryGroups()
+    val groups = categoryDao.getAllGrouped().toCategoryGroups()
     val accounts = accountDao.getAllWithStatus()
     val closed = accounts.filter { it.closed == true }.map { it.id }.toSet()
     return EditorEntities(

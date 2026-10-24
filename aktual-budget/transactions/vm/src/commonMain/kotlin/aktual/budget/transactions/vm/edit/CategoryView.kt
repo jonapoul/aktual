@@ -1,7 +1,7 @@
 package aktual.budget.transactions.vm.edit
 
 import aktual.budget.budgeting.domain.BudgetMonthCalculator
-import aktual.budget.db.GetAllActiveGrouped
+import aktual.budget.db.GetAllGrouped
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import kotlinx.collections.immutable.toImmutableList
@@ -17,7 +17,7 @@ import logcat.logcat
 internal data class CategoryView(val showHidden: Boolean, val balances: Map<CategoryId, Amount>)
 
 // Every category under its group, hidden ones included
-internal fun List<GetAllActiveGrouped>.toCategoryGroups(): List<CategoryGroupOptions> = groupBy {
+internal fun List<GetAllGrouped>.toCategoryGroups(): List<CategoryGroupOptions> = groupBy {
   it.groupId
 }
   .values
