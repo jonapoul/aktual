@@ -1,6 +1,7 @@
 package aktual.budget.home.ui
 
 import aktual.budget.accounts.ui.AddAccountSheet
+import aktual.budget.accounts.ui.addAccountLauncher
 import aktual.budget.home.vm.AccountsCardState
 import aktual.budget.home.vm.AttentionCardState
 import aktual.budget.home.vm.HomeCardType
@@ -91,6 +92,8 @@ internal fun HomeScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   var showAddAccount by rememberSaveable { mutableStateOf(false) }
+  val addAccount =
+    addAccountLauncher(showSheet = { showAddAccount = true }, createLocal = { createAccount() })
 
   HomeScaffold(
     state = state,
@@ -98,7 +101,7 @@ internal fun HomeScreen(
       when (action) {
         is OpenAccount -> transactions(action.id)
         OpenBankSync -> bankSync()
-        AddAccount -> showAddAccount = true
+        AddAccount -> addAccount()
         is OpenBankSyncSettings -> bankSyncSettings(action.id)
         is LinkBankAccount -> linkBankAccount(action.id)
         ReviewUncategorised -> transactions.uncategorised()

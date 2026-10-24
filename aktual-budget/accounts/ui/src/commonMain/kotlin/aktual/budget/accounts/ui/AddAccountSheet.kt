@@ -21,7 +21,6 @@ import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.heading
@@ -32,25 +31,18 @@ import androidx.compose.ui.unit.dp
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 /**
- * Chooses between a local account and bank sync, as upstream's CreateAccountModal. Without a server
- * there's no bank sync, so this goes straight to [onCreateLocal] instead.
+ * Adds an account from [showSheet], where a local account or bank sync can be chosen as upstream's
+ * CreateAccountModal. Without a server there's no bank sync, so it goes straight to [createLocal].
  */
 @Composable
-fun AddAccountSheet(
-  onCreateLocal: () -> Unit,
-  onBankSync: () -> Unit,
-  onDismiss: () -> Unit,
+fun addAccountLauncher(
+  showSheet: () -> Unit,
+  createLocal: () -> Unit,
   viewModel: AddAccountViewModel = metroViewModel(),
-) {
-  if (!viewModel.canBankSync) {
-    // Dismissing takes this out of composition, so it only runs once
-    SideEffect {
-      onDismiss()
-      onCreateLocal()
-    }
-    return
-  }
+): () -> Unit = { if (viewModel.canBankSync) showSheet() else createLocal() }
 
+@Composable
+fun AddAccountSheet(onCreateLocal: () -> Unit, onBankSync: () -> Unit, onDismiss: () -> Unit) {
   AktualModalBottomSheet(onDismissRequest = onDismiss) {
     AddAccountSheetContent(
       onCreateLocal = {
