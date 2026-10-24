@@ -1272,9 +1272,7 @@ class EditTransactionViewModelTest {
       cancelAndIgnoreRemainingEvents()
     }
 
-    // As the saved state's restored after the process is killed
-    val saved = savedState.savedStateProvider().saveState().read { getSavedState("draft") }
-    val restored = SavedStateHandle(mapOf("draft" to saved))
+    val restored = savedState.afterProcessDeath()
     val second = createViewModel(scope, id = "t", savedState = restored)
 
     second.state.test {
@@ -1325,8 +1323,7 @@ class EditTransactionViewModelTest {
     }
 
     insertCategoryRule(payee = "a", category = "b")
-    val saved = savedState.savedStateProvider().saveState().read { getSavedState("draft") }
-    val restored = SavedStateHandle(mapOf("draft" to saved))
+    val restored = savedState.afterProcessDeath()
     val second = createViewModel(scope, target = EditTransactionTarget.New(), savedState = restored)
 
     second.state.test {
@@ -1351,6 +1348,14 @@ class EditTransactionViewModelTest {
       }
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  // As the saved state's restored after the process is killed. savedStateProvider() is restricted
+  // to androidx.lifecycle, but there's no public way to save a handle on its own
+  @Suppress("RestrictedApi")
+  private fun SavedStateHandle.afterProcessDeath(): SavedStateHandle {
+    val saved = savedStateProvider().saveState().read { getSavedState("draft") }
+    return SavedStateHandle(mapOf("draft" to saved))
   }
 
   private suspend fun ReceiveTurbine<EditTransactionState>.awaitBalances(
