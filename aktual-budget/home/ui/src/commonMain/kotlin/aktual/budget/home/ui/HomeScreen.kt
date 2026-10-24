@@ -1,5 +1,8 @@
 package aktual.budget.home.ui
 
+import aktual.budget.accounts.ui.AddAccountSheet
+import aktual.budget.accounts.ui.addAccount
+import aktual.budget.accounts.vm.AddAccountViewModel
 import aktual.budget.home.vm.AccountsCardState
 import aktual.budget.home.vm.AttentionCardState
 import aktual.budget.home.vm.HomeCardType
@@ -13,6 +16,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.nav.BankSyncNavigator
 import aktual.core.nav.BankSyncSettingsNavigator
+import aktual.core.nav.CreateAccountNavigator
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.nav.ListSchedulesNavigator
@@ -79,20 +83,30 @@ internal fun HomeScreen(
   transactions: TransactionsNavigator,
   bankSync: BankSyncNavigator,
   bankSyncSettings: BankSyncSettingsNavigator,
+  createAccount: CreateAccountNavigator,
   linkBankAccount: LinkBankAccountNavigator,
   schedules: ListSchedulesNavigator,
   editSchedule: EditScheduleNavigator,
   report: ReportNavigator,
   modifier: Modifier = Modifier,
   viewModel: HomeViewModel = metroViewModel(),
+  addAccountViewModel: AddAccountViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  var showAddAccount by rememberSaveable { mutableStateOf(false) }
+
   HomeScaffold(
     state = state,
     onAction = { action ->
       when (action) {
         is OpenAccount -> transactions(action.id)
         OpenBankSync -> bankSync()
+        AddAccount ->
+          addAccount(
+            canBankSync = addAccountViewModel.canBankSync,
+            showSheet = { showAddAccount = true },
+            createLocal = { createAccount() },
+          )
         is OpenBankSyncSettings -> bankSyncSettings(action.id)
         is LinkBankAccount -> linkBankAccount(action.id)
         ReviewUncategorised -> transactions.uncategorised()
@@ -109,6 +123,14 @@ internal fun HomeScreen(
     },
     modifier = modifier,
   )
+
+  if (showAddAccount) {
+    AddAccountSheet(
+      onCreateLocal = { createAccount() },
+      onBankSync = { bankSync() },
+      onDismiss = { showAddAccount = false },
+    )
+  }
 }
 
 // Measured against the screen's own width rather than the window's, since the nav rail takes some

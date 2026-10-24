@@ -1,5 +1,7 @@
 package aktual.budget.navrail.ui
 
+import aktual.budget.accounts.ui.AddAccountSheet
+import aktual.budget.accounts.ui.addAccount
 import aktual.budget.navrail.vm.BudgetNavRailViewModel
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
@@ -26,6 +28,7 @@ import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.BudgetNavRoute
 import aktual.core.nav.BudgetTab
+import aktual.core.nav.CreateAccountNavRoute
 import aktual.core.nav.HomeNavRoute
 import aktual.core.nav.ListRulesNavRoute
 import aktual.core.nav.ListSchedulesNavRoute
@@ -131,7 +134,7 @@ internal fun BudgetNavRail(
   val transactionsStack = tabStacks.getValue(Transactions)
 
   var selectedTab by rememberSaveable(stateSaver = TabSaver) { mutableStateOf(BudgetTab.Home) }
-  var showRenameDialog by rememberSaveable { mutableStateOf(false) }
+  var dialog by rememberSaveable { mutableStateOf<NavRailDialog?>(null) }
 
   val activeStack = remember(tabStacks, selectedTab) { tabStacks.getValue(selectedTab) }
 
@@ -150,6 +153,8 @@ internal fun BudgetNavRail(
     selectedTab = Transactions
   }
 
+  val createAccount = { onOpenTransactions(CreateAccountNavRoute) }
+
   val sidebar: @Composable ColumnScope.(close: () -> Unit) -> Unit = { close ->
     BudgetSidebarContent(
       headerState = headerState,
@@ -164,9 +169,13 @@ internal fun BudgetNavRail(
         close()
         onOpenTransactions(route)
       },
+      onAddAccount = {
+        close()
+        addAccount(!headerState.isDemo, { dialog = AddAccount }, createAccount)
+      },
       onRename = {
         close()
-        showRenameDialog = true
+        dialog = Rename
       },
       // Stays open, so the balances can be seen changing
       onSetPrivacyMode = viewModel::setPrivacyMode,
@@ -208,28 +217,66 @@ internal fun BudgetNavRail(
       activeStack = activeStack,
       selectedTab = selectedTab,
       onSelectTab = onSelectTab,
-      onRename = { showRenameDialog = true },
+      onRename = { dialog = Rename },
       onSetPrivacyMode = viewModel::setPrivacyMode,
       onAction = onAction,
       modifier = modifier,
     )
   }
 
-  if (showRenameDialog) {
+  BudgetNavRailDialogs(
+    budgetName = headerState.budgetName,
+    dialog = dialog,
+    hasUnpostedSchedules = hasUnpostedSchedules,
+    onRename = viewModel::rename,
+    onDismiss = { dialog = null },
+    onCreateAccount = createAccount,
+    onBankSync = { onSelectTab(BankSync) },
+    onPostSchedules = viewModel::postUnpostedSchedules,
+    onDismissSchedules = viewModel::dismissUnpostedSchedules,
+  )
+}
+
+private enum class NavRailDialog {
+  Rename,
+  AddAccount,
+}
+
+@Composable
+private fun BudgetNavRailDialogs(
+  budgetName: String?,
+  dialog: NavRailDialog?,
+  hasUnpostedSchedules: Boolean,
+  onRename: (String) -> Unit,
+  onDismiss: () -> Unit,
+  onCreateAccount: () -> Unit,
+  onBankSync: () -> Unit,
+  onPostSchedules: () -> Unit,
+  onDismissSchedules: () -> Unit,
+) {
+  if (dialog == Rename) {
     RenameBudgetDialog(
-      currentName = headerState.budgetName.orEmpty(),
+      currentName = budgetName.orEmpty(),
       onConfirm = { name ->
-        showRenameDialog = false
-        viewModel.rename(name)
+        onDismiss()
+        onRename(name)
       },
-      onDismiss = { showRenameDialog = false },
+      onDismiss = onDismiss,
+    )
+  }
+
+  if (dialog == AddAccount) {
+    AddAccountSheet(
+      onCreateLocal = onCreateAccount,
+      onBankSync = onBankSync,
+      onDismiss = onDismiss,
     )
   }
 
   if (hasUnpostedSchedules) {
     UnpostedSchedulesDialog(
-      onPost = viewModel::postUnpostedSchedules,
-      onDismiss = viewModel::dismissUnpostedSchedules,
+      onPost = onPostSchedules,
+      onDismiss = onDismissSchedules,
     )
   }
 }

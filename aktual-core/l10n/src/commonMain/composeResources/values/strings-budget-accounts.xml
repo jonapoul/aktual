@@ -10,4 +10,9 @@
   <string name="accounts_create_submit">Create</string>
   <string name="accounts_create_failure_title">Couldn't create account</string>
   <string name="accounts_create_failure_dismiss">OK</string>
+  <string name="accounts_add_title">Add account</string>
+  <string name="accounts_add_local">Create a local account</string>
+  <string name="accounts_add_local_hint">Add transactions manually.</string>
+  <string name="accounts_add_bank_sync">Set up bank sync</string>
+  <string name="accounts_add_bank_sync_hint">Configure providers and link accounts from the Bank Sync page.</string>
 </resources>

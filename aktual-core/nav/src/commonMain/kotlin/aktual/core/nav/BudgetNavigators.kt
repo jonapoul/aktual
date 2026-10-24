@@ -18,6 +18,15 @@ class BudgetNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke(month: YearMonth? = null) = stack.push(BudgetNavRoute(month))
 }
 
+// Leaves a deleted account's transactions. When nothing's under it, as when opened from the
+// sidebar, it goes to all accounts
+@Immutable
+class DeletedAccountNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke() {
+    if (stack.size > 1) stack.pop() else stack.replaceAll(TransactionsNavRoute)
+  }
+}
+
 @Immutable
 class BudgetCategoryNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke(category: CategoryId, month: YearMonth) =

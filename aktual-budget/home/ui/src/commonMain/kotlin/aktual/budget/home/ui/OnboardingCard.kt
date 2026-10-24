@@ -48,7 +48,7 @@ internal fun OnboardingCard(onAction: HomeActionHandler, modifier: Modifier = Mo
 
       PrimaryTextButton(
         text = Strings.homeAccountsEmptyAction,
-        onClick = { onAction(OpenBankSync) },
+        onClick = { onAction(AddAccount) },
       )
     }
   }
