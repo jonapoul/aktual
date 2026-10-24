@@ -52,7 +52,7 @@ getAllNames: SELECT id, name FROM categories WHERE tombstone = 0;
 -- Categories under their groups, hidden ones included, in the order upstream's category picker
 -- lists them
 getAllActiveGrouped:
-SELECT c.id, c.name, c.hidden, c.is_income, g.id AS groupId, g.name AS groupName, g.hidden AS groupHidden
+SELECT c.id, c.name, c.hidden, g.id AS groupId, g.name AS groupName, g.hidden AS groupHidden
   FROM categories c
   LEFT JOIN category_groups g ON g.id = c.cat_group
   WHERE c.tombstone = 0 AND IFNULL(g.tombstone, 0) = 0
