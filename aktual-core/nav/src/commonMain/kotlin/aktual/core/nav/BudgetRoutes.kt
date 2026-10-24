@@ -33,6 +33,8 @@ data class BudgetCategoryNavRoute(val category: CategoryId, val month: YearMonth
 
 @Serializable data class AccountTransactionsNavRoute(val id: AccountId) : BudgetNavKey.Transactions
 
+@Serializable data object CreateAccountNavRoute : BudgetNavKey.Transactions
+
 @Serializable
 data class AccountGroupTransactionsNavRoute(val group: AccountGroup) : BudgetNavKey.Transactions
 
