@@ -4,6 +4,7 @@ import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.db.GetAllGrouped
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
+import aktual.budget.transactions.domain.TransactionDraft
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -11,10 +12,19 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.yearMonth
 import logcat.logcat
 
 // How the category picker shows the categories
 internal data class CategoryView(val showHidden: Boolean, val balances: Map<CategoryId, Amount>)
+
+internal data class MonthBalances(val month: YearMonth?, val balances: Map<CategoryId, Amount>)
+
+// Left out once the transaction's moved to another month, until that one's worked out
+internal fun MonthBalances.of(month: YearMonth?): Map<CategoryId, Amount> =
+  if (month == this.month) balances else emptyMap()
+
+internal fun TransactionDraft.month(): YearMonth = fields.date.yearMonth
 
 // Every category under its group, hidden ones included
 internal fun List<GetAllGrouped>.toCategoryGroups(): List<CategoryGroupOptions> = groupBy {

@@ -44,7 +44,10 @@ import androidx.compose.material3.getSelectedDate
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -91,6 +94,7 @@ internal fun EditTransactionSheet(
         onDismiss = onDismiss,
         onSelect = { onAction(SetCategory(it)) },
         onToggleHiding = { onAction(ToggleHiddenCategories) },
+        onPicking = { onAction(PickingCategory(it)) },
       )
 
     Account ->
@@ -145,6 +149,7 @@ private fun PartSheet(
         onDismiss = onDismiss,
         onSelect = { onAction(SetPartCategory(part.id, it)) },
         onToggleHiding = { onAction(ToggleHiddenCategories) },
+        onPicking = { onAction(PickingCategory(it)) },
       )
 
     Notes ->
@@ -296,11 +301,18 @@ private fun CategorySheet(
   onDismiss: () -> Unit,
   onSelect: (CategoryId?) -> Unit,
   onToggleHiding: () -> Unit,
+  onPicking: (Boolean) -> Unit,
 ) =
   AktualModalBottomSheet(
     onDismissRequest = onDismiss,
     sheetState = rememberBottomSheetState(Hidden),
   ) {
+    val currentOnPicking by rememberUpdatedState(onPicking)
+    DisposableEffect(Unit) {
+      currentOnPicking(true)
+      onDispose { currentOnPicking(false) }
+    }
+
     val query = rememberTextFieldState()
     val name = query.text.toString().trim()
     val groups = options.categoryGroups

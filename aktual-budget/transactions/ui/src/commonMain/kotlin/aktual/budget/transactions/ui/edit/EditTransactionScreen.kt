@@ -129,6 +129,7 @@ internal fun EditTransactionScreen(
         CommitAmount -> viewModel.commitAmount()
         GoToBudget -> toBudget()
         ToggleHiddenCategories -> viewModel.toggleHiddenCategories()
+        is PickingCategory -> viewModel.setPickingCategory(action.isPicking)
         is FieldAction -> viewModel.onFieldAction(action)
         is SplitAction -> viewModel.onSplitAction(action)
       }

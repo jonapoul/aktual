@@ -72,13 +72,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.yearMonth
 import logcat.logcat
 
 @Suppress("TooManyFunctions", "LongParameterList") // One per editor action, and its sources
@@ -138,14 +138,23 @@ internal constructor(
       .map { it == true }
       .stateIn(viewModelScope, Eagerly, false)
 
-  // The category balances of the month the transaction's in
-  private val categoryBalances: StateFlow<Map<CategoryId, Amount>> =
-    combine(mutableDraft, mutableSaved) { draft, saved ->
-        (draft ?: saved?.draft)?.fields?.date?.yearMonth
+  private val isPickingCategory = MutableStateFlow(false)
+
+  // The category balances of the month the transaction's in, only worked out while the category
+  // picker's open
+  private val categoryBalances: StateFlow<MonthBalances> =
+    combine(mutableDraft, mutableSaved, isPickingCategory) { draft, saved, isPicking ->
+        (draft ?: saved?.draft)?.month() to isPicking
       }
       .distinctUntilChanged()
-      .flatMapLatest { month -> budgetCalculator.observeBalances(month) }
-      .stateIn(viewModelScope, Eagerly, emptyMap())
+      .flatMapLatest { (month, isPicking) ->
+        if (isPicking) {
+          budgetCalculator.observeBalances(month).map { MonthBalances(month, it) }
+        } else {
+          emptyFlow()
+        }
+      }
+      .stateIn(viewModelScope, Eagerly, MonthBalances(month = null, balances = emptyMap()))
 
   // Followed, so a tag created from the notes is offered straight away
   private val tags: StateFlow<ImmutableList<TagLabel>> =
@@ -205,7 +214,7 @@ internal constructor(
         draft = draft,
         newPayees = newPayees,
         tags = tagOptions,
-        categories = CategoryView(showHidden, balances),
+        categories = CategoryView(showHidden, balances.of((draft ?: saved?.draft)?.month())),
         isWorking = isWorking,
         changedElsewhere = changedElsewhere,
       )
@@ -606,6 +615,8 @@ internal constructor(
   }
 
   fun dismissError() = mutableError.update { null }
+
+  fun setPickingCategory(isPicking: Boolean) = isPickingCategory.update { isPicking }
 
   // Shared with the budget, as upstream's budget.showHiddenCategories
   fun toggleHiddenCategories() = localPreferences.update { metadata ->

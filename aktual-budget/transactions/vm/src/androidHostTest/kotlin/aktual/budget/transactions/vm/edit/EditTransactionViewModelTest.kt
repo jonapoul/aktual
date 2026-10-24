@@ -1230,7 +1230,7 @@ class EditTransactionViewModelTest {
   }
 
   @Test
-  fun `Categories show their balance in the transaction's month`() = runTest {
+  fun `Categories show their balance in the transaction's month while they're picked`() = runTest {
     val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
     driver.use {
       val database = buildDatabase(driver)
@@ -1242,6 +1242,14 @@ class EditTransactionViewModelTest {
       val viewModel = database.createViewModel(this, id = "t")
 
       viewModel.state.test {
+        val closed = awaitEdit()
+        assertThat(closed.options.categoryGroups.flatMap { it.categories }.map { it.balance })
+          .each { it.isNull() }
+        testScheduler.advanceUntilIdle()
+        expectNoEvents()
+
+        viewModel.setPickingCategory(true)
+
         // Income categories have no balance
         assertThat(awaitBalances { it != Zero })
           .containsExactly("Food" to Amount(10.0), "Rent" to Amount.Zero, "Salary" to null)

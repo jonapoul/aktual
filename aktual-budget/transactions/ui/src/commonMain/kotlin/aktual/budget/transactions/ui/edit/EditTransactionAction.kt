@@ -32,6 +32,8 @@ internal data object GoToBudget : EditTransactionAction
 
 internal data object ToggleHiddenCategories : EditTransactionAction
 
+internal data class PickingCategory(val isPicking: Boolean) : EditTransactionAction
+
 // What changes one of the transaction's own fields
 @Immutable internal sealed interface FieldAction : EditTransactionAction
 
