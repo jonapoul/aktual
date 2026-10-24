@@ -111,6 +111,9 @@
   <string name="transaction_create_go_to_budget">Go to budget</string>
   <string name="transaction_payee_search">Find or add a payee</string>
   <string name="transaction_category_search">Find a category</string>
+  <string name="transaction_category_hidden">%1$s (hidden)</string>
+  <string name="transaction_category_show_hidden">Show hidden categories</string>
+  <string name="transaction_category_hide_hidden">Hide hidden categories</string>
   <string name="transaction_payee_create">Create payee “%1$s”</string>
   <string name="transaction_notes_add_tag">Add tag</string>
   <string name="transaction_notes_create_tag">Create tag</string>

@@ -85,6 +85,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.createSavedStateHandle
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -127,6 +128,7 @@ internal fun EditTransactionScreen(
         DismissError -> viewModel.dismissError()
         CommitAmount -> viewModel.commitAmount()
         GoToBudget -> toBudget()
+        ToggleHiddenCategories -> viewModel.toggleHiddenCategories()
         is FieldAction -> viewModel.onFieldAction(action)
         is SplitAction -> viewModel.onSplitAction(action)
       }
@@ -164,8 +166,8 @@ private fun EditTransactionViewModel.onSplitAction(action: SplitAction) =
 private fun editTransactionViewModel(target: EditTransactionTarget) =
   assistedMetroViewModel<EditTransactionViewModel, EditTransactionViewModel.Factory>(
     key = target.toString(),
-  ) {
-    create(target)
+  ) { extras ->
+    create(target, extras.createSavedStateHandle())
   }
 
 @Composable

@@ -30,6 +30,8 @@ internal data object CommitAmount : EditTransactionAction
 
 internal data object GoToBudget : EditTransactionAction
 
+internal data object ToggleHiddenCategories : EditTransactionAction
+
 // What changes one of the transaction's own fields
 @Immutable internal sealed interface FieldAction : EditTransactionAction
 

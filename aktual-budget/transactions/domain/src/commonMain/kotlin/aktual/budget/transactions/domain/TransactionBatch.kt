@@ -295,11 +295,12 @@ internal data class TouchedTransactions(
 )
 
 // convertInputType() rejects dates before this
-private val MIN_DATE = LocalDate(year = 1995, month = 1, day = 1)
+val MIN_TRANSACTION_DATE = LocalDate(year = 1995, month = 1, day = 1)
 
 private const val STARTING_BALANCE = "Starting Balance"
 
-private fun checkDate(date: LocalDate) = require(date >= MIN_DATE) { "Invalid date: $date" }
+private fun checkDate(date: LocalDate) =
+  require(date >= MIN_TRANSACTION_DATE) { "Invalid date: $date" }
 
 private fun String?.orSkip(): MessageValue? = this?.let(MessageValue::String)
 

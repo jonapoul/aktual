@@ -47,6 +47,7 @@ import aktual.prefs.vm.transactions.TransactionSettingsViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.Companion.VIEW_MODEL_KEY
@@ -226,13 +227,13 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test
   fun editTransaction() =
     testAssistedVM<EditTransactionViewModel, EditTransactionViewModel.Factory> {
-      create(EditTransactionTarget.Existing(TRANSACTION_ID))
+      create(EditTransactionTarget.Existing(TRANSACTION_ID), SavedStateHandle())
     }
 
   @Test
   fun createTransaction() =
     testAssistedVM<EditTransactionViewModel, EditTransactionViewModel.Factory> {
-      create(EditTransactionTarget.New())
+      create(EditTransactionTarget.New(), SavedStateHandle())
     }
 
   @Test

@@ -3,13 +3,16 @@ package aktual.budget.transactions.ui.edit
 import aktual.budget.model.AccountId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.transactions.domain.MIN_TRANSACTION_DATE
 import aktual.budget.transactions.domain.SplitPart
-import aktual.budget.transactions.vm.edit.CategoryGroupOptions
 import aktual.budget.transactions.vm.edit.EntityOption
 import aktual.budget.transactions.vm.edit.TransactionForm
+import aktual.budget.transactions.vm.edit.TransactionOptions
 import aktual.budget.transactions.vm.edit.matching
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Visibility
+import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTextField
@@ -17,6 +20,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.ListBottomSheet
+import aktual.core.ui.formattedText
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,7 +31,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.getSelectedDate
@@ -42,6 +49,7 @@ import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
 
@@ -75,9 +83,10 @@ internal fun EditTransactionSheet(
     Category ->
       CategorySheet(
         selected = draft.category,
-        groups = form.options.categoryGroups,
+        options = form.options,
         onDismiss = onDismiss,
         onSelect = { onAction(SetCategory(it)) },
+        onToggleHiding = { onAction(ToggleHiddenCategories) },
       )
 
     Account ->
@@ -128,9 +137,10 @@ private fun PartSheet(
     Category ->
       CategorySheet(
         selected = part.category,
-        groups = form.options.categoryGroups,
+        options = form.options,
         onDismiss = onDismiss,
         onSelect = { onAction(SetPartCategory(part.id, it)) },
+        onToggleHiding = { onAction(ToggleHiddenCategories) },
       )
 
     Notes ->
@@ -273,13 +283,15 @@ private fun AccountSheet(
   )
 
 // As upstream's category picker, typing filters the categories by their name or their group's.
-// Groups with no match are left out, and "None" is only offered until something's typed
+// Groups with no match are left out, and "None" is only offered until something's typed. Each
+// category shows its balance in the transaction's month
 @Composable
 private fun CategorySheet(
   selected: CategoryId?,
-  groups: ImmutableList<CategoryGroupOptions>,
+  options: TransactionOptions,
   onDismiss: () -> Unit,
   onSelect: (CategoryId?) -> Unit,
+  onToggleHiding: () -> Unit,
 ) =
   AktualModalBottomSheet(
     onDismissRequest = onDismiss,
@@ -287,6 +299,7 @@ private fun CategorySheet(
   ) {
     val query = rememberTextFieldState()
     val name = query.text.toString().trim()
+    val groups = options.categoryGroups
     val matches = remember(groups, name) { groups.matching(name) }
 
     AktualTextField(
@@ -315,13 +328,20 @@ private fun CategorySheet(
       matches.fastForEach { group ->
         val groupName = group.name
         if (groupName != null) {
-          item { GroupHeader(groupName) }
+          item { GroupHeader(if (group.isHidden) hiddenName(groupName) else groupName) }
         }
 
         items(group.categories, key = { it.id.toString() }) { category ->
           BottomSheetListItem(
-            label = category.name,
+            // A hidden group already says so
+            label =
+              if (category.isHidden && !group.isHidden) {
+                hiddenName(category.name)
+              } else {
+                category.name
+              },
             isSelected = category.id == selected,
+            trailingContent = category.balance?.let { balance -> { CategoryBalance(balance) } },
             onClick = {
               onSelect(category.id)
               onDismiss()
@@ -329,12 +349,57 @@ private fun CategorySheet(
           )
         }
       }
+
+      if (options.hasHiddenCategories) {
+        item {
+          val showHidden = options.showHiddenCategories
+          BottomSheetListItem(
+            label =
+              if (showHidden) {
+                Strings.transactionCategoryHideHidden
+              } else {
+                Strings.transactionCategoryShowHidden
+              },
+            isSelected = false,
+            leadingContent = {
+              BottomSheetIcon(
+                if (showHidden) MaterialIcons.VisibilityOff else MaterialIcons.Visibility,
+              )
+            },
+            onClick = onToggleHiding,
+          )
+        }
+      }
     }
   }
 
+@Composable private fun hiddenName(name: String) = Strings.transactionCategoryHidden(name)
+
+// Qualified, since Amount is also the field
+@Composable
+private fun CategoryBalance(balance: aktual.budget.model.Amount) =
+  Text(
+    text = balance.formattedText(),
+    fontSize = BalanceSize,
+    style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
+    color =
+      when {
+        balance < Zero -> colors.numberNegative
+        balance > Zero -> colors.numberPositive
+        else -> colors.pageTextSubdued
+      },
+    maxLines = 1,
+  )
+
+// Saving rejects dates before MIN_TRANSACTION_DATE, so they can't be picked
 @Composable
 private fun DateDialog(date: LocalDate, onDismiss: () -> Unit, onSelect: (LocalDate) -> Unit) {
-  val state = rememberDatePickerState(date.toJavaLocalDate())
+  val state =
+    rememberDatePickerState(
+      initialSelectedDate = date.toJavaLocalDate(),
+      yearRange = MIN_TRANSACTION_DATE.year..DatePickerDefaults.YearRange.last,
+      selectableDates = TransactionDates,
+    )
   DatePickerDialog(
     onDismissRequest = onDismiss,
     confirmButton = {
@@ -354,7 +419,16 @@ private fun DateDialog(date: LocalDate, onDismiss: () -> Unit, onSelect: (LocalD
   )
 }
 
+private object TransactionDates : SelectableDates {
+  private val min = MIN_TRANSACTION_DATE.atStartOfDayIn(UTC).toEpochMilliseconds()
+
+  override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis >= min
+
+  override fun isSelectableYear(year: Int) = year >= MIN_TRANSACTION_DATE.year
+}
+
 private val GroupHeaderPadding =
   PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp)
 private val GroupHeaderSize = 13.sp
+private val BalanceSize = 14.sp
 private val SearchPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)

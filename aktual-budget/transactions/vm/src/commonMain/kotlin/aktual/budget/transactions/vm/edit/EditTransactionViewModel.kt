@@ -1,5 +1,7 @@
 package aktual.budget.transactions.vm.edit
 
+import aktual.budget.BudgetLocalPreferences
+import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
@@ -7,6 +9,7 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
+import aktual.budget.model.DbMetadata.Companion.BudgetShowHiddenCategories
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.LoadedRules
@@ -46,6 +49,7 @@ import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.launchMolecule
@@ -66,11 +70,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.yearMonth
 import logcat.logcat
 
 @Suppress("TooManyFunctions", "LongParameterList") // One per editor action, and its sources
@@ -79,6 +87,7 @@ import logcat.logcat
 class EditTransactionViewModel
 internal constructor(
   @Assisted private val target: EditTransactionTarget,
+  @Assisted private val savedState: SavedStateHandle,
   private val loader: TransactionLoader,
   private val writer: TransactionWriter,
   private val rulesLoader: TransactionRulesLoader,
@@ -89,19 +98,24 @@ internal constructor(
   private val categoryDao: CategoryDao,
   private val uuidGenerator: UuidGenerator,
   private val tagCreator: TagCreator,
+  private val localPreferences: BudgetLocalPreferences,
+  budgetCalculator: BudgetMonthCalculator,
   tagsDao: TagsDao,
 ) : ViewModel() {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(@Assisted target: EditTransactionTarget): EditTransactionViewModel
+    fun create(
+      @Assisted target: EditTransactionTarget,
+      @Assisted savedState: SavedStateHandle,
+    ): EditTransactionViewModel
   }
 
   // What's currently saved, following any changes made elsewhere, e.g. by a sync. Stays null for a
   // new transaction
   private val mutableSaved = MutableStateFlow<Saved?>(null)
-  private val mutableEntities = MutableStateFlow<Entities?>(null)
+  private val mutableEntities = MutableStateFlow<EditorEntities?>(null)
   private val mutableFailure = MutableStateFlow<Failure?>(null)
   // The edits in progress. Null for a saved transaction that hasn't been changed, so it follows
   // what's saved
@@ -115,6 +129,23 @@ internal constructor(
   // Whether what's saved changed under the draft in a way that saving it overwrites
   private val mutableHasConflicts = MutableStateFlow(false)
   private var isDeleted = false
+  // A draft kept from before the process was killed
+  private val restored: EditorSnapshot? = savedState.restoreEditorSnapshot()
+
+  private val showHiddenCategories: StateFlow<Boolean> =
+    localPreferences
+      .observe(BudgetShowHiddenCategories)
+      .map { it == true }
+      .stateIn(viewModelScope, Eagerly, false)
+
+  // The category balances of the month the transaction's in
+  private val categoryBalances: StateFlow<Map<CategoryId, Amount>> =
+    combine(mutableDraft, mutableSaved) { draft, saved ->
+        (draft ?: saved?.draft)?.fields?.date?.yearMonth
+      }
+      .distinctUntilChanged()
+      .flatMapLatest { month -> budgetCalculator.observeBalances(month) }
+      .stateIn(viewModelScope, Eagerly, emptyMap())
 
   // Followed, so a tag created from the notes is offered straight away
   private val tags: StateFlow<ImmutableList<TagLabel>> =
@@ -130,6 +161,8 @@ internal constructor(
   private var rules: LoadedRules? = null
   // What a new transaction started as
   private var initial: TransactionDraft? = null
+  // What a restored draft of a saved transaction was based on, until it's loaded again
+  private var restoredBase: TransactionDraft? = null
   // Fields of a new transaction that the user emptied, which rules mustn't fill back in. As
   // upstream's clearedFields
   private var emptied = emptySet<TransactionField>()
@@ -157,6 +190,8 @@ internal constructor(
       val tagOptions by tags.collectAsState()
       val isGone by mutableIsGone.collectAsState()
       val hasConflicts by mutableHasConflicts.collectAsState()
+      val showHidden by showHiddenCategories.collectAsState()
+      val balances by categoryBalances.collectAsState()
       val changedElsewhere =
         when {
           isGone -> ChangedElsewhere.Deleted
@@ -170,22 +205,34 @@ internal constructor(
         draft = draft,
         newPayees = newPayees,
         tags = tagOptions,
+        categories = CategoryView(showHidden, balances),
         isWorking = isWorking,
         changedElsewhere = changedElsewhere,
       )
     }
 
   init {
+    savedState.provideEditorSnapshot(::snapshot)
     viewModelScope.launch { observe() }
   }
 
+  private fun snapshot() =
+    EditorSnapshot(
+      draft = mutableDraft.value?.toSnapshot(),
+      base = (initial ?: mutableSaved.value?.draft ?: restoredBase)?.toSnapshot(),
+      newPayees = mutableNewPayees.value.map { (id, name) -> NewPayeeSnapshot(id, name) },
+      emptied = emptied,
+      hasConflicts = mutableHasConflicts.value,
+    )
+
   private fun buildState(
     saved: Saved?,
-    entities: Entities?,
+    entities: EditorEntities?,
     failure: Failure?,
     draft: TransactionDraft?,
     newPayees: Map<PayeeId, String>,
     tags: ImmutableList<TagLabel>,
+    categories: CategoryView,
     isWorking: Boolean,
     changedElsewhere: ChangedElsewhere?,
   ): EditTransactionState {
@@ -193,7 +240,8 @@ internal constructor(
     // A draft stays open when its transaction's deleted elsewhere, so it isn't lost
     if (changedElsewhere == Deleted && draft == null) return Failure.NotFound
     if (entities == null) return Loading
-    val form = (draft ?: saved?.draft)?.let { form(it, entities, newPayees, tags, saved) }
+    val form =
+      (draft ?: saved?.draft)?.let { form(it, entities, newPayees, tags, categories, saved) }
     return when (target) {
       is Existing -> existingState(saved, form, isWorking, changedElsewhere)
       is New -> newState(entities, form, isWorking)
@@ -216,13 +264,13 @@ internal constructor(
   }
 
   private fun newState(
-    entities: Entities,
+    entities: EditorEntities,
     form: TransactionForm?,
     isWorking: Boolean,
   ): EditTransactionState =
     when {
       entities.options.accounts.isEmpty() -> EditTransactionState.Empty.NoAccounts
-      entities.options.categoryGroups.all { it.categories.isEmpty() } ->
+      entities.options.categoryGroups.all { group -> group.categories.all { it.isHidden } } ->
         EditTransactionState.Empty.NoCategories
       form == null -> Loading
       else ->
@@ -236,9 +284,10 @@ internal constructor(
   // A name the pickers don't offer, like a closed account's, falls back to the saved one
   private fun form(
     draft: TransactionDraft,
-    entities: Entities,
+    entities: EditorEntities,
     newPayees: Map<PayeeId, String>,
     tags: ImmutableList<TagLabel>,
+    categories: CategoryView,
     saved: Saved?,
   ): TransactionForm {
     val fields = draft.fields
@@ -268,7 +317,11 @@ internal constructor(
         } else {
           transactionDiff(saved.details.transaction.id, saved.draft, draft) != null
         },
-      options = entities.options.withoutTransfersTo(fields.account, entities).copy(tags = tags),
+      options =
+        entities.options
+          .withoutTransfersTo(fields.account, entities)
+          .withCategories(categories)
+          .copy(tags = tags),
       parts = parts,
       splitRemaining = draft.splitDifference,
     )
@@ -276,7 +329,7 @@ internal constructor(
 
   private fun partForms(
     draft: TransactionDraft,
-    entities: Entities,
+    entities: EditorEntities,
     newPayees: Map<PayeeId, String>,
     saved: Saved?,
   ): ImmutableList<SplitPartForm> {
@@ -326,14 +379,34 @@ internal constructor(
     }
   }
 
-  private suspend fun startDraft(target: EditTransactionTarget.New, entities: Entities) {
+  private suspend fun startDraft(target: EditTransactionTarget.New, entities: EditorEntities) {
     rules = rulesLoader.load()
+    val snapshot = restored
+    val restoredDraft = snapshot?.draft
+    if (restoredDraft != null) {
+      restoreDraft()
+      initial = (snapshot.base ?: restoredDraft).toDraft()
+      emptied = snapshot.emptied
+      return
+    }
     val draft = TransactionDraft(newDraft(target, entities))
     initial = draft
     mutableDraft.update { draft }
   }
 
+  private fun restoreDraft() {
+    val snapshot = restored ?: return
+    mutableDraft.update { snapshot.draft?.toDraft() }
+    mutableNewPayees.update { snapshot.newPayees.associate { payee -> payee.id to payee.name } }
+    mutableHasConflicts.update { snapshot.hasConflicts }
+  }
+
   private suspend fun follow(target: EditTransactionTarget.Existing) {
+    val snapshot = restored
+    if (snapshot?.draft != null) {
+      restoreDraft()
+      restoredBase = snapshot.base?.toDraft()
+    }
     viewModelScope.launch { loadPayeeLookup() }
     loader.observe(target.id).collect { loaded ->
       if (loaded != null) {
@@ -351,7 +424,7 @@ internal constructor(
   // Moves an open draft onto what's now saved, so it only changes what the user has changed
   private fun rebaseDraft(onto: Saved) {
     val draft = mutableDraft.value ?: return
-    val base = mutableSaved.value?.draft ?: return
+    val base = mutableSaved.value?.draft ?: restoredBase ?: return
     if (base == onto.draft) return
     val rebased = rebase(base, onto.draft, draft)
     if (rebased.hasConflicts) mutableHasConflicts.update { true }
@@ -362,7 +435,7 @@ internal constructor(
   // one added, unless the list it was added from has an account of its own
   private fun newDraft(
     target: EditTransactionTarget.New,
-    entities: Entities,
+    entities: EditorEntities,
   ): TransactionFields {
     val last = lastTransaction.fields
     val account = target.account ?: last?.account
@@ -378,28 +451,15 @@ internal constructor(
     )
   }
 
-  private suspend fun loadEntities(): Entities {
+  private suspend fun loadEntities(): EditorEntities {
     val allPayees = payeeDao.getAllWithTransfer()
     val transferAccounts =
       allPayees.mapNotNull { row -> row.transfer_acct?.let { row.id to it } }.toMap()
     val payees = allPayees.mapNotNull { row -> row.name?.let { EntityOption(row.id, it) } }
-    val categories = categoryDao.getAllActiveGrouped()
-    val groups =
-      categories
-        .groupBy { it.groupId }
-        .values
-        .map { rows ->
-          CategoryGroupOptions(
-            name = rows.first().groupName,
-            categories =
-              rows
-                .mapNotNull { row -> row.name?.let { EntityOption(row.id, it) } }
-                .toImmutableList(),
-          )
-        }
+    val groups = categoryDao.getAllActiveGrouped().toCategoryGroups()
     val accounts = accountDao.getAllWithStatus()
     val closed = accounts.filter { it.closed == true }.map { it.id }.toSet()
-    return Entities(
+    return EditorEntities(
       options =
         TransactionOptions(
           payees = payees.filter { it.id !in transferAccounts }.toImmutableList(),
@@ -409,6 +469,7 @@ internal constructor(
               .filter { transferAccounts[it.id]?.let { id -> id !in closed } == true }
               .toImmutableList(),
           categoryGroups = groups.toImmutableList(),
+          hasHiddenCategories = groups.any { group -> group.categories.any { it.isHidden } },
           accounts =
             accounts
               .filter { it.closed != true }
@@ -479,7 +540,7 @@ internal constructor(
     val trimmed = name.trim()
     if (trimmed.isEmpty()) return null
     val id = rules.resolvePayee(trimmed)
-    mutableNewPayees.update { rules.createdPayees }
+    mutableNewPayees.update { it + rules.createdPayees }
     return id
   }
 
@@ -544,6 +605,11 @@ internal constructor(
 
   fun dismissError() = mutableError.update { null }
 
+  // Shared with the budget, as upstream's budget.showHiddenCategories
+  fun toggleHiddenCategories() = localPreferences.update { metadata ->
+    metadata.set(BudgetShowHiddenCategories, metadata[BudgetShowHiddenCategories] != true)
+  }
+
   private fun newPartId(): TransactionId = uuidGenerator(::TransactionId)
 
   // Rules aren't run on a split's parts
@@ -579,7 +645,7 @@ internal constructor(
     val fields = draft.fields
     emptied = if (fields.isEmpty(updated)) emptied + updated else emptied - updated
     val result = rules.run(fields.toRuleTransaction())
-    mutableNewPayees.update { rules.createdPayees }
+    mutableNewPayees.update { it + rules.createdPayees }
     val afterRules = fields.afterRules(result, keepPayee = draft.isSplit)
     val applied = applyRuleChanges(fields, afterRules, updated, emptied)
     return when {
@@ -721,63 +787,5 @@ internal constructor(
   private data class Saved(val details: TransactionDetails, val draft: TransactionDraft) {
     val fields: TransactionFields
       get() = draft.fields
-  }
-
-  private data class Entities(
-    val options: TransactionOptions,
-    val payeeNames: Map<PayeeId, String>,
-    val categoryNames: Map<CategoryId, String>,
-    val accountNames: Map<AccountId, String>,
-    val offBudget: Set<AccountId>,
-    // The account each transfer payee stands in for
-    val transferAccounts: Map<PayeeId, AccountId>,
-  )
-
-  // As upstream's isBudgetTransfer, though it doesn't look at the account the transfer is from. An
-  // off budget one shows as that instead
-  private fun Entities.isBudgetTransfer(account: AccountId?, payee: PayeeId?): Boolean {
-    val to = payee?.let(transferAccounts::get) ?: return false
-    return account !in offBudget && to !in offBudget
-  }
-
-  // An account can't transfer to itself
-  private fun TransactionOptions.withoutTransfersTo(
-    account: AccountId?,
-    entities: Entities,
-  ): TransactionOptions {
-    if (account == null) return this
-    val others = transfers.filter { entities.transferAccounts[it.id] != account }
-    return if (others.size == transfers.size) this else copy(transfers = others.toImmutableList())
-  }
-
-  private fun TransactionFields.toRuleTransaction() =
-    RuleTransaction(
-      account = account ?: NO_ACCOUNT,
-      date = date,
-      amount = amount,
-      payee = payee,
-      category = category,
-      notes = notes,
-      cleared = cleared,
-      reconciled = reconciled,
-    )
-
-  // A rule that splits the transaction moves its payee to the parts it makes. They aren't used if
-  // the transaction is split already, so then the payee stays
-  private fun TransactionFields.afterRules(result: RuleTransaction, keepPayee: Boolean) =
-    copy(
-      account = result.account.takeIf { it != NO_ACCOUNT },
-      date = result.date,
-      amount = result.amount,
-      payee = if (result.isParent && keepPayee) payee else result.payee,
-      category = result.category,
-      notes = result.notes,
-      cleared = result.cleared,
-    )
-
-  private companion object {
-    // Upstream runs rules on a new transaction before it has an account, which RuleTransaction
-    // needs
-    val NO_ACCOUNT = AccountId("")
   }
 }
