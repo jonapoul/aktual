@@ -126,6 +126,7 @@ internal class BankSyncTestScope(
       api = api,
       accountDao = accountDao,
       dao = BankSyncDao(database),
+      writer = writer,
       syncController = this,
       bankSync = controller(api),
       uuidGenerator = { Uuid.random().toString() },

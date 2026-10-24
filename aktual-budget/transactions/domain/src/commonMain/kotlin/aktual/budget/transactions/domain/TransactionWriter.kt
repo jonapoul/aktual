@@ -15,8 +15,8 @@ import kotlinx.coroutines.sync.withLock
 import logcat.logcat
 
 /**
- * Writes transactions, payees and account sync fields, like the db.insertTransaction() /
- * updateTransaction() / deleteTransaction() / insertPayee() / update('accounts') calls that
+ * Writes transactions, payees and accounts, like the db.insertTransaction() / updateTransaction() /
+ * deleteTransaction() / insertPayee() / update('accounts') calls that
  * packages/loot-core/src/server/transactions/index.ts batchUpdateTransactions() and the bank sync
  * in accounts/sync.ts make inside batchMessages(). Everything goes through [BudgetSyncController],
  * which also applies the changes to the local database.

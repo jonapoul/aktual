@@ -7,17 +7,16 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.BankSyncDao
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.db.dao.DatabaseTables.BANKS
-import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.BankId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
+import aktual.budget.transactions.domain.TransactionWriter
 import aktual.core.UuidGenerator
 import aktual.di.BudgetCoroutineScope
 import dev.zacsweers.metro.Inject
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.math.floor
 import kotlinx.coroutines.launch
 import logcat.logcat
 
@@ -30,6 +29,7 @@ class BankAccountLinker(
   private val api: BankSyncApi,
   private val accountDao: AccountDao,
   private val dao: BankSyncDao,
+  private val writer: TransactionWriter,
   private val syncController: BudgetSyncController,
   private val bankSync: BankSyncController,
   private val uuidGenerator: UuidGenerator,
@@ -57,20 +57,11 @@ class BankAccountLinker(
     external: ExternalBankAccount,
     offBudget: Boolean,
   ): AccountId {
-    val account = AccountId(uuidGenerator())
-    // Messages only carry whole numbers, so rounding down still puts it after a fractional order
-    val sortOrder =
-      (accountDao.maxSortOrder(offBudget)?.let(::floor)?.toLong() ?: 0L) + SORT_INCREMENT
-    val changes =
-      mutableListOf(
-        localChange(ACCOUNTS, account.value, "name", external.name),
-        localChange(ACCOUNTS, account.value, "offbudget", offBudget),
-        localChange(ACCOUNTS, account.value, "sort_order", sortOrder),
-      )
+    val account = writer.write {
+      insertAccount(external.name, offBudget).also { insertPayee(name = "", transferAccount = it) }
+    }
+    val changes = mutableListOf<LocalChange>()
     changes.addLink(account, source, external)
-    val payee = uuidGenerator()
-    changes += localChange(PAYEES, payee, "name", "")
-    changes += localChange(PAYEES, payee, "transfer_acct", account.value)
     syncController.syncChanges(changes)
     scope.launch { bankSync.sync(setOf(account)) }
     return account
@@ -127,6 +118,3 @@ class BankAccountLinker(
     this += localChange(ACCOUNTS, account.value, "account_sync_source", source.value)
   }
 }
-
-// packages/loot-core/src/shared/util.ts
-private const val SORT_INCREMENT = 16384L

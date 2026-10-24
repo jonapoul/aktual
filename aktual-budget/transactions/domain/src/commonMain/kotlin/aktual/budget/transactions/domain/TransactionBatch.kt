@@ -19,6 +19,7 @@ import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
 import aktual.budget.model.tombstone
 import aktual.core.UuidGenerator
+import kotlin.math.floor
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonObject
@@ -87,7 +88,7 @@ internal constructor(
         "imported_description" to t.importedPayee.orSkip(),
         "starting_balance_flag" to t.startingBalance.trueOrSkip(),
         "transferred_id" to t.transferId?.value.orSkip(),
-        "sort_order" to MessageValue.Number(t.sortOrder ?: clock.now().toEpochMilliseconds()),
+        SORT_ORDER to MessageValue.Number(t.sortOrder ?: clock.now().toEpochMilliseconds()),
         "cleared" to t.cleared.messageValue(),
         "reconciled" to t.reconciled.messageValue(),
         "schedule" to t.schedule?.value.orSkip(),
@@ -129,7 +130,7 @@ internal constructor(
         "imported_description" to u.importedPayee.messageValue { it.messageValue() },
         "starting_balance_flag" to u.startingBalance?.messageValue(),
         "transferred_id" to u.transferId.messageValue { it.value.messageValue() },
-        "sort_order" to u.sortOrder?.let(MessageValue::Number),
+        SORT_ORDER to u.sortOrder?.let(MessageValue::Number),
         "cleared" to u.cleared?.messageValue(),
         "reconciled" to u.reconciled?.messageValue(),
         "schedule" to u.schedule.messageValue { it.value.messageValue() },
@@ -242,6 +243,39 @@ internal constructor(
     changes += tombstone(ACCOUNTS, id.value)
   }
 
+  /**
+   * db.insertAccount(): an open account at the end of the on or [offBudget] list. Its transfer
+   * payee isn't added, see [createAccount].
+   */
+  suspend fun insertAccount(name: String, offBudget: Boolean): AccountId {
+    val id = uuidGenerator(::AccountId)
+    val row = id.value
+    // Messages only carry whole numbers, so rounding down still puts it after a fractional order
+    val maxSortOrder = accountDao.maxSortOrder(offBudget)?.let(::floor)?.toLong() ?: 0L
+    changes += localChange(ACCOUNTS, row, "name", name)
+    changes += localChange(ACCOUNTS, row, "offbudget", offBudget)
+    changes += localChange(ACCOUNTS, row, "closed", false)
+    changes += localChange(ACCOUNTS, row, SORT_ORDER, maxSortOrder + SORT_INCREMENT)
+    this.offBudget[id] = offBudget
+    return id
+  }
+
+  /**
+   * accounts/app.ts createAccount(): the account, its transfer payee and, unless [balance] is zero,
+   * a starting balance on [date].
+   */
+  suspend fun createAccount(
+    name: String,
+    offBudget: Boolean,
+    balance: Amount,
+    date: LocalDate,
+  ): AccountId {
+    val id = insertAccount(name, offBudget)
+    insertPayee(name = "", transferAccount = id)
+    if (balance != Zero) insertStartingBalance(id, balance, date)
+    return id
+  }
+
   /** db.update('accounts', ...) with any of the bank sync fields. */
   fun updateAccount(update: AccountUpdate) {
     val columns =
@@ -298,6 +332,11 @@ internal data class TouchedTransactions(
 val MIN_TRANSACTION_DATE = LocalDate(year = 1995, month = 1, day = 1)
 
 private const val STARTING_BALANCE = "Starting Balance"
+
+// packages/loot-core/src/shared/util.ts
+private const val SORT_INCREMENT = 16384L
+
+private const val SORT_ORDER = "sort_order"
 
 private fun checkDate(date: LocalDate) =
   require(date >= MIN_TRANSACTION_DATE) { "Invalid date: $date" }
