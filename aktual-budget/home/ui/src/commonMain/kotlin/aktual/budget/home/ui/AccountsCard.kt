@@ -20,7 +20,12 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryTextButton
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,7 +40,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -47,10 +54,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 
@@ -86,7 +96,6 @@ internal fun AccountsCard(
 }
 
 @Composable
-@Suppress("UnusedReceiverParameter")
 private fun ColumnScope.AccountsContent(
   state: Loaded,
   showAll: Boolean,
@@ -94,10 +103,14 @@ private fun ColumnScope.AccountsContent(
 ) {
   var isExpanded by rememberSaveable { mutableStateOf(false) }
   val recent = if (showAll) null else state.recent
-  val summary = if (isExpanded || recent == null) state.summary else recent
+  val visibleIds =
+    remember(state, recent, isExpanded) {
+      val summary = if (isExpanded || recent == null) state.summary else recent
+      (summary.onBudget.accounts + summary.offBudget.accounts).map { it.id }.toImmutableSet()
+    }
 
-  AccountsSection(Strings.homeAccountsOnBudget, summary.onBudget, onAction)
-  AccountsSection(Strings.homeAccountsOffBudget, summary.offBudget, onAction)
+  AccountsSection(Strings.homeAccountsOnBudget, state.summary.onBudget, visibleIds, onAction)
+  AccountsSection(Strings.homeAccountsOffBudget, state.summary.offBudget, visibleIds, onAction)
 
   if (recent != null) {
     val allCount = with(state.summary) { onBudget.accounts.size + offBudget.accounts.size }
@@ -125,24 +138,36 @@ private fun ExpandRow(text: String, onClick: () -> Unit, modifier: Modifier = Mo
 }
 
 @Composable
-private fun AccountsSection(
+private fun ColumnScope.AccountsSection(
   title: String,
   section: AccountSection,
+  visibleIds: ImmutableSet<AccountId>,
   onAction: HomeActionHandler,
 ) {
-  if (section.accounts.isEmpty()) return
-
-  HeaderRow(
-    modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
-    title = title.uppercase(),
-    amount = section.total,
-    style = typography.labelMedium,
-  )
+  AnimatedVisibility(
+    visible = section.accounts.fastAny { it.id in visibleIds },
+    enter = RowEnter,
+    exit = RowExit,
+  ) {
+    HeaderRow(
+      modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
+      title = title.uppercase(),
+      amount = section.total,
+      style = typography.labelMedium,
+    )
+  }
 
   section.accounts.fastForEach { account ->
-    AccountRow(account = account, onClick = { onAction(OpenAccount(account.id)) })
+    key(account.id) {
+      AnimatedVisibility(visible = account.id in visibleIds, enter = RowEnter, exit = RowExit) {
+        AccountRow(account = account, onClick = { onAction(OpenAccount(account.id)) })
+      }
+    }
   }
 }
+
+private val RowEnter = expandVertically() + fadeIn()
+private val RowExit = shrinkVertically() + fadeOut()
 
 @Composable
 private fun HeaderRow(
