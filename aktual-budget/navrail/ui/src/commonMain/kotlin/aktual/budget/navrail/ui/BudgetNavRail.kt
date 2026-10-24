@@ -1,7 +1,7 @@
 package aktual.budget.navrail.ui
 
 import aktual.budget.accounts.ui.AddAccountSheet
-import aktual.budget.accounts.ui.addAccountLauncher
+import aktual.budget.accounts.ui.addAccount
 import aktual.budget.navrail.vm.BudgetNavRailViewModel
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
@@ -154,8 +154,6 @@ internal fun BudgetNavRail(
   }
 
   val createAccount = { onOpenTransactions(CreateAccountNavRoute) }
-  val addAccount =
-    addAccountLauncher(showSheet = { dialog = AddAccount }, createLocal = createAccount)
 
   val sidebar: @Composable ColumnScope.(close: () -> Unit) -> Unit = { close ->
     BudgetSidebarContent(
@@ -173,7 +171,7 @@ internal fun BudgetNavRail(
       },
       onAddAccount = {
         close()
-        addAccount()
+        addAccount(!headerState.isDemo, { dialog = AddAccount }, createAccount)
       },
       onRename = {
         close()

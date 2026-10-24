@@ -1,6 +1,5 @@
 package aktual.budget.accounts.ui
 
-import aktual.budget.accounts.vm.AddAccountViewModel
 import aktual.core.icons.material.AccountBalance
 import aktual.core.icons.material.AccountBalanceWallet
 import aktual.core.icons.material.MaterialIcons
@@ -28,18 +27,13 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 /**
  * Adds an account from [showSheet], where a local account or bank sync can be chosen as upstream's
  * CreateAccountModal. Without a server there's no bank sync, so it goes straight to [createLocal].
  */
-@Composable
-fun addAccountLauncher(
-  showSheet: () -> Unit,
-  createLocal: () -> Unit,
-  viewModel: AddAccountViewModel = metroViewModel(),
-): () -> Unit = { if (viewModel.canBankSync) showSheet() else createLocal() }
+fun addAccount(canBankSync: Boolean, showSheet: () -> Unit, createLocal: () -> Unit) =
+  if (canBankSync) showSheet() else createLocal()
 
 @Composable
 fun AddAccountSheet(onCreateLocal: () -> Unit, onBankSync: () -> Unit, onDismiss: () -> Unit) {
