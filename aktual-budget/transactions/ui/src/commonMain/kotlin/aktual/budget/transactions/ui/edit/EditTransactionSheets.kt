@@ -391,13 +391,16 @@ private fun CategoryBalance(balance: aktual.budget.model.Amount) =
     maxLines = 1,
   )
 
-// Saving rejects dates before MIN_TRANSACTION_DATE, so they can't be picked
+// Saving rejects dates before MIN_TRANSACTION_DATE, so they can't be picked. The range still holds
+// an older date that's already saved, which the picker would otherwise crash on
 @Composable
 private fun DateDialog(date: LocalDate, onDismiss: () -> Unit, onSelect: (LocalDate) -> Unit) {
+  val first = minOf(MIN_TRANSACTION_DATE.year, date.year)
+  val last = maxOf(DatePickerDefaults.YearRange.last, date.year)
   val state =
     rememberDatePickerState(
       initialSelectedDate = date.toJavaLocalDate(),
-      yearRange = MIN_TRANSACTION_DATE.year..DatePickerDefaults.YearRange.last,
+      yearRange = first..last,
       selectableDates = TransactionDates,
     )
   DatePickerDialog(
