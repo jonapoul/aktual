@@ -6,3 +6,5 @@ aktual:
     active: true
   RedundantQualifier:
     active: true
+  SetMainDispatcher:
+    active: true
