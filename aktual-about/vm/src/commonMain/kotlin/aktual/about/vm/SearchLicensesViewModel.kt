@@ -4,6 +4,8 @@ import aktual.about.data.ArtifactDetail
 import aktual.about.data.LicensesRepository
 import aktual.about.vm.SearchLicensesState.Results
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,7 +23,10 @@ import kotlinx.coroutines.launch
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class SearchLicensesViewModel(private val licensesRepository: LicensesRepository) : ViewModel() {
+class SearchLicensesViewModel(
+  private val licensesRepository: LicensesRepository,
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableQuery = MutableStateFlow("")
   private val artifacts = MutableStateFlow<List<ArtifactDetail>>(emptyList())
 

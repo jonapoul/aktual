@@ -25,6 +25,8 @@ object AppCoroutineBindings {
   @IntoSet
   @ForScope(AppScope::class)
   fun closeable(scope: AppCoroutineScope): Closeable = Closeable { scope.cancel() }
+
+  @Provides fun viewModelContext(): ViewModelContext = Default
 }
 
 @BindingContainer

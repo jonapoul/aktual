@@ -60,6 +60,7 @@ import aktual.test.TestCalendar
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.inMemoryDriverFactory
 import aktual.test.runDatabaseTest
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import androidx.lifecycle.SavedStateHandle
 import androidx.savedstate.read
@@ -81,17 +82,13 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
-import kotlin.test.AfterTest
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonPrimitive
 import org.junit.Test
@@ -101,11 +98,6 @@ import org.robolectric.RobolectricTestRunner
 @Suppress("TooManyFunctions")
 @RunWith(RobolectricTestRunner::class)
 class EditTransactionViewModelTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `A transaction opens ready to edit`() = runDatabaseTest { scope ->
     insertEntities()
@@ -1504,7 +1496,6 @@ class EditTransactionViewModelTest {
     savedState: SavedStateHandle = SavedStateHandle(),
     prefs: TestBudgetLocalPreferences = TestBudgetLocalPreferences(),
   ): EditTransactionViewModel {
-    Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val tags = tagsDao(scope)
     val accountDao = AccountDao(this)
@@ -1549,6 +1540,7 @@ class EditTransactionViewModelTest {
           contexts = contexts,
         ),
       tagsDao = tags,
+      viewModelContext = scope.viewModelContext,
     )
   }
 

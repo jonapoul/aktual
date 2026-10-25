@@ -7,6 +7,8 @@ import aktual.core.theme.CustomThemeCache
 import aktual.core.theme.CustomThemeRepo
 import aktual.core.theme.CustomThemeSummary
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.ThemePreferences
 import aktual.prefs.vm.asLoadedStateFlow
 import aktual.prefs.vm.theme.custom.CustomThemeEvent.FailedFetching
@@ -44,7 +46,8 @@ class CustomThemeSettingsViewModel(
   private val preferences: ThemePreferences,
   private val themeApi: ThemeApi,
   private val cache: CustomThemeCache,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableIsFetchingCatalog = MutableStateFlow(false)
   private val mutableFilter = MutableStateFlow<ThemeFilter>(All)
   private val mutableSorting = MutableStateFlow<ThemeSorting>(ByName)

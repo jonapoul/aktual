@@ -10,6 +10,8 @@ import aktual.budget.schedules.domain.UnpostedSchedules
 import aktual.core.model.BudgetServer
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.AppPreferences
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -43,7 +45,8 @@ class BudgetNavRailViewModel(
   accountDao: AccountDao,
   private val appPreferences: AppPreferences,
   private val unpostedSchedules: UnpostedSchedules,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   val budgetNavEntryContributors: ImmutableSet<BudgetNavEntryContributor> =
     contributors.toImmutableSet()
 

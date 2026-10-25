@@ -45,6 +45,8 @@ import aktual.budget.transactions.vm.toTransaction
 import aktual.core.Calendar
 import aktual.core.UuidGenerator
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -101,7 +103,8 @@ internal constructor(
   private val localPreferences: BudgetLocalPreferences,
   budgetCalculator: BudgetMonthCalculator,
   tagsDao: TagsDao,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)

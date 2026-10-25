@@ -13,22 +13,14 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.resetMain
 import kotlinx.datetime.LocalDate
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class HomeViewModelReportsTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `Pinned reports show on their card`() = runDatabaseTest { scope ->
     val pinned = FakePinnedReports(listOf(pinned("a"), pinned("b")))

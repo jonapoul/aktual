@@ -15,6 +15,7 @@ import aktual.prefs.TagPreferencesImpl
 import aktual.test.TestSyncController
 import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
+import aktual.test.unconfinedViewModelContext
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import androidx.compose.ui.graphics.Color
@@ -328,6 +329,7 @@ class ListTagsViewModelTest {
       syncController = sync,
       preferences = preferences,
       budgetScope = BudgetCoroutineScope(scope),
+      viewModelContext = scope.unconfinedViewModelContext,
     )
 
   private class FailingSyncController : BudgetSyncController {

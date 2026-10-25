@@ -5,6 +5,8 @@ import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,7 +43,8 @@ class AboutViewModel(
   private val buildConfig: BuildConfig,
   private val githubRepository: GithubRepository,
   aktualVersionsStateHolder: AktualVersionsStateHolder,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
   @ViewModelAssistedFactoryKey(AboutViewModel::class)
   @ContributesIntoMap(AppScope::class)

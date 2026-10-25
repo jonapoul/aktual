@@ -23,6 +23,8 @@ import aktual.budget.reports.vm.withLiveBalances
 import aktual.budget.reports.vm.withSurplusKept
 import aktual.core.UuidGenerator
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.CoroutineContexts
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -73,7 +75,8 @@ internal constructor(
   private val sync: DashboardSync,
   private val uuidGenerator: UuidGenerator,
   contexts: CoroutineContexts,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val saved: StateFlow<SavedMeta> =
     dashboardDao
       .observeById(id)

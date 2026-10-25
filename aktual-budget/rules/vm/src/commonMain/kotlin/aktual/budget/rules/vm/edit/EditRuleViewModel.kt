@@ -25,6 +25,8 @@ import aktual.budget.rules.vm.edit.EditRuleState.Failure
 import aktual.budget.rules.vm.hasUnknownValues
 import aktual.core.UuidGenerator
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -65,7 +67,8 @@ class EditRuleViewModel(
   private val syncController: BudgetSyncController,
   val nameFetcher: NameFetcher,
   val entityListFetcher: EntityListFetcher,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableEvents =
     MutableSharedFlow<EditRuleEvent>(
       replay = 0,

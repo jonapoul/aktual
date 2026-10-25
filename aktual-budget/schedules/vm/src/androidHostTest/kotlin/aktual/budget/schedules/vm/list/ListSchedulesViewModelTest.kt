@@ -21,6 +21,7 @@ import aktual.test.TestSyncController
 import aktual.test.buildPreferences
 import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -30,14 +31,10 @@ import assertk.assertions.containsExactly
 import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
 import assertk.assertions.prop
-import kotlin.test.AfterTest
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,11 +42,6 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class ListSchedulesViewModelTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `Delete tombstones the schedule and its rule`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
@@ -238,7 +230,6 @@ class ListSchedulesViewModelTest {
     preferences: SchedulePreferences = SchedulePreferencesImpl(scope.buildPreferences()),
   ): ListSchedulesViewModel {
     val dispatcher = StandardTestDispatcher(scope.testScheduler)
-    Dispatchers.setMain(dispatcher)
     val loader =
       SchedulesLoader(
         scheduleDao = ScheduleDao(this),
@@ -251,6 +242,7 @@ class ListSchedulesViewModelTest {
       loader = loader,
       syncController = sync,
       preferences = preferences,
+      viewModelContext = scope.viewModelContext,
     )
   }
 

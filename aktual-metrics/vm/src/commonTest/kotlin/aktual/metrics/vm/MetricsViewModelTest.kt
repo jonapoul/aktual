@@ -6,6 +6,7 @@ import aktual.core.model.bytes
 import aktual.metrics.vm.MetricsState.Failure
 import aktual.metrics.vm.MetricsState.Success
 import aktual.test.assertThatNextEmissionIsEqualTo
+import aktual.test.viewModelContext
 import alakazam.test.TestClock
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
@@ -22,6 +23,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.SerializationException
 
@@ -34,12 +36,13 @@ class MetricsViewModelTest {
     metricsApi = mockk()
   }
 
-  private fun buildViewModel() {
+  private fun TestScope.buildViewModel() {
     viewModel =
       MetricsViewModel(
         metricsApi = metricsApi,
         contexts = TestCoroutineContexts(EmptyCoroutineContext),
         clock = TestClock(EXAMPLE_INSTANT),
+        viewModelContext = viewModelContext,
       )
   }
 

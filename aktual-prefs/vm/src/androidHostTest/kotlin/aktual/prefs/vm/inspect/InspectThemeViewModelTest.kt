@@ -15,6 +15,7 @@ import aktual.prefs.vm.inspect.InspectThemeState.Loaded
 import aktual.prefs.vm.theme.properties
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
+import aktual.test.viewModelContext
 import alakazam.test.standardDispatcher
 import androidx.compose.ui.graphics.Color
 import app.cash.turbine.test
@@ -24,18 +25,14 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
-import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -53,7 +50,6 @@ class InspectThemeViewModelTest {
     }
 
   private fun TestScope.buildViewModel(id: ThemeId = LightColors.id): InspectThemeViewModel {
-    Dispatchers.setMain(standardDispatcher)
     preferences = ThemePreferencesImpl(buildPreferences(standardDispatcher))
     return InspectThemeViewModel(
       themeId = id,
@@ -61,12 +57,8 @@ class InspectThemeViewModelTest {
       cache = cache,
       preferences = preferences,
       uuidGenerator = { "abc" },
+      viewModelContext = viewModelContext,
     )
-  }
-
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
   }
 
   @Test

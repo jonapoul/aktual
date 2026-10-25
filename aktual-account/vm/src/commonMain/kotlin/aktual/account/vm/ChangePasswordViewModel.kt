@@ -5,6 +5,8 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Password
 import aktual.core.model.Token
 import aktual.di.LoggedInScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,7 +35,8 @@ internal constructor(
   versionsStateHolder: AktualVersionsStateHolder,
   private val passwordChanger: PasswordChanger,
   private val loginRequester: LoginRequester,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableShowPasswords = MutableStateFlow(false)
   private val mutablePassword1 = MutableStateFlow(Password.Empty)
   private val mutablePassword2 = MutableStateFlow(Password.Empty)

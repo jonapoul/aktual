@@ -7,6 +7,8 @@ import aktual.budget.reports.vm.DashboardSync
 import aktual.core.UuidGenerator
 import aktual.core.model.Empty
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -37,7 +39,8 @@ internal constructor(
   @Assisted private val page: DashboardPageId,
   private val uuidGenerator: UuidGenerator,
   private val sync: DashboardSync,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private var job: Job? = null
   private val shouldNavigateChannel = Channel<ShouldNavigateEvent>()
   private val mutableDialog = MutableStateFlow<ChooseReportTypeDialog?>(null)

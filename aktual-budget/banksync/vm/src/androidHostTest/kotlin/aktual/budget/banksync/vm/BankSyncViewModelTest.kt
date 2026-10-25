@@ -19,6 +19,7 @@ import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.test.inMemoryDriverFactory
+import aktual.test.viewModelContext
 import alakazam.test.TestClock
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.ReceiveTurbine
@@ -29,7 +30,6 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
-import kotlin.test.AfterTest
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
@@ -38,23 +38,14 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class BankSyncViewModelTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `Groups open accounts by provider, with unlinked accounts separate`() = runBankSyncTest {
     insertBank(BANK_A, name = "Bankity Bank")
@@ -272,13 +263,13 @@ class BankSyncViewModelTest {
     api: BankSyncApi,
     server: BudgetServer = REMOTE,
   ): BankSyncViewModel {
-    Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     return BankSyncViewModel(
       accountDao = AccountDao(database),
       api = api,
       controller = controller,
       server = server,
       clock = TestClock(NOW),
+      viewModelContext = scope.viewModelContext,
     )
   }
 

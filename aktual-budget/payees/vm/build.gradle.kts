@@ -9,8 +9,4 @@ kotlin {
     api(project(":aktual-budget:rules:domain"))
     implementation(libs.metrox.viewmodel)
   }
-
-  androidHostTestDependencies {
-    implementation(project(":aktual-test"))
-  }
 }

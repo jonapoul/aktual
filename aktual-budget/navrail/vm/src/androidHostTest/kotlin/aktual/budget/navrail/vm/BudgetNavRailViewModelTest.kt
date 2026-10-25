@@ -24,6 +24,7 @@ import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
+import aktual.test.viewModelContext
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.all
@@ -205,6 +206,7 @@ class BudgetNavRailViewModelTest {
       accountDao = AccountDao(this),
       appPreferences = appPreferences,
       unpostedSchedules = unpostedSchedules,
+      viewModelContext = scope.viewModelContext,
     )
 
   private class TestUnpostedSchedules : UnpostedSchedules {

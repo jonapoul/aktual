@@ -10,6 +10,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.CategoryId
 import aktual.test.TestCalendar
 import aktual.test.inMemoryDriverFactory
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.ReceiveTurbine
@@ -18,15 +19,11 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import org.junit.runner.RunWith
@@ -35,11 +32,6 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class BudgetCategoryViewModelTest {
   private val calendar = TestCalendar(LocalDate(2026, 4, 15))
-
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
 
   @Test
   fun `History matches each month's budget`() = runCategoryTest { viewModel, calculator ->
@@ -120,9 +112,17 @@ class BudgetCategoryViewModelTest {
     driver.use {
       val database = buildDatabase(driver)
       SETUP.forEach { sql -> driver.run(sql) }
-      Dispatchers.setMain(StandardTestDispatcher(testScheduler))
       val calculator = database.calculator(this)
-      action(BudgetCategoryViewModel(category, APRIL, calculator, calendar), calculator)
+      action(
+        BudgetCategoryViewModel(
+          category,
+          APRIL,
+          calculator,
+          calendar,
+          viewModelContext = viewModelContext,
+        ),
+        calculator,
+      )
     }
   }
 

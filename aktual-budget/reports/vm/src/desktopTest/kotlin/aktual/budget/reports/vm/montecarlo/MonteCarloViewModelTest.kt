@@ -13,6 +13,7 @@ import aktual.budget.reports.vm.McPot
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.keepsSurplus
 import aktual.budget.reports.vm.runSyncedDatabaseTest
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -29,12 +30,9 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlin.test.assertNotNull
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
@@ -210,7 +208,6 @@ class MonteCarloViewModelTest {
     }
     val dispatcher = StandardTestDispatcher(scope.testScheduler)
     // Keep viewModelScope on the test scheduler, so its queries can't outlive the database
-    Dispatchers.setMain(dispatcher)
     val contexts = TestCoroutineContexts(dispatcher)
     val dao = DashboardDao(this, contexts)
     val sync = DashboardSync(dao, controller)
@@ -225,13 +222,10 @@ class MonteCarloViewModelTest {
         sync = sync,
         uuidGenerator = { "new-id" },
         contexts = contexts,
+        viewModelContext = scope.viewModelContext,
       )
-    try {
-      action(viewModel, dao, scope)
-      scope.advanceUntilIdle()
-    } finally {
-      Dispatchers.resetMain()
-    }
+    action(viewModel, dao, scope)
+    scope.advanceUntilIdle()
   }
 
   private companion object {

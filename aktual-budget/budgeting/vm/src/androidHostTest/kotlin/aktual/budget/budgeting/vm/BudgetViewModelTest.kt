@@ -17,6 +17,7 @@ import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
 import aktual.test.TestSyncController
 import aktual.test.inMemoryDriverFactory
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.ReceiveTurbine
@@ -31,14 +32,10 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
-import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import org.junit.runner.RunWith
@@ -53,11 +50,6 @@ class BudgetViewModelTest {
 
   private val BudgetState.Loaded.shown: MonthBudget
     get() = checkNotNull(this[month]) { "$month hasn't loaded" }
-
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
 
   @Test
   fun `Loads the envelope budget for the current month`() = runBudgetTest { viewModel, _ ->
@@ -528,7 +520,6 @@ class BudgetViewModelTest {
   }
 
   private fun BudgetDatabase.createViewModel(scope: TestScope, month: YearMonth?): BudgetViewModel {
-    Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     return BudgetViewModel(
       month = month,
@@ -545,6 +536,7 @@ class BudgetViewModelTest {
       syncController = TestSyncController(),
       calendar = calendar,
       syncStateHolder = SyncStateHolder(),
+      viewModelContext = scope.viewModelContext,
     )
   }
 

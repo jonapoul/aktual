@@ -4,6 +4,8 @@ import aktual.about.data.LogsRepository
 import aktual.core.model.Bytes
 import aktual.core.model.bytes
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,7 +31,8 @@ class LogFilesViewModel
 internal constructor(
   private val repository: LogsRepository,
   private val exporter: LogExporter,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableState = MutableStateFlow<LogFilesState>(Loading)
   val state: StateFlow<LogFilesState> = mutableState.asStateFlow()
 

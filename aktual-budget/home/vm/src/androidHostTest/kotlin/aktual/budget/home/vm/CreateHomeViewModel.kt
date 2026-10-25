@@ -16,12 +16,11 @@ import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
 import aktual.test.inMemoryDriverFactory
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.setMain
 
 internal fun BudgetDatabase.createHomeViewModel(
   scope: TestScope,
@@ -30,7 +29,6 @@ internal fun BudgetDatabase.createHomeViewModel(
   accountsCard: BudgetDatabase = this,
   pinnedReports: PinnedReports = FakePinnedReports(),
 ): HomeViewModel {
-  Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
   val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
   val calculator =
     BudgetMonthCalculatorImpl(
@@ -62,6 +60,7 @@ internal fun BudgetDatabase.createHomeViewModel(
     accountsSummaryLoader = AccountsSummaryLoader(AccountDao(accountsCard)),
     upcomingSchedulesLoader = UpcomingSchedulesLoader(schedulesLoader, calendar),
     pinnedReports = pinnedReports,
+    viewModelContext = scope.viewModelContext,
   )
 }
 

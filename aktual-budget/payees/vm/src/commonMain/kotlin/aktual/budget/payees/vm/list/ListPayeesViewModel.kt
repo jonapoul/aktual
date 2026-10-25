@@ -10,6 +10,8 @@ import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.rules.domain.CategoryLearningPref
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -42,7 +44,8 @@ internal constructor(
   private val merger: PayeeMerger,
   private val learning: CategoryLearningPref,
   private val budgetScope: BudgetCoroutineScope,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
   private val mutableEvents =

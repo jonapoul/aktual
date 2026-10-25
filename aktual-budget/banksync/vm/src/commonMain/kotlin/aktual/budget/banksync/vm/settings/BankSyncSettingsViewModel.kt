@@ -12,6 +12,8 @@ import aktual.budget.banksync.domain.with
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.model.AccountId
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -51,7 +53,8 @@ class BankSyncSettingsViewModel(
   private val writer: BankSyncSettingsWriter,
   private val fieldsLoader: MappableFieldsLoader,
   private val linker: BankAccountLinker,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)

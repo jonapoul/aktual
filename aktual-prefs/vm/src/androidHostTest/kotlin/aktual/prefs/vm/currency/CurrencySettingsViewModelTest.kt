@@ -2,6 +2,7 @@ package aktual.prefs.vm.currency
 
 import aktual.prefs.CurrencyPreferencesImpl
 import aktual.test.buildPreferences
+import aktual.test.viewModelContext
 import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.all
@@ -19,7 +20,7 @@ class CurrencySettingsViewModelTest {
   @Test
   fun `Symbol settings are disabled without a currency`() = runTest {
     val preferences = CurrencyPreferencesImpl(buildPreferences(unconfinedDispatcher))
-    val viewModel = CurrencySettingsViewModel(preferences)
+    val viewModel = CurrencySettingsViewModel(preferences, viewModelContext = viewModelContext)
 
     viewModel.state.test {
       awaitItem()

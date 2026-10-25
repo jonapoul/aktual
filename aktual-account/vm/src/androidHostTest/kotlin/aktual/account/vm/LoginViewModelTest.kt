@@ -8,7 +8,7 @@ import aktual.prefs.AppPreferencesImpl
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
-import alakazam.test.standardDispatcher
+import aktual.test.viewModelContext
 import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
@@ -20,16 +20,12 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -44,7 +40,6 @@ internal class LoginViewModelTest {
   private lateinit var loginRequester: LoginRequester
 
   private fun TestScope.before() {
-    Dispatchers.setMain(standardDispatcher)
     val prefs = buildPreferences(unconfinedDispatcher)
     preferences = AppPreferencesImpl(prefs)
     versionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
@@ -55,12 +50,8 @@ internal class LoginViewModelTest {
         loginRequester = loginRequester,
         preferences = preferences,
         buildConfig = TestBuildConfig.copy(defaultPassword = Empty),
+        viewModelContext = viewModelContext,
       )
-  }
-
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
   }
 
   @Test

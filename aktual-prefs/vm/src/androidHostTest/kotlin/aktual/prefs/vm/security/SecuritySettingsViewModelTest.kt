@@ -5,6 +5,7 @@ import aktual.prefs.SecurityPreferencesImpl
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
 import aktual.test.buildPreferences
+import aktual.test.unconfinedViewModelContext
 import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.all
@@ -25,7 +26,12 @@ class SecuritySettingsViewModelTest {
   @Test
   fun `Enabling after a successful unlock`() = runTest {
     val preferences = SecurityPreferencesImpl(buildPreferences(unconfinedDispatcher))
-    val viewModel = SecuritySettingsViewModel(preferences, authenticator)
+    val viewModel =
+      SecuritySettingsViewModel(
+        preferences,
+        authenticator,
+        viewModelContext = unconfinedViewModelContext,
+      )
 
     viewModel.state.test {
       val initial = awaitItem()
@@ -49,7 +55,12 @@ class SecuritySettingsViewModelTest {
   @Test
   fun `Not enabled if the unlock fails`() = runTest {
     val preferences = SecurityPreferencesImpl(buildPreferences(unconfinedDispatcher))
-    val viewModel = SecuritySettingsViewModel(preferences, authenticator)
+    val viewModel =
+      SecuritySettingsViewModel(
+        preferences,
+        authenticator,
+        viewModelContext = unconfinedViewModelContext,
+      )
 
     viewModel.state.test {
       authenticator.result = false
@@ -65,7 +76,12 @@ class SecuritySettingsViewModelTest {
   fun `Disabling doesn't need an unlock`() = runTest {
     val preferences = SecurityPreferencesImpl(buildPreferences(unconfinedDispatcher))
     preferences.appLockEnabled.set(true)
-    val viewModel = SecuritySettingsViewModel(preferences, authenticator)
+    val viewModel =
+      SecuritySettingsViewModel(
+        preferences,
+        authenticator,
+        viewModelContext = unconfinedViewModelContext,
+      )
 
     viewModel.state.test {
       awaitItem().appLockEnabled.onChange(false)
@@ -79,7 +95,12 @@ class SecuritySettingsViewModelTest {
   fun `Toggle disabled without a screen lock`() = runTest {
     val preferences = SecurityPreferencesImpl(buildPreferences(unconfinedDispatcher))
     authenticator.available = false
-    val viewModel = SecuritySettingsViewModel(preferences, authenticator)
+    val viewModel =
+      SecuritySettingsViewModel(
+        preferences,
+        authenticator,
+        viewModelContext = unconfinedViewModelContext,
+      )
 
     viewModel.state.test {
       assertThat(awaitItem()).all {
@@ -102,7 +123,12 @@ class SecuritySettingsViewModelTest {
     val preferences = SecurityPreferencesImpl(buildPreferences(unconfinedDispatcher))
     preferences.appLockEnabled.set(true)
     authenticator.available = false
-    val viewModel = SecuritySettingsViewModel(preferences, authenticator)
+    val viewModel =
+      SecuritySettingsViewModel(
+        preferences,
+        authenticator,
+        viewModelContext = unconfinedViewModelContext,
+      )
 
     viewModel.state.test {
       assertThat(awaitItem().appLockEnabled.enabled).isTrue()
@@ -113,7 +139,12 @@ class SecuritySettingsViewModelTest {
   @Test
   fun `Timeout changes`() = runTest {
     val preferences = SecurityPreferencesImpl(buildPreferences(unconfinedDispatcher))
-    val viewModel = SecuritySettingsViewModel(preferences, authenticator)
+    val viewModel =
+      SecuritySettingsViewModel(
+        preferences,
+        authenticator,
+        viewModelContext = unconfinedViewModelContext,
+      )
 
     viewModel.state.test {
       awaitItem().appLockTimeout.onChange(Minutes5)

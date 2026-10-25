@@ -8,8 +8,4 @@ kotlin {
     api(project(":aktual-core:l10n"))
     implementation(project(":aktual-budget:rules:domain"))
   }
-
-  commonTestDependencies {
-    implementation(project(":aktual-test"))
-  }
 }

@@ -15,6 +15,5 @@ kotlin {
 
   androidHostTestDependencies {
     implementation(project(":aktual-prefs:impl"))
-    implementation(project(":aktual-test"))
   }
 }

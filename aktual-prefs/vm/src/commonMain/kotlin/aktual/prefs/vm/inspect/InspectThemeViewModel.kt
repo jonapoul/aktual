@@ -9,6 +9,8 @@ import aktual.core.theme.CustomThemeRepo
 import aktual.core.theme.ThemeResolver
 import aktual.core.theme.toCustomColors
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.ThemePreferences
 import aktual.prefs.vm.inspect.InspectThemeEvent.Deleted
 import aktual.prefs.vm.inspect.InspectThemeEvent.Duplicated
@@ -47,7 +49,8 @@ class InspectThemeViewModel(
   private val cache: CustomThemeCache,
   private val preferences: ThemePreferences,
   private val uuidGenerator: UuidGenerator,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableState = MutableStateFlow<InspectThemeState>(Loading)
   private val mutableSorting = MutableStateFlow<PropertySorting>(Default)
   private val saveMutex = Mutex()

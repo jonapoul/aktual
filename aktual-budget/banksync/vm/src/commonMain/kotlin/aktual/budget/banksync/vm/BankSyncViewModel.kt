@@ -10,6 +10,8 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -53,7 +55,8 @@ class BankSyncViewModel(
   private val controller: BankSyncController,
   private val server: BudgetServer,
   private val clock: Clock,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableAccounts = MutableStateFlow<LoadedAccounts>(None)
   private val mutableStatuses =
     MutableStateFlow<PersistentMap<AccountSyncSource, BankSyncProviderStatus>>(persistentMapOf())

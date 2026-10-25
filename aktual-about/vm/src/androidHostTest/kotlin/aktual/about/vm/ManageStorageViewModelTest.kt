@@ -6,6 +6,7 @@ import aktual.core.logging.LogStorage
 import aktual.core.model.bytes
 import aktual.test.CoTemporaryFolder
 import aktual.test.testBudgetFiles
+import aktual.test.unconfinedViewModelContext
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.unconfinedDispatcher
 import app.cash.burst.InterceptTest
@@ -15,13 +16,9 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.prop
 import io.mockk.mockk
-import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import okio.FileSystem
 import okio.Path
 
@@ -29,7 +26,6 @@ class ManageStorageViewModelTest {
   @InterceptTest val temporaryFolder = CoTemporaryFolder()
 
   private fun TestScope.buildViewModel(root: Path, logsDir: Path): ManageStorageViewModel {
-    Dispatchers.setMain(unconfinedDispatcher)
     return ManageStorageViewModel(
       files = testBudgetFiles(SYSTEM, root / "budgets"),
       appDirectory = AppDirectory { root },
@@ -39,12 +35,8 @@ class ManageStorageViewModelTest {
       runLevelState = mockk(),
       runLevelController = mockk(),
       dataStore = mockk(),
+      viewModelContext = unconfinedViewModelContext,
     )
-  }
-
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
   }
 
   @Test

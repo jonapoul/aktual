@@ -16,6 +16,8 @@ import aktual.di.AppScope
 import aktual.di.BudgetGraph
 import aktual.di.RunLevelController
 import aktual.di.RunLevelState
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.CoroutineContexts
 import androidx.compose.runtime.Stable
 import androidx.datastore.core.DataStore
@@ -52,7 +54,8 @@ class ManageStorageViewModel(
   private val runLevelState: RunLevelState,
   private val runLevelController: RunLevelController,
   private val dataStore: DataStore<Preferences>,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
 
   private val mutableState = MutableStateFlow<ManageStorageState>(Loading)
   val state: StateFlow<ManageStorageState> = mutableState.asStateFlow()

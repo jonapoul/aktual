@@ -3,6 +3,7 @@ package aktual.detekt
 import aktual.detekt.rules.InjectedRawCoroutineScope
 import aktual.detekt.rules.InvalidComposeLazyKey
 import aktual.detekt.rules.RedundantQualifier
+import aktual.detekt.rules.SetMainDispatcher
 import dev.detekt.api.RuleSet
 import dev.detekt.api.RuleSetId
 import dev.detekt.api.RuleSetProvider
@@ -13,6 +14,12 @@ class AktualRuleSetProvider : RuleSetProvider {
   override fun instance(): RuleSet =
     RuleSet(
       id = ruleSetId,
-      rules = listOf(::InjectedRawCoroutineScope, ::InvalidComposeLazyKey, ::RedundantQualifier),
+      rules =
+        listOf(
+          ::InjectedRawCoroutineScope,
+          ::InvalidComposeLazyKey,
+          ::RedundantQualifier,
+          ::SetMainDispatcher,
+        ),
     )
 }

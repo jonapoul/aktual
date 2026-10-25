@@ -1,6 +1,8 @@
 package aktual.prefs.vm.format
 
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.FormatPreferences
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
@@ -18,7 +20,8 @@ import kotlinx.coroutines.flow.StateFlow
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class FormatSettingsViewModel(preferences: FormatPreferences) : ViewModel() {
+class FormatSettingsViewModel(preferences: FormatPreferences, viewModelContext: ViewModelContext) :
+  ViewModel(viewModelContext.newScope()) {
   val state: StateFlow<FormatSettingsState> =
     viewModelScope.launchMolecule(Immediate) {
       val numberFormat by collectAsState(preferences.numberFormat)

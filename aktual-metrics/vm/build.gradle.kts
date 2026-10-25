@@ -7,8 +7,4 @@ kotlin {
     api(project(":aktual-di:core"))
     implementation(libs.kotlinx.serialization.core)
   }
-
-  commonTestDependencies {
-    implementation(project(":aktual-test"))
-  }
 }

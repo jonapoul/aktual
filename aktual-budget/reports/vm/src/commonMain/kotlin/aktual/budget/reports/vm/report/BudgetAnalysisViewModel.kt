@@ -16,6 +16,8 @@ import aktual.budget.reports.vm.withSettings
 import aktual.core.Calendar
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -55,7 +57,8 @@ internal constructor(
   private val sync: DashboardSync,
   private val calendar: Calendar,
   private val budgetScope: BudgetCoroutineScope,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val saved: StateFlow<SavedMeta> =
     dashboardDao
       .observeById(id)

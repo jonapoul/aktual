@@ -11,7 +11,7 @@ import aktual.budget.payees.vm.search.SearchPayeesState.Results
 import aktual.budget.rules.domain.PayeeRuleCounter
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
-import alakazam.test.standardDispatcher
+import aktual.test.viewModelContext
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -19,23 +19,14 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
-import kotlin.test.AfterTest
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class SearchPayeesViewModelTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `Blank query prompts for input`() = runDatabaseTest { scope ->
     PayeeDao(this).insert(PayeeId("argos"), "Argos")
@@ -104,10 +95,10 @@ class SearchPayeesViewModelTest {
   }
 
   private fun BudgetDatabase.createViewModel(scope: TestScope): SearchPayeesViewModel {
-    Dispatchers.setMain(scope.standardDispatcher)
     return SearchPayeesViewModel(
       savedState = SavedStateHandle(),
       loader = PayeesLoader(PayeeDao(this), PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
+      viewModelContext = scope.viewModelContext,
     )
   }
 }

@@ -1,6 +1,8 @@
 package aktual.prefs.vm.schedules
 
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.SchedulePreferences
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.asLoadedStateFlow
@@ -18,7 +20,10 @@ import kotlinx.coroutines.launch
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class ScheduleSettingsViewModel(preferences: SchedulePreferences) : ViewModel() {
+class ScheduleSettingsViewModel(
+  preferences: SchedulePreferences,
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val showCompleted = preferences.showCompleted.asLoadedStateFlow(viewModelScope)
 
   val state: StateFlow<ScheduleSettingsState> =

@@ -16,6 +16,8 @@ import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.QueryEditorDataLoader
 import aktual.core.UuidGenerator
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -61,7 +63,8 @@ internal constructor(
   tagsDao: TagsDao,
   chartDataLoader: ChartDataLoader,
   queryEditorDataLoader: QueryEditorDataLoader,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private var job: Job? = null
   private val isEditing = MutableStateFlow(true)
   private val draft = MutableStateFlow(CustomReportConfig.Default)

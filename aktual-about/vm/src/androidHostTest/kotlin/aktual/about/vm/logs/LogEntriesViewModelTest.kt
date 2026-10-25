@@ -3,6 +3,7 @@ package aktual.about.vm.logs
 import aktual.about.data.LogsRepository
 import aktual.about.vm.logs.LogEntriesState.Loaded
 import aktual.core.logging.LogLine
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import app.cash.turbine.TurbineTestContext
@@ -15,17 +16,13 @@ import assertk.assertions.prop
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import org.junit.runner.RunWith
@@ -36,7 +33,6 @@ class LogEntriesViewModelTest {
   private val repository = mockk<LogsRepository>()
 
   private fun TestScope.buildViewModel(date: LocalDate): LogEntriesViewModel {
-    Dispatchers.setMain(standardDispatcher)
     every { repository.today() } returns TODAY
     return LogEntriesViewModel(
       date = date,
@@ -44,12 +40,8 @@ class LogEntriesViewModelTest {
       repository = repository,
       exporter = LogExporter(repository),
       contexts = TestCoroutineContexts(standardDispatcher),
+      viewModelContext = viewModelContext,
     )
-  }
-
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
   }
 
   @Test

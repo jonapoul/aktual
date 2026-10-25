@@ -8,8 +8,4 @@ kotlin {
     api(project(":aktual-budget:transactions:domain"))
     implementation(libs.metrox.viewmodel)
   }
-
-  androidHostTestDependencies {
-    implementation(project(":aktual-test"))
-  }
 }

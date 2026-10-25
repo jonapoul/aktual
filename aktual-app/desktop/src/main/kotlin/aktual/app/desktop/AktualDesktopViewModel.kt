@@ -10,6 +10,7 @@ import aktual.core.nav.NavEntryContributor
 import aktual.core.theme.ThemeResolver
 import aktual.di.AppScope
 import aktual.di.RunLevelState
+import aktual.di.ViewModelContext
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import dev.zacsweers.metro.ContributesIntoMap
@@ -28,6 +29,7 @@ class AktualDesktopViewModel(
   initialRouteUseCase: InitialRouteUseCase,
   bottomBarStateUseCase: BottomBarStateUseCase,
   runLevels: RunLevelState,
+  viewModelContext: ViewModelContext,
 ) :
   RootViewModel(
     themeResolver = themeResolver,
@@ -38,4 +40,5 @@ class AktualDesktopViewModel(
     initialRouteUseCase = initialRouteUseCase,
     bottomBarStateUseCase = bottomBarStateUseCase,
     runLevels = runLevels,
+    viewModelContext = viewModelContext,
   )

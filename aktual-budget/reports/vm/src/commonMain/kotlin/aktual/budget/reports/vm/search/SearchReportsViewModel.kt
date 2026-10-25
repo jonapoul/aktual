@@ -13,6 +13,8 @@ import aktual.budget.reports.vm.dashboard.displayName
 import aktual.budget.reports.vm.search.SearchReportsState.Results
 import aktual.core.snippet
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -40,7 +42,8 @@ internal constructor(
   customReportsDao: CustomReportsDao,
   pages: DashboardPages,
   private val decoder: DashboardItemDecoder,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
   @ViewModelAssistedFactoryKey(SearchReportsViewModel::class)
   @ContributesIntoMap(BudgetScope::class)

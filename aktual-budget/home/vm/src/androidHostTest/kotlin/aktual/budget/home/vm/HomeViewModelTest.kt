@@ -30,21 +30,13 @@ import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import assertk.assertions.prop
-import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.resetMain
 import kotlinx.datetime.LocalDate
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class HomeViewModelTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `Budget name follows local preferences`() = runDatabaseTest { scope ->
     val prefs = TestBudgetLocalPreferences(DbMetadata(budgetName = "Household"))

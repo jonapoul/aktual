@@ -15,6 +15,8 @@ import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
 import aktual.core.model.BuildConfig
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -62,7 +64,8 @@ class LinkBankAccountViewModel(
   waiter: GoCardlessLoginWaiter,
   enableBanking: EnableBankingApi,
   buildConfig: BuildConfig,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)

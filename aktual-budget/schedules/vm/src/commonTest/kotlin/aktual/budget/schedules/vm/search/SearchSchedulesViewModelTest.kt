@@ -13,6 +13,7 @@ import aktual.budget.schedules.vm.search.SearchSchedulesState.Results
 import aktual.core.Calendar
 import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.ReceiveTurbine
@@ -22,22 +23,13 @@ import assertk.assertions.containsExactly
 import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 
 class SearchSchedulesViewModelTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `Blank query prompts for input`() = runDatabaseTest { scope ->
     insertSchedule(id = "rent", name = "Rent", payee = "Landlord", account = "Checking")
@@ -117,7 +109,6 @@ class SearchSchedulesViewModelTest {
 
   private fun BudgetDatabase.createViewModel(scope: TestScope): SearchSchedulesViewModel {
     val dispatcher = StandardTestDispatcher(scope.testScheduler)
-    Dispatchers.setMain(dispatcher)
     val loader =
       SchedulesLoader(
         scheduleDao = ScheduleDao(this),
@@ -126,6 +117,10 @@ class SearchSchedulesViewModelTest {
         preferencesDao = PreferencesDao(this, TestCoroutineContexts(dispatcher)),
         calendar = Calendar { LocalDate(2026, 4, 1) },
       )
-    return SearchSchedulesViewModel(savedState = SavedStateHandle(), loader = loader)
+    return SearchSchedulesViewModel(
+      savedState = SavedStateHandle(),
+      loader = loader,
+      viewModelContext = scope.viewModelContext,
+    )
   }
 }

@@ -16,6 +16,7 @@ import aktual.budget.rules.vm.RulesLoader
 import aktual.budget.rules.vm.StringLookup
 import aktual.budget.rules.vm.search.SearchRulesState.Results
 import aktual.test.runDatabaseTest
+import aktual.test.viewModelContext
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -23,27 +24,17 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
-import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 import org.jetbrains.compose.resources.StringResource
 
 class SearchRulesViewModelTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `Blank query prompts for input`() = runDatabaseTest { scope ->
     insertRule(id = "a", conditions = listOf(notesDoNotContain("rent")))
@@ -213,13 +204,13 @@ class SearchRulesViewModelTest {
     scope: TestScope,
     payee: PayeeId? = null,
   ): SearchRulesViewModel {
-    Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     return SearchRulesViewModel(
       initialPayee = payee,
       savedState = SavedStateHandle(),
       loader = RulesLoader(RulesDao(this)),
       searchText = RuleSearchText(FakeNameFetcher, FakeStringLookup),
       nameFetcher = FakeNameFetcher,
+      viewModelContext = scope.viewModelContext,
     )
   }
 

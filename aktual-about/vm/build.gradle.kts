@@ -14,8 +14,4 @@ kotlin {
     api(project(":aktual-di:runlevel"))
     implementation(libs.okio)
   }
-
-  commonTestDependencies {
-    implementation(project(":aktual-test"))
-  }
 }

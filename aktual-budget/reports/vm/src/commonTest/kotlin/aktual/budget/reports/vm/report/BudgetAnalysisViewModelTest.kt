@@ -17,6 +17,7 @@ import aktual.budget.reports.vm.report.BudgetAnalysisState.Loaded
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.core.Calendar
 import aktual.di.BudgetCoroutineScope
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -30,12 +31,9 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import kotlinx.serialization.json.Json
@@ -178,7 +176,6 @@ class BudgetAnalysisViewModelTest {
       }
       val dispatcher = StandardTestDispatcher(scope.testScheduler)
       // Keep viewModelScope on the test scheduler, so its queries can't outlive the database
-      Dispatchers.setMain(dispatcher)
       val contexts = TestCoroutineContexts(dispatcher)
       val calendar = Calendar { LocalDate(2026, 1, 15) }
       val dao = DashboardDao(this, contexts)
@@ -194,13 +191,10 @@ class BudgetAnalysisViewModelTest {
           sync = sync,
           calendar = calendar,
           budgetScope = BudgetCoroutineScope(scope),
+          viewModelContext = scope.viewModelContext,
         )
-      try {
-        Harness(viewModel, dao, scope).action()
-        scope.advanceUntilIdle()
-      } finally {
-        Dispatchers.resetMain()
-      }
+      Harness(viewModel, dao, scope).action()
+      scope.advanceUntilIdle()
     }
 
   private companion object {

@@ -13,6 +13,8 @@ import aktual.budget.reports.vm.SummaryChartType
 import aktual.budget.reports.vm.TextAlign
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -42,7 +44,8 @@ internal constructor(
   private val sync: DashboardSync,
   private val chartDataLoader: ChartDataLoader,
   private val decoder: DashboardItemDecoder,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   val state: StateFlow<ReportState> =
     dashboardDao
       .observeById(id)

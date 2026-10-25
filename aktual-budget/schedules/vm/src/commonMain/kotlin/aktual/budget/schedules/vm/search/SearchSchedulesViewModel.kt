@@ -5,6 +5,8 @@ import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Failure
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Results
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
@@ -34,7 +36,8 @@ class SearchSchedulesViewModel
 internal constructor(
   @Assisted private val savedState: SavedStateHandle,
   private val loader: SchedulesLoader,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
   @ViewModelAssistedFactoryKey(SearchSchedulesViewModel::class)
   @ContributesIntoMap(BudgetScope::class)

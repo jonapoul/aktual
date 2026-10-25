@@ -20,12 +20,9 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import org.junit.runner.RunWith
@@ -34,11 +31,6 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class HomeViewModelAttentionTest {
   private val calendar = TestCalendar(LocalDate(2026, 4, 15))
-
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
 
   @Test
   fun `Nothing to act on is empty`() = runAttentionTest { viewModel, _, _ ->

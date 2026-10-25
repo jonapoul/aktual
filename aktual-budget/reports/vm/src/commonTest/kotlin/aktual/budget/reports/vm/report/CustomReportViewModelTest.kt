@@ -26,6 +26,7 @@ import aktual.budget.reports.vm.report.CustomReportState.Loaded
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.budget.reports.vm.withMode
 import aktual.core.Calendar
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -39,12 +40,9 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -210,7 +208,6 @@ class CustomReportViewModelTest {
     customReportsQueries.withoutResult { insert(report) }
     val dispatcher = StandardTestDispatcher(scope.testScheduler)
     // Keep viewModelScope on the test scheduler, so its queries can't outlive the database
-    Dispatchers.setMain(dispatcher)
     val contexts = TestCoroutineContexts(dispatcher)
     val calendar = Calendar { LocalDate(2026, 1, 1) }
     val dao = DashboardDao(this, contexts)
@@ -228,13 +225,10 @@ class CustomReportViewModelTest {
         chartDataLoader = chartDataLoader(contexts, calendar),
         queryEditorDataLoader = QueryEditorDataLoader(this, ReportsDao(this, contexts), calendar),
         sync = CustomReportSync(customReports, controller, calendar),
+        viewModelContext = scope.viewModelContext,
       )
-    try {
-      Harness(viewModel, customReports, controller, scope).action()
-      scope.advanceUntilIdle()
-    } finally {
-      Dispatchers.resetMain()
-    }
+    Harness(viewModel, customReports, controller, scope).action()
+    scope.advanceUntilIdle()
   }
 
   private companion object {

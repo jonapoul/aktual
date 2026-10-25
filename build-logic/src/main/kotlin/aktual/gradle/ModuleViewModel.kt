@@ -6,6 +6,7 @@ import blueprint.core.get
 import blueprint.core.libs
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.commonMainDependencies
+import org.gradle.kotlin.dsl.commonTestDependencies
 
 class ModuleViewModel : ProjectPlugin {
   override fun Project.applyTo() {
@@ -21,11 +22,15 @@ class ModuleViewModel : ProjectPlugin {
         api(libs["kotlinx.coroutines.core"])
         api(libs["kotlinx.immutable"])
         api(libs["metrox.viewmodel"])
+        api(project(":aktual-di:core"))
         implementation(libs["androidx.savedstate"])
         implementation(libs["compose.runtime"])
         implementation(libs["molecule"])
         implementation(project(":aktual-core:logging"))
-        implementation(project(":aktual-di:core"))
+      }
+
+      commonTestDependencies {
+        implementation(project(":aktual-test"))
       }
     }
   }

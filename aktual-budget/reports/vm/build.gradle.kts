@@ -14,8 +14,4 @@ kotlin {
     implementation(project(":aktual-core:theme"))
     implementation(project(":aktual-prefs"))
   }
-
-  commonTestDependencies {
-    implementation(project(":aktual-test"))
-  }
 }

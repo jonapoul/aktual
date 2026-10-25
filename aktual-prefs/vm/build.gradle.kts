@@ -9,6 +9,5 @@ kotlin {
 
   commonTestDependencies {
     implementation(project(":aktual-app:di"))
-    implementation(project(":aktual-test"))
   }
 }

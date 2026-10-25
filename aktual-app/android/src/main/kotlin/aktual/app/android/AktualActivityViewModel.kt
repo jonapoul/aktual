@@ -10,6 +10,7 @@ import aktual.core.nav.NavEntryContributor
 import aktual.core.theme.ThemeResolver
 import aktual.di.AppScope
 import aktual.di.RunLevelState
+import aktual.di.ViewModelContext
 import aktual.prefs.SecurityPreferences
 import aktual.prefs.SystemUiPreferences
 import androidx.compose.runtime.Stable
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.stateIn
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@Suppress("LongParameterList")
 class AktualActivityViewModel(
   themeResolver: ThemeResolver,
   appLifecycleManager: AppLifecycleManager,
@@ -36,6 +38,7 @@ class AktualActivityViewModel(
   systemUiPreferences: SystemUiPreferences,
   securityPreferences: SecurityPreferences,
   val runLevels: RunLevelState,
+  viewModelContext: ViewModelContext,
 ) :
   RootViewModel(
     themeResolver = themeResolver,
@@ -46,6 +49,7 @@ class AktualActivityViewModel(
     initialRouteUseCase = initialRouteUseCase,
     bottomBarStateUseCase = bottomBarStateUseCase,
     runLevels = runLevels,
+    viewModelContext = viewModelContext,
   ) {
   // hides the app's contents in the recent-apps switcher (and blocks screenshots) when true. Forced
   // on by the app lock, since the recents snapshot is taken before the lock screen can draw

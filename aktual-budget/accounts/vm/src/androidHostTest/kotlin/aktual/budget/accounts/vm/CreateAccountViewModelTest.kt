@@ -18,6 +18,7 @@ import aktual.test.TestCalendar
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
+import aktual.test.viewModelContext
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
@@ -25,14 +26,9 @@ import assertk.assertions.contains
 import assertk.assertions.containsExactly
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
-import kotlin.test.AfterTest
 import kotlin.time.Clock
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,11 +36,6 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class CreateAccountViewModelTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `Can't create without a name`() = runDatabaseTest { scope ->
     val viewModel = createViewModel(scope)
@@ -173,7 +164,6 @@ class CreateAccountViewModelTest {
     scope: TestScope,
     sync: BudgetSyncController = TestSyncController(),
   ): CreateAccountViewModel {
-    Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     val accountDao = AccountDao(this)
     var nextId = 1
     return CreateAccountViewModel(
@@ -190,6 +180,7 @@ class CreateAccountViewModelTest {
         ),
       accountDao = accountDao,
       calendar = TestCalendar(LocalDate(2026, 10, 24)),
+      viewModelContext = scope.viewModelContext,
     )
   }
 

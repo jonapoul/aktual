@@ -12,6 +12,8 @@ import aktual.budget.tags.domain.toHex
 import aktual.budget.tags.vm.list.toTagItem
 import aktual.core.UuidGenerator
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.TagPreferences
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
@@ -49,7 +51,8 @@ class EditTagViewModel(
   private val uuidGenerator: UuidGenerator,
   private val syncController: BudgetSyncController,
   private val preferences: TagPreferences,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableLoaded = MutableStateFlow<Loaded?>(null)
   private val mutableFailure = MutableStateFlow<EditTagState.Failure?>(null)
   private val mutableExistingNames = MutableStateFlow(persistentSetOf<String>())
