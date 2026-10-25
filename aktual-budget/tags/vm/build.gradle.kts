@@ -13,7 +13,7 @@ kotlin {
     implementation(libs.metrox.viewmodel)
   }
 
-  androidHostTestDependencies {
+  commonTestDependencies {
     implementation(project(":aktual-prefs:impl"))
   }
 }

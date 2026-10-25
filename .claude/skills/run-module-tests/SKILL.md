@@ -19,7 +19,7 @@ Check which test source set directories exist for the module under `src/`:
 
 ```
 src/commonTest/     -> shared tests (run by both androidHostTest and desktopTest tasks)
-src/androidHostTest/ -> Android-specific tests (Robolectric, runs on host JVM)
+src/androidHostTest/ -> Android-specific tests (runs on host JVM, Robolectric where a class opts in)
 src/desktopTest/    -> JVM/Desktop-specific tests
 src/test/           -> Standard JVM test (JVM-only modules)
 ```

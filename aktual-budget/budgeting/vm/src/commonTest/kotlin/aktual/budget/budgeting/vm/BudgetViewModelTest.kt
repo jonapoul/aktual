@@ -1,0 +1,579 @@
+package aktual.budget.budgeting.vm
+
+import aktual.budget.SyncStateHolder
+import aktual.budget.budgeting.domain.BudgetMonthCalculatorImpl
+import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.buildDatabase
+import aktual.budget.db.dao.BudgetDao
+import aktual.budget.db.dao.PreferencesDao
+import aktual.budget.db.dao.TransactionDao
+import aktual.budget.model.Amount
+import aktual.budget.model.BudgetId
+import aktual.budget.model.CategoryGroupId
+import aktual.budget.model.CategoryId
+import aktual.budget.model.DbMetadata
+import aktual.budget.model.SyncedPrefKey
+import aktual.test.TestBudgetLocalPreferences
+import aktual.test.TestCalendar
+import aktual.test.TestSyncController
+import aktual.test.inMemoryDriverFactory
+import aktual.test.viewModelContext
+import alakazam.test.TestCoroutineContexts
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.turbine.ReceiveTurbine
+import app.cash.turbine.test
+import assertk.all
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
+import assertk.assertions.prop
+import kotlin.test.Test
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
+
+@Suppress("TooManyFunctions")
+class BudgetViewModelTest {
+  private val calendar = TestCalendar(LocalDate(2026, 4, 15))
+  private val prefs = TestBudgetLocalPreferences(DbMetadata())
+  private val writer = RecordingBudgetWriter()
+
+  private val BudgetState.Loaded.shown: MonthBudget
+    get() = checkNotNull(this[month]) { "$month hasn't loaded" }
+
+  @Test
+  fun `Loads the envelope budget for the current month`() = runBudgetTest { viewModel, _ ->
+    viewModel.state.test {
+      assertThat(awaitItem()).isEqualTo(Loading)
+
+      val state = awaitLoaded()
+      assertThat(state.type).isEqualTo(Envelope)
+      assertThat(state.month).isEqualTo(YearMonth(2026, 4))
+      assertThat(state.shown.summary)
+        .isEqualTo(
+          BudgetSummary.Envelope(
+            toBudget = Amount(-5_000L),
+            available = Amount(300_000L),
+            budgeted = Amount(305_000L),
+            overspentLastMonth = Zero,
+            held = Zero,
+          ),
+        )
+      assertThat(state.shown.groups.map { it.id }).containsExactly(CategoryGroupId("usual"))
+      assertThat(state.shown.groups.single().categories)
+        .containsExactly(
+          CategoryRow(
+            id = CategoryId("food"),
+            name = "Food",
+            isHidden = false,
+            budgeted = Amount(5_000L),
+            spent = Amount(-50_000L),
+            balance = Amount(-45_000L),
+            carryover = false,
+          ),
+          CategoryRow(
+            id = CategoryId("rent"),
+            name = "Rent",
+            isHidden = false,
+            budgeted = Amount(300_000L),
+            spent = Zero,
+            balance = Amount(300_000L),
+            carryover = false,
+          ),
+        )
+      assertThat(state.shown.income?.categories?.map { it.spent })
+        .isEqualTo(listOf(Amount(300_000L)))
+      assertThat(state.showSpent).isFalse()
+      assertThat(state.showHidden).isFalse()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Shows the month from the route`() =
+    runBudgetTest(month = YearMonth(2026, 3)) { viewModel, _ ->
+      viewModel.state.test {
+        assertThat(awaitLoaded().month).isEqualTo(YearMonth(2026, 3))
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `Banners for uncategorised, overspent and overbudgeted`() = runBudgetTest { viewModel, _ ->
+    viewModel.state.test {
+      assertThat(awaitLoaded().shown.banners)
+        .containsExactly(
+          Banner.Uncategorised(count = 1),
+          Banner.Overspent(count = 1, total = Amount(-45_000L)),
+          Banner.Overbudgeted(Amount(-5_000L)),
+        )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Toggles the spent column`() = runBudgetTest { viewModel, _ ->
+    viewModel.state.test {
+      assertThat(awaitLoaded().showSpent).isFalse()
+
+      viewModel.toggleSpent()
+      assertThat(awaitLoaded().showSpent).isTrue()
+      assertThat(prefs.value[DbMetadata.MobileShowSpentColumn]).isEqualTo(true)
+
+      viewModel.toggleSpent()
+      assertThat(awaitLoaded().showSpent).isFalse()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Collapses and expands a group`() = runBudgetTest { viewModel, _ ->
+    viewModel.state.test {
+      assertThat(awaitLoaded().shown.groups.single().isCollapsed).isFalse()
+
+      viewModel.toggleCollapsed(CategoryGroupId("usual"))
+      assertThat(awaitLoaded().shown.groups.single().isCollapsed).isTrue()
+      assertThat(prefs.value[DbMetadata.BudgetCollapsed]).isEqualTo(listOf("usual"))
+
+      viewModel.toggleCollapsed(CategoryGroupId("usual"))
+      assertThat(awaitLoaded().shown.groups.single().isCollapsed).isFalse()
+      assertThat(prefs.value[DbMetadata.BudgetCollapsed]).isEqualTo(emptyList())
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Hidden categories and groups only show when asked for`() =
+    runBudgetTest(extra = HIDDEN) { viewModel, _ ->
+      viewModel.state.test {
+        val hidden = awaitLoaded().shown
+        assertThat(hidden.groups.map { it.id }).containsExactly(CategoryGroupId("usual"))
+        assertThat(hidden.groups.single().categories.map { it.id })
+          .containsExactly(CategoryId("food"), CategoryId("rent"))
+
+        viewModel.toggleHidden()
+        val state = awaitLoaded()
+        assertThat(state.showHidden).isTrue()
+        val shown = state.shown
+        assertThat(shown.groups.map { it.id })
+          .containsExactly(CategoryGroupId("usual"), CategoryGroupId("old"))
+        assertThat(shown.groups[0].categories.map { it.id to it.isHidden })
+          .containsExactly(
+            CategoryId("food") to false,
+            CategoryId("rent") to false,
+            CategoryId("gym") to true,
+          )
+        // Categories in a hidden group are shown as hidden too
+        assertThat(shown.groups[1].categories.map { it.isHidden }).containsExactly(true)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `Tracking budgets project savings for months that haven't finished`() =
+    runBudgetTest(extra = TRACKING) { viewModel, database ->
+      database.preferences(this)[SyncedPrefKey.Global.BudgetType] = "tracking"
+
+      viewModel.state.test {
+        var state = awaitLoaded()
+        while (state.type != Tracking) state = awaitLoaded()
+        assertThat(state.shown.summary)
+          .isEqualTo(
+            BudgetSummary.Tracking(
+              saved = Amount(280_000L - 305_000L),
+              isProjected = true,
+              budgeted = Amount(305_000L),
+              spent = Amount(-50_000L),
+              incomeBudgeted = Amount(280_000L),
+              received = Amount(300_000L),
+            ),
+          )
+        // Overspending isn't flagged as overbudgeted for tracking budgets
+        assertThat(state.shown.banners.filterIsInstance<Banner.Overbudgeted>()).containsExactly()
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `Tracking budgets show what was saved in past months`() =
+    runBudgetTest(month = YearMonth(2026, 3), extra = TRACKING) { viewModel, database ->
+      database.preferences(this)[SyncedPrefKey.Global.BudgetType] = "tracking"
+
+      viewModel.state.test {
+        var state = awaitLoaded()
+        while (state.type != Tracking) state = awaitLoaded()
+        assertThat(state.shown.summary)
+          .isInstanceOf<BudgetSummary.Tracking>()
+          .prop(BudgetSummary.Tracking::isProjected)
+          .isFalse()
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `Paging moves the month`() = runBudgetTest { viewModel, _ ->
+    viewModel.state.test {
+      assertThat(awaitLoaded().month).isEqualTo(YearMonth(2026, 4))
+
+      // Already prefetched, so there's no wait for it to load
+      viewModel.nextMonth()
+      assertThat(awaitLoaded().shown.month).isEqualTo(YearMonth(2026, 5))
+
+      viewModel.previousMonth()
+      awaitMonth(YearMonth(2026, 4))
+
+      viewModel.showMonth(YearMonth(2026, 8))
+      awaitMonth(YearMonth(2026, 8))
+
+      viewModel.showToday()
+      awaitMonth(YearMonth(2026, 4))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Loads the months either side`() = runBudgetTest { viewModel, _ ->
+    viewModel.state.test {
+      assertThat(awaitLoaded().months.map { it.month })
+        .containsExactly(YearMonth(2026, 3), YearMonth(2026, 4), YearMonth(2026, 5))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Follows the current month`() = runBudgetTest { viewModel, _ ->
+    viewModel.state.test {
+      assertThat(awaitLoaded().month).isEqualTo(YearMonth(2026, 4))
+
+      calendar.set(LocalDate(2026, 5, 1))
+      assertThat(awaitMonth(YearMonth(2026, 5)).current).isEqualTo(YearMonth(2026, 5))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Months stay within the budget bounds`() = runBudgetTest { viewModel, _ ->
+    viewModel.state.test {
+      val initial = awaitLoaded()
+      assertThat(initial).all {
+        prop(BudgetState.Loaded::earliest).isEqualTo(YearMonth(2026, 1))
+        prop(BudgetState.Loaded::latest).isEqualTo(YearMonth(2027, 4))
+        prop(BudgetState.Loaded::canGoBack).isTrue()
+        prop(BudgetState.Loaded::canGoForward).isTrue()
+      }
+
+      viewModel.showMonth(YearMonth(2030, 1))
+      assertThat(awaitMonth(YearMonth(2027, 4))).all {
+        prop(BudgetState.Loaded::canGoBack).isTrue()
+        prop(BudgetState.Loaded::canGoForward).isFalse()
+      }
+
+      viewModel.showMonth(YearMonth(2020, 1))
+      assertThat(awaitMonth(YearMonth(2026, 1))).all {
+        prop(BudgetState.Loaded::canGoBack).isFalse()
+        prop(BudgetState.Loaded::canGoForward).isTrue()
+      }
+
+      viewModel.previousMonth()
+      expectNoEvents()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Month count is limited to what fits`() = runBudgetTest { viewModel, _ ->
+    viewModel.state.test {
+      assertThat(awaitLoaded().monthCount).isEqualTo(1)
+
+      viewModel.setMonthCount(3)
+      assertThat(prefs.value[DbMetadata.BudgetMonthCount]).isEqualTo(3)
+      expectNoEvents()
+
+      viewModel.setFittingMonths(2)
+      val two = awaitLoaded()
+      assertThat(two.monthCount).isEqualTo(2)
+      assertThat(two.maxMonthCount).isEqualTo(2)
+      assertThat(two.lastMonth).isEqualTo(YearMonth(2026, 5))
+
+      viewModel.setFittingMonths(9)
+      var three = awaitLoaded()
+      while (three.months.size < 5) three = awaitLoaded()
+      assertThat(three.monthCount).isEqualTo(3)
+      assertThat(three.maxMonthCount).isEqualTo(4)
+      assertThat(three.months.map { it.month })
+        .containsExactly(
+          YearMonth(2026, 3),
+          YearMonth(2026, 4),
+          YearMonth(2026, 5),
+          YearMonth(2026, 6),
+          YearMonth(2026, 7),
+        )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `The last months stay visible at the end of the budget`() = runBudgetTest { viewModel, _ ->
+    viewModel.setMonthCount(4)
+    viewModel.setFittingMonths(4)
+    viewModel.showMonth(YearMonth(2030, 1))
+
+    viewModel.state.test {
+      val state = awaitMonth(YearMonth(2027, 1))
+      assertThat(state.lastMonth).isEqualTo(YearMonth(2027, 4))
+      assertThat(state.canGoForward).isFalse()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Fails when the database can't be read`() = runTest {
+    val driver = inMemoryDriverFactory().create(BudgetId("closed"))
+    driver.close()
+    val viewModel = buildDatabase(driver).createViewModel(this, month = null)
+    viewModel.state.test {
+      var state = awaitItem()
+      while (state == Loading) state = awaitItem()
+      assertThat(state).isEqualTo(Failed)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Nothing to show without categories`() = runTest {
+    val driver = inMemoryDriverFactory().create(BudgetId("empty"))
+    driver.use {
+      val viewModel = buildDatabase(driver).createViewModel(this, month = null)
+      viewModel.state.test {
+        val state = awaitLoaded()
+        assertThat(state.isEmpty).isTrue()
+        assertThat(state.shown.income).isNull()
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+  }
+
+  @Test
+  fun `Saving a budget sets the typed amount`() = runBudgetTest { viewModel, _ ->
+    assertThat(viewModel.setBudget(YearMonth(2026, 4), CategoryId("food"), "120 + 30.50")).isTrue()
+    testScheduler.advanceUntilIdle()
+    assertThat(writer.calls)
+      .containsExactly(listOf("setBudget", YearMonth(2026, 4), CategoryId("food"), Amount(15_050L)))
+  }
+
+  @Test
+  fun `Saving a negative budget keeps its sign`() = runBudgetTest { viewModel, _ ->
+    assertThat(viewModel.setBudget(YearMonth(2026, 4), CategoryId("food"), "-20")).isTrue()
+    testScheduler.advanceUntilIdle()
+    assertThat(writer.calls)
+      .containsExactly(listOf("setBudget", YearMonth(2026, 4), CategoryId("food"), Amount(-2_000L)))
+  }
+
+  @Test
+  fun `Invalid budget input is rejected`() = runBudgetTest { viewModel, _ ->
+    assertThat(viewModel.setBudget(YearMonth(2026, 4), CategoryId("food"), "12 +")).isFalse()
+    assertThat(viewModel.setBudget(YearMonth(2026, 4), CategoryId("food"), "abc")).isFalse()
+    testScheduler.advanceUntilIdle()
+    assertThat(writer.calls).isEmpty()
+  }
+
+  @Test
+  fun `Quick actions call the writer`() = runBudgetTest { viewModel, _ ->
+    val month = YearMonth(2026, 4)
+    val food = CategoryId("food")
+    viewModel.copyLastMonth(month, food)
+    viewModel.setAverage(month, food, months = 3)
+    viewModel.setAverage(month, food, months = 6)
+    viewModel.setAverage(month, food, months = 12)
+    viewModel.copyToYearEnd(month, food)
+    testScheduler.advanceUntilIdle()
+    assertThat(writer.calls)
+      .containsExactly(
+        listOf("copySinglePreviousMonth", month, food),
+        listOf("setSingleAverage", month, food, 3),
+        listOf("setSingleAverage", month, food, 6),
+        listOf("setSingleAverage", month, food, 12),
+        listOf("copyUntilYearEnd", month, food),
+      )
+  }
+
+  @Test
+  fun `Money movements call the writer`() = runBudgetTest { viewModel, _ ->
+    val month = YearMonth(2026, 4)
+    val food = CategoryId("food")
+    val rent = CategoryId("rent")
+    assertThat(viewModel.transfer(month, "20", from = rent, to = food)).isTrue()
+    assertThat(viewModel.transfer(month, "5", from = rent, to = null)).isTrue()
+    assertThat(viewModel.coverOverspending(month, to = food, from = rent, input = "450")).isTrue()
+    assertThat(viewModel.coverOverspending(month, to = food, from = null, input = "1")).isTrue()
+    viewModel.setCarryover(month, food, enabled = true)
+    assertThat(viewModel.hold(month, "10")).isTrue()
+    viewModel.resetHold(month)
+    assertThat(viewModel.transferAvailable(month, "15", food)).isTrue()
+    assertThat(viewModel.coverOverbudgeted(month, rent, "50")).isTrue()
+    testScheduler.advanceUntilIdle()
+    assertThat(writer.calls)
+      .containsExactly(
+        listOf("transferCategory", month, Amount(2_000L), rent, food),
+        listOf("transferCategory", month, Amount(500L), rent, null),
+        listOf("coverOverspending", month, food, rent, Amount(45_000L)),
+        listOf("coverOverspending", month, food, null, Amount(100L)),
+        listOf("setCarryover", month, food, true),
+        listOf("holdForNextMonth", month, Amount(1_000L)),
+        listOf("resetHold", month),
+        listOf("transferAvailable", month, Amount(1_500L), food),
+        listOf("coverOverbudgeted", month, rent, Amount(5_000L)),
+      )
+  }
+
+  @Test
+  fun `Money movements reject zero, negative and unreadable amounts`() =
+    runBudgetTest { viewModel, _ ->
+      val month = YearMonth(2026, 4)
+      assertThat(viewModel.transfer(month, "0", CategoryId("rent"), null)).isFalse()
+      assertThat(viewModel.hold(month, "-5")).isFalse()
+      assertThat(viewModel.transferAvailable(month, "abc", CategoryId("food"))).isFalse()
+      testScheduler.advanceUntilIdle()
+      assertThat(writer.calls).isEmpty()
+    }
+
+  @Test
+  fun `Month-wide actions call the writer`() = runBudgetTest { viewModel, _ ->
+    val month = YearMonth(2026, 4)
+    viewModel.copyPreviousMonth(month)
+    viewModel.setZero(month)
+    viewModel.setMonthAverage(month, months = 6)
+    testScheduler.advanceUntilIdle()
+    assertThat(writer.calls)
+      .containsExactly(
+        listOf("copyPreviousMonth", month),
+        listOf("setZero", month),
+        listOf("setAverage", month, 6),
+      )
+  }
+
+  @Test
+  fun `Each change can be undone`() = runBudgetTest { viewModel, _ ->
+    viewModel.events.test {
+      viewModel.setZero(YearMonth(2026, 4))
+      val updated = awaitItem() as Updated
+
+      viewModel.undo(updated.token)
+      testScheduler.advanceUntilIdle()
+
+      assertThat(writer.calls.last()).containsExactly("undo", updated.token)
+    }
+  }
+
+  @Test
+  fun `Only the latest change can be undone`() = runBudgetTest { viewModel, _ ->
+    viewModel.events.test {
+      viewModel.setZero(YearMonth(2026, 4))
+      val first = awaitItem() as Updated
+      viewModel.copyPreviousMonth(YearMonth(2026, 4))
+      val second = awaitItem() as Updated
+
+      viewModel.undo(first.token)
+      viewModel.undo(second.token)
+      viewModel.undo(second.token)
+      testScheduler.advanceUntilIdle()
+
+      assertThat(writer.calls.filter { it.first() == "undo" })
+        .containsExactly(listOf("undo", second.token))
+    }
+  }
+
+  private suspend fun ReceiveTurbine<BudgetState>.awaitLoaded(): BudgetState.Loaded {
+    var state = awaitItem()
+    while (state !is Loaded) state = awaitItem()
+    return state
+  }
+
+  // Waits for the month to be shown and loaded
+  private suspend fun ReceiveTurbine<BudgetState>.awaitMonth(month: YearMonth): BudgetState.Loaded {
+    var state = awaitLoaded()
+    while (state.month != month || state[month] == null) state = awaitLoaded()
+    return state
+  }
+
+  private fun runBudgetTest(
+    month: YearMonth? = null,
+    extra: List<String> = emptyList(),
+    action: suspend TestScope.(BudgetViewModel, BudgetDatabase) -> Unit,
+  ) = runTest {
+    val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
+    driver.use {
+      val database = buildDatabase(driver)
+      (SETUP + extra).forEach { sql -> driver.run(sql) }
+      action(database.createViewModel(this, month), database)
+    }
+  }
+
+  private fun BudgetDatabase.createViewModel(scope: TestScope, month: YearMonth?): BudgetViewModel {
+    val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
+    return BudgetViewModel(
+      month = month,
+      calculator =
+        BudgetMonthCalculatorImpl(
+          budgetDao = BudgetDao(this, contexts),
+          preferencesDao = preferences(scope),
+          calendar = calendar,
+          contexts = contexts,
+        ),
+      writer = writer,
+      transactionDao = TransactionDao(this),
+      localPreferences = prefs,
+      syncController = TestSyncController(),
+      calendar = calendar,
+      syncStateHolder = SyncStateHolder(),
+      viewModelContext = scope.viewModelContext,
+    )
+  }
+
+  private fun BudgetDatabase.preferences(scope: TestScope) =
+    PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
+
+  private suspend fun SqlDriver.run(sql: String) {
+    execute(identifier = null, sql = sql, parameters = 0).await()
+  }
+
+  private companion object {
+    @Suppress("MaxLineLength")
+    val SETUP =
+      listOf(
+        "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('usual', 'Usual', 0, 1)",
+        "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('income', 'Income', 1, 3)",
+        "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('food', 'Food', 0, 'usual', 1)",
+        "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('rent', 'Rent', 0, 'usual', 2)",
+        "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('salary', 'Salary', 1, 'income', 1)",
+        "INSERT INTO category_mapping(id, transferId) VALUES ('food', 'food'), ('rent', 'rent'), ('salary', 'salary')",
+        "INSERT INTO accounts(id, name, offbudget) VALUES ('on', 'On', 0)",
+        "INSERT INTO transactions(id, acct, category, amount, date) VALUES ('t1', 'on', 'salary', 300000, 20260401)",
+        "INSERT INTO transactions(id, acct, category, amount, date) VALUES ('t2', 'on', 'food', -50000, 20260402)",
+        "INSERT INTO transactions(id, acct, amount, date) VALUES ('t3', 'on', -1000, 20260403)",
+        "INSERT INTO zero_budgets(id, month, category, amount) VALUES ('202604-food', 202604, 'food', 5000), ('202604-rent', 202604, 'rent', 300000)",
+      )
+
+    @Suppress("MaxLineLength")
+    val HIDDEN =
+      listOf(
+        "INSERT INTO category_groups(id, name, is_income, sort_order, hidden) VALUES ('old', 'Old', 0, 2, 1)",
+        "INSERT INTO categories(id, name, is_income, cat_group, sort_order, hidden) VALUES ('gym', 'Gym', 0, 'usual', 3, 1)",
+        "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('club', 'Club', 0, 'old', 1)",
+        "INSERT INTO category_mapping(id, transferId) VALUES ('gym', 'gym'), ('club', 'club')",
+      )
+
+    @Suppress("MaxLineLength")
+    val TRACKING =
+      listOf(
+        "INSERT INTO reflect_budgets(id, month, category, amount) VALUES ('202604-food', 202604, 'food', 5000), ('202604-rent', 202604, 'rent', 300000), ('202604-salary', 202604, 'salary', 280000)",
+      )
+  }
+}

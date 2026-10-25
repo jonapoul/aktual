@@ -6,7 +6,7 @@ kotlin {
     api(project(":aktual-prefs"))
   }
 
-  androidHostTestDependencies {
+  commonTestDependencies {
     implementation(project(":aktual-prefs:impl"))
   }
 }

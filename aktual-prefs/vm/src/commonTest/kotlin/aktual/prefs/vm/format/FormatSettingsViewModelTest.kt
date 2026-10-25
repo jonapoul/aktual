@@ -1,0 +1,32 @@
+package aktual.prefs.vm.format
+
+import aktual.prefs.FormatPreferencesImpl
+import aktual.test.buildPreferences
+import aktual.test.viewModelContext
+import alakazam.test.unconfinedDispatcher
+import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import kotlin.test.Test
+import kotlinx.coroutines.test.runTest
+
+class FormatSettingsViewModelTest {
+  @Test
+  fun `Hide fraction toggles the preference`() = runTest {
+    val preferences = FormatPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    val viewModel = FormatSettingsViewModel(preferences, viewModelContext = viewModelContext)
+
+    viewModel.state.test {
+      val initial = awaitItem()
+      val hideFraction = initial.hideFraction.value
+
+      initial.hideFraction.onChange(!hideFraction)
+      assertThat(awaitItem().hideFraction.value).isEqualTo(!hideFraction)
+
+      preferences.hideFraction.set(hideFraction)
+      assertThat(awaitItem().hideFraction.value).isEqualTo(hideFraction)
+
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+}
