@@ -10,16 +10,12 @@ import aktual.budget.rules.vm.search.SearchRulesState
 import aktual.budget.rules.vm.search.SearchRulesState.Failure
 import aktual.budget.rules.vm.search.SearchRulesState.Results
 import aktual.budget.rules.vm.search.SearchRulesViewModel
-import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditRuleNavigator
-import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -28,6 +24,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.RemovableChip
 import aktual.core.ui.ScrollToTopOnNewQuery
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SearchScaffold
@@ -36,27 +33,18 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -122,9 +110,10 @@ private fun SearchRulesScaffold(
   ) { innerPadding ->
     Column(modifier = Modifier.padding(innerPadding)) {
       if (payeeName != null) {
-        PayeeChip(
+        RemovableChip(
           modifier = Modifier.padding(horizontal = Dimens.Large, vertical = Dimens.Medium),
-          name = payeeName,
+          text = payeeName,
+          removeDescription = Strings.rulesSearchPayeeRemove(payeeName),
           onRemove = { onAction(ClearPayee) },
         )
       }
@@ -178,25 +167,6 @@ private fun SearchRulesContent(
     }
   }
 }
-
-@Composable
-private fun PayeeChip(name: String, onRemove: () -> Unit, modifier: Modifier = Modifier) =
-  Row(
-    modifier =
-      modifier
-        .heightIn(min = 34.dp)
-        .background(colors.pillBackground, CircleShape)
-        .padding(horizontal = 12.dp)
-        .clickable(onClick = onRemove),
-    verticalAlignment = CenterVertically,
-  ) {
-    Text(text = name, style = typography.bodyMedium, color = colors.pillText)
-    Icon(
-      modifier = Modifier.size(16.dp),
-      imageVector = MaterialIcons.Clear,
-      contentDescription = Strings.rulesSearchPayeeRemove(name),
-    )
-  }
 
 @Composable
 private fun ResultsList(
