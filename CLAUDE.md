@@ -66,6 +66,9 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./scripts/compile.sh          # compileAll on changed modules
 ./scripts/test.sh             # testAll on changed modules
 
+# Report l10n strings not referenced anywhere (CI runs this). Needs a fresh :aktual-core:l10n:catalog
+./scripts/unusedStrings.sh
+
 # Dependency graph - rerun only when module deps change, then run the `redundant-module-links` skill
 ./gradlew atlasGenerate
 
@@ -112,6 +115,8 @@ See [aktual-app:nav](aktual-app/nav/CLAUDE.md).
 ## Dependency helpers
 
 Inside `kotlin { ... }`: `commonMainDependencies`, `desktopMainDependencies`, `androidMainDependencies`, `androidHostTestDependencies`, `desktopTestDependencies`. Use `api()` only for deps that leak into the public API.
+
+Keep each dependency block sorted: all `api` lines before `implementation` lines, and within each group `libs.*` before `project(...)`, alphabetically. CI fails on unsorted blocks (`checkSortDependencies`); `./gradlew sortDependencies` fixes them.
 
 ## Multiplatform
 

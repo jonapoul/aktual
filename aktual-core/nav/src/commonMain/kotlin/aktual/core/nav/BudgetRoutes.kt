@@ -5,6 +5,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.ConditionsFilter
 import aktual.budget.model.DashboardPageId
+import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
@@ -70,11 +71,13 @@ data class CreateTransactionNavRoute(
 
 @Serializable data object ListRulesNavRoute : BudgetNavKey.Rules
 
-@Serializable data object SearchRulesNavRoute : BudgetNavKey.Rules
+// Filtered to the rules referring to payee, when set
+@Serializable data class SearchRulesNavRoute(val payee: PayeeId? = null) : BudgetNavKey.Rules
 
 @Serializable data class EditRuleNavRoute(val id: RuleId) : BudgetNavKey.Rules
 
-@Serializable data object CreateRuleNavRoute : BudgetNavKey.Rules
+// Starts from `payee is X` and an empty `set category`, when payee is set
+@Serializable data class CreateRuleNavRoute(val payee: PayeeId? = null) : BudgetNavKey.Rules
 
 @Serializable data object ListSchedulesNavRoute : BudgetNavKey.Schedules
 

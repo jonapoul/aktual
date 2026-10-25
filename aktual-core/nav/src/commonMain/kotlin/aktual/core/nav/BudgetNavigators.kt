@@ -5,6 +5,7 @@ import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.CategoryId
 import aktual.budget.model.ConditionsFilter
 import aktual.budget.model.DashboardPageId
+import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
@@ -97,12 +98,12 @@ class ListRulesNavigator(private val stack: NavStack<BudgetNavKey>) {
 class EditRuleNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke(id: RuleId) = stack.push(EditRuleNavRoute(id))
 
-  operator fun invoke() = stack.push(CreateRuleNavRoute)
+  operator fun invoke(payee: PayeeId? = null) = stack.push(CreateRuleNavRoute(payee))
 }
 
 @Immutable
 class SearchRulesNavigator(private val stack: NavStack<BudgetNavKey>) {
-  operator fun invoke() = stack.push(SearchRulesNavRoute)
+  operator fun invoke(payee: PayeeId? = null) = stack.push(SearchRulesNavRoute(payee))
 }
 
 @Immutable

@@ -28,14 +28,20 @@ class RulesNavEntryContributor : BudgetNavEntryContributor {
       ListRulesScreen(editRule = EditRuleNavigator(stack), toSearch = SearchRulesNavigator(stack))
     }
 
-    budgetEntry<SearchRulesNavRoute> {
-      SearchRulesScreen(back = BackNavigator(stack), editRule = EditRuleNavigator(stack))
+    budgetEntry<SearchRulesNavRoute> { route ->
+      SearchRulesScreen(
+        payee = route.payee,
+        back = BackNavigator(stack),
+        editRule = EditRuleNavigator(stack),
+      )
     }
 
     budgetEntry<EditRuleNavRoute> { route ->
-      EditRuleScreen(id = route.id, back = BackNavigator(stack))
+      EditRuleScreen(id = route.id, payee = null, back = BackNavigator(stack))
     }
 
-    budgetEntry<CreateRuleNavRoute> { EditRuleScreen(id = null, back = BackNavigator(stack)) }
+    budgetEntry<CreateRuleNavRoute> { route ->
+      EditRuleScreen(id = null, payee = route.payee, back = BackNavigator(stack))
+    }
   }
 }
