@@ -42,6 +42,7 @@ import com.valentinilk.shimmer.shimmer
 @Composable
 internal fun PayeeItem(
   payee: PayeeItem,
+  onClick: () -> Unit,
   onClickRules: () -> Unit,
   modifier: Modifier = Modifier,
   query: String = "",
@@ -53,6 +54,7 @@ internal fun PayeeItem(
         .clip(RowShape)
         .background(colors.tableBackground, RowShape)
         .border(Hairline, colors.tableBorder, RowShape)
+        .clickable(onClick = onClick)
         .padding(ListPayeesDS.itemPadding),
     horizontalArrangement = Arrangement.spacedBy(ListPayeesDS.itemHorizontalSpacing),
     verticalAlignment = CenterVertically,
@@ -94,7 +96,16 @@ internal fun PayeeItem(
 }
 
 @Composable
-private fun RuleCountChip(numRules: Int, onClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun RuleCountChip(numRules: Int, onClick: () -> Unit, modifier: Modifier = Modifier) =
+  PayeeChip(
+    modifier = modifier,
+    text =
+      if (numRules > 0) Plurals.payeesNumRules(numRules, numRules) else Strings.payeesCreateRule,
+    onClick = onClick,
+  )
+
+@Composable
+internal fun PayeeChip(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
   Box(
     modifier =
       modifier
@@ -104,12 +115,7 @@ private fun RuleCountChip(numRules: Int, onClick: () -> Unit, modifier: Modifier
         .padding(ListPayeesDS.ruleChipPadding),
     contentAlignment = Center,
   ) {
-    Text(
-      text =
-        if (numRules > 0) Plurals.payeesNumRules(numRules, numRules) else Strings.payeesCreateRule,
-      style = typography.bodySmall,
-      color = colors.noticeTextDark,
-    )
+    Text(text = text, style = typography.bodySmall, color = colors.noticeTextDark)
   }
 }
 
@@ -163,7 +169,7 @@ private class PayeeItemProvider : ColoredParameterProvider<PayeeItem>(PayeesPrev
 @Composable
 private fun PreviewPayeeItem(
   @PreviewParameter(PayeeItemProvider::class) params: ColoredParams<PayeeItem>,
-) = PreviewWithColoredParams(params) { PayeeItem(payee = this, onClickRules = {}) }
+) = PreviewWithColoredParams(params) { PayeeItem(payee = this, onClick = {}, onClickRules = {}) }
 
 @Preview
 @Composable

@@ -4,6 +4,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
@@ -35,3 +36,5 @@ internal val DASHBOARD_PAGE_ID = DashboardPageId("page")
 internal val WIDGET_ID = WidgetId("widget")
 
 internal val RULE_ID = RuleId("abc-123")
+
+internal val PAYEE_ID = PayeeId("abc-123")

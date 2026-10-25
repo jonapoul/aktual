@@ -12,6 +12,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.l10n.Strings
+import aktual.core.nav.EditPayeeNavigator
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchPayeesNavigator
 import aktual.core.nav.SearchRulesNavigator
@@ -56,6 +57,7 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 internal fun ListPayeesScreen(
   toSearch: SearchPayeesNavigator,
+  toEdit: EditPayeeNavigator,
   editRule: EditRuleNavigator,
   searchRules: SearchRulesNavigator,
   modifier: Modifier = Modifier,
@@ -70,6 +72,7 @@ internal fun ListPayeesScreen(
       when (action) {
         Retry -> viewModel.retry()
         OpenSearch -> toSearch()
+        is OpenPayee -> toEdit(action.id)
         is OpenRules -> openRules(action.payee, editRule, searchRules)
       }
     },
@@ -190,6 +193,7 @@ private fun PayeesList(
       PayeeItem(
         modifier = Modifier.animateItem(),
         payee = payee,
+        onClick = { onAction(OpenPayee(payee.id)) },
         onClickRules = { onAction(OpenRules(payee)) },
       )
     }

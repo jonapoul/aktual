@@ -85,6 +85,8 @@ getName:
 
 getNames: SELECT name FROM v_payees WHERE id IN ?;
 
+setNameAndFavorite: UPDATE payees SET name = :name, favorite = :favorite WHERE id = :id;
+
 insert:
   INSERT OR REPLACE
     INTO payees(id, name, category, tombstone, transfer_acct, favorite, learn_categories)

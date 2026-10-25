@@ -36,6 +36,10 @@ class PayeeDao(database: BudgetDatabase) {
       mappings.insert(id = id, targetId = id)
     }
 
+  suspend fun update(id: PayeeId, name: String, favorite: Boolean) = queries.withoutResult {
+    setNameAndFavorite(name = name, favorite = favorite, id = id)
+  }
+
   suspend operator fun get(id: PayeeId): Payees? = queries.withResult {
     getById(id).awaitAsOneOrNull()
   }

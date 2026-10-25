@@ -36,4 +36,5 @@
   <string name="reports_formula_editor_theme_colors">Theme colours</string>
   <string name="reports_custom_editor_show_uncategorised">Show uncategorised</string>
   <string name="payees_favorite">Favourite</string>
+  <string name="payees_edit_favorite_help">Favourites are suggested first when picking a payee for a transaction.</string>
 </resources>
