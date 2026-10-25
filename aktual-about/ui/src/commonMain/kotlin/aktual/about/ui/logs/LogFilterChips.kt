@@ -1,8 +1,8 @@
 package aktual.about.ui.logs
 
 import aktual.about.vm.logs.LogFilters
-import aktual.core.icons.material.ArrowDropDown
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronDown
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.ColoredParameters
@@ -34,7 +34,7 @@ internal fun LogFilterChips(
       text = filters.levelsSummary(),
       isSelected = true,
       onClick = onOpenLevels,
-      trailingIcon = MaterialIcons.ArrowDropDown,
+      trailingIcon = AktualIcons.CheveronDown,
       role = Button,
     )
 

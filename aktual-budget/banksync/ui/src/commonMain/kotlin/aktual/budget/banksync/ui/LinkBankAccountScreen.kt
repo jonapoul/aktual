@@ -13,11 +13,11 @@ import aktual.budget.banksync.vm.link.LoginBanks
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
-import aktual.core.icons.material.AccountBalance
-import aktual.core.icons.material.ArrowBack
-import aktual.core.icons.material.Key
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronLeft
+import aktual.core.icons.Key
+import aktual.core.icons.Library
+import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.BankSyncProvidersNavigator
@@ -187,12 +187,12 @@ private fun LinkBankAccountScaffold(
             modifier = Modifier.padding(innerPadding),
             title = Strings.bankSyncLinkNoProvidersTitle,
             reason = Strings.bankSyncLinkNoProvidersMessage,
-            icon = MaterialIcons.AccountBalance,
+            icon = AktualIcons.Library,
             action =
               if (state.hasServer) {
                 FailureAction(
                   text = { Strings.bankSyncProvidersOpen },
-                  icon = MaterialIcons.Key,
+                  icon = AktualIcons.Key,
                   onClick = { onAction(OpenProviders) },
                 )
               } else {
@@ -248,7 +248,7 @@ private val BudgetOptions = persistentListOf(false, true)
 private fun backAction(onAction: LinkBankAccountActionHandler) =
   FailureAction(
     text = { Strings.navBack },
-    icon = MaterialIcons.ArrowBack,
+    icon = AktualIcons.CheveronLeft,
     onClick = { onAction(CloseLink) },
   )
 
@@ -368,7 +368,7 @@ internal fun ListingFailure(
       action =
         FailureAction(
           text = { Strings.syncRetry },
-          icon = MaterialIcons.Refresh,
+          icon = AktualIcons.Refresh,
           onClick = { onAction(RetryListing) },
         ),
     )

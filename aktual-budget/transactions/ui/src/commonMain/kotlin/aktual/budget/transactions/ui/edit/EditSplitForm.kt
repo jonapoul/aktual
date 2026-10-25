@@ -6,9 +6,9 @@ import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.ui.tabularFigures
 import aktual.budget.transactions.vm.edit.SplitPartForm
 import aktual.budget.transactions.vm.edit.TransactionForm
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.Clear
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
@@ -204,7 +204,7 @@ private fun fillTarget(form: TransactionForm, active: ActiveField?) =
 private fun AddSplitButton(onClick: () -> Unit) =
   TonalButton(
     modifier = Modifier.height(AddSplitHeight),
-    icon = MaterialIcons.Add,
+    icon = AktualIcons.Add,
     text = Strings.transactionSplitAdd,
     contentPadding = AddSplitPadding,
     onClick = onClick,
@@ -270,7 +270,7 @@ private fun PartRow(
     )
 
     BareIconButton(
-      imageVector = MaterialIcons.Clear,
+      imageVector = AktualIcons.Delete,
       contentDescription = Strings.transactionSplitRemove,
       size = RemoveIconSize,
       onClick = {

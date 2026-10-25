@@ -1,13 +1,13 @@
 package aktual.prefs.ui.theme.custom
 
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronRight
 import aktual.core.icons.Cloud
 import aktual.core.icons.CloudWarning
-import aktual.core.icons.material.ArrowRight
+import aktual.core.icons.Refresh
+import aktual.core.icons.Tuning
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OfflinePin
-import aktual.core.icons.material.Refresh
-import aktual.core.icons.material.Tune
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
 import aktual.core.l10n.settings_theme_refresh_failure
@@ -218,7 +218,7 @@ private fun CustomThemeSettingsScaffold(
 @Composable
 private fun SortFilterButton(state: CatalogState, onAction: CustomThemeSettingsActionHandler) {
   BareIconButton(
-    imageVector = MaterialIcons.Tune,
+    imageVector = AktualIcons.Tuning,
     contentDescription = Strings.settingsThemeSortFilter,
     enabled = state !is Loading,
     onClick = { onAction(ShowSortFilterSheet) },
@@ -260,7 +260,7 @@ private fun FailedContent(
       FailureAction(
         text = { Strings.settingsThemeRefreshRetry },
         onClick = { onAction(RetryFetchCatalog) },
-        icon = MaterialIcons.Refresh,
+        icon = AktualIcons.Refresh,
       ),
   )
 }
@@ -421,7 +421,7 @@ private fun CustomThemeItem(
     }
 
     BareIconButton(
-      imageVector = MaterialIcons.ArrowRight,
+      imageVector = AktualIcons.CheveronRight,
       enabled = enabled,
       onClick = { onAction(InspectTheme(item.summary)) },
       contentDescription = Strings.settingsThemePreview(item.summary.name),

@@ -11,10 +11,10 @@ import aktual.budget.rules.vm.list.ListRulesState.Failure
 import aktual.budget.rules.vm.list.ListRulesState.Loading
 import aktual.budget.rules.vm.list.ListRulesState.Success
 import aktual.budget.rules.vm.list.ListRulesViewModel
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
-import aktual.core.icons.material.Search
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Refresh
+import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchRulesNavigator
@@ -145,7 +145,7 @@ private fun ListRulesScaffold(
           actions = {
             if (state is Success) {
               BareIconButton(
-                imageVector = MaterialIcons.Search,
+                imageVector = AktualIcons.SearchAlternate,
                 contentDescription = Strings.rulesToolbarSearch,
                 onClick = { onAction(OpenSearch) },
               )
@@ -231,7 +231,7 @@ private fun ListRulesContent(
           action =
             FailureAction(
               text = { Strings.syncRetry },
-              icon = MaterialIcons.Refresh,
+              icon = AktualIcons.Refresh,
               onClick = { onAction(Retry) },
             ),
         )
@@ -245,7 +245,7 @@ private fun ListRulesContent(
           action =
             FailureAction(
               text = { Strings.rulesEmptyCreate },
-              icon = MaterialIcons.Add,
+              icon = AktualIcons.Add,
               onClick = { onAction(CreateNew) },
             ),
         )

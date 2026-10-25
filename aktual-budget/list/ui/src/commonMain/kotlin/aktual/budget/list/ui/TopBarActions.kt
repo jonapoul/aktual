@@ -1,12 +1,12 @@
 package aktual.budget.list.ui
 
-import aktual.core.icons.material.BarChart
-import aktual.core.icons.material.Cloud
-import aktual.core.icons.material.Info
-import aktual.core.icons.material.Key
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
-import aktual.core.icons.material.Settings
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Cloud
+import aktual.core.icons.Cog
+import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.InformationOutline
+import aktual.core.icons.Key
+import aktual.core.icons.Reports
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
@@ -24,7 +24,7 @@ internal fun SettingsButton(onAction: ListBudgetsActionHandler, modifier: Modifi
   BasicIconButton(
     modifier = modifier,
     onClick = { onAction(OpenSettings) },
-    imageVector = MaterialIcons.Settings,
+    imageVector = AktualIcons.Cog,
     contentDescription = Strings.listBudgetsSettings,
     colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
   )
@@ -34,7 +34,7 @@ internal fun MoreButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
   BasicIconButton(
     modifier = modifier,
     onClick = onClick,
-    imageVector = MaterialIcons.MoreVert,
+    imageVector = AktualIcons.DotsHorizontalTriple,
     contentDescription = Strings.listBudgetsMenu,
     colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
   )
@@ -58,7 +58,7 @@ internal fun MoreMenu(
         onDismissRequest()
         onAction(LogOut)
       },
-      leadingIcon = { Icon(MaterialIcons.Cloud, contentDescription = serverText) },
+      leadingIcon = { Icon(AktualIcons.Cloud, contentDescription = serverText) },
     )
 
     val passwordText = Strings.listBudgetsChangePassword
@@ -68,7 +68,7 @@ internal fun MoreMenu(
         onDismissRequest()
         onAction(ChangePassword)
       },
-      leadingIcon = { Icon(MaterialIcons.Key, contentDescription = passwordText) },
+      leadingIcon = { Icon(AktualIcons.Key, contentDescription = passwordText) },
     )
 
     val metricsText = Strings.metricsToolbar
@@ -78,7 +78,7 @@ internal fun MoreMenu(
         onDismissRequest()
         onAction(OpenServerMetrics)
       },
-      leadingIcon = { Icon(MaterialIcons.BarChart, contentDescription = metricsText) },
+      leadingIcon = { Icon(AktualIcons.Reports, contentDescription = metricsText) },
     )
 
     val aboutText = Strings.listBudgetsAbout
@@ -88,7 +88,7 @@ internal fun MoreMenu(
         onDismissRequest()
         onAction(OpenAbout)
       },
-      leadingIcon = { Icon(MaterialIcons.Info, contentDescription = aboutText) },
+      leadingIcon = { Icon(AktualIcons.InformationOutline, contentDescription = aboutText) },
     )
   }
 }

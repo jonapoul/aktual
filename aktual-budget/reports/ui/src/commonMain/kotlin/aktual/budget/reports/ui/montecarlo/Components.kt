@@ -1,10 +1,10 @@
 package aktual.budget.reports.ui.montecarlo
 
 import aktual.budget.reports.vm.montecarlo.MonteCarloSection
-import aktual.core.icons.material.ArrowDropDown
-import aktual.core.icons.material.ArrowRight
-import aktual.core.icons.material.Info
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronDown
+import aktual.core.icons.CheveronRight
+import aktual.core.icons.InformationOutline
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -75,7 +75,7 @@ internal fun CollapsibleSectionCard(
       verticalAlignment = CenterVertically,
     ) {
       Icon(
-        imageVector = if (isExpanded) MaterialIcons.ArrowDropDown else MaterialIcons.ArrowRight,
+        imageVector = if (isExpanded) AktualIcons.CheveronDown else AktualIcons.CheveronRight,
         contentDescription = null,
         tint = colors.pageText,
       )
@@ -143,7 +143,7 @@ internal fun HelpTooltip(text: String, modifier: Modifier = Modifier) {
         Modifier.size(HELP_ICON_SIZE).clickable {
           if (state.isVisible) state.dismiss() else scope.launch { state.show() }
         },
-      imageVector = MaterialIcons.Info,
+      imageVector = AktualIcons.InformationOutline,
       contentDescription = text,
       tint = colors.pageTextSubdued,
     )

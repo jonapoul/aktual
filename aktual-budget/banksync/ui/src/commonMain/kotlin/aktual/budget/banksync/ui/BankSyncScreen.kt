@@ -6,12 +6,12 @@ import aktual.budget.banksync.vm.Empty
 import aktual.budget.banksync.vm.Failure
 import aktual.budget.banksync.vm.Loading
 import aktual.budget.banksync.vm.Success
-import aktual.core.icons.material.AccountBalance
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.Key
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
-import aktual.core.icons.material.Sync
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.ArrowsSynchronize
+import aktual.core.icons.Key
+import aktual.core.icons.Library
+import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.nav.BankSyncProvidersNavigator
 import aktual.core.nav.BankSyncSettingsNavigator
@@ -121,14 +121,14 @@ private fun BankSyncScaffold(
           val canSync = state is Success && state.canSync || state is Empty && state.canSync
           if (canSync) {
             BareIconButton(
-              imageVector = MaterialIcons.Key,
+              imageVector = AktualIcons.Key,
               contentDescription = Strings.bankSyncProvidersOpen,
               onClick = { onAction(OpenProviders) },
             )
           }
           if (state is Success && state.canSync) {
             BareIconButton(
-              imageVector = MaterialIcons.Add,
+              imageVector = AktualIcons.Add,
               contentDescription = Strings.bankSyncAddAccount,
               onClick = { onAction(AddAccount) },
             )
@@ -189,12 +189,12 @@ private fun BankSyncContent(
         FailureScreen(
           title = Strings.bankSyncEmpty,
           reason = Strings.bankSyncNotice,
-          icon = MaterialIcons.AccountBalance,
+          icon = AktualIcons.Library,
           background = colors.tableBackground,
           action =
             FailureAction(
                 text = { Strings.bankSyncAddAccount },
-                icon = MaterialIcons.Add,
+                icon = AktualIcons.Add,
                 onClick = { onAction(AddAccount) },
               )
               .takeIf { state.canSync },
@@ -208,7 +208,7 @@ private fun BankSyncContent(
           action =
             FailureAction(
               text = { Strings.syncRetry },
-              icon = MaterialIcons.Refresh,
+              icon = AktualIcons.Refresh,
               onClick = { onAction(Reload) },
             ),
         )
@@ -240,7 +240,7 @@ private fun ContentSuccess(
     verticalArrangement = Arrangement.spacedBy(BankSyncDS.listItemSpacing),
   ) {
     item(key = "notice") {
-      NoticeBanner(text = Strings.bankSyncNotice, icon = MaterialIcons.AccountBalance)
+      NoticeBanner(text = Strings.bankSyncNotice, icon = AktualIcons.Library)
     }
 
     for ((source, status, accounts) in state.providers) {
@@ -287,7 +287,7 @@ private fun SyncAllButton(isSyncing: Boolean, onClick: () -> Unit, modifier: Mod
   } else {
     BareIconButton(
       modifier = modifier,
-      imageVector = MaterialIcons.Sync,
+      imageVector = AktualIcons.ArrowsSynchronize,
       contentDescription = Strings.bankSyncSyncAll,
       onClick = onClick,
     )

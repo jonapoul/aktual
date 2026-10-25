@@ -5,8 +5,8 @@ import aktual.budget.banksync.vm.BankSyncAccountStatus
 import aktual.budget.banksync.vm.BankSyncProviderStatus
 import aktual.budget.banksync.vm.LastBankSync
 import aktual.budget.model.AccountSyncSource
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Sync
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.ArrowsSynchronize
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
@@ -123,7 +123,7 @@ internal fun BankSyncAccountItem(
       }
       sync != null -> {
         BareIconButton(
-          imageVector = MaterialIcons.Sync,
+          imageVector = AktualIcons.ArrowsSynchronize,
           contentDescription =
             Strings.bankSyncSyncAccount(account.name ?: Strings.bankSyncUnnamedAccount),
           enabled = sync.enabled,
@@ -140,7 +140,7 @@ internal fun SyncingIndicator(modifier: Modifier = Modifier) {
   val rotation by transition.animateFloat(0f, -360f, SyncingAnimationSpec, "sync-rotation")
   BareIconButton(
     modifier = modifier.rotate(rotation),
-    imageVector = MaterialIcons.Sync,
+    imageVector = AktualIcons.ArrowsSynchronize,
     contentDescription = Strings.bankSyncSyncing,
     enabled = false,
     onClick = {},

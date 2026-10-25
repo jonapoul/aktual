@@ -2,9 +2,8 @@ package aktual.budget.payees.ui.list
 
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.Bookmark
 import aktual.core.icons.LightBulb
-import aktual.core.icons.material.Bookmark
-import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
@@ -66,7 +65,7 @@ internal fun PayeeItem(
     if (payee.isFavorite) {
       Icon(
         modifier = Modifier.size(ListPayeesDS.favoriteIconSize),
-        imageVector = MaterialIcons.Bookmark,
+        imageVector = AktualIcons.Bookmark,
         contentDescription = Strings.payeesFavorite,
         tint = colors.pageText,
       )

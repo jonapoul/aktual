@@ -4,9 +4,10 @@ import aktual.about.data.ArtifactDetail
 import aktual.about.vm.LicenseSorting
 import aktual.about.vm.LicensesState
 import aktual.about.vm.LicensesViewModel
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Refresh
+import aktual.core.icons.SearchAlternate
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
-import aktual.core.icons.material.Search
 import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -107,7 +108,7 @@ private fun LicensesScaffold(
         actions = {
           if (state is Loaded) {
             BareIconButton(
-              imageVector = MaterialIcons.Search,
+              imageVector = AktualIcons.SearchAlternate,
               contentDescription = Strings.licensesToolbarSearch,
               onClick = { onAction(OpenSearch) },
             )
@@ -215,7 +216,7 @@ private fun ErrorContent(
       FailureAction(
         text = { Strings.licensesFailedRetry },
         onClick = { onAction(Reload) },
-        icon = MaterialIcons.Refresh,
+        icon = AktualIcons.Refresh,
       ),
   )
 }

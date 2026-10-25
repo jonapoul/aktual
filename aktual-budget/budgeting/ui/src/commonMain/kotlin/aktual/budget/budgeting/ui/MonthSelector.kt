@@ -1,8 +1,8 @@
 package aktual.budget.budgeting.ui
 
 import aktual.budget.budgeting.vm.BudgetState
-import aktual.core.icons.material.ExpandMore
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronDown
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
@@ -60,7 +60,7 @@ internal fun MonthSelector(
   Row(modifier = modifier, verticalAlignment = CenterVertically) {
     BareIconButton(
       modifier = Modifier.rotate(PREVIOUS_ROTATION),
-      imageVector = MaterialIcons.ExpandMore,
+      imageVector = AktualIcons.CheveronDown,
       contentDescription = Strings.budgetingPreviousMonth,
       enabled = state.canGoBack,
       onClick = { onAction(PreviousMonth) },
@@ -95,7 +95,7 @@ internal fun MonthSelector(
 
     BareIconButton(
       modifier = Modifier.rotate(NEXT_ROTATION),
-      imageVector = MaterialIcons.ExpandMore,
+      imageVector = AktualIcons.CheveronDown,
       contentDescription = Strings.budgetingNextMonth,
       enabled = state.canGoForward,
       onClick = { onAction(NextMonth) },
@@ -168,7 +168,7 @@ private fun MonthPickerContent(
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = CenterVertically) {
       BareIconButton(
         modifier = Modifier.rotate(PREVIOUS_ROTATION),
-        imageVector = MaterialIcons.ExpandMore,
+        imageVector = AktualIcons.CheveronDown,
         contentDescription = Strings.budgetingPreviousYear,
         enabled = year > state.earliest.year,
         onClick = { year-- },
@@ -181,7 +181,7 @@ private fun MonthPickerContent(
       )
       BareIconButton(
         modifier = Modifier.rotate(NEXT_ROTATION),
-        imageVector = MaterialIcons.ExpandMore,
+        imageVector = AktualIcons.CheveronDown,
         contentDescription = Strings.budgetingNextYear,
         enabled = year < state.latest.year,
         onClick = { year++ },

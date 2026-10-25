@@ -24,9 +24,10 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
   val role = Role.Admin; listOf(Role.Admin); a to Role.Admin; roles += Role.Admin
   val r = if (x) Role.Admin else Role.Basic; takesState(State.Failure("x"))
   ```
-  - Only a type or function in scope makes a name ambiguous (`LoginMethod.Password` vs the `Password` class, `Role.Checkbox` vs the `Checkbox` composable). Another enum's entry with the same name doesn't count, so `consume(Plus)` and `UnaryNode(Plus, x)` both resolve.
+  - Only a type, function or imported property in scope makes a name ambiguous (an icon import like `aktual.core.icons.Copy` clashes with `LogExportTarget.Copy`) (`LoginMethod.Password` vs the `Password` class, `Role.Checkbox` vs the `Checkbox` composable). Another enum's entry with the same name doesn't count, so `consume(Plus)` and `UnaryNode(Plus, x)` both resolve.
   - Don't name new enum entries or sealed subtypes after Kotlin types (`Number`, `Any`, `Boolean`, `Error`), since that forces a qualifier at every use.
 - `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` - add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
+- Before using or adding an icon, check upstream Actual for an equivalent and prefer it over Material. See [aktual-core/icons](aktual-core/icons/CLAUDE.md).
 - In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.
 - Put tests in `commonTest` so they run on both targets. Use `androidHostTest` only for tests needing real Android behaviour (`Context`, `Bundle`, `Looper`, Compose UI), with `@RunWith(RobolectricTestRunner::class)`. Host tests run on plain JUnit otherwise, with Android stubs returning defaults (`isReturnDefaultValues`).
 - Wrap comments at 100 columns. That is where `ktfmt --google-style` wraps them, not the `max_line_length` of 120 in `.editorconfig`.

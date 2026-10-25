@@ -8,8 +8,8 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.l10n.Strings
 import aktual.core.model.unaryPlus
 import aktual.core.ui.AktualDropdownMenu
@@ -389,7 +389,7 @@ private fun MonthMenu(month: YearMonth, onAction: BudgetActionHandler) {
   val actions = monthActions(month, onAction)
   Box {
     BareIconButton(
-      imageVector = MaterialIcons.MoreVert,
+      imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.budgetingMonthMenu(month.stringLong()),
       onClick = { expanded = true },
     )

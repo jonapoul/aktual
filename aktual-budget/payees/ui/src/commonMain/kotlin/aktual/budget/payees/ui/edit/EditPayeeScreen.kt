@@ -14,8 +14,9 @@ import aktual.budget.payees.vm.edit.Editing
 import aktual.budget.payees.vm.edit.Failure
 import aktual.budget.payees.vm.edit.Loading
 import aktual.budget.payees.vm.list.PayeeItem
-import aktual.core.icons.material.ArrowBack
-import aktual.core.icons.material.Clear
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronLeft
+import aktual.core.icons.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Save
 import aktual.core.l10n.Plurals
@@ -236,7 +237,7 @@ private fun EditPayeeScaffold(
             action =
               FailureAction(
                 text = { Strings.navBack },
-                icon = MaterialIcons.ArrowBack,
+                icon = AktualIcons.CheveronLeft,
                 onClick = { onAction(NavigateBack) },
               ),
           )
@@ -276,7 +277,7 @@ private fun EditPayeeTopBar(
       if (hasChanges) {
         IconButton(onClick = onRequestDiscard) {
           Icon(
-            imageVector = MaterialIcons.Clear,
+            imageVector = AktualIcons.Delete,
             contentDescription = Strings.payeesDiscardConfirm,
             tint = colors.errorText,
           )

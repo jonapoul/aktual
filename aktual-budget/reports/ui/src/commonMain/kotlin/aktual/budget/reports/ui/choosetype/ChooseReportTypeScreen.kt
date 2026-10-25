@@ -22,8 +22,8 @@ import aktual.budget.reports.ui.string
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeDialog
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Warning
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.AlertTriangle
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.NewCustomReportNavigator
@@ -197,7 +197,7 @@ private fun WidgetType(
 
       if (!enabled) {
         NormalIconButton(
-          imageVector = MaterialIcons.Warning,
+          imageVector = AktualIcons.AlertTriangle,
           contentDescription = Strings.reportsChooseTypeDisabled,
           onClick = { onAction(ShowDisabledDialog) },
           colors = NormalRed,

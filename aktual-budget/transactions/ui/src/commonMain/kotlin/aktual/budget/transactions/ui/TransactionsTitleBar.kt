@@ -1,12 +1,12 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.transactions.vm.LoadedAccount
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
-import aktual.core.icons.material.Settings
-import aktual.core.icons.material.Tune
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Cog
+import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.Trash
+import aktual.core.icons.Tuning
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualDropdownMenu
@@ -84,12 +84,12 @@ internal fun TransactionsTitleBar(
     actions = {
       IconButton(
         onClick = { onAction(CreateTransaction) },
-        content = { Icon(MaterialIcons.Add, Strings.transactionsCreate) },
+        content = { Icon(AktualIcons.Add, Strings.transactionsCreate) },
       )
 
       IconButton(
         onClick = onOpenViewOptions,
-        content = { Icon(MaterialIcons.Tune, Strings.transactionsViewOptions) },
+        content = { Icon(AktualIcons.Tuning, Strings.transactionsViewOptions) },
       )
 
       TransactionsMenu(canDeleteAccount = loadedAccount is SpecificAccount, onAction = onAction)
@@ -109,13 +109,13 @@ private fun TransactionsMenu(
   Box(modifier = modifier) {
     IconButton(
       onClick = { expanded = true },
-      content = { Icon(MaterialIcons.MoreVert, Strings.transactionsMenu) },
+      content = { Icon(AktualIcons.DotsHorizontalTriple, Strings.transactionsMenu) },
     )
 
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
       AktualDropdownMenuItem(
         text = Strings.transactionsSettings,
-        leadingIcon = MaterialIcons.Settings,
+        leadingIcon = AktualIcons.Cog,
         onClick = {
           expanded = false
           onAction(OpenSettings)
@@ -125,7 +125,7 @@ private fun TransactionsMenu(
       if (canDeleteAccount) {
         AktualDropdownMenuItem(
           text = Strings.transactionsDeleteAccount,
-          leadingIcon = MaterialIcons.Delete,
+          leadingIcon = AktualIcons.Trash,
           onClick = {
             expanded = false
             confirmDelete = true

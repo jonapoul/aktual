@@ -8,7 +8,8 @@ import aktual.budget.transactions.vm.edit.complete
 import aktual.budget.transactions.vm.edit.insertHash
 import aktual.budget.transactions.vm.edit.matching
 import aktual.budget.transactions.vm.edit.tagQuery
-import aktual.core.icons.material.Add
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Numbers
 import aktual.core.l10n.Strings
@@ -148,7 +149,7 @@ private fun CreateTagChip(name: String, onClick: () -> Unit) =
     verticalAlignment = CenterVertically,
   ) {
     Icon(
-      imageVector = MaterialIcons.Add,
+      imageVector = AktualIcons.Add,
       contentDescription = null,
       modifier = Modifier.size(NotesSheetDS.createIconSize),
       tint = colors.noticeTextDark,

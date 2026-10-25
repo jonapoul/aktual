@@ -5,14 +5,15 @@ import aktual.about.vm.logs.LogEntriesState
 import aktual.about.vm.logs.LogExportScope
 import aktual.about.vm.logs.LogExportScope.Day
 import aktual.about.vm.logs.LogFilters
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
+import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.SearchAlternate
 import aktual.core.icons.material.ArrowDownward
 import aktual.core.icons.material.ArrowUpward
-import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Pause
 import aktual.core.icons.material.PlayArrow
-import aktual.core.icons.material.Search
 import aktual.core.icons.material.Share
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
@@ -239,13 +240,13 @@ private fun LogDayTopBar(
     actions = {
       if (isSearching) {
         BareIconButton(
-          imageVector = MaterialIcons.Clear,
+          imageVector = AktualIcons.Delete,
           contentDescription = Strings.logsSearchClose,
           onClick = onCloseSearch,
         )
       } else {
         BareIconButton(
-          imageVector = MaterialIcons.Search,
+          imageVector = AktualIcons.SearchAlternate,
           contentDescription = Strings.logsSearch,
           onClick = onSearch,
         )
@@ -265,7 +266,7 @@ private fun LogDayMenu(onScrollToTop: () -> Unit, onScrollToBottom: () -> Unit) 
   var expanded by remember { mutableStateOf(false) }
   Box {
     BareIconButton(
-      imageVector = MaterialIcons.MoreVert,
+      imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.logsMenu,
       onClick = { expanded = true },
     )

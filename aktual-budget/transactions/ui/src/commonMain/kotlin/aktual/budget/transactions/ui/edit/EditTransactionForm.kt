@@ -10,9 +10,8 @@ import aktual.budget.transactions.ui.tabularFigures
 import aktual.budget.transactions.vm.edit.ChangedElsewhere
 import aktual.budget.transactions.vm.edit.TransactionForm
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronDown
 import aktual.core.icons.Split
-import aktual.core.icons.material.ExpandMore
-import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
@@ -519,7 +518,7 @@ internal fun FieldRow(
     if (showChevron && enabled) {
       Icon(
         modifier = Modifier.size(ChevronSize).rotate(degrees = -90f),
-        imageVector = MaterialIcons.ExpandMore,
+        imageVector = AktualIcons.CheveronDown,
         contentDescription = null,
         tint = colors.pageTextSubdued,
       )

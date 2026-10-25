@@ -1,8 +1,8 @@
 package aktual.core.ui
 
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.Edit
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Pencil1
+import aktual.core.icons.Trash
 import aktual.core.theme.Colors
 import androidx.compose.animation.core.EaseOutBack
 import androidx.compose.foundation.background
@@ -217,10 +217,10 @@ private fun PreviewSwipeToReveal(@PreviewParameter(ColoredParameters::class) col
     SwipeToReveal(
       actions =
         persistentListOf(
-          SwipeAction("Rename", MaterialIcons.Edit, colors.tableBackground, colors.tableText) {},
+          SwipeAction("Rename", AktualIcons.Pencil1, colors.tableBackground, colors.tableText) {},
           SwipeAction(
             "Delete",
-            MaterialIcons.Delete,
+            AktualIcons.Trash,
             colors.errorText,
             colors.errorText.contrastingTextColor(),
           ) {},

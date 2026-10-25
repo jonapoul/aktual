@@ -8,9 +8,8 @@ import aktual.budget.schedules.vm.edit.ScheduleDate
 import aktual.budget.schedules.vm.edit.defaultRecurConfig
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.Calendar3
 import aktual.core.icons.Subtract
-import aktual.core.icons.material.CalendarToday
-import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
@@ -283,7 +282,7 @@ private fun DateField(
     NormalTextButton(
       modifier = Modifier.fillMaxWidth(),
       text = date.formatted(),
-      prefix = { Icon(imageVector = MaterialIcons.CalendarToday, contentDescription = null) },
+      prefix = { Icon(imageVector = AktualIcons.Calendar3, contentDescription = null) },
       onClick = { showDialog = true },
     )
   }

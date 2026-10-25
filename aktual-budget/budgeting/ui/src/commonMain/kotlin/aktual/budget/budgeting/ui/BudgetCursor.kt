@@ -5,8 +5,8 @@ import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryId
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toSignedInputText
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
@@ -236,7 +236,7 @@ internal fun RowScope.BudgetedCell(
           ) {
             cursor.openMenu(cell)
           },
-        imageVector = MaterialIcons.MoreVert,
+        imageVector = AktualIcons.DotsHorizontalTriple,
         contentDescription = null,
         tint = colors.pageTextSubdued,
       )

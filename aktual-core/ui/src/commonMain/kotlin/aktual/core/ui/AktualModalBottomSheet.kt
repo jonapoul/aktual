@@ -1,7 +1,7 @@
 package aktual.core.ui
 
-import aktual.core.icons.material.Clear
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.layout.Box
@@ -62,7 +62,7 @@ fun AktualModalBottomSheet(
       Box(modifier = Modifier.fillMaxWidth()) {
         BottomSheetDefaults.DragHandle(modifier = Modifier.align(Center))
         IconButton(modifier = Modifier.align(CenterEnd), onClick = onDismissRequest) {
-          Icon(imageVector = MaterialIcons.Clear, contentDescription = Strings.inputClose)
+          Icon(imageVector = AktualIcons.Delete, contentDescription = Strings.inputClose)
         }
       }
     },

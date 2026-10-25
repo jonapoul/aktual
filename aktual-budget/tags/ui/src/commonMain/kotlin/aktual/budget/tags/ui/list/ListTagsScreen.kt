@@ -9,11 +9,12 @@ import aktual.budget.tags.vm.list.ListTagsViewModel
 import aktual.budget.tags.vm.list.Loading
 import aktual.budget.tags.vm.list.Success
 import aktual.budget.tags.vm.list.TagItem
-import aktual.core.icons.material.Add
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.Refresh
+import aktual.core.icons.SearchAlternate
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
-import aktual.core.icons.material.Refresh
-import aktual.core.icons.material.Search
 import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditTagNavigator
@@ -148,13 +149,13 @@ private fun ListTagsScaffold(
         actions = {
           if (successState != null) {
             BareIconButton(
-              imageVector = MaterialIcons.Search,
+              imageVector = AktualIcons.SearchAlternate,
               contentDescription = Strings.tagsSearch,
               onClick = { onAction(OpenSearch) },
             )
           }
           BareIconButton(
-            imageVector = MaterialIcons.Add,
+            imageVector = AktualIcons.Add,
             contentDescription = Strings.tagsCreate,
             onClick = { onAction(CreateTag) },
           )
@@ -208,7 +209,7 @@ private fun ListTagsContent(
         action =
           FailureAction(
             text = { Strings.syncRetry },
-            icon = MaterialIcons.Refresh,
+            icon = AktualIcons.Refresh,
             onClick = { onAction(Retry) },
           ),
       )
@@ -222,7 +223,7 @@ private fun ListTagsContent(
         action =
           FailureAction(
             text = { Strings.tagsCreate },
-            icon = MaterialIcons.Add,
+            icon = AktualIcons.Add,
             onClick = { onAction(CreateTag) },
           ),
       )
@@ -281,7 +282,7 @@ private fun ListTagsMenu(onSort: () -> Unit, modifier: Modifier = Modifier) {
 
   Box(modifier = modifier) {
     BareIconButton(
-      imageVector = MaterialIcons.MoreVert,
+      imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.tagsMenu,
       onClick = { expanded = true },
     )

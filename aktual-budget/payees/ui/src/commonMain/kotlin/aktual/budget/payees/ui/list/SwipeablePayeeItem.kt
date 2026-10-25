@@ -1,10 +1,10 @@
 package aktual.budget.payees.ui.list
 
 import aktual.budget.payees.vm.list.PayeeItem
-import aktual.core.icons.material.Bookmark
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Merge
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Bookmark
+import aktual.core.icons.Merge
+import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParameterProvider
@@ -48,7 +48,7 @@ internal fun SwipeablePayeeItem(
       persistentListOf(
         SwipeAction(
           text = if (payee.isFavorite) Strings.payeesUnfavorite else Strings.payeesFavorite,
-          icon = MaterialIcons.Bookmark,
+          icon = AktualIcons.Bookmark,
           background = lerp(colors.tableBackground, Black, fraction = 0.1f),
           foreground = colors.tableText,
           onClick = {
@@ -58,7 +58,7 @@ internal fun SwipeablePayeeItem(
         ),
         SwipeAction(
           text = Strings.payeesMerge,
-          icon = MaterialIcons.Merge,
+          icon = AktualIcons.Merge,
           background = lerp(colors.tableBackground, Black, fraction = 0.2f),
           foreground = colors.tableText,
           onClick = {
@@ -68,7 +68,7 @@ internal fun SwipeablePayeeItem(
         ),
         SwipeAction(
           text = Strings.payeesDelete,
-          icon = MaterialIcons.Delete,
+          icon = AktualIcons.Trash,
           background = deleteBackground,
           foreground = deleteBackground.contrastingTextColor(),
           onClick = {

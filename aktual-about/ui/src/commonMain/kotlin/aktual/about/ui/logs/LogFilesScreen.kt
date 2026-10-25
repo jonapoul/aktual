@@ -4,8 +4,9 @@ import aktual.about.data.LogFile
 import aktual.about.vm.logs.LogExportScope
 import aktual.about.vm.logs.LogExportScope.Day
 import aktual.about.vm.logs.LogFilesState
-import aktual.core.icons.material.ChevronRight
-import aktual.core.icons.material.Delete
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronRight
+import aktual.core.icons.Trash
 import aktual.core.icons.material.Description
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Share
@@ -226,7 +227,7 @@ private fun SwipeableLogFileItem(
       persistentListOf(
         SwipeAction(
           text = Strings.logsDelete,
-          icon = MaterialIcons.Delete,
+          icon = AktualIcons.Trash,
           background = deleteBackground,
           foreground = deleteBackground.contrastingTextColor(),
           onClick = { onAction(DeleteDay(file.date)) },
@@ -297,7 +298,7 @@ private fun LogFileItem(
     }
 
     Icon(
-      imageVector = MaterialIcons.ChevronRight,
+      imageVector = AktualIcons.CheveronRight,
       contentDescription = null,
       tint = colors.pageTextSubdued,
     )

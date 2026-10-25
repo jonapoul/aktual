@@ -10,9 +10,9 @@ import aktual.budget.home.vm.HomeState
 import aktual.budget.home.vm.HomeViewModel
 import aktual.budget.home.vm.ReportsCardState
 import aktual.budget.home.vm.UpcomingCardState
-import aktual.core.icons.material.Check
-import aktual.core.icons.material.Edit
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Check
+import aktual.core.icons.Pencil1
 import aktual.core.l10n.Strings
 import aktual.core.nav.BankSyncNavigator
 import aktual.core.nav.BankSyncSettingsNavigator
@@ -256,7 +256,7 @@ private fun HomeContent(
           if (!state.isEmpty) {
             Crossfade(targetState = isEditing) { editing ->
               BareIconButton(
-                imageVector = if (editing) MaterialIcons.Check else MaterialIcons.Edit,
+                imageVector = if (editing) AktualIcons.Check else AktualIcons.Pencil1,
                 contentDescription = if (editing) Strings.homeReorderDone else Strings.homeReorder,
                 onClick = onToggleEditing,
               )

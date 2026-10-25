@@ -5,23 +5,23 @@ import aktual.budget.accounts.ui.addAccount
 import aktual.budget.navrail.vm.BudgetNavRailViewModel
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
+import aktual.core.icons.Cog
+import aktual.core.icons.InformationOutline
+import aktual.core.icons.Library
+import aktual.core.icons.Pencil1
 import aktual.core.icons.Reports
 import aktual.core.icons.Tag
 import aktual.core.icons.Tuning
 import aktual.core.icons.UserGroup
-import aktual.core.icons.material.AccountBalance
-import aktual.core.icons.material.AccountBalanceWallet
-import aktual.core.icons.material.Edit
+import aktual.core.icons.ViewHide
+import aktual.core.icons.ViewShow
+import aktual.core.icons.Wallet
 import aktual.core.icons.material.Home
-import aktual.core.icons.material.Info
 import aktual.core.icons.material.Logout
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Menu
 import aktual.core.icons.material.ReceiptLong
-import aktual.core.icons.material.Settings
 import aktual.core.icons.material.SwapHoriz
-import aktual.core.icons.material.Visibility
-import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.core.nav.BankSyncNavRoute
 import aktual.core.nav.BudgetEntryScope
@@ -590,14 +590,14 @@ internal fun BudgetTab.label(): String =
 internal fun BudgetTab.icon(): ImageVector =
   when (this) {
     BudgetTab.Home -> MaterialIcons.Home
-    Budget -> MaterialIcons.AccountBalanceWallet
+    Budget -> AktualIcons.Wallet
     Transactions -> MaterialIcons.ReceiptLong
     BudgetTab.Reports -> AktualIcons.Reports
     Schedules -> AktualIcons.Calendar3
     Rules -> AktualIcons.Tuning
     Tags -> AktualIcons.Tag
     Payees -> AktualIcons.UserGroup
-    BankSync -> MaterialIcons.AccountBalance
+    BankSync -> AktualIcons.Library
   }
 
 // Less frequently used tabs, which the side rail keeps in its menu
@@ -650,7 +650,7 @@ private fun BudgetMenu(
       }
       AktualDropdownMenuItem(
         text = Strings.budgetNavMenuRenameBudget,
-        leadingIcon = MaterialIcons.Edit,
+        leadingIcon = AktualIcons.Pencil1,
         onClick = {
           onDismissRequest()
           onRename()
@@ -663,8 +663,7 @@ private fun BudgetMenu(
           } else {
             Strings.budgetNavMenuPrivacyOn
           },
-        leadingIcon =
-          if (isPrivacyEnabled) MaterialIcons.VisibilityOff else MaterialIcons.Visibility,
+        leadingIcon = if (isPrivacyEnabled) AktualIcons.ViewHide else AktualIcons.ViewShow,
         onClick = {
           onDismissRequest()
           onSetPrivacyMode(!isPrivacyEnabled)
@@ -699,7 +698,7 @@ private fun BudgetMenu(
       }
       AktualDropdownMenuItem(
         text = Strings.budgetNavMenuSettings,
-        leadingIcon = MaterialIcons.Settings,
+        leadingIcon = AktualIcons.Cog,
         onClick = {
           onDismissRequest()
           onAction(Settings)
@@ -707,7 +706,7 @@ private fun BudgetMenu(
       )
       AktualDropdownMenuItem(
         text = Strings.budgetNavMenuAbout,
-        leadingIcon = MaterialIcons.Info,
+        leadingIcon = AktualIcons.InformationOutline,
         onClick = {
           onDismissRequest()
           onAction(About)

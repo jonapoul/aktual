@@ -2,8 +2,8 @@
 
 package aktual.core.ui
 
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
 import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -326,7 +326,7 @@ private fun PreviewTonal(
       TonalButton(
         modifier = Modifier.fillMaxWidth(),
         text = "Add item",
-        icon = MaterialIcons.Add,
+        icon = AktualIcons.Add,
         isEnabled = isEnabled,
         onClick = {},
       )

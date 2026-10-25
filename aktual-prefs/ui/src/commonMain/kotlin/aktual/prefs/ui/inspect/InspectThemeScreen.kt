@@ -1,12 +1,13 @@
 package aktual.prefs.ui.inspect
 
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.Edit
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.Pencil1
+import aktual.core.icons.Refresh
+import aktual.core.icons.SearchAlternate
+import aktual.core.icons.Trash
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.OpenInNew
-import aktual.core.icons.material.Refresh
-import aktual.core.icons.material.Search
 import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
@@ -182,7 +183,7 @@ private fun InspectThemeScaffold(
         actions = {
           if (state is Loaded) {
             BareIconButton(
-              imageVector = MaterialIcons.Search,
+              imageVector = AktualIcons.SearchAlternate,
               contentDescription = Strings.settingsThemeInspectSearch,
               onClick = { onAction(OpenSearch) },
             )
@@ -257,7 +258,7 @@ private fun MoreMenu(source: ThemeSource, onAction: InspectThemeActionHandler) {
   var showMenu by remember { mutableStateOf(false) }
 
   BareIconButton(
-    imageVector = MaterialIcons.MoreVert,
+    imageVector = AktualIcons.DotsHorizontalTriple,
     contentDescription = Strings.settingsThemeInspectMenu,
     onClick = { showMenu = true },
   )
@@ -280,7 +281,7 @@ private fun MoreMenu(source: ThemeSource, onAction: InspectThemeActionHandler) {
         showMenu = false
         onAction(ShowDuplicateDialog)
       },
-      leadingIcon = { Icon(MaterialIcons.Edit, contentDescription = duplicateText) },
+      leadingIcon = { Icon(AktualIcons.Pencil1, contentDescription = duplicateText) },
     )
 
     if (source == Downloaded) {
@@ -303,7 +304,7 @@ private fun MoreMenu(source: ThemeSource, onAction: InspectThemeActionHandler) {
           showMenu = false
           onAction(ShowDeleteDialog)
         },
-        leadingIcon = { Icon(MaterialIcons.Delete, contentDescription = deleteText) },
+        leadingIcon = { Icon(AktualIcons.Trash, contentDescription = deleteText) },
       )
     }
   }
@@ -334,7 +335,7 @@ private fun InspectThemeContent(
           FailureAction(
             text = { Strings.settingsThemeInspectRetry },
             onClick = { onAction(Retry) },
-            icon = MaterialIcons.Refresh,
+            icon = AktualIcons.Refresh,
           ),
       )
     }

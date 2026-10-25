@@ -1,7 +1,8 @@
 package aktual.about.ui.licenses
 
 import aktual.about.vm.LicenseSorting
-import aktual.core.icons.material.AccountBalance
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Library
 import aktual.core.icons.material.Badge
 import aktual.core.icons.material.FormatListBulleted
 import aktual.core.icons.material.MaterialIcons
@@ -48,5 +49,5 @@ private fun LicenseSorting.icon(): ImageVector =
   when (this) {
     ByArtifact -> MaterialIcons.FormatListBulleted
     ByName -> MaterialIcons.Badge
-    ByLicense -> MaterialIcons.AccountBalance
+    ByLicense -> AktualIcons.Library
   }

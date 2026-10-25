@@ -5,8 +5,8 @@ import aktual.budget.rules.ui.LocalEntityListFetcher
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.vm.EntityListFetcher
 import aktual.budget.rules.vm.EntitySummary
-import aktual.core.icons.material.Clear
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -83,7 +83,7 @@ internal fun EntityIdPicker(
       trailingIcon = {
         if (selectedId != null && isEnabled) {
           IconButton(onClick = { onValueChange(JsonNull) }) {
-            Icon(MaterialIcons.Clear, contentDescription = Strings.editRuleConditionDelete)
+            Icon(AktualIcons.Delete, contentDescription = Strings.editRuleConditionDelete)
           }
         } else {
           ExposedDropdownMenuDefaults.TrailingIcon(expanded = showSheet)

@@ -4,9 +4,9 @@ import aktual.budget.model.DashboardPageId
 import aktual.budget.reports.ui.Action.SelectPage
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.vm.dashboard.DashboardPage
-import aktual.core.icons.material.ArrowDropDown
-import aktual.core.icons.material.Check
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Check
+import aktual.core.icons.CheveronDown
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
@@ -68,7 +68,7 @@ internal fun DashboardSelector(
         overflow = Ellipsis,
       )
       Icon(
-        imageVector = MaterialIcons.ArrowDropDown,
+        imageVector = AktualIcons.CheveronDown,
         contentDescription = Strings.reportsDashboardChoose,
         tint = colors.pageText,
       )
@@ -95,7 +95,7 @@ private fun DashboardSelectorItems(
 ) = pages.fastForEach { page ->
   AktualDropdownMenuItem(
     text = page.displayName(),
-    trailingIcon = if (page.id == selected.id) MaterialIcons.Check else null,
+    trailingIcon = if (page.id == selected.id) AktualIcons.Check else null,
     onClick = { onAction(SelectPage(page.id)) },
   )
 }

@@ -3,12 +3,12 @@ package aktual.budget.budgeting.ui
 import aktual.budget.budgeting.vm.BudgetEvent.Updated
 import aktual.budget.budgeting.vm.BudgetState
 import aktual.budget.budgeting.vm.BudgetViewModel
-import aktual.core.icons.material.CalendarToday
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
-import aktual.core.icons.material.Refresh
-import aktual.core.icons.material.Visibility
-import aktual.core.icons.material.VisibilityOff
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Calendar3
+import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.Refresh
+import aktual.core.icons.ViewHide
+import aktual.core.icons.ViewShow
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
 import aktual.core.l10n.budgeting_undo
@@ -327,7 +327,7 @@ private fun BudgetContent(
         action =
           FailureAction(
             text = { Strings.syncRetry },
-            icon = MaterialIcons.Refresh,
+            icon = AktualIcons.Refresh,
             onClick = { onAction(Retry) },
           ),
       )
@@ -449,7 +449,7 @@ private fun BudgetMenu(
 
   Box(modifier = modifier) {
     BareIconButton(
-      imageVector = MaterialIcons.MoreVert,
+      imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.budgetingMenu,
       onClick = { expanded = true },
     )
@@ -458,7 +458,7 @@ private fun BudgetMenu(
       if (state.month != state.current) {
         AktualDropdownMenuItem(
           text = Strings.budgetingToday,
-          leadingIcon = MaterialIcons.CalendarToday,
+          leadingIcon = AktualIcons.Calendar3,
           onClick = {
             expanded = false
             onAction(ShowToday)
@@ -469,7 +469,7 @@ private fun BudgetMenu(
       val showHidden = state.showHidden
       AktualDropdownMenuItem(
         text = if (showHidden) Strings.budgetingHideHidden else Strings.budgetingShowHidden,
-        leadingIcon = if (showHidden) MaterialIcons.VisibilityOff else MaterialIcons.Visibility,
+        leadingIcon = if (showHidden) AktualIcons.ViewHide else AktualIcons.ViewShow,
         onClick = {
           expanded = false
           onAction(ToggleHidden)

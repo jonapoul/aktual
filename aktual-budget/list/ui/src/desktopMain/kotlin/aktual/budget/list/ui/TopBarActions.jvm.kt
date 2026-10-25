@@ -1,7 +1,7 @@
 package aktual.budget.list.ui
 
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.normalIconButton
@@ -20,7 +20,7 @@ internal actual fun TopBarActions(onAction: ListBudgetsActionHandler) = Row {
   BasicIconButton(
     modifier = Modifier.padding(horizontal = 5.dp),
     onClick = { onAction(Reload) },
-    imageVector = MaterialIcons.Refresh,
+    imageVector = AktualIcons.Refresh,
     contentDescription = Strings.listBudgetsRefresh,
     colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
   )

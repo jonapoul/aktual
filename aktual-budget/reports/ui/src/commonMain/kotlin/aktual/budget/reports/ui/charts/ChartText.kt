@@ -4,9 +4,9 @@ import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.vm.TextAlign
 import aktual.budget.reports.vm.TextData
-import aktual.core.icons.material.Check
-import aktual.core.icons.material.Edit
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Check
+import aktual.core.icons.Pencil1
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
@@ -227,14 +227,14 @@ private fun TextChartButtons(
         modifier = Modifier.weight(1f),
         text = Strings.reportsTextSave,
         isEnabled = hasChanges,
-        prefix = { Icon(imageVector = MaterialIcons.Check, contentDescription = null) },
+        prefix = { Icon(imageVector = AktualIcons.Check, contentDescription = null) },
         onClick = onSave,
       )
     } else {
       PrimaryTextButton(
         modifier = Modifier.fillMaxWidth(),
         text = Strings.reportsTextEdit,
-        prefix = { Icon(imageVector = MaterialIcons.Edit, contentDescription = null) },
+        prefix = { Icon(imageVector = AktualIcons.Pencil1, contentDescription = null) },
         onClick = onEdit,
       )
     }

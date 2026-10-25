@@ -1,8 +1,8 @@
 package aktual.prefs.ui.schedules
 
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Visibility
-import aktual.core.icons.material.VisibilityOff
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.ViewHide
+import aktual.core.icons.ViewShow
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualTheme.colors
@@ -108,8 +108,7 @@ private fun ScheduleSettingsContent(
         preference = state.showCompleted,
         title = Strings.settingsSchedulesShowCompleted,
         subtitle = null,
-        icon =
-          if (state.showCompleted.value) MaterialIcons.Visibility else MaterialIcons.VisibilityOff,
+        icon = if (state.showCompleted.value) AktualIcons.ViewShow else AktualIcons.ViewHide,
       )
     }
     item { BottomSpacing() }

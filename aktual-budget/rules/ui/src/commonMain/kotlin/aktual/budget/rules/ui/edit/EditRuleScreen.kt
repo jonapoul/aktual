@@ -13,10 +13,11 @@ import aktual.budget.rules.vm.edit.EditRuleState.Loading
 import aktual.budget.rules.vm.edit.EditRuleState.Success
 import aktual.budget.rules.vm.edit.EditRuleViewModel
 import aktual.budget.rules.vm.hasUnknownValues
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.InformationOutline
 import aktual.core.icons.material.DeleteForever
-import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Save
 import aktual.core.icons.material.SaveAs
 import aktual.core.l10n.Strings
@@ -204,7 +205,7 @@ private fun EditRuleActions(
     NormalIconButton(
       onClick = { showMenu = !showMenu },
       isEnabled = state is Success,
-      imageVector = MaterialIcons.MoreVert,
+      imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.editRuleMenu,
     )
 
@@ -353,7 +354,7 @@ private fun RuleStage(
       )
 
       AktualTooltip(
-        imageVector = MaterialIcons.Info,
+        imageVector = AktualIcons.InformationOutline,
         contentDescription = null,
         tooltipText = Strings.editRuleStageDesc,
       )

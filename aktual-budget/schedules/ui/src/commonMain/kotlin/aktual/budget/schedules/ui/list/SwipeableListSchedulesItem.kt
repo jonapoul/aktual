@@ -1,7 +1,8 @@
 package aktual.budget.schedules.ui.list
 
 import aktual.budget.schedules.domain.Schedule
-import aktual.core.icons.material.Delete
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Trash
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.PostAdd
 import aktual.core.l10n.Strings
@@ -44,7 +45,7 @@ internal fun SwipeableListSchedulesItem(
         ),
         SwipeAction(
           text = Strings.listSchedulesDelete,
-          icon = MaterialIcons.Delete,
+          icon = AktualIcons.Trash,
           background = deleteBackground,
           foreground = deleteBackground.contrastingTextColor(),
           onClick = {

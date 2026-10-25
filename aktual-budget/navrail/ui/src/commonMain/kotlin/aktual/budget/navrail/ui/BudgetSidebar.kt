@@ -10,16 +10,17 @@ import aktual.budget.navrail.vm.DrawerAccount
 import aktual.budget.navrail.vm.DrawerAccountSection
 import aktual.budget.navrail.vm.DrawerAccounts
 import aktual.budget.navrail.vm.DrawerHeaderState
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.Edit
-import aktual.core.icons.material.ExpandMore
-import aktual.core.icons.material.Info
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronDown
+import aktual.core.icons.Cog
+import aktual.core.icons.InformationOutline
+import aktual.core.icons.Pencil1
+import aktual.core.icons.ViewHide
+import aktual.core.icons.ViewShow
 import aktual.core.icons.material.Logout
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Settings
 import aktual.core.icons.material.SwapHoriz
-import aktual.core.icons.material.Visibility
-import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.core.model.unaryPlus
 import aktual.core.nav.AccountGroupTransactionsNavRoute
@@ -162,7 +163,7 @@ internal fun ColumnScope.BudgetSidebarContent(
       )
     }
 
-    DrawerItem(icon = MaterialIcons.Add, label = Strings.accountsAddTitle, onClick = onAddAccount)
+    DrawerItem(icon = AktualIcons.Add, label = Strings.accountsAddTitle, onClick = onAddAccount)
   }
 
   HorizontalDivider(
@@ -242,7 +243,7 @@ private fun AccountSectionHeader(
     IconButton(onClick = onToggle) {
       Icon(
         modifier = Modifier.rotate(rotation),
-        imageVector = MaterialIcons.ExpandMore,
+        imageVector = AktualIcons.CheveronDown,
         contentDescription =
           if (isExpanded) {
             Strings.budgetNavAccountsCollapse(title)
@@ -357,13 +358,13 @@ private fun drawerActions(
 ): ImmutableList<DrawerAction> = buildList {
   if (LocalPrivacyEnabled.current) {
     +DrawerAction(
-      icon = MaterialIcons.VisibilityOff,
+      icon = AktualIcons.ViewHide,
       label = Strings.budgetNavMenuPrivacyOff,
       onClick = { onSetPrivacyMode(false) },
     )
   } else {
     +DrawerAction(
-      icon = MaterialIcons.Visibility,
+      icon = AktualIcons.ViewShow,
       label = Strings.budgetNavMenuPrivacyOn,
       onClick = { onSetPrivacyMode(true) },
     )
@@ -376,12 +377,12 @@ private fun drawerActions(
     )
   }
   +DrawerAction(
-    icon = MaterialIcons.Settings,
+    icon = AktualIcons.Cog,
     label = Strings.budgetNavMenuSettings,
     onClick = { onAction(Settings) },
   )
   +DrawerAction(
-    icon = MaterialIcons.Info,
+    icon = AktualIcons.InformationOutline,
     label = Strings.budgetNavMenuAbout,
     onClick = { onAction(About) },
   )
@@ -462,7 +463,7 @@ private fun DrawerHeader(
     }
 
     BareIconButton(
-      imageVector = MaterialIcons.Edit,
+      imageVector = AktualIcons.Pencil1,
       contentDescription = Strings.budgetNavMenuRenameBudget,
       colors = RenameButtonColors,
       onClick = onRename,

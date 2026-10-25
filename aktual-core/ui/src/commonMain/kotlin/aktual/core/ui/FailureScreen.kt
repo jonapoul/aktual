@@ -2,8 +2,7 @@ package aktual.core.ui
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudWarning
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
+import aktual.core.icons.Refresh
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import alakazam.compose.VerticalSpacer
@@ -146,7 +145,7 @@ private data class FailureScreenParams(
   val reason: String? = null,
   val title: String = "Failed syncing the doodads",
   val action: FailureAction? =
-    FailureAction(text = { "Retry" }, icon = MaterialIcons.Refresh, onClick = {}),
+    FailureAction(text = { "Retry" }, icon = AktualIcons.Refresh, onClick = {}),
   val background: Colors.() -> Color = { cardBackground },
 )
 

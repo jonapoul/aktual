@@ -1,9 +1,10 @@
 package aktual.prefs.ui.inspect
 
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.System
 import aktual.core.icons.material.Badge
 import aktual.core.icons.material.FormatListBulleted
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.ListBottomSheet
@@ -48,5 +49,5 @@ private fun PropertySorting.icon(): ImageVector =
   when (this) {
     Default -> MaterialIcons.FormatListBulleted
     ByName -> MaterialIcons.Badge
-    ByColor -> MaterialIcons.ThemeRoutine
+    ByColor -> AktualIcons.System
   }

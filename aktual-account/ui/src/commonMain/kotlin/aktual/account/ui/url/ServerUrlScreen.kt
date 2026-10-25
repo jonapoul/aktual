@@ -1,8 +1,8 @@
 package aktual.account.ui.url
 
 import aktual.account.vm.ServerUrlViewModel
-import aktual.core.icons.material.Info
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.InformationOutline
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Protocol
@@ -114,7 +114,7 @@ private fun ServerUrlScaffold(
           BasicIconButton(
             modifier = Modifier.padding(horizontal = 5.dp),
             onClick = { onAction(OpenAbout) },
-            imageVector = MaterialIcons.Info,
+            imageVector = AktualIcons.InformationOutline,
             contentDescription = Strings.serverUrlMenuAbout,
             colors = { c, isPressed -> c.normalIconButton(isPressed) },
           )

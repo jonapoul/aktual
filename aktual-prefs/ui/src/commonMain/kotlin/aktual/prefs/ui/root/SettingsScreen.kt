@@ -2,13 +2,13 @@ package aktual.prefs.ui.root
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
+import aktual.core.icons.System
+import aktual.core.icons.Tuning
 import aktual.core.icons.material.CurrencyPound
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Numbers
 import aktual.core.icons.material.ReceiptLong
 import aktual.core.icons.material.Security
-import aktual.core.icons.material.ThemeRoutine
-import aktual.core.icons.material.Tune
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.CurrencySettingsNavigator
@@ -64,7 +64,7 @@ private fun SettingsScaffold(onAction: SettingsActionHandler) {
     item {
       SubSettingsItem(
         title = Strings.settingsTheme,
-        icon = MaterialIcons.ThemeRoutine,
+        icon = AktualIcons.System,
         onClick = { onAction(NavToThemeSettings) },
       )
     }
@@ -85,7 +85,7 @@ private fun SettingsScaffold(onAction: SettingsActionHandler) {
     item {
       SubSettingsItem(
         title = Strings.settingsUiGroup,
-        icon = MaterialIcons.Tune,
+        icon = AktualIcons.Tuning,
         onClick = { onAction(NavToSystemUiSettings) },
       )
     }

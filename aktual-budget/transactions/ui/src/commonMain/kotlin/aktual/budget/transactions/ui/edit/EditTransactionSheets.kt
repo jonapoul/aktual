@@ -9,10 +9,10 @@ import aktual.budget.transactions.vm.edit.EntityOption
 import aktual.budget.transactions.vm.edit.TransactionForm
 import aktual.budget.transactions.vm.edit.TransactionOptions
 import aktual.budget.transactions.vm.edit.matching
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Visibility
-import aktual.core.icons.material.VisibilityOff
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.ViewHide
+import aktual.core.icons.ViewShow
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTextField
@@ -222,7 +222,7 @@ private fun PayeeSheet(
           BottomSheetListItem(
             label = Strings.transactionPayeeCreate(name),
             isSelected = false,
-            leadingContent = { BottomSheetIcon(MaterialIcons.Add) },
+            leadingContent = { BottomSheetIcon(AktualIcons.Add) },
             onClick = {
               onCreate(name)
               onDismiss()
@@ -352,7 +352,7 @@ private fun CategorySheet(
       if (options.hasHiddenCategories) {
         val showHidden = options.showHiddenCategories
         NormalIconButton(
-          imageVector = if (showHidden) MaterialIcons.VisibilityOff else MaterialIcons.Visibility,
+          imageVector = if (showHidden) AktualIcons.ViewHide else AktualIcons.ViewShow,
           contentDescription =
             if (showHidden) {
               Strings.transactionCategoryHideHidden

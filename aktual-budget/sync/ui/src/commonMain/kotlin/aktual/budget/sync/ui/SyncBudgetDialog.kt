@@ -7,8 +7,8 @@ import aktual.budget.sync.vm.SyncOverallState
 import aktual.budget.sync.vm.SyncStep
 import aktual.budget.sync.vm.SyncStepState
 import aktual.budget.sync.vm.SyncStepState.InProgress
-import aktual.core.icons.material.Error
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.ExclamationOutline
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.theme.Colors
@@ -255,7 +255,7 @@ private fun SyncStepState(state: SyncStepState, modifier: Modifier = Modifier) {
 
       is Failed -> {
         Icon(
-          imageVector = MaterialIcons.Error,
+          imageVector = AktualIcons.ExclamationOutline,
           contentDescription = state.moreInfo,
           modifier = Modifier.size(ITEM_SIZE),
           tint = colors.reportsNumberNegative,

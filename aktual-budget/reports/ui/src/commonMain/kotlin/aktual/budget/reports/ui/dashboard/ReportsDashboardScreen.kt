@@ -9,9 +9,9 @@ import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Search
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.CreateReportNavigator
@@ -155,14 +155,14 @@ internal fun ReportsDashboardScaffold(
         actions = {
           IconButton(onClick = { onAction(OpenSearch) }) {
             Icon(
-              imageVector = MaterialIcons.Search,
+              imageVector = AktualIcons.SearchAlternate,
               contentDescription = Strings.reportsDashboardSearch,
             )
           }
           if (!items.isNullOrEmpty()) {
             IconButton(onClick = { onAction(CreateNewReport) }) {
               Icon(
-                imageVector = MaterialIcons.Add,
+                imageVector = AktualIcons.Add,
                 contentDescription = Strings.reportsDashboardCreate,
               )
             }

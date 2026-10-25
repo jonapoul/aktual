@@ -14,10 +14,11 @@ import aktual.budget.schedules.vm.edit.NamedEntity
 import aktual.budget.schedules.vm.edit.ScheduleAmount
 import aktual.budget.schedules.vm.edit.ScheduleDate
 import aktual.budget.schedules.vm.edit.ScheduleForm
-import aktual.core.icons.material.ArrowBack
-import aktual.core.icons.material.Clear
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.Edit
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronLeft
+import aktual.core.icons.Delete
+import aktual.core.icons.Pencil1
+import aktual.core.icons.Trash
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Save
 import aktual.core.icons.material.SaveAs
@@ -188,7 +189,7 @@ private fun EditScheduleScaffold(
           if (loaded?.isEditing == true) {
             IconButton(onClick = { onBack() }) {
               Icon(
-                imageVector = MaterialIcons.Clear,
+                imageVector = AktualIcons.Delete,
                 contentDescription = Strings.editScheduleStopEditing,
               )
             }
@@ -229,7 +230,7 @@ private fun EditScheduleScaffold(
             action =
               FailureAction(
                 text = { Strings.navBack },
-                icon = MaterialIcons.ArrowBack,
+                icon = AktualIcons.CheveronLeft,
                 onClick = { onAction(NavigateBack) },
               ),
           )
@@ -324,13 +325,13 @@ private fun TopBarActions(
       )
     } else {
       BareIconButton(
-        imageVector = MaterialIcons.Edit,
+        imageVector = AktualIcons.Pencil1,
         contentDescription = Strings.editScheduleEdit,
         enabled = !state.isWorking,
         onClick = { onAction(StartEditing) },
       )
       BareIconButton(
-        imageVector = MaterialIcons.Delete,
+        imageVector = AktualIcons.Trash,
         contentDescription = Strings.editScheduleDelete,
         enabled = !state.isWorking,
         onClick = onDelete,

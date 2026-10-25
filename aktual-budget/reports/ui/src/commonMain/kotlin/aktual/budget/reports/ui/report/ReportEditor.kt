@@ -6,9 +6,10 @@ import aktual.budget.reports.ui.charts.ChartZoomState
 import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.ui.charts.info
 import aktual.budget.reports.vm.ChartData
-import aktual.core.icons.material.Clear
-import aktual.core.icons.material.Edit
-import aktual.core.icons.material.Info
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
+import aktual.core.icons.InformationOutline
+import aktual.core.icons.Pencil1
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ZoomOut
 import aktual.core.l10n.Strings
@@ -70,7 +71,7 @@ internal fun ReportEditorTopBar(
           onClick = { onAction(StopEditing) },
         ) {
           Icon(
-            imageVector = MaterialIcons.Clear,
+            imageVector = AktualIcons.Delete,
             contentDescription = Strings.reportsFormulaEditorClose,
           )
         }
@@ -115,7 +116,7 @@ internal fun ReportEditorTopBar(
       if (!isEditing && preview?.info()?.isNotEmpty() == true) {
         BareIconButton(
           modifier = Modifier.testTag(Tags.ChartInfo),
-          imageVector = MaterialIcons.Info,
+          imageVector = AktualIcons.InformationOutline,
           contentDescription = Strings.reportsChartInfo,
           onClick = onShowInfo,
         )
@@ -123,7 +124,7 @@ internal fun ReportEditorTopBar(
       if (!isEditing && canEdit) {
         PrimaryIconButton(
           modifier = Modifier.padding(horizontal = 8.dp).testTag(Tags.EditReport),
-          imageVector = MaterialIcons.Edit,
+          imageVector = AktualIcons.Pencil1,
           contentDescription = Strings.reportsFormulaViewerEdit,
           size = 20.dp,
           shape = CircleShape,

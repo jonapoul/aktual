@@ -11,7 +11,7 @@ internal inline fun aktualIcon(
   name: String,
   size: Float,
   block: ImageVector.Builder.() -> ImageVector.Builder,
-): ImageVector = aktualIcon(name, size, size, block)
+): ImageVector = ImageVector.Builder("Aktual.$name", 24.dp, 24.dp, size, size).block().build()
 
 internal inline fun aktualIcon(
   name: String,

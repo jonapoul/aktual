@@ -3,7 +3,8 @@ package aktual.about.ui.logs
 import aktual.about.vm.logs.LogExportScope
 import aktual.about.vm.logs.LogExportScope.Day
 import aktual.about.vm.logs.LogExportTarget
-import aktual.core.icons.material.ContentCopy
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Copy
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Save
 import aktual.core.icons.material.Share
@@ -109,8 +110,8 @@ private fun LogExportSheetContent(
       ExportTargetRow(MaterialIcons.Save, Strings.logsExportSave) {
         onExport(selected, LogExportTarget.Save)
       }
-      ExportTargetRow(MaterialIcons.ContentCopy, Strings.logsExportCopy) {
-        onExport(selected, Copy)
+      ExportTargetRow(AktualIcons.Copy, Strings.logsExportCopy) {
+        onExport(selected, LogExportTarget.Copy)
       }
     }
   }

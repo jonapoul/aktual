@@ -1,8 +1,8 @@
 package aktual.core.ui
 
-import aktual.core.icons.material.Check
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Search
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Check
+import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -70,8 +69,8 @@ fun <T : Any> ListBottomSheet(
         placeholderText = searchPlaceholder,
         singleLine = true,
         clearable = true,
-        leadingIcon = { BottomSheetIcon(MaterialIcons.Search) },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        leadingIcon = { BottomSheetIcon(AktualIcons.SearchAlternate) },
+        keyboardOptions = KeyboardOptions(imeAction = Search),
       )
     }
 
@@ -142,7 +141,7 @@ fun BottomSheetListItem(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = CenterVertically,
           ) {
-            if (isSelected) BottomSheetIcon(MaterialIcons.Check)
+            if (isSelected) BottomSheetIcon(AktualIcons.Check)
             trailingContent?.invoke()
           }
         }

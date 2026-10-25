@@ -6,9 +6,9 @@ import aktual.budget.banksync.vm.providers.BankSyncProviderSetupViewModel
 import aktual.budget.banksync.vm.providers.SetupError
 import aktual.budget.banksync.vm.providers.SetupField
 import aktual.budget.model.AccountSyncSource
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Visibility
-import aktual.core.icons.material.VisibilityOff
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.ViewHide
+import aktual.core.icons.ViewShow
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualTextField
@@ -246,8 +246,7 @@ private fun CredentialField(
         if (isSecret) {
           {
             BareIconButton(
-              imageVector =
-                if (isVisible) MaterialIcons.VisibilityOff else MaterialIcons.Visibility,
+              imageVector = if (isVisible) AktualIcons.ViewHide else AktualIcons.ViewShow,
               contentDescription = label,
               onClick = { isVisible = !isVisible },
             )

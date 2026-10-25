@@ -1,7 +1,8 @@
 package aktual.app.nav
 
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.LockClosed
 import aktual.core.icons.material.Fingerprint
-import aktual.core.icons.material.Lock
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
@@ -106,7 +107,7 @@ private fun LockedContent(onUnlock: () -> Unit) {
     ) {
       Icon(
         modifier = Modifier.size(40.dp),
-        imageVector = MaterialIcons.Lock,
+        imageVector = AktualIcons.LockClosed,
         contentDescription = null,
         tint = colors.pageTextPositive,
       )

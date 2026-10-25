@@ -2,8 +2,14 @@
 
 Icon definitions as `ImageVector` properties, split into two families:
 
-- **`AktualIcons`** (package `aktual.core.icons`) - custom SVG icons. Built with `aktualIcon()` + `aktualPath {}`; typical size 20f or 24f.
+- **`AktualIcons`** (package `aktual.core.icons`) - custom SVG icons. Built with `aktualIcon()` + `aktualPath {}`. For square icons `size` is the SVG viewBox size, and the icon always renders at 24dp to match Material. Non-square icons pass `width`/`height`, which are used as both viewport and dp size.
 - **`MaterialIcons`** (package `aktual.core.icons.material`) - Material Design icons. Built with `materialIcon()` + `materialPath {}`; 24dp, or 960-unit viewport for Material Symbols.
+
+## Check upstream first
+
+Before adding or picking an icon, check whether upstream Actual has one for the same purpose, and prefer it over a Material icon. Upstream SVGs live in `/home/jon/dev/actual/packages/component-library/src/icons/{v0,v1,v2}/`. To see which one Actual uses for a given action, grep `packages/desktop-client/src` for `Svg<Name>` (e.g. delete uses `SvgTrash`, settings uses `SvgCog`). Add it with `/add-svg-icon` as an `AktualIcons` entry. Only fall back to a Material icon when upstream has nothing suitable.
+
+## Adding icons
 
 Prefer the `/add-svg-icon` and `/add-material-icon` skills - they handle SVG → `ImageVector` conversion. The notes below are for when you need to do it by hand.
 

@@ -6,8 +6,8 @@ import aktual.budget.model.RuleStage
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.ui.PreviewRule2
 import aktual.budget.rules.vm.Rule
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
@@ -67,7 +67,7 @@ internal fun ListRulesItem(
       persistentListOf(
         SwipeAction(
           text = Strings.rulesItemDelete,
-          icon = MaterialIcons.Delete,
+          icon = AktualIcons.Trash,
           background = deleteBackground,
           foreground = deleteBackground.contrastingTextColor(),
           onClick = {

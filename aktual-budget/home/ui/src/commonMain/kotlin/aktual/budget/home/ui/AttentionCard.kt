@@ -8,11 +8,11 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.AlertTriangle
+import aktual.core.icons.Calendar3
 import aktual.core.icons.CloudWarning
-import aktual.core.icons.material.CalendarToday
 import aktual.core.icons.material.FormatListBulleted
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Warning
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
@@ -202,8 +202,8 @@ private fun AttentionItem.icon(): ImageVector =
     is SyncFailed,
     is SyncFailedMany -> AktualIcons.CloudWarning
     is Uncategorised -> MaterialIcons.FormatListBulleted
-    is Overspent -> MaterialIcons.Warning
-    is OverdueSchedules -> MaterialIcons.CalendarToday
+    is Overspent -> AktualIcons.AlertTriangle
+    is OverdueSchedules -> AktualIcons.Calendar3
   }
 
 @Composable

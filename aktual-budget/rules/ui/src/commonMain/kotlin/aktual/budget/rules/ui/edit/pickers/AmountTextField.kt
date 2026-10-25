@@ -8,9 +8,8 @@ import aktual.budget.model.NumberFormat
 import aktual.budget.model.NumberFormatConfig
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
 import aktual.core.icons.Subtract
-import aktual.core.icons.material.Clear
-import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.DarkColors
 import aktual.core.ui.AktualTextField
@@ -219,7 +218,7 @@ private fun TrailingContent(
     if (canClear) {
       BareIconButton(
         enabled = isEnabled,
-        imageVector = MaterialIcons.Clear,
+        imageVector = AktualIcons.Delete,
         contentDescription = Strings.editRuleAmountClear,
         onClick = onClear,
       )

@@ -10,9 +10,9 @@ import aktual.budget.reports.vm.removeIncomeStream
 import aktual.budget.reports.vm.updateContribution
 import aktual.budget.reports.vm.updateIncomeStream
 import aktual.budget.reports.vm.withSource
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
@@ -36,7 +36,7 @@ internal fun IncomeTab(config: McConfig, onAction: MonteCarloActionHandler) {
   }
 
   TonalButton(
-    icon = MaterialIcons.Add,
+    icon = AktualIcons.Add,
     text = Strings.monteCarloIncomeAdd,
     onClick = { onAction(AddIncomeStream) },
   )
@@ -58,7 +58,7 @@ private fun IncomeCard(
     title = label,
     actions = {
       BareIconButton(
-        imageVector = MaterialIcons.Delete,
+        imageVector = AktualIcons.Trash,
         contentDescription = Strings.monteCarloIncomeRemove,
         onClick = { onAction.edit { it.removeIncomeStream(stream.id) } },
       )
@@ -120,7 +120,7 @@ internal fun ContributionsTab(config: McConfig, onAction: MonteCarloActionHandle
   }
 
   TonalButton(
-    icon = MaterialIcons.Add,
+    icon = AktualIcons.Add,
     text = Strings.monteCarloContributionAdd,
     onClick = { onAction(AddContribution) },
   )
@@ -142,7 +142,7 @@ private fun ContributionCard(
     title = label,
     actions = {
       BareIconButton(
-        imageVector = MaterialIcons.Delete,
+        imageVector = AktualIcons.Trash,
         contentDescription = Strings.monteCarloContributionRemove,
         onClick = { onAction.edit { it.removeContribution(contribution.id) } },
       )

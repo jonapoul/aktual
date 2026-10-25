@@ -10,11 +10,10 @@ import aktual.budget.transactions.vm.Transaction
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.ArrowsSynchronize
 import aktual.core.icons.Calendar3
+import aktual.core.icons.CheveronDown
 import aktual.core.icons.LeftArrow2
 import aktual.core.icons.RightArrow2
 import aktual.core.icons.Split
-import aktual.core.icons.material.ExpandMore
-import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
@@ -193,7 +192,7 @@ private fun CategoryLine(
     if (transaction.isExpandable(parts)) {
       Icon(
         modifier = Modifier.size(ChevronSize).rotate(if (parts == Expanded) HALF_TURN else 0f),
-        imageVector = MaterialIcons.ExpandMore,
+        imageVector = AktualIcons.CheveronDown,
         contentDescription = null,
         tint = colors.pageTextLight,
       )

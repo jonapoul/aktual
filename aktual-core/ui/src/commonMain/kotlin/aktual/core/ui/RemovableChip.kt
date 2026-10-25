@@ -1,7 +1,7 @@
 package aktual.core.ui
 
-import aktual.core.icons.material.Clear
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.background
@@ -49,7 +49,7 @@ fun RemovableChip(
     )
     Icon(
       modifier = Modifier.size(16.dp),
-      imageVector = MaterialIcons.Clear,
+      imageVector = AktualIcons.Delete,
       contentDescription = removeDescription,
       tint = colors.pillText,
     )

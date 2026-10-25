@@ -3,8 +3,9 @@ package aktual.budget.tags.ui.edit
 import aktual.budget.model.TagId
 import aktual.budget.tags.vm.edit.EditTagState
 import aktual.budget.tags.vm.edit.EditTagViewModel
-import aktual.core.icons.material.ArrowBack
-import aktual.core.icons.material.Clear
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronLeft
+import aktual.core.icons.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Save
 import aktual.core.l10n.Strings
@@ -208,7 +209,7 @@ private fun EditTagScaffold(
             action =
               FailureAction(
                 text = { Strings.navBack },
-                icon = MaterialIcons.ArrowBack,
+                icon = AktualIcons.CheveronLeft,
                 onClick = { onAction(NavigateBack) },
               ),
           )
@@ -249,7 +250,7 @@ private fun EditTagTopBar(
         // unsaved changes: a red cross that prompts the discard confirmation
         IconButton(onClick = onRequestDiscard) {
           Icon(
-            imageVector = MaterialIcons.Clear,
+            imageVector = AktualIcons.Delete,
             contentDescription = Strings.tagsDiscardConfirm,
             tint = colors.errorText,
           )

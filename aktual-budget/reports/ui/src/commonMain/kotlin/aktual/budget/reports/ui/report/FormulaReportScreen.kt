@@ -19,10 +19,10 @@ import aktual.budget.reports.vm.withNewQuery
 import aktual.budget.reports.vm.withQuery
 import aktual.budget.reports.vm.withQueryRenamed
 import aktual.budget.reports.vm.withoutQuery
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.Clear
-import aktual.core.icons.material.Edit
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
+import aktual.core.icons.Pencil1
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -375,7 +375,7 @@ private fun FormulaReportTopBar(
             onClick = { onAction(StopEditing) },
           ) {
             Icon(
-              imageVector = MaterialIcons.Clear,
+              imageVector = AktualIcons.Delete,
               contentDescription = Strings.reportsFormulaEditorClose,
             )
           }
@@ -412,7 +412,7 @@ private fun FormulaReportTopBar(
         } else if (loaded != null) {
           PrimaryIconButton(
             modifier = Modifier.padding(horizontal = 8.dp).testTag(Tags.EditReport),
-            imageVector = MaterialIcons.Edit,
+            imageVector = AktualIcons.Pencil1,
             contentDescription = Strings.reportsFormulaViewerEdit,
             size = 20.dp,
             shape = CircleShape,
@@ -566,7 +566,7 @@ private fun Settings(
     ) {
       TonalButton(
         modifier = Modifier.fillMaxWidth().testTag(Tags.AddQuery),
-        icon = MaterialIcons.Add,
+        icon = AktualIcons.Add,
         text = Strings.reportsFormulaQueryAdd,
         isEnabled = names != null,
         onClick = { onAction(AddQuery) },
