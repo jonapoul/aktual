@@ -21,6 +21,7 @@ import aktual.core.Calendar
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.turbine.test
@@ -32,13 +33,10 @@ import assertk.assertions.isNotNull
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
@@ -128,7 +126,6 @@ class ReportsDashboardViewModelTest {
     }
     val dispatcher = StandardTestDispatcher(scope.testScheduler)
     // Keep viewModelScope on the test scheduler, so its queries can't outlive the database
-    Dispatchers.setMain(dispatcher)
     val contexts = TestCoroutineContexts(dispatcher)
     val dao = DashboardDao(this, contexts)
     val sync = DashboardSync(dao, controller)
@@ -156,14 +153,11 @@ class ReportsDashboardViewModelTest {
           ),
         customReports = CustomReportSync(customReports, controller, calendar),
         customReportsDao = customReports,
+        viewModelContext = scope.viewModelContext,
       )
-    try {
-      action(viewModel, sync, scope)
-      // Let the VM's eager queries finish before the database closes
-      scope.advanceUntilIdle()
-    } finally {
-      Dispatchers.resetMain()
-    }
+    action(viewModel, sync, scope)
+    // Let the VM's eager queries finish before the database closes
+    scope.advanceUntilIdle()
   }
 
   private companion object {

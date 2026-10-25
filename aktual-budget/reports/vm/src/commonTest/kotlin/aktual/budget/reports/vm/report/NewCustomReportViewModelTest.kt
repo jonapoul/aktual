@@ -23,6 +23,7 @@ import aktual.budget.reports.vm.toConfig
 import aktual.budget.reports.vm.withMode
 import aktual.core.Calendar
 import aktual.test.assertThatNextEmissionIsEqualTo
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
 import assertk.all
@@ -33,13 +34,10 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -107,7 +105,6 @@ class NewCustomReportViewModelTest {
       }
       val dispatcher = StandardTestDispatcher(scope.testScheduler)
       // Keep viewModelScope on the test scheduler, so its queries can't outlive the database
-      Dispatchers.setMain(dispatcher)
       val contexts = TestCoroutineContexts(dispatcher)
       val calendar = Calendar { LocalDate(2026, 1, 1) }
       val dashboard = DashboardDao(this, contexts)
@@ -124,13 +121,10 @@ class NewCustomReportViewModelTest {
           tagsDao = TagsDao(this, contexts),
           chartDataLoader = chartDataLoader(contexts, calendar),
           queryEditorDataLoader = QueryEditorDataLoader(this, ReportsDao(this, contexts), calendar),
+          viewModelContext = scope.viewModelContext,
         )
-      try {
-        Harness(this, viewModel, customReports, dashboard, scope).action()
-        scope.advanceUntilIdle()
-      } finally {
-        Dispatchers.resetMain()
-      }
+      Harness(this, viewModel, customReports, dashboard, scope).action()
+      scope.advanceUntilIdle()
     }
 
   private companion object {

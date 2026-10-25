@@ -14,6 +14,7 @@ import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.dashboard.DashboardPages
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.test.TestBudgetLocalPreferences
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.ReceiveTurbine
@@ -23,11 +24,8 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 
@@ -237,7 +235,6 @@ class SearchReportsViewModelTest {
       }
       val dispatcher = StandardTestDispatcher(scope.testScheduler)
       // Keep viewModelScope on the test scheduler, so its queries can't outlive the database
-      Dispatchers.setMain(dispatcher)
       val contexts = TestCoroutineContexts(dispatcher)
       val dao = DashboardDao(this, contexts)
       val sync = DashboardSync(dao, controller)
@@ -254,14 +251,11 @@ class SearchReportsViewModelTest {
               uuidGenerator = { "unused" },
             ),
           decoder = DashboardItemDecoder(),
+          viewModelContext = scope.viewModelContext,
         )
-      try {
-        action(viewModel, sync)
-        // Let the VM's eager queries finish before the database closes
-        scope.advanceUntilIdle()
-      } finally {
-        Dispatchers.resetMain()
-      }
+      action(viewModel, sync)
+      // Let the VM's eager queries finish before the database closes
+      scope.advanceUntilIdle()
     }
 
   private companion object {

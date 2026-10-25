@@ -15,6 +15,8 @@ import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.report.CustomReportState.Loaded
 import aktual.budget.reports.vm.toConfig
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -55,7 +57,8 @@ internal constructor(
   private val chartDataLoader: ChartDataLoader,
   queryEditorDataLoader: QueryEditorDataLoader,
   private val sync: CustomReportSync,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val saved: StateFlow<SavedReport> =
     dashboardDao
       .observeById(id)

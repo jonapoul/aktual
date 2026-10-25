@@ -27,6 +27,8 @@ import aktual.budget.reports.vm.UnsupportedReportMeta
 import aktual.budget.reports.vm.pinned.PinnedReports
 import aktual.budget.reports.vm.pinned.PinnedReports.Companion.MAX_PINNED_REPORTS
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -65,7 +67,8 @@ internal constructor(
   private val pinned: PinnedReports,
   private val customReports: CustomReportSync,
   customReportsDao: CustomReportsDao,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val createReportChannel = Channel<DashboardPageId>()
   val createReportEvents: Flow<DashboardPageId> = createReportChannel.receiveAsFlow()
 

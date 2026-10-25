@@ -9,18 +9,16 @@ import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.MarkdownReportMeta
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.test.assertThatNextEmissionIsEqualTo
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 
 class ChooseReportTypeViewModelTest {
   @Test
@@ -59,20 +57,16 @@ class ChooseReportTypeViewModelTest {
   ) = runSyncedDatabaseTest { scope, controller ->
     val dispatcher = StandardTestDispatcher(scope.testScheduler)
     // Keep viewModelScope on the test scheduler, so its queries can't outlive the database
-    Dispatchers.setMain(dispatcher)
     val dao = DashboardDao(this, TestCoroutineContexts(dispatcher))
     val viewModel =
       ChooseReportTypeViewModel(
         page = PAGE,
         uuidGenerator = { WIDGET.value },
         sync = DashboardSync(dao, controller),
+        viewModelContext = scope.viewModelContext,
       )
-    try {
-      action(viewModel, dao)
-      scope.advanceUntilIdle()
-    } finally {
-      Dispatchers.resetMain()
-    }
+    action(viewModel, dao)
+    scope.advanceUntilIdle()
   }
 
   private companion object {
