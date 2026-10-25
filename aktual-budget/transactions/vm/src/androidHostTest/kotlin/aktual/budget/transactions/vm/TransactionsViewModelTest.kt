@@ -54,16 +54,13 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import kotlinx.serialization.json.buildJsonObject
@@ -101,14 +98,12 @@ class TransactionsViewModelTest {
     if (::viewModel.isInitialized) viewModel.viewModelScope.cancel()
     Shadows.shadowOf(Looper.getMainLooper()).idle()
     appGraph.close()
-    Dispatchers.resetMain()
     FileSystem.SYSTEM.deleteRecursively(rootDir)
   }
 
   private suspend fun TestScope.buildViewModel(spec: AccountSpec) {
     rootDir = createTempDirectory().toOkioPath()
     contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
-    Dispatchers.setMain(StandardTestDispatcher(testScheduler))
     appGraph =
       createDynamicGraph<TestAppGraph>(
         TestCoroutineContainer(backgroundScope, contexts),

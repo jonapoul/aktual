@@ -27,6 +27,8 @@ import aktual.budget.transactions.vm.LoadedAccount.SpecificTag
 import aktual.budget.transactions.vm.LoadedAccount.Uncategorised
 import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.TransactionPreferences
 import aktual.prefs.asStateFlow
 import androidx.compose.runtime.Stable
@@ -67,6 +69,7 @@ import logcat.logcat
 
 @Stable
 @AssistedInject
+@Suppress("LongParameterList")
 class TransactionsViewModel(
   @Assisted private val spec: TransactionsSpec,
   private val prefs: BudgetLocalPreferences,
@@ -78,7 +81,8 @@ class TransactionsViewModel(
   private val deleter: AccountDeleter,
   transactionPreferences: TransactionPreferences,
   server: BudgetServer,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)
