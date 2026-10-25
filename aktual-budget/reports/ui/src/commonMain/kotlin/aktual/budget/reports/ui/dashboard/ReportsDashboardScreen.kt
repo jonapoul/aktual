@@ -111,10 +111,11 @@ fun ReportsDashboardScreen(
         is DeleteSavedReport -> viewModel.deleteSavedReport(action.item)
         is Pin -> pin(action.id)
         is Unpin -> viewModel.unpinReport(action.id)
-        is SetSummaryType -> TODO()
-        is SetAllTimeDivisor -> TODO()
         is ClickCalendarDay -> TODO()
-        // Text is only edited, and custom reports only drilled into, from the report screen
+        // Text, summary options and custom report drilldowns are only reachable from the report
+        // screen
+        is SetSummaryType,
+        is SetAllTimeDivisor,
         is SaveText,
         is SetUnsavedText,
         is DrillDown -> Unit

@@ -9,6 +9,7 @@ import aktual.budget.reports.vm.CustomReportMeta
 import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.FormulaReportMeta
 import aktual.budget.reports.vm.MonteCarloReportMeta
+import aktual.budget.reports.vm.SummaryChartType
 import aktual.budget.reports.vm.TextAlign
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.di.BudgetScope
@@ -51,6 +52,14 @@ internal constructor(
   fun saveText(content: String, align: TextAlign) {
     logcat.d { "Saving text for $id" }
     viewModelScope.launch { sync.setWidgetText(id, content, align) }
+  }
+
+  fun setSummaryType(type: SummaryChartType) {
+    viewModelScope.launch { sync.setSummaryType(id, type) }
+  }
+
+  fun setSummaryAllTimeDivisor(allTime: Boolean) {
+    viewModelScope.launch { sync.setSummaryAllTimeDivisor(id, allTime) }
   }
 
   private fun toReportState(widget: Dashboard?): Flow<ReportState> {
