@@ -58,7 +58,7 @@ fun RemovableChip(
 @Preview
 @Composable
 private fun PreviewRemovableChip(
-  @PreviewParameter(RemovableChipProvider::class) params: ColoredParams<String>
+  @PreviewParameter(RemovableChipProvider::class) params: ColoredParams<String>,
 ) =
   PreviewWithColoredParams(params) {
     RemovableChip(text = this, removeDescription = "Remove", onRemove = {})
