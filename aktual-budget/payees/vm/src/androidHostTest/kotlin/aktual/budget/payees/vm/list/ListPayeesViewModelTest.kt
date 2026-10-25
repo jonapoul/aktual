@@ -23,6 +23,7 @@ import aktual.di.BudgetCoroutineScope
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import app.cash.turbine.test
@@ -32,13 +33,9 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.prop
-import kotlin.test.AfterTest
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonPrimitive
 import org.junit.Test
@@ -47,11 +44,6 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class ListPayeesViewModelTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `Loads payees with their transaction and rule counts`() = runDatabaseTest { scope ->
     // given
@@ -361,7 +353,6 @@ class ListPayeesViewModelTest {
     scope: TestScope,
     sync: TestSyncController = TestSyncController(),
   ): ListPayeesViewModel {
-    Dispatchers.setMain(scope.standardDispatcher)
     val preferences = PreferencesDao(this, TestCoroutineContexts(scope.standardDispatcher))
     return ListPayeesViewModel(
       loader = PayeesLoader(PayeeDao(this), PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
@@ -369,6 +360,7 @@ class ListPayeesViewModelTest {
       merger = PayeeMerger(PayeeDao(this), sync),
       learning = CategoryLearningPref(preferences, sync),
       budgetScope = BudgetCoroutineScope(scope),
+      viewModelContext = scope.viewModelContext,
     )
   }
 

@@ -6,6 +6,8 @@ import aktual.budget.payees.vm.search.SearchPayeesState.Failure
 import aktual.budget.payees.vm.search.SearchPayeesState.Results
 import aktual.budget.rules.domain.normalise
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
@@ -37,7 +39,8 @@ class SearchPayeesViewModel
 internal constructor(
   @Assisted private val savedState: SavedStateHandle,
   private val loader: PayeesLoader,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
   @ViewModelAssistedFactoryKey(SearchPayeesViewModel::class)
   @ContributesIntoMap(BudgetScope::class)

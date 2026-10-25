@@ -9,6 +9,8 @@ import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.rules.domain.CategoryLearningPref
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -43,7 +45,8 @@ internal constructor(
   private val payeeDao: PayeeDao,
   private val syncController: BudgetSyncController,
   learning: CategoryLearningPref,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val loaded = MutableStateFlow<Loaded?>(null)
   private val otherNames = MutableStateFlow(emptySet<String>())
   private val mutableName = MutableStateFlow("")

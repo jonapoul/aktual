@@ -18,6 +18,7 @@ import aktual.budget.rules.domain.PayeeRuleCounter
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import app.cash.turbine.test
@@ -27,22 +28,13 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.prop
-import kotlin.test.AfterTest
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class EditPayeeViewModelTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `Loads the payee`() = runDatabaseTest { scope ->
     // given
@@ -183,7 +175,6 @@ class EditPayeeViewModelTest {
     id: PayeeId,
     sync: TestSyncController = TestSyncController(),
   ): EditPayeeViewModel {
-    Dispatchers.setMain(scope.standardDispatcher)
     val payees = PayeeDao(this)
     return EditPayeeViewModel(
       payeeId = id,
@@ -195,6 +186,7 @@ class EditPayeeViewModelTest {
           PreferencesDao(this, TestCoroutineContexts(scope.standardDispatcher)),
           sync,
         ),
+      viewModelContext = scope.viewModelContext,
     )
   }
 
