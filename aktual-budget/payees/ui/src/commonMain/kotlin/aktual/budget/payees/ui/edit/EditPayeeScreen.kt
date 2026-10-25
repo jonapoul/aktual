@@ -440,7 +440,7 @@ private inline fun Field(
       } else {
         AnnotatedString(label)
       }
-    Text(text = labelText, style = typography.labelLarge, color = colors.pageTextSubdued)
+    Text(text = labelText, style = typography.labelLarge, color = colors.pageText)
     content()
   }
 }
