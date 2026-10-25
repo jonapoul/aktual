@@ -47,6 +47,7 @@
     <item quantity="one">%1$d associated rule</item>
     <item quantity="other">%1$d associated rules</item>
   </plurals>
+  <string name="payees_unused_filter">Unused (%1$d)</string>
   <plurals name="payees_num_transactions">
     <item quantity="one">%1$d transaction</item>
     <item quantity="other">%1$d transactions</item>

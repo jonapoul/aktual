@@ -14,6 +14,7 @@ internal object PayeesPreview {
       isFavorite = true,
       numTransactions = 42,
       numRules = 2,
+      isUnused = false,
     )
 
   val argos =
@@ -24,6 +25,7 @@ internal object PayeesPreview {
       isFavorite = false,
       numTransactions = 1,
       numRules = 0,
+      isUnused = false,
     )
 
   val transfer =
@@ -34,6 +36,7 @@ internal object PayeesPreview {
       isFavorite = false,
       numTransactions = 0,
       numRules = 1,
+      isUnused = false,
     )
 
   val longName =
@@ -44,6 +47,7 @@ internal object PayeesPreview {
       isFavorite = true,
       numTransactions = 0,
       numRules = 0,
+      isUnused = true,
     )
 
   val all: ImmutableList<PayeeItem> = persistentListOf(argos, transfer, longName, tesco)

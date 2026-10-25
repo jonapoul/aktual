@@ -63,6 +63,10 @@ class PayeeDao(database: BudgetDatabase) {
 
   suspend fun list(): List<GetPayeeList> = queries.withResult { getPayeeList().awaitAsList() }
 
+  suspend fun unused(): Set<PayeeId> = queries.withResult {
+    getUnusedIds().awaitAsList().toSet()
+  }
+
   // Emits whenever a table behind list() is written to
   fun observeListChanges(): Flow<Unit> = queries.getPayeeList().asFlow().map {}
 

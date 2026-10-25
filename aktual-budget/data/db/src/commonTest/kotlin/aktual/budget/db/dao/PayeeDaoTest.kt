@@ -3,23 +3,28 @@ package aktual.budget.db.dao
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.GetPayeeList
 import aktual.budget.db.Payees
+import aktual.budget.db.Rules
 import aktual.budget.db.test.buildAccount
 import aktual.budget.db.test.insertAccounts
 import aktual.budget.db.test.insertPayeeMapping
 import aktual.budget.db.withoutResult
 import aktual.budget.model.AccountId
+import aktual.budget.model.Condition
 import aktual.budget.model.PayeeId
+import aktual.budget.model.RuleId
 import aktual.budget.model.TransactionId
 import aktual.test.runDatabaseTest
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.json.JsonPrimitive
 
 internal class PayeeDaoTest {
   @Test
@@ -116,6 +121,47 @@ internal class PayeeDaoTest {
     }
 
   @Test
+  fun `Unused payees have no alive transactions and aren't transfers or deleted`() =
+    runDaoTest { payees, transactions ->
+      // given
+      transactions.insert("t1", ACCOUNT, null, "a", RECENT)
+      // b's only transaction is deleted
+      val row = requireNotNull(transactions.row(TransactionId("t1")))
+      transactionsQueries.withoutResult {
+        insert(row.copy(id = TransactionId("t2"), description = PayeeId("b"), tombstone = true))
+      }
+
+      // then
+      assertThat(payees.unused()).containsExactlyInAnyOrder(PayeeId("b"), PayeeId("c"))
+    }
+
+  @Test
+  fun `Payees used through a mapping aren't unused`() = runDaoTest { payees, transactions ->
+    // given a payee merged into c, but not deleted, whose transaction resolves to c
+    payees.insert(PayeeId("merged"), "Merged")
+    insertPayeeMapping("merged", "c")
+    transactions.insert("t1", ACCOUNT, null, "merged", RECENT)
+
+    // then
+    assertThat(payees.unused()).containsExactlyInAnyOrder(PayeeId("a"), PayeeId("b"))
+  }
+
+  @Test
+  fun `Payees in a rule's description condition aren't unused`() = runDaoTest { payees, _ ->
+    // given
+    insertRule("r1", Condition(field = Description, operator = Is, value = JsonPrimitive("a")))
+    insertRule("r2", Condition(field = Payee, operator = Is, value = JsonPrimitive("b")))
+    insertRule(
+      "r3",
+      Condition(field = Description, operator = Is, value = JsonPrimitive("c")),
+      tombstone = true,
+    )
+
+    // then
+    assertThat(payees.unused()).containsExactlyInAnyOrder(PayeeId("b"), PayeeId("c"))
+  }
+
+  @Test
   fun `Update sets the name and favourite`() = runDaoTest { payees, _ ->
     // when
     payees.update(PayeeId("a"), name = "Argos Extra", favorite = true)
@@ -138,6 +184,23 @@ internal class PayeeDaoTest {
       insert(row.copy(id = TransactionId(id), date = date, tombstone = true))
     }
   }
+
+  private suspend fun BudgetDatabase.insertRule(
+    id: String,
+    condition: Condition,
+    tombstone: Boolean = false,
+  ) =
+    RulesDao(this)
+      .insert(
+        Rules(
+          id = RuleId(id),
+          stage = null,
+          conditions = listOf(condition),
+          actions = emptyList(),
+          tombstone = tombstone,
+          conditions_op = And,
+        ),
+      )
 
   private fun runDaoTest(action: suspend BudgetDatabase.(PayeeDao, TransactionDao) -> Unit) =
     runDatabaseTest {

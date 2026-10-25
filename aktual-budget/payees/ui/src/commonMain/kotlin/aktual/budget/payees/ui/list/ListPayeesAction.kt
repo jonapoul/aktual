@@ -10,6 +10,8 @@ internal data object Retry : ListPayeesAction
 
 internal data object OpenSearch : ListPayeesAction
 
+internal data object ToggleUnusedOnly : ListPayeesAction
+
 @JvmInline internal value class OpenPayee(val id: PayeeId) : ListPayeesAction
 
 @JvmInline internal value class OpenRules(val payee: PayeeItem) : ListPayeesAction

@@ -18,14 +18,16 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
@@ -45,13 +47,15 @@ internal constructor(
     MutableSharedFlow<ListPayeesEvent>(extraBufferCapacity = 1, onBufferOverflow = DROP_OLDEST)
   val events: SharedFlow<ListPayeesEvent> = mutableEvents.asSharedFlow()
 
+  private val unusedOnly = MutableStateFlow(false)
+
   val state: StateFlow<ListPayeesState> =
     retries
       .onStart { emit(Unit) }
       .flatMapLatest {
-        loader
-          .observe()
-          .map { payees -> if (payees.isEmpty()) Empty else Success(payees.toImmutableList()) }
+        combine(loader.observe(), unusedOnly) { payees, unusedOnly ->
+            if (payees.isEmpty()) Empty else Success(payees.toImmutableList(), unusedOnly)
+          }
           .onStart<ListPayeesState> { emit(Loading) }
           .catch { e ->
             logcat.e(e) { "Failed loading payees" }
@@ -62,6 +66,10 @@ internal constructor(
 
   fun retry() {
     retries.tryEmit(Unit)
+  }
+
+  fun toggleUnusedOnly() {
+    unusedOnly.update { !it }
   }
 
   // Transfer payees can't be deleted, as upstream

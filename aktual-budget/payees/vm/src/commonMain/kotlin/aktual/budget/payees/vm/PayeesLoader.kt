@@ -23,10 +23,11 @@ internal class PayeesLoader(
 
   private suspend fun load(): List<PayeeItem> {
     val ruleCounts = ruleCounter.count()
-    return payeeDao.list().map { it.toPayeeItem(ruleCounts) }
+    val unused = payeeDao.unused()
+    return payeeDao.list().map { it.toPayeeItem(ruleCounts, unused) }
   }
 
-  private fun GetPayeeList.toPayeeItem(ruleCounts: Map<PayeeId, Int>) =
+  private fun GetPayeeList.toPayeeItem(ruleCounts: Map<PayeeId, Int>, unused: Set<PayeeId>) =
     PayeeItem(
       id = id,
       name = name.orEmpty(),
@@ -34,5 +35,6 @@ internal class PayeesLoader(
       isFavorite = favorite == true,
       numTransactions = num_transactions.toInt(),
       numRules = ruleCounts[id] ?: 0,
+      isUnused = id in unused,
     )
 }
