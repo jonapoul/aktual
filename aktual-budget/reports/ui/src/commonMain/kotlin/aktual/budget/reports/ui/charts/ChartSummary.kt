@@ -148,7 +148,12 @@ private fun CompactAmount(
   ScaleToFitText(
     modifier = modifier.padding(16.dp),
     style = summaryTextStyle(),
-    color = if (amount.isPositive()) colors.reportsNumberPositive else colors.reportsNumberNegative,
+    color =
+      when {
+        amount == Zero -> colors.reportsNumberNeutral
+        amount.isPositive() -> colors.reportsNumberPositive
+        else -> colors.reportsNumberNegative
+      },
     text = amount.formattedString(includeSign = false),
   )
 }
