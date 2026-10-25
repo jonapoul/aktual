@@ -170,15 +170,17 @@ jobs:
         id: upload-apk
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
+          name: android-debug
           path: aktual-app/android/build/outputs/apk/debug/*.apk
           if-no-files-found: error
-          archive: false
       - name: Comment APK link
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         env:
           PR: ${{ github.event.pull_request.number }}
           SHA: ${{ github.event.pull_request.head.sha }}
-          URL: ${{ steps.upload-apk.outputs.artifact-url }}
+          # nightly.link skips GitHub's login wall and the mobile app's link handling, but only
+          # serves zipped artifacts
+          URL: https://nightly.link/${{ github.repository }}/actions/artifacts/${{ steps.upload-apk.outputs.artifact-id }}.zip
         run: |
           marker='<!-- debug-apk -->'
           body="$marker"$'\n'"[Debug APK]($URL) for ${SHA::7}"

@@ -27,6 +27,15 @@ An :warning: UNOFFICIAL :warning: set of clients for the [Actual personal budget
 > [!IMPORTANT]
 > This is nowhere near complete - do not bank on it being ready to use any time soon!
 
+# Nightly builds
+
+Latest builds of `main`, via [nightly.link](https://nightly.link):
+
+- [Android](https://nightly.link/jonapoul/aktual/workflows/nightly/main/android.zip)
+- [Linux (.deb)](https://nightly.link/jonapoul/aktual/workflows/nightly/main/desktop-Linux.zip)
+- [macOS (.dmg)](https://nightly.link/jonapoul/aktual/workflows/nightly/main/desktop-macOS.zip)
+- [Windows (.msi/.exe)](https://nightly.link/jonapoul/aktual/workflows/nightly/main/desktop-Windows.zip)
+
 # License
 
 ```
