@@ -78,50 +78,29 @@ internal fun SummaryChart(
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
 ) =
-  Column(
-    modifier = modifier,
-    horizontalAlignment = CenterHorizontally,
-    verticalArrangement = Arrangement.Center,
-  ) {
-    if (compact && includeHeader) {
-      Header(modifier = Modifier.fillMaxWidth(), data = data)
-    }
+  Column(modifier = modifier, horizontalAlignment = CenterHorizontally) {
+    if (compact) {
+      if (includeHeader) {
+        Header(modifier = Modifier.fillMaxWidth(), data = data)
+      }
 
-    when (data) {
-      is AveragePerMonth ->
-        if (compact) {
-          CompactAmount(data.average)
-        } else {
-          RegularPerMonth(data, onAction)
+      Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Center) {
+        when (data) {
+          is AveragePerMonth -> CompactAmount(data.average)
+          is AveragePerYear -> CompactAmount(data.average)
+          is AveragePerTransaction -> CompactAmount(data.average)
+          is Percentage -> CompactPercent(data.percent)
+          is Sum -> CompactAmount(data.value)
         }
-
-      is AveragePerYear ->
-        if (compact) {
-          CompactAmount(data.average)
-        } else {
-          RegularPerYear(data, onAction)
-        }
-
-      is AveragePerTransaction ->
-        if (compact) {
-          CompactAmount(data.average)
-        } else {
-          RegularPerTransaction(data, onAction)
-        }
-
-      is Percentage ->
-        if (compact) {
-          CompactPercent(data.percent)
-        } else {
-          RegularPercent(data, onAction)
-        }
-
-      is Sum ->
-        if (compact) {
-          CompactAmount(data.value)
-        } else {
-          RegularSum(data, onAction)
-        }
+      }
+    } else {
+      when (data) {
+        is AveragePerMonth -> RegularPerMonth(data, onAction)
+        is AveragePerYear -> RegularPerYear(data, onAction)
+        is AveragePerTransaction -> RegularPerTransaction(data, onAction)
+        is Percentage -> RegularPercent(data, onAction)
+        is Sum -> RegularSum(data, onAction)
+      }
     }
   }
 
