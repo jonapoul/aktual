@@ -15,10 +15,12 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
+import aktual.core.ui.checkbox
 import aktual.core.ui.rememberHighlighted
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,19 +49,35 @@ internal fun PayeeItem(
   onClickRules: () -> Unit,
   modifier: Modifier = Modifier,
   query: String = "",
+  onLongClick: (() -> Unit)? = null,
+  // null outside of selection mode
+  isSelected: Boolean? = null,
 ) {
   Row(
     modifier =
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
+        .background(
+          if (isSelected == true) colors.tableRowBackgroundHighlight else colors.tableBackground,
+          RowShape,
+        )
         .border(Hairline, colors.tableBorder, RowShape)
-        .clickable(onClick = onClick)
+        .combinedClickable(onClick = onClick, onLongClick = onLongClick)
         .padding(ListPayeesDS.itemPadding),
     horizontalArrangement = Arrangement.spacedBy(ListPayeesDS.itemHorizontalSpacing),
     verticalAlignment = CenterVertically,
   ) {
+    if (isSelected != null) {
+      Checkbox(
+        modifier = Modifier.size(ListPayeesDS.checkboxSize),
+        checked = isSelected,
+        onCheckedChange = null,
+        enabled = !payee.isTransfer,
+        colors = colors.checkbox(),
+      )
+    }
+
     if (payee.isFavorite) {
       Icon(
         modifier = Modifier.size(ListPayeesDS.favoriteIconSize),
@@ -170,6 +189,15 @@ private class PayeeItemProvider : ColoredParameterProvider<PayeeItem>(PayeesPrev
 private fun PreviewPayeeItem(
   @PreviewParameter(PayeeItemProvider::class) params: ColoredParams<PayeeItem>,
 ) = PreviewWithColoredParams(params) { PayeeItem(payee = this, onClick = {}, onClickRules = {}) }
+
+@Preview
+@Composable
+private fun PreviewSelectedPayeeItem(
+  @PreviewParameter(PayeeItemProvider::class) params: ColoredParams<PayeeItem>,
+) =
+  PreviewWithColoredParams(params) {
+    PayeeItem(payee = this, onClick = {}, onClickRules = {}, isSelected = !isTransfer)
+  }
 
 @Preview
 @Composable

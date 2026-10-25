@@ -10,6 +10,7 @@ kotlin {
     api(project(":aktual-budget:payees:vm"))
     api(project(":aktual-core:nav"))
     api(project(":aktual-core:ui"))
+    implementation(libs.compose.resources)
     implementation(libs.metrox.viewmodel)
     implementation(project(":aktual-core:l10n"))
   }

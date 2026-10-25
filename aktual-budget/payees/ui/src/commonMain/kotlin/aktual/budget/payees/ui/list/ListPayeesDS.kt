@@ -10,6 +10,7 @@ internal object ListPayeesDS {
   val itemHorizontalSpacing = 8.dp
   val itemContentSpacing = 2.dp
   val favoriteIconSize = 16.dp
+  val checkboxSize = 20.dp
   val ruleChipPadding = PaddingValues(horizontal = 6.dp, vertical = 3.dp)
 
   val shimmerNameHeight = 16.dp

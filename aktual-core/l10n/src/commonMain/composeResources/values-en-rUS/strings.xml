@@ -37,4 +37,5 @@
   <string name="reports_custom_editor_show_uncategorised">Show uncategorized</string>
   <string name="payees_favorite">Favorite</string>
   <string name="payees_edit_favorite_help">Favorites are suggested first when picking a payee for a transaction.</string>
+  <string name="payees_unfavorite">Unfavorite</string>
 </resources>
