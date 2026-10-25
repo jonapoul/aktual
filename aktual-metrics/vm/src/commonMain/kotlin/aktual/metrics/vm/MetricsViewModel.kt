@@ -2,6 +2,8 @@ package aktual.metrics.vm
 
 import aktual.api.client.MetricsApi
 import aktual.di.LoggedInScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.metrics.vm.MetricsState.Failure
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
@@ -30,7 +32,8 @@ class MetricsViewModel(
   private val metricsApi: MetricsApi,
   private val contexts: CoroutineContexts,
   private val clock: Clock,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val fetchCount = MutableStateFlow(value = 0)
   private val mutableState = MutableStateFlow<MetricsState>(Loading)
 
