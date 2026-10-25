@@ -1,12 +1,10 @@
 package aktual.budget.payees.vm.list
 
-import aktual.budget.model.PayeeId
 import androidx.compose.runtime.Immutable
-import kotlinx.collections.immutable.ImmutableSet
 
 @Immutable
 sealed interface ListPayeesEvent {
-  @JvmInline value class Deleted(val ids: ImmutableSet<PayeeId>) : ListPayeesEvent
+  @JvmInline value class Deleted(val payee: PayeeItem) : ListPayeesEvent
 
   data object DeleteFailed : ListPayeesEvent
 

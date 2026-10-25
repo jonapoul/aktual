@@ -1,7 +1,7 @@
 package aktual.budget.payees.ui.list
 
-import aktual.budget.model.PayeeId
 import aktual.budget.payees.vm.list.ListPayeesEvent
+import aktual.budget.payees.vm.list.PayeeItem
 import aktual.core.l10n.Res
 import aktual.core.l10n.payees_delete_failed
 import aktual.core.l10n.payees_deleted
@@ -10,22 +10,20 @@ import aktual.core.l10n.payees_restore_failed
 import aktual.core.l10n.payees_update_failed
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
-import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
 
 internal suspend fun SnackbarHostState.showDeleted(
   event: ListPayeesEvent.Deleted,
-  onUndo: (Set<PayeeId>) -> Unit,
+  onUndo: (PayeeItem) -> Unit,
 ) {
-  val count = event.ids.size
   val result =
     showSnackbar(
-      message = getPluralString(Res.plurals.payees_deleted, count, count),
+      message = getString(Res.string.payees_deleted, event.payee.name),
       actionLabel = getString(Res.string.payees_deleted_undo),
       duration = SnackbarDuration.Long,
     )
   if (result == ActionPerformed) {
-    onUndo(event.ids)
+    onUndo(event.payee)
   }
 }
 

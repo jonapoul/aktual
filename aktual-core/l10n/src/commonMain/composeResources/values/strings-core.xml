@@ -95,9 +95,4 @@
   <string name="app_lock_disabled_title">App lock turned off</string>
   <string name="app_lock_disabled_message">Your device no longer has a screen lock, so the app lock has been turned off. Set up a screen lock to turn it back on.</string>
   <string name="app_lock_disabled_ok">OK</string>
-  <string name="selection_clear">Clear selection</string>
-  <plurals name="selection_num_selected">
-    <item quantity="one">%1$d selected</item>
-    <item quantity="other">%1$d selected</item>
-  </plurals>
 </resources>

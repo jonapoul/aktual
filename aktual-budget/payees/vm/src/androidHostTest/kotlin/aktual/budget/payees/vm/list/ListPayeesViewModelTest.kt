@@ -22,11 +22,9 @@ import alakazam.test.standardDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
-import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEmpty
 import kotlin.test.AfterTest
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -140,131 +138,67 @@ class ListPayeesViewModelTest {
   }
 
   @Test
-  fun `Selects and deselects payees, but not transfers`() = runDatabaseTest { scope ->
+  fun `Deleting tombstones the payee and undo restores it`() = runDatabaseTest { scope ->
     // given
     insertPayees()
-    val viewModel = createViewModel(scope).awaitLoaded()
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync).awaitLoaded()
 
-    viewModel.selected.test {
-      assertThatNextEmissionIsEqualTo(persistentSetOf())
-
-      // when
-      viewModel.toggleSelected(ARGOS.id)
-      assertThatNextEmissionIsEqualTo(persistentSetOf(ARGOS.id))
-
-      viewModel.toggleSelected(TRANSFER)
-      viewModel.toggleSelected(ARGOS.id)
-      assertThatNextEmissionIsEqualTo(persistentSetOf())
+    // when
+    viewModel.events.test {
+      viewModel.delete(ARGOS)
+      assertThatNextEmissionIsEqualTo(ListPayeesEvent.Deleted(ARGOS))
     }
+
+    // then
+    assertThat(sync.changes.map { it.row to it.column to it.value })
+      .containsExactly("argos" to "tombstone" to MessageValue.Number(1))
+
+    // when
+    sync.changes.clear()
+    viewModel.undoDelete(ARGOS)
+    scope.advanceUntilIdle()
+
+    // then
+    assertThat(sync.changes.map { it.row to it.column to it.value })
+      .containsExactly("argos" to "tombstone" to MessageValue.Number(0))
   }
 
   @Test
-  fun `Select all leaves out transfers`() = runDatabaseTest { scope ->
+  fun `Toggling favourite flips the payee's flag`() = runDatabaseTest { scope ->
     // given
     insertPayees()
-    val viewModel = createViewModel(scope).awaitLoaded()
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync).awaitLoaded()
 
-    viewModel.selected.test {
-      assertThatNextEmissionIsEqualTo(persistentSetOf())
+    // when
+    viewModel.toggleFavorite(ARGOS)
+    viewModel.toggleFavorite(ARGOS.copy(isFavorite = true))
+    scope.advanceUntilIdle()
 
-      // when
-      viewModel.selectAll()
-      assertThatNextEmissionIsEqualTo(persistentSetOf(ARGOS.id, TESCO))
-
-      viewModel.clearSelection()
-      assertThatNextEmissionIsEqualTo(persistentSetOf())
-    }
+    // then
+    assertThat(sync.changes.map { it.row to it.column to it.value })
+      .containsExactly(
+        "argos" to "favorite" to MessageValue.Number(1),
+        "argos" to "favorite" to MessageValue.Number(0),
+      )
   }
 
   @Test
-  fun `Deleting tombstones the selected payees and undo restores them`() =
-    runDatabaseTest { scope ->
-      // given
-      insertPayees()
-      val sync = TestSyncController()
-      val viewModel = createViewModel(scope, sync).awaitLoaded()
-      viewModel.selectAll()
-
-      // when
-      viewModel.events.test {
-        viewModel.deleteSelected()
-        assertThatNextEmissionIsEqualTo(ListPayeesEvent.Deleted(persistentSetOf(ARGOS.id, TESCO)))
-      }
-
-      // then
-      assertThat(viewModel.selected.value).isEmpty()
-      assertThat(sync.changes.map { it.row to it.column to it.value })
-        .containsExactlyInAnyOrder(
-          "argos" to "tombstone" to MessageValue.Number(1),
-          "tesco" to "tombstone" to MessageValue.Number(1),
-        )
-
-      // when
-      sync.changes.clear()
-      viewModel.undoDelete(setOf(ARGOS.id, TESCO))
-      scope.advanceUntilIdle()
-
-      // then
-      assertThat(sync.changes.map { it.row to it.column to it.value })
-        .containsExactlyInAnyOrder(
-          "argos" to "tombstone" to MessageValue.Number(0),
-          "tesco" to "tombstone" to MessageValue.Number(0),
-        )
-    }
-
-  @Test
-  fun `Favourites all the selected payees unless they all are already`() =
-    runDatabaseTest { scope ->
-      // given
-      insertPayees()
-      payeesQueries.withoutResult {
-        setNameAndFavorite(name = "Tesco", favorite = true, id = TESCO)
-      }
-      val sync = TestSyncController()
-      val viewModel = createViewModel(scope, sync).awaitLoaded()
-
-      // when some are favourites
-      viewModel.selectAll()
-      viewModel.toggleFavoriteSelected()
-      scope.advanceUntilIdle()
-
-      // then
-      assertThat(sync.changes.map { it.row to it.value })
-        .containsExactlyInAnyOrder(
-          "argos" to MessageValue.Number(1),
-          "tesco" to MessageValue.Number(1),
-        )
-      assertThat(viewModel.selected.value).isEmpty()
-
-      // when they all are
-      sync.changes.clear()
-      viewModel.toggleSelected(TESCO)
-      viewModel.toggleFavoriteSelected()
-      scope.advanceUntilIdle()
-
-      // then
-      assertThat(sync.changes.map { it.row to it.value })
-        .containsExactly("tesco" to MessageValue.Number(0))
-    }
-
-  @Test
-  fun `Payees deleted elsewhere drop out of the selection`() = runDatabaseTest { scope ->
+  fun `Transfer payees can't be deleted or favourited`() = runDatabaseTest { scope ->
     // given
     insertPayees()
-    val viewModel = createViewModel(scope).awaitLoaded()
-    viewModel.selectAll()
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync).awaitLoaded()
+    val transfer = ARGOS.copy(id = TRANSFER, isTransfer = true)
 
-    viewModel.selected.test {
-      assertThatNextEmissionIsEqualTo(persistentSetOf(ARGOS.id, TESCO))
+    // when
+    viewModel.delete(transfer)
+    viewModel.toggleFavorite(transfer)
+    scope.advanceUntilIdle()
 
-      // when
-      payeesQueries.withoutResult {
-        insert(TESCO, "Tesco", null, true, null, false, null)
-      }
-
-      // then
-      assertThatNextEmissionIsEqualTo(persistentSetOf(ARGOS.id))
-    }
+    // then
+    assertThat(sync.changes).isEmpty()
   }
 
   private suspend fun ListPayeesViewModel.awaitLoaded(): ListPayeesViewModel = apply {

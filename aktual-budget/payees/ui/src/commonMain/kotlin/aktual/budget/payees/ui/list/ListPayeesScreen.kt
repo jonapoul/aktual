@@ -9,26 +9,19 @@ import aktual.budget.payees.vm.list.ListPayeesViewModel
 import aktual.budget.payees.vm.list.Loading
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.payees.vm.list.Success
-import aktual.core.icons.material.Bookmark
-import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
-import aktual.core.icons.material.SelectAll
-import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditPayeeNavigator
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchPayeesNavigator
 import aktual.core.nav.SearchRulesNavigator
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -37,8 +30,6 @@ import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.SelectionTopAppBar
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -70,8 +61,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun ListPayeesScreen(
@@ -83,7 +72,6 @@ internal fun ListPayeesScreen(
   viewModel: ListPayeesViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  val selected by viewModel.selected.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
@@ -100,18 +88,14 @@ internal fun ListPayeesScreen(
   ListPayeesScaffold(
     modifier = modifier,
     state = state,
-    selected = selected,
     onAction = { action ->
       when (action) {
         Retry -> viewModel.retry()
         OpenSearch -> toSearch()
         is OpenPayee -> toEdit(action.id)
         is OpenRules -> openRules(action.payee, editRule, searchRules)
-        is ToggleSelected -> viewModel.toggleSelected(action.id)
-        SelectAll -> viewModel.selectAll()
-        ClearSelection -> viewModel.clearSelection()
-        DeleteSelected -> viewModel.deleteSelected()
-        ToggleFavoriteSelected -> viewModel.toggleFavoriteSelected()
+        is Delete -> viewModel.delete(action.payee)
+        is ToggleFavorite -> viewModel.toggleFavorite(action.payee)
       }
     },
   )
@@ -120,65 +104,40 @@ internal fun ListPayeesScreen(
 @Composable
 private fun ListPayeesScaffold(
   state: ListPayeesState,
-  selected: ImmutableSet<PayeeId>,
   onAction: ListPayeesActionHandler,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
-  var showDeleteDialog by remember { mutableStateOf(false) }
-  val payees = (state as? Success)?.payees.orEmpty()
+  var confirmDelete by remember { mutableStateOf<PayeeItem?>(null) }
 
-  BackHandler(enabled = selected.isNotEmpty()) { onAction(ClearSelection) }
+  // Only worth confirming when transactions will lose their payee
+  val handleAction = ListPayeesActionHandler { action ->
+    if (action is Delete && action.payee.numTransactions > 0) {
+      confirmDelete = action.payee
+    } else {
+      onAction(action)
+    }
+  }
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
-      if (selected.isEmpty()) {
-        TopAppBar(
-          modifier = Modifier.hazedTopBar(hazeState, listState),
-          colors = colors.transparentTopAppBarColors(),
-          navigationIcon = { NavDrawerIconButton() },
-          title = { Text(text = Strings.payeesTitle) },
-          actions = {
-            if (state is Success) {
-              BareIconButton(
-                imageVector = MaterialIcons.Search,
-                contentDescription = Strings.payeesSearch,
-                onClick = { onAction(OpenSearch) },
-              )
-            }
-          },
-        )
-      } else {
-        val allFavorites = payees.filter { it.id in selected }.all { it.isFavorite }
-        SelectionTopAppBar(
-          modifier = Modifier.hazedTopBar(hazeState, listState),
-          numSelected = selected.size,
-          onClear = { onAction(ClearSelection) },
-        ) {
-          BareIconButton(
-            imageVector = MaterialIcons.SelectAll,
-            contentDescription = Strings.payeesSelectAll,
-            onClick = { onAction(SelectAll) },
-          )
-          BareIconButton(
-            imageVector = MaterialIcons.Bookmark,
-            contentDescription =
-              if (allFavorites) Strings.payeesUnfavorite else Strings.payeesFavorite,
-            onClick = { onAction(ToggleFavoriteSelected) },
-          )
-          BareIconButton(
-            imageVector = MaterialIcons.Delete,
-            contentDescription = Strings.payeesDelete,
-            onClick = {
-              // Only worth confirming when transactions will lose their payee
-              val isUsed = payees.any { it.id in selected && it.numTransactions > 0 }
-              if (isUsed) showDeleteDialog = true else onAction(DeleteSelected)
-            },
-          )
-        }
-      }
+      TopAppBar(
+        modifier = Modifier.hazedTopBar(hazeState, listState),
+        colors = colors.transparentTopAppBarColors(),
+        navigationIcon = { NavDrawerIconButton() },
+        title = { Text(text = Strings.payeesTitle) },
+        actions = {
+          if (state is Success) {
+            BareIconButton(
+              imageVector = MaterialIcons.Search,
+              contentDescription = Strings.payeesSearch,
+              onClick = { onAction(OpenSearch) },
+            )
+          }
+        },
+      )
     },
   ) { innerPadding ->
     Box(modifier = Modifier.fillMaxSize()) {
@@ -191,21 +150,20 @@ private fun ListPayeesScaffold(
       ) {
         ListPayeesContent(
           state = state,
-          selected = selected,
-          onAction = onAction,
+          onAction = handleAction,
           listState = listState,
           padding = hazedTopBarContentPadding(hazeState, innerPadding),
         )
       }
 
-      if (showDeleteDialog) {
-        DeletePayeesDialog(
-          count = selected.size,
+      confirmDelete?.let { payee ->
+        DeletePayeeDialog(
+          name = payee.name,
           onConfirm = {
-            showDeleteDialog = false
-            onAction(DeleteSelected)
+            confirmDelete = null
+            onAction(Delete(payee))
           },
-          onCancel = { showDeleteDialog = false },
+          onCancel = { confirmDelete = null },
         )
       }
     }
@@ -213,9 +171,9 @@ private fun ListPayeesScaffold(
 }
 
 @Composable
-private fun DeletePayeesDialog(count: Int, onConfirm: () -> Unit, onCancel: () -> Unit) {
+private fun DeletePayeeDialog(name: String, onConfirm: () -> Unit, onCancel: () -> Unit) {
   AktualAlertDialog(
-    title = Plurals.payeesDeleteConfirmTitle(count, count),
+    title = Strings.payeesDeleteConfirmTitle(name),
     highlight = colors.errorText,
     onDismissRequest = onCancel,
     buttons = {
@@ -231,7 +189,6 @@ private fun DeletePayeesDialog(count: Int, onConfirm: () -> Unit, onCancel: () -
 @Composable
 private fun ListPayeesContent(
   state: ListPayeesState,
-  selected: ImmutableSet<PayeeId>,
   onAction: ListPayeesActionHandler,
   listState: LazyListState,
   padding: PaddingValues,
@@ -270,7 +227,6 @@ private fun ListPayeesContent(
     is Success ->
       PayeesList(
         payees = state.payees,
-        selected = selected,
         listState = listState,
         contentPadding = padding,
         onAction = onAction,
@@ -281,12 +237,14 @@ private fun ListPayeesContent(
 @Composable
 private fun PayeesList(
   payees: ImmutableList<PayeeItem>,
-  selected: ImmutableSet<PayeeId>,
   listState: LazyListState,
   contentPadding: PaddingValues,
   onAction: ListPayeesActionHandler,
   modifier: Modifier = Modifier,
 ) {
+  // only one row may be swiped open at a time - opening another closes the previous one
+  var openId by remember { mutableStateOf<PayeeId?>(null) }
+
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
@@ -294,16 +252,19 @@ private fun PayeesList(
     verticalArrangement = Arrangement.spacedBy(ListPayeesDS.listItemSpacing),
   ) {
     items(payees, key = { it.id.value }) { payee ->
-      val isSelecting = selected.isNotEmpty()
-      PayeeItem(
+      SwipeablePayeeItem(
         modifier = Modifier.animateItem(),
         payee = payee,
-        isSelected = if (isSelecting) payee.id in selected else null,
-        onClick = {
-          onAction(if (isSelecting) ToggleSelected(payee.id) else OpenPayee(payee.id))
+        isOpen = openId == payee.id,
+        onOpenChange = { open ->
+          openId =
+            when {
+              open -> payee.id
+              openId == payee.id -> null
+              else -> openId
+            }
         },
-        onLongClick = { onAction(ToggleSelected(payee.id)) },
-        onClickRules = { onAction(OpenRules(payee)) },
+        onAction = onAction,
       )
     }
 
@@ -323,18 +284,4 @@ private class ListPayeesStateProvider :
 @Composable
 private fun PreviewListPayeesScaffold(
   @PreviewParameter(ListPayeesStateProvider::class) params: ColoredParams<ListPayeesState>,
-) =
-  PreviewWithColoredParams(params) {
-    ListPayeesScaffold(state = this, selected = persistentSetOf(), onAction = {})
-  }
-
-@PortraitPreview
-@Composable
-private fun PreviewListPayeesSelecting(@PreviewParameter(ColoredParameters::class) colors: Colors) =
-  PreviewWithColors(colors) {
-    ListPayeesScaffold(
-      state = Success(PayeesPreview.all),
-      selected = persistentSetOf(PayeesPreview.tesco.id, PayeesPreview.argos.id),
-      onAction = {},
-    )
-  }
+) = PreviewWithColoredParams(params) { ListPayeesScaffold(state = this, onAction = {}) }

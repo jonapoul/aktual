@@ -29,23 +29,16 @@
   <string name="payees_discard_cancel">Cancel</string>
   <string name="payees_discard_confirm">Discard</string>
   <string name="payees_unfavorite">Unfavorite</string>
-  <string name="payees_select_all">Select all</string>
   <string name="payees_delete">Delete</string>
-  <string name="payees_delete_confirm_message">Some of these payees are still used by transactions, which will be left without a payee.</string>
+  <string name="payees_delete_confirm_message">This payee is still used by transactions, which will be left without a payee.</string>
   <string name="payees_delete_confirm">Delete</string>
   <string name="payees_delete_cancel">Cancel</string>
   <string name="payees_deleted_undo">Undo</string>
-  <string name="payees_delete_failed">Couldn't delete payees</string>
-  <string name="payees_restore_failed">Couldn't restore payees</string>
-  <string name="payees_update_failed">Couldn't update payees</string>
-  <plurals name="payees_delete_confirm_title">
-    <item quantity="one">Delete %1$d payee?</item>
-    <item quantity="other">Delete %1$d payees?</item>
-  </plurals>
-  <plurals name="payees_deleted">
-    <item quantity="one">Deleted %1$d payee</item>
-    <item quantity="other">Deleted %1$d payees</item>
-  </plurals>
+  <string name="payees_delete_failed">Couldn't delete payee</string>
+  <string name="payees_restore_failed">Couldn't restore payee</string>
+  <string name="payees_update_failed">Couldn't update payee</string>
+  <string name="payees_delete_confirm_title">Delete %1$s?</string>
+  <string name="payees_deleted">Deleted %1$s</string>
   <plurals name="payees_num_rules">
     <item quantity="one">%1$d associated rule</item>
     <item quantity="other">%1$d associated rules</item>
