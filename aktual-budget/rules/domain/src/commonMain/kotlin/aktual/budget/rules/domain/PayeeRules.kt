@@ -6,6 +6,8 @@ import aktual.budget.model.Condition
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction.Op.Set
 import dev.zacsweers.metro.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
@@ -57,6 +59,10 @@ private fun JsonElement.payeeId(): PayeeId? =
  */
 @Inject
 class PayeeRuleCounter(private val rulesDao: RulesDao, private val contextDao: RuleContextDao) {
+  // Emits whenever the counts might have changed
+  fun observeChanges(): Flow<Unit> =
+    combine(rulesDao.observeChanges(), contextDao.observeCompletedScheduleRuleChanges()) { _, _ -> }
+
   suspend fun count(): Map<PayeeId, Int> {
     val completed = contextDao.completedScheduleRules()
     val counts = HashMap<PayeeId, Int>()

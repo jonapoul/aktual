@@ -16,12 +16,13 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -42,7 +43,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -53,23 +53,13 @@ internal fun ListPayeesScreen(
   viewModel: ListPayeesViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
-
-  // refresh on return so the list reflects changes made elsewhere
-  @Suppress("ComposeViewModelForwarding")
-  LifecycleResumeEffect(viewModel) {
-    viewModel.reload(showLoading = false)
-    onPauseOrDispose {}
-  }
 
   ListPayeesScaffold(
     modifier = modifier,
     state = state,
-    isRefreshing = isRefreshing,
     onAction = { action ->
       when (action) {
-        Reload -> viewModel.reload()
-        Refresh -> viewModel.refresh()
+        Retry -> viewModel.retry()
       }
     },
   )
@@ -80,7 +70,6 @@ private fun ListPayeesScaffold(
   state: ListPayeesState,
   onAction: ListPayeesActionHandler,
   modifier: Modifier = Modifier,
-  isRefreshing: Boolean = false,
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -99,19 +88,16 @@ private fun ListPayeesScaffold(
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()
 
-      HazedPullToRefreshBox(
-        modifier = Modifier.padding(ListPayeesDS.listPadding),
+      Box(
+        modifier =
+          Modifier.padding(ListPayeesDS.listPadding).hazedTopBarContent(hazeState, innerPadding),
         contentAlignment = Center,
-        onRefresh = { onAction(Refresh) },
-        isRefreshing = isRefreshing,
-        hazeState = hazeState,
-        innerPadding = innerPadding,
-      ) { padding ->
+      ) {
         ListPayeesContent(
           state = state,
           onAction = onAction,
           listState = listState,
-          padding = padding,
+          padding = hazedTopBarContentPadding(hazeState, innerPadding),
         )
       }
     }
@@ -143,7 +129,7 @@ private fun ListPayeesContent(
           FailureAction(
             text = { Strings.syncRetry },
             icon = MaterialIcons.Refresh,
-            onClick = { onAction(Reload) },
+            onClick = { onAction(Retry) },
           ),
       )
 

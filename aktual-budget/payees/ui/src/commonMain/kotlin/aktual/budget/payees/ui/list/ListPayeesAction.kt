@@ -4,9 +4,7 @@ import androidx.compose.runtime.Immutable
 
 internal sealed interface ListPayeesAction
 
-internal data object Reload : ListPayeesAction
-
-internal data object Refresh : ListPayeesAction
+internal data object Retry : ListPayeesAction
 
 @Immutable
 internal fun interface ListPayeesActionHandler {

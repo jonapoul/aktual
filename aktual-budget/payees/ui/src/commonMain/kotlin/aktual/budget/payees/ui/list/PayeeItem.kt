@@ -74,7 +74,7 @@ internal fun PayeeItem(payee: PayeeItem, modifier: Modifier = Modifier) {
       Text(
         text = Plurals.payeesNumTransactions(payee.numTransactions, payee.numTransactions),
         style = typography.bodySmall,
-        color = colors.tableTextLight,
+        color = colors.tableTextSubdued,
       )
     }
 

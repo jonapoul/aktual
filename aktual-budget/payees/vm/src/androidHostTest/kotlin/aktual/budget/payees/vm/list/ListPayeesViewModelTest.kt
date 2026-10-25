@@ -14,8 +14,14 @@ import aktual.budget.model.RuleId
 import aktual.budget.rules.domain.PayeeRuleCounter
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
+import alakazam.test.standardDispatcher
 import app.cash.turbine.test
+import kotlin.test.AfterTest
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonPrimitive
 import org.junit.Test
@@ -24,8 +30,13 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class ListPayeesViewModelTest {
+  @AfterTest
+  fun after() {
+    Dispatchers.resetMain()
+  }
+
   @Test
-  fun `Loads payees with their transaction and rule counts`() = runDatabaseTest {
+  fun `Loads payees with their transaction and rule counts`() = runDatabaseTest { scope ->
     // given
     insertAccount(ACCOUNT, name = "Current")
     val payees = PayeeDao(this)
@@ -39,10 +50,11 @@ class ListPayeesViewModelTest {
     insertPayeeRule("r2", payee = "transfer")
 
     // when
-    val viewModel = createViewModel()
+    val viewModel = createViewModel(scope)
 
     // then
     viewModel.state.test {
+      assertThatNextEmissionIsEqualTo(Loading)
       assertThatNextEmissionIsEqualTo(
         Success(
           persistentListOf(
@@ -77,44 +89,53 @@ class ListPayeesViewModelTest {
   }
 
   @Test
-  fun `No payees gives the empty state`() = runDatabaseTest {
-    createViewModel().state.test { assertThatNextEmissionIsEqualTo(Empty) }
+  fun `No payees gives the empty state`() = runDatabaseTest { scope ->
+    createViewModel(scope).state.test {
+      assertThatNextEmissionIsEqualTo(Loading)
+      assertThatNextEmissionIsEqualTo(Empty)
+    }
   }
 
   @Test
-  fun `Reload picks up new payees`() = runDatabaseTest {
+  fun `Updates when a payee is added`() = runDatabaseTest { scope ->
     // given
-    val viewModel = createViewModel()
+    val viewModel = createViewModel(scope)
     viewModel.state.test {
+      assertThatNextEmissionIsEqualTo(Loading)
       assertThatNextEmissionIsEqualTo(Empty)
 
       // when
       PayeeDao(this@runDatabaseTest).insert(PayeeId("argos"), "Argos")
-      viewModel.reload(showLoading = false)
 
       // then
-      assertThatNextEmissionIsEqualTo(
-        Success(
-          persistentListOf(
-            PayeeItem(
-              id = PayeeId("argos"),
-              name = "Argos",
-              isTransfer = false,
-              isFavorite = false,
-              numTransactions = 0,
-              numRules = 0,
-            ),
-          ),
-        ),
-      )
+      assertThatNextEmissionIsEqualTo(Success(persistentListOf(ARGOS)))
     }
   }
 
-  private fun BudgetDatabase.createViewModel() =
-    ListPayeesViewModel(
+  @Test
+  fun `Updates rule counts when a rule is added`() = runDatabaseTest { scope ->
+    // given
+    PayeeDao(this).insert(PayeeId("argos"), "Argos")
+    val viewModel = createViewModel(scope)
+    viewModel.state.test {
+      assertThatNextEmissionIsEqualTo(Loading)
+      assertThatNextEmissionIsEqualTo(Success(persistentListOf(ARGOS)))
+
+      // when
+      insertPayeeRule("r1", payee = "argos")
+
+      // then
+      assertThatNextEmissionIsEqualTo(Success(persistentListOf(ARGOS.copy(numRules = 1))))
+    }
+  }
+
+  private fun BudgetDatabase.createViewModel(scope: TestScope): ListPayeesViewModel {
+    Dispatchers.setMain(scope.standardDispatcher)
+    return ListPayeesViewModel(
       payeeDao = PayeeDao(this),
       ruleCounter = PayeeRuleCounter(RulesDao(this), RuleContextDao(this)),
     )
+  }
 
   private suspend fun BudgetDatabase.insertAccount(id: String, name: String) =
     accountsQueries.withoutResult {
@@ -146,5 +167,15 @@ class ListPayeesViewModelTest {
   private companion object {
     const val ACCOUNT = "account"
     val DATE = LocalDate(2026, 10, 1)
+
+    val ARGOS =
+      PayeeItem(
+        id = PayeeId("argos"),
+        name = "Argos",
+        isTransfer = false,
+        isFavorite = false,
+        numTransactions = 0,
+        numRules = 0,
+      )
   }
 }
