@@ -56,7 +56,7 @@ internal object TestCurrencyPreferences : CurrencyPreferences {
   override val spaceBetweenAmountAndSymbol = fixed(false)
 }
 
-private fun <T : Any> fixed(fixed: T) =
+internal fun <T : Any> fixed(fixed: T) =
   object : Preference<T> {
     override val default = fixed
 
