@@ -95,7 +95,7 @@ internal class ChartDataLoader(
       is NetWorthReportMeta -> netWorth(meta)
       is SankeyReportMeta -> sankey(meta)
       is SummaryReportMeta -> summary(meta)
-      is CalendarReportMeta,
+      is CalendarReportMeta -> calendar(meta)
       is SpendingReportMeta -> unsupported(meta, ReportType)
       is UnsupportedReportMeta ->
         unsupported(meta, if (meta.type == Unknown) ReportType else InvalidMeta)
@@ -425,6 +425,37 @@ internal class ChartDataLoader(
         combine(amounts, divisorAmounts) { rows, divisor ->
           calculateSummary(params, rows.amountsMatching(filter), divisor)
         }
+      }
+      .flowOn(contexts.default)
+  }
+
+  // packages/desktop-client/src/components/reports/spreadsheets/calendar-spreadsheet.ts
+  // calendarSpreadsheet()
+  fun calendar(meta: CalendarReportMeta): Flow<ChartData> {
+    val filter = TransactionFilter.compile(meta.conditions.orEmpty(), meta.conditionsOp ?: And)
+    return combine(dao.observeTransactionDateBounds(), formatPreferences.firstDayOfWeek.asFlow()) {
+        bounds,
+        firstDayOfWeek ->
+        bounds to firstDayOfWeek
+      }
+      .flatMapLatest { (bounds, firstDayOfWeek) ->
+        val today = calendar.today()
+        val range =
+          resolveTimeRange(
+            timeFrame = meta.timeFrame,
+            default = TimeFrame(start = today.yearMonth, end = today.yearMonth, mode = Full),
+            today = today,
+            latestTransaction = bounds.latest,
+          )
+        customReports
+          .observeTransactions(range.start.firstDay, range.endInclusive.lastDay, divisor = 1L)
+          .map { rows ->
+            val transactions =
+              rows
+                .filter { filter.matches(it.toFilterRow()) }
+                .map { CalendarTransaction(it.date, it.amount) }
+            calculateCalendar(meta.name.orEmpty(), range, transactions, firstDayOfWeek)
+          }
       }
       .flowOn(contexts.default)
   }

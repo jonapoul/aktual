@@ -12,6 +12,7 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.YearMonth
@@ -252,6 +253,7 @@ data class CalendarData(
   val end: YearMonth,
   val income: Amount,
   val expenses: Amount,
+  val firstDayOfWeek: DayOfWeek,
   val months: ImmutableList<CalendarMonth>,
 ) : ChartData
 

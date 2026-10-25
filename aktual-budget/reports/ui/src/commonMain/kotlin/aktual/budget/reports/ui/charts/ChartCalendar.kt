@@ -102,6 +102,7 @@ private fun CompactCalendarChart(
         CalendarMonth(
           modifier = Modifier.width(500.dp),
           month = month,
+          firstDayOfWeek = data.firstDayOfWeek,
           compact = true,
           onAction = onAction,
         )
@@ -130,6 +131,7 @@ private fun RegularCalendarChart(
         CalendarMonth(
           modifier = Modifier.animateItem(),
           month = month,
+          firstDayOfWeek = data.firstDayOfWeek,
           compact = false,
           onAction = onAction,
         )
@@ -348,6 +350,7 @@ private fun DayBarChart(
 @Composable
 internal fun CalendarMonth(
   month: CalendarMonth,
+  firstDayOfWeek: DayOfWeek,
   compact: Boolean,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
@@ -370,7 +373,8 @@ internal fun CalendarMonth(
     VerticalSpacer(5.dp)
 
     Row(modifier = Modifier.fillMaxWidth().wrapContentHeight()) {
-      DayOfWeek.entries.fastForEach { day ->
+      val weekdays = remember(firstDayOfWeek) { weekdays(firstDayOfWeek) }
+      weekdays.fastForEach { day ->
         Text(
           modifier = Modifier.weight(1f),
           text = day.stringShort(),
@@ -419,6 +423,9 @@ private fun CalendarMonth.toWeeks(): ImmutableList<ImmutableList<CalendarDay>> {
   }
   return weeks.toImmutableList()
 }
+
+private fun weekdays(first: DayOfWeek): List<DayOfWeek> =
+  List(DAYS_PER_WEEK) { DayOfWeek.entries[(first.ordinal + it) % DAYS_PER_WEEK] }
 
 private const val DAYS_PER_WEEK = 7
 private val TABLE_SPACING = 2.dp
@@ -524,7 +531,7 @@ private fun PreviewCalendarMonth(
   @PreviewParameter(CalendarMonthProvider::class) params: ColoredParams<CalendarMonthParams>,
 ) =
   PreviewWithColoredParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
-    CalendarMonth(month = month, compact = compact, onAction = {})
+    CalendarMonth(month = month, firstDayOfWeek = MONDAY, compact = compact, onAction = {})
   }
 
 private data class CalendarMonthParams(
@@ -590,6 +597,7 @@ private val ONE_MONTH =
     end = YearMonth(2025, Month.JANUARY),
     income = Amount(5795.88),
     expenses = Amount(3822.78),
+    firstDayOfWeek = MONDAY,
     months = persistentListOf(JAN_2025),
   )
 
@@ -600,6 +608,7 @@ internal val THREE_MONTHS =
     end = YearMonth(2025, Month.MARCH),
     income = Amount(57958.8),
     expenses = Amount(38227.8),
+    firstDayOfWeek = MONDAY,
     months =
       persistentListOf(
         JAN_2025,
