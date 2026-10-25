@@ -1,8 +1,7 @@
-@file:Suppress("BracesOnWhenStatements")
-
 package aktual.budget.rules.vm
 
 import aktual.budget.model.Condition
+import aktual.budget.model.Field
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.ScheduleId
@@ -29,22 +28,9 @@ internal class RuleSearchText(
   private suspend fun conditionText(condition: Condition): List<String> = buildList {
     add(strings.get(condition.field.label(condition.options)))
     add(strings.get(condition.operator.label()))
-    val field = condition.field
     when (val value = condition.value) {
-      is JsonArray -> {
-        val ids = value.map { it.jsonPrimitive.content }
-        if (field.isIdField()) {
-          addAll(nameFetcher.names(field, ids).first().map { it.jsonPrimitive.content })
-        } else {
-          addAll(ids)
-        }
-      }
-
-      is JsonPrimitive -> {
-        val content = value.content
-        add(if (field.isIdField()) nameFetcher.name(field, content).first() ?: content else content)
-      }
-
+      is JsonArray -> addAll(names(condition.field, value.map { it.jsonPrimitive.content }))
+      is JsonPrimitive -> add(name(condition.field, value.content))
       else -> Unit
     }
   }
@@ -54,19 +40,23 @@ internal class RuleSearchText(
     action.field?.let { add(strings.get(it.label(options = null))) }
     val content = action.value?.content ?: return@buildList
     when (action.op) {
-      Set -> {
-        val field = action.field
-        add(if (field.isIdField()) nameFetcher.name(field, content).first() ?: content else content)
-      }
-
+      Set -> add(name(action.field, content))
       LinkSchedule -> nameFetcher.name(ScheduleId(content)).first()?.let(::add)
-
       AppendNotes,
       PrependNotes,
       SetSplitAmount -> add(content)
-
       DeleteTransaction,
       Unknown -> Unit
     }
   }
+
+  private suspend fun name(field: Field?, value: String): String =
+    if (field.isIdField()) nameFetcher.name(field, value).first() ?: value else value
+
+  private suspend fun names(field: Field, values: List<String>): List<String> =
+    if (field.isIdField()) {
+      nameFetcher.names(field, values).first().map { it.jsonPrimitive.content }
+    } else {
+      values
+    }
 }

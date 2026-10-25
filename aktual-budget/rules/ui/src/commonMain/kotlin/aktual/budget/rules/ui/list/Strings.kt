@@ -1,4 +1,4 @@
-@file:Suppress("MagicNumber", "LongMethod")
+@file:Suppress("MagicNumber")
 
 package aktual.budget.rules.ui.list
 
@@ -207,7 +207,6 @@ private fun fieldNamesFlow(condition: Condition, nameFetcher: NameFetcher): Flow
   }
 
 @Composable
-@Suppress("ElseCaseInsteadOfExhaustiveWhen")
 internal fun rememberActionText(
   action: RuleAction,
   styles: RuleSpanStyles,
@@ -222,28 +221,7 @@ internal fun rememberActionText(
   val privacy = LocalPrivacyEnabled.current
 
   val nameFetcher = LocalNameFetcher.current
-  val fieldNameFlow =
-    remember(nameFetcher, action) {
-      val value = action.value
-      when (action.op) {
-        Set -> {
-          val field = action.field
-          if (field.isIdField() && value != null) {
-            nameFetcher.name(field, value.content)
-          } else {
-            flowOf(null)
-          }
-        }
-
-        LinkSchedule -> {
-          value?.let { nameFetcher.name(ScheduleId(it.content)) } ?: flowOf(null)
-        }
-
-        else -> {
-          flowOf(null)
-        }
-      }
-    }
+  val fieldNameFlow = remember(nameFetcher, action) { actionNameFlow(action, nameFetcher) }
 
   val fieldName by fieldNameFlow.collectAsStateWithLifecycle(initialValue = "...")
 
@@ -318,6 +296,29 @@ internal fun rememberActionText(
         .highlighted(query)
     }
     .redacted()
+}
+
+@Suppress("ElseCaseInsteadOfExhaustiveWhen")
+private fun actionNameFlow(action: RuleAction, nameFetcher: NameFetcher): Flow<String?> {
+  val value = action.value
+  return when (action.op) {
+    Set -> {
+      val field = action.field
+      if (field.isIdField() && value != null) {
+        nameFetcher.name(field, value.content)
+      } else {
+        flowOf(null)
+      }
+    }
+
+    LinkSchedule -> {
+      value?.let { nameFetcher.name(ScheduleId(it.content)) } ?: flowOf(null)
+    }
+
+    else -> {
+      flowOf(null)
+    }
+  }
 }
 
 private fun formatAmount(
