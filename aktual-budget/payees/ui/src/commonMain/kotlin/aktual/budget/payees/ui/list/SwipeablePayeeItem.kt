@@ -4,6 +4,7 @@ import aktual.budget.payees.vm.list.PayeeItem
 import aktual.core.icons.material.Bookmark
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Merge
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParameterProvider
@@ -20,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import kotlinx.collections.immutable.persistentListOf
 
-// Transfer payees can't be deleted or favourited, as upstream, so they don't swipe
+// Transfer payees can't be deleted, favourited or merged, as upstream, so they don't swipe
 @Composable
 internal fun SwipeablePayeeItem(
   payee: PayeeItem,
@@ -51,6 +52,16 @@ internal fun SwipeablePayeeItem(
           onClick = {
             onOpenChange(false)
             onAction(ToggleFavorite(payee))
+          },
+        ),
+        SwipeAction(
+          text = Strings.payeesMerge,
+          icon = MaterialIcons.Merge,
+          background = lerp(colors.tableBackground, Black, fraction = 0.2f),
+          foreground = colors.tableText,
+          onClick = {
+            onOpenChange(false)
+            onAction(StartMerge(payee))
           },
         ),
         SwipeAction(

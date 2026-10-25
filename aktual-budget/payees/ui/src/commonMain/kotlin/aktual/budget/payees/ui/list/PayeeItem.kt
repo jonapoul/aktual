@@ -64,7 +64,7 @@ internal fun PayeeItem(
         modifier = Modifier.size(ListPayeesDS.favoriteIconSize),
         imageVector = MaterialIcons.Bookmark,
         contentDescription = Strings.payeesFavorite,
-        tint = colors.tableText,
+        tint = colors.pageText,
       )
     }
 
@@ -79,7 +79,7 @@ internal fun PayeeItem(
             query = query,
           ),
         style = typography.bodyLarge,
-        color = if (payee.isTransfer) colors.tableTextLight else colors.tableText,
+        color = if (payee.isTransfer) colors.pageTextLight else colors.pageText,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -87,7 +87,7 @@ internal fun PayeeItem(
       Text(
         text = Plurals.payeesNumTransactions(payee.numTransactions, payee.numTransactions),
         style = typography.bodySmall,
-        color = colors.tableTextSubdued,
+        color = colors.pageTextSubdued,
       )
     }
 

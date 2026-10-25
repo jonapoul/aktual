@@ -16,6 +16,11 @@ internal data object OpenSearch : ListPayeesAction
 
 @JvmInline internal value class Delete(val payee: PayeeItem) : ListPayeesAction
 
+// Picks the payee to merge into
+@JvmInline internal value class StartMerge(val payee: PayeeItem) : ListPayeesAction
+
+internal data class Merge(val payee: PayeeItem, val into: PayeeItem) : ListPayeesAction
+
 @JvmInline internal value class ToggleFavorite(val payee: PayeeItem) : ListPayeesAction
 
 @Immutable

@@ -77,6 +77,7 @@ private val materialIcons =
       LineEndArrowNotch,
       LineStartArrowNotch,
       Menu,
+      Merge,
       MoreVert,
       Numbers,
       OfflinePin,

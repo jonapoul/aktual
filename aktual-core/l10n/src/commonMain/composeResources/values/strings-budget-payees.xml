@@ -39,6 +39,10 @@
   <string name="payees_update_failed">Couldn't update payee</string>
   <string name="payees_delete_confirm_title">Delete %1$s?</string>
   <string name="payees_deleted">Deleted %1$s</string>
+  <string name="payees_merge">Merge</string>
+  <string name="payees_merge_placeholder">Merge %1$s into…</string>
+  <string name="payees_merged">Merged %1$s into %2$s</string>
+  <string name="payees_merge_failed">Couldn't merge payees</string>
   <plurals name="payees_num_rules">
     <item quantity="one">%1$d associated rule</item>
     <item quantity="other">%1$d associated rules</item>
