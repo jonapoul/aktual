@@ -69,8 +69,6 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.datetime.Month.JANUARY
-import kotlinx.datetime.Month.MARCH
 
 private const val LINK_ALPHA = 0.6f
 private const val DIMMED_LINK_ALPHA = 0.2f

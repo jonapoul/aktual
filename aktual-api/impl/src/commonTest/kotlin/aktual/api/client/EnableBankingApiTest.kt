@@ -2,7 +2,6 @@ package aktual.api.client
 
 import aktual.api.model.banksync.BankSyncTransactionsResponse.ProviderError
 import aktual.api.model.banksync.BankSyncTransactionsResponse.Rejected
-import aktual.api.model.banksync.EnableBankingAccountType.Business
 import aktual.api.model.banksync.EnableBankingAccountsResponse
 import aktual.api.model.banksync.EnableBankingBank
 import aktual.api.model.banksync.EnableBankingBanksResponse

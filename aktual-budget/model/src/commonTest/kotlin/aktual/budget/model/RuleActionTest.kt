@@ -2,8 +2,6 @@
 
 package aktual.budget.model
 
-import aktual.budget.model.Field.Category
-import aktual.budget.model.Field.Description
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
 import kotlin.test.Test

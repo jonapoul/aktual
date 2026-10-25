@@ -46,14 +46,7 @@ import com.patrykandpatrick.vico.compose.common.Fill
 import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Month.APRIL
 import kotlinx.datetime.Month.AUGUST
-import kotlinx.datetime.Month.FEBRUARY
-import kotlinx.datetime.Month.JANUARY
-import kotlinx.datetime.Month.JULY
-import kotlinx.datetime.Month.JUNE
-import kotlinx.datetime.Month.MARCH
-import kotlinx.datetime.Month.MAY
 import kotlinx.datetime.YearMonth
 
 @Composable
