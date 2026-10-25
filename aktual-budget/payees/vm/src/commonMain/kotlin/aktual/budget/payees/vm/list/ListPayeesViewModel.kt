@@ -97,8 +97,13 @@ internal constructor(
   fun merge(payee: PayeeItem, into: PayeeItem) {
     viewModelScope.launch {
       try {
-        val merge = merger.merge(into.id, listOf(payee.id)) ?: return@launch
-        mutableEvents.tryEmit(ListPayeesEvent.Merged(payee, into, merge))
+        val merge = merger.merge(into.id, listOf(payee.id))
+        if (merge == null) {
+          logcat.w { "Nothing to merge from ${payee.id} into ${into.id}" }
+          mutableEvents.tryEmit(MergeFailed)
+        } else {
+          mutableEvents.tryEmit(ListPayeesEvent.Merged(payee, into, merge))
+        }
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {

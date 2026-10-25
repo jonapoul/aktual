@@ -228,6 +228,24 @@ class ListPayeesViewModelTest {
   }
 
   @Test
+  fun `A merge with nothing to merge reports a failure`() = runDatabaseTest { scope ->
+    // given
+    insertPayees()
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync).awaitLoaded()
+    val transfer = ARGOS.copy(id = TRANSFER, isTransfer = true)
+
+    // when
+    viewModel.events.test {
+      viewModel.merge(transfer, into = ARGOS)
+
+      // then
+      assertThatNextEmissionIsEqualTo(MergeFailed)
+    }
+    assertThat(sync.changes).isEmpty()
+  }
+
+  @Test
   fun `Transfer payees can't be deleted or favourited`() = runDatabaseTest { scope ->
     // given
     insertPayees()

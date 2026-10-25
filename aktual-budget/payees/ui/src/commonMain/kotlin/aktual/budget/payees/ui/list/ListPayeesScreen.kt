@@ -121,9 +121,10 @@ private fun ListPayeesScaffold(
 
   // Only worth confirming when transactions will lose their payee
   val handleAction = ListPayeesActionHandler { action ->
-    when {
-      action is Delete && action.payee.numTransactions > 0 -> confirmDelete = action.payee
-      action is StartMerge -> mergeSource = action.payee
+    @Suppress("ElseCaseInsteadOfExhaustiveWhen")
+    when (action) {
+      is Delete if action.payee.numTransactions > 0 -> confirmDelete = action.payee
+      is StartMerge -> mergeSource = action.payee
       else -> onAction(action)
     }
   }

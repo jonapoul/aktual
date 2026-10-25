@@ -58,6 +58,37 @@ class PayeeMergerTest {
   }
 
   @Test
+  fun `Merging payees mapped to each other keeps their old targets for undo`() = runMergerTest {
+    // given
+    insertPayees()
+    payeeDao.insert(SAINSBURYS, "Sainsbury's")
+    database.payeeMappingQueries.insert(id = SAINSBURYS, targetId = TESCO)
+    TransactionDao(database).insert("t4", ACCOUNT, null, SAINSBURYS.value, DATE)
+
+    // when
+    val merge = requireNotNull(merger.merge(ARGOS, listOf(SAINSBURYS, TESCO)))
+
+    // then
+    assertThat(merge)
+      .isEqualTo(
+        PayeeMerge(
+          target = ARGOS,
+          merged = listOf(SAINSBURYS, TESCO),
+          oldTargets = mapOf(SAINSBURYS to TESCO, TESCO to TESCO, OLD_TESCO to TESCO),
+        ),
+      )
+    assertThat(transactionCounts()).containsExactly(ARGOS to 4, TRANSFER to 0)
+
+    // when
+    merger.undo(merge)
+
+    // then
+    assertThat(transactionCounts())
+      .containsExactly(ARGOS to 1, TRANSFER to 0, SAINSBURYS to 0, TESCO to 3)
+    assertThat(payeeDao.mappingTarget(SAINSBURYS)).isEqualTo(TESCO)
+  }
+
+  @Test
   fun `Transfer payees aren't merged`() = runMergerTest {
     // given
     insertPayees()
@@ -141,6 +172,7 @@ class PayeeMergerTest {
     val ARGOS = PayeeId("argos")
     val TESCO = PayeeId("tesco")
     val OLD_TESCO = PayeeId("old-tesco")
+    val SAINSBURYS = PayeeId("sainsburys")
     val TRANSFER = PayeeId("transfer")
     val DATE = LocalDate(2026, 10, 1)
   }
