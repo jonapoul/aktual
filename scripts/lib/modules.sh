@@ -51,7 +51,7 @@ matches_catalog_trigger() {
 }
 
 # Print the Gradle module paths whose build files use a version catalog entry that changed since
-# the given ref, or "ALL" if a changed entry is used by build-logic, compiler-plugin or the root
+# the given ref, or "ALL" if a changed entry is used by build-logic or the root
 # build (or the catalog can't be compared). Matching is by prefix, so it errs towards more modules.
 # Args: $1 = base ref.
 catalog_affected_modules() {
@@ -65,7 +65,7 @@ catalog_affected_modules() {
   # `apply false` only puts a plugin on the classpath, the modules applying it are matched below
   local global_uses
   global_uses=$(git grep -hF -f <(printf '%s\n' "$terms") -- \
-    build-logic compiler-plugin build.gradle.kts settings.gradle.kts 'gradle/*.gradle.kts' \
+    build-logic build.gradle.kts settings.gradle.kts 'gradle/*.gradle.kts' \
     | grep -v 'apply false' || true)
   if [[ -n "$global_uses" ]]; then
     echo "ALL"
