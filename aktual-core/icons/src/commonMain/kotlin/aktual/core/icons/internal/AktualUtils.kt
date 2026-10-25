@@ -11,19 +11,15 @@ internal inline fun aktualIcon(
   name: String,
   size: Float,
   block: ImageVector.Builder.() -> ImageVector.Builder,
-): ImageVector = aktualIcon(name, size, size, block = block)
+): ImageVector = ImageVector.Builder("Aktual.$name", 24.dp, 24.dp, size, size).block().build()
 
 internal inline fun aktualIcon(
   name: String,
   width: Float,
   height: Float,
-  viewportWidth: Float = width,
-  viewportHeight: Float = height,
   block: ImageVector.Builder.() -> ImageVector.Builder,
 ): ImageVector =
-  ImageVector.Builder("Aktual.$name", width.dp, height.dp, viewportWidth, viewportHeight)
-    .block()
-    .build()
+  ImageVector.Builder("Aktual.$name", width.dp, height.dp, width, height).block().build()
 
 internal inline fun ImageVector.Builder.aktualPath(
   fillAlpha: Float = 1f,

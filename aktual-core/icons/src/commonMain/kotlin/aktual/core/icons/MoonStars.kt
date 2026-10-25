@@ -7,13 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.MoonStars: ImageVector by lazy {
-  aktualIcon(
-    name = "MoonStars",
-    width = 20f,
-    height = 20f,
-    viewportWidth = 16f,
-    viewportHeight = 16f,
-  ) {
+  aktualIcon(name = "MoonStars", size = 16f) {
     aktualPath {
       moveTo(6f, 0.278f)
       arcToRelative(0.768f, 0.768f, 0f, false, true, 0.08f, 0.858f)

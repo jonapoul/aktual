@@ -2,7 +2,7 @@
 
 Icon definitions as `ImageVector` properties, split into two families:
 
-- **`AktualIcons`** (package `aktual.core.icons`) - custom SVG icons. Built with `aktualIcon()` + `aktualPath {}`; typical size 20f or 24f.
+- **`AktualIcons`** (package `aktual.core.icons`) - custom SVG icons. Built with `aktualIcon()` + `aktualPath {}`. For square icons `size` is the SVG viewBox size, and the icon always renders at 24dp to match Material. Non-square icons pass `width`/`height`, which are used as both viewport and dp size.
 - **`MaterialIcons`** (package `aktual.core.icons.material`) - Material Design icons. Built with `materialIcon()` + `materialPath {}`; 24dp, or 960-unit viewport for Material Symbols.
 
 ## Check upstream first
