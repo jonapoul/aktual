@@ -3,8 +3,8 @@ package aktual.budget.banksync.ui
 import aktual.budget.banksync.vm.providers.BankSyncProviderItem
 import aktual.budget.banksync.vm.providers.BankSyncProvidersState
 import aktual.budget.banksync.vm.providers.BankSyncProvidersViewModel
-import aktual.core.icons.material.ArrowBack
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronLeft
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.BankSyncProviderSetupNavigator
@@ -130,7 +130,7 @@ private fun BankSyncProvidersScaffold(
             action =
               FailureAction(
                 text = { Strings.navBack },
-                icon = MaterialIcons.ArrowBack,
+                icon = AktualIcons.CheveronLeft,
                 onClick = { onAction(CloseProviders) },
               ),
           )

@@ -1,7 +1,7 @@
 package aktual.prefs.ui.core
 
-import aktual.core.icons.material.Info
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.InformationOutline
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -87,7 +87,7 @@ private class BooleanPreferenceItemProvider :
       title = "Change the doodad",
       subtitle =
         "When you change this setting, the doodad will update. This might also affect the thingybob.",
-      icon = MaterialIcons.Info,
+      icon = AktualIcons.InformationOutline,
     ),
     BooleanPreferenceItemParams(
       value = false,
@@ -99,7 +99,7 @@ private class BooleanPreferenceItemProvider :
       value = true,
       title = "Disabled preference",
       subtitle = "This item is disabled and should appear subdued",
-      icon = MaterialIcons.Info,
+      icon = AktualIcons.InformationOutline,
       enabled = false,
     ),
   )

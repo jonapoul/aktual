@@ -1,7 +1,7 @@
 package aktual.core.ui
 
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Search
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.SearchAlternate
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -46,7 +46,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -138,7 +137,7 @@ private fun SearchField(
       placeholderText = placeholder,
       showBorder = false,
       clearable = true,
-      keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+      keyboardOptions = KeyboardOptions(imeAction = Search),
       onKeyboardAction = {
         keyboard?.hide()
         focusManager.clearFocus()
@@ -166,7 +165,7 @@ fun ScrollToTopOnNewQuery(listState: LazyListState, query: String?) {
 fun SearchMessage(
   text: String,
   modifier: Modifier = Modifier,
-  icon: ImageVector = MaterialIcons.Search,
+  icon: ImageVector = AktualIcons.SearchAlternate,
 ) =
   Box(modifier = modifier.fillMaxSize().padding(32.dp), contentAlignment = Center) {
     Column(

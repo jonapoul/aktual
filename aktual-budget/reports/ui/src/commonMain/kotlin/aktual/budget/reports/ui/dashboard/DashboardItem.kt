@@ -13,10 +13,10 @@ import aktual.budget.reports.vm.UnsupportedData
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.dashboard.isRenamable
 import aktual.budget.reports.vm.dashboard.name
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.Edit
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.PushPin
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Pencil1
+import aktual.core.icons.Pin
+import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
@@ -104,7 +104,7 @@ private fun DashboardItem(
   val renameAction =
     SwipeAction(
       text = Strings.reportsDashboardRename,
-      icon = MaterialIcons.Edit,
+      icon = AktualIcons.Pencil1,
       background = lerp(colors.tableBackground, Black, fraction = 0.1f),
       foreground = colors.tableText,
       onClick = { showRenameDialog = true },
@@ -112,7 +112,7 @@ private fun DashboardItem(
   val deleteAction =
     SwipeAction(
       text = Strings.reportsDashboardDelete,
-      icon = MaterialIcons.Delete,
+      icon = AktualIcons.Trash,
       background = colors.errorText,
       foreground = colors.errorText.contrastingTextColor(),
       onClick = { showDeleteDialog = true },
@@ -121,7 +121,7 @@ private fun DashboardItem(
   val pinAction =
     SwipeAction(
       text = if (isPinned) Strings.reportsDashboardUnpin else Strings.reportsDashboardPin,
-      icon = MaterialIcons.PushPin,
+      icon = AktualIcons.Pin,
       background = lerp(colors.tableBackground, Black, fraction = 0.2f),
       foreground = colors.tableText,
       onClick = {

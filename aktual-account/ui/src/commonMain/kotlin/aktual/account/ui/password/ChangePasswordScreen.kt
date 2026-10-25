@@ -2,8 +2,8 @@ package aktual.account.ui.password
 
 import aktual.account.vm.ChangePasswordState
 import aktual.account.vm.ChangePasswordViewModel
-import aktual.core.icons.material.Check
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Check
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Password
@@ -165,7 +165,7 @@ private fun ChangePasswordContent(
         Loading,
         null -> Unit
         is Failure -> ErrorBanner(text = state.errorMessage())
-        Success -> NoticeBanner(text = Strings.passwordSuccess, icon = MaterialIcons.Check)
+        Success -> NoticeBanner(text = Strings.passwordSuccess, icon = AktualIcons.Check)
       }
     }
 

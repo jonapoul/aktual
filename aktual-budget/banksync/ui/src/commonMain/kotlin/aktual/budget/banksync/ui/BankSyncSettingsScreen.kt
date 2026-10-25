@@ -7,13 +7,14 @@ import aktual.budget.banksync.vm.settings.BankSyncSettingsViewModel
 import aktual.budget.banksync.vm.settings.FieldOption
 import aktual.budget.banksync.vm.settings.MappedFieldRow
 import aktual.budget.model.AccountId
-import aktual.core.icons.material.ArrowBack
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Calendar3
+import aktual.core.icons.CheveronLeft
+import aktual.core.icons.Pencil1
+import aktual.core.icons.Refresh
+import aktual.core.icons.Reports
 import aktual.core.icons.material.Badge
-import aktual.core.icons.material.BarChart
-import aktual.core.icons.material.CalendarToday
-import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Save
 import aktual.core.icons.material.Timer
 import aktual.core.l10n.Strings
@@ -190,7 +191,7 @@ private fun BankSyncSettingsScaffold(
             action =
               FailureAction(
                 text = { Strings.navBack },
-                icon = MaterialIcons.ArrowBack,
+                icon = AktualIcons.CheveronLeft,
                 onClick = { onAction(NavigateBack) },
               ),
           )
@@ -439,7 +440,7 @@ private fun OptionsGroup(
       onValueChange = { onAction(SetToggle(ImportNotes, it)) },
       title = Strings.bankSyncSettingsImportNotes,
       subtitle = null,
-      icon = MaterialIcons.Edit,
+      icon = AktualIcons.Pencil1,
       enabled = state.importTransactions,
       includeBackground = false,
     )
@@ -448,7 +449,7 @@ private fun OptionsGroup(
       onValueChange = { onAction(SetToggle(ReimportDeleted, it)) },
       title = Strings.bankSyncSettingsReimportDeleted,
       subtitle = Strings.bankSyncSettingsReimportDeletedHint,
-      icon = MaterialIcons.Refresh,
+      icon = AktualIcons.Refresh,
       enabled = state.importTransactions,
       includeBackground = false,
     )
@@ -457,7 +458,7 @@ private fun OptionsGroup(
       onValueChange = { onAction(SetToggle(UpdateDates, it)) },
       title = Strings.bankSyncSettingsUpdateDates,
       subtitle = Strings.bankSyncSettingsUpdateDatesHint,
-      icon = MaterialIcons.CalendarToday,
+      icon = AktualIcons.Calendar3,
       enabled = state.importTransactions,
       includeBackground = false,
     )
@@ -466,7 +467,7 @@ private fun OptionsGroup(
       onValueChange = { onAction(SetToggle(ImportTransactions, !it)) },
       title = Strings.bankSyncSettingsInvestment,
       subtitle = Strings.bankSyncSettingsInvestmentHint,
-      icon = MaterialIcons.BarChart,
+      icon = AktualIcons.Reports,
       includeBackground = false,
     )
   }
@@ -491,9 +492,9 @@ private fun fieldString(field: MappedField): String =
 
 private fun fieldIcon(field: MappedField): ImageVector =
   when (field) {
-    Date -> MaterialIcons.CalendarToday
+    Date -> AktualIcons.Calendar3
     Payee -> MaterialIcons.Badge
-    Notes -> MaterialIcons.Edit
+    Notes -> AktualIcons.Pencil1
   }
 
 @PortraitPreview

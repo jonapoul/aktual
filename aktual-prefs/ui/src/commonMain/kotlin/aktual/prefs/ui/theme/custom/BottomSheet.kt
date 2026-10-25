@@ -2,11 +2,11 @@ package aktual.prefs.ui.theme.custom
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Git
+import aktual.core.icons.MoonStars
+import aktual.core.icons.Sun
+import aktual.core.icons.System
 import aktual.core.icons.material.Badge
-import aktual.core.icons.material.DarkMode
-import aktual.core.icons.material.LightMode
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
@@ -102,7 +102,7 @@ private fun ThemeFilter.string(): String =
 @Stable
 private fun ThemeFilter.icon(): ImageVector =
   when (this) {
-    All -> MaterialIcons.ThemeRoutine
-    Light -> MaterialIcons.LightMode
-    Dark -> MaterialIcons.DarkMode
+    All -> AktualIcons.System
+    Light -> AktualIcons.Sun
+    Dark -> AktualIcons.MoonStars
   }

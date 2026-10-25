@@ -1,8 +1,8 @@
 package aktual.about.ui.licenses
 
 import aktual.about.data.ArtifactDetail
-import aktual.core.icons.material.ArrowRight
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
@@ -118,7 +118,7 @@ internal fun ArtifactItem(
     if (url != null) {
       NormalIconButton(
         modifier = Modifier.clip(CardShape),
-        imageVector = MaterialIcons.ArrowRight,
+        imageVector = AktualIcons.CheveronRight,
         onClick = { onLaunchUrl(url) },
         contentDescription = Strings.licensesItemLaunch,
       )

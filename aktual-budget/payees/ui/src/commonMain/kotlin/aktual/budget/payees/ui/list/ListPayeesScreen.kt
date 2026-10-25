@@ -10,11 +10,10 @@ import aktual.budget.payees.vm.list.Loading
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.payees.vm.list.Success
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.LightBulb
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
-import aktual.core.icons.material.Refresh
-import aktual.core.icons.material.Search
+import aktual.core.icons.Refresh
+import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditPayeeNavigator
 import aktual.core.nav.EditRuleNavigator
@@ -150,7 +149,7 @@ private fun ListPayeesScaffold(
         actions = {
           if (state is Success) {
             BareIconButton(
-              imageVector = MaterialIcons.Search,
+              imageVector = AktualIcons.SearchAlternate,
               contentDescription = Strings.payeesSearch,
               onClick = { onAction(OpenSearch) },
             )
@@ -214,7 +213,7 @@ private fun ListPayeesMenu(onAction: ListPayeesActionHandler, modifier: Modifier
 
   Box(modifier = modifier) {
     BareIconButton(
-      imageVector = MaterialIcons.MoreVert,
+      imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.payeesMenu,
       onClick = { expanded = true },
     )
@@ -296,7 +295,7 @@ private fun ListPayeesContent(
         action =
           FailureAction(
             text = { Strings.syncRetry },
-            icon = MaterialIcons.Refresh,
+            icon = AktualIcons.Refresh,
             onClick = { onAction(Retry) },
           ),
       )

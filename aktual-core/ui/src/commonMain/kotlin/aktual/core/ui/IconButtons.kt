@@ -1,7 +1,8 @@
 package aktual.core.ui
 
-import aktual.core.icons.material.ArrowBack
-import aktual.core.icons.material.Check
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Check
+import aktual.core.icons.CheveronLeft
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Menu
 import aktual.core.l10n.Strings
@@ -147,7 +148,7 @@ fun BasicIconButton(
 @Suppress("LambdaParameterEventTrailing")
 fun NavBackIconButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
   IconButton(modifier = modifier, onClick = onClick) {
-    Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
+    Icon(imageVector = AktualIcons.CheveronLeft, contentDescription = Strings.navBack)
   }
 }
 
@@ -200,19 +201,19 @@ private fun DefaultIconButtonContent(
 @Composable
 private fun PreviewBare(@PreviewParameter(ColoredParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
-    BareIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
+    BareIconButton(imageVector = AktualIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
 private fun PreviewNormal(@PreviewParameter(ColoredParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
-    NormalIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
+    NormalIconButton(imageVector = AktualIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
 private fun PreviewPrimary(@PreviewParameter(ColoredParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
-    PrimaryIconButton(imageVector = MaterialIcons.Check, contentDescription = "OK", onClick = {})
+    PrimaryIconButton(imageVector = AktualIcons.Check, contentDescription = "OK", onClick = {})
   }

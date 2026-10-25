@@ -2,8 +2,8 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.FontSizeMode
-import aktual.core.icons.material.ChevronRight
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -97,7 +97,7 @@ internal fun SettingRow(
     ) {
       Icon(
         modifier = Modifier.padding(start = 12.dp).size(CHEVRON_SIZE),
-        imageVector = MaterialIcons.ChevronRight,
+        imageVector = AktualIcons.CheveronRight,
         contentDescription = null,
         tint = colors.tableHeaderText,
       )

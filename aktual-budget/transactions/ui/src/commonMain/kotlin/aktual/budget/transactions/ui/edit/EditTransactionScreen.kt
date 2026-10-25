@@ -22,11 +22,12 @@ import aktual.budget.transactions.vm.edit.TransactionDetails
 import aktual.budget.transactions.vm.edit.TransactionEditMode
 import aktual.budget.transactions.vm.edit.TransactionForm
 import aktual.budget.transactions.vm.edit.TransactionOptions
-import aktual.core.icons.material.ArrowBack
-import aktual.core.icons.material.ArrowRight
-import aktual.core.icons.material.Delete
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronLeft
+import aktual.core.icons.CheveronRight
+import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.Trash
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Undo
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -360,7 +361,7 @@ private fun TopBarActions(
       Box {
         var expanded by remember { mutableStateOf(false) }
         BareIconButton(
-          imageVector = MaterialIcons.MoreVert,
+          imageVector = AktualIcons.DotsHorizontalTriple,
           contentDescription = Strings.transactionMore,
           enabled = !state.isWorking,
           onClick = { expanded = true },
@@ -378,7 +379,7 @@ private fun TopBarActions(
           }
           AktualDropdownMenuItem(
             text = Strings.transactionDelete,
-            leadingIcon = MaterialIcons.Delete,
+            leadingIcon = AktualIcons.Trash,
             onClick = {
               expanded = false
               onDelete()
@@ -441,7 +442,7 @@ private fun LoadFailure(
     action =
       FailureAction(
         text = { Strings.navBack },
-        icon = MaterialIcons.ArrowBack,
+        icon = AktualIcons.CheveronLeft,
         onClick = { onAction(NavigateBack) },
       ),
   )
@@ -463,7 +464,7 @@ private fun NothingToCreateWith(
         action =
           FailureAction(
             text = { Strings.navBack },
-            icon = MaterialIcons.ArrowBack,
+            icon = AktualIcons.CheveronLeft,
             onClick = { onAction(NavigateBack) },
           ),
       )
@@ -477,7 +478,7 @@ private fun NothingToCreateWith(
         action =
           FailureAction(
             text = { Strings.transactionCreateGoToBudget },
-            icon = MaterialIcons.ArrowRight,
+            icon = AktualIcons.CheveronRight,
             onClick = { onAction(GoToBudget) },
           ),
       )

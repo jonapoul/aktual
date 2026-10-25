@@ -5,9 +5,9 @@ import aktual.budget.reports.vm.McRunDetailRow
 import aktual.budget.reports.vm.McYearInvestment
 import aktual.budget.reports.vm.investmentAt
 import aktual.budget.reports.vm.montecarlo.MonteCarloRunDetail
-import aktual.core.icons.material.ArrowDropDown
-import aktual.core.icons.material.ArrowRight
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronDown
+import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
 import aktual.core.model.unaryPlus
 import aktual.core.ui.AktualSlidingToggleButton
@@ -265,7 +265,7 @@ private fun YearRow(
     Box(modifier = Modifier.width(EXPAND_WIDTH), contentAlignment = Center) {
       Icon(
         modifier = Modifier.size(20.dp),
-        imageVector = if (isExpanded) MaterialIcons.ArrowDropDown else MaterialIcons.ArrowRight,
+        imageVector = if (isExpanded) AktualIcons.CheveronDown else AktualIcons.CheveronRight,
         contentDescription =
           if (isExpanded) {
             Strings.monteCarloDetailHideBreakdown

@@ -1,8 +1,8 @@
 package aktual.budget.home.ui
 
 import aktual.budget.model.Amount
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Warning
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.AlertTriangle
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -132,7 +132,7 @@ internal fun CardError(
   ) {
     Icon(
       modifier = Modifier.size(20.dp),
-      imageVector = MaterialIcons.Warning,
+      imageVector = AktualIcons.AlertTriangle,
       contentDescription = null,
       tint = colors.errorText,
     )

@@ -8,8 +8,9 @@ import aktual.budget.schedules.vm.search.SearchSchedulesState
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Failure
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Results
 import aktual.budget.schedules.vm.search.SearchSchedulesViewModel
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Refresh
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -110,7 +111,7 @@ private fun SearchSchedulesScaffold(
             action =
               FailureAction(
                 text = { Strings.syncRetry },
-                icon = MaterialIcons.Refresh,
+                icon = AktualIcons.Refresh,
                 onClick = { onAction(Reload) },
               ),
           )

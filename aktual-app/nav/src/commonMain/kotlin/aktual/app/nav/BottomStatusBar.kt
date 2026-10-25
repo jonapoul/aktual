@@ -3,11 +3,10 @@ package aktual.app.nav
 import aktual.budget.model.SyncState
 import aktual.budget.model.SyncState.SyncFailed
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.ArrowsSynchronize
 import aktual.core.icons.CloudCheck
 import aktual.core.icons.CloudWarning
-import aktual.core.icons.material.Error
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Sync
+import aktual.core.icons.ExclamationOutline
 import aktual.core.l10n.Strings
 import aktual.core.model.PingState
 import aktual.core.theme.BottomBarThemeAttrs
@@ -195,10 +194,10 @@ private fun SyncState(
 @Stable
 private fun SyncState.icon() =
   when (this) {
-    NoToken -> MaterialIcons.Error
-    is SyncFailed -> MaterialIcons.Error
-    Syncing -> MaterialIcons.Sync
-    Inactive -> MaterialIcons.Sync
+    NoToken -> AktualIcons.ExclamationOutline
+    is SyncFailed -> AktualIcons.ExclamationOutline
+    Syncing -> AktualIcons.ArrowsSynchronize
+    Inactive -> AktualIcons.ArrowsSynchronize
   }
 
 @Composable

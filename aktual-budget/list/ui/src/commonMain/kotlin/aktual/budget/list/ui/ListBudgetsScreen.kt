@@ -7,8 +7,8 @@ import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.directoryId
 import aktual.budget.sync.ui.SyncBudgetDialog
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.model.ServerUrl
 import aktual.core.nav.BudgetNavRailNavigator
@@ -231,7 +231,7 @@ private fun StateContent(
               FailureAction(
                 text = { Strings.budgetFailureRetry },
                 onClick = { onAction(Reload) },
-                icon = MaterialIcons.Refresh,
+                icon = AktualIcons.Refresh,
               ),
           )
         }

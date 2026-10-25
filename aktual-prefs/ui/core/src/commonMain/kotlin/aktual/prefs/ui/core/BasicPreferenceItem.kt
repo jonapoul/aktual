@@ -1,7 +1,7 @@
 package aktual.prefs.ui.core
 
-import aktual.core.icons.material.Info
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.InformationOutline
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
@@ -149,7 +149,7 @@ private class BasicPreferenceItemProvider :
       title = "Change the doodad",
       subtitle =
         "When you change this setting, the doodad will update. This might also affect the thingybob.",
-      icon = MaterialIcons.Info,
+      icon = AktualIcons.InformationOutline,
     ),
     BasicPreferenceItemParams(
       title = "This one has no subtitle and no icon",
@@ -159,7 +159,7 @@ private class BasicPreferenceItemProvider :
     BasicPreferenceItemParams(
       title = "Disabled preference",
       subtitle = "This item is disabled and should appear subdued",
-      icon = MaterialIcons.Info,
+      icon = AktualIcons.InformationOutline,
       enabled = false,
     ),
   )

@@ -1,7 +1,7 @@
 package aktual.core.ui
 
-import aktual.core.icons.material.Clear
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -122,7 +122,7 @@ fun AktualTextField(
 @Composable
 private fun ClearButton(tint: Color, onClick: () -> Unit, modifier: Modifier = Modifier) {
   IconButton(modifier = modifier, onClick = onClick) {
-    Icon(imageVector = MaterialIcons.Clear, contentDescription = Strings.inputClear, tint = tint)
+    Icon(imageVector = AktualIcons.Delete, contentDescription = Strings.inputClear, tint = tint)
   }
 }
 

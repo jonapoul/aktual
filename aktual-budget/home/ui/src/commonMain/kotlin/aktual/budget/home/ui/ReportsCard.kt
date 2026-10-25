@@ -15,8 +15,9 @@ import aktual.budget.reports.vm.pinned.PinnedReport
 import aktual.budget.reports.vm.pinned.PinnedReports.Companion.MAX_PINNED_REPORTS
 import aktual.budget.reports.vm.pinned.ReportPage
 import aktual.budget.reports.vm.pinned.ReportSummary
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.Clear
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.SwapHoriz
 import aktual.core.l10n.Plurals
@@ -228,7 +229,7 @@ private fun PinnedContent(
         )
 
         BareIconButton(
-          imageVector = MaterialIcons.Clear,
+          imageVector = AktualIcons.Delete,
           contentDescription = Strings.homeReportsRemove(name),
           onClick = { onAction(UnpinReport(report.summary.id)) },
         )
@@ -239,7 +240,7 @@ private fun PinnedContent(
       BottomSheetListItem(
         label = Strings.homeReportsAdd,
         isSelected = false,
-        leadingContent = { BottomSheetIcon(MaterialIcons.Add) },
+        leadingContent = { BottomSheetIcon(AktualIcons.Add) },
         onClick = { onPick(null) },
       )
     }

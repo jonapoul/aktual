@@ -8,9 +8,9 @@ import aktual.budget.rules.ui.displayString
 import aktual.budget.rules.ui.filteredOperators
 import aktual.budget.rules.ui.string
 import aktual.budget.rules.vm.Rule
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualExposedDropDownMenu
@@ -75,7 +75,7 @@ internal fun Conditions(
       }
       PrimaryIconButton(
         enabled = isEnabled,
-        imageVector = MaterialIcons.Add,
+        imageVector = AktualIcons.Add,
         contentDescription = Strings.editRuleCreate,
         onClick = { onAction(AppendCondition) },
       )
@@ -112,7 +112,7 @@ private fun Condition(
       )
 
       NormalIconButton(
-        imageVector = MaterialIcons.Delete,
+        imageVector = AktualIcons.Trash,
         contentDescription = Strings.rulesItemDelete,
         onClick = { onAction(DeleteCondition(index)) },
         colors = NormalRed,

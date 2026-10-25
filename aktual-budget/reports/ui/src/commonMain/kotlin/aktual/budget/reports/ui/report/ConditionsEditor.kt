@@ -7,8 +7,8 @@ import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.QUERY_FIELDS
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.newQueryCondition
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
@@ -80,7 +80,7 @@ internal fun ConditionsEditor(
       }
       TonalButton(
         modifier = Modifier.fillMaxWidth().testTag(Tags.AddCondition),
-        icon = MaterialIcons.Add,
+        icon = AktualIcons.Add,
         text = Strings.reportsFormulaQueryAddCondition,
         onClick = {
           conditionIndex = conditions.size

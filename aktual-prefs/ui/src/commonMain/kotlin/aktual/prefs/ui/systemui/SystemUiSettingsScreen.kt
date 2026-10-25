@@ -1,14 +1,15 @@
 package aktual.prefs.ui.systemui
 
 import aktual.budget.model.BarEffect
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.ViewHide
+import aktual.core.icons.ViewShow
 import aktual.core.icons.material.BlurCircular
 import aktual.core.icons.material.BlurOn
 import aktual.core.icons.material.Dialogs
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Opacity
 import aktual.core.icons.material.Security
-import aktual.core.icons.material.Visibility
-import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.theme.Colors
@@ -48,8 +49,7 @@ private fun SystemUiSettingsScaffold(state: SystemUiSettingsState, onBack: () ->
         preference = state.showStatusBar,
         title = Strings.settingsUiShowStatus,
         subtitle = null,
-        icon =
-          if (state.showStatusBar.value) MaterialIcons.Visibility else MaterialIcons.VisibilityOff,
+        icon = if (state.showStatusBar.value) AktualIcons.ViewShow else AktualIcons.ViewHide,
       )
     }
     item {

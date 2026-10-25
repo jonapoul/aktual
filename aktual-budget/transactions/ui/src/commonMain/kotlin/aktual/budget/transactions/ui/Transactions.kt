@@ -4,8 +4,8 @@ import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.vm.Transaction
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.theme.hasAlternateRowColour
 import aktual.core.ui.AktualTheme.colors
@@ -86,7 +86,7 @@ internal fun Transactions(
         action =
           FailureAction(
             text = { Strings.syncRetry },
-            icon = MaterialIcons.Refresh,
+            icon = AktualIcons.Refresh,
             onClick = pagingItems::retry,
           ),
       )

@@ -1,8 +1,8 @@
 package aktual.budget.tags.ui.list
 
 import aktual.budget.tags.vm.list.TagItem
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Trash
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
@@ -57,7 +57,7 @@ internal fun TagItem(
       persistentListOf(
         SwipeAction(
           text = Strings.tagsDelete,
-          icon = MaterialIcons.Delete,
+          icon = AktualIcons.Trash,
           background = deleteBackground,
           foreground = deleteBackground.contrastingTextColor(),
           onClick = { onAction(DeleteTag(tag.id)) },

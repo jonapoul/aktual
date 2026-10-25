@@ -2,9 +2,10 @@ package aktual.about.ui.info
 
 import aktual.about.vm.AboutViewModel
 import aktual.about.vm.BuildState
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Calendar3
+import aktual.core.icons.Cloud
 import aktual.core.icons.material.Apps
-import aktual.core.icons.material.CalendarToday
-import aktual.core.icons.material.Cloud
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Drawables
 import aktual.core.l10n.Strings
@@ -217,14 +218,14 @@ private fun InfoBuildState(buildState: BuildState, modifier: Modifier = Modifier
 
     BuildStateItem(
       modifier = Modifier.testTag(Tags.ServerVersionText).padding(ItemMargin).clip(CardShape),
-      icon = MaterialIcons.Cloud,
+      icon = AktualIcons.Cloud,
       title = Strings.infoServerVersion,
       subtitle = buildState.versions.server ?: Strings.infoServerVersionUnknown,
     )
 
     BuildStateItem(
       modifier = Modifier.padding(ItemMargin).clip(CardShape),
-      icon = MaterialIcons.CalendarToday,
+      icon = AktualIcons.Calendar3,
       title = Strings.infoDate,
       subtitle = buildState.buildDate,
     )

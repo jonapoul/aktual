@@ -5,9 +5,9 @@ import aktual.budget.reports.ui.montecarlo.NumberField
 import aktual.budget.reports.vm.ConditionValueKind
 import aktual.budget.reports.vm.QueryEntity
 import aktual.budget.reports.vm.toDayOrNull
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Search
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
@@ -158,7 +158,7 @@ private fun EntityListPicker(
     var showSheet by remember { mutableStateOf(false) }
     TonalButton(
       modifier = Modifier.fillMaxWidth(),
-      icon = MaterialIcons.Add,
+      icon = AktualIcons.Add,
       text = Strings.reportsFormulaQueryChoose,
       onClick = { showSheet = true },
     )
@@ -196,7 +196,7 @@ private fun EntitySheet(
       placeholderText = Strings.reportsFormulaQuerySearch,
       singleLine = true,
       clearable = true,
-      leadingIcon = { Icon(MaterialIcons.Search, contentDescription = null) },
+      leadingIcon = { Icon(AktualIcons.SearchAlternate, contentDescription = null) },
     )
 
     val listState = rememberLazyListState()

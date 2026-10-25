@@ -12,9 +12,9 @@ import aktual.budget.reports.vm.removeSpendingPhase
 import aktual.budget.reports.vm.removeTaxBand
 import aktual.budget.reports.vm.updateSpendingPhase
 import aktual.budget.reports.vm.updateTaxBand
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
@@ -39,7 +39,7 @@ internal fun SpendingTab(config: McConfig, onAction: MonteCarloActionHandler) {
     key(phase.id) { PhaseCard(config, phase, index, onAction) }
   }
   TonalButton(
-    icon = MaterialIcons.Add,
+    icon = AktualIcons.Add,
     text = Strings.monteCarloPhaseAdd,
     onClick = { onAction(AddSpendingPhase) },
   )
@@ -77,7 +77,7 @@ private fun PhaseCard(
     actions = {
       if (config.spendingPhases.size > 1) {
         BareIconButton(
-          imageVector = MaterialIcons.Delete,
+          imageVector = AktualIcons.Trash,
           contentDescription = Strings.monteCarloPhaseRemove,
           onClick = { onAction.edit { it.removeSpendingPhase(phase.id) } },
         )
@@ -348,7 +348,7 @@ internal fun TaxTab(config: McConfig, onAction: MonteCarloActionHandler) {
     key(band.id) { TaxBandRow(config, band, index, onAction) }
   }
   TonalButton(
-    icon = MaterialIcons.Add,
+    icon = AktualIcons.Add,
     text = Strings.monteCarloBandAdd,
     onClick = { onAction(AddTaxBand) },
   )
@@ -386,7 +386,7 @@ private fun TaxBandRow(
     }
     if (config.taxBands.size > 1) {
       BareIconButton(
-        imageVector = MaterialIcons.Delete,
+        imageVector = AktualIcons.Trash,
         contentDescription = Strings.monteCarloBandRemove,
         onClick = { onAction.edit { it.removeTaxBand(band.id) } },
       )

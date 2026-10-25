@@ -3,8 +3,7 @@ package aktual.budget.list.ui
 import aktual.budget.model.Budget
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Key
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -58,7 +57,7 @@ internal fun BudgetListItem(
       persistentListOf(
         SwipeAction(
           text = Strings.budgetDelete,
-          icon = MaterialIcons.Delete,
+          icon = AktualIcons.Trash,
           background = deleteBackground,
           foreground = deleteBackground.contrastingTextColor(),
           onClick = {

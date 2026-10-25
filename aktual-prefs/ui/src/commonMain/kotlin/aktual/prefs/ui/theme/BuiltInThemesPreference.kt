@@ -1,7 +1,7 @@
 package aktual.prefs.ui.theme
 
-import aktual.core.icons.material.ArrowRight
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
 import aktual.core.theme.Colors
@@ -123,7 +123,7 @@ internal fun ThemeItem(
 
     NormalIconButton(
       modifier = Modifier.clip(CardShape),
-      imageVector = MaterialIcons.ArrowRight,
+      imageVector = AktualIcons.CheveronRight,
       isEnabled = enabled,
       onClick = { onAction(InspectTheme(id)) },
       contentDescription = Strings.settingsThemePreview(name),

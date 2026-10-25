@@ -9,8 +9,9 @@ import aktual.budget.payees.vm.search.SearchPayeesState
 import aktual.budget.payees.vm.search.SearchPayeesState.Failure
 import aktual.budget.payees.vm.search.SearchPayeesState.Results
 import aktual.budget.payees.vm.search.SearchPayeesViewModel
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Refresh
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -116,7 +117,7 @@ private fun SearchPayeesScaffold(
             action =
               FailureAction(
                 text = { Strings.syncRetry },
-                icon = MaterialIcons.Refresh,
+                icon = AktualIcons.Refresh,
                 onClick = { onAction(Retry) },
               ),
           )

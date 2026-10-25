@@ -5,11 +5,11 @@ import aktual.budget.reports.ui.Action.DeletePage
 import aktual.budget.reports.ui.Action.RenamePage
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.vm.dashboard.DashboardPage
-import aktual.core.icons.material.Add
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.Edit
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.Pencil1
+import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
@@ -60,7 +60,7 @@ internal fun DashboardMenu(
   Box(modifier = modifier) {
     IconButton(onClick = { expanded = true }) {
       Icon(
-        imageVector = MaterialIcons.MoreVert,
+        imageVector = AktualIcons.DotsHorizontalTriple,
         contentDescription = Strings.reportsDashboardPageMenu,
       )
     }
@@ -132,14 +132,14 @@ private fun DashboardMenuItems(
 ) {
   AktualDropdownMenuItem(
     text = Strings.reportsDashboardNewPage,
-    leadingIcon = MaterialIcons.Add,
+    leadingIcon = AktualIcons.Add,
     onClick = { onClick(Create) },
   )
 
   if (hasPage) {
     AktualDropdownMenuItem(
       text = Strings.reportsDashboardRenamePage,
-      leadingIcon = MaterialIcons.Edit,
+      leadingIcon = AktualIcons.Pencil1,
       onClick = { onClick(Rename) },
     )
   }
@@ -148,7 +148,7 @@ private fun DashboardMenuItems(
     val deleteText = Strings.reportsDashboardDeletePage
     AktualDropdownMenuItem(
       text = { Text(deleteText, color = colors.errorText) },
-      leadingIcon = { Icon(MaterialIcons.Delete, deleteText, tint = colors.errorText) },
+      leadingIcon = { Icon(AktualIcons.Trash, deleteText, tint = colors.errorText) },
       onClick = { onClick(Delete) },
     )
   }

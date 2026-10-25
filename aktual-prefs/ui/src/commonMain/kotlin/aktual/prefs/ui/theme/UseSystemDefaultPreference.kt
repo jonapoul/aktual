@@ -1,7 +1,7 @@
 package aktual.prefs.ui.theme
 
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.ThemeRoutine
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.System
 import aktual.core.l10n.Strings
 import aktual.core.ui.ColoredBooleanParameters
 import aktual.core.ui.ColoredParams
@@ -26,7 +26,7 @@ internal fun UseSystemDefaultPreference(
     onValueChange = { value -> onAction(SetUseSystemDefault(value)) },
     title = Strings.settingsThemeUseSystem,
     subtitle = null,
-    icon = MaterialIcons.ThemeRoutine,
+    icon = AktualIcons.System,
     enabled = preference.enabled,
   )
 }

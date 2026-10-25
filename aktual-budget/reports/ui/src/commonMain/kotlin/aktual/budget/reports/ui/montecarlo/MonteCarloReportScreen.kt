@@ -6,8 +6,8 @@ import aktual.budget.reports.vm.montecarlo.MonteCarloSection
 import aktual.budget.reports.vm.montecarlo.MonteCarloState
 import aktual.budget.reports.vm.montecarlo.MonteCarloViewModel
 import aktual.budget.reports.vm.montecarlo.previewMonteCarloState
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
@@ -233,7 +233,7 @@ private fun MonteCarloMenu(
 
   Box(modifier = modifier) {
     BareIconButton(
-      imageVector = MaterialIcons.MoreVert,
+      imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.monteCarloMenu,
       onClick = { expanded = true },
     )

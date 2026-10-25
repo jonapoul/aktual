@@ -1,9 +1,9 @@
 package aktual.budget.rules.ui.edit.pickers
 
 import aktual.budget.model.RecurConfig
-import aktual.core.icons.material.CalendarToday
-import aktual.core.icons.material.Clear
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Calendar3
+import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.theme.DarkColors
 import aktual.core.ui.AktualTextField
@@ -77,13 +77,13 @@ internal fun DateTextField(
       readOnly = true,
       isEnabled = isEnabled,
       singleLine = true,
-      leadingIcon = { Icon(imageVector = MaterialIcons.CalendarToday, contentDescription = null) },
+      leadingIcon = { Icon(imageVector = AktualIcons.Calendar3, contentDescription = null) },
       trailingIcon =
         if (value != JsonNull) {
           {
             BareIconButton(
               enabled = isEnabled,
-              imageVector = MaterialIcons.Clear,
+              imageVector = AktualIcons.Delete,
               contentDescription = Strings.editRuleDateClear,
               onClick = { onValueChange(JsonNull) },
             )

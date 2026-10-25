@@ -1,7 +1,7 @@
 package aktual.prefs.ui.inspect
 
-import aktual.core.icons.material.ArrowRight
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
@@ -101,7 +101,7 @@ private fun EditPropertyDialogContent(
         verticalAlignment = CenterVertically,
       ) {
         Swatch(property.color)
-        Icon(MaterialIcons.ArrowRight, contentDescription = null)
+        Icon(AktualIcons.CheveronRight, contentDescription = null)
         Swatch(color)
       }
 

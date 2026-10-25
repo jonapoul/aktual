@@ -10,8 +10,9 @@ import aktual.budget.rules.vm.search.SearchRulesState
 import aktual.budget.rules.vm.search.SearchRulesState.Failure
 import aktual.budget.rules.vm.search.SearchRulesState.Results
 import aktual.budget.rules.vm.search.SearchRulesViewModel
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Refresh
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -158,7 +159,7 @@ private fun SearchRulesContent(
           action =
             FailureAction(
               text = { Strings.syncRetry },
-              icon = MaterialIcons.Refresh,
+              icon = AktualIcons.Refresh,
               onClick = { onAction(Reload) },
             ),
         )

@@ -24,7 +24,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
   val role = Role.Admin; listOf(Role.Admin); a to Role.Admin; roles += Role.Admin
   val r = if (x) Role.Admin else Role.Basic; takesState(State.Failure("x"))
   ```
-  - Only a type or function in scope makes a name ambiguous (`LoginMethod.Password` vs the `Password` class, `Role.Checkbox` vs the `Checkbox` composable). Another enum's entry with the same name doesn't count, so `consume(Plus)` and `UnaryNode(Plus, x)` both resolve.
+  - Only a type, function or imported property in scope makes a name ambiguous (an icon import like `aktual.core.icons.Copy` clashes with `LogExportTarget.Copy`) (`LoginMethod.Password` vs the `Password` class, `Role.Checkbox` vs the `Checkbox` composable). Another enum's entry with the same name doesn't count, so `consume(Plus)` and `UnaryNode(Plus, x)` both resolve.
   - Don't name new enum entries or sealed subtypes after Kotlin types (`Number`, `Any`, `Boolean`, `Error`), since that forces a qualifier at every use.
 - `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` - add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
 - Before using or adding an icon, check upstream Actual for an equivalent and prefer it over Material. See [aktual-core/icons](aktual-core/icons/CLAUDE.md).

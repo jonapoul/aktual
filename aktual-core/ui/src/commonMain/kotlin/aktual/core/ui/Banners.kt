@@ -1,9 +1,9 @@
 package aktual.core.ui
 
-import aktual.core.icons.material.Error
-import aktual.core.icons.material.Info
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Warning
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.AlertTriangle
+import aktual.core.icons.ExclamationOutline
+import aktual.core.icons.InformationOutline
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 fun NoticeBanner(
   text: String,
   modifier: Modifier = Modifier,
-  icon: ImageVector? = MaterialIcons.Info,
+  icon: ImageVector? = AktualIcons.InformationOutline,
 ) =
   Banner(
     text = text,
@@ -44,7 +44,7 @@ fun NoticeBanner(
 fun WarningBanner(
   text: String,
   modifier: Modifier = Modifier,
-  icon: ImageVector? = MaterialIcons.Warning,
+  icon: ImageVector? = AktualIcons.AlertTriangle,
 ) =
   Banner(
     text = text,
@@ -58,7 +58,7 @@ fun WarningBanner(
 fun ErrorBanner(
   text: String,
   modifier: Modifier = Modifier,
-  icon: ImageVector? = MaterialIcons.Error,
+  icon: ImageVector? = AktualIcons.ExclamationOutline,
 ) =
   Banner(
     text = text,

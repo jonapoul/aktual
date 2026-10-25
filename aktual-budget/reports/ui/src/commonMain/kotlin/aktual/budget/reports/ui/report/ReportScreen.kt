@@ -16,7 +16,8 @@ import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.report.ReportViewModel
-import aktual.core.icons.material.Info
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.InformationOutline
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ZoomOut
 import aktual.core.l10n.Strings
@@ -186,7 +187,7 @@ internal fun ReportScaffold(
           if (info.isNotEmpty()) {
             BareIconButton(
               modifier = Modifier.testTag(Tags.ChartInfo),
-              imageVector = MaterialIcons.Info,
+              imageVector = AktualIcons.InformationOutline,
               contentDescription = Strings.reportsChartInfo,
               onClick = { showInfo = true },
             )

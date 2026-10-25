@@ -1,8 +1,8 @@
 package aktual.budget.accounts.ui
 
-import aktual.core.icons.material.AccountBalance
-import aktual.core.icons.material.AccountBalanceWallet
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Library
+import aktual.core.icons.Wallet
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualModalBottomSheet
@@ -64,13 +64,13 @@ private fun AddAccountSheetContent(
       style = typography.headlineSmall,
     )
     AddAccountOption(
-      icon = MaterialIcons.AccountBalanceWallet,
+      icon = AktualIcons.Wallet,
       title = Strings.accountsAddLocal,
       hint = Strings.accountsAddLocalHint,
       onClick = onCreateLocal,
     )
     AddAccountOption(
-      icon = MaterialIcons.AccountBalance,
+      icon = AktualIcons.Library,
       title = Strings.accountsAddBankSync,
       hint = Strings.accountsAddBankSyncHint,
       onClick = onBankSync,

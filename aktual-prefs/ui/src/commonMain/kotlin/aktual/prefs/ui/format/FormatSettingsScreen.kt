@@ -3,7 +3,8 @@ package aktual.prefs.ui.format
 import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
-import aktual.core.icons.material.CalendarToday
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Calendar3
 import aktual.core.icons.material.CalendarViewWeek
 import aktual.core.icons.material.DecimalDecrease
 import aktual.core.icons.material.DecimalIncrease
@@ -72,7 +73,7 @@ private fun FormatSettingsScaffold(state: FormatSettingsState, onBack: () -> Uni
         optionSuffix = null,
         title = Strings.settingsFormatFirstDay,
         subtitle = null,
-        icon = MaterialIcons.CalendarToday,
+        icon = AktualIcons.Calendar3,
       )
     }
     item {

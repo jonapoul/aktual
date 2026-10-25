@@ -14,12 +14,13 @@ import aktual.budget.schedules.vm.list.ListSchedulesState
 import aktual.budget.schedules.vm.list.ListSchedulesViewModel
 import aktual.budget.schedules.vm.list.Loading
 import aktual.budget.schedules.vm.list.Success
-import aktual.core.icons.material.Add
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Cog
+import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.Refresh
+import aktual.core.icons.SearchAlternate
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.MoreVert
-import aktual.core.icons.material.Refresh
-import aktual.core.icons.material.Search
-import aktual.core.icons.material.Settings
 import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditScheduleNavigator
@@ -156,13 +157,13 @@ private fun ListSchedulesScaffold(
         actions = {
           if (successState != null) {
             BareIconButton(
-              imageVector = MaterialIcons.Search,
+              imageVector = AktualIcons.SearchAlternate,
               contentDescription = Strings.listSchedulesSearch,
               onClick = { onAction(OpenSearch) },
             )
           }
           BareIconButton(
-            imageVector = MaterialIcons.Add,
+            imageVector = AktualIcons.Add,
             contentDescription = Strings.listSchedulesCreate,
             onClick = { onAction(CreateNew) },
           )
@@ -226,7 +227,7 @@ private fun ListSchedulesContent(
           action =
             FailureAction(
               text = { Strings.listSchedulesEmptyCreate },
-              icon = MaterialIcons.Add,
+              icon = AktualIcons.Add,
               onClick = { onAction(CreateNew) },
             ),
         )
@@ -239,7 +240,7 @@ private fun ListSchedulesContent(
           action =
             FailureAction(
               text = { Strings.syncRetry },
-              icon = MaterialIcons.Refresh,
+              icon = AktualIcons.Refresh,
               onClick = { onAction(Retry) },
             ),
         )
@@ -304,7 +305,7 @@ private fun ListSchedulesMenu(
 
   Box(modifier = modifier) {
     BareIconButton(
-      imageVector = MaterialIcons.MoreVert,
+      imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.listSchedulesMenu,
       onClick = { expanded = true },
     )
@@ -340,7 +341,7 @@ private fun ListSchedulesMenuItems(
   }
   AktualDropdownMenuItem(
     text = Strings.listSchedulesSettings,
-    leadingIcon = MaterialIcons.Settings,
+    leadingIcon = AktualIcons.Cog,
     onClick = { onAction(OpenSettings) },
   )
 }

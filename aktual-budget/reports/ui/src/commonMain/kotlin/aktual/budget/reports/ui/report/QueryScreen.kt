@@ -5,10 +5,10 @@ import aktual.budget.reports.ui.dashboard.NameDialog
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
-import aktual.core.icons.material.CalendarToday
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.Edit
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Calendar3
+import aktual.core.icons.Pencil1
+import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
@@ -152,13 +152,13 @@ internal fun QueryScaffold(
         actions = {
           BareIconButton(
             modifier = Modifier.testTag(Tags.RenameQuery),
-            imageVector = MaterialIcons.Edit,
+            imageVector = AktualIcons.Pencil1,
             contentDescription = Strings.reportsFormulaQueryRename,
             onClick = onRename,
           )
           BareIconButton(
             modifier = Modifier.padding(end = 4.dp).testTag(Tags.DeleteQuery),
-            imageVector = MaterialIcons.Delete,
+            imageVector = AktualIcons.Trash,
             contentDescription = Strings.reportsFormulaQueryDelete,
             colors = DELETE_COLORS,
             onClick = onDelete,
@@ -232,7 +232,7 @@ internal fun TimeFrameRow(timeFrame: TimeFrame?, onClick: () -> Unit) =
     SettingRow(modifier = Modifier.testTag(Tags.TimeFrameRow), onClick = onClick) {
       Icon(
         modifier = Modifier.size(20.dp),
-        imageVector = MaterialIcons.CalendarToday,
+        imageVector = AktualIcons.Calendar3,
         contentDescription = null,
         tint = colors.tableHeaderText,
       )

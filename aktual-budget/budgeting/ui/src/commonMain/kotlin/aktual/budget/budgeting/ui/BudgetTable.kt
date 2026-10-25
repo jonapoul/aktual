@@ -7,11 +7,10 @@ import aktual.budget.budgeting.vm.GroupRow
 import aktual.budget.budgeting.vm.MonthBudget
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
-import aktual.core.icons.material.ArrowDropDown
-import aktual.core.icons.material.ArrowRight
-import aktual.core.icons.material.ExpandMore
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Warning
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.AlertTriangle
+import aktual.core.icons.CheveronDown
+import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
@@ -284,7 +283,7 @@ internal fun BannerRow(
   ) {
     Icon(
       modifier = Modifier.size(18.dp),
-      imageVector = MaterialIcons.Warning,
+      imageVector = AktualIcons.AlertTriangle,
       contentDescription = null,
       tint = text,
     )
@@ -359,7 +358,7 @@ private fun ColumnHeader(
       )
       Icon(
         modifier = Modifier.size(16.dp),
-        imageVector = MaterialIcons.ArrowDropDown,
+        imageVector = AktualIcons.CheveronDown,
         contentDescription = null,
         tint = colors.pageTextLink,
       )
@@ -484,7 +483,7 @@ internal fun GroupHeaderRow(
       ) {
         Icon(
           modifier = Modifier.size(16.dp).rotate(rotation),
-          imageVector = MaterialIcons.ExpandMore,
+          imageVector = AktualIcons.CheveronDown,
           contentDescription = null,
           tint = colors.tableRowHeaderText,
         )
@@ -662,7 +661,7 @@ internal fun BalancePill(balance: Amount, carryover: Boolean, modifier: Modifier
     if (carryover) {
       Icon(
         modifier = Modifier.size(12.dp),
-        imageVector = MaterialIcons.ArrowRight,
+        imageVector = AktualIcons.CheveronRight,
         contentDescription = null,
         tint = pill.text,
       )

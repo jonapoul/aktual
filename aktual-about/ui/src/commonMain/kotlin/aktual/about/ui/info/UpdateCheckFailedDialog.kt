@@ -1,7 +1,7 @@
 package aktual.about.ui.info
 
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Warning
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.AlertTriangle
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
@@ -40,7 +40,7 @@ internal fun UpdateCheckFailedDialogContent(
   AktualAlertDialogContent(
     modifier = modifier,
     title = Strings.infoCheckFailedTitle,
-    icon = MaterialIcons.Warning,
+    icon = AktualIcons.AlertTriangle,
     highlight = colors.errorText,
     content = { Text(cause) },
     buttons = {

@@ -6,8 +6,8 @@ import aktual.about.vm.ManageStorageViewModel
 import aktual.about.vm.StorageDialog
 import aktual.about.vm.StorageNavEvent
 import aktual.budget.model.BudgetId
-import aktual.core.icons.material.Delete
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.model.bytes
 import aktual.core.model.percent
@@ -406,7 +406,7 @@ private fun BudgetRow(budget: BudgetStorageItem, color: Color, onDelete: () -> U
     )
     IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
       Icon(
-        imageVector = MaterialIcons.Delete,
+        imageVector = AktualIcons.Trash,
         contentDescription = null,
         tint = colors.errorText,
         modifier = Modifier.size(18.dp),

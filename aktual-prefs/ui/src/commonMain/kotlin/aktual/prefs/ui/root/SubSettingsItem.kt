@@ -2,8 +2,7 @@ package aktual.prefs.ui.root
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
-import aktual.core.icons.material.ArrowRight
-import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.CheveronRight
 import aktual.core.theme.Colors
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.IconButtonColorProvider
@@ -39,7 +38,7 @@ internal fun SubSettingsItem(
     rightContent = {
       NormalIconButton(
         contentDescription = title,
-        imageVector = MaterialIcons.ArrowRight,
+        imageVector = AktualIcons.CheveronRight,
         colors = NavItemButtonColors,
         isEnabled = isEnabled,
         onClick = onClick,

@@ -2,9 +2,10 @@ package aktual.budget.tags.ui.edit
 
 import aktual.budget.tags.domain.toColorOrNull
 import aktual.budget.tags.domain.toHex
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Tuning
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Shuffle
-import aktual.core.icons.material.Tune
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
@@ -163,7 +164,7 @@ internal fun TagColorPicker(
       )
 
       NormalIconButton(
-        imageVector = MaterialIcons.Tune,
+        imageVector = AktualIcons.Tuning,
         contentDescription = Strings.tagsCreateColorAdvanced,
         onClick = { advancedVisible = !advancedVisible },
         colors =
