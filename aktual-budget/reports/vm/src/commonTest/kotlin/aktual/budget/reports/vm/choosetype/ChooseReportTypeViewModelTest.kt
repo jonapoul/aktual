@@ -34,7 +34,7 @@ class ChooseReportTypeViewModelTest {
   }
 
   @Test
-  fun `Markdown reports are created with empty content`() = runChooseTest { viewModel, dao ->
+  fun `Markdown reports are created with starting content`() = runChooseTest { viewModel, dao ->
     viewModel.shouldNavigateEvent.test {
       viewModel.createReport(Markdown)
       assertThatNextEmissionIsEqualTo(ChooseReportTypeViewModel.ShouldNavigateEvent(WIDGET))
@@ -42,7 +42,7 @@ class ChooseReportTypeViewModelTest {
 
     val meta = checkNotNull(dao.meta(WIDGET))
     assertThat(DbJson.decodeFromJsonElement(MarkdownReportMeta.serializer(), meta))
-      .isEqualTo(MarkdownReportMeta(content = ""))
+      .isEqualTo(MarkdownReportMeta(content = "reports_text_default"))
   }
 
   @Test
@@ -63,6 +63,7 @@ class ChooseReportTypeViewModelTest {
         page = PAGE,
         uuidGenerator = { WIDGET.value },
         sync = DashboardSync(dao, controller),
+        strings = { it.key },
         viewModelContext = scope.viewModelContext,
       )
     action(viewModel, dao)

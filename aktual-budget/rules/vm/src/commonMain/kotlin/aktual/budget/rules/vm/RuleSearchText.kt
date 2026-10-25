@@ -6,6 +6,7 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.isIdField
+import aktual.core.l10n.StringLookup
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.JsonArray

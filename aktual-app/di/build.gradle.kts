@@ -19,7 +19,6 @@ kotlin {
     api(project(":aktual-api:impl"))
     api(project(":aktual-budget:data:impl"))
     api(project(":aktual-budget:sync:domain"))
-    api(project(":aktual-core:logging:impl"))
     api(project(":aktual-core:theme:impl"))
     api(project(":aktual-di:bindings"))
     api(project(":aktual-di:runlevel:impl"))
