@@ -45,6 +45,10 @@ flowchart TD
     listSchedules["List Schedules"]
     editSchedule["Edit Schedule"]
     searchSchedules["Search Schedules"]
+    listRules["List Rules"]
+    editRule["Edit Rule"]
+    createRule["Create Rule"]
+    searchRules["Search Rules"]
     bankSync["Bank Sync"]
     bankSyncSettings["Bank Sync Settings"]
     linkBankAccount["Link Bank Account"]
@@ -140,6 +144,11 @@ flowchart TD
   listSchedules --tap search--> searchSchedules
   listSchedules --tap settings--> scheduleSettings
   searchSchedules --tap schedule--> editSchedule
+
+  listRules --tap rule--> editRule
+  listRules --tap create--> createRule
+  listRules --tap search--> searchRules
+  searchRules --tap rule--> editRule
 
   bankSync --tap linked account--> bankSyncSettings
   bankSync --tap unlinked account--> linkBankAccount

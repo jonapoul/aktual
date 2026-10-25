@@ -91,44 +91,48 @@ internal fun ListRulesItem(
     modifier = modifier,
     shape = RowShape,
   ) {
-    ListRulesItemRow(rule = rule, checkboxes = checkboxes, onAction = onAction)
+    val isChecked = if (checkboxes is Active) rule.id in checkboxes.ids else null
+    ListRulesItemRow(
+      rule = rule,
+      isChecked = isChecked,
+      onClick = {
+        val action =
+          when (isChecked) {
+            null -> Edit(rule.id)
+            true -> Uncheck(rule.id)
+            false -> Check(rule.id)
+          }
+        onAction(action)
+      },
+    )
   }
 }
 
 /** Keep this in sync with [ShimmerListRulesItem] */
 @Composable
-private fun ListRulesItemRow(
+internal fun ListRulesItemRow(
   rule: Rule,
-  checkboxes: CheckboxesState,
-  onAction: ListRulesActionHandler,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  isChecked: Boolean? = null,
+  query: String = "",
 ) {
-  val isChecked = checkboxes is Active && rule.id in checkboxes.ids
-
-  val toggleCheck =
-    if (checkboxes is Active) {
-      { onAction(if (isChecked) Uncheck(rule.id) else Check(rule.id)) }
-    } else {
-      null
-    }
-
   Box(modifier = modifier) {
     Row(
-      modifier =
-        Modifier.ruleRow(colors, onOpen = { onAction(Edit(rule.id)) }, onToggle = toggleCheck),
+      modifier = Modifier.ruleRow(colors, onClick = onClick),
       horizontalArrangement = Arrangement.Start,
       verticalAlignment = CenterVertically,
     ) {
-      if (checkboxes is Active) {
+      if (isChecked != null) {
         Checkbox(
           modifier = Modifier.minimumInteractiveComponentSize(),
-          checked = rule.id in checkboxes.ids,
-          onCheckedChange = { toggleCheck?.invoke() },
+          checked = isChecked,
+          onCheckedChange = { onClick() },
           colors = colors.checkbox(),
         )
       }
 
-      ItemContent(rule)
+      ItemContent(rule, query)
     }
 
     if (rule.stage.showBadge()) {
@@ -166,7 +170,7 @@ private fun RuleStageBadge(
 }
 
 @Composable
-private fun RowScope.ItemContent(rule: Rule) {
+private fun RowScope.ItemContent(rule: Rule, query: String) {
   val styles = rememberRuleSpanStyles()
   if (isCompactWidth()) {
     Column(
@@ -174,9 +178,9 @@ private fun RowScope.ItemContent(rule: Rule) {
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = CenterHorizontally,
     ) {
-      ListRulesItemConditions(rule.conditions, styles)
+      ListRulesItemConditions(rule.conditions, styles, query)
       Text("↓", color = colors.tableText)
-      ListRulesItemActions(rule.actions, styles)
+      ListRulesItemActions(rule.actions, styles, query)
     }
   } else {
     Row(
@@ -184,9 +188,9 @@ private fun RowScope.ItemContent(rule: Rule) {
       horizontalArrangement = Arrangement.Center,
       verticalAlignment = CenterVertically,
     ) {
-      ListRulesItemConditions(rule.conditions, styles, modifier = Modifier.weight(1f))
+      ListRulesItemConditions(rule.conditions, styles, query, Modifier.weight(1f))
       Text("→", color = colors.tableText)
-      ListRulesItemActions(rule.actions, styles, modifier = Modifier.weight(1f))
+      ListRulesItemActions(rule.actions, styles, query, Modifier.weight(1f))
     }
   }
 }
@@ -195,6 +199,7 @@ private fun RowScope.ItemContent(rule: Rule) {
 private fun ListRulesItemConditions(
   conditions: ImmutableList<Condition>,
   styles: RuleSpanStyles,
+  query: String,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -211,7 +216,7 @@ private fun ListRulesItemConditions(
       ) {
         val prefix = if (index != 0) "and " else ""
         Text(
-          text = rememberConditionText(prefix, condition, styles),
+          text = rememberConditionText(prefix, condition, styles, query),
           overflow = Ellipsis,
           maxLines = 1,
         )
@@ -224,6 +229,7 @@ private fun ListRulesItemConditions(
 private fun ListRulesItemActions(
   actions: ImmutableList<RuleAction>,
   styles: RuleSpanStyles,
+  query: String,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -238,7 +244,7 @@ private fun ListRulesItemActions(
             .background(colors.pillBackgroundLight, CardShape)
             .padding(horizontal = 5.dp, vertical = 3.dp),
       ) {
-        Text(text = rememberActionText(action, styles), overflow = Ellipsis, maxLines = 1)
+        Text(text = rememberActionText(action, styles, query), overflow = Ellipsis, maxLines = 1)
       }
     }
   }
@@ -253,8 +259,7 @@ internal fun ShimmerListRulesItem(
   val shimmer = rememberShimmer(Window)
 
   Row(
-    modifier =
-      modifier.fillMaxWidth().ruleRow(colors, onOpen = null, onToggle = null).shimmer(shimmer),
+    modifier = modifier.fillMaxWidth().ruleRow(colors, onClick = null).shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = CenterVertically,
   ) {
@@ -299,19 +304,13 @@ internal fun ShimmerListRulesItem(
   }
 }
 
-private fun Modifier.ruleRow(
-  colors: Colors,
-  onOpen: (() -> Unit)?,
-  onToggle: (() -> Unit)?,
-): Modifier {
-  val onClick = onToggle ?: onOpen
-  return fillMaxWidth()
+private fun Modifier.ruleRow(colors: Colors, onClick: (() -> Unit)?): Modifier =
+  fillMaxWidth()
     .clip(RowShape)
     .background(colors.tableBackground, RowShape)
     .border(Hairline, colors.tableBorder, RowShape)
     .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
     .padding(horizontal = 15.dp, vertical = 12.dp)
-}
 
 @Preview
 @Composable

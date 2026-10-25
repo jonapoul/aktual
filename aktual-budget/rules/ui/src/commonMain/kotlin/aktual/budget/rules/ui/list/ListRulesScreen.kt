@@ -20,10 +20,12 @@ import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Deselect
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
+import aktual.core.icons.material.Search
 import aktual.core.icons.material.SelectAll
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditRuleNavigator
+import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
@@ -93,6 +95,7 @@ import kotlinx.collections.immutable.persistentSetOf
 @Composable
 fun ListRulesScreen(
   editRule: EditRuleNavigator,
+  toSearch: SearchRulesNavigator,
   modifier: Modifier = Modifier,
   viewModel: ListRulesViewModel = metroViewModel(),
 ) {
@@ -110,6 +113,7 @@ fun ListRulesScreen(
         when (action) {
           Reload -> viewModel.reload()
           CreateNew -> editRule()
+          OpenSearch -> toSearch()
           is Delete -> pendingDelete = persistentSetOf(action.id)
           is DeleteMultiple -> pendingDelete = action.ids
           is Edit -> editRule(action.id)
@@ -229,6 +233,14 @@ private fun AppBarButtons(
   checkboxes: CheckboxesState,
   onAction: ListRulesActionHandler,
 ) {
+  if (state is Success && checkboxes is Inactive) {
+    BareIconButton(
+      imageVector = MaterialIcons.Search,
+      contentDescription = Strings.rulesToolbarSearch,
+      onClick = { onAction(OpenSearch) },
+    )
+  }
+
   when (checkboxes) {
     is Active -> {
       BareIconButton(

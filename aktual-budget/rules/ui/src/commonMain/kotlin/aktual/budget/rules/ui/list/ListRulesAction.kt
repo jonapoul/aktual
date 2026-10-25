@@ -10,6 +10,8 @@ internal data object Reload : ListRulesAction
 
 internal data object CreateNew : ListRulesAction
 
+internal data object OpenSearch : ListRulesAction
+
 @JvmInline internal value class Delete(val id: RuleId) : ListRulesAction
 
 @JvmInline internal value class DeleteMultiple(val ids: ImmutableSet<RuleId>) : ListRulesAction

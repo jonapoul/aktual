@@ -1,4 +1,4 @@
-@file:Suppress("MagicNumber")
+@file:Suppress("MagicNumber", "LongMethod")
 
 package aktual.budget.rules.ui.list
 
@@ -17,6 +17,7 @@ import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.displayString
 import aktual.budget.rules.ui.string
 import aktual.budget.rules.vm.NameFetcher
+import aktual.budget.rules.vm.label
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -25,6 +26,7 @@ import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.description
+import aktual.core.ui.highlighted
 import aktual.core.ui.redacted
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,15 +50,9 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonPrimitive
+import org.jetbrains.compose.resources.stringResource
 
-@Composable
-internal fun RuleStage.string(): String =
-  when (this) {
-    Pre -> Strings.rulesStagePre
-    Default -> Strings.rulesStageNone
-    Post -> Strings.rulesStagePost
-    Unknown -> Strings.rulesStageUnknown
-  }
+@Composable internal fun RuleStage.string(): String = stringResource(label())
 
 @Composable
 internal fun headerText(onAction: ListRulesActionHandler): AnnotatedString {
@@ -97,6 +93,7 @@ internal fun rememberConditionText(
   prefix: String,
   condition: Condition,
   styles: RuleSpanStyles,
+  query: String = "",
 ): AnnotatedString {
   val fieldText = condition.field.string(condition.options)
   val opText = condition.operator.displayString()
@@ -122,57 +119,59 @@ internal fun rememberConditionText(
       numberFormat,
       currency,
       privacy,
+      query,
     ) {
       buildAnnotatedString {
-        withStyle(styles.default) { append(prefix) }
-        withStyle(styles.highlighted) { append(fieldText) }
-        withStyle(styles.default) {
-          append(" ")
-          append(opText)
-          append(" ")
-        }
-        when (val value = fieldNames ?: condition.value) {
-          is JsonPrimitive -> {
-            withStyle(styles.highlighted) {
-              if (condition.field == Amount) {
-                append(
-                  Amount(value.int)
-                    .toString(
-                      numberFormatConfig = numberFormat,
-                      currencyConfig = currency,
-                      includeSign = true,
-                      isPrivacyEnabled = privacy,
-                    ),
-                )
-              } else {
-                append(value.content)
+          withStyle(styles.default) { append(prefix) }
+          withStyle(styles.highlighted) { append(fieldText) }
+          withStyle(styles.default) {
+            append(" ")
+            append(opText)
+            append(" ")
+          }
+          when (val value = fieldNames ?: condition.value) {
+            is JsonPrimitive -> {
+              withStyle(styles.highlighted) {
+                if (condition.field == Amount) {
+                  append(
+                    Amount(value.int)
+                      .toString(
+                        numberFormatConfig = numberFormat,
+                        currencyConfig = currency,
+                        includeSign = true,
+                        isPrivacyEnabled = privacy,
+                      ),
+                  )
+                } else {
+                  append(value.content)
+                }
               }
             }
-          }
 
-          is JsonArray -> {
-            withStyle(styles.default) { append("[") }
-            value.forEachIndexed { index, element ->
-              withStyle(styles.highlighted) { append(element.jsonPrimitive.content) }
-              if (index != value.lastIndex) {
-                withStyle(styles.default) { append(", ") }
+            is JsonArray -> {
+              withStyle(styles.default) { append("[") }
+              value.forEachIndexed { index, element ->
+                withStyle(styles.highlighted) { append(element.jsonPrimitive.content) }
+                if (index != value.lastIndex) {
+                  withStyle(styles.default) { append(", ") }
+                }
               }
+              withStyle(styles.default) { append("]") }
             }
-            withStyle(styles.default) { append("]") }
-          }
 
-          JsonNull -> {
-            error("Should never see null in a condition's value: $condition")
-          }
-
-          is JsonObject -> {
-            if (condition.field != Date || recurText == null) {
-              error("Should only see a JSON object in a condition value for a date: $condition")
+            JsonNull -> {
+              error("Should never see null in a condition's value: $condition")
             }
-            withStyle(styles.highlighted) { append(recurText) }
+
+            is JsonObject -> {
+              if (condition.field != Date || recurText == null) {
+                error("Should only see a JSON object in a condition value for a date: $condition")
+              }
+              withStyle(styles.highlighted) { append(recurText) }
+            }
           }
         }
-      }
+        .highlighted(query)
     }
     .redacted()
 }
@@ -209,7 +208,11 @@ private fun fieldNamesFlow(condition: Condition, nameFetcher: NameFetcher): Flow
 
 @Composable
 @Suppress("ElseCaseInsteadOfExhaustiveWhen")
-internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): AnnotatedString {
+internal fun rememberActionText(
+  action: RuleAction,
+  styles: RuleSpanStyles,
+  query: String = "",
+): AnnotatedString {
   val opText = action.opString()
   val fieldText = action.field?.string(options = null)
   val setToText = if (action.op == Set) Strings.rulesActionSetTo else null
@@ -254,63 +257,65 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
       numberFormat,
       currency,
       privacy,
+      query,
     ) {
       buildAnnotatedString {
-        val content = action.value?.content.orEmpty()
-        when (action.op) {
-          AppendNotes -> {
-            withStyle(styles.default) {
-              append(opText)
-              append(" ")
+          val content = action.value?.content.orEmpty()
+          when (action.op) {
+            AppendNotes -> {
+              withStyle(styles.default) {
+                append(opText)
+                append(" ")
+              }
+              withStyle(styles.highlighted) { append(content) }
             }
-            withStyle(styles.highlighted) { append(content) }
-          }
-          DeleteTransaction,
-          Unknown -> {
-            withStyle(styles.default) { append(opText) }
-          }
-          LinkSchedule -> {
-            withStyle(styles.default) {
-              append(opText)
-              append(" ")
+            DeleteTransaction,
+            Unknown -> {
+              withStyle(styles.default) { append(opText) }
             }
-            withStyle(styles.highlighted) { append(fieldName) }
-          }
-          PrependNotes -> {
-            withStyle(styles.default) {
-              append(opText)
-              append(" ")
+            LinkSchedule -> {
+              withStyle(styles.default) {
+                append(opText)
+                append(" ")
+              }
+              withStyle(styles.highlighted) { append(fieldName) }
             }
-            withStyle(styles.highlighted) { append(content) }
-          }
-          Set -> {
-            withStyle(styles.default) {
-              append(opText)
-              append(" ")
+            PrependNotes -> {
+              withStyle(styles.default) {
+                append(opText)
+                append(" ")
+              }
+              withStyle(styles.highlighted) { append(content) }
             }
-            withStyle(styles.highlighted) { append(fieldText) }
-            withStyle(styles.default) { append(setToText) }
-            withStyle(styles.highlighted) {
-              if (action.field == Amount) {
+            Set -> {
+              withStyle(styles.default) {
+                append(opText)
+                append(" ")
+              }
+              withStyle(styles.highlighted) { append(fieldText) }
+              withStyle(styles.default) { append(setToText) }
+              withStyle(styles.highlighted) {
+                if (action.field == Amount) {
+                  append(formatAmount(action, numberFormat, currency, privacy))
+                } else if (fieldName != null) {
+                  append(fieldName)
+                } else {
+                  append(content)
+                }
+              }
+            }
+            SetSplitAmount -> {
+              withStyle(styles.default) {
+                append(opText)
+                append(" ")
+              }
+              withStyle(styles.highlighted) {
                 append(formatAmount(action, numberFormat, currency, privacy))
-              } else if (fieldName != null) {
-                append(fieldName)
-              } else {
-                append(content)
               }
             }
           }
-          SetSplitAmount -> {
-            withStyle(styles.default) {
-              append(opText)
-              append(" ")
-            }
-            withStyle(styles.highlighted) {
-              append(formatAmount(action, numberFormat, currency, privacy))
-            }
-          }
         }
-      }
+        .highlighted(query)
     }
     .redacted()
 }
@@ -329,14 +334,4 @@ private fun formatAmount(
       isPrivacyEnabled = privacy,
     )
 
-@Composable
-private fun RuleAction.opString(): String =
-  when (op) {
-    AppendNotes -> Strings.rulesOpAppendNotes
-    DeleteTransaction -> Strings.rulesOpDeleteTransaction
-    LinkSchedule -> Strings.rulesOpLinkSchedule
-    PrependNotes -> Strings.rulesOpPrependNotes
-    Set -> Strings.rulesOpSet
-    SetSplitAmount -> Strings.rulesOpSetSplitAmount
-    Unknown -> Strings.rulesOpUnknown
-  }
+@Composable private fun RuleAction.opString(): String = stringResource(op.label())
