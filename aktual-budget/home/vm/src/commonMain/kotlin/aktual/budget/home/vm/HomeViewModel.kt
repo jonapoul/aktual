@@ -10,6 +10,8 @@ import aktual.budget.reports.vm.pinned.PinnedReports.Companion.MAX_PINNED_REPORT
 import aktual.budget.reports.vm.pinned.ReportPage
 import aktual.core.model.unaryPlus
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,7 +46,8 @@ internal constructor(
   accountsSummaryLoader: AccountsSummaryLoader,
   upcomingSchedulesLoader: UpcomingSchedulesLoader,
   private val pinnedReports: PinnedReports,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private var retries by mutableIntStateOf(0)
 
   val state: StateFlow<HomeState> =
