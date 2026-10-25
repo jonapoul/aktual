@@ -178,8 +178,6 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test fun searchReports() = testSavedStateVM<SearchReportsViewModel>()
 
-  @Test fun searchRules() = testSavedStateVM<SearchRulesViewModel>()
-
   @Test fun searchSchedules() = testSavedStateVM<SearchSchedulesViewModel>()
 
   @Test fun searchTags() = testSavedStateVM<SearchTagsViewModel>()
@@ -252,6 +250,12 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
     }
 
   @Test
+  fun searchRules() =
+    testAssistedVM<SearchRulesViewModel, SearchRulesViewModel.Factory> {
+      create(null, SavedStateHandle())
+    }
+
+  @Test
   fun inspectTheme() =
     testAssistedVM<InspectThemeViewModel, InspectThemeViewModel.Factory> { create(DarkColors.id) }
 
@@ -262,7 +266,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
     testAssistedVM<SearchThemeViewModel, SearchThemeViewModel.Factory> { create(DarkColors.id) }
 
   @Test
-  fun editRule() = testAssistedVM<EditRuleViewModel, EditRuleViewModel.Factory> { create(RULE_ID) }
+  fun editRule() =
+    testAssistedVM<EditRuleViewModel, EditRuleViewModel.Factory> { create(RULE_ID, null) }
 
   protected inline fun <reified VM : ViewModel> testVm() = runTest {
     val viewModelFactory = appGraph.runLevelState.viewModelFactory().first()

@@ -1,5 +1,6 @@
 package aktual.budget.payees.ui.list
 
+import aktual.budget.payees.ui.openRules
 import aktual.budget.payees.vm.list.Empty
 import aktual.budget.payees.vm.list.Failure
 import aktual.budget.payees.vm.list.ListPayeesState
@@ -11,7 +12,9 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.l10n.Strings
+import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchPayeesNavigator
+import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
@@ -53,6 +56,8 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 internal fun ListPayeesScreen(
   toSearch: SearchPayeesNavigator,
+  editRule: EditRuleNavigator,
+  searchRules: SearchRulesNavigator,
   modifier: Modifier = Modifier,
   viewModel: ListPayeesViewModel = metroViewModel(),
 ) {
@@ -65,6 +70,7 @@ internal fun ListPayeesScreen(
       when (action) {
         Retry -> viewModel.retry()
         OpenSearch -> toSearch()
+        is OpenRules -> openRules(action.payee, editRule, searchRules)
       }
     },
   )
@@ -156,7 +162,13 @@ private fun ListPayeesContent(
         background = colors.tableBackground,
       )
 
-    is Success -> PayeesList(payees = state.payees, listState = listState, contentPadding = padding)
+    is Success ->
+      PayeesList(
+        payees = state.payees,
+        listState = listState,
+        contentPadding = padding,
+        onAction = onAction,
+      )
   }
 }
 
@@ -165,6 +177,7 @@ private fun PayeesList(
   payees: ImmutableList<PayeeItem>,
   listState: LazyListState,
   contentPadding: PaddingValues,
+  onAction: ListPayeesActionHandler,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
@@ -174,7 +187,11 @@ private fun PayeesList(
     verticalArrangement = Arrangement.spacedBy(ListPayeesDS.listItemSpacing),
   ) {
     items(payees, key = { it.id.value }) { payee ->
-      PayeeItem(modifier = Modifier.animateItem(), payee = payee)
+      PayeeItem(
+        modifier = Modifier.animateItem(),
+        payee = payee,
+        onClickRules = { onAction(OpenRules(payee)) },
+      )
     }
 
     item { BottomSpacing() }

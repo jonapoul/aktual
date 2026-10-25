@@ -6,6 +6,7 @@ kotlin {
     api(project(":aktual-budget:data:db"))
     api(project(":aktual-core"))
     api(project(":aktual-core:l10n"))
+    implementation(project(":aktual-budget:rules:domain"))
   }
 
   commonTestDependencies {

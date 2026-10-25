@@ -18,6 +18,7 @@ import aktual.core.ui.RowShape
 import aktual.core.ui.rememberHighlighted
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,7 +40,12 @@ import com.valentinilk.shimmer.shimmer
 
 /** Keep in sync with [ShimmerPayeeItem] */
 @Composable
-internal fun PayeeItem(payee: PayeeItem, modifier: Modifier = Modifier, query: String = "") {
+internal fun PayeeItem(
+  payee: PayeeItem,
+  onClickRules: () -> Unit,
+  modifier: Modifier = Modifier,
+  query: String = "",
+) {
   Row(
     modifier =
       modifier
@@ -83,15 +89,19 @@ internal fun PayeeItem(payee: PayeeItem, modifier: Modifier = Modifier, query: S
       )
     }
 
-    RuleCountChip(numRules = payee.numRules)
+    RuleCountChip(numRules = payee.numRules, onClick = onClickRules)
   }
 }
 
 @Composable
-private fun RuleCountChip(numRules: Int, modifier: Modifier = Modifier) {
+private fun RuleCountChip(numRules: Int, onClick: () -> Unit, modifier: Modifier = Modifier) {
   Box(
     modifier =
-      modifier.background(colors.noticeBackground, CardShape).padding(ListPayeesDS.ruleChipPadding),
+      modifier
+        .clip(CardShape)
+        .background(colors.noticeBackground)
+        .clickable(onClick = onClick)
+        .padding(ListPayeesDS.ruleChipPadding),
     contentAlignment = Center,
   ) {
     Text(
@@ -153,7 +163,7 @@ private class PayeeItemProvider : ColoredParameterProvider<PayeeItem>(PayeesPrev
 @Composable
 private fun PreviewPayeeItem(
   @PreviewParameter(PayeeItemProvider::class) params: ColoredParams<PayeeItem>,
-) = PreviewWithColoredParams(params) { PayeeItem(payee = this) }
+) = PreviewWithColoredParams(params) { PayeeItem(payee = this, onClickRules = {}) }
 
 @Preview
 @Composable

@@ -4,6 +4,7 @@ import aktual.budget.payees.ui.list.ListPayeesDS
 import aktual.budget.payees.ui.list.PayeeItem
 import aktual.budget.payees.ui.list.PayeesPreview
 import aktual.budget.payees.ui.list.ShimmerPayeeItem
+import aktual.budget.payees.ui.openRules
 import aktual.budget.payees.vm.search.SearchPayeesState
 import aktual.budget.payees.vm.search.SearchPayeesState.Failure
 import aktual.budget.payees.vm.search.SearchPayeesState.Results
@@ -13,6 +14,8 @@ import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.EditRuleNavigator
+import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -47,6 +50,8 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun SearchPayeesScreen(
   back: BackNavigator,
+  editRule: EditRuleNavigator,
+  searchRules: SearchRulesNavigator,
   viewModel: SearchPayeesViewModel = metroViewModel(),
 ) {
   val query by viewModel.query.collectAsStateWithLifecycle()
@@ -60,6 +65,7 @@ internal fun SearchPayeesScreen(
         NavBack -> back()
         Retry -> viewModel.retry()
         is SetQuery -> viewModel.setQuery(action.query)
+        is OpenRules -> openRules(action.payee, editRule, searchRules)
       }
     },
   )
@@ -112,7 +118,8 @@ private fun SearchPayeesScaffold(
               ),
           )
 
-        is Results -> ResultsList(results = animatedState, listState = listState)
+        is Results ->
+          ResultsList(results = animatedState, listState = listState, onAction = onAction)
       }
     }
   }
@@ -122,6 +129,7 @@ private fun SearchPayeesScaffold(
 private fun ResultsList(
   results: Results,
   listState: LazyListState,
+  onAction: SearchPayeesActionHandler,
   modifier: Modifier = Modifier,
 ) =
   LazyColumn(
@@ -131,7 +139,12 @@ private fun ResultsList(
     verticalArrangement = Arrangement.spacedBy(ListPayeesDS.listItemSpacing),
   ) {
     items(results.payees, key = { it.id.value }) { payee ->
-      PayeeItem(modifier = Modifier.animateItem(), payee = payee, query = results.query)
+      PayeeItem(
+        modifier = Modifier.animateItem(),
+        payee = payee,
+        query = results.query,
+        onClickRules = { onAction(OpenRules(payee)) },
+      )
     }
 
     item(key = "bottom") { BottomSpacing() }

@@ -5,6 +5,7 @@ import aktual.budget.db.Rules
 import aktual.budget.db.dao.RulesDao
 import aktual.budget.model.Condition
 import aktual.budget.model.Field
+import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
@@ -126,6 +127,60 @@ class SearchRulesViewModelTest {
     }
   }
 
+  @Test
+  fun `A payee filter lists its rules without a query`() = runDatabaseTest { scope ->
+    insertRule(id = "a", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p1"))))
+    insertRule(id = "b", conditions = listOf(Condition(Payee, OneOf, ids("p2", "p3"))))
+    insertRule(
+      id = "c",
+      conditions = listOf(notesDoNotContain("x")),
+      actions =
+        listOf(RuleAction(value = JsonPrimitive("p3"), op = RuleAction.Op.Set, field = Payee)),
+    )
+    val viewModel = createViewModel(scope, payee = PayeeId("p3"))
+
+    viewModel.payeeName.test { assertThat(awaitNonNull()).isEqualTo("landlord ltd") }
+    viewModel.state.test {
+      assertThat(awaitResults()).extracting { it.id.value }.containsExactly("b", "c")
+    }
+  }
+
+  @Test
+  fun `A payee filter narrows the query matches`() = runDatabaseTest { scope ->
+    insertRule(id = "a", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p1"))))
+    insertRule(id = "b", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p3"))))
+    val viewModel = createViewModel(scope, payee = PayeeId("p1"))
+
+    viewModel.setQuery("landlord")
+
+    viewModel.state.test {
+      assertThat(awaitResults()).extracting { it.id.value }.containsExactly("a")
+    }
+  }
+
+  @Test
+  fun `Clearing the payee filter prompts for input`() = runDatabaseTest { scope ->
+    insertRule(id = "a", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p1"))))
+    val viewModel = createViewModel(scope, payee = PayeeId("p1"))
+
+    viewModel.state.test {
+      awaitResults()
+      viewModel.clearPayee()
+      var state = awaitItem()
+      while (state != NoQuery) state = awaitItem()
+    }
+    viewModel.payeeName.test {
+      var name = awaitItem()
+      while (name != null) name = awaitItem()
+    }
+  }
+
+  private suspend fun ReceiveTurbine<String?>.awaitNonNull(): String {
+    var name = awaitItem()
+    while (name == null) name = awaitItem()
+    return name
+  }
+
   private suspend fun ReceiveTurbine<SearchRulesState>.awaitResults(): List<Rule> {
     var state = awaitItem()
     while (state !is Results) state = awaitItem()
@@ -154,9 +209,13 @@ class SearchRulesViewModelTest {
         ),
       )
 
-  private fun BudgetDatabase.createViewModel(scope: TestScope): SearchRulesViewModel {
+  private fun BudgetDatabase.createViewModel(
+    scope: TestScope,
+    payee: PayeeId? = null,
+  ): SearchRulesViewModel {
     Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     return SearchRulesViewModel(
+      initialPayee = payee,
       savedState = SavedStateHandle(),
       loader = RulesLoader(RulesDao(this)),
       searchText = RuleSearchText(FakeNameFetcher, FakeStringLookup),

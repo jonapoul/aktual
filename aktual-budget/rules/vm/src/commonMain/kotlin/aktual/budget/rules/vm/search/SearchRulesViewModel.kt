@@ -1,5 +1,8 @@
 package aktual.budget.rules.vm.search
 
+import aktual.budget.model.PayeeId
+import aktual.budget.rules.domain.TransactionRule
+import aktual.budget.rules.domain.payeeIds
 import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.RuleSearchText
@@ -11,20 +14,21 @@ import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactoryKey
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -34,28 +38,48 @@ import logcat.logcat
 @AssistedInject
 class SearchRulesViewModel
 internal constructor(
+  @Assisted initialPayee: PayeeId?,
   @Assisted private val savedState: SavedStateHandle,
   private val loader: RulesLoader,
   private val searchText: RuleSearchText,
   val nameFetcher: NameFetcher,
 ) : ViewModel() {
   @AssistedFactory
-  @ViewModelAssistedFactoryKey(SearchRulesViewModel::class)
+  @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)
-  fun interface Factory : ViewModelAssistedFactory {
-    override fun create(extras: CreationExtras): SearchRulesViewModel =
-      create(extras.createSavedStateHandle())
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted initialPayee: PayeeId?,
+      @Assisted savedState: SavedStateHandle,
+    ): SearchRulesViewModel
+  }
 
-    fun create(@Assisted savedState: SavedStateHandle): SearchRulesViewModel
+  init {
+    // Only the first time, so clearing the filter survives process death
+    if (KEY_PAYEE !in savedState) savedState[KEY_PAYEE] = initialPayee?.value
   }
 
   val query: StateFlow<String> = savedState.getStateFlow(KEY_QUERY, initialValue = "")
+
+  private val payee: StateFlow<PayeeId?> =
+    savedState
+      .getStateFlow<String?>(KEY_PAYEE, initialValue = null)
+      .map { it?.let(::PayeeId) }
+      .stateIn(viewModelScope, Eagerly, initialValue = null)
+
+  // The name of the payee the results are filtered to, or null when there's no filter
+  val payeeName: StateFlow<String?> =
+    payee
+      .flatMapLatest { id ->
+        if (id == null) flowOf(null) else nameFetcher.name(Payee, id.value).map { it.orEmpty() }
+      }
+      .stateIn(viewModelScope, Eagerly, initialValue = null)
 
   private val rules = MutableStateFlow<List<SearchableRule>?>(null)
   private val failure = MutableStateFlow<String?>(null)
 
   val state: StateFlow<SearchRulesState> =
-    combine(query, rules, failure, ::search)
+    combine(query, payee, rules, failure, ::search)
       .stateIn(viewModelScope, Eagerly, initialValue = NoQuery)
 
   init {
@@ -66,7 +90,10 @@ internal constructor(
     failure.update { null }
     viewModelScope.launch {
       try {
-        val loaded = loader.load().map { SearchableRule(it, searchText.of(it)) }
+        val loaded =
+          loader.load().map { rule ->
+            SearchableRule(rule, searchText.of(rule), rule.toTransactionRule().payeeIds())
+          }
         rules.update { loaded }
       } catch (e: CancellationException) {
         throw e
@@ -81,17 +108,27 @@ internal constructor(
     savedState[KEY_QUERY] = query
   }
 
+  fun clearPayee() {
+    savedState[KEY_PAYEE] = null
+  }
+
   private fun search(
     query: String,
+    payee: PayeeId?,
     rules: List<SearchableRule>?,
     failure: String?,
   ): SearchRulesState {
     if (failure != null) return Failure(failure)
     val trimmed = query.trim()
-    if (trimmed.isEmpty()) return NoQuery
+    if (trimmed.isEmpty() && payee == null) return NoQuery
     if (rules == null) return Loading
 
-    val matching = rules.filter { it.text.contains(trimmed, ignoreCase = true) }.map { it.rule }
+    val matching =
+      rules
+        .filter {
+          (payee == null || payee in it.payees) && it.text.contains(trimmed, ignoreCase = true)
+        }
+        .map { it.rule }
     return if (matching.isEmpty()) {
       NoResults
     } else {
@@ -99,9 +136,13 @@ internal constructor(
     }
   }
 
-  private data class SearchableRule(val rule: Rule, val text: String)
+  private fun Rule.toTransactionRule() =
+    TransactionRule(id = id, conditions = conditions, actions = actions)
+
+  private data class SearchableRule(val rule: Rule, val text: String, val payees: Set<PayeeId>)
 
   private companion object {
     const val KEY_QUERY = "query"
+    const val KEY_PAYEE = "payee"
   }
 }

@@ -10,7 +10,9 @@ import aktual.budget.model.ConditionOp
 import aktual.budget.model.Field
 import aktual.budget.model.LocalChange
 import aktual.budget.model.Operator
+import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction
+import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.localChange
@@ -50,12 +52,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonPrimitive
 import logcat.logcat
 
 @Stable
 @AssistedInject
 class EditRuleViewModel(
   @Assisted private val ruleId: RuleId?,
+  @Assisted private val payee: PayeeId?,
   private val uuidGenerator: UuidGenerator,
   private val rulesDao: RulesDao,
   private val syncController: BudgetSyncController,
@@ -94,7 +98,7 @@ class EditRuleViewModel(
 
     viewModelScope.launch {
       if (ruleId == null) {
-        mutableRule.update { emptyRule() }
+        mutableRule.update { if (payee == null) emptyRule() else payeeRule(payee) }
         mutableIsLoading.update { false }
         return@launch
       }
@@ -224,6 +228,17 @@ class EditRuleViewModel(
       actions = persistentListOf(emptyAction()),
     )
 
+  // Matches upstream's "Create rule" from the payees screen
+  private fun payeeRule(payee: PayeeId) =
+    emptyRule()
+      .copy(
+        conditions =
+          persistentListOf(
+            Condition(field = Payee, operator = Is, type = Id, value = JsonPrimitive(payee.value)),
+          ),
+        actions = persistentListOf(RuleAction(value = null, op = Set, field = Category, type = Id)),
+      )
+
   private fun emptyCondition() =
     Condition(field = Payee, operator = Is, type = Id, value = JsonNull)
 
@@ -258,6 +273,6 @@ class EditRuleViewModel(
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)
   interface Factory : ManualViewModelAssistedFactory {
-    fun create(ruleId: RuleId?): EditRuleViewModel
+    fun create(ruleId: RuleId?, payee: PayeeId?): EditRuleViewModel
   }
 }

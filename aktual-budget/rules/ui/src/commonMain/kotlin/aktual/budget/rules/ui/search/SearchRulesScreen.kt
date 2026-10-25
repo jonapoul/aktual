@@ -1,5 +1,6 @@
 package aktual.budget.rules.ui.search
 
+import aktual.budget.model.PayeeId
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.ui.PreviewRule2
@@ -23,6 +24,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.RemovableChip
 import aktual.core.ui.ScrollToTopOnNewQuery
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SearchScaffold
@@ -47,26 +49,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.zacsweers.metrox.viewmodel.metroViewModel
+import androidx.lifecycle.createSavedStateHandle
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun SearchRulesScreen(
+  payee: PayeeId?,
   back: BackNavigator,
   editRule: EditRuleNavigator,
-  viewModel: SearchRulesViewModel = metroViewModel(),
+  viewModel: SearchRulesViewModel = metroViewModel(payee),
 ) {
   val query by viewModel.query.collectAsStateWithLifecycle()
+  val payeeName by viewModel.payeeName.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
 
   CompositionLocalProvider(LocalNameFetcher provides viewModel.nameFetcher) {
     SearchRulesScaffold(
       query = query,
+      payeeName = payeeName,
       state = state,
       onAction = { action ->
         when (action) {
           NavBack -> back()
           Reload -> viewModel.reload()
+          ClearPayee -> viewModel.clearPayee()
           is SetQuery -> viewModel.setQuery(action.query)
           is OpenRule -> editRule(action.id)
         }
@@ -76,8 +83,16 @@ internal fun SearchRulesScreen(
 }
 
 @Composable
+private fun metroViewModel(payee: PayeeId?) =
+  assistedMetroViewModel<SearchRulesViewModel, SearchRulesViewModel.Factory>(
+    key = payee.toString(),
+    createViewModel = { extras -> create(payee, extras.createSavedStateHandle()) },
+  )
+
+@Composable
 private fun SearchRulesScaffold(
   query: String,
+  payeeName: String?,
   state: SearchRulesState,
   onAction: SearchRulesActionHandler,
   modifier: Modifier = Modifier,
@@ -93,38 +108,62 @@ private fun SearchRulesScaffold(
     onQueryChange = { onAction(SetQuery(it)) },
     onBack = { onAction(NavBack) },
   ) { innerPadding ->
-    AnimatedContent(
-      modifier = Modifier.padding(innerPadding),
-      targetState = state,
-      contentKey = { it::class },
-      transitionSpec = { fadeIn() togetherWith fadeOut() },
-    ) { animatedState ->
-      when (animatedState) {
-        NoQuery -> SearchMessage(text = Strings.rulesSearchPrompt)
-
-        Loading -> ShimmerResults()
-
-        NoResults ->
-          SearchMessage(
-            icon = MaterialIcons.SearchOff,
-            text = Strings.rulesSearchNoResults(query.trim()),
-          )
-
-        is Failure ->
-          FailureScreen(
-            title = Strings.rulesFailurePrefix,
-            reason = animatedState.cause ?: Strings.rulesFailureDefaultMessage,
-            action =
-              FailureAction(
-                text = { Strings.syncRetry },
-                icon = MaterialIcons.Refresh,
-                onClick = { onAction(Reload) },
-              ),
-          )
-
-        is Results ->
-          ResultsList(results = animatedState, listState = listState, onAction = onAction)
+    Column(modifier = Modifier.padding(innerPadding)) {
+      if (payeeName != null) {
+        RemovableChip(
+          modifier = Modifier.padding(horizontal = Dimens.Large, vertical = Dimens.Medium),
+          text = payeeName,
+          removeDescription = Strings.rulesSearchPayeeRemove(payeeName),
+          onRemove = { onAction(ClearPayee) },
+        )
       }
+
+      SearchRulesContent(query = query, state = state, listState = listState, onAction = onAction)
+    }
+  }
+}
+
+@Composable
+private fun SearchRulesContent(
+  query: String,
+  state: SearchRulesState,
+  listState: LazyListState,
+  onAction: SearchRulesActionHandler,
+) {
+  AnimatedContent(
+    targetState = state,
+    contentKey = { it::class },
+    transitionSpec = { fadeIn() togetherWith fadeOut() },
+  ) { animatedState ->
+    when (animatedState) {
+      NoQuery -> SearchMessage(text = Strings.rulesSearchPrompt)
+
+      Loading -> ShimmerResults()
+
+      NoResults ->
+        SearchMessage(
+          icon = MaterialIcons.SearchOff,
+          text =
+            if (query.isBlank()) {
+              Strings.rulesSearchPayeeNoResults
+            } else {
+              Strings.rulesSearchNoResults(query.trim())
+            },
+        )
+
+      is Failure ->
+        FailureScreen(
+          title = Strings.rulesFailurePrefix,
+          reason = animatedState.cause ?: Strings.rulesFailureDefaultMessage,
+          action =
+            FailureAction(
+              text = { Strings.syncRetry },
+              icon = MaterialIcons.Refresh,
+              onClick = { onAction(Reload) },
+            ),
+        )
+
+      is Results -> ResultsList(results = animatedState, listState = listState, onAction = onAction)
     }
   }
 }
@@ -171,14 +210,23 @@ private fun PreviewSearchRulesScaffold(
   @PreviewParameter(SearchRulesScaffoldProvider::class) params: ColoredParams<SearchRulesParams>,
 ) =
   PreviewWithColoredParams(params) {
-    SearchRulesScaffold(query = query, state = state, onAction = {})
+    SearchRulesScaffold(query = query, payeeName = payeeName, state = state, onAction = {})
   }
 
-private data class SearchRulesParams(val query: String, val state: SearchRulesState)
+private data class SearchRulesParams(
+  val query: String,
+  val state: SearchRulesState,
+  val payeeName: String? = null,
+)
 
 private class SearchRulesScaffoldProvider :
   ColoredParameterProvider<SearchRulesParams>(
     SearchRulesParams(query = "", state = NoQuery),
+    SearchRulesParams(
+      query = "",
+      state = Results(query = "", rules = persistentListOf(PreviewRule1)),
+      payeeName = "Tesco",
+    ),
     SearchRulesParams(query = "dummy1", state = Loading),
     SearchRulesParams(query = "xyz", state = NoResults),
     SearchRulesParams(query = "dummy2", state = Failure("Database connection lost")),

@@ -3,6 +3,7 @@ package aktual.budget.navrail.ui
 import aktual.budget.model.AccountId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.DashboardPageId
+import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
@@ -30,6 +31,7 @@ import aktual.core.nav.ReportNavRoute
 import aktual.core.nav.ReportsListNavRoute
 import aktual.core.nav.SearchPayeesNavRoute
 import aktual.core.nav.SearchReportsNavRoute
+import aktual.core.nav.SearchRulesNavRoute
 import aktual.core.nav.SearchTagsNavRoute
 import aktual.core.nav.TransactionNavRoute
 import aktual.core.nav.TransactionsNavRoute
@@ -64,7 +66,9 @@ class BudgetNavKeyStackSaverTest {
         SearchReportsNavRoute,
         ListRulesNavRoute,
         EditRuleNavRoute(RuleId("rule")),
-        CreateRuleNavRoute,
+        CreateRuleNavRoute(),
+        CreateRuleNavRoute(PayeeId("payee")),
+        SearchRulesNavRoute(PayeeId("payee")),
         ListSchedulesNavRoute,
         CreateScheduleNavRoute,
         EditScheduleNavRoute(ScheduleId("schedule")),

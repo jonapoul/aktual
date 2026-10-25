@@ -6,41 +6,32 @@ import aktual.budget.reports.vm.ConditionValueKind
 import aktual.budget.reports.vm.QueryEntity
 import aktual.budget.reports.vm.toDayOrNull
 import aktual.core.icons.material.Add
-import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Search
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
-import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.RemovableChip
 import aktual.core.ui.TonalButton
 import aktual.core.ui.scrollbar
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -70,7 +61,7 @@ internal fun ConditionValue(
 
     EntityList -> EntityListPicker(value as JsonArray, entities, names, onChange)
 
-    ConditionValueKind.Text ->
+    Text ->
       CommitTextField(
         modifier = Modifier.fillMaxWidth(),
         text = value.jsonPrimitive.content,
@@ -154,8 +145,10 @@ private fun EntityListPicker(
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
         ids.fastForEach { id ->
-          EntityChip(
-            name = names.nameOf(id),
+          val name = names.nameOf(id)
+          RemovableChip(
+            text = name,
+            removeDescription = Strings.reportsFormulaQueryRemove(name),
             onRemove = { onChange(JsonArray(ids.minus(id).map(::JsonPrimitive))) },
           )
         }
@@ -178,24 +171,6 @@ private fun EntityListPicker(
         onDismiss = { showSheet = false },
       )
     }
-  }
-
-@Composable
-private fun EntityChip(name: String, onRemove: () -> Unit) =
-  Row(
-    modifier =
-      Modifier.heightIn(min = 34.dp)
-        .background(colors.pillBackground, CircleShape)
-        .padding(start = 12.dp, end = 2.dp),
-    verticalAlignment = CenterVertically,
-  ) {
-    Text(text = name, style = typography.bodyMedium, color = colors.pillText)
-    BareIconButton(
-      imageVector = MaterialIcons.Clear,
-      contentDescription = Strings.reportsFormulaQueryRemove(name),
-      size = 16.dp,
-      onClick = onRemove,
-    )
   }
 
 // A list sheet with a search field, since there can be hundreds of payees

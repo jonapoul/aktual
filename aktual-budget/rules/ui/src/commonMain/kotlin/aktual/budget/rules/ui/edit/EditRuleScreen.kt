@@ -1,5 +1,6 @@
 package aktual.budget.rules.ui.edit
 
+import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.rules.ui.LocalEntityListFetcher
@@ -77,9 +78,10 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 @Composable
 internal fun EditRuleScreen(
   id: RuleId?,
+  payee: PayeeId?,
   back: BackNavigator,
   modifier: Modifier = Modifier,
-  viewModel: EditRuleViewModel = metroViewModel(id),
+  viewModel: EditRuleViewModel = metroViewModel(id, payee),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -118,9 +120,9 @@ internal fun EditRuleScreen(
 }
 
 @Composable
-private fun metroViewModel(id: RuleId?) =
-  assistedMetroViewModel<EditRuleViewModel, EditRuleViewModel.Factory>(key = id.toString()) {
-    create(id)
+private fun metroViewModel(id: RuleId?, payee: PayeeId?) =
+  assistedMetroViewModel<EditRuleViewModel, EditRuleViewModel.Factory>(key = "$id-$payee") {
+    create(id, payee)
   }
 
 @Composable

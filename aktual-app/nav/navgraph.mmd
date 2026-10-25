@@ -143,6 +143,10 @@ flowchart TD
   searchTags --tap tag--> editTag
 
   listPayees --tap search--> searchPayees
+  listPayees --tap rule chip, no rules--> createRule
+  listPayees --tap rule chip--> searchRules
+  searchPayees --tap rule chip, no rules--> createRule
+  searchPayees --tap rule chip--> searchRules
 
   listSchedules --tap schedule--> editSchedule
   listSchedules --tap search--> searchSchedules

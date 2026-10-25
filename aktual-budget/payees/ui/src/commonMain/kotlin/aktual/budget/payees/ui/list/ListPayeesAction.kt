@@ -1,5 +1,6 @@
 package aktual.budget.payees.ui.list
 
+import aktual.budget.payees.vm.list.PayeeItem
 import androidx.compose.runtime.Immutable
 
 internal sealed interface ListPayeesAction
@@ -7,6 +8,8 @@ internal sealed interface ListPayeesAction
 internal data object Retry : ListPayeesAction
 
 internal data object OpenSearch : ListPayeesAction
+
+@JvmInline internal value class OpenRules(val payee: PayeeItem) : ListPayeesAction
 
 @Immutable
 internal fun interface ListPayeesActionHandler {

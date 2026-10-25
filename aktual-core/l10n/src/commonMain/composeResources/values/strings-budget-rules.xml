@@ -6,6 +6,8 @@
   <string name="rules_search_placeholder">Search rules</string>
   <string name="rules_search_prompt">Enter some text to search rule conditions and actions</string>
   <string name="rules_search_no_results">No rules match “%1$s”</string>
+  <string name="rules_search_payee_no_results">No rules refer to this payee</string>
+  <string name="rules_search_payee_remove">Stop filtering by %1$s</string>
 
   <string name="rules_failure_prefix">Failed loading rules</string>
   <string name="rules_failure_default_message">Unknown cause</string>
