@@ -107,6 +107,8 @@ internal fun EditPayeeScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val isFavorite by viewModel.isFavorite.collectAsStateWithLifecycle()
+  val learnsCategories by viewModel.learnsCategories.collectAsStateWithLifecycle()
+  val isLearningEnabled by viewModel.isLearningEnabled.collectAsStateWithLifecycle()
   val hasUnsavedChanges by viewModel.hasUnsavedChanges.collectAsStateWithLifecycle()
   val canSave by viewModel.canSave.collectAsStateWithLifecycle()
   val isDuplicateName by viewModel.isDuplicateName.collectAsStateWithLifecycle()
@@ -124,6 +126,8 @@ internal fun EditPayeeScreen(
     modifier = modifier,
     state = state,
     isFavorite = isFavorite,
+    learnsCategories = learnsCategories,
+    isLearningEnabled = isLearningEnabled,
     hasChanges = hasUnsavedChanges,
     canSave = canSave,
     isDuplicateName = isDuplicateName,
@@ -135,6 +139,7 @@ internal fun EditPayeeScreen(
         DismissSaveError -> viewModel.dismissSaveError()
         is SetName -> viewModel.setName(action.name)
         is SetFavorite -> viewModel.setFavorite(action.isFavorite)
+        is SetLearnCategories -> viewModel.setLearnCategories(action.learn)
         is OpenRules -> openRules(action.payee, editRule, searchRules)
         is OpenTransactions -> toTransactions(action.title, payeeFilter(id))
       }
@@ -165,6 +170,8 @@ private fun EditPayeeScaffold(
   canSave: Boolean,
   onAction: EditPayeeActionHandler,
   modifier: Modifier = Modifier,
+  learnsCategories: Boolean = false,
+  isLearningEnabled: Boolean = false,
   isDuplicateName: Boolean = false,
   saveError: String? = null,
 ) {
@@ -213,6 +220,8 @@ private fun EditPayeeScaffold(
             payee = state.payee,
             nameState = nameState,
             isFavorite = isFavorite,
+            learnsCategories = learnsCategories,
+            isLearningEnabled = isLearningEnabled,
             isDuplicateName = isDuplicateName,
             scrollState = scrollState,
             contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
@@ -322,6 +331,8 @@ private fun EditPayeeContent(
   payee: PayeeItem,
   nameState: TextFieldState,
   isFavorite: Boolean,
+  learnsCategories: Boolean,
+  isLearningEnabled: Boolean,
   isDuplicateName: Boolean,
   scrollState: ScrollState,
   contentPadding: PaddingValues,
@@ -355,26 +366,22 @@ private fun EditPayeeContent(
       )
     }
 
-    Row(
-      horizontalArrangement = Arrangement.spacedBy(EditPayeeDS.switchSpacing),
-      verticalAlignment = CenterVertically,
-    ) {
-      Column(
-        modifier = Modifier.weight(1f),
-        verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing),
-      ) {
-        Text(text = Strings.payeesFavorite, style = typography.labelLarge, color = colors.pageText)
-        Text(
-          text = Strings.payeesEditFavoriteHelp,
-          style = typography.bodySmall,
-          color = colors.pageTextSubdued,
-        )
-      }
-      Switch(
-        checked = isFavorite,
-        onCheckedChange = { onAction(SetFavorite(it)) },
+    SwitchRow(
+      label = Strings.payeesFavorite,
+      help = Strings.payeesEditFavoriteHelp,
+      checked = isFavorite,
+      onCheckedChange = { onAction(SetFavorite(it)) },
+      enabled = !payee.isTransfer,
+    )
+
+    // Upstream only offers the per-payee switch while the global pref is on
+    if (isLearningEnabled) {
+      SwitchRow(
+        label = Strings.payeesEditLearnLabel,
+        help = Strings.payeesEditLearnHelp,
+        checked = learnsCategories,
+        onCheckedChange = { onAction(SetLearnCategories(it)) },
         enabled = !payee.isTransfer,
-        colors = colors.switch(),
       )
     }
 
@@ -391,6 +398,34 @@ private fun EditPayeeContent(
     }
 
     BottomSpacing()
+  }
+}
+
+@Composable
+private fun SwitchRow(
+  label: String,
+  help: String,
+  checked: Boolean,
+  onCheckedChange: (Boolean) -> Unit,
+  enabled: Boolean,
+) {
+  Row(
+    horizontalArrangement = Arrangement.spacedBy(EditPayeeDS.switchSpacing),
+    verticalAlignment = CenterVertically,
+  ) {
+    Column(
+      modifier = Modifier.weight(1f),
+      verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing),
+    ) {
+      Text(text = label, style = typography.labelLarge, color = colors.pageText)
+      Text(text = help, style = typography.bodySmall, color = colors.pageTextSubdued)
+    }
+    Switch(
+      checked = checked,
+      onCheckedChange = onCheckedChange,
+      enabled = enabled,
+      colors = colors.switch(),
+    )
   }
 }
 
@@ -454,6 +489,8 @@ private fun PreviewEditPayeeScreen(
     EditPayeeScaffold(
       state = this,
       isFavorite = (this as? Editing)?.payee?.isFavorite == true,
+      learnsCategories = (this as? Editing)?.payee?.learnsCategories == true,
+      isLearningEnabled = true,
       hasChanges = false,
       canSave = true,
       onAction = {},

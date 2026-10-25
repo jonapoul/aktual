@@ -39,6 +39,7 @@ private val aktualIcons =
       Git,
       Key,
       LeftArrow2,
+      LightBulb,
       OpenBracket,
       Reports,
       RightArrow2,

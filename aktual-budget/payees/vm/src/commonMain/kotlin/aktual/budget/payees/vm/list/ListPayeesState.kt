@@ -13,8 +13,12 @@ data object Loading : ListPayeesState
 data object Empty : ListPayeesState
 
 // payees holds every payee, so merging can pick any of them, and shown is what the list displays
-data class Success(val payees: ImmutableList<PayeeItem>, val unusedOnly: Boolean = false) :
-  ListPayeesState {
+// isLearningEnabled is the global learn-categories pref
+data class Success(
+  val payees: ImmutableList<PayeeItem>,
+  val unusedOnly: Boolean = false,
+  val isLearningEnabled: Boolean = true,
+) : ListPayeesState {
   val numUnused: Int = payees.count { it.isUnused }
   val shown: ImmutableList<PayeeItem> =
     if (unusedOnly) payees.filter { it.isUnused }.toImmutableList() else payees

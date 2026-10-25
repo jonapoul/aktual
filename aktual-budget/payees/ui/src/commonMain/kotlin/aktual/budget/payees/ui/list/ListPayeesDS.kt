@@ -10,6 +10,7 @@ internal object ListPayeesDS {
   val itemHorizontalSpacing = 8.dp
   val itemContentSpacing = 2.dp
   val favoriteIconSize = 16.dp
+  val learningIconSize = 12.dp
   val ruleChipPadding = PaddingValues(horizontal = 6.dp, vertical = 3.dp)
   val filterChipPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
   val filterChipMinHeight = 28.dp

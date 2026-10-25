@@ -3,6 +3,7 @@ package aktual.budget.payees.vm.edit
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Payees
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.RuleContextDao
 import aktual.budget.db.dao.RulesDao
 import aktual.budget.db.withoutResult
@@ -10,12 +11,14 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
+import aktual.budget.payees.domain.CategoryLearningPref
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.rules.domain.PayeeRuleCounter
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
+import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import app.cash.turbine.test
 import assertk.all
@@ -78,6 +81,12 @@ class EditPayeeViewModelTest {
 
       viewModel.setFavorite(true)
       assertThatNextEmissionIsEqualTo(true)
+
+      viewModel.setFavorite(false)
+      assertThatNextEmissionIsEqualTo(false)
+
+      viewModel.setLearnCategories(false)
+      assertThatNextEmissionIsEqualTo(true)
     }
   }
 
@@ -128,33 +137,37 @@ class EditPayeeViewModelTest {
   }
 
   @Test
-  fun `Saving renames and favourites the payee, then finishes`() = runDatabaseTest { scope ->
-    // given
-    val payees = PayeeDao(this)
-    payees.insert(TESCO.id, TESCO.name)
-    val sync = TestSyncController()
-    val viewModel = createViewModel(scope, TESCO.id, sync).awaitLoaded()
+  fun `Saving renames, favourites and stops learning for the payee, then finishes`() =
+    runDatabaseTest { scope ->
+      // given
+      val payees = PayeeDao(this)
+      payees.insert(TESCO.id, TESCO.name)
+      val sync = TestSyncController()
+      val viewModel = createViewModel(scope, TESCO.id, sync).awaitLoaded()
 
-    // when
-    viewModel.setName(" Tesco Extra ")
-    viewModel.setFavorite(true)
-    viewModel.events.test {
-      viewModel.save()
-      assertThatNextEmissionIsEqualTo(FinishedSaving)
-    }
+      // when
+      viewModel.setName(" Tesco Extra ")
+      viewModel.setFavorite(true)
+      viewModel.setLearnCategories(false)
+      viewModel.events.test {
+        viewModel.save()
+        assertThatNextEmissionIsEqualTo(FinishedSaving)
+      }
 
-    // then
-    assertThat(payees[TESCO.id]).isNotNull().all {
-      prop(Payees::name).isEqualTo("Tesco Extra")
-      prop(Payees::favorite).isEqualTo(true)
+      // then
+      assertThat(payees[TESCO.id]).isNotNull().all {
+        prop(Payees::name).isEqualTo("Tesco Extra")
+        prop(Payees::favorite).isEqualTo(true)
+        prop(Payees::learn_categories).isEqualTo(0L)
+      }
+      assertThat(sync.changes.map { it.column to it.value })
+        .containsExactly(
+          "name" to MessageValue.String("Tesco Extra"),
+          "favorite" to MessageValue.Number(1),
+          "learn_categories" to MessageValue.Number(0),
+        )
+      assertThat(sync.changes.map(LocalChange::row).distinct()).containsExactly(TESCO.id.value)
     }
-    assertThat(sync.changes.map { it.column to it.value })
-      .containsExactly(
-        "name" to MessageValue.String("Tesco Extra"),
-        "favorite" to MessageValue.Number(1),
-      )
-    assertThat(sync.changes.map(LocalChange::row).distinct()).containsExactly(TESCO.id.value)
-  }
 
   private suspend fun EditPayeeViewModel.awaitLoaded(): EditPayeeViewModel = apply {
     state.test {
@@ -177,6 +190,11 @@ class EditPayeeViewModelTest {
       loader = PayeesLoader(payees, PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
       payeeDao = payees,
       syncController = sync,
+      learning =
+        CategoryLearningPref(
+          PreferencesDao(this, TestCoroutineContexts(scope.standardDispatcher)),
+          sync,
+        ),
     )
   }
 
@@ -202,6 +220,7 @@ class EditPayeeViewModelTest {
         name = "Tesco",
         isTransfer = false,
         isFavorite = false,
+        learnsCategories = true,
         numTransactions = 0,
         numRules = 0,
         isUnused = true,

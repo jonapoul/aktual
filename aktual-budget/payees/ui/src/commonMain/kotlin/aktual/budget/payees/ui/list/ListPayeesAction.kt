@@ -12,6 +12,10 @@ internal data object OpenSearch : ListPayeesAction
 
 internal data object ToggleUnusedOnly : ListPayeesAction
 
+internal data object OpenCategoryLearning : ListPayeesAction
+
+@JvmInline internal value class SetLearningEnabled(val enabled: Boolean) : ListPayeesAction
+
 @JvmInline internal value class OpenPayee(val id: PayeeId) : ListPayeesAction
 
 @JvmInline internal value class OpenRules(val payee: PayeeItem) : ListPayeesAction

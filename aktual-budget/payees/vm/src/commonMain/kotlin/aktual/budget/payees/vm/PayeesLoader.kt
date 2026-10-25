@@ -33,6 +33,8 @@ internal class PayeesLoader(
       name = name.orEmpty(),
       isTransfer = transfer_acct != null,
       isFavorite = favorite == true,
+      // Truthy, as upstream checks it, so NULL is off
+      learnsCategories = learn_categories != null && learn_categories != 0L,
       numTransactions = num_transactions.toInt(),
       numRules = ruleCounts[id] ?: 0,
       isUnused = id in unused,

@@ -31,14 +31,20 @@ class PayeeDao(database: BudgetDatabase) {
         tombstone = false,
         transfer_acct = transferAccount,
         favorite = false,
-        learn_categories = null,
+        learn_categories = 1L,
       )
       mappings.insert(id = id, targetId = id)
     }
 
-  suspend fun update(id: PayeeId, name: String, favorite: Boolean) = queries.withoutResult {
-    setNameAndFavorite(name = name, favorite = favorite, id = id)
-  }
+  suspend fun update(id: PayeeId, name: String, favorite: Boolean, learnCategories: Boolean) =
+    queries.withoutResult {
+      setEditable(
+        name = name,
+        favorite = favorite,
+        learn_categories = if (learnCategories) 1L else 0L,
+        id = id,
+      )
+    }
 
   suspend operator fun get(id: PayeeId): Payees? = queries.withResult {
     getById(id).awaitAsOneOrNull()

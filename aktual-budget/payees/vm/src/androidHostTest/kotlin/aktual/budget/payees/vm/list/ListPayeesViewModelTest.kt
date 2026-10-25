@@ -3,6 +3,7 @@ package aktual.budget.payees.vm.list
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Rules
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.RuleContextDao
 import aktual.budget.db.dao.RulesDao
 import aktual.budget.db.dao.TransactionDao
@@ -12,6 +13,8 @@ import aktual.budget.model.Condition
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
+import aktual.budget.model.SyncedPrefKey.Global.LearnCategories
+import aktual.budget.payees.domain.CategoryLearningPref
 import aktual.budget.payees.domain.PayeeMerge
 import aktual.budget.payees.domain.PayeeMerger
 import aktual.budget.payees.vm.PayeesLoader
@@ -20,6 +23,7 @@ import aktual.di.BudgetCoroutineScope
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
+import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import app.cash.turbine.test
 import assertk.all
@@ -76,6 +80,7 @@ class ListPayeesViewModelTest {
               name = "Argos",
               isTransfer = false,
               isFavorite = false,
+              learnsCategories = true,
               numTransactions = 0,
               numRules = 0,
               isUnused = true,
@@ -85,6 +90,7 @@ class ListPayeesViewModelTest {
               name = "Current",
               isTransfer = true,
               isFavorite = false,
+              learnsCategories = true,
               numTransactions = 0,
               numRules = 1,
               isUnused = false,
@@ -94,6 +100,7 @@ class ListPayeesViewModelTest {
               name = "Tesco",
               isTransfer = false,
               isFavorite = false,
+              learnsCategories = true,
               numTransactions = 2,
               numRules = 1,
               isUnused = false,
@@ -282,6 +289,41 @@ class ListPayeesViewModelTest {
   }
 
   @Test
+  fun `Category learning follows the synced pref`() = runDatabaseTest { scope ->
+    // given
+    insertPayees()
+    val viewModel = createViewModel(scope)
+    val preferences = PreferencesDao(this, TestCoroutineContexts(scope.standardDispatcher))
+
+    viewModel.state.test {
+      assertThatNextEmissionIsEqualTo(Loading)
+      assertThat((awaitItem() as Success).isLearningEnabled).isEqualTo(true)
+
+      // when
+      preferences[LearnCategories] = "false"
+
+      // then
+      assertThat((awaitItem() as Success).isLearningEnabled).isEqualTo(false)
+    }
+  }
+
+  @Test
+  fun `Setting category learning syncs the pref`() = runDatabaseTest { scope ->
+    // given
+    insertPayees()
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync).awaitLoaded()
+
+    // when
+    viewModel.setLearningEnabled(false)
+    scope.advanceUntilIdle()
+
+    // then
+    assertThat(sync.changes.map { it.row to it.column to it.value })
+      .containsExactly("learn-categories" to "value" to MessageValue.String("false"))
+  }
+
+  @Test
   fun `Transfer payees can't be deleted or favourited`() = runDatabaseTest { scope ->
     // given
     insertPayees()
@@ -320,10 +362,12 @@ class ListPayeesViewModelTest {
     sync: TestSyncController = TestSyncController(),
   ): ListPayeesViewModel {
     Dispatchers.setMain(scope.standardDispatcher)
+    val preferences = PreferencesDao(this, TestCoroutineContexts(scope.standardDispatcher))
     return ListPayeesViewModel(
       loader = PayeesLoader(PayeeDao(this), PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
       syncController = sync,
       merger = PayeeMerger(PayeeDao(this), sync),
+      learning = CategoryLearningPref(preferences, sync),
       budgetScope = BudgetCoroutineScope(scope),
     )
   }
@@ -367,6 +411,7 @@ class ListPayeesViewModelTest {
         name = "Argos",
         isTransfer = false,
         isFavorite = false,
+        learnsCategories = true,
         numTransactions = 0,
         numRules = 0,
         isUnused = true,

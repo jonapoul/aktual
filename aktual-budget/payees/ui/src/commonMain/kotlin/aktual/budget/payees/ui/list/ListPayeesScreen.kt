@@ -9,7 +9,10 @@ import aktual.budget.payees.vm.list.ListPayeesViewModel
 import aktual.budget.payees.vm.list.Loading
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.payees.vm.list.Success
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.LightBulb
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.l10n.Strings
@@ -18,6 +21,8 @@ import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchPayeesNavigator
 import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
@@ -98,6 +103,8 @@ internal fun ListPayeesScreen(
         Retry -> viewModel.retry()
         OpenSearch -> toSearch()
         ToggleUnusedOnly -> viewModel.toggleUnusedOnly()
+        OpenCategoryLearning -> Unit
+        is SetLearningEnabled -> viewModel.setLearningEnabled(action.enabled)
         is OpenPayee -> toEdit(action.id)
         is OpenRules -> openRules(action.payee, editRule, searchRules)
         is Delete -> viewModel.delete(action.payee)
@@ -119,6 +126,7 @@ private fun ListPayeesScaffold(
   val listState = rememberLazyListState()
   var confirmDelete by remember { mutableStateOf<PayeeItem?>(null) }
   var mergeSource by remember { mutableStateOf<PayeeItem?>(null) }
+  var showCategoryLearning by remember { mutableStateOf(false) }
 
   // Only worth confirming when transactions will lose their payee
   val handleAction = ListPayeesActionHandler { action ->
@@ -126,6 +134,7 @@ private fun ListPayeesScaffold(
     when (action) {
       is Delete if action.payee.numTransactions > 0 -> confirmDelete = action.payee
       is StartMerge -> mergeSource = action.payee
+      OpenCategoryLearning -> showCategoryLearning = true
       else -> onAction(action)
     }
   }
@@ -145,6 +154,7 @@ private fun ListPayeesScaffold(
               contentDescription = Strings.payeesSearch,
               onClick = { onAction(OpenSearch) },
             )
+            ListPayeesMenu(onAction = handleAction)
           }
         },
       )
@@ -177,6 +187,14 @@ private fun ListPayeesScaffold(
         )
       }
 
+      if (showCategoryLearning && state is Success) {
+        CategoryLearningDialog(
+          isEnabled = state.isLearningEnabled,
+          onEnabledChange = { onAction(SetLearningEnabled(it)) },
+          onDismiss = { showCategoryLearning = false },
+        )
+      }
+
       val source = mergeSource
       if (source != null && state is Success) {
         MergePayeeSheet(
@@ -186,6 +204,30 @@ private fun ListPayeesScaffold(
           onDismiss = { mergeSource = null },
         )
       }
+    }
+  }
+}
+
+@Composable
+private fun ListPayeesMenu(onAction: ListPayeesActionHandler, modifier: Modifier = Modifier) {
+  var expanded by remember { mutableStateOf(false) }
+
+  Box(modifier = modifier) {
+    BareIconButton(
+      imageVector = MaterialIcons.MoreVert,
+      contentDescription = Strings.payeesMenu,
+      onClick = { expanded = true },
+    )
+
+    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      AktualDropdownMenuItem(
+        text = Strings.payeesCategoryLearning,
+        leadingIcon = AktualIcons.LightBulb,
+        onClick = {
+          expanded = false
+          onAction(OpenCategoryLearning)
+        },
+      )
     }
   }
 }
@@ -273,6 +315,7 @@ private fun ListPayeesContent(
         payees = state.shown,
         numUnused = state.numUnused,
         unusedOnly = state.unusedOnly,
+        showLearningOff = state.isLearningEnabled,
         listState = listState,
         contentPadding = padding,
         onAction = onAction,
@@ -285,6 +328,7 @@ private fun PayeesList(
   payees: ImmutableList<PayeeItem>,
   numUnused: Int,
   unusedOnly: Boolean,
+  showLearningOff: Boolean,
   listState: LazyListState,
   contentPadding: PaddingValues,
   onAction: ListPayeesActionHandler,
@@ -324,6 +368,7 @@ private fun PayeesList(
             }
         },
         onAction = onAction,
+        showLearningOff = showLearningOff,
       )
     }
 
