@@ -1,7 +1,5 @@
 package aktual.api.client
 
-import aktual.api.model.banksync.BankSyncSecret.SimpleFinAccessKey
-import aktual.api.model.banksync.BankSyncSecret.SimpleFinToken
 import aktual.api.model.banksync.SecretResponse
 import aktual.core.model.AktualJson
 import aktual.core.model.BudgetServer

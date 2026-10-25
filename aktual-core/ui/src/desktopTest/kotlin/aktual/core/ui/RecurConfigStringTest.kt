@@ -4,18 +4,7 @@ package aktual.core.ui
 
 import aktual.budget.model.DateFormat.YyyyMmDd
 import aktual.budget.model.RecurConfig
-import aktual.budget.model.RecurEndMode.AfterNOccurrences
-import aktual.budget.model.RecurEndMode.Never
-import aktual.budget.model.RecurEndMode.OnDate
-import aktual.budget.model.RecurFrequency.Monthly
-import aktual.budget.model.RecurFrequency.Weekly
-import aktual.budget.model.RecurFrequency.Yearly
 import aktual.budget.model.RecurPattern
-import aktual.budget.model.RecurType.Day
-import aktual.budget.model.RecurType.Friday
-import aktual.budget.model.RecurType.Saturday
-import aktual.budget.model.WeekendSolveMode.After
-import aktual.budget.model.WeekendSolveMode.Before
 import androidx.compose.ui.test.v2.runComposeUiTest
 import app.cash.burst.Burst
 import app.cash.burst.burstValues

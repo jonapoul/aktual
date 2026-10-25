@@ -4,8 +4,6 @@ import aktual.budget.model.Amount
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.CurrencySymbolPosition
-import aktual.budget.model.CurrencySymbolPosition.AfterAmount
-import aktual.budget.model.CurrencySymbolPosition.BeforeAmount
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.NumberFormatConfig
 import aktual.core.icons.Add

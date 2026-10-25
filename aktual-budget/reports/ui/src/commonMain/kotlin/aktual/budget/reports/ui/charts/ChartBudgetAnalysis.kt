@@ -57,12 +57,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Month.APRIL
-import kotlinx.datetime.Month.FEBRUARY
-import kotlinx.datetime.Month.JANUARY
-import kotlinx.datetime.Month.JUNE
-import kotlinx.datetime.Month.MARCH
-import kotlinx.datetime.Month.MAY
 
 @Composable
 internal fun BudgetAnalysisChart(

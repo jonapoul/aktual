@@ -4,9 +4,6 @@ import aktual.api.model.banksync.BankSyncSecret
 import aktual.api.model.banksync.SecretResponse
 import aktual.api.model.banksync.SecretResponse.Failed
 import aktual.budget.banksync.domain.BankSyncProviderSetup
-import aktual.budget.banksync.domain.ProviderCredential.EnableBankingApplicationId
-import aktual.budget.banksync.domain.ProviderCredential.EnableBankingSecretKey
-import aktual.budget.banksync.domain.ProviderCredential.SimpleFinToken
 import aktual.budget.banksync.vm.FakeEnableBankingApi
 import aktual.budget.banksync.vm.FakeSecretsApi
 import aktual.budget.banksync.vm.providers.SetupError.Other

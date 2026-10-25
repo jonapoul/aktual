@@ -9,7 +9,6 @@ import aktual.budget.reports.vm.SummaryChartType
 import aktual.budget.reports.vm.SummaryData
 import aktual.budget.reports.vm.SummaryReportMeta
 import aktual.budget.reports.vm.TimeFrame
-import aktual.budget.reports.vm.TimeFrameMode.Static
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloseBracket
 import aktual.core.icons.Equals
