@@ -449,7 +449,7 @@ private fun RegularPercent(
       ) {
         Text(
           modifier = Modifier.fillMaxWidth(),
-          text = data.numerator.toString(),
+          text = data.numerator.formattedText(),
           fontSize = 30.sp,
           textAlign = Center,
           color = colors.pageText,
@@ -459,7 +459,7 @@ private fun RegularPercent(
 
         Text(
           modifier = Modifier.fillMaxWidth(),
-          text = data.denominator.toString(),
+          text = data.denominator.formattedText(),
           fontSize = 30.sp,
           textAlign = Center,
           color = colors.pageText,
