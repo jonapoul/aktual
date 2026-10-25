@@ -10,6 +10,7 @@ import aktual.budget.model.TagSort
 import aktual.budget.model.tagsInNotes
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
+import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.prefs.TagPreferences
 import alakazam.kotlin.requireMessage
@@ -44,6 +45,7 @@ class ListTagsViewModel(
   private val transactionDao: TransactionDao,
   private val syncController: BudgetSyncController,
   private val preferences: TagPreferences,
+  private val budgetScope: BudgetCoroutineScope,
 ) : ViewModel() {
   private val mutableTags = MutableStateFlow<ImmutableList<TagItem>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
@@ -145,8 +147,9 @@ class ListTagsViewModel(
     }
   }
 
+  // The undo snackbar can outlive this screen, so the restore can't be tied to viewModelScope
   fun undoDelete(item: TagItem, index: Int) {
-    viewModelScope.launch {
+    budgetScope.launch {
       try {
         // reverse the tombstone in the local db and queue the reversal for sync. The row's other
         // columns were never touched by the delete, so clearing the tombstone fully restores it
