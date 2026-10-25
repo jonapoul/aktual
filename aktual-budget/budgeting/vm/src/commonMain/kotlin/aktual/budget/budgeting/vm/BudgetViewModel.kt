@@ -23,6 +23,8 @@ import aktual.budget.model.evaluateAmountInput
 import aktual.core.Calendar
 import aktual.core.model.unaryPlus
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -77,7 +79,8 @@ class BudgetViewModel(
   private val syncController: BudgetSyncController,
   private val calendar: Calendar,
   syncStateHolder: SyncStateHolder,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)

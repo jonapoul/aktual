@@ -5,6 +5,8 @@ import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.model.CategoryId
 import aktual.core.Calendar
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -41,7 +43,8 @@ class BudgetCategoryViewModel(
   @Assisted month: YearMonth,
   calculator: BudgetMonthCalculator,
   calendar: Calendar,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)
