@@ -37,6 +37,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -44,11 +45,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -183,15 +186,15 @@ private fun PayeeChip(name: String, onRemove: () -> Unit, modifier: Modifier = M
       modifier
         .heightIn(min = 34.dp)
         .background(colors.pillBackground, CircleShape)
-        .padding(start = 12.dp, end = 2.dp),
+        .padding(horizontal = 12.dp)
+        .clickable(onClick = onRemove),
     verticalAlignment = CenterVertically,
   ) {
     Text(text = name, style = typography.bodyMedium, color = colors.pillText)
-    BareIconButton(
+    Icon(
+      modifier = Modifier.size(16.dp),
       imageVector = MaterialIcons.Clear,
       contentDescription = Strings.rulesSearchPayeeRemove(name),
-      size = 16.dp,
-      onClick = onRemove,
     )
   }
 
