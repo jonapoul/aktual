@@ -18,7 +18,7 @@ import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewModelScope
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -28,6 +28,7 @@ import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Test
@@ -152,6 +153,7 @@ class ListTagsViewModelTest {
 
     // undoing puts it back where it was
     viewModel.undoDelete(deleted.item, deleted.index)
+    scope.advanceUntilIdle()
     viewModel.state.test {
       assertThat(awaitItem())
         .isInstanceOf(Success::class)
@@ -307,10 +309,7 @@ class ListTagsViewModelTest {
     }
 
     // the snackbar outlives the screen, so undo can be tapped after the view model is cleared
-    ViewModelStore().apply {
-      put("tags", viewModel)
-      clear()
-    }
+    viewModel.viewModelScope.cancel()
     viewModel.undoDelete(deleted.item, deleted.index)
     scope.advanceUntilIdle()
 
