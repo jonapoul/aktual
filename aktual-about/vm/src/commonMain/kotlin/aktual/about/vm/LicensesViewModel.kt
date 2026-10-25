@@ -3,6 +3,8 @@ package aktual.about.vm
 import aktual.about.data.LicensesLoadState
 import aktual.about.data.LicensesRepository
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,7 +24,10 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class LicensesViewModel(private val licensesRepository: LicensesRepository) : ViewModel() {
+class LicensesViewModel(
+  private val licensesRepository: LicensesRepository,
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableState = MutableStateFlow<LicensesState>(Loading)
   private val mutableSorting = MutableStateFlow<LicenseSorting>(ByArtifact)
 

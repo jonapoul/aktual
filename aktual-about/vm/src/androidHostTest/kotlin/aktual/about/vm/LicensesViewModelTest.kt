@@ -9,6 +9,7 @@ import aktual.about.data.LicensesRepository
 import aktual.about.vm.LicensesState.Error
 import aktual.about.vm.LicensesState.Loaded
 import aktual.test.assertThatNextEmissionIsEqualTo
+import aktual.test.unconfinedViewModelContext
 import app.cash.turbine.TurbineTestContext
 import app.cash.turbine.test
 import io.mockk.coEvery
@@ -16,6 +17,7 @@ import io.mockk.mockk
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -104,8 +106,12 @@ class LicensesViewModelTest {
     }
   }
 
-  private fun buildViewModel() {
-    viewModel = LicensesViewModel(licensesRepository = repository)
+  private fun TestScope.buildViewModel() {
+    viewModel =
+      LicensesViewModel(
+        licensesRepository = repository,
+        viewModelContext = unconfinedViewModelContext,
+      )
   }
 
   private suspend fun TurbineTestContext<LicensesState>.assertLoaded(

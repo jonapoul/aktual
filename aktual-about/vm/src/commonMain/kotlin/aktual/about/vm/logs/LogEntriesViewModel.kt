@@ -3,6 +3,8 @@ package aktual.about.vm.logs
 import aktual.about.data.LogsRepository
 import aktual.core.logging.LogLine
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.CoroutineContexts
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -40,7 +42,8 @@ internal constructor(
   private val repository: LogsRepository,
   private val exporter: LogExporter,
   contexts: CoroutineContexts,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   // Number of lines shown when paused, or null when following
   private val pausedAt = MutableStateFlow<Int?>(null)
 

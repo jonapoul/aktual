@@ -38,6 +38,7 @@ class AboutViewModelTest {
         buildConfig = TestBuildConfig,
         githubRepository = repository,
         aktualVersionsStateHolder = aktualVersionsStateHolder,
+        viewModelContext = Default,
       )
   }
 

@@ -7,19 +7,15 @@ import aktual.about.data.LicensesLoadState.Success
 import aktual.about.data.LicensesRepository
 import aktual.about.vm.SearchLicensesState.Results
 import aktual.test.assertThatNextEmissionIsEqualTo
-import alakazam.test.standardDispatcher
+import aktual.test.viewModelContext
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -30,14 +26,8 @@ class SearchLicensesViewModelTest {
   private fun TestScope.buildViewModel(
     artifacts: List<ArtifactDetail> = listOf(MANGO, KIWI, PLUM),
   ): SearchLicensesViewModel {
-    Dispatchers.setMain(standardDispatcher)
     coEvery { repository.loadLicenses() } returns Success(artifacts)
-    return SearchLicensesViewModel(repository)
-  }
-
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
+    return SearchLicensesViewModel(repository, viewModelContext = viewModelContext)
   }
 
   @Test
@@ -65,9 +55,8 @@ class SearchLicensesViewModelTest {
 
   @Test
   fun `Failing to load gives no results`() = runTest {
-    Dispatchers.setMain(standardDispatcher)
     coEvery { repository.loadLicenses() } returns Failure("something broke")
-    val viewModel = SearchLicensesViewModel(repository)
+    val viewModel = SearchLicensesViewModel(repository, viewModelContext = viewModelContext)
 
     viewModel.state.test {
       assertThatNextEmissionIsEqualTo(NoQuery)
