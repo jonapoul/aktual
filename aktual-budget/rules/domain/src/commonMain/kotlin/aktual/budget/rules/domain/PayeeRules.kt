@@ -4,7 +4,7 @@ import aktual.budget.db.dao.RuleContextDao
 import aktual.budget.db.dao.RulesDao
 import aktual.budget.model.Condition
 import aktual.budget.model.PayeeId
-import aktual.budget.model.RuleAction
+import aktual.budget.model.RuleAction.Op.Set
 import dev.zacsweers.metro.Inject
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -19,9 +19,9 @@ fun TransactionRule.payeeIds(): Set<PayeeId> = buildSet {
   for (condition in conditions) {
     if (condition.field.toRuleField() == Payee) addAll(condition.payeeIds())
   }
-  for (action in actions) {
-    if (action.op == RuleAction.Op.Set && action.field?.toRuleField() == Payee) {
-      action.value?.contentOrNull?.let { add(PayeeId(it)) }
+  for ((value, op, field) in actions) {
+    if (op == Set && field?.toRuleField() == Payee) {
+      value?.contentOrNull?.let { add(PayeeId(it)) }
     }
   }
 }
