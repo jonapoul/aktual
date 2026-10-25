@@ -1,6 +1,5 @@
 package aktual.budget.rules.ui.list
 
-import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
@@ -17,7 +16,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @Composable
 internal fun DeleteRulesDialog(
-  count: Int,
   onConfirm: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
@@ -25,20 +23,19 @@ internal fun DeleteRulesDialog(
   AktualAlertDialog(
     modifier = modifier,
     onDismissRequest = onDismiss,
-    content = { DeleteRulesDialogContent(count, onConfirm, onDismiss) },
+    content = { DeleteRulesDialogContent(onConfirm, onDismiss) },
   )
 }
 
 @Composable
 private fun DeleteRulesDialogContent(
-  count: Int,
   onConfirm: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   AktualAlertDialogContent(
     modifier = modifier,
-    title = Plurals.rulesDeleteDialogTitle(count, count),
+    title = Strings.rulesDeleteDialogTitle,
     highlight = colors.errorText,
     content = { Text(text = Strings.rulesDeleteDialogMessage) },
     buttons = {
@@ -53,4 +50,4 @@ private fun DeleteRulesDialogContent(
 @Preview
 @Composable
 private fun PreviewDeleteRulesDialog(@PreviewParameter(ColoredParameters::class) colors: Colors) =
-  PreviewWithColors(colors) { DeleteRulesDialogContent(count = 3, onConfirm = {}, onDismiss = {}) }
+  PreviewWithColors(colors) { DeleteRulesDialogContent(onConfirm = {}, onDismiss = {}) }

@@ -25,6 +25,7 @@ import aktual.budget.reports.vm.report.ReportViewModel
 import aktual.budget.reports.vm.search.SearchReportsViewModel
 import aktual.budget.rules.vm.edit.EditRuleViewModel
 import aktual.budget.rules.vm.list.ListRulesViewModel
+import aktual.budget.rules.vm.search.SearchRulesViewModel
 import aktual.budget.schedules.vm.list.ListSchedulesViewModel
 import aktual.budget.schedules.vm.search.SearchSchedulesViewModel
 import aktual.budget.sync.vm.SyncBudgetViewModel
@@ -153,7 +154,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
       create(ACCOUNT_ID)
     }
 
-  @Test fun listRules() = testSavedStateVM<ListRulesViewModel>()
+  @Test fun listRules() = testVm<ListRulesViewModel>()
 
   @Test fun listSchedules() = testVm<ListSchedulesViewModel>()
 
@@ -170,6 +171,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun scheduleSettings() = testVm<ScheduleSettingsViewModel>()
 
   @Test fun searchReports() = testSavedStateVM<SearchReportsViewModel>()
+
+  @Test fun searchRules() = testSavedStateVM<SearchRulesViewModel>()
 
   @Test fun searchSchedules() = testSavedStateVM<SearchSchedulesViewModel>()
 

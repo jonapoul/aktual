@@ -6,9 +6,6 @@ import aktual.budget.model.RuleStage
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.ui.PreviewRule2
 import aktual.budget.rules.vm.Rule
-import aktual.budget.rules.vm.list.CheckboxesState
-import aktual.budget.rules.vm.list.CheckboxesState.Active
-import aktual.budget.rules.vm.list.CheckboxesState.Inactive
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
@@ -25,7 +22,6 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
-import aktual.core.ui.checkbox
 import aktual.core.ui.contrastingTextColor
 import aktual.core.ui.isCompactWidth
 import androidx.compose.foundation.background
@@ -39,11 +35,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
@@ -60,12 +52,10 @@ import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun ListRulesItem(
   rule: Rule,
-  checkboxes: CheckboxesState,
   isOpen: Boolean,
   onOpenChange: (Boolean) -> Unit,
   onAction: ListRulesActionHandler,
@@ -91,44 +81,25 @@ internal fun ListRulesItem(
     modifier = modifier,
     shape = RowShape,
   ) {
-    ListRulesItemRow(rule = rule, checkboxes = checkboxes, onAction = onAction)
+    ListRulesItemRow(rule = rule, onClick = { onAction(Edit(rule.id)) })
   }
 }
 
 /** Keep this in sync with [ShimmerListRulesItem] */
 @Composable
-private fun ListRulesItemRow(
+internal fun ListRulesItemRow(
   rule: Rule,
-  checkboxes: CheckboxesState,
-  onAction: ListRulesActionHandler,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  query: String = "",
 ) {
-  val isChecked = checkboxes is Active && rule.id in checkboxes.ids
-
-  val toggleCheck =
-    if (checkboxes is Active) {
-      { onAction(if (isChecked) Uncheck(rule.id) else Check(rule.id)) }
-    } else {
-      null
-    }
-
   Box(modifier = modifier) {
     Row(
-      modifier =
-        Modifier.ruleRow(colors, onOpen = { onAction(Edit(rule.id)) }, onToggle = toggleCheck),
+      modifier = Modifier.ruleRow(colors, onClick = onClick),
       horizontalArrangement = Arrangement.Start,
       verticalAlignment = CenterVertically,
     ) {
-      if (checkboxes is Active) {
-        Checkbox(
-          modifier = Modifier.minimumInteractiveComponentSize(),
-          checked = rule.id in checkboxes.ids,
-          onCheckedChange = { toggleCheck?.invoke() },
-          colors = colors.checkbox(),
-        )
-      }
-
-      ItemContent(rule)
+      ItemContent(rule, query)
     }
 
     if (rule.stage.showBadge()) {
@@ -166,7 +137,7 @@ private fun RuleStageBadge(
 }
 
 @Composable
-private fun RowScope.ItemContent(rule: Rule) {
+private fun RowScope.ItemContent(rule: Rule, query: String) {
   val styles = rememberRuleSpanStyles()
   if (isCompactWidth()) {
     Column(
@@ -174,9 +145,9 @@ private fun RowScope.ItemContent(rule: Rule) {
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = CenterHorizontally,
     ) {
-      ListRulesItemConditions(rule.conditions, styles)
+      ListRulesItemConditions(rule.conditions, styles, query)
       Text("↓", color = colors.tableText)
-      ListRulesItemActions(rule.actions, styles)
+      ListRulesItemActions(rule.actions, styles, query)
     }
   } else {
     Row(
@@ -184,9 +155,9 @@ private fun RowScope.ItemContent(rule: Rule) {
       horizontalArrangement = Arrangement.Center,
       verticalAlignment = CenterVertically,
     ) {
-      ListRulesItemConditions(rule.conditions, styles, modifier = Modifier.weight(1f))
+      ListRulesItemConditions(rule.conditions, styles, query, Modifier.weight(1f))
       Text("→", color = colors.tableText)
-      ListRulesItemActions(rule.actions, styles, modifier = Modifier.weight(1f))
+      ListRulesItemActions(rule.actions, styles, query, Modifier.weight(1f))
     }
   }
 }
@@ -195,6 +166,7 @@ private fun RowScope.ItemContent(rule: Rule) {
 private fun ListRulesItemConditions(
   conditions: ImmutableList<Condition>,
   styles: RuleSpanStyles,
+  query: String,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -211,7 +183,7 @@ private fun ListRulesItemConditions(
       ) {
         val prefix = if (index != 0) "and " else ""
         Text(
-          text = rememberConditionText(prefix, condition, styles),
+          text = rememberConditionText(prefix, condition, styles, query),
           overflow = Ellipsis,
           maxLines = 1,
         )
@@ -224,6 +196,7 @@ private fun ListRulesItemConditions(
 private fun ListRulesItemActions(
   actions: ImmutableList<RuleAction>,
   styles: RuleSpanStyles,
+  query: String,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -238,7 +211,7 @@ private fun ListRulesItemActions(
             .background(colors.pillBackgroundLight, CardShape)
             .padding(horizontal = 5.dp, vertical = 3.dp),
       ) {
-        Text(text = rememberActionText(action, styles), overflow = Ellipsis, maxLines = 1)
+        Text(text = rememberActionText(action, styles, query), overflow = Ellipsis, maxLines = 1)
       }
     }
   }
@@ -246,32 +219,14 @@ private fun ListRulesItemActions(
 
 /** Keep this in sync with [ListRulesItemRow] */
 @Composable
-internal fun ShimmerListRulesItem(
-  checkboxes: CheckboxesState,
-  modifier: Modifier = Modifier,
-) {
+internal fun ShimmerListRulesItem(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(Window)
 
   Row(
-    modifier =
-      modifier.fillMaxWidth().ruleRow(colors, onOpen = null, onToggle = null).shimmer(shimmer),
+    modifier = modifier.fillMaxWidth().ruleRow(colors, onClick = null).shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = CenterVertically,
   ) {
-    // checkbox
-    if (checkboxes is Active) {
-      Box(
-        modifier = Modifier.size(LocalMinimumInteractiveComponentSize.current),
-        contentAlignment = Center,
-      ) {
-        Box(
-          modifier =
-            Modifier.size(LocalMinimumInteractiveComponentSize.current / 2)
-              .background(colors.pageText, CardShape),
-        )
-      }
-    }
-
     Column(modifier = Modifier.weight(1f), horizontalAlignment = CenterHorizontally) {
       Box(
         modifier =
@@ -299,19 +254,13 @@ internal fun ShimmerListRulesItem(
   }
 }
 
-private fun Modifier.ruleRow(
-  colors: Colors,
-  onOpen: (() -> Unit)?,
-  onToggle: (() -> Unit)?,
-): Modifier {
-  val onClick = onToggle ?: onOpen
-  return fillMaxWidth()
+private fun Modifier.ruleRow(colors: Colors, onClick: (() -> Unit)?): Modifier =
+  fillMaxWidth()
     .clip(RowShape)
     .background(colors.tableBackground, RowShape)
     .border(Hairline, colors.tableBorder, RowShape)
     .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
     .padding(horizontal = 15.dp, vertical = 12.dp)
-}
 
 @Preview
 @Composable
@@ -321,7 +270,6 @@ private fun PreviewListRulesItem(
   PreviewWithColoredParams(params) {
     ListRulesItem(
       rule = item,
-      checkboxes = checkboxes,
       isOpen = isOpen,
       onOpenChange = {},
       onAction = {},
@@ -330,7 +278,6 @@ private fun PreviewListRulesItem(
 
 private data class ListRulesItemParams(
   val item: Rule,
-  val checkboxes: CheckboxesState = Inactive,
   val isOpen: Boolean = false,
 )
 
@@ -340,12 +287,11 @@ private class ListRulesItemProvider :
     ListRulesItemParams(item = PreviewRule1.copy(stage = Pre)),
     ListRulesItemParams(item = PreviewRule2.copy(stage = Post)),
     ListRulesItemParams(item = PreviewRule1, isOpen = true),
-    ListRulesItemParams(item = PreviewRule2, checkboxes = Active(persistentSetOf(PreviewRule2.id))),
   )
 
 @Preview
 @Composable
 private fun PreviewShimmerListItem(@PreviewParameter(ColoredParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
-    ShimmerListRulesItem(checkboxes = Inactive, modifier = Modifier.fillMaxWidth())
+    ShimmerListRulesItem(modifier = Modifier.fillMaxWidth())
   }

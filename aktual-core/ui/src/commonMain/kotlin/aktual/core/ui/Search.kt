@@ -202,17 +202,21 @@ fun Modifier.searchResultCard(
 // Bolds each case-insensitive match of query in text
 @Composable
 fun rememberHighlighted(text: String, query: String): AnnotatedString =
-  remember(text, query) {
-    buildAnnotatedString {
-      append(text)
-      if (query.isEmpty()) return@buildAnnotatedString
-      var index = text.indexOf(query, ignoreCase = true)
-      while (index >= 0) {
-        addStyle(SpanStyle(fontWeight = Bold), index, index + query.length)
-        index = text.indexOf(query, startIndex = index + query.length, ignoreCase = true)
-      }
+  remember(text, query) { AnnotatedString(text).highlighted(query) }
+
+// Bolds each case-insensitive match of query, keeping any existing styles
+fun AnnotatedString.highlighted(query: String): AnnotatedString {
+  if (query.isEmpty()) return this
+  val source = this
+  return buildAnnotatedString {
+    append(source)
+    var index = source.text.indexOf(query, ignoreCase = true)
+    while (index >= 0) {
+      addStyle(SpanStyle(fontWeight = Bold), index, index + query.length)
+      index = source.text.indexOf(query, startIndex = index + query.length, ignoreCase = true)
     }
   }
+}
 
 @Preview
 @Composable

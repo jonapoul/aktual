@@ -70,6 +70,8 @@ data class CreateTransactionNavRoute(
 
 @Serializable data object ListRulesNavRoute : BudgetNavKey.Rules
 
+@Serializable data object SearchRulesNavRoute : BudgetNavKey.Rules
+
 @Serializable data class EditRuleNavRoute(val id: RuleId) : BudgetNavKey.Rules
 
 @Serializable data object CreateRuleNavRoute : BudgetNavKey.Rules

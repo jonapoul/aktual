@@ -101,6 +101,11 @@ class EditRuleNavigator(private val stack: NavStack<BudgetNavKey>) {
 }
 
 @Immutable
+class SearchRulesNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke() = stack.push(SearchRulesNavRoute)
+}
+
+@Immutable
 class ListSchedulesNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke() = stack.push(ListSchedulesNavRoute)
 }

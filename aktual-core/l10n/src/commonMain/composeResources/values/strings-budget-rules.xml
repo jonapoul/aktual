@@ -2,8 +2,10 @@
   <string name="rules_title">Rules</string>
   <string name="rules_toolbar">Rules</string>
 
-  <string name="rules_toolbar_checkboxes_enable">Enable multi-select</string>
-  <string name="rules_toolbar_checkboxes_disable">Disable multi-select</string>
+  <string name="rules_toolbar_search">Search</string>
+  <string name="rules_search_placeholder">Search rules</string>
+  <string name="rules_search_prompt">Enter some text to search rule conditions and actions</string>
+  <string name="rules_search_no_results">No rules match “%1$s”</string>
 
   <string name="rules_failure_prefix">Failed loading rules</string>
   <string name="rules_failure_default_message">Unknown cause</string>
@@ -12,10 +14,7 @@
 
   <string name="rules_item_delete">Delete</string>
 
-  <plurals name="rules_delete_dialog_title">
-    <item quantity="one">Delete %1$d rule?</item>
-    <item quantity="other">Delete %1$d rules?</item>
-  </plurals>
+  <string name="rules_delete_dialog_title">Delete rule?</string>
   <string name="rules_delete_dialog_message">This can't be undone.</string>
   <string name="rules_delete_dialog_cancel">Cancel</string>
   <string name="rules_delete_dialog_confirm">Delete</string>
@@ -78,12 +77,6 @@
   <string name="rules_field_reconciled">reconciled</string>
   <string name="rules_field_unknown">unknown field</string>
 
-  <plurals name="rules_checkbox_counter">
-    <item quantity="one">Selected %1$d rule</item>
-    <item quantity="other">Selected %1$d rules</item>
-  </plurals>
-  <string name="rules_checkbox_delete">Delete</string>
-  <string name="rules_checkbox_clear">Clear selected</string>
 
   <string name="edit_rule_toolbar_edit">Edit Rule</string>
   <string name="edit_rule_toolbar_create">Create Rule</string>
