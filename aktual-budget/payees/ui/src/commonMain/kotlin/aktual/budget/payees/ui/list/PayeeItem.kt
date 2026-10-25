@@ -1,6 +1,8 @@
 package aktual.budget.payees.ui.list
 
 import aktual.budget.payees.vm.list.PayeeItem
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.LightBulb
 import aktual.core.icons.material.Bookmark
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Plurals
@@ -46,6 +48,8 @@ internal fun PayeeItem(
   onClickRules: () -> Unit,
   modifier: Modifier = Modifier,
   query: String = "",
+  // Only while the global learn-categories pref is on, as upstream
+  showLearningOff: Boolean = false,
 ) {
   Row(
     modifier =
@@ -88,6 +92,15 @@ internal fun PayeeItem(
         text = Plurals.payeesNumTransactions(payee.numTransactions, payee.numTransactions),
         style = typography.bodySmall,
         color = colors.pageTextSubdued,
+      )
+    }
+
+    if (showLearningOff && !payee.learnsCategories) {
+      Icon(
+        modifier = Modifier.size(ListPayeesDS.learningIconSize),
+        imageVector = AktualIcons.LightBulb,
+        contentDescription = Strings.payeesLearningOff,
+        tint = colors.errorText,
       )
     }
 
@@ -169,7 +182,10 @@ private class PayeeItemProvider : ColoredParameterProvider<PayeeItem>(PayeesPrev
 @Composable
 private fun PreviewPayeeItem(
   @PreviewParameter(PayeeItemProvider::class) params: ColoredParams<PayeeItem>,
-) = PreviewWithColoredParams(params) { PayeeItem(payee = this, onClick = {}, onClickRules = {}) }
+) =
+  PreviewWithColoredParams(params) {
+    PayeeItem(payee = this, onClick = {}, onClickRules = {}, showLearningOff = true)
+  }
 
 @Preview
 @Composable

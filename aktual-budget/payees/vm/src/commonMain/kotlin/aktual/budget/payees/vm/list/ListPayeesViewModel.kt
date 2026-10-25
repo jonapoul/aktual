@@ -5,6 +5,7 @@ import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
+import aktual.budget.payees.domain.CategoryLearningPref
 import aktual.budget.payees.domain.PayeeMerger
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.di.BudgetCoroutineScope
@@ -39,6 +40,7 @@ internal constructor(
   loader: PayeesLoader,
   private val syncController: BudgetSyncController,
   private val merger: PayeeMerger,
+  private val learning: CategoryLearningPref,
   private val budgetScope: BudgetCoroutineScope,
 ) : ViewModel() {
   private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -53,8 +55,15 @@ internal constructor(
     retries
       .onStart { emit(Unit) }
       .flatMapLatest {
-        combine(loader.observe(), unusedOnly) { payees, unusedOnly ->
-            if (payees.isEmpty()) Empty else Success(payees.toImmutableList(), unusedOnly)
+        combine(loader.observe(), unusedOnly, learning.observe()) {
+            payees,
+            unusedOnly,
+            isLearningEnabled ->
+            if (payees.isEmpty()) {
+              Empty
+            } else {
+              Success(payees.toImmutableList(), unusedOnly, isLearningEnabled)
+            }
           }
           .onStart<ListPayeesState> { emit(Loading) }
           .catch { e ->
@@ -70,6 +79,19 @@ internal constructor(
 
   fun toggleUnusedOnly() {
     unusedOnly.update { !it }
+  }
+
+  fun setLearningEnabled(enabled: Boolean) {
+    viewModelScope.launch {
+      try {
+        learning.set(enabled)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed setting category learning to $enabled" }
+        mutableEvents.tryEmit(UpdateFailed)
+      }
+    }
   }
 
   // Transfer payees can't be deleted, as upstream

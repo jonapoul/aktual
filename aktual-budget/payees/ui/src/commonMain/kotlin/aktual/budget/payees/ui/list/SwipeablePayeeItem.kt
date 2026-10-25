@@ -29,6 +29,7 @@ internal fun SwipeablePayeeItem(
   onOpenChange: (Boolean) -> Unit,
   onAction: ListPayeesActionHandler,
   modifier: Modifier = Modifier,
+  showLearningOff: Boolean = false,
 ) {
   if (payee.isTransfer) {
     PayeeItem(
@@ -36,6 +37,7 @@ internal fun SwipeablePayeeItem(
       payee = payee,
       onClick = { onAction(OpenPayee(payee.id)) },
       onClickRules = { onAction(OpenRules(payee)) },
+      showLearningOff = showLearningOff,
     )
     return
   }
@@ -84,6 +86,7 @@ internal fun SwipeablePayeeItem(
       payee = payee,
       onClick = { onAction(OpenPayee(payee.id)) },
       onClickRules = { onAction(OpenRules(payee)) },
+      showLearningOff = showLearningOff,
     )
   }
 }

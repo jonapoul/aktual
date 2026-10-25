@@ -162,14 +162,20 @@ internal class PayeeDaoTest {
   }
 
   @Test
-  fun `Update sets the name and favourite`() = runDaoTest { payees, _ ->
+  fun `Inserted payees learn categories`() = runDaoTest { payees, _ ->
+    assertThat(payees[PayeeId("a")]).isNotNull().prop(Payees::learn_categories).isEqualTo(1L)
+  }
+
+  @Test
+  fun `Update sets the name, favourite and learning`() = runDaoTest { payees, _ ->
     // when
-    payees.update(PayeeId("a"), name = "Argos Extra", favorite = true)
+    payees.update(PayeeId("a"), name = "Argos Extra", favorite = true, learnCategories = false)
 
     // then
     assertThat(payees[PayeeId("a")]).isNotNull().all {
       prop(Payees::name).isEqualTo("Argos Extra")
       prop(Payees::favorite).isEqualTo(true)
+      prop(Payees::learn_categories).isEqualTo(0L)
     }
   }
 

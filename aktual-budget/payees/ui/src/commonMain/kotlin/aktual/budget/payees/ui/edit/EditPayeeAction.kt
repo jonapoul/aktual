@@ -15,6 +15,8 @@ internal data object DismissSaveError : EditPayeeAction
 
 @JvmInline internal value class SetFavorite(val isFavorite: Boolean) : EditPayeeAction
 
+@JvmInline internal value class SetLearnCategories(val learn: Boolean) : EditPayeeAction
+
 @JvmInline internal value class OpenRules(val payee: PayeeItem) : EditPayeeAction
 
 // title is the payee's name as shown, for the transactions screen's top bar

@@ -104,7 +104,10 @@ getName:
 
 getNames: SELECT name FROM v_payees WHERE id IN ?;
 
-setNameAndFavorite: UPDATE payees SET name = :name, favorite = :favorite WHERE id = :id;
+setEditable:
+  UPDATE payees
+    SET name = :name, favorite = :favorite, learn_categories = :learn_categories
+    WHERE id = :id;
 
 insert:
   INSERT OR REPLACE

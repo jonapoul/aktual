@@ -43,6 +43,17 @@
   <string name="payees_merge_placeholder">Merge %1$s into…</string>
   <string name="payees_merged">Merged %1$s into %2$s</string>
   <string name="payees_merge_failed">Couldn't merge payees</string>
+  <string name="payees_menu">More options</string>
+  <string name="payees_learning_off">Category learning off</string>
+  <string name="payees_category_learning">Category learning</string>
+  <string name="payees_category_learning_message">Category learning works out the best category for a transaction and creates a rule that sets the category for the payee.</string>
+  <string name="payees_category_learning_learn_more">Learn more</string>
+  <string name="payees_category_learning_disable_message">Turning it off won't delete any existing rules, but stops new ones being created automatically.</string>
+  <string name="payees_category_learning_enable">Enable</string>
+  <string name="payees_category_learning_disable">Disable</string>
+  <string name="payees_category_learning_close">Close</string>
+  <string name="payees_edit_learn_label">Learn categories</string>
+  <string name="payees_edit_learn_help">Lets category learning create rules for this payee.</string>
   <plurals name="payees_num_rules">
     <item quantity="one">%1$d associated rule</item>
     <item quantity="other">%1$d associated rules</item>

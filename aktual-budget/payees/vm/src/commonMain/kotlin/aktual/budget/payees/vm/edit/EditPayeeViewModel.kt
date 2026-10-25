@@ -5,6 +5,7 @@ import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.model.PayeeId
 import aktual.budget.model.localChange
+import aktual.budget.payees.domain.CategoryLearningPref
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.di.BudgetScope
@@ -41,16 +42,24 @@ internal constructor(
   loader: PayeesLoader,
   private val payeeDao: PayeeDao,
   private val syncController: BudgetSyncController,
+  learning: CategoryLearningPref,
 ) : ViewModel() {
   private val loaded = MutableStateFlow<Loaded?>(null)
   private val otherNames = MutableStateFlow(emptySet<String>())
   private val mutableName = MutableStateFlow("")
   private val mutableFavorite = MutableStateFlow(false)
+  private val mutableLearnCategories = MutableStateFlow(false)
 
   private val mutableSaveError = MutableStateFlow<String?>(null)
   val saveError: StateFlow<String?> = mutableSaveError.asStateFlow()
 
   val isFavorite: StateFlow<Boolean> = mutableFavorite.asStateFlow()
+
+  val learnsCategories: StateFlow<Boolean> = mutableLearnCategories.asStateFlow()
+
+  // The per-payee switch only matters, and only shows, while the global pref is on
+  val isLearningEnabled: StateFlow<Boolean> =
+    learning.observe().stateIn(viewModelScope, Eagerly, initialValue = false)
 
   private val mutableEvents =
     MutableSharedFlow<EditPayeeEvent>(extraBufferCapacity = 1, onBufferOverflow = DROP_OLDEST)
@@ -67,8 +76,9 @@ internal constructor(
       .stateIn(viewModelScope, Eagerly, initialValue = Loading)
 
   val hasUnsavedChanges: StateFlow<Boolean> =
-    combine(loaded, mutableName, mutableFavorite) { l, name, favorite ->
-        l != null && (name != l.name || favorite != l.isFavorite)
+    combine(loaded, mutableName, mutableFavorite, mutableLearnCategories) { l, name, favorite, learn
+        ->
+        l != null && (name != l.name || favorite != l.isFavorite || learn != l.learnsCategories)
       }
       .stateIn(viewModelScope, Eagerly, initialValue = false)
 
@@ -95,7 +105,8 @@ internal constructor(
     if (loaded.value == null) {
       mutableName.update { payee.name }
       mutableFavorite.update { payee.isFavorite }
-      loaded.update { Loaded(payee.name, payee.isFavorite) }
+      mutableLearnCategories.update { payee.learnsCategories }
+      loaded.update { Loaded(payee.name, payee.isFavorite, payee.learnsCategories) }
     }
     return Editing(payee)
   }
@@ -103,6 +114,8 @@ internal constructor(
   fun setName(name: String) = mutableName.update { name }
 
   fun setFavorite(isFavorite: Boolean) = mutableFavorite.update { isFavorite }
+
+  fun setLearnCategories(learn: Boolean) = mutableLearnCategories.update { learn }
 
   fun dismissSaveError() = mutableSaveError.update { null }
 
@@ -112,11 +125,13 @@ internal constructor(
       try {
         val name = mutableName.value.trim()
         val favorite = mutableFavorite.value
+        val learn = mutableLearnCategories.value
         val row = payeeId.value
-        payeeDao.update(payeeId, name, favorite)
+        payeeDao.update(payeeId, name, favorite, learn)
         syncController.syncChanges(
           localChange(PAYEES, row, "name", name),
           localChange(PAYEES, row, "favorite", favorite),
+          localChange(PAYEES, row, "learn_categories", learn),
         )
         mutableEvents.tryEmit(FinishedSaving)
       } catch (e: CancellationException) {
@@ -128,7 +143,11 @@ internal constructor(
     }
   }
 
-  private data class Loaded(val name: String, val isFavorite: Boolean)
+  private data class Loaded(
+    val name: String,
+    val isFavorite: Boolean,
+    val learnsCategories: Boolean,
+  )
 
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
