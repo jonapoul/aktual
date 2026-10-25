@@ -97,6 +97,7 @@ internal fun ListPayeesScreen(
       when (action) {
         Retry -> viewModel.retry()
         OpenSearch -> toSearch()
+        ToggleUnusedOnly -> viewModel.toggleUnusedOnly()
         is OpenPayee -> toEdit(action.id)
         is OpenRules -> openRules(action.payee, editRule, searchRules)
         is Delete -> viewModel.delete(action.payee)
@@ -269,7 +270,9 @@ private fun ListPayeesContent(
 
     is Success ->
       PayeesList(
-        payees = state.payees,
+        payees = state.shown,
+        numUnused = state.numUnused,
+        unusedOnly = state.unusedOnly,
         listState = listState,
         contentPadding = padding,
         onAction = onAction,
@@ -280,6 +283,8 @@ private fun ListPayeesContent(
 @Composable
 private fun PayeesList(
   payees: ImmutableList<PayeeItem>,
+  numUnused: Int,
+  unusedOnly: Boolean,
   listState: LazyListState,
   contentPadding: PaddingValues,
   onAction: ListPayeesActionHandler,
@@ -294,6 +299,17 @@ private fun PayeesList(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(ListPayeesDS.listItemSpacing),
   ) {
+    // Upstream only offers the filter when there's something to filter, or it's already on
+    if (numUnused > 0 || unusedOnly) {
+      item(key = "unused") {
+        UnusedPayeesChip(
+          numUnused = numUnused,
+          isSelected = unusedOnly,
+          onClick = { onAction(ToggleUnusedOnly) },
+        )
+      }
+    }
+
     items(payees, key = { it.id.value }) { payee ->
       SwipeablePayeeItem(
         modifier = Modifier.animateItem(),
@@ -318,6 +334,7 @@ private fun PayeesList(
 private class ListPayeesStateProvider :
   ColoredParameterProvider<ListPayeesState>(
     Success(PayeesPreview.all),
+    Success(PayeesPreview.all, unusedOnly = true),
     Empty,
     Loading,
     Failure("Database connection lost"),

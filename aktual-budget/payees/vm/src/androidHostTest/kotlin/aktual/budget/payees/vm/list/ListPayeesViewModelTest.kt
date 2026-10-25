@@ -22,9 +22,12 @@ import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
 import alakazam.test.standardDispatcher
 import app.cash.turbine.test
+import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.prop
 import kotlin.test.AfterTest
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
@@ -75,6 +78,7 @@ class ListPayeesViewModelTest {
               isFavorite = false,
               numTransactions = 0,
               numRules = 0,
+              isUnused = true,
             ),
             PayeeItem(
               id = PayeeId("transfer"),
@@ -83,6 +87,7 @@ class ListPayeesViewModelTest {
               isFavorite = false,
               numTransactions = 0,
               numRules = 1,
+              isUnused = false,
             ),
             PayeeItem(
               id = PayeeId("tesco"),
@@ -91,6 +96,7 @@ class ListPayeesViewModelTest {
               isFavorite = false,
               numTransactions = 2,
               numRules = 1,
+              isUnused = false,
             ),
           ),
         ),
@@ -136,6 +142,36 @@ class ListPayeesViewModelTest {
 
       // then
       assertThatNextEmissionIsEqualTo(Success(persistentListOf(ARGOS.copy(numRules = 1))))
+    }
+  }
+
+  @Test
+  fun `The unused filter shows only payees without transactions`() = runDatabaseTest { scope ->
+    // given
+    insertPayees()
+    TransactionDao(this).insert("t1", ACCOUNT, null, TESCO.value, DATE)
+    val viewModel = createViewModel(scope)
+    viewModel.state.test {
+      assertThatNextEmissionIsEqualTo(Loading)
+      val all = (awaitItem() as Success).payees
+      assertThat(all.filter { it.isUnused }.map { it.id }).containsExactly(ARGOS.id)
+
+      // when
+      viewModel.toggleUnusedOnly()
+
+      // then
+      val filtered = awaitItem() as Success
+      assertThat(filtered).all {
+        prop(Success::payees).isEqualTo(all)
+        prop(Success::numUnused).isEqualTo(1)
+        prop(Success::shown).containsExactly(ARGOS)
+      }
+
+      // when
+      viewModel.toggleUnusedOnly()
+
+      // then
+      assertThatNextEmissionIsEqualTo(Success(all, unusedOnly = false))
     }
   }
 
@@ -333,6 +369,7 @@ class ListPayeesViewModelTest {
         isFavorite = false,
         numTransactions = 0,
         numRules = 0,
+        isUnused = true,
       )
   }
 }

@@ -11,4 +11,6 @@ data class PayeeItem(
   val isFavorite: Boolean,
   val numTransactions: Int,
   val numRules: Int,
+  // No transactions and not in a legacy description rule, as upstream's orphaned payees
+  val isUnused: Boolean,
 )

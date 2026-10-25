@@ -204,6 +204,7 @@ class EditPayeeViewModelTest {
         isFavorite = false,
         numTransactions = 0,
         numRules = 0,
+        isUnused = true,
       )
   }
 }
