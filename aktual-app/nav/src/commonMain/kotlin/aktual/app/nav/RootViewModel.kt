@@ -7,6 +7,8 @@ import aktual.core.ui.BottomBarState
 import aktual.core.ui.HazeConfig
 import aktual.di.BudgetGraph
 import aktual.di.RunLevelState
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -34,7 +36,8 @@ abstract class RootViewModel(
   initialRouteUseCase: InitialRouteUseCase,
   bottomBarStateUseCase: BottomBarStateUseCase,
   private val runLevels: RunLevelState,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   val navEntryContributors: ImmutableSet<NavEntryContributor> =
     navEntryContributors.toImmutableSet()
   val formatConfig: StateFlow<FormatConfig> = formatConfigUseCase(viewModelScope)
