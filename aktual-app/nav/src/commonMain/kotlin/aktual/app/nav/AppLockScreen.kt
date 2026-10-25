@@ -1,6 +1,8 @@
 package aktual.app.nav
 
-import aktual.core.l10n.Drawables
+import aktual.core.icons.material.Fingerprint
+import aktual.core.icons.material.Lock
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
@@ -10,16 +12,25 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButton
+import aktual.core.ui.RounderCardShape
+import aktual.core.ui.WavyBackground
 import aktual.core.ui.WithCompositionLocals
+import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,7 +41,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -73,29 +83,81 @@ fun AppLockContent(
 
 @Composable
 internal fun AppLockScreen(onUnlock: () -> Unit, modifier: Modifier = Modifier) {
-  Column(
-    modifier = modifier.fillMaxSize().background(colors.tableBackground).safeDrawingPadding(),
-    horizontalAlignment = CenterHorizontally,
-    verticalArrangement = Arrangement.Center,
-  ) {
-    Image(
-      modifier = Modifier.size(96.dp),
-      painter = Drawables.appIcon192,
-      contentDescription = null,
-    )
+  Box(modifier.fillMaxSize()) {
+    WavyBackground()
+    LockedContent(onUnlock)
+  }
+}
 
-    VerticalSpacer(20.dp)
+@Composable
+private fun LockedContent(onUnlock: () -> Unit) {
+  Column(
+    modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = 16.dp),
+    horizontalAlignment = CenterHorizontally,
+  ) {
+    VerticalSpacer(96.dp)
+
+    Box(
+      modifier =
+        Modifier.size(88.dp)
+          .background(colors.cardBackground, CircleShape)
+          .border(1.dp, colors.cardBorder, CircleShape),
+      contentAlignment = Center,
+    ) {
+      Icon(
+        modifier = Modifier.size(40.dp),
+        imageVector = MaterialIcons.Lock,
+        contentDescription = null,
+        tint = colors.pageTextPositive,
+      )
+    }
+
+    VerticalSpacer(28.dp)
 
     Text(
       text = Strings.appLockTitle,
-      fontSize = 20.sp,
-      fontWeight = W700,
+      fontSize = 25.sp,
+      fontWeight = W600,
       color = colors.pageText,
     )
 
-    VerticalSpacer(20.dp)
+    VerticalSpacer(8.dp)
 
-    PrimaryTextButton(text = Strings.appLockUnlock, onClick = onUnlock)
+    Text(
+      text = Strings.appLockMessage,
+      fontSize = 15.sp,
+      textAlign = Center,
+      color = colors.pageTextLight,
+    )
+
+    Spacer(Modifier.weight(1f))
+
+    PrimaryTextButton(
+      modifier = Modifier.fillMaxWidth().height(56.dp),
+      text = Strings.appLockUnlock,
+      shape = RounderCardShape,
+      fontSize = 16.sp,
+      onClick = onUnlock,
+      prefix = {
+        Icon(
+          modifier = Modifier.size(22.dp),
+          imageVector = MaterialIcons.Fingerprint,
+          contentDescription = null,
+        )
+        HorizontalSpacer(8.dp)
+      },
+    )
+
+    VerticalSpacer(12.dp)
+
+    Text(
+      text = Strings.appLockPromptSubtitle,
+      fontSize = 13.sp,
+      textAlign = Center,
+      color = colors.pageTextLight,
+    )
+
+    VerticalSpacer(24.dp)
   }
 }
 
