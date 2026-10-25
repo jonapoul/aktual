@@ -13,6 +13,8 @@ import aktual.core.model.Password
 import aktual.core.model.Percent
 import aktual.di.LoggedInScope
 import aktual.di.RunLevelController
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.KeyPreferences
 import alakazam.kotlin.launchInfiniteLoop
 import androidx.compose.runtime.Stable
@@ -55,7 +57,8 @@ class SyncBudgetViewModel(
   private val keyFetcher: KeyFetcher,
   private val keyPreferences: KeyPreferences,
   private val runLevelController: RunLevelController,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private var cachedData: CachedEncryptedData? = null
 
   private val mutablePasswordState = MutableStateFlow<KeyPasswordState>(Inactive)
