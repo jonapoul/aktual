@@ -12,7 +12,7 @@
   <string name="payees_search_no_results">No payees match “%1$s”</string>
   <string name="payees_edit_title">Edit payee</string>
   <string name="payees_edit_name_label">Name</string>
-  <string name="payees_edit_name_placeholder">e.g. Tesco</string>
+  <string name="payees_edit_name_placeholder">e.g. Netflix</string>
   <string name="payees_edit_name_required">Required</string>
   <string name="payees_edit_name_duplicate">Another payee already has this name</string>
   <string name="payees_edit_favorite_help">Favorites are suggested first when picking a payee for a transaction.</string>

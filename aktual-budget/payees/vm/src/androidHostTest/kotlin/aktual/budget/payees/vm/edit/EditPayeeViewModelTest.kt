@@ -158,7 +158,9 @@ class EditPayeeViewModelTest {
 
   private suspend fun EditPayeeViewModel.awaitLoaded(): EditPayeeViewModel = apply {
     state.test {
-      while (awaitItem() !is Editing) Unit
+      do {
+        val item = awaitItem()
+      } while (item !is Editing)
       cancelAndIgnoreRemainingEvents()
     }
   }
