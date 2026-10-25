@@ -1,6 +1,8 @@
 package aktual.prefs.vm.transactions
 
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.TransactionPreferences
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.asLoadedStateFlow
@@ -18,7 +20,10 @@ import kotlinx.coroutines.launch
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class TransactionSettingsViewModel(preferences: TransactionPreferences) : ViewModel() {
+class TransactionSettingsViewModel(
+  preferences: TransactionPreferences,
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val alternateRowColours =
     preferences.alternateRowColours.asLoadedStateFlow(viewModelScope)
 

@@ -1,6 +1,8 @@
 package aktual.prefs.vm.currency
 
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.CurrencyPreferences
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
@@ -18,7 +20,10 @@ import kotlinx.coroutines.flow.StateFlow
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class CurrencySettingsViewModel(preferences: CurrencyPreferences) : ViewModel() {
+class CurrencySettingsViewModel(
+  preferences: CurrencyPreferences,
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   val state: StateFlow<CurrencySettingsState> =
     viewModelScope.launchMolecule(Immediate) {
       val currency by collectAsState(preferences.currency)

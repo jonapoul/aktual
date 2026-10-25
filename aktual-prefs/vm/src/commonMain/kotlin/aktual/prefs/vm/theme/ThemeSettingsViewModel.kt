@@ -5,6 +5,8 @@ import aktual.core.theme.CustomThemeCache
 import aktual.core.theme.DarkColors
 import aktual.core.theme.MidnightColors
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.ThemePreferences
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
@@ -32,7 +34,8 @@ import kotlinx.coroutines.launch
 class ThemeSettingsViewModel(
   private val preferences: ThemePreferences,
   cache: CustomThemeCache,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val useSystemDefault = preferences.useSystemDefault.asLoadedStateFlow(viewModelScope)
   private val nightTheme = preferences.nightTheme.asLoadedStateFlow(viewModelScope)
   private val constantTheme = preferences.constantTheme.asLoadedStateFlow(viewModelScope)

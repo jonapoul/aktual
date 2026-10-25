@@ -1,6 +1,8 @@
 package aktual.prefs.vm.security
 
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.AppLockAuthenticator
 import aktual.prefs.SecurityPreferences
 import aktual.prefs.vm.BooleanPreference
@@ -26,7 +28,8 @@ import kotlinx.coroutines.launch
 class SecuritySettingsViewModel(
   private val preferences: SecurityPreferences,
   private val authenticator: AppLockAuthenticator,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val isAvailable = MutableStateFlow(authenticator.isAvailable())
 
   val state: StateFlow<SecuritySettingsState> =

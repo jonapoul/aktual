@@ -9,22 +9,18 @@ import aktual.prefs.vm.inspect.search.SearchThemeState.Results
 import aktual.prefs.vm.inspect.toHexString
 import aktual.prefs.vm.theme.properties
 import aktual.test.assertThatNextEmissionIsEqualTo
-import alakazam.test.standardDispatcher
+import aktual.test.viewModelContext
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEmpty
-import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -39,15 +35,8 @@ class SearchThemeViewModelTest {
 
   private val properties = LightColors.properties()
 
-  private fun TestScope.buildViewModel(): SearchThemeViewModel {
-    Dispatchers.setMain(standardDispatcher)
-    return SearchThemeViewModel(LightColors.id, resolver)
-  }
-
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
+  private fun TestScope.buildViewModel(): SearchThemeViewModel =
+    SearchThemeViewModel(LightColors.id, resolver, viewModelContext = viewModelContext)
 
   @Test
   fun `Blank query prompts for input`() = runTest {

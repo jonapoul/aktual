@@ -1,6 +1,8 @@
 package aktual.prefs.vm.systemui
 
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.SystemUiPreferences
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
@@ -18,7 +20,10 @@ import kotlinx.coroutines.flow.StateFlow
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class SystemUiSettingsViewModel(preferences: SystemUiPreferences) : ViewModel() {
+class SystemUiSettingsViewModel(
+  preferences: SystemUiPreferences,
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   val state: StateFlow<SystemUiSettingsState> =
     viewModelScope.launchMolecule(Immediate) {
       val showBottomBar by collectAsState(preferences.showBottomBar)

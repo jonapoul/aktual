@@ -3,6 +3,8 @@ package aktual.prefs.vm.inspect.search
 import aktual.core.model.ThemeId
 import aktual.core.theme.ThemeResolver
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.vm.inspect.ThemeProperty
 import aktual.prefs.vm.inspect.search.SearchThemeState.Results
 import aktual.prefs.vm.inspect.toHexString
@@ -30,7 +32,8 @@ import kotlinx.coroutines.launch
 class SearchThemeViewModel(
   @Assisted private val themeId: ThemeId,
   private val themeResolver: ThemeResolver,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableQuery = MutableStateFlow("")
   private val properties = MutableStateFlow<List<ThemeProperty>>(emptyList())
 
