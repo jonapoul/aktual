@@ -14,6 +14,8 @@ import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.di.LoggedInScope
 import aktual.di.RunLevelController
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.AppPreferences
 import aktual.prefs.asStateFlow
 import aktual.prefs.delete
@@ -52,7 +54,8 @@ class ListBudgetsViewModel(
   private val syncApi: SyncApi,
   private val appPreferences: AppPreferences,
   private val runLevels: RunLevelController,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableEvent = MutableSharedFlow<ListBudgetsEvent>(extraBufferCapacity = 1)
   val event: Flow<ListBudgetsEvent> = mutableEvent.asSharedFlow()
 
