@@ -19,15 +19,15 @@ internal class RuleSearchText(
   private val strings: StringLookup,
 ) {
   suspend fun of(rule: Rule): String = buildList {
-    if (rule.stage == Pre || rule.stage == Post) add(strings.get(rule.stage.label()))
+    if (rule.stage == Pre || rule.stage == Post) add(strings[rule.stage.label()])
     rule.conditions.forEach { addAll(conditionText(it)) }
     rule.actions.forEach { addAll(actionText(it)) }
   }
     .joinToString(separator = " ")
 
   private suspend fun conditionText(condition: Condition): List<String> = buildList {
-    add(strings.get(condition.field.label(condition.options)))
-    add(strings.get(condition.operator.label()))
+    add(strings[condition.field.label(condition.options)])
+    add(strings[condition.operator.label()])
     when (val value = condition.value) {
       is JsonArray -> addAll(names(condition.field, value.map { it.jsonPrimitive.content }))
       is JsonPrimitive -> add(name(condition.field, value.content))
@@ -36,8 +36,8 @@ internal class RuleSearchText(
   }
 
   private suspend fun actionText(action: RuleAction): List<String> = buildList {
-    add(strings.get(action.op.label()))
-    action.field?.let { add(strings.get(it.label(options = null))) }
+    add(strings[action.op.label()])
+    action.field?.let { add(strings[it.label(options = null)]) }
     val content = action.value?.content ?: return@buildList
     when (action.op) {
       Set -> add(name(action.field, content))
