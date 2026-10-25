@@ -109,7 +109,7 @@ data class BudgetAnalysisReportMeta(
 
 @Serializable
 data class MarkdownReportMeta(
-  @SerialName("content") val content: String,
+  @SerialName("content") val content: String = "",
   @SerialName("text_align") val textAlign: TextAlign? = null,
 ) : ReportMeta
 

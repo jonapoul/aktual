@@ -406,10 +406,11 @@ private val MARKDOWN_1 =
 @Language("Markdown")
 private val MARKDOWN_SHORT =
   """
-  - Bullet 1
-  - Bullet 2
+  ### Monthly goals
+  - Keep **dining out** within budget
+  - Move *10%* of income into savings
 
-  More text goes below - *lorem ipsum* blah blah who cares just trying to **split over multiple lines like this**. Here's a [link to Google](https://www.google.com)
+  Add notes, reminders or context alongside your reports using [Markdown](https://commonmark.org/help/).
   """
     .trimIndent()
 
