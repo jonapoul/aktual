@@ -7,7 +7,7 @@ import androidx.compose.runtime.Immutable
 
 internal sealed interface ListSchedulesAction
 
-internal data object Reload : ListSchedulesAction
+internal data object Retry : ListSchedulesAction
 
 internal data object CreateNew : ListSchedulesAction
 

@@ -24,13 +24,14 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
@@ -95,7 +96,6 @@ internal fun BudgetScreen(
   viewModel: BudgetViewModel = budgetViewModel(month),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  val isSyncing by viewModel.isSyncing.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
 
   // A newer change replaces the snackbar, as only the latest can be undone
@@ -111,10 +111,8 @@ internal fun BudgetScreen(
   BudgetScaffold(
     modifier = modifier,
     state = state,
-    isRefreshing = isSyncing,
     onAction = { action ->
       when (action) {
-        Refresh -> viewModel.refresh()
         Retry -> viewModel.retry()
         is ShowMonth -> viewModel.showMonth(action.month)
         PreviousMonth -> viewModel.previousMonth()
@@ -181,7 +179,6 @@ private fun budgetViewModel(month: YearMonth?) =
 @Composable
 private fun BudgetScaffold(
   state: BudgetState,
-  isRefreshing: Boolean,
   onAction: BudgetActionHandler,
   modifier: Modifier = Modifier,
   isCompact: Boolean = isCompactWidth(),
@@ -254,16 +251,11 @@ private fun BudgetScaffold(
 
       PageBackground()
 
-      HazedPullToRefreshBox(
-        hazeState = hazeState,
-        innerPadding = innerPadding,
-        isRefreshing = isRefreshing,
-        onRefresh = { handler(Refresh) },
-      ) { padding ->
+      Box(modifier = Modifier.hazedTopBarContent(hazeState, innerPadding)) {
         BudgetContent(
           state = state,
           isCompact = isCompact,
-          contentPadding = padding,
+          contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
           listState = listState,
           pageListStates = pageListStates,
           onAction = handler,
@@ -525,7 +517,7 @@ private fun PreviewBudgetScaffold(
   @PreviewParameter(BudgetStateProvider::class) params: ColoredParams<BudgetState>,
 ) =
   PreviewWithColoredParams(params) {
-    BudgetScaffold(state = this, isRefreshing = false, onAction = {}, isCompact = true)
+    BudgetScaffold(state = this, onAction = {}, isCompact = true)
   }
 
 private class BudgetColumnsProvider :
@@ -542,7 +534,7 @@ private fun PreviewBudgetColumns(
   @PreviewParameter(BudgetColumnsProvider::class) params: ColoredParams<BudgetState>,
 ) =
   PreviewWithColoredParams(params) {
-    BudgetScaffold(state = this, isRefreshing = false, onAction = {}, isCompact = false)
+    BudgetScaffold(state = this, onAction = {}, isCompact = false)
   }
 
 internal object BudgetDS {

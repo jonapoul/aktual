@@ -20,6 +20,7 @@ import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
+import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -52,7 +53,7 @@ class ListTagsViewModelTest {
 
     // then the state settles on the mapped tags
     viewModel.state.test {
-      assertThat(awaitItem())
+      assertThat(awaitLoaded())
         .isInstanceOf(Success::class)
         .prop(Success::tags)
         .containsExactlyInAnyOrder(
@@ -84,13 +85,13 @@ class ListTagsViewModelTest {
 
     // then we get the empty state rather than a failure
     viewModel.state.test {
-      assertThat(awaitItem()).isEqualTo(Empty)
+      assertThat(awaitLoaded()).isEqualTo(Empty)
       cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
-  fun `Delete tombstones the tag, removes it, and emits an event`() = runDatabaseTest { scope ->
+  fun `Delete tombstones the tag and emits an event`() = runDatabaseTest { scope ->
     insertTag(id = "groceries-id", tag = "groceries")
     insertTag(id = "rent-id", tag = "rent")
 
@@ -99,7 +100,7 @@ class ListTagsViewModelTest {
 
     // wait for the initial load with both tags
     viewModel.state.test {
-      assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).hasSize(2)
+      assertThat(awaitLoaded()).isInstanceOf(Success::class).prop(Success::tags).hasSize(2)
       cancelAndIgnoreRemainingEvents()
     }
 
@@ -114,20 +115,10 @@ class ListTagsViewModelTest {
     assertThat(sync.changes)
       .extracting(LocalChange::row, LocalChange::column)
       .containsExactly("groceries-id" to "tombstone")
-
-    // and only the remaining tag is shown
-    viewModel.state.test {
-      assertThat(awaitItem())
-        .isInstanceOf(Success::class)
-        .prop(Success::tags)
-        .extracting(TagItem::tag)
-        .containsExactly("rent")
-      cancelAndIgnoreRemainingEvents()
-    }
   }
 
   @Test
-  fun `Undo restores a deleted tag at its original position`() = runDatabaseTest { scope ->
+  fun `Undo untombstones a deleted tag`() = runDatabaseTest { scope ->
     insertTag(id = "groceries-id", tag = "groceries")
     insertTag(id = "rent-id", tag = "rent")
 
@@ -136,30 +127,21 @@ class ListTagsViewModelTest {
 
     // wait for the initial load with both tags
     viewModel.state.test {
-      assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).hasSize(2)
+      assertThat(awaitLoaded()).isInstanceOf(Success::class).prop(Success::tags).hasSize(2)
       cancelAndIgnoreRemainingEvents()
     }
 
     // delete the first tag, capturing the event we'd hand back to undo
-    lateinit var deleted: ListTagsEvent.Deleted
+    lateinit var deleted: TagItem
     viewModel.events.test {
       viewModel.delete(TagId("groceries-id"))
       val event = awaitItem()
       assertThat(event).isInstanceOf(ListTagsEvent.Deleted::class)
-      deleted = event as Deleted
+      deleted = (event as Deleted).item
     }
 
-    // undoing puts it back where it was
-    viewModel.undoDelete(deleted.item, deleted.index)
+    viewModel.undoDelete(deleted)
     scope.advanceUntilIdle()
-    viewModel.state.test {
-      assertThat(awaitItem())
-        .isInstanceOf(Success::class)
-        .prop(Success::tags)
-        .extracting(TagItem::tag)
-        .containsExactly("groceries", "rent")
-      cancelAndIgnoreRemainingEvents()
-    }
 
     // the delete tombstone and its reversal were both queued for sync
     assertThat(sync.changes)
@@ -178,7 +160,7 @@ class ListTagsViewModelTest {
 
     // wait for the initial load
     viewModel.state.test {
-      assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).hasSize(1)
+      assertThat(awaitLoaded()).isInstanceOf(Success::class).prop(Success::tags).hasSize(1)
       cancelAndIgnoreRemainingEvents()
     }
 
@@ -208,7 +190,7 @@ class ListTagsViewModelTest {
 
       // wait for the initial load
       viewModel.state.test {
-        assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).hasSize(1)
+        assertThat(awaitLoaded()).isInstanceOf(Success::class).prop(Success::tags).hasSize(1)
         cancelAndIgnoreRemainingEvents()
       }
 
@@ -223,7 +205,7 @@ class ListTagsViewModelTest {
           numTransactions = 0,
         )
       viewModel.events.test {
-        viewModel.undoDelete(deleted, index = 0)
+        viewModel.undoDelete(deleted)
         assertThat(awaitItem()).isEqualTo(ListTagsEvent.RestoreFailed("groceries"))
       }
 
@@ -247,7 +229,7 @@ class ListTagsViewModelTest {
     val viewModel = createViewModel(scope)
 
     viewModel.state.test {
-      val success = awaitItem() as Success
+      val success = awaitLoaded() as Success
       // case-insensitive A-Z, regardless of insertion order
       assertThat(success)
         .prop(Success::tags)
@@ -268,7 +250,7 @@ class ListTagsViewModelTest {
 
     viewModel.state.test {
       // starts ascending
-      assertThat(awaitItem() as Success)
+      assertThat(awaitLoaded() as Success)
         .prop(Success::tags)
         .extracting(TagItem::tag)
         .containsExactly("apple", "rent")
@@ -297,22 +279,50 @@ class ListTagsViewModelTest {
     val sync = TestSyncController()
     val viewModel = createViewModel(scope, sync)
     viewModel.state.test {
-      assertThat(awaitItem()).isInstanceOf(Success::class)
+      assertThat(awaitLoaded()).isInstanceOf(Success::class)
       cancelAndIgnoreRemainingEvents()
     }
-    lateinit var deleted: ListTagsEvent.Deleted
+    lateinit var deleted: TagItem
     viewModel.events.test {
       viewModel.delete(TagId("groceries-id"))
-      deleted = awaitItem() as Deleted
+      deleted = (awaitItem() as Deleted).item
     }
 
     // the snackbar outlives the screen, so undo can be tapped after the view model is cleared
     viewModel.viewModelScope.cancel()
-    viewModel.undoDelete(deleted.item, deleted.index)
+    viewModel.undoDelete(deleted)
     scope.advanceUntilIdle()
 
     assertThat(sync.changes.last().row to sync.changes.last().value)
       .isEqualTo("groceries-id" to MessageValue.Number(0))
+  }
+
+  @Test
+  fun `Tags written to the database show up without a reload`() = runDatabaseTest { scope ->
+    insertTag(id = "rent-id", tag = "rent")
+    val viewModel = createViewModel(scope)
+
+    viewModel.state.test {
+      assertThat(awaitLoaded())
+        .isInstanceOf(Success::class)
+        .prop(Success::tags)
+        .extracting(TagItem::tag)
+        .containsExactly("rent")
+
+      insertTag(id = "apple-id", tag = "apple")
+      assertThat(awaitItem())
+        .isInstanceOf(Success::class)
+        .prop(Success::tags)
+        .extracting(TagItem::tag)
+        .containsExactly("apple", "rent")
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  private suspend fun ReceiveTurbine<ListTagsState>.awaitLoaded(): ListTagsState {
+    var state = awaitItem()
+    while (state == Loading) state = awaitItem()
+    return state
   }
 
   private fun BudgetDatabase.createViewModel(

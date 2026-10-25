@@ -57,15 +57,14 @@ class ListSchedulesViewModelTest {
       viewModel.delete(rent)
       scope.advanceUntilIdle()
 
-      assertThat(awaitItem()).isEqualTo(ListSchedulesEvent.Deleted(rent, index = 0))
+      assertThat(awaitItem()).isEqualTo(ListSchedulesEvent.Deleted(rent))
       assertThat(sync.changes)
         .containsExactly(tombstone(RULES, "a-rule"), tombstone(SCHEDULES, "a"))
     }
-    assertThat(viewModel.state.awaitSchedules()).extracting(Schedule::name).containsExactly("Power")
   }
 
   @Test
-  fun `Undo restores the schedule in its old position`() = runDatabaseTest { scope ->
+  fun `Undo untombstones the schedule and its rule`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
     insertSchedule(
       id = "b",
@@ -82,11 +81,28 @@ class ListSchedulesViewModelTest {
     scope.advanceUntilIdle()
     sync.changes.clear()
 
-    viewModel.undoDelete(rent, index = 0)
+    viewModel.undoDelete(rent)
     scope.advanceUntilIdle()
 
     assertThat(sync.changes)
       .containsExactly(untombstone(RULES, "a-rule"), untombstone(SCHEDULES, "a"))
+  }
+
+  @Test
+  fun `Schedules written to the database show up without a reload`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
+    val viewModel = createViewModel(scope, TestSyncController())
+    assertThat(viewModel.state.awaitSchedules()).extracting(Schedule::name).containsExactly("Rent")
+
+    insertSchedule(
+      id = "b",
+      name = "Power",
+      payee = "Energy",
+      account = "Checking",
+      nextDate = LocalDate(2026, 5, 2),
+    )
+    scope.advanceUntilIdle()
+
     assertThat(viewModel.state.awaitSchedules())
       .extracting(Schedule::name)
       .containsExactly("Rent", "Power")

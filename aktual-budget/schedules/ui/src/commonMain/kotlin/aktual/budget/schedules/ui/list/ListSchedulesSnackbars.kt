@@ -15,7 +15,7 @@ import org.jetbrains.compose.resources.getString
 
 internal suspend fun SnackbarHostState.showDeleted(
   event: ListSchedulesEvent.Deleted,
-  onUndo: (Schedule, Int) -> Unit,
+  onUndo: (Schedule) -> Unit,
 ) {
   val result =
     showSnackbar(
@@ -24,7 +24,7 @@ internal suspend fun SnackbarHostState.showDeleted(
       duration = SnackbarDuration.Long,
     )
   if (result == ActionPerformed) {
-    onUndo(event.schedule, event.index)
+    onUndo(event.schedule)
   }
 }
 
