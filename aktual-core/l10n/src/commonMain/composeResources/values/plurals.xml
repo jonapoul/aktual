@@ -1,0 +1,167 @@
+<resources>
+  <!-- about -->
+  <plurals name="logs_summary_files">
+    <item quantity="one">%1$d file</item>
+    <item quantity="other">%1$d files</item>
+  </plurals>
+  <plurals name="logs_errors">
+    <item quantity="one">%1$d error</item>
+    <item quantity="other">%1$d errors</item>
+  </plurals>
+  <plurals name="logs_live_paused">
+    <item quantity="one">Paused - %1$d new line</item>
+    <item quantity="other">Paused - %1$d new lines</item>
+  </plurals>
+  <plurals name="logs_matches">
+    <item quantity="one">%1$d matching line</item>
+    <item quantity="other">%1$d matching lines</item>
+  </plurals>
+
+  <!-- budget-bank-sync -->
+  <plurals name="bank_sync_minutes_ago">
+    <item quantity="one">%1$d minute ago</item>
+    <item quantity="other">%1$d minutes ago</item>
+  </plurals>
+  <plurals name="bank_sync_hours_ago">
+    <item quantity="one">%1$d hour ago</item>
+    <item quantity="other">%1$d hours ago</item>
+  </plurals>
+  <plurals name="bank_sync_days_ago">
+    <item quantity="one">%1$d day ago</item>
+    <item quantity="other">%1$d days ago</item>
+  </plurals>
+
+  <!-- budget-budgeting -->
+  <plurals name="budgeting_banner_overspent">
+    <item quantity="one">%1$d overspent category (%2$s)</item>
+    <item quantity="other">%1$d overspent categories (%2$s)</item>
+  </plurals>
+
+  <!-- budget-home -->
+  <plurals name="home_reports_sheet_message">
+    <item quantity="one">Pin up to %1$d report to your home page</item>
+    <item quantity="other">Pin up to %1$d reports to your home page</item>
+  </plurals>
+  <plurals name="home_this_month_days_left">
+    <item quantity="one">%1$d day left</item>
+    <item quantity="other">%1$d days left</item>
+  </plurals>
+  <plurals name="home_attention_sync_failed_many">
+    <item quantity="one">%1$d account failed to sync</item>
+    <item quantity="other">%1$d accounts failed to sync</item>
+  </plurals>
+  <plurals name="home_attention_uncategorised">
+    <item quantity="one">%1$d uncategorized transaction</item>
+    <item quantity="other">%1$d uncategorized transactions</item>
+  </plurals>
+  <plurals name="home_attention_overspent">
+    <item quantity="one">%1$d category overspent</item>
+    <item quantity="other">%1$d categories overspent</item>
+  </plurals>
+  <plurals name="home_attention_overdue">
+    <item quantity="one">%1$d schedule overdue</item>
+    <item quantity="other">%1$d schedules overdue</item>
+  </plurals>
+  <plurals name="home_upcoming_window_days">
+    <item quantity="one">next %1$d day</item>
+    <item quantity="other">next %1$d days</item>
+  </plurals>
+  <plurals name="home_upcoming_window_weeks">
+    <item quantity="one">next week</item>
+    <item quantity="other">next %1$d weeks</item>
+  </plurals>
+  <plurals name="home_upcoming_window_months">
+    <item quantity="one">next month</item>
+    <item quantity="other">next %1$d months</item>
+  </plurals>
+  <plurals name="home_upcoming_window_years">
+    <item quantity="one">next year</item>
+    <item quantity="other">next %1$d years</item>
+  </plurals>
+  <plurals name="home_upcoming_in_days">
+    <item quantity="one">In %1$d day</item>
+    <item quantity="other">In %1$d days</item>
+  </plurals>
+
+  <!-- budget-payees -->
+  <plurals name="payees_num_rules">
+    <item quantity="one">%1$d associated rule</item>
+    <item quantity="other">%1$d associated rules</item>
+  </plurals>
+  <plurals name="payees_num_transactions">
+    <item quantity="one">%1$d transaction</item>
+    <item quantity="other">%1$d transactions</item>
+  </plurals>
+
+  <!-- budget-reports -->
+  <plurals name="reports_age_of_money_days">
+    <item quantity="one">%1$d day</item>
+    <item quantity="other">%1$d days</item>
+  </plurals>
+  <plurals name="reports_balance_forecast_scheduled">
+    <item quantity="one">%1$d scheduled transaction included</item>
+    <item quantity="other">%1$d scheduled transactions included</item>
+  </plurals>
+  <plurals name="reports_monte_carlo_simulations">
+    <item quantity="one">%1$d simulation, in today’s money</item>
+    <item quantity="other">%1$d simulations, in today’s money</item>
+  </plurals>
+  <plurals name="reports_formula_editor_conditions">
+    <item quantity="one">%1$d condition</item>
+    <item quantity="other">%1$d conditions</item>
+  </plurals>
+
+  <!-- budget-schedules -->
+  <plurals name="edit_schedule_sentence_times">
+    <item quantity="one">%1$d time</item>
+    <item quantity="other">%1$d times</item>
+  </plurals>
+  <plurals name="edit_schedule_interval_days">
+    <item quantity="one">Every %1$d day</item>
+    <item quantity="other">Every %1$d days</item>
+  </plurals>
+  <plurals name="edit_schedule_interval_weeks">
+    <item quantity="one">Every %1$d week</item>
+    <item quantity="other">Every %1$d weeks</item>
+  </plurals>
+  <plurals name="edit_schedule_interval_months">
+    <item quantity="one">Every %1$d month</item>
+    <item quantity="other">Every %1$d months</item>
+  </plurals>
+  <plurals name="edit_schedule_interval_years">
+    <item quantity="one">Every %1$d year</item>
+    <item quantity="other">Every %1$d years</item>
+  </plurals>
+  <plurals name="recur_every_n_days">
+    <item quantity="one">Every %1$d day</item>
+    <item quantity="other">Every %1$d days</item>
+  </plurals>
+  <plurals name="recur_every_n_weeks">
+    <item quantity="one">Every %1$d week on %2$s</item>
+    <item quantity="other">Every %1$d weeks on %2$s</item>
+  </plurals>
+  <plurals name="recur_every_n_months">
+    <item quantity="one">Every %1$d month on the %2$s</item>
+    <item quantity="other">Every %1$d months on the %2$s</item>
+  </plurals>
+  <plurals name="recur_every_n_years">
+    <item quantity="one">Every %1$d year on %2$s</item>
+    <item quantity="other">Every %1$d years on %2$s</item>
+  </plurals>
+  <plurals name="recur_end_times">
+    <item quantity="one">%1$d time</item>
+    <item quantity="other">%1$d times</item>
+  </plurals>
+
+  <!-- budget-tags -->
+  <plurals name="tags_num_transactions">
+    <item quantity="one">%1$d transaction</item>
+    <item quantity="other">%1$d transactions</item>
+  </plurals>
+
+  <!-- budget-transactions -->
+  <plurals name="transactions_split_parts">
+    <item quantity="one">%1$d of %2$d part</item>
+    <item quantity="other">%1$d of %2$d parts</item>
+  </plurals>
+</resources>

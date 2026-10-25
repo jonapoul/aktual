@@ -4,7 +4,7 @@
 # entries that aren't referenced anywhere in the project sources. For CI.
 #
 # Reports the XML resource name (snake_case) rather than the Kotlin accessor
-# (camelCase) so that output is greppable against the strings-*.xml files.
+# (camelCase) so that output is greppable against strings.xml / plurals.xml.
 #
 # Usage:
 #   ./scripts/unusedStrings.sh          # Report unused, exit non-zero if any
@@ -119,27 +119,22 @@ check_catalog() {
   done
 }
 
-# Strings: non-parameterized are `public val <accessor>: String` spread across
-# lines with a later `get() = stringResource(Res.string.<resource>)`.
-# Parameterized are a single-line `public fun <accessor>(...): String =
-# stringResource(Res.string.<resource>, ...)`.
+# Each entry is a `public val <accessor>` or `public fun <accessor>(...)`, with the matching
+# `Res.<kind>.<resource>` either on the same line or a later one (getters and wrapped parameter
+# lists span several lines).
 # shellcheck disable=SC2016
 check_catalog "Strings" "string" "$STRINGS_FILE" '
-  match($0, /public fun ([A-Za-z_][A-Za-z0-9_]*)\(.*Res\.string\.([A-Za-z_][A-Za-z0-9_]*)/, m) {
-    print m[1], m[2]; acc = ""; next
-  }
-  match($0, /public val ([A-Za-z_][A-Za-z0-9_]*):/, m) { acc = m[1]; next }
+  match($0, /public (val|fun) ([A-Za-z_][A-Za-z0-9_]*)/, m) { acc = m[2] }
   acc != "" && match($0, /Res\.string\.([A-Za-z_][A-Za-z0-9_]*)/, m) {
     print acc, m[1]; acc = ""
   }
 '
 
-# Plurals: both accessor and resource on the same line
-#   `public fun <accessor>(...): String = pluralStringResource(Res.plurals.<resource>, ...)`
 # shellcheck disable=SC2016
 check_catalog "Plurals" "plurals" "$PLURALS_FILE" '
-  match($0, /public fun ([A-Za-z_][A-Za-z0-9_]*)\(.*Res\.plurals\.([A-Za-z_][A-Za-z0-9_]*)/, m) {
-    print m[1], m[2]
+  match($0, /public fun ([A-Za-z_][A-Za-z0-9_]*)/, m) { acc = m[1] }
+  acc != "" && match($0, /Res\.plurals\.([A-Za-z_][A-Za-z0-9_]*)/, m) {
+    print acc, m[1]; acc = ""
   }
 '
 

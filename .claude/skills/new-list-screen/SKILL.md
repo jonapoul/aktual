@@ -544,8 +544,8 @@ Open `settings.gradle.kts` and add both new module paths to the `include(...)` b
 
 ## Step 4 - Add l10n strings
 
-Open `aktual-core/l10n/src/commonMain/composeResources/values/strings-{feature-area}.xml`
-(create a new file `strings-{name}.xml` if no appropriate file exists).
+Open `aktual-core/l10n/src/commonMain/composeResources/values/strings.xml` and add to the
+`<!-- {feature-area} -->` section (add a new section if none fits).
 
 Add these strings - adjust wording as needed:
 
