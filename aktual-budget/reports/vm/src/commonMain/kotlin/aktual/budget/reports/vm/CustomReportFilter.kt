@@ -60,7 +60,7 @@ internal fun taggedAmounts(
       )
     }
 
-private fun CustomReportTransactions.toFilterRow() =
+internal fun CustomReportTransactions.toFilterRow() =
   FilterRow(
     date = date,
     amount = Amount(amount),

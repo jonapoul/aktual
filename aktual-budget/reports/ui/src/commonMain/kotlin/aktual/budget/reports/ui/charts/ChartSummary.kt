@@ -78,50 +78,29 @@ internal fun SummaryChart(
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
 ) =
-  Column(
-    modifier = modifier,
-    horizontalAlignment = CenterHorizontally,
-    verticalArrangement = Arrangement.Center,
-  ) {
-    if (compact && includeHeader) {
+  Column(modifier = modifier, horizontalAlignment = CenterHorizontally) {
+    if (includeHeader) {
       Header(modifier = Modifier.fillMaxWidth(), data = data)
     }
 
-    when (data) {
-      is AveragePerMonth ->
-        if (compact) {
-          CompactAmount(data.average)
-        } else {
-          RegularPerMonth(data, onAction)
+    if (compact) {
+      Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Center) {
+        when (data) {
+          is AveragePerMonth -> CompactAmount(data.average)
+          is AveragePerYear -> CompactAmount(data.average)
+          is AveragePerTransaction -> CompactAmount(data.average)
+          is Percentage -> CompactPercent(data.percent)
+          is Sum -> CompactAmount(data.value)
         }
-
-      is AveragePerYear ->
-        if (compact) {
-          CompactAmount(data.average)
-        } else {
-          RegularPerYear(data, onAction)
-        }
-
-      is AveragePerTransaction ->
-        if (compact) {
-          CompactAmount(data.average)
-        } else {
-          RegularPerTransaction(data, onAction)
-        }
-
-      is Percentage ->
-        if (compact) {
-          CompactPercent(data.percent)
-        } else {
-          RegularPercent(data, onAction)
-        }
-
-      is Sum ->
-        if (compact) {
-          CompactAmount(data.value)
-        } else {
-          RegularSum(data, onAction)
-        }
+      }
+    } else {
+      when (data) {
+        is AveragePerMonth -> RegularPerMonth(data, onAction)
+        is AveragePerYear -> RegularPerYear(data, onAction)
+        is AveragePerTransaction -> RegularPerTransaction(data, onAction)
+        is Percentage -> RegularPercent(data, onAction)
+        is Sum -> RegularSum(data, onAction)
+      }
     }
   }
 
@@ -148,7 +127,12 @@ private fun CompactAmount(
   ScaleToFitText(
     modifier = modifier.padding(16.dp),
     style = summaryTextStyle(),
-    color = if (amount.isPositive()) colors.reportsNumberPositive else colors.reportsNumberNegative,
+    color =
+      when {
+        amount == Zero -> colors.reportsNumberNeutral
+        amount.isPositive() -> colors.reportsNumberPositive
+        else -> colors.reportsNumberNegative
+      },
     text = amount.formattedString(includeSign = false),
   )
 }
@@ -187,7 +171,7 @@ private fun RegularPerMonth(
       verticalAlignment = CenterVertically,
     ) {
       Column(
-        modifier = Modifier.width(Max),
+        modifier = Modifier.weight(1f, fill = false).width(Max),
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
@@ -238,13 +222,9 @@ private fun RegularPerMonth(
           color = colors.pageText,
         )
       }
-
-      HorizontalSpacer(10.dp)
-      Equals()
-      HorizontalSpacer(10.dp)
-
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average) }
     }
+
+    Result { CompactAmount(data.average) }
   }
 
 @Composable
@@ -262,7 +242,7 @@ private fun RegularPerYear(
       verticalAlignment = CenterVertically,
     ) {
       Column(
-        modifier = Modifier.width(Max),
+        modifier = Modifier.weight(1f, fill = false).width(Max),
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
@@ -313,13 +293,9 @@ private fun RegularPerYear(
           color = colors.pageText,
         )
       }
-
-      HorizontalSpacer(10.dp)
-      Equals()
-      HorizontalSpacer(10.dp)
-
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average) }
     }
+
+    Result { CompactAmount(data.average) }
   }
 
 @Composable
@@ -337,7 +313,7 @@ private fun RegularPerTransaction(
       verticalAlignment = CenterVertically,
     ) {
       Column(
-        modifier = Modifier.width(Max),
+        modifier = Modifier.weight(1f, fill = false).width(Max),
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
@@ -388,13 +364,9 @@ private fun RegularPerTransaction(
           color = colors.pageText,
         )
       }
-
-      HorizontalSpacer(10.dp)
-      Equals()
-      HorizontalSpacer(10.dp)
-
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average) }
     }
+
+    Result { CompactAmount(data.average) }
   }
 
 @Composable
@@ -413,7 +385,7 @@ private fun RegularPercent(
       verticalAlignment = CenterVertically,
     ) {
       Column(
-        modifier = Modifier.width(Max),
+        modifier = Modifier.weight(1f, fill = false).width(Max),
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
@@ -449,7 +421,7 @@ private fun RegularPercent(
       ) {
         Text(
           modifier = Modifier.fillMaxWidth(),
-          text = data.numerator.toString(),
+          text = data.numerator.formattedText(),
           fontSize = 30.sp,
           textAlign = Center,
           color = colors.pageText,
@@ -459,19 +431,15 @@ private fun RegularPercent(
 
         Text(
           modifier = Modifier.fillMaxWidth(),
-          text = data.denominator.toString(),
+          text = data.denominator.formattedText(),
           fontSize = 30.sp,
           textAlign = Center,
           color = colors.pageText,
         )
       }
-
-      HorizontalSpacer(10.dp)
-      Equals()
-      HorizontalSpacer(10.dp)
-
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactPercent(data.percent) }
     }
+
+    Result { CompactPercent(data.percent) }
   }
 
 @Composable
@@ -490,10 +458,24 @@ private fun RegularSum(
     ) {
       SumColumn(data)
       FilterDisplay()
-      Equals()
-
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.value) }
     }
+
+    Result { CompactAmount(data.value) }
+  }
+
+@Composable
+private fun Result(
+  modifier: Modifier = Modifier,
+  content: @Composable () -> Unit,
+) =
+  Row(
+    modifier = modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.Center,
+    verticalAlignment = CenterVertically,
+  ) {
+    Equals()
+    HorizontalSpacer(10.dp)
+    Box(modifier = Modifier.width(250.dp)) { content() }
   }
 
 @Composable
@@ -503,7 +485,7 @@ private fun ShowAs(
   modifier: Modifier = Modifier,
 ) =
   Row(modifier = modifier.wrapContentSize(), verticalAlignment = CenterVertically) {
-    Text(text = Strings.reportsSummaryShowAs)
+    Text(text = Strings.reportsSummaryShowAs, color = colors.pageText)
 
     HorizontalSpacer(5.dp)
 
@@ -536,11 +518,16 @@ private fun SumColumn(range: DateRange) =
     modifier = Modifier.wrapContentSize(),
     horizontalAlignment = CenterHorizontally,
   ) {
-    range.start?.let { Text(text = string(it)) }
+    range.start?.let { Text(text = string(it), color = colors.pageTextSubdued) }
 
-    Icon(modifier = Modifier.size(50.dp), imageVector = AktualIcons.Sum, contentDescription = null)
+    Icon(
+      modifier = Modifier.size(50.dp),
+      imageVector = AktualIcons.Sum,
+      contentDescription = null,
+      tint = colors.pageText,
+    )
 
-    range.end?.let { Text(text = string(it)) }
+    range.end?.let { Text(text = string(it), color = colors.pageTextSubdued) }
   }
 
 @Composable
@@ -559,7 +546,11 @@ private fun DivisorCheckbox(
 
     HorizontalSpacer(4.dp)
 
-    Text(modifier = Modifier.weight(1f), text = Strings.reportsSummaryAllTimeDivisor)
+    Text(
+      modifier = Modifier.weight(1f),
+      text = Strings.reportsSummaryAllTimeDivisor,
+      color = colors.pageText,
+    )
   }
 }
 
@@ -570,21 +561,34 @@ private fun FilterDisplay() =
       modifier = Modifier.size(50.dp),
       imageVector = AktualIcons.OpenBracket,
       contentDescription = null,
+      tint = colors.pageText,
     )
 
     // TODO handle filtering here https://github.com/jonapoul/aktual/issues/361
-    Text(text = Strings.reportsSummaryAll, fontSize = 25.sp, color = colors.pageTextPositive)
+    Text(
+      modifier = Modifier.weight(1f, fill = false),
+      text = Strings.reportsSummaryAll,
+      fontSize = 25.sp,
+      textAlign = Center,
+      color = colors.pageTextPositive,
+    )
 
     Icon(
       modifier = Modifier.size(50.dp),
       imageVector = AktualIcons.CloseBracket,
       contentDescription = null,
+      tint = colors.pageText,
     )
   }
 
 @Composable
 private fun Equals(modifier: Modifier = Modifier) =
-  Icon(modifier = modifier.size(50.dp), imageVector = AktualIcons.Equals, contentDescription = null)
+  Icon(
+    modifier = modifier.size(50.dp),
+    imageVector = AktualIcons.Equals,
+    contentDescription = null,
+    tint = colors.pageText,
+  )
 
 // E.g. "Jan 24"
 @Composable
@@ -634,7 +638,11 @@ private class SummaryChartProvider :
     SummaryChartParams(SUM_DATA, compact = false),
     SummaryChartParams(SUM_DATA, compact = false, private = true),
     SummaryChartParams(PERCENT_DATA, compact = true),
+    SummaryChartParams(PER_MONTH_DATA, compact = true),
     SummaryChartParams(PER_MONTH_DATA, compact = false),
+    SummaryChartParams(PER_YEAR_DATA, compact = true),
+    SummaryChartParams(PER_YEAR_DATA, compact = false),
+    SummaryChartParams(PER_TRANSACTION_DATA, compact = true),
     SummaryChartParams(PER_TRANSACTION_DATA, compact = false),
     SummaryChartParams(PER_TRANSACTION_DATA, compact = false, private = true),
     SummaryChartParams(
@@ -662,6 +670,16 @@ private val PER_MONTH_DATA =
     average = Amount(340.70),
   )
 
+private val PER_YEAR_DATA =
+  SummaryData.AveragePerYear(
+    title = "My Per-Year Summary",
+    start = START_DATE,
+    end = END_DATE,
+    numYears = 1.52f,
+    total = Amount(6198.55),
+    average = Amount(4078.00),
+  )
+
 internal val PER_TRANSACTION_DATA =
   SummaryData.AveragePerTransaction(
     title = "My Per-Transaction Summary",
@@ -669,7 +687,7 @@ internal val PER_TRANSACTION_DATA =
     end = END_DATE,
     numTransactions = 1327,
     total = Amount(6198.55),
-    average = Amount(340.70),
+    average = Amount(4.67),
   )
 
 private val PERCENT_DATA =
@@ -689,10 +707,5 @@ internal val PER_TRANSACTION_META =
     conditionsOp = And,
     timeFrame =
       TimeFrame(start = YearMonth(2024, JANUARY), end = YearMonth(2025, JULY), mode = Static),
-    content =
-      """
-      {"type":"percentage","fontSize":98,"divisorConditions":[],"divisorConditionsOp":"and",
-      "divisorAllTimeDateRange":true}
-      """
-        .trimIndent(),
+    content = """{"type":"avgPerTransact","fontSize":98}""",
   )
