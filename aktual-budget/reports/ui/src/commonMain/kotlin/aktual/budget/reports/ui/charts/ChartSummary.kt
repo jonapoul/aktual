@@ -222,13 +222,9 @@ private fun RegularPerMonth(
           color = colors.pageText,
         )
       }
-
-      HorizontalSpacer(10.dp)
-      Equals()
-      HorizontalSpacer(10.dp)
-
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average) }
     }
+
+    Result { CompactAmount(data.average) }
   }
 
 @Composable
@@ -297,13 +293,9 @@ private fun RegularPerYear(
           color = colors.pageText,
         )
       }
-
-      HorizontalSpacer(10.dp)
-      Equals()
-      HorizontalSpacer(10.dp)
-
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average) }
     }
+
+    Result { CompactAmount(data.average) }
   }
 
 @Composable
@@ -372,13 +364,9 @@ private fun RegularPerTransaction(
           color = colors.pageText,
         )
       }
-
-      HorizontalSpacer(10.dp)
-      Equals()
-      HorizontalSpacer(10.dp)
-
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average) }
     }
+
+    Result { CompactAmount(data.average) }
   }
 
 @Composable
@@ -449,13 +437,9 @@ private fun RegularPercent(
           color = colors.pageText,
         )
       }
-
-      HorizontalSpacer(10.dp)
-      Equals()
-      HorizontalSpacer(10.dp)
-
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactPercent(data.percent) }
     }
+
+    Result { CompactPercent(data.percent) }
   }
 
 @Composable
@@ -474,10 +458,24 @@ private fun RegularSum(
     ) {
       SumColumn(data)
       FilterDisplay()
-      Equals()
-
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.value) }
     }
+
+    Result { CompactAmount(data.value) }
+  }
+
+@Composable
+private fun Result(
+  modifier: Modifier = Modifier,
+  content: @Composable () -> Unit,
+) =
+  Row(
+    modifier = modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.Center,
+    verticalAlignment = CenterVertically,
+  ) {
+    Equals()
+    HorizontalSpacer(10.dp)
+    Box(modifier = Modifier.width(250.dp)) { content() }
   }
 
 @Composable
