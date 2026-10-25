@@ -60,7 +60,9 @@ class SearchPayeesViewModelTest {
     viewModel.setQuery(" cafe ")
 
     viewModel.state.test {
-      assertThat(awaitResults()).extracting(PayeeItem::name).containsExactly("CAFES R US", "Café Nero")
+      assertThat(awaitResults())
+        .extracting(PayeeItem::name)
+        .containsExactly("CAFES R US", "Café Nero")
     }
   }
 

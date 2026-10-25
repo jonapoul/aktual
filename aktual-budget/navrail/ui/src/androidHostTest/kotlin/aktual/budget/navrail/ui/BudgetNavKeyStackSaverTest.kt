@@ -28,8 +28,8 @@ import aktual.core.nav.ListTagsNavRoute
 import aktual.core.nav.NavStackImpl
 import aktual.core.nav.ReportNavRoute
 import aktual.core.nav.ReportsListNavRoute
-import aktual.core.nav.SearchReportsNavRoute
 import aktual.core.nav.SearchPayeesNavRoute
+import aktual.core.nav.SearchReportsNavRoute
 import aktual.core.nav.SearchTagsNavRoute
 import aktual.core.nav.TransactionNavRoute
 import aktual.core.nav.TransactionsNavRoute
