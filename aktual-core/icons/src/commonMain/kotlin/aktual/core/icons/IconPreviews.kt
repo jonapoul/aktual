@@ -47,5 +47,6 @@ private val aktualIcons =
       Sum,
       Tag,
       Tuning,
+      UserGroup,
     )
   }

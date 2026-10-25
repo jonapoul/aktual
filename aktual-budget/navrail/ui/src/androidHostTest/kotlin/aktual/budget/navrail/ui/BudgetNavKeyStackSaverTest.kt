@@ -21,6 +21,7 @@ import aktual.core.nav.EditRuleNavRoute
 import aktual.core.nav.EditScheduleNavRoute
 import aktual.core.nav.EditTagNavRoute
 import aktual.core.nav.HomeNavRoute
+import aktual.core.nav.ListPayeesNavRoute
 import aktual.core.nav.ListRulesNavRoute
 import aktual.core.nav.ListSchedulesNavRoute
 import aktual.core.nav.ListTagsNavRoute
@@ -70,6 +71,7 @@ class BudgetNavKeyStackSaverTest {
         CreateTagNavRoute,
         SearchTagsNavRoute,
         EditTagNavRoute(TagId("tag")),
+        ListPayeesNavRoute,
       )
     val saver = budgetNavKeyStackSaver()
     val stack = NavStackImpl(appCloser = null, stack = keys.toMutableStateList())

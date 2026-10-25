@@ -3,14 +3,9 @@ package aktual.budget.reports.ui.charts
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionType.Boolean
-import aktual.budget.model.Field.Transfer
-import aktual.budget.model.Interval.Weekly
-import aktual.budget.model.Operator.Is
 import aktual.budget.reports.vm.NetWorthData
-import aktual.budget.reports.vm.NetWorthMode.Stacked
 import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.TimeFrame
-import aktual.budget.reports.vm.TimeFrameMode.SlidingWindow
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -52,12 +47,7 @@ import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Month.AUGUST
-import kotlinx.datetime.Month.DECEMBER
-import kotlinx.datetime.Month.FEBRUARY
 import kotlinx.datetime.Month.JANUARY
-import kotlinx.datetime.Month.JULY
-import kotlinx.datetime.Month.JUNE
 import kotlinx.datetime.Month.MARCH
 import kotlinx.datetime.YearMonth
 import kotlinx.serialization.json.JsonArray

@@ -35,6 +35,7 @@ private val materialIcons =
       Badge,
       BarChart,
       Block,
+      Bookmark,
       BlurCircular,
       BlurOn,
       Brightness2,

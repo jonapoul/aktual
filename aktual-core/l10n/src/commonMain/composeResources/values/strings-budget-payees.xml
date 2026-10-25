@@ -1,0 +1,17 @@
+<resources>
+  <string name="payees_title">Payees</string>
+  <string name="payees_failure_prefix">Failed loading payees</string>
+  <string name="payees_failure_default_message">Unknown cause</string>
+  <string name="payees_empty">No payees yet</string>
+  <string name="payees_transfer">Transfer: %1$s</string>
+  <string name="payees_favorite">Favorite</string>
+  <string name="payees_create_rule">Create rule</string>
+  <plurals name="payees_num_rules">
+    <item quantity="one">%1$d associated rule</item>
+    <item quantity="other">%1$d associated rules</item>
+  </plurals>
+  <plurals name="payees_num_transactions">
+    <item quantity="one">%1$d transaction</item>
+    <item quantity="other">%1$d transactions</item>
+  </plurals>
+</resources>

@@ -9,7 +9,10 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.coroutines.asFlow
 import dev.zacsweers.metro.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /** What running rules against transactions needs to know about the rest of the budget. */
 @Inject
@@ -50,6 +53,15 @@ class RuleContextDao(database: BudgetDatabase) {
   suspend fun scheduleRules(): Map<ScheduleId, RuleId> = queries.withResult {
     ruleScheduleRules { id, rule -> id to rule }.awaitAsList().toMap()
   }
+
+  // The rules behind completed schedules
+  suspend fun completedScheduleRules(): Set<RuleId> = queries.withResult {
+    ruleCompletedScheduleRules().awaitAsList().toSet()
+  }
+
+  // Emits whenever the schedules table is written to
+  fun observeCompletedScheduleRuleChanges(): Flow<Unit> =
+    queries.ruleCompletedScheduleRules().asFlow().map {}
 
   data class PayeeRow(val id: PayeeId, val name: String?, val tombstone: Boolean)
 }

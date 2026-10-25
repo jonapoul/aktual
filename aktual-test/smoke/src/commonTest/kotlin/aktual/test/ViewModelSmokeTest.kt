@@ -14,6 +14,7 @@ import aktual.budget.banksync.vm.settings.BankSyncSettingsViewModel
 import aktual.budget.budgeting.vm.BudgetViewModel
 import aktual.budget.home.vm.HomeViewModel
 import aktual.budget.list.vm.ListBudgetsViewModel
+import aktual.budget.payees.vm.list.ListPayeesViewModel
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.budget.reports.vm.montecarlo.MonteCarloViewModel
@@ -153,6 +154,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
     testAssistedVM<LinkBankAccountViewModel, LinkBankAccountViewModel.Factory> {
       create(ACCOUNT_ID)
     }
+
+  @Test fun listPayees() = testVm<ListPayeesViewModel>()
 
   @Test fun listRules() = testVm<ListRulesViewModel>()
 

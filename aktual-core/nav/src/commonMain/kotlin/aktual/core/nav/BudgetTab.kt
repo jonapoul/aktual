@@ -8,5 +8,6 @@ enum class BudgetTab {
   Schedules,
   Rules,
   Tags,
+  Payees,
   BankSync,
 }

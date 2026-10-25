@@ -27,6 +27,26 @@ WHERE p.transfer_acct IS NULL OR a.id IS NOT NULL;
 
 getAllActive: SELECT id, name FROM v_payees WHERE tombstone = 0 ORDER BY name;
 
+-- The payees screen's list, named as v_payees names them, with how many transactions use each. A
+-- split counts once. Reads the tables directly since v_payees has no learn_categories
+getPayeeList:
+SELECT
+  p.id,
+  COALESCE(a.name, p.name) AS name,
+  p.transfer_acct,
+  p.favorite,
+  p.learn_categories,
+  COALESCE(c.num_transactions, 0) AS num_transactions
+FROM payees p
+LEFT JOIN accounts a ON (p.transfer_acct = a.id AND a.tombstone = 0)
+LEFT JOIN (
+  SELECT payee, COUNT(DISTINCT COALESCE(parent_id, id)) AS num_transactions
+    FROM v_transactions_internal_alive
+    GROUP BY payee
+) c ON c.payee = p.id
+WHERE p.tombstone = 0 AND (p.transfer_acct IS NULL OR a.id IS NOT NULL)
+ORDER BY name COLLATE NOCASE;
+
 -- With the account each transfer payee stands in for
 getAllWithTransfer:
 SELECT id, name, transfer_acct, favorite FROM v_payees WHERE tombstone = 0 ORDER BY name;

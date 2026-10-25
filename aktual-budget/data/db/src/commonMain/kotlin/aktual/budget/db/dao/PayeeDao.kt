@@ -2,6 +2,7 @@ package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.GetAllWithTransfer
+import aktual.budget.db.GetPayeeList
 import aktual.budget.db.Payees
 import aktual.budget.db.payees.GetAllActive
 import aktual.budget.db.withResult
@@ -10,7 +11,10 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.PayeeId
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
+import app.cash.sqldelight.coroutines.asFlow
 import dev.zacsweers.metro.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 
 @Inject
@@ -52,6 +56,11 @@ class PayeeDao(database: BudgetDatabase) {
   suspend fun getAllActive(): List<GetAllActive> = queries.withResult {
     getAllActive().awaitAsList()
   }
+
+  suspend fun list(): List<GetPayeeList> = queries.withResult { getPayeeList().awaitAsList() }
+
+  // Emits whenever a table behind list() is written to
+  fun observeListChanges(): Flow<Unit> = queries.getPayeeList().asFlow().map {}
 
   suspend fun getAllWithTransfer(): List<GetAllWithTransfer> = queries.withResult {
     getAllWithTransfer().awaitAsList()
