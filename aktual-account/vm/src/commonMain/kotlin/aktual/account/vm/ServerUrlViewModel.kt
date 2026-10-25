@@ -10,6 +10,8 @@ import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.di.AppScope
 import aktual.di.RunLevelController
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.AppPreferences
 import aktual.prefs.delete
 import alakazam.kotlin.CoroutineContexts
@@ -49,7 +51,8 @@ class ServerUrlViewModel(
   private val demoBudget: DemoBudget,
   versionsStateHolder: AktualVersionsStateHolder,
   buildConfig: BuildConfig,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableIsLoading = ResettableStateFlow(value = false)
   private val mutableBaseUrl = MutableStateFlow(buildConfig.defaultServerUrl?.baseUrl.orEmpty())
   private val mutableProtocol = MutableStateFlow(buildConfig.defaultServerUrl?.protocol ?: Https)
