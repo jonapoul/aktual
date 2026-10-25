@@ -32,6 +32,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -81,6 +82,7 @@ fun AmountField(
 
 @Composable
 private fun OperatorKeys(onKey: (String) -> Unit, modifier: Modifier = Modifier) {
+  val haptics = LocalHapticFeedback.current
   Row(
     modifier = modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.spacedBy(AmountFieldDS.keySpacing),
@@ -90,7 +92,10 @@ private fun OperatorKeys(onKey: (String) -> Unit, modifier: Modifier = Modifier)
         modifier = Modifier.weight(1f).semantics { contentDescription = description },
         text = symbol,
         fontSize = AmountFieldDS.keyFontSize,
-        onClick = { onKey(symbol) },
+        onClick = {
+          haptics.performHapticFeedback(KeyboardTap)
+          onKey(symbol)
+        },
       )
     }
   }
@@ -118,6 +123,7 @@ fun AmountKeypad(
   canFinish: Boolean = true,
 ) {
   val operators = operatorKeys()
+  val haptics = LocalHapticFeedback.current
   val focusRequester = remember { FocusRequester() }
   LaunchedEffect(focusRequester) { focusRequester.requestFocus() }
 
@@ -160,7 +166,10 @@ fun AmountKeypad(
       modifier = Modifier.fillMaxWidth().height(AmountFieldDS.keyHeight),
       text = Strings.inputDone,
       isEnabled = canFinish,
-      onClick = onDone,
+      onClick = {
+        haptics.performHapticFeedback(Confirm)
+        onDone()
+      },
     )
   }
 }
@@ -205,7 +214,8 @@ private inline fun KeypadRow(content: @Composable RowScope.() -> Unit) =
   )
 
 @Composable
-private fun RowScope.KeypadKey(text: String, onClick: () -> Unit, description: String? = null) =
+private fun RowScope.KeypadKey(text: String, onClick: () -> Unit, description: String? = null) {
+  val haptics = LocalHapticFeedback.current
   NormalTextButton(
     modifier =
       Modifier.weight(1f).height(AmountFieldDS.keyHeight).semantics {
@@ -213,8 +223,12 @@ private fun RowScope.KeypadKey(text: String, onClick: () -> Unit, description: S
       },
     text = text,
     fontSize = AmountFieldDS.keyFontSize,
-    onClick = onClick,
+    onClick = {
+      haptics.performHapticFeedback(KeyboardTap)
+      onClick()
+    },
   )
+}
 
 @Preview
 @Composable
