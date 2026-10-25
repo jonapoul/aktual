@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package aktual.gradle
 
 import aktual.gradle.dsl.apply
