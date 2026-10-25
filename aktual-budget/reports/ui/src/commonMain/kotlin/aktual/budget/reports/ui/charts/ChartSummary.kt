@@ -171,7 +171,7 @@ private fun RegularPerMonth(
       verticalAlignment = CenterVertically,
     ) {
       Column(
-        modifier = Modifier.width(Max),
+        modifier = Modifier.weight(1f, fill = false).width(Max),
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
@@ -242,7 +242,7 @@ private fun RegularPerYear(
       verticalAlignment = CenterVertically,
     ) {
       Column(
-        modifier = Modifier.width(Max),
+        modifier = Modifier.weight(1f, fill = false).width(Max),
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
@@ -313,7 +313,7 @@ private fun RegularPerTransaction(
       verticalAlignment = CenterVertically,
     ) {
       Column(
-        modifier = Modifier.width(Max),
+        modifier = Modifier.weight(1f, fill = false).width(Max),
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
@@ -385,7 +385,7 @@ private fun RegularPercent(
       verticalAlignment = CenterVertically,
     ) {
       Column(
-        modifier = Modifier.width(Max),
+        modifier = Modifier.weight(1f, fill = false).width(Max),
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
@@ -565,7 +565,13 @@ private fun FilterDisplay() =
     )
 
     // TODO handle filtering here https://github.com/jonapoul/aktual/issues/361
-    Text(text = Strings.reportsSummaryAll, fontSize = 25.sp, color = colors.pageTextPositive)
+    Text(
+      modifier = Modifier.weight(1f, fill = false),
+      text = Strings.reportsSummaryAll,
+      fontSize = 25.sp,
+      textAlign = Center,
+      color = colors.pageTextPositive,
+    )
 
     Icon(
       modifier = Modifier.size(50.dp),
