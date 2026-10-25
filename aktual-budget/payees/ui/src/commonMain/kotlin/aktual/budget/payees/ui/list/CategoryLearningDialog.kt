@@ -32,11 +32,13 @@ internal fun CategoryLearningDialog(
   AktualAlertDialog(
     title = Strings.payeesCategoryLearning,
     icon = AktualIcons.LightBulb,
+    highlight = colors.noticeText,
     onDismissRequest = onDismiss,
     buttons = {
       TextButton(onClick = onDismiss) { Text(Strings.payeesCategoryLearningClose) }
       TextButton(onClick = { onEnabledChange(!isEnabled) }) {
         Text(
+          color = colors.noticeText,
           text =
             if (isEnabled) {
               Strings.payeesCategoryLearningDisable
