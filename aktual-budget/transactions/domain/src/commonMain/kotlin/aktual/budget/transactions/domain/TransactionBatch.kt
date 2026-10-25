@@ -53,6 +53,8 @@ internal constructor(
   private val added = mutableSetOf<TransactionId>()
   private val updated = mutableSetOf<TransactionId>()
   private val deleted = mutableSetOf<TransactionId>()
+  // Added or updated with a category, for category learning
+  private val categorised = mutableSetOf<TransactionId>()
   private val newPayees = mutableMapOf<String, PayeeId>()
   private var existingPayees: Map<String, PayeeId>? = null
 
@@ -65,6 +67,8 @@ internal constructor(
       updated = updated - added - deleted,
       deleted = deleted.toSet(),
     )
+
+  internal fun categorised(): Set<TransactionId> = categorised - deleted
 
   /**
    * db.insertTransaction(), plus batchUpdateTransactions() clearing the category of split parents
@@ -99,6 +103,7 @@ internal constructor(
       )
     addAll(TRANSACTIONS, id.value, columns)
     added += id
+    if (category != null) categorised += id
     if (t.parentId != null) batchParents[id] = t.parentId
     batchAccounts[id] = t.account
     batchIsParent[id] = t.isParent
@@ -141,6 +146,7 @@ internal constructor(
       )
     addAll(TRANSACTIONS, u.id.value, columns)
     updated += u.id
+    if ((category as? To)?.value != null) categorised += u.id
     if (u.parentId is To) batchParents[u.id] = u.parentId.value
     if (u.account != null) batchAccounts[u.id] = u.account
     if (u.isParent != null) batchIsParent[u.id] = u.isParent

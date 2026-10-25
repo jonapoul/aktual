@@ -682,6 +682,46 @@ internal class TransactionWriterTest {
     }
   }
 
+  @Test
+  fun `Learning gets the transactions added or given a category`() = runWriterTest {
+    insertAccount(ACCOUNT)
+    insertAccount(OFF_BUDGET, offBudget = true)
+    insertCategory(GROCERIES, name = "Groceries")
+    val (uncategorised, renamed) =
+      writer.write {
+        val uncategorised = insert(NewTransaction(account = ACCOUNT, date = DATE))
+        val renamed = insert(NewTransaction(account = ACCOUNT, date = DATE, category = GROCERIES))
+        uncategorised to renamed
+      }
+
+    val added =
+      writer.write(learnCategories = true) {
+        update(TransactionUpdate(id = uncategorised, category = Patch.To(GROCERIES)))
+        update(TransactionUpdate(id = renamed, notes = Patch.To("Renamed")))
+        val added = insert(NewTransaction(account = ACCOUNT, date = DATE, category = GROCERIES))
+        insert(NewTransaction(account = OFF_BUDGET, date = DATE, category = GROCERIES))
+        insert(
+          NewTransaction(account = ACCOUNT, date = DATE, isParent = true, category = GROCERIES),
+        )
+        delete(insert(NewTransaction(account = ACCOUNT, date = DATE, category = GROCERIES)))
+        added
+      }
+
+    assertThat(learnCalls).containsExactly(setOf(uncategorised, added))
+  }
+
+  @Test
+  fun `Learning only runs when asked for`() = runWriterTest {
+    insertAccount(ACCOUNT)
+    insertCategory(GROCERIES, name = "Groceries")
+
+    writer.write {
+      insert(NewTransaction(account = ACCOUNT, date = DATE, category = GROCERIES))
+    }
+
+    assertThat(learnCalls).isEmpty()
+  }
+
   private companion object {
     val ACCOUNT = AccountId("account")
     val OFF_BUDGET = AccountId("off-budget")

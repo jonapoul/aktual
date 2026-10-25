@@ -87,6 +87,7 @@ internal class BankSyncTestScope(
       categoryDao = CategoryDao(database),
       payeeDao = payeeDao,
       transactionDao = transactionDao,
+      categoryLearner = {},
       uuidGenerator = ::uuid,
       clock = TestClock(NOW),
     )

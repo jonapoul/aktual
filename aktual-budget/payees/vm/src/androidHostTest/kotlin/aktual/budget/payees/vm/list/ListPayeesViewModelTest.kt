@@ -14,10 +14,10 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.SyncedPrefKey.Global.LearnCategories
-import aktual.budget.payees.domain.CategoryLearningPref
 import aktual.budget.payees.domain.PayeeMerge
 import aktual.budget.payees.domain.PayeeMerger
 import aktual.budget.payees.vm.PayeesLoader
+import aktual.budget.rules.domain.CategoryLearningPref
 import aktual.budget.rules.domain.PayeeRuleCounter
 import aktual.di.BudgetCoroutineScope
 import aktual.test.TestSyncController

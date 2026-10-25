@@ -184,6 +184,7 @@ class CreateAccountViewModelTest {
           categoryDao = CategoryDao(this),
           payeeDao = PayeeDao(this),
           transactionDao = TransactionDao(this),
+          categoryLearner = {},
           uuidGenerator = { "id-${nextId++}" },
           clock = Clock.System,
         ),

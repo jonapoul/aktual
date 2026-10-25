@@ -5,9 +5,9 @@ import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.model.PayeeId
 import aktual.budget.model.localChange
-import aktual.budget.payees.domain.CategoryLearningPref
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
+import aktual.budget.rules.domain.CategoryLearningPref
 import aktual.di.BudgetScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable

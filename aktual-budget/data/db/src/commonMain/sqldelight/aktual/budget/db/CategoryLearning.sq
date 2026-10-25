@@ -1,0 +1,19 @@
+-- Lookups for category learning, see CategoryLearner in aktual-budget:transactions:domain
+
+-- The changed transactions batchUpdateTransactions() in
+-- packages/loot-core/src/server/transactions/index.ts passes to updateCategoryRules()
+learningChanged:
+SELECT id, payee, date FROM v_transactions WHERE id IN ?;
+
+-- packages/loot-core/src/server/transactions/transaction-rules.ts updateCategoryRules(): non-parent
+-- transactions of these payees in open accounts, for payees that learn categories. Upstream only
+-- sorts by date, so this adds the rest of v_transactions' order to make ties stable
+learningHistory:
+SELECT t.id, t.payee, t.category
+FROM v_transactions t
+LEFT JOIN accounts a ON a.id = t.account
+LEFT JOIN payees p ON p.id = t.payee
+WHERE
+  t.date >= :from AND t.date <= :to AND t.is_parent = 0 AND a.closed = 0 AND
+  p.learn_categories = 1 AND t.payee IN :payees
+ORDER BY t.date DESC, t.starting_balance_flag, t.sort_order DESC, t.id;
