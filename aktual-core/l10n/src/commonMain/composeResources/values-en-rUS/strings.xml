@@ -35,4 +35,5 @@
   <string name="reports_formula_editor_color_formula_help">Returns a color for the result. RESULT is the formula's value, and theme_ names like theme_numberPositive are theme colors.</string>
   <string name="reports_formula_editor_theme_colors">Theme colors</string>
   <string name="reports_custom_editor_show_uncategorised">Show uncategorized</string>
+  <string name="payees_favorite">Favorite</string>
 </resources>

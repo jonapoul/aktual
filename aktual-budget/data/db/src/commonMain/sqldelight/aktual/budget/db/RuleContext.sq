@@ -22,3 +22,7 @@ SELECT id, transferId FROM category_mapping;
 -- packages/loot-core/src/server/transactions/transaction-rules.ts getAllRuleIdsFromSchedules()
 ruleScheduleRules:
 SELECT id, rule FROM schedules WHERE rule IS NOT NULL;
+
+-- packages/loot-core/src/server/schedules/app.ts getCompletedScheduleRuleIds()
+ruleCompletedScheduleRules:
+SELECT rule FROM schedules WHERE completed = 1 AND tombstone = 0 AND rule IS NOT NULL;

@@ -68,7 +68,6 @@ class ListTagsViewModel(
       val failure by mutableFailure.collectAsState()
       val sortField by preferences.sortField.asFlow().collectAsState(TagSort.Field.Default)
       val sortDirection by preferences.sortDirection.asFlow().collectAsState(SortDirection.Default)
-      @Suppress("BracesOnWhenStatements")
       when {
         isLoading -> Loading
         failure != null -> Failure(failure)

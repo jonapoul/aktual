@@ -51,5 +51,10 @@ class RuleContextDao(database: BudgetDatabase) {
     ruleScheduleRules { id, rule -> id to rule }.awaitAsList().toMap()
   }
 
+  // The rules behind completed schedules
+  suspend fun completedScheduleRules(): Set<RuleId> = queries.withResult {
+    ruleCompletedScheduleRules().awaitAsList().toSet()
+  }
+
   data class PayeeRow(val id: PayeeId, val name: String?, val tombstone: Boolean)
 }
