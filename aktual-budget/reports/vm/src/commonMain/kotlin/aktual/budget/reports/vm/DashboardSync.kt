@@ -19,6 +19,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 
 // Writes dashboard changes through the sync log, so they reach the server
 @Inject
@@ -59,7 +60,7 @@ internal class DashboardSync(
   suspend fun setWidgetText(id: WidgetId, content: String, align: TextAlign) =
     patchMeta(
       id,
-      "content" to JsonPrimitive(content),
+      CONTENT to JsonPrimitive(content),
       "text_align" to DbJson.encodeToJsonElement(TextAlign.serializer(), align),
     )
 
@@ -91,6 +92,24 @@ internal class DashboardSync(
     val meta = BudgetAnalysisReportMeta().withSettings(settings)
     val encoded = DbJson.encodeToJsonElement(BudgetAnalysisReportMeta.serializer(), meta)
     patchMeta(id, (encoded as JsonObject).filterKeys { it in BUDGET_ANALYSIS_KEYS })
+  }
+
+  suspend fun setSummaryType(id: WidgetId, type: SummaryChartType) =
+    patchSummaryContent(id, "type" to JsonPrimitive(type.serialName))
+
+  suspend fun setSummaryAllTimeDivisor(id: WidgetId, allTime: Boolean) =
+    patchSummaryContent(id, "divisorAllTimeDateRange" to JsonPrimitive(allTime))
+
+  // The summary's content is a JSON string inside the meta. Unreadable content is replaced, like
+  // upstream falling back to a default when parsing fails
+  private suspend fun patchSummaryContent(id: WidgetId, value: Pair<String, JsonElement>) {
+    val meta = dao.meta(id) ?: return
+    val raw = (meta[CONTENT] as? JsonPrimitive)?.contentOrNull
+    val content =
+      raw?.let { runCatching { DbJson.parseToJsonElement(it) as? JsonObject }.getOrNull() }
+        ?: JsonObject(emptyMap())
+    val patched = JsonObject(content + value)
+    patchMeta(id, CONTENT to JsonPrimitive(DbJson.encodeToString(patched)))
   }
 
   private suspend fun patchMeta(id: WidgetId, vararg values: Pair<String, JsonElement>) =
@@ -155,6 +174,8 @@ internal class DashboardSync(
     WidgetType.serializer().descriptor.getElementName(ordinal)
 
   private companion object {
+    const val CONTENT = "content"
+
     val QUERIES_SERIALIZER = MapSerializer(String.serializer(), FormulaQuery.serializer())
 
     val ExplicitNullsJson = Json {

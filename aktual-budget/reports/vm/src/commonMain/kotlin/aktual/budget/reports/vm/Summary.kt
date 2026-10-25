@@ -22,15 +22,18 @@ internal data class SummaryContent(
   @SerialName("divisorAllTimeDateRange") val divisorAllTimeDateRange: Boolean? = null,
 ) {
   val chartType: SummaryChartType
-    get() =
-      when (type) {
-        "avgPerMonth" -> AveragePerMonth
-        "avgPerYear" -> AveragePerYear
-        "avgPerTransact" -> AveragePerTransaction
-        "percentage" -> Percentage
-        else -> Sum
-      }
+    get() = SummaryChartType.entries.firstOrNull { it.serialName == type } ?: Sum
 }
+
+internal val SummaryChartType.serialName: String
+  get() =
+    when (this) {
+      Sum -> "sum"
+      AveragePerMonth -> "avgPerMonth"
+      AveragePerYear -> "avgPerYear"
+      AveragePerTransaction -> "avgPerTransact"
+      Percentage -> "percentage"
+    }
 
 private val summaryJson = Json { ignoreUnknownKeys = true }
 

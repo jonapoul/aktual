@@ -122,6 +122,35 @@ class DashboardSyncTest {
   }
 
   @Test
+  fun `Setting a summary type keeps other content`() = runSyncTest { dao ->
+    dao.insert(
+      WIDGET,
+      page = PAGE_1,
+      type = Summary,
+      x = 0,
+      y = 0,
+      meta = json("""{"name":"S","content":"{\"type\":\"sum\",\"extra\":1}"}"""),
+    )
+
+    setSummaryType(WIDGET, AveragePerTransaction)
+
+    val meta = dao.observeByPage(PAGE_1).first().single().meta
+    assertThat(meta)
+      .isEqualTo(json("""{"name":"S","content":"{\"type\":\"avgPerTransact\",\"extra\":1}"}"""))
+  }
+
+  @Test
+  fun `Setting an all-time divisor without content`() = runSyncTest { dao ->
+    dao.insert(WIDGET, page = PAGE_1, type = Summary, x = 0, y = 0, meta = json("""{"name":"S"}"""))
+
+    setSummaryAllTimeDivisor(WIDGET, allTime = true)
+
+    val meta = dao.observeByPage(PAGE_1).first().single().meta
+    assertThat(meta)
+      .isEqualTo(json("""{"name":"S","content":"{\"divisorAllTimeDateRange\":true}"}"""))
+  }
+
+  @Test
   fun `Setting a formula keeps other values`() = runSyncTest { dao ->
     dao.insert(
       WIDGET,
