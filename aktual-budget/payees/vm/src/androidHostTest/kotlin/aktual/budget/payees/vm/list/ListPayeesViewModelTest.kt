@@ -9,18 +9,25 @@ import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.withoutResult
 import aktual.budget.model.AccountId
 import aktual.budget.model.Condition
+import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.rules.domain.PayeeRuleCounter
+import aktual.di.BudgetCoroutineScope
+import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
 import alakazam.test.standardDispatcher
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import kotlin.test.AfterTest
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
@@ -130,10 +137,96 @@ class ListPayeesViewModelTest {
     }
   }
 
-  private fun BudgetDatabase.createViewModel(scope: TestScope): ListPayeesViewModel {
+  @Test
+  fun `Deleting tombstones the payee and undo restores it`() = runDatabaseTest { scope ->
+    // given
+    insertPayees()
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync).awaitLoaded()
+
+    // when
+    viewModel.events.test {
+      viewModel.delete(ARGOS)
+      assertThatNextEmissionIsEqualTo(ListPayeesEvent.Deleted(ARGOS))
+    }
+
+    // then
+    assertThat(sync.changes.map { it.row to it.column to it.value })
+      .containsExactly("argos" to "tombstone" to MessageValue.Number(1))
+
+    // when
+    sync.changes.clear()
+    viewModel.undoDelete(ARGOS)
+    scope.advanceUntilIdle()
+
+    // then
+    assertThat(sync.changes.map { it.row to it.column to it.value })
+      .containsExactly("argos" to "tombstone" to MessageValue.Number(0))
+  }
+
+  @Test
+  fun `Toggling favourite flips the payee's flag`() = runDatabaseTest { scope ->
+    // given
+    insertPayees()
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync).awaitLoaded()
+
+    // when
+    viewModel.toggleFavorite(ARGOS)
+    viewModel.toggleFavorite(ARGOS.copy(isFavorite = true))
+    scope.advanceUntilIdle()
+
+    // then
+    assertThat(sync.changes.map { it.row to it.column to it.value })
+      .containsExactly(
+        "argos" to "favorite" to MessageValue.Number(1),
+        "argos" to "favorite" to MessageValue.Number(0),
+      )
+  }
+
+  @Test
+  fun `Transfer payees can't be deleted or favourited`() = runDatabaseTest { scope ->
+    // given
+    insertPayees()
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync).awaitLoaded()
+    val transfer = ARGOS.copy(id = TRANSFER, isTransfer = true)
+
+    // when
+    viewModel.delete(transfer)
+    viewModel.toggleFavorite(transfer)
+    scope.advanceUntilIdle()
+
+    // then
+    assertThat(sync.changes).isEmpty()
+  }
+
+  private suspend fun ListPayeesViewModel.awaitLoaded(): ListPayeesViewModel = apply {
+    state.test {
+      do {
+        val item = awaitItem()
+      } while (item !is Success)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  private suspend fun BudgetDatabase.insertPayees() {
+    insertAccount(ACCOUNT, name = "Current")
+    val payees = PayeeDao(this)
+    payees.insert(ARGOS.id, "Argos")
+    payees.insert(TESCO, "Tesco")
+    payees.insert(TRANSFER, null, transferAccount = AccountId(ACCOUNT))
+  }
+
+  private fun BudgetDatabase.createViewModel(
+    scope: TestScope,
+    sync: TestSyncController = TestSyncController(),
+  ): ListPayeesViewModel {
     Dispatchers.setMain(scope.standardDispatcher)
     return ListPayeesViewModel(
       loader = PayeesLoader(PayeeDao(this), PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
+      syncController = sync,
+      budgetScope = BudgetCoroutineScope(scope),
     )
   }
 
@@ -166,6 +259,8 @@ class ListPayeesViewModelTest {
 
   private companion object {
     const val ACCOUNT = "account"
+    val TESCO = PayeeId("tesco")
+    val TRANSFER = PayeeId("transfer")
     val DATE = LocalDate(2026, 10, 1)
 
     val ARGOS =

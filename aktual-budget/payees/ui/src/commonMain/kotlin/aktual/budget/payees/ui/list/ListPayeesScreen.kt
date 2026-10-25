@@ -1,5 +1,6 @@
 package aktual.budget.payees.ui.list
 
+import aktual.budget.model.PayeeId
 import aktual.budget.payees.ui.openRules
 import aktual.budget.payees.vm.list.Empty
 import aktual.budget.payees.vm.list.Failure
@@ -16,6 +17,7 @@ import aktual.core.nav.EditPayeeNavigator
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchPayeesNavigator
 import aktual.core.nav.SearchRulesNavigator
+import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
@@ -23,6 +25,7 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -45,9 +48,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,6 +72,18 @@ internal fun ListPayeesScreen(
   viewModel: ListPayeesViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val snackbars = LocalSnackbars.current
+
+  LaunchedEffect(viewModel) {
+    viewModel.events.collect { event ->
+      when (event) {
+        is Deleted -> snackbars.show { showDeleted(event, onUndo = viewModel::undoDelete) }
+        DeleteFailed,
+        RestoreFailed,
+        UpdateFailed -> snackbars.show { showFailure(event) }
+      }
+    }
+  }
 
   ListPayeesScaffold(
     modifier = modifier,
@@ -74,6 +94,8 @@ internal fun ListPayeesScreen(
         OpenSearch -> toSearch()
         is OpenPayee -> toEdit(action.id)
         is OpenRules -> openRules(action.payee, editRule, searchRules)
+        is Delete -> viewModel.delete(action.payee)
+        is ToggleFavorite -> viewModel.toggleFavorite(action.payee)
       }
     },
   )
@@ -87,6 +109,16 @@ private fun ListPayeesScaffold(
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
+  var confirmDelete by remember { mutableStateOf<PayeeItem?>(null) }
+
+  // Only worth confirming when transactions will lose their payee
+  val handleAction = ListPayeesActionHandler { action ->
+    if (action is Delete && action.payee.numTransactions > 0) {
+      confirmDelete = action.payee
+    } else {
+      onAction(action)
+    }
+  }
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
@@ -118,13 +150,40 @@ private fun ListPayeesScaffold(
       ) {
         ListPayeesContent(
           state = state,
-          onAction = onAction,
+          onAction = handleAction,
           listState = listState,
           padding = hazedTopBarContentPadding(hazeState, innerPadding),
         )
       }
+
+      confirmDelete?.let { payee ->
+        DeletePayeeDialog(
+          name = payee.name,
+          onConfirm = {
+            confirmDelete = null
+            onAction(Delete(payee))
+          },
+          onCancel = { confirmDelete = null },
+        )
+      }
     }
   }
+}
+
+@Composable
+private fun DeletePayeeDialog(name: String, onConfirm: () -> Unit, onCancel: () -> Unit) {
+  AktualAlertDialog(
+    title = Strings.payeesDeleteConfirmTitle(name),
+    highlight = colors.errorText,
+    onDismissRequest = onCancel,
+    buttons = {
+      TextButton(onClick = onCancel) { Text(Strings.payeesDeleteCancel) }
+      TextButton(onClick = onConfirm) {
+        Text(Strings.payeesDeleteConfirm, color = colors.errorText)
+      }
+    },
+    content = { Text(Strings.payeesDeleteConfirmMessage) },
+  )
 }
 
 @Composable
@@ -183,6 +242,9 @@ private fun PayeesList(
   onAction: ListPayeesActionHandler,
   modifier: Modifier = Modifier,
 ) {
+  // only one row may be swiped open at a time - opening another closes the previous one
+  var openId by remember { mutableStateOf<PayeeId?>(null) }
+
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
@@ -190,11 +252,19 @@ private fun PayeesList(
     verticalArrangement = Arrangement.spacedBy(ListPayeesDS.listItemSpacing),
   ) {
     items(payees, key = { it.id.value }) { payee ->
-      PayeeItem(
+      SwipeablePayeeItem(
         modifier = Modifier.animateItem(),
         payee = payee,
-        onClick = { onAction(OpenPayee(payee.id)) },
-        onClickRules = { onAction(OpenRules(payee)) },
+        isOpen = openId == payee.id,
+        onOpenChange = { open ->
+          openId =
+            when {
+              open -> payee.id
+              openId == payee.id -> null
+              else -> openId
+            }
+        },
+        onAction = onAction,
       )
     }
 

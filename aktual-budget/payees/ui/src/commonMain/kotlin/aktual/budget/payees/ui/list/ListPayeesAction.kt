@@ -14,6 +14,10 @@ internal data object OpenSearch : ListPayeesAction
 
 @JvmInline internal value class OpenRules(val payee: PayeeItem) : ListPayeesAction
 
+@JvmInline internal value class Delete(val payee: PayeeItem) : ListPayeesAction
+
+@JvmInline internal value class ToggleFavorite(val payee: PayeeItem) : ListPayeesAction
+
 @Immutable
 internal fun interface ListPayeesActionHandler {
   operator fun invoke(action: ListPayeesAction)
