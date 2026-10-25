@@ -107,7 +107,7 @@ internal fun EditTransactionScreen(
     viewModel.events.collect { event ->
       when (event) {
         Deleted,
-        Created,
+        Saved,
         Discarded -> back()
       }
     }

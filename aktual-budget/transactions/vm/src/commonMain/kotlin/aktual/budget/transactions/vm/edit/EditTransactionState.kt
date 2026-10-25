@@ -189,7 +189,7 @@ sealed interface EditTransactionError {
 sealed interface EditTransactionEvent {
   data object Deleted : EditTransactionEvent
 
-  data object Created : EditTransactionEvent
+  data object Saved : EditTransactionEvent
 
   data object Discarded : EditTransactionEvent
 }
