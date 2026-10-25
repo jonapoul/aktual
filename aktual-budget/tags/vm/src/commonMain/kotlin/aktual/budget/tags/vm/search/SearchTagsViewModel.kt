@@ -6,6 +6,8 @@ import aktual.budget.tags.vm.list.toTagItem
 import aktual.budget.tags.vm.search.SearchTagsState.Results
 import aktual.core.snippet
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -31,7 +33,8 @@ class SearchTagsViewModel
 internal constructor(
   @Assisted private val savedState: SavedStateHandle,
   tagsDao: TagsDao,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
   @ViewModelAssistedFactoryKey(SearchTagsViewModel::class)
   @ContributesIntoMap(BudgetScope::class)

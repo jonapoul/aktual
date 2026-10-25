@@ -16,6 +16,7 @@ import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import androidx.compose.ui.graphics.Color
@@ -369,6 +370,7 @@ class EditTagViewModelTest {
       uuidGenerator = uuid,
       syncController = sync,
       preferences = preferences,
+      viewModelContext = scope.viewModelContext,
     )
   }
 

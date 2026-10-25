@@ -12,6 +12,8 @@ import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.TagPreferences
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
@@ -46,7 +48,8 @@ class ListTagsViewModel(
   private val syncController: BudgetSyncController,
   private val preferences: TagPreferences,
   private val budgetScope: BudgetCoroutineScope,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableTags = MutableStateFlow<ImmutableList<TagItem>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
   private val mutableIsRefreshing = MutableStateFlow(false)

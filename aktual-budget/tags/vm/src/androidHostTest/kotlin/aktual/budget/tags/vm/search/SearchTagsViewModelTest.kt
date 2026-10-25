@@ -6,6 +6,7 @@ import aktual.budget.tags.vm.insertTag
 import aktual.budget.tags.vm.list.TagItem
 import aktual.budget.tags.vm.tombstoneTag
 import aktual.test.runDatabaseTest
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import androidx.lifecycle.SavedStateHandle
@@ -15,23 +16,14 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
-import kotlin.test.AfterTest
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class SearchTagsViewModelTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `Blank query prompts for input`() = runDatabaseTest { scope ->
     insertTag(id = "groceries-id", tag = "groceries")
@@ -125,10 +117,10 @@ class SearchTagsViewModelTest {
   }
 
   private fun BudgetDatabase.createViewModel(scope: TestScope): SearchTagsViewModel {
-    Dispatchers.setMain(scope.standardDispatcher)
     return SearchTagsViewModel(
       savedState = SavedStateHandle(),
       tagsDao = TagsDao(this, TestCoroutineContexts(scope.standardDispatcher)),
+      viewModelContext = scope.viewModelContext,
     )
   }
 }
