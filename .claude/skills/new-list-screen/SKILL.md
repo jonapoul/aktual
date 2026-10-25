@@ -97,6 +97,8 @@ package {pkg}.vm.list
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import aktual.di.AppScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
@@ -107,7 +109,8 @@ import kotlinx.coroutines.flow.asStateFlow
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
-class List{Name}ViewModel : ViewModel() {
+class List{Name}ViewModel(viewModelContext: ViewModelContext) :
+  ViewModel(viewModelContext.newScope()) {
   private val mutableState = MutableStateFlow<List{Name}State>(Loading)
   val state: StateFlow<List{Name}State> = mutableState.asStateFlow()
 
