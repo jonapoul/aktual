@@ -58,10 +58,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class LinkBankAccountViewModelTest {
   @Test
   fun `Lists the first configured provider's accounts`() = runLinkTest {

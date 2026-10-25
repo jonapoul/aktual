@@ -33,10 +33,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class ListTagsViewModelTest {
   @Test
   fun `Loads and maps tags from the database`() = runDatabaseTest { scope ->

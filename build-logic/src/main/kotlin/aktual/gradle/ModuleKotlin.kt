@@ -55,6 +55,9 @@ class ModuleKotlin : ProjectPlugin {
         withHostTest {
           // For Robolectric
           isIncludeAndroidResources = true
+
+          // Android stubs return defaults instead of throwing, for tests not using Robolectric
+          isReturnDefaultValues = true
         }
       }
 

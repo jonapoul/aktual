@@ -25,10 +25,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class KeyFetcherTest {
   private lateinit var keyFetcher: KeyFetcher
   private lateinit var keyPreferences: KeyPreferences

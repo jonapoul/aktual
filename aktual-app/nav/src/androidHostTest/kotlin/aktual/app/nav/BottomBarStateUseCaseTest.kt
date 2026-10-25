@@ -18,10 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class BottomBarStateUseCaseTest {
   private lateinit var preferences: SystemUiPreferences
   private lateinit var pingStateHolder: PingStateHolder

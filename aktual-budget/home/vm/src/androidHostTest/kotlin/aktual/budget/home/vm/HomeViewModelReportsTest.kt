@@ -16,10 +16,7 @@ import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class HomeViewModelReportsTest {
   @Test
   fun `Pinned reports show on their card`() = runDatabaseTest { scope ->

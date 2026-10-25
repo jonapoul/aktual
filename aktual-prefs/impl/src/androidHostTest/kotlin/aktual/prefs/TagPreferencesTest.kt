@@ -11,10 +11,7 @@ import app.cash.turbine.test
 import kotlin.test.Test
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class TagPreferencesTest {
   private lateinit var dataStore: DataStore<Preferences>
   private lateinit var preferences: TagPreferences

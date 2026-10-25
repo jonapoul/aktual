@@ -8,10 +8,7 @@ import app.cash.turbine.test
 import kotlin.test.Test
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class AppPreferencesTest {
   private lateinit var preferences: AppPreferences
 

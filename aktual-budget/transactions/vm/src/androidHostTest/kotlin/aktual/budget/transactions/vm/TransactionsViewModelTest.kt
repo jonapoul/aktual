@@ -33,7 +33,6 @@ import aktual.test.TestCoroutineContainer
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
-import android.os.Looper
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingSource.LoadParams
 import androidx.paging.testing.asSnapshot
@@ -68,12 +67,8 @@ import kotlinx.serialization.json.put
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.Shadows
 
 @Suppress("TooManyFunctions")
-@RunWith(RobolectricTestRunner::class)
 class TransactionsViewModelTest {
   // real
   private lateinit var viewModel: TransactionsViewModel
@@ -93,10 +88,9 @@ class TransactionsViewModelTest {
 
   @AfterTest
   fun after() {
-    // viewModelScope holds SQLDelight Flow subscriptions; cancel it and flush the main looper
-    // so connections are released before we close the driver
+    // viewModelScope holds SQLDelight Flow subscriptions; cancel it so connections are released
+    // before we close the driver
     if (::viewModel.isInitialized) viewModel.viewModelScope.cancel()
-    Shadows.shadowOf(Looper.getMainLooper()).idle()
     appGraph.close()
     FileSystem.SYSTEM.deleteRecursively(rootDir)
   }

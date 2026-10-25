@@ -6,10 +6,7 @@ import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class TransactionPreferencesTest {
   @Test
   fun `Alternate row colours`() = runTest {

@@ -16,10 +16,7 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class SecuritySettingsViewModelTest {
   private val authenticator = FakeAppLockAuthenticator()
 

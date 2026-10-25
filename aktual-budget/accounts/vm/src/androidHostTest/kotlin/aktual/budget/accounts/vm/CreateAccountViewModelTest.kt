@@ -31,10 +31,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.datetime.LocalDate
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class CreateAccountViewModelTest {
   @Test
   fun `Can't create without a name`() = runDatabaseTest { scope ->

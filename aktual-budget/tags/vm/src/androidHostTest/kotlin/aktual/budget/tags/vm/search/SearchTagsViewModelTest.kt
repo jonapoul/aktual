@@ -19,10 +19,7 @@ import assertk.assertions.isEqualTo
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class SearchTagsViewModelTest {
   @Test
   fun `Blank query prompts for input`() = runDatabaseTest { scope ->

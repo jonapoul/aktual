@@ -37,10 +37,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.datetime.LocalDate
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class ListSchedulesViewModelTest {
   @Test
   fun `Delete tombstones the schedule and its rule`() = runDatabaseTest { scope ->

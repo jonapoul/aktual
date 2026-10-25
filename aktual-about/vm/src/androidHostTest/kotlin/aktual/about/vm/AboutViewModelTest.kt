@@ -7,18 +7,16 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.test.TestBuildConfig
 import aktual.test.TestInstant
 import aktual.test.assertThatNextEmissionIsEqualTo
+import aktual.test.viewModelContext
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import github.api.model.GithubRelease
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlin.test.Test
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class AboutViewModelTest {
   // real
   private lateinit var viewModel: AboutViewModel
@@ -27,8 +25,7 @@ class AboutViewModelTest {
   // mock
   private lateinit var repository: GithubRepository
 
-  @Before
-  fun before() {
+  private fun TestScope.before() {
     repository = mockk()
     aktualVersionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
 
@@ -38,12 +35,13 @@ class AboutViewModelTest {
         buildConfig = TestBuildConfig,
         githubRepository = repository,
         aktualVersionsStateHolder = aktualVersionsStateHolder,
-        viewModelContext = Default,
+        viewModelContext = viewModelContext,
       )
   }
 
   @Test
   fun `Successfully fetch new release`() = runTest {
+    before()
     // Given the repo returns a new update
     val url = "www.website.com/whatever"
     val version = "2.3.4"

@@ -10,10 +10,7 @@ import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class TransactionSettingsViewModelTest {
   @Test
   fun `Alternate row colours toggles the preference`() = runTest {

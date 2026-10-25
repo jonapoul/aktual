@@ -40,10 +40,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.LocalDate
 import okio.ByteString
 import okio.IOException
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class BudgetNavRailViewModelTest {
   private val prefs =
     TestBudgetLocalPreferences(DbMetadata(budgetName = "Household", cloudFileId = BUDGET_ID))

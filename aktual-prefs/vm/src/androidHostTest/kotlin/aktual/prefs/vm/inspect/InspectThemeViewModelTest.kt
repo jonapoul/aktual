@@ -33,10 +33,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class InspectThemeViewModelTest {
   private val cache = FakeCustomThemeCache()
   private lateinit var preferences: ThemePreferences

@@ -36,10 +36,7 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlinx.coroutines.test.TestScope
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class EditTagViewModelTest {
   private lateinit var tagsDao: TagsDao
 

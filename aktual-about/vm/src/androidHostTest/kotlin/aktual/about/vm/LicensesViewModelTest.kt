@@ -19,10 +19,7 @@ import kotlin.test.Test
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class LicensesViewModelTest {
   // real
   private lateinit var viewModel: LicensesViewModel

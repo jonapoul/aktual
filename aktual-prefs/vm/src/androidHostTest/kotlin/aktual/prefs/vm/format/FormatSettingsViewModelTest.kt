@@ -9,10 +9,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class FormatSettingsViewModelTest {
   @Test
   fun `Hide fraction toggles the preference`() = runTest {

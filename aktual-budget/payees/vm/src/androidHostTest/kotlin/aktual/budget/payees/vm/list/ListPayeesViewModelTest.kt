@@ -39,10 +39,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonPrimitive
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class ListPayeesViewModelTest {
   @Test
   fun `Loads payees with their transaction and rule counts`() = runDatabaseTest { scope ->

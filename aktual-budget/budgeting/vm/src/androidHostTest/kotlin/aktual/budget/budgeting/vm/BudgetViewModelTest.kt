@@ -38,11 +38,8 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 @Suppress("TooManyFunctions")
-@RunWith(RobolectricTestRunner::class)
 class BudgetViewModelTest {
   private val calendar = TestCalendar(LocalDate(2026, 4, 15))
   private val prefs = TestBudgetLocalPreferences(DbMetadata())

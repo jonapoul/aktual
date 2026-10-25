@@ -32,10 +32,7 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class HomeViewModelTest {
   @Test
   fun `Budget name follows local preferences`() = runDatabaseTest { scope ->

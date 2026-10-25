@@ -19,10 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class AppLockManagerTest {
   private lateinit var preferences: SecurityPreferences
   private var now = Instant.fromEpochMilliseconds(0)
