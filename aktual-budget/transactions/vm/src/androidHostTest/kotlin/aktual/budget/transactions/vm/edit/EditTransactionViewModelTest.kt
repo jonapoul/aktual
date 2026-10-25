@@ -329,6 +329,24 @@ class EditTransactionViewModelTest {
   }
 
   @Test
+  fun `Saving edits closes`() = runDatabaseTest { scope ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val viewModel = createViewModel(scope, id = "t")
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitEdit()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.setNotes("Lunch")
+      viewModel.save()
+
+      assertThatNextEmissionIsEqualTo(Saved)
+    }
+  }
+
+  @Test
   fun `Edits can't be discarded, reverted or changed while they're being saved`() =
     runDatabaseTest { scope ->
       insertEntities()
@@ -792,7 +810,7 @@ class EditTransactionViewModelTest {
       viewModel.fillRemaining(TransactionId("part-2"))
       viewModel.save()
 
-      assertThatNextEmissionIsEqualTo(Created)
+      assertThatNextEmissionIsEqualTo(Saved)
       val columns = setOf("amount", "isParent", "isChild", "parent_id")
       assertThat(sync.calls.single().filter { it.column in columns })
         .containsExactly(
@@ -1044,7 +1062,7 @@ class EditTransactionViewModelTest {
       viewModel.setDate(DATE_2)
       viewModel.save()
 
-      assertThatNextEmissionIsEqualTo(Created)
+      assertThatNextEmissionIsEqualTo(Saved)
       assertThat(sync.calls.single().filter { it.column != "sort_order" })
         .containsExactly(
           localChange(TRANSACTIONS, "uuid", "acct", "a"),
@@ -1082,7 +1100,7 @@ class EditTransactionViewModelTest {
       }
       viewModel.save()
 
-      assertThatNextEmissionIsEqualTo(Created)
+      assertThatNextEmissionIsEqualTo(Saved)
       val changes = sync.calls.single()
       assertThat(changes.filter { it.dataset != TRANSACTIONS || it.column == "description" })
         .containsExactly(

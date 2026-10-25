@@ -669,6 +669,7 @@ internal constructor(
     val id = saved.details.transaction.id
     if (transactionDiff(id, saved.draft, draft) == null) {
       closeDraft()
+      mutableEvents.tryEmit(EditTransactionEvent.Saved)
       return
     }
 
@@ -678,6 +679,7 @@ internal constructor(
       }
       loader.load(target.id)?.let { reloaded -> mutableSaved.update { reloaded.toSaved() } }
       closeDraft()
+      mutableEvents.tryEmit(EditTransactionEvent.Saved)
     }
   }
 
@@ -702,7 +704,7 @@ internal constructor(
         toSave.parts.forEach { insert(it.toNewTransaction(id, account, fields)) }
       }
       lastTransaction.set(draft.fields)
-      mutableEvents.tryEmit(Created)
+      mutableEvents.tryEmit(EditTransactionEvent.Saved)
     }
   }
 
