@@ -1,4 +1,4 @@
-package aktual.budget.payees.domain
+package aktual.budget.rules.domain
 
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.MessageValue

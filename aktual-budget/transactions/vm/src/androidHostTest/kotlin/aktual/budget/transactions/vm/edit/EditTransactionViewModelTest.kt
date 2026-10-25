@@ -1523,6 +1523,7 @@ class EditTransactionViewModelTest {
           categoryDao = categoryDao,
           payeeDao = payeeDao,
           transactionDao = transactionDao,
+          categoryLearner = {},
           uuidGenerator = { savedUuid },
           clock = Clock.System,
         ),

@@ -670,7 +670,7 @@ internal constructor(
     }
 
     launchSave {
-      writer.write(runTransfers = true) {
+      writer.write(runTransfers = true, learnCategories = true) {
         transactionDiff(id, saved.draft, withSavedPayees(draft))?.let { write(it) }
       }
       loader.load(target.id)?.let { reloaded -> mutableSaved.update { reloaded.toSaved() } }
@@ -681,7 +681,7 @@ internal constructor(
   private fun saveNew(draft: TransactionDraft) {
     val account = draft.fields.account ?: return
     launchSave {
-      writer.write(runTransfers = true) {
+      writer.write(runTransfers = true, learnCategories = true) {
         val toSave = withSavedPayees(draft)
         val fields = toSave.fields
         val transaction =

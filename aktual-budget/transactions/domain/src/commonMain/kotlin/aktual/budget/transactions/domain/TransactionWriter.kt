@@ -5,6 +5,7 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.TransactionDao
+import aktual.budget.rules.domain.CategoryLearner
 import aktual.core.UuidGenerator
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.Inject
@@ -21,7 +22,7 @@ import logcat.logcat
  * in accounts/sync.ts make inside batchMessages(). Everything goes through [BudgetSyncController],
  * which also applies the changes to the local database.
  *
- * Rules and category learning aren't run, and transfers only when asked for.
+ * Rules aren't run, and transfers and category learning only when asked for.
  */
 @Inject
 @SingleIn(BudgetScope::class)
@@ -31,6 +32,7 @@ class TransactionWriter(
   private val categoryDao: CategoryDao,
   private val payeeDao: PayeeDao,
   private val transactionDao: TransactionDao,
+  private val categoryLearner: CategoryLearner,
   private val uuidGenerator: UuidGenerator,
   private val clock: Clock,
 ) {
@@ -44,9 +46,13 @@ class TransactionWriter(
    * [runTransfers] is batchUpdateTransactions()'s flag of that name: once the changes are written,
    * the other side of every transfer among them is added, updated or removed to match, in a second
    * syncChanges() call. Bank sync leaves it off, as upstream's does.
+   *
+   * [learnCategories] is the flag of that name too: afterwards, [CategoryLearner] looks at the
+   * transactions that were added or given a category. Only user edits turn it on.
    */
   suspend fun <R> write(
     runTransfers: Boolean = false,
+    learnCategories: Boolean = false,
     block: suspend TransactionBatch.() -> R,
   ): R = mutex.withLock {
     val batch = newBatch()
@@ -57,6 +63,7 @@ class TransactionWriter(
       Transfers(transfers, accountDao, payeeDao, transactionDao).run(batch.touched())
       send(transfers)
     }
+    if (learnCategories) categoryLearner.learn(batch.categorised())
     result
   }
 

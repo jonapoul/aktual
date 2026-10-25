@@ -508,6 +508,7 @@ class ScheduleAdvancerTest {
               categoryDao = CategoryDao(this),
               payeeDao = PayeeDao(this),
               transactionDao = TransactionDao(this),
+              categoryLearner = {},
               uuidGenerator = uuidGenerator,
               clock = TestClock(Instant.fromEpochMilliseconds(0)),
             ),

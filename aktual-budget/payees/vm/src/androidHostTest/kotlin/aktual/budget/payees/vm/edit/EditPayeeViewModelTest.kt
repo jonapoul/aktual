@@ -11,9 +11,9 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
-import aktual.budget.payees.domain.CategoryLearningPref
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
+import aktual.budget.rules.domain.CategoryLearningPref
 import aktual.budget.rules.domain.PayeeRuleCounter
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo

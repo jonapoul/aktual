@@ -15,6 +15,7 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.Timestamp
+import aktual.budget.model.TransactionId
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestClock
 import kotlin.time.Clock
@@ -41,6 +42,9 @@ internal class WriterTestScope(
 ) : BudgetSyncController {
   val syncCalls = mutableListOf<List<LocalChange>>()
 
+  // The ids of each CategoryLearner.learn() call
+  val learnCalls = mutableListOf<Set<TransactionId>>()
+
   private var nextId = 1
 
   val writer =
@@ -50,6 +54,7 @@ internal class WriterTestScope(
       categoryDao = categoryDao,
       payeeDao = payeeDao,
       transactionDao = transactionDao,
+      categoryLearner = { ids -> learnCalls += ids.toSet() },
       uuidGenerator = { "id-${nextId++}" },
       clock = TestClock(NOW),
     )

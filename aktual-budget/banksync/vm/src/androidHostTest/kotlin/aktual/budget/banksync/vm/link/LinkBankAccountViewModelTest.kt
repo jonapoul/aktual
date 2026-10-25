@@ -473,6 +473,7 @@ class LinkBankAccountViewModelTest {
               categoryDao = CategoryDao(database),
               payeeDao = PayeeDao(database),
               transactionDao = TransactionDao(database),
+              categoryLearner = {},
               uuidGenerator = { Uuid.random().toString() },
               clock = Clock.System,
             ),
