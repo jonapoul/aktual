@@ -60,7 +60,7 @@ internal class DashboardSync(
   suspend fun setWidgetText(id: WidgetId, content: String, align: TextAlign) =
     patchMeta(
       id,
-      "content" to JsonPrimitive(content),
+      CONTENT to JsonPrimitive(content),
       "text_align" to DbJson.encodeToJsonElement(TextAlign.serializer(), align),
     )
 
@@ -104,12 +104,12 @@ internal class DashboardSync(
   // upstream falling back to a default when parsing fails
   private suspend fun patchSummaryContent(id: WidgetId, value: Pair<String, JsonElement>) {
     val meta = dao.meta(id) ?: return
-    val raw = (meta["content"] as? JsonPrimitive)?.contentOrNull
+    val raw = (meta[CONTENT] as? JsonPrimitive)?.contentOrNull
     val content =
       raw?.let { runCatching { DbJson.parseToJsonElement(it) as? JsonObject }.getOrNull() }
         ?: JsonObject(emptyMap())
     val patched = JsonObject(content + value)
-    patchMeta(id, "content" to JsonPrimitive(DbJson.encodeToString(patched)))
+    patchMeta(id, CONTENT to JsonPrimitive(DbJson.encodeToString(patched)))
   }
 
   private suspend fun patchMeta(id: WidgetId, vararg values: Pair<String, JsonElement>) =
@@ -174,6 +174,8 @@ internal class DashboardSync(
     WidgetType.serializer().descriptor.getElementName(ordinal)
 
   private companion object {
+    const val CONTENT = "content"
+
     val QUERIES_SERIALIZER = MapSerializer(String.serializer(), FormulaQuery.serializer())
 
     val ExplicitNullsJson = Json {
