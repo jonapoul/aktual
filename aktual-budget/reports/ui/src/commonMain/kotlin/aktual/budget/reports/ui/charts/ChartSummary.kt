@@ -632,7 +632,11 @@ private class SummaryChartProvider :
     SummaryChartParams(SUM_DATA, compact = false),
     SummaryChartParams(SUM_DATA, compact = false, private = true),
     SummaryChartParams(PERCENT_DATA, compact = true),
+    SummaryChartParams(PER_MONTH_DATA, compact = true),
     SummaryChartParams(PER_MONTH_DATA, compact = false),
+    SummaryChartParams(PER_YEAR_DATA, compact = true),
+    SummaryChartParams(PER_YEAR_DATA, compact = false),
+    SummaryChartParams(PER_TRANSACTION_DATA, compact = true),
     SummaryChartParams(PER_TRANSACTION_DATA, compact = false),
     SummaryChartParams(PER_TRANSACTION_DATA, compact = false, private = true),
     SummaryChartParams(
@@ -658,6 +662,16 @@ private val PER_MONTH_DATA =
     numMonths = 18.19f,
     total = Amount(6198.55),
     average = Amount(340.70),
+  )
+
+private val PER_YEAR_DATA =
+  SummaryData.AveragePerYear(
+    title = "My Per-Year Summary",
+    start = START_DATE,
+    end = END_DATE,
+    numYears = 1.52f,
+    total = Amount(6198.55),
+    average = Amount(4078.00),
   )
 
 internal val PER_TRANSACTION_DATA =
