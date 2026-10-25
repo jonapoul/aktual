@@ -5,6 +5,8 @@ import aktual.budget.model.evaluateAmountInput
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.core.Calendar
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -38,7 +40,8 @@ class CreateAccountViewModel(
   private val writer: TransactionWriter,
   private val accountDao: AccountDao,
   private val calendar: Calendar,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableName = MutableStateFlow("")
   private val mutableBalance = MutableStateFlow("")
   private val mutableOffBudget = MutableStateFlow(false)
