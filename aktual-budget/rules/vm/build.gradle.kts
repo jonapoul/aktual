@@ -1,7 +1,4 @@
-plugins {
-  id("aktual.module.viewmodel")
-  alias(libs.plugins.kotlin.serialization)
-}
+plugins { id("aktual.module.viewmodel") }
 
 kotlin {
   commonMainDependencies {
@@ -9,7 +6,6 @@ kotlin {
     api(project(":aktual-budget:data:db"))
     api(project(":aktual-core"))
     api(project(":aktual-core:l10n"))
-    implementation(libs.kotlinx.serialization.core)
   }
 
   commonTestDependencies {

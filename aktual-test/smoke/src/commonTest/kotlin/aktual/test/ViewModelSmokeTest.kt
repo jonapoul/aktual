@@ -154,7 +154,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
       create(ACCOUNT_ID)
     }
 
-  @Test fun listRules() = testSavedStateVM<ListRulesViewModel>()
+  @Test fun listRules() = testVm<ListRulesViewModel>()
 
   @Test fun listSchedules() = testVm<ListSchedulesViewModel>()
 

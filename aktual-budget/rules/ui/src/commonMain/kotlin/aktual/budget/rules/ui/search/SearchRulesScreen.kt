@@ -5,7 +5,6 @@ import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.ui.PreviewRule2
 import aktual.budget.rules.ui.list.ListRulesItemRow
 import aktual.budget.rules.ui.list.ShimmerListRulesItem
-import aktual.budget.rules.vm.list.CheckboxesState.Inactive
 import aktual.budget.rules.vm.search.SearchRulesState
 import aktual.budget.rules.vm.search.SearchRulesState.Failure
 import aktual.budget.rules.vm.search.SearchRulesState.Results
@@ -161,7 +160,7 @@ private fun ShimmerResults(modifier: Modifier = Modifier) =
     modifier = modifier.fillMaxSize().padding(ListPadding),
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
-    repeat(times = 10) { ShimmerListRulesItem(checkboxes = Inactive) }
+    repeat(times = 10) { ShimmerListRulesItem() }
   }
 
 private val ListPadding = PaddingValues(horizontal = 8.dp)
