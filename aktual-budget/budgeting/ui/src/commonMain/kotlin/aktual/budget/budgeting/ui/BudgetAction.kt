@@ -7,8 +7,6 @@ import kotlinx.datetime.YearMonth
 
 @Immutable internal sealed interface BudgetAction
 
-internal data object Refresh : BudgetAction
-
 internal data object Retry : BudgetAction
 
 internal data class ShowMonth(val month: YearMonth) : BudgetAction

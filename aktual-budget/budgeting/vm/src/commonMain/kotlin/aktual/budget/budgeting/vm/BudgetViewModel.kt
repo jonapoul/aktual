@@ -1,8 +1,6 @@
 package aktual.budget.budgeting.vm
 
 import aktual.budget.BudgetLocalPreferences
-import aktual.budget.BudgetSyncController
-import aktual.budget.SyncStateHolder
 import aktual.budget.budgeting.domain.BudgetMonth
 import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.budgeting.domain.BudgetWriter
@@ -55,7 +53,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -76,9 +73,7 @@ class BudgetViewModel(
   private val writer: BudgetWriter,
   private val transactionDao: TransactionDao,
   private val localPreferences: BudgetLocalPreferences,
-  private val syncController: BudgetSyncController,
   private val calendar: Calendar,
-  syncStateHolder: SyncStateHolder,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
@@ -114,13 +109,8 @@ class BudgetViewModel(
   // Only the latest change can be undone
   private var lastUndo: UndoToken? = null
 
-  val isSyncing: StateFlow<Boolean> =
-    syncStateHolder.map { it == Syncing }.stateIn(viewModelScope, Eagerly, initialValue = false)
-
   private val loaded: BudgetState.Loaded?
     get() = state.value as? Loaded
-
-  fun refresh() = syncController.schedule()
 
   fun retry() {
     retries++

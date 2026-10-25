@@ -1,6 +1,5 @@
 package aktual.budget.budgeting.vm
 
-import aktual.budget.SyncStateHolder
 import aktual.budget.budgeting.domain.BudgetMonthCalculatorImpl
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
@@ -15,7 +14,6 @@ import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncedPrefKey
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
-import aktual.test.TestSyncController
 import aktual.test.inMemoryDriverFactory
 import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
@@ -530,9 +528,7 @@ class BudgetViewModelTest {
       writer = writer,
       transactionDao = TransactionDao(this),
       localPreferences = prefs,
-      syncController = TestSyncController(),
       calendar = calendar,
-      syncStateHolder = SyncStateHolder(),
       viewModelContext = scope.viewModelContext,
     )
   }

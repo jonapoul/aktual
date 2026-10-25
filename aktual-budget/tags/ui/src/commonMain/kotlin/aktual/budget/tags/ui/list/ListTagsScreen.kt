@@ -30,7 +30,6 @@ import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
@@ -39,6 +38,8 @@ import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SortDialog
 import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -68,7 +69,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -82,15 +82,7 @@ internal fun ListTagsScreen(
   viewModel: ListTagsViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
-
-  // refresh on return (e.g. after creating or editing a tag) so the list reflects the changes
-  @Suppress("ComposeViewModelForwarding")
-  LifecycleResumeEffect(viewModel) {
-    viewModel.reload(showLoading = false)
-    onPauseOrDispose {}
-  }
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
@@ -105,11 +97,9 @@ internal fun ListTagsScreen(
   ListTagsScaffold(
     modifier = modifier,
     state = state,
-    isRefreshing = isRefreshing,
     onAction = { action ->
       when (action) {
-        Reload -> viewModel.reload()
-        Refresh -> viewModel.refresh()
+        Retry -> viewModel.retry()
         OpenSearch -> toSearch()
         CreateTag -> toEdit()
         is EditTag -> toEdit(action.id)
@@ -126,7 +116,6 @@ private fun ListTagsScaffold(
   state: ListTagsState,
   onAction: ListTagsActionHandler,
   modifier: Modifier = Modifier,
-  isRefreshing: Boolean = false,
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -179,19 +168,16 @@ private fun ListTagsScaffold(
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()
 
-      HazedPullToRefreshBox(
-        modifier = Modifier.padding(ListTagsDS.listPadding),
+      Box(
+        modifier =
+          Modifier.padding(ListTagsDS.listPadding).hazedTopBarContent(hazeState, innerPadding),
         contentAlignment = Center,
-        onRefresh = { onAction(Refresh) },
-        isRefreshing = isRefreshing,
-        hazeState = hazeState,
-        innerPadding = innerPadding,
-      ) { padding ->
+      ) {
         ListTagsContent(
           state = state,
           onAction = onAction,
           listState = listState,
-          padding = padding,
+          padding = hazedTopBarContentPadding(hazeState, innerPadding),
         )
       }
     }
@@ -223,7 +209,7 @@ private fun ListTagsContent(
           FailureAction(
             text = { Strings.syncRetry },
             icon = MaterialIcons.Refresh,
-            onClick = { onAction(Reload) },
+            onClick = { onAction(Retry) },
           ),
       )
 

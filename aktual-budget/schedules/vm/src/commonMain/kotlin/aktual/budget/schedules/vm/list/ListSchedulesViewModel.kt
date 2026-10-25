@@ -5,7 +5,6 @@ import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.DatabaseTables.SCHEDULES
 import aktual.budget.model.LocalChange
 import aktual.budget.model.ScheduleSort
-import aktual.budget.model.SortDirection
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
 import aktual.budget.schedules.domain.Schedule
@@ -14,26 +13,23 @@ import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.prefs.SchedulePreferences
-import aktual.prefs.asStateFlow
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import logcat.logcat
 
@@ -42,14 +38,12 @@ import logcat.logcat
 @ContributesIntoMap(BudgetScope::class)
 class ListSchedulesViewModel
 internal constructor(
-  private val loader: SchedulesLoader,
+  loader: SchedulesLoader,
   private val syncController: BudgetSyncController,
   private val preferences: SchedulePreferences,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
-  private val mutableSchedules = MutableStateFlow<ImmutableList<Schedule>>(persistentListOf())
-  private val mutableIsLoading = MutableStateFlow(true)
-  private val mutableFailure = MutableStateFlow<String?>(null)
+  private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
   private val mutableEvents =
     MutableSharedFlow<ListSchedulesEvent>(
@@ -59,63 +53,47 @@ internal constructor(
     )
   val events: SharedFlow<ListSchedulesEvent> = mutableEvents.asSharedFlow()
 
-  private val showCompleted = preferences.showCompleted.asStateFlow(viewModelScope)
-
   val state: StateFlow<ListSchedulesState> =
-    viewModelScope.launchMolecule(Immediate) {
-      val schedules by mutableSchedules.collectAsState()
-      val isLoading by mutableIsLoading.collectAsState()
-      val failure by mutableFailure.collectAsState()
-      val includeCompleted by showCompleted.collectAsState()
-      val sortField by preferences.sortField.asFlow().collectAsState(ScheduleSort.Field.Default)
-      val sortDirection by preferences.sortDirection.asFlow().collectAsState(SortDirection.Default)
-      val visible =
-        if (includeCompleted) {
-          schedules
-        } else {
-          schedules.filterNot { it.isCompleted }
-        }
-      val sort = ScheduleSort(sortField, sortDirection)
-      when {
-        isLoading -> Loading
-        failure != null -> Failure(failure)
-        visible.isEmpty() -> Empty
-        else -> Success(visible.sortedWith(sort.comparator()).toImmutableList(), sort)
+    retries
+      .onStart { emit(Unit) }
+      .flatMapLatest {
+        combine(
+            loader.observe(),
+            preferences.showCompleted.asFlow(),
+            preferences.sortField.asFlow(),
+            preferences.sortDirection.asFlow(),
+          ) { schedules, includeCompleted, sortField, sortDirection ->
+            val visible =
+              if (includeCompleted) {
+                schedules
+              } else {
+                schedules.filterNot { it.isCompleted }
+              }
+            val sort = ScheduleSort(sortField, sortDirection)
+            if (visible.isEmpty()) {
+              Empty
+            } else {
+              Success(visible.sortedWith(sort.comparator()).toImmutableList(), sort)
+            }
+          }
+          .onStart<ListSchedulesState> { emit(Loading) }
+          .catch { e ->
+            logcat.e(e) { "Failed loading schedules" }
+            emit(Failure(e.requireMessage()))
+          }
       }
-    }
+      .stateIn(viewModelScope, Eagerly, initialValue = Loading)
 
-  init {
-    reload()
-  }
-
-  fun reload(showLoading: Boolean = true) {
-    if (showLoading) mutableIsLoading.update { true }
-    viewModelScope.launch {
-      try {
-        val schedules = loader.load()
-        mutableSchedules.update { schedules }
-        mutableFailure.update { null }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed loading schedules" }
-        mutableFailure.update { e.requireMessage() }
-      } finally {
-        mutableIsLoading.update { false }
-      }
-    }
+  fun retry() {
+    retries.tryEmit(Unit)
   }
 
   // deleteSchedule() in packages/loot-core/src/server/schedules/app.ts
   fun delete(schedule: Schedule) {
     viewModelScope.launch {
-      val index = mutableSchedules.value.indexOfFirst { it.id == schedule.id }
       try {
         syncController.syncChanges(schedule.tombstones(::tombstone))
-        mutableSchedules.update { list ->
-          list.filterNot { it.id == schedule.id }.toImmutableList()
-        }
-        mutableEvents.tryEmit(ListSchedulesEvent.Deleted(schedule, index))
+        mutableEvents.tryEmit(ListSchedulesEvent.Deleted(schedule))
         logcat.i { "Deleted schedule ${schedule.id}" }
       } catch (e: CancellationException) {
         throw e
@@ -126,17 +104,10 @@ internal constructor(
     }
   }
 
-  fun undoDelete(schedule: Schedule, index: Int) {
+  fun undoDelete(schedule: Schedule) {
     viewModelScope.launch {
       try {
         syncController.syncChanges(schedule.tombstones(::untombstone))
-        mutableSchedules.update { list ->
-          if (list.any { it.id == schedule.id }) {
-            list
-          } else {
-            list.toMutableList().apply { add(index.coerceIn(0, size), schedule) }.toImmutableList()
-          }
-        }
         logcat.i { "Restored schedule ${schedule.id}" }
       } catch (e: CancellationException) {
         throw e

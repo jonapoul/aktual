@@ -5,7 +5,7 @@ import androidx.compose.runtime.Immutable
 
 internal sealed interface ListRulesAction
 
-internal data object Reload : ListRulesAction
+internal data object Retry : ListRulesAction
 
 internal data object CreateNew : ListRulesAction
 

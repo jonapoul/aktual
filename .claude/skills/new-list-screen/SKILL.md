@@ -1,6 +1,6 @@
 ---
 name: new-list-screen
-description: Generate a new UI/VM module pairing with a scrolling list screen - blurred top bar, pull-to-refresh, shimmer loading, and Loading/Empty/Failure/Success states. Uses ListSchedulesScreen as the reference template.
+description: Generate a new UI/VM module pairing with a scrolling list screen - blurred top bar, shimmer loading, and Loading/Empty/Failure/Success states. Uses ListSchedulesScreen as the reference template.
 argument-hint: "<FeatureName> <gradle-module-path>"
 ---
 
@@ -96,29 +96,57 @@ package {pkg}.vm.list
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import logcat.logcat
 
 @Stable
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(AppScope::class)
 class List{Name}ViewModel(viewModelContext: ViewModelContext) :
   ViewModel(viewModelContext.newScope()) {
-  private val mutableState = MutableStateFlow<List{Name}State>(Loading)
-  val state: StateFlow<List{Name}State> = mutableState.asStateFlow()
+  private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
-  fun reload() {
-    // TODO
+  // Follows the database, so there's no manual refresh
+  val state: StateFlow<List{Name}State> =
+    retries
+      .onStart { emit(Unit) }
+      .flatMapLatest {
+        observeItems()
+          .map { items -> if (items.isEmpty()) Empty else Success(items.toImmutableList()) }
+          .onStart<List{Name}State> { emit(Loading) }
+          .catch { e ->
+            logcat.e(e) { "Failed loading {name}s" }
+            emit(Failure(e.requireMessage()))
+          }
+      }
+      .stateIn(viewModelScope, Eagerly, initialValue = Loading)
+
+  fun retry() {
+    retries.tryEmit(Unit)
   }
+
+  // TODO: observe the DAO's query flow, e.g. ListPayeesViewModel / PayeesLoader
+  private fun observeItems(): Flow<List<{Name}>> = emptyFlow()
 }
 ```
+
+Don't add pull to refresh or a reload-on-resume effect: the state follows the database, so local and synced writes show up by themselves. Pull to refresh is only for screens where it triggers a bank sync (the transactions list).
 
 ## Step 2 - Create the UI module
 
@@ -152,7 +180,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable internal sealed interface List{Name}Action
 
-internal data object Reload : List{Name}Action
+internal data object Retry : List{Name}Action
 
 // TODO: add feature-specific actions (e.g. Open, CreateNew)
 
@@ -283,12 +311,13 @@ import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PageBackground
 import aktual.core.ui.blurredTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -327,7 +356,7 @@ internal fun List{Name}Screen(
     state = state,
     onAction = { action ->
       when (action) {
-        Reload -> viewModel.reload()
+        Retry -> viewModel.retry()
       }
     },
   )
@@ -355,17 +384,14 @@ private fun List{Name}Scaffold(
     Box {
       PageBackground()
 
-      HazedPullToRefreshBox(
-        modifier = Modifier.padding(List{Name}DS.listPadding),
+      Box(
+        modifier =
+          Modifier.padding(List{Name}DS.listPadding).hazedTopBarContent(hazeState, innerPadding),
         contentAlignment = Alignment.Center,
-        onRefresh = { onAction(Reload) },
-        isRefreshing = state is Loading,
-        hazeState = hazeState,
-        innerPadding = innerPadding,
-      ) { padding ->
+      ) {
         List{Name}Content(
           state = state,
-          contentPadding = padding,
+          contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
           onAction = onAction,
           listState = listState,
         )
@@ -416,7 +442,7 @@ private fun List{Name}Content(
             FailureAction(
               text = { Strings.syncRetry },
               icon = MaterialIcons.Refresh,
-              onClick = { onAction(Reload) },
+              onClick = { onAction(Retry) },
             ),
         )
       }
@@ -559,7 +585,7 @@ After the skill completes:
 - [ ] Fill in `List{Name}Item` with real item UI
 - [ ] Add feature-specific actions to `List{Name}Action` (e.g. `Open`, `CreateNew`)
 - [ ] Wire up the `Open` action in `List{Name}Item.clickable`
-- [ ] Implement `reload()` in the ViewModel
+- [ ] Implement `observeItems()` in the ViewModel
 - [ ] Add the `{Name}NavRoute` and any feature-specific navigator to `aktual-app:nav` (see that module's CLAUDE.md)
 - [ ] Add the `:ui` module to `aktual-app:nav:di/build.gradle.kts`
 - [ ] Add VM dependencies for data access (DAO / repository)

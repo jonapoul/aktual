@@ -27,12 +27,13 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.topBarHazeOffset
@@ -90,7 +91,7 @@ fun ListRulesScreen(
       state = state,
       onAction = { action ->
         when (action) {
-          Reload -> viewModel.reload()
+          Retry -> viewModel.retry()
           CreateNew -> editRule()
           OpenSearch -> toSearch()
           is Delete -> pendingDelete = action.id
@@ -157,17 +158,13 @@ private fun ListRulesScaffold(
   ) { innerPadding ->
     Box {
       PageBackground()
-      HazedPullToRefreshBox(
-        modifier = Modifier.padding(horizontal = 8.dp),
+      Box(
+        modifier = Modifier.padding(horizontal = 8.dp).hazedTopBarContent(hazeState, innerPadding),
         contentAlignment = Center,
-        onRefresh = { onAction(Reload) },
-        isRefreshing = state is Loading,
-        hazeState = hazeState,
-        innerPadding = innerPadding,
-      ) { padding ->
+      ) {
         ListRulesContent(
           state = state,
-          contentPadding = padding,
+          contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
           onAction = onAction,
           listState = listState,
         )
@@ -235,7 +232,7 @@ private fun ListRulesContent(
             FailureAction(
               text = { Strings.syncRetry },
               icon = MaterialIcons.Refresh,
-              onClick = { onAction(Reload) },
+              onClick = { onAction(Retry) },
             ),
         )
       }

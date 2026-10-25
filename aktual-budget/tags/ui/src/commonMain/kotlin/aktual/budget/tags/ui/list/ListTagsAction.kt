@@ -6,9 +6,7 @@ import androidx.compose.runtime.Immutable
 
 internal sealed interface ListTagsAction
 
-internal data object Reload : ListTagsAction
-
-internal data object Refresh : ListTagsAction
+internal data object Retry : ListTagsAction
 
 internal data object OpenSearch : ListTagsAction
 

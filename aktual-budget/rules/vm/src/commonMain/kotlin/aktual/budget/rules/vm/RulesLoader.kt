@@ -7,11 +7,15 @@ import aktual.budget.model.Operator
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapLatest
 
 @Inject
 class RulesLoader(private val rulesDao: RulesDao) {
   suspend fun load(): ImmutableList<Rule> =
     rulesDao.getAll().map(::toRule).sortedWith(RuleComparator).toImmutableList()
+
+  fun observe(): Flow<ImmutableList<Rule>> = rulesDao.observeChanges().mapLatest { load() }
 
   private fun toRule(rule: Rules): Rule =
     Rule(

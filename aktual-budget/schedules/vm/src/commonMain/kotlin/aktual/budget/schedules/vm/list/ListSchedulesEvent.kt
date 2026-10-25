@@ -5,7 +5,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 sealed interface ListSchedulesEvent {
-  data class Deleted(val schedule: Schedule, val index: Int) : ListSchedulesEvent
+  @JvmInline value class Deleted(val schedule: Schedule) : ListSchedulesEvent
 
   @JvmInline value class DeleteFailed(val schedule: Schedule) : ListSchedulesEvent
 

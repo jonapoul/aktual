@@ -36,7 +36,6 @@ import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
@@ -44,6 +43,8 @@ import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SortDialog
 import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -74,7 +75,6 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -101,19 +101,12 @@ internal fun ListSchedulesScreen(
     }
   }
 
-  // refresh on return (e.g. after creating or editing a schedule) so the list reflects the changes
-  @Suppress("ComposeViewModelForwarding")
-  LifecycleResumeEffect(viewModel) {
-    viewModel.reload(showLoading = false)
-    onPauseOrDispose {}
-  }
-
   ListSchedulesScaffold(
     modifier = modifier,
     state = state,
     onAction = { action ->
       when (action) {
-        Reload -> viewModel.reload()
+        Retry -> viewModel.retry()
         CreateNew -> editSchedule()
         is Open -> editSchedule(action.id)
         OpenSearch -> toSearch()
@@ -185,17 +178,14 @@ private fun ListSchedulesScaffold(
     Box {
       PageBackground()
 
-      HazedPullToRefreshBox(
-        modifier = Modifier.padding(ListSchedulesDS.listPadding),
+      Box(
+        modifier =
+          Modifier.padding(ListSchedulesDS.listPadding).hazedTopBarContent(hazeState, innerPadding),
         contentAlignment = Center,
-        onRefresh = { onAction(Reload) },
-        isRefreshing = state is Loading,
-        hazeState = hazeState,
-        innerPadding = innerPadding,
-      ) { padding ->
+      ) {
         ListSchedulesContent(
           state = state,
-          contentPadding = padding,
+          contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
           onAction = onAction,
           listState = listState,
         )
@@ -250,7 +240,7 @@ private fun ListSchedulesContent(
             FailureAction(
               text = { Strings.syncRetry },
               icon = MaterialIcons.Refresh,
-              onClick = { onAction(Reload) },
+              onClick = { onAction(Retry) },
             ),
         )
       }

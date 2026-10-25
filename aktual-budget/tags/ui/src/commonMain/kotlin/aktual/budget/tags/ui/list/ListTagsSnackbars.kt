@@ -15,7 +15,7 @@ import org.jetbrains.compose.resources.getString
 // shows the delete confirmation with an undo action, invoking onUndo if the user taps it
 internal suspend fun SnackbarHostState.showDeleted(
   event: ListTagsEvent.Deleted,
-  onUndo: (TagItem, Int) -> Unit,
+  onUndo: (TagItem) -> Unit,
 ) {
   val result =
     showSnackbar(
@@ -24,7 +24,7 @@ internal suspend fun SnackbarHostState.showDeleted(
       duration = SnackbarDuration.Long,
     )
   if (result == ActionPerformed) {
-    onUndo(event.item, event.index)
+    onUndo(event.item)
   }
 }
 
