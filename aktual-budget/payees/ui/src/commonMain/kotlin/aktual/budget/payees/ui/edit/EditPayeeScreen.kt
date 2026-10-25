@@ -276,7 +276,7 @@ private fun EditPayeeTopBar(
         NavBackIconButton(onClick = { onAction(NavigateBack) })
       }
     },
-    title = { if (editing != null) { Text(text = Strings.payeesEditTitle) } },
+    title = { if (editing != null) Text(text = Strings.payeesEditTitle) },
     actions = {
       if (editing != null && !editing.payee.isTransfer) {
         BareIconButton(
