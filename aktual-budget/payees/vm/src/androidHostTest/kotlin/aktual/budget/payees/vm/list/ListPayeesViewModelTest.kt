@@ -14,6 +14,7 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.rules.domain.PayeeRuleCounter
+import aktual.di.BudgetCoroutineScope
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
@@ -291,6 +292,7 @@ class ListPayeesViewModelTest {
     return ListPayeesViewModel(
       loader = PayeesLoader(PayeeDao(this), PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
       syncController = sync,
+      budgetScope = BudgetCoroutineScope(scope),
     )
   }
 

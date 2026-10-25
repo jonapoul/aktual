@@ -7,6 +7,7 @@ import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
 import aktual.budget.payees.vm.PayeesLoader
+import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
@@ -40,8 +41,11 @@ import logcat.logcat
 @ViewModelKey
 @ContributesIntoMap(BudgetScope::class)
 class ListPayeesViewModel
-internal constructor(loader: PayeesLoader, private val syncController: BudgetSyncController) :
-  ViewModel() {
+internal constructor(
+  loader: PayeesLoader,
+  private val syncController: BudgetSyncController,
+  private val budgetScope: BudgetCoroutineScope,
+) : ViewModel() {
   private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
   private val mutableSelected = MutableStateFlow<PersistentSet<PayeeId>>(persistentSetOf())
 
@@ -98,8 +102,9 @@ internal constructor(loader: PayeesLoader, private val syncController: BudgetSyn
     }
   }
 
+  // The undo snackbar can outlive this screen, so the restore can't be tied to viewModelScope
   fun undoDelete(ids: Set<PayeeId>) {
-    viewModelScope.launch {
+    budgetScope.launch {
       try {
         syncController.syncChanges(ids.map { untombstone(PAYEES, it.value) })
       } catch (e: CancellationException) {
