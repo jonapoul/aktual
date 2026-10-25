@@ -701,10 +701,5 @@ internal val PER_TRANSACTION_META =
     conditionsOp = And,
     timeFrame =
       TimeFrame(start = YearMonth(2024, JANUARY), end = YearMonth(2025, JULY), mode = Static),
-    content =
-      """
-      {"type":"percentage","fontSize":98,"divisorConditions":[],"divisorConditionsOp":"and",
-      "divisorAllTimeDateRange":true}
-      """
-        .trimIndent(),
+    content = """{"type":"avgPerTransact","fontSize":98}""",
   )
