@@ -6,6 +6,7 @@ import blueprint.core.get
 import blueprint.core.libs
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.commonMainDependencies
+import org.gradle.kotlin.dsl.commonTestDependencies
 
 class ModuleViewModel : ProjectPlugin {
   override fun Project.applyTo() {
@@ -26,6 +27,10 @@ class ModuleViewModel : ProjectPlugin {
         implementation(libs["compose.runtime"])
         implementation(libs["molecule"])
         implementation(project(":aktual-core:logging"))
+      }
+
+      commonTestDependencies {
+        implementation(project(":aktual-test"))
       }
     }
   }

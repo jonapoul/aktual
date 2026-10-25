@@ -4,8 +4,4 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:banksync:domain"))
   }
-
-  androidHostTestDependencies {
-    implementation(project(":aktual-test"))
-  }
 }

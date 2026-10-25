@@ -8,7 +8,7 @@ import aktual.prefs.AppPreferencesImpl
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
-import alakazam.test.standardDispatcher
+import aktual.test.viewModelContext
 import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
@@ -50,7 +50,7 @@ internal class LoginViewModelTest {
         loginRequester = loginRequester,
         preferences = preferences,
         buildConfig = TestBuildConfig.copy(defaultPassword = Empty),
-        viewModelContext = { standardDispatcher },
+        viewModelContext = viewModelContext,
       )
   }
 
