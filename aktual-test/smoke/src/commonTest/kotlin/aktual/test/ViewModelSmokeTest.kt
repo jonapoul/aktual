@@ -14,6 +14,7 @@ import aktual.budget.banksync.vm.settings.BankSyncSettingsViewModel
 import aktual.budget.budgeting.vm.BudgetViewModel
 import aktual.budget.home.vm.HomeViewModel
 import aktual.budget.list.vm.ListBudgetsViewModel
+import aktual.budget.payees.vm.edit.EditPayeeViewModel
 import aktual.budget.payees.vm.list.ListPayeesViewModel
 import aktual.budget.payees.vm.search.SearchPayeesViewModel
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
@@ -224,6 +225,10 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
     testAssistedVM<MonteCarloViewModel, MonteCarloViewModel.Factory> { create(WIDGET_ID) }
 
   @Test fun budget() = testAssistedVM<BudgetViewModel, BudgetViewModel.Factory> { create(null) }
+
+  @Test
+  fun editPayee() =
+    testAssistedVM<EditPayeeViewModel, EditPayeeViewModel.Factory> { create(PAYEE_ID) }
 
   @Test fun editTag() = testAssistedVM<EditTagViewModel, EditTagViewModel.Factory> { create(null) }
 

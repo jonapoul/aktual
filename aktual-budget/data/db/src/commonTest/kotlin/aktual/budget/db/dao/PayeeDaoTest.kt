@@ -2,6 +2,7 @@ package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.GetPayeeList
+import aktual.budget.db.Payees
 import aktual.budget.db.test.buildAccount
 import aktual.budget.db.test.insertAccounts
 import aktual.budget.db.test.insertPayeeMapping
@@ -10,10 +11,13 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import aktual.test.runDatabaseTest
+import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
+import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
 
@@ -110,6 +114,18 @@ internal class PayeeDaoTest {
           ),
         )
     }
+
+  @Test
+  fun `Update sets the name and favourite`() = runDaoTest { payees, _ ->
+    // when
+    payees.update(PayeeId("a"), name = "Argos Extra", favorite = true)
+
+    // then
+    assertThat(payees[PayeeId("a")]).isNotNull().all {
+      prop(Payees::name).isEqualTo("Argos Extra")
+      prop(Payees::favorite).isEqualTo(true)
+    }
+  }
 
   private suspend fun BudgetDatabase.insertDeletedCopy(
     transactions: TransactionDao,

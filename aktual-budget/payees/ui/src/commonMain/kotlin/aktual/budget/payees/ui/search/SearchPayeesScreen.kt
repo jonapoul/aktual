@@ -14,6 +14,7 @@ import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.EditPayeeNavigator
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.BottomSpacing
@@ -50,6 +51,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun SearchPayeesScreen(
   back: BackNavigator,
+  toEdit: EditPayeeNavigator,
   editRule: EditRuleNavigator,
   searchRules: SearchRulesNavigator,
   viewModel: SearchPayeesViewModel = metroViewModel(),
@@ -65,6 +67,7 @@ internal fun SearchPayeesScreen(
         NavBack -> back()
         Retry -> viewModel.retry()
         is SetQuery -> viewModel.setQuery(action.query)
+        is OpenPayee -> toEdit(action.id)
         is OpenRules -> openRules(action.payee, editRule, searchRules)
       }
     },
@@ -143,6 +146,7 @@ private fun ResultsList(
         modifier = Modifier.animateItem(),
         payee = payee,
         query = results.query,
+        onClick = { onAction(OpenPayee(payee.id)) },
         onClickRules = { onAction(OpenRules(payee)) },
       )
     }

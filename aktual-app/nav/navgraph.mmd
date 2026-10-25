@@ -44,6 +44,7 @@ flowchart TD
     searchTags["Search Tags"]
     listPayees["List Payees"]
     searchPayees["Search Payees"]
+    editPayee["Edit Payee"]
     listSchedules["List Schedules"]
     editSchedule["Edit Schedule"]
     searchSchedules["Search Schedules"]
@@ -147,6 +148,11 @@ flowchart TD
   listPayees --tap rule chip--> searchRules
   searchPayees --tap rule chip, no rules--> createRule
   searchPayees --tap rule chip--> searchRules
+  listPayees --tap payee--> editPayee
+  searchPayees --tap payee--> editPayee
+  editPayee --tap rule chip, no rules--> createRule
+  editPayee --tap rule chip--> searchRules
+  editPayee --tap transactions--> filteredTransactions
 
   listSchedules --tap schedule--> editSchedule
   listSchedules --tap search--> searchSchedules
