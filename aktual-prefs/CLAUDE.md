@@ -19,7 +19,7 @@ Preferences and settings, split into `vm` (state) and `ui` (Compose). `ui:core` 
    // ... myPref = BooleanPreference(value = myPref, onChange = { launchAndSet(preferences.myPref, it) })
    ```
 
-1. **Add the string.** In `aktual-core/l10n/src/commonMain/composeResources/values/strings-settings.xml`, then `./gradlew :aktual-core:l10n:catalog`. Access via `Strings.settingsSectionMyPref` (snake_case → camelCase).
+1. **Add the string.** In `aktual-core/l10n/src/commonMain/composeResources/values/strings.xml` (the `settings` section), then `./gradlew :aktual-core:l10n:catalog`. Access via `Strings.settingsSectionMyPref` (snake_case → camelCase).
 
 1. **Add the UI.** In the matching `*SettingsScreen.kt` under `aktual-prefs/ui/.../<screen>/`, add an `item { }` using `BooleanPreferenceItem` / `SliderPreferenceItem` / `ListPreferenceItem`.
 

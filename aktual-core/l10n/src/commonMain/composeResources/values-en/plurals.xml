@@ -1,0 +1,6 @@
+<resources>
+  <plurals name="home_attention_uncategorised">
+    <item quantity="one">%1$d uncategorised transaction</item>
+    <item quantity="other">%1$d uncategorised transactions</item>
+  </plurals>
+</resources>
