@@ -7,6 +7,8 @@ import aktual.core.model.LoginMethod
 import aktual.core.model.Password
 import aktual.core.model.Token
 import aktual.di.ServerChosenScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.AppPreferences
 import alakazam.kotlin.ResettableStateFlow
 import androidx.compose.runtime.Stable
@@ -42,7 +44,8 @@ class LoginViewModel(
   versionsStateHolder: AktualVersionsStateHolder,
   preferences: AppPreferences,
   buildConfig: BuildConfig,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableEnteredPassword = ResettableStateFlow(buildConfig.defaultPassword)
   private val mutableIsLoading = ResettableStateFlow(false)
   private val mutableLoginFailure = ResettableStateFlow<LoginResult.Failure?>(null)

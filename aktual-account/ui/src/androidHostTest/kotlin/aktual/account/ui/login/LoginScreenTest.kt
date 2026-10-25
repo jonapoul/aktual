@@ -88,6 +88,7 @@ class LoginScreenTest {
         versionsStateHolder = versionsStateHolder,
         preferences = preferences,
         buildConfig = TestBuildConfig.copy(defaultPassword = password),
+        viewModelContext = Default,
       )
   }
 

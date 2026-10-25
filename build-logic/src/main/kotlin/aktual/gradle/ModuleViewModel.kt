@@ -21,11 +21,11 @@ class ModuleViewModel : ProjectPlugin {
         api(libs["kotlinx.coroutines.core"])
         api(libs["kotlinx.immutable"])
         api(libs["metrox.viewmodel"])
+        api(project(":aktual-di:core"))
         implementation(libs["androidx.savedstate"])
         implementation(libs["compose.runtime"])
         implementation(libs["molecule"])
         implementation(project(":aktual-core:logging"))
-        implementation(project(":aktual-di:core"))
       }
     }
   }
