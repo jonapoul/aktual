@@ -16,6 +16,8 @@ import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.edit.EditScheduleState.Failure
 import aktual.core.Calendar
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -56,7 +58,8 @@ internal constructor(
   private val loader: SchedulesLoader,
   private val writer: ScheduleWriter,
   calendar: Calendar,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val today = calendar.today()
 
   // What's currently saved, so edits can be compared against it and thrown away

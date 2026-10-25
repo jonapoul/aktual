@@ -11,6 +11,8 @@ import aktual.budget.model.untombstone
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import aktual.prefs.SchedulePreferences
 import aktual.prefs.asStateFlow
 import alakazam.kotlin.requireMessage
@@ -43,7 +45,8 @@ internal constructor(
   private val loader: SchedulesLoader,
   private val syncController: BudgetSyncController,
   private val preferences: SchedulePreferences,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableSchedules = MutableStateFlow<ImmutableList<Schedule>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
   private val mutableFailure = MutableStateFlow<String?>(null)
