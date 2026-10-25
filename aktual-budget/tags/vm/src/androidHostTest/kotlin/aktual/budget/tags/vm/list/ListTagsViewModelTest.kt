@@ -9,6 +9,7 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.model.TagSort
 import aktual.budget.tags.vm.insertTag
+import aktual.di.BudgetCoroutineScope
 import aktual.prefs.TagPreferences
 import aktual.prefs.TagPreferencesImpl
 import aktual.test.TestSyncController
@@ -17,6 +18,7 @@ import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.ViewModelStore
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -27,6 +29,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -288,6 +291,33 @@ class ListTagsViewModelTest {
     assertThat(preferences.sortDirection.get()).isEqualTo(Descending)
   }
 
+  @Test
+  fun `Undo still restores the tag after the screen has gone`() = runDatabaseTest { scope ->
+    insertTag(id = "groceries-id", tag = "groceries")
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync)
+    viewModel.state.test {
+      assertThat(awaitItem()).isInstanceOf(Success::class)
+      cancelAndIgnoreRemainingEvents()
+    }
+    lateinit var deleted: ListTagsEvent.Deleted
+    viewModel.events.test {
+      viewModel.delete(TagId("groceries-id"))
+      deleted = awaitItem() as Deleted
+    }
+
+    // the snackbar outlives the screen, so undo can be tapped after the view model is cleared
+    ViewModelStore().apply {
+      put("tags", viewModel)
+      clear()
+    }
+    viewModel.undoDelete(deleted.item, deleted.index)
+    scope.advanceUntilIdle()
+
+    assertThat(sync.changes.last().row to sync.changes.last().value)
+      .isEqualTo("groceries-id" to MessageValue.Number(0))
+  }
+
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
     sync: BudgetSyncController = TestSyncController(),
@@ -298,6 +328,7 @@ class ListTagsViewModelTest {
       transactionDao = TransactionDao(database = this),
       syncController = sync,
       preferences = preferences,
+      budgetScope = BudgetCoroutineScope(scope),
     )
 
   private class FailingSyncController : BudgetSyncController {
