@@ -28,7 +28,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
   - Don't name new enum entries or sealed subtypes after Kotlin types (`Number`, `Any`, `Boolean`, `Error`), since that forces a qualifier at every use.
 - `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` - add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
 - In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.
-- `androidHostTest` runs on plain JUnit, with Android stubs returning defaults (`isReturnDefaultValues`). Only add `@RunWith(RobolectricTestRunner::class)` when a test needs real Android behaviour (`Context`, `Bundle`, `Looper`, Compose UI).
+- Put tests in `commonTest` so they run on both targets. Use `androidHostTest` only for tests needing real Android behaviour (`Context`, `Bundle`, `Looper`, Compose UI), with `@RunWith(RobolectricTestRunner::class)`. Host tests run on plain JUnit otherwise, with Android stubs returning defaults (`isReturnDefaultValues`).
 - Wrap comments at 100 columns. That is where `ktfmt --google-style` wraps them, not the `max_line_length` of 120 in `.editorconfig`.
 
 ## Build commands

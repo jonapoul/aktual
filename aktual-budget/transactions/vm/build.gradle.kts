@@ -27,7 +27,7 @@ kotlin {
     api(project(":aktual-prefs"))
   }
 
-  androidHostTestDependencies {
+  commonTestDependencies {
     implementation(libs.androidx.paging.testing)
     implementation(project(":aktual-app:di"))
     implementation(project(":aktual-di:runlevel"))

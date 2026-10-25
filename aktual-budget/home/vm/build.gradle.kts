@@ -7,7 +7,7 @@ kotlin {
     api(project(":aktual-budget:schedules:domain"))
   }
 
-  androidHostTestDependencies {
+  commonTestDependencies {
     implementation(libs.sqldelight.runtime)
   }
 }

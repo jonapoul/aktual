@@ -23,4 +23,8 @@ kotlin {
     implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:logging"))
   }
+
+  commonTestDependencies {
+    implementation(project(":aktual-prefs:impl"))
+  }
 }

@@ -13,7 +13,7 @@ kotlin {
     implementation(project(":aktual-core:logging"))
   }
 
-  androidHostTestDependencies {
+  commonTestDependencies {
     implementation(project(":aktual-prefs:impl"))
   }
 }
