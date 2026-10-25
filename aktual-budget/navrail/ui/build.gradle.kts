@@ -15,6 +15,5 @@ kotlin {
     implementation(libs.kotlinx.serialization.json)
     implementation(project(":aktual-budget:accounts:ui"))
     implementation(project(":aktual-core:l10n"))
-    implementation(project(":aktual-core:ui"))
   }
 }

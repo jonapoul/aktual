@@ -13,8 +13,8 @@ import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.RuleSearchText
 import aktual.budget.rules.vm.RulesLoader
-import aktual.budget.rules.vm.StringLookup
 import aktual.budget.rules.vm.search.SearchRulesState.Results
+import aktual.core.l10n.StringLookup
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
 import androidx.lifecycle.SavedStateHandle

@@ -5,6 +5,9 @@ import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.reports.vm.DashboardSync
 import aktual.core.UuidGenerator
+import aktual.core.l10n.Res
+import aktual.core.l10n.StringLookup
+import aktual.core.l10n.reports_text_default
 import aktual.core.model.Empty
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
@@ -39,6 +42,7 @@ internal constructor(
   @Assisted private val page: DashboardPageId,
   private val uuidGenerator: UuidGenerator,
   private val sync: DashboardSync,
+  private val strings: StringLookup,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private var job: Job? = null
@@ -66,26 +70,21 @@ internal constructor(
       return
     }
 
-    insertWidget(type, buildEmptyMetadata(type))
-  }
-
-  private fun insertWidget(type: WidgetType, meta: JsonObject) {
     job?.cancel()
     job = viewModelScope.launch {
       val widgetId = uuidGenerator(::WidgetId)
       logcat.d { "Creating $type report $widgetId on page $page" }
-      sync.addWidget(widgetId, page, type, meta)
+      sync.addWidget(widgetId, page, type, initialMeta(type))
       shouldNavigateChannel.send(ShouldNavigateEvent(widgetId))
     }
   }
 
-  @Suppress("ElseCaseInsteadOfExhaustiveWhen", "UseIfInsteadOfWhen")
-  private fun buildEmptyMetadata(type: WidgetType): JsonObject =
-    when (type) {
-      // Upstream requires content on markdown widgets
-      Markdown -> buildJsonObject { put("content", "") }
-      // TODO: implement properly
-      else -> JsonObject.Empty
+  // Upstream only gives markdown widgets a starting meta, the rest are left empty
+  private suspend fun initialMeta(type: WidgetType): JsonObject =
+    if (type == Markdown) {
+      buildJsonObject { put("content", strings[Res.string.reports_text_default]) }
+    } else {
+      JsonObject.Empty
     }
 
   data class ShouldNavigateEvent(val id: WidgetId)

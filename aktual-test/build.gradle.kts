@@ -19,7 +19,6 @@ kotlin {
     api(libs.turbine)
     api(project(":aktual-budget:data:db"))
     api(project(":aktual-core"))
-    api(project(":aktual-di:core"))
     implementation(libs.kotlinx.immutable)
     implementation(libs.sqldelight.async)
     implementation(libs.sqldelight.driver.sqlite)
