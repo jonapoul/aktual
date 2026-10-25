@@ -75,6 +75,15 @@ class PayeeDao(database: BudgetDatabase) {
     getCommon(since, limit).awaitAsList().map { it.id }
   }
 
+  // The payee_mapping rows that resolve to this payee, its own row included
+  suspend fun mappedTo(target: PayeeId): List<PayeeId> = mappings.withResult {
+    getIdsByTargetId(target).awaitAsList()
+  }
+
+  suspend fun mappingTarget(id: PayeeId): PayeeId? = mappings.withResult {
+    getTargetId(id).awaitAsOneOrNull()?.targetId
+  }
+
   // The account this payee transfers to, null if it's an ordinary payee
   suspend fun transferAccount(id: PayeeId): AccountId? = queries.withResult {
     getTransferAccount(id).awaitAsOneOrNull()?.transfer_acct

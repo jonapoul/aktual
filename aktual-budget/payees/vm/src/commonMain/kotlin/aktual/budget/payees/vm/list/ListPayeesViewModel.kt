@@ -5,6 +5,7 @@ import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
+import aktual.budget.payees.domain.PayeeMerger
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
@@ -35,6 +36,7 @@ class ListPayeesViewModel
 internal constructor(
   loader: PayeesLoader,
   private val syncController: BudgetSyncController,
+  private val merger: PayeeMerger,
   private val budgetScope: BudgetCoroutineScope,
 ) : ViewModel() {
   private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -87,6 +89,33 @@ internal constructor(
         throw e
       } catch (e: Exception) {
         logcat.e(e) { "Failed restoring payee ${payee.id}" }
+        mutableEvents.tryEmit(RestoreFailed)
+      }
+    }
+  }
+
+  fun merge(payee: PayeeItem, into: PayeeItem) {
+    viewModelScope.launch {
+      try {
+        val merge = merger.merge(into.id, listOf(payee.id)) ?: return@launch
+        mutableEvents.tryEmit(ListPayeesEvent.Merged(payee, into, merge))
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed merging ${payee.id} into ${into.id}" }
+        mutableEvents.tryEmit(MergeFailed)
+      }
+    }
+  }
+
+  fun undoMerge(event: ListPayeesEvent.Merged) {
+    budgetScope.launch {
+      try {
+        merger.undo(event.merge)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed undoing merge of ${event.payee.id}" }
         mutableEvents.tryEmit(RestoreFailed)
       }
     }

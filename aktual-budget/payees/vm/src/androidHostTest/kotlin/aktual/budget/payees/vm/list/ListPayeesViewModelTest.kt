@@ -12,6 +12,8 @@ import aktual.budget.model.Condition
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
+import aktual.budget.payees.domain.PayeeMerge
+import aktual.budget.payees.domain.PayeeMerger
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.rules.domain.PayeeRuleCounter
 import aktual.di.BudgetCoroutineScope
@@ -185,6 +187,47 @@ class ListPayeesViewModelTest {
   }
 
   @Test
+  fun `Merging moves the payee into the target and undo restores it`() = runDatabaseTest { scope ->
+    // given
+    insertPayees()
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync).awaitLoaded()
+    val tesco = ARGOS.copy(id = TESCO, name = "Tesco")
+    val merged =
+      ListPayeesEvent.Merged(
+        payee = tesco,
+        target = ARGOS,
+        merge =
+          PayeeMerge(target = ARGOS.id, merged = listOf(TESCO), oldTargets = mapOf(TESCO to TESCO)),
+      )
+
+    // when
+    viewModel.events.test {
+      viewModel.merge(tesco, into = ARGOS)
+      assertThatNextEmissionIsEqualTo(merged)
+    }
+
+    // then
+    assertThat(sync.changes.map { it.row to it.column to it.value })
+      .containsExactly(
+        "tesco" to "targetId" to MessageValue.String("argos"),
+        "tesco" to "tombstone" to MessageValue.Number(1),
+      )
+
+    // when
+    sync.changes.clear()
+    viewModel.undoMerge(merged)
+    scope.advanceUntilIdle()
+
+    // then
+    assertThat(sync.changes.map { it.row to it.column to it.value })
+      .containsExactly(
+        "tesco" to "tombstone" to MessageValue.Number(0),
+        "tesco" to "targetId" to MessageValue.String("tesco"),
+      )
+  }
+
+  @Test
   fun `Transfer payees can't be deleted or favourited`() = runDatabaseTest { scope ->
     // given
     insertPayees()
@@ -226,6 +269,7 @@ class ListPayeesViewModelTest {
     return ListPayeesViewModel(
       loader = PayeesLoader(PayeeDao(this), PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
       syncController = sync,
+      merger = PayeeMerger(PayeeDao(this), sync),
       budgetScope = BudgetCoroutineScope(scope),
     )
   }

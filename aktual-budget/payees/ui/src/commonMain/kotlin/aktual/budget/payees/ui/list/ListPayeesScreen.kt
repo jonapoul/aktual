@@ -25,6 +25,7 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
@@ -50,6 +51,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -61,6 +63,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun ListPayeesScreen(
@@ -78,7 +81,9 @@ internal fun ListPayeesScreen(
     viewModel.events.collect { event ->
       when (event) {
         is Deleted -> snackbars.show { showDeleted(event, onUndo = viewModel::undoDelete) }
+        is Merged -> snackbars.show { showMerged(event, onUndo = viewModel::undoMerge) }
         DeleteFailed,
+        MergeFailed,
         RestoreFailed,
         UpdateFailed -> snackbars.show { showFailure(event) }
       }
@@ -95,6 +100,8 @@ internal fun ListPayeesScreen(
         is OpenPayee -> toEdit(action.id)
         is OpenRules -> openRules(action.payee, editRule, searchRules)
         is Delete -> viewModel.delete(action.payee)
+        is StartMerge -> Unit
+        is Merge -> viewModel.merge(action.payee, action.into)
         is ToggleFavorite -> viewModel.toggleFavorite(action.payee)
       }
     },
@@ -110,13 +117,14 @@ private fun ListPayeesScaffold(
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
   var confirmDelete by remember { mutableStateOf<PayeeItem?>(null) }
+  var mergeSource by remember { mutableStateOf<PayeeItem?>(null) }
 
   // Only worth confirming when transactions will lose their payee
   val handleAction = ListPayeesActionHandler { action ->
-    if (action is Delete && action.payee.numTransactions > 0) {
-      confirmDelete = action.payee
-    } else {
-      onAction(action)
+    when {
+      action is Delete && action.payee.numTransactions > 0 -> confirmDelete = action.payee
+      action is StartMerge -> mergeSource = action.payee
+      else -> onAction(action)
     }
   }
 
@@ -166,6 +174,16 @@ private fun ListPayeesScaffold(
           onCancel = { confirmDelete = null },
         )
       }
+
+      val source = mergeSource
+      if (source != null && state is Success) {
+        MergePayeeSheet(
+          payee = source,
+          payees = state.payees,
+          onSelect = { target -> onAction(Merge(source, target)) },
+          onDismiss = { mergeSource = null },
+        )
+      }
     }
   }
 }
@@ -183,6 +201,30 @@ private fun DeletePayeeDialog(name: String, onConfirm: () -> Unit, onCancel: () 
       }
     },
     content = { Text(Strings.payeesDeleteConfirmMessage) },
+  )
+}
+
+// Transfer payees can't be merged into, as upstream
+@Composable
+private fun MergePayeeSheet(
+  payee: PayeeItem,
+  payees: ImmutableList<PayeeItem>,
+  onSelect: (PayeeItem) -> Unit,
+  onDismiss: () -> Unit,
+) {
+  val targets =
+    remember(payee, payees) {
+      payees.filter { !it.isTransfer && it.id != payee.id }.toImmutableList()
+    }
+  ListBottomSheet(
+    value = payee,
+    options = targets,
+    onDismiss = onDismiss,
+    onSelect = onSelect,
+    sheetState = rememberBottomSheetState(initialValue = Hidden),
+    string = { it.name },
+    key = { it.id.value },
+    searchPlaceholder = Strings.payeesMergePlaceholder(payee.name),
   )
 }
 

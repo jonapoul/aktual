@@ -193,6 +193,7 @@ include(
   ":aktual-budget:model",
   ":aktual-budget:navrail:ui",
   ":aktual-budget:navrail:vm",
+  ":aktual-budget:payees:domain",
   ":aktual-budget:payees:ui",
   ":aktual-budget:payees:vm",
   ":aktual-budget:reports:ui",
