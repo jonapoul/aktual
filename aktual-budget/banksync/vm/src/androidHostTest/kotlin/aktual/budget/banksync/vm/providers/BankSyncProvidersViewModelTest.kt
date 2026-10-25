@@ -13,18 +13,14 @@ import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
+import aktual.test.viewModelContext
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
-import kotlin.test.AfterTest
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -32,11 +28,6 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class BankSyncProvidersViewModelTest {
   private val secrets = FakeSecretsApi()
-
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
 
   @Test
   fun `Lists each provider's status`() = runTest {
@@ -115,7 +106,6 @@ class BankSyncProvidersViewModelTest {
     if (goCardless == Checking) Checking else NotConfigured
 
   private fun TestScope.createViewModel(server: BudgetServer = SERVER): BankSyncProvidersViewModel {
-    Dispatchers.setMain(StandardTestDispatcher(testScheduler))
     val configured = Success(configured = true)
     val unconfigured = Success(configured = false)
     return BankSyncProvidersViewModel(
@@ -129,6 +119,7 @@ class BankSyncProvidersViewModelTest {
         ),
       setup = BankSyncProviderSetup(secrets, FakeEnableBankingApi()),
       server = server,
+      viewModelContext = viewModelContext,
     )
   }
 

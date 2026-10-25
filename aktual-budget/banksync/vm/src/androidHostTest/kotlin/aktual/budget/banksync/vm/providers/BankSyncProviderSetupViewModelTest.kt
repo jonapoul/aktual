@@ -14,6 +14,7 @@ import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
+import aktual.test.viewModelContext
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -22,24 +23,14 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
-import kotlin.test.AfterTest
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Test
 
 class BankSyncProviderSetupViewModelTest {
   private val secrets = FakeSecretsApi()
   private val enableBanking = FakeEnableBankingApi()
-
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
 
   @Test
   fun `Saving needs every credential`() = runTest {
@@ -119,11 +110,11 @@ class BankSyncProviderSetupViewModelTest {
   }
 
   private fun TestScope.createViewModel(source: AccountSyncSource): BankSyncProviderSetupViewModel {
-    Dispatchers.setMain(StandardTestDispatcher(testScheduler))
     return BankSyncProviderSetupViewModel(
       source = source,
       setup = BankSyncProviderSetup(secrets, enableBanking),
       server = BudgetServer.Remote(ServerUrl(Https, "test.server.com"), Token("token")),
+      viewModelContext = viewModelContext,
     )
   }
 }

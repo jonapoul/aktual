@@ -29,6 +29,7 @@ import aktual.budget.model.SyncedPrefKey.PerAccount.SyncUpdateDates
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.di.BudgetCoroutineScope
 import aktual.test.inMemoryDriverFactory
+import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.ReceiveTurbine
@@ -40,27 +41,17 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.test.AfterTest
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class BankSyncSettingsViewModelTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `Unset settings take their defaults`() = runSettingsTest {
     createViewModel().state.test {
@@ -255,7 +246,6 @@ class BankSyncSettingsViewModelTest {
   }
 
   private fun TestContext.createViewModel(account: AccountId = ACCOUNT): BankSyncSettingsViewModel {
-    Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     return BankSyncSettingsViewModel(
       account = account,
       accountDao = AccountDao(database),
@@ -283,6 +273,7 @@ class BankSyncSettingsViewModelTest {
           uuidGenerator = { Uuid.random().toString() },
           scope = BudgetCoroutineScope(scope.backgroundScope),
         ),
+      viewModelContext = scope.viewModelContext,
     )
   }
 

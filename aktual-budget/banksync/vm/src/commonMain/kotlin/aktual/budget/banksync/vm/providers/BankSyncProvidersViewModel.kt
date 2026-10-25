@@ -6,6 +6,8 @@ import aktual.budget.banksync.vm.BankSyncProviderStatus
 import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -39,7 +41,8 @@ class BankSyncProvidersViewModel(
   private val api: BankSyncApi,
   private val setup: BankSyncProviderSetup,
   private val server: BudgetServer,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableStatuses =
     MutableStateFlow(PROVIDERS.associateWith { BankSyncProviderStatus.Checking })
   private val mutableResetting = MutableStateFlow<AccountSyncSource?>(null)

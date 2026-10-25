@@ -42,6 +42,7 @@ import aktual.core.model.Token
 import aktual.di.BudgetCoroutineScope
 import aktual.test.TestBuildConfig
 import aktual.test.inMemoryDriverFactory
+import aktual.test.viewModelContext
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -50,28 +51,18 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
-import kotlin.test.AfterTest
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class LinkBankAccountViewModelTest {
-  @AfterTest
-  fun after() {
-    Dispatchers.resetMain()
-  }
-
   @Test
   fun `Lists the first configured provider's accounts`() = runLinkTest {
     insertLinked(AccountId("other"), "Other", remote = "ACT-2")
@@ -456,7 +447,6 @@ class LinkBankAccountViewModelTest {
     account: AccountId? = ACCOUNT,
     server: BudgetServer = REMOTE,
   ): LinkBankAccountViewModel {
-    Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     return LinkBankAccountViewModel(
       account = account,
       accountDao = AccountDao(database),
@@ -486,6 +476,7 @@ class LinkBankAccountViewModelTest {
       waiter = GoCardlessLoginWaiter(api),
       enableBanking = enableBankingApi,
       buildConfig = TestBuildConfig,
+      viewModelContext = scope.viewModelContext,
     )
   }
 

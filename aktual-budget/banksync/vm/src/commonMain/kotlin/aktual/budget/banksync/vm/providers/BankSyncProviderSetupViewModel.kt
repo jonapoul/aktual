@@ -5,6 +5,8 @@ import aktual.budget.banksync.domain.ProviderCredential
 import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -40,7 +42,8 @@ class BankSyncProviderSetupViewModel(
   @Assisted private val source: AccountSyncSource,
   private val setup: BankSyncProviderSetup,
   server: BudgetServer,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)
