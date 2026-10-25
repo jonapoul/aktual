@@ -687,7 +687,7 @@ internal val PER_TRANSACTION_DATA =
     end = END_DATE,
     numTransactions = 1327,
     total = Amount(6198.55),
-    average = Amount(340.70),
+    average = Amount(4.67),
   )
 
 private val PERCENT_DATA =
