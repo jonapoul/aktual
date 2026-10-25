@@ -6,6 +6,8 @@ internal sealed interface ListPayeesAction
 
 internal data object Retry : ListPayeesAction
 
+internal data object OpenSearch : ListPayeesAction
+
 @Immutable
 internal fun interface ListPayeesActionHandler {
   operator fun invoke(action: ListPayeesAction)

@@ -6,6 +6,10 @@
   <string name="payees_transfer">Transfer: %1$s</string>
   <string name="payees_favorite">Favorite</string>
   <string name="payees_create_rule">Create rule</string>
+  <string name="payees_search">Search</string>
+  <string name="payees_search_placeholder">Search payees</string>
+  <string name="payees_search_prompt">Enter some text to search payee names</string>
+  <string name="payees_search_no_results">No payees match “%1$s”</string>
   <plurals name="payees_num_rules">
     <item quantity="one">%1$d associated rule</item>
     <item quantity="other">%1$d associated rules</item>

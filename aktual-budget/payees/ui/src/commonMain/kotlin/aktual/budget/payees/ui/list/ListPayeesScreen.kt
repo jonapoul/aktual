@@ -9,8 +9,11 @@ import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.payees.vm.list.Success
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
+import aktual.core.icons.material.Search
 import aktual.core.l10n.Strings
+import aktual.core.nav.SearchPayeesNavigator
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -49,6 +52,7 @@ import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 internal fun ListPayeesScreen(
+  toSearch: SearchPayeesNavigator,
   modifier: Modifier = Modifier,
   viewModel: ListPayeesViewModel = metroViewModel(),
 ) {
@@ -60,6 +64,7 @@ internal fun ListPayeesScreen(
     onAction = { action ->
       when (action) {
         Retry -> viewModel.retry()
+        OpenSearch -> toSearch()
       }
     },
   )
@@ -82,6 +87,15 @@ private fun ListPayeesScaffold(
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavDrawerIconButton() },
         title = { Text(text = Strings.payeesTitle) },
+        actions = {
+          if (state is Success) {
+            BareIconButton(
+              imageVector = MaterialIcons.Search,
+              contentDescription = Strings.payeesSearch,
+              onClick = { onAction(OpenSearch) },
+            )
+          }
+        },
       )
     },
   ) { innerPadding ->

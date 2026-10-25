@@ -425,7 +425,7 @@ internal fun likePatternToRegex(pattern: String): Regex {
 }
 
 // getNormalisedString in packages/loot-core/src/shared/normalisation.ts
-internal fun normalise(value: String): String {
+fun normalise(value: String): String {
   var lower = value.lowercase()
   for ((from, to) in LETTER_REPLACEMENTS) lower = lower.replace(from, to)
   return stripDiacritics(lower)

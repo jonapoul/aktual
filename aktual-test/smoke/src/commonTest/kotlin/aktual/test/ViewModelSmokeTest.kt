@@ -15,6 +15,7 @@ import aktual.budget.budgeting.vm.BudgetViewModel
 import aktual.budget.home.vm.HomeViewModel
 import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.payees.vm.list.ListPayeesViewModel
+import aktual.budget.payees.vm.search.SearchPayeesViewModel
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.budget.reports.vm.montecarlo.MonteCarloViewModel
@@ -172,6 +173,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun reportDashboard() = testVm<ReportsDashboardViewModel>()
 
   @Test fun scheduleSettings() = testVm<ScheduleSettingsViewModel>()
+
+  @Test fun searchPayees() = testSavedStateVM<SearchPayeesViewModel>()
 
   @Test fun searchReports() = testSavedStateVM<SearchReportsViewModel>()
 
