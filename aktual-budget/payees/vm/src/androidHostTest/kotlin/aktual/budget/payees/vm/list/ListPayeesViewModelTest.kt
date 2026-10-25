@@ -11,6 +11,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Condition
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
+import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.rules.domain.PayeeRuleCounter
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
@@ -132,8 +133,7 @@ class ListPayeesViewModelTest {
   private fun BudgetDatabase.createViewModel(scope: TestScope): ListPayeesViewModel {
     Dispatchers.setMain(scope.standardDispatcher)
     return ListPayeesViewModel(
-      payeeDao = PayeeDao(this),
-      ruleCounter = PayeeRuleCounter(RulesDao(this), RuleContextDao(this)),
+      loader = PayeesLoader(PayeeDao(this), PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
     )
   }
 

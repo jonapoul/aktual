@@ -15,6 +15,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
+import aktual.core.ui.rememberHighlighted
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +39,7 @@ import com.valentinilk.shimmer.shimmer
 
 /** Keep in sync with [ShimmerPayeeItem] */
 @Composable
-internal fun PayeeItem(payee: PayeeItem, modifier: Modifier = Modifier) {
+internal fun PayeeItem(payee: PayeeItem, modifier: Modifier = Modifier, query: String = "") {
   Row(
     modifier =
       modifier
@@ -64,7 +65,11 @@ internal fun PayeeItem(payee: PayeeItem, modifier: Modifier = Modifier) {
       verticalArrangement = Arrangement.spacedBy(ListPayeesDS.itemContentSpacing),
     ) {
       Text(
-        text = if (payee.isTransfer) Strings.payeesTransfer(payee.name) else payee.name,
+        text =
+          rememberHighlighted(
+            text = if (payee.isTransfer) Strings.payeesTransfer(payee.name) else payee.name,
+            query = query,
+          ),
         style = typography.bodyLarge,
         color = if (payee.isTransfer) colors.tableTextLight else colors.tableText,
         maxLines = 1,
