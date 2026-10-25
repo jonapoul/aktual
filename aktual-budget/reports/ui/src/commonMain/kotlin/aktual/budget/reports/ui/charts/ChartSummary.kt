@@ -79,11 +79,11 @@ internal fun SummaryChart(
   includeHeader: Boolean = true,
 ) =
   Column(modifier = modifier, horizontalAlignment = CenterHorizontally) {
-    if (compact) {
-      if (includeHeader) {
-        Header(modifier = Modifier.fillMaxWidth(), data = data)
-      }
+    if (includeHeader) {
+      Header(modifier = Modifier.fillMaxWidth(), data = data)
+    }
 
+    if (compact) {
       Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Center) {
         when (data) {
           is AveragePerMonth -> CompactAmount(data.average)
