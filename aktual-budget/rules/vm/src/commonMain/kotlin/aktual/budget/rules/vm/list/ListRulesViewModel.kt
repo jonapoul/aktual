@@ -12,6 +12,8 @@ import aktual.budget.rules.vm.list.ListRulesState.Failure
 import aktual.budget.rules.vm.list.ListRulesState.Loading
 import aktual.budget.rules.vm.list.ListRulesState.Success
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -37,7 +39,8 @@ class ListRulesViewModel(
   private val loader: RulesLoader,
   private val syncController: BudgetSyncController,
   val nameFetcher: NameFetcher,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   private val mutableRules = MutableStateFlow<ImmutableList<Rule>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
   private val mutableFailure = MutableStateFlow<String?>(null)

@@ -10,6 +10,8 @@ import aktual.budget.rules.vm.RulesLoader
 import aktual.budget.rules.vm.search.SearchRulesState.Failure
 import aktual.budget.rules.vm.search.SearchRulesState.Results
 import aktual.di.BudgetScope
+import aktual.di.ViewModelContext
+import aktual.di.newScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
@@ -43,7 +45,8 @@ internal constructor(
   private val loader: RulesLoader,
   private val searchText: RuleSearchText,
   val nameFetcher: NameFetcher,
-) : ViewModel() {
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(BudgetScope::class)
