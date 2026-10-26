@@ -146,7 +146,10 @@ class TransactionDao(database: BudgetDatabase) {
       .distinctUntilChanged()
 
   suspend fun oldestImportedSortOrder(ids: List<TransactionId>): Double? = queries.withResult {
-    oldestImportedSortOrder(ids).awaitAsOne().oldest
+    ids
+      .chunked(MAX_BIND_ARGS)
+      .mapNotNull { chunk -> oldestImportedSortOrder(chunk).awaitAsOne().oldest }
+      .minOrNull()
   }
 
   // Current balance of every transaction, or of one account's
