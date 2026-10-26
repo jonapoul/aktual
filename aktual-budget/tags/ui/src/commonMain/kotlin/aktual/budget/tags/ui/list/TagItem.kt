@@ -12,6 +12,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
+import aktual.core.ui.ChipSize
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
@@ -33,6 +34,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -90,9 +92,12 @@ internal fun ShimmerTagItem(modifier: Modifier = Modifier) {
   ) {
     Box(
       modifier =
-        Modifier.size(width = ListTagsDS.shimmerChipWidth, height = ListTagsDS.shimmerChipHeight)
-          .background(colors.pageText, ChipDefaults.Shape),
-    )
+        Modifier.width(ListTagsDS.shimmerChipWidth)
+          .background(colors.pageText, ChipSize.Regular.shape)
+          .padding(ChipSize.Regular.contentPadding),
+    ) {
+      Text(text = "", style = typography.bodyMedium, maxLines = 1)
+    }
     Box(
       modifier =
         Modifier.fillMaxWidth(fraction = 0.7f)
@@ -140,6 +145,7 @@ private fun TagItemRow(
         Chip(
           text = Plurals.tagsNumTransactions(tag.numTransactions, tag.numTransactions),
           colors = ChipDefaults.colors(background = colors.pillBackgroundSelected),
+          size = Small,
           textStyle = typography.bodySmall,
           onClick = { onAction(ViewTransactions(tag.id)) },
           trailingIcon = AktualIcons.CheveronRight,

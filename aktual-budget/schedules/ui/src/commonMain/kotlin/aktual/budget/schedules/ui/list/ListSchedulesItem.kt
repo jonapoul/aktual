@@ -172,6 +172,7 @@ internal fun ScheduleStatusBadge(
     modifier = modifier,
     text = label,
     colors = ChipDefaults.colors(bgColor, textColor),
+    size = Small,
     textStyle = typography.labelSmall,
   )
 }

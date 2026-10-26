@@ -45,10 +45,14 @@ data class ChipColors(
   val border: Color = Unspecified,
 )
 
+enum class ChipSize(val radius: Dp, val contentPadding: PaddingValues) {
+  Regular(radius = 8.dp, contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)),
+  Small(radius = 4.dp, contentPadding = PaddingValues(horizontal = 6.dp, vertical = 2.dp));
+
+  val shape = RoundedCornerShape(radius)
+}
+
 object ChipDefaults {
-  val Radius = 8.dp
-  val Shape = RoundedCornerShape(Radius)
-  val ContentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
   val Spacing = 4.dp
   val IconSize = 16.dp
 
@@ -81,6 +85,7 @@ fun Chip(
   text: String,
   modifier: Modifier = Modifier,
   colors: ChipColors = ChipDefaults.colors(),
+  size: ChipSize = Regular,
   textStyle: TextStyle = typography.labelLarge,
   trailingIcon: ImageVector? = null,
   trailingIconDescription: String? = null,
@@ -90,6 +95,7 @@ fun Chip(
   Chip(
     modifier = modifier,
     colors = colors,
+    size = size,
     textStyle = textStyle,
     onClick = onClick,
     role = role,
@@ -115,6 +121,7 @@ fun Chip(
 fun Chip(
   modifier: Modifier = Modifier,
   colors: ChipColors = ChipDefaults.colors(),
+  size: ChipSize = Regular,
   textStyle: TextStyle = typography.labelLarge,
   spacing: Dp = ChipDefaults.Spacing,
   onClick: (() -> Unit)? = null,
@@ -124,17 +131,17 @@ fun Chip(
   Row(
     modifier =
       modifier
-        .clip(ChipDefaults.Shape)
-        .background(colors.background, ChipDefaults.Shape)
+        .clip(size.shape)
+        .background(colors.background, size.shape)
         .then(
           if (colors.border.isSpecified) {
-            Modifier.border(1.dp, colors.border, ChipDefaults.Shape)
+            Modifier.border(1.dp, colors.border, size.shape)
           } else {
             Modifier
           },
         )
         .then(if (onClick == null) Modifier else Modifier.clickable(role = role, onClick = onClick))
-        .padding(ChipDefaults.ContentPadding),
+        .padding(size.contentPadding),
     horizontalArrangement = Arrangement.spacedBy(spacing),
     verticalAlignment = CenterVertically,
   ) {
@@ -154,6 +161,7 @@ private fun PreviewChip(@PreviewParameter(ChipProvider::class) params: ColoredPa
     val text = this
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       Chip(text = text)
+      Chip(text = text, size = Small, textStyle = typography.labelSmall)
       Chip(
         text = text,
         trailingIcon = AktualIcons.Delete,

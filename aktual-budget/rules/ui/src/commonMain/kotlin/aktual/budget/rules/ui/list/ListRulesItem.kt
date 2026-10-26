@@ -129,6 +129,7 @@ private fun RuleStageBadge(
     modifier = modifier.padding(Dimens.Large),
     text = stage.string(),
     colors = chipColors(colors),
+    size = Small,
     textStyle = typography.labelSmall,
   )
 }

@@ -15,8 +15,9 @@ fun TagChip(
   text: String,
   color: Color?,
   modifier: Modifier = Modifier,
+  size: ChipSize = Regular,
   onClick: (() -> Unit)? = null,
-) = TagChip(AnnotatedString("#$text"), color, modifier, onClick)
+) = TagChip(AnnotatedString("#$text"), color, modifier, size, onClick)
 
 // [text] includes the leading '#'. Upstream falls back to the theme's note-tag colors when a tag
 // has no explicit color
@@ -25,6 +26,7 @@ fun TagChip(
   text: AnnotatedString,
   color: Color?,
   modifier: Modifier = Modifier,
+  size: ChipSize = Regular,
   onClick: (() -> Unit)? = null,
 ) {
   Chip(
@@ -34,6 +36,7 @@ fun TagChip(
         background = color ?: colors.noteTagBackground,
         content = color?.contrastingTextColor() ?: colors.noteTagText,
       ),
+    size = size,
     textStyle = typography.bodyMedium.copy(fontWeight = SemiBold),
     onClick = onClick,
   ) {

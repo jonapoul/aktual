@@ -121,6 +121,7 @@ private fun ConditionRow(
     )
     Chip(
       text = condition.operator.label(),
+      size = Small,
       textStyle = typography.bodySmall,
     )
     Text(

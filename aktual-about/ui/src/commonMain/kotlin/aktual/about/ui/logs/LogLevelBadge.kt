@@ -39,5 +39,6 @@ internal fun LogLabelBadge(priority: LogPriority, modifier: Modifier = Modifier)
     modifier = modifier,
     text = priority.label(),
     colors = ChipDefaults.colors(priority.background(colors), priority.foreground(colors)),
+    size = Small,
     textStyle = LocalTextStyle.current.copy(fontWeight = SemiBold, fontSize = 11.sp),
   )

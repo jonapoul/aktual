@@ -646,6 +646,7 @@ internal fun BalancePill(balance: Amount, carryover: Boolean, modifier: Modifier
   Chip(
     modifier = modifier.semantics { if (carryover) stateDescription = rollsOver },
     colors = pill,
+    size = Small,
     textStyle = TextStyle.Default.tabularFigures().copy(fontSize = 13.sp, fontWeight = Medium),
     spacing = 2.dp,
   ) {

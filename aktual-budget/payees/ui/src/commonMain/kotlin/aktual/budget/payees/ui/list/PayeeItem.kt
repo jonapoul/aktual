@@ -13,6 +13,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
+import aktual.core.ui.ChipSize
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
@@ -169,7 +170,8 @@ internal fun ShimmerPayeeItem(modifier: Modifier = Modifier) {
     Box(
       modifier =
         Modifier.width(ListPayeesDS.shimmerChipWidth)
-          .background(colors.pageText, ChipDefaults.Shape),
+          .background(colors.pageText, ChipSize.Regular.shape)
+          .padding(ChipSize.Regular.contentPadding),
     ) {
       Text(text = "", style = typography.bodySmall, maxLines = 1)
     }

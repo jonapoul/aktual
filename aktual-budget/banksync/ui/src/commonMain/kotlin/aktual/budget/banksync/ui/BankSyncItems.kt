@@ -233,6 +233,7 @@ private fun StatusChip(
     modifier = modifier,
     text = label,
     colors = ChipDefaults.colors(background, text),
+    size = Small,
     textStyle = typography.labelSmall,
   )
 }
