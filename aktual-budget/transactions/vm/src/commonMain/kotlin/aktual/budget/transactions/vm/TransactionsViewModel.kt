@@ -108,8 +108,12 @@ class TransactionsViewModel(
 
   val density: StateFlow<TransactionsDensity> =
     prefs
-      .map { meta -> meta[TransactionDensityKey] ?: Default }
-      .stateIn(viewModelScope, Eagerly, initialValue = prefs[TransactionDensityKey] ?: Default)
+      .map { meta -> meta[DbMetadata.TransactionDensity] ?: Default }
+      .stateIn(
+        viewModelScope,
+        Eagerly,
+        initialValue = prefs[DbMetadata.TransactionDensity] ?: Default,
+      )
 
   // Colours the #tags in each row's notes
   val tags: StateFlow<ImmutableList<TagLabel>> =
@@ -240,7 +244,7 @@ class TransactionsViewModel(
     }
 
   fun setDensity(density: TransactionsDensity) {
-    prefs.update { meta -> meta.set(TransactionDensityKey, density) }
+    prefs.update { meta -> meta.set(DbMetadata.TransactionDensity, density) }
   }
 
   fun toggleExpanded(id: TransactionId) {
@@ -274,8 +278,4 @@ class TransactionsViewModel(
 
   // As the bank sync screen decides it
   private fun Accounts.isLinked() = account_sync_source != null && account_id != null
-
-  private companion object {
-    val TransactionDensityKey = DbMetadata.enumKey<TransactionsDensity>("transactionDensity")
-  }
 }
