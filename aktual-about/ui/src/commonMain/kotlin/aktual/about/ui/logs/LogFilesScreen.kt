@@ -33,6 +33,10 @@ import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.contrastingTextColor
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.background
@@ -51,6 +55,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -90,11 +95,14 @@ internal fun LogFilesScaffold(
 ) {
   var showExport by remember { mutableStateOf(false) }
   var showDelete by remember { mutableStateOf(false) }
+  val hazeState = rememberHazedTopBarState()
+  val listState = rememberLazyListState()
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
+        modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(text = Strings.logsToolbar, maxLines = 1, overflow = Ellipsis) },
@@ -108,10 +116,13 @@ internal fun LogFilesScaffold(
   ) { innerPadding ->
     Box(modifier = Modifier.fillMaxSize()) {
       WavyBackground()
-      when (state) {
-        Loading -> ShimmerLogFiles(innerPadding)
-        Empty -> SearchMessage(text = Strings.logsEmpty, icon = MaterialIcons.Description)
-        is Loaded -> LogFilesList(state, innerPadding, onAction)
+      Box(modifier = Modifier.hazedTopBarContent(hazeState, innerPadding)) {
+        val contentPadding = hazedTopBarContentPadding(hazeState, innerPadding)
+        when (state) {
+          Loading -> ShimmerLogFiles(contentPadding)
+          Empty -> SearchMessage(text = Strings.logsEmpty, icon = MaterialIcons.Description)
+          is Loaded -> LogFilesList(state, contentPadding, listState, onAction)
+        }
       }
     }
   }
@@ -141,10 +152,9 @@ internal fun LogFilesScaffold(
 private fun LogFilesList(
   state: LogFilesState.Loaded,
   contentPadding: PaddingValues,
+  listState: LazyListState,
   onAction: LogsActionHandler,
 ) {
-  val listState = rememberLazyListState()
-
   // Only one row may be swiped open at a time
   var openDate by remember { mutableStateOf<LocalDate?>(null) }
 
