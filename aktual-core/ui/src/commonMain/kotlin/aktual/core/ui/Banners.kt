@@ -2,12 +2,14 @@ package aktual.core.ui
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.AlertTriangle
+import aktual.core.icons.CheveronRight
 import aktual.core.icons.ExclamationOutline
 import aktual.core.icons.InformationOutline
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.semantics
@@ -31,6 +34,7 @@ fun NoticeBanner(
   text: String,
   modifier: Modifier = Modifier,
   icon: ImageVector? = AktualIcons.InformationOutline,
+  onClick: (() -> Unit)? = null,
 ) =
   Banner(
     text = text,
@@ -38,6 +42,7 @@ fun NoticeBanner(
     background = colors.noticeBackgroundLight,
     content = colors.noticeText,
     modifier = modifier,
+    onClick = onClick,
   )
 
 @Composable
@@ -75,13 +80,16 @@ private fun Banner(
   background: Color,
   content: Color,
   modifier: Modifier = Modifier,
+  onClick: (() -> Unit)? = null,
 ) {
   Row(
     modifier =
       modifier
         .fillMaxWidth()
         .semantics(mergeDescendants = true) {}
-        .background(background, RowShape)
+        .clip(RowShape)
+        .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+        .background(background)
         .padding(Dimens.VeryLarge),
     horizontalArrangement = Arrangement.spacedBy(Dimens.VeryLarge),
     verticalAlignment = CenterVertically,
@@ -100,6 +108,14 @@ private fun Banner(
       style = typography.bodySmall,
       color = content,
     )
+    if (onClick != null) {
+      Icon(
+        modifier = Modifier.size(BannerIconSize),
+        imageVector = AktualIcons.CheveronRight,
+        contentDescription = null,
+        tint = content,
+      )
+    }
   }
 }
 
@@ -114,5 +130,6 @@ private fun PreviewBanners(@PreviewParameter(ColoredParameters::class) colors: C
       WarningBanner(text = "Some values in this rule aren't supported yet")
       ErrorBanner(text = "Server error 404: Resource not found")
       NoticeBanner(text = "No icon on this one", icon = null)
+      NoticeBanner(text = "Tap me to learn more", onClick = {})
     }
   }

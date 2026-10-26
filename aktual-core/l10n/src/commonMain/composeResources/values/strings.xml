@@ -1499,8 +1499,8 @@
   <string name="rules_delete_dialog_cancel">Cancel</string>
   <string name="rules_delete_dialog_confirm">Delete</string>
 
-  <string name="rules_header_text">Rules are always run in the order that you see them.</string>
-  <string name="rules_header_learn_more">Learn more</string>
+  <string name="rules_header_mobile">Rules are always run in the order that you see them. Tap to learn more.</string>
+  <string name="rules_header_desktop">Rules are always run in the order that you see them. Click to learn more.</string>
 
   <string name="rules_stage_pre">Pre</string>
   <string name="rules_stage_none">Default</string>

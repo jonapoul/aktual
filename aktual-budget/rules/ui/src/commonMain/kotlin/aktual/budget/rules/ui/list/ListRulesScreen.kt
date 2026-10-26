@@ -19,7 +19,6 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
@@ -28,6 +27,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavDrawerIconButton
+import aktual.core.ui.NoticeBanner
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
@@ -36,7 +36,6 @@ import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
-import aktual.core.ui.topBarHazeOffset
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +43,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -61,16 +59,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -122,38 +114,24 @@ private fun ListRulesScaffold(
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
 
-  // Drives the collapsing header below the toolbar: it fades + slides out as the list scrolls
-  // down, and back in as it scrolls up (enter-always behaviour).
-  val headerState = rememberCollapsingHeaderState()
-
   Scaffold(
-    modifier = modifier.fillMaxSize().nestedScroll(headerState.nestedScrollConnection),
+    modifier = modifier.fillMaxSize(),
     topBar = {
-      // The header eats the first slice of scroll as it collapses, so fold its collapse distance
-      // into the offset - otherwise small scrolls leave a dead zone with no haze.
-      Column(
-        modifier =
-          Modifier.hazedTopBar(
-            hazeState,
-            scrollOffset = { -headerState.offset + listState.topBarHazeOffset() },
-          ),
-      ) {
-        TopAppBar(
-          colors = colors.transparentTopAppBarColors(),
-          navigationIcon = { NavDrawerIconButton() },
-          title = { Text(Strings.rulesToolbar) },
-          actions = {
-            if (state is Success) {
-              BareIconButton(
-                imageVector = AktualIcons.SearchAlternate,
-                contentDescription = Strings.rulesToolbarSearch,
-                onClick = { onAction(OpenSearch) },
-              )
-            }
-          },
-        )
-        CollapsingHeader(state = headerState, onAction = onAction)
-      }
+      TopAppBar(
+        modifier = Modifier.hazedTopBar(hazeState, listState),
+        colors = colors.transparentTopAppBarColors(),
+        navigationIcon = { NavDrawerIconButton() },
+        title = { Text(Strings.rulesToolbar) },
+        actions = {
+          if (state is Success) {
+            BareIconButton(
+              imageVector = AktualIcons.SearchAlternate,
+              contentDescription = Strings.rulesToolbarSearch,
+              onClick = { onAction(OpenSearch) },
+            )
+          }
+        },
+      )
     },
   ) { innerPadding ->
     Box {
@@ -173,35 +151,6 @@ private fun ListRulesScaffold(
       }
     }
   }
-}
-
-// Descriptive header that lives in the top app bar and collapses (fades + slides up), driven by
-// [state] which the scaffold's nested-scroll connection updates as the list scrolls.
-@Composable
-private fun CollapsingHeader(
-  state: CollapsingHeaderState,
-  onAction: ListRulesActionHandler,
-  modifier: Modifier = Modifier,
-) {
-  Text(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .padding(horizontal = 4.dp)
-        .clipToBounds()
-        .layout { measurable, constraints ->
-          val placeable = measurable.measure(constraints)
-          state.height = placeable.height.toFloat()
-          val collapsed = (placeable.height + state.offset).roundToInt().coerceAtLeast(0)
-          layout(placeable.width, collapsed) { placeable.place(0, state.offset.roundToInt()) }
-        }
-        .graphicsLayer { alpha = state.alpha }
-        .padding(horizontal = Dimens.Medium)
-        .padding(bottom = Dimens.Medium),
-    textAlign = Start,
-    text = headerText(onAction),
-    style = typography.bodySmall,
-  )
 }
 
 @Composable
@@ -279,14 +228,20 @@ private fun ContentSuccess(
   var openId by remember { mutableStateOf<RuleId?>(null) }
 
   // Pass the top inset as the LazyColumn's contentPadding (not Modifier.padding) so items rest
-  // below
-  // the bar but scroll up *behind* it, which is what reveals the haze.
+  // below the bar but scroll up *behind* it, which is what reveals the haze.
   LazyColumn(
     modifier = modifier.scrollbar(listState),
     state = listState,
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
+    item(key = "notice") {
+      NoticeBanner(
+        text = rulesHeaderText(),
+        onClick = { onAction(OpenUrl(LEARN_MORE_URL)) },
+      )
+    }
+
     items(rules, key = { it.id.value }) { rule ->
       ListRulesItem(
         modifier = Modifier.animateItem(),
@@ -307,6 +262,10 @@ private fun ContentSuccess(
     item { BottomSpacing() }
   }
 }
+
+@Composable internal expect fun rulesHeaderText(): String
+
+private const val LEARN_MORE_URL = "https://actualbudget.org/docs/budgeting/rules/"
 
 @PortraitPreview
 @Composable
