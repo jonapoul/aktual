@@ -3,7 +3,6 @@ package aktual.budget.tags.ui.edit
 import androidx.compose.ui.unit.dp
 
 internal object EditTagDS {
-  val contentPadding = 16.dp
   val fieldSpacing = 16.dp
   val labelSpacing = 4.dp
 

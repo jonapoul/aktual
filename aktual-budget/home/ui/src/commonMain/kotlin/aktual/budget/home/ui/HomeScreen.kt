@@ -280,8 +280,8 @@ private fun HomeContent(
             .onGloballyPositioned { scrollArea.place(it, topInset, bottomInset) }
             .verticalScrollWithBar(scrollState)
             .padding(hazedTopBarContentPadding(hazeState, innerPadding))
-            .padding(Dimens.VeryLarge),
-        verticalArrangement = Arrangement.spacedBy(Dimens.VeryLarge),
+            .padding(Dimens.ScreenPadding),
+        verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
       ) {
         content()
         BottomSpacing()

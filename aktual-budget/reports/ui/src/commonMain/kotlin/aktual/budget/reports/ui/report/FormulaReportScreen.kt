@@ -33,6 +33,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
@@ -337,7 +338,7 @@ internal fun FormulaReportScaffold(
               contentModifier
                 .verticalScrollWithBar(scrollState)
                 .padding(hazedTopBarContentPadding(hazeState, innerPadding))
-                .padding(CONTENT_PADDING),
+                .padding(Dimens.ScreenPadding),
             verticalArrangement = Arrangement.spacedBy(20.dp),
           ) {
             ResultCard(preview = state.preview, isEditing = state.isEditing)
@@ -675,7 +676,6 @@ private fun QueryDetail(text: String) =
   Text(text = text, style = typography.bodySmall, color = colors.tableHeaderText)
 
 private const val SWAP_SCALE = 0.8f
-private val CONTENT_PADDING = 8.dp
 private val RESULT_HEIGHT = 160.dp
 private val DASHES = floatArrayOf(12f, 8f)
 

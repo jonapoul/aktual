@@ -22,6 +22,7 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
@@ -538,7 +539,7 @@ private fun PreviewBudgetColumns(
   }
 
 internal object BudgetDS {
-  val listPadding = PaddingValues(start = 8.dp, end = 8.dp, top = 8.dp)
+  val listPadding = listPadding(top = 0.dp)
   val valueWidth = 104.dp
   val balanceWidth = 96.dp
   val rowHeight = 44.dp
@@ -546,5 +547,10 @@ internal object BudgetDS {
   val rowPadding = 12.dp
   val categoryIndent = 32.dp
 
-  fun listPadding(top: Dp) = PaddingValues(start = 8.dp, end = 8.dp, top = 8.dp + top)
+  fun listPadding(top: Dp) =
+    PaddingValues(
+      start = Dimens.ScreenPadding,
+      end = Dimens.ScreenPadding,
+      top = Dimens.ScreenPadding + top,
+    )
 }

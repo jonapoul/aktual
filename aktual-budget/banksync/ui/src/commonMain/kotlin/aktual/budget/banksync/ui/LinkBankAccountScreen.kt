@@ -28,6 +28,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureCard
 import aktual.core.ui.FailureScreen
@@ -205,10 +206,10 @@ private fun LinkBankAccountScaffold(
             modifier =
               Modifier.hazedTopBarContent(hazeState, innerPadding)
                 .scrollbar(listState)
-                .padding(BankSyncDS.listPadding),
+                .padding(horizontal = Dimens.ScreenPadding),
             state = listState,
             contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
-            verticalArrangement = Arrangement.spacedBy(BankSyncDS.listItemSpacing),
+            verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
           ) {
             choosing(state, bankQuery, { bankQuery = it }, onAction)
           }
@@ -224,8 +225,8 @@ private fun ShimmerLinkBankAccount(modifier: Modifier = Modifier) {
   val bar = Modifier.background(colors.pageText, CardShape)
 
   Column(
-    modifier = modifier.fillMaxSize().padding(BankSyncDS.listPadding),
-    verticalArrangement = Arrangement.spacedBy(BankSyncDS.listItemSpacing),
+    modifier = modifier.fillMaxSize().padding(horizontal = Dimens.ScreenPadding),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     Column(
       modifier =

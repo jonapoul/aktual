@@ -18,6 +18,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
+import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PrimaryIconButton
 import aktual.core.ui.PrimaryTextButton
@@ -144,7 +145,7 @@ internal fun ReportEditorContent(
   onChartAction: ActionListener = ActionListener {},
   below: @Composable ColumnScope.() -> Unit,
 ) =
-  Column(modifier = modifier.padding(CONTENT_PADDING)) {
+  Column(modifier = modifier.padding(Dimens.ScreenPadding)) {
     ChartCard(
       modifier =
         if (isEditing) {
@@ -205,5 +206,4 @@ private fun ChartCard(
     }
   }
 
-private val CONTENT_PADDING = 8.dp
 private val PREVIEW_HEIGHT = 280.dp

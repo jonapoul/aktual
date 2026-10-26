@@ -19,6 +19,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
@@ -196,7 +197,7 @@ private fun QueryContent(
       modifier
         .fillMaxSize()
         .verticalScrollWithBar(rememberScrollState())
-        .padding(horizontal = 16.dp, vertical = 4.dp),
+        .padding(horizontal = Dimens.ScreenPadding, vertical = 4.dp),
     verticalArrangement = Arrangement.spacedBy(22.dp),
   ) {
     ConditionsEditor(

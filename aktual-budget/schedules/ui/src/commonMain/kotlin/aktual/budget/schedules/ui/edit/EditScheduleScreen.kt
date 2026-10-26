@@ -34,6 +34,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.ListBottomSheet
@@ -356,7 +357,7 @@ private fun EditScheduleContent(
         .fillMaxSize()
         .verticalScroll(scrollState)
         .padding(contentPadding)
-        .padding(EditScheduleDS.contentPadding),
+        .padding(Dimens.ScreenPadding),
     verticalArrangement = Arrangement.spacedBy(EditScheduleDS.sectionSpacing),
   ) {
     if (state.isEditing) {
@@ -410,10 +411,7 @@ private fun ShimmerSchedule(modifier: Modifier = Modifier) {
 
   Column(
     modifier =
-      modifier
-        .fillMaxSize()
-        .padding(EditScheduleDS.contentPadding)
-        .shimmer(rememberShimmer(Window)),
+      modifier.fillMaxSize().padding(Dimens.ScreenPadding).shimmer(rememberShimmer(Window)),
     verticalArrangement = Arrangement.spacedBy(EditScheduleDS.sectionSpacing),
   ) {
     Row(

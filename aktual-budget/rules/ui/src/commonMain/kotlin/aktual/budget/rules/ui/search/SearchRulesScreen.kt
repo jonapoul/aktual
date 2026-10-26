@@ -48,7 +48,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.createSavedStateHandle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -112,7 +111,7 @@ private fun SearchRulesScaffold(
     Column(modifier = Modifier.padding(innerPadding)) {
       if (payeeName != null) {
         RemovableChip(
-          modifier = Modifier.padding(horizontal = Dimens.Large, vertical = Dimens.Medium),
+          modifier = Modifier.padding(horizontal = Dimens.ScreenPadding, vertical = Dimens.Medium),
           text = payeeName,
           removeDescription = Strings.rulesSearchPayeeRemove(payeeName),
           onRemove = { onAction(ClearPayee) },
@@ -179,8 +178,8 @@ private fun ResultsList(
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
-    contentPadding = ListPadding,
-    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+    contentPadding = PaddingValues(horizontal = Dimens.ScreenPadding),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     items(results.rules, key = { it.id.value }) { rule ->
       ListRulesItemRow(
@@ -197,13 +196,11 @@ private fun ResultsList(
 @Composable
 private fun ShimmerResults(modifier: Modifier = Modifier) =
   Column(
-    modifier = modifier.fillMaxSize().padding(ListPadding),
-    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+    modifier = modifier.fillMaxSize().padding(horizontal = Dimens.ScreenPadding),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     repeat(times = 10) { ShimmerListRulesItem() }
   }
-
-private val ListPadding = PaddingValues(horizontal = 8.dp)
 
 @PortraitPreview
 @Composable

@@ -16,6 +16,7 @@ import aktual.core.ui.BackHandler
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -128,7 +129,7 @@ private fun FormulaFieldScaffold(
             .padding(innerPadding)
             .imePadding()
             .verticalScrollWithBar(rememberScrollState())
-            .padding(16.dp),
+            .padding(Dimens.ScreenPadding),
         verticalArrangement = Arrangement.spacedBy(12.dp),
       ) {
         AktualTextField(

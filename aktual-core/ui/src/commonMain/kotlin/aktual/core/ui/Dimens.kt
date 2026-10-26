@@ -10,4 +10,7 @@ object Dimens {
   val Large = 8.dp
   val VeryLarge = 12.dp
   val Huge = 16.dp
+
+  val ScreenPadding = Large
+  val ListItemSpacing = Large
 }

@@ -15,6 +15,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
@@ -163,7 +164,7 @@ private fun BankSyncProvidersContent(
         .fillMaxSize()
         .verticalScroll(scrollState)
         .padding(contentPadding)
-        .padding(BankSyncDS.settingsPadding),
+        .padding(Dimens.ScreenPadding),
     verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsFieldSpacing),
   ) {
     Text(

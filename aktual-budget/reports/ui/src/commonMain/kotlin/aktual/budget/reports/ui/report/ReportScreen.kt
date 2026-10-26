@@ -31,6 +31,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -217,7 +218,7 @@ private fun ReportContent(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier = modifier.padding(contentPadding).padding(CONTENT_PADDING)) {
+  Column(modifier = modifier.padding(contentPadding).padding(Dimens.ScreenPadding)) {
     val contentModifier = Modifier.fillMaxWidth().weight(1f)
     when (state) {
       Loading ->
@@ -248,8 +249,6 @@ private fun ReportContent(
     BottomSpacing()
   }
 }
-
-private val CONTENT_PADDING = 8.dp
 
 @PortraitPreview
 @Composable

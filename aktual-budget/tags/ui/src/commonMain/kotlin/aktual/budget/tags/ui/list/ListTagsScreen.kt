@@ -29,6 +29,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
@@ -171,7 +172,8 @@ private fun ListTagsScaffold(
 
       Box(
         modifier =
-          Modifier.padding(ListTagsDS.listPadding).hazedTopBarContent(hazeState, innerPadding),
+          Modifier.padding(horizontal = Dimens.ScreenPadding)
+            .hazedTopBarContent(hazeState, innerPadding),
         contentAlignment = Center,
       ) {
         ListTagsContent(
@@ -196,7 +198,7 @@ private fun ListTagsContent(
     Loading ->
       Column(
         modifier = Modifier.fillMaxSize().padding(padding),
-        verticalArrangement = Arrangement.spacedBy(ListTagsDS.listItemSpacing),
+        verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
       ) {
         repeat(ListTagsDS.SHIMMER_ITEMS) { ShimmerTagItem() }
       }
@@ -253,7 +255,7 @@ private fun TagsList(
     modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
     contentPadding = contentPadding,
-    verticalArrangement = Arrangement.spacedBy(ListTagsDS.listItemSpacing),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     items(tags, key = { it.id.value }) { tag ->
       TagItem(

@@ -27,6 +27,7 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.ListBottomSheet
@@ -164,7 +165,8 @@ private fun ListPayeesScaffold(
 
       Box(
         modifier =
-          Modifier.padding(ListPayeesDS.listPadding).hazedTopBarContent(hazeState, innerPadding),
+          Modifier.padding(horizontal = Dimens.ScreenPadding)
+            .hazedTopBarContent(hazeState, innerPadding),
         contentAlignment = Center,
       ) {
         ListPayeesContent(
@@ -282,7 +284,7 @@ private fun ListPayeesContent(
     Loading ->
       Column(
         modifier = Modifier.fillMaxSize().padding(padding),
-        verticalArrangement = Arrangement.spacedBy(ListPayeesDS.listItemSpacing),
+        verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
       ) {
         repeat(ListPayeesDS.SHIMMER_ITEMS) { ShimmerPayeeItem() }
       }
@@ -340,7 +342,7 @@ private fun PayeesList(
     modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
     contentPadding = contentPadding,
-    verticalArrangement = Arrangement.spacedBy(ListPayeesDS.listItemSpacing),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     // Upstream only offers the filter when there's something to filter, or it's already on
     if (numUnused > 0 || unusedOnly) {

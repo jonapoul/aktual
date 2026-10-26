@@ -35,6 +35,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
@@ -181,7 +182,8 @@ private fun ListSchedulesScaffold(
 
       Box(
         modifier =
-          Modifier.padding(ListSchedulesDS.listPadding).hazedTopBarContent(hazeState, innerPadding),
+          Modifier.padding(horizontal = Dimens.ScreenPadding)
+            .hazedTopBarContent(hazeState, innerPadding),
         contentAlignment = Center,
       ) {
         ListSchedulesContent(
@@ -212,7 +214,7 @@ private fun ListSchedulesContent(
       Loading -> {
         Column(
           modifier = Modifier.padding(contentPadding),
-          verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.listItemSpacing),
+          verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
         ) {
           repeat(times = 10) { ShimmerListSchedulesItem() }
           BottomSpacing()
@@ -272,7 +274,7 @@ private fun ContentSuccess(
     modifier = modifier.scrollbar(listState),
     state = listState,
     contentPadding = contentPadding,
-    verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.listItemSpacing),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     items(schedules, key = { it.id.value }) { schedule ->
       SwipeableListSchedulesItem(
