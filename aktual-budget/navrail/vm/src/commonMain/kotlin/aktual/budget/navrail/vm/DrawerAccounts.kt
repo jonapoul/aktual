@@ -40,19 +40,24 @@ data class DrawerAccount(
   val name: String,
   val balance: Amount,
   val syncState: AccountSyncState = NotLinked,
+  val newTransactions: Int = 0,
 )
 
-internal fun List<GetAllWithBalances>.toDrawerAccounts(): DrawerAccounts {
+internal fun List<GetAllWithBalances>.toDrawerAccounts(
+  newTransactions: Map<AccountId, Int> = emptyMap(),
+): DrawerAccounts {
   val (closed, open) = partition { it.closed == true }
   val (offBudget, onBudget) = open.partition { it.offbudget == true }
   return DrawerAccounts(
-    onBudget = onBudget.toSection(),
-    offBudget = offBudget.toSection(),
-    closed = closed.toSection(),
+    onBudget = onBudget.toSection(newTransactions),
+    offBudget = offBudget.toSection(newTransactions),
+    closed = closed.toSection(newTransactions),
   )
 }
 
-private fun List<GetAllWithBalances>.toSection(): DrawerAccountSection {
+private fun List<GetAllWithBalances>.toSection(
+  newTransactions: Map<AccountId, Int>,
+): DrawerAccountSection {
   val accounts = map { row ->
     DrawerAccount(
       id = row.id,
@@ -65,6 +70,7 @@ private fun List<GetAllWithBalances>.toSection(): DrawerAccountSection {
           row.bank_sync_status,
           row.last_sync,
         ),
+      newTransactions = newTransactions[row.id] ?: 0,
     )
   }
   return DrawerAccountSection(

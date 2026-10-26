@@ -31,7 +31,6 @@ import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.di.BudgetCoroutineScope
 import aktual.test.inMemoryDriverFactory
-import alakazam.test.TestClock
 import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlDriver
@@ -77,6 +76,13 @@ internal class BankSyncTestScope(
   val preferences = PreferencesDao(database, TestCoroutineContexts(EmptyCoroutineContext))
   val accountDao = AccountDao(database)
   val dao = BankSyncDao(database)
+  // Moved on by tests that sync or open an account later
+  var now = NOW
+  private val clock =
+    object : Clock {
+      override fun now() = this@BankSyncTestScope.now
+    }
+  val newTransactions = NewTransactionsImpl(transactionDao, preferences, this, clock)
 
   private var nextId = 1
 
@@ -89,7 +95,7 @@ internal class BankSyncTestScope(
       transactionDao = transactionDao,
       categoryLearner = {},
       uuidGenerator = ::uuid,
-      clock = TestClock(NOW),
+      clock = clock,
     )
 
   val importer =
@@ -105,7 +111,7 @@ internal class BankSyncTestScope(
       dao = BankSyncDao(database),
       uuidGenerator = ::uuid,
       calendar = { TODAY },
-      clock = TestClock(NOW),
+      clock = clock,
     )
 
   private fun uuid() = "id-${nextId++}"
@@ -115,9 +121,10 @@ internal class BankSyncTestScope(
       api = api,
       importer = importer,
       writer = writer,
+      newTransactions = newTransactions,
       dao = BankSyncDao(database),
       calendar = { TODAY },
-      clock = TestClock(NOW),
+      clock = clock,
       scope = BudgetCoroutineScope(backgroundScope),
     )
 

@@ -42,4 +42,9 @@ internal object TestDatabaseBindings {
   @IntoMap
   @AccessorKey(FakeBankSyncController::class)
   fun bankSync(controller: FakeBankSyncController): Accessor = { controller }
+
+  @Provides
+  @IntoMap
+  @AccessorKey(FakeNewTransactions::class)
+  fun newTransactions(newTransactions: FakeNewTransactions): Accessor = { newTransactions }
 }

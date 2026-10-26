@@ -55,6 +55,16 @@ internal class AccountsSummaryTest {
   }
 
   @Test
+  fun `Carries each account's new transaction count`() {
+    val summary =
+      listOf(row("a"), row("b"), row("c", offBudget = true))
+        .toAccountsSummary(mapOf(AccountId("a") to 3, AccountId("c") to 1))
+
+    val accounts = summary.onBudget.accounts + summary.offBudget.accounts
+    assertThat(accounts.map { it.newTransactions }).containsExactly(3, 0, 1)
+  }
+
+  @Test
   fun `Maps sync state`() {
     val states =
       listOf(

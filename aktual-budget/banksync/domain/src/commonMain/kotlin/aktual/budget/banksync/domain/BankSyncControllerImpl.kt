@@ -46,6 +46,7 @@ class BankSyncControllerImpl(
   private val api: BankSyncApi,
   private val importer: BankSyncImporter,
   private val writer: TransactionWriter,
+  private val newTransactions: NewTransactions,
   private val dao: BankSyncDao,
   private val calendar: Calendar,
   private val clock: Clock,
@@ -201,6 +202,7 @@ class BankSyncControllerImpl(
         currentBalance = response.startingBalance?.let(::Amount),
       )
     val result = importer.import(account.id, account.source, download, initialSync)
+    newTransactions.imported(account.id, result.added)
     updateAccount(account.id, Ok, synced = true)
     return BankSyncResult.Synced(account.id, account.name, result.added, result.updated)
   }

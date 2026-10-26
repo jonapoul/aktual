@@ -136,6 +136,22 @@ class TransactionDao(database: BudgetDatabase) {
   fun observeUncategorisedCount(): Flow<Long> =
     queries.countUncategorised().asFlow().map { it.awaitAsOne() }.distinctUntilChanged()
 
+  fun observeNewImportedCounts(): Flow<Map<AccountId, Int>> =
+    queries
+      .countNewImported()
+      .asFlow()
+      .map { query ->
+        query.awaitAsList().associate { row -> requireNotNull(row.account) to row.count.toInt() }
+      }
+      .distinctUntilChanged()
+
+  suspend fun oldestImportedSortOrder(ids: List<TransactionId>): Double? = queries.withResult {
+    ids
+      .chunked(MAX_BIND_ARGS)
+      .mapNotNull { chunk -> oldestImportedSortOrder(chunk).awaitAsOne().oldest }
+      .minOrNull()
+  }
+
   // Current balance of every transaction, or of one account's
   fun observeBalance(account: AccountId? = null): Flow<Long> {
     val query =

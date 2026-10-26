@@ -56,6 +56,7 @@ import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -80,6 +81,7 @@ class TransactionsViewModelTest {
   private lateinit var tags: TagsDao
   private lateinit var sync: SyncDao
   private lateinit var bankSync: FakeBankSyncController
+  private lateinit var newTransactions: FakeNewTransactions
   private lateinit var factory: TransactionsViewModel.Factory
 
   // fake
@@ -117,6 +119,7 @@ class TransactionsViewModelTest {
       tags = budgetGraph[TagsDao::class]
       sync = budgetGraph[SyncDao::class]
       bankSync = budgetGraph[FakeBankSyncController::class]
+      newTransactions = budgetGraph[FakeNewTransactions::class]
     }
 
     // add some utility entities
@@ -1068,6 +1071,25 @@ class TransactionsViewModelTest {
       // then
       assertThatNextEmissionIsEqualTo(BankSyncSummary.Synced("Linked", added = 1, updated = 0))
     }
+  }
+
+  @Test
+  fun `An open account's new transactions are marked read`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(LINKED))
+    val other = AccountId("a")
+
+    newTransactions.counts.test {
+      assertThatNextEmissionIsEqualTo(emptyMap())
+
+      // when
+      newTransactions.counts.update { mapOf(LINKED to 1, other to 1) }
+
+      // then
+      assertThatNextEmissionIsEqualTo(mapOf(LINKED to 1, other to 1))
+      assertThatNextEmissionIsEqualTo(mapOf(other to 1))
+    }
+    assertThat(newTransactions.seen).containsExactly(LINKED)
   }
 
   @Test

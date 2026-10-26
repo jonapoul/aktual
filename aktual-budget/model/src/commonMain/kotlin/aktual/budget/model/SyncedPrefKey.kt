@@ -78,6 +78,13 @@ sealed interface SyncedPrefKey {
     /** [Boolean] */
     data class ShowExtraBalances(override val id: AccountId) : PerAccount("show-extra-balances")
 
+    /**
+     * Epoch millis the account was last opened, against transaction sort orders. Aktual's own, not
+     * upstream's
+     */
+    data class NewTransactionsSeen(override val id: AccountId) :
+      PerAccount(NEW_TRANSACTIONS_SEEN_PREFIX)
+
     data class ParseDate(override val id: AccountId, val fileType: String) :
       PerAccount("parse-date") {
       override val key = "$keyPrefix-$id-$fileType"
@@ -92,6 +99,9 @@ sealed interface SyncedPrefKey {
   data class Other(override val key: String) : SyncedPrefKey
 
   companion object {
+    // Also in Transactions.sq
+    const val NEW_TRANSACTIONS_SEEN_PREFIX = "aktual-new-transactions-seen"
+
     fun decode(key: String): SyncedPrefKey =
       Global.entries.firstOrNull { it.key == key }
         ?: fromId(key, "csv-delimiter", PerAccount::CsvDelimiter)
@@ -107,6 +117,7 @@ sealed interface SyncedPrefKey {
         ?: fromId(key, "sync-update-dates", PerAccount::SyncUpdateDates)
         ?: fromId(key, "custom-sync-mappings", PerAccount::CustomSyncMappings)
         ?: fromId(key, "show-extra-balances", PerAccount::ShowExtraBalances)
+        ?: fromId(key, NEW_TRANSACTIONS_SEEN_PREFIX, PerAccount::NewTransactionsSeen)
         ?: fromIdAndType(key, "parse-date", PerAccount::ParseDate)
         ?: fromIdAndType(key, "flip-amount", PerAccount::FlipAmount)
         ?: Other(key)

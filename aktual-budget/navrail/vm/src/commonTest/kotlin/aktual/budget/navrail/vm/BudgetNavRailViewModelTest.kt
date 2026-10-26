@@ -36,6 +36,7 @@ import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.LocalDate
 import okio.ByteString
@@ -47,6 +48,7 @@ class BudgetNavRailViewModelTest {
   private val sync = TestSyncController()
   private val api = TestBudgetSyncApi()
   private val unpostedSchedules = TestUnpostedSchedules()
+  private val newTransactions = FakeNewTransactions()
 
   @Test
   fun `Renaming updates the server, the local name and the sync log`() = runDatabaseTest { scope ->
@@ -142,6 +144,24 @@ class BudgetNavRailViewModelTest {
     }
   }
 
+  @Test
+  fun `Accounts carry their new transaction counts`() = runDatabaseTest { scope ->
+    insertAccount("a")
+    insertAccount("b")
+    val viewModel = viewModel(None, scope)
+
+    viewModel.accounts.test {
+      assertThat(awaitLoaded().onBudget.accounts.map { it.newTransactions }).containsExactly(0, 0)
+
+      newTransactions.counts.update { mapOf(AccountId("b") to 2) }
+      assertThat(awaitItem().onBudget.accounts.map { it.name to it.newTransactions })
+        .containsExactly("a" to 0, "b" to 2)
+
+      newTransactions.markSeen(AccountId("b"))
+      assertThat(awaitItem().onBudget.accounts.map { it.newTransactions }).containsExactly(0, 0)
+    }
+  }
+
   private suspend fun ReceiveTurbine<DrawerAccounts>.awaitLoaded(): DrawerAccounts {
     var item = awaitItem()
     while (item == DrawerAccounts()) item = awaitItem()
@@ -201,6 +221,7 @@ class BudgetNavRailViewModelTest {
       syncApi = api,
       sync = sync,
       accountDao = AccountDao(this),
+      newTransactions = newTransactions,
       appPreferences = appPreferences,
       unpostedSchedules = unpostedSchedules,
       viewModelContext = scope.viewModelContext,
