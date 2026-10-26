@@ -63,4 +63,11 @@ class DbMetadataTest {
     val json = PrettyJson.encodeToString(metadata)
     assertThat(PrettyJson.decodeFromString<DbMetadata>(json)).isEqualTo(metadata)
   }
+
+  @Test
+  fun `Read and write an enum`() {
+    val metadata = DbMetadata(DbMetadata.TransactionDensity to TransactionsDensity.Comfortable)
+    val json = PrettyJson.encodeToString(metadata)
+    assertThat(PrettyJson.decodeFromString<DbMetadata>(json)).isEqualTo(metadata)
+  }
 }

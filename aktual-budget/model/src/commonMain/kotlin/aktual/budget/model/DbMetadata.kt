@@ -139,6 +139,7 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
     val ResetClock: Key<Boolean> = BoolKey("resetClock")
     val UserId: Key<String> = StringKey("userId")
     val EncryptKeyId: Key<String> = StringKey("encryptKeyId")
+    val TransactionDensity: Key<TransactionsDensity> = enumKey("transactionDensity")
 
     fun Key(key: String): Key<*> =
       when (key) {
@@ -158,6 +159,7 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
         ResetClock.name -> ResetClock
         UserId.name -> UserId
         EncryptKeyId.name -> EncryptKeyId
+        TransactionDensity.name -> TransactionDensity
         else -> StringKey(key)
       }
 
