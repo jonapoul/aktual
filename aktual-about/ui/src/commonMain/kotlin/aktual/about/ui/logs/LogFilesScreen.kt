@@ -33,6 +33,10 @@ import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.contrastingTextColor
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.background
@@ -45,9 +49,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -62,11 +70,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.Bottom
+import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -81,11 +95,14 @@ internal fun LogFilesScaffold(
 ) {
   var showExport by remember { mutableStateOf(false) }
   var showDelete by remember { mutableStateOf(false) }
+  val hazeState = rememberHazedTopBarState()
+  val listState = rememberLazyListState()
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
+        modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(text = Strings.logsToolbar, maxLines = 1, overflow = Ellipsis) },
@@ -99,10 +116,13 @@ internal fun LogFilesScaffold(
   ) { innerPadding ->
     Box(modifier = Modifier.fillMaxSize()) {
       WavyBackground()
-      when (state) {
-        Loading -> Unit
-        Empty -> SearchMessage(text = Strings.logsEmpty, icon = MaterialIcons.Description)
-        is Loaded -> LogFilesList(state, innerPadding, onAction)
+      Box(modifier = Modifier.hazedTopBarContent(hazeState, innerPadding)) {
+        val contentPadding = hazedTopBarContentPadding(hazeState, innerPadding)
+        when (state) {
+          Loading -> ShimmerLogFiles(contentPadding)
+          Empty -> SearchMessage(text = Strings.logsEmpty, icon = MaterialIcons.Description)
+          is Loaded -> LogFilesList(state, contentPadding, listState, onAction)
+        }
       }
     }
   }
@@ -132,10 +152,9 @@ internal fun LogFilesScaffold(
 private fun LogFilesList(
   state: LogFilesState.Loaded,
   contentPadding: PaddingValues,
+  listState: LazyListState,
   onAction: LogsActionHandler,
 ) {
-  val listState = rememberLazyListState()
-
   // Only one row may be swiped open at a time
   var openDate by remember { mutableStateOf<LocalDate?>(null) }
 
@@ -147,14 +166,7 @@ private fun LogFilesList(
   ) {
     item { LogFilesSummary(state, Modifier.padding(vertical = Dimens.Huge)) }
 
-    item {
-      Text(
-        modifier = Modifier.padding(horizontal = Dimens.Medium, vertical = Dimens.Medium),
-        text = Strings.logsDailyHeader,
-        style = typography.labelLarge,
-        color = colors.pageTextLight,
-      )
-    }
+    item { LogFilesDailyHeader() }
 
     items(state.files, key = { it.date.toString() }) { file ->
       SwipeableLogFileItem(
@@ -179,12 +191,7 @@ private fun LogFilesList(
 @Composable
 private fun LogFilesSummary(state: LogFilesState.Loaded, modifier: Modifier = Modifier) =
   Column(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .background(colors.cardBackground, CardShape)
-        .border(Hairline, colors.tableBorder, CardShape)
-        .padding(Dimens.VeryLarge),
+    modifier = modifier.logFilesSummaryCard(colors.cardBackground, colors.cardShadow),
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
     Text(
@@ -250,19 +257,7 @@ private fun LogFileItem(
   modifier: Modifier = Modifier,
 ) =
   Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .heightIn(min = 56.dp)
-        .clip(RowShape)
-        .background(colors.tableBackground)
-        .clickable(onClick = onClick)
-        .padding(
-          start = Dimens.VeryLarge,
-          end = Dimens.Medium,
-          top = Dimens.Large,
-          bottom = Dimens.Large,
-        ),
+    modifier = modifier.logFileRow(colors.tableBackground, onClick),
     verticalAlignment = CenterVertically,
     horizontalArrangement = spacedBy(Dimens.VeryLarge),
   ) {
@@ -305,6 +300,94 @@ private fun LogFileItem(
   }
 
 @Composable
+private fun LogFilesDailyHeader() =
+  Text(
+    modifier = Modifier.padding(horizontal = Dimens.Medium, vertical = Dimens.Medium),
+    text = Strings.logsDailyHeader,
+    style = typography.labelLarge,
+    color = colors.pageTextLight,
+  )
+
+@Composable
+private fun ShimmerLogFiles(contentPadding: PaddingValues) =
+  Column(
+    modifier = Modifier.fillMaxSize().padding(contentPadding).padding(horizontal = Dimens.Large),
+    verticalArrangement = spacedBy(Dimens.Medium),
+  ) {
+    ShimmerLogFilesSummary(Modifier.padding(vertical = Dimens.Huge))
+    LogFilesDailyHeader()
+    repeat(times = 6) { ShimmerLogFileItem() }
+  }
+
+/** Keep in sync with [LogFilesSummary] */
+@Composable
+private fun ShimmerLogFilesSummary(modifier: Modifier = Modifier) =
+  Column(
+    modifier =
+      modifier
+        .logFilesSummaryCard(colors.cardBackground, colors.cardShadow)
+        .shimmer(rememberShimmer(Window)),
+    verticalArrangement = spacedBy(Dimens.Medium),
+  ) {
+    ShimmerLine(typography.labelMedium, ShimmerLabelHeight, Modifier.fillMaxWidth(fraction = 0.3f))
+    Row(verticalAlignment = Bottom, horizontalArrangement = spacedBy(8.dp)) {
+      ShimmerLine(
+        typography.headlineMedium,
+        ShimmerHeadlineHeight,
+        Modifier.width(ShimmerCountWidth),
+      )
+      ShimmerLine(typography.bodyMedium, ShimmerBodyHeight, Modifier.width(ShimmerSizeWidth))
+    }
+    ShimmerLine(typography.labelMedium, ShimmerLabelHeight, Modifier.fillMaxWidth(fraction = 0.4f))
+  }
+
+/** Keep in sync with [LogFileItem] */
+@Composable
+private fun ShimmerLogFileItem() =
+  Row(
+    modifier = Modifier.logFileRow(colors.tableBackground).shimmer(rememberShimmer(Window)),
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = spacedBy(Dimens.VeryLarge),
+  ) {
+    Box(Modifier.size(ShimmerIconSize).background(colors.pageText, CardShape))
+    Column(modifier = Modifier.weight(1f), verticalArrangement = spacedBy(2.dp)) {
+      ShimmerLine(typography.bodyMedium, ShimmerBodyHeight, Modifier.fillMaxWidth(fraction = 0.3f))
+      ShimmerLine(
+        typography.labelSmall.copy(fontFamily = Monospace),
+        ShimmerLabelHeight,
+        Modifier.fillMaxWidth(fraction = 0.6f),
+      )
+    }
+  }
+
+/** A bar vertically centred in the height of one line of [style], so it matches real text */
+@Composable
+private fun ShimmerLine(style: TextStyle, barHeight: Dp, modifier: Modifier = Modifier) =
+  Box(modifier = modifier, contentAlignment = CenterStart) {
+    Text(text = "", style = style, maxLines = 1)
+    Box(Modifier.fillMaxWidth().height(barHeight).background(colors.pageText, CardShape))
+  }
+
+private fun Modifier.logFilesSummaryCard(background: Color, border: Color) =
+  fillMaxWidth()
+    .background(background, CardShape)
+    .border(Hairline, border, CardShape)
+    .padding(Dimens.VeryLarge)
+
+private fun Modifier.logFileRow(background: Color, onClick: (() -> Unit)? = null) =
+  fillMaxWidth()
+    .heightIn(min = 56.dp)
+    .clip(RowShape)
+    .background(background)
+    .then(if (onClick == null) Modifier else Modifier.clickable(onClick = onClick))
+    .padding(
+      start = Dimens.VeryLarge,
+      end = Dimens.Medium,
+      top = Dimens.Large,
+      bottom = Dimens.Large,
+    )
+
+@Composable
 private fun LogFilesBottomBar(onDelete: () -> Unit, onExport: () -> Unit) =
   Column(modifier = Modifier.fillMaxWidth().background(colors.cardBackground)) {
     Row(
@@ -332,9 +415,10 @@ private fun DeleteAllDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) =
   AktualAlertDialog(
     title = Strings.logsDeleteTitle,
     onDismissRequest = onDismiss,
+    highlight = colors.errorText,
     buttons = {
       TextButton(onClick = onDismiss) { Text(Strings.logsCancel) }
-      TextButton(onClick = onConfirm) { Text(Strings.logsDelete) }
+      TextButton(onClick = onConfirm) { Text(Strings.logsDelete, color = colors.errorText) }
     },
   ) {
     Text(text = Strings.logsDeleteMessage)
@@ -348,6 +432,13 @@ private fun PreviewLogFiles(
   PreviewWithColoredParams(params) {
     LogFilesScaffold(state = this, canShare = true, onAction = {})
   }
+
+private val ShimmerLabelHeight = 9.dp
+private val ShimmerBodyHeight = 11.dp
+private val ShimmerHeadlineHeight = 22.dp
+private val ShimmerCountWidth = 80.dp
+private val ShimmerSizeWidth = 40.dp
+private val ShimmerIconSize = 24.dp
 
 private val PREVIEW_TODAY = LocalDate(2026, 10, 18)
 
@@ -364,4 +455,5 @@ private class LogFilesProvider :
       today = PREVIEW_TODAY,
     ),
     LogFilesState.Empty,
+    LogFilesState.Loading,
   )
