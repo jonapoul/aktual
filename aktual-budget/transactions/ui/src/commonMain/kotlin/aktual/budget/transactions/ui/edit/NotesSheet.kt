@@ -17,17 +17,13 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipDefaults
 import aktual.core.ui.EditorSheet
 import aktual.core.ui.TagChip
-import aktual.core.ui.TagChipShape
 import aktual.core.ui.keyboardFocusRequester
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -40,7 +36,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.key
@@ -139,27 +134,17 @@ private fun InsertHashButton(text: TextFieldState, focusRequester: FocusRequeste
 
 @Composable
 private fun CreateTagChip(name: String, onClick: () -> Unit) =
-  Row(
-    modifier =
-      Modifier.clip(TagChipShape)
-        .background(colors.noticeBackground, TagChipShape)
-        .clickable(onClick = onClick)
-        .padding(NotesSheetDS.createPadding),
-    horizontalArrangement = Arrangement.spacedBy(NotesSheetDS.createSpacing),
-    verticalAlignment = CenterVertically,
+  Chip(
+    colors = ChipDefaults.colors(colors.noticeBackground, colors.noticeTextDark),
+    textStyle = typography.bodyMedium,
+    onClick = onClick,
   ) {
     Icon(
       imageVector = AktualIcons.Add,
       contentDescription = null,
       modifier = Modifier.size(NotesSheetDS.createIconSize),
-      tint = colors.noticeTextDark,
     )
-    Text(
-      text = Strings.transactionNotesCreateTag,
-      style = typography.bodyMedium,
-      color = colors.noticeTextDark,
-      maxLines = 1,
-    )
+    Text(text = Strings.transactionNotesCreateTag, maxLines = 1)
     TagChip(text = name, color = null)
   }
 
@@ -171,7 +156,5 @@ private fun TextFieldState.applyEdit(change: NotesEdit) = edit {
 
 private object NotesSheetDS {
   val chipSpacing = 4.dp
-  val createPadding = PaddingValues(start = 9.dp, top = 2.dp, end = 2.dp, bottom = 2.dp)
-  val createSpacing = 4.dp
   val createIconSize = 12.dp
 }

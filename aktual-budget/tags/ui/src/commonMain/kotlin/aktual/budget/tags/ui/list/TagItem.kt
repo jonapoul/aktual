@@ -2,6 +2,7 @@ package aktual.budget.tags.ui.list
 
 import aktual.budget.tags.vm.list.TagItem
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronRight
 import aktual.core.icons.Trash
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
@@ -9,6 +10,8 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
@@ -18,7 +21,6 @@ import aktual.core.ui.RowShape
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.TagChip
-import aktual.core.ui.TagChipShape
 import aktual.core.ui.contrastingTextColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -89,7 +91,7 @@ internal fun ShimmerTagItem(modifier: Modifier = Modifier) {
     Box(
       modifier =
         Modifier.size(width = ListTagsDS.shimmerChipWidth, height = ListTagsDS.shimmerChipHeight)
-          .background(colors.pageText, TagChipShape),
+          .background(colors.pageText, ChipDefaults.Shape),
     )
     Box(
       modifier =
@@ -135,19 +137,13 @@ private fun TagItemRow(
       )
 
       if (tag.numTransactions > 0) {
-        Box(
-          modifier =
-            Modifier.background(colors.pillBackgroundSelected, CardShape)
-              .clickable { onAction(ViewTransactions(tag.id)) }
-              .padding(ListTagsDS.numTransactionsPadding),
-          contentAlignment = Center,
-        ) {
-          Text(
-            text = Plurals.tagsNumTransactions(tag.numTransactions, tag.numTransactions),
-            style = typography.bodySmall,
-            color = colors.pillText,
-          )
-        }
+        Chip(
+          text = Plurals.tagsNumTransactions(tag.numTransactions, tag.numTransactions),
+          colors = ChipDefaults.colors(background = colors.pillBackgroundSelected),
+          textStyle = typography.bodySmall,
+          onClick = { onAction(ViewTransactions(tag.id)) },
+          trailingIcon = AktualIcons.CheveronRight,
+        )
       }
     }
   }

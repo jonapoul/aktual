@@ -14,14 +14,13 @@ import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.Chip
 import aktual.core.ui.TonalButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -120,13 +119,9 @@ private fun ConditionRow(
       style = typography.bodyMedium,
       color = colors.tableHeaderText,
     )
-    Text(
-      modifier =
-        Modifier.background(colors.pillBackground, OPERATOR_SHAPE)
-          .padding(horizontal = 8.dp, vertical = 2.dp),
+    Chip(
       text = condition.operator.label(),
-      style = typography.bodySmall,
-      color = colors.pillText,
+      textStyle = typography.bodySmall,
     )
     Text(
       modifier = Modifier.weight(1f),
@@ -139,4 +134,3 @@ private fun ConditionRow(
   }
 
 private val FIELD_WIDTH = 72.dp
-private val OPERATOR_SHAPE = RoundedCornerShape(6.dp)

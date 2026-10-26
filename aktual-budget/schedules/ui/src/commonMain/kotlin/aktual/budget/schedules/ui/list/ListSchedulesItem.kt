@@ -8,6 +8,8 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
@@ -166,11 +168,12 @@ internal fun ScheduleStatusBadge(
       Completed -> Strings.listSchedulesStatusCompleted
       Scheduled -> Strings.listSchedulesStatusScheduled
     }
-  Box(
-    modifier = modifier.background(bgColor, CardShape).padding(ListSchedulesDS.statusBadgePadding),
-  ) {
-    Text(text = label, style = typography.labelSmall, color = textColor, maxLines = 1)
-  }
+  Chip(
+    modifier = modifier,
+    text = label,
+    colors = ChipDefaults.colors(bgColor, textColor),
+    textStyle = typography.labelSmall,
+  )
 }
 
 /** Keep in sync with [ListSchedulesItem] */

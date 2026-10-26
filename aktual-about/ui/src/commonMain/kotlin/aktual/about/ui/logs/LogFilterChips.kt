@@ -3,8 +3,11 @@ package aktual.about.ui.logs
 import aktual.about.vm.logs.LogFilters
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
+import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.Arrangement
@@ -30,20 +33,21 @@ internal fun LogFilterChips(
     horizontalArrangement = Arrangement.spacedBy(2.dp),
     verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
-    LogChip(
+    Chip(
       text = filters.levelsSummary(),
-      isSelected = true,
-      onClick = onOpenLevels,
+      colors = ChipDefaults.selectableColors(isSelected = true),
       trailingIcon = AktualIcons.CheveronDown,
+      onClick = onOpenLevels,
       role = Button,
     )
 
     for (tag in filters.tags) {
-      LogChip(
-        text = "$tag ×",
-        isSelected = true,
+      Chip(
+        text = tag,
+        colors = ChipDefaults.selectableColors(isSelected = true),
+        trailingIcon = AktualIcons.Delete,
+        trailingIconDescription = Strings.logsTagRemove(tag),
         onClick = { onAction(RemoveTag(tag)) },
-        contentDescription = Strings.logsTagRemove(tag),
       )
     }
   }

@@ -13,6 +13,8 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColors
@@ -37,6 +39,8 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -92,9 +96,11 @@ private fun LogExportSheetContent(
         verticalArrangement = spacedBy(6.dp),
       ) {
         for (scope in scopes) {
-          LogChip(
+          val isSelected = scope == selected
+          Chip(
+            modifier = Modifier.semantics { this.selected = isSelected },
             text = scope.label(today),
-            isSelected = scope == selected,
+            colors = ChipDefaults.selectableColors(isSelected),
             onClick = { selected = scope },
           )
         }

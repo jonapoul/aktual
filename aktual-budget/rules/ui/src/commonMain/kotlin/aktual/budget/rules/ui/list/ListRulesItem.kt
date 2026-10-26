@@ -13,6 +13,8 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipColors
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
@@ -123,18 +125,20 @@ private fun RuleStageBadge(
   stage: RuleStage,
   modifier: Modifier = Modifier,
 ) {
-  Box(
-    modifier =
-      modifier
-        .padding(Dimens.Large)
-        .clip(CardShape)
-        .background(colors.pillBackgroundSelected, CardShape)
-        .border(Hairline, colors.pillBorder, CardShape)
-        .padding(horizontal = 6.dp, vertical = 2.dp),
-  ) {
-    Text(text = stage.string(), color = colors.pillText, style = typography.labelSmall)
-  }
+  Chip(
+    modifier = modifier.padding(Dimens.Large),
+    text = stage.string(),
+    colors = chipColors(colors),
+    textStyle = typography.labelSmall,
+  )
 }
+
+@Stable
+private fun chipColors(colors: Colors): ChipColors =
+  ChipColors(
+    background = colors.pillBackgroundSelected,
+    content = colors.pillText,
+  )
 
 @Composable
 private fun RowScope.ItemContent(rule: Rule, query: String) {
