@@ -7,14 +7,15 @@ import aktual.budget.reports.vm.QueryEntity
 import aktual.budget.reports.vm.toDayOrNull
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
 import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.BottomSheetListItem
+import aktual.core.ui.Chip
 import aktual.core.ui.NormalTextButton
-import aktual.core.ui.RemovableChip
 import aktual.core.ui.TonalButton
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.layout.Arrangement
@@ -146,10 +147,11 @@ private fun EntityListPicker(
       ) {
         ids.fastForEach { id ->
           val name = names.nameOf(id)
-          RemovableChip(
+          Chip(
             text = name,
-            removeDescription = Strings.reportsFormulaQueryRemove(name),
-            onRemove = { onChange(JsonArray(ids.minus(id).map(::JsonPrimitive))) },
+            trailingIcon = AktualIcons.Delete,
+            trailingIconDescription = Strings.reportsFormulaQueryRemove(name),
+            onClick = { onChange(JsonArray(ids.minus(id).map(::JsonPrimitive))) },
           )
         }
       }

@@ -16,6 +16,8 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipColors
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.redacted
@@ -421,7 +423,7 @@ private fun GroupHeader(
     AmountText(
       amount = group.balance,
       modifier = Modifier.width(BudgetDS.balanceWidth),
-      color = balanceColors(group.balance).text,
+      color = balanceColors(group.balance).content,
       bold = true,
     )
   }
@@ -641,43 +643,31 @@ internal fun AmountText(
 internal fun BalancePill(balance: Amount, carryover: Boolean, modifier: Modifier = Modifier) {
   val pill = balanceColors(balance)
   val rollsOver = Strings.budgetingRollsOver
-  Row(
-    modifier =
-      modifier
-        .background(pill.background, PillShape)
-        .padding(horizontal = 8.dp, vertical = 3.dp)
-        .semantics { if (carryover) stateDescription = rollsOver },
-    horizontalArrangement = Arrangement.spacedBy(2.dp),
-    verticalAlignment = CenterVertically,
+  Chip(
+    modifier = modifier.semantics { if (carryover) stateDescription = rollsOver },
+    colors = pill,
+    size = Small,
+    textStyle = TextStyle.Default.tabularFigures().copy(fontSize = 13.sp, fontWeight = Medium),
+    spacing = 2.dp,
   ) {
-    Text(
-      text = balance.formattedText(includeSign = true),
-      fontSize = 13.sp,
-      fontWeight = Medium,
-      style = TextStyle.Default.tabularFigures(),
-      color = pill.text,
-      maxLines = 1,
-    )
+    Text(text = balance.formattedText(includeSign = true), maxLines = 1)
     if (carryover) {
       Icon(
         modifier = Modifier.size(12.dp),
         imageVector = AktualIcons.CheveronRight,
         contentDescription = null,
-        tint = pill.text,
       )
     }
   }
 }
 
-internal data class PillColors(val background: Color, val text: Color)
-
 @Composable
 @ReadOnlyComposable
-internal fun balanceColors(balance: Amount): PillColors =
+internal fun balanceColors(balance: Amount): ChipColors =
   when {
-    balance > Zero -> PillColors(colors.noticeBackground, colors.noticeText)
-    balance < Zero -> PillColors(colors.errorBackground, colors.errorText)
-    else -> PillColors(colors.pillBackground, colors.pillText)
+    balance > Zero -> ChipColors(colors.noticeBackground, colors.noticeText)
+    balance < Zero -> ChipColors(colors.errorBackground, colors.errorText)
+    else -> ChipColors(colors.pillBackground, colors.pillText)
   }
 
 // Keep in sync with budgetTable
@@ -710,7 +700,6 @@ internal fun TextStyle.tabularFigures() = copy(fontFeatureSettings = "tnum")
 
 internal val TopShape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)
 private val CategoryInset = BudgetDS.categoryIndent - BudgetDS.rowPadding
-private val PillShape = RoundedCornerShape(12.dp)
 private const val HIDDEN_ALPHA = 0.5f
 private const val COLLAPSED_ROTATION = -90f
 private const val SHIMMER_GROUPS = 3

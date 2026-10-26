@@ -14,6 +14,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
@@ -193,7 +195,7 @@ internal fun AccountStatusChip(
       AccountMissing -> Strings.bankSyncStatusAccountMissing
       Unknown -> Strings.bankSyncStatusUnknown
     }
-  Chip(label = label, background = background, text = text, modifier = modifier)
+  StatusChip(label = label, background = background, text = text, modifier = modifier)
 }
 
 @Composable
@@ -217,19 +219,23 @@ internal fun ProviderStatusChip(
       Failed -> Strings.bankSyncProviderFailed
       NoServer -> Strings.bankSyncProviderNoServer
     }
-  Chip(label, background, text, modifier)
+  StatusChip(label, background, text, modifier)
 }
 
 @Composable
-private fun Chip(
+private fun StatusChip(
   label: String,
   background: Color,
   text: Color,
   modifier: Modifier = Modifier,
 ) {
-  Box(modifier = modifier.background(background, CardShape).padding(BankSyncDS.chipPadding)) {
-    Text(text = label, style = typography.labelSmall, color = text, maxLines = 1)
-  }
+  Chip(
+    modifier = modifier,
+    text = label,
+    colors = ChipDefaults.colors(background, text),
+    size = Small,
+    textStyle = typography.labelSmall,
+  )
 }
 
 @Composable

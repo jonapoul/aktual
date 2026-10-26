@@ -1,10 +1,12 @@
 package aktual.about.ui.logs
 
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipDefaults
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -32,16 +34,11 @@ internal fun LogLetterBadge(
 }
 
 @Composable
-internal fun LogLabelBadge(priority: LogPriority, modifier: Modifier = Modifier) {
-  Text(
-    modifier =
-      modifier
-        .background(priority.background(colors), RoundedCornerShape(4.dp))
-        .padding(horizontal = 6.dp, vertical = 2.dp),
+internal fun LogLabelBadge(priority: LogPriority, modifier: Modifier = Modifier) =
+  Chip(
+    modifier = modifier,
     text = priority.label(),
-    color = priority.foreground(colors),
-    fontWeight = SemiBold,
-    fontSize = 11.sp,
-    maxLines = 1,
+    colors = ChipDefaults.colors(priority.background(colors), priority.foreground(colors)),
+    size = Small,
+    textStyle = LocalTextStyle.current.copy(fontWeight = SemiBold, fontSize = 11.sp),
   )
-}

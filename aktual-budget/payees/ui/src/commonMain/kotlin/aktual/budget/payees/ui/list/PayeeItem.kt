@@ -3,6 +3,7 @@ package aktual.budget.payees.ui.list
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Bookmark
+import aktual.core.icons.CheveronRight
 import aktual.core.icons.LightBulb
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
@@ -10,6 +11,9 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipDefaults
+import aktual.core.ui.ChipSize
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
@@ -111,27 +115,25 @@ internal fun PayeeItem(
 }
 
 @Composable
-internal fun RuleCountChip(numRules: Int, onClick: () -> Unit, modifier: Modifier = Modifier) =
+internal fun RuleCountChip(numRules: Int, onClick: () -> Unit, modifier: Modifier = Modifier) {
   PayeeChip(
     modifier = modifier,
     text =
       if (numRules > 0) Plurals.payeesNumRules(numRules, numRules) else Strings.payeesCreateRule,
     onClick = onClick,
   )
+}
 
 @Composable
 internal fun PayeeChip(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-  Box(
-    modifier =
-      modifier
-        .clip(CardShape)
-        .background(colors.noticeBackground)
-        .clickable(onClick = onClick)
-        .padding(ListPayeesDS.ruleChipPadding),
-    contentAlignment = Center,
-  ) {
-    Text(text = text, style = typography.bodySmall, color = colors.noticeTextDark)
-  }
+  Chip(
+    modifier = modifier,
+    text = text,
+    colors = ChipDefaults.colors(colors.noticeBackground, colors.noticeTextDark),
+    textStyle = typography.bodySmall,
+    trailingIcon = AktualIcons.CheveronRight,
+    onClick = onClick,
+  )
 }
 
 /** Keep in sync with [PayeeItem] */
@@ -168,8 +170,8 @@ internal fun ShimmerPayeeItem(modifier: Modifier = Modifier) {
     Box(
       modifier =
         Modifier.width(ListPayeesDS.shimmerChipWidth)
-          .background(colors.pageText, CardShape)
-          .padding(ListPayeesDS.ruleChipPadding),
+          .background(colors.pageText, ChipSize.Regular.shape)
+          .padding(ChipSize.Regular.contentPadding),
     ) {
       Text(text = "", style = typography.bodySmall, maxLines = 1)
     }

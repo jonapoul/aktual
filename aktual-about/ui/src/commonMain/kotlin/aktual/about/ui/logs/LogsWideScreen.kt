@@ -7,6 +7,8 @@ import aktual.about.vm.logs.LogExportScope
 import aktual.about.vm.logs.LogExportScope.Day
 import aktual.about.vm.logs.LogFilesState
 import aktual.about.vm.logs.LogFilters
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Share
 import aktual.core.l10n.Strings
@@ -17,6 +19,8 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ButtonShape
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
@@ -233,11 +237,12 @@ private fun WideSidebar(
           verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
           for (tag in filters.tags) {
-            LogChip(
-              text = "$tag ×",
-              isSelected = true,
+            Chip(
+              text = tag,
+              colors = ChipDefaults.selectableColors(isSelected = true),
+              trailingIcon = AktualIcons.Delete,
+              trailingIconDescription = Strings.logsTagRemove(tag),
               onClick = { onAction(RemoveTag(tag)) },
-              contentDescription = Strings.logsTagRemove(tag),
             )
           }
         }

@@ -5,23 +5,18 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.attributes
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipDefaults
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.FlowRowScope
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily.Companion.Monospace
@@ -101,23 +96,19 @@ private fun ShortcutChip(
   tint: Color? = null,
 ) {
   val accent = colors.buttonPrimaryBackground
-  Row(
-    modifier =
-      Modifier.height(CHIP_HEIGHT)
-        .clip(CHIP_SHAPE)
-        .background(if (highlight) accent.copy(alpha = HIGHLIGHT_ALPHA) else colors.tableBackground)
-        .border(1.dp, if (highlight) accent else colors.tableBorder, CHIP_SHAPE)
-        .clickable(onClick = onClick)
-        .padding(horizontal = 12.dp),
-    verticalAlignment = CenterVertically,
-    horizontalArrangement = spacedBy(8.dp),
-  ) {
-    Text(
-      text = text,
-      style = typography.labelMedium.copy(fontFamily = Monospace),
-      color = tint ?: colors.tableText,
-    )
-  }
+  Chip(
+    modifier = Modifier.height(CHIP_HEIGHT),
+    text = text,
+    colors =
+      ChipDefaults.colors(
+        background =
+          if (highlight) accent.copy(alpha = HIGHLIGHT_ALPHA) else colors.tableBackground,
+        content = tint ?: colors.tableText,
+        border = if (highlight) accent else colors.tableBorder,
+      ),
+    textStyle = typography.labelMedium.copy(fontFamily = Monospace),
+    onClick = onClick,
+  )
 }
 
 // Replaces any selected text, and puts the cursor [cursor] characters into the inserted text
@@ -130,7 +121,6 @@ private fun TextFieldState.insert(value: String, cursor: Int = value.length) = e
 private const val RESULT = "RESULT"
 private const val HIGHLIGHT_ALPHA = 0.18f
 private val CHIP_HEIGHT = 36.dp
-private val CHIP_SHAPE = RoundedCornerShape(10.dp)
 
 private val FUNCTIONS =
   persistentListOf(

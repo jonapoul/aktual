@@ -1,5 +1,6 @@
 package aktual.budget.transactions.ui.edit
 
+import aktual.budget.model.TagId
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.vm.edit.NotesEdit
 import aktual.budget.transactions.vm.edit.TagQuery
@@ -17,17 +18,17 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipDefaults
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.EditorSheet
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.TagChip
-import aktual.core.ui.TagChipShape
 import aktual.core.ui.keyboardFocusRequester
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -40,15 +41,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 // As upstream's notes input, a button adds a '#', and typing one offers the tags to complete it
 // with or to create one named as typed. Tab picks the first of them
@@ -61,6 +65,26 @@ internal fun NotesSheet(
   onCreateTag: (String) -> Unit,
 ) {
   val text = rememberTextFieldState(initialText = notes.orEmpty())
+
+  EditorSheet(
+    title = Strings.transactionNotes,
+    cancelText = Strings.transactionSheetCancel,
+    confirmText = Strings.transactionSheetDone,
+    canConfirm = true,
+    onDismiss = onDismiss,
+    onConfirm = { onSave(text.text.toString()) },
+  ) {
+    NotesSheetContent(text = text, tags = tags, onCreateTag = onCreateTag)
+  }
+}
+
+@Composable
+private fun NotesSheetContent(
+  text: TextFieldState,
+  tags: ImmutableList<TagLabel>,
+  onCreateTag: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
   val focusRequester = keyboardFocusRequester()
   val notesText = text.text.toString()
   val cursor = text.selection.end
@@ -75,14 +99,7 @@ internal fun NotesSheet(
     select(typed, typed.name)
   }
 
-  EditorSheet(
-    title = Strings.transactionNotes,
-    cancelText = Strings.transactionSheetCancel,
-    confirmText = Strings.transactionSheetDone,
-    canConfirm = true,
-    onDismiss = onDismiss,
-    onConfirm = { onSave(text.text.toString()) },
-  ) {
+  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(NotesSheetDS.spacing)) {
     AktualTextField(
       modifier =
         Modifier.fillMaxWidth().focusRequester(focusRequester).onPreviewKeyEvent { event ->
@@ -139,28 +156,19 @@ private fun InsertHashButton(text: TextFieldState, focusRequester: FocusRequeste
 
 @Composable
 private fun CreateTagChip(name: String, onClick: () -> Unit) =
-  Row(
-    modifier =
-      Modifier.clip(TagChipShape)
-        .background(colors.noticeBackground, TagChipShape)
-        .clickable(onClick = onClick)
-        .padding(NotesSheetDS.createPadding),
-    horizontalArrangement = Arrangement.spacedBy(NotesSheetDS.createSpacing),
-    verticalAlignment = CenterVertically,
+  Chip(
+    colors = ChipDefaults.colors(colors.noticeBackground, colors.noticeTextDark),
+    size = Small,
+    textStyle = typography.bodyMedium,
+    onClick = onClick,
   ) {
     Icon(
       imageVector = AktualIcons.Add,
       contentDescription = null,
       modifier = Modifier.size(NotesSheetDS.createIconSize),
-      tint = colors.noticeTextDark,
     )
-    Text(
-      text = Strings.transactionNotesCreateTag,
-      style = typography.bodyMedium,
-      color = colors.noticeTextDark,
-      maxLines = 1,
-    )
-    TagChip(text = name, color = null)
+    Text(text = Strings.transactionNotesCreateTag, maxLines = 1)
+    TagChip(text = name, color = null, size = Small)
   }
 
 // Replaces the text the edit covers, leaving the cursor after what it put in
@@ -169,9 +177,36 @@ private fun TextFieldState.applyEdit(change: NotesEdit) = edit {
   selection = TextRange(change.start + change.text.length)
 }
 
+@Preview
+@Composable
+private fun PreviewNotesSheet(
+  @PreviewParameter(NotesSheetProvider::class) params: ColoredParams<String>,
+) =
+  PreviewWithColoredParams(params) {
+    NotesSheetContent(
+      text = rememberTextFieldState(initialText = this),
+      tags = PREVIEW_TAGS,
+      onCreateTag = {},
+    )
+  }
+
+private val PREVIEW_TAGS =
+  persistentListOf(
+    TagLabel(TagId("a"), "food", Color(0xFF3CB371)),
+    TagLabel(TagId("b"), "fuel", null),
+    TagLabel(TagId("c"), "holiday", Color(0xFFFFD700)),
+  )
+
+private class NotesSheetProvider :
+  ColoredParameterProvider<String>(
+    "",
+    "Lunch with #f",
+    "Lunch with #fo",
+    "Dinner with #friends",
+  )
+
 private object NotesSheetDS {
+  val spacing = 16.dp
   val chipSpacing = 4.dp
-  val createPadding = PaddingValues(start = 9.dp, top = 2.dp, end = 2.dp, bottom = 2.dp)
-  val createSpacing = 4.dp
   val createIconSize = 12.dp
 }

@@ -14,8 +14,6 @@ internal object BankSyncDS {
   val progressSize = 20.dp
   val progressStroke = 2.dp
 
-  val chipPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-
   val shimmerItemTextHeight = 20.dp
   val shimmerItemTextHeightSmall = 15.dp
   val shimmerChipWidth = 48.dp

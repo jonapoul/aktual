@@ -11,6 +11,7 @@ import aktual.budget.rules.vm.search.SearchRulesState.Failure
 import aktual.budget.rules.vm.search.SearchRulesState.Results
 import aktual.budget.rules.vm.search.SearchRulesViewModel
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
 import aktual.core.icons.Refresh
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.SearchOff
@@ -18,6 +19,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.Chip
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
@@ -25,7 +27,6 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.RemovableChip
 import aktual.core.ui.ScrollToTopOnNewQuery
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SearchScaffold
@@ -110,11 +111,12 @@ private fun SearchRulesScaffold(
   ) { innerPadding ->
     Column(modifier = Modifier.padding(innerPadding)) {
       if (payeeName != null) {
-        RemovableChip(
+        Chip(
           modifier = Modifier.padding(horizontal = Dimens.ScreenPadding, vertical = Dimens.Medium),
           text = payeeName,
-          removeDescription = Strings.rulesSearchPayeeRemove(payeeName),
-          onRemove = { onAction(ClearPayee) },
+          trailingIcon = AktualIcons.Delete,
+          trailingIconDescription = Strings.rulesSearchPayeeRemove(payeeName),
+          onClick = { onAction(ClearPayee) },
         )
       }
 

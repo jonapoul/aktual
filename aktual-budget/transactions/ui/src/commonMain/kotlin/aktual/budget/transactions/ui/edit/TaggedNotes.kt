@@ -4,6 +4,7 @@ import aktual.budget.model.TagId
 import aktual.budget.model.tagRangesInNotes
 import aktual.budget.tags.domain.TagLabel
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.ChipSize
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
@@ -121,7 +122,7 @@ private fun DrawScope.drawChip(layout: TextLayoutResult, chip: Chip) {
       color = chip.background,
       topLeft = Offset(left, top),
       size = Size(right - left, bottom - top),
-      cornerRadius = CornerRadius((bottom - top) / 2),
+      cornerRadius = CornerRadius(ChipSize.Small.radius.toPx()),
     )
   }
 }

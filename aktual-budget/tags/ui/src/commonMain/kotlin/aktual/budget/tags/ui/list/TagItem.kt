@@ -2,6 +2,7 @@ package aktual.budget.tags.ui.list
 
 import aktual.budget.tags.vm.list.TagItem
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronRight
 import aktual.core.icons.Trash
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
@@ -9,6 +10,9 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipDefaults
+import aktual.core.ui.ChipSize
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
@@ -18,7 +22,6 @@ import aktual.core.ui.RowShape
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.TagChip
-import aktual.core.ui.TagChipShape
 import aktual.core.ui.contrastingTextColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,6 +34,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -88,9 +92,12 @@ internal fun ShimmerTagItem(modifier: Modifier = Modifier) {
   ) {
     Box(
       modifier =
-        Modifier.size(width = ListTagsDS.shimmerChipWidth, height = ListTagsDS.shimmerChipHeight)
-          .background(colors.pageText, TagChipShape),
-    )
+        Modifier.width(ListTagsDS.shimmerChipWidth)
+          .background(colors.pageText, ChipSize.Regular.shape)
+          .padding(ChipSize.Regular.contentPadding),
+    ) {
+      Text(text = "", style = typography.bodyMedium, maxLines = 1)
+    }
     Box(
       modifier =
         Modifier.fillMaxWidth(fraction = 0.7f)
@@ -135,19 +142,14 @@ private fun TagItemRow(
       )
 
       if (tag.numTransactions > 0) {
-        Box(
-          modifier =
-            Modifier.background(colors.pillBackgroundSelected, CardShape)
-              .clickable { onAction(ViewTransactions(tag.id)) }
-              .padding(ListTagsDS.numTransactionsPadding),
-          contentAlignment = Center,
-        ) {
-          Text(
-            text = Plurals.tagsNumTransactions(tag.numTransactions, tag.numTransactions),
-            style = typography.bodySmall,
-            color = colors.pillText,
-          )
-        }
+        Chip(
+          text = Plurals.tagsNumTransactions(tag.numTransactions, tag.numTransactions),
+          colors = ChipDefaults.colors(background = colors.pillBackgroundSelected),
+          size = Small,
+          textStyle = typography.bodySmall,
+          onClick = { onAction(ViewTransactions(tag.id)) },
+          trailingIcon = AktualIcons.CheveronRight,
+        )
       }
     }
   }

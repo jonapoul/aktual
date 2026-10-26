@@ -167,7 +167,11 @@ private fun LazyListScope.budgetColumns(
           val month = column.groups[group.id] ?: return@Months
           AmountCell(amount = month.budgeted, bold = true)
           AmountCell(amount = month.spent, bold = true)
-          AmountCell(amount = month.balance, color = balanceColors(month.balance).text, bold = true)
+          AmountCell(
+            amount = month.balance,
+            color = balanceColors(month.balance).content,
+            bold = true,
+          )
         }
       }
     }

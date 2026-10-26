@@ -89,8 +89,8 @@
 
   <!-- budget-payees -->
   <plurals name="payees_num_rules">
-    <item quantity="one">%1$d associated rule</item>
-    <item quantity="other">%1$d associated rules</item>
+    <item quantity="one">%1$d rule</item>
+    <item quantity="other">%1$d rules</item>
   </plurals>
   <plurals name="payees_num_transactions">
     <item quantity="one">%1$d transaction</item>
