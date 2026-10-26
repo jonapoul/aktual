@@ -45,8 +45,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -65,8 +67,11 @@ import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -100,7 +105,7 @@ internal fun LogFilesScaffold(
     Box(modifier = Modifier.fillMaxSize()) {
       WavyBackground()
       when (state) {
-        Loading -> Unit
+        Loading -> ShimmerLogFiles(innerPadding)
         Empty -> SearchMessage(text = Strings.logsEmpty, icon = MaterialIcons.Description)
         is Loaded -> LogFilesList(state, innerPadding, onAction)
       }
@@ -179,12 +184,7 @@ private fun LogFilesList(
 @Composable
 private fun LogFilesSummary(state: LogFilesState.Loaded, modifier: Modifier = Modifier) =
   Column(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .background(colors.cardBackground, CardShape)
-        .border(Hairline, colors.tableBorder, CardShape)
-        .padding(Dimens.VeryLarge),
+    modifier = modifier.logFilesSummaryCard(colors.cardBackground, colors.tableBorder),
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
     Text(
@@ -250,19 +250,7 @@ private fun LogFileItem(
   modifier: Modifier = Modifier,
 ) =
   Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .heightIn(min = 56.dp)
-        .clip(RowShape)
-        .background(colors.tableBackground)
-        .clickable(onClick = onClick)
-        .padding(
-          start = Dimens.VeryLarge,
-          end = Dimens.Medium,
-          top = Dimens.Large,
-          bottom = Dimens.Large,
-        ),
+    modifier = modifier.logFileRow(colors.tableBackground, onClick),
     verticalAlignment = CenterVertically,
     horizontalArrangement = spacedBy(Dimens.VeryLarge),
   ) {
@@ -303,6 +291,68 @@ private fun LogFileItem(
       tint = colors.pageTextSubdued,
     )
   }
+
+@Composable
+private fun ShimmerLogFiles(contentPadding: PaddingValues) =
+  Column(
+    modifier =
+      Modifier.fillMaxSize()
+        .padding(contentPadding)
+        .padding(horizontal = Dimens.Large)
+        .shimmer(rememberShimmer(Window)),
+    verticalArrangement = spacedBy(Dimens.Medium),
+  ) {
+    ShimmerLogFilesSummary(Modifier.padding(vertical = Dimens.Huge))
+    repeat(times = 6) { ShimmerLogFileItem() }
+  }
+
+/** Keep in sync with [LogFilesSummary] */
+@Composable
+private fun ShimmerLogFilesSummary(modifier: Modifier = Modifier) =
+  Column(
+    modifier = modifier.logFilesSummaryCard(colors.cardBackground, colors.tableBorder),
+    verticalArrangement = spacedBy(Dimens.Medium),
+  ) {
+    val bar = Modifier.background(colors.pageText, CardShape)
+    Box(bar.fillMaxWidth(fraction = 0.3f).height(ShimmerLabelHeight))
+    Box(bar.fillMaxWidth(fraction = 0.5f).height(ShimmerHeadlineHeight))
+    Box(bar.fillMaxWidth(fraction = 0.7f).height(ShimmerLabelHeight))
+  }
+
+/** Keep in sync with [LogFileItem] */
+@Composable
+private fun ShimmerLogFileItem() =
+  Row(
+    modifier = Modifier.logFileRow(colors.tableBackground),
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = spacedBy(Dimens.VeryLarge),
+  ) {
+    val bar = Modifier.background(colors.pageText, CardShape)
+    Box(bar.size(ShimmerIconSize))
+    Column(modifier = Modifier.weight(1f), verticalArrangement = spacedBy(ShimmerLineSpacing)) {
+      Box(bar.fillMaxWidth(fraction = 0.3f).height(ShimmerTitleHeight))
+      Box(bar.fillMaxWidth(fraction = 0.6f).height(ShimmerSubtitleHeight))
+    }
+  }
+
+private fun Modifier.logFilesSummaryCard(background: Color, border: Color) =
+  fillMaxWidth()
+    .background(background, CardShape)
+    .border(Hairline, border, CardShape)
+    .padding(Dimens.VeryLarge)
+
+private fun Modifier.logFileRow(background: Color, onClick: (() -> Unit)? = null) =
+  fillMaxWidth()
+    .heightIn(min = 56.dp)
+    .clip(RowShape)
+    .background(background)
+    .then(if (onClick == null) Modifier else Modifier.clickable(onClick = onClick))
+    .padding(
+      start = Dimens.VeryLarge,
+      end = Dimens.Medium,
+      top = Dimens.Large,
+      bottom = Dimens.Large,
+    )
 
 @Composable
 private fun LogFilesBottomBar(onDelete: () -> Unit, onExport: () -> Unit) =
@@ -349,6 +399,13 @@ private fun PreviewLogFiles(
     LogFilesScaffold(state = this, canShare = true, onAction = {})
   }
 
+private val ShimmerLabelHeight = 12.dp
+private val ShimmerHeadlineHeight = 28.dp
+private val ShimmerIconSize = 24.dp
+private val ShimmerTitleHeight = 14.dp
+private val ShimmerSubtitleHeight = 10.dp
+private val ShimmerLineSpacing = 6.dp
+
 private val PREVIEW_TODAY = LocalDate(2026, 10, 18)
 
 private class LogFilesProvider :
@@ -364,4 +421,5 @@ private class LogFilesProvider :
       today = PREVIEW_TODAY,
     ),
     LogFilesState.Empty,
+    LogFilesState.Loading,
   )

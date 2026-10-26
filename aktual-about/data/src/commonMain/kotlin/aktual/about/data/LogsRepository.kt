@@ -9,6 +9,8 @@ import alakazam.kotlin.TimeZoneProvider
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -41,9 +43,12 @@ class LogsRepository(
         .list(dir)
         .mapNotNull { path ->
           val date = LogFileFormat.parseFileName(path.name) ?: return@mapNotNull null
-          val size = fileSystem.metadataOrNull(path)?.size ?: 0L
-          LogFile(date, size.bytes, errorCount(path))
+          async {
+            val size = fileSystem.metadataOrNull(path)?.size ?: 0L
+            LogFile(date, size.bytes, errorCount(path))
+          }
         }
+        .awaitAll()
         .sortedByDescending { it.date }
     }
 
