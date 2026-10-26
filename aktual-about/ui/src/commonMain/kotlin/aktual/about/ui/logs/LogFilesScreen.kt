@@ -49,6 +49,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -64,11 +65,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.Bottom
+import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
@@ -152,14 +156,7 @@ private fun LogFilesList(
   ) {
     item { LogFilesSummary(state, Modifier.padding(vertical = Dimens.Huge)) }
 
-    item {
-      Text(
-        modifier = Modifier.padding(horizontal = Dimens.Medium, vertical = Dimens.Medium),
-        text = Strings.logsDailyHeader,
-        style = typography.labelLarge,
-        color = colors.pageTextLight,
-      )
-    }
+    item { LogFilesDailyHeader() }
 
     items(state.files, key = { it.date.toString() }) { file ->
       SwipeableLogFileItem(
@@ -184,7 +181,7 @@ private fun LogFilesList(
 @Composable
 private fun LogFilesSummary(state: LogFilesState.Loaded, modifier: Modifier = Modifier) =
   Column(
-    modifier = modifier.logFilesSummaryCard(colors.cardBackground, colors.tableBorder),
+    modifier = modifier.logFilesSummaryCard(colors.cardBackground, colors.cardShadow),
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
     Text(
@@ -293,16 +290,22 @@ private fun LogFileItem(
   }
 
 @Composable
+private fun LogFilesDailyHeader() =
+  Text(
+    modifier = Modifier.padding(horizontal = Dimens.Medium, vertical = Dimens.Medium),
+    text = Strings.logsDailyHeader,
+    style = typography.labelLarge,
+    color = colors.pageTextLight,
+  )
+
+@Composable
 private fun ShimmerLogFiles(contentPadding: PaddingValues) =
   Column(
-    modifier =
-      Modifier.fillMaxSize()
-        .padding(contentPadding)
-        .padding(horizontal = Dimens.Large)
-        .shimmer(rememberShimmer(Window)),
+    modifier = Modifier.fillMaxSize().padding(contentPadding).padding(horizontal = Dimens.Large),
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
     ShimmerLogFilesSummary(Modifier.padding(vertical = Dimens.Huge))
+    LogFilesDailyHeader()
     repeat(times = 6) { ShimmerLogFileItem() }
   }
 
@@ -310,29 +313,49 @@ private fun ShimmerLogFiles(contentPadding: PaddingValues) =
 @Composable
 private fun ShimmerLogFilesSummary(modifier: Modifier = Modifier) =
   Column(
-    modifier = modifier.logFilesSummaryCard(colors.cardBackground, colors.tableBorder),
+    modifier =
+      modifier
+        .logFilesSummaryCard(colors.cardBackground, colors.cardShadow)
+        .shimmer(rememberShimmer(Window)),
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
-    val bar = Modifier.background(colors.pageText, CardShape)
-    Box(bar.fillMaxWidth(fraction = 0.3f).height(ShimmerLabelHeight))
-    Box(bar.fillMaxWidth(fraction = 0.5f).height(ShimmerHeadlineHeight))
-    Box(bar.fillMaxWidth(fraction = 0.7f).height(ShimmerLabelHeight))
+    ShimmerLine(typography.labelMedium, ShimmerLabelHeight, Modifier.fillMaxWidth(fraction = 0.3f))
+    Row(verticalAlignment = Bottom, horizontalArrangement = spacedBy(8.dp)) {
+      ShimmerLine(
+        typography.headlineMedium,
+        ShimmerHeadlineHeight,
+        Modifier.width(ShimmerCountWidth),
+      )
+      ShimmerLine(typography.bodyMedium, ShimmerBodyHeight, Modifier.width(ShimmerSizeWidth))
+    }
+    ShimmerLine(typography.labelMedium, ShimmerLabelHeight, Modifier.fillMaxWidth(fraction = 0.4f))
   }
 
 /** Keep in sync with [LogFileItem] */
 @Composable
 private fun ShimmerLogFileItem() =
   Row(
-    modifier = Modifier.logFileRow(colors.tableBackground),
+    modifier = Modifier.logFileRow(colors.tableBackground).shimmer(rememberShimmer(Window)),
     verticalAlignment = CenterVertically,
     horizontalArrangement = spacedBy(Dimens.VeryLarge),
   ) {
-    val bar = Modifier.background(colors.pageText, CardShape)
-    Box(bar.size(ShimmerIconSize))
-    Column(modifier = Modifier.weight(1f), verticalArrangement = spacedBy(ShimmerLineSpacing)) {
-      Box(bar.fillMaxWidth(fraction = 0.3f).height(ShimmerTitleHeight))
-      Box(bar.fillMaxWidth(fraction = 0.6f).height(ShimmerSubtitleHeight))
+    Box(Modifier.size(ShimmerIconSize).background(colors.pageText, CardShape))
+    Column(modifier = Modifier.weight(1f), verticalArrangement = spacedBy(2.dp)) {
+      ShimmerLine(typography.bodyMedium, ShimmerBodyHeight, Modifier.fillMaxWidth(fraction = 0.3f))
+      ShimmerLine(
+        typography.labelSmall.copy(fontFamily = Monospace),
+        ShimmerLabelHeight,
+        Modifier.fillMaxWidth(fraction = 0.6f),
+      )
     }
+  }
+
+/** A bar vertically centred in the height of one line of [style], so it matches real text */
+@Composable
+private fun ShimmerLine(style: TextStyle, barHeight: Dp, modifier: Modifier = Modifier) =
+  Box(modifier = modifier, contentAlignment = CenterStart) {
+    Text(text = "", style = style, maxLines = 1)
+    Box(Modifier.fillMaxWidth().height(barHeight).background(colors.pageText, CardShape))
   }
 
 private fun Modifier.logFilesSummaryCard(background: Color, border: Color) =
@@ -399,12 +422,12 @@ private fun PreviewLogFiles(
     LogFilesScaffold(state = this, canShare = true, onAction = {})
   }
 
-private val ShimmerLabelHeight = 12.dp
-private val ShimmerHeadlineHeight = 28.dp
+private val ShimmerLabelHeight = 9.dp
+private val ShimmerBodyHeight = 11.dp
+private val ShimmerHeadlineHeight = 22.dp
+private val ShimmerCountWidth = 80.dp
+private val ShimmerSizeWidth = 40.dp
 private val ShimmerIconSize = 24.dp
-private val ShimmerTitleHeight = 14.dp
-private val ShimmerSubtitleHeight = 10.dp
-private val ShimmerLineSpacing = 6.dp
 
 private val PREVIEW_TODAY = LocalDate(2026, 10, 18)
 
