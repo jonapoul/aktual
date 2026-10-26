@@ -31,14 +31,14 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryIconButton
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TonalButton
@@ -682,14 +682,14 @@ private val DASHES = floatArrayOf(12f, 8f)
 @PortraitPreview
 @Composable
 private fun PreviewFormulaReportScaffold(
-  @PreviewParameter(FormulaReportProvider::class) params: ColoredParams<FormulaReportState>,
+    @PreviewParameter(FormulaReportProvider::class) params: ColorParams<FormulaReportState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     FormulaReportScaffold(state = this, queryEditorData = PREVIEW_QUERY_DATA, onAction = {})
   }
 
 private class FormulaReportProvider :
-  ColoredParameterProvider<FormulaReportState>(
+  ColorParamsProvider<FormulaReportState>(
     FormulaReportState.Loaded(
       draft = PREVIEW_FORMULA_META.toEdits(),
       preview = PREVIEW_FORMULA_DATA,

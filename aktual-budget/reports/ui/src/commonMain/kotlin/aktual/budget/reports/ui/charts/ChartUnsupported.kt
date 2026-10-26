@@ -5,9 +5,9 @@ import aktual.budget.reports.vm.UnsupportedData
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.plainTextClipEntry
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.layout.Box
@@ -99,11 +99,11 @@ private fun StackTraceDialog(stackTrace: String, onDismiss: () -> Unit) {
 @Preview
 @Composable
 private fun PreviewUnsupportedChart(
-  @PreviewParameter(UnsupportedChartProvider::class) params: ColoredParams<UnsupportedData>,
-) = PreviewWithColoredParams(params) { UnsupportedChart(data = params.data) }
+    @PreviewParameter(UnsupportedChartProvider::class) params: ColorParams<UnsupportedData>,
+) = PreviewWithColorParams(params) { UnsupportedChart(data = params.data) }
 
 private class UnsupportedChartProvider :
-  ColoredParameterProvider<UnsupportedData>(
+  ColorParamsProvider<UnsupportedData>(
     UnsupportedData(reason = Filters, type = CashFlow, name = "Groceries cash flow"),
     UnsupportedData(reason = ReportType, type = Calendar, name = null),
     UnsupportedData(

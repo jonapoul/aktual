@@ -16,10 +16,10 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParameters
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParameters
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
 import androidx.compose.animation.core.LinearEasing
@@ -344,11 +344,11 @@ internal fun ShimmerBankSyncAccountItem(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun PreviewAccountItem(
-  @PreviewParameter(AccountProvider::class) params: ColoredParams<BankSyncAccount>,
-) = PreviewWithColoredParams(params) { BankSyncAccountItem(account = this, isLinked = true) }
+  @PreviewParameter(AccountProvider::class) params: ColorParams<BankSyncAccount>,
+) = PreviewWithColorParams(params) { BankSyncAccountItem(account = this, isLinked = true) }
 
 private class AccountProvider :
-  ColoredParameterProvider<BankSyncAccount>(
+  ColorParamsProvider<BankSyncAccount>(
     BankSyncPreview.checking,
     BankSyncPreview.savings,
     BankSyncPreview.creditCard,
@@ -357,9 +357,9 @@ private class AccountProvider :
 @Preview
 @Composable
 private fun PreviewSyncableAccountItem(
-  @PreviewParameter(AccountProvider::class) params: ColoredParams<BankSyncAccount>,
+  @PreviewParameter(AccountProvider::class) params: ColorParams<BankSyncAccount>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     var isSyncing by remember { mutableStateOf(false) }
     val account by remember(isSyncing) { mutableStateOf(this.copy(isSyncing = isSyncing)) }
     BankSyncAccountItem(
@@ -371,7 +371,7 @@ private fun PreviewSyncableAccountItem(
 
 @Preview
 @Composable
-private fun PreviewUnlinkedAccountItem(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewUnlinkedAccountItem(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     BankSyncAccountItem(account = BankSyncPreview.cash, isLinked = false)
   }
@@ -379,25 +379,25 @@ private fun PreviewUnlinkedAccountItem(@PreviewParameter(ColoredParameters::clas
 @Preview
 @Composable
 private fun PreviewAccountStatusChip(
-  @PreviewParameter(AccountStatusProvider::class) params: ColoredParams<BankSyncAccountStatus>,
-) = PreviewWithColoredParams(params) { AccountStatusChip(this) }
+  @PreviewParameter(AccountStatusProvider::class) params: ColorParams<BankSyncAccountStatus>,
+) = PreviewWithColorParams(params) { AccountStatusChip(this) }
 
 private class AccountStatusProvider :
-  ColoredParameterProvider<BankSyncAccountStatus>(BankSyncAccountStatus.entries)
+  ColorParamsProvider<BankSyncAccountStatus>(BankSyncAccountStatus.entries)
 
 @Preview
 @Composable
 private fun PreviewProviderHeader(
-  @PreviewParameter(ProviderStatusProvider::class) params: ColoredParams<BankSyncProviderStatus>,
+  @PreviewParameter(ProviderStatusProvider::class) params: ColorParams<BankSyncProviderStatus>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     ProviderHeader(source = GoCardless, status = this)
   }
 
 private class ProviderStatusProvider :
-  ColoredParameterProvider<BankSyncProviderStatus>(BankSyncProviderStatus.entries)
+  ColorParamsProvider<BankSyncProviderStatus>(BankSyncProviderStatus.entries)
 
 @Preview
 @Composable
-private fun PreviewLoadingItem(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewLoadingItem(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { ShimmerBankSyncAccountItem() }

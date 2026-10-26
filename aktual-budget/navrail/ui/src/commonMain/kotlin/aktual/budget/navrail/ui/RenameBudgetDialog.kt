@@ -5,9 +5,9 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.disabled
 import aktual.core.ui.keyboardFocusRequester
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -78,9 +78,9 @@ private fun RenameBudgetDialogContent(
 @Preview
 @Composable
 private fun PreviewRenameBudgetDialog(
-  @PreviewParameter(RenameBudgetDialogProvider::class) params: ColoredParams<String>,
+    @PreviewParameter(RenameBudgetDialogProvider::class) params: ColorParams<String>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     RenameBudgetDialogContent(
       currentName = "My Budget",
       state = rememberTextFieldState(params.data),
@@ -90,4 +90,4 @@ private fun PreviewRenameBudgetDialog(
   }
 
 private class RenameBudgetDialogProvider :
-  ColoredParameterProvider<String>("My Budget", "Household", "")
+  ColorParamsProvider<String>("My Budget", "Household", "")

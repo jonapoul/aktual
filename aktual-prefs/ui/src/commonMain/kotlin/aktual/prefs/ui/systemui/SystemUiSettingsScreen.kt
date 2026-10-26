@@ -13,7 +13,7 @@ import aktual.core.icons.material.Security
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.theme.Colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.prefs.ui.BooleanPreferenceItem
@@ -110,7 +110,7 @@ private fun BarEffect.string(): String =
 @PortraitPreview
 @Composable
 private fun PreviewSystemUiSettingsScaffold(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     SystemUiSettingsScaffold(

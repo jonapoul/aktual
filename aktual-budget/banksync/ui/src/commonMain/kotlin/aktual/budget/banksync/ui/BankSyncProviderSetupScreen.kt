@@ -16,15 +16,15 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PasswordTransformation
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -317,9 +317,9 @@ private fun errorMessage(error: SetupError): String =
 @PortraitPreview
 @Composable
 private fun PreviewBankSyncProviderSetupScaffold(
-  @PreviewParameter(BankSyncProviderSetupStateProvider::class)
-  params: ColoredParams<BankSyncProviderSetupState>,
-) = PreviewWithColoredParams(params) { BankSyncProviderSetupScaffold(state = this, onAction = {}) }
+    @PreviewParameter(BankSyncProviderSetupStateProvider::class)
+  params: ColorParams<BankSyncProviderSetupState>,
+) = PreviewWithColorParams(params) { BankSyncProviderSetupScaffold(state = this, onAction = {}) }
 
 private fun previewState(
   source: AccountSyncSource,
@@ -339,7 +339,7 @@ private fun previewState(
   )
 
 private class BankSyncProviderSetupStateProvider :
-  ColoredParameterProvider<BankSyncProviderSetupState>(
+  ColorParamsProvider<BankSyncProviderSetupState>(
     previewState(GoCardless),
     previewState(GoCardless, isSaving = true),
     previewState(PluggyAi, error = NotAdmin),

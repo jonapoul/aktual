@@ -11,14 +11,14 @@ import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
@@ -426,7 +426,7 @@ private val PREVIEW_CATEGORY =
   )
 
 private class BudgetCategoryStateProvider :
-  ColoredParameterProvider<BudgetCategoryState>(
+  ColorParamsProvider<BudgetCategoryState>(
     PREVIEW_CATEGORY,
     PREVIEW_CATEGORY.copy(type = Tracking, selected = PREVIEW_EARLIER_MONTH),
     PREVIEW_CATEGORY.copy(history = persistentListOf(PREVIEW_HISTORY.last())),
@@ -436,8 +436,8 @@ private class BudgetCategoryStateProvider :
 @PortraitPreview
 @Composable
 private fun PreviewBudgetCategory(
-  @PreviewParameter(BudgetCategoryStateProvider::class) params: ColoredParams<BudgetCategoryState>,
+    @PreviewParameter(BudgetCategoryStateProvider::class) params: ColorParams<BudgetCategoryState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     BudgetCategoryScaffold(state = this, onBack = {}, onSelect = {}, onViewTransactions = {})
   }

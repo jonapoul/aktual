@@ -199,21 +199,21 @@ private fun DefaultIconButtonContent(
 
 @Preview
 @Composable
-private fun PreviewBare(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewBare(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     BareIconButton(imageVector = AktualIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
-private fun PreviewNormal(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewNormal(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     NormalIconButton(imageVector = AktualIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
-private fun PreviewPrimary(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewPrimary(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     PrimaryIconButton(imageVector = AktualIcons.Check, contentDescription = "OK", onClick = {})
   }

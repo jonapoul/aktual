@@ -6,7 +6,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.background
@@ -125,7 +125,7 @@ internal fun LogLevelRow(
 @Preview
 @Composable
 private fun PreviewLogLevelSheetContent(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     LogLevelSheetContent(

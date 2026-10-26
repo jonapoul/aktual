@@ -12,14 +12,14 @@ import aktual.core.nav.ListBudgetsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.ErrorBanner
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NoticeBanner
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
@@ -190,9 +190,9 @@ private fun ChangePasswordState.Failure.errorMessage(): String =
 @LandscapePreview
 @Composable
 private fun PreviewChangePassword(
-  @PreviewParameter(ChangePasswordProvider::class) params: ColoredParams<ChangePasswordParams>,
+    @PreviewParameter(ChangePasswordProvider::class) params: ColorParams<ChangePasswordParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     ChangePasswordScaffold(
       inputPassword1 = password1,
       inputPassword2 = password2,
@@ -213,7 +213,7 @@ private data class ChangePasswordParams(
 )
 
 private class ChangePasswordProvider :
-  ColoredParameterProvider<ChangePasswordParams>(
+  ColorParamsProvider<ChangePasswordParams>(
     ChangePasswordParams(password1 = Empty, password2 = Empty),
     ChangePasswordParams(showPasswords = true, passwordsMatch = true),
     ChangePasswordParams(state = Loading, passwordsMatch = true),

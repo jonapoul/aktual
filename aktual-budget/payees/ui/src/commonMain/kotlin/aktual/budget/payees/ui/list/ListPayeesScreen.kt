@@ -25,8 +25,8 @@ import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -35,7 +35,7 @@ import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -378,7 +378,7 @@ private fun PayeesList(
 }
 
 private class ListPayeesStateProvider :
-  ColoredParameterProvider<ListPayeesState>(
+  ColorParamsProvider<ListPayeesState>(
     Success(PayeesPreview.all),
     Success(PayeesPreview.all, unusedOnly = true),
     Empty,
@@ -389,5 +389,5 @@ private class ListPayeesStateProvider :
 @PortraitPreview
 @Composable
 private fun PreviewListPayeesScaffold(
-  @PreviewParameter(ListPayeesStateProvider::class) params: ColoredParams<ListPayeesState>,
-) = PreviewWithColoredParams(params) { ListPayeesScaffold(state = this, onAction = {}) }
+    @PreviewParameter(ListPayeesStateProvider::class) params: ColorParams<ListPayeesState>,
+) = PreviewWithColorParams(params) { ListPayeesScaffold(state = this, onAction = {}) }

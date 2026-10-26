@@ -19,7 +19,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
@@ -281,7 +281,7 @@ private val ItemHeight = 50.dp
 @LandscapePreview
 @TabletPreview
 @Composable
-private fun PreviewInfoScaffold(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewInfoScaffold(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     InfoScaffold(modifier = Modifier.fillMaxSize(), buildState = PreviewBuildState, onAction = {})
   }

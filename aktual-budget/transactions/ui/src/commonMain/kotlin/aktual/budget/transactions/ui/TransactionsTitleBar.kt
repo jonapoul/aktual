@@ -12,13 +12,13 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.LocalNavDrawerOpener
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NavDrawerIconButton
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.stringLong
@@ -164,9 +164,9 @@ private fun ConfirmDeleteAccountDialog(onConfirm: () -> Unit, onCancel: () -> Un
 @Preview
 @Composable
 private fun PreviewTransactionsTitleBar(
-  @PreviewParameter(TransactionsTitleBarProvider::class) params: ColoredParams<LoadedAccount>,
+    @PreviewParameter(TransactionsTitleBarProvider::class) params: ColorParams<LoadedAccount>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     TransactionsTitleBar(
       hazeState = rememberHazedTopBarState(),
       listState = rememberLazyListState(),
@@ -178,7 +178,7 @@ private fun PreviewTransactionsTitleBar(
   }
 
 private class TransactionsTitleBarProvider :
-  ColoredParameterProvider<LoadedAccount>(
+  ColorParamsProvider<LoadedAccount>(
     LoadedAccount.AllAccounts,
     LoadedAccount.Uncategorised,
     LoadedAccount.Loading,

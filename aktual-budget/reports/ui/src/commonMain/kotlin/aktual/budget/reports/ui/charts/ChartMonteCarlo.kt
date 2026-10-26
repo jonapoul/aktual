@@ -10,9 +10,9 @@ import aktual.core.model.percent
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.isInPreview
 import aktual.core.ui.redacted
@@ -320,9 +320,9 @@ private const val AGE_LABELS = 6
 @Preview
 @Composable
 private fun PreviewMonteCarloChart(
-  @PreviewParameter(MonteCarloChartProvider::class) params: ColoredParams<MonteCarloChartParams>,
+    @PreviewParameter(MonteCarloChartProvider::class) params: ColorParams<MonteCarloChartParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     MonteCarloChart(
       modifier =
         Modifier.background(colors.tableBackground, CardShape)
@@ -337,7 +337,7 @@ private fun PreviewMonteCarloChart(
 private data class MonteCarloChartParams(val data: MonteCarloData, val compact: Boolean)
 
 private class MonteCarloChartProvider :
-  ColoredParameterProvider<MonteCarloChartParams>(
+  ColorParamsProvider<MonteCarloChartParams>(
     MonteCarloChartParams(PREVIEW_MONTE_CARLO_DATA, compact = true),
     MonteCarloChartParams(PREVIEW_MONTE_CARLO_DATA, compact = false),
   )

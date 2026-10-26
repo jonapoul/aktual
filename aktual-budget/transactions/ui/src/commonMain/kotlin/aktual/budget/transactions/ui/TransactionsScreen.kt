@@ -18,14 +18,14 @@ import aktual.core.nav.EditTransactionNavigator
 import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
@@ -264,9 +264,9 @@ private fun rememberVisibleYear(
 @TabletPreview
 @DesktopPreview
 private fun PreviewTransactionsScaffold(
-  @PreviewParameter(DensityProvider::class) params: ColoredParams<TransactionsDensity>,
+    @PreviewParameter(DensityProvider::class) params: ColorParams<TransactionsDensity>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     TransactionsScaffold(
       pagingData = previewPagingData(PREVIEW_TRANSACTIONS),
       loadedAccount = AllAccounts,

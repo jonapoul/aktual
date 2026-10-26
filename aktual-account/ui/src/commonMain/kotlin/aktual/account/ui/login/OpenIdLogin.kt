@@ -3,7 +3,7 @@ package aktual.account.ui.login
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.FailureCard
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RounderCardShape
@@ -28,5 +28,5 @@ internal fun OpenIdLogin(modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
-private fun PreviewOpenIdLogin(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewOpenIdLogin(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { OpenIdLogin() }

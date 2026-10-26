@@ -6,10 +6,10 @@ import aktual.budget.tags.domain.TagLabel
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ChipSize
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParameters
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParameters
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.contrastingTextColor
 import androidx.compose.foundation.border
@@ -197,9 +197,9 @@ private val ChipInset = 1.dp
 @Preview
 @Composable
 private fun PreviewTaggedNotes(
-  @PreviewParameter(TaggedNotesProvider::class) params: ColoredParams<String>,
+  @PreviewParameter(TaggedNotesProvider::class) params: ColorParams<String>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     TaggedNotes(
       notes = this,
       tags = PREVIEW_TAGS,
@@ -213,7 +213,7 @@ private fun PreviewTaggedNotes(
 @Preview
 @Composable
 private fun PreviewTaggedNotesTruncated(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -238,7 +238,7 @@ private val PREVIEW_TAGS =
   )
 
 private class TaggedNotesProvider :
-  ColoredParameterProvider<String>(
+  ColorParamsProvider<String>(
     "Lunch with #food and #holiday",
     "#untagged colour",
     "No tags here",

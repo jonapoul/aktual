@@ -11,10 +11,10 @@ import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SearchScaffold
@@ -128,17 +128,17 @@ private fun ResultsList(
 @PortraitPreview
 @Composable
 private fun PreviewSearchLicensesScaffold(
-  @PreviewParameter(SearchLicensesScaffoldProvider::class)
-  params: ColoredParams<SearchLicensesParams>,
+    @PreviewParameter(SearchLicensesScaffoldProvider::class)
+  params: ColorParams<SearchLicensesParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     SearchLicensesScaffold(query = query, state = state, onAction = {})
   }
 
 private data class SearchLicensesParams(val query: String, val state: SearchLicensesState)
 
 private class SearchLicensesScaffoldProvider :
-  ColoredParameterProvider<SearchLicensesParams>(
+  ColorParamsProvider<SearchLicensesParams>(
     SearchLicensesParams(query = "", state = NoQuery),
     SearchLicensesParams(query = "xyz", state = NoResults),
     SearchLicensesParams(

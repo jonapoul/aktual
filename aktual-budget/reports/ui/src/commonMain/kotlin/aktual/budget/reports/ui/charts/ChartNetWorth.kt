@@ -10,9 +10,9 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedText
 import aktual.core.ui.isInPreview
 import alakazam.compose.VerticalSpacer
@@ -200,9 +200,9 @@ private suspend fun CartesianChartModelProducer.populate(data: NetWorthData, zoo
 @Preview
 @Composable
 private fun PreviewNetWorthChart(
-  @PreviewParameter(NetWorthChartProvider::class) params: ColoredParams<NetWorthChartParams>,
+    @PreviewParameter(NetWorthChartProvider::class) params: ColorParams<NetWorthChartParams>,
 ) =
-  PreviewWithColoredParams(params, isPrivacyEnabled = params.data.private) {
+  PreviewWithColorParams(params, isPrivacyEnabled = params.data.private) {
     NetWorthChart(
       modifier =
         Modifier.background(colors.tableBackground, CardShape)
@@ -221,7 +221,7 @@ private data class NetWorthChartParams(
 )
 
 private class NetWorthChartProvider :
-  ColoredParameterProvider<NetWorthChartParams>(
+  ColorParamsProvider<NetWorthChartParams>(
     NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = true, private = false),
     NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = true, private = true),
     NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = false, private = false),

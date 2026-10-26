@@ -19,13 +19,13 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.RowShape
 import aktual.core.ui.SearchMessage
@@ -427,9 +427,9 @@ private fun DeleteAllDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) =
 @PortraitPreview
 @Composable
 private fun PreviewLogFiles(
-  @PreviewParameter(LogFilesProvider::class) params: ColoredParams<LogFilesState>,
+    @PreviewParameter(LogFilesProvider::class) params: ColorParams<LogFilesState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     LogFilesScaffold(state = this, canShare = true, onAction = {})
   }
 
@@ -443,7 +443,7 @@ private val ShimmerIconSize = 24.dp
 private val PREVIEW_TODAY = LocalDate(2026, 10, 18)
 
 private class LogFilesProvider :
-  ColoredParameterProvider<LogFilesState>(
+  ColorParamsProvider<LogFilesState>(
     LogFilesState.Loaded(
       files =
         persistentListOf(

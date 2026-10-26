@@ -11,11 +11,11 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredBooleanParameters
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.BooleanColorParameters
+import aktual.core.ui.ColorParams
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NormalIconButton
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.contrastingTextColor
 import aktual.core.ui.textField
 import androidx.compose.animation.AnimatedVisibility
@@ -356,9 +356,9 @@ private fun Modifier.rotateVertically(): Modifier =
 @Preview
 @Composable
 private fun PreviewTagColorPicker(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
+  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     var color by remember { mutableStateOf<Color?>(TAG_COLOR_PRESETS.random()) }
     TagColorPicker(
       modifier = Modifier.padding(16.dp),

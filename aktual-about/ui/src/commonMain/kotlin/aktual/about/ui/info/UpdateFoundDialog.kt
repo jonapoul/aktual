@@ -5,7 +5,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -103,7 +103,7 @@ private fun TextContent(
 
 @Preview
 @Composable
-private fun PreviewUpdateFoundContent(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewUpdateFoundContent(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     UpdateFoundDialogContent(
       currentVersion = "v1.2.3",

@@ -14,15 +14,15 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarSpacing
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.hazedTopBar
@@ -351,12 +351,12 @@ private fun SuccessContentRow(title: String, value: String, modifier: Modifier =
 @PortraitPreview
 @Composable
 private fun PreviewMetricsScaffold(
-  @PreviewParameter(MetricsStateProvider::class) params: ColoredParams<MetricsState>,
-) = PreviewWithColoredParams(params) { MetricsScaffold(state = this, onAction = {}) }
+    @PreviewParameter(MetricsStateProvider::class) params: ColorParams<MetricsState>,
+) = PreviewWithColorParams(params) { MetricsScaffold(state = this, onAction = {}) }
 
 @Suppress("MagicNumber")
 private class MetricsStateProvider :
-  ColoredParameterProvider<MetricsState>(
+  ColorParamsProvider<MetricsState>(
     Loading,
     Disconnected,
     MetricsState.Failure("Something broke"),

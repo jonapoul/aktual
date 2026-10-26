@@ -7,9 +7,9 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.isInPreview
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
@@ -217,9 +217,9 @@ private suspend fun CartesianChartModelProducer.populate(data: CrossoverData, zo
 @Preview
 @Composable
 private fun PreviewCrossoverChart(
-  @PreviewParameter(CrossoverChartProvider::class) params: ColoredParams<CrossoverChartParams>,
+    @PreviewParameter(CrossoverChartProvider::class) params: ColorParams<CrossoverChartParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     CrossoverChart(
       modifier =
         Modifier.background(colors.tableBackground, CardShape)
@@ -234,7 +234,7 @@ private fun PreviewCrossoverChart(
 private data class CrossoverChartParams(val data: CrossoverData, val compact: Boolean)
 
 private class CrossoverChartProvider :
-  ColoredParameterProvider<CrossoverChartParams>(
+  ColorParamsProvider<CrossoverChartParams>(
     CrossoverChartParams(PREVIEW_CROSSOVER_DATA, compact = true),
     CrossoverChartParams(PREVIEW_CROSSOVER_DATA, compact = false),
     CrossoverChartParams(

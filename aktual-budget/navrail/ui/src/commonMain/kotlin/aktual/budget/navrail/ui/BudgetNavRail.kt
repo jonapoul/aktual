@@ -46,7 +46,7 @@ import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.LocalNavDrawerOpener
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.LocalSnackbars
@@ -718,7 +718,7 @@ private fun BudgetMenu(
 
 @TabletPreview
 @Composable
-private fun PreviewSideNavRail(@PreviewParameter(ColoredParameters::class) colors: Colors) {
+private fun PreviewSideNavRail(@PreviewParameter(ColorParameters::class) colors: Colors) {
   PreviewWithColors(colors) {
     Row(modifier = Modifier.fillMaxSize()) {
       SideNavRail(selectedTab = Transactions, onSelectTab = {}, onMenuClick = {})

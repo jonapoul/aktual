@@ -14,15 +14,15 @@ import aktual.core.nav.EditTagNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.Dimens.Large
 import aktual.core.ui.Dimens.ListItemSpacing
 import aktual.core.ui.Dimens.Medium
 import aktual.core.ui.Dimens.ScreenPadding
 import aktual.core.ui.Dimens.VeryLarge
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SearchScaffold
@@ -187,16 +187,16 @@ private fun ResultItem(
 @PortraitPreview
 @Composable
 private fun PreviewSearchTagsScaffold(
-  @PreviewParameter(SearchTagsScaffoldProvider::class) params: ColoredParams<SearchTagsParams>,
+    @PreviewParameter(SearchTagsScaffoldProvider::class) params: ColorParams<SearchTagsParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     SearchTagsScaffold(query = query, state = state, onAction = {})
   }
 
 private data class SearchTagsParams(val query: String, val state: SearchTagsState)
 
 private class SearchTagsScaffoldProvider :
-  ColoredParameterProvider<SearchTagsParams>(
+  ColorParamsProvider<SearchTagsParams>(
     SearchTagsParams(query = "", state = NoQuery),
     SearchTagsParams(query = "xyz", state = NoResults),
     SearchTagsParams(

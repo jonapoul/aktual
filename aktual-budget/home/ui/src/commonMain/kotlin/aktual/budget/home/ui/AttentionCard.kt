@@ -20,9 +20,9 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -320,9 +320,9 @@ private fun OverspentContent(
 @Preview
 @Composable
 private fun PreviewAttentionCard(
-  @PreviewParameter(AttentionCardStateProvider::class) params: ColoredParams<AttentionCardState>,
+    @PreviewParameter(AttentionCardStateProvider::class) params: ColorParams<AttentionCardState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     AttentionCard(
       modifier = Modifier.padding(16.dp),
       state = this,
@@ -333,9 +333,9 @@ private fun PreviewAttentionCard(
 @Preview
 @Composable
 private fun PreviewOverspentContent(
-  @PreviewParameter(OverspentProvider::class) params: ColoredParams<AttentionItem.Overspent>,
+    @PreviewParameter(OverspentProvider::class) params: ColorParams<AttentionItem.Overspent>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     OverspentContent(categories)
   }
 
@@ -358,7 +358,7 @@ internal val PREVIEW_ATTENTION =
   )
 
 private class AttentionCardStateProvider :
-  ColoredParameterProvider<AttentionCardState>(
+  ColorParamsProvider<AttentionCardState>(
     PREVIEW_ATTENTION,
     Loaded(persistentListOf(AttentionItem.Uncategorised(count = 1))),
     Loaded(
@@ -372,4 +372,4 @@ private class AttentionCardStateProvider :
   )
 
 private class OverspentProvider :
-  ColoredParameterProvider<AttentionItem.Overspent>(PREVIEW_OVERSPENT)
+  ColorParamsProvider<AttentionItem.Overspent>(PREVIEW_OVERSPENT)

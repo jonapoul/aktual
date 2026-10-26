@@ -189,7 +189,7 @@ private val DROPDOWN_CONTENT_PADDING =
 
 @Preview
 @Composable
-private fun PreviewDropDownMenu(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewDropDownMenu(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     var value by remember { mutableStateOf("B") }
     val options = persistentListOf("A", "B", "C", "D")
@@ -203,7 +203,7 @@ private fun PreviewDropDownMenu(@PreviewParameter(ColoredParameters::class) colo
 @Preview
 @Composable
 private fun PreviewDropDownMenuForcedWidth(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     var value by remember { mutableStateOf("B") }
@@ -219,7 +219,7 @@ private fun PreviewDropDownMenuForcedWidth(
 @Preview
 @Composable
 @Suppress("ElseCaseInsteadOfExhaustiveWhen")
-private fun PreviewDropDownMenuEnum(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewDropDownMenuEnum(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     var value by remember { mutableStateOf(DateRangeType.YearToDate) }
     val options = DateRangeType.known
@@ -240,7 +240,7 @@ private fun PreviewDropDownMenuEnum(@PreviewParameter(ColoredParameters::class) 
 
 @Preview
 @Composable
-private fun PreviewDropDownMenuLonger(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewDropDownMenuLonger(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     var value by remember { mutableStateOf("Much longer item") }
     val options = persistentListOf("Much longer item", "A", "B")

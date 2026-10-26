@@ -21,7 +21,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColors
@@ -472,7 +472,7 @@ private val TagWidth = 200.dp
 
 @Preview(widthDp = 1280, heightDp = 760)
 @Composable
-private fun PreviewLogsWide(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewLogsWide(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     LogsWideScaffold(
       files =

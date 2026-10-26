@@ -6,11 +6,11 @@ import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toSignedInputText
 import aktual.core.l10n.Strings
 import aktual.core.ui.AmountField
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.EditorSheet
 import aktual.core.ui.NormalTextButton
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.stringLong
@@ -123,10 +123,10 @@ internal fun QuickAction.string(): String =
     CopyToYearEnd -> Strings.budgetingCopyYearEnd
   }
 
-private class QuickActionsProvider : ColoredParameterProvider<BudgetType>(Envelope, Tracking)
+private class QuickActionsProvider : ColorParamsProvider<BudgetType>(Envelope, Tracking)
 
 @Preview
 @Composable
 private fun PreviewQuickActionButtons(
-  @PreviewParameter(QuickActionsProvider::class) params: ColoredParams<BudgetType>,
-) = PreviewWithColoredParams(params) { QuickActionButtons(type = this, onClick = {}) }
+    @PreviewParameter(QuickActionsProvider::class) params: ColorParams<BudgetType>,
+) = PreviewWithColorParams(params) { QuickActionButtons(type = this, onClick = {}) }

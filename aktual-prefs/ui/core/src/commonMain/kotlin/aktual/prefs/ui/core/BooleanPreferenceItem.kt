@@ -3,9 +3,9 @@ package aktual.prefs.ui.core
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.InformationOutline
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.switch
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
@@ -58,10 +58,10 @@ fun BooleanPreferenceItem(
 @Preview
 @Composable
 private fun PreviewBooleanPreferenceItem(
-  @PreviewParameter(BooleanPreferenceItemProvider::class)
-  params: ColoredParams<BooleanPreferenceItemParams>,
+    @PreviewParameter(BooleanPreferenceItemProvider::class)
+  params: ColorParams<BooleanPreferenceItemParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     BooleanPreferenceItem(
       value = value,
       onValueChange = {},
@@ -81,7 +81,7 @@ private data class BooleanPreferenceItemParams(
 )
 
 private class BooleanPreferenceItemProvider :
-  ColoredParameterProvider<BooleanPreferenceItemParams>(
+  ColorParamsProvider<BooleanPreferenceItemParams>(
     BooleanPreferenceItemParams(
       value = true,
       title = "Change the doodad",

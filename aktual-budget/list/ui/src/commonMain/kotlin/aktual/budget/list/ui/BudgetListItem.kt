@@ -7,9 +7,9 @@ import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
@@ -141,9 +141,9 @@ private fun budgetDescription(budget: Budget) =
 @Preview
 @Composable
 private fun PreviewBudgetListItem(
-  @PreviewParameter(BudgetListItemProvider::class) params: ColoredParams<BudgetListItemParams>,
+    @PreviewParameter(BudgetListItemProvider::class) params: ColorParams<BudgetListItemParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     BudgetListItem(
       modifier = width?.let { w -> Modifier.width(w) } ?: Modifier.fillMaxWidth(),
       budget = budget,
@@ -157,7 +157,7 @@ private fun PreviewBudgetListItem(
 private data class BudgetListItemParams(val budget: Budget, val width: Dp? = null)
 
 private class BudgetListItemProvider :
-  ColoredParameterProvider<BudgetListItemParams>(
+  ColorParamsProvider<BudgetListItemParams>(
     BudgetListItemParams(PreviewBudgetSynced),
     BudgetListItemParams(PreviewBudgetSynced, width = 300.dp),
     BudgetListItemParams(PreviewBudgetBroken),

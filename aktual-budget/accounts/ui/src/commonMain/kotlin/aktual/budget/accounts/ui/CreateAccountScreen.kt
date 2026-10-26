@@ -12,12 +12,12 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AmountField
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -262,11 +262,11 @@ private const val MINUS = "−"
 @PortraitPreview
 @Composable
 private fun PreviewCreateAccountScreen(
-  @PreviewParameter(CreateAccountStateProvider::class) params: ColoredParams<CreateAccountState>,
-) = PreviewWithColoredParams(params) { CreateAccountScaffold(state = this, onAction = {}) }
+    @PreviewParameter(CreateAccountStateProvider::class) params: ColorParams<CreateAccountState>,
+) = PreviewWithColorParams(params) { CreateAccountScaffold(state = this, onAction = {}) }
 
 private class CreateAccountStateProvider :
-  ColoredParameterProvider<CreateAccountState>(
+  ColorParamsProvider<CreateAccountState>(
     CreateAccountState(),
     CreateAccountState(offBudget = true, isNegative = true, canCreate = true),
     CreateAccountState(duplicateName = "Savings", isBalanceValid = false),

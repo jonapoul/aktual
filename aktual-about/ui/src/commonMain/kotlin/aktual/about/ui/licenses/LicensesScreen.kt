@@ -15,13 +15,13 @@ import aktual.core.nav.SearchLicensesNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -224,9 +224,9 @@ private fun ErrorContent(
 @PortraitPreview
 @Composable
 private fun PreviewLicenses(
-  @PreviewParameter(LicensesParamsProvider::class) params: ColoredParams<LicensesState>,
+    @PreviewParameter(LicensesParamsProvider::class) params: ColorParams<LicensesState>,
 ) {
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     LicensesScaffold(state = this, sorting = ByArtifact, showSortSheet = false, onAction = {})
   }
 }
@@ -239,7 +239,7 @@ private val LOADED_STATE =
   )
 
 private class LicensesParamsProvider :
-  ColoredParameterProvider<LicensesState>(
+  ColorParamsProvider<LicensesState>(
     LicensesState.Error("Something broke lol! Here's some more shite to show how it looks"),
     NoneFound,
     Loading,

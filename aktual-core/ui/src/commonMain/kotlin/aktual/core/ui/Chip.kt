@@ -156,8 +156,8 @@ fun Chip(
 
 @Preview
 @Composable
-private fun PreviewChip(@PreviewParameter(ChipProvider::class) params: ColoredParams<String>) =
-  PreviewWithColoredParams(params) {
+private fun PreviewChip(@PreviewParameter(ChipProvider::class) params: ColorParams<String>) =
+  PreviewWithColorParams(params) {
     val text = this
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       Chip(text = text)
@@ -183,7 +183,7 @@ private fun PreviewChip(@PreviewParameter(ChipProvider::class) params: ColoredPa
   }
 
 private class ChipProvider :
-  ColoredParameterProvider<String>(
+  ColorParamsProvider<String>(
     "Tesco",
     "A deliberately long payee name to check how the chip truncates its text",
   )

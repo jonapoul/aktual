@@ -27,8 +27,8 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -37,7 +37,7 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.errorButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -501,9 +501,9 @@ private fun fieldIcon(field: MappedField): ImageVector =
 @PortraitPreview
 @Composable
 private fun PreviewBankSyncSettingsScaffold(
-  @PreviewParameter(BankSyncSettingsStateProvider::class)
-  params: ColoredParams<BankSyncSettingsState>,
-) = PreviewWithColoredParams(params) { BankSyncSettingsScaffold(state = this, onAction = {}) }
+    @PreviewParameter(BankSyncSettingsStateProvider::class)
+  params: ColorParams<BankSyncSettingsState>,
+) = PreviewWithColorParams(params) { BankSyncSettingsScaffold(state = this, onAction = {}) }
 
 private val PreviewEditing =
   BankSyncSettingsState.Editing(
@@ -544,7 +544,7 @@ private val PreviewEditing =
   )
 
 private class BankSyncSettingsStateProvider :
-  ColoredParameterProvider<BankSyncSettingsState>(
+  ColorParamsProvider<BankSyncSettingsState>(
     PreviewEditing,
     PreviewEditing.copy(fields = null, hasChanges = false),
     PreviewEditing.copy(importTransactions = false),

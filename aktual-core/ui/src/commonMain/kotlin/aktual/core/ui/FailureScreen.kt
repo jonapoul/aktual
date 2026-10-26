@@ -116,9 +116,9 @@ data class FailureAction(
 @Preview
 @Composable
 private fun PreviewFailureCard(
-  @PreviewParameter(FailureScreenProvider::class) params: ColoredParams<FailureScreenParams>,
+    @PreviewParameter(FailureScreenProvider::class) params: ColorParams<FailureScreenParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     FailureCard(
       title = title,
       reason = reason,
@@ -130,9 +130,9 @@ private fun PreviewFailureCard(
 @PortraitPreview
 @Composable
 private fun PreviewFailureScreen(
-  @PreviewParameter(FailureScreenProvider::class) params: ColoredParams<FailureScreenParams>,
+    @PreviewParameter(FailureScreenProvider::class) params: ColorParams<FailureScreenParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     FailureScreen(
       title = title,
       reason = reason,
@@ -150,7 +150,7 @@ private data class FailureScreenParams(
 )
 
 private class FailureScreenProvider :
-  ColoredParameterProvider<FailureScreenParams>(
+  ColorParamsProvider<FailureScreenParams>(
     FailureScreenParams(reason = "Some error", background = { buttonPrimaryBackground }),
     FailureScreenParams(
       reason =

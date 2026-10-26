@@ -20,11 +20,11 @@ import aktual.budget.reports.vm.montecarlo.previewMonteCarloState
 import aktual.budget.reports.vm.surplusPot
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualExposedDropDownMenu
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
@@ -203,9 +203,9 @@ private val TAB_SPACING = 6.dp
 @PortraitPreview
 @Composable
 private fun PreviewMonteCarloConfiguration(
-  @PreviewParameter(ConfigTabProvider::class) params: ColoredParams<ConfigTab>,
+    @PreviewParameter(ConfigTabProvider::class) params: ColorParams<ConfigTab>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     MonteCarloConfiguration(
       state = previewMonteCarloState(config = PREVIEW_CONFIG),
       onAction = {},
@@ -214,7 +214,7 @@ private fun PreviewMonteCarloConfiguration(
   }
 
 private class ConfigTabProvider :
-  ColoredParameterProvider<ConfigTab>(
+  ColorParamsProvider<ConfigTab>(
     Plan,
     Pots,
     Income,

@@ -7,11 +7,11 @@ import aktual.core.model.ThemeId
 import aktual.core.theme.DarkColors
 import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualSlidingToggleButton
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.isCompactWidth
 import aktual.prefs.ui.core.BasicPreferenceItem
 import aktual.prefs.vm.ListPreference
@@ -87,10 +87,10 @@ private fun DarkThemeContent(
 @DesktopPreview
 @Composable
 private fun PreviewDarkColorsPreference(
-  @PreviewParameter(DarkThemePreferenceProvider::class)
-  params: ColoredParams<DarkThemePreferenceParams>,
+    @PreviewParameter(DarkThemePreferenceProvider::class)
+  params: ColorParams<DarkThemePreferenceParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     DarkThemePreference(
       onAction = {},
       preference =
@@ -105,7 +105,7 @@ private fun PreviewDarkColorsPreference(
 private data class DarkThemePreferenceParams(val selected: ThemeId, val enabled: Boolean)
 
 private class DarkThemePreferenceProvider :
-  ColoredParameterProvider<DarkThemePreferenceParams>(
+  ColorParamsProvider<DarkThemePreferenceParams>(
     DarkThemePreferenceParams(selected = DarkColors.id, enabled = true),
     DarkThemePreferenceParams(selected = DarkColors.id, enabled = false),
     DarkThemePreferenceParams(selected = MidnightColors.id, enabled = true),

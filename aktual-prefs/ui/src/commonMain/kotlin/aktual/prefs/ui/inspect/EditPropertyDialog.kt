@@ -9,7 +9,7 @@ import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.disabled
 import aktual.prefs.vm.inspect.ThemeProperty
@@ -154,7 +154,7 @@ private val SWATCH_SIZE = 32.dp
 
 @Preview
 @Composable
-private fun PreviewEditPropertyDialog(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewEditPropertyDialog(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     EditPropertyDialogContent(
       property = ThemeProperty(name = "tableRowBackgroundAlternate", color = Color(0xFF2B8FED)),

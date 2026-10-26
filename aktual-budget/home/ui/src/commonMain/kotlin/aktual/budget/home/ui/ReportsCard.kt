@@ -29,9 +29,9 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
@@ -372,9 +372,9 @@ internal val PREVIEW_REPORT_CHOICES =
 @Preview
 @Composable
 private fun PreviewReportsCard(
-  @PreviewParameter(ReportsCardStateProvider::class) params: ColoredParams<ReportsCardState>,
+    @PreviewParameter(ReportsCardStateProvider::class) params: ColorParams<ReportsCardState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     ReportsCard(
       modifier = Modifier.padding(16.dp),
       state = this,
@@ -386,23 +386,23 @@ private fun PreviewReportsCard(
 @Preview
 @Composable
 private fun PreviewPinnedContent(
-  @PreviewParameter(PinnedContentProvider::class) params: ColoredParams<Loaded>,
-) = PreviewWithColoredParams(params) { PinnedContent(state = this, onAction = {}, onPick = {}) }
+    @PreviewParameter(PinnedContentProvider::class) params: ColorParams<Loaded>,
+) = PreviewWithColorParams(params) { PinnedContent(state = this, onAction = {}, onPick = {}) }
 
 @Preview
 @Composable
 private fun PreviewPickerContent(
-  @PreviewParameter(PickerContentProvider::class) params: ColoredParams<ImmutableList<ReportPage>>,
+    @PreviewParameter(PickerContentProvider::class) params: ColorParams<ImmutableList<ReportPage>>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     PickerContent(choices = this, pinned = PREVIEW_REPORTS.reports, onBack = {}, onPick = {})
   }
 
 private class ReportsCardStateProvider :
-  ColoredParameterProvider<ReportsCardState>(PREVIEW_REPORTS, Loading, Failed)
+  ColorParamsProvider<ReportsCardState>(PREVIEW_REPORTS, Loading, Failed)
 
 private class PinnedContentProvider :
-  ColoredParameterProvider<Loaded>(
+  ColorParamsProvider<Loaded>(
     PREVIEW_REPORTS,
     Loaded(
       reports =
@@ -416,4 +416,4 @@ private class PinnedContentProvider :
   )
 
 private class PickerContentProvider :
-  ColoredParameterProvider<ImmutableList<ReportPage>>(PREVIEW_REPORT_CHOICES, persistentListOf())
+  ColorParamsProvider<ImmutableList<ReportPage>>(PREVIEW_REPORT_CHOICES, persistentListOf())

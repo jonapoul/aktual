@@ -129,7 +129,7 @@ private fun ClearButton(tint: Color, onClick: () -> Unit, modifier: Modifier = M
 private data class TextInputPreviewParams(val initialText: String, val clearable: Boolean = false)
 
 private class TextInputPreviewProvider :
-  ColoredParameterProvider<TextInputPreviewParams>(
+  ColorParamsProvider<TextInputPreviewParams>(
     TextInputPreviewParams(initialText = ""),
     TextInputPreviewParams(initialText = "I'm full"),
     TextInputPreviewParams(initialText = "I'm full", clearable = true),
@@ -138,9 +138,9 @@ private class TextInputPreviewProvider :
 @Preview
 @Composable
 private fun PreviewAktualTextField(
-  @PreviewParameter(TextInputPreviewProvider::class) params: ColoredParams<TextInputPreviewParams>,
+    @PreviewParameter(TextInputPreviewProvider::class) params: ColorParams<TextInputPreviewParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     AktualTextField(
       state = rememberTextFieldState(initialText = initialText),
       placeholderText = "Placeholder",

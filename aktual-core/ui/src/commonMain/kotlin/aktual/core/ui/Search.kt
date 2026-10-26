@@ -219,5 +219,5 @@ fun AnnotatedString.highlighted(query: String): AnnotatedString {
 
 @Preview
 @Composable
-private fun PreviewSearchMessage(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewSearchMessage(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { SearchMessage(text = "Enter some text to search") }

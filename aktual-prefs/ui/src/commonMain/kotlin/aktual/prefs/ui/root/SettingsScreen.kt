@@ -19,7 +19,7 @@ import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavigator
 import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.theme.Colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.prefs.ui.SettingsListScaffold
@@ -117,5 +117,5 @@ private fun SettingsScaffold(onAction: SettingsActionHandler) {
 
 @PortraitPreview
 @Composable
-private fun PreviewSettingsScaffold(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewSettingsScaffold(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { SettingsScaffold(onAction = {}) }

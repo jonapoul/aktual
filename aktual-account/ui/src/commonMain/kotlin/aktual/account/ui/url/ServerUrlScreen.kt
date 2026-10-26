@@ -13,12 +13,12 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.ErrorBanner
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
@@ -205,10 +205,10 @@ private fun ServerUrlContent(
 @Composable
 @PortraitPreview
 private fun PreviewServerUrlScaffold(
-  @PreviewParameter(ServerUrlScaffoldProvider::class)
-  params: ColoredParams<ServerUrlScaffoldParams>,
+    @PreviewParameter(ServerUrlScaffoldProvider::class)
+  params: ColorParams<ServerUrlScaffoldParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     ServerUrlScaffold(
       url = url,
       protocol = protocol,
@@ -228,7 +228,7 @@ private data class ServerUrlScaffoldParams(
 )
 
 private class ServerUrlScaffoldProvider :
-  ColoredParameterProvider<ServerUrlScaffoldParams>(
+  ColorParamsProvider<ServerUrlScaffoldParams>(
     ServerUrlScaffoldParams(
       url = "",
       protocol = Https,

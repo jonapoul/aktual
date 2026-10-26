@@ -13,9 +13,9 @@ import aktual.core.theme.BottomBarThemeAttrs
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomBarState.Visible
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -221,9 +221,9 @@ private fun SyncState.tint(colors: Colors, attrs: BottomBarThemeAttrs) =
 @Preview
 @Composable
 private fun PreviewBottomBar(
-  @PreviewParameter(BottomBarProvider::class) params: ColoredParams<BottomBarParams>,
+    @PreviewParameter(BottomBarProvider::class) params: ColorParams<BottomBarParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     BottomStatusBar(
       modifier = Modifier.fillMaxWidth(),
       state = Visible(state, syncState, budgetName),
@@ -246,7 +246,7 @@ private data class BottomBarParams(
 
 @Suppress("StringLiteralDuplication")
 private class BottomBarProvider :
-  ColoredParameterProvider<BottomBarParams>(
+  ColorParamsProvider<BottomBarParams>(
     BottomBarParams(state = Success, budgetName = "My Budget"),
     BottomBarParams(state = Success, syncState = NoToken, budgetName = "My Budget"),
     BottomBarParams(state = Success, syncState = SyncFailed("abc"), budgetName = "My Budget"),

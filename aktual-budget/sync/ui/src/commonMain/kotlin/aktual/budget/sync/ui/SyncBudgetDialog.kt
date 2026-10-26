@@ -16,10 +16,10 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
 import aktual.core.ui.MY_PHONE_WIDTH_DP
 import aktual.core.ui.PasswordTransformation
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.checkbox
 import aktual.core.ui.disabled
 import aktual.core.ui.keyboardFocusRequester
@@ -359,9 +359,9 @@ private fun buildPasswordText(colors: Colors, onAction: SyncBudgetActionHandler)
 @Preview(widthDp = MY_PHONE_WIDTH_DP, heightDp = 500)
 @Composable
 private fun PreviewSyncBudgetDialog(
-  @PreviewParameter(SyncBudgetDialogProvider::class) params: ColoredParams<SyncBudgetDialogParams>,
+    @PreviewParameter(SyncBudgetDialogProvider::class) params: ColorParams<SyncBudgetDialogParams>,
 ) {
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     SyncBudgetDialog(
       overallState = overallState,
       stepStates = stepStates,

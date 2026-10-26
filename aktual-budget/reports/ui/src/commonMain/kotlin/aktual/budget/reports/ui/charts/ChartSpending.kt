@@ -9,9 +9,9 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.WrapWidthTable
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
@@ -292,9 +292,9 @@ private fun xAxisFormatter() = remember {
 @Preview
 @Composable
 private fun PreviewSpendingChart(
-  @PreviewParameter(SpendingChartProvider::class) params: ColoredParams<SpendingChartParams>,
+    @PreviewParameter(SpendingChartProvider::class) params: ColorParams<SpendingChartParams>,
 ) =
-  PreviewWithColoredParams(params, isPrivacyEnabled = params.data.private) {
+  PreviewWithColorParams(params, isPrivacyEnabled = params.data.private) {
     SpendingChart(
       modifier =
         Modifier.background(colors.tableBackground, CardShape)
@@ -313,7 +313,7 @@ private data class SpendingChartParams(
 )
 
 private class SpendingChartProvider :
-  ColoredParameterProvider<SpendingChartParams>(
+  ColorParamsProvider<SpendingChartParams>(
     SpendingChartParams(JUL_2025, compact = false),
     SpendingChartParams(JUL_2025, compact = true),
   )

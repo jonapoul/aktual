@@ -2,9 +2,9 @@ package aktual.about.ui.storage
 
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -81,9 +81,9 @@ private fun hslToArgb(h: Float, s: Float, l: Float): Long {
 @Preview
 @Composable
 private fun PreviewDistinctColors(
-  @PreviewParameter(CountParameters::class) params: ColoredParams<Int>,
+    @PreviewParameter(CountParameters::class) params: ColorParams<Int>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     val colors = rememberDistinctColors(count = this, colors = params.colors)
 
     Column {
@@ -103,4 +103,4 @@ private fun PreviewDistinctColors(
     }
   }
 
-private class CountParameters : ColoredParameterProvider<Int>(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+private class CountParameters : ColorParamsProvider<Int>(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)

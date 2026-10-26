@@ -33,8 +33,8 @@ import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -42,7 +42,7 @@ import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.TextFieldShape
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -485,9 +485,9 @@ private inline fun Field(
 @PortraitPreview
 @Composable
 private fun PreviewEditPayeeScreen(
-  @PreviewParameter(EditPayeeStateProvider::class) params: ColoredParams<EditPayeeState>,
+    @PreviewParameter(EditPayeeStateProvider::class) params: ColorParams<EditPayeeState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     EditPayeeScaffold(
       state = this,
       isFavorite = (this as? Editing)?.payee?.isFavorite == true,
@@ -500,7 +500,7 @@ private fun PreviewEditPayeeScreen(
   }
 
 private class EditPayeeStateProvider :
-  ColoredParameterProvider<EditPayeeState>(
+  ColorParamsProvider<EditPayeeState>(
     Loading,
     Editing(PayeesPreview.tesco),
     Editing(PayeesPreview.transfer),

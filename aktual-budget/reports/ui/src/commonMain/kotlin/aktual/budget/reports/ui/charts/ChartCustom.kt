@@ -25,9 +25,9 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedText
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.background
@@ -227,9 +227,9 @@ private fun dateRange(dates: CustomReportDates): String =
 @Preview
 @Composable
 private fun PreviewCustomChart(
-  @PreviewParameter(CustomChartProvider::class) params: ColoredParams<CustomChartParams>,
+    @PreviewParameter(CustomChartProvider::class) params: ColorParams<CustomChartParams>,
 ) =
-  PreviewWithColoredParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
+  PreviewWithColorParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CustomChart(
       modifier =
         Modifier.background(colors.tableBackground, CardShape)
@@ -248,7 +248,7 @@ private data class CustomChartParams(
 )
 
 private class CustomChartProvider :
-  ColoredParameterProvider<CustomChartParams>(
+  ColorParamsProvider<CustomChartParams>(
     CustomChartParams(PREVIEW_CUSTOM_DATA, compact = false),
     CustomChartParams(PREVIEW_CUSTOM_DATA, compact = false, isPrivacyEnabled = true),
     CustomChartParams(PREVIEW_CUSTOM_DATA, compact = true),

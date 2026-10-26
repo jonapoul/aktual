@@ -172,7 +172,7 @@ fun WrapWidthTable(
 
 @Preview(widthDp = 500)
 @Composable
-private fun PreviewWeightedTable(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewWeightedTable(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     WeightedTable(modifier = Modifier.wrapContentSize(), data = PREVIEW_CELLS)
   }
@@ -180,7 +180,7 @@ private fun PreviewWeightedTable(@PreviewParameter(ColoredParameters::class) col
 @Preview(widthDp = 700)
 @Composable
 private fun PreviewWeightedTableWithStylesAndPadding(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     WeightedTable(
@@ -205,7 +205,7 @@ private fun PreviewWeightedTableWithStylesAndPadding(
 
 @Preview
 @Composable
-private fun PreviewWrapWidth(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewWrapWidth(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     WrapWidthTable(modifier = Modifier.wrapContentSize(), data = PREVIEW_CELLS)
   }
@@ -213,7 +213,7 @@ private fun PreviewWrapWidth(@PreviewParameter(ColoredParameters::class) colors:
 @Preview(widthDp = 900)
 @Composable
 private fun PreviewWrapWidthWithStylesAndPadding(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     WrapWidthTable(

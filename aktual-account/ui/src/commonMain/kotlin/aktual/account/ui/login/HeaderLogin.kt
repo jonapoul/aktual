@@ -3,10 +3,10 @@ package aktual.account.ui.login
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.ColorParams
 import aktual.core.ui.NormalTextButton
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RounderCardShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -65,9 +65,9 @@ internal fun HeaderLogin(
 @Preview
 @Composable
 private fun PreviewHeaderLogin(
-  @PreviewParameter(HeaderLoginProvider::class) params: ColoredParams<HeaderLoginParams>,
+    @PreviewParameter(HeaderLoginProvider::class) params: ColorParams<HeaderLoginParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     HeaderLogin(isLoading = isLoading, hasFailure = hasFailure, onAction = {})
   }
 
@@ -77,7 +77,7 @@ private data class HeaderLoginParams(
 )
 
 private class HeaderLoginProvider :
-  ColoredParameterProvider<HeaderLoginParams>(
+  ColorParamsProvider<HeaderLoginParams>(
     HeaderLoginParams(isLoading = false, hasFailure = false),
     HeaderLoginParams(isLoading = true, hasFailure = false),
     HeaderLoginParams(isLoading = false, hasFailure = true),

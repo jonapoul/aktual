@@ -118,7 +118,7 @@ private fun loadingIcon(color: Color): ImageVector =
 
 @Preview
 @Composable
-private fun PreviewCheckUpdatesContent(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewCheckUpdatesContent(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     Box(modifier = Modifier.size(50.dp), contentAlignment = Center) { AnimatedLoading() }
   }

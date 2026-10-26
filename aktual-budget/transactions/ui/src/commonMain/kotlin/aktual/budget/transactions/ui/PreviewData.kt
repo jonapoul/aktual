@@ -6,7 +6,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.transactions.vm.Transaction
-import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColorParamsProvider
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
@@ -41,7 +41,7 @@ internal fun emptyPreviewPagingData(loading: Boolean) =
   previewPagingData(transactions = persistentListOf(), loading = loading)
 
 internal class DensityProvider :
-  ColoredParameterProvider<TransactionsDensity>(Comfortable, Compact, Dense)
+  ColorParamsProvider<TransactionsDensity>(Comfortable, Compact, Dense)
 
 internal val PREVIEW_DATE = LocalDate(2025, JUNE, 9)
 internal val PREVIEW_BALANCE = Amount(3412.60)
