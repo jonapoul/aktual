@@ -33,6 +33,7 @@ import aktual.core.ui.AccountSyncDot
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.ChipSize
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalPrivacyEnabled
@@ -62,8 +63,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -329,7 +328,7 @@ private fun BalanceText(
   )
 
 private fun Modifier.sidebarRow(theme: Colors, selected: Boolean, onClick: () -> Unit): Modifier =
-  clip(CircleShape)
+  clip(SelectedShape)
     .background(if (selected) theme.sidebarItemTextSelected.disabled else Transparent)
     .selectable(selected = selected, onClick = onClick)
 
@@ -448,7 +447,7 @@ private fun DrawerHeader(
     modifier =
       modifier
         .fillMaxWidth()
-        .clip(RoundedCornerShape(16.dp))
+        .clip(SelectedShape)
         .background(colors.sidebarItemBackgroundHover)
         .padding(start = 16.dp, top = 8.dp, end = 4.dp, bottom = 8.dp),
     verticalAlignment = CenterVertically,
@@ -495,6 +494,8 @@ private val DrawerItemHeight = 44.dp
 // Aktual icons are 20dp and Material ones 24dp, so pad them to the same width to line up labels
 private val DrawerIconSize = 24.dp
 
+private val SelectedShape = ChipSize.Regular.shape
+
 @Composable
 private fun DrawerItem(
   icon: ImageVector,
@@ -516,6 +517,7 @@ private fun DrawerItem(
     selected = selected,
     onClick = onClick,
     colors = colors.drawerItem(),
+    shape = SelectedShape,
   )
 }
 
