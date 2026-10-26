@@ -13,8 +13,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -272,7 +272,7 @@ private fun ResetDialog(name: String, onDismiss: () -> Unit, onConfirm: () -> Un
 @PortraitPreview
 @Composable
 private fun PreviewBankSyncProvidersScaffold(
-    @PreviewParameter(BankSyncProvidersStateProvider::class)
+  @PreviewParameter(BankSyncProvidersStateProvider::class)
   params: ColorParams<BankSyncProvidersState>,
 ) = PreviewWithColorParams(params) { BankSyncProvidersScaffold(state = this, onAction = {}) }
 

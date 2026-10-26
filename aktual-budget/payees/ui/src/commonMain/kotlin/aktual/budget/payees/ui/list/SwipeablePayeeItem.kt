@@ -7,8 +7,8 @@ import aktual.core.icons.Merge
 import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.SwipeAction
@@ -94,7 +94,7 @@ internal fun SwipeablePayeeItem(
 @Preview
 @Composable
 private fun PreviewSwipeablePayeeItem(
-    @PreviewParameter(SwipeableProvider::class) params: ColorParams<Boolean>,
+  @PreviewParameter(SwipeableProvider::class) params: ColorParams<Boolean>,
 ) =
   PreviewWithColorParams(params) {
     SwipeablePayeeItem(

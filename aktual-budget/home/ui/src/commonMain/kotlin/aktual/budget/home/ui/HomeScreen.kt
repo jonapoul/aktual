@@ -25,8 +25,8 @@ import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavDrawerIconButton
@@ -406,7 +406,7 @@ private class PrivateHomeStateProvider : ColorParamsProvider<HomeState>(PREVIEW_
 @PortraitPreview
 @Composable
 private fun PreviewHomeScaffold(
-    @PreviewParameter(HomeStateProvider::class) params: ColorParams<HomeState>,
+  @PreviewParameter(HomeStateProvider::class) params: ColorParams<HomeState>,
 ) =
   PreviewWithColorParams(params) {
     HomeScaffold(state = this, onAction = {})
@@ -415,7 +415,7 @@ private fun PreviewHomeScaffold(
 @TabletPreview
 @Composable
 private fun PreviewTabletHomeScaffold(
-    @PreviewParameter(HomeStateProvider::class) params: ColorParams<HomeState>,
+  @PreviewParameter(HomeStateProvider::class) params: ColorParams<HomeState>,
 ) =
   PreviewWithColorParams(params) {
     HomeScaffold(state = this, onAction = {})
@@ -424,7 +424,7 @@ private fun PreviewTabletHomeScaffold(
 @DesktopPreview
 @Composable
 private fun PreviewDesktopHomeScaffold(
-    @PreviewParameter(WideHomeStateProvider::class) params: ColorParams<HomeState>,
+  @PreviewParameter(WideHomeStateProvider::class) params: ColorParams<HomeState>,
 ) =
   PreviewWithColorParams(params) {
     HomeScaffold(state = this, onAction = {})
@@ -433,7 +433,7 @@ private fun PreviewDesktopHomeScaffold(
 @PortraitPreview
 @Composable
 private fun PreviewEditingHomeScaffold(
-    @PreviewParameter(WideHomeStateProvider::class) params: ColorParams<HomeState>,
+  @PreviewParameter(WideHomeStateProvider::class) params: ColorParams<HomeState>,
 ) =
   PreviewWithColorParams(params) {
     HomeScaffold(state = this, onAction = {}, initialEditing = true)
@@ -442,7 +442,7 @@ private fun PreviewEditingHomeScaffold(
 @DesktopPreview
 @Composable
 private fun PreviewEditingDesktopHomeScaffold(
-    @PreviewParameter(WideHomeStateProvider::class) params: ColorParams<HomeState>,
+  @PreviewParameter(WideHomeStateProvider::class) params: ColorParams<HomeState>,
 ) =
   PreviewWithColorParams(params) {
     HomeScaffold(state = this, onAction = {}, initialEditing = true)
@@ -451,7 +451,7 @@ private fun PreviewEditingDesktopHomeScaffold(
 @PortraitPreview
 @Composable
 private fun PreviewPrivateHomeScaffold(
-    @PreviewParameter(PrivateHomeStateProvider::class) params: ColorParams<HomeState>,
+  @PreviewParameter(PrivateHomeStateProvider::class) params: ColorParams<HomeState>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = true) {
     HomeScaffold(state = this, onAction = {})

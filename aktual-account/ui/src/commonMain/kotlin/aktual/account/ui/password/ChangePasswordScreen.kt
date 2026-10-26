@@ -12,8 +12,8 @@ import aktual.core.nav.ListBudgetsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ErrorBanner
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
@@ -190,7 +190,7 @@ private fun ChangePasswordState.Failure.errorMessage(): String =
 @LandscapePreview
 @Composable
 private fun PreviewChangePassword(
-    @PreviewParameter(ChangePasswordProvider::class) params: ColorParams<ChangePasswordParams>,
+  @PreviewParameter(ChangePasswordProvider::class) params: ColorParams<ChangePasswordParams>,
 ) =
   PreviewWithColorParams(params) {
     ChangePasswordScaffold(

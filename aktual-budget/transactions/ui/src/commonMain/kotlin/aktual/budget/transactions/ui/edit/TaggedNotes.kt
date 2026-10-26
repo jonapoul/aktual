@@ -6,9 +6,9 @@ import aktual.budget.tags.domain.TagLabel
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ChipSize
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.contrastingTextColor

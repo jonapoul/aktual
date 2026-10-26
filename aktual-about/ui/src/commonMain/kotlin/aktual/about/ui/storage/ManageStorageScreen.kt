@@ -19,8 +19,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.HazedTopBarSpacing
 import aktual.core.ui.NavBackIconButton
@@ -541,7 +541,7 @@ private class StoragePreviewParams :
 @TabletPreview
 @Composable
 private fun PreviewManageStorage(
-    @PreviewParameter(StoragePreviewParams::class) params: ColorParams<ManageStorageState>,
+  @PreviewParameter(StoragePreviewParams::class) params: ColorParams<ManageStorageState>,
 ) {
   PreviewWithColorParams(params) {
     ManageStorageScaffold(state = this, onAction = {}, modifier = Modifier.fillMaxSize())

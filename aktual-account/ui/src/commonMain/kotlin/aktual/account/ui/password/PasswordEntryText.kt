@@ -2,8 +2,8 @@ package aktual.account.ui.password
 
 import aktual.core.model.Password
 import aktual.core.ui.AktualTextField
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PasswordTransformation
 import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.text.KeyboardOptions
@@ -56,7 +56,7 @@ internal fun PasswordEntryText(
 @Preview
 @Composable
 private fun PreviewPasswordEntryText(
-    @PreviewParameter(PasswordEntryProvider::class) params: ColorParams<PasswordEntryParams>,
+  @PreviewParameter(PasswordEntryProvider::class) params: ColorParams<PasswordEntryParams>,
 ) =
   PreviewWithColorParams(params) {
     PasswordEntryText(

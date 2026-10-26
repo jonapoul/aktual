@@ -30,8 +30,8 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AktualTooltip
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
@@ -376,7 +376,7 @@ private fun RuleStage(
 @PortraitPreview
 @Composable
 private fun PreviewEditRuleScaffold(
-    @PreviewParameter(EditRuleStateProvider::class) params: ColorParams<EditRuleStateParams>,
+  @PreviewParameter(EditRuleStateProvider::class) params: ColorParams<EditRuleStateParams>,
 ) {
   PreviewWithColorParams(params) { EditRuleScaffold(state = state, mode = mode, onAction = {}) }
 }

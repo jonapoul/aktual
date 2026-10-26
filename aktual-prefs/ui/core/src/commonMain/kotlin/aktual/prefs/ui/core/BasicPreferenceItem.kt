@@ -5,8 +5,8 @@ import aktual.core.icons.InformationOutline
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.disabledIf
 import alakazam.kotlin.ifNotNull
@@ -123,7 +123,7 @@ fun BasicPreferenceItem(
 @Preview
 @Composable
 private fun PreviewBasicPreferenceItem(
-    @PreviewParameter(BasicPreferenceItemProvider::class)
+  @PreviewParameter(BasicPreferenceItemProvider::class)
   params: ColorParams<BasicPreferenceItemParams>,
 ) =
   PreviewWithColorParams(params) {

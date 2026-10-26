@@ -13,8 +13,8 @@ import aktual.core.theme.BottomBarThemeAttrs
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomBarState.Visible
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.animation.core.LinearEasing
@@ -221,7 +221,7 @@ private fun SyncState.tint(colors: Colors, attrs: BottomBarThemeAttrs) =
 @Preview
 @Composable
 private fun PreviewBottomBar(
-    @PreviewParameter(BottomBarProvider::class) params: ColorParams<BottomBarParams>,
+  @PreviewParameter(BottomBarProvider::class) params: ColorParams<BottomBarParams>,
 ) =
   PreviewWithColorParams(params) {
     BottomStatusBar(

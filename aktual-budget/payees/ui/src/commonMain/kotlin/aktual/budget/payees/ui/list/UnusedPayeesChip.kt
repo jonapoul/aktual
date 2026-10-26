@@ -1,9 +1,9 @@
 package aktual.budget.payees.ui.list
 
 import aktual.core.l10n.Strings
+import aktual.core.ui.BooleanColorParameters
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
-import aktual.core.ui.BooleanColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.runtime.Composable

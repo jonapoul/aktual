@@ -5,8 +5,8 @@ import aktual.core.icons.material.Security
 import aktual.core.icons.material.Timer
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.prefs.AppLockTimeout
@@ -81,7 +81,7 @@ private fun AppLockTimeout.string(): String =
 @PortraitPreview
 @Composable
 private fun PreviewSecuritySettingsScaffold(
-    @PreviewParameter(SecuritySettingsProvider::class) params: ColorParams<SecuritySettingsState>,
+  @PreviewParameter(SecuritySettingsProvider::class) params: ColorParams<SecuritySettingsState>,
 ) = PreviewWithColorParams(params) { SecuritySettingsScaffold(state = this, onBack = {}) }
 
 private class SecuritySettingsProvider :

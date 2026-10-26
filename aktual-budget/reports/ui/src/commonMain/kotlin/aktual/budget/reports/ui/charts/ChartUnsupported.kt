@@ -5,8 +5,8 @@ import aktual.budget.reports.vm.UnsupportedData
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.plainTextClipEntry
 import aktual.core.ui.verticalScrollWithBar
@@ -99,7 +99,7 @@ private fun StackTraceDialog(stackTrace: String, onDismiss: () -> Unit) {
 @Preview
 @Composable
 private fun PreviewUnsupportedChart(
-    @PreviewParameter(UnsupportedChartProvider::class) params: ColorParams<UnsupportedData>,
+  @PreviewParameter(UnsupportedChartProvider::class) params: ColorParams<UnsupportedData>,
 ) = PreviewWithColorParams(params) { UnsupportedChart(data = params.data) }
 
 private class UnsupportedChartProvider :

@@ -17,8 +17,8 @@ import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -203,7 +203,7 @@ private fun CustomReportContent(
 @PortraitPreview
 @Composable
 private fun PreviewCustomReportScaffold(
-    @PreviewParameter(CustomReportProvider::class) params: ColorParams<CustomReportState>,
+  @PreviewParameter(CustomReportProvider::class) params: ColorParams<CustomReportState>,
 ) = PreviewWithColorParams(params) { CustomReportScaffold(state = this, onAction = {}) }
 
 private class CustomReportProvider :

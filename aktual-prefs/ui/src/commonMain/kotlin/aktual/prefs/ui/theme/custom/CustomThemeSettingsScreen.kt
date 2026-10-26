@@ -24,8 +24,8 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
@@ -476,7 +476,7 @@ private const val PREVIEW_WEIGHT = 1f
 @Composable
 @PortraitPreview
 private fun PreviewCustomThemeSettings(
-    @PreviewParameter(CatalogStateProvider::class) params: ColorParams<CustomThemeSettingsParams>,
+  @PreviewParameter(CatalogStateProvider::class) params: ColorParams<CustomThemeSettingsParams>,
 ) =
   PreviewWithColorParams(params) {
     CustomThemeSettingsScaffold(
@@ -492,7 +492,7 @@ private fun PreviewCustomThemeSettings(
 @Preview
 @Composable
 private fun PreviewCustomThemeItem(
-    @PreviewParameter(CatalogItemProvider::class) params: ColorParams<CatalogItem>,
+  @PreviewParameter(CatalogItemProvider::class) params: ColorParams<CatalogItem>,
 ) = PreviewWithColorParams(params) { CustomThemeItem(item = this, onAction = {}) }
 
 private class CatalogItemProvider :

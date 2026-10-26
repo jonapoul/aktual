@@ -29,8 +29,8 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.layout.Arrangement.spacedBy
@@ -372,7 +372,7 @@ internal val PREVIEW_REPORT_CHOICES =
 @Preview
 @Composable
 private fun PreviewReportsCard(
-    @PreviewParameter(ReportsCardStateProvider::class) params: ColorParams<ReportsCardState>,
+  @PreviewParameter(ReportsCardStateProvider::class) params: ColorParams<ReportsCardState>,
 ) =
   PreviewWithColorParams(params) {
     ReportsCard(
@@ -386,13 +386,13 @@ private fun PreviewReportsCard(
 @Preview
 @Composable
 private fun PreviewPinnedContent(
-    @PreviewParameter(PinnedContentProvider::class) params: ColorParams<Loaded>,
+  @PreviewParameter(PinnedContentProvider::class) params: ColorParams<Loaded>,
 ) = PreviewWithColorParams(params) { PinnedContent(state = this, onAction = {}, onPick = {}) }
 
 @Preview
 @Composable
 private fun PreviewPickerContent(
-    @PreviewParameter(PickerContentProvider::class) params: ColorParams<ImmutableList<ReportPage>>,
+  @PreviewParameter(PickerContentProvider::class) params: ColorParams<ImmutableList<ReportPage>>,
 ) =
   PreviewWithColorParams(params) {
     PickerContent(choices = this, pinned = PREVIEW_REPORTS.reports, onBack = {}, onPick = {})

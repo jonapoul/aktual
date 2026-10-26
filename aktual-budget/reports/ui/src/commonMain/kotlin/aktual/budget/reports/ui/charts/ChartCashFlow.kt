@@ -9,8 +9,8 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.WrapWidthTable
 import aktual.core.ui.formattedString
@@ -262,7 +262,7 @@ private suspend fun CartesianChartModelProducer.populate(data: CashFlowData, zoo
 @Preview
 @Composable
 private fun PreviewCashFlowChart(
-    @PreviewParameter(CashFlowChartProvider::class) params: ColorParams<CashFlowChartParams>,
+  @PreviewParameter(CashFlowChartProvider::class) params: ColorParams<CashFlowChartParams>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CashFlowChart(

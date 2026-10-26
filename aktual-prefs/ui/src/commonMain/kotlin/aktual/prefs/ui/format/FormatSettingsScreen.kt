@@ -12,8 +12,8 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Speed125
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.prefs.ui.BooleanPreferenceItem
@@ -128,7 +128,7 @@ private fun FirstDayOfWeek.string(): String =
 @PortraitPreview
 @Composable
 private fun PreviewFormatSettingsScaffold(
-    @PreviewParameter(FormatSettingsProvider::class) params: ColorParams<FormatSettingsParams>,
+  @PreviewParameter(FormatSettingsProvider::class) params: ColorParams<FormatSettingsParams>,
 ) =
   PreviewWithColorParams(params) {
     FormatSettingsScaffold(

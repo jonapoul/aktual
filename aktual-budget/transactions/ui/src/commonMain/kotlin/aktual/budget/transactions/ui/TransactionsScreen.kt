@@ -264,7 +264,7 @@ private fun rememberVisibleYear(
 @TabletPreview
 @DesktopPreview
 private fun PreviewTransactionsScaffold(
-    @PreviewParameter(DensityProvider::class) params: ColorParams<TransactionsDensity>,
+  @PreviewParameter(DensityProvider::class) params: ColorParams<TransactionsDensity>,
 ) =
   PreviewWithColorParams(params) {
     TransactionsScaffold(

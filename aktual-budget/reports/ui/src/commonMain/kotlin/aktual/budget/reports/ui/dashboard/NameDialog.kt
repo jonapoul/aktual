@@ -6,8 +6,8 @@ import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.disabled
 import aktual.core.ui.keyboardFocusRequester
@@ -120,7 +120,7 @@ private fun NameDialogContent(
 @Preview
 @Composable
 private fun PreviewNameDialog(
-    @PreviewParameter(NameDialogProvider::class) params: ColorParams<String>,
+  @PreviewParameter(NameDialogProvider::class) params: ColorParams<String>,
 ) =
   PreviewWithColorParams(params) {
     NameDialogContent(

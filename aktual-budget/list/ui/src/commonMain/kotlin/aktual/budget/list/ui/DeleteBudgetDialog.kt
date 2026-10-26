@@ -9,8 +9,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareTextButton
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.buttonTextStyle
 import aktual.core.ui.errorButton
@@ -174,7 +174,7 @@ private fun Colors.errorBare(isPressed: Boolean) =
 @Preview
 @Composable
 private fun PreviewDeleteBudgetDialog(
-    @PreviewParameter(DeleteBudgetDialogProvider::class)
+  @PreviewParameter(DeleteBudgetDialogProvider::class)
   params: ColorParams<DeleteBudgetDialogParams>,
 ) {
   PreviewWithColorParams(params) {

@@ -3,8 +3,8 @@ package aktual.account.ui.url
 import aktual.core.model.Protocol
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTextField
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.keyboardFocusRequester
 import alakazam.kotlin.parse
@@ -85,7 +85,7 @@ private const val EXAMPLE_URL = "example.com"
 @Preview
 @Composable
 private fun PreviewInputFields(
-    @PreviewParameter(InputFieldsProvider::class) params: ColorParams<InputFieldsParams>,
+  @PreviewParameter(InputFieldsProvider::class) params: ColorParams<InputFieldsParams>,
 ) =
   PreviewWithColorParams(params) {
     InputFields(url = url, protocol = protocol, onAction = {})

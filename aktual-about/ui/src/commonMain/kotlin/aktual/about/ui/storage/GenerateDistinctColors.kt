@@ -2,8 +2,8 @@ package aktual.about.ui.storage
 
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -81,7 +81,7 @@ private fun hslToArgb(h: Float, s: Float, l: Float): Long {
 @Preview
 @Composable
 private fun PreviewDistinctColors(
-    @PreviewParameter(CountParameters::class) params: ColorParams<Int>,
+  @PreviewParameter(CountParameters::class) params: ColorParams<Int>,
 ) =
   PreviewWithColorParams(params) {
     val colors = rememberDistinctColors(count = this, colors = params.colors)

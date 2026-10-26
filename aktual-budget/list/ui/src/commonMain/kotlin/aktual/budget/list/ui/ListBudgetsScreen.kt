@@ -19,8 +19,8 @@ import aktual.core.nav.ServerUrlNavigator
 import aktual.core.nav.SettingsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
@@ -250,7 +250,7 @@ private fun StateContent(
 @PortraitPreview
 @Composable
 private fun PreviewListBudgetsScaffold(
-    @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ColorParams<ListBudgetsState>,
+  @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ColorParams<ListBudgetsState>,
 ) = PreviewWithColorParams(params) { ListBudgetsScaffold(state = this, onAction = {}) }
 
 private val PREVIEW_ITEMS =

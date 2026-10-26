@@ -11,8 +11,8 @@ import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
@@ -436,7 +436,7 @@ private class BudgetCategoryStateProvider :
 @PortraitPreview
 @Composable
 private fun PreviewBudgetCategory(
-    @PreviewParameter(BudgetCategoryStateProvider::class) params: ColorParams<BudgetCategoryState>,
+  @PreviewParameter(BudgetCategoryStateProvider::class) params: ColorParams<BudgetCategoryState>,
 ) =
   PreviewWithColorParams(params) {
     BudgetCategoryScaffold(state = this, onBack = {}, onSelect = {}, onViewTransactions = {})

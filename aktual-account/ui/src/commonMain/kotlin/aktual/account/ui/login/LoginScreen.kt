@@ -12,8 +12,8 @@ import aktual.core.nav.ServerUrlNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
@@ -231,7 +231,7 @@ private fun Content(
 @PortraitPreview
 @LandscapePreview
 private fun PreviewLoginScaffold(
-    @PreviewParameter(LoginScaffoldProvider::class) params: ColorParams<LoginScaffoldParams>,
+  @PreviewParameter(LoginScaffoldProvider::class) params: ColorParams<LoginScaffoldParams>,
 ) =
   PreviewWithColorParams(params) {
     LoginScaffold(

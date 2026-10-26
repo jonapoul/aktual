@@ -71,8 +71,7 @@ open class PreviewParameters<T>(protected val data: List<T>) : PreviewParameterP
 
 @Immutable data class ColorParams<T>(val colors: DefaultColors, val data: T)
 
-open class ColorParamsProvider<T>(collection: List<T>) :
-  PreviewParameterProvider<ColorParams<T>> {
+open class ColorParamsProvider<T>(collection: List<T>) : PreviewParameterProvider<ColorParams<T>> {
   private val all: List<ColorParams<T>> = collection.flatMap { data ->
     Colors.Defaults.map { type -> ColorParams(type, data) }
   }

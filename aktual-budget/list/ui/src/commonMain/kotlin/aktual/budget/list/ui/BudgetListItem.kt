@@ -7,8 +7,8 @@ import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.SwipeAction
@@ -141,7 +141,7 @@ private fun budgetDescription(budget: Budget) =
 @Preview
 @Composable
 private fun PreviewBudgetListItem(
-    @PreviewParameter(BudgetListItemProvider::class) params: ColorParams<BudgetListItemParams>,
+  @PreviewParameter(BudgetListItemProvider::class) params: ColorParams<BudgetListItemParams>,
 ) =
   PreviewWithColorParams(params) {
     BudgetListItem(

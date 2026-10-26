@@ -11,8 +11,8 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
@@ -283,7 +283,7 @@ private fun textChartMarkdownTypography(align: TextAlign): MarkdownTypography {
 @Preview
 @Composable
 private fun PreviewTextChart(
-    @PreviewParameter(TextChartProvider::class) params: ColorParams<TextChartParams>,
+  @PreviewParameter(TextChartProvider::class) params: ColorParams<TextChartParams>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = params.data.private) {
     TextChart(

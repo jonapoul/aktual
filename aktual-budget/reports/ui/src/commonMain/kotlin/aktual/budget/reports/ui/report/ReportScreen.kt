@@ -29,8 +29,8 @@ import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
@@ -253,7 +253,7 @@ private fun ReportContent(
 @PortraitPreview
 @Composable
 private fun PreviewReportScaffold(
-    @PreviewParameter(ReportScaffoldProvider::class) params: ColorParams<ReportState>,
+  @PreviewParameter(ReportScaffoldProvider::class) params: ColorParams<ReportState>,
 ) = PreviewWithColorParams(params) { ReportScaffold(state = this, onAction = {}) }
 
 private class ReportScaffoldProvider :

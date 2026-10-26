@@ -13,8 +13,8 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.slider
 import androidx.compose.foundation.background
@@ -178,7 +178,7 @@ private val PREVIEW_HEIGHT = 96.dp
 @Preview
 @Composable
 private fun PreviewFontSizeDialog(
-    @PreviewParameter(FontSizeDialogProvider::class) params: ColorParams<FontSizeMode>,
+  @PreviewParameter(FontSizeDialogProvider::class) params: ColorParams<FontSizeMode>,
 ) =
   PreviewWithColorParams(params) {
     FontSizeDialogContent(

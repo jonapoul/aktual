@@ -3,8 +3,8 @@ package aktual.account.ui.login
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.ui.AktualTextField
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PasswordTransformation
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButtonWithLoading
@@ -80,7 +80,7 @@ internal fun PasswordLogin(
 @Preview
 @Composable
 private fun PreviewPasswordLogin(
-    @PreviewParameter(PasswordLoginProvider::class) params: ColorParams<PasswordLoginParams>,
+  @PreviewParameter(PasswordLoginProvider::class) params: ColorParams<PasswordLoginParams>,
 ) =
   PreviewWithColorParams(params) {
     PasswordLogin(isLoading = isLoading, enteredPassword = password, onAction = {})

@@ -25,8 +25,8 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedText
 import aktual.core.ui.verticalScrollWithBar
@@ -227,7 +227,7 @@ private fun dateRange(dates: CustomReportDates): String =
 @Preview
 @Composable
 private fun PreviewCustomChart(
-    @PreviewParameter(CustomChartProvider::class) params: ColorParams<CustomChartParams>,
+  @PreviewParameter(CustomChartProvider::class) params: ColorParams<CustomChartParams>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CustomChart(

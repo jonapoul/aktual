@@ -18,8 +18,8 @@ import aktual.core.nav.ReportNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens.Large
 import aktual.core.ui.Dimens.Medium
 import aktual.core.ui.Dimens.Small
@@ -228,8 +228,7 @@ private fun ResultItem(
 @PortraitPreview
 @Composable
 private fun PreviewSearchReportsScaffold(
-    @PreviewParameter(SearchReportsScaffoldProvider::class)
-  params: ColorParams<SearchReportsParams>,
+  @PreviewParameter(SearchReportsScaffoldProvider::class) params: ColorParams<SearchReportsParams>,
 ) =
   PreviewWithColorParams(params) {
     SearchReportsScaffold(query = query, state = state, onAction = {})

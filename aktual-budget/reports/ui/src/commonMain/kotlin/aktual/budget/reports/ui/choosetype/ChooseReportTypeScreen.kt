@@ -31,8 +31,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalIconButton
@@ -266,7 +266,7 @@ private val REPORT_HEIGHT = 250.dp
 @PortraitPreview
 @Composable
 private fun PreviewChooseReportTypeScaffold(
-    @PreviewParameter(ChooseReportTypeScaffoldParameters::class)
+  @PreviewParameter(ChooseReportTypeScaffoldParameters::class)
   params: ColorParams<ChooseReportTypeScaffoldParams>,
 ) =
   PreviewWithColorParams(params) {

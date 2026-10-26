@@ -17,8 +17,8 @@ import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NavBackIconButton
@@ -257,7 +257,7 @@ internal fun TimeFrameRow(timeFrame: TimeFrame?, onClick: () -> Unit) =
 @PortraitPreview
 @Composable
 private fun PreviewQueryScaffold(
-    @PreviewParameter(QueryProvider::class) params: ColorParams<FormulaQuery>,
+  @PreviewParameter(QueryProvider::class) params: ColorParams<FormulaQuery>,
 ) =
   PreviewWithColorParams(params) {
     QueryScaffold(

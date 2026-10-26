@@ -2,8 +2,8 @@ package aktual.account.ui.login
 
 import aktual.account.vm.LoginResult
 import aktual.core.l10n.Strings
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ErrorBanner
 import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.runtime.Composable
@@ -34,7 +34,7 @@ internal fun LoginFailureText(
 @Preview
 @Composable
 private fun PreviewLoginFailureText(
-    @PreviewParameter(LoginFailureProvider::class) params: ColorParams<LoginResult.Failure>,
+  @PreviewParameter(LoginFailureProvider::class) params: ColorParams<LoginResult.Failure>,
 ) = PreviewWithColorParams(params) { LoginFailureText(result = this) }
 
 private class LoginFailureProvider :

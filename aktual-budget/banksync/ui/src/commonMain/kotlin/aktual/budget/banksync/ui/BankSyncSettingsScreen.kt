@@ -27,8 +27,8 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -501,7 +501,7 @@ private fun fieldIcon(field: MappedField): ImageVector =
 @PortraitPreview
 @Composable
 private fun PreviewBankSyncSettingsScaffold(
-    @PreviewParameter(BankSyncSettingsStateProvider::class)
+  @PreviewParameter(BankSyncSettingsStateProvider::class)
   params: ColorParams<BankSyncSettingsState>,
 ) = PreviewWithColorParams(params) { BankSyncSettingsScaffold(state = this, onAction = {}) }
 

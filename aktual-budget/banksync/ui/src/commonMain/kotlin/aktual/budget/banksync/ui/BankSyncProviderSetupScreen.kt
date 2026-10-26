@@ -16,8 +16,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
@@ -317,7 +317,7 @@ private fun errorMessage(error: SetupError): String =
 @PortraitPreview
 @Composable
 private fun PreviewBankSyncProviderSetupScaffold(
-    @PreviewParameter(BankSyncProviderSetupStateProvider::class)
+  @PreviewParameter(BankSyncProviderSetupStateProvider::class)
   params: ColorParams<BankSyncProviderSetupState>,
 ) = PreviewWithColorParams(params) { BankSyncProviderSetupScaffold(state = this, onAction = {}) }
 

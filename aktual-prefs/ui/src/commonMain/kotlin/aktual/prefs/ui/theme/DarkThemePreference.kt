@@ -7,8 +7,8 @@ import aktual.core.model.ThemeId
 import aktual.core.theme.DarkColors
 import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualSlidingToggleButton
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -87,7 +87,7 @@ private fun DarkThemeContent(
 @DesktopPreview
 @Composable
 private fun PreviewDarkColorsPreference(
-    @PreviewParameter(DarkThemePreferenceProvider::class)
+  @PreviewParameter(DarkThemePreferenceProvider::class)
   params: ColorParams<DarkThemePreferenceParams>,
 ) =
   PreviewWithColorParams(params) {

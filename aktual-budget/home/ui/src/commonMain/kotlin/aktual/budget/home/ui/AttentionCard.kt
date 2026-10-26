@@ -20,8 +20,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -320,7 +320,7 @@ private fun OverspentContent(
 @Preview
 @Composable
 private fun PreviewAttentionCard(
-    @PreviewParameter(AttentionCardStateProvider::class) params: ColorParams<AttentionCardState>,
+  @PreviewParameter(AttentionCardStateProvider::class) params: ColorParams<AttentionCardState>,
 ) =
   PreviewWithColorParams(params) {
     AttentionCard(
@@ -333,7 +333,7 @@ private fun PreviewAttentionCard(
 @Preview
 @Composable
 private fun PreviewOverspentContent(
-    @PreviewParameter(OverspentProvider::class) params: ColorParams<AttentionItem.Overspent>,
+  @PreviewParameter(OverspentProvider::class) params: ColorParams<AttentionItem.Overspent>,
 ) =
   PreviewWithColorParams(params) {
     OverspentContent(categories)
@@ -371,5 +371,4 @@ private class AttentionCardStateProvider :
     Failed,
   )
 
-private class OverspentProvider :
-  ColorParamsProvider<AttentionItem.Overspent>(PREVIEW_OVERSPENT)
+private class OverspentProvider : ColorParamsProvider<AttentionItem.Overspent>(PREVIEW_OVERSPENT)

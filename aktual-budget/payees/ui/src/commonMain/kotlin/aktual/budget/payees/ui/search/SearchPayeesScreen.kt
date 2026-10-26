@@ -19,8 +19,8 @@ import aktual.core.nav.EditPayeeNavigator
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -169,7 +169,7 @@ private fun ShimmerResults(modifier: Modifier = Modifier) =
 @PortraitPreview
 @Composable
 private fun PreviewSearchPayeesScaffold(
-    @PreviewParameter(SearchPayeesScaffoldProvider::class) params: ColorParams<SearchPayeesParams>,
+  @PreviewParameter(SearchPayeesScaffoldProvider::class) params: ColorParams<SearchPayeesParams>,
 ) =
   PreviewWithColorParams(params) {
     SearchPayeesScaffold(query = query, state = state, onAction = {})

@@ -26,8 +26,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureCard
@@ -443,8 +443,7 @@ private fun ExternalAccountRow(
 @PortraitPreview
 @Composable
 private fun PreviewLinkBankAccountScaffold(
-    @PreviewParameter(LinkBankAccountStateProvider::class)
-  params: ColorParams<LinkBankAccountState>,
+  @PreviewParameter(LinkBankAccountStateProvider::class) params: ColorParams<LinkBankAccountState>,
 ) = PreviewWithColorParams(params) { LinkBankAccountScaffold(state = this, onAction = {}) }
 
 private val PreviewAccounts =

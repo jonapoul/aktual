@@ -19,8 +19,8 @@ import aktual.core.nav.ReportNavigator
 import aktual.core.nav.SearchReportsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
@@ -320,7 +320,7 @@ private fun ContentList(
 @Preview
 @Composable
 private fun PreviewReportsDashboardScaffold(
-    @PreviewParameter(ReportsDashboardScaffoldProvider::class)
+  @PreviewParameter(ReportsDashboardScaffoldProvider::class)
   params: ColorParams<ReportsDashboardScaffoldParams>,
 ) =
   PreviewWithColorParams(params) {

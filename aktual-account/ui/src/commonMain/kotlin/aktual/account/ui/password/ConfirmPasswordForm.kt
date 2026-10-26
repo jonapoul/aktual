@@ -4,8 +4,8 @@ import aktual.account.vm.ChangePasswordState
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.checkbox
@@ -109,7 +109,7 @@ internal fun ConfirmPasswordForm(
 @Preview
 @Composable
 private fun PreviewConfirmPassword(
-    @PreviewParameter(ConfirmPasswordProvider::class) params: ColorParams<ConfirmPasswordParams>,
+  @PreviewParameter(ConfirmPasswordProvider::class) params: ColorParams<ConfirmPasswordParams>,
 ) =
   PreviewWithColorParams(params) {
     ConfirmPasswordForm(

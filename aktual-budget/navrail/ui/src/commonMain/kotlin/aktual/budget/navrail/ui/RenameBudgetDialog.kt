@@ -5,8 +5,8 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.disabled
 import aktual.core.ui.keyboardFocusRequester
@@ -78,7 +78,7 @@ private fun RenameBudgetDialogContent(
 @Preview
 @Composable
 private fun PreviewRenameBudgetDialog(
-    @PreviewParameter(RenameBudgetDialogProvider::class) params: ColorParams<String>,
+  @PreviewParameter(RenameBudgetDialogProvider::class) params: ColorParams<String>,
 ) =
   PreviewWithColorParams(params) {
     RenameBudgetDialogContent(
@@ -89,5 +89,4 @@ private fun PreviewRenameBudgetDialog(
     )
   }
 
-private class RenameBudgetDialogProvider :
-  ColorParamsProvider<String>("My Budget", "Household", "")
+private class RenameBudgetDialogProvider : ColorParamsProvider<String>("My Budget", "Household", "")

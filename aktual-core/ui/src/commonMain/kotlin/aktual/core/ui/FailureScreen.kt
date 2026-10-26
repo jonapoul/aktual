@@ -116,7 +116,7 @@ data class FailureAction(
 @Preview
 @Composable
 private fun PreviewFailureCard(
-    @PreviewParameter(FailureScreenProvider::class) params: ColorParams<FailureScreenParams>,
+  @PreviewParameter(FailureScreenProvider::class) params: ColorParams<FailureScreenParams>,
 ) =
   PreviewWithColorParams(params) {
     FailureCard(
@@ -130,7 +130,7 @@ private fun PreviewFailureCard(
 @PortraitPreview
 @Composable
 private fun PreviewFailureScreen(
-    @PreviewParameter(FailureScreenProvider::class) params: ColorParams<FailureScreenParams>,
+  @PreviewParameter(FailureScreenProvider::class) params: ColorParams<FailureScreenParams>,
 ) =
   PreviewWithColorParams(params) {
     FailureScreen(

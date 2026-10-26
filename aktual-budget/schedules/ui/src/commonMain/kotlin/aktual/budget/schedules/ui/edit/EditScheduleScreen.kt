@@ -32,8 +32,8 @@ import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -697,7 +697,7 @@ private fun ErrorDialog(error: EditScheduleError, onDismiss: () -> Unit) {
 @PortraitPreview
 @Composable
 private fun PreviewEditScheduleScaffold(
-    @PreviewParameter(EditScheduleStateProvider::class) params: ColorParams<EditScheduleState>,
+  @PreviewParameter(EditScheduleStateProvider::class) params: ColorParams<EditScheduleState>,
 ) =
   PreviewWithColorParams(params) {
     EditScheduleScaffold(state = this, error = null, onAction = {})

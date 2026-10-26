@@ -138,7 +138,7 @@ private class TextInputPreviewProvider :
 @Preview
 @Composable
 private fun PreviewAktualTextField(
-    @PreviewParameter(TextInputPreviewProvider::class) params: ColorParams<TextInputPreviewParams>,
+  @PreviewParameter(TextInputPreviewProvider::class) params: ColorParams<TextInputPreviewParams>,
 ) =
   PreviewWithColorParams(params) {
     AktualTextField(

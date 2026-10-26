@@ -9,9 +9,9 @@ import aktual.core.icons.material.Shuffle
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.BooleanColorParameters
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.CardShape
-import aktual.core.ui.BooleanColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NormalIconButton

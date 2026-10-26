@@ -12,8 +12,8 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.LocalNavDrawerOpener
 import aktual.core.ui.NavBackIconButton
@@ -164,7 +164,7 @@ private fun ConfirmDeleteAccountDialog(onConfirm: () -> Unit, onCancel: () -> Un
 @Preview
 @Composable
 private fun PreviewTransactionsTitleBar(
-    @PreviewParameter(TransactionsTitleBarProvider::class) params: ColorParams<LoadedAccount>,
+  @PreviewParameter(TransactionsTitleBarProvider::class) params: ColorParams<LoadedAccount>,
 ) =
   PreviewWithColorParams(params) {
     TransactionsTitleBar(

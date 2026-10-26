@@ -17,8 +17,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
@@ -264,7 +264,7 @@ private fun MonteCarloMenu(
 @PortraitPreview
 @Composable
 private fun PreviewMonteCarloScaffold(
-    @PreviewParameter(MonteCarloScaffoldProvider::class) params: ColorParams<MonteCarloState>,
+  @PreviewParameter(MonteCarloScaffoldProvider::class) params: ColorParams<MonteCarloState>,
 ) = PreviewWithColorParams(params) { MonteCarloScaffold(state = this, onAction = {}) }
 
 private class MonteCarloScaffoldProvider :

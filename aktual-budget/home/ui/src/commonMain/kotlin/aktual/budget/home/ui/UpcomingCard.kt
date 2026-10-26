@@ -19,8 +19,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.background
@@ -307,7 +307,7 @@ private const val SHIMMER_ROWS = 3
 @Preview
 @Composable
 private fun PreviewUpcomingCard(
-    @PreviewParameter(UpcomingCardStateProvider::class) params: ColorParams<UpcomingCardState>,
+  @PreviewParameter(UpcomingCardStateProvider::class) params: ColorParams<UpcomingCardState>,
 ) =
   PreviewWithColorParams(params) {
     UpcomingCard(

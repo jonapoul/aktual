@@ -12,8 +12,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AmountField
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -262,7 +262,7 @@ private const val MINUS = "−"
 @PortraitPreview
 @Composable
 private fun PreviewCreateAccountScreen(
-    @PreviewParameter(CreateAccountStateProvider::class) params: ColorParams<CreateAccountState>,
+  @PreviewParameter(CreateAccountStateProvider::class) params: ColorParams<CreateAccountState>,
 ) = PreviewWithColorParams(params) { CreateAccountScaffold(state = this, onAction = {}) }
 
 private class CreateAccountStateProvider :

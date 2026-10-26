@@ -13,8 +13,8 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedText
 import aktual.core.ui.stringShort
@@ -444,7 +444,7 @@ private val TOOLTIP_SHAPE = RoundedCornerShape(4.dp)
 @Preview
 @Composable
 private fun PreviewSankeyChart(
-    @PreviewParameter(SankeyChartProvider::class) params: ColorParams<SankeyChartParams>,
+  @PreviewParameter(SankeyChartProvider::class) params: ColorParams<SankeyChartParams>,
 ) =
   PreviewWithColorParams(params) {
     SankeyChart(

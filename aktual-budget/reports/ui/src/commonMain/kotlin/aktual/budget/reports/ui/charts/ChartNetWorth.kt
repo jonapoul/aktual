@@ -10,8 +10,8 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedText
 import aktual.core.ui.isInPreview
@@ -200,7 +200,7 @@ private suspend fun CartesianChartModelProducer.populate(data: NetWorthData, zoo
 @Preview
 @Composable
 private fun PreviewNetWorthChart(
-    @PreviewParameter(NetWorthChartProvider::class) params: ColorParams<NetWorthChartParams>,
+  @PreviewParameter(NetWorthChartProvider::class) params: ColorParams<NetWorthChartParams>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = params.data.private) {
     NetWorthChart(

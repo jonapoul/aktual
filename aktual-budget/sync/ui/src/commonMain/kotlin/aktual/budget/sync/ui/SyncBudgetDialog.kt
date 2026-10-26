@@ -359,7 +359,7 @@ private fun buildPasswordText(colors: Colors, onAction: SyncBudgetActionHandler)
 @Preview(widthDp = MY_PHONE_WIDTH_DP, heightDp = 500)
 @Composable
 private fun PreviewSyncBudgetDialog(
-    @PreviewParameter(SyncBudgetDialogProvider::class) params: ColorParams<SyncBudgetDialogParams>,
+  @PreviewParameter(SyncBudgetDialogProvider::class) params: ColorParams<SyncBudgetDialogParams>,
 ) {
   PreviewWithColorParams(params) {
     SyncBudgetDialog(

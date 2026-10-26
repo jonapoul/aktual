@@ -12,8 +12,8 @@ import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -106,7 +106,7 @@ internal fun DashboardPage.displayName(): String = name.ifBlank { Strings.report
 @Preview
 @Composable
 private fun PreviewDashboardSelector(
-    @PreviewParameter(DashboardSelectorItemsProvider::class)
+  @PreviewParameter(DashboardSelectorItemsProvider::class)
   params: ColorParams<ImmutableList<DashboardPage>>,
 ) =
   PreviewWithColorParams(params) {
@@ -120,7 +120,7 @@ private fun PreviewDashboardSelector(
 @Preview
 @Composable
 private fun PreviewDashboardSelectorItems(
-    @PreviewParameter(DashboardSelectorItemsProvider::class)
+  @PreviewParameter(DashboardSelectorItemsProvider::class)
   params: ColorParams<ImmutableList<DashboardPage>>,
 ) =
   PreviewWithColorParams(params) {

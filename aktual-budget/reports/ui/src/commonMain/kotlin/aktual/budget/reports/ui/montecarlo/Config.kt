@@ -20,8 +20,8 @@ import aktual.budget.reports.vm.montecarlo.previewMonteCarloState
 import aktual.budget.reports.vm.surplusPot
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualExposedDropDownMenu
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -203,7 +203,7 @@ private val TAB_SPACING = 6.dp
 @PortraitPreview
 @Composable
 private fun PreviewMonteCarloConfiguration(
-    @PreviewParameter(ConfigTabProvider::class) params: ColorParams<ConfigTab>,
+  @PreviewParameter(ConfigTabProvider::class) params: ColorParams<ConfigTab>,
 ) =
   PreviewWithColorParams(params) {
     MonteCarloConfiguration(

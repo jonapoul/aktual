@@ -7,8 +7,8 @@ import aktual.core.nav.BackNavigator
 import aktual.core.theme.hasAlternateRowColour
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
@@ -123,7 +123,7 @@ private fun TransactionSettingsContent(
 @PortraitPreview
 @Composable
 private fun PreviewTransactionSettingsScaffold(
-    @PreviewParameter(TransactionSettingsProvider::class)
+  @PreviewParameter(TransactionSettingsProvider::class)
   params: ColorParams<TransactionSettingsState>,
 ) = PreviewWithColorParams(params) { TransactionSettingsScaffold(state = this, onAction = {}) }
 

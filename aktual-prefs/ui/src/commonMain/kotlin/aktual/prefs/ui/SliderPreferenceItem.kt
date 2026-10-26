@@ -3,8 +3,8 @@ package aktual.prefs.ui
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.InformationOutline
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.disabledIf
 import aktual.core.ui.slider
@@ -110,7 +110,7 @@ private const val MEASURE_VALUE = 100f
 @Preview
 @Composable
 private fun PreviewSliderPreferenceItem(
-    @PreviewParameter(SliderPreferenceItemProvider::class)
+  @PreviewParameter(SliderPreferenceItemProvider::class)
   params: ColorParams<SliderPreferenceItemParams>,
 ) =
   PreviewWithColorParams(params) {

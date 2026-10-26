@@ -14,8 +14,8 @@ import aktual.core.nav.EditTagNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens.Large
 import aktual.core.ui.Dimens.ListItemSpacing
 import aktual.core.ui.Dimens.Medium
@@ -187,7 +187,7 @@ private fun ResultItem(
 @PortraitPreview
 @Composable
 private fun PreviewSearchTagsScaffold(
-    @PreviewParameter(SearchTagsScaffoldProvider::class) params: ColorParams<SearchTagsParams>,
+  @PreviewParameter(SearchTagsScaffoldProvider::class) params: ColorParams<SearchTagsParams>,
 ) =
   PreviewWithColorParams(params) {
     SearchTagsScaffold(query = query, state = state, onAction = {})

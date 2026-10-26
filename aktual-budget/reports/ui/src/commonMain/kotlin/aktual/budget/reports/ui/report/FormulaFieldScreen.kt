@@ -14,8 +14,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
@@ -235,7 +235,7 @@ private fun FormulaField.minHeight() =
 @PortraitPreview
 @Composable
 private fun PreviewFormulaFieldScaffold(
-    @PreviewParameter(FormulaFieldProvider::class) params: ColorParams<FormulaFieldParams>,
+  @PreviewParameter(FormulaFieldProvider::class) params: ColorParams<FormulaFieldParams>,
 ) =
   PreviewWithColorParams(params) {
     FormulaFieldScaffold(

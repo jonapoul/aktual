@@ -18,8 +18,8 @@ import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
@@ -600,7 +600,7 @@ private const val SHIMMER_BAR_FRACTION = 1.5f
 @Preview
 @Composable
 private fun PreviewLedgerRow(
-    @PreviewParameter(LedgerRowProvider::class) params: ColorParams<LedgerRowParams>,
+  @PreviewParameter(LedgerRowProvider::class) params: ColorParams<LedgerRowParams>,
 ) =
   PreviewWithColorParams(params) {
     WithLedgerDimens(density) {
@@ -618,7 +618,7 @@ private fun PreviewLedgerRow(
 @Preview
 @Composable
 private fun PreviewLedgerShimmerRow(
-    @PreviewParameter(DensityProvider::class) params: ColorParams<TransactionsDensity>,
+  @PreviewParameter(DensityProvider::class) params: ColorParams<TransactionsDensity>,
 ) = PreviewWithColorParams(params) { WithLedgerDimens(this) { LedgerShimmerRow() } }
 
 private data class LedgerRowParams(

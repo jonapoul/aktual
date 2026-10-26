@@ -6,8 +6,8 @@ import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toSignedInputText
 import aktual.core.l10n.Strings
 import aktual.core.ui.AmountField
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.EditorSheet
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColorParams
@@ -128,5 +128,5 @@ private class QuickActionsProvider : ColorParamsProvider<BudgetType>(Envelope, T
 @Preview
 @Composable
 private fun PreviewQuickActionButtons(
-    @PreviewParameter(QuickActionsProvider::class) params: ColorParams<BudgetType>,
+  @PreviewParameter(QuickActionsProvider::class) params: ColorParams<BudgetType>,
 ) = PreviewWithColorParams(params) { QuickActionButtons(type = this, onClick = {}) }

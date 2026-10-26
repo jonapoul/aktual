@@ -11,8 +11,8 @@ import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
@@ -128,7 +128,7 @@ private fun ResultsList(
 @PortraitPreview
 @Composable
 private fun PreviewSearchLicensesScaffold(
-    @PreviewParameter(SearchLicensesScaffoldProvider::class)
+  @PreviewParameter(SearchLicensesScaffoldProvider::class)
   params: ColorParams<SearchLicensesParams>,
 ) =
   PreviewWithColorParams(params) {

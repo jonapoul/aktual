@@ -31,8 +31,8 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.NavBackIconButton
@@ -682,7 +682,7 @@ private val DASHES = floatArrayOf(12f, 8f)
 @PortraitPreview
 @Composable
 private fun PreviewFormulaReportScaffold(
-    @PreviewParameter(FormulaReportProvider::class) params: ColorParams<FormulaReportState>,
+  @PreviewParameter(FormulaReportProvider::class) params: ColorParams<FormulaReportState>,
 ) =
   PreviewWithColorParams(params) {
     FormulaReportScaffold(state = this, queryEditorData = PREVIEW_QUERY_DATA, onAction = {})

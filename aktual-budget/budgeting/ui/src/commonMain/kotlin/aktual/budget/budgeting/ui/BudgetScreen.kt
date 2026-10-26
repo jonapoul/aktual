@@ -20,8 +20,8 @@ import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -515,7 +515,7 @@ private class BudgetStateProvider :
 @PortraitPreview
 @Composable
 private fun PreviewBudgetScaffold(
-    @PreviewParameter(BudgetStateProvider::class) params: ColorParams<BudgetState>,
+  @PreviewParameter(BudgetStateProvider::class) params: ColorParams<BudgetState>,
 ) =
   PreviewWithColorParams(params) {
     BudgetScaffold(state = this, onAction = {}, isCompact = true)
@@ -532,7 +532,7 @@ private class BudgetColumnsProvider :
 @Preview(widthDp = 1440, heightDp = 900, locale = "en")
 @Composable
 private fun PreviewBudgetColumns(
-    @PreviewParameter(BudgetColumnsProvider::class) params: ColorParams<BudgetState>,
+  @PreviewParameter(BudgetColumnsProvider::class) params: ColorParams<BudgetState>,
 ) =
   PreviewWithColorParams(params) {
     BudgetScaffold(state = this, onAction = {}, isCompact = false)

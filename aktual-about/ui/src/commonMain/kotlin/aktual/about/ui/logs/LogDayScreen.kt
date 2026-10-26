@@ -25,8 +25,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NavBackIconButton
@@ -406,7 +406,7 @@ internal fun LiveButton(isFollowing: Boolean, onAction: LogsActionHandler) =
 @PortraitPreview
 @Composable
 private fun PreviewLogDay(
-    @PreviewParameter(LogDayProvider::class) params: ColorParams<LogEntriesState>,
+  @PreviewParameter(LogDayProvider::class) params: ColorParams<LogEntriesState>,
 ) =
   PreviewWithColorParams(params) {
     LogDayScaffold(state = this, filters = PREVIEW_FILTERS, canShare = true, onAction = {})

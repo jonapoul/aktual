@@ -12,8 +12,8 @@ import aktual.core.icons.ArrowThickUp
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.formattedText
@@ -433,7 +433,7 @@ private val TABLE_SPACING = 2.dp
 @Preview
 @Composable
 private fun PreviewCalendarChart(
-    @PreviewParameter(CalendarChartProvider::class) params: ColorParams<CalendarChartParams>,
+  @PreviewParameter(CalendarChartProvider::class) params: ColorParams<CalendarChartParams>,
 ) =
   PreviewWithColorParams(params) {
     CalendarChart(
@@ -461,7 +461,7 @@ private class CalendarChartProvider :
 @Preview
 @Composable
 private fun PreviewMonthHeader(
-    @PreviewParameter(MonthHeaderProvider::class) params: ColorParams<MonthHeaderParams>,
+  @PreviewParameter(MonthHeaderProvider::class) params: ColorParams<MonthHeaderParams>,
 ) =
   PreviewWithColorParams(params) {
     MonthHeader(month = month, compact = compact)
@@ -478,7 +478,7 @@ private class MonthHeaderProvider :
 @Preview
 @Composable
 private fun PreviewCalendarSummary(
-    @PreviewParameter(CalendarSummaryProvider::class) params: ColorParams<CalendarSummaryParams>,
+  @PreviewParameter(CalendarSummaryProvider::class) params: ColorParams<CalendarSummaryParams>,
 ) =
   PreviewWithColorParams(params) {
     CalendarSummary(data = data, compact = compact)
@@ -496,7 +496,7 @@ private class CalendarSummaryProvider :
 @Preview
 @Composable
 private fun PreviewDayButton(
-    @PreviewParameter(DayButtonProvider::class) params: ColorParams<DayButtonParams>,
+  @PreviewParameter(DayButtonProvider::class) params: ColorParams<DayButtonParams>,
 ) =
   PreviewWithColorParams(params) {
     DayButton(
@@ -528,7 +528,7 @@ private class DayButtonProvider :
 @Preview
 @Composable
 private fun PreviewCalendarMonth(
-    @PreviewParameter(CalendarMonthProvider::class) params: ColorParams<CalendarMonthParams>,
+  @PreviewParameter(CalendarMonthProvider::class) params: ColorParams<CalendarMonthParams>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CalendarMonth(month = month, firstDayOfWeek = MONDAY, compact = compact, onAction = {})

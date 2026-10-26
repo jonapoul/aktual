@@ -3,8 +3,8 @@ package aktual.prefs.ui.core
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.InformationOutline
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.switch
 import androidx.compose.foundation.layout.ColumnScope
@@ -58,7 +58,7 @@ fun BooleanPreferenceItem(
 @Preview
 @Composable
 private fun PreviewBooleanPreferenceItem(
-    @PreviewParameter(BooleanPreferenceItemProvider::class)
+  @PreviewParameter(BooleanPreferenceItemProvider::class)
   params: ColorParams<BooleanPreferenceItemParams>,
 ) =
   PreviewWithColorParams(params) {

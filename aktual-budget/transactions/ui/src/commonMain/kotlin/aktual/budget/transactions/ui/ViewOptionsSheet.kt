@@ -6,8 +6,8 @@ import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -75,7 +75,7 @@ private fun TransactionsDensity.string(): String =
 @Preview
 @Composable
 private fun PreviewViewOptions(
-    @PreviewParameter(ViewOptionsProvider::class) params: ColorParams<TransactionsDensity>,
+  @PreviewParameter(ViewOptionsProvider::class) params: ColorParams<TransactionsDensity>,
 ) = PreviewWithColorParams(params) { ViewOptionsContent(density = this, onAction = {}) }
 
 private class ViewOptionsProvider :

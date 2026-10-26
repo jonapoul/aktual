@@ -10,8 +10,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.stringShort
 import androidx.compose.foundation.background
@@ -246,7 +246,7 @@ private class MonthPickerProvider :
 @Preview
 @Composable
 private fun PreviewMonthPicker(
-    @PreviewParameter(MonthPickerProvider::class) params: ColorParams<BudgetState.Loaded>,
+  @PreviewParameter(MonthPickerProvider::class) params: ColorParams<BudgetState.Loaded>,
 ) = PreviewWithColorParams(params) { MonthPickerContent(state = this, onSelect = {}) }
 
 private val MonthRows = Month.entries.chunked(size = 3)

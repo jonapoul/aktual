@@ -15,8 +15,8 @@ import aktual.core.nav.SearchLicensesNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
@@ -224,7 +224,7 @@ private fun ErrorContent(
 @PortraitPreview
 @Composable
 private fun PreviewLicenses(
-    @PreviewParameter(LicensesParamsProvider::class) params: ColorParams<LicensesState>,
+  @PreviewParameter(LicensesParamsProvider::class) params: ColorParams<LicensesState>,
 ) {
   PreviewWithColorParams(params) {
     LicensesScaffold(state = this, sorting = ByArtifact, showSortSheet = false, onAction = {})

@@ -15,8 +15,8 @@ import aktual.core.ui.AccountSyncDot
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NewTransactionsBadge
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
@@ -288,7 +288,7 @@ private fun AccountsEmpty(onAction: HomeActionHandler, modifier: Modifier = Modi
 @Preview
 @Composable
 private fun PreviewAccountsCard(
-    @PreviewParameter(AccountsCardStateProvider::class) params: ColorParams<AccountsCardState>,
+  @PreviewParameter(AccountsCardStateProvider::class) params: ColorParams<AccountsCardState>,
 ) =
   PreviewWithColorParams(params) {
     AccountsCard(

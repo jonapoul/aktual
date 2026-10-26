@@ -3,8 +3,8 @@ package aktual.account.ui.login
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RounderCardShape
@@ -65,7 +65,7 @@ internal fun HeaderLogin(
 @Preview
 @Composable
 private fun PreviewHeaderLogin(
-    @PreviewParameter(HeaderLoginProvider::class) params: ColorParams<HeaderLoginParams>,
+  @PreviewParameter(HeaderLoginProvider::class) params: ColorParams<HeaderLoginParams>,
 ) =
   PreviewWithColorParams(params) {
     HeaderLogin(isLoading = isLoading, hasFailure = hasFailure, onAction = {})

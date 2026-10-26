@@ -19,8 +19,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
@@ -427,7 +427,7 @@ private fun DeleteAllDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) =
 @PortraitPreview
 @Composable
 private fun PreviewLogFiles(
-    @PreviewParameter(LogFilesProvider::class) params: ColorParams<LogFilesState>,
+  @PreviewParameter(LogFilesProvider::class) params: ColorParams<LogFilesState>,
 ) =
   PreviewWithColorParams(params) {
     LogFilesScaffold(state = this, canShare = true, onAction = {})

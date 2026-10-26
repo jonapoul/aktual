@@ -21,8 +21,8 @@ import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -270,7 +270,7 @@ private const val LEARN_MORE_URL = "https://actualbudget.org/docs/budgeting/rule
 @PortraitPreview
 @Composable
 private fun PreviewListRulesScaffold(
-    @PreviewParameter(ListRulesStateProvider::class) params: ColorParams<ListRulesStateParams>,
+  @PreviewParameter(ListRulesStateProvider::class) params: ColorParams<ListRulesStateParams>,
 ) =
   PreviewWithColorParams(params) {
     ListRulesScaffold(state = state, onAction = {})

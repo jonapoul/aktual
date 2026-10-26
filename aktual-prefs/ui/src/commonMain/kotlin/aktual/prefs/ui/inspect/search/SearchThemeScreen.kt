@@ -7,8 +7,8 @@ import aktual.core.model.ThemeId
 import aktual.core.nav.BackNavigator
 import aktual.core.theme.LightColors
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -129,7 +129,7 @@ private fun ResultsList(
 @PortraitPreview
 @Composable
 private fun PreviewSearchThemeScaffold(
-    @PreviewParameter(SearchThemeScaffoldProvider::class) params: ColorParams<SearchThemeParams>,
+  @PreviewParameter(SearchThemeScaffoldProvider::class) params: ColorParams<SearchThemeParams>,
 ) =
   PreviewWithColorParams(params) {
     SearchThemeScaffold(query = query, state = state, onAction = {})

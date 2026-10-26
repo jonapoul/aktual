@@ -4,8 +4,8 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.InformationOutline
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.textField
@@ -144,7 +144,7 @@ private enum class PreviewOption {
 @Preview
 @Composable
 private fun PreviewListPreferenceItem(
-    @PreviewParameter(ListPreferenceItemProvider::class)
+  @PreviewParameter(ListPreferenceItemProvider::class)
   params: ColorParams<ListPreferenceItemParams>,
 ) =
   PreviewWithColorParams(params) {

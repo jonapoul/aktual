@@ -10,8 +10,8 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.hasAlternateRowColour
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
@@ -229,7 +229,7 @@ private const val NUM_SHIMMER_ROWS = 12
 @PortraitPreview
 @Composable
 private fun PreviewTransactions(
-    @PreviewParameter(TransactionsProvider::class) params: ColorParams<TransactionsParams>,
+  @PreviewParameter(TransactionsProvider::class) params: ColorParams<TransactionsParams>,
 ) =
   PreviewWithColorParams(params) {
     WithLedgerDimens(density) {

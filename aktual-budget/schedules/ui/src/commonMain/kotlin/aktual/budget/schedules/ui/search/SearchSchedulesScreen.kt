@@ -15,8 +15,8 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -161,7 +161,7 @@ private fun ShimmerResults(modifier: Modifier = Modifier) =
 @PortraitPreview
 @Composable
 private fun PreviewSearchSchedulesScaffold(
-    @PreviewParameter(SearchSchedulesScaffoldProvider::class)
+  @PreviewParameter(SearchSchedulesScaffoldProvider::class)
   params: ColorParams<SearchSchedulesParams>,
 ) =
   PreviewWithColorParams(params) {
