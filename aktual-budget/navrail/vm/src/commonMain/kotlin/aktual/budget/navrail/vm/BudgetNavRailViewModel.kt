@@ -3,6 +3,7 @@ package aktual.budget.navrail.vm
 import aktual.api.client.BudgetSyncApi
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.BudgetSyncController
+import aktual.budget.banksync.domain.NewTransactions
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.localChange
@@ -27,7 +28,7 @@ import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -43,6 +44,7 @@ class BudgetNavRailViewModel(
   private val syncApi: BudgetSyncApi,
   private val sync: BudgetSyncController,
   accountDao: AccountDao,
+  newTransactions: NewTransactions,
   private val appPreferences: AppPreferences,
   private val unpostedSchedules: UnpostedSchedules,
   viewModelContext: ViewModelContext,
@@ -60,9 +62,9 @@ class BudgetNavRailViewModel(
     }
 
   val accounts: StateFlow<DrawerAccounts> =
-    accountDao
-      .observeAllWithBalances()
-      .map { rows -> rows.toDrawerAccounts() }
+    combine(accountDao.observeAllWithBalances(), newTransactions.counts) { rows, counts ->
+        rows.toDrawerAccounts(counts)
+      }
       .catch { e -> logcat.e(e) { "Failed loading accounts" } }
       .stateIn(viewModelScope, Eagerly, initialValue = DrawerAccounts())
 

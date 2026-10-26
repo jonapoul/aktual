@@ -77,6 +77,7 @@ internal class BankSyncTestScope(
   val preferences = PreferencesDao(database, TestCoroutineContexts(EmptyCoroutineContext))
   val accountDao = AccountDao(database)
   val dao = BankSyncDao(database)
+  val newTransactions = NewTransactions()
 
   private var nextId = 1
 
@@ -115,6 +116,7 @@ internal class BankSyncTestScope(
       api = api,
       importer = importer,
       writer = writer,
+      newTransactions = newTransactions,
       dao = BankSyncDao(database),
       calendar = { TODAY },
       clock = TestClock(NOW),

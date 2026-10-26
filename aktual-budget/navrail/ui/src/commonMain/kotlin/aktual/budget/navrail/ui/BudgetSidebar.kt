@@ -36,6 +36,7 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalPrivacyEnabled
+import aktual.core.ui.NewTransactionsBadge
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
@@ -289,14 +290,22 @@ private fun AccountItem(
     horizontalArrangement = spacedBy(12.dp),
     verticalAlignment = CenterVertically,
   ) {
-    Text(
+    Row(
       modifier = Modifier.weight(1f),
-      text = account.name,
-      style = typography.bodyMedium,
-      color = color,
-      maxLines = 1,
-      overflow = Ellipsis,
-    )
+      horizontalArrangement = spacedBy(8.dp),
+      verticalAlignment = CenterVertically,
+    ) {
+      Text(
+        modifier = Modifier.weight(1f, fill = false),
+        text = account.name,
+        style = typography.bodyMedium,
+        color = color,
+        maxLines = 1,
+        overflow = Ellipsis,
+      )
+
+      NewTransactionsBadge(account.newTransactions)
+    }
 
     AccountSyncDot(account.syncState)
 
@@ -551,10 +560,10 @@ private val PREVIEW_ACCOUNTS =
   DrawerAccounts(
     onBudget =
       section(
-        account("Current Account", 2_431.18),
+        account("Current Account", 2_431.18, newTransactions = 3),
         account("Joint Account", 1_204.50),
         account("Easy Saver", 8_500.00, Ok(lastSync = null)),
-        account("Credit Card", -642.37, Failed(ReauthRequired)),
+        account("Credit Card", -642.37, Failed(ReauthRequired), newTransactions = 1),
       ),
     offBudget = section(account("Stocks ISA", 14_220.91), account("Car Loan", -6_300.00)),
     closed = section(account("Old Savings", 0.0)),
@@ -566,5 +575,16 @@ private fun section(vararg accounts: DrawerAccount) =
     total = accounts.fold(Amount.Zero) { sum, account -> sum + account.balance },
   )
 
-private fun account(name: String, balance: Double, syncState: AccountSyncState = NotLinked) =
-  DrawerAccount(id = AccountId(name), name = name, balance = Amount(balance), syncState = syncState)
+private fun account(
+  name: String,
+  balance: Double,
+  syncState: AccountSyncState = NotLinked,
+  newTransactions: Int = 0,
+) =
+  DrawerAccount(
+    id = AccountId(name),
+    name = name,
+    balance = Amount(balance),
+    syncState = syncState,
+    newTransactions = newTransactions,
+  )

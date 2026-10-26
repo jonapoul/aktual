@@ -4,6 +4,7 @@ import aktual.budget.BudgetLocalPreferences
 import aktual.budget.banksync.domain.AccountDeleter
 import aktual.budget.banksync.domain.BankSyncController
 import aktual.budget.banksync.domain.BankSyncSummary
+import aktual.budget.banksync.domain.NewTransactions
 import aktual.budget.db.Accounts
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
@@ -59,6 +60,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -79,6 +81,7 @@ class TransactionsViewModel(
   private val categoryDao: CategoryDao,
   private val bankSyncController: BankSyncController,
   private val deleter: AccountDeleter,
+  newTransactions: NewTransactions,
   transactionPreferences: TransactionPreferences,
   server: BudgetServer,
   viewModelContext: ViewModelContext,
@@ -208,6 +211,15 @@ class TransactionsViewModel(
       transactionDao.observeChanges().drop(count = 1).collect {
         logcat.d { "Transactions table updated, invalidating paging source..." }
         currentPagingSource?.invalidate()
+      }
+    }
+
+    // The account's new transactions are seen while it's open, even ones a sync adds meanwhile
+    if (accountId != null) {
+      viewModelScope.launch {
+        newTransactions.counts
+          .filter { accountId in it }
+          .collect { newTransactions.markRead(accountId) }
       }
     }
   }

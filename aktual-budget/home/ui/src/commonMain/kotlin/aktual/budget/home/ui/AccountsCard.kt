@@ -8,7 +8,6 @@ import aktual.budget.home.vm.AccountsSummary
 import aktual.budget.home.vm.mostRecentlyActive
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncState
-import aktual.budget.model.AccountSyncState.Failed
 import aktual.budget.model.AccountSyncState.Ok
 import aktual.budget.model.Amount
 import aktual.core.l10n.Strings
@@ -18,6 +17,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.NewTransactionsBadge
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryTextButton
 import androidx.compose.animation.AnimatedVisibility
@@ -84,7 +84,7 @@ internal fun AccountsCard(
     when (state) {
       Loading -> ShimmerAccounts()
       Empty -> AccountsEmpty(onAction)
-      AccountsCardState.Failed ->
+      Failed ->
         CardError(
           modifier = Modifier.padding(top = 4.dp),
           message = Strings.homeAccountsFailed,
@@ -213,14 +213,22 @@ private fun AccountRow(
     horizontalArrangement = Arrangement.spacedBy(12.dp),
     verticalAlignment = CenterVertically,
   ) {
-    Text(
+    Row(
       modifier = Modifier.weight(1f),
-      text = account.name,
-      style = typography.bodyLarge,
-      color = colors.pageText,
-      maxLines = 1,
-      overflow = Ellipsis,
-    )
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      verticalAlignment = CenterVertically,
+    ) {
+      Text(
+        modifier = Modifier.weight(1f, fill = false),
+        text = account.name,
+        style = typography.bodyLarge,
+        color = colors.pageText,
+        maxLines = 1,
+        overflow = Ellipsis,
+      )
+
+      NewTransactionsBadge(account.newTransactions)
+    }
 
     AccountSyncDot(account.syncState)
 
@@ -297,17 +305,23 @@ private class AccountsCardStateProvider :
     Loaded(PREVIEW_ACCOUNTS.copy(offBudget = section())),
     Empty,
     Loading,
-    AccountsCardState.Failed,
+    Failed,
   )
 
 internal val PREVIEW_ACCOUNTS =
   AccountsSummary(
     onBudget =
       section(
-        account("Current Account", 2_431.18, daysAgo = 0),
+        account("Current Account", 2_431.18, daysAgo = 0, newTransactions = 3),
         account("Joint Account", 1_204.50, daysAgo = 1),
         account("Easy Saver", 8_500.00, Ok(lastSync = null), daysAgo = 12),
-        account("Credit Card", -642.37, Failed(ReauthRequired), daysAgo = 2),
+        account(
+          "Credit Card",
+          -642.37,
+          AccountSyncState.Failed(ReauthRequired),
+          daysAgo = 2,
+          newTransactions = 1,
+        ),
         account("Cash", 60.00, daysAgo = 40),
       ),
     offBudget =
@@ -330,6 +344,7 @@ private fun account(
   balance: Double,
   syncState: AccountSyncState = NotLinked,
   daysAgo: Int? = null,
+  newTransactions: Int = 0,
 ) =
   AccountBalance(
     id = AccountId(name),
@@ -337,4 +352,5 @@ private fun account(
     balance = Amount(balance),
     syncState = syncState,
     lastActivity = daysAgo?.let { LocalDate(year = 2026, month = 3, day = 31).minus(it, DAY) },
+    newTransactions = newTransactions,
   )

@@ -30,6 +30,10 @@
     <item quantity="one">%1$d day ago</item>
     <item quantity="other">%1$d days ago</item>
   </plurals>
+  <plurals name="bank_sync_new_transactions">
+    <item quantity="one">%1$d new transaction</item>
+    <item quantity="other">%1$d new transactions</item>
+  </plurals>
 
   <!-- budget-budgeting -->
   <plurals name="budgeting_banner_overspent">

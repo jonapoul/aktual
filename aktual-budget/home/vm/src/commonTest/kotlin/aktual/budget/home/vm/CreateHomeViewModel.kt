@@ -1,5 +1,6 @@
 package aktual.budget.home.vm
 
+import aktual.budget.banksync.domain.NewTransactions
 import aktual.budget.budgeting.domain.BudgetMonthCalculatorImpl
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
@@ -28,6 +29,7 @@ internal fun BudgetDatabase.createHomeViewModel(
   prefs: TestBudgetLocalPreferences = TestBudgetLocalPreferences(DbMetadata()),
   accountsCard: BudgetDatabase = this,
   pinnedReports: PinnedReports = FakePinnedReports(),
+  newTransactions: NewTransactions = NewTransactions(),
 ): HomeViewModel {
   val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
   val calculator =
@@ -46,7 +48,7 @@ internal fun BudgetDatabase.createHomeViewModel(
       calendar = calendar,
     )
   val thisMonthLoader = ThisMonthLoader(calculator, calendar)
-  val accountsSummaryLoader = AccountsSummaryLoader(AccountDao(this))
+  val accountsSummaryLoader = AccountsSummaryLoader(AccountDao(this), newTransactions)
   return HomeViewModel(
     localPreferences = prefs,
     thisMonthLoader = thisMonthLoader,
@@ -57,7 +59,7 @@ internal fun BudgetDatabase.createHomeViewModel(
         thisMonthLoader = thisMonthLoader,
         schedulesLoader = schedulesLoader,
       ),
-    accountsSummaryLoader = AccountsSummaryLoader(AccountDao(accountsCard)),
+    accountsSummaryLoader = AccountsSummaryLoader(AccountDao(accountsCard), newTransactions),
     upcomingSchedulesLoader = UpcomingSchedulesLoader(schedulesLoader, calendar),
     pinnedReports = pinnedReports,
     viewModelContext = scope.viewModelContext,

@@ -3,6 +3,7 @@ package aktual.budget.home.vm
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncState
 import aktual.budget.model.Amount
+import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
@@ -17,14 +18,16 @@ data class AccountsSummary(
     get() = onBudget.total + offBudget.total
 }
 
-data class AccountSection(val accounts: ImmutableList<AccountBalance>, val total: Amount)
+@Immutable data class AccountSection(val accounts: ImmutableList<AccountBalance>, val total: Amount)
 
+@Immutable
 data class AccountBalance(
   val id: AccountId,
   val name: String,
   val balance: Amount,
   val syncState: AccountSyncState,
   val lastActivity: LocalDate?,
+  val newTransactions: Int = 0,
 )
 
 // Cuts the open accounts down to those with the latest transactions, keeping their order and the

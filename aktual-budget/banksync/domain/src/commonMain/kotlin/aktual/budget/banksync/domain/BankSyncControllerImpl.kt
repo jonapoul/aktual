@@ -46,6 +46,7 @@ class BankSyncControllerImpl(
   private val api: BankSyncApi,
   private val importer: BankSyncImporter,
   private val writer: TransactionWriter,
+  private val newTransactions: NewTransactions,
   private val dao: BankSyncDao,
   private val calendar: Calendar,
   private val clock: Clock,
@@ -97,6 +98,7 @@ class BankSyncControllerImpl(
       mutableProgress.update { it.copy(isRunning = false, pending = emptyList()) }
     }
     val results = mutableProgress.value.results
+    newTransactions += results
     mutableFinished.emit(results)
     return results
   }
