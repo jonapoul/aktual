@@ -19,8 +19,6 @@ import aktual.budget.rules.ui.string
 import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.label
 import aktual.core.l10n.Strings
-import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalNumberFormatConfig
@@ -32,10 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
@@ -53,33 +48,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import org.jetbrains.compose.resources.stringResource
 
 @Composable internal fun RuleStage.string(): String = stringResource(label())
-
-@Composable
-internal fun headerText(onAction: ListRulesActionHandler): AnnotatedString {
-  val headerText = Strings.rulesHeaderText
-  val learnMoreText = Strings.rulesHeaderLearnMore
-  val defaultStyle = typography.bodyMedium.copy(color = colors.pageTextLight)
-  val linkStyle = defaultStyle.copy(color = colors.pageTextLinkLight, textDecoration = Underline)
-  return remember(headerText, learnMoreText, defaultStyle, linkStyle) {
-    buildAnnotatedString {
-      withStyle(defaultStyle.toSpanStyle()) {
-        append(headerText)
-        append(" ")
-      }
-      withLink(
-        LinkAnnotation.Clickable(
-          tag = LEARN_MORE_URL,
-          styles = TextLinkStyles(linkStyle.toSpanStyle()),
-          linkInteractionListener = { onAction(OpenUrl(LEARN_MORE_URL)) },
-        ),
-      ) {
-        append(learnMoreText)
-      }
-    }
-  }
-}
-
-private const val LEARN_MORE_URL = "https://actualbudget.org/docs/budgeting/rules/"
 
 private fun JsonArray.toList(): List<String> = map { it.jsonPrimitive.content }
 
