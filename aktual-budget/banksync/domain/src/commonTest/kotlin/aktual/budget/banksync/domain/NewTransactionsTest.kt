@@ -1,49 +1,79 @@
 package aktual.budget.banksync.domain
 
 import aktual.budget.model.AccountId
-import aktual.budget.model.TransactionId
+import aktual.budget.model.SyncedPrefKey.PerAccount.NewTransactionsSeen
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.flow.first
 
-class NewTransactionsTest {
-  private val newTransactions = NewTransactions()
+internal class NewTransactionsTest {
+  private val api = FakeBankSyncApi()
 
   @Test
-  fun `Counts what each sync adds`() {
-    newTransactions += listOf(synced("a", added = 2, updated = 1), synced("b", added = 1))
-    newTransactions += listOf(synced("a", added = 3))
+  fun `A first sync counts its imported transactions as new`() = runBankSyncTest {
+    insertLinkedAccount(A)
+    api.responses["provider-a"] =
+      success(bankTx("-1.00", transactionId = "t1"), bankTx("-2.00", transactionId = "t2"))
 
-    assertThat(newTransactions.counts.value)
-      .isEqualTo(mapOf(AccountId("a") to 5, AccountId("b") to 1))
+    controller(api).sync()
+
+    // Not the starting balance, which wasn't imported
+    assertThat(newTransactions.counts.first()).isEqualTo(mapOf(A to 2))
   }
 
   @Test
-  fun `Ignores accounts with nothing added`() {
-    newTransactions +=
-      listOf(
-        synced("a", added = 0, updated = 2),
-        BankSyncResult.Failed(AccountId("b"), "b", BankSyncError.Internal(null)),
+  fun `Opening the account clears its count`() = runBankSyncTest {
+    insertLinkedAccount(A)
+    insertLinkedAccount(B)
+    api.responses["provider-a"] = success(bankTx("-1.00", transactionId = "t1"))
+    api.responses["provider-b"] = success(bankTx("-1.00", transactionId = "t2"))
+    controller(api).sync()
+
+    now += 1.minutes
+    newTransactions.markSeen(A)
+
+    assertThat(newTransactions.counts.first()).isEqualTo(mapOf(B to 1))
+    assertThat(preferences[NewTransactionsSeen(A)]).isEqualTo(now.toEpochMilliseconds().toString())
+  }
+
+  @Test
+  fun `Later syncs count what they import after the account was opened`() = runBankSyncTest {
+    insertLinkedAccount(A)
+    api.responses["provider-a"] = success(bankTx("-1.00", transactionId = "t1"))
+    val controller = controller(api)
+    controller.sync()
+    now += 1.hours
+    newTransactions.markSeen(A)
+
+    // A second after it was opened, so the second import's sort order counts down to before then
+    now += 1.seconds
+    api.responses["provider-a"] =
+      success(
+        bankTx("-1.00", transactionId = "t1"),
+        bankTx("-2.00", transactionId = "t2"),
+        bankTx("-3.00", transactionId = "t3"),
       )
+    controller.sync()
 
-    assertThat(newTransactions.counts.value).isEmpty()
+    assertThat(newTransactions.counts.first()).isEqualTo(mapOf(A to 2))
   }
 
   @Test
-  fun `Marking an account read clears only its count`() {
-    newTransactions += listOf(synced("a", added = 2), synced("b", added = 1))
+  fun `Nothing is new in an account that was never synced`() = runBankSyncTest {
+    insertLinkedAccount(A)
 
-    newTransactions.markRead(AccountId("a"))
+    newTransactions.markSeen(A)
 
-    assertThat(newTransactions.counts.value).isEqualTo(mapOf(AccountId("b") to 1))
+    assertThat(newTransactions.counts.first()).isEmpty()
   }
 
-  private fun synced(name: String, added: Int, updated: Int = 0) =
-    BankSyncResult.Synced(
-      account = AccountId(name),
-      name = name,
-      added = List(added) { TransactionId("$name-added-$it") },
-      updated = List(updated) { TransactionId("$name-updated-$it") },
-    )
+  private companion object {
+    val A = AccountId("a")
+    val B = AccountId("b")
+  }
 }

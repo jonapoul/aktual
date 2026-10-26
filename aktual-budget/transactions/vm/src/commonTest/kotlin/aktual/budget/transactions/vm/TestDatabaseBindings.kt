@@ -1,6 +1,5 @@
 package aktual.budget.transactions.vm
 
-import aktual.budget.banksync.domain.NewTransactions
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
@@ -46,6 +45,6 @@ internal object TestDatabaseBindings {
 
   @Provides
   @IntoMap
-  @AccessorKey(NewTransactions::class)
-  fun newTransactions(newTransactions: NewTransactions): Accessor = { newTransactions }
+  @AccessorKey(FakeNewTransactions::class)
+  fun newTransactions(newTransactions: FakeNewTransactions): Accessor = { newTransactions }
 }

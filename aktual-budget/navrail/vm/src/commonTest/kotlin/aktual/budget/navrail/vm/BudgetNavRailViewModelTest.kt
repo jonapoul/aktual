@@ -1,8 +1,6 @@
 package aktual.budget.navrail.vm
 
 import aktual.api.client.BudgetSyncApi
-import aktual.budget.banksync.domain.BankSyncResult
-import aktual.budget.banksync.domain.NewTransactions
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.TransactionDao
@@ -14,7 +12,6 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncResponse
-import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.schedules.domain.UnpostedSchedules
 import aktual.core.model.BudgetServer
@@ -39,6 +36,7 @@ import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.LocalDate
 import okio.ByteString
@@ -50,7 +48,7 @@ class BudgetNavRailViewModelTest {
   private val sync = TestSyncController()
   private val api = TestBudgetSyncApi()
   private val unpostedSchedules = TestUnpostedSchedules()
-  private val newTransactions = NewTransactions()
+  private val newTransactions = FakeNewTransactions()
 
   @Test
   fun `Renaming updates the server, the local name and the sync log`() = runDatabaseTest { scope ->
@@ -155,19 +153,11 @@ class BudgetNavRailViewModelTest {
     viewModel.accounts.test {
       assertThat(awaitLoaded().onBudget.accounts.map { it.newTransactions }).containsExactly(0, 0)
 
-      newTransactions +=
-        listOf(
-          BankSyncResult.Synced(
-            AccountId("b"),
-            "b",
-            List(2) { TransactionId("t$it") },
-            emptyList(),
-          ),
-        )
+      newTransactions.counts.update { mapOf(AccountId("b") to 2) }
       assertThat(awaitItem().onBudget.accounts.map { it.name to it.newTransactions })
         .containsExactly("a" to 0, "b" to 2)
 
-      newTransactions.markRead(AccountId("b"))
+      newTransactions.markSeen(AccountId("b"))
       assertThat(awaitItem().onBudget.accounts.map { it.newTransactions }).containsExactly(0, 0)
     }
   }

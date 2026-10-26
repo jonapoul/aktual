@@ -3,7 +3,6 @@ package aktual.budget.transactions.vm
 import aktual.budget.banksync.domain.BankSyncError
 import aktual.budget.banksync.domain.BankSyncResult
 import aktual.budget.banksync.domain.BankSyncSummary
-import aktual.budget.banksync.domain.NewTransactions
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
@@ -53,11 +52,11 @@ import kotlin.io.path.createTempDirectory
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.uuid.Uuid
-import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -82,7 +81,7 @@ class TransactionsViewModelTest {
   private lateinit var tags: TagsDao
   private lateinit var sync: SyncDao
   private lateinit var bankSync: FakeBankSyncController
-  private lateinit var newTransactions: NewTransactions
+  private lateinit var newTransactions: FakeNewTransactions
   private lateinit var factory: TransactionsViewModel.Factory
 
   // fake
@@ -120,7 +119,7 @@ class TransactionsViewModelTest {
       tags = budgetGraph[TagsDao::class]
       sync = budgetGraph[SyncDao::class]
       bankSync = budgetGraph[FakeBankSyncController::class]
-      newTransactions = budgetGraph[NewTransactions::class]
+      newTransactions = budgetGraph[FakeNewTransactions::class]
     }
 
     // add some utility entities
@@ -1079,24 +1078,18 @@ class TransactionsViewModelTest {
     // given
     buildViewModel(SpecificAccount(LINKED))
     val other = AccountId("a")
-    fun synced(account: AccountId) =
-      BankSyncResult.Synced(
-        account,
-        null,
-        added = listOf(TransactionId("t")),
-        updated = emptyList(),
-      )
 
     newTransactions.counts.test {
-      assertThatNextEmissionIsEqualTo(persistentMapOf())
+      assertThatNextEmissionIsEqualTo(emptyMap())
 
       // when
-      newTransactions += listOf(synced(LINKED), synced(other))
+      newTransactions.counts.update { mapOf(LINKED to 1, other to 1) }
 
       // then
-      assertThatNextEmissionIsEqualTo(persistentMapOf(LINKED to 1, other to 1))
-      assertThatNextEmissionIsEqualTo(persistentMapOf(other to 1))
+      assertThatNextEmissionIsEqualTo(mapOf(LINKED to 1, other to 1))
+      assertThatNextEmissionIsEqualTo(mapOf(other to 1))
     }
+    assertThat(newTransactions.seen).containsExactly(LINKED)
   }
 
   @Test

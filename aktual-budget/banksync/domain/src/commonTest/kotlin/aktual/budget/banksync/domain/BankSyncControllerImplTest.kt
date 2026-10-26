@@ -146,19 +146,6 @@ internal class BankSyncControllerImplTest {
   }
 
   @Test
-  fun `A sync counts the transactions it added to each account`() = runBankSyncTest {
-    insertLinkedAccount(A)
-    insertLinkedAccount(B)
-    api.responses["provider-a"] = success(bankTx("-12.34", transactionId = "t1"))
-    api.responses["provider-b"] = providerError("ITEM_ERROR", "ITEM_LOGIN_REQUIRED")
-
-    controller(api).sync()
-
-    // With the starting balance
-    assertThat(newTransactions.counts.value).isEqualTo(mapOf(A to 2))
-  }
-
-  @Test
   fun `Provider errors set the account's status`() = runBankSyncTest {
     insertLinkedAccount(A)
     api.responses["provider-a"] = providerError("ITEM_ERROR", "ITEM_LOGIN_REQUIRED")

@@ -219,7 +219,15 @@ class TransactionsViewModel(
       viewModelScope.launch {
         newTransactions.counts
           .filter { accountId in it }
-          .collect { newTransactions.markRead(accountId) }
+          .collect {
+            try {
+              newTransactions.markSeen(accountId)
+            } catch (e: CancellationException) {
+              throw e
+            } catch (e: Exception) {
+              logcat.w(e) { "Failed marking $accountId seen" }
+            }
+          }
       }
     }
   }

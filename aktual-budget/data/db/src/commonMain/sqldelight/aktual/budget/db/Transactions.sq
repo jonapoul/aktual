@@ -319,6 +319,25 @@ SELECT
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
   LIMIT :limit OFFSET :offset;
 
+-- Bank-imported transactions in each account added since it was last opened. Accounts that were
+-- never tracked have no seen pref, so are left out. The key prefix is
+-- SyncedPrefKey.NEW_TRANSACTIONS_SEEN_PREFIX
+countNewImported:
+SELECT t.acct AS account, COUNT(*) AS count
+  FROM transactions AS t
+  JOIN preferences AS p ON p.id = 'aktual-new-transactions-seen-' || t.acct
+  WHERE
+    IFNULL(t.tombstone, 0) = 0 AND
+    IFNULL(t.isChild, 0) = 0 AND
+    t.financial_id IS NOT NULL AND
+    t.sort_order > CAST(p.value AS REAL)
+  GROUP BY t.acct;
+
+oldestImportedSortOrder:
+SELECT MIN(sort_order) AS oldest
+  FROM transactions
+  WHERE id IN ? AND financial_id IS NOT NULL;
+
 countUncategorised:
 SELECT COUNT(*)
   FROM v_transactions_internal_alive AS vt

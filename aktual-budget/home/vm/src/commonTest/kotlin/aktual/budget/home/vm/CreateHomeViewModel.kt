@@ -29,7 +29,7 @@ internal fun BudgetDatabase.createHomeViewModel(
   prefs: TestBudgetLocalPreferences = TestBudgetLocalPreferences(DbMetadata()),
   accountsCard: BudgetDatabase = this,
   pinnedReports: PinnedReports = FakePinnedReports(),
-  newTransactions: NewTransactions = NewTransactions(),
+  newTransactions: NewTransactions = FakeNewTransactions(),
 ): HomeViewModel {
   val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
   val calculator =

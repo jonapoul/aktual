@@ -98,7 +98,6 @@ class BankSyncControllerImpl(
       mutableProgress.update { it.copy(isRunning = false, pending = emptyList()) }
     }
     val results = mutableProgress.value.results
-    newTransactions += results
     mutableFinished.emit(results)
     return results
   }
@@ -203,6 +202,7 @@ class BankSyncControllerImpl(
         currentBalance = response.startingBalance?.let(::Amount),
       )
     val result = importer.import(account.id, account.source, download, initialSync)
+    newTransactions.imported(account.id, result.added)
     updateAccount(account.id, Ok, synced = true)
     return BankSyncResult.Synced(account.id, account.name, result.added, result.updated)
   }
