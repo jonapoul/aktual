@@ -415,9 +415,10 @@ private fun DeleteAllDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) =
   AktualAlertDialog(
     title = Strings.logsDeleteTitle,
     onDismissRequest = onDismiss,
+    highlight = colors.errorText,
     buttons = {
       TextButton(onClick = onDismiss) { Text(Strings.logsCancel) }
-      TextButton(onClick = onConfirm) { Text(Strings.logsDelete) }
+      TextButton(onClick = onConfirm) { Text(Strings.logsDelete, color = colors.errorText) }
     },
   ) {
     Text(text = Strings.logsDeleteMessage)
