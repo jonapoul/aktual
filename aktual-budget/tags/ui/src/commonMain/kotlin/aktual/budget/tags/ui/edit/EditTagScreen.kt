@@ -20,6 +20,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarState
@@ -317,7 +318,7 @@ private fun EditTagContent(
         .fillMaxSize()
         .verticalScroll(scrollState)
         .padding(contentPadding)
-        .padding(EditTagDS.contentPadding),
+        .padding(Dimens.ScreenPadding),
     verticalArrangement = Arrangement.spacedBy(EditTagDS.fieldSpacing),
   ) {
     Field(label = Strings.tagsCreateTagLabel, required = true) {
@@ -368,7 +369,7 @@ private fun ShimmerEditTag(modifier: Modifier = Modifier) {
 
   Column(
     modifier =
-      modifier.fillMaxSize().padding(EditTagDS.contentPadding).shimmer(rememberShimmer(Window)),
+      modifier.fillMaxSize().padding(Dimens.ScreenPadding).shimmer(rememberShimmer(Window)),
     verticalArrangement = Arrangement.spacedBy(EditTagDS.fieldSpacing),
   ) {
     repeat(times = 2) {

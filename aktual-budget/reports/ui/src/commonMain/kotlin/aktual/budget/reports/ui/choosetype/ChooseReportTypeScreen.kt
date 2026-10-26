@@ -33,6 +33,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PortraitPreview
@@ -151,9 +152,13 @@ private fun ChooseReportTypeContent(
 ) {
   Box(modifier = modifier.fillMaxSize()) {
     LazyColumn(
-      modifier = Modifier.fillMaxWidth().background(colors.pageBackground).scrollbar(lazyListState),
+      modifier =
+        Modifier.fillMaxWidth()
+          .background(colors.pageBackground)
+          .scrollbar(lazyListState)
+          .padding(horizontal = Dimens.ScreenPadding),
       state = lazyListState,
-      verticalArrangement = Arrangement.spacedBy(8.dp),
+      verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
       contentPadding = contentPadding,
     ) {
       items(WidgetType.known) { type ->

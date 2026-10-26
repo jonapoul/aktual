@@ -32,6 +32,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalIconButton
@@ -310,10 +311,10 @@ private fun LoadedContent(
 ) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = TopCenter) {
     LazyColumn(
-      modifier = Modifier.padding(8.dp).scrollbar(listState),
+      modifier = Modifier.padding(Dimens.ScreenPadding).scrollbar(listState),
       state = listState,
       contentPadding = contentPadding,
-      verticalArrangement = Arrangement.spacedBy(8.dp),
+      verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
     ) {
       if (rule.hasUnknownValues) {
         item { WarningBanner(text = Strings.editRuleUnknownValues) }
@@ -344,7 +345,7 @@ private fun RuleStage(
   Column(
     modifier =
       modifier.fillMaxWidth().background(colors.cardBackground, CardShape).padding(CARD_PADDING),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     Row {
       Text(

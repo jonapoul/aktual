@@ -18,6 +18,7 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PageBackground
@@ -149,7 +150,7 @@ private fun BankSyncProviderSetupContent(
         .fillMaxSize()
         .verticalScroll(scrollState)
         .padding(contentPadding)
-        .padding(BankSyncDS.settingsPadding),
+        .padding(Dimens.ScreenPadding),
     verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsFieldSpacing),
   ) {
     intro(state.source)?.let { intro ->

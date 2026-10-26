@@ -159,7 +159,9 @@ private fun ListRulesScaffold(
     Box {
       PageBackground()
       Box(
-        modifier = Modifier.padding(horizontal = 8.dp).hazedTopBarContent(hazeState, innerPadding),
+        modifier =
+          Modifier.padding(horizontal = Dimens.ScreenPadding)
+            .hazedTopBarContent(hazeState, innerPadding),
         contentAlignment = Center,
       ) {
         ListRulesContent(
@@ -217,7 +219,7 @@ private fun ListRulesContent(
   ) {
     when (state) {
       is Loading -> {
-        Column(verticalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing)) {
           VerticalSpacer(contentPadding.calculateTopPadding())
           repeat(times = 10) { ShimmerListRulesItem() }
         }
@@ -283,7 +285,7 @@ private fun ContentSuccess(
     modifier = modifier.scrollbar(listState),
     state = listState,
     contentPadding = contentPadding,
-    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     items(rules, key = { it.id.value }) { rule ->
       ListRulesItem(

@@ -17,7 +17,9 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens.Large
+import aktual.core.ui.Dimens.ListItemSpacing
 import aktual.core.ui.Dimens.Medium
+import aktual.core.ui.Dimens.ScreenPadding
 import aktual.core.ui.Dimens.VeryLarge
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
@@ -126,8 +128,8 @@ private fun ResultsList(
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
-    contentPadding = PaddingValues(horizontal = Large, vertical = Medium),
-    verticalArrangement = Arrangement.spacedBy(Large),
+    contentPadding = PaddingValues(horizontal = ScreenPadding, vertical = Medium),
+    verticalArrangement = Arrangement.spacedBy(ListItemSpacing),
   ) {
     items(results.tags, key = { it.id.value }) { tag ->
       ResultItem(

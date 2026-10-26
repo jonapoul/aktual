@@ -21,6 +21,7 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
@@ -144,7 +145,7 @@ private fun BankSyncScaffold(
       PageBackground()
 
       HazedPullToRefreshBox(
-        modifier = Modifier.padding(BankSyncDS.listPadding),
+        modifier = Modifier.padding(horizontal = Dimens.ScreenPadding),
         contentAlignment = Center,
         onRefresh = { onAction(Reload) },
         isRefreshing = state is Loading,
@@ -179,7 +180,7 @@ private fun BankSyncContent(
       Loading -> {
         Column(
           modifier = Modifier.padding(contentPadding),
-          verticalArrangement = Arrangement.spacedBy(BankSyncDS.listItemSpacing),
+          verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
         ) {
           repeat(times = 10) { ShimmerBankSyncAccountItem() }
           BottomSpacing()
@@ -237,7 +238,7 @@ private fun ContentSuccess(
     modifier = modifier.scrollbar(listState),
     state = listState,
     contentPadding = contentPadding,
-    verticalArrangement = Arrangement.spacedBy(BankSyncDS.listItemSpacing),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     item(key = "notice") {
       NoticeBanner(text = Strings.bankSyncNotice, icon = AktualIcons.Library)

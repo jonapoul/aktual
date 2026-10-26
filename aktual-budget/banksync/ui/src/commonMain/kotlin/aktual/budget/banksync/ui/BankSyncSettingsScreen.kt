@@ -29,6 +29,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
@@ -224,7 +225,7 @@ private fun BankSyncSettingsContent(
         .fillMaxSize()
         .verticalScrollWithBar(scrollState)
         .padding(contentPadding)
-        .padding(BankSyncDS.settingsPadding),
+        .padding(Dimens.ScreenPadding),
     verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsItemSpacing),
   ) {
     // Investment accounts only import their balance, so have no transactions to map
@@ -251,7 +252,7 @@ private fun ShimmerSettings(modifier: Modifier = Modifier) {
 
   Column(
     modifier =
-      modifier.fillMaxSize().padding(BankSyncDS.settingsPadding).shimmer(rememberShimmer(Window)),
+      modifier.fillMaxSize().padding(Dimens.ScreenPadding).shimmer(rememberShimmer(Window)),
     verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsItemSpacing),
   ) {
     ShimmerGroup {

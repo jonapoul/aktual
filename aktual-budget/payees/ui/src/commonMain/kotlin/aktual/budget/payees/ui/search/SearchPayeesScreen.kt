@@ -21,6 +21,7 @@ import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
@@ -35,6 +36,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -139,8 +141,8 @@ private fun ResultsList(
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
-    contentPadding = ListPayeesDS.listPadding,
-    verticalArrangement = Arrangement.spacedBy(ListPayeesDS.listItemSpacing),
+    contentPadding = PaddingValues(horizontal = Dimens.ScreenPadding),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     items(results.payees, key = { it.id.value }) { payee ->
       PayeeItem(
@@ -158,8 +160,8 @@ private fun ResultsList(
 @Composable
 private fun ShimmerResults(modifier: Modifier = Modifier) =
   Column(
-    modifier = modifier.fillMaxSize().padding(ListPayeesDS.listPadding),
-    verticalArrangement = Arrangement.spacedBy(ListPayeesDS.listItemSpacing),
+    modifier = modifier.fillMaxSize().padding(horizontal = Dimens.ScreenPadding),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     repeat(ListPayeesDS.SHIMMER_ITEMS) { ShimmerPayeeItem() }
   }

@@ -3,7 +3,6 @@ package aktual.budget.payees.ui.edit
 import androidx.compose.ui.unit.dp
 
 internal object EditPayeeDS {
-  val contentPadding = 16.dp
   val fieldSpacing = 16.dp
   val labelSpacing = 4.dp
   val switchSpacing = 12.dp

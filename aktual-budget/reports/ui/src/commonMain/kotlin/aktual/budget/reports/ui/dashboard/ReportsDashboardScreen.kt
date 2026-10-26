@@ -21,6 +21,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
@@ -247,8 +248,8 @@ private fun ReportsDashboardContent(
 @Composable
 private fun ContentLoading(contentPadding: PaddingValues, modifier: Modifier = Modifier) =
   Column(
-    modifier = modifier.padding(4.dp).padding(contentPadding),
-    verticalArrangement = Arrangement.spacedBy(4.dp),
+    modifier = modifier.padding(horizontal = Dimens.ScreenPadding).padding(contentPadding),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     repeat(times = 5) { ShimmerDashboardItem() }
   }
@@ -286,10 +287,10 @@ private fun ContentList(
   var openItemId by remember { mutableStateOf<WidgetId?>(null) }
 
   LazyColumn(
-    modifier = modifier.scrollbar(listState).padding(4.dp),
+    modifier = modifier.scrollbar(listState).padding(horizontal = Dimens.ScreenPadding),
     state = listState,
     contentPadding = contentPadding,
-    verticalArrangement = Arrangement.spacedBy(4.dp),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     items(items, key = { it.id.value }) { item ->
       DashboardItem(

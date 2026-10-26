@@ -35,6 +35,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarState
@@ -346,7 +347,7 @@ private fun EditPayeeContent(
         .fillMaxSize()
         .verticalScroll(scrollState)
         .padding(contentPadding)
-        .padding(EditPayeeDS.contentPadding),
+        .padding(Dimens.ScreenPadding),
     verticalArrangement = Arrangement.spacedBy(EditPayeeDS.fieldSpacing),
   ) {
     Field(label = Strings.payeesEditNameLabel, required = !payee.isTransfer) {
@@ -439,7 +440,7 @@ private fun ShimmerEditPayee(modifier: Modifier = Modifier) {
 
   Column(
     modifier =
-      modifier.fillMaxSize().padding(EditPayeeDS.contentPadding).shimmer(rememberShimmer(Window)),
+      modifier.fillMaxSize().padding(Dimens.ScreenPadding).shimmer(rememberShimmer(Window)),
     verticalArrangement = Arrangement.spacedBy(EditPayeeDS.fieldSpacing),
   ) {
     Column(verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing)) {

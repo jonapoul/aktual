@@ -1,6 +1,5 @@
 package aktual.budget.schedules.ui.search
 
-import aktual.budget.schedules.ui.list.ListSchedulesDS
 import aktual.budget.schedules.ui.list.ListSchedulesItem
 import aktual.budget.schedules.ui.list.ListSchedulesPreview
 import aktual.budget.schedules.ui.list.ShimmerListSchedulesItem
@@ -18,6 +17,7 @@ import aktual.core.nav.EditScheduleNavigator
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
@@ -32,6 +32,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -133,8 +134,8 @@ private fun ResultsList(
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
-    contentPadding = ListSchedulesDS.listPadding,
-    verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.listItemSpacing),
+    contentPadding = PaddingValues(horizontal = Dimens.ScreenPadding),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     items(results.schedules, key = { it.id.value }) { schedule ->
       ListSchedulesItem(
@@ -151,8 +152,8 @@ private fun ResultsList(
 @Composable
 private fun ShimmerResults(modifier: Modifier = Modifier) =
   Column(
-    modifier = modifier.fillMaxSize().padding(ListSchedulesDS.listPadding),
-    verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.listItemSpacing),
+    modifier = modifier.fillMaxSize().padding(horizontal = Dimens.ScreenPadding),
+    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     repeat(times = 10) { ShimmerListSchedulesItem() }
   }

@@ -3,7 +3,6 @@ package aktual.budget.schedules.ui.edit
 import androidx.compose.ui.unit.dp
 
 internal object EditScheduleDS {
-  val contentPadding = 16.dp
   val sectionSpacing = 20.dp
   val fieldSpacing = 12.dp
   val labelSpacing = 6.dp

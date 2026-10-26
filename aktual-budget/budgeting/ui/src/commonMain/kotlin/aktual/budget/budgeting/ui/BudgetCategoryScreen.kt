@@ -13,6 +13,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
@@ -162,8 +163,8 @@ private fun BudgetCategoryScaffold(
               Modifier.fillMaxSize()
                 .verticalScroll(scroll)
                 .padding(innerPadding)
-                .padding(horizontal = CategoryDS.padding),
-            verticalArrangement = Arrangement.spacedBy(CategoryDS.spacing),
+                .padding(horizontal = Dimens.ScreenPadding),
+            verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
           ) {
             state.selectedMonth?.let { selected ->
               MonthCard(month = selected, isIncome = state.isIncome)
@@ -391,8 +392,6 @@ private const val BAR_FRACTION = 0.3f
 private const val MONTH_LABEL_LENGTH = 3
 
 private object CategoryDS {
-  val padding = 16.dp
-  val spacing = 12.dp
   val cardPadding = 12.dp
   val chartHeight = 160.dp
 }

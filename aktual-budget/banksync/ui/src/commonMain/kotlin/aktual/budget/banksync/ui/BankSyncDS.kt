@@ -4,9 +4,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
 
 internal object BankSyncDS {
-  val listPadding = PaddingValues(horizontal = 8.dp)
-  val listItemSpacing = 4.dp
-
   val headerPadding = PaddingValues(start = 4.dp, end = 4.dp, top = 12.dp, bottom = 4.dp)
   val headerSpacing = 8.dp
 
@@ -23,7 +20,6 @@ internal object BankSyncDS {
   val shimmerItemTextHeightSmall = 15.dp
   val shimmerChipWidth = 48.dp
 
-  val settingsPadding = PaddingValues(8.dp)
   val settingsItemSpacing = 10.dp
   val settingsFieldSpacing = 12.dp
   val settingsLabelSpacing = 6.dp

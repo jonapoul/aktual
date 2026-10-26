@@ -104,7 +104,7 @@ internal fun ReorderableCards(
     CardColumns(
       modifier = modifier,
       columns = columns,
-      spacing = Dimens.VeryLarge,
+      spacing = Dimens.ListItemSpacing,
       dragged = order.indexOf(drag.dragged).takeIf { it >= 0 },
       dragPosition = { drag.position.round() },
       onPlaced = { slots, coordinates -> drag.place(order, slots, coordinates) },

@@ -19,6 +19,7 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -195,7 +196,7 @@ internal fun MonteCarloScaffold(
                 .verticalScrollWithBar()
                 // Tapping away from a field ends its edit
                 .pointerInput(Unit) { detectTapGestures { focusManager.clearFocus() } }
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = Dimens.ScreenPadding),
             verticalArrangement = Arrangement.spacedBy(10.dp),
           ) {
             MonteCarloConfiguration(state = state, onAction = onAction)
