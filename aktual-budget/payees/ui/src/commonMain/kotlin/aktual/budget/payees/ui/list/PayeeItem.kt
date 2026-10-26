@@ -28,14 +28,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 
@@ -150,28 +153,35 @@ internal fun ShimmerPayeeItem(modifier: Modifier = Modifier) {
       modifier = Modifier.weight(1f),
       verticalArrangement = Arrangement.spacedBy(ListPayeesDS.itemContentSpacing),
     ) {
-      Box(
-        modifier =
-          Modifier.fillMaxWidth(fraction = 0.6f)
-            .height(ListPayeesDS.shimmerNameHeight)
-            .background(colors.pageText, CardShape),
+      ShimmerLine(
+        style = typography.bodyLarge,
+        barHeight = ListPayeesDS.shimmerNameHeight,
+        modifier = Modifier.fillMaxWidth(fraction = 0.6f),
       )
-      Box(
-        modifier =
-          Modifier.fillMaxWidth(fraction = 0.3f)
-            .height(ListPayeesDS.shimmerSubtitleHeight)
-            .background(colors.pageText, CardShape),
+      ShimmerLine(
+        style = typography.bodySmall,
+        barHeight = ListPayeesDS.shimmerSubtitleHeight,
+        modifier = Modifier.fillMaxWidth(fraction = 0.3f),
       )
     }
 
     Box(
       modifier =
-        Modifier.size(
-            width = ListPayeesDS.shimmerChipWidth,
-            height = ListPayeesDS.shimmerChipHeight,
-          )
-          .background(colors.pageText, CardShape),
-    )
+        Modifier.width(ListPayeesDS.shimmerChipWidth)
+          .background(colors.pageText, CardShape)
+          .padding(ListPayeesDS.ruleChipPadding),
+    ) {
+      Text(text = "", style = typography.bodySmall, maxLines = 1)
+    }
+  }
+}
+
+/** A bar vertically centred in the height of one line of [style], so it matches real text */
+@Composable
+private fun ShimmerLine(style: TextStyle, barHeight: Dp, modifier: Modifier = Modifier) {
+  Box(modifier = modifier, contentAlignment = CenterStart) {
+    Text(text = "", style = style, maxLines = 1)
+    Box(modifier = Modifier.fillMaxWidth().height(barHeight).background(colors.pageText, CardShape))
   }
 }
 

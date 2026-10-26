@@ -20,6 +20,5 @@ internal object ListPayeesDS {
   val shimmerNameHeight = 16.dp
   val shimmerSubtitleHeight = 12.dp
   val shimmerChipWidth = 96.dp
-  val shimmerChipHeight = 20.dp
   const val SHIMMER_ITEMS = 10
 }
