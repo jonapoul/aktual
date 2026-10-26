@@ -150,7 +150,7 @@ fun AktualAlertDialogContent(
 @Preview
 @Composable
 private fun PreviewExampleContentWithButtons(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     AktualAlertDialogContent(
@@ -174,7 +174,7 @@ private fun PreviewExampleContentWithButtons(
 @Preview
 @Composable
 private fun PreviewExampleContentWithoutButtons(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     AktualAlertDialogContent(

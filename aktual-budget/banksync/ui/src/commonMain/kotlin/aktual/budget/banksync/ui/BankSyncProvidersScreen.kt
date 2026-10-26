@@ -13,8 +13,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -23,7 +23,7 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -273,8 +273,8 @@ private fun ResetDialog(name: String, onDismiss: () -> Unit, onConfirm: () -> Un
 @Composable
 private fun PreviewBankSyncProvidersScaffold(
   @PreviewParameter(BankSyncProvidersStateProvider::class)
-  params: ColoredParams<BankSyncProvidersState>,
-) = PreviewWithColoredParams(params) { BankSyncProvidersScaffold(state = this, onAction = {}) }
+  params: ColorParams<BankSyncProvidersState>,
+) = PreviewWithColorParams(params) { BankSyncProvidersScaffold(state = this, onAction = {}) }
 
 private val PreviewLoaded =
   BankSyncProvidersState.Loaded(
@@ -289,7 +289,7 @@ private val PreviewLoaded =
   )
 
 private class BankSyncProvidersStateProvider :
-  ColoredParameterProvider<BankSyncProvidersState>(
+  ColorParamsProvider<BankSyncProvidersState>(
     PreviewLoaded,
     PreviewLoaded.copy(resetting = GoCardless),
     BankSyncProvidersState.NoServer,

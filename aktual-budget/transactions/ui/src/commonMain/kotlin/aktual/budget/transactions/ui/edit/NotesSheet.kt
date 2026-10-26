@@ -20,10 +20,10 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.EditorSheet
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.TagChip
 import aktual.core.ui.keyboardFocusRequester
 import androidx.compose.foundation.layout.Arrangement
@@ -180,9 +180,9 @@ private fun TextFieldState.applyEdit(change: NotesEdit) = edit {
 @Preview
 @Composable
 private fun PreviewNotesSheet(
-  @PreviewParameter(NotesSheetProvider::class) params: ColoredParams<String>,
+  @PreviewParameter(NotesSheetProvider::class) params: ColorParams<String>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     NotesSheetContent(
       text = rememberTextFieldState(initialText = this),
       tags = PREVIEW_TAGS,
@@ -198,7 +198,7 @@ private val PREVIEW_TAGS =
   )
 
 private class NotesSheetProvider :
-  ColoredParameterProvider<String>(
+  ColorParamsProvider<String>(
     "",
     "Lunch with #f",
     "Lunch with #fo",

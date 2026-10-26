@@ -6,7 +6,7 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.disabled
 import aktual.core.ui.keyboardFocusRequester
@@ -102,7 +102,7 @@ private fun DeleteThemeDialogContent(
 @Preview
 @Composable
 private fun PreviewDuplicateThemeDialog(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     DuplicateThemeDialogContent(rememberTextFieldState("Midnight (copy)"), {}, {})
@@ -110,5 +110,5 @@ private fun PreviewDuplicateThemeDialog(
 
 @Preview
 @Composable
-private fun PreviewDeleteThemeDialog(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewDeleteThemeDialog(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { DeleteThemeDialogContent("My theme", {}, {}) }

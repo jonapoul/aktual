@@ -12,9 +12,9 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.redacted
@@ -265,14 +265,14 @@ private fun Amount.absolute(): Amount = if (this < Zero) -this else this
 @Preview
 @Composable
 private fun PreviewThisMonthCard(
-  @PreviewParameter(ThisMonthCardStateProvider::class) params: ColoredParams<ThisMonthCardState>,
+  @PreviewParameter(ThisMonthCardStateProvider::class) params: ColorParams<ThisMonthCardState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     ThisMonthCard(modifier = Modifier.padding(16.dp), state = this, onAction = {})
   }
 
 private class ThisMonthCardStateProvider :
-  ColoredParameterProvider<ThisMonthCardState>(
+  ColorParamsProvider<ThisMonthCardState>(
     PREVIEW_THIS_MONTH,
     PREVIEW_THIS_MONTH.copy(toBudget = Zero),
     PREVIEW_THIS_MONTH.copy(toBudget = Amount(-120.00), spent = Amount(2_310.40), daysLeft = 0),

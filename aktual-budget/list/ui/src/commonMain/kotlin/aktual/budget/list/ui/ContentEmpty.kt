@@ -4,7 +4,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButton
@@ -56,5 +56,5 @@ internal fun ContentEmpty(
 
 @PortraitPreview
 @Composable
-private fun PreviewContentEmpty(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewContentEmpty(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { ContentEmpty(onCreateBudgetInBrowser = {}) }

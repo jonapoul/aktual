@@ -9,7 +9,7 @@ import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSheetIcon
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -105,5 +105,5 @@ private fun Colors.option(): ListItemColors =
 
 @Preview
 @Composable
-private fun PreviewAddAccountSheet(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewAddAccountSheet(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { AddAccountSheetContent(onCreateLocal = {}, onBankSync = {}) }

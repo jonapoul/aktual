@@ -123,7 +123,7 @@ private val BannerIconSize = 24.dp
 
 @Preview
 @Composable
-private fun PreviewBanners(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewBanners(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     Column(verticalArrangement = Arrangement.spacedBy(Dimens.Large)) {
       NoticeBanner(text = "This screen is read-only")

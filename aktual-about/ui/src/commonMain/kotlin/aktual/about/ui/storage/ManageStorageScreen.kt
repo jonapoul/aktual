@@ -19,14 +19,14 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.HazedTopBarSpacing
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.WavyBackground
@@ -531,7 +531,7 @@ private val PreviewLoadedState =
   )
 
 private class StoragePreviewParams :
-  ColoredParameterProvider<ManageStorageState>(
+  ColorParamsProvider<ManageStorageState>(
     PreviewLoadedState,
     ManageStorageState.Loading,
     PreviewLoadedState.copy(dialog = StorageDialog.ConfirmClearAllFiles),
@@ -541,9 +541,9 @@ private class StoragePreviewParams :
 @TabletPreview
 @Composable
 private fun PreviewManageStorage(
-  @PreviewParameter(StoragePreviewParams::class) params: ColoredParams<ManageStorageState>,
+  @PreviewParameter(StoragePreviewParams::class) params: ColorParams<ManageStorageState>,
 ) {
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     ManageStorageScaffold(state = this, onAction = {}, modifier = Modifier.fillMaxSize())
   }
 }

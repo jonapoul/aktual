@@ -2,10 +2,10 @@ package aktual.account.ui.login
 
 import aktual.account.vm.LoginResult
 import aktual.core.l10n.Strings
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ErrorBanner
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
@@ -34,11 +34,11 @@ internal fun LoginFailureText(
 @Preview
 @Composable
 private fun PreviewLoginFailureText(
-  @PreviewParameter(LoginFailureProvider::class) params: ColoredParams<LoginResult.Failure>,
-) = PreviewWithColoredParams(params) { LoginFailureText(result = this) }
+  @PreviewParameter(LoginFailureProvider::class) params: ColorParams<LoginResult.Failure>,
+) = PreviewWithColorParams(params) { LoginFailureText(result = this) }
 
 private class LoginFailureProvider :
-  ColoredParameterProvider<LoginResult.Failure>(
+  ColorParamsProvider<LoginResult.Failure>(
     LoginResult.InvalidPassword,
     LoginResult.TokenExpired,
     LoginResult.HttpFailure(code = 404, message = "Resource not found"),

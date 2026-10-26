@@ -2,7 +2,7 @@ package aktual.about.ui.info
 
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.Arrangement
@@ -151,5 +151,5 @@ private val HORIZONTAL_SPACING = 8.dp
 @Preview(name = "Medium - small font", widthDp = 500, fontScale = 0.65f)
 @Preview(name = "Wide", widthDp = 800)
 @Preview(name = "Wide - big font", widthDp = 800, fontScale = 2f)
-private fun PreviewInfoButtons(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewInfoButtons(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { InfoButtons(onAction = {}) }

@@ -15,7 +15,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
@@ -151,7 +151,7 @@ private fun LogExportScope.label(today: LocalDate?): String =
 
 @Preview
 @Composable
-private fun PreviewLogExportSheet(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewLogExportSheet(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     LogExportSheetContent(
       scopes =

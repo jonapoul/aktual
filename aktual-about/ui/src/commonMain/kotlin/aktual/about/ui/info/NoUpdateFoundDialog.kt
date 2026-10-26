@@ -5,7 +5,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -45,5 +45,5 @@ internal fun NoUpdateFoundDialogContent(
 
 @Preview
 @Composable
-private fun PreviewNoUpdatesContent(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewNoUpdatesContent(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { NoUpdateFoundDialogContent(onDismiss = {}) }

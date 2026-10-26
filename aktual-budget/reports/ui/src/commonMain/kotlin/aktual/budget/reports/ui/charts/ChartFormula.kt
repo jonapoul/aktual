@@ -17,9 +17,9 @@ import aktual.core.theme.parseColor
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.formattedString
 import aktual.core.ui.redacted
@@ -179,9 +179,9 @@ internal fun FormulaWarning.message(): String? =
 @Preview
 @Composable
 private fun PreviewFormulaChart(
-  @PreviewParameter(FormulaChartProvider::class) params: ColoredParams<FormulaChartParams>,
+  @PreviewParameter(FormulaChartProvider::class) params: ColorParams<FormulaChartParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     FormulaChart(
       modifier =
         Modifier.background(colors.tableBackground, CardShape)
@@ -196,7 +196,7 @@ private fun PreviewFormulaChart(
 private data class FormulaChartParams(val data: FormulaData)
 
 private class FormulaChartProvider :
-  ColoredParameterProvider<FormulaChartParams>(
+  ColorParamsProvider<FormulaChartParams>(
     listOf(
         formulaPreview(FormulaOutput.Money(Amount(123456))),
         formulaPreview(FormulaOutput.Money(Amount(-5000)), color = "#e11d48"),

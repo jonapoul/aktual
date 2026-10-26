@@ -14,10 +14,10 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ChipSize
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParameters
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParameters
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
 import aktual.core.ui.rememberHighlighted
@@ -187,18 +187,18 @@ private fun ShimmerLine(style: TextStyle, barHeight: Dp, modifier: Modifier = Mo
   }
 }
 
-private class PayeeItemProvider : ColoredParameterProvider<PayeeItem>(PayeesPreview.all)
+private class PayeeItemProvider : ColorParamsProvider<PayeeItem>(PayeesPreview.all)
 
 @Preview
 @Composable
 private fun PreviewPayeeItem(
-  @PreviewParameter(PayeeItemProvider::class) params: ColoredParams<PayeeItem>,
+  @PreviewParameter(PayeeItemProvider::class) params: ColorParams<PayeeItem>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     PayeeItem(payee = this, onClick = {}, onClickRules = {}, showLearningOff = true)
   }
 
 @Preview
 @Composable
-private fun PreviewShimmerPayeeItem(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewShimmerPayeeItem(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { ShimmerPayeeItem() }

@@ -19,13 +19,13 @@ import aktual.core.nav.ReportNavigator
 import aktual.core.nav.SearchReportsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -321,9 +321,9 @@ private fun ContentList(
 @Composable
 private fun PreviewReportsDashboardScaffold(
   @PreviewParameter(ReportsDashboardScaffoldProvider::class)
-  params: ColoredParams<ReportsDashboardScaffoldParams>,
+  params: ColorParams<ReportsDashboardScaffoldParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     ReportsDashboardScaffold(
       pages = pages,
       selectedPage = pages.firstOrNull(),
@@ -342,7 +342,7 @@ private data class ReportsDashboardScaffoldParams(
 )
 
 private class ReportsDashboardScaffoldProvider :
-  ColoredParameterProvider<ReportsDashboardScaffoldParams>(
+  ColorParamsProvider<ReportsDashboardScaffoldParams>(
     ReportsDashboardScaffoldParams(
       pages =
         persistentListOf(

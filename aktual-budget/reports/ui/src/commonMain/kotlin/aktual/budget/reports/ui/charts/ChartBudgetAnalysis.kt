@@ -7,9 +7,9 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.WrapWidthTable
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
@@ -346,9 +346,9 @@ private suspend fun CartesianChartModelProducer.populate(
 @Composable
 private fun PreviewBudgetAnalysisChart(
   @PreviewParameter(BudgetAnalysisChartProvider::class)
-  params: ColoredParams<BudgetAnalysisChartParams>,
+  params: ColorParams<BudgetAnalysisChartParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     BudgetAnalysisChart(
       modifier =
         Modifier.background(colors.tableBackground, CardShape)
@@ -363,7 +363,7 @@ private fun PreviewBudgetAnalysisChart(
 private data class BudgetAnalysisChartParams(val data: BudgetAnalysisData, val compact: Boolean)
 
 private class BudgetAnalysisChartProvider :
-  ColoredParameterProvider<BudgetAnalysisChartParams>(
+  ColorParamsProvider<BudgetAnalysisChartParams>(
     BudgetAnalysisChartParams(PREVIEW_BUDGET_ANALYSIS_DATA, compact = true),
     BudgetAnalysisChartParams(PREVIEW_BUDGET_ANALYSIS_DATA, compact = false),
     BudgetAnalysisChartParams(

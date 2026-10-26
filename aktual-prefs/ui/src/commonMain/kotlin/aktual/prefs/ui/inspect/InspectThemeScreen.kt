@@ -24,13 +24,13 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -414,9 +414,9 @@ internal fun ThemePropertyRow(
 @Preview
 @Composable
 private fun PreviewInspectColors(
-  @PreviewParameter(InspectThemePreviewProvider::class) params: ColoredParams<InspectThemeState>,
+  @PreviewParameter(InspectThemePreviewProvider::class) params: ColorParams<InspectThemeState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     InspectThemeScaffold(
       state = this,
       sorting = Default,
@@ -427,7 +427,7 @@ private fun PreviewInspectColors(
   }
 
 private class InspectThemePreviewProvider :
-  ColoredParameterProvider<InspectThemeState>(
+  ColorParamsProvider<InspectThemeState>(
     NotFound(id = ThemeId("username/repo")),
     Loading,
     Loaded(LightColors.id, null, BuiltIn, LightColors.properties()),

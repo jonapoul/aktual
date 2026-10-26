@@ -2,7 +2,7 @@ package aktual.about.ui.storage
 
 import aktual.core.model.Percent
 import aktual.core.theme.Colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
@@ -136,7 +136,7 @@ private fun DrawScope.drawPie(
 
 @Preview
 @Composable
-private fun PreviewPieWithHole(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewPieWithHole(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     val pieColors = rememberDistinctColors(count = 5)
     PieChart(
@@ -151,7 +151,7 @@ private fun PreviewPieWithHole(@PreviewParameter(ColoredParameters::class) color
 
 @Preview
 @Composable
-private fun PreviewPieFull(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewPieFull(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     val pieColors = rememberDistinctColors(count = 10)
     PieChart(

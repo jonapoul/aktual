@@ -4,7 +4,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButton
 import androidx.compose.foundation.layout.Arrangement
@@ -56,7 +56,7 @@ internal fun OnboardingCard(onAction: HomeActionHandler, modifier: Modifier = Mo
 
 @Preview
 @Composable
-private fun PreviewOnboardingCard(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewOnboardingCard(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     OnboardingCard(modifier = Modifier.padding(16.dp), onAction = {})
   }

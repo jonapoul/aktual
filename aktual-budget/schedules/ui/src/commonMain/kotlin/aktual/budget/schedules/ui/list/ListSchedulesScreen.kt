@@ -32,16 +32,16 @@ import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParameters
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParameters
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SortDialog
 import aktual.core.ui.hazedTopBar
@@ -362,7 +362,7 @@ private fun ScheduleSort.Field.label(): String =
 @Preview
 @Composable
 private fun PreviewListSchedulesMenuItems(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {
@@ -373,14 +373,14 @@ private fun PreviewListSchedulesMenuItems(
 @Preview
 @Composable
 private fun PreviewListSchedulesScaffold(
-  @PreviewParameter(ListSchedulesProvider::class) params: ColoredParams<ListSchedulesState>,
+  @PreviewParameter(ListSchedulesProvider::class) params: ColorParams<ListSchedulesState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     ListSchedulesScaffold(state = this, onAction = {})
   }
 
 private class ListSchedulesProvider :
-  ColoredParameterProvider<ListSchedulesState>(
+  ColorParamsProvider<ListSchedulesState>(
     Success(schedules = persistentListOf(scheduleA, scheduleB), sort = Default),
     Empty,
     Loading,

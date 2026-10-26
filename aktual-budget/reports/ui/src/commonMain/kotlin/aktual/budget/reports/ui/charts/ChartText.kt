@@ -11,10 +11,10 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NormalTextButton
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.errorButton
 import aktual.core.ui.verticalScrollWithBar
@@ -283,9 +283,9 @@ private fun textChartMarkdownTypography(align: TextAlign): MarkdownTypography {
 @Preview
 @Composable
 private fun PreviewTextChart(
-  @PreviewParameter(TextChartProvider::class) params: ColoredParams<TextChartParams>,
+  @PreviewParameter(TextChartProvider::class) params: ColorParams<TextChartParams>,
 ) =
-  PreviewWithColoredParams(params, isPrivacyEnabled = params.data.private) {
+  PreviewWithColorParams(params, isPrivacyEnabled = params.data.private) {
     TextChart(
       modifier =
         Modifier.background(colors.tableBackground, CardShape)
@@ -301,7 +301,7 @@ private fun PreviewTextChart(
 private data class TextChartParams(val data: TextData, val compact: Boolean, val private: Boolean)
 
 private class TextChartProvider :
-  ColoredParameterProvider<TextChartParams>(
+  ColorParamsProvider<TextChartParams>(
     listOf(PREVIEW_TEXT_DATA, PREVIEW_SHORT_TEXT_DATA, TextData(content = "")).flatMap { data ->
       listOf(true, false).flatMap { compact ->
         listOf(true, false).map { private -> TextChartParams(data, compact, private) }

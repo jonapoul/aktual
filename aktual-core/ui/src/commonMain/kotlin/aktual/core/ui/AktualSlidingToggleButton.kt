@@ -137,9 +137,9 @@ private fun Colors.unselectedBackground(isEnabled: Boolean): Color =
 @Preview
 @Composable
 private fun PreviewStrings(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
+  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     var selected by remember { mutableStateOf("Option A") }
     AktualSlidingToggleButton(
       modifier = Modifier.padding(4.dp),
@@ -152,7 +152,7 @@ private fun PreviewStrings(
 
 @Preview
 @Composable
-private fun PreviewEnum(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewEnum(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     var selected by remember { mutableStateOf(Interval.Weekly) }
     AktualSlidingToggleButton(

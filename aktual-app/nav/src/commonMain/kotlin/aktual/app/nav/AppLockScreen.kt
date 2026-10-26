@@ -10,7 +10,7 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.RounderCardShape
@@ -184,10 +184,10 @@ private fun AppLockDisabledDialogContent(onDismiss: () -> Unit) {
 @Preview
 @Composable
 private fun PreviewAppLockDisabledDialog(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) = PreviewWithColors(colors) { AppLockDisabledDialogContent(onDismiss = {}) }
 
 @Preview
 @Composable
-private fun PreviewAppLockScreen(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewAppLockScreen(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { AppLockScreen(onUnlock = {}) }

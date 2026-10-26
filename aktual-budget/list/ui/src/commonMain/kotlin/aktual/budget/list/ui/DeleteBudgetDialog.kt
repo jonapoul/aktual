@@ -9,9 +9,9 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareTextButton
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.buttonTextStyle
 import aktual.core.ui.errorButton
 import alakazam.compose.HorizontalSpacer
@@ -175,9 +175,9 @@ private fun Colors.errorBare(isPressed: Boolean) =
 @Composable
 private fun PreviewDeleteBudgetDialog(
   @PreviewParameter(DeleteBudgetDialogProvider::class)
-  params: ColoredParams<DeleteBudgetDialogParams>,
+  params: ColorParams<DeleteBudgetDialogParams>,
 ) {
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     Content(
       deletingState = state,
       localFileExists = localFileExists,
@@ -195,7 +195,7 @@ private data class DeleteBudgetDialogParams(
 )
 
 private class DeleteBudgetDialogProvider :
-  ColoredParameterProvider<DeleteBudgetDialogParams>(
+  ColorParamsProvider<DeleteBudgetDialogParams>(
     DeleteBudgetDialogParams(state = Inactive, localFileExists = true),
     DeleteBudgetDialogParams(
       state = DeletingState.Active(deletingLocal = true),

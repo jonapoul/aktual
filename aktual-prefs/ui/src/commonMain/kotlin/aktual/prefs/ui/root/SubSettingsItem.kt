@@ -4,7 +4,7 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
 import aktual.core.icons.CheveronRight
 import aktual.core.theme.Colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColors
@@ -60,7 +60,7 @@ private val NavItemButtonColors = IconButtonColorProvider { colors, isPressed ->
 
 @Preview
 @Composable
-private fun PreviewSubSettingsItem(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewSubSettingsItem(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
       listOf(true, false).forEach { isEnabled ->

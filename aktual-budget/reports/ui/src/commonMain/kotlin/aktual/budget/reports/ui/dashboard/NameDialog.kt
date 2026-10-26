@@ -6,9 +6,9 @@ import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.disabled
 import aktual.core.ui.keyboardFocusRequester
 import androidx.compose.foundation.layout.Column
@@ -120,9 +120,9 @@ private fun NameDialogContent(
 @Preview
 @Composable
 private fun PreviewNameDialog(
-  @PreviewParameter(NameDialogProvider::class) params: ColoredParams<String>,
+  @PreviewParameter(NameDialogProvider::class) params: ColorParams<String>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     NameDialogContent(
       title = Strings.reportsDashboardNewPage,
       placeholder = Strings.reportsDashboardPageName,
@@ -133,4 +133,4 @@ private fun PreviewNameDialog(
     )
   }
 
-private class NameDialogProvider : ColoredParameterProvider<String>("", "Holidays")
+private class NameDialogProvider : ColorParamsProvider<String>("", "Holidays")

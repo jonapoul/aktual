@@ -233,7 +233,7 @@ private fun RowScope.KeypadKey(text: String, onClick: () -> Unit, description: S
 @Preview
 @Composable
 private fun PreviewAmountField(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     AmountField(
@@ -247,7 +247,7 @@ private fun PreviewAmountField(
 @Preview
 @Composable
 private fun PreviewAmountKeypad(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     AmountKeypad(

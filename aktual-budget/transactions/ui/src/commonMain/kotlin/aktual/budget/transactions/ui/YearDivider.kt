@@ -2,7 +2,7 @@ package aktual.budget.transactions.ui
 
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -42,5 +42,5 @@ internal fun YearDivider(year: Int, modifier: Modifier = Modifier) =
 
 @Preview
 @Composable
-private fun PreviewYearDivider(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewYearDivider(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { YearDivider(year = 2026) }

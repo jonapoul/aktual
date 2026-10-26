@@ -5,9 +5,9 @@ import aktual.core.icons.LightBulb
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredBooleanParameters
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.BooleanColorParameters
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -75,8 +75,8 @@ private const val LEARN_MORE_URL = "https://actualbudget.org/docs/budgeting/rule
 @Preview
 @Composable
 private fun PreviewCategoryLearningDialog(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
+  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     CategoryLearningDialog(isEnabled = this, onEnabledChange = {}, onDismiss = {})
   }

@@ -8,7 +8,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
@@ -55,7 +55,7 @@ internal fun LogFilterChips(
 
 @Preview
 @Composable
-private fun PreviewLogFilterChips(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewLogFilterChips(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     LogFilterChips(
       filters =

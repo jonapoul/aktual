@@ -7,13 +7,13 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -118,11 +118,11 @@ private fun ScheduleSettingsContent(
 @PortraitPreview
 @Composable
 private fun PreviewScheduleSettingsScaffold(
-  @PreviewParameter(ScheduleSettingsProvider::class) params: ColoredParams<ScheduleSettingsState>,
-) = PreviewWithColoredParams(params) { ScheduleSettingsScaffold(state = this, onAction = {}) }
+  @PreviewParameter(ScheduleSettingsProvider::class) params: ColorParams<ScheduleSettingsState>,
+) = PreviewWithColorParams(params) { ScheduleSettingsScaffold(state = this, onAction = {}) }
 
 private class ScheduleSettingsProvider :
-  ColoredParameterProvider<ScheduleSettingsState>(
+  ColorParamsProvider<ScheduleSettingsState>(
     ScheduleSettingsState(showCompleted = BooleanPreference(value = true)),
     ScheduleSettingsState(showCompleted = BooleanPreference(value = false)),
   )

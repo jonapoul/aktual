@@ -25,15 +25,15 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
@@ -406,9 +406,9 @@ internal fun LiveButton(isFollowing: Boolean, onAction: LogsActionHandler) =
 @PortraitPreview
 @Composable
 private fun PreviewLogDay(
-  @PreviewParameter(LogDayProvider::class) params: ColoredParams<LogEntriesState>,
+  @PreviewParameter(LogDayProvider::class) params: ColorParams<LogEntriesState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     LogDayScaffold(state = this, filters = PREVIEW_FILTERS, canShare = true, onAction = {})
   }
 
@@ -448,7 +448,7 @@ internal val PREVIEW_LINES =
   )
 
 private class LogDayProvider :
-  ColoredParameterProvider<LogEntriesState>(
+  ColorParamsProvider<LogEntriesState>(
     LogEntriesState.Loaded(
       date = PREVIEW_DATE,
       today = PREVIEW_DATE,

@@ -21,8 +21,8 @@ import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -30,7 +30,7 @@ import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.NoticeBanner
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -270,16 +270,16 @@ private const val LEARN_MORE_URL = "https://actualbudget.org/docs/budgeting/rule
 @PortraitPreview
 @Composable
 private fun PreviewListRulesScaffold(
-  @PreviewParameter(ListRulesStateProvider::class) params: ColoredParams<ListRulesStateParams>,
+  @PreviewParameter(ListRulesStateProvider::class) params: ColorParams<ListRulesStateParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     ListRulesScaffold(state = state, onAction = {})
   }
 
 private data class ListRulesStateParams(val state: ListRulesState)
 
 private class ListRulesStateProvider :
-  ColoredParameterProvider<ListRulesStateParams>(
+  ColorParamsProvider<ListRulesStateParams>(
     ListRulesStateParams(Success(persistentListOf(PreviewRule1, PreviewRule2))),
     ListRulesStateParams(Loading),
     ListRulesStateParams(Empty),

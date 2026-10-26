@@ -13,10 +13,10 @@ import aktual.core.icons.material.Title
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.IconButtonColorProvider
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -129,9 +129,9 @@ private fun AlignButton(
 @Preview
 @Composable
 private fun PreviewTextEditorToolbar(
-  @PreviewParameter(TextEditorToolbarProvider::class) params: ColoredParams<EditorMode>,
+  @PreviewParameter(TextEditorToolbarProvider::class) params: ColorParams<EditorMode>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     TextEditorToolbar(
       mode = this,
       onMode = {},
@@ -141,4 +141,4 @@ private fun PreviewTextEditorToolbar(
     )
   }
 
-private class TextEditorToolbarProvider : ColoredParameterProvider<EditorMode>(Write, Rendered)
+private class TextEditorToolbarProvider : ColorParamsProvider<EditorMode>(Write, Rendered)

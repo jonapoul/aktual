@@ -24,8 +24,8 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
@@ -33,7 +33,7 @@ import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.disabledIf
@@ -476,9 +476,9 @@ private const val PREVIEW_WEIGHT = 1f
 @Composable
 @PortraitPreview
 private fun PreviewCustomThemeSettings(
-  @PreviewParameter(CatalogStateProvider::class) params: ColoredParams<CustomThemeSettingsParams>,
+  @PreviewParameter(CatalogStateProvider::class) params: ColorParams<CustomThemeSettingsParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     CustomThemeSettingsScaffold(
       state = state,
       sorting = ByName,
@@ -492,11 +492,11 @@ private fun PreviewCustomThemeSettings(
 @Preview
 @Composable
 private fun PreviewCustomThemeItem(
-  @PreviewParameter(CatalogItemProvider::class) params: ColoredParams<CatalogItem>,
-) = PreviewWithColoredParams(params) { CustomThemeItem(item = this, onAction = {}) }
+  @PreviewParameter(CatalogItemProvider::class) params: ColorParams<CatalogItem>,
+) = PreviewWithColorParams(params) { CustomThemeItem(item = this, onAction = {}) }
 
 private class CatalogItemProvider :
-  ColoredParameterProvider<CatalogItem>(
+  ColorParamsProvider<CatalogItem>(
     PREVIEW_CATALOG_ITEM,
     PREVIEW_CATALOG_ITEM.copy(isSelected = true),
     PREVIEW_CATALOG_ITEM.copy(state = Remote),
@@ -516,7 +516,7 @@ private val SUCCESS_STATE =
   )
 
 private class CatalogStateProvider :
-  ColoredParameterProvider<CustomThemeSettingsParams>(
+  ColorParamsProvider<CustomThemeSettingsParams>(
     CustomThemeSettingsParams(Loading),
     CustomThemeSettingsParams(CatalogState.Failed.FetchingCatalog),
     CustomThemeSettingsParams(SUCCESS_STATE),

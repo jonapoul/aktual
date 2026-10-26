@@ -6,7 +6,7 @@ import aktual.budget.reports.vm.DateRangeMode
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualSlidingToggleButton
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.YearMonthPicker
@@ -120,7 +120,7 @@ private fun DateRangeMode.string() =
 
 @Preview
 @Composable
-private fun PreviewChartDateConfig(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewChartDateConfig(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     ChartDateConfig(
       modifier = Modifier.padding(8.dp),

@@ -7,13 +7,13 @@ import aktual.core.nav.BackNavigator
 import aktual.core.theme.hasAlternateRowColour
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -124,11 +124,11 @@ private fun TransactionSettingsContent(
 @Composable
 private fun PreviewTransactionSettingsScaffold(
   @PreviewParameter(TransactionSettingsProvider::class)
-  params: ColoredParams<TransactionSettingsState>,
-) = PreviewWithColoredParams(params) { TransactionSettingsScaffold(state = this, onAction = {}) }
+  params: ColorParams<TransactionSettingsState>,
+) = PreviewWithColorParams(params) { TransactionSettingsScaffold(state = this, onAction = {}) }
 
 private class TransactionSettingsProvider :
-  ColoredParameterProvider<TransactionSettingsState>(
+  ColorParamsProvider<TransactionSettingsState>(
     TransactionSettingsState(alternateRowColours = BooleanPreference(value = true)),
     TransactionSettingsState(alternateRowColours = BooleanPreference(value = false)),
   )

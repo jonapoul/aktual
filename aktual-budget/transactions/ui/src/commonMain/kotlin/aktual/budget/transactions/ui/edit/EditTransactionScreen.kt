@@ -36,14 +36,14 @@ import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
@@ -547,10 +547,9 @@ private const val SHIMMER_ROWS = 6
 @PortraitPreview
 @Composable
 private fun PreviewEditTransactionScaffold(
-  @PreviewParameter(EditTransactionStateProvider::class)
-  params: ColoredParams<EditTransactionState>,
+  @PreviewParameter(EditTransactionStateProvider::class) params: ColorParams<EditTransactionState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     EditTransactionScaffold(state = this, error = null, onAction = {})
   }
 
@@ -645,7 +644,7 @@ private val PREVIEW_NEW =
   )
 
 private class EditTransactionStateProvider :
-  ColoredParameterProvider<EditTransactionState>(
+  ColorParamsProvider<EditTransactionState>(
     Loading,
     EditTransactionState.Failure.NotFound,
     previewLoaded(TRANSACTION_1),

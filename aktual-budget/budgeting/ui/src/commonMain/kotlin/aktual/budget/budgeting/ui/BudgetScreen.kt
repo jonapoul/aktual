@@ -20,8 +20,8 @@ import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -29,7 +29,7 @@ import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -504,7 +504,7 @@ private suspend fun SnackbarHostState.showUpdated(onUndo: () -> Unit) {
 }
 
 private class BudgetStateProvider :
-  ColoredParameterProvider<BudgetState>(
+  ColorParamsProvider<BudgetState>(
     PREVIEW_ENVELOPE,
     PREVIEW_TRACKING,
     PREVIEW_EMPTY,
@@ -515,14 +515,14 @@ private class BudgetStateProvider :
 @PortraitPreview
 @Composable
 private fun PreviewBudgetScaffold(
-  @PreviewParameter(BudgetStateProvider::class) params: ColoredParams<BudgetState>,
+  @PreviewParameter(BudgetStateProvider::class) params: ColorParams<BudgetState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     BudgetScaffold(state = this, onAction = {}, isCompact = true)
   }
 
 private class BudgetColumnsProvider :
-  ColoredParameterProvider<BudgetState>(
+  ColorParamsProvider<BudgetState>(
     previewColumns(count = 1),
     previewColumns(count = 2),
     previewColumns(count = 4),
@@ -532,9 +532,9 @@ private class BudgetColumnsProvider :
 @Preview(widthDp = 1440, heightDp = 900, locale = "en")
 @Composable
 private fun PreviewBudgetColumns(
-  @PreviewParameter(BudgetColumnsProvider::class) params: ColoredParams<BudgetState>,
+  @PreviewParameter(BudgetColumnsProvider::class) params: ColorParams<BudgetState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     BudgetScaffold(state = this, onAction = {}, isCompact = false)
   }
 

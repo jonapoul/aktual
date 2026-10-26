@@ -15,10 +15,10 @@ import aktual.core.ui.AccountSyncDot
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NewTransactionsBadge
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -288,9 +288,9 @@ private fun AccountsEmpty(onAction: HomeActionHandler, modifier: Modifier = Modi
 @Preview
 @Composable
 private fun PreviewAccountsCard(
-  @PreviewParameter(AccountsCardStateProvider::class) params: ColoredParams<AccountsCardState>,
+  @PreviewParameter(AccountsCardStateProvider::class) params: ColorParams<AccountsCardState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     AccountsCard(
       modifier = Modifier.padding(16.dp),
       state = this,
@@ -299,7 +299,7 @@ private fun PreviewAccountsCard(
   }
 
 private class AccountsCardStateProvider :
-  ColoredParameterProvider<AccountsCardState>(
+  ColorParamsProvider<AccountsCardState>(
     Loaded(PREVIEW_ACCOUNTS),
     Loaded(PREVIEW_ACCOUNTS, recent = PREVIEW_ACCOUNTS.mostRecentlyActive(limit = 5)),
     Loaded(PREVIEW_ACCOUNTS.copy(offBudget = section())),

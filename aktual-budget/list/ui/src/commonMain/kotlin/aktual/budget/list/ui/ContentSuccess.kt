@@ -5,7 +5,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.directoryId
 import aktual.core.theme.Colors
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
@@ -69,7 +69,7 @@ internal fun ContentSuccess(
 
 @PortraitPreview
 @Composable
-private fun PreviewContentSuccess(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewContentSuccess(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     ContentSuccess(
       modifier = Modifier.background(colors.pageBackground),

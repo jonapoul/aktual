@@ -21,9 +21,9 @@ import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.checkbox
 import aktual.core.ui.formattedString
@@ -610,9 +610,9 @@ private fun string(type: SummaryChartType): String =
 @Preview
 @Composable
 private fun PreviewSummaryChart(
-  @PreviewParameter(SummaryChartProvider::class) params: ColoredParams<SummaryChartParams>,
+  @PreviewParameter(SummaryChartProvider::class) params: ColorParams<SummaryChartParams>,
 ) =
-  PreviewWithColoredParams(params, isPrivacyEnabled = params.data.private) {
+  PreviewWithColorParams(params, isPrivacyEnabled = params.data.private) {
     SummaryChart(
       modifier =
         Modifier.background(colors.tableBackground, CardShape)
@@ -632,7 +632,7 @@ private data class SummaryChartParams(
 )
 
 private class SummaryChartProvider :
-  ColoredParameterProvider<SummaryChartParams>(
+  ColorParamsProvider<SummaryChartParams>(
     SummaryChartParams(SUM_DATA, compact = true),
     SummaryChartParams(SUM_DATA, compact = false),
     SummaryChartParams(SUM_DATA, compact = false, private = true),

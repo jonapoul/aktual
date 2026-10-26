@@ -12,9 +12,9 @@ import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -107,9 +107,9 @@ internal fun DashboardPage.displayName(): String = name.ifBlank { Strings.report
 @Composable
 private fun PreviewDashboardSelector(
   @PreviewParameter(DashboardSelectorItemsProvider::class)
-  params: ColoredParams<ImmutableList<DashboardPage>>,
+  params: ColorParams<ImmutableList<DashboardPage>>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     DashboardSelector(
       pages = this,
       selected = first(),
@@ -121,9 +121,9 @@ private fun PreviewDashboardSelector(
 @Composable
 private fun PreviewDashboardSelectorItems(
   @PreviewParameter(DashboardSelectorItemsProvider::class)
-  params: ColoredParams<ImmutableList<DashboardPage>>,
+  params: ColorParams<ImmutableList<DashboardPage>>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {
       DashboardSelectorItems(pages = params.data, selected = params.data.first(), onAction = {})
     }
@@ -136,7 +136,7 @@ internal val PREVIEW_PAGES =
   )
 
 private class DashboardSelectorItemsProvider :
-  ColoredParameterProvider<ImmutableList<DashboardPage>>(
+  ColorParamsProvider<ImmutableList<DashboardPage>>(
     PREVIEW_PAGES,
     persistentListOf(PREVIEW_PAGES[0]),
   )

@@ -17,10 +17,10 @@ import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParameters
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParameters
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -175,9 +175,9 @@ private fun DeletePageDialogContent(
 @Preview
 @Composable
 private fun PreviewDashboardMenuItems(
-  @PreviewParameter(DashboardMenuItemsProvider::class) params: ColoredParams<Boolean>,
+  @PreviewParameter(DashboardMenuItemsProvider::class) params: ColorParams<Boolean>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {
       DashboardMenuItems(hasPage = true, canDelete = params.data, onClick = {})
     }
@@ -185,9 +185,9 @@ private fun PreviewDashboardMenuItems(
 
 @Preview
 @Composable
-private fun PreviewDeletePageDialog(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewDeletePageDialog(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     DeletePageDialogContent(page = PREVIEW_PAGES.first(), onConfirm = {}, onDismiss = {})
   }
 
-private class DashboardMenuItemsProvider : ColoredParameterProvider<Boolean>(true, false)
+private class DashboardMenuItemsProvider : ColorParamsProvider<Boolean>(true, false)

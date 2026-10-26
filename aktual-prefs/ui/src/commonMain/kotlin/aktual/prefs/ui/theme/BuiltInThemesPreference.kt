@@ -11,7 +11,7 @@ import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.disabledIf
@@ -134,7 +134,7 @@ internal fun ThemeItem(
 @Preview
 @Composable
 private fun PreviewBuiltInThemesPreference(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     BuiltInThemesPreference(selectedTheme = LightColors.id, enabled = true, onAction = {})
@@ -143,7 +143,7 @@ private fun PreviewBuiltInThemesPreference(
 @Preview
 @Composable
 private fun PreviewBuiltInThemesPreferenceDisabled(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     BuiltInThemesPreference(selectedTheme = LightColors.id, enabled = false, onAction = {})

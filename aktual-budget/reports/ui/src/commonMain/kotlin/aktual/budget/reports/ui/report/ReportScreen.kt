@@ -29,13 +29,13 @@ import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -253,11 +253,11 @@ private fun ReportContent(
 @PortraitPreview
 @Composable
 private fun PreviewReportScaffold(
-  @PreviewParameter(ReportScaffoldProvider::class) params: ColoredParams<ReportState>,
-) = PreviewWithColoredParams(params) { ReportScaffold(state = this, onAction = {}) }
+  @PreviewParameter(ReportScaffoldProvider::class) params: ColorParams<ReportState>,
+) = PreviewWithColorParams(params) { ReportScaffold(state = this, onAction = {}) }
 
 private class ReportScaffoldProvider :
-  ColoredParameterProvider<ReportState>(
+  ColorParamsProvider<ReportState>(
     ReportState.Loaded(
       type = AgeOfMoney,
       item = DashboardItem(id = WidgetId("preview"), x = 0, y = 0, meta = AgeOfMoneyReportMeta()),

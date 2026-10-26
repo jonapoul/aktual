@@ -3,7 +3,7 @@ package aktual.budget.transactions.ui
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -80,5 +80,5 @@ private fun LedgerHeaderText(
 
 @Preview
 @Composable
-private fun PreviewLedgerHeader(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewLedgerHeader(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { WithLedgerDimens(Dense) { LedgerHeader() } }

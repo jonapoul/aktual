@@ -69,15 +69,14 @@ open class PreviewParameters<T>(protected val data: List<T>) : PreviewParameterP
     labels.getOrNull(index) ?: data[index]?.toString()
 }
 
-@Immutable data class ColoredParams<T>(val colors: DefaultColors, val data: T)
+@Immutable data class ColorParams<T>(val colors: DefaultColors, val data: T)
 
-open class ColoredParameterProvider<T>(collection: List<T>) :
-  PreviewParameterProvider<ColoredParams<T>> {
-  private val all: List<ColoredParams<T>> = collection.flatMap { data ->
-    Colors.Defaults.map { type -> ColoredParams(type, data) }
+open class ColorParamsProvider<T>(collection: List<T>) : PreviewParameterProvider<ColorParams<T>> {
+  private val all: List<ColorParams<T>> = collection.flatMap { data ->
+    Colors.Defaults.map { type -> ColorParams(type, data) }
   }
 
-  override val values: Sequence<ColoredParams<T>>
+  override val values: Sequence<ColorParams<T>>
     get() = all.asSequence()
 
   constructor(vararg values: T) : this(values.toList())
@@ -93,9 +92,9 @@ open class ColoredParameterProvider<T>(collection: List<T>) :
     }
 }
 
-class ColoredParameters : PreviewParameters<Colors>(Colors.Defaults.toList())
+class ColorParameters : PreviewParameters<Colors>(Colors.Defaults.toList())
 
-class ColoredBooleanParameters : ColoredParameterProvider<Boolean>(true, false)
+class BooleanColorParameters : ColorParamsProvider<Boolean>(true, false)
 
 @Composable
 fun PreviewWithColors(
@@ -111,8 +110,8 @@ fun PreviewWithColors(
   }
 
 @Composable
-fun <T> PreviewWithColoredParams(
-  params: ColoredParams<T>,
+fun <T> PreviewWithColorParams(
+  params: ColorParams<T>,
   modifier: Modifier = Modifier,
   isPrivacyEnabled: Boolean = false,
   content: @Composable T.() -> Unit,

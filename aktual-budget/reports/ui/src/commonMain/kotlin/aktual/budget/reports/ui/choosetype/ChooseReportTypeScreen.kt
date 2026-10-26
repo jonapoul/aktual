@@ -31,13 +31,13 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.disabledIf
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -267,16 +267,16 @@ private val REPORT_HEIGHT = 250.dp
 @Composable
 private fun PreviewChooseReportTypeScaffold(
   @PreviewParameter(ChooseReportTypeScaffoldParameters::class)
-  params: ColoredParams<ChooseReportTypeScaffoldParams>,
+  params: ColorParams<ChooseReportTypeScaffoldParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     ChooseReportTypeScaffold(dialog = dialog, onAction = {})
   }
 
 private data class ChooseReportTypeScaffoldParams(val dialog: ChooseReportTypeDialog?)
 
 private class ChooseReportTypeScaffoldParameters :
-  ColoredParameterProvider<ChooseReportTypeScaffoldParams>(
+  ColorParamsProvider<ChooseReportTypeScaffoldParams>(
     ChooseReportTypeScaffoldParams(dialog = null),
     ChooseReportTypeScaffoldParams(dialog = UnsupportedType),
   )

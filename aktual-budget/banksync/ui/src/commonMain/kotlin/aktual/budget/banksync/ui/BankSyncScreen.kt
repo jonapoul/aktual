@@ -19,8 +19,8 @@ import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -29,7 +29,7 @@ import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.NoticeBanner
 import aktual.core.ui.PageBackground
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
@@ -298,11 +298,11 @@ private fun SyncAllButton(isSyncing: Boolean, onClick: () -> Unit, modifier: Mod
 @Preview
 @Composable
 private fun PreviewBankSyncScaffold(
-  @PreviewParameter(BankSyncStateProvider::class) params: ColoredParams<BankSyncState>,
-) = PreviewWithColoredParams(params) { BankSyncScaffold(state = this, onAction = {}) }
+  @PreviewParameter(BankSyncStateProvider::class) params: ColorParams<BankSyncState>,
+) = PreviewWithColorParams(params) { BankSyncScaffold(state = this, onAction = {}) }
 
 private class BankSyncStateProvider :
-  ColoredParameterProvider<BankSyncState>(
+  ColorParamsProvider<BankSyncState>(
     BankSyncPreview.success,
     BankSyncPreview.syncing,
     BankSyncPreview.unlinkedOnly,

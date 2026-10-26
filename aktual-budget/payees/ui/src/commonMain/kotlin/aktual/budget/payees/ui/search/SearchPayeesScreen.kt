@@ -19,13 +19,13 @@ import aktual.core.nav.EditPayeeNavigator
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SearchScaffold
@@ -169,16 +169,16 @@ private fun ShimmerResults(modifier: Modifier = Modifier) =
 @PortraitPreview
 @Composable
 private fun PreviewSearchPayeesScaffold(
-  @PreviewParameter(SearchPayeesScaffoldProvider::class) params: ColoredParams<SearchPayeesParams>,
+  @PreviewParameter(SearchPayeesScaffoldProvider::class) params: ColorParams<SearchPayeesParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     SearchPayeesScaffold(query = query, state = state, onAction = {})
   }
 
 private data class SearchPayeesParams(val query: String, val state: SearchPayeesState)
 
 private class SearchPayeesScaffoldProvider :
-  ColoredParameterProvider<SearchPayeesParams>(
+  ColorParamsProvider<SearchPayeesParams>(
     SearchPayeesParams(query = "", state = NoQuery),
     SearchPayeesParams(query = "a", state = Loading),
     SearchPayeesParams(query = "xyz", state = NoResults),

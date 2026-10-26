@@ -26,9 +26,9 @@ import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParameters
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParameters
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -36,7 +36,7 @@ import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SortDialog
 import aktual.core.ui.hazedTopBar
@@ -313,7 +313,7 @@ private fun TagSort.Field.label(): String =
   }
 
 private class ListTagsStateProvider :
-  ColoredParameterProvider<ListTagsState>(
+  ColorParamsProvider<ListTagsState>(
     Success(tags = TagsPreview.all, sort = Default),
     Empty,
     Loading,
@@ -322,7 +322,7 @@ private class ListTagsStateProvider :
 
 @Preview
 @Composable
-private fun PreviewListTagsMenuItems(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewListTagsMenuItems(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {
       ListTagsMenuItems(onSort = {})
@@ -332,5 +332,5 @@ private fun PreviewListTagsMenuItems(@PreviewParameter(ColoredParameters::class)
 @PortraitPreview
 @Composable
 private fun PreviewListTagsScaffold(
-  @PreviewParameter(ListTagsStateProvider::class) params: ColoredParams<ListTagsState>,
-) = PreviewWithColoredParams(params) { ListTagsScaffold(state = this, onAction = {}) }
+  @PreviewParameter(ListTagsStateProvider::class) params: ColorParams<ListTagsState>,
+) = PreviewWithColorParams(params) { ListTagsScaffold(state = this, onAction = {}) }

@@ -17,13 +17,13 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.checkbox
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
@@ -264,11 +264,11 @@ private fun MonteCarloMenu(
 @PortraitPreview
 @Composable
 private fun PreviewMonteCarloScaffold(
-  @PreviewParameter(MonteCarloScaffoldProvider::class) params: ColoredParams<MonteCarloState>,
-) = PreviewWithColoredParams(params) { MonteCarloScaffold(state = this, onAction = {}) }
+  @PreviewParameter(MonteCarloScaffoldProvider::class) params: ColorParams<MonteCarloState>,
+) = PreviewWithColorParams(params) { MonteCarloScaffold(state = this, onAction = {}) }
 
 private class MonteCarloScaffoldProvider :
-  ColoredParameterProvider<MonteCarloState>(
+  ColorParamsProvider<MonteCarloState>(
     previewMonteCarloState(),
     previewMonteCarloState(resultsView = Cashflow),
     previewMonteCarloState(resultsView = Pots),

@@ -88,7 +88,7 @@ private fun FontFamily.textStyle(
 
 @Preview(widthDp = 1200)
 @Composable
-private fun PreviewTypography(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewTypography(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     Column {
       for ((name, style) in styles()) {

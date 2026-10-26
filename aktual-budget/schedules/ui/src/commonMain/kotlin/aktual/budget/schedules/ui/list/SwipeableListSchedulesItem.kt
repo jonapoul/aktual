@@ -7,9 +7,9 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.PostAdd
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
@@ -66,9 +66,9 @@ internal fun SwipeableListSchedulesItem(
 @Preview
 @Composable
 private fun PreviewSwipeableListSchedulesItem(
-  @PreviewParameter(SwipeableProvider::class) params: ColoredParams<Boolean>,
+  @PreviewParameter(SwipeableProvider::class) params: ColorParams<Boolean>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     SwipeableListSchedulesItem(
       schedule = ListSchedulesPreview.scheduleA,
       isOpen = this,
@@ -77,4 +77,4 @@ private fun PreviewSwipeableListSchedulesItem(
     )
   }
 
-private class SwipeableProvider : ColoredParameterProvider<Boolean>(false, true)
+private class SwipeableProvider : ColorParamsProvider<Boolean>(false, true)

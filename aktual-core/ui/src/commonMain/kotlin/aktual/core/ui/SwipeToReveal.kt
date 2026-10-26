@@ -212,7 +212,7 @@ private val SwipeButtonBleed = 24.dp
 
 @Preview
 @Composable
-private fun PreviewSwipeToReveal(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewSwipeToReveal(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     SwipeToReveal(
       actions =

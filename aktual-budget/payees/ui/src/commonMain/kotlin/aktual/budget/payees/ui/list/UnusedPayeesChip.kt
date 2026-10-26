@@ -1,11 +1,11 @@
 package aktual.budget.payees.ui.list
 
 import aktual.core.l10n.Strings
+import aktual.core.ui.BooleanColorParameters
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
-import aktual.core.ui.ColoredBooleanParameters
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.selected
@@ -31,8 +31,8 @@ internal fun UnusedPayeesChip(
 @Preview
 @Composable
 private fun PreviewUnusedPayeesChip(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
+  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     UnusedPayeesChip(numUnused = 3, isSelected = this, onClick = {})
   }

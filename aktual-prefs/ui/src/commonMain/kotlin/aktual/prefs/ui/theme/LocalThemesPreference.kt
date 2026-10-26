@@ -3,7 +3,7 @@ package aktual.prefs.ui.theme
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
 import aktual.core.theme.Colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import aktual.prefs.ui.core.BasicPreferenceItem
 import aktual.prefs.vm.theme.LocalTheme
@@ -61,7 +61,7 @@ internal fun LocalThemesPreference(
 @Preview
 @Composable
 private fun PreviewLocalThemesPreference(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     LocalThemesPreference(
@@ -79,7 +79,7 @@ private fun PreviewLocalThemesPreference(
 @Preview
 @Composable
 private fun PreviewLocalThemesPreferenceEmpty(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     LocalThemesPreference(

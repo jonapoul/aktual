@@ -45,5 +45,5 @@ private fun backgroundImage(colors: Colors) =
 @LandscapePreview
 @PortraitPreview
 @Composable
-private fun PreviewWavyBackground(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewWavyBackground(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { WavyBackground() }

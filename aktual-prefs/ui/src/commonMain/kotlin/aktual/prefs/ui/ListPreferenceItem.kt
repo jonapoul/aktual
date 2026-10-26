@@ -4,10 +4,10 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.InformationOutline
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ListBottomSheet
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.textField
 import aktual.prefs.ui.core.BasicPreferenceItem
 import aktual.prefs.vm.ListPreference
@@ -145,9 +145,9 @@ private enum class PreviewOption {
 @Composable
 private fun PreviewListPreferenceItem(
   @PreviewParameter(ListPreferenceItemProvider::class)
-  params: ColoredParams<ListPreferenceItemParams>,
+  params: ColorParams<ListPreferenceItemParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     ListPreferenceItem(
       value = value,
       options = options,
@@ -171,7 +171,7 @@ private data class ListPreferenceItemParams(
 )
 
 private class ListPreferenceItemProvider :
-  ColoredParameterProvider<ListPreferenceItemParams>(
+  ColorParamsProvider<ListPreferenceItemParams>(
     ListPreferenceItemParams(
       title = "Change the doodad",
       subtitle =

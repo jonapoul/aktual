@@ -32,8 +32,8 @@ import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -41,7 +41,7 @@ import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formatted
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -697,9 +697,9 @@ private fun ErrorDialog(error: EditScheduleError, onDismiss: () -> Unit) {
 @PortraitPreview
 @Composable
 private fun PreviewEditScheduleScaffold(
-  @PreviewParameter(EditScheduleStateProvider::class) params: ColoredParams<EditScheduleState>,
+  @PreviewParameter(EditScheduleStateProvider::class) params: ColorParams<EditScheduleState>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     EditScheduleScaffold(state = this, error = null, onAction = {})
   }
 
@@ -741,7 +741,7 @@ internal val PreviewLoaded =
   )
 
 private class EditScheduleStateProvider :
-  ColoredParameterProvider<EditScheduleState>(
+  ColorParamsProvider<EditScheduleState>(
     Loading,
     EditScheduleState.Failure.NotFound,
     PreviewLoaded,

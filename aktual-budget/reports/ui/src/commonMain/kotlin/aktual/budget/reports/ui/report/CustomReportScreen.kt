@@ -17,11 +17,11 @@ import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -203,11 +203,11 @@ private fun CustomReportContent(
 @PortraitPreview
 @Composable
 private fun PreviewCustomReportScaffold(
-  @PreviewParameter(CustomReportProvider::class) params: ColoredParams<CustomReportState>,
-) = PreviewWithColoredParams(params) { CustomReportScaffold(state = this, onAction = {}) }
+  @PreviewParameter(CustomReportProvider::class) params: ColorParams<CustomReportState>,
+) = PreviewWithColorParams(params) { CustomReportScaffold(state = this, onAction = {}) }
 
 private class CustomReportProvider :
-  ColoredParameterProvider<CustomReportState>(
+  ColorParamsProvider<CustomReportState>(
     CustomReportState.Loaded(
       name = PREVIEW_CUSTOM_DATA.title,
       draft = PREVIEW_CUSTOM_DATA.config,

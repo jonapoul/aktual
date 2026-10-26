@@ -290,36 +290,36 @@ val Typography.buttonTextStyle: TextStyle
 @Preview
 @Composable
 private fun PreviewBare(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
+  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     BareTextButton(text = "Bare", isEnabled = this, onClick = {})
   }
 
 @Preview
 @Composable
 private fun PreviewPrimary(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
+  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     PrimaryTextButton(text = "Primary", isEnabled = this, onClick = {})
   }
 
 @Preview
 @Composable
 private fun PreviewNormal(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
+  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     NormalTextButton(text = "Normal", isEnabled = this, onClick = {})
   }
 
 @Preview
 @Composable
 private fun PreviewTonal(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
+  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     val isEnabled = this
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       TonalButton(text = "Tonal", isEnabled = isEnabled, onClick = {})
@@ -336,8 +336,8 @@ private fun PreviewTonal(
 @Preview
 @Composable
 private fun PreviewPrimaryWithLoadingNotLoading(
-  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>,
+  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     PrimaryTextButtonWithLoading(text = "OK", isLoading = this, onClick = {})
   }

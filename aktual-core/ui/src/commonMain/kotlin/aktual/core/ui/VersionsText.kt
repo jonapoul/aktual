@@ -22,11 +22,11 @@ fun VersionsText(versions: AktualVersions, modifier: Modifier = Modifier, paddin
 @Preview
 @Composable
 private fun PreviewVersionsText(
-  @PreviewParameter(VersionsTextProvider::class) params: ColoredParams<AktualVersions>,
-) = PreviewWithColoredParams(params) { VersionsText(params.data) }
+  @PreviewParameter(VersionsTextProvider::class) params: ColorParams<AktualVersions>,
+) = PreviewWithColorParams(params) { VersionsText(params.data) }
 
 private class VersionsTextProvider :
-  ColoredParameterProvider<AktualVersions>(
+  ColorParamsProvider<AktualVersions>(
     AktualVersions(app = "1.2.3", server = null),
     AktualVersions(app = "1.2.3", server = "2.3.4"),
   )

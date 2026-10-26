@@ -123,7 +123,7 @@ private fun SortDirection.label(): String =
 
 @Preview
 @Composable
-private fun PreviewSortDialog(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewSortDialog(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     SortDialog(
       fields = persistentListOf("Name", "Date"),

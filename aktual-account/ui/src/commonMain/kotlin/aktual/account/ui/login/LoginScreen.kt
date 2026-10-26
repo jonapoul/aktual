@@ -12,12 +12,12 @@ import aktual.core.nav.ServerUrlNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
@@ -231,9 +231,9 @@ private fun Content(
 @PortraitPreview
 @LandscapePreview
 private fun PreviewLoginScaffold(
-  @PreviewParameter(LoginScaffoldProvider::class) params: ColoredParams<LoginScaffoldParams>,
+  @PreviewParameter(LoginScaffoldProvider::class) params: ColorParams<LoginScaffoldParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     LoginScaffold(
       versions = versions,
       enteredPassword = password,
@@ -257,7 +257,7 @@ private data class LoginScaffoldParams(
 private val ALL_METHODS = (LoginMethod.entries - LoginMethod.Unknown).toImmutableList()
 
 private class LoginScaffoldProvider :
-  ColoredParameterProvider<LoginScaffoldParams>(
+  ColorParamsProvider<LoginScaffoldParams>(
     LoginScaffoldParams(password = Empty, isLoading = false),
     LoginScaffoldParams(
       password = Dummy,

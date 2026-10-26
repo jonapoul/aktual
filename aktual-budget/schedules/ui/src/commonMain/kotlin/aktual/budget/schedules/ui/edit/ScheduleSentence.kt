@@ -10,9 +10,9 @@ import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import aktual.core.ui.frequencyDescription
@@ -361,9 +361,9 @@ private val SentenceLineHeight = 44.sp
 @Preview(widthDp = 390)
 @Composable
 private fun PreviewScheduleSentence(
-  @PreviewParameter(ScheduleSentenceProvider::class) params: ColoredParams<SentencePreview>,
+  @PreviewParameter(ScheduleSentenceProvider::class) params: ColorParams<SentencePreview>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     ScheduleSentence(
       modifier = Modifier.padding(16.dp),
       state = state,
@@ -412,7 +412,7 @@ private val PreviewDeposit =
   )
 
 private class ScheduleSentenceProvider :
-  ColoredParameterProvider<SentencePreview>(
+  ColorParamsProvider<SentencePreview>(
     SentencePreview(PreviewLoaded),
     SentencePreview(PreviewEditing),
     SentencePreview(PreviewEditing, activePart = SentencePart.Amount),

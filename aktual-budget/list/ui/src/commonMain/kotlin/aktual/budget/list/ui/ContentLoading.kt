@@ -2,7 +2,7 @@ package aktual.budget.list.ui
 
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.Box
@@ -25,5 +25,5 @@ internal fun ContentLoading(modifier: Modifier = Modifier) {
 
 @PortraitPreview
 @Composable
-private fun PreviewContentLoading(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewContentLoading(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { ContentLoading() }

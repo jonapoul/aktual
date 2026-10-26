@@ -7,11 +7,11 @@ import aktual.core.model.ThemeId
 import aktual.core.nav.BackNavigator
 import aktual.core.theme.LightColors
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SearchScaffold
@@ -129,16 +129,16 @@ private fun ResultsList(
 @PortraitPreview
 @Composable
 private fun PreviewSearchThemeScaffold(
-  @PreviewParameter(SearchThemeScaffoldProvider::class) params: ColoredParams<SearchThemeParams>,
+  @PreviewParameter(SearchThemeScaffoldProvider::class) params: ColorParams<SearchThemeParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     SearchThemeScaffold(query = query, state = state, onAction = {})
   }
 
 private data class SearchThemeParams(val query: String, val state: SearchThemeState)
 
 private class SearchThemeScaffoldProvider :
-  ColoredParameterProvider<SearchThemeParams>(
+  ColorParamsProvider<SearchThemeParams>(
     SearchThemeParams(query = "", state = NoQuery),
     SearchThemeParams(query = "xyz", state = NoResults),
     SearchThemeParams(

@@ -22,5 +22,5 @@ private fun LoadingScreen(modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
-private fun PreviewLoadingScreen(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewLoadingScreen(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { LoadingScreen() }

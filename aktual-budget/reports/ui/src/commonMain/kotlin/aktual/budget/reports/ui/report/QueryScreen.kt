@@ -17,14 +17,14 @@ import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.bareIconButton
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
@@ -257,9 +257,9 @@ internal fun TimeFrameRow(timeFrame: TimeFrame?, onClick: () -> Unit) =
 @PortraitPreview
 @Composable
 private fun PreviewQueryScaffold(
-  @PreviewParameter(QueryProvider::class) params: ColoredParams<FormulaQuery>,
+  @PreviewParameter(QueryProvider::class) params: ColorParams<FormulaQuery>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     QueryScaffold(
       name = "groceries",
       query = this,
@@ -272,7 +272,7 @@ private fun PreviewQueryScaffold(
   }
 
 private class QueryProvider :
-  ColoredParameterProvider<FormulaQuery>(
+  ColorParamsProvider<FormulaQuery>(
     PREVIEW_FORMULA_META.queries.getValue("groceries"),
     PREVIEW_FORMULA_META.queries.getValue("income"),
     FormulaQuery(conditions = emptyList(), conditionsOp = And, timeFrame = null),

@@ -15,13 +15,13 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SearchScaffold
@@ -162,16 +162,16 @@ private fun ShimmerResults(modifier: Modifier = Modifier) =
 @Composable
 private fun PreviewSearchSchedulesScaffold(
   @PreviewParameter(SearchSchedulesScaffoldProvider::class)
-  params: ColoredParams<SearchSchedulesParams>,
+  params: ColorParams<SearchSchedulesParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     SearchSchedulesScaffold(query = query, state = state, onAction = {})
   }
 
 private data class SearchSchedulesParams(val query: String, val state: SearchSchedulesState)
 
 private class SearchSchedulesScaffoldProvider :
-  ColoredParameterProvider<SearchSchedulesParams>(
+  ColorParamsProvider<SearchSchedulesParams>(
     SearchSchedulesParams(query = "", state = NoQuery),
     SearchSchedulesParams(query = "rent", state = Loading),
     SearchSchedulesParams(query = "xyz", state = NoResults),

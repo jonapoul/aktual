@@ -34,7 +34,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.ChipSize
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.NewTransactionsBadge
@@ -536,7 +536,7 @@ private fun Colors.drawerItem(): NavigationDrawerItemColors =
 
 @PortraitPreview
 @Composable
-private fun PreviewBudgetDrawerSheet(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewBudgetDrawerSheet(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     BudgetDrawerSheet {
       BudgetSidebarContent(

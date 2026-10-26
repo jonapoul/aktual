@@ -15,7 +15,7 @@ import aktual.budget.sync.vm.SyncStepState.InProgress.Indefinite
 import aktual.budget.sync.vm.SyncStepState.NotStarted
 import aktual.budget.sync.vm.SyncStepState.Succeeded
 import aktual.core.model.percent
-import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColorParamsProvider
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
 
@@ -26,7 +26,7 @@ internal data class SyncBudgetDialogParams(
 )
 
 internal class SyncBudgetDialogProvider :
-  ColoredParameterProvider<SyncBudgetDialogParams>(
+  ColorParamsProvider<SyncBudgetDialogParams>(
     SyncBudgetDialogParams(
       overallState = SyncOverallState.NotStarted,
       passwordState = Inactive,

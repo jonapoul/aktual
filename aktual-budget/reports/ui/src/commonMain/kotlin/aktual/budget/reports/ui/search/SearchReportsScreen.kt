@@ -18,13 +18,13 @@ import aktual.core.nav.ReportNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens.Large
 import aktual.core.ui.Dimens.Medium
 import aktual.core.ui.Dimens.Small
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SearchScaffold
@@ -228,17 +228,16 @@ private fun ResultItem(
 @PortraitPreview
 @Composable
 private fun PreviewSearchReportsScaffold(
-  @PreviewParameter(SearchReportsScaffoldProvider::class)
-  params: ColoredParams<SearchReportsParams>,
+  @PreviewParameter(SearchReportsScaffoldProvider::class) params: ColorParams<SearchReportsParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     SearchReportsScaffold(query = query, state = state, onAction = {})
   }
 
 private data class SearchReportsParams(val query: String, val state: SearchReportsState)
 
 private class SearchReportsScaffoldProvider :
-  ColoredParameterProvider<SearchReportsParams>(
+  ColorParamsProvider<SearchReportsParams>(
     SearchReportsParams(query = "", state = NoQuery),
     SearchReportsParams(query = "xyz", state = NoResults),
     SearchReportsParams(

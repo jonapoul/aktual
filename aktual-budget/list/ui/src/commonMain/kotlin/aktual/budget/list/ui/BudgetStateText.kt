@@ -10,9 +10,9 @@ import aktual.core.icons.FileDouble
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -87,7 +87,7 @@ private fun BudgetState.color(colors: Colors): Color =
 @Preview
 @Composable
 private fun PreviewBudgetStateText(
-  @PreviewParameter(BudgetStateProvider::class) params: ColoredParams<BudgetState>,
-) = PreviewWithColoredParams(params) { BudgetStateText(this) }
+  @PreviewParameter(BudgetStateProvider::class) params: ColorParams<BudgetState>,
+) = PreviewWithColorParams(params) { BudgetStateText(this) }
 
-private class BudgetStateProvider : ColoredParameterProvider<BudgetState>(BudgetState.entries)
+private class BudgetStateProvider : ColorParamsProvider<BudgetState>(BudgetState.entries)

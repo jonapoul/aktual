@@ -30,15 +30,15 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AktualTooltip
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.WarningBanner
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -376,15 +376,15 @@ private fun RuleStage(
 @PortraitPreview
 @Composable
 private fun PreviewEditRuleScaffold(
-  @PreviewParameter(EditRuleStateProvider::class) params: ColoredParams<EditRuleStateParams>,
+  @PreviewParameter(EditRuleStateProvider::class) params: ColorParams<EditRuleStateParams>,
 ) {
-  PreviewWithColoredParams(params) { EditRuleScaffold(state = state, mode = mode, onAction = {}) }
+  PreviewWithColorParams(params) { EditRuleScaffold(state = state, mode = mode, onAction = {}) }
 }
 
 private data class EditRuleStateParams(val state: EditRuleState, val mode: Mode = Edit)
 
 private class EditRuleStateProvider :
-  ColoredParameterProvider<EditRuleStateParams>(
+  ColorParamsProvider<EditRuleStateParams>(
     EditRuleStateParams(Success(PreviewRule1, isWorking = false)),
     EditRuleStateParams(Success(PreviewRule1, isWorking = true)),
     EditRuleStateParams(Loading),

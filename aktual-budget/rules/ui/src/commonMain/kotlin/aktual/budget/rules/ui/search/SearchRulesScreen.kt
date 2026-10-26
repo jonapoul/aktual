@@ -20,13 +20,13 @@ import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.Chip
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SearchScaffold
@@ -207,9 +207,9 @@ private fun ShimmerResults(modifier: Modifier = Modifier) =
 @PortraitPreview
 @Composable
 private fun PreviewSearchRulesScaffold(
-  @PreviewParameter(SearchRulesScaffoldProvider::class) params: ColoredParams<SearchRulesParams>,
+  @PreviewParameter(SearchRulesScaffoldProvider::class) params: ColorParams<SearchRulesParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     SearchRulesScaffold(query = query, payeeName = payeeName, state = state, onAction = {})
   }
 
@@ -220,7 +220,7 @@ private data class SearchRulesParams(
 )
 
 private class SearchRulesScaffoldProvider :
-  ColoredParameterProvider<SearchRulesParams>(
+  ColorParamsProvider<SearchRulesParams>(
     SearchRulesParams(query = "", state = NoQuery),
     SearchRulesParams(
       query = "",

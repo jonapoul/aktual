@@ -15,11 +15,11 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipColors
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParameters
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParameters
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
 import aktual.core.ui.SwipeAction
@@ -270,9 +270,9 @@ private fun Modifier.ruleRow(colors: Colors, onClick: (() -> Unit)?): Modifier =
 @Preview
 @Composable
 private fun PreviewListRulesItem(
-  @PreviewParameter(ListRulesItemProvider::class) params: ColoredParams<ListRulesItemParams>,
+  @PreviewParameter(ListRulesItemProvider::class) params: ColorParams<ListRulesItemParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     ListRulesItem(
       rule = item,
       isOpen = isOpen,
@@ -287,7 +287,7 @@ private data class ListRulesItemParams(
 )
 
 private class ListRulesItemProvider :
-  ColoredParameterProvider<ListRulesItemParams>(
+  ColorParamsProvider<ListRulesItemParams>(
     ListRulesItemParams(item = PreviewRule1),
     ListRulesItemParams(item = PreviewRule1.copy(stage = Pre)),
     ListRulesItemParams(item = PreviewRule2.copy(stage = Post)),
@@ -296,7 +296,7 @@ private class ListRulesItemProvider :
 
 @Preview
 @Composable
-private fun PreviewShimmerListItem(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewShimmerListItem(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     ShimmerListRulesItem(modifier = Modifier.fillMaxWidth())
   }

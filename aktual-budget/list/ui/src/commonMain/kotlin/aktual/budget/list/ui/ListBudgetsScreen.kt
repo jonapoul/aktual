@@ -19,13 +19,13 @@ import aktual.core.nav.ServerUrlNavigator
 import aktual.core.nav.SettingsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
@@ -250,8 +250,8 @@ private fun StateContent(
 @PortraitPreview
 @Composable
 private fun PreviewListBudgetsScaffold(
-  @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ColoredParams<ListBudgetsState>,
-) = PreviewWithColoredParams(params) { ListBudgetsScaffold(state = this, onAction = {}) }
+  @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ColorParams<ListBudgetsState>,
+) = PreviewWithColorParams(params) { ListBudgetsScaffold(state = this, onAction = {}) }
 
 private val PREVIEW_ITEMS =
   List(size = 5) { PreviewBudgetSynced } +
@@ -259,7 +259,7 @@ private val PREVIEW_ITEMS =
     List(size = 5) { PreviewBudgetBroken }
 
 private class ListBudgetsScaffoldProvider :
-  ColoredParameterProvider<ListBudgetsState>(
+  ColorParamsProvider<ListBudgetsState>(
     ListBudgetsState.Success(PREVIEW_ITEMS.toImmutableList()),
     ListBudgetsState.Loading(numLoadingItems = 3),
     ListBudgetsState.Failure(reason = "Something broke lol"),

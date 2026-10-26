@@ -10,7 +10,7 @@ import aktual.core.theme.LightColors
 import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
@@ -141,7 +141,7 @@ private fun ThemeSettingsContent(
 
 @PortraitPreview
 @Composable
-private fun PreviewColorsSettings(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewColorsSettings(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     ThemeSettingsScaffold(
       state =

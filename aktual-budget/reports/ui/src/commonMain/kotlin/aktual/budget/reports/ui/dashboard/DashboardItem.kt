@@ -23,10 +23,10 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParameters
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParameters
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
@@ -283,9 +283,9 @@ private fun DeleteReportDialogContent(
 @Preview
 @Composable
 private fun PreviewReportDashboardItem(
-  @PreviewParameter(ReportDashboardItemProvider::class) params: ColoredParams<DashboardItemParams>,
+  @PreviewParameter(ReportDashboardItemProvider::class) params: ColorParams<DashboardItemParams>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     DashboardItem(
       item = item,
       chartData = chartData,
@@ -300,27 +300,27 @@ private fun PreviewReportDashboardItem(
 @Preview
 @Composable
 private fun PreviewDeleteReportDialog(
-  @PreviewParameter(DeleteReportDialogProvider::class) params: ColoredParams<String?>,
+  @PreviewParameter(DeleteReportDialogProvider::class) params: ColorParams<String?>,
 ) =
-  PreviewWithColoredParams(params) {
+  PreviewWithColorParams(params) {
     DeleteReportDialogContent(name = params.data, onConfirm = {}, onDismiss = {})
   }
 
 @Preview
 @Composable
 private fun PreviewDeleteSavedReportDialog(
-  @PreviewParameter(ColoredParameters::class) colors: Colors,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
     DeleteReportDialogContent(name = null, onConfirm = {}, onDismiss = {}, onDeleteReport = {})
   }
 
-private class DeleteReportDialogProvider : ColoredParameterProvider<String?>("Net worth", null)
+private class DeleteReportDialogProvider : ColorParamsProvider<String?>("Net worth", null)
 
 private data class DashboardItemParams(val item: DashboardItem, val chartData: ChartData?)
 
 private class ReportDashboardItemProvider :
-  ColoredParameterProvider<DashboardItemParams>(
+  ColorParamsProvider<DashboardItemParams>(
     DashboardItemParams(PREVIEW_DASHBOARD_ITEM_1, PREVIEW_CASH_FLOW_DATA),
     DashboardItemParams(PREVIEW_DASHBOARD_ITEM_2, PREVIEW_NET_WORTH_DATA),
     DashboardItemParams(PREVIEW_DASHBOARD_ITEM_3, PER_TRANSACTION_DATA),

@@ -18,11 +18,11 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParams
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -263,8 +263,8 @@ private val GRAPH_TYPES = persistentListOf<GraphType>(Bar, Line)
 @PortraitPreview
 @Composable
 private fun PreviewBudgetAnalysisScaffold(
-  @PreviewParameter(BudgetAnalysisProvider::class) params: ColoredParams<BudgetAnalysisState>,
-) = PreviewWithColoredParams(params) { BudgetAnalysisScaffold(state = this, onAction = {}) }
+  @PreviewParameter(BudgetAnalysisProvider::class) params: ColorParams<BudgetAnalysisState>,
+) = PreviewWithColorParams(params) { BudgetAnalysisScaffold(state = this, onAction = {}) }
 
 private val PREVIEW_SETTINGS =
   BudgetAnalysisSettings(
@@ -278,7 +278,7 @@ private val PREVIEW_SETTINGS =
   )
 
 private class BudgetAnalysisProvider :
-  ColoredParameterProvider<BudgetAnalysisState>(
+  ColorParamsProvider<BudgetAnalysisState>(
     BudgetAnalysisState.Loaded(
       name = null,
       draft = PREVIEW_SETTINGS,

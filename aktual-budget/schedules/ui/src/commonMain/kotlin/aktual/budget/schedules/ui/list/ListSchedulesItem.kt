@@ -10,10 +10,10 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
-import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParameters
-import aktual.core.ui.ColoredParams
-import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.ColorParameters
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
 import aktual.core.ui.formatted
@@ -232,20 +232,19 @@ internal fun ShimmerListSchedulesItem(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun PreviewScheduleStatus(
-  @PreviewParameter(ScheduleStatusProvider::class) params: ColoredParams<ScheduleStatus>,
-) = PreviewWithColoredParams(params) { ScheduleStatusBadge(this) }
+  @PreviewParameter(ScheduleStatusProvider::class) params: ColorParams<ScheduleStatus>,
+) = PreviewWithColorParams(params) { ScheduleStatusBadge(this) }
 
-private class ScheduleStatusProvider :
-  ColoredParameterProvider<ScheduleStatus>(ScheduleStatus.entries)
+private class ScheduleStatusProvider : ColorParamsProvider<ScheduleStatus>(ScheduleStatus.entries)
 
 @Preview
 @Composable
 private fun PreviewListItem(
-  @PreviewParameter(SchedulesProvider::class) params: ColoredParams<Schedule>,
-) = PreviewWithColoredParams(params) { ListSchedulesItem(schedule = this, onClick = {}) }
+  @PreviewParameter(SchedulesProvider::class) params: ColorParams<Schedule>,
+) = PreviewWithColorParams(params) { ListSchedulesItem(schedule = this, onClick = {}) }
 
 private class SchedulesProvider :
-  ColoredParameterProvider<Schedule>(
+  ColorParamsProvider<Schedule>(
     ListSchedulesPreview.scheduleA,
     ListSchedulesPreview.scheduleB,
     ListSchedulesPreview.scheduleCompleted,
@@ -253,5 +252,5 @@ private class SchedulesProvider :
 
 @Preview
 @Composable
-private fun PreviewLoadingListItem(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+private fun PreviewLoadingListItem(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { ShimmerListSchedulesItem() }
