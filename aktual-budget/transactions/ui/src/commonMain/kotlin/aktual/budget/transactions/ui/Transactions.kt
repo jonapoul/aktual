@@ -32,6 +32,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.paging.LoadState
@@ -52,10 +53,11 @@ internal fun Transactions(
   density: TransactionsDensity,
   innerPadding: PaddingValues,
   contentPadding: PaddingValues,
-  expanded: ImmutableSet<TransactionId>,
+  toggledSplits: ImmutableSet<TransactionId>,
   splitsPinnedOpen: Boolean,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
+  expandSplits: Boolean = false,
   alternateRowColours: Boolean = false,
   tags: ImmutableList<TagLabel> = persistentListOf(),
 ) {
@@ -69,8 +71,7 @@ internal fun Transactions(
         modifier = modifier,
         contentPadding = contentPadding,
         innerPadding = innerPadding,
-        expanded = expanded,
-        splitsPinnedOpen = splitsPinnedOpen,
+        splits = SplitsState(toggledSplits, expandSplits, splitsPinnedOpen),
         alternateRowColours = alternateRowColours,
         tags = tags,
         onAction = onAction,
@@ -138,8 +139,7 @@ private fun TransactionsFilled(
   density: TransactionsDensity,
   innerPadding: PaddingValues,
   contentPadding: PaddingValues,
-  expanded: ImmutableSet<TransactionId>,
-  splitsPinnedOpen: Boolean,
+  splits: SplitsState,
   alternateRowColours: Boolean,
   tags: ImmutableList<TagLabel>,
   onAction: ActionListener,
@@ -178,12 +178,7 @@ private fun TransactionsFilled(
           // The first year is already pinned under the top bar
           if (showYear) YearDivider(transaction.date.year)
 
-          val parts =
-            when {
-              splitsPinnedOpen -> SplitParts.Pinned
-              transaction.id in expanded -> SplitParts.Expanded
-              else -> SplitParts.Collapsed
-            }
+          val parts = splits.partsOf(transaction.id)
           val onToggleSplit = { onAction(Action.ToggleSplit(transaction.id)) }
           val onOpen = { onAction(Action.OpenTransaction(transaction.id)) }
 
@@ -226,6 +221,21 @@ private fun TransactionsFilled(
 
 private const val NUM_SHIMMER_ROWS = 12
 
+// toggled holds the splits flipped away from expandByDefault
+@Immutable
+private data class SplitsState(
+  val toggled: ImmutableSet<TransactionId>,
+  val expandByDefault: Boolean,
+  val pinnedOpen: Boolean,
+)
+
+private fun SplitsState.partsOf(id: TransactionId): SplitParts =
+  when {
+    pinnedOpen -> Pinned
+    id in toggled != expandByDefault -> Expanded
+    else -> Collapsed
+  }
+
 @PortraitPreview
 @Composable
 private fun PreviewTransactions(
@@ -239,7 +249,7 @@ private fun PreviewTransactions(
         density = density,
         contentPadding = Zero,
         innerPadding = Zero,
-        expanded = persistentSetOf(TRANSACTION_SPLIT.id),
+        toggledSplits = persistentSetOf(TRANSACTION_SPLIT.id),
         splitsPinnedOpen = false,
         onAction = {},
       )

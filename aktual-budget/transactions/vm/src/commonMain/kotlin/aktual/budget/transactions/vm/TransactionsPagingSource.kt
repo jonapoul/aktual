@@ -21,6 +21,8 @@ internal class TransactionsPagingSource(
   private val transactionDao: TransactionDao,
   private val tagsDao: TagsDao,
   private val spec: TransactionsSpec,
+  // Only applies to a single account's list
+  private val hideReconciled: Boolean = false,
 ) : PagingSource<Int, Transaction>() {
   // A #tag match can't be expressed as a SQL offset query, so for tag-filtered specs we resolve the
   // full ordered id list once and page over it in memory. Cached for this source's lifetime - a new
@@ -92,7 +94,8 @@ internal class TransactionsPagingSource(
         val page =
           when (val accountSpec = spec.accountSpec) {
             AllAccounts -> transactionDao.getPaged(limit, offset)
-            is SpecificAccount -> transactionDao.getByAccountPaged(accountSpec.id, limit, offset)
+            is SpecificAccount ->
+              transactionDao.getByAccountPaged(accountSpec.id, limit, offset, hideReconciled)
             is Group -> transactionDao.getByGroupPaged(accountSpec.group, limit, offset)
           }
         page.toTransactions(childrenOf(page.rows))

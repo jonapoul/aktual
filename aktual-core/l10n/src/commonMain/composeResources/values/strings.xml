@@ -1798,7 +1798,6 @@
   <string name="transactions_transfer_from">Transfer from %1$s</string>
   <string name="transactions_view_options">View options</string>
   <string name="transactions_menu">Menu</string>
-  <string name="transactions_settings">Settings</string>
   <string name="transactions_delete_account">Delete account</string>
   <string name="transactions_delete_account_title">Delete account?</string>
   <string name="transactions_delete_account_message">This deletes the account and all of its transactions permanently. Money in it may vanish from your budget. Transfers to other accounts stay there, but are no longer transfers.</string>
@@ -1809,10 +1808,18 @@
   <string name="transactions_delete_account_login_kept_title">Bank login not removed</string>
   <string name="transactions_delete_account_login_kept_message">The account was deleted, but its GoCardless bank login couldn’t be removed from the server.</string>
   <string name="transactions_delete_account_login_kept_dismiss">OK</string>
-  <string name="transactions_density">Density</string>
   <string name="transactions_density_comfortable">Comfortable</string>
   <string name="transactions_density_compact">Compact</string>
   <string name="transactions_density_dense">Dense</string>
+  <string name="transactions_view_this_account">This account</string>
+  <string name="transactions_view_running_balance">Show running balance</string>
+  <string name="transactions_view_hide_reconciled">Hide reconciled transactions</string>
+  <string name="transactions_view_extra_balances">Show cleared and uncleared totals</string>
+  <string name="transactions_view_alternate_rows">Alternate row colors</string>
+  <string name="transactions_view_alternate_rows_unsupported">Your theme has no alternate row color</string>
+  <string name="transactions_view_expand_splits">Expand split transactions</string>
+  <string name="transactions_header_cleared">Cleared</string>
+  <string name="transactions_header_uncleared">Uncleared</string>
   <string name="transactions_load_failed">Failed loading transactions</string>
   <string name="transactions_title_all">All Accounts</string>
   <string name="transactions_title_on_budget">On Budget Accounts</string>
@@ -1992,15 +1999,9 @@
   <string name="settings_theme">App theme</string>
   <string name="settings_dark_theme">Dark theme</string>
   <string name="settings_schedules">Schedules</string>
-  <string name="settings_transactions">Transactions</string>
 
   <string name="settings_schedules_toolbar">Schedule Settings</string>
   <string name="settings_schedules_show_completed">Show completed schedules</string>
-
-  <string name="settings_transactions_toolbar">Transaction Settings</string>
-  <string name="settings_transactions_alternate_rows">Alternate row colors</string>
-  <string name="settings_transactions_alternate_rows_supported">Every other row is shaded with your theme's alternate row color</string>
-  <string name="settings_transactions_alternate_rows_unsupported">Your current theme doesn't define an alternate row color, so this has no effect</string>
 
   <string name="settings_theme_toolbar">Theme</string>
   <string name="settings_theme_use_system">Use System Default</string>

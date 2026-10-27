@@ -10,6 +10,7 @@ import aktual.budget.db.test.insertSchedule
 import aktual.budget.db.test.insertScheduleJsonPaths
 import aktual.budget.db.withoutResult
 import aktual.budget.model.AccountId
+import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
 import aktual.budget.model.PayeeId
@@ -251,11 +252,11 @@ internal class TransactionDaoTest {
 
       // then
       assertThat(onBudget.rows.map { it.id.toString() }).containsExactly("t1", "t2")
-      assertThat(onBudget.topBalance).isEqualTo(3000L)
+      assertThat(onBudget.balances.first()).isEqualTo(3000L)
       assertThat(offBudget.rows.map { it.id.toString() }).containsExactly("t3")
-      assertThat(offBudget.topBalance).isEqualTo(500L)
+      assertThat(offBudget.balances.first()).isEqualTo(500L)
       assertThat(closed.rows.map { it.id.toString() }).containsExactly("t4")
-      assertThat(closed.topBalance).isEqualTo(100L)
+      assertThat(closed.balances.first()).isEqualTo(100L)
       assertThat(transactions.getIdsAndNotesByGroup(OnBudget).map { it.id.toString() })
         .containsExactly("t1", "t2")
     }
@@ -276,9 +277,48 @@ internal class TransactionDaoTest {
 
     // then
     assertThat(all.rows.map { it.id.toString() }).containsExactly("t1")
-    assertThat(all.topBalance).isEqualTo(3000L)
+    assertThat(all.balances.first()).isEqualTo(3000L)
     assertThat(account.rows.map { it.id.toString() }).containsExactly("t1")
-    assertThat(account.topBalance).isEqualTo(3000L)
+    assertThat(account.balances.first()).isEqualTo(3000L)
+  }
+
+  @Test
+  fun `Hiding reconciled rows keeps the balances of the whole account`() =
+    runDaoTest { transactions ->
+      // given
+      transactions.insert("t1", ON_1, CATEGORY, PAYEE, LocalDate(2026, 1, 1), amount = 10.0)
+      transactions.insert("t2", ON_1, CATEGORY, PAYEE, LocalDate(2026, 1, 2), amount = 20.0)
+      insertCopy(transactions, id = "r", copyOf = "t2") {
+        it.copy(date = LocalDate(2026, 1, 3), reconciled = true)
+      }
+      transactions.insert("t3", ON_1, CATEGORY, PAYEE, LocalDate(2026, 1, 4), amount = 5.0)
+
+      // when
+      val shown = transactions.getByAccountPaged(AccountId(ON_1), limit = 10, offset = 0)
+      val hidden = transactions.getByAccountPaged(AccountId(ON_1), limit = 10, offset = 0, true)
+
+      // then
+      assertThat(shown.rows.map { it.id.toString() }).containsExactly("t3", "r", "t2", "t1")
+      assertThat(shown.balances).containsExactly(5500L, 5000L, 3000L, 1000L)
+      assertThat(hidden.rows.map { it.id.toString() }).containsExactly("t3", "t2", "t1")
+      assertThat(hidden.balances).containsExactly(5500L, 3000L, 1000L)
+    }
+
+  @Test
+  fun `Cleared balances split the account by cleared state`() = runDaoTest { transactions ->
+    // given
+    transactions.insert("t1", ON_1, CATEGORY, PAYEE, DATE, amount = 10.0)
+    insertCopy(transactions, id = "c", copyOf = "t1") { it.copy(cleared = true) }
+    insertCopy(transactions, id = "u", copyOf = "t1") {
+      it.copy(cleared = false, amount = Amount(-300L))
+    }
+    transactions.insert("t2", ON_2, CATEGORY, PAYEE, DATE, amount = 20.0)
+    insertCopy(transactions, id = "o", copyOf = "t2") { it.copy(cleared = true) }
+
+    // then
+    transactions.observeClearedBalances(AccountId(ON_1)).test {
+      assertThatNextEmissionIsEqualTo(ClearedBalances(cleared = 1000L, uncleared = -300L))
+    }
   }
 
   @Test

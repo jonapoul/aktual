@@ -3,7 +3,10 @@ package aktual.budget.model
 import aktual.budget.model.SyncedPrefKey.Companion.decode
 import aktual.budget.model.SyncedPrefKey.PerAccount.CsvDelimiter
 import aktual.budget.model.SyncedPrefKey.PerAccount.CustomSyncMappings
+import aktual.budget.model.SyncedPrefKey.PerAccount.HideReconciled
 import aktual.budget.model.SyncedPrefKey.PerAccount.NewTransactionsSeen
+import aktual.budget.model.SyncedPrefKey.PerAccount.ShowBalances
+import aktual.budget.model.SyncedPrefKey.PerAccount.ShowExtraBalances
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportPending
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportTransactions
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncUpdateDates
@@ -31,5 +34,13 @@ class SyncedPrefKeyAccountTest {
     val id = AccountId("abc-123")
     assertThat(NewTransactionsSeen(id).key).isEqualTo("aktual-new-transactions-seen-abc-123")
     assertThat(decode("aktual-new-transactions-seen-abc-123")).isEqualTo(NewTransactionsSeen(id))
+  }
+
+  @Test
+  fun `Decode transaction view keys`() {
+    val id = AccountId("abc-123")
+    assertThat(decode("hide-reconciled-abc-123")).isEqualTo(HideReconciled(id))
+    assertThat(decode("show-balances-abc-123")).isEqualTo(ShowBalances(id))
+    assertThat(decode("show-extra-balances-abc-123")).isEqualTo(ShowExtraBalances(id))
   }
 }

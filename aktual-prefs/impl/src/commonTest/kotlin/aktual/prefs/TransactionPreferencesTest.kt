@@ -25,4 +25,22 @@ class TransactionPreferencesTest {
       }
     }
   }
+
+  @Test
+  fun `Expand splits`() = runTest {
+    val preferences = TransactionPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    with(preferences.expandSplits) {
+      asFlow().test {
+        // Given nothing has been stored yet, splits start collapsed
+        assertThatNextEmissionIsEqualTo(false)
+
+        // When enabled
+        set(true)
+
+        // Then it round-trips
+        assertThatNextEmissionIsEqualTo(true)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+  }
 }

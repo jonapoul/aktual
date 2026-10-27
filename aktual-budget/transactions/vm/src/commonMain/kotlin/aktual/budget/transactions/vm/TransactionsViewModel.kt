@@ -8,18 +8,23 @@ import aktual.budget.banksync.domain.NewTransactions
 import aktual.budget.db.Accounts
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
+import aktual.budget.db.dao.ClearedBalances
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
 import aktual.budget.model.CategorySpec
 import aktual.budget.model.DbMetadataKey.Companion.TransactionDensity
+import aktual.budget.model.SyncedPrefKey.PerAccount.HideReconciled
+import aktual.budget.model.SyncedPrefKey.PerAccount.ShowBalances
+import aktual.budget.model.SyncedPrefKey.PerAccount.ShowExtraBalances
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.tags.domain.toTagLabels
+import aktual.budget.transactions.domain.AccountViewPrefs
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
@@ -59,8 +64,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -81,8 +90,9 @@ class TransactionsViewModel(
   private val categoryDao: CategoryDao,
   private val bankSyncController: BankSyncController,
   private val deleter: AccountDeleter,
+  private val viewPrefs: AccountViewPrefs,
+  private val transactionPreferences: TransactionPreferences,
   newTransactions: NewTransactions,
-  transactionPreferences: TransactionPreferences,
   server: BudgetServer,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
@@ -94,7 +104,8 @@ class TransactionsViewModel(
   }
 
   private val mutableLoadedAccount = MutableStateFlow<LoadedAccount>(Loading)
-  private val mutableExpanded = MutableStateFlow<PersistentSet<TransactionId>>(persistentSetOf())
+  private val mutableToggledSplits =
+    MutableStateFlow<PersistentSet<TransactionId>>(persistentSetOf())
   private val accountId = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id
   private val isRemote = server is Remote
   private var currentPagingSource: PagingSource<Int, Transaction>? = null
@@ -129,6 +140,43 @@ class TransactionsViewModel(
   val alternateRowColours: StateFlow<Boolean> =
     transactionPreferences.alternateRowColours.asStateFlow(viewModelScope)
 
+  val expandSplits: StateFlow<Boolean> =
+    transactionPreferences.expandSplits.asStateFlow(viewModelScope)
+
+  // Null unless the list is a single account's, the only list these options apply to
+  val accountOptions: StateFlow<AccountViewOptions?> =
+    if (accountId == null) {
+      MutableStateFlow(null)
+    } else {
+      combine(
+          viewPrefs.observe(ShowBalances(accountId)),
+          viewPrefs.observe(HideReconciled(accountId)),
+          viewPrefs.observe(ShowExtraBalances(accountId)),
+          ::AccountViewOptions,
+        )
+        .stateIn(viewModelScope, Eagerly, initialValue = null)
+    }
+
+  // An account's list shows a running balance if its option says so. Other lists that have a
+  // balance always show it
+  val showRunningBalance: StateFlow<Boolean> =
+    accountOptions
+      .map { options -> options?.showRunningBalance ?: (accountId == null) }
+      .stateIn(viewModelScope, Eagerly, initialValue = accountId == null)
+
+  val clearedBalances: StateFlow<ClearedBalances?> =
+    accountOptions
+      .map { it?.showExtraBalances == true }
+      .distinctUntilChanged()
+      .flatMapLatest { show ->
+        if (show && accountId != null) {
+          transactionDao.observeClearedBalances(accountId)
+        } else {
+          flowOf(null)
+        }
+      }
+      .stateIn(viewModelScope, Eagerly, initialValue = null)
+
   val canBankSync: StateFlow<Boolean> =
     mutableLoadedAccount
       .map { it is SpecificAccount && it.account.isLinked() && isRemote }
@@ -158,9 +206,10 @@ class TransactionsViewModel(
   // A tag list shows the matching parts of each split, with nothing to toggle
   val splitsPinnedOpen: Boolean = spec.tagSpec is TagSpec.SpecificTag
 
-  // The splits showing their parts. Kept out of the paging data so a toggle doesn't reload the
-  // page, and survives an invalidation
-  val expanded: StateFlow<ImmutableSet<TransactionId>> = mutableExpanded.asStateFlow()
+  // The splits toggled away from expandSplits: open ones if splits start closed, and closed ones if
+  // they start open. Kept out of the paging data so a toggle doesn't reload the page, and survives
+  // an invalidation
+  val toggledSplits: StateFlow<ImmutableSet<TransactionId>> = mutableToggledSplits.asStateFlow()
 
   val pagingData: Flow<PagingData<Transaction>> =
     Pager(
@@ -209,6 +258,20 @@ class TransactionsViewModel(
       else -> mutableLoadedAccount.update { AllAccounts }
     }
 
+    // Toggles were made against the old default, so they start over with the new one
+    viewModelScope.launch {
+      expandSplits.drop(count = 1).collect { mutableToggledSplits.update { persistentSetOf() } }
+    }
+
+    // Hiding reconciled transactions changes the rows in the list
+    viewModelScope.launch {
+      accountOptions
+        .map { it?.hideReconciled == true }
+        .distinctUntilChanged()
+        .drop(count = 1)
+        .collect { currentPagingSource?.invalidate() }
+    }
+
     // Invalidate PagingSource when transaction data changes.
     // Ignore the first item from the flow, that'll be the initial table state.
     viewModelScope.launch {
@@ -247,8 +310,35 @@ class TransactionsViewModel(
     prefs.update { meta -> meta.set(TransactionDensity, density) }
   }
 
-  fun toggleExpanded(id: TransactionId) {
-    mutableExpanded.update { ids -> if (id in ids) ids.removing(id) else ids.adding(id) }
+  fun setAlternateRowColours(enabled: Boolean) {
+    viewModelScope.launch { transactionPreferences.alternateRowColours.set(enabled) }
+  }
+
+  fun setExpandSplits(enabled: Boolean) {
+    viewModelScope.launch { transactionPreferences.expandSplits.set(enabled) }
+  }
+
+  fun setAccountOption(option: AccountOption, enabled: Boolean) {
+    val account = accountId ?: return
+    val key =
+      when (option) {
+        RunningBalance -> ShowBalances(account)
+        HideReconciledRows -> HideReconciled(account)
+        ExtraBalances -> ShowExtraBalances(account)
+      }
+    viewModelScope.launch {
+      try {
+        viewPrefs.set(key, enabled)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.w(e) { "Failed setting $key" }
+      }
+    }
+  }
+
+  fun toggleSplit(id: TransactionId) {
+    mutableToggledSplits.update { ids -> if (id in ids) ids.removing(id) else ids.adding(id) }
   }
 
   fun bankSync() {
@@ -274,7 +364,13 @@ class TransactionsViewModel(
   }
 
   private fun buildPagingSource() =
-    TransactionsPagingSource(transactionDao, tagsDao, spec).also { currentPagingSource = it }
+    TransactionsPagingSource(
+        transactionDao = transactionDao,
+        tagsDao = tagsDao,
+        spec = spec,
+        hideReconciled = accountOptions.value?.hideReconciled == true,
+      )
+      .also { currentPagingSource = it }
 
   // As the bank sync screen decides it
   private fun Accounts.isLinked() = account_sync_source != null && account_id != null

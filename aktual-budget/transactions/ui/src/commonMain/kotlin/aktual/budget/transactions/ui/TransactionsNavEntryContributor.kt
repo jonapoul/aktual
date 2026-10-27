@@ -21,7 +21,6 @@ import aktual.core.nav.EditTransactionNavigator
 import aktual.core.nav.FilteredTransactionsNavRoute
 import aktual.core.nav.NavStack
 import aktual.core.nav.TransactionNavRoute
-import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.nav.TransactionsWithTagNavRoute
 import aktual.core.nav.UncategorisedTransactionsNavRoute
@@ -40,7 +39,6 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
     budgetEntry<TransactionsNavRoute> {
       TransactionsScreen(
         back = BackNavigator(stack),
-        toSettings = TransactionSettingsNavigator(appStack),
         accountDeleted = DeletedAccountNavigator(stack),
         openTransaction = EditTransactionNavigator(stack),
         spec = TransactionsSpec(),
@@ -51,7 +49,6 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
     budgetEntry<TransactionsWithTagNavRoute> { route ->
       TransactionsScreen(
         back = BackNavigator(stack),
-        toSettings = TransactionSettingsNavigator(appStack),
         accountDeleted = DeletedAccountNavigator(stack),
         openTransaction = EditTransactionNavigator(stack),
         spec = TransactionsSpec(tagSpec = TagSpec.SpecificTag(route.id)),
@@ -61,7 +58,6 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
     budgetEntry<AccountTransactionsNavRoute> { route ->
       TransactionsScreen(
         back = BackNavigator(stack),
-        toSettings = TransactionSettingsNavigator(appStack),
         accountDeleted = DeletedAccountNavigator(stack),
         openTransaction = EditTransactionNavigator(stack),
         spec = TransactionsSpec(accountSpec = AccountSpec.SpecificAccount(route.id)),
@@ -72,7 +68,6 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
     budgetEntry<AccountGroupTransactionsNavRoute> { route ->
       TransactionsScreen(
         back = BackNavigator(stack),
-        toSettings = TransactionSettingsNavigator(appStack),
         accountDeleted = DeletedAccountNavigator(stack),
         openTransaction = EditTransactionNavigator(stack),
         spec = TransactionsSpec(accountSpec = AccountSpec.Group(route.group)),
@@ -83,7 +78,6 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
     budgetEntry<FilteredTransactionsNavRoute> { route ->
       TransactionsScreen(
         back = BackNavigator(stack),
-        toSettings = TransactionSettingsNavigator(appStack),
         accountDeleted = DeletedAccountNavigator(stack),
         openTransaction = EditTransactionNavigator(stack),
         spec = TransactionsSpec(filtered = FilteredSpec(route.title, route.filter)),
@@ -93,7 +87,6 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
     budgetEntry<CategoryTransactionsNavRoute> { route ->
       TransactionsScreen(
         back = BackNavigator(stack),
-        toSettings = TransactionSettingsNavigator(appStack),
         accountDeleted = DeletedAccountNavigator(stack),
         openTransaction = EditTransactionNavigator(stack),
         spec =
@@ -126,7 +119,6 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
     budgetEntry<UncategorisedTransactionsNavRoute> {
       TransactionsScreen(
         back = BackNavigator(stack),
-        toSettings = TransactionSettingsNavigator(appStack),
         accountDeleted = DeletedAccountNavigator(stack),
         openTransaction = EditTransactionNavigator(stack),
         spec = TransactionsSpec(categorySpec = Uncategorised),

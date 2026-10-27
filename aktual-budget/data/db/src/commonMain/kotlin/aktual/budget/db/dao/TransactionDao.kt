@@ -13,6 +13,7 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
+import androidx.compose.runtime.Immutable
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOne
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
@@ -65,8 +66,11 @@ data class TransactionDetail(
 // What a split child's editor needs on top of its row
 data class ChildFields(val payee: PayeeId?, val category: CategoryId?, val sortOrder: Long?)
 
-// One page of the list, with the balance after its first (newest) row
-data class TransactionPage(val rows: List<TransactionRow>, val topBalance: Long)
+// One page of the list, with the balance after each of its rows
+data class TransactionPage(val rows: List<TransactionRow>, val balances: List<Long>)
+
+// An account's totals of its cleared and uncleared transactions
+@Immutable data class ClearedBalances(val cleared: Long, val uncleared: Long)
 
 @Suppress("TooManyFunctions") // One per query the transaction screens and writer need
 @Inject
@@ -74,21 +78,33 @@ class TransactionDao(database: BudgetDatabase) {
   private val queries = database.transactionsQueries
 
   suspend fun getPaged(limit: Long, offset: Long): TransactionPage = queries.withResult {
-    TransactionPage(
+    pageOf(
       rows = getPaged(limit, offset, ::transactionRow).awaitAsList(),
       topBalance = balanceFromOffset(offset).awaitAsOne(),
     )
   }
 
+  // Hiding reconciled rows leaves gaps in the page, so each row's balance is looked up instead of
+  // walked down from the first
   suspend fun getByAccountPaged(
     account: AccountId,
     limit: Long,
     offset: Long,
+    hideReconciled: Boolean = false,
   ): TransactionPage = queries.withResult {
-    TransactionPage(
-      rows = getByAccountPaged(account, limit, offset, ::transactionRow).awaitAsList(),
-      topBalance = balanceFromOffsetByAccount(account, offset).awaitAsOne(),
-    )
+    val rows =
+      getByAccountPaged(account, hideReconciled.toLong(), limit, offset, ::transactionRow)
+        .awaitAsList()
+    if (hideReconciled) {
+      val balances =
+        rows
+          .chunked(MAX_BIND_ARGS)
+          .flatMap { chunk -> balancesAfterByAccount(account, chunk.map { it.id }).awaitAsList() }
+          .associate { it.id to it.balance }
+      TransactionPage(rows, rows.map { balances[it.id] ?: 0L })
+    } else {
+      pageOf(rows, topBalance = balanceFromOffsetByAccount(account, offset).awaitAsOne())
+    }
   }
 
   suspend fun getByGroupPaged(
@@ -98,7 +114,7 @@ class TransactionDao(database: BudgetDatabase) {
   ): TransactionPage = queries.withResult {
     val closed = group == Closed
     val offBudget = group.offBudget
-    TransactionPage(
+    pageOf(
       rows = getByGroupPaged(closed, offBudget, limit, offset, ::transactionRow).awaitAsList(),
       topBalance = balanceFromOffsetByGroup(closed, offBudget, offset).awaitAsOne(),
     )
@@ -166,6 +182,15 @@ class TransactionDao(database: BudgetDatabase) {
   fun observeBalance(group: AccountGroup): Flow<Long> =
     queries
       .balanceFromOffsetByGroup(group == Closed, group.offBudget, offset = 0)
+      .asFlow()
+      .map { it.awaitAsOne() }
+      .distinctUntilChanged()
+
+  fun observeClearedBalances(account: AccountId): Flow<ClearedBalances> =
+    queries
+      .clearedBalancesByAccount(account) { cleared, uncleared ->
+        ClearedBalances(cleared, uncleared)
+      }
       .asFlow()
       .map { it.awaitAsOne() }
       .distinctUntilChanged()
@@ -311,6 +336,14 @@ class TransactionDao(database: BudgetDatabase) {
     )
   }
 }
+
+// Walks down the page from the balance after its first row
+private fun pageOf(rows: List<TransactionRow>, topBalance: Long): TransactionPage {
+  var balance = topBalance
+  return TransactionPage(rows, rows.map { row -> balance.also { balance -= row.amount } })
+}
+
+private fun Boolean.toLong() = if (this) 1L else 0L
 
 @Suppress("LongParameterList")
 private fun transactionRow(

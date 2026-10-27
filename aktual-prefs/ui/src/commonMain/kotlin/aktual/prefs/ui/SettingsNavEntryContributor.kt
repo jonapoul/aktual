@@ -22,8 +22,6 @@ import aktual.core.nav.SystemUiSettingsNavRoute
 import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavRoute
 import aktual.core.nav.ThemeSettingsNavigator
-import aktual.core.nav.TransactionSettingsNavRoute
-import aktual.core.nav.TransactionSettingsNavigator
 import aktual.di.AppScope
 import aktual.prefs.ui.currency.CurrencySettingsScreen
 import aktual.prefs.ui.format.FormatSettingsScreen
@@ -35,7 +33,6 @@ import aktual.prefs.ui.security.SecuritySettingsScreen
 import aktual.prefs.ui.systemui.SystemUiSettingsScreen
 import aktual.prefs.ui.theme.ThemeSettingsScreen
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsScreen
-import aktual.prefs.ui.transactions.TransactionSettingsScreen
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
@@ -48,7 +45,6 @@ class SettingsNavEntryContributor : NavEntryContributor {
         back = BackNavigator(stack),
         toThemeSettings = ThemeSettingsNavigator(stack),
         toScheduleSettings = ScheduleSettingsNavigator(stack),
-        toTransactionSettings = TransactionSettingsNavigator(stack),
         toSystemUiSettings = SystemUiSettingsNavigator(stack),
         toSecuritySettings = SecuritySettingsNavigator(stack),
         toFormatSettings = FormatSettingsNavigator(stack),
@@ -57,8 +53,6 @@ class SettingsNavEntryContributor : NavEntryContributor {
     }
 
     entry<ScheduleSettingsNavRoute> { ScheduleSettingsScreen(BackNavigator(stack)) }
-
-    entry<TransactionSettingsNavRoute> { TransactionSettingsScreen(BackNavigator(stack)) }
 
     entry<SystemUiSettingsNavRoute> { SystemUiSettingsScreen(BackNavigator(stack)) }
 
