@@ -9,9 +9,7 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.unit.Velocity
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
 
 /**
@@ -52,11 +50,13 @@ private class ReleasingOverscrollEffect(private val delegate: OverscrollEffect) 
   ) {
     releaseJob?.cancel()
     delegate.applyToFling(velocity, performFling)
-    if (!delegate.isInProgress) return
+    val node = delegate.node.node
+    if (!delegate.isInProgress || !node.isAttached) return
 
-    // Separate job so the fling isn't held open while the stretch relaxes
+    // Launched in the effect's node scope so the fling isn't held open while the stretch relaxes,
+    // and the loop stops when the node detaches
     releaseJob =
-      CoroutineScope(currentCoroutineContext() + Job()).launch {
+      node.coroutineScope.launch {
         var frames = 0
         while (delegate.isInProgress && frames++ < MAX_RELEASE_FRAMES) {
           withFrameNanos {}
