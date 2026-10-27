@@ -5,7 +5,7 @@ import aktual.budget.BudgetLocalPreferences
 import aktual.budget.BudgetSyncController
 import aktual.budget.banksync.domain.NewTransactions
 import aktual.budget.db.dao.AccountDao
-import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey
 import aktual.budget.model.localChange
 import aktual.budget.schedules.domain.UnpostedSchedules
 import aktual.core.model.BudgetServer
@@ -54,9 +54,9 @@ class BudgetNavRailViewModel(
 
   val headerState: StateFlow<DrawerHeaderState> =
     viewModelScope.launchMolecule(Immediate) {
-      val budgetNameFlow = remember { localPreferences.observe(DbMetadata.BudgetName) }
+      val budgetNameFlow = remember { localPreferences.observe(DbMetadataKey.BudgetName) }
       val budgetName by
-        budgetNameFlow.collectAsState(initial = localPreferences[DbMetadata.BudgetName])
+        budgetNameFlow.collectAsState(initial = localPreferences[DbMetadataKey.BudgetName])
       val serverHost = (server as? Remote)?.url?.baseUrl
       DrawerHeaderState(budgetName = budgetName, serverHost = serverHost)
     }
@@ -83,11 +83,11 @@ class BudgetNavRailViewModel(
       try {
         // The server keeps its own copy of the name for the budget list, see saveMetadataPrefs in
         // packages/loot-core/src/server/preferences/app.ts
-        val cloudFileId = localPreferences[DbMetadata.CloudFileId]
+        val cloudFileId = localPreferences[DbMetadataKey.CloudFileId]
         if (server is Remote && cloudFileId != null) {
           syncApi.renameBudget(cloudFileId, name)
         }
-        localPreferences.update { metadata -> metadata.set(DbMetadata.BudgetName, name) }
+        localPreferences.update { metadata -> metadata.set(DbMetadataKey.BudgetName, name) }
         sync.syncChanges(budgetNameChange(name))
       } catch (e: CancellationException) {
         throw e
@@ -101,7 +101,7 @@ class BudgetNavRailViewModel(
   private fun budgetNameChange(name: String) =
     localChange(
       dataset = "prefs",
-      row = DbMetadata.BudgetName.name,
+      row = DbMetadataKey.BudgetName.name,
       column = "value",
       value = name,
     )

@@ -7,7 +7,7 @@ import aktual.budget.SyncStateHolder
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
-import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey
 import aktual.budget.model.NumberFormat
 import aktual.core.TokenExpiredEvent
 import aktual.core.model.PingStateHolder
@@ -132,7 +132,7 @@ class BottomBarStateUseCase(
 
     val budgetName: Flow<String?> =
       runLevelState.budget().flatMapLatest { bg ->
-        bg?.localPreferences?.map { meta -> meta[DbMetadata.BudgetName] } ?: flowOf(null)
+        bg?.localPreferences?.map { meta -> meta[DbMetadataKey.BudgetName] } ?: flowOf(null)
       }
 
     return scope.launchMolecule(Immediate) {

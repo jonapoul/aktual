@@ -535,6 +535,18 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
       .isEmpty()
 
   // Checks the findings, then that the code still compiles once they're applied
+  @Test
+  fun `does not report a companion property in a generic argument`() =
+    assertNotReported("fun foo(prefs: Prefs) = prefs.observe(Key.Name)", "Key.Name" to "Name")
+
+  @Test
+  fun `does not report a companion property as a generic index`() =
+    assertNotReported("fun foo(prefs: Prefs) = prefs[Key.Name]", "Key.Name" to "Name")
+
+  @Test
+  fun `reports a companion property as a fixed generic argument`() =
+    assertReported("fun foo() = takesCountKey(Key.Count)", "Key.Count" to "Count")
+
   private fun assertReported(@Language("kotlin") code: String, vararg fixes: Pair<String, String>) {
     val source = PREAMBLE + "\n" + code.trimIndent()
     val expected = fixes.map { (from, to) -> "'$from' can be written as '$to'" }
@@ -664,6 +676,20 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
       fun <T> both(first: T, second: T) = first to second
 
       fun <A, B> pairOf(first: A, second: B) = first to second
+
+      class Key<T : Any>(val name: String) {
+        companion object {
+          val Name: Key<String> = Key("name")
+          val Count: Key<Int> = Key("count")
+        }
+      }
+
+      class Prefs {
+        operator fun <T : Any> get(key: Key<T>): T? = null
+        fun <T : Any> observe(key: Key<T>): T? = null
+      }
+
+      fun takesCountKey(key: Key<Int>) = key
       """
         .trimIndent()
   }

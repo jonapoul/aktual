@@ -13,10 +13,7 @@ import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.DbMetadata
-import aktual.budget.model.DbMetadata.Companion.BudgetCollapsed
-import aktual.budget.model.DbMetadata.Companion.BudgetMonthCount
-import aktual.budget.model.DbMetadata.Companion.BudgetShowHiddenCategories
-import aktual.budget.model.DbMetadata.Companion.MobileShowSpentColumn
+import aktual.budget.model.DbMetadataKey
 import aktual.budget.model.evaluateAmountInput
 import aktual.core.Calendar
 import aktual.core.model.unaryPlus
@@ -127,7 +124,7 @@ class BudgetViewModel(
   fun showToday() = requested.update { null }
 
   fun setMonthCount(count: Int) = localPreferences.update {
-    it.set(BudgetMonthCount, count.coerceIn(1, MAX_MONTH_COUNT))
+    it.set(DbMetadataKey.BudgetMonthCount, count.coerceIn(1, MAX_MONTH_COUNT))
   }
 
   // How many month columns the screen has room for
@@ -138,9 +135,9 @@ class BudgetViewModel(
   fun toggleHidden() = localPreferences.update { it.toggle(BudgetShowHiddenCategories) }
 
   fun toggleCollapsed(id: CategoryGroupId) = localPreferences.update { metadata ->
-    val collapsed = metadata[BudgetCollapsed].orEmpty()
+    val collapsed = metadata[DbMetadataKey.BudgetCollapsed].orEmpty()
     metadata.set(
-      BudgetCollapsed,
+      DbMetadataKey.BudgetCollapsed,
       if (id.value in collapsed) collapsed - id.value else collapsed + id.value,
     )
   }
@@ -276,7 +273,7 @@ class BudgetViewModel(
         calendar.observeToday().map { it.yearMonth }.distinctUntilChanged(),
         calculator.observeBounds(),
         requested,
-        localPreferences.observe(BudgetMonthCount).distinctUntilChanged(),
+        localPreferences.observe(DbMetadataKey.BudgetMonthCount).distinctUntilChanged(),
         fittingMonths,
       ) { current, bounds, requested, chosen, fitting ->
         // packages/desktop-client/src/components/budget/index.tsx maxMonths
@@ -329,8 +326,8 @@ class BudgetViewModel(
   }
 
   private fun Source.Data.toState(metadata: DbMetadata): BudgetState.Loaded {
-    val showHidden = metadata[BudgetShowHiddenCategories] == true
-    val collapsed = metadata[BudgetCollapsed].orEmpty().toSet()
+    val showHidden = metadata[DbMetadataKey.BudgetShowHiddenCategories] == true
+    val collapsed = metadata[DbMetadataKey.BudgetCollapsed].orEmpty().toSet()
     return BudgetState.Loaded(
       type = months.firstOrNull()?.type() ?: Envelope,
       month = window.first,
@@ -343,7 +340,7 @@ class BudgetViewModel(
         months
           .map { it.toMonthBudget(window.current, uncategorised, collapsed, showHidden) }
           .toImmutableList(),
-      showSpent = metadata[MobileShowSpentColumn] == true,
+      showSpent = metadata[DbMetadataKey.MobileShowSpentColumn] == true,
       showHidden = showHidden,
     )
   }
@@ -448,7 +445,7 @@ class BudgetViewModel(
       carryover = carryover,
     )
 
-  private fun DbMetadata.toggle(key: DbMetadata.Key<Boolean>): DbMetadata =
+  private fun DbMetadata.toggle(key: DbMetadataKey<Boolean>): DbMetadata =
     set(key, this[key] != true)
 
   private inline fun <T> Iterable<T>.sumOf(selector: (T) -> Amount): Amount =

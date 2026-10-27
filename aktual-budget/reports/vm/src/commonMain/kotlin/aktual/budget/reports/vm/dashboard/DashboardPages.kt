@@ -3,7 +3,7 @@ package aktual.budget.reports.vm.dashboard
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.DashboardPageId
-import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey
 import aktual.budget.reports.vm.DashboardSync
 import aktual.core.UuidGenerator
 import androidx.compose.runtime.Immutable
@@ -64,6 +64,6 @@ internal class DashboardPages(
 
   private companion object {
     const val DEFAULT_NAME = "Main"
-    val SelectedPageKey = DbMetadata.stringKey("reports.dashboardPage")
+    val SelectedPageKey = DbMetadataKey.stringKey("reports.dashboardPage")
   }
 }

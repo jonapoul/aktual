@@ -12,7 +12,7 @@ import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.db.schedules.GetAllActive
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
-import aktual.budget.model.DbMetadata.Companion.LastScheduleRun
+import aktual.budget.model.DbMetadataKey
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.RecurConfig
@@ -93,13 +93,13 @@ internal constructor(
 
   internal suspend fun onSyncCompleted(outcome: SyncOutcome) {
     val today = calendar.today()
-    if (budgetPrefs[LastScheduleRun] == today) return
+    if (budgetPrefs[DbMetadataKey.LastScheduleRun] == today) return
 
     val result = tryAdvance(today, canPost = outcome == Succeeded) ?: return
     mutableHasUnposted.update { result.unposted && !dismissed }
     // Only mark the day as done when sync and advancing succeeded, so a failure gets retried. Sync
     // events are collected one at a time, so the one our own changes cause waits for this
-    if (outcome == Succeeded) budgetPrefs.update { it.set(LastScheduleRun, today) }
+    if (outcome == Succeeded) budgetPrefs.update { it.set(DbMetadataKey.LastScheduleRun, today) }
   }
 
   private suspend fun tryAdvance(today: LocalDate, canPost: Boolean): Run? =

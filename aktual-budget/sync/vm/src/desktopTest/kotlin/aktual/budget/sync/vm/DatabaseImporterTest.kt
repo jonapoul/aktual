@@ -5,6 +5,7 @@ import aktual.api.model.sync.UserWithAccess
 import aktual.budget.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey
 import aktual.budget.model.Timestamp
 import aktual.test.CoTemporaryFolder
 import aktual.test.RESOURCES_DIR
@@ -73,7 +74,7 @@ class DatabaseImporterTest {
     assertThat(metaPath).existsOn(fileSystem)
     val contentsJson = fileSystem.source(metaPath).buffer().use { it.readUtf8() }
     val contents = Json.decodeFromString<DbMetadata>(contentsJson)
-    assertThat(contents[DbMetadata.LastUploaded]).isEqualTo(TEST_DATE)
+    assertThat(contents[DbMetadataKey.LastUploaded]).isEqualTo(TEST_DATE)
   }
 
   @Test

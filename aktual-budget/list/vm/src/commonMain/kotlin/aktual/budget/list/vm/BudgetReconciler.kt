@@ -7,6 +7,7 @@ import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.BudgetUserWithAccess
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey
 import aktual.budget.model.LocalBudget
 import aktual.core.model.KeyId
 import aktual.prefs.KeyPreferences
@@ -49,7 +50,7 @@ internal constructor(
       out +=
         if (local != null) {
           matchedLocalIds += local.id
-          val localGroupId = local.metadata?.get(DbMetadata.GroupId)
+          val localGroupId = local.metadata?.get(DbMetadataKey.GroupId)
           if (localGroupId == file.groupId) {
             Budget.Synced(
               name = file.name,
@@ -101,29 +102,29 @@ internal constructor(
   private suspend fun LocalBudget.toUnknown(cloudId: BudgetId): Budget.Unknown {
     val md = metadata
     return Budget.Unknown(
-      name = md?.get(DbMetadata.BudgetName) ?: id.value,
+      name = md?.get(DbMetadataKey.BudgetName) ?: id.value,
       hasKey = md?.encryptKeyIdOrNull?.let { KeyId(it) } in keyPreferences,
       encryptKeyId = md?.encryptKeyIdOrNull,
       cloudFileId = cloudId,
-      groupId = md?.get(DbMetadata.GroupId).orEmpty(),
+      groupId = md?.get(DbMetadataKey.GroupId).orEmpty(),
     )
   }
 
   private suspend fun LocalBudget.toBroken(cloudId: BudgetId): Budget.Broken {
     val md = metadata
     return Budget.Broken(
-      name = md?.get(DbMetadata.BudgetName) ?: id.value,
+      name = md?.get(DbMetadataKey.BudgetName) ?: id.value,
       hasKey = md?.encryptKeyIdOrNull?.let { KeyId(it) } in keyPreferences,
       encryptKeyId = md?.encryptKeyIdOrNull,
       cloudFileId = cloudId,
-      groupId = md?.get(DbMetadata.GroupId).orEmpty(),
+      groupId = md?.get(DbMetadataKey.GroupId).orEmpty(),
     )
   }
 
   private suspend fun LocalBudget.toLocal(): Budget.Local =
     Budget.Local(
       id = id,
-      name = metadata?.get(DbMetadata.BudgetName) ?: id.value,
+      name = metadata?.get(DbMetadataKey.BudgetName) ?: id.value,
       hasKey = metadata?.encryptKeyIdOrNull?.let { KeyId(it) } in keyPreferences,
       encryptKeyId = metadata?.encryptKeyIdOrNull,
     )
@@ -140,7 +141,7 @@ private fun List<UserWithAccess>.toModelList(): ImmutableList<BudgetUserWithAcce
   .toImmutableList()
 
 private val DbMetadata.cloudFileIdOrNull: BudgetId?
-  get() = get(DbMetadata.CloudFileId)
+  get() = get(DbMetadataKey.CloudFileId)
 
 private val DbMetadata.encryptKeyIdOrNull: String?
-  get() = get(DbMetadata.EncryptKeyId)
+  get() = get(DbMetadataKey.EncryptKeyId)

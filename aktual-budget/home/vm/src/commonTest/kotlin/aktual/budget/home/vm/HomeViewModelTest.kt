@@ -12,7 +12,7 @@ import aktual.budget.home.vm.HomeCardType.Upcoming
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.DbMetadata
-import aktual.budget.model.DbMetadata.Companion.HomeCardOrder
+import aktual.budget.model.DbMetadataKey
 import aktual.budget.model.SyncedPrefKey.Global.UpcomingScheduledTransactionLength
 import aktual.budget.model.UpcomingLength
 import aktual.test.TestBudgetLocalPreferences
@@ -305,7 +305,7 @@ class HomeViewModelTest {
       viewModel.swap(Accounts, ThisMonth)
       assertThat(awaitItem().cards)
         .containsExactly(Accounts, Attention, Upcoming, ThisMonth, Reports)
-      assertThat(prefs[HomeCardOrder])
+      assertThat(prefs[DbMetadataKey.HomeCardOrder])
         .isEqualTo(listOf("Accounts", "Attention", "Upcoming", "ThisMonth", "Reports"))
       cancelAndIgnoreRemainingEvents()
     }
@@ -322,7 +322,7 @@ class HomeViewModelTest {
       viewModel.reorder(listOf(Upcoming, ThisMonth, Attention))
       assertThat(awaitItem().cards)
         .containsExactly(Upcoming, ThisMonth, Attention, Accounts, Reports)
-      assertThat(prefs[HomeCardOrder])
+      assertThat(prefs[DbMetadataKey.HomeCardOrder])
         .isEqualTo(listOf("Upcoming", "ThisMonth", "Attention", "Accounts", "Reports"))
       cancelAndIgnoreRemainingEvents()
     }

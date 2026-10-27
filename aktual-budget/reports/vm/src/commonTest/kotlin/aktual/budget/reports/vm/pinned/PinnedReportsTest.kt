@@ -7,7 +7,7 @@ import aktual.budget.db.dao.DashboardDao
 import aktual.budget.db.withoutResult
 import aktual.budget.model.Currency
 import aktual.budget.model.DashboardPageId
-import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.TestCurrencyPreferences
@@ -42,14 +42,14 @@ class PinnedReportsTest {
     pinned.pin(B)
     pinned.pin(C)
     pinned.pin(D)
-    assertThat(prefs[DbMetadata.HomeReports]).isEqualTo(listOf("a", "b", "c"))
+    assertThat(prefs[DbMetadataKey.HomeReports]).isEqualTo(listOf("a", "b", "c"))
   }
 
   @Test
   fun `Pinning a report twice keeps one pin`() = runPinnedTest { pinned, _, prefs ->
     pinned.pin(A)
     pinned.pin(A)
-    assertThat(prefs[DbMetadata.HomeReports]).isEqualTo(listOf("a"))
+    assertThat(prefs[DbMetadataKey.HomeReports]).isEqualTo(listOf("a"))
   }
 
   @Test
@@ -57,7 +57,7 @@ class PinnedReportsTest {
     pinned.pin(A)
     pinned.pin(B)
     pinned.replace(A, C)
-    assertThat(prefs[DbMetadata.HomeReports]).isEqualTo(listOf("c", "b"))
+    assertThat(prefs[DbMetadataKey.HomeReports]).isEqualTo(listOf("c", "b"))
   }
 
   @Test
@@ -65,7 +65,7 @@ class PinnedReportsTest {
     pinned.pin(A)
     pinned.pin(B)
     pinned.replace(A, B)
-    assertThat(prefs[DbMetadata.HomeReports]).isEqualTo(listOf("a", "b"))
+    assertThat(prefs[DbMetadataKey.HomeReports]).isEqualTo(listOf("a", "b"))
   }
 
   @Test
@@ -73,7 +73,7 @@ class PinnedReportsTest {
     pinned.pin(A)
     pinned.pin(B)
     pinned.unpin(A)
-    assertThat(prefs[DbMetadata.HomeReports]).isEqualTo(listOf("b"))
+    assertThat(prefs[DbMetadataKey.HomeReports]).isEqualTo(listOf("b"))
   }
 
   @Test
@@ -86,7 +86,7 @@ class PinnedReportsTest {
     pinned.ids.test { assertThatNextEmissionIsEqualTo(listOf(B, C)) }
 
     pinned.pin(D)
-    assertThat(prefs[DbMetadata.HomeReports]).isEqualTo(listOf("b", "c", "d"))
+    assertThat(prefs[DbMetadataKey.HomeReports]).isEqualTo(listOf("b", "c", "d"))
   }
 
   @Test
@@ -110,7 +110,7 @@ class PinnedReportsTest {
     pinned.ids.test { assertThatNextEmissionIsEqualTo(listOf(A, B)) }
 
     pinned.pin(C)
-    assertThat(prefs[DbMetadata.HomeReports]).isEqualTo(listOf("a", "b", "c"))
+    assertThat(prefs[DbMetadataKey.HomeReports]).isEqualTo(listOf("a", "b", "c"))
   }
 
   @Test
