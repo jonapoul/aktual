@@ -3,10 +3,12 @@ package aktual.budget.home.ui
 import aktual.budget.model.Amount
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.AlertTriangle
+import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareTextButton
+import aktual.core.ui.ButtonShape
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.formattedString
@@ -35,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -88,6 +91,29 @@ internal fun Modifier.hoverClickable(role: Role? = null, onClick: () -> Unit): M
       role = role,
       onClick = onClick,
     )
+}
+
+// A link with a chevron for card headers, small enough not to stretch them like a button would
+@Composable
+internal fun CardLink(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+  Row(
+    modifier =
+      modifier
+        .clip(ButtonShape)
+        .hoverClickable(role = Button, onClick = onClick)
+        .padding(start = 6.dp, end = 2.dp),
+    horizontalArrangement = Arrangement.spacedBy(2.dp),
+    verticalAlignment = CenterVertically,
+  ) {
+    Text(text = text, style = typography.bodyMedium, color = colors.pageTextLinkLight, maxLines = 1)
+
+    Icon(
+      modifier = Modifier.size(16.dp),
+      imageVector = AktualIcons.CheveronRight,
+      contentDescription = text,
+      tint = colors.pageTextLinkLight,
+    )
+  }
 }
 
 internal fun TextStyle.tabularFigures() = copy(fontFeatureSettings = "tnum")
