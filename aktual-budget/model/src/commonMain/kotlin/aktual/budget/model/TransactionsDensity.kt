@@ -1,11 +1,13 @@
 package aktual.budget.model
 
-enum class TransactionsDensity(private val value: String) {
-  Comfortable("Comfortable"),
-  Compact("Compact"),
-  Dense("Dense");
+import fallback.serializer.Fallback
+import kotlinx.serialization.Serializable
 
-  override fun toString(): String = value
+@Serializable
+enum class TransactionsDensity {
+  Comfortable,
+  @Fallback Compact,
+  Dense;
 
   companion object {
     val Default = Compact

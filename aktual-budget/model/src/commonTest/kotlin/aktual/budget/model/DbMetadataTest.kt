@@ -1,8 +1,15 @@
 package aktual.budget.model
 
+import aktual.budget.model.DbMetadataKey.Companion.BudgetMonthCount
+import aktual.budget.model.DbMetadataKey.Companion.BudgetName
+import aktual.budget.model.DbMetadataKey.Companion.Id
+import aktual.budget.model.DbMetadataKey.Companion.TransactionDensity
 import aktual.test.PrettyJson
 import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.containsOnly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import kotlin.test.Test
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
@@ -59,15 +66,74 @@ class DbMetadataTest {
 
   @Test
   fun `Read and write a number`() {
-    val metadata = DbMetadata(DbMetadata.BudgetMonthCount to 3)
+    val metadata = DbMetadata(BudgetMonthCount to 3)
     val json = PrettyJson.encodeToString(metadata)
     assertThat(PrettyJson.decodeFromString<DbMetadata>(json)).isEqualTo(metadata)
   }
 
   @Test
   fun `Read and write an enum`() {
-    val metadata = DbMetadata(DbMetadata.TransactionDensity to TransactionsDensity.Comfortable)
+    val metadata = DbMetadata(TransactionDensity to TransactionsDensity.Comfortable)
     val json = PrettyJson.encodeToString(metadata)
     assertThat(PrettyJson.decodeFromString<DbMetadata>(json)).isEqualTo(metadata)
+  }
+
+  @Test
+  fun `Key defined elsewhere decodes as its own type`() {
+    val json = """{ "feature.density": "Dense", "feature.flag": true }"""
+    val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
+    assertThat(decoded[DbMetadataKey.serializableKey<TransactionsDensity>("feature.density")])
+      .isEqualTo(Dense)
+    assertThat(decoded[DbMetadataKey.boolKey("feature.flag")]).isEqualTo(true)
+  }
+
+  @Test
+  fun `Keys with the same name are equal`() {
+    assertThat(DbMetadataKey.serializableKey<TransactionsDensity>("x"))
+      .isEqualTo(DbMetadataKey.serializableKey<TransactionsDensity>("x"))
+    val metadata =
+      DbMetadata(
+        DbMetadataKey.serializableKey<TransactionsDensity>("x") to TransactionsDensity.Dense,
+      )
+    assertThat(metadata[DbMetadataKey.serializableKey<TransactionsDensity>("x")]).isEqualTo(Dense)
+  }
+
+  @Test
+  fun `Unknown arrays and objects round-trip`() {
+    val json =
+      """
+      {
+        "budgetName": "Test Budget",
+        "unknown.array": [1, "two", { "three": 3 }],
+        "unknown.object": { "a": [true] }
+      }
+      """
+        .trimIndent()
+    val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
+    assertThat(decoded[BudgetName]).isEqualTo("Test Budget")
+    val reencoded = PrettyJson.decodeFromString<DbMetadata>(PrettyJson.encodeToString(decoded))
+    assertThat(reencoded).isEqualTo(decoded)
+    assertThat(reencoded.data.keys).containsOnly("budgetName", "unknown.array", "unknown.object")
+  }
+
+  @Test
+  fun `Undecodable values read as null without failing others`() {
+    val json = """{ "budget.monthCount": "x", "id": "abc" }"""
+    val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
+    assertThat(decoded[BudgetMonthCount]).isNull()
+    assertThat(decoded[Id]).isEqualTo("abc")
+  }
+
+  @Test
+  fun `Unknown enum value reads as the fallback`() {
+    val json = """{ "transactionDensity": "Squashed" }"""
+    val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
+    assertThat(decoded[TransactionDensity]).isEqualTo(Compact)
+  }
+
+  @Test
+  fun `Enum written by serial name`() {
+    val metadata = DbMetadata(TransactionDensity to TransactionsDensity.Comfortable)
+    assertThat(PrettyJson.encodeToString(metadata)).contains("\"Comfortable\"")
   }
 }

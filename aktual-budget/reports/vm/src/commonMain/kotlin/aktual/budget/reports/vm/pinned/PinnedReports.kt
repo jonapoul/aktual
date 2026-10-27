@@ -5,7 +5,7 @@ import aktual.budget.db.Dashboard
 import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.CustomReportId
-import aktual.budget.model.DbMetadata.Companion.HomeReports
+import aktual.budget.model.DbMetadataKey.Companion.HomeReports
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.ChartDataLoader

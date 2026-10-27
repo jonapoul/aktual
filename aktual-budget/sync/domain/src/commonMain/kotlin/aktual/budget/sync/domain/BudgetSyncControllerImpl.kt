@@ -5,7 +5,7 @@ import aktual.budget.BudgetSyncController
 import aktual.budget.SyncEvents
 import aktual.budget.SyncStateHolder
 import aktual.budget.db.dao.SyncDao
-import aktual.budget.model.DbMetadata.Companion.CloudFileId
+import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.SyncState
 import aktual.budget.model.SyncState.SyncFailed

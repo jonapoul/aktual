@@ -26,7 +26,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
-import aktual.budget.model.DbMetadata.Companion.BudgetShowHiddenCategories
+import aktual.budget.model.DbMetadataKey.Companion.BudgetShowHiddenCategories
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId

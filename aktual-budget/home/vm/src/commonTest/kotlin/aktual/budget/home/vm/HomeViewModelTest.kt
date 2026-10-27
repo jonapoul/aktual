@@ -12,7 +12,7 @@ import aktual.budget.home.vm.HomeCardType.Upcoming
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.DbMetadata
-import aktual.budget.model.DbMetadata.Companion.HomeCardOrder
+import aktual.budget.model.DbMetadataKey.Companion.HomeCardOrder
 import aktual.budget.model.SyncedPrefKey.Global.UpcomingScheduledTransactionLength
 import aktual.budget.model.UpcomingLength
 import aktual.test.TestBudgetLocalPreferences

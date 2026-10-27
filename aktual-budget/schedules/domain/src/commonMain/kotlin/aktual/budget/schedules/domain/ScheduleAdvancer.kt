@@ -12,7 +12,7 @@ import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.db.schedules.GetAllActive
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
-import aktual.budget.model.DbMetadata.Companion.LastScheduleRun
+import aktual.budget.model.DbMetadataKey.Companion.LastScheduleRun
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.RecurConfig

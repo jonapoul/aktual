@@ -31,12 +31,14 @@ import org.jetbrains.kotlin.analysis.api.types.KaType
 import org.jetbrains.kotlin.analysis.api.types.KaTypeParameterType
 import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.psi.KtArrayAccessExpression
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtBinaryExpressionWithTypeRHS
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtCallableDeclaration
 import org.jetbrains.kotlin.psi.KtCatchClause
+import org.jetbrains.kotlin.psi.KtContainerNode
 import org.jetbrains.kotlin.psi.KtContainerNodeForControlStructureBody
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtElement
@@ -88,7 +90,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * - names shadowed by another class, property or function in scope, like a `Password` class next to
  *   `LoginMethod.Password`, or a `Button` composable next to `Role.Button`
  * - other arguments that decide a generic type themselves: `listOf(Role.Admin)`, `x to Role.Admin`,
- *   `associateWith { Role.Admin }`
+ *   `associateWith { Role.Admin }`, `prefs[Key.Name]` against `get(key: Key<T>)`
  * - sealed subtypes and companion properties in an `if`/`when` passed as an argument, where another
  *   branch can narrow the expected type: `update(if (x) Patch.To(1) else Patch.Keep)`
  * - anything with no expected type, or a supertype as the expected type: `val role = Role.Admin`,
@@ -251,6 +253,8 @@ internal class RedundantQualifier(config: Config) :
       is KtWhenConditionWithExpression ->
         parent.getStrictParentOfType<KtWhenExpression>()?.let { subjectType(it) }
       is KtValueArgument -> argumentType(parent, expression)
+      is KtContainerNode if parent.parent is KtArrayAccessExpression ->
+        indexType(parent, expression)
       is KtParenthesizedExpression -> expectedType(parent)
       else ->
         tryResultType(expression)
@@ -276,6 +280,13 @@ internal class RedundantQualifier(config: Config) :
     val call = callOf(argument)
     val inferred = call != null && isInferred(call, expression) { type -> type }
     return if (inferred) null else expression.expectedType
+  }
+
+  // `prefs[Key.Name]` against `operator fun <T> get(key: Key<T>)` decides T from the index
+  private fun KaSession.indexType(node: KtContainerNode, expression: KtExpression): KaType? {
+    val access = node.parent as? KtArrayAccessExpression ?: return null
+    if (expression !in access.indexExpressions) return null
+    return if (isInferred(access, expression) { type -> type }) null else expression.expectedType
   }
 
   private fun KaSession.operandType(binary: KtBinaryExpression, operand: KtExpression): KaType? =
@@ -362,8 +373,9 @@ internal class RedundantQualifier(config: Config) :
     return if (passesResultUp) lambdaReturning(parent) else null
   }
 
-  // Whether the type comes from the argument itself, as it does for T in `listOf(Role.Admin)`, or
-  // can't be pinned down because overloads disagree about it. CSR has no expected type in both
+  // Whether the type comes from the argument itself, as it does for T in `listOf(Role.Admin)` or in
+  // `get(key: Key<T>)`, or can't be pinned down because overloads disagree about it. CSR has no
+  // expected type in both
   private fun KaSession.isInferred(
     call: KtElement,
     argument: KtExpression,
@@ -386,8 +398,7 @@ internal class RedundantQualifier(config: Config) :
 
     return overloadsDisagree ||
       (call as? KtCallExpression)?.typeArgumentList == null &&
-        declared is KaTypeParameterType &&
-        isDecidedByArgument(declared.symbol, resolved.symbol)
+        declared.typeParameters().any { isDecidedByArgument(it, resolved.symbol) }
   }
 
   // A candidate that fails on something other than this argument, like `Assert<String?>.isEqualTo`
@@ -406,6 +417,13 @@ internal class RedundantQualifier(config: Config) :
     function is KaConstructorSymbol ||
       parameter.containingDeclaration == function &&
         function.receiverParameter?.returnType?.mentions(parameter) != true
+
+  private fun KaType.typeParameters(): List<KaTypeParameterSymbol> =
+    when (this) {
+      is KaTypeParameterType -> listOf(symbol)
+      is KaClassType -> typeArguments.flatMap { it.type?.typeParameters().orEmpty() }
+      else -> emptyList()
+    }
 
   private fun KaType.mentions(parameter: KaTypeParameterSymbol): Boolean =
     when (this) {

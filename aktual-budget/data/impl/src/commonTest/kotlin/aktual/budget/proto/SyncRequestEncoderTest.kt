@@ -3,6 +3,7 @@ package aktual.budget.proto
 import aktual.budget.encryption.BufferEncrypterImpl
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey.Companion.EncryptKeyId
 import aktual.budget.model.Message
 import aktual.budget.model.MessageValue.Number as MsgNum
 import aktual.budget.model.MessageValue.String as MsgStr
@@ -114,7 +115,7 @@ class SyncRequestEncoderTest {
             "9eMTHvs5B80fDbw7",
             "xTAtW1uXcZi2ZDvR",
           ),
-        metadata = DbMetadata(DbMetadata.EncryptKeyId to "de88d4dd-3536-4369-9191-8b5ac0ad2bf4"),
+        metadata = DbMetadata(EncryptKeyId to "de88d4dd-3536-4369-9191-8b5ac0ad2bf4"),
       )
     val encoded = encoder(groupId, budgetId, since, messages)
 
@@ -145,7 +146,7 @@ class SyncRequestEncoderTest {
       buildEncoder(
         key = "whQKldE0yvZp1QjVhWsfCxP9uBMIKFk9NBUhpTTCtLE=".base64(),
         iv = sequenceOf("myuDvoceP6VR3Y5Z"),
-        metadata = DbMetadata(DbMetadata.EncryptKeyId to "de88d4dd-3536-4369-9191-8b5ac0ad2bf4"),
+        metadata = DbMetadata(EncryptKeyId to "de88d4dd-3536-4369-9191-8b5ac0ad2bf4"),
       )
     val encoded = encoder(groupId, budgetId, since, messages)
 

@@ -13,10 +13,11 @@ import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.DbMetadata
-import aktual.budget.model.DbMetadata.Companion.BudgetCollapsed
-import aktual.budget.model.DbMetadata.Companion.BudgetMonthCount
-import aktual.budget.model.DbMetadata.Companion.BudgetShowHiddenCategories
-import aktual.budget.model.DbMetadata.Companion.MobileShowSpentColumn
+import aktual.budget.model.DbMetadataKey
+import aktual.budget.model.DbMetadataKey.Companion.BudgetCollapsed
+import aktual.budget.model.DbMetadataKey.Companion.BudgetMonthCount
+import aktual.budget.model.DbMetadataKey.Companion.BudgetShowHiddenCategories
+import aktual.budget.model.DbMetadataKey.Companion.MobileShowSpentColumn
 import aktual.budget.model.evaluateAmountInput
 import aktual.core.Calendar
 import aktual.core.model.unaryPlus
@@ -448,7 +449,7 @@ class BudgetViewModel(
       carryover = carryover,
     )
 
-  private fun DbMetadata.toggle(key: DbMetadata.Key<Boolean>): DbMetadata =
+  private fun DbMetadata.toggle(key: DbMetadataKey<Boolean>): DbMetadata =
     set(key, this[key] != true)
 
   private inline fun <T> Iterable<T>.sumOf(selector: (T) -> Amount): Amount =

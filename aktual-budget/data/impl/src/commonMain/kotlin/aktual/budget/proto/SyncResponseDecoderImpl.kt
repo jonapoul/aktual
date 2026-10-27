@@ -3,6 +3,7 @@ package aktual.budget.proto
 import aktual.budget.encryption.BufferDecrypter
 import aktual.budget.encryption.DefaultMeta
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey.Companion.EncryptKeyId
 import aktual.budget.model.Merkle
 import aktual.budget.model.Message
 import aktual.budget.model.MessageEnvelope
@@ -22,7 +23,7 @@ class SyncResponseDecoderImpl(private val decrypter: BufferDecrypter) : SyncResp
   override suspend fun invoke(source: Source, metadata: DbMetadata): SyncResponse {
     val byteString = source.buffer().use { it.readByteString() }
     val response = ProtoSyncResponse.ADAPTER.decode(byteString)
-    val encryptKeyId = metadata[DbMetadata.EncryptKeyId]
+    val encryptKeyId = metadata[EncryptKeyId]
     return SyncResponse(
       merkle = Merkle(response.merkle),
       messages = response.messages.map { msg -> msg.parseEnvelope(encryptKeyId) },

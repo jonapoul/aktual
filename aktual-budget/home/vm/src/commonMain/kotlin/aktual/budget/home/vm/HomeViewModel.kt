@@ -1,8 +1,8 @@
 package aktual.budget.home.vm
 
 import aktual.budget.BudgetLocalPreferences
-import aktual.budget.model.DbMetadata.Companion.BudgetName
-import aktual.budget.model.DbMetadata.Companion.HomeCardOrder
+import aktual.budget.model.DbMetadataKey.Companion.BudgetName
+import aktual.budget.model.DbMetadataKey.Companion.HomeCardOrder
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.pinned.PinnedReport
 import aktual.budget.reports.vm.pinned.PinnedReports

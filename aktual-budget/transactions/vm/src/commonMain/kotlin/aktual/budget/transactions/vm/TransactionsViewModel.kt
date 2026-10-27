@@ -13,7 +13,7 @@ import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
 import aktual.budget.model.CategorySpec
-import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey.Companion.TransactionDensity
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
@@ -108,11 +108,11 @@ class TransactionsViewModel(
 
   val density: StateFlow<TransactionsDensity> =
     prefs
-      .map { meta -> meta[DbMetadata.TransactionDensity] ?: Default }
+      .map { meta -> meta[TransactionDensity] ?: Default }
       .stateIn(
         viewModelScope,
         Eagerly,
-        initialValue = prefs[DbMetadata.TransactionDensity] ?: Default,
+        initialValue = prefs[TransactionDensity] ?: Default,
       )
 
   // Colours the #tags in each row's notes
@@ -244,7 +244,7 @@ class TransactionsViewModel(
     }
 
   fun setDensity(density: TransactionsDensity) {
-    prefs.update { meta -> meta.set(DbMetadata.TransactionDensity, density) }
+    prefs.update { meta -> meta.set(TransactionDensity, density) }
   }
 
   fun toggleExpanded(id: TransactionId) {

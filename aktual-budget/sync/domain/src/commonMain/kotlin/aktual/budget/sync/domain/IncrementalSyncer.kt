@@ -3,9 +3,9 @@ package aktual.budget.sync.domain
 import aktual.api.client.BudgetSyncApi
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.db.dao.SyncDao
-import aktual.budget.model.DbMetadata.Companion.CloudFileId
-import aktual.budget.model.DbMetadata.Companion.GroupId
-import aktual.budget.model.DbMetadata.Companion.LastSyncedTimestamp
+import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
+import aktual.budget.model.DbMetadataKey.Companion.GroupId
+import aktual.budget.model.DbMetadataKey.Companion.LastSyncedTimestamp
 import aktual.budget.model.MerkleOperations
 import aktual.budget.model.Timestamp
 import aktual.budget.proto.SyncRequestEncoder
@@ -78,7 +78,10 @@ internal class IncrementalSyncer(
 
     val now = clock.now()
     budgetMetadata.update { m ->
-      m.set(LastSyncedTimestamp, Timestamp(now, counter = 0, node = Timestamp.BASE_NODE))
+      m.set(
+        LastSyncedTimestamp,
+        Timestamp(now, counter = 0, node = Timestamp.BASE_NODE),
+      )
     }
     return SyncResult.Success(affectedTables = applyResult.affectedTables)
   }

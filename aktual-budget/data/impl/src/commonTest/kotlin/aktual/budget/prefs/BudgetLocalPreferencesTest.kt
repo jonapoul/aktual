@@ -4,6 +4,10 @@ import aktual.budget.BudgetFiles
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey
+import aktual.budget.model.DbMetadataKey.Companion.BudgetName
+import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
+import aktual.budget.model.DbMetadataKey.Companion.UserId
 import aktual.budget.model.Timestamp
 import aktual.di.AppCoroutineScope
 import aktual.test.CoTemporaryFolder
@@ -80,7 +84,10 @@ class BudgetLocalPreferencesTest {
     buildPreferences(metadata)
     preferences.update { existing ->
       existing +
-        mapOf(DbMetadata.Key("some-new-key") to 123, DbMetadata.BudgetName to "Hello World")
+        mapOf(
+          DbMetadataKey.intKey("some-new-key") to 123,
+          BudgetName to "Hello World",
+        )
     }
 
     // then
@@ -93,7 +100,7 @@ class BudgetLocalPreferencesTest {
   fun `Observe key`() = runTest {
     // given
     val userId = "abc-123"
-    val metadata = TEST_METADATA + (DbMetadata.UserId to userId)
+    val metadata = TEST_METADATA + (UserId to userId)
     files.writeMetadata(BUDGET_ID, metadata)
 
     // when
@@ -101,13 +108,13 @@ class BudgetLocalPreferencesTest {
     advanceUntilIdle()
 
     // then
-    preferences.observe(DbMetadata.UserId).test {
+    preferences.observe(UserId).test {
       assertThatNextEmissionIsEqualTo(userId)
 
-      preferences.update { metadata -> metadata - DbMetadata.UserId }
+      preferences.update { metadata -> metadata - UserId }
       assertThatNextEmissionIsEqualTo(null)
 
-      preferences.update { metadata -> metadata + (DbMetadata.UserId to "def-456") }
+      preferences.update { metadata -> metadata + (UserId to "def-456") }
       assertThatNextEmissionIsEqualTo("def-456")
 
       expectNoEvents()
@@ -118,16 +125,16 @@ class BudgetLocalPreferencesTest {
   @Test
   fun `Modifying local-only metadata writes to file`() = runTest {
     // given
-    val metadata = TEST_METADATA - DbMetadata.CloudFileId
+    val metadata = TEST_METADATA - CloudFileId
     files.writeMetadata(BUDGET_ID, metadata)
 
     // when
     buildPreferences(metadata)
-    preferences.update { existing -> existing + (DbMetadata.BudgetName to "Hello World") }
+    preferences.update { existing -> existing + (BudgetName to "Hello World") }
 
     // then
     advanceUntilIdle()
-    assertThat(files.readMetadata(BUDGET_ID)?.get(DbMetadata.BudgetName)).isEqualTo("Hello World")
+    assertThat(files.readMetadata(BUDGET_ID)?.get(BudgetName)).isEqualTo("Hello World")
   }
 
   @Test
@@ -137,11 +144,11 @@ class BudgetLocalPreferencesTest {
     buildPreferences(TEST_METADATA)
 
     // when
-    preferences.update { existing -> existing + (DbMetadata.BudgetName to "Hello World") }
+    preferences.update { existing -> existing + (BudgetName to "Hello World") }
 
     // then
     advanceUntilIdle()
-    assertThat(preferences.value[DbMetadata.BudgetName]).isEqualTo("Hello World")
+    assertThat(preferences.value[BudgetName]).isEqualTo("Hello World")
   }
 
   private class FailingSinkFileSystem(delegate: FileSystem) : ForwardingFileSystem(delegate) {

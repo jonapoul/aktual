@@ -4,7 +4,7 @@ import aktual.about.vm.ManageStorageState.Loaded
 import aktual.about.vm.StorageNavEvent.ActiveBudgetCleared
 import aktual.budget.BudgetFiles
 import aktual.budget.model.BudgetId
-import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey.Companion.BudgetName
 import aktual.core.AppDirectory
 import aktual.core.logging.LogStorage
 import aktual.core.model.Bytes
@@ -173,7 +173,7 @@ class ManageStorageViewModel(
           val budgetId = BudgetId(entry.name)
           val name =
             try {
-              files.readMetadata(budgetId)?.get(DbMetadata.BudgetName) ?: entry.name
+              files.readMetadata(budgetId)?.get(BudgetName) ?: entry.name
             } catch (_: Exception) {
               entry.name
             }

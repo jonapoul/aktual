@@ -3,7 +3,7 @@ package aktual.budget.proto
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.encryption.BufferEncrypter
 import aktual.budget.model.BudgetId
-import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey.Companion.EncryptKeyId
 import aktual.budget.model.Message
 import aktual.budget.model.Timestamp
 import aktual.core.model.KeyId
@@ -23,7 +23,7 @@ class SyncRequestEncoderImpl(
     since: Timestamp,
     messages: List<Message>,
   ): ByteString {
-    val keyId = prefs[DbMetadata.EncryptKeyId]?.let(::KeyId)
+    val keyId = prefs[EncryptKeyId]?.let(::KeyId)
 
     val envelopes = messages.map { message ->
       ProtoMessageEnvelope(

@@ -13,7 +13,7 @@ import aktual.api.model.banksync.SimpleFinBatchRequest
 import aktual.api.model.banksync.SimpleFinBatchResponse
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.AccountSyncSource
-import aktual.budget.model.DbMetadata.Companion.CloudFileId
+import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.core.model.AktualJson
 import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
