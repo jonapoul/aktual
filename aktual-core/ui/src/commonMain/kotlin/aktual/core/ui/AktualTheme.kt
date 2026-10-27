@@ -5,7 +5,6 @@ import aktual.core.theme.LocalColors
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.foundation.LocalIndication
-import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
@@ -42,7 +41,6 @@ fun AktualTheme(colors: Colors?, content: @Composable () -> Unit) {
       LocalColors provides c,
       LocalIndication provides ripple(),
       LocalShimmerTheme provides aktualShimmerTheme(c),
-      LocalOverscrollFactory provides null,
     ) {
       SetStatusBarColors(colors = c)
 
