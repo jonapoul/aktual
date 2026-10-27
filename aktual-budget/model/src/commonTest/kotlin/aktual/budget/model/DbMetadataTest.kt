@@ -2,7 +2,10 @@ package aktual.budget.model
 
 import aktual.test.PrettyJson
 import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.containsOnly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import kotlin.test.Test
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
@@ -69,5 +72,55 @@ class DbMetadataTest {
     val metadata = DbMetadata(DbMetadata.TransactionDensity to TransactionsDensity.Comfortable)
     val json = PrettyJson.encodeToString(metadata)
     assertThat(PrettyJson.decodeFromString<DbMetadata>(json)).isEqualTo(metadata)
+  }
+
+  @Test
+  fun `Key defined elsewhere decodes as its own type`() {
+    val json = """{ "feature.density": "Dense", "feature.flag": true }"""
+    val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
+    assertThat(decoded[DbMetadata.enumKey<TransactionsDensity>("feature.density")]).isEqualTo(Dense)
+    assertThat(decoded[DbMetadata.boolKey("feature.flag")]).isEqualTo(true)
+  }
+
+  @Test
+  fun `Keys with the same name are equal`() {
+    assertThat(DbMetadata.enumKey<TransactionsDensity>("x"))
+      .isEqualTo(DbMetadata.enumKey<TransactionsDensity>("x"))
+    val metadata =
+      DbMetadata(DbMetadata.enumKey<TransactionsDensity>("x") to TransactionsDensity.Dense)
+    assertThat(metadata[DbMetadata.enumKey<TransactionsDensity>("x")]).isEqualTo(Dense)
+  }
+
+  @Test
+  fun `Unknown arrays and objects round-trip`() {
+    val json =
+      """
+      {
+        "budgetName": "Test Budget",
+        "unknown.array": [1, "two", { "three": 3 }],
+        "unknown.object": { "a": [true] }
+      }
+      """
+        .trimIndent()
+    val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
+    assertThat(decoded[DbMetadata.BudgetName]).isEqualTo("Test Budget")
+    val reencoded = PrettyJson.decodeFromString<DbMetadata>(PrettyJson.encodeToString(decoded))
+    assertThat(reencoded).isEqualTo(decoded)
+    assertThat(reencoded.data.keys).containsOnly("budgetName", "unknown.array", "unknown.object")
+  }
+
+  @Test
+  fun `Undecodable values read as null without failing others`() {
+    val json = """{ "transactionDensity": "Squashed", "budget.monthCount": "x", "id": "abc" }"""
+    val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
+    assertThat(decoded[DbMetadata.TransactionDensity]).isNull()
+    assertThat(decoded[DbMetadata.BudgetMonthCount]).isNull()
+    assertThat(decoded[DbMetadata.Id]).isEqualTo("abc")
+  }
+
+  @Test
+  fun `Enum written by name`() {
+    val metadata = DbMetadata(DbMetadata.TransactionDensity to TransactionsDensity.Comfortable)
+    assertThat(PrettyJson.encodeToString(metadata)).contains("\"Comfortable\"")
   }
 }

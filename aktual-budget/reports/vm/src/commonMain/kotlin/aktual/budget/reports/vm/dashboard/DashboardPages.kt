@@ -64,6 +64,6 @@ internal class DashboardPages(
 
   private companion object {
     const val DEFAULT_NAME = "Main"
-    val SelectedPageKey = DbMetadata.StringKey("reports.dashboardPage")
+    val SelectedPageKey = DbMetadata.stringKey("reports.dashboardPage")
   }
 }

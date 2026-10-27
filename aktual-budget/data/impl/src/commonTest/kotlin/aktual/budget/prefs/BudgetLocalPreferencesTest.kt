@@ -80,7 +80,7 @@ class BudgetLocalPreferencesTest {
     buildPreferences(metadata)
     preferences.update { existing ->
       existing +
-        mapOf(DbMetadata.Key("some-new-key") to 123, DbMetadata.BudgetName to "Hello World")
+        mapOf(DbMetadata.intKey("some-new-key") to 123, DbMetadata.BudgetName to "Hello World")
     }
 
     // then
