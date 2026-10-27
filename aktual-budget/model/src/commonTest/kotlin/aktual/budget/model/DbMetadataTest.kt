@@ -88,7 +88,7 @@ class DbMetadataTest {
       .isEqualTo(DbMetadataKey.serializableKey<TransactionsDensity>("x"))
     val metadata =
       DbMetadata(
-        DbMetadataKey.serializableKey<TransactionsDensity>("x") to TransactionsDensity.Dense
+        DbMetadataKey.serializableKey<TransactionsDensity>("x") to TransactionsDensity.Dense,
       )
     assertThat(metadata[DbMetadataKey.serializableKey<TransactionsDensity>("x")]).isEqualTo(Dense)
   }
