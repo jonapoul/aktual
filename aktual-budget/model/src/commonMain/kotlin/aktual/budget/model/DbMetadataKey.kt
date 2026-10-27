@@ -1,10 +1,13 @@
 package aktual.budget.model
 
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
@@ -23,24 +26,23 @@ class DbMetadataKey<T : Any>(
   override fun toString() = "DbMetadataKey($name)"
 
   companion object {
-    val BudgetName: DbMetadataKey<String> = stringKey("budgetName")
-    val BudgetCollapsed: DbMetadataKey<List<String>> = listKey("budget.collapsed")
-    val BudgetShowHiddenCategories: DbMetadataKey<Boolean> = boolKey("budget.showHiddenCategories")
-    val BudgetMonthCount: DbMetadataKey<Int> = intKey("budget.monthCount")
-    val MobileShowSpentColumn: DbMetadataKey<Boolean> = boolKey("mobile.showSpentColumn")
-    val HomeCardOrder: DbMetadataKey<List<String>> = listKey("home.cardOrder")
-    val HomeReports: DbMetadataKey<List<String>> = listKey("home.reports")
-    val CloudFileId: DbMetadataKey<BudgetId> = typedKey("cloudFileId", ::BudgetId)
-    val GroupId: DbMetadataKey<String> = stringKey("groupId")
-    val Id: DbMetadataKey<String> = stringKey("id")
-    val LastScheduleRun: DbMetadataKey<LocalDate> = typedKey("lastScheduleRun", LocalDate::parse)
-    val LastSyncedTimestamp: DbMetadataKey<Timestamp> =
-      typedKey("lastSyncedTimestamp", Timestamp::parse)
-    val LastUploaded: DbMetadataKey<LocalDate> = typedKey("lastUploaded", LocalDate::parse)
-    val ResetClock: DbMetadataKey<Boolean> = boolKey("resetClock")
-    val UserId: DbMetadataKey<String> = stringKey("userId")
-    val EncryptKeyId: DbMetadataKey<String> = stringKey("encryptKeyId")
-    val TransactionDensity: DbMetadataKey<TransactionsDensity> = enumKey("transactionDensity")
+    val BudgetName = stringKey("budgetName")
+    val BudgetCollapsed = listKey("budget.collapsed")
+    val BudgetShowHiddenCategories = boolKey("budget.showHiddenCategories")
+    val BudgetMonthCount = intKey("budget.monthCount")
+    val MobileShowSpentColumn = boolKey("mobile.showSpentColumn")
+    val HomeCardOrder = listKey("home.cardOrder")
+    val HomeReports = listKey("home.reports")
+    val CloudFileId = typedKey("cloudFileId", ::BudgetId)
+    val GroupId = stringKey("groupId")
+    val Id = stringKey("id")
+    val LastScheduleRun = typedKey("lastScheduleRun", LocalDate::parse)
+    val LastSyncedTimestamp = typedKey("lastSyncedTimestamp", Timestamp::parse)
+    val LastUploaded = typedKey("lastUploaded", LocalDate::parse)
+    val ResetClock = boolKey("resetClock")
+    val UserId = stringKey("userId")
+    val EncryptKeyId = stringKey("encryptKeyId")
+    val TransactionDensity = serializableKey<TransactionsDensity>("transactionDensity")
 
     fun boolKey(name: String): DbMetadataKey<Boolean> =
       DbMetadataKey(name, decode = { it.jsonPrimitive.boolean }, encode = { JsonPrimitive(it) })
@@ -66,12 +68,11 @@ class DbMetadataKey<T : Any>(
         encode = { JsonPrimitive(it.toString()) },
       )
 
-    /** Written and read by [Enum.name]. */
-    inline fun <reified E : Enum<E>> enumKey(name: String): DbMetadataKey<E> =
+    inline fun <reified T : Any> serializableKey(name: String): DbMetadataKey<T> =
       DbMetadataKey(
         name,
-        decode = { element -> enumValues<E>().first { it.name == element.jsonPrimitive.content } },
-        encode = { JsonPrimitive(it.name) },
+        decode = { Json.decodeFromJsonElement<T>(it) },
+        encode = { Json.encodeToJsonElement(it) },
       )
   }
 }

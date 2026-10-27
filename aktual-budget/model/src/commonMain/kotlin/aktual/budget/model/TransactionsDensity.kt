@@ -1,8 +1,12 @@
 package aktual.budget.model
 
+import fallback.serializer.Fallback
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class TransactionsDensity {
   Comfortable,
-  Compact,
+  @Fallback Compact,
   Dense;
 
   companion object {
