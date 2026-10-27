@@ -3,7 +3,9 @@ package aktual.budget.sync.domain
 import aktual.api.client.BudgetSyncApi
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.db.dao.SyncDao
-import aktual.budget.model.DbMetadataKey
+import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
+import aktual.budget.model.DbMetadataKey.Companion.GroupId
+import aktual.budget.model.DbMetadataKey.Companion.LastSyncedTimestamp
 import aktual.budget.model.MerkleOperations
 import aktual.budget.model.Timestamp
 import aktual.budget.proto.SyncRequestEncoder
@@ -40,8 +42,8 @@ internal class IncrementalSyncer(
     count: Int,
     prevDiffTime: Long?,
   ): SyncResult {
-    val groupId = budgetMetadata[DbMetadataKey.GroupId]
-    val budgetId = budgetMetadata[DbMetadataKey.CloudFileId]
+    val groupId = budgetMetadata[GroupId]
+    val budgetId = budgetMetadata[CloudFileId]
     if (groupId == null || budgetId == null) {
       logcat.w { "Null required prefs! groupId=$groupId, budgetId=$budgetId" }
       return SyncResult.MissingPrefError(
@@ -50,8 +52,7 @@ internal class IncrementalSyncer(
       )
     }
 
-    val since =
-      sinceTimestamp ?: budgetMetadata[DbMetadataKey.LastSyncedTimestamp] ?: fiveMinutesAgo()
+    val since = sinceTimestamp ?: budgetMetadata[LastSyncedTimestamp] ?: fiveMinutesAgo()
     val localMessages = syncDao.getMessagesSince(since)
     val requestBody = encoder(groupId, budgetId, since, localMessages)
     val response = syncApi.syncBudget(requestBody)
@@ -78,7 +79,7 @@ internal class IncrementalSyncer(
     val now = clock.now()
     budgetMetadata.update { m ->
       m.set(
-        DbMetadataKey.LastSyncedTimestamp,
+        LastSyncedTimestamp,
         Timestamp(now, counter = 0, node = Timestamp.BASE_NODE),
       )
     }

@@ -5,7 +5,7 @@ import aktual.budget.BudgetSyncController
 import aktual.budget.SyncEvents
 import aktual.budget.SyncStateHolder
 import aktual.budget.db.dao.SyncDao
-import aktual.budget.model.DbMetadataKey
+import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.SyncState
 import aktual.budget.model.SyncState.SyncFailed
@@ -87,7 +87,7 @@ internal constructor(
   }
 
   private suspend fun scheduleSync() {
-    if (budgetMetadata[DbMetadataKey.CloudFileId] == null) {
+    if (budgetMetadata[CloudFileId] == null) {
       logcat.d { "Local-only budget, skipping sync" }
       syncEvents.complete(Succeeded)
       return

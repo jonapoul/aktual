@@ -9,7 +9,7 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
-import aktual.budget.model.DbMetadataKey
+import aktual.budget.model.DbMetadataKey.Companion.BudgetShowHiddenCategories
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.LoadedRules
@@ -137,7 +137,7 @@ internal constructor(
 
   private val showHiddenCategories: StateFlow<Boolean> =
     localPreferences
-      .observe(DbMetadataKey.BudgetShowHiddenCategories)
+      .observe(BudgetShowHiddenCategories)
       .map { it == true }
       .stateIn(viewModelScope, Eagerly, false)
 
@@ -594,8 +594,8 @@ internal constructor(
   // Shared with the budget, as upstream's budget.showHiddenCategories
   fun toggleHiddenCategories() = localPreferences.update { metadata ->
     metadata.set(
-      DbMetadataKey.BudgetShowHiddenCategories,
-      metadata[DbMetadataKey.BudgetShowHiddenCategories] != true,
+      BudgetShowHiddenCategories,
+      metadata[BudgetShowHiddenCategories] != true,
     )
   }
 

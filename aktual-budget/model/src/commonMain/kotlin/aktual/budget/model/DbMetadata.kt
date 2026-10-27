@@ -1,5 +1,16 @@
 package aktual.budget.model
 
+import aktual.budget.model.DbMetadataKey.Companion.BudgetCollapsed
+import aktual.budget.model.DbMetadataKey.Companion.BudgetName
+import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
+import aktual.budget.model.DbMetadataKey.Companion.EncryptKeyId
+import aktual.budget.model.DbMetadataKey.Companion.GroupId
+import aktual.budget.model.DbMetadataKey.Companion.Id
+import aktual.budget.model.DbMetadataKey.Companion.LastScheduleRun
+import aktual.budget.model.DbMetadataKey.Companion.LastSyncedTimestamp
+import aktual.budget.model.DbMetadataKey.Companion.LastUploaded
+import aktual.budget.model.DbMetadataKey.Companion.ResetClock
+import aktual.budget.model.DbMetadataKey.Companion.UserId
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.minus
 import kotlinx.collections.immutable.mutate
@@ -39,17 +50,17 @@ data class DbMetadata(val data: PersistentMap<String, JsonElement> = persistentM
     userId: String? = null,
     encryptKeyId: String? = null,
   ) : this(
-    DbMetadataKey.BudgetName to budgetName,
-    DbMetadataKey.BudgetCollapsed to budgetCollapsed,
-    DbMetadataKey.CloudFileId to cloudFileId,
-    DbMetadataKey.GroupId to groupId,
-    DbMetadataKey.Id to id,
-    DbMetadataKey.LastScheduleRun to lastScheduleRun,
-    DbMetadataKey.LastSyncedTimestamp to lastSyncedTimestamp,
-    DbMetadataKey.LastUploaded to lastUploaded,
-    DbMetadataKey.ResetClock to resetClock,
-    DbMetadataKey.UserId to userId,
-    DbMetadataKey.EncryptKeyId to encryptKeyId,
+    BudgetName to budgetName,
+    BudgetCollapsed to budgetCollapsed,
+    CloudFileId to cloudFileId,
+    GroupId to groupId,
+    Id to id,
+    LastScheduleRun to lastScheduleRun,
+    LastSyncedTimestamp to lastSyncedTimestamp,
+    LastUploaded to lastUploaded,
+    ResetClock to resetClock,
+    UserId to userId,
+    EncryptKeyId to encryptKeyId,
   )
 
   /** Returns null if the key is missing or its value can't be decoded as [T]. */

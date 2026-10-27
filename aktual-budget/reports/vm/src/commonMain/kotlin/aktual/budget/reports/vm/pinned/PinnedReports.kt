@@ -5,7 +5,7 @@ import aktual.budget.db.Dashboard
 import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.CustomReportId
-import aktual.budget.model.DbMetadataKey
+import aktual.budget.model.DbMetadataKey.Companion.HomeReports
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.ChartDataLoader
@@ -68,7 +68,7 @@ internal constructor(
   private val chartDataLoader: ChartDataLoader,
 ) : PinnedReports {
   override val ids: Flow<List<WidgetId>> =
-    combine(prefs.observe(DbMetadataKey.HomeReports), dashboardDao.observeAll()) { saved, widgets ->
+    combine(prefs.observe(HomeReports), dashboardDao.observeAll()) { saved, widgets ->
         val live = widgets.pinnableIds()
         saved.orEmpty().mapNotNull { WidgetId(it).takeIf { id -> id in live } }
       }
@@ -152,10 +152,10 @@ internal constructor(
     val live = dashboardDao.observeAll().first().pinnableIds()
     prefs.update { meta ->
       val ids =
-        meta[DbMetadataKey.HomeReports].orEmpty().mapNotNull {
+        meta[HomeReports].orEmpty().mapNotNull {
           WidgetId(it).takeIf { id -> id in live }
         }
-      meta.set(DbMetadataKey.HomeReports, change(ids).map { it.value })
+      meta.set(HomeReports, change(ids).map { it.value })
     }
   }
 

@@ -4,7 +4,10 @@ import aktual.api.model.sync.UserFile
 import aktual.budget.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
-import aktual.budget.model.DbMetadataKey
+import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
+import aktual.budget.model.DbMetadataKey.Companion.EncryptKeyId
+import aktual.budget.model.DbMetadataKey.Companion.GroupId
+import aktual.budget.model.DbMetadataKey.Companion.LastUploaded
 import aktual.core.Calendar
 import aktual.core.model.AktualJson
 import alakazam.kotlin.CoroutineContexts
@@ -86,10 +89,10 @@ class DatabaseImporter(
     // Update the metadata. The stored file on the server might be out-of-date with a few keys
     val newMeta =
       meta
-        .set(DbMetadataKey.CloudFileId, userFile.fileId)
-        .set(DbMetadataKey.GroupId, userFile.groupId)
-        .set(DbMetadataKey.LastUploaded, calendar.today())
-        .set(DbMetadataKey.EncryptKeyId, userFile.encryptMeta?.keyId?.value)
+        .set(CloudFileId, userFile.fileId)
+        .set(GroupId, userFile.groupId)
+        .set(LastUploaded, calendar.today())
+        .set(EncryptKeyId, userFile.encryptMeta?.keyId?.value)
 
     budgetFiles.writeMetadata(userFile.fileId, newMeta)
     return ImportResult.Success(newMeta)

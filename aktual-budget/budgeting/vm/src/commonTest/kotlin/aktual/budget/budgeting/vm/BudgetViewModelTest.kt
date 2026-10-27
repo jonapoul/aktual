@@ -11,7 +11,9 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.DbMetadata
-import aktual.budget.model.DbMetadataKey
+import aktual.budget.model.DbMetadataKey.Companion.BudgetCollapsed
+import aktual.budget.model.DbMetadataKey.Companion.BudgetMonthCount
+import aktual.budget.model.DbMetadataKey.Companion.MobileShowSpentColumn
 import aktual.budget.model.SyncedPrefKey
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
@@ -124,7 +126,7 @@ class BudgetViewModelTest {
 
       viewModel.toggleSpent()
       assertThat(awaitLoaded().showSpent).isTrue()
-      assertThat(prefs.value[DbMetadataKey.MobileShowSpentColumn]).isEqualTo(true)
+      assertThat(prefs.value[MobileShowSpentColumn]).isEqualTo(true)
 
       viewModel.toggleSpent()
       assertThat(awaitLoaded().showSpent).isFalse()
@@ -139,11 +141,11 @@ class BudgetViewModelTest {
 
       viewModel.toggleCollapsed(CategoryGroupId("usual"))
       assertThat(awaitLoaded().shown.groups.single().isCollapsed).isTrue()
-      assertThat(prefs.value[DbMetadataKey.BudgetCollapsed]).isEqualTo(listOf("usual"))
+      assertThat(prefs.value[BudgetCollapsed]).isEqualTo(listOf("usual"))
 
       viewModel.toggleCollapsed(CategoryGroupId("usual"))
       assertThat(awaitLoaded().shown.groups.single().isCollapsed).isFalse()
-      assertThat(prefs.value[DbMetadataKey.BudgetCollapsed]).isEqualTo(emptyList())
+      assertThat(prefs.value[BudgetCollapsed]).isEqualTo(emptyList())
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -292,7 +294,7 @@ class BudgetViewModelTest {
       assertThat(awaitLoaded().monthCount).isEqualTo(1)
 
       viewModel.setMonthCount(3)
-      assertThat(prefs.value[DbMetadataKey.BudgetMonthCount]).isEqualTo(3)
+      assertThat(prefs.value[BudgetMonthCount]).isEqualTo(3)
       expectNoEvents()
 
       viewModel.setFittingMonths(2)

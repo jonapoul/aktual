@@ -13,7 +13,7 @@ import aktual.api.model.banksync.SimpleFinBatchRequest
 import aktual.api.model.banksync.SimpleFinBatchResponse
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.AccountSyncSource
-import aktual.budget.model.DbMetadataKey
+import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.core.model.AktualJson
 import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
@@ -241,7 +241,7 @@ class BankSyncApiImpl(
 
     // Pluggy.ai credentials can be set per budget file, so the server needs to know which file
     if (source == PluggyAi) {
-      prefs[DbMetadataKey.CloudFileId]?.let { header(AktualHeaders.FILE_ID, it) }
+      prefs[CloudFileId]?.let { header(AktualHeaders.FILE_ID, it) }
     }
   }
 
