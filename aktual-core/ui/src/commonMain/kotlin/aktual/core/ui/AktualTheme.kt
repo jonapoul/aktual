@@ -42,7 +42,7 @@ fun AktualTheme(colors: Colors?, content: @Composable () -> Unit) {
       LocalColors provides c,
       LocalIndication provides ripple(),
       LocalShimmerTheme provides aktualShimmerTheme(c),
-      LocalOverscrollFactory provides null,
+      LocalOverscrollFactory provides releasingOverscrollFactory(),
     ) {
       SetStatusBarColors(colors = c)
 
