@@ -78,8 +78,7 @@ class DbMetadataTest {
   fun `Key defined elsewhere decodes as its own type`() {
     val json = """{ "feature.density": "Dense", "feature.flag": true }"""
     val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
-    assertThat(decoded[DbMetadataKey.serializableKey<TransactionsDensity>("feature.density")])
-      .isEqualTo(Dense)
+    assertThat(decoded[DbMetadataKey.TransactionDensity]).isEqualTo(Dense)
     assertThat(decoded[DbMetadataKey.boolKey("feature.flag")]).isEqualTo(true)
   }
 
@@ -89,7 +88,7 @@ class DbMetadataTest {
       .isEqualTo(DbMetadataKey.serializableKey<TransactionsDensity>("x"))
     val metadata =
       DbMetadata(
-        DbMetadataKey.serializableKey<TransactionsDensity>("x") to TransactionsDensity.Dense,
+        DbMetadataKey.serializableKey<TransactionsDensity>("x") to TransactionsDensity.Dense
       )
     assertThat(metadata[DbMetadataKey.serializableKey<TransactionsDensity>("x")]).isEqualTo(Dense)
   }
