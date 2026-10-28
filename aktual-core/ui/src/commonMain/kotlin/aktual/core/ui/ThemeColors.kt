@@ -122,7 +122,7 @@ private fun contrast(a: Color, b: Color): Float {
   return maxOf(lumA, lumB) / minOf(lumA, lumB)
 }
 
-private const val DROPDOWN_SHIFT = 0.3f
+private const val DROPDOWN_SHIFT = 0.2f
 private const val DROPDOWN_FALLBACK_SHIFT = 0.08f
 private const val DROPDOWN_MIN_CONTRAST = 1.1f
 private const val CONTRAST_OFFSET = 0.05f
