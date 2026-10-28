@@ -1,4 +1,4 @@
-package aktual.budget.budgeting.ui
+package aktual.core.ui
 
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListItemInfo
@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastForEach
@@ -17,14 +18,12 @@ import androidx.compose.ui.zIndex
 // Lists here scroll under the top bar, but sticky headers pin to the very top of a list, ignoring
 // its content padding. This shifts each header down so it sticks just below the bar instead
 @Stable
-internal class StuckHeaders(
+class StuckHeaders(
   private val listState: LazyListState,
   private val topBar: Dp,
 ) {
-  fun modifier(key: Any): Modifier =
-    Modifier.zIndex(1f).graphicsLayer {
-      translationY = listState.layoutInfo.shift(key, topBar.roundToPx())
-    }
+  internal fun shift(key: Any, density: Density): Float =
+    listState.layoutInfo.shift(key, with(density) { topBar.roundToPx() })
 
   private fun LazyListLayoutInfo.shift(key: Any, topBar: Int): Float {
     val item = visibleItemsInfo.fastFirstOrNull { it.key == key } ?: return 0f
@@ -32,7 +31,8 @@ internal class StuckHeaders(
     var next: LazyListItemInfo? = null
     visibleItemsInfo.fastForEach { other ->
       val isLaterHeader = other.index > item.index && other.contentType == StickyHeader
-      if (isLaterHeader && other.index < next?.index ?: MAX_VALUE) next = other
+      val nextIndex = next?.index ?: MAX_VALUE
+      if (isLaterHeader && other.index < nextIndex) next = other
     }
 
     val top = top(item)
@@ -50,9 +50,14 @@ internal class StuckHeaders(
 }
 
 // A sticky header that sticks below the top bar. The content gets the modifier that shifts it
-internal fun LazyListScope.stuckHeader(
+fun LazyListScope.stuckHeader(
   key: Any,
   stuck: StuckHeaders,
   content: @Composable LazyItemScope.(Modifier) -> Unit,
 ) =
-  stickyHeader(key = key, contentType = StuckHeaders.StickyHeader) { content(stuck.modifier(key)) }
+  stickyHeader(key = key, contentType = StuckHeaders.StickyHeader) {
+    content(Modifier.stuckOffset(stuck, key))
+  }
+
+private fun Modifier.stuckOffset(stuck: StuckHeaders, key: Any): Modifier =
+  zIndex(1f).graphicsLayer { translationY = stuck.shift(key, density = this) }

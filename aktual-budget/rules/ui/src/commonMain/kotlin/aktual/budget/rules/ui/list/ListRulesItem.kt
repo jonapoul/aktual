@@ -2,19 +2,17 @@ package aktual.budget.rules.ui.list
 
 import aktual.budget.model.Condition
 import aktual.budget.model.RuleAction
-import aktual.budget.model.RuleStage
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.ui.PreviewRule2
 import aktual.budget.rules.vm.Rule
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Trash
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.SubdirectoryArrowRight
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.Chip
-import aktual.core.ui.ChipColors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -33,16 +31,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
@@ -95,73 +91,22 @@ internal fun ListRulesItemRow(
   modifier: Modifier = Modifier,
   query: String = "",
 ) {
-  Box(modifier = modifier) {
-    Row(
-      modifier = Modifier.ruleRow(colors, onClick = onClick),
-      horizontalArrangement = Arrangement.Start,
-      verticalAlignment = CenterVertically,
-    ) {
-      ItemContent(rule, query)
-    }
-
-    if (rule.stage.showBadge()) {
-      RuleStageBadge(stage = rule.stage, modifier = Modifier.align(TopEnd))
-    }
-  }
-}
-
-// Only Pre/Post rules force an explicit ordering worth flagging; Default is the implicit norm.
-@Stable
-private fun RuleStage.showBadge() =
-  when (this) {
-    Default,
-    Unknown -> false
-    Pre,
-    Post -> true
-  }
-
-@Composable
-private fun RuleStageBadge(
-  stage: RuleStage,
-  modifier: Modifier = Modifier,
-) {
-  Chip(
-    modifier = modifier.padding(Dimens.Large),
-    text = stage.string(),
-    colors = chipColors(colors),
-    size = Small,
-    textStyle = typography.labelSmall,
-  )
-}
-
-@Stable
-private fun chipColors(colors: Colors): ChipColors =
-  ChipColors(
-    background = colors.pillBackgroundSelected,
-    content = colors.pillText,
-  )
-
-@Composable
-private fun RowScope.ItemContent(rule: Rule, query: String) {
   val styles = rememberRuleSpanStyles()
   if (isCompactWidth()) {
     Column(
-      modifier = Modifier.weight(1f),
-      verticalArrangement = Arrangement.Center,
-      horizontalAlignment = CenterHorizontally,
+      modifier = modifier.ruleRow(colors, onClick = onClick),
+      verticalArrangement = Arrangement.spacedBy(ItemSpacing),
     ) {
       ListRulesItemConditions(rule.conditions, styles, query)
-      Text("↓", color = colors.tableText)
       ListRulesItemActions(rule.actions, styles, query)
     }
   } else {
     Row(
-      modifier = Modifier.weight(1f),
-      horizontalArrangement = Arrangement.Center,
-      verticalAlignment = CenterVertically,
+      modifier = modifier.ruleRow(colors, onClick = onClick),
+      horizontalArrangement = Arrangement.spacedBy(Dimens.Huge),
+      verticalAlignment = Alignment.Top,
     ) {
       ListRulesItemConditions(rule.conditions, styles, query, Modifier.weight(1f))
-      Text("→", color = colors.tableText)
       ListRulesItemActions(rule.actions, styles, query, Modifier.weight(1f))
     }
   }
@@ -176,16 +121,11 @@ private fun ListRulesItemConditions(
 ) {
   Column(
     modifier = modifier,
-    horizontalAlignment = CenterHorizontally,
-    verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Top),
+    horizontalAlignment = Alignment.Start,
+    verticalArrangement = Arrangement.spacedBy(ItemSpacing, Alignment.Top),
   ) {
     conditions.fastForEachIndexed { index, condition ->
-      Box(
-        modifier =
-          Modifier.clip(CardShape)
-            .background(colors.pillBackgroundLight, CardShape)
-            .padding(horizontal = 5.dp, vertical = 3.dp),
-      ) {
+      Box(modifier = Modifier.rulePill(colors)) {
         val prefix = if (index != 0) "and " else ""
         Text(
           text = rememberConditionText(prefix, condition, styles, query),
@@ -204,19 +144,26 @@ private fun ListRulesItemActions(
   query: String,
   modifier: Modifier = Modifier,
 ) {
-  Column(
+  Row(
     modifier = modifier,
-    horizontalAlignment = CenterHorizontally,
-    verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Top),
+    horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
+    verticalAlignment = Alignment.Top,
   ) {
-    actions.fastForEach { action ->
-      Box(
-        modifier =
-          Modifier.clip(CardShape)
-            .background(colors.pillBackgroundLight, CardShape)
-            .padding(horizontal = 5.dp, vertical = 3.dp),
-      ) {
-        Text(text = rememberActionText(action, styles, query), overflow = Ellipsis, maxLines = 1)
+    Icon(
+      modifier = Modifier.padding(top = 3.dp).size(16.dp),
+      imageVector = MaterialIcons.SubdirectoryArrowRight,
+      contentDescription = null,
+      tint = colors.pageTextLight,
+    )
+
+    Column(
+      horizontalAlignment = Alignment.Start,
+      verticalArrangement = Arrangement.spacedBy(ItemSpacing, Alignment.Top),
+    ) {
+      actions.fastForEach { action ->
+        Box(modifier = Modifier.rulePill(colors)) {
+          Text(text = rememberActionText(action, styles, query), overflow = Ellipsis, maxLines = 1)
+        }
       }
     }
   }
@@ -227,37 +174,24 @@ private fun ListRulesItemActions(
 internal fun ShimmerListRulesItem(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(Window)
 
-  Row(
+  Column(
     modifier = modifier.fillMaxWidth().ruleRow(colors, onClick = null).shimmer(shimmer),
-    horizontalArrangement = Arrangement.Start,
-    verticalAlignment = CenterVertically,
+    verticalArrangement = Arrangement.spacedBy(ItemSpacing),
   ) {
-    Column(modifier = Modifier.weight(1f), horizontalAlignment = CenterHorizontally) {
-      Box(
-        modifier =
-          Modifier.fillMaxWidth(fraction = 0.55f)
-            .height(20.dp)
-            .background(colors.pageText, CardShape),
-      )
-
-      Box(
-        modifier =
-          Modifier.padding(top = 4.dp)
-            .fillMaxWidth(fraction = 0.35f)
-            .height(20.dp)
-            .background(colors.pageText, CardShape),
-      )
-
-      Box(
-        modifier =
-          Modifier.padding(top = 4.dp)
-            .fillMaxWidth(fraction = 0.45f)
-            .height(20.dp)
-            .background(colors.pageText, CardShape),
-      )
+    ShimmerPill(fraction = 0.6f)
+    ShimmerPill(fraction = 0.35f)
+    Row(horizontalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
+      Box(modifier = Modifier.size(16.dp))
+      ShimmerPill(fraction = 0.45f)
     }
   }
 }
+
+@Composable
+private fun ShimmerPill(fraction: Float) =
+  Box(
+    modifier = Modifier.fillMaxWidth(fraction).height(20.dp).background(colors.pageText, CardShape),
+  )
 
 private fun Modifier.ruleRow(colors: Colors, onClick: (() -> Unit)?): Modifier =
   fillMaxWidth()
@@ -265,7 +199,14 @@ private fun Modifier.ruleRow(colors: Colors, onClick: (() -> Unit)?): Modifier =
     .background(colors.tableBackground, RowShape)
     .border(Hairline, colors.tableBorder, RowShape)
     .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
-    .padding(horizontal = 15.dp, vertical = 12.dp)
+    .padding(horizontal = 12.dp, vertical = 10.dp)
+
+private fun Modifier.rulePill(colors: Colors): Modifier =
+  clip(CardShape)
+    .background(colors.pillBackgroundLight, CardShape)
+    .padding(horizontal = 6.dp, vertical = 3.dp)
+
+private val ItemSpacing = 3.dp
 
 @Preview
 @Composable
@@ -289,8 +230,7 @@ private data class ListRulesItemParams(
 private class ListRulesItemProvider :
   ColorParamsProvider<ListRulesItemParams>(
     ListRulesItemParams(item = PreviewRule1),
-    ListRulesItemParams(item = PreviewRule1.copy(stage = Pre)),
-    ListRulesItemParams(item = PreviewRule2.copy(stage = Post)),
+    ListRulesItemParams(item = PreviewRule2),
     ListRulesItemParams(item = PreviewRule1, isOpen = true),
   )
 
