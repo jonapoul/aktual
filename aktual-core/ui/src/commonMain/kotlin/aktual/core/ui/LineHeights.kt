@@ -1,10 +1,8 @@
 package aktual.core.ui
 
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.sp
 
-@Immutable
-class LineHeights internal constructor() {
+object LineHeights {
   val small = 12.sp
   val mediumPlus = 15.sp
   val large = 16.sp

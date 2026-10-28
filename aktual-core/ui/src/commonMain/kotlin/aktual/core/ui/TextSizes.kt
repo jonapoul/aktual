@@ -1,10 +1,8 @@
 package aktual.core.ui
 
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.sp
 
-@Immutable
-class TextSizes internal constructor() {
+object TextSizes {
   val micro = 8.sp
   val tiny = 10.sp
   val extraSmall = 11.sp

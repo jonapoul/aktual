@@ -33,11 +33,11 @@ object AktualTheme {
   val typography: Typography
     get() = MaterialTheme.typography
 
-  val textSizes: TextSizes = TextSizes()
+  val textSizes: TextSizes = TextSizes
 
-  val lineHeights: LineHeights = LineHeights()
+  val lineHeights: LineHeights = LineHeights
 
-  val letterSpacings: LetterSpacings = LetterSpacings()
+  val letterSpacings: LetterSpacings = LetterSpacings
 }
 
 @Composable
