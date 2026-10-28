@@ -7,7 +7,6 @@ import aktual.core.icons.Tuning
 import aktual.core.icons.material.CurrencyPound
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Numbers
-import aktual.core.icons.material.ReceiptLong
 import aktual.core.icons.material.Security
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -17,7 +16,6 @@ import aktual.core.nav.ScheduleSettingsNavigator
 import aktual.core.nav.SecuritySettingsNavigator
 import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavigator
-import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.theme.Colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PortraitPreview
@@ -32,7 +30,6 @@ fun SettingsScreen(
   back: BackNavigator,
   toThemeSettings: ThemeSettingsNavigator,
   toScheduleSettings: ScheduleSettingsNavigator,
-  toTransactionSettings: TransactionSettingsNavigator,
   toSystemUiSettings: SystemUiSettingsNavigator,
   toSecuritySettings: SecuritySettingsNavigator,
   toFormatSettings: FormatSettingsNavigator,
@@ -44,7 +41,6 @@ fun SettingsScreen(
         NavBack -> back()
         NavToThemeSettings -> toThemeSettings()
         NavToScheduleSettings -> toScheduleSettings()
-        NavToTransactionSettings -> toTransactionSettings()
         NavToSystemUiSettings -> toSystemUiSettings()
         NavToSecuritySettings -> toSecuritySettings()
         NavToFormatSettings -> toFormatSettings()
@@ -73,13 +69,6 @@ private fun SettingsScaffold(onAction: SettingsActionHandler) {
         title = Strings.settingsSchedules,
         icon = AktualIcons.Calendar3,
         onClick = { onAction(NavToScheduleSettings) },
-      )
-    }
-    item {
-      SubSettingsItem(
-        title = Strings.settingsTransactions,
-        icon = MaterialIcons.ReceiptLong,
-        onClick = { onAction(NavToTransactionSettings) },
       )
     }
     item {

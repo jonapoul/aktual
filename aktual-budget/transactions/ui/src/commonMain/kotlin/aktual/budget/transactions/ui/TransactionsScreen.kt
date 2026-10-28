@@ -1,12 +1,14 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.banksync.ui.showBankSyncSummary
+import aktual.budget.db.dao.ClearedBalances
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.tags.domain.TagLabel
+import aktual.budget.transactions.vm.AccountViewOptions
 import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
 import aktual.budget.transactions.vm.Transaction
@@ -15,7 +17,6 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.DeletedAccountNavigator
 import aktual.core.nav.EditTransactionNavigator
-import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParams
@@ -64,7 +65,6 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun TransactionsScreen(
   back: BackNavigator,
-  toSettings: TransactionSettingsNavigator,
   accountDeleted: DeletedAccountNavigator,
   openTransaction: EditTransactionNavigator,
   spec: TransactionsSpec,
@@ -76,8 +76,12 @@ fun TransactionsScreen(
   val balance by viewModel.balance.collectAsStateWithLifecycle()
   val canBankSync by viewModel.canBankSync.collectAsStateWithLifecycle()
   val isBankSyncing by viewModel.isBankSyncing.collectAsStateWithLifecycle()
-  val expanded by viewModel.expanded.collectAsStateWithLifecycle()
+  val toggledSplits by viewModel.toggledSplits.collectAsStateWithLifecycle()
+  val expandSplits by viewModel.expandSplits.collectAsStateWithLifecycle()
   val alternateRowColours by viewModel.alternateRowColours.collectAsStateWithLifecycle()
+  val accountOptions by viewModel.accountOptions.collectAsStateWithLifecycle()
+  val showRunningBalance by viewModel.showRunningBalance.collectAsStateWithLifecycle()
+  val clearedBalances by viewModel.clearedBalances.collectAsStateWithLifecycle()
   val tags by viewModel.tags.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
 
@@ -106,21 +110,27 @@ fun TransactionsScreen(
     density = density,
     balance = balance,
     showBalance = viewModel.showBalance,
+    showRunningBalance = showRunningBalance,
+    clearedBalances = clearedBalances,
     isRoot = isRoot,
     canBankSync = canBankSync,
     isBankSyncing = isBankSyncing,
-    expanded = expanded,
+    toggledSplits = toggledSplits,
+    expandSplits = expandSplits,
     splitsPinnedOpen = viewModel.splitsPinnedOpen,
     alternateRowColours = alternateRowColours,
+    accountOptions = accountOptions,
     tags = tags,
     onAction = { action ->
       when (action) {
         NavBack -> back()
         BankSync -> viewModel.bankSync()
-        OpenSettings -> toSettings()
         DeleteAccount -> viewModel.deleteAccount()
         is SetDensity -> viewModel.setDensity(action.density)
-        is ToggleSplit -> viewModel.toggleExpanded(action.id)
+        is SetAlternateRowColours -> viewModel.setAlternateRowColours(action.enabled)
+        is SetExpandSplits -> viewModel.setExpandSplits(action.enabled)
+        is SetAccountOption -> viewModel.setAccountOption(action.option, action.enabled)
+        is ToggleSplit -> viewModel.toggleSplit(action.id)
         is OpenTransaction -> openTransaction(action.id)
         CreateTransaction ->
           openTransaction.create(
@@ -169,11 +179,15 @@ internal fun TransactionsScaffold(
   isRoot: Boolean,
   onAction: ActionListener,
   showBalance: Boolean = true,
+  showRunningBalance: Boolean = true,
+  clearedBalances: ClearedBalances? = null,
   canBankSync: Boolean = false,
   isBankSyncing: Boolean = false,
-  expanded: ImmutableSet<TransactionId> = persistentSetOf(),
+  toggledSplits: ImmutableSet<TransactionId> = persistentSetOf(),
+  expandSplits: Boolean = false,
   splitsPinnedOpen: Boolean = false,
   alternateRowColours: Boolean = false,
+  accountOptions: AccountViewOptions? = null,
   tags: ImmutableList<TagLabel> = persistentListOf(),
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -183,7 +197,11 @@ internal fun TransactionsScaffold(
   var topBarHeight by remember { mutableIntStateOf(0) }
   val year by rememberVisibleYear(listState, pagingItems) { topBarHeight }
 
-  WithLedgerDimens(density, showBalance, showAccount = loadedAccount !is SpecificAccount) {
+  WithLedgerDimens(
+    density = density,
+    showBalance = showBalance && showRunningBalance,
+    showAccount = loadedAccount !is SpecificAccount,
+  ) {
     Scaffold(
       topBar = {
         Column(modifier = Modifier.onSizeChanged { topBarHeight = it.height }) {
@@ -196,7 +214,10 @@ internal fun TransactionsScaffold(
             onOpenViewOptions = { showViewOptions = true },
           )
 
-          if (density != Dense && showBalance) BalanceStrip(balance)
+          // Dense rows have their own balance column, so the strip only shows for the totals
+          if (showBalance && (density != Dense || clearedBalances != null)) {
+            BalanceStrip(balance, clearedBalances = clearedBalances)
+          }
           if (density == Dense) LedgerHeader()
           year?.let { YearDivider(it) }
         }
@@ -219,7 +240,8 @@ internal fun TransactionsScaffold(
             pagingItems = pagingItems,
             density = density,
             innerPadding = innerPadding,
-            expanded = expanded,
+            toggledSplits = toggledSplits,
+            expandSplits = expandSplits,
             splitsPinnedOpen = splitsPinnedOpen,
             alternateRowColours = alternateRowColours,
             tags = tags,
@@ -232,7 +254,13 @@ internal fun TransactionsScaffold(
 
   if (showViewOptions) {
     ViewOptionsSheet(
-      density = density,
+      options =
+        ViewOptions(
+          density = density,
+          alternateRowColours = alternateRowColours,
+          expandSplits = expandSplits,
+          account = accountOptions,
+        ),
       onAction = onAction,
       onDismiss = { showViewOptions = false },
     )
@@ -273,7 +301,7 @@ private fun PreviewTransactionsScaffold(
       density = this,
       balance = PREVIEW_BALANCE,
       isRoot = true,
-      expanded = persistentSetOf(TRANSACTION_SPLIT.id),
+      toggledSplits = persistentSetOf(TRANSACTION_SPLIT.id),
       onAction = {},
     )
   }

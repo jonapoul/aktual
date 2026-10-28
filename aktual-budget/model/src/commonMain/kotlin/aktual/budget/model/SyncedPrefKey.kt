@@ -47,6 +47,9 @@ sealed interface SyncedPrefKey {
     data class HideCleared(override val id: AccountId) : PerAccount("hide-cleared")
 
     /** [Boolean] */
+    data class HideReconciled(override val id: AccountId) : PerAccount("hide-reconciled")
+
+    /** [Boolean] */
     data class OfxFallbackMissingPayee(override val id: AccountId) :
       PerAccount("ofx-fallback-missing-payee")
 
@@ -72,10 +75,10 @@ sealed interface SyncedPrefKey {
      */
     data class CustomSyncMappings(override val id: AccountId) : PerAccount("custom-sync-mappings")
 
-    /** [Boolean] */
+    /** [Boolean], the running balance of each transaction */
     data class ShowBalances(override val id: AccountId) : PerAccount("show-balances")
 
-    /** [Boolean] */
+    /** [Boolean], the account's cleared and uncleared totals */
     data class ShowExtraBalances(override val id: AccountId) : PerAccount("show-extra-balances")
 
     /**
@@ -108,6 +111,7 @@ sealed interface SyncedPrefKey {
         ?: fromId(key, "csv-has-header", PerAccount::CsvHasHeader)
         ?: fromId(key, "csv-mappings", PerAccount::CsvMappings)
         ?: fromId(key, "hide-cleared", PerAccount::HideCleared)
+        ?: fromId(key, "hide-reconciled", PerAccount::HideReconciled)
         ?: fromId(key, "ofx-fallback-missing-payee", PerAccount::OfxFallbackMissingPayee)
         ?: fromId(key, "show-balances", PerAccount::ShowBalances)
         ?: fromId(key, "sync-import-notes", PerAccount::SyncImportNotes)

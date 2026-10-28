@@ -3,7 +3,6 @@ package aktual.budget.transactions.ui
 import aktual.budget.transactions.vm.LoadedAccount
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.Cog
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.Trash
 import aktual.core.icons.Tuning
@@ -92,14 +91,13 @@ internal fun TransactionsTitleBar(
         content = { Icon(AktualIcons.Tuning, Strings.transactionsViewOptions) },
       )
 
-      TransactionsMenu(canDeleteAccount = loadedAccount is SpecificAccount, onAction = onAction)
+      if (loadedAccount is SpecificAccount) TransactionsMenu(onAction = onAction)
     },
   )
 }
 
 @Composable
 private fun TransactionsMenu(
-  canDeleteAccount: Boolean,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
@@ -114,24 +112,13 @@ private fun TransactionsMenu(
 
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
       AktualDropdownMenuItem(
-        text = Strings.transactionsSettings,
-        leadingIcon = AktualIcons.Cog,
+        text = Strings.transactionsDeleteAccount,
+        leadingIcon = AktualIcons.Trash,
         onClick = {
           expanded = false
-          onAction(OpenSettings)
+          confirmDelete = true
         },
       )
-
-      if (canDeleteAccount) {
-        AktualDropdownMenuItem(
-          text = Strings.transactionsDeleteAccount,
-          leadingIcon = AktualIcons.Trash,
-          onClick = {
-            expanded = false
-            confirmDelete = true
-          },
-        )
-      }
     }
   }
 

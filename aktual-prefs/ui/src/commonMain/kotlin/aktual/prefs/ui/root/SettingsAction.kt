@@ -10,8 +10,6 @@ internal data object NavToThemeSettings : SettingsAction
 
 internal data object NavToScheduleSettings : SettingsAction
 
-internal data object NavToTransactionSettings : SettingsAction
-
 internal data object NavToSystemUiSettings : SettingsAction
 
 internal data object NavToSecuritySettings : SettingsAction

@@ -54,16 +54,13 @@ data class Transaction(
   override fun compareTo(other: Transaction) = date.compareTo(other.date)
 }
 
-// Walks down the page from the balance after its first row. Split children hang off their parent
-// with no balance, since its amount already covers theirs.
+// Split children hang off their parent with no balance, since its amount already covers theirs
 internal fun TransactionPage.toTransactions(
   children: Map<TransactionId, List<TransactionRow>>,
-): List<Transaction> {
-  var balance = topBalance
-  return rows.map { row ->
-    row.toTransaction(Amount(balance), children[row.id].orEmpty()).also { balance -= row.amount }
+): List<Transaction> =
+  rows.zip(balances) { row, balance ->
+    row.toTransaction(Amount(balance), children[row.id].orEmpty())
   }
-}
 
 // A null shownChildren shows every child
 internal fun TransactionRow.toTransaction(

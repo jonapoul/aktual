@@ -5,6 +5,7 @@ import aktual.budget.banksync.domain.BankSyncResult
 import aktual.budget.banksync.domain.BankSyncSummary
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
+import aktual.budget.db.dao.ClearedBalances
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.SyncDao
 import aktual.budget.db.dao.TagsDao
@@ -890,21 +891,124 @@ class TransactionsViewModelTest {
     buildViewModel(AllAccounts)
     val id = TransactionId("p")
 
-    viewModel.expanded.test {
+    viewModel.toggledSplits.test {
       assertThatNextEmissionIsEqualTo(persistentSetOf())
 
       // when
-      viewModel.toggleExpanded(id)
+      viewModel.toggleSplit(id)
 
       // then
       assertThatNextEmissionIsEqualTo(persistentSetOf(id))
 
       // when
-      viewModel.toggleExpanded(id)
+      viewModel.toggleSplit(id)
 
       // then
       assertThatNextEmissionIsEqualTo(persistentSetOf())
     }
+  }
+
+  @Test
+  fun `Changing whether splits start expanded clears the toggles`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    val id = TransactionId("p")
+    advanceUntilIdle()
+    viewModel.toggleSplit(id)
+
+    viewModel.toggledSplits.test {
+      assertThatNextEmissionIsEqualTo(persistentSetOf(id))
+
+      // when
+      viewModel.setExpandSplits(true)
+
+      // then
+      assertThatNextEmissionIsEqualTo(persistentSetOf())
+    }
+    viewModel.expandSplits.test { assertThatNextEmissionIsEqualTo(true) }
+  }
+
+  @Test
+  fun `Only a single account's list has account options`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    advanceUntilIdle()
+
+    // then
+    viewModel.accountOptions.test { assertThatNextEmissionIsEqualTo(null) }
+    viewModel.showRunningBalance.test { assertThatNextEmissionIsEqualTo(true) }
+  }
+
+  @Test
+  fun `Account options are off until set`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(AccountId("a")))
+
+    viewModel.accountOptions
+      .dropWhile { it == null }
+      .test {
+        assertThatNextEmissionIsEqualTo(AccountViewOptions(false, false, false))
+
+        // when
+        viewModel.setAccountOption(RunningBalance, enabled = true)
+
+        // then
+        assertThatNextEmissionIsEqualTo(AccountViewOptions(true, false, false))
+      }
+    viewModel.showRunningBalance.test { assertThatNextEmissionIsEqualTo(true) }
+  }
+
+  @Test
+  fun `Hiding reconciled transactions drops them from the list`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(AccountId("a")))
+    with(transactions) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
+      insertTransaction(id = "b", account = "a", category = "b", payee = "b", date = DATE_2)
+    }
+    sync.sendMessages(listOf(localChange("transactions", row = "a", "reconciled", true)))
+    advanceUntilIdle()
+    assertThat(viewModel.pagingData.asSnapshot().map { it.id.toString() }).containsExactly("b", "a")
+
+    // when
+    viewModel.setAccountOption(HideReconciledRows, enabled = true)
+    // The pref is read off the test scheduler
+    viewModel.accountOptions.first { it?.hideReconciled == true }
+    advanceUntilIdle()
+
+    // then
+    assertThat(viewModel.pagingData.asSnapshot().map { it.id.toString() to it.balance })
+      .containsExactly("b" to Amount(246.90))
+  }
+
+  @Test
+  fun `Extra balances split the account by cleared state`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(AccountId("a")))
+    with(transactions) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a")
+      insertTransaction(id = "b", account = "a", category = "b", payee = "b", amount = -23.45)
+    }
+    sync.sendMessages(
+      listOf(
+        localChange("transactions", row = "a", "cleared", true),
+        localChange("transactions", row = "b", "cleared", false),
+      ),
+    )
+    advanceUntilIdle()
+    viewModel.clearedBalances.test { assertThatNextEmissionIsEqualTo(null) }
+
+    // when
+    viewModel.setAccountOption(ExtraBalances, enabled = true)
+
+    // then
+    viewModel.clearedBalances
+      .dropWhile { it == null }
+      .test {
+        assertThatNextEmissionIsEqualTo(
+          ClearedBalances(cleared = 12_345L, uncleared = -2_345L),
+        )
+      }
   }
 
   @Test

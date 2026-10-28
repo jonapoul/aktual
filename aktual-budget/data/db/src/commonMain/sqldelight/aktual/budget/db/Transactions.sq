@@ -210,7 +210,10 @@ SELECT
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
   LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
-  WHERE a.id = :account AND IFNULL(vt.is_child, 0) = 0
+  WHERE
+    a.id = :account AND
+    IFNULL(vt.is_child, 0) = 0 AND
+    (:hideReconciled = 0 OR IFNULL(vt.reconciled, 0) = 0)
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
   LIMIT :limit OFFSET :offset;
 
@@ -534,6 +537,30 @@ SELECT IFNULL(SUM(amount), 0) FROM (
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
   LIMIT -1 OFFSET :offset
 );
+
+-- The account's balance after each of these transactions, as balanceAfter has it. For a list that
+-- hides some of the account's rows, whose balances can't be walked down the page
+balancesAfterByAccount:
+SELECT id, balance FROM (
+  SELECT
+    vt.id,
+    CAST(SUM(vt.amount) OVER (
+      ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id
+      ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING
+    ) AS INTEGER) AS balance
+  FROM v_transactions_internal_alive AS vt
+  WHERE vt.account = :account AND IFNULL(vt.is_child, 0) = 0
+)
+WHERE id IN :ids;
+
+-- The account's cleared and uncleared totals, as upstream's accountBalanceCleared and
+-- accountBalanceUncleared bindings in desktop-client/src/spreadsheet/bindings.ts
+clearedBalancesByAccount:
+SELECT
+  IFNULL(SUM(CASE WHEN vt.cleared = 1 THEN vt.amount ELSE 0 END), 0) AS cleared,
+  IFNULL(SUM(CASE WHEN vt.cleared = 0 THEN vt.amount ELSE 0 END), 0) AS uncleared
+  FROM v_transactions_internal_alive AS vt
+  WHERE vt.account = :account AND IFNULL(vt.is_child, 0) = 0;
 
 -- id + notes for every live transaction, for in-memory #tag filtering (no SQL regex available).
 -- parentId is only meaningful when isChild is set

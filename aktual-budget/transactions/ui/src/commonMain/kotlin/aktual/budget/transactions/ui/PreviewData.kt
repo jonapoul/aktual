@@ -1,6 +1,7 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.db.Accounts
+import aktual.budget.db.dao.ClearedBalances
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.TransactionId
@@ -45,6 +46,8 @@ internal class DensityProvider :
 
 internal val PREVIEW_DATE = LocalDate(2025, JUNE, 9)
 internal val PREVIEW_BALANCE = Amount(3412.60)
+
+internal val PREVIEW_CLEARED_BALANCES = ClearedBalances(cleared = 352_510L, uncleared = -11_250L)
 
 private const val NATWEST = "NatWest"
 private const val AMAZON = "Amazon"

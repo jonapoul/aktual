@@ -12,4 +12,9 @@ class TransactionPreferencesImpl(dataStore: DataStore<Preferences>) : Transactio
     dataStore
       .boolean(key = booleanPreferencesKey("alternateTransactionRowColours"), default = false)
       .required()
+
+  override val expandSplits: Preference<Boolean> =
+    dataStore
+      .boolean(key = booleanPreferencesKey("expandSplitTransactions"), default = false)
+      .required()
 }
