@@ -109,8 +109,8 @@ private fun ShimmerUpcoming(modifier: Modifier = Modifier) {
       modifier = Modifier.fillMaxWidth().padding(horizontal = CardPadding),
       horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-      Box(modifier = bar.width(140.dp).height(16.dp))
-      Box(modifier = bar.width(48.dp).height(16.dp))
+      Box(modifier = bar.width(140.dp).height(24.dp))
+      Box(modifier = bar.width(48.dp).height(24.dp))
     }
 
     repeat(SHIMMER_ROWS) {

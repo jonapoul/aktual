@@ -8,8 +8,11 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareTextButton
-import aktual.core.ui.ButtonShape
+import aktual.core.ui.ChipSize
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.LocalPrivacyEnabled
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.formattedString
 import aktual.core.ui.redacted
@@ -23,6 +26,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -39,6 +43,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 
 internal val CardPadding = 16.dp
@@ -98,22 +104,36 @@ internal fun CardLink(text: String, onClick: () -> Unit, modifier: Modifier = Mo
   Row(
     modifier =
       modifier
-        .clip(ButtonShape)
+        .heightIn(min = 24.dp)
+        .clip(ChipSize.Small.shape)
+        .background(colors.buttonNormalBackgroundHover, ChipSize.Small.shape)
         .hoverClickable(role = Button, onClick = onClick)
         .padding(start = 6.dp, end = 2.dp),
     horizontalArrangement = Arrangement.spacedBy(2.dp),
     verticalAlignment = CenterVertically,
   ) {
-    Text(text = text, style = typography.bodyMedium, color = colors.pageTextLinkLight, maxLines = 1)
+    Text(text = text, style = typography.bodyMedium, color = colors.buttonNormalText, maxLines = 1)
 
     Icon(
       modifier = Modifier.size(16.dp),
       imageVector = AktualIcons.CheveronRight,
       contentDescription = text,
-      tint = colors.pageTextLinkLight,
+      tint = colors.buttonNormalText,
     )
   }
 }
+
+@Preview
+@Composable
+private fun PreviewCardLink(
+  @PreviewParameter(CardLinkProvider::class) params: ColorParams<String>,
+) =
+  PreviewWithColorParams(params) {
+    CardLink(modifier = Modifier.padding(8.dp), text = this, onClick = {})
+  }
+
+private class CardLinkProvider :
+  ColorParamsProvider<String>("See all", "Manage", "A much longer link label")
 
 internal fun TextStyle.tabularFigures() = copy(fontFeatureSettings = "tnum")
 
