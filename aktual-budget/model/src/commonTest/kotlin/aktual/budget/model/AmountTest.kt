@@ -66,6 +66,21 @@ class AmountTest {
       .isEqualTo("••••• £")
   }
 
+  @Test
+  fun `Zero-decimal currencies keep two implied decimals and only change the display`() {
+    val yen = CurrencyConfig(JapaneseYen, BeforeAmount, false)
+    assertThat(Amount(150_000L).formatted(yen)).isEqualTo("¥1,500")
+    assertThat(Amount(150_000L).toDouble()).isEqualTo(1500.0)
+  }
+
+  private fun Amount.formatted(currencyConfig: CurrencyConfig) =
+    toString(
+      numberFormatConfig = NumberFormatConfig(CommaDot, hideFraction = false),
+      currencyConfig = currencyConfig,
+      includeSign = false,
+      isPrivacyEnabled = false,
+    )
+
   private fun Amount.toString(currency: CurrencyConfig) =
     toString(
       numberFormatConfig = NumberFormatConfig(CommaDot, hideFraction = false),

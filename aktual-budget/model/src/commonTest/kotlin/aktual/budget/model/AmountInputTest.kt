@@ -67,4 +67,18 @@ class AmountInputTest {
     assertThat(Amount(-120_050L).toSignedInputText()).isEqualTo("-1200.50")
     assertThat(Amount(120_050L).toSignedInputText()).isEqualTo("1200.50")
   }
+
+  @Test
+  fun `Zero-decimal currencies still store two implied decimals`() {
+    assertThat(parseAmountInput("1500")).isEqualTo(Amount(150_000L))
+    assertThat(evaluateAmountInput("1,500")).isEqualTo(Amount(150_000L))
+  }
+
+  @Test
+  fun `Editing a stored fraction without changes keeps it`() {
+    val stored = Amount(150_050L)
+    assertThat(parseAmountInput(stored.toInputText())).isEqualTo(stored)
+    assertThat(evaluateAmountInput(stored.toSignedInputText())).isEqualTo(stored)
+    assertThat(evaluateAmountInput((-stored).toSignedInputText())).isEqualTo(-stored)
+  }
 }
