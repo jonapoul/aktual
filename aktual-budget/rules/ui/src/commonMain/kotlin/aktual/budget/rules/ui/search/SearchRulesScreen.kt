@@ -70,6 +70,7 @@ internal fun SearchRulesScreen(
       query = query,
       payeeName = payeeName,
       state = state,
+      focusOnOpen = payee == null,
       onAction = { action ->
         when (action) {
           NavBack -> back()
@@ -97,6 +98,7 @@ private fun SearchRulesScaffold(
   state: SearchRulesState,
   onAction: SearchRulesActionHandler,
   modifier: Modifier = Modifier,
+  focusOnOpen: Boolean = true,
 ) {
   val listState = rememberLazyListState()
   ScrollToTopOnNewQuery(listState, (state as? Results)?.query)
@@ -108,6 +110,7 @@ private fun SearchRulesScaffold(
     listState = listState,
     onQueryChange = { onAction(SetQuery(it)) },
     onBack = { onAction(NavBack) },
+    focusOnOpen = focusOnOpen,
   ) { innerPadding ->
     Column(modifier = Modifier.padding(innerPadding)) {
       if (payeeName != null) {
