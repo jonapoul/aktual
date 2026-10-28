@@ -24,6 +24,7 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.ProvideSurfaceColor
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.checkbox
 import aktual.core.ui.formattedString
@@ -500,15 +501,18 @@ private fun ShowAs(
         is Sum -> SummaryChartType.Sum
       }
 
-    AktualExposedDropDownMenu(
-      modifier = Modifier.wrapContentSize(),
-      value = string(currentType),
-      options = chartTypeMap.keys.toImmutableList(),
-      onValueChange = { string ->
-        val type = chartTypeMap.getValue(string)
-        onAction(Action.SetSummaryType(type))
-      },
-    )
+    // Summary charts are always drawn on a table card
+    ProvideSurfaceColor(colors.tableBackground) {
+      AktualExposedDropDownMenu(
+        modifier = Modifier.wrapContentSize(),
+        value = string(currentType),
+        options = chartTypeMap.keys.toImmutableList(),
+        onValueChange = { string ->
+          val type = chartTypeMap.getValue(string)
+          onAction(Action.SetSummaryType(type))
+        },
+      )
+    }
   }
 
 @Composable

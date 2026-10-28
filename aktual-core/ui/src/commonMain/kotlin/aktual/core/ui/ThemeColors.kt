@@ -19,8 +19,11 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
 
 @Composable
 fun Colors.topAppBarColors(
@@ -93,8 +96,36 @@ fun Colors.textField(
 
 @Composable
 fun Colors.exposedDropDownMenu(): TextFieldColors =
-  textField()
+  textField(focusedContainer = dropdownBackground())
     .copy(focusedTrailingIconColor = formInputText, unfocusedTrailingIconColor = formInputText)
+
+// Darker than the surface behind it in dark themes, lighter in light themes. If the surface is
+// already too close to black or white for that, shift it a little the other way instead
+@Stable
+fun Colors.dropdownBackground(surface: Color): Color {
+  val shifted = lerp(surface, if (isLight) White else Black, DROPDOWN_SHIFT)
+  return if (contrast(shifted, surface) >= DROPDOWN_MIN_CONTRAST) {
+    shifted
+  } else {
+    lerp(surface, if (isLight) Black else White, DROPDOWN_FALLBACK_SHIFT)
+  }
+}
+
+@Composable
+@ReadOnlyComposable
+fun Colors.dropdownBackground(): Color =
+  dropdownBackground(LocalSurfaceColor.current ?: pageBackground)
+
+private fun contrast(a: Color, b: Color): Float {
+  val lumA = a.luminance() + CONTRAST_OFFSET
+  val lumB = b.luminance() + CONTRAST_OFFSET
+  return maxOf(lumA, lumB) / minOf(lumA, lumB)
+}
+
+private const val DROPDOWN_SHIFT = 0.3f
+private const val DROPDOWN_FALLBACK_SHIFT = 0.08f
+private const val DROPDOWN_MIN_CONTRAST = 1.1f
+private const val CONTRAST_OFFSET = 0.05f
 
 @Composable
 fun Colors.primaryButton(isPressed: Boolean): ButtonColors =

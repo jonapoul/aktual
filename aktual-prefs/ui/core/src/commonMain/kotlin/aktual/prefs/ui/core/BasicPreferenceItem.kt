@@ -8,6 +8,7 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.ProvideSurfaceColor
 import aktual.core.ui.disabledIf
 import alakazam.kotlin.ifNotNull
 import alakazam.kotlin.ifTrue
@@ -110,7 +111,11 @@ fun BasicPreferenceItem(
       }
 
       if (bottomContent != null) {
-        Column(content = bottomContent)
+        if (includeBackground) {
+          ProvideSurfaceColor(colors.settingsCardBackground) { Column(content = bottomContent) }
+        } else {
+          Column(content = bottomContent)
+        }
       }
     }
 
