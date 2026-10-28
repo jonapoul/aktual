@@ -10,6 +10,7 @@ import aktual.budget.model.CategoryId
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.AlertTriangle
 import aktual.core.icons.Calendar3
+import aktual.core.icons.CheveronRight
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.material.FormatListBulleted
 import aktual.core.icons.material.MaterialIcons
@@ -18,7 +19,6 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareTextButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -160,9 +160,23 @@ private fun AttentionRow(
   onShowOverspent: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val onClick = {
+    when (item) {
+      is SyncFailed -> onAction(item.fixAction())
+      is SyncFailedMany -> onAction(OpenBankSync)
+      is Uncategorised -> onAction(ReviewUncategorised)
+      is Overspent -> onShowOverspent()
+      is OverdueSchedules -> onAction(OpenSchedules)
+    }
+  }
+
   Row(
     modifier =
-      modifier.fillMaxWidth().heightIn(min = RowMinHeight).padding(horizontal = CardPadding),
+      modifier
+        .fillMaxWidth()
+        .heightIn(min = RowMinHeight)
+        .hoverClickable(role = Button, onClick = onClick)
+        .padding(horizontal = CardPadding),
     horizontalArrangement = Arrangement.spacedBy(12.dp),
     verticalAlignment = CenterVertically,
   ) {
@@ -182,18 +196,19 @@ private fun AttentionRow(
       overflow = Ellipsis,
     )
 
-    BareTextButton(
-      text = item.actionLabel(),
-      onClick = {
-        when (item) {
-          is SyncFailed -> onAction(item.fixAction())
-          is SyncFailedMany -> onAction(OpenBankSync)
-          is Uncategorised -> onAction(ReviewUncategorised)
-          is Overspent -> onShowOverspent()
-          is OverdueSchedules -> onAction(OpenSchedules)
-        }
-      },
-    )
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(2.dp),
+      verticalAlignment = CenterVertically,
+    ) {
+      Text(text = item.actionLabel(), style = typography.bodyMedium, color = colors.pageTextLink)
+
+      Icon(
+        modifier = Modifier.size(16.dp),
+        imageVector = AktualIcons.CheveronRight,
+        contentDescription = null,
+        tint = colors.pageTextLink,
+      )
+    }
   }
 }
 

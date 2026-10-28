@@ -17,7 +17,6 @@ import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareTextButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -38,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
-import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
@@ -111,8 +109,8 @@ private fun ShimmerUpcoming(modifier: Modifier = Modifier) {
       modifier = Modifier.fillMaxWidth().padding(horizontal = CardPadding),
       horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-      Box(modifier = bar.width(140.dp).height(16.dp))
-      Box(modifier = bar.width(48.dp).height(16.dp))
+      Box(modifier = bar.width(140.dp).height(24.dp))
+      Box(modifier = bar.width(48.dp).height(24.dp))
     }
 
     repeat(SHIMMER_ROWS) {
@@ -146,7 +144,7 @@ private fun UpcomingHeader(
   Row(
     modifier = modifier.fillMaxWidth().padding(horizontal = CardPadding),
     horizontalArrangement = spacedBy(12.dp),
-    verticalAlignment = Top,
+    verticalAlignment = CenterVertically,
   ) {
     Text(
       modifier = Modifier.weight(1f).semantics { heading() },
@@ -158,7 +156,7 @@ private fun UpcomingHeader(
       overflow = Ellipsis,
     )
 
-    BareTextButton(text = Strings.homeUpcomingSeeAll, onClick = onSeeAll)
+    CardLink(text = Strings.homeUpcomingSeeAll, onClick = onSeeAll)
   }
 }
 

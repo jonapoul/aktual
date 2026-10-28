@@ -47,7 +47,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
@@ -133,7 +132,7 @@ private fun ReportsHeader(onManage: (() -> Unit)?, modifier: Modifier = Modifier
   Row(
     modifier = modifier.fillMaxWidth().padding(horizontal = CardPadding),
     horizontalArrangement = spacedBy(12.dp),
-    verticalAlignment = Alignment.Top,
+    verticalAlignment = CenterVertically,
   ) {
     Text(
       modifier = Modifier.weight(1f).semantics { heading() },
@@ -146,7 +145,7 @@ private fun ReportsHeader(onManage: (() -> Unit)?, modifier: Modifier = Modifier
     )
 
     if (onManage != null) {
-      BareTextButton(text = Strings.homeReportsManage, onClick = onManage)
+      CardLink(text = Strings.homeReportsManage, onClick = onManage)
     }
   }
 }
