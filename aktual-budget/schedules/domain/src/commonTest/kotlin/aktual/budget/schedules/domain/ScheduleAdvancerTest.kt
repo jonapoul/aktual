@@ -276,6 +276,43 @@ class ScheduleAdvancerTest {
   }
 
   @Test
+  fun `Rule that sets payees on splits posts the parts with those payees`() =
+    runDatabaseTest { scope ->
+      insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
+      insertRule(
+        payee = "a-payee",
+        actions =
+          """
+          [
+            {"op": "set-split-amount", "value": 60, "options": {"splitIndex": 1, "method": "fixed-percent"}},
+            {"op": "set", "field": "description", "value": "landlord", "options": {"splitIndex": 1}},
+            {"op": "set-split-amount", "value": null, "options": {"splitIndex": 2, "method": "remainder"}},
+            {"op": "set", "field": "description", "value": "agent", "options": {"splitIndex": 2}}
+          ]
+          """
+            .trimIndent(),
+      )
+
+      advancer(scope).onSyncCompleted(Succeeded)
+
+      val rows = syncController.changes.filter { it.dataset == TRANSACTIONS }.groupBy { it.row }
+      val children =
+        rows.values
+          .filter { row -> row.any { it.column == "parent_id" } }
+          .associate { row ->
+            row.single { it.column == "amount" }.value to
+              row.singleOrNull { it.column == "description" }?.value
+          }
+      assertThat(children)
+        .isEqualTo(
+          mapOf(
+            MessageValue.Number(-600) to MessageValue.String("landlord"),
+            MessageValue.Number(-400) to MessageValue.String("agent"),
+          ),
+        )
+    }
+
+  @Test
   fun `Failed posting doesn't count as today's run`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
     val failingSync =
