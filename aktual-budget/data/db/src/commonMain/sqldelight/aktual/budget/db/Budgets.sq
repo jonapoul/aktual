@@ -50,6 +50,19 @@ FROM reflect_budgets b
 JOIN categories c ON c.id = b.category AND c.tombstone = 0
 WHERE b.month >= :start AND b.month <= :end;
 
+-- packages/loot-core/src/server/budget/base.ts getLatestAllocatedMonth()
+zeroBudgetLatestAllocation:
+SELECT CAST(MAX(b.month) AS INTEGER) AS month
+FROM zero_budgets b
+JOIN categories c ON c.id = b.category AND c.tombstone = 0
+WHERE b.amount != 0;
+
+reflectBudgetLatestAllocation:
+SELECT CAST(MAX(b.month) AS INTEGER) AS month
+FROM reflect_budgets b
+JOIN categories c ON c.id = b.category AND c.tombstone = 0
+WHERE b.amount != 0;
+
 zeroBudgetMonths:
 SELECT id, buffered FROM zero_budget_months;
 

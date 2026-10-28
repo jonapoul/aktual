@@ -372,8 +372,7 @@ class BudgetWriterImpl(
       }
     }
 
-  private suspend fun bounds(): ClosedRange<YearMonth> =
-    budgetBounds(budgetDao.observeEarliestTransactionDate().first(), calendar.today())
+  private suspend fun bounds(): ClosedRange<YearMonth> = calculator.observeBounds().first()
 
   // isTrackingBudget()
   private suspend fun type(): BudgetType =

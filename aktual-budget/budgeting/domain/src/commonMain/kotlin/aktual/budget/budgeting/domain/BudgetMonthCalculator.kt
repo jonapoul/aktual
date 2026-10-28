@@ -13,14 +13,17 @@ import aktual.core.Calendar
 import aktual.di.BudgetScope
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.SingleIn
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.datetime.YearMonth
 
 interface BudgetMonthCalculator {
@@ -33,6 +36,7 @@ interface BudgetMonthCalculator {
   fun observeBounds(): Flow<ClosedRange<YearMonth>>
 }
 
+@SingleIn(BudgetScope::class)
 @ContributesBinding(BudgetScope::class)
 class BudgetMonthCalculatorImpl(
   private val budgetDao: BudgetDao,
@@ -40,16 +44,14 @@ class BudgetMonthCalculatorImpl(
   private val calendar: Calendar,
   private val contexts: CoroutineContexts,
 ) : BudgetMonthCalculator {
+  private val latestEnd = MutableStateFlow<YearMonth?>(null)
+
   override fun observe(month: YearMonth): Flow<BudgetMonth> =
     observeRange(month..month).map { it.single() }.distinctUntilChanged()
 
   override fun observeRange(months: ClosedRange<YearMonth>): Flow<ImmutableList<BudgetMonth>> =
-    combine(
-        preferencesDao.observe(SyncedPrefKey.Global.BudgetType).map { BudgetType.from(it) },
-        budgetDao.observeEarliestTransactionDate(),
-      ) { type, earliest ->
-        // Upstream falls back to envelope budgeting too
-        (type ?: Envelope) to budgetStart(earliest, calendar.today())
+    combine(observeType(), budgetDao.observeEarliestTransactionDate()) { type, earliest ->
+        type to budgetStart(earliest, calendar.today())
       }
       .distinctUntilChanged()
       .flatMapLatest { (type, start) ->
@@ -61,12 +63,29 @@ class BudgetMonthCalculatorImpl(
       .distinctUntilChanged()
       .flowOn(contexts.default)
 
+  // The range only grows while the budget is open, so every month shown stays reachable. Clearing
+  // allocations shrinks it the next time the budget opens
   override fun observeBounds(): Flow<ClosedRange<YearMonth>> =
-    budgetDao
-      .observeEarliestTransactionDate()
-      .map { earliest -> budgetBounds(earliest, calendar.today()) }
+    combine(observeType(), budgetDao.observeEarliestTransactionDate(), ::Pair)
+      .distinctUntilChanged()
+      .flatMapLatest { (type, earliest) ->
+        budgetDao.observeLatestAllocation(type).map { latest ->
+          budgetBounds(earliest, calendar.today(), latest)
+        }
+      }
+      .map { bounds ->
+        val end = bounds.endInclusive
+        bounds.start..(latestEnd.updateAndGet { maxOf(it ?: end, end) } ?: end)
+      }
       .distinctUntilChanged()
       .flowOn(contexts.default)
+
+  // Upstream falls back to envelope budgeting too
+  private fun observeType(): Flow<BudgetType> =
+    preferencesDao
+      .observe(SyncedPrefKey.Global.BudgetType)
+      .map { BudgetType.from(it) ?: Envelope }
+      .distinctUntilChanged()
 
   private fun observeEnvelope(
     start: YearMonth,
