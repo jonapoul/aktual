@@ -59,7 +59,8 @@ private val QueryDebounce = 300.milliseconds
 
 /**
  * Full screen search layout, with a back button and search field in the top bar. Scrolling
- * [listState] hides the keyboard.
+ * [listState] hides the keyboard. [focusOnOpen] focuses the field and shows the keyboard on first
+ * open.
  */
 @Composable
 fun SearchScaffold(
@@ -69,6 +70,7 @@ fun SearchScaffold(
   onQueryChange: (String) -> Unit,
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
+  focusOnOpen: Boolean = true,
   content: @Composable (PaddingValues) -> Unit,
 ) {
   val keyboard = LocalSoftwareKeyboardController.current
@@ -89,7 +91,7 @@ fun SearchScaffold(
       TopAppBar(
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton(onClick = onBack) },
-        title = { SearchField(initialQuery, placeholder, onQueryChange) },
+        title = { SearchField(initialQuery, placeholder, focusOnOpen, onQueryChange) },
       )
     },
   ) { innerPadding ->
@@ -105,6 +107,7 @@ fun SearchScaffold(
 private fun SearchField(
   initialQuery: String,
   placeholder: String,
+  focusOnOpen: Boolean,
   onQueryChange: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -113,7 +116,7 @@ private fun SearchField(
   val keyboard = LocalSoftwareKeyboardController.current
   val focusManager = LocalFocusManager.current
   val currentOnQueryChange by rememberUpdatedState(onQueryChange)
-  var hasFocused by rememberSaveable { mutableStateOf(false) }
+  var hasFocused by rememberSaveable { mutableStateOf(!focusOnOpen) }
 
   // Only on first open, not when coming back from another screen
   LaunchedEffect(Unit) {
