@@ -10,6 +10,7 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButton
@@ -45,7 +46,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -117,7 +117,7 @@ private fun LockedContent(onUnlock: () -> Unit) {
 
     Text(
       text = Strings.appLockTitle,
-      fontSize = 25.sp,
+      fontSize = textSizes.heading,
       fontWeight = W600,
       color = colors.pageText,
     )
@@ -126,7 +126,7 @@ private fun LockedContent(onUnlock: () -> Unit) {
 
     Text(
       text = Strings.appLockMessage,
-      fontSize = 15.sp,
+      fontSize = textSizes.mediumPlus,
       textAlign = Center,
       color = colors.pageTextLight,
     )
@@ -137,7 +137,7 @@ private fun LockedContent(onUnlock: () -> Unit) {
       modifier = Modifier.fillMaxWidth().height(56.dp),
       text = Strings.appLockUnlock,
       shape = RounderCardShape,
-      fontSize = 16.sp,
+      fontSize = textSizes.large,
       onClick = onUnlock,
       prefix = {
         Icon(
@@ -153,7 +153,7 @@ private fun LockedContent(onUnlock: () -> Unit) {
 
     Text(
       text = Strings.appLockPromptSubtitle,
-      fontSize = 13.sp,
+      fontSize = textSizes.smallPlus,
       textAlign = Center,
       color = colors.pageTextLight,
     )

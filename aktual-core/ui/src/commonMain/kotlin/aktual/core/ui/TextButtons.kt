@@ -4,6 +4,7 @@ package aktual.core.ui
 
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -40,7 +41,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 @NonRestartableComposable
@@ -285,7 +285,7 @@ private fun RowScope.DefaultTextButtonContent(
 val DefaultButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
 
 val Typography.buttonTextStyle: TextStyle
-  get() = bodyMedium.copy(fontSize = 15.sp)
+  get() = bodyMedium.copy(fontSize = textSizes.mediumPlus)
 
 @Preview
 @Composable

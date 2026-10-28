@@ -4,6 +4,7 @@ import aktual.account.vm.ChangePasswordState
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
@@ -29,7 +30,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun ConfirmPasswordForm(
@@ -93,7 +93,7 @@ internal fun ConfirmPasswordForm(
         colors = colors.checkbox(),
       )
 
-      Text(text = Strings.passwordShow, fontSize = 15.sp)
+      Text(text = Strings.passwordShow, fontSize = textSizes.mediumPlus)
     }
 
     PrimaryTextButtonWithLoading(

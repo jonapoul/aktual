@@ -3,6 +3,7 @@ package aktual.budget.list.ui
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PortraitPreview
@@ -20,7 +21,6 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Stable
 @Composable
@@ -45,7 +45,7 @@ internal fun ContentEmpty(
       text = Strings.budgetSuccessEmptySecond,
       color = colors.pageText,
       textAlign = Center,
-      fontSize = 20.sp,
+      fontSize = textSizes.extraLarge,
     )
 
     VerticalSpacer(30.dp)

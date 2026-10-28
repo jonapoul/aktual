@@ -34,6 +34,8 @@ import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.letterSpacings
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.ColorParams
@@ -84,7 +86,6 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.createSavedStateHandle
 import com.valentinilk.shimmer.rememberShimmer
@@ -523,18 +524,18 @@ internal val CardSpacing = 12.dp
 internal val DetailCardShape = RoundedCornerShape(10.dp)
 private val HeroPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 4.dp)
 private val HeroSpacing = 10.dp
-internal val HeroAmountSize = 44.sp
-internal val HeroAmountTracking = (-1).sp
-private val DateSize = 14.sp
+internal val HeroAmountSize = textSizes.hero
+internal val HeroAmountTracking = letterSpacings.tight
+private val DateSize = textSizes.medium
 private val SaveShape = RoundedCornerShape(percent = 50)
 private val SaveInset = 8.dp
 private val RowPadding = PaddingValues(horizontal = 16.dp, vertical = 15.dp)
 private val RowGap = 12.dp
-internal val ValueSize = 15.sp
+internal val ValueSize = textSizes.mediumPlus
 private val BalancePadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
 internal val SplitHeaderPadding = PaddingValues(start = 4.dp, bottom = 8.dp)
-internal val SplitHeaderSize = 13.sp
-internal val SplitHeaderTracking = 1.sp
+internal val SplitHeaderSize = textSizes.smallPlus
+internal val SplitHeaderTracking = letterSpacings.wider
 private val ShimmerBarShape = RoundedCornerShape(4.dp)
 private val ShimmerToggleWidth = 200.dp
 private val ShimmerToggleHeight = 30.dp

@@ -9,6 +9,7 @@ import aktual.budget.schedules.vm.edit.isDeposit
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -49,7 +50,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.datetime.LocalDate
 
@@ -356,7 +356,7 @@ private val ChipGap = 5.dp
 private val BorderWidth = 1.dp
 private val ActiveBorderWidth = 2.dp
 private val DashLength = 4.dp
-private val SentenceLineHeight = 44.sp
+private val SentenceLineHeight = lineHeights.hero
 
 @Preview(widthDp = 390)
 @Composable

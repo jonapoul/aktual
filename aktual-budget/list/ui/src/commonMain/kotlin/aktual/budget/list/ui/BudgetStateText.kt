@@ -10,6 +10,7 @@ import aktual.core.icons.FileDouble
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
@@ -27,7 +28,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun BudgetStateText(
@@ -47,7 +47,7 @@ internal fun BudgetStateText(
 
     HorizontalSpacer(5.dp)
 
-    Text(text = text, color = color, fontSize = 13.sp)
+    Text(text = text, color = color, fontSize = textSizes.smallPlus)
   }
 }
 

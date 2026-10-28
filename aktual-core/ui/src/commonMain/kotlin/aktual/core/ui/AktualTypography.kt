@@ -11,6 +11,8 @@ import aktual.core.l10n.inter_regular
 import aktual.core.l10n.inter_semibold
 import aktual.core.l10n.inter_thin
 import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.lineHeights
+import aktual.core.ui.AktualTheme.textSizes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize.Min
@@ -32,7 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.persistentMapOf
 import org.jetbrains.compose.resources.Font
 
@@ -53,21 +54,36 @@ internal fun aktualTypography(colors: Colors = AktualTheme.colors): Typography {
 
   return with(font) {
     Typography(
-      displayLarge = textStyle(weight = W700, size = 40.sp),
-      displayMedium = textStyle(weight = W600, size = 35.sp),
-      displaySmall = textStyle(weight = W500, size = 30.sp),
-      headlineLarge = textStyle(weight = W700, size = 30.sp, color = colors.pageTextPositive),
-      headlineMedium = textStyle(weight = W600, size = 25.sp, color = colors.pageTextPositive),
-      headlineSmall = textStyle(weight = W500, size = 20.sp, color = colors.pageTextPositive),
-      titleLarge = textStyle(weight = W500, size = 25.sp),
-      titleMedium = textStyle(weight = W400, size = 23.sp),
-      titleSmall = textStyle(weight = W300, size = 22.sp),
-      bodyLarge = textStyle(size = 16.sp, height = 22.4.sp),
-      bodyMedium = textStyle(size = 15.sp, height = 21.4.sp),
-      bodySmall = textStyle(size = 14.sp, height = 20.4.sp),
-      labelLarge = textStyle(size = 14.sp, color = colors.pageTextSubdued),
-      labelMedium = textStyle(size = 13.sp, color = colors.pageTextSubdued),
-      labelSmall = textStyle(size = 12.sp, color = colors.pageTextSubdued),
+      displayLarge = textStyle(weight = W700, size = textSizes.displayLarge),
+      displayMedium = textStyle(weight = W600, size = textSizes.displayPlus),
+      displaySmall = textStyle(weight = W500, size = textSizes.display),
+      headlineLarge =
+        textStyle(
+          weight = W700,
+          size = textSizes.display,
+          color = colors.pageTextPositive,
+        ),
+      headlineMedium =
+        textStyle(
+          weight = W600,
+          size = textSizes.heading,
+          color = colors.pageTextPositive,
+        ),
+      headlineSmall =
+        textStyle(
+          weight = W500,
+          size = textSizes.extraLarge,
+          color = colors.pageTextPositive,
+        ),
+      titleLarge = textStyle(weight = W500, size = textSizes.heading),
+      titleMedium = textStyle(weight = W400, size = textSizes.titlePlus),
+      titleSmall = textStyle(weight = W300, size = textSizes.title),
+      bodyLarge = textStyle(size = textSizes.large, height = lineHeights.bodyLarge),
+      bodyMedium = textStyle(size = textSizes.mediumPlus, height = lineHeights.bodyMedium),
+      bodySmall = textStyle(size = textSizes.medium, height = lineHeights.bodySmall),
+      labelLarge = textStyle(size = textSizes.medium, color = colors.pageTextSubdued),
+      labelMedium = textStyle(size = textSizes.smallPlus, color = colors.pageTextSubdued),
+      labelSmall = textStyle(size = textSizes.small, color = colors.pageTextSubdued),
     )
   }
 }

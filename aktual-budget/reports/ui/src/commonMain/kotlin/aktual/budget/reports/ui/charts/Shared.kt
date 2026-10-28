@@ -7,6 +7,7 @@ import aktual.budget.model.NumberFormatConfig
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalNumberFormatConfig
@@ -30,7 +31,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.patrykandpatrick.vico.compose.cartesian.CartesianDrawingContext
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisGuidelineComponent
@@ -90,7 +90,9 @@ internal fun axisLabelComponent(compact: Boolean) =
   if (compact) {
     null
   } else {
-    rememberAxisLabelComponent(style = TextStyle(color = colors.pageText, fontSize = 12.sp))
+    rememberAxisLabelComponent(
+      style = TextStyle(color = colors.pageText, fontSize = textSizes.small),
+    )
   }
 
 @Composable

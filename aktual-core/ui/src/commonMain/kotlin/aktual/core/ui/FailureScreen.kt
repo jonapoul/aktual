@@ -5,6 +5,7 @@ import aktual.core.icons.CloudWarning
 import aktual.core.icons.Refresh
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -23,7 +24,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 fun FailureCard(
@@ -53,7 +53,7 @@ fun FailureCard(
       text = title,
       color = colors.warningText,
       textAlign = Center,
-      fontSize = 20.sp,
+      fontSize = textSizes.extraLarge,
       fontWeight = Bold,
     )
 
@@ -63,7 +63,7 @@ fun FailureCard(
       Text(
         text = reason,
         color = colors.warningTextDark,
-        fontSize = 16.sp,
+        fontSize = textSizes.large,
         textAlign = Center,
       )
     }

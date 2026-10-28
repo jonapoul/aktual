@@ -6,6 +6,7 @@ import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColors
@@ -27,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableList
 
 // Rules arrive sorted in execution order, so grouping keeps stages in run order too
@@ -66,7 +66,7 @@ internal fun RuleStageHeader(stage: RuleStage, count: Int, modifier: Modifier = 
     Text(
       text = stage.string(),
       color = colors.pageText,
-      fontSize = 14.sp,
+      fontSize = textSizes.medium,
       fontWeight = SemiBold,
     )
 
@@ -74,13 +74,13 @@ internal fun RuleStageHeader(stage: RuleStage, count: Int, modifier: Modifier = 
       modifier = Modifier.weight(1f),
       text = stage.hint().orEmpty(),
       color = colors.pageTextLight,
-      fontSize = 12.sp,
+      fontSize = textSizes.small,
     )
 
     Text(
       text = Plurals.rulesStageCount(count, count),
       color = colors.pageTextLight,
-      fontSize = 12.sp,
+      fontSize = textSizes.small,
     )
   }
 }

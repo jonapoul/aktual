@@ -3,6 +3,7 @@ package aktual.core.ui
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +39,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 
@@ -260,7 +260,7 @@ private fun PreviewAmountKeypad(
 private object AmountFieldDS {
   val spacing = 6.dp
   val keySpacing = 8.dp
-  val keyFontSize = 20.sp
+  val keyFontSize = textSizes.extraLarge
   val keypadSpacing = 6.dp
   val keyHeight = 50.dp
 }

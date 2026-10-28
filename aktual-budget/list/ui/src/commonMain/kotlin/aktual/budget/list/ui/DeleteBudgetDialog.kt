@@ -6,6 +6,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareTextButton
@@ -42,7 +43,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun DeleteBudgetDialog(
@@ -83,7 +83,7 @@ private fun Content(
     val isNotDeleting = deletingState is Inactive
 
     if (remoteFileExists) {
-      Text(text = annotatedString(), fontSize = 14.sp)
+      Text(text = annotatedString(), fontSize = textSizes.medium)
 
       var firstCheckbox by remember { mutableStateOf(false) }
       var secondCheckbox by remember { mutableStateOf(false) }
@@ -109,7 +109,7 @@ private fun Content(
     }
 
     if (localFileExists) {
-      Text(text = Strings.budgetDeleteDialogLocalTxt, fontSize = 14.sp)
+      Text(text = Strings.budgetDeleteDialogLocalTxt, fontSize = textSizes.medium)
 
       LoadableBareTextButton(
         text = Strings.budgetDeleteDialogLocalButton,

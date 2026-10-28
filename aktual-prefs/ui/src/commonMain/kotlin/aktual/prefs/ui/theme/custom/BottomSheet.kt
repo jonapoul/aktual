@@ -4,6 +4,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
@@ -20,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -57,7 +57,7 @@ private fun SortFilterContent(
         options = SortingOptions,
         onSelect = { onAction(SetSorting(it)) },
         string = { it.string() },
-        fontSize = 14.sp,
+        fontSize = textSizes.medium,
       )
     }
 
@@ -67,7 +67,7 @@ private fun SortFilterContent(
         options = FilterOptions,
         onSelect = { onAction(SetModeFilter(it)) },
         string = { it.string() },
-        fontSize = 14.sp,
+        fontSize = textSizes.medium,
       )
     }
   }
@@ -75,7 +75,7 @@ private fun SortFilterContent(
 @Composable
 private fun Section(title: String, content: @Composable () -> Unit) =
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-    Text(text = title, fontSize = 13.sp, color = colors.pageTextLight)
+    Text(text = title, fontSize = textSizes.smallPlus, color = colors.pageTextLight)
     content()
   }
 

@@ -2,6 +2,7 @@ package aktual.budget.transactions.ui
 
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.background
@@ -15,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 private val DividerHeight = 24.dp
 
@@ -32,7 +32,7 @@ internal fun YearDivider(year: Int, modifier: Modifier = Modifier) =
   ) {
     Text(
       text = year.toString(),
-      fontSize = 11.sp,
+      fontSize = textSizes.extraSmall,
       fontWeight = SemiBold,
       color = colors.tableHeaderText,
       style = tabularFigures(),

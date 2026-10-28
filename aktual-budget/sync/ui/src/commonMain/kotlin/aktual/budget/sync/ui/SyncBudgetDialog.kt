@@ -16,6 +16,7 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParams
 import aktual.core.ui.MY_PHONE_WIDTH_DP
 import aktual.core.ui.PasswordTransformation
@@ -73,7 +74,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -290,7 +290,7 @@ private fun PasswordEntryLayout(
     Text(
       modifier = Modifier.padding(horizontal = 20.dp),
       text = buildPasswordText(colors, onAction),
-      fontSize = 14.sp,
+      fontSize = textSizes.medium,
     )
 
     VerticalSpacer(4.dp)

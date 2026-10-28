@@ -8,6 +8,7 @@ import aktual.core.theme.hasAlternateRowColour
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
@@ -36,7 +37,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.toImmutableList
 
 private val Densities = TransactionsDensity.entries.toImmutableList()
@@ -87,7 +87,7 @@ private fun ViewOptionsContent(
       options = Densities,
       onSelect = { onAction(Action.SetDensity(it)) },
       string = { it.string() },
-      fontSize = 14.sp,
+      fontSize = textSizes.medium,
     )
 
     Column {
@@ -120,7 +120,7 @@ private fun ViewOptionsContent(
       ) {
         Text(
           text = Strings.transactionsViewThisAccount,
-          fontSize = 13.sp,
+          fontSize = textSizes.smallPlus,
           color = colors.pageTextLight,
         )
 
@@ -187,7 +187,11 @@ private fun SwitchRow(
         color = colors.pageTextLight.disabledIf(!enabled),
       )
       if (subtitle != null) {
-        Text(text = subtitle, fontSize = 12.sp, color = colors.pageTextSubdued.disabledIf(!enabled))
+        Text(
+          text = subtitle,
+          fontSize = textSizes.small,
+          color = colors.pageTextSubdued.disabledIf(!enabled),
+        )
       }
     }
 

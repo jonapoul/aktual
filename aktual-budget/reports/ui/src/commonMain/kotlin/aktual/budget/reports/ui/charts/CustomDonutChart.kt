@@ -2,6 +2,7 @@ package aktual.budget.reports.ui.charts
 
 import aktual.budget.reports.vm.CustomMetric
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.isInPreview
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.Composable
@@ -11,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.sp
 import com.patrykandpatrick.vico.compose.common.Fill
 import com.patrykandpatrick.vico.compose.common.MeasuringContext
 import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
@@ -50,7 +50,9 @@ internal fun CustomDonutChart(
       null
     } else {
       PieChart.SliceLabel.Inside(
-        rememberTextComponent(style = TextStyle(color = labelColor, fontSize = 12.sp)),
+        rememberTextComponent(
+          style = TextStyle(color = labelColor, fontSize = textSizes.small),
+        ),
       )
     }
   val sliceProvider =

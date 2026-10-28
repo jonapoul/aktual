@@ -3,6 +3,7 @@ package aktual.budget.transactions.ui
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.background
@@ -20,7 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 private val HeaderHeight = 26.dp
 
@@ -71,7 +71,7 @@ private fun LedgerHeaderText(
     modifier = modifier,
     text = text.uppercase(),
     textAlign = textAlign,
-    fontSize = 11.sp,
+    fontSize = textSizes.extraSmall,
     fontWeight = SemiBold,
     color = colors.tableHeaderText,
     overflow = Ellipsis,
