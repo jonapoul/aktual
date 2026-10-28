@@ -11,6 +11,7 @@ import aktual.core.l10n.inter_regular
 import aktual.core.l10n.inter_semibold
 import aktual.core.l10n.inter_thin
 import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.textSizes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.persistentMapOf
 import org.jetbrains.compose.resources.Font
 
@@ -78,9 +78,9 @@ internal fun aktualTypography(colors: Colors = AktualTheme.colors): Typography {
       titleLarge = textStyle(weight = W500, size = textSizes.heading),
       titleMedium = textStyle(weight = W400, size = textSizes.titlePlus),
       titleSmall = textStyle(weight = W300, size = textSizes.title),
-      bodyLarge = textStyle(size = textSizes.large, height = 22.4.sp),
-      bodyMedium = textStyle(size = textSizes.mediumPlus, height = 21.4.sp),
-      bodySmall = textStyle(size = textSizes.medium, height = 20.4.sp),
+      bodyLarge = textStyle(size = textSizes.large, height = lineHeights.bodyLarge),
+      bodyMedium = textStyle(size = textSizes.mediumPlus, height = lineHeights.bodyMedium),
+      bodySmall = textStyle(size = textSizes.medium, height = lineHeights.bodySmall),
       labelLarge = textStyle(size = textSizes.medium, color = colors.pageTextSubdued),
       labelMedium = textStyle(size = textSizes.smallPlus, color = colors.pageTextSubdued),
       labelSmall = textStyle(size = textSizes.small, color = colors.pageTextSubdued),

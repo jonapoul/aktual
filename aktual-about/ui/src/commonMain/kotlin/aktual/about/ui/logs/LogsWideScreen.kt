@@ -17,6 +17,7 @@ import aktual.core.logging.LogLine
 import aktual.core.model.bytes
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ButtonShape
@@ -71,7 +72,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.launch
@@ -459,7 +459,7 @@ private fun DetailPane(line: LogLine?) {
           color = line.priority.messageColor(colors),
           fontFamily = Monospace,
           fontSize = textSizes.small,
-          lineHeight = 18.sp,
+          lineHeight = lineHeights.largePlus,
         )
       }
     }

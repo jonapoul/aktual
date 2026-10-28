@@ -7,6 +7,7 @@ import aktual.core.icons.CheveronRight
 import aktual.core.icons.InformationOutline
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.letterSpacings
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.redacted
@@ -33,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.launch
 
@@ -107,7 +107,7 @@ internal fun GroupHeading(
     textAlign = textAlign,
     style = typography.labelSmall,
     fontWeight = SemiBold,
-    letterSpacing = 0.5.sp,
+    letterSpacing = letterSpacings.wide,
     color = colors.pageText,
   )
 

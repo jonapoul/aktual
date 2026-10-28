@@ -8,10 +8,10 @@ Shared Compose components and theming.
 
 - `AktualTheme.colors` - theme colors (`Colors` from `aktual-core:theme`). Composable, since it depends on the active theme.
 - `AktualTheme.typography` - Material `Typography` built in `AktualTypography.kt` with the Inter font. Composable.
-- `AktualTheme.textSizes` - font size scale (`TextSizes`). Not composable, so it works in top-level vals and default params.
+- `AktualTheme.textSizes`, `lineHeights`, `letterSpacings` - `sp` scales in `TextSizes.kt`, `LineHeights.kt` and `LetterSpacings.kt`. Not composable, so they work in top-level vals and default params.
 
-## Text sizes
+## Text tokens
 
-Never write a raw `N.sp` for a font size. Use the nearest entry in `TextSizes.kt` (8sp `micro` up to 44sp `hero`), imported statically: `import aktual.core.ui.AktualTheme.textSizes`, then `textSizes.small`. If no entry fits, add one to `TextSizes.kt` rather than hardcoding. Line heights and letter spacing aren't tokenised yet, so `sp` literals for those are fine.
+Never write a raw `N.sp` for a font size, line height or letter spacing. Import the scale statically and use the nearest entry, e.g. `import aktual.core.ui.AktualTheme.textSizes`, then `textSizes.small`. If no entry fits, add one to the scale's file rather than hardcoding. Only sizes computed at runtime (like in `ScaleToFitText`) use `.sp` directly.
 
 Spacing uses `Dimens` (dp), not `AktualTheme`.

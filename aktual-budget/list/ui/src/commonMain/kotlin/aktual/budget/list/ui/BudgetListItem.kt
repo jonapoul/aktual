@@ -6,6 +6,7 @@ import aktual.core.icons.Key
 import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
@@ -35,7 +36,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.persistentListOf
 
 /**
@@ -115,7 +115,7 @@ private fun BudgetListItemRow(
         style = typography.bodySmall,
         color = colors.pageTextSubdued,
         fontSize = textSizes.tiny,
-        lineHeight = 12.sp,
+        lineHeight = lineHeights.small,
       )
     }
 
