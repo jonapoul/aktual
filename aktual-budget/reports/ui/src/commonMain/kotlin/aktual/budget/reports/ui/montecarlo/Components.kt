@@ -9,6 +9,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.ProvideSurfaceColor
 import aktual.core.ui.redacted
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,8 +47,9 @@ internal fun SectionCard(
   Column(
     modifier = modifier.fillMaxWidth().background(colors.tableBackground, CardShape).padding(16.dp),
     verticalArrangement = Arrangement.spacedBy(10.dp),
-    content = content,
-  )
+  ) {
+    ProvideSurfaceColor(colors.tableBackground) { content() }
+  }
 
 // A SectionCard that expands and collapses from its title
 @Composable

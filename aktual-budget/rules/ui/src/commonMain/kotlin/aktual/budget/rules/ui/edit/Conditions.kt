@@ -21,6 +21,7 @@ import aktual.core.ui.ColorParameters
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryIconButton
+import aktual.core.ui.ProvideSurfaceColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -50,35 +51,37 @@ internal fun Conditions(
       modifier.fillMaxWidth().background(colors.cardBackground, CardShape).padding(CARD_PADDING),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
-    Row(verticalAlignment = Alignment.Top) {
-      Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(text = Strings.editRuleConditions, style = typography.titleSmall)
+    ProvideSurfaceColor(colors.cardBackground) {
+      Row(verticalAlignment = Alignment.Top) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          Text(text = Strings.editRuleConditions, style = typography.titleSmall)
 
-        Row(
-          horizontalArrangement = Arrangement.spacedBy(6.dp),
-          verticalAlignment = CenterVertically,
-        ) {
-          Text(text = Strings.editRuleConditionsDescPrefix, style = typography.bodyLarge)
+          Row(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = CenterVertically,
+          ) {
+            Text(text = Strings.editRuleConditionsDescPrefix, style = typography.bodyLarge)
 
-          AktualExposedDropDownMenu(
-            value = rule.conditionsOp,
-            onValueChange = { op -> onAction(SetConditionOp(op)) },
-            options = ConditionOp.known,
-            string = { op -> op.string() },
-            textStyle = typography.bodySmall,
-            isEnabled = isEnabled,
-            contentPadding = BUTTON_PADDING,
-          )
+            AktualExposedDropDownMenu(
+              value = rule.conditionsOp,
+              onValueChange = { op -> onAction(SetConditionOp(op)) },
+              options = ConditionOp.known,
+              string = { op -> op.string() },
+              textStyle = typography.bodySmall,
+              isEnabled = isEnabled,
+              contentPadding = BUTTON_PADDING,
+            )
 
-          Text(text = Strings.editRuleConditionsDescSuffix, style = typography.bodyLarge)
+            Text(text = Strings.editRuleConditionsDescSuffix, style = typography.bodyLarge)
+          }
         }
+        PrimaryIconButton(
+          enabled = isEnabled,
+          imageVector = AktualIcons.Add,
+          contentDescription = Strings.editRuleCreate,
+          onClick = { onAction(AppendCondition) },
+        )
       }
-      PrimaryIconButton(
-        enabled = isEnabled,
-        imageVector = AktualIcons.Add,
-        contentDescription = Strings.editRuleCreate,
-        onClick = { onAction(AppendCondition) },
-      )
     }
 
     rule.conditions.fastForEachIndexed { index, condition ->
@@ -99,46 +102,48 @@ private fun Condition(
     modifier = modifier.fillMaxWidth().background(colors.pillBackground, CardShape).padding(4.dp),
     verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    ProvideSurfaceColor(colors.pillBackground) {
+      Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        AktualExposedDropDownMenu(
+          modifier = Modifier.weight(1f),
+          value = condition.field,
+          onValueChange = { f -> onAction(SetConditionField(f, index)) },
+          options = VISIBLE_FIELDS,
+          string = { f -> f.string(condition.options) },
+          textStyle = typography.bodySmall,
+          isEnabled = isEnabled,
+          contentPadding = BUTTON_PADDING,
+        )
+
+        NormalIconButton(
+          imageVector = AktualIcons.Trash,
+          contentDescription = Strings.rulesItemDelete,
+          onClick = { onAction(DeleteCondition(index)) },
+          colors = NormalRed,
+          isEnabled = isEnabled,
+        )
+      }
+
       AktualExposedDropDownMenu(
-        modifier = Modifier.weight(1f),
-        value = condition.field,
-        onValueChange = { f -> onAction(SetConditionField(f, index)) },
-        options = VISIBLE_FIELDS,
-        string = { f -> f.string(condition.options) },
+        modifier = Modifier.fillMaxWidth(),
+        value = condition.operator,
+        onValueChange = { op -> onAction(SetConditionOperator(op, index)) },
+        options = filteredOperators(condition),
+        string = { f -> f.displayString() },
         textStyle = typography.bodySmall,
         isEnabled = isEnabled,
         contentPadding = BUTTON_PADDING,
       )
 
-      NormalIconButton(
-        imageVector = AktualIcons.Trash,
-        contentDescription = Strings.rulesItemDelete,
-        onClick = { onAction(DeleteCondition(index)) },
-        colors = NormalRed,
+      ConditionValueEditor(
+        modifier = Modifier.fillMaxWidth(),
+        field = condition.field,
+        value = condition.value,
+        index = index,
         isEnabled = isEnabled,
+        onAction = onAction,
       )
     }
-
-    AktualExposedDropDownMenu(
-      modifier = Modifier.fillMaxWidth(),
-      value = condition.operator,
-      onValueChange = { op -> onAction(SetConditionOperator(op, index)) },
-      options = filteredOperators(condition),
-      string = { f -> f.displayString() },
-      textStyle = typography.bodySmall,
-      isEnabled = isEnabled,
-      contentPadding = BUTTON_PADDING,
-    )
-
-    ConditionValueEditor(
-      modifier = Modifier.fillMaxWidth(),
-      field = condition.field,
-      value = condition.value,
-      index = index,
-      isEnabled = isEnabled,
-      onAction = onAction,
-    )
   }
 }
 

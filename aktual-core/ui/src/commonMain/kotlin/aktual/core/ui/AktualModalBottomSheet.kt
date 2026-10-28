@@ -66,6 +66,6 @@ fun AktualModalBottomSheet(
         }
       }
     },
-    content = content,
+    content = { ProvideSurfaceColor(colors.modalBackground) { content() } },
   )
 }

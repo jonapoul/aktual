@@ -1,3 +1,5 @@
+@file:Suppress("ComposeCompositionLocalUsage")
+
 package aktual.core.ui
 
 import aktual.budget.model.Amount
@@ -26,6 +28,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -37,6 +40,13 @@ import kotlinx.datetime.format.DateTimeFormat
 import org.jetbrains.compose.resources.Font
 
 val LocalPrivacyEnabled = compositionLocalOf { false }
+
+// The colour of the surface content is drawn on, or null for the page background
+val LocalSurfaceColor = compositionLocalOf<Color?> { null }
+
+@Composable
+fun ProvideSurfaceColor(color: Color, content: @Composable () -> Unit) =
+  CompositionLocalProvider(LocalSurfaceColor provides color, content = content)
 
 // Opens the budget nav drawer, or null when the current layout has no drawer
 val LocalNavDrawerOpener = compositionLocalOf<(() -> Unit)?> { null }
