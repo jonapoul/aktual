@@ -6,6 +6,7 @@ import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.ui.PreviewRule2
 import aktual.budget.rules.ui.list.ListRulesItemRow
 import aktual.budget.rules.ui.list.ShimmerListRulesItem
+import aktual.budget.rules.ui.list.ruleSections
 import aktual.budget.rules.vm.search.SearchRulesState
 import aktual.budget.rules.vm.search.SearchRulesState.Failure
 import aktual.budget.rules.vm.search.SearchRulesState.Results
@@ -30,6 +31,7 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SearchScaffold
+import aktual.core.ui.StuckHeaders
 import aktual.core.ui.scrollbar
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -42,13 +44,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.createSavedStateHandle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -179,14 +182,15 @@ private fun ResultsList(
   listState: LazyListState,
   onAction: SearchRulesActionHandler,
   modifier: Modifier = Modifier,
-) =
+) {
+  val stuck = remember(listState) { StuckHeaders(listState, topBar = 0.dp) }
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
     contentPadding = PaddingValues(horizontal = Dimens.ScreenPadding),
     verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
-    items(results.rules, key = { it.id.value }) { rule ->
+    ruleSections(results.rules, stuck) { rule ->
       ListRulesItemRow(
         modifier = Modifier.animateItem(),
         rule = rule,
@@ -197,6 +201,7 @@ private fun ResultsList(
 
     item(key = "bottom") { BottomSpacing() }
   }
+}
 
 @Composable
 private fun ShimmerResults(modifier: Modifier = Modifier) =

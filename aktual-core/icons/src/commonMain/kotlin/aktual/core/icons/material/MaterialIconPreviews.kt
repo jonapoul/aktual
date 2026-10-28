@@ -67,6 +67,7 @@ private val materialIcons =
       Sort,
       SpaceBar,
       Speed125,
+      SubdirectoryArrowRight,
       SwapHoriz,
       Timer,
       Title,

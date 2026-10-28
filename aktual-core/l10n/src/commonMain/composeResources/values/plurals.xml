@@ -97,6 +97,12 @@
     <item quantity="other">%1$d transactions</item>
   </plurals>
 
+  <!-- budget-rules -->
+  <plurals name="rules_stage_count">
+    <item quantity="one">%1$d rule</item>
+    <item quantity="other">%1$d rules</item>
+  </plurals>
+
   <!-- budget-reports -->
   <plurals name="reports_age_of_money_days">
     <item quantity="one">%1$d day</item>

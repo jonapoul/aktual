@@ -18,9 +18,11 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
+import aktual.core.ui.StuckHeaders
 import aktual.core.ui.formattedText
 import aktual.core.ui.scrollbar
 import aktual.core.ui.stringLong
+import aktual.core.ui.stuckHeader
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

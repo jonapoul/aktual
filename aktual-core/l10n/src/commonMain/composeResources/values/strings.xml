@@ -1506,6 +1506,8 @@
   <string name="rules_stage_none">Default</string>
   <string name="rules_stage_post">Post</string>
   <string name="rules_stage_unknown">Unknown</string>
+  <string name="rules_stage_hint_pre">Run first</string>
+  <string name="rules_stage_hint_post">Run last</string>
 
   <!-- Rule action operations -->
   <string name="rules_op_set">set</string>

@@ -31,6 +31,7 @@ import aktual.core.ui.NoticeBanner
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.StuckHeaders
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -46,7 +47,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -226,6 +226,8 @@ private fun ContentSuccess(
 ) {
   // only one row may be swiped open at a time - opening another closes the previous one
   var openId by remember { mutableStateOf<RuleId?>(null) }
+  val topPadding = contentPadding.calculateTopPadding()
+  val stuck = remember(listState, topPadding) { StuckHeaders(listState, topPadding) }
 
   // Pass the top inset as the LazyColumn's contentPadding (not Modifier.padding) so items rest
   // below the bar but scroll up *behind* it, which is what reveals the haze.
@@ -242,7 +244,7 @@ private fun ContentSuccess(
       )
     }
 
-    items(rules, key = { it.id.value }) { rule ->
+    ruleSections(rules, stuck) { rule ->
       ListRulesItem(
         modifier = Modifier.animateItem(),
         rule = rule,
@@ -280,7 +282,15 @@ private data class ListRulesStateParams(val state: ListRulesState)
 
 private class ListRulesStateProvider :
   ColorParamsProvider<ListRulesStateParams>(
-    ListRulesStateParams(Success(persistentListOf(PreviewRule1, PreviewRule2))),
+    ListRulesStateParams(
+      Success(
+        persistentListOf(
+          PreviewRule1.copy(id = RuleId("pre"), stage = Pre),
+          PreviewRule1,
+          PreviewRule2,
+        ),
+      ),
+    ),
     ListRulesStateParams(Loading),
     ListRulesStateParams(Empty),
     ListRulesStateParams(Failure("Something broke")),
