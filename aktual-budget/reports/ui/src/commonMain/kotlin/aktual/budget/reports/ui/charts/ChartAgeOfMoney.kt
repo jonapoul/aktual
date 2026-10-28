@@ -5,6 +5,7 @@ import aktual.budget.reports.vm.AgeOfMoneyTrend
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
@@ -35,7 +36,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
@@ -267,7 +267,9 @@ private fun rememberTargetLine(): HorizontalLine {
       shape = remember { DashedShape(dashLength = 5.dp, gapLength = 5.dp) },
     )
   val label =
-    rememberTextComponent(style = TextStyle(color = colors.reportsGreen, fontSize = 10.sp))
+    rememberTextComponent(
+      style = TextStyle(color = colors.reportsGreen, fontSize = textSizes.tiny),
+    )
   val text = Plurals.reportsAgeOfMoneyDays(TARGET_AGE_DAYS, TARGET_AGE_DAYS)
   return remember(line, label, text) {
     HorizontalLine(

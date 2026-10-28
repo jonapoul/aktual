@@ -15,6 +15,7 @@ import aktual.core.model.unaryPlus
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
@@ -67,8 +68,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -346,7 +347,7 @@ private fun SummaryCard(
     SummaryLine {
       Text(
         text = column.month.stringLong(),
-        fontSize = 15.sp,
+        fontSize = textSizes.mediumPlus,
         fontWeight = SemiBold,
         color = colors.pageText,
         maxLines = 1,
@@ -355,7 +356,7 @@ private fun SummaryCard(
         Text(
           modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
           text = Strings.budgetingThisMonth,
-          fontSize = 12.sp,
+          fontSize = textSizes.small,
           fontWeight = Medium,
           color = colors.pageTextLink,
           maxLines = 1,
@@ -369,8 +370,18 @@ private fun SummaryCard(
 
     summary.breakdown().fastForEach { (label, amount) ->
       SummaryLine {
-        Text(text = label, fontSize = 13.sp, color = colors.pageTextSubdued, maxLines = 1)
-        SummaryAmount(amount = amount, includeSign = false, fontSize = 13, color = colors.pageText)
+        Text(
+          text = label,
+          fontSize = textSizes.smallPlus,
+          color = colors.pageTextSubdued,
+          maxLines = 1,
+        )
+        SummaryAmount(
+          amount = amount,
+          includeSign = false,
+          fontSize = textSizes.smallPlus,
+          color = colors.pageText,
+        )
       }
     }
 
@@ -378,11 +389,16 @@ private fun SummaryCard(
 
     val headline = summary.headline()
     SummaryLine {
-      Text(text = headline.label, fontSize = 13.sp, color = colors.pageTextSubdued, maxLines = 1)
+      Text(
+        text = headline.label,
+        fontSize = textSizes.smallPlus,
+        color = colors.pageTextSubdued,
+        maxLines = 1,
+      )
       SummaryAmount(
         amount = headline.amount,
         includeSign = true,
-        fontSize = 18,
+        fontSize = textSizes.largePlus,
         color = headline.color,
       )
     }
@@ -426,12 +442,12 @@ private fun SummaryLine(content: @Composable RowScope.() -> Unit) =
 private fun SummaryAmount(
   amount: Amount,
   includeSign: Boolean,
-  fontSize: Int,
+  fontSize: TextUnit,
   color: Color,
 ) =
   Text(
     text = amount.formattedText(includeSign = includeSign),
-    fontSize = fontSize.sp,
+    fontSize = fontSize,
     fontWeight = if (includeSign) SemiBold else Normal,
     style = TextStyle.Default.tabularFigures(),
     color = color,

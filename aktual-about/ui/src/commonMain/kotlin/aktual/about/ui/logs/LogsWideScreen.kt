@@ -17,6 +17,7 @@ import aktual.core.logging.LogLine
 import aktual.core.model.bytes
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.Chip
@@ -403,7 +404,7 @@ private fun RowScope.MonoCell(
     text = text,
     color = color,
     fontFamily = Monospace,
-    fontSize = 12.5.sp,
+    fontSize = textSizes.small,
     maxLines = 1,
     overflow = Ellipsis,
   )
@@ -457,7 +458,7 @@ private fun DetailPane(line: LogLine?) {
           text = line.message,
           color = line.priority.messageColor(colors),
           fontFamily = Monospace,
-          fontSize = 12.sp,
+          fontSize = textSizes.small,
           lineHeight = 18.sp,
         )
       }

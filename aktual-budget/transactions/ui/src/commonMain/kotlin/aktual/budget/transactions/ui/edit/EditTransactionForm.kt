@@ -15,6 +15,7 @@ import aktual.core.icons.Split
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AmountKeypad
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.BottomSpacing
@@ -74,7 +75,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -560,7 +560,7 @@ internal fun Amount.negatedIf(negate: Boolean): Amount = if (negate) -this else 
 private val AmountPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 4.dp)
 private val AmountSpacing = 10.dp
 private val ToggleWidth = 200.dp
-private val ToggleTextSize = 13.sp
+private val ToggleTextSize = textSizes.smallPlus
 private val TogglePadding = PaddingValues(horizontal = 5.dp, vertical = 7.dp)
 private val UnderlineWidth = 2.dp
 private val UnderlinePadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 4.dp)
@@ -572,7 +572,7 @@ private val FieldRowPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
 private val SwitchRowPadding = PaddingValues(horizontal = 16.dp)
 private val FieldRowGap = 12.dp
 private val FieldLabelWidth = 84.dp
-private val FieldLabelSize = 13.sp
+private val FieldLabelSize = textSizes.smallPlus
 private val ChevronSize = 16.dp
 private val KeypadPadding = 8.dp
 internal const val EMPTY_AMOUNT = "0"

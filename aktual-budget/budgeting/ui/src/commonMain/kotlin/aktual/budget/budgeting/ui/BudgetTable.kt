@@ -14,6 +14,7 @@ import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
@@ -62,7 +63,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
@@ -225,7 +225,11 @@ internal fun BudgetSummary.breakdown(): ImmutableList<Pair<String, Amount>> =
 @Composable
 private fun Headline(headline: SummaryHeadline, modifier: Modifier = Modifier) {
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
-    Text(text = headline.label, fontSize = 13.sp, color = colors.pageTextSubdued)
+    Text(
+      text = headline.label,
+      fontSize = textSizes.smallPlus,
+      color = colors.pageTextSubdued,
+    )
     Text(
       text = headline.amount.formattedText(includeSign = true),
       style = typography.headlineSmall.tabularFigures(),
@@ -248,10 +252,14 @@ private fun Breakdown(lines: ImmutableList<Pair<String, Amount>>, modifier: Modi
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = CenterVertically,
       ) {
-        Text(text = label, fontSize = 13.sp, color = colors.pageTextSubdued)
+        Text(
+          text = label,
+          fontSize = textSizes.smallPlus,
+          color = colors.pageTextSubdued,
+        )
         Text(
           text = amount.formattedText(),
-          fontSize = 13.sp,
+          fontSize = textSizes.smallPlus,
           style = TextStyle.Default.tabularFigures(),
           color = colors.pageText,
           maxLines = 1,
@@ -305,7 +313,7 @@ internal fun BannerRow(
             )
           is Overbudgeted -> Strings.budgetingBannerOverbudgeted
         }.redacted(),
-      fontSize = 14.sp,
+      fontSize = textSizes.medium,
       color = text,
       maxLines = 2,
       overflow = Ellipsis,
@@ -356,7 +364,7 @@ private fun ColumnHeader(
     ) {
       Text(
         text = if (showSpent) Strings.budgetingColumnSpent else Strings.budgetingColumnBudgeted,
-        fontSize = 13.sp,
+        fontSize = textSizes.smallPlus,
         fontWeight = Medium,
         color = colors.pageTextLink,
       )
@@ -407,7 +415,7 @@ internal fun HeaderLabel(
   Text(
     modifier = modifier,
     text = text,
-    fontSize = 13.sp,
+    fontSize = textSizes.smallPlus,
     color = colors.tableHeaderText,
     textAlign = textAlign,
     maxLines = 1,
@@ -493,7 +501,7 @@ internal fun GroupHeaderRow(
         )
         Text(
           text = group.name,
-          fontSize = 14.sp,
+          fontSize = textSizes.medium,
           fontWeight = SemiBold,
           color = colors.tableRowHeaderText,
           maxLines = 1,
@@ -597,7 +605,7 @@ internal fun CategoryRowLayout(
       ) {
         Text(
           text = category.name,
-          fontSize = 14.sp,
+          fontSize = textSizes.medium,
           color = colors.tableText,
           maxLines = 1,
           overflow = Ellipsis,
@@ -632,7 +640,7 @@ internal fun AmountText(
   Text(
     modifier = modifier,
     text = amount.formattedText(includeSign = includeSign),
-    fontSize = 14.sp,
+    fontSize = textSizes.medium,
     fontWeight = if (bold) SemiBold else Normal,
     style = TextStyle.Default.tabularFigures(),
     color = color,
@@ -649,7 +657,8 @@ internal fun BalancePill(balance: Amount, carryover: Boolean, modifier: Modifier
     modifier = modifier.semantics { if (carryover) stateDescription = rollsOver },
     colors = pill,
     size = Small,
-    textStyle = TextStyle.Default.tabularFigures().copy(fontSize = 13.sp, fontWeight = Medium),
+    textStyle =
+      TextStyle.Default.tabularFigures().copy(fontSize = textSizes.smallPlus, fontWeight = Medium),
     spacing = 2.dp,
   ) {
     Text(text = balance.formattedText(includeSign = true), maxLines = 1)

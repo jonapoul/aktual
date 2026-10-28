@@ -19,6 +19,7 @@ import aktual.core.model.Percent
 import aktual.core.model.percent
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
@@ -59,7 +60,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
@@ -188,7 +188,7 @@ private fun RegularPerMonth(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = Strings.reportsSummaryNumMonths,
-          fontSize = 25.sp,
+          fontSize = textSizes.heading,
           textAlign = Center,
           color = colors.pageText,
         )
@@ -206,7 +206,7 @@ private fun RegularPerMonth(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = data.total.formattedText(),
-          fontSize = 30.sp,
+          fontSize = textSizes.display,
           textAlign = Center,
           color = colors.pageText,
         )
@@ -216,7 +216,7 @@ private fun RegularPerMonth(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = "%.2f".format(data.numMonths),
-          fontSize = 30.sp,
+          fontSize = textSizes.display,
           textAlign = Center,
           color = colors.pageText,
         )
@@ -259,7 +259,7 @@ private fun RegularPerYear(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = Strings.reportsSummaryNumYears,
-          fontSize = 25.sp,
+          fontSize = textSizes.heading,
           textAlign = Center,
           color = colors.pageText,
         )
@@ -277,7 +277,7 @@ private fun RegularPerYear(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = data.total.formattedText(),
-          fontSize = 30.sp,
+          fontSize = textSizes.display,
           textAlign = Center,
           color = colors.pageText,
         )
@@ -287,7 +287,7 @@ private fun RegularPerYear(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = "%.2f".format(data.numYears),
-          fontSize = 30.sp,
+          fontSize = textSizes.display,
           textAlign = Center,
           color = colors.pageText,
         )
@@ -330,7 +330,7 @@ private fun RegularPerTransaction(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = Strings.reportsSummaryNumTransactions,
-          fontSize = 25.sp,
+          fontSize = textSizes.heading,
           textAlign = Center,
           color = colors.pageText,
         )
@@ -348,7 +348,7 @@ private fun RegularPerTransaction(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = data.total.formattedText(),
-          fontSize = 30.sp,
+          fontSize = textSizes.display,
           textAlign = Center,
           color = colors.pageText,
         )
@@ -358,7 +358,7 @@ private fun RegularPerTransaction(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = data.numTransactions.toString(),
-          fontSize = 30.sp,
+          fontSize = textSizes.display,
           textAlign = Center,
           color = colors.pageText,
         )
@@ -421,7 +421,7 @@ private fun RegularPercent(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = data.numerator.formattedText(),
-          fontSize = 30.sp,
+          fontSize = textSizes.display,
           textAlign = Center,
           color = colors.pageText,
         )
@@ -431,7 +431,7 @@ private fun RegularPercent(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = data.denominator.formattedText(),
-          fontSize = 30.sp,
+          fontSize = textSizes.display,
           textAlign = Center,
           color = colors.pageText,
         )
@@ -567,7 +567,7 @@ private fun FilterDisplay() =
     Text(
       modifier = Modifier.weight(1f, fill = false),
       text = Strings.reportsSummaryAll,
-      fontSize = 25.sp,
+      fontSize = textSizes.heading,
       textAlign = Center,
       color = colors.pageTextPositive,
     )

@@ -1,6 +1,7 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.model.TransactionsDensity
+import aktual.core.ui.AktualTheme.textSizes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -10,7 +11,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 internal val LocalLedgerDimens = compositionLocalOf { LedgerDimens(Default) }
 
@@ -47,7 +47,7 @@ internal data class LedgerDimens(
   val amountWeight: FontWeight,
   val childRowHeight: Dp,
   val childAmountSize: TextUnit,
-  val balanceSize: TextUnit = 12.sp,
+  val balanceSize: TextUnit = textSizes.small,
   val showAccount: Boolean = false,
   val showNotes: Boolean = false,
   val showBalance: Boolean = true,
@@ -63,15 +63,15 @@ internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
         railTop = 12.dp,
         contentGap = 12.dp,
         rowEnd = 16.dp,
-        dayNumberSize = 20.sp,
-        weekdaySize = 11.sp,
-        payeeSize = 15.sp,
+        dayNumberSize = textSizes.extraLarge,
+        weekdaySize = textSizes.extraSmall,
+        payeeSize = textSizes.mediumPlus,
         payeeWeight = SemiBold,
-        secondLineSize = 13.sp,
-        amountSize = 15.sp,
+        secondLineSize = textSizes.smallPlus,
+        amountSize = textSizes.mediumPlus,
         amountWeight = SemiBold,
         childRowHeight = 36.dp,
-        childAmountSize = 14.sp,
+        childAmountSize = textSizes.medium,
         showAccount = true,
         showNotes = true,
       )
@@ -84,15 +84,15 @@ internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
         railTop = 8.dp,
         contentGap = 10.dp,
         rowEnd = 12.dp,
-        dayNumberSize = 15.sp,
-        weekdaySize = 10.sp,
-        payeeSize = 14.sp,
+        dayNumberSize = textSizes.mediumPlus,
+        weekdaySize = textSizes.tiny,
+        payeeSize = textSizes.medium,
         payeeWeight = Medium,
-        secondLineSize = 12.sp,
-        amountSize = 14.sp,
+        secondLineSize = textSizes.small,
+        amountSize = textSizes.medium,
         amountWeight = SemiBold,
         childRowHeight = 32.dp,
-        childAmountSize = 13.sp,
+        childAmountSize = textSizes.smallPlus,
       )
 
     Dense ->
@@ -103,15 +103,15 @@ internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
         railTop = 0.dp,
         contentGap = 8.dp,
         rowEnd = 10.dp,
-        dayNumberSize = 12.sp,
-        weekdaySize = 12.sp,
-        payeeSize = 13.sp,
+        dayNumberSize = textSizes.small,
+        weekdaySize = textSizes.small,
+        payeeSize = textSizes.smallPlus,
         payeeWeight = Medium,
-        secondLineSize = 12.sp,
-        amountSize = 13.sp,
+        secondLineSize = textSizes.small,
+        amountSize = textSizes.smallPlus,
         amountWeight = Medium,
         childRowHeight = 28.dp,
-        childAmountSize = 12.sp,
+        childAmountSize = textSizes.small,
       )
   }
 

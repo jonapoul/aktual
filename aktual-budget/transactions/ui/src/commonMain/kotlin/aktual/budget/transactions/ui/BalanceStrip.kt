@@ -5,6 +5,7 @@ import aktual.budget.model.Amount
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.formattedText
@@ -24,7 +25,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 private val StripHeight = 40.dp
 
@@ -45,13 +45,13 @@ internal fun BalanceStrip(
     ) {
       Text(
         text = Strings.transactionsHeaderBalance,
-        fontSize = 13.sp,
+        fontSize = textSizes.smallPlus,
         color = colors.pageTextLight,
       )
 
       Text(
         text = balance?.formattedText() ?: AnnotatedString(""),
-        fontSize = 15.sp,
+        fontSize = textSizes.mediumPlus,
         fontWeight = SemiBold,
         color = colors.tableText,
         style = tabularFigures(),
@@ -83,10 +83,10 @@ private fun ExtraBalance(label: String, amount: Amount) =
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(6.dp),
   ) {
-    Text(text = label, fontSize = 12.sp, color = colors.pageTextLight)
+    Text(text = label, fontSize = textSizes.small, color = colors.pageTextLight)
     Text(
       text = amount.formattedText(),
-      fontSize = 12.sp,
+      fontSize = textSizes.small,
       fontWeight = Medium,
       color = colors.tableText,
       style = tabularFigures(),

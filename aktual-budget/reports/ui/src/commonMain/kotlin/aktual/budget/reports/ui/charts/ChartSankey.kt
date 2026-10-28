@@ -11,6 +11,7 @@ import aktual.core.l10n.Strings
 import aktual.core.model.Percent
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
@@ -63,7 +64,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -121,8 +121,8 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
   BoxWithConstraints(modifier = modifier.fillMaxSize()) {
     val textMeasurer = rememberTextMeasurer()
     val theme = colors
-    val nameStyle = TextStyle(color = theme.pageText, fontSize = 12.sp, fontWeight = Bold)
-    val valueStyle = TextStyle(color = theme.pageText, fontSize = 11.sp)
+    val nameStyle = TextStyle(color = theme.pageText, fontSize = textSizes.small, fontWeight = Bold)
+    val valueStyle = TextStyle(color = theme.pageText, fontSize = textSizes.extraSmall)
     val labels = data.nodes.map { it.label.string() }
     val values =
       data.nodes.map { node ->

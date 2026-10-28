@@ -6,6 +6,7 @@ import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
@@ -78,7 +79,7 @@ internal fun ArtifactItem(
         text = artifact.name ?: artifact.artifactId,
         fontWeight = W700,
         color = colors.pageTextPositive,
-        fontSize = 15.sp,
+        fontSize = textSizes.mediumPlus,
       )
 
       val headerStyle = LocalTextStyle.current.copy(fontWeight = Bold, fontSize = TextSize)
@@ -250,7 +251,7 @@ private fun LibraryTableRow(
 }
 
 private val LineHeight = 15.sp
-private val TextSize = 12.sp
+private val TextSize = textSizes.small
 
 private val ShimmerTitleHeight = 18.dp
 private val ShimmerTextHeight = 12.dp

@@ -11,6 +11,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -53,7 +54,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.YearMonth
 
@@ -317,7 +317,7 @@ private fun InlineAmountEditor(
     cursorBrush = SolidColor(colors.pageText),
     textStyle =
       TextStyle(
-        fontSize = 14.sp,
+        fontSize = textSizes.medium,
         color = colors.tableText,
         textAlign = End,
         fontFeatureSettings = "tnum",

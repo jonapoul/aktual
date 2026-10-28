@@ -7,6 +7,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
@@ -43,7 +44,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Month
@@ -131,7 +131,7 @@ internal fun MonthCountSelector(
     selected = count,
     options = remember(max) { (1..max).toImmutableList() },
     onSelect = { onAction(SetMonthCount(it)) },
-    fontSize = 14.sp,
+    fontSize = textSizes.medium,
   )
 }
 
@@ -233,7 +233,12 @@ private fun MonthCell(
         .semantics { selected = isSelected },
     contentAlignment = Center,
   ) {
-    Text(text = month.stringShort(), fontSize = 14.sp, color = text, maxLines = 1)
+    Text(
+      text = month.stringShort(),
+      fontSize = textSizes.medium,
+      color = text,
+      maxLines = 1,
+    )
   }
 }
 

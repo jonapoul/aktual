@@ -2,6 +2,7 @@ package aktual.about.ui.logs
 
 import aktual.core.logging.LogLine
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -106,5 +107,5 @@ internal fun AnnotatedString.Builder.appendHighlighted(
 
 private const val TIME_LENGTH = 8
 private const val MAX_TAG_LENGTH = 15
-private val LineFontSize = 11.5.sp
+private val LineFontSize = textSizes.small
 private val LineHeight = 16.sp

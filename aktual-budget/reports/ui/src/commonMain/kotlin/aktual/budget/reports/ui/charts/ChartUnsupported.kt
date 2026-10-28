@@ -5,6 +5,7 @@ import aktual.budget.reports.vm.UnsupportedData
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
@@ -30,7 +31,6 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 
 @Composable
@@ -91,7 +91,7 @@ private fun StackTraceDialog(stackTrace: String, onDismiss: () -> Unit) {
     },
   ) {
     SelectionContainer(modifier = Modifier.heightIn(max = 400.dp).verticalScrollWithBar()) {
-      Text(text = stackTrace, fontFamily = Monospace, fontSize = 12.sp)
+      Text(text = stackTrace, fontFamily = Monospace, fontSize = textSizes.small)
     }
   }
 }

@@ -17,6 +17,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.ListBottomSheet
@@ -52,7 +53,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -473,7 +473,7 @@ private object TransactionDates : SelectableDates {
 
 private val GroupHeaderPadding =
   PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp)
-private val GroupHeaderSize = 13.sp
-private val BalanceSize = 14.sp
+private val GroupHeaderSize = textSizes.smallPlus
+private val BalanceSize = textSizes.medium
 private val SearchPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
 private const val NONE_KEY = "none"

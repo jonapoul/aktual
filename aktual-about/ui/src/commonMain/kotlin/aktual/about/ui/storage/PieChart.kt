@@ -2,6 +2,7 @@ package aktual.about.ui.storage
 
 import aktual.core.model.Percent
 import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.Canvas
@@ -23,7 +24,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import kotlin.math.cos
 import kotlin.math.min
@@ -36,7 +36,7 @@ internal fun PieChart(
   slices: ImmutableList<PieSlice>,
   modifier: Modifier = Modifier,
   strokeWidth: Dp = Unspecified, // use Unspecified for 18% of chart size, 0.dp for filled pie
-  fontSize: TextUnit = 12.sp,
+  fontSize: TextUnit = textSizes.small,
 ) {
   require(slices.isNotEmpty()) { "slices must not be empty" }
 

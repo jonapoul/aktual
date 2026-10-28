@@ -2,6 +2,7 @@ package aktual.about.ui.storage
 
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
@@ -19,7 +20,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -95,7 +95,7 @@ private fun PreviewDistinctColors(
           Text(
             text = "#%06X".format(color.toArgb() and 0xFFFFFF),
             color = params.colors.formInputTextSelected,
-            fontSize = 8.sp,
+            fontSize = textSizes.micro,
             textAlign = Center,
           )
         }

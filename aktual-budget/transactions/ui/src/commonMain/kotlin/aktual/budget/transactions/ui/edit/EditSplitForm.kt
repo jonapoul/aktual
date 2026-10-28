@@ -11,6 +11,7 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.TonalButton
 import aktual.core.ui.formatted
@@ -46,7 +47,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachIndexed
 import kotlinx.collections.immutable.ImmutableList
 
@@ -407,13 +407,13 @@ private fun RemainingBanner(remaining: Amount, onFill: () -> Unit, modifier: Mod
 
 private val TotalPadding = PaddingValues(start = 8.dp, top = 4.dp, end = 8.dp)
 private val TotalSpacing = 4.dp
-private val TotalSize = 36.sp
+private val TotalSize = textSizes.displayPlus
 private val TotalCursorHeight = 32.dp
-private val TotalLabelSize = 12.sp
+private val TotalLabelSize = textSizes.small
 private val CompactRowHeight = 44.dp
 private val CompactLabelWidth = 64.dp
 private val CompactFieldPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
-private val CompactValueSize = 14.sp
+private val CompactValueSize = textSizes.medium
 private val ChipShape = RoundedCornerShape(6.dp)
 private val AddSplitHeight = 32.dp
 private val AddSplitPadding = PaddingValues(horizontal = 10.dp)
@@ -422,7 +422,7 @@ private val PartRowPadding = PaddingValues(start = 8.dp, top = 4.dp, bottom = 4.
 private val PartRowGap = 4.dp
 private val PartTextPadding = PaddingValues(horizontal = 6.dp, vertical = 5.dp)
 private val PartDetailGap = 2.dp
-private val PartDetailSize = 12.sp
+private val PartDetailSize = textSizes.small
 private val PartAmountWidth = 86.dp
 private val PartAmountHeight = 36.dp
 private val PartAmountShape = RoundedCornerShape(6.dp)
@@ -434,8 +434,8 @@ private val BannerInset = 10.dp
 private val BannerShape = RoundedCornerShape(8.dp)
 private val BannerPadding = PaddingValues(start = 14.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
 private val BannerGap = 8.dp
-private val BannerTextSize = 13.sp
+private val BannerTextSize = textSizes.smallPlus
 private val FillShape = RoundedCornerShape(15.dp)
 private val FillBorder = 1.dp
 private val FillPadding = PaddingValues(horizontal = 12.dp, vertical = 7.dp)
-private val FillTextSize = 12.sp
+private val FillTextSize = textSizes.small

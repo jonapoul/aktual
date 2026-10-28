@@ -15,6 +15,7 @@ import aktual.core.model.unaryPlus
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AmountField
 import aktual.core.ui.BottomSheetListItem
@@ -46,7 +47,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.YearMonth
@@ -526,10 +526,10 @@ private fun BudgetSummary.rows(): List<Pair<String, Amount>> =
 @Composable
 private fun SummaryRow(label: String, amount: Amount, bold: Boolean = false) {
   Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-    Text(text = label, fontSize = 14.sp, color = colors.pageTextSubdued)
+    Text(text = label, fontSize = textSizes.medium, color = colors.pageTextSubdued)
     Text(
       text = amount.formattedText(includeSign = true),
-      fontSize = 14.sp,
+      fontSize = textSizes.medium,
       fontWeight = if (bold) SemiBold else Normal,
       style = TextStyle.Default.tabularFigures(),
       color = colors.pageText,
@@ -541,7 +541,7 @@ private fun SummaryRow(label: String, amount: Amount, bold: Boolean = false) {
 private fun AmountLabel(text: String) =
   Text(
     text = text.redacted(),
-    fontSize = 13.sp,
+    fontSize = textSizes.smallPlus,
     style = TextStyle.Default.tabularFigures(),
     color = colors.pageTextSubdued,
   )

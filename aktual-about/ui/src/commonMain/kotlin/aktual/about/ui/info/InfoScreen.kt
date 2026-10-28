@@ -16,6 +16,7 @@ import aktual.core.nav.LogsNavigator
 import aktual.core.nav.ManageStorageNavigator
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
@@ -63,7 +64,6 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
@@ -191,7 +191,7 @@ private fun InfoHeader(year: Int, modifier: Modifier = Modifier) {
     ) {
       Text(
         text = appName,
-        fontSize = 25.sp,
+        fontSize = textSizes.heading,
         fontWeight = W700,
         color = colors.pillTextHighlighted,
       )

@@ -32,6 +32,8 @@ object AktualTheme {
   @get:ReadOnlyComposable
   val typography: Typography
     get() = MaterialTheme.typography
+
+  val textSizes: TextSizes = TextSizes()
 }
 
 @Composable

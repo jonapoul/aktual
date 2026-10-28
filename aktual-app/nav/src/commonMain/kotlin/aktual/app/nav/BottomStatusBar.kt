@@ -12,6 +12,7 @@ import aktual.core.model.PingState
 import aktual.core.theme.BottomBarThemeAttrs
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BottomBarState.Visible
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -51,9 +52,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
-private val FONT_SIZE = 10.sp
+private val FONT_SIZE = textSizes.tiny
 private val ICON_SIZE = 12.dp
 private val PADDING = PaddingValues(vertical = 3.dp, horizontal = 8.dp)
 

@@ -9,6 +9,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
@@ -64,7 +65,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlin.math.abs
@@ -131,7 +131,7 @@ private fun BudgetCategoryScaffold(
             if (!loaded?.group.isNullOrEmpty()) {
               Text(
                 text = loaded.group,
-                fontSize = 13.sp,
+                fontSize = textSizes.smallPlus,
                 color = colors.pageTextSubdued,
                 maxLines = 1,
                 overflow = Ellipsis,
@@ -197,7 +197,7 @@ private fun MonthCard(
   ) {
     Text(
       text = month.month.stringLong(),
-      fontSize = 15.sp,
+      fontSize = textSizes.mediumPlus,
       fontWeight = SemiBold,
       color = colors.pageText,
     )
@@ -211,7 +211,7 @@ private fun MonthCard(
       Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(
           text = Strings.budgetingColumnBalance,
-          fontSize = 13.sp,
+          fontSize = textSizes.smallPlus,
           color = colors.pageTextSubdued,
         )
         BalancePill(balance = month.balance, carryover = month.carryover)
@@ -223,10 +223,10 @@ private fun MonthCard(
 @Composable
 private fun Figure(label: String, amount: Amount, modifier: Modifier = Modifier) {
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
-    Text(text = label, fontSize = 13.sp, color = colors.pageTextSubdued)
+    Text(text = label, fontSize = textSizes.smallPlus, color = colors.pageTextSubdued)
     Text(
       text = amount.formattedText(),
-      fontSize = 16.sp,
+      fontSize = textSizes.large,
       fontWeight = Medium,
       style = TextStyle.Default.tabularFigures(),
       color = colors.pageText,
@@ -247,7 +247,7 @@ private fun HistoryCard(
   ) {
     Text(
       text = Strings.budgetingCategoryHistory,
-      fontSize = 15.sp,
+      fontSize = textSizes.mediumPlus,
       fontWeight = SemiBold,
       color = colors.pageText,
     )
@@ -277,7 +277,7 @@ private fun HistoryCard(
               }
             },
           text = point.month.stringShort().take(MONTH_LABEL_LENGTH),
-          fontSize = 11.sp,
+          fontSize = textSizes.extraSmall,
           fontWeight = if (isSelected) SemiBold else Normal,
           color = if (isSelected) colors.pageText else colors.pageTextSubdued,
           textAlign = Center,
@@ -308,7 +308,7 @@ private fun Legend(isIncome: Boolean, modifier: Modifier = Modifier) {
 private fun LegendItem(color: Color, label: String) {
   Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = CenterVertically) {
     Spacer(modifier = Modifier.size(8.dp).background(color, CircleShape))
-    Text(text = label, fontSize = 12.sp, color = colors.pageTextSubdued)
+    Text(text = label, fontSize = textSizes.small, color = colors.pageTextSubdued)
   }
 }
 
