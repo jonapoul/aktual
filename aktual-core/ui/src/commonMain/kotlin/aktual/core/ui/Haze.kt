@@ -64,7 +64,7 @@ fun Modifier.hazedBottomBar(
     // matches what the blurred/glass variant would have shown
     None -> background(color)
     Blur -> hazeBlur(input = input, style = barBlurStyle(color, config))
-    Glass -> hazeGlass(input = input, style = barGlassStyle(color, config))
+    Glass -> hazeGlass(input = input, style = barGlassStyle(color, BottomBarGlassShape))
   }
 }
 
@@ -117,7 +117,11 @@ fun Modifier.hazedTopBar(
   return when (state.effect) {
     None -> measured
     Blur -> measured.hazeBlur(input = input, style = barBlurStyle(color, config, progress))
-    Glass -> measured.hazeGlass(input = input, style = barGlassStyle(color, config, progress))
+    Glass ->
+      measured.hazeGlass(
+        input = input,
+        style = barGlassStyle(color, TopBarGlassShape, progress),
+      )
   }
 }
 
@@ -227,8 +231,13 @@ private class HoledShape(private val holes: SnapshotStateMap<Any, Rect>) : Shape
 
 private val DefaultAnimationSpec = tween<Float>(durationMillis = 200, easing = FastOutSlowInEasing)
 
-// Bars are full-width rectangles, not floating cards, so glass renders with square corners.
-private val BarGlassShape = RoundedCornerShape(0.dp)
+// Round only the edge facing the content, like iOS bars
+private val BarGlassCornerRadius = 24.dp
+private const val BarGlassTintAlpha = 0.15f
+private val TopBarGlassShape =
+  RoundedCornerShape(bottomStart = BarGlassCornerRadius, bottomEnd = BarGlassCornerRadius)
+private val BottomBarGlassShape =
+  RoundedCornerShape(topStart = BarGlassCornerRadius, topEnd = BarGlassCornerRadius)
 
 @Composable
 private fun barBlurStyle(color: Color, config: HazeConfig, progress: Float = 1f): HazeBlurStyle =
@@ -241,14 +250,17 @@ private fun barBlurStyle(color: Color, config: HazeConfig, progress: Float = 1f)
   }
 
 @Composable
-private fun barGlassStyle(color: Color, config: HazeConfig, progress: Float = 1f): GlassStyle =
-  remember(color, config, progress) {
+private fun barGlassStyle(
+  color: Color,
+  shape: RoundedCornerShape,
+  progress: Float = 1f,
+): GlassStyle =
+  remember(color, shape, progress) {
+    // Only set colors and shape, so the optics and lighting come from GlassStyle.regular
     GlassStyle {
-      shape(BarGlassShape)
-      edgeSoftness(0.dp)
+      shape(shape)
       backgroundColor(color.copy(alpha = color.alpha * progress))
-      tint(color.copy(alpha = config.alpha * progress))
-      optics(blurRadius = config.radius)
+      tint(color.copy(alpha = BarGlassTintAlpha * progress))
       alpha(progress)
     }
   }

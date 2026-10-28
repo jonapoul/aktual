@@ -2087,7 +2087,7 @@
   <string name="settings_ui_group">System UI</string>
   <string name="settings_ui_show_status">Show bottom status bar</string>
   <string name="settings_ui_bar_effect">Status bar and app bar effect</string>
-  <string name="settings_ui_bar_effect_none">None</string>
+  <string name="settings_ui_bar_effect_none">Solid</string>
   <string name="settings_ui_bar_effect_blur">Blur</string>
   <string name="settings_ui_bar_effect_glass">Glass</string>
   <string name="settings_ui_blur_dialogs">Blur behind dialogs</string>

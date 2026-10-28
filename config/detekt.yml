@@ -57,6 +57,10 @@ naming:
     functionPattern: "[a-zA-Z][a-zA-Z0-9]*"
   NonBooleanPropertyPrefixedWithIs:
     allowSingleTypedGenerics: true
+  ObjectPropertyNaming:
+    constantPattern: "[A-Z][_A-Za-z0-9]*"
+  TopLevelPropertyNaming:
+    constantPattern: "[A-Z][_A-Za-z0-9]*"
 
 potential-bugs:
   ImplicitDefaultLocale:
