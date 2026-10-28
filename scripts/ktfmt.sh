@@ -93,8 +93,8 @@ fi
 # Collect files to format
 if [ "$FORCE" = true ]; then
     echo "Formatting all Kotlin files (mode: $MODE)"
-    run_ktfmt() {
-        find . -type d -name build -prune -o -type f \( -name "*.kt" -o -name "*.kts" \) -print0 | xargs -0 "$@"
+    list_files() {
+        find . -type d -name build -prune -o -type f \( -name "*.kt" -o -name "*.kts" \) -print0
     }
 else
     BASE_BRANCH="main"
@@ -110,16 +110,31 @@ else
     fi
 
     echo "$FILE_COUNT file(s) changed since $BASE_BRANCH ($MERGE_BASE_SHORT) (mode: $MODE)"
-    run_ktfmt() {
-        echo "$CHANGED_FILES" | tr '\n' '\0' | xargs -0 "$@"
+    list_files() {
+        echo "$CHANGED_FILES" | tr '\n' '\0'
     }
 fi
+
+run_ktfmt() {
+    list_files | xargs -0 "$@"
+}
+
+checksum_files() {
+    list_files | xargs -0 cksum | sort
+}
 
 # Resolve the java binary: prefer JAVA_HOME, fall back to PATH
 if [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
     JAVA_BIN="$JAVA_HOME/bin/java"
 else
     JAVA_BIN="java"
+fi
+
+if [ "$MODE" = "format" ]; then
+    BEFORE=$(mktemp)
+    AFTER=$(mktemp)
+    trap 'rm -f "$BEFORE" "$AFTER"' EXIT
+    checksum_files > "$BEFORE"
 fi
 
 # Run ktfmt
@@ -132,4 +147,18 @@ else
     echo "Using cached ktfmt v$KTFMT_VERSION JAR (mode: $MODE)"
     # shellcheck disable=SC2086
     run_ktfmt "$JAVA_BIN" -jar "$KTFMT_JAR" $KTFMT_ARGS
+fi
+KTFMT_EXIT=$?
+
+if [ "$KTFMT_EXIT" -ne 0 ]; then
+    exit "$KTFMT_EXIT"
+fi
+
+# In format mode, exit with the number of changed files (capped at 255)
+if [ "$MODE" = "format" ]; then
+    checksum_files > "$AFTER"
+    CHANGED_COUNT=$(comm -13 "$BEFORE" "$AFTER" | grep -c . || true)
+    echo "$CHANGED_COUNT file(s) reformatted"
+    [ "$CHANGED_COUNT" -gt 255 ] && CHANGED_COUNT=255
+    exit "$CHANGED_COUNT"
 fi
