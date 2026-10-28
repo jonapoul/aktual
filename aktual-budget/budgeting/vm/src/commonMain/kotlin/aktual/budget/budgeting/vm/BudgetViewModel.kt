@@ -53,6 +53,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
@@ -293,6 +294,9 @@ class BudgetViewModel(
         )
       }
       .distinctUntilChanged()
+      // Changed bounds (e.g. switching budget type) or more columns fitting can leave the chosen
+      // month out of range
+      .onEach { window -> requested.update { it?.let { window.first } } }
 
   private data class Window(
     val first: YearMonth,

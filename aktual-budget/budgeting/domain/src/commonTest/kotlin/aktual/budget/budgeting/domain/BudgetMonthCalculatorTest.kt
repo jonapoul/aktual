@@ -129,6 +129,66 @@ internal class BudgetMonthCalculatorTest {
     }
   }
 
+  @Test
+  fun `Envelope bounds extend past the latest allocation`() =
+    runBoundsTest { _, driver, newCalculator ->
+      assertBoundsFollowAllocations(newCalculator(), driver, table = "zero_budgets")
+    }
+
+  @Test
+  fun `Tracking bounds extend past the latest allocation`() =
+    runBoundsTest { database, driver, newCalculator ->
+      database.preferences(this)[SyncedPrefKey.Global.BudgetType] = "tracking"
+      assertBoundsFollowAllocations(newCalculator(), driver, table = "reflect_budgets")
+    }
+
+  @Test
+  fun `Bounds stay extended while open and shrink on the next open`() =
+    runBoundsTest { _, driver, newCalculator ->
+      newCalculator().observeBounds().test {
+        assertThatNextEmissionIsEqualTo(START..MIN_END)
+
+        driver.write(
+          "INSERT INTO zero_budgets(id, month, category, amount) VALUES ('a', 202704, 'food', 1)",
+        )
+        assertThatNextEmissionIsEqualTo(START..YearMonth(2027, 7))
+
+        driver.write("UPDATE zero_budgets SET amount = 0 WHERE id = 'a'")
+        expectNoEvents()
+        cancelAndIgnoreRemainingEvents()
+      }
+
+      newCalculator().observeBounds().test {
+        assertThatNextEmissionIsEqualTo(START..MIN_END)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  private suspend fun TestScope.assertBoundsFollowAllocations(
+    calculator: BudgetMonthCalculator,
+    driver: SqlDriver,
+    table: String,
+  ) {
+    val other = if (table == "zero_budgets") "reflect_budgets" else "zero_budgets"
+    calculator.observeBounds().test {
+      assertThatNextEmissionIsEqualTo(START..MIN_END)
+
+      // Deleted categories and the other budget type don't count
+      driver.write("INSERT INTO $table(id, month, category, amount) VALUES ('a', 202812, 'old', 1)")
+      driver.write(
+        "INSERT INTO $other(id, month, category, amount) VALUES ('b', 202812, 'food', 1)",
+      )
+      expectNoEvents()
+
+      // Negative amounts are allocations too
+      driver.write(
+        "INSERT INTO $table(id, month, category, amount) VALUES ('c', 202704, 'food', -1)",
+      )
+      assertThatNextEmissionIsEqualTo(START..YearMonth(2027, 7))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private suspend fun TestScope.assertRangeMatchesMonths(calculator: BudgetMonthCalculator) {
     val range = YearMonth(2026, 1)..YearMonth(2026, 5)
     val single = range.map { month -> calculator.observe(month).first() }.toImmutableList()
@@ -140,20 +200,30 @@ internal class BudgetMonthCalculatorTest {
 
   private fun runCalculatorTest(
     action: suspend TestScope.(BudgetMonthCalculator, BudgetDatabase) -> Unit,
+  ) = runBoundsTest { database, _, newCalculator -> action(newCalculator(), database) }
+
+  // Each new calculator is the budget opened again
+  private fun runBoundsTest(
+    action:
+      suspend TestScope.(
+        database: BudgetDatabase,
+        driver: SqlDriver,
+        newCalculator: () -> BudgetMonthCalculator,
+      ) -> Unit,
   ) = runTest {
     val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
     driver.use {
       val database = buildDatabase(driver)
       SETUP.forEach { sql -> driver.run(sql) }
       val contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
-      val calculator =
+      action(database, driver) {
         BudgetMonthCalculatorImpl(
           budgetDao = BudgetDao(database, contexts),
           preferencesDao = database.preferences(this),
           calendar = { TODAY },
           contexts = contexts,
         )
-      action(calculator, database)
+      }
     }
   }
 
@@ -164,8 +234,16 @@ internal class BudgetMonthCalculatorTest {
     execute(identifier = null, sql = sql, parameters = 0).await()
   }
 
+  // Raw statements don't notify the queries watching the budget tables
+  private suspend fun SqlDriver.write(sql: String) {
+    run(sql)
+    notifyListeners("zero_budgets", "reflect_budgets")
+  }
+
   private companion object {
     val TODAY = LocalDate(2026, 4, 15)
+    val START = YearMonth(2025, 12)
+    val MIN_END = YearMonth(2027, 4)
 
     // The off budget, deleted and uncategorised transactions don't count
     @Suppress("MaxLineLength", "TrimMultilineRawString")

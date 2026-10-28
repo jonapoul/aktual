@@ -42,6 +42,16 @@ internal class BudgetSheetTest {
   }
 
   @Test
+  fun `Bounds extend three months past the latest allocation, up to five years ahead`() {
+    val today = LocalDate(2026, 4, 1)
+    fun end(latest: YearMonth) = budgetBounds(null, today, latest).endInclusive
+    assertThat(end(YearMonth(2026, 12))).isEqualTo(YearMonth(2027, 4))
+    assertThat(end(YearMonth(2027, 4))).isEqualTo(YearMonth(2027, 7))
+    assertThat(end(YearMonth(2028, 12))).isEqualTo(YearMonth(2029, 3))
+    assertThat(end(YearMonth(2099, 1))).isEqualTo(YearMonth(2031, 4))
+  }
+
+  @Test
   fun `Range keeps each month of a single walk`() {
     val months = envelope().envelopeMonths(JAN, FEB..MAR)
     assertThat(months)

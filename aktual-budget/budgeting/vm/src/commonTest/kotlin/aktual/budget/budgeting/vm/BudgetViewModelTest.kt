@@ -289,6 +289,25 @@ class BudgetViewModelTest {
   }
 
   @Test
+  fun `Bounds extend past the latest allocation of the budget type`() =
+    runBudgetTest(extra = FAR_TRACKING) { viewModel, database ->
+      viewModel.state.test {
+        assertThat(awaitLoaded().latest).isEqualTo(YearMonth(2027, 4))
+
+        // The month out of range is clamped, so it stays put when the bounds grow
+        viewModel.showMonth(YearMonth(2030, 1))
+        awaitMonth(YearMonth(2027, 4))
+
+        database.preferences(this@runBudgetTest)[SyncedPrefKey.Global.BudgetType] = "tracking"
+        var state = awaitLoaded()
+        while (state.latest != YearMonth(2028, 3)) state = awaitLoaded()
+        assertThat(state.month).isEqualTo(YearMonth(2027, 4))
+        assertThat(state.canGoForward).isTrue()
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
   fun `Month count is limited to what fits`() = runBudgetTest { viewModel, _ ->
     viewModel.state.test {
       assertThat(awaitLoaded().monthCount).isEqualTo(1)
@@ -567,6 +586,12 @@ class BudgetViewModelTest {
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order, hidden) VALUES ('gym', 'Gym', 0, 'usual', 3, 1)",
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('club', 'Club', 0, 'old', 1)",
         "INSERT INTO category_mapping(id, transferId) VALUES ('gym', 'gym'), ('club', 'club')",
+      )
+
+    @Suppress("MaxLineLength")
+    val FAR_TRACKING =
+      listOf(
+        "INSERT INTO reflect_budgets(id, month, category, amount) VALUES ('202712-food', 202712, 'food', 5000)",
       )
 
     @Suppress("MaxLineLength")

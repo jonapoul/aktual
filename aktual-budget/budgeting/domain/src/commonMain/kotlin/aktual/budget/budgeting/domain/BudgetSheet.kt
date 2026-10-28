@@ -47,7 +47,9 @@ internal data class BudgetData(
 }
 
 private const val LEAD_MONTHS = 3
-private const val TRAILING_MONTHS = 12
+private const val MIN_MONTHS_AHEAD = 12
+private const val MONTHS_AFTER_LATEST_ALLOCATION = 3
+private const val MAX_MONTHS_AHEAD = 60
 
 // packages/loot-core/src/server/budget/base.ts getBudgetRange(). Budgets start three months before
 // the earliest transaction, or the current month if that comes first
@@ -57,13 +59,21 @@ internal fun budgetStart(earliestTransaction: LocalDate?, today: LocalDate): Yea
   return minOf(earliest, current).minus(LEAD_MONTHS, MONTH)
 }
 
-// packages/loot-core/src/server/budget/base.ts getBudgetRange(). Budgets end a year after the
-// current month, future-dated transactions don't extend them
+// packages/loot-core/src/server/budget/base.ts getBudgetRange(). Budgets end at least a year after
+// the current month, or three months after the latest allocation, up to five years ahead.
+// Future-dated transactions don't extend them
 internal fun budgetBounds(
   earliestTransaction: LocalDate?,
   today: LocalDate,
-): ClosedRange<YearMonth> =
-  budgetStart(earliestTransaction, today)..today.yearMonth.plus(TRAILING_MONTHS, MONTH)
+  latestAllocation: YearMonth? = null,
+): ClosedRange<YearMonth> {
+  val current = today.yearMonth
+  val planned = latestAllocation?.plus(MONTHS_AFTER_LATEST_ALLOCATION, MONTH)
+  val end =
+    maxOf(current.plus(MIN_MONTHS_AHEAD, MONTH), planned ?: current)
+      .coerceAtMost(current.plus(MAX_MONTHS_AHEAD, MONTH))
+  return budgetStart(earliestTransaction, today)..end
+}
 
 // Walks forward from the first budget month once, keeping every month in the range
 private inline fun <T : BudgetMonth> walk(

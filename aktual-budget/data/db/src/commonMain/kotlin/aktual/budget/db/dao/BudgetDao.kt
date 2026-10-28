@@ -85,6 +85,19 @@ class BudgetDao(database: BudgetDatabase, private val contexts: CoroutineContext
       .mapToList(contexts.default)
       .distinctUntilChanged()
 
+  // The latest month with a non-zero amount for a live category
+  fun observeLatestAllocation(type: BudgetType): Flow<YearMonth?> =
+    when (type) {
+        Envelope ->
+          queries.zeroBudgetLatestAllocation().asFlow().mapToOne(contexts.default).map { it.month }
+        Tracking ->
+          queries.reflectBudgetLatestAllocation().asFlow().mapToOne(contexts.default).map {
+            it.month
+          }
+      }
+      .map { it?.toYearMonth() }
+      .distinctUntilChanged()
+
   fun observeEnvelopeMonths(): Flow<List<Zero_budget_months>> =
     queries.zeroBudgetMonths().asFlow().mapToList(contexts.default).distinctUntilChanged()
 
@@ -128,9 +141,7 @@ class BudgetDao(database: BudgetDatabase, private val contexts: CoroutineContext
           Tracking -> reflectBudgetFirstActivity(category, end).awaitAsOneOrNull()?.month
         }
       }
-      ?.let {
-        YearMonth(year = (it / YEAR_MONTH_FACTOR).toInt(), month = (it % YEAR_MONTH_FACTOR).toInt())
-      }
+      ?.toYearMonth()
 
   private fun budgetRow(id: String, amount: Amount?, carryover: Long?) =
     BudgetRow(id = id, amount = amount ?: Zero, carryover = carryover == 1L)
@@ -165,3 +176,7 @@ class BudgetDao(database: BudgetDatabase, private val contexts: CoroutineContext
       carryover = carryover,
     )
 }
+
+// Stored as YYYYMM
+private fun Long.toYearMonth(): YearMonth =
+  YearMonth(year = (this / YEAR_MONTH_FACTOR).toInt(), month = (this % YEAR_MONTH_FACTOR).toInt())
