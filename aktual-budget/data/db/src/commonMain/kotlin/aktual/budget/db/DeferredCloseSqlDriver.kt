@@ -44,10 +44,7 @@ internal class DeferredCloseSqlDriver(private val delegate: SqlDriver) :
   }
 
   override suspend fun <R> dispatch(transaction: suspend () -> R): R = guard {
-    when (delegate) {
-      is TransactionDispatcher -> delegate.dispatch(transaction)
-      else -> transaction()
-    }
+    if (delegate is TransactionDispatcher) delegate.dispatch(transaction) else transaction()
   }
 
   override fun close() {
