@@ -48,7 +48,7 @@ class CustomThemeCacheImpl(
   override suspend fun repos(): List<CustomThemeRepo> =
     withContext(contexts.io) {
       fileSystem
-        .list(themesDir)
+        .listOrEmpty(themesDir)
         .filter { it.isDirectory }
         .flatMap { userDir ->
           fileSystem
@@ -104,7 +104,7 @@ class CustomThemeCacheImpl(
     val repos =
       withContext(contexts.io) {
         fileSystem
-          .list(localThemesDir)
+          .listOrEmpty(localThemesDir)
           .filter { it.isRegularFile && it.name.endsWith(JSON_SUFFIX) }
           .map { CustomThemeRepo.local(it.name.removeSuffix(JSON_SUFFIX)) }
       }
@@ -128,7 +128,6 @@ class CustomThemeCacheImpl(
 
     try {
       val encoded = encode(theme, THEME_SERIALIZER)
-      withContext(contexts.io) { themeFile.parent?.let(fileSystem::createDirectory) }
       write(encoded, themeFile)
       if (theme.repo.isLocal) localThemesVersion.update { it + 1 }
     } catch (e: IOException) {
@@ -163,11 +162,17 @@ class CustomThemeCacheImpl(
     withContext(contexts.default) { ThemeJson.decodeFromString(serializer, encoded) }
 
   private suspend fun write(encoded: String, path: Path) {
-    withContext(contexts.io) { fileSystem.sink(path).buffer().use { it.writeUtf8(encoded) } }
+    withContext(contexts.io) {
+      path.parent?.let(fileSystem::createDirectories)
+      fileSystem.sink(path).buffer().use { it.writeUtf8(encoded) }
+    }
   }
 
   private suspend fun read(path: Path): String =
     withContext(contexts.io) { fileSystem.source(path).buffer().use { it.readUtf8() } }
+
+  // The directories can be deleted from under us, e.g. by clearing all files in storage settings
+  private fun FileSystem.listOrEmpty(dir: Path): List<Path> = listOrNull(dir).orEmpty()
 
   private fun CustomThemeRepo.themeFile() =
     if (isLocal) {
