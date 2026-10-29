@@ -6,6 +6,7 @@ import assertk.assertions.contains
 import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.each
+import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.single
@@ -86,6 +87,42 @@ class SankeyTest {
       .containsExactly("big", "bills__OTHER_BUCKET")
     assertThat(data.node("bills__OTHER_BUCKET").label).isEqualTo(Other)
     assertThat(data.node("bills__OTHER_BUCKET").value).isEqualTo(Amount(150))
+  }
+
+  @Test
+  fun `Limiting nodes groups more categories into Other`() {
+    val data =
+      calculate(
+        expense(total = -500, categoryId = "big"),
+        expense(total = -200, categoryId = "medium"),
+        expense(total = -100, categoryId = "small1"),
+        expense(total = -50, categoryId = "small2"),
+      )
+
+    fun categories(maxNodes: Int) =
+      data.limitTo(maxNodes).nodes.filter { it.column == 2 }.map { it.key }
+
+    assertThat(data.reduced).hasSize(2)
+    assertThat(categories(maxNodes = 1)).containsExactly("big", "bills__OTHER_BUCKET")
+    assertThat(categories(maxNodes = 2)).containsExactly("big", "bills__OTHER_BUCKET")
+    assertThat(categories(maxNodes = 3)).containsExactly("big", "medium", "bills__OTHER_BUCKET")
+    assertThat(categories(maxNodes = 4)).containsExactly("big", "medium", "small1", "small2")
+    assertThat(data.limitTo(maxNodes = 100)).isEqualTo(data)
+  }
+
+  @Test
+  fun `Limiting nodes never exceeds the configured top N`() {
+    val data =
+      calculate(
+        expense(total = -500, categoryId = "big"),
+        expense(total = -200, categoryId = "medium"),
+        expense(total = -100, categoryId = "small"),
+        params = SankeyParams(topN = 2),
+      )
+
+    assertThat(data.reduced).isEmpty()
+    assertThat(data.limitTo(maxNodes = 100).nodes.filter { it.column == 2 }.map { it.key })
+      .containsExactly("big", "bills__OTHER_BUCKET")
   }
 
   @Test

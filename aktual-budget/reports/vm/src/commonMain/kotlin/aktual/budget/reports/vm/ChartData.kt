@@ -123,6 +123,8 @@ data class MonteCarloBand(
   val p90: Amount,
 )
 
+const val MIN_SANKEY_NODES = 2
+
 data class SankeyData(
   val title: String?,
   val start: YearMonth,
@@ -131,7 +133,19 @@ data class SankeyData(
   // Within a column, nodes are drawn top to bottom in list order
   val nodes: ImmutableList<SankeyNode>,
   val links: ImmutableList<SankeyLink>,
+  // Graphs with fewer nodes per layer, for charts too short to fit nodes. The one at index i keeps
+  // at most MIN_SANKEY_NODES + i nodes per layer, and the list ends before the first that would
+  // match nodes and links
+  val reduced: ImmutableList<SankeyGraph> = persistentListOf(),
 ) : ChartData
+
+fun SankeyData.limitTo(maxNodes: Int): SankeyData {
+  val graph = reduced.getOrNull(maxNodes.coerceAtLeast(MIN_SANKEY_NODES) - MIN_SANKEY_NODES)
+  return graph?.let { copy(nodes = it.nodes, links = it.links, reduced = persistentListOf()) }
+    ?: this
+}
+
+data class SankeyGraph(val nodes: ImmutableList<SankeyNode>, val links: ImmutableList<SankeyLink>)
 
 data class SankeyNode(
   val key: String,
