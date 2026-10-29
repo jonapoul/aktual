@@ -12,3 +12,7 @@ local.properties
 *.so
 *.dylib
 *.dll
+
+# gradle-profiler output, see scripts/gradleConfiguration*.sh
+/profiling/*-out/
+/profiling/gradle-user-home/

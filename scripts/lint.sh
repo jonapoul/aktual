@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# Runs lint on all modules where files have changed on the current branch (vs main).
+# Runs lint on all modules where files have changed on the current
+# branch (vs origin/main, or main if there is no remote branch).
 #
 # Usage:
 #   ./scripts/lint.sh              # Run lint on changed modules
@@ -17,7 +18,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 DRY_RUN=false
 FORCE=false
-MAIN_BRANCH="main"
+MAIN_BRANCH="$(git_default_base)"
 
 for arg in "$@"; do
   case "$arg" in

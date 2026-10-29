@@ -36,7 +36,7 @@ script which handles output capture, filtering, and exit-code propagation:
 ### Getting more output
 
 The script prints a filtered view, capped at 200 lines, and ends with the path of the full log, e.g.
-`Full log (1234 lines): /.../build/gradle-run/20261006-191500.log`. If the filtered view is missing
+`Full log (1234 lines): /.../build/gradle-run/20261006-191500-12345.log`. If the filtered view is missing
 something the caller asked for, or says `TRUNCATED`, search that log instead of running Gradle again:
 
 ```bash

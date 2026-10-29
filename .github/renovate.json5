@@ -21,6 +21,17 @@
       // D2 tags its releases with a v prefix
       "extractVersionTemplate": "^v(?<version>.+)$",
     },
+    {
+      // Docker image pinned by tag and digest in scripts/betterleaks.sh
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^scripts/betterleaks\\.sh$/",
+      ],
+      "matchStrings": [
+        "(?<depName>ghcr\\.io/betterleaks/betterleaks):(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]+)",
+      ],
+      "datasourceTemplate": "docker",
+    },
   ],
   "packageRules": [
     // TBC

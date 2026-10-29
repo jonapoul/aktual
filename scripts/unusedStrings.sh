@@ -13,6 +13,11 @@
 
 set -euo pipefail
 
+if ((BASH_VERSINFO[0] < 4)); then
+  echo "Error: needs bash 4+, found $BASH_VERSION (on macOS: brew install bash)" >&2
+  exit 1
+fi
+
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 GENERATED_DIR="$REPO_ROOT/aktual-core/l10n/build/generated/kotlin/catalogCommonMain/aktual/core/l10n"
 STRINGS_FILE="$GENERATED_DIR/Strings.kt"
@@ -121,20 +126,24 @@ check_catalog() {
 
 # Each entry is a `public val <accessor>` or `public fun <accessor>(...)`, with the matching
 # `Res.<kind>.<resource>` either on the same line or a later one (getters and wrapped parameter
-# lists span several lines).
+# lists span several lines). Sticks to POSIX awk (no gawk capture groups), so mawk and BSD awk work.
 # shellcheck disable=SC2016
 check_catalog "Strings" "string" "$STRINGS_FILE" '
-  match($0, /public (val|fun) ([A-Za-z_][A-Za-z0-9_]*)/, m) { acc = m[2] }
-  acc != "" && match($0, /Res\.string\.([A-Za-z_][A-Za-z0-9_]*)/, m) {
-    print acc, m[1]; acc = ""
+  match($0, /public (val|fun) [A-Za-z_][A-Za-z0-9_]*/) {
+    acc = substr($0, RSTART, RLENGTH); sub(/^public (val|fun) /, "", acc)
+  }
+  acc != "" && match($0, /Res\.string\.[A-Za-z_][A-Za-z0-9_]*/) {
+    print acc, substr($0, RSTART + 11, RLENGTH - 11); acc = ""
   }
 '
 
 # shellcheck disable=SC2016
 check_catalog "Plurals" "plurals" "$PLURALS_FILE" '
-  match($0, /public fun ([A-Za-z_][A-Za-z0-9_]*)/, m) { acc = m[1] }
-  acc != "" && match($0, /Res\.plurals\.([A-Za-z_][A-Za-z0-9_]*)/, m) {
-    print acc, m[1]; acc = ""
+  match($0, /public fun [A-Za-z_][A-Za-z0-9_]*/) {
+    acc = substr($0, RSTART + 11, RLENGTH - 11)
+  }
+  acc != "" && match($0, /Res\.plurals\.[A-Za-z_][A-Za-z0-9_]*/) {
+    print acc, substr($0, RSTART + 12, RLENGTH - 12); acc = ""
   }
 '
 
@@ -143,7 +152,7 @@ if [[ ${#unused_all[@]} -gt 0 ]]; then
 fi
 
 if $LIST_ONLY; then
-  printf '%s\n' "${unused_all[@]}"
+  [[ ${#unused_all[@]} -eq 0 ]] || printf '%s\n' "${unused_all[@]}"
   [[ ${#unused_all[@]} -eq 0 ]] || exit 1
   exit 0
 fi

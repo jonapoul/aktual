@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# Runs detektCheck on all modules where Kotlin files have changed on the current branch (vs main).
+# Runs detektCheck on all modules where Kotlin files have changed on the current
+# branch (vs origin/main, or main if there is no remote branch).
 #
 # Usage:
 #   ./scripts/detekt.sh              # Run detektCheck on changed modules
@@ -21,7 +22,7 @@ CATALOG_TRIGGER_PATTERN='detekt'
 
 DRY_RUN=false
 FORCE=false
-MAIN_BRANCH="main"
+MAIN_BRANCH="$(git_default_base)"
 
 for arg in "$@"; do
   case "$arg" in
