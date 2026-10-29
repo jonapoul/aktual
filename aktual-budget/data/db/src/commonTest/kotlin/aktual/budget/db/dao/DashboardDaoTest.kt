@@ -29,7 +29,7 @@ internal class DashboardDaoTest {
 
     assertThat(observeByPage(PAGE_1).first())
       .extracting(Dashboard::id)
-      .containsExactly(WidgetId("c"), WidgetId("a"))
+      .containsExactly(WidgetId("a"), WidgetId("c"))
     assertThat(observeByPage(PAGE_2).first())
       .extracting(Dashboard::id)
       .containsExactly(WidgetId("b"))
