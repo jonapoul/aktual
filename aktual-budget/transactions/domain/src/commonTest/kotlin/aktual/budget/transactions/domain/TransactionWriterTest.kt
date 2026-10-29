@@ -622,6 +622,17 @@ internal class TransactionWriterTest {
   }
 
   @Test
+  fun `Rename an account`() = runWriterTest {
+    insertAccount(ACCOUNT)
+
+    writer.write { renameAccount(ACCOUNT, "Savings") }
+
+    assertThat(accountDao[ACCOUNT]?.name).isEqualTo("Savings")
+    assertThat(lastSync())
+      .containsExactly(Change(ACCOUNTS, ACCOUNT.value, "name", string("Savings")))
+  }
+
+  @Test
   fun `Everything goes out in one sync call`() = runWriterTest {
     insertAccount(ACCOUNT)
 

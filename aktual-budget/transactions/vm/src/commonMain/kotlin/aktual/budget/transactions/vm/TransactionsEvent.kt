@@ -10,4 +10,6 @@ sealed interface TransactionsEvent {
   data object AccountDeletedBankLoginKept : TransactionsEvent
 
   data object DeleteAccountFailed : TransactionsEvent
+
+  data object RenameAccountFailed : TransactionsEvent
 }

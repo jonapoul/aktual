@@ -58,6 +58,8 @@ internal fun NewCustomReportScreen(
         ReportEditorAction.Save -> showSave = true
         is Edit -> viewModel.edit(action.transform)
         is DrillDown -> drillDown(action.drilldown)
+        // Named when it's first saved
+        is Rename -> Unit
       }
     },
   )

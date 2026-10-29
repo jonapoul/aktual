@@ -4,6 +4,7 @@ import aktual.budget.transactions.vm.LoadedAccount
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.Pencil1
 import aktual.core.icons.Trash
 import aktual.core.icons.Tuning
 import aktual.core.l10n.Strings
@@ -38,6 +39,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.datetime.YearMonth
 
 @Composable
@@ -48,6 +51,7 @@ internal fun TransactionsTitleBar(
   isRoot: Boolean,
   onAction: ActionListener,
   onOpenViewOptions: () -> Unit,
+  otherAccountNames: ImmutableSet<String> = persistentSetOf(),
 ) {
   val title =
     when (loadedAccount) {
@@ -91,17 +95,26 @@ internal fun TransactionsTitleBar(
         content = { Icon(AktualIcons.Tuning, Strings.transactionsViewOptions) },
       )
 
-      if (loadedAccount is SpecificAccount) TransactionsMenu(onAction = onAction)
+      if (loadedAccount is SpecificAccount) {
+        TransactionsMenu(
+          accountName = loadedAccount.account.name.orEmpty(),
+          otherAccountNames = otherAccountNames,
+          onAction = onAction,
+        )
+      }
     },
   )
 }
 
 @Composable
 private fun TransactionsMenu(
+  accountName: String,
+  otherAccountNames: ImmutableSet<String>,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
   var expanded by remember { mutableStateOf(false) }
+  var showRename by remember { mutableStateOf(false) }
   var confirmDelete by remember { mutableStateOf(false) }
 
   Box(modifier = modifier) {
@@ -112,6 +125,14 @@ private fun TransactionsMenu(
 
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
       AktualDropdownMenuItem(
+        text = Strings.transactionsRenameAccount,
+        leadingIcon = AktualIcons.Pencil1,
+        onClick = {
+          expanded = false
+          showRename = true
+        },
+      )
+      AktualDropdownMenuItem(
         text = Strings.transactionsDeleteAccount,
         leadingIcon = AktualIcons.Trash,
         onClick = {
@@ -120,6 +141,18 @@ private fun TransactionsMenu(
         },
       )
     }
+  }
+
+  if (showRename) {
+    RenameAccountDialog(
+      currentName = accountName,
+      otherNames = otherAccountNames,
+      onConfirm = { name ->
+        showRename = false
+        onAction(Action.RenameAccount(name))
+      },
+      onDismiss = { showRename = false },
+    )
   }
 
   if (confirmDelete) {

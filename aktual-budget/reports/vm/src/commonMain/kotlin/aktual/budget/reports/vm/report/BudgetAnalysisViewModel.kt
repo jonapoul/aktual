@@ -131,6 +131,12 @@ internal constructor(
     budgetScope.launch { sync.setBudgetAnalysis(id, draft) }
   }
 
+  // Leaves the draft alone, since the name isn't one of its settings
+  fun rename(name: String) {
+    logcat.d { "Renaming budget analysis $id to $name" }
+    budgetScope.launch { sync.renameWidget(id, name) }
+  }
+
   // Read straight from the draft, since the state can lag behind an edit made just before leaving
   fun hasUnsavedChanges(): Boolean {
     val saved = saved.value as? Found ?: return false

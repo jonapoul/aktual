@@ -249,6 +249,11 @@ internal constructor(
     changes += tombstone(ACCOUNTS, id.value)
   }
 
+  /** accounts/app.ts updateAccount() with a new name. */
+  fun renameAccount(id: AccountId, name: String) {
+    changes += localChange(ACCOUNTS, id.value, "name", name)
+  }
+
   /**
    * db.insertAccount(): an open account at the end of the on or [offBudget] list. Its transfer
    * payee isn't added, see [createAccount].

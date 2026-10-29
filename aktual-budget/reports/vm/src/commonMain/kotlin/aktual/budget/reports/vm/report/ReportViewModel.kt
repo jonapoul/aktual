@@ -52,6 +52,11 @@ internal constructor(
       .flatMapLatest(::toReportState)
       .stateIn(viewModelScope, Eagerly, initialValue = Loading)
 
+  fun rename(name: String) {
+    logcat.d { "Renaming report $id to $name" }
+    viewModelScope.launch { sync.renameWidget(id, name) }
+  }
+
   fun saveText(content: String, align: TextAlign) {
     logcat.d { "Saving text for $id" }
     viewModelScope.launch { sync.setWidgetText(id, content, align) }

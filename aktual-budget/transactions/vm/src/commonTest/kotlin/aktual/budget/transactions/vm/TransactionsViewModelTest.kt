@@ -41,9 +41,11 @@ import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.prop
@@ -1223,6 +1225,40 @@ class TransactionsViewModelTest {
       prop("account_sync_source") { it.account_sync_source }.isNull()
     }
     assertThat(transactions.row(TransactionId("x"))?.tombstone).isEqualTo(true)
+  }
+
+  @Test
+  fun `Renaming an account updates its title`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(AccountId("a")))
+
+    viewModel.loadedAccount.test {
+      assertThat(awaitItem()).isEqualTo(LoadedAccount.Loading)
+      assertThat(awaitItem())
+        .isInstanceOf<LoadedAccount.SpecificAccount>()
+        .prop("name") { it.account.name }
+        .isEqualTo("Amex")
+
+      // when
+      viewModel.renameAccount("Savings")
+
+      // then
+      assertThat(awaitItem())
+        .isInstanceOf<LoadedAccount.SpecificAccount>()
+        .prop("name") { it.account.name }
+        .isEqualTo("Savings")
+    }
+    assertThat(accounts[AccountId("a")]?.name).isEqualTo("Savings")
+  }
+
+  @Test
+  fun `A rename can't take another account's name`() = runTest {
+    buildViewModel(SpecificAccount(AccountId("a")))
+
+    viewModel.otherAccountNames.test {
+      assertThat(awaitItem()).isEmpty()
+      assertThat(awaitItem()).containsExactlyInAnyOrder("Barclays", "Chase", "Linked")
+    }
   }
 
   private companion object {

@@ -77,6 +77,7 @@ internal fun BudgetAnalysisReportScreen(
         ReportEditorAction.Revert -> viewModel.revert()
         ReportEditorAction.Save -> viewModel.save()
         is Edit -> viewModel.edit(action.transform)
+        is Rename -> viewModel.rename(action.name)
       }
     },
   )
@@ -130,6 +131,14 @@ internal fun BudgetAnalysisScaffold(
         zoom = zoom,
         onShowInfo = { showInfo = true },
         onAction = onAction,
+        menu = {
+          if (loaded != null) {
+            ReportMenu(
+              name = loaded.name.orEmpty(),
+              onRename = { onAction(BudgetAnalysisAction.Rename(it)) },
+            )
+          }
+        },
       )
     },
   ) { innerPadding ->

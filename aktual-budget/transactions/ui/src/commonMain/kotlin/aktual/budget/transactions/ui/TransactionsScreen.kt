@@ -83,6 +83,7 @@ fun TransactionsScreen(
   val showRunningBalance by viewModel.showRunningBalance.collectAsStateWithLifecycle()
   val clearedBalances by viewModel.clearedBalances.collectAsStateWithLifecycle()
   val tags by viewModel.tags.collectAsStateWithLifecycle()
+  val otherAccountNames by viewModel.otherAccountNames.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
@@ -93,6 +94,7 @@ fun TransactionsScreen(
 
   val deleted = Strings.transactionsDeleteAccountDone
   val deleteFailed = Strings.transactionsDeleteAccountFailed
+  val renameFailed = Strings.transactionsRenameAccountFailed
   var showLoginKept by rememberSaveable { mutableStateOf(false) }
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
@@ -100,6 +102,7 @@ fun TransactionsScreen(
         AccountDeleted -> snackbars.show(message = deleted).also { accountDeleted() }
         AccountDeletedBankLoginKept -> showLoginKept = true
         DeleteAccountFailed -> snackbars.show(message = deleteFailed)
+        RenameAccountFailed -> snackbars.show(message = renameFailed)
       }
     }
   }
@@ -121,11 +124,13 @@ fun TransactionsScreen(
     alternateRowColours = alternateRowColours,
     accountOptions = accountOptions,
     tags = tags,
+    otherAccountNames = otherAccountNames,
     onAction = { action ->
       when (action) {
         NavBack -> back()
         BankSync -> viewModel.bankSync()
         DeleteAccount -> viewModel.deleteAccount()
+        is RenameAccount -> viewModel.renameAccount(action.name)
         is SetDensity -> viewModel.setDensity(action.density)
         is SetAlternateRowColours -> viewModel.setAlternateRowColours(action.enabled)
         is SetExpandSplits -> viewModel.setExpandSplits(action.enabled)
@@ -189,6 +194,7 @@ internal fun TransactionsScaffold(
   alternateRowColours: Boolean = false,
   accountOptions: AccountViewOptions? = null,
   tags: ImmutableList<TagLabel> = persistentListOf(),
+  otherAccountNames: ImmutableSet<String> = persistentSetOf(),
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -210,6 +216,7 @@ internal fun TransactionsScaffold(
             listState = listState,
             loadedAccount = loadedAccount,
             isRoot = isRoot,
+            otherAccountNames = otherAccountNames,
             onAction = onAction,
             onOpenViewOptions = { showViewOptions = true },
           )

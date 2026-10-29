@@ -183,6 +183,34 @@ class CustomReportViewModelTest {
       }
     }
 
+  @Test
+  fun `Renaming updates the report's name`() = runCustomTest {
+    viewModel.state.test {
+      awaitLoaded { it.preview != null }
+      viewModel.rename("Groceries")
+
+      awaitLoaded { it.name == "Groceries" }
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertThat(customReports[REPORT]?.name).isEqualTo("Groceries")
+  }
+
+  @Test
+  fun `Can't rename to another report's name`() =
+    runCustomTest(
+      others = listOf(emptyCustomReport(OTHER).copy(name = "Groceries", tombstone = false)),
+    ) {
+      viewModel.takenNames.test {
+        while (awaitItem().isEmpty()) continue
+        viewModel.rename("Groceries")
+        scope.advanceUntilIdle()
+        cancelAndIgnoreRemainingEvents()
+      }
+
+      assertThat(customReports[REPORT]?.name).isEqualTo("Spending")
+    }
+
   private suspend fun ReceiveTurbine<CustomReportState>.awaitLoaded(
     predicate: (Loaded) -> Boolean,
   ): Loaded {
@@ -202,10 +230,11 @@ class CustomReportViewModelTest {
   private fun runCustomTest(
     meta: JsonObject? = META,
     report: CustomReports = emptyCustomReport(REPORT).copy(name = "Spending"),
+    others: List<CustomReports> = emptyList(),
     action: suspend Harness.() -> Unit,
   ) = runSyncedDatabaseTest { scope, controller ->
     dashboardPagesQueries.withoutResult { insert(Dashboard_pages(PAGE, "Main", tombstone = false)) }
-    customReportsQueries.withoutResult { insert(report) }
+    customReportsQueries.withoutResult { (others + report).forEach { insert(it) } }
     val dispatcher = StandardTestDispatcher(scope.testScheduler)
     // Keep viewModelScope on the test scheduler, so its queries can't outlive the database
     val contexts = TestCoroutineContexts(dispatcher)
@@ -225,6 +254,7 @@ class CustomReportViewModelTest {
         chartDataLoader = chartDataLoader(contexts, calendar),
         queryEditorDataLoader = QueryEditorDataLoader(this, ReportsDao(this, contexts), calendar),
         sync = CustomReportSync(customReports, controller, calendar),
+        dashboardSync = dashboardSync,
         viewModelContext = scope.viewModelContext,
       )
     Harness(viewModel, customReports, controller, scope).action()
@@ -235,6 +265,7 @@ class CustomReportViewModelTest {
     val PAGE = DashboardPageId("page")
     val ID = WidgetId("custom")
     val REPORT = CustomReportId("report-1")
+    val OTHER = CustomReportId("report-2")
     val META = JsonObject(mapOf("id" to JsonPrimitive(REPORT.value)))
   }
 }
