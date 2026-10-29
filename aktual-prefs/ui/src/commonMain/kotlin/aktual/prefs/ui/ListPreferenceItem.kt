@@ -8,7 +8,6 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.dropdownBackground
 import aktual.core.ui.textField
 import aktual.prefs.ui.core.BasicPreferenceItem
 import aktual.prefs.vm.ListPreference
@@ -109,11 +108,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
           isEnabled = enabled,
           trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) },
           leadingIcon = optionSuffix?.let { suffix -> { suffix(value) } },
-          colors =
-            colors.textField(
-              focusedContainer = colors.dropdownBackground(),
-              border = colors.buttonNormalBorder,
-            ),
+          colors = colors.textField(border = colors.buttonNormalBorder),
         )
         Box(modifier = Modifier.matchParentSize().clickable(enabled) { showSheet = true })
       }
