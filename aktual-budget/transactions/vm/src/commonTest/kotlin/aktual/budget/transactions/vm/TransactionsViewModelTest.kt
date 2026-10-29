@@ -1233,7 +1233,7 @@ class TransactionsViewModelTest {
     buildViewModel(SpecificAccount(AccountId("a")))
 
     viewModel.loadedAccount.test {
-      assertThat(awaitItem()).isEqualTo(LoadedAccount.Loading)
+      assertThat(awaitItem()).isEqualTo(Loading)
       assertThat(awaitItem())
         .isInstanceOf<LoadedAccount.SpecificAccount>()
         .prop("name") { it.account.name }

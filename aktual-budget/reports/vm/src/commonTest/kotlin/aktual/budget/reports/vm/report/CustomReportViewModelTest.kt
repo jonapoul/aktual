@@ -202,7 +202,8 @@ class CustomReportViewModelTest {
       others = listOf(emptyCustomReport(OTHER).copy(name = "Groceries", tombstone = false)),
     ) {
       viewModel.takenNames.test {
-        while (awaitItem().isEmpty()) continue
+        var names = awaitItem()
+        while ("Groceries" !in names) names = awaitItem()
         viewModel.rename("Groceries")
         scope.advanceUntilIdle()
         cancelAndIgnoreRemainingEvents()

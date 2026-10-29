@@ -380,8 +380,11 @@ class TransactionsViewModel(
         writer.write { renameAccount(account, name) }
         logcat.i { "Renamed account $account" }
         mutableLoadedAccount.update { loaded ->
-          if (loaded is SpecificAccount) SpecificAccount(loaded.account.copy(name = name))
-          else loaded
+          if (loaded is SpecificAccount) {
+            SpecificAccount(loaded.account.copy(name = name))
+          } else {
+            loaded
+          }
         }
       } catch (e: CancellationException) {
         throw e

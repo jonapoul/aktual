@@ -50,6 +50,7 @@ import logcat.logcat
 @Stable
 @AssistedInject
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("LongParameterList")
 class CustomReportViewModel
 internal constructor(
   @Assisted id: WidgetId,
