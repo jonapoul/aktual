@@ -18,6 +18,9 @@ sealed interface BudgetCategoryState {
     val name: String,
     val group: String,
     val isIncome: Boolean,
+    val isHidden: Boolean,
+    // Its categories read as hidden too, and only the group can be unhidden, as upstream
+    val isGroupHidden: Boolean,
     val selected: YearMonth,
     val current: YearMonth,
     // Oldest first, up to twelve months ending at the month the screen opened on

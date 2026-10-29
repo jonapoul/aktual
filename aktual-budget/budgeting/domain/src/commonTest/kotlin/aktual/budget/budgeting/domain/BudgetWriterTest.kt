@@ -4,6 +4,7 @@ import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.BudgetDao
+import aktual.budget.db.dao.DatabaseTables.CATEGORIES
 import aktual.budget.db.dao.DatabaseTables.NOTES
 import aktual.budget.db.dao.DatabaseTables.REFLECT_BUDGETS
 import aktual.budget.db.dao.DatabaseTables.ZERO_BUDGETS
@@ -36,8 +37,10 @@ import assertk.assertions.containsExactly
 import assertk.assertions.containsOnly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
@@ -525,6 +528,32 @@ internal class BudgetWriterTest {
       )
   }
 
+  @Test
+  fun `Hiding a category`() = runWriterTest {
+    writer.setCategoryHidden(CAT1, hidden = true)
+
+    assertThat(syncCalls.single()).containsExactly(localChange(CATEGORIES, "cat1", "hidden", true))
+    assertThat(isHidden(CAT1)).isTrue()
+  }
+
+  @Test
+  fun `Undoing a hide shows the category again`() = runWriterTest {
+    val token = writer.setCategoryHidden(CAT1, hidden = true)
+
+    writer.undo(token)
+
+    assertThat(isHidden(CAT1)).isFalse()
+  }
+
+  @Test
+  fun `Unhiding a category shows it`() = runWriterTest {
+    hideCategory(CAT1)
+
+    writer.setCategoryHidden(CAT1, hidden = false)
+
+    assertThat(isHidden(CAT1)).isFalse()
+  }
+
   private class WriterTestScope(
     database: BudgetDatabase,
     private val driver: SqlDriver,
@@ -559,6 +588,9 @@ internal class BudgetWriterTest {
 
     suspend fun budgeted(month: YearMonth, category: CategoryId): Amount =
       calculator.observe(month).first().categories.single { it.id == category }.budgeted
+
+    suspend fun isHidden(category: CategoryId): Boolean =
+      calculator.observe(JAN).first().categories.single { it.id == category }.isHidden
 
     suspend fun envelope(month: YearMonth): BudgetMonth.Envelope =
       calculator.observe(month).first() as Envelope

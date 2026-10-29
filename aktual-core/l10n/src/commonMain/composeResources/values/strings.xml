@@ -479,6 +479,10 @@
   <string name="budgeting_category_transactions">View transactions</string>
   <string name="budgeting_category_failure">Couldn't load this category</string>
   <string name="budgeting_category_select_month">Show %1$s</string>
+  <string name="budgeting_category_menu">Category options</string>
+  <string name="budgeting_category_hide">Hide category</string>
+  <string name="budgeting_category_unhide">Unhide category</string>
+  <string name="budgeting_category_hidden">Hidden</string>
 
   <string name="budgeting_balance_options">Balance options for %1$s</string>
   <string name="budgeting_balance_transfer">Transfer to another category</string>

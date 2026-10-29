@@ -5,11 +5,18 @@ import aktual.budget.budgeting.vm.BudgetCategoryViewModel
 import aktual.budget.budgeting.vm.CategoryHistoryMonth
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.ViewHide
+import aktual.core.icons.ViewShow
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.TransactionsNavigator
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
@@ -50,6 +57,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -57,6 +67,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
@@ -91,6 +102,7 @@ internal fun BudgetCategoryScreen(
     onBack = { back() },
     onSelect = viewModel::select,
     onViewTransactions = { selected -> transactions(category, selected) },
+    onHide = viewModel::setHidden,
   )
 }
 
@@ -103,11 +115,12 @@ private fun budgetCategoryViewModel(category: CategoryId, month: YearMonth) =
   }
 
 @Composable
-private fun BudgetCategoryScaffold(
+internal fun BudgetCategoryScaffold(
   state: BudgetCategoryState,
   onBack: () -> Unit,
   onSelect: (YearMonth) -> Unit,
   onViewTransactions: (YearMonth) -> Unit,
+  onHide: (hide: Boolean) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -128,15 +141,28 @@ private fun BudgetCategoryScaffold(
               maxLines = 1,
               overflow = Ellipsis,
             )
-            if (!loaded?.group.isNullOrEmpty()) {
+            val subtitle =
+              listOfNotNull(
+                  loaded?.group?.takeIf { it.isNotEmpty() },
+                  Strings.budgetingCategoryHidden.takeIf { loaded?.isHidden == true },
+                )
+                .joinToString(separator = " · ")
+            if (subtitle.isNotEmpty()) {
               Text(
-                text = loaded.group,
+                text = subtitle,
                 fontSize = textSizes.smallPlus,
                 color = colors.pageTextSubdued,
                 maxLines = 1,
                 overflow = Ellipsis,
               )
             }
+          }
+        },
+        actions = {
+          // A category in a hidden group follows its group, as upstream
+          val loaded = state as? Loaded
+          if (loaded != null && !loaded.isGroupHidden) {
+            CategoryMenu(isHidden = loaded.isHidden, onHide = onHide)
           }
         },
       )
@@ -181,6 +207,29 @@ private fun BudgetCategoryScaffold(
             BottomSpacing()
           }
       }
+    }
+  }
+}
+
+@Composable
+private fun CategoryMenu(isHidden: Boolean, onHide: (hide: Boolean) -> Unit) {
+  var expanded by remember { mutableStateOf(false) }
+  Box {
+    BareIconButton(
+      modifier = Modifier.testTag(BudgetTags.CategoryMenu),
+      imageVector = AktualIcons.DotsHorizontalTriple,
+      contentDescription = Strings.budgetingCategoryMenu,
+      onClick = { expanded = true },
+    )
+    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      AktualDropdownMenuItem(
+        text = if (isHidden) Strings.budgetingCategoryUnhide else Strings.budgetingCategoryHide,
+        leadingIcon = if (isHidden) AktualIcons.ViewShow else AktualIcons.ViewHide,
+        onClick = {
+          expanded = false
+          onHide(!isHidden)
+        },
+      )
     }
   }
 }
@@ -414,12 +463,14 @@ private val PREVIEW_HISTORY =
     }
     .toImmutableList()
 
-private val PREVIEW_CATEGORY =
+internal val PREVIEW_CATEGORY =
   BudgetCategoryState.Loaded(
     type = Envelope,
     name = "Groceries",
     group = "Food",
     isIncome = false,
+    isHidden = false,
+    isGroupHidden = false,
     selected = PREVIEW_MONTH,
     current = PREVIEW_MONTH,
     history = PREVIEW_HISTORY,
@@ -430,6 +481,7 @@ private class BudgetCategoryStateProvider :
     PREVIEW_CATEGORY,
     PREVIEW_CATEGORY.copy(type = Tracking, selected = PREVIEW_EARLIER_MONTH),
     PREVIEW_CATEGORY.copy(history = persistentListOf(PREVIEW_HISTORY.last())),
+    PREVIEW_CATEGORY.copy(isHidden = true),
     Failed,
   )
 
@@ -439,5 +491,11 @@ private fun PreviewBudgetCategory(
   @PreviewParameter(BudgetCategoryStateProvider::class) params: ColorParams<BudgetCategoryState>,
 ) =
   PreviewWithColorParams(params) {
-    BudgetCategoryScaffold(state = this, onBack = {}, onSelect = {}, onViewTransactions = {})
+    BudgetCategoryScaffold(
+      state = this,
+      onBack = {},
+      onSelect = {},
+      onViewTransactions = {},
+      onHide = {},
+    )
   }
