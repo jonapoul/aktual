@@ -16,6 +16,7 @@ import assertk.assertions.isNull
 import kotlin.test.Test
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import okio.FileSystem
 
 class CustomColorsCacheImplTest {
   @InterceptTest val temporaryFolder = TemporaryFolder()
@@ -116,5 +117,22 @@ class CustomColorsCacheImplTest {
     cache.clear()
     assertThat(cache.theme(ShadesOfCoffeeTheme.repo)).isNull()
     assertThat(cache.theme(local.repo)).isEqualTo(local)
+  }
+
+  @Test
+  fun `works after app directory contents are deleted`() = runCacheTest {
+    val local = LightColors.toCustomColors("Mine", CustomThemeRepo.local("abc"))
+    with(FileSystem.SYSTEM) { list(temporaryFolder.root).forEach { deleteRecursively(it) } }
+
+    assertThat(cache.repos()).isEmpty()
+    cache.localThemes().test {
+      assertThat(awaitItem()).isEmpty()
+
+      cache.save(local)
+      assertThat(awaitItem()).containsExactly(local)
+    }
+
+    cache.save(listOf(ShadesOfCoffeeThemeSummary))
+    assertThat(cache.summaries()).containsExactly(ShadesOfCoffeeThemeSummary)
   }
 }
