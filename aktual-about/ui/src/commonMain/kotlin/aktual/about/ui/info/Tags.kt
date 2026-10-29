@@ -8,7 +8,6 @@ internal object Tags {
 
   const val CheckUpdatesButton = "info:button:checkUpdates"
   const val ReportButton = "info:button:report"
-  const val SourceCodeButton = "info:button:sourceCode"
   const val LicensesButton = "info:button:licenses"
 
   const val InfoScreenContent = "info:container:infoScreenContent"

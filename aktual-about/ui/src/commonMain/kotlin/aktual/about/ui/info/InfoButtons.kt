@@ -40,14 +40,6 @@ internal fun InfoButtons(onAction: InfoActionHandler, modifier: Modifier = Modif
   }
 
 @Composable
-private fun SourceCodeButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
-  NormalTextButton(
-    modifier = modifier.testTag(Tags.SourceCodeButton),
-    text = Strings.infoRepo,
-    onClick = { onAction(OpenSourceCode) },
-  )
-
-@Composable
 private fun CheckUpdatesButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
   NormalTextButton(
     modifier = modifier.testTag(Tags.CheckUpdatesButton),
@@ -91,7 +83,6 @@ private fun LogsButton(onAction: InfoActionHandler, modifier: Modifier = Modifie
 private fun InfoButtonsColumn(onAction: InfoActionHandler) =
   Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
     val buttonModifier = Modifier.fillMaxWidth()
-    SourceCodeButton(onAction, buttonModifier)
     CheckUpdatesButton(onAction, buttonModifier)
     ReportButton(onAction, buttonModifier)
     LicensesButton(onAction, buttonModifier)
@@ -106,13 +97,7 @@ private fun InfoButtonsGrid(onAction: InfoActionHandler) =
     horizontalAlignment = CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(0.dp),
   ) {
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),
-    ) {
-      SourceCodeButton(onAction, Modifier.weight(1f))
-      CheckUpdatesButton(onAction, Modifier.weight(1f))
-    }
+    CheckUpdatesButton(onAction, Modifier.fillMaxWidth())
     Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),
@@ -135,7 +120,6 @@ private fun InfoButtonsRow(onAction: InfoActionHandler) =
     modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),
   ) {
-    SourceCodeButton(onAction, Modifier.weight(1f))
     CheckUpdatesButton(onAction, Modifier.weight(1f))
     ReportButton(onAction, Modifier.weight(1f))
     LicensesButton(onAction, Modifier.weight(1f))
