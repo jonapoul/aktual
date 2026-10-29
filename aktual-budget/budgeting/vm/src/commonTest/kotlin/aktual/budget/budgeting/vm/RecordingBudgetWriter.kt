@@ -57,6 +57,9 @@ internal class RecordingBudgetWriter : BudgetWriter {
 
   override suspend fun resetHold(month: YearMonth) = record("resetHold", month)
 
+  override suspend fun setCategoryHidden(category: CategoryId, hidden: Boolean) =
+    record("setCategoryHidden", category, hidden)
+
   override suspend fun undo(token: UndoToken) {
     calls += listOf("undo", token)
   }

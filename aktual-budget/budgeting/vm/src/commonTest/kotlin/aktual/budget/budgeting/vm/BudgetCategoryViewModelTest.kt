@@ -18,17 +18,21 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 
 class BudgetCategoryViewModelTest {
   private val calendar = TestCalendar(LocalDate(2026, 4, 15))
+  private val writer = RecordingBudgetWriter()
 
   @Test
   fun `History matches each month's budget`() = runCategoryTest { viewModel, calculator ->
@@ -84,6 +88,51 @@ class BudgetCategoryViewModelTest {
   }
 
   @Test
+  fun `Category isn't hidden by default`() = runCategoryTest { viewModel, _ ->
+    viewModel.state.test {
+      val state = awaitLoaded()
+      assertThat(state.isHidden).isFalse()
+      assertThat(state.isGroupHidden).isFalse()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Hidden category reads as hidden`() =
+    runCategoryTest(category = OLD) { viewModel, _ ->
+      viewModel.state.test {
+        val state = awaitLoaded()
+        assertThat(state.isHidden).isTrue()
+        assertThat(state.isGroupHidden).isFalse()
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `Category in a hidden group reads its group as hidden`() =
+    runCategoryTest(category = GIFTS) { viewModel, _ ->
+      viewModel.state.test {
+        val state = awaitLoaded()
+        assertThat(state.isHidden).isFalse()
+        assertThat(state.isGroupHidden).isTrue()
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
+  fun `Hiding and unhiding set the hidden flag`() = runCategoryTest { viewModel, _ ->
+    viewModel.setHidden(true)
+    viewModel.setHidden(false)
+    advanceUntilIdle()
+
+    assertThat(writer.calls)
+      .containsExactly(
+        listOf("setCategoryHidden", FOOD, true),
+        listOf("setCategoryHidden", FOOD, false),
+      )
+  }
+
+  @Test
   fun `Unknown category fails`() =
     runCategoryTest(category = CategoryId("gone")) { viewModel, _ ->
       viewModel.state.test {
@@ -115,6 +164,7 @@ class BudgetCategoryViewModelTest {
           category,
           APRIL,
           calculator,
+          writer,
           calendar,
           viewModelContext = viewModelContext,
         ),
@@ -139,6 +189,8 @@ class BudgetCategoryViewModelTest {
 
   private companion object {
     val FOOD = CategoryId("food")
+    val OLD = CategoryId("old")
+    val GIFTS = CategoryId("gifts")
     val MARCH = YearMonth(2026, 3)
     val APRIL = YearMonth(2026, 4)
 
@@ -147,9 +199,12 @@ class BudgetCategoryViewModelTest {
       listOf(
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('usual', 'Usual', 0, 1)",
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('income', 'Income', 1, 3)",
+        "INSERT INTO category_groups(id, name, is_income, sort_order, hidden) VALUES ('rare', 'Rare', 0, 2, 1)",
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('food', 'Food', 0, 'usual', 1)",
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('salary', 'Salary', 1, 'income', 1)",
-        "INSERT INTO category_mapping(id, transferId) VALUES ('food', 'food'), ('salary', 'salary')",
+        "INSERT INTO categories(id, name, is_income, cat_group, sort_order, hidden) VALUES ('old', 'Old', 0, 'usual', 2, 1)",
+        "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('gifts', 'Gifts', 0, 'rare', 1)",
+        "INSERT INTO category_mapping(id, transferId) VALUES ('food', 'food'), ('salary', 'salary'), ('old', 'old'), ('gifts', 'gifts')",
         "INSERT INTO accounts(id, name, offbudget) VALUES ('on', 'On', 0)",
         "INSERT INTO transactions(id, acct, category, amount, date) VALUES ('t1', 'on', 'salary', 300000, 20260301)",
         "INSERT INTO transactions(id, acct, category, amount, date) VALUES ('t2', 'on', 'food', -3000, 20260302)",

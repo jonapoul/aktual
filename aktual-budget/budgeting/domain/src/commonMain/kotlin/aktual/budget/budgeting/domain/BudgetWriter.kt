@@ -3,6 +3,7 @@ package aktual.budget.budgeting.domain
 import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.BudgetDao
 import aktual.budget.db.dao.BudgetRow
+import aktual.budget.db.dao.DatabaseTables.CATEGORIES
 import aktual.budget.db.dao.DatabaseTables.NOTES
 import aktual.budget.db.dao.DatabaseTables.REFLECT_BUDGETS
 import aktual.budget.db.dao.DatabaseTables.ZERO_BUDGETS
@@ -93,6 +94,8 @@ interface BudgetWriter {
 
   suspend fun resetHold(month: YearMonth): UndoToken?
 
+  suspend fun setCategoryHidden(category: CategoryId, hidden: Boolean): UndoToken
+
   // Writes back the values the token's action replaced, in one batch
   suspend fun undo(token: UndoToken)
 }
@@ -119,6 +122,12 @@ class BudgetWriterImpl(
   }
 
   override suspend fun undo(token: UndoToken) = syncController.syncChanges(token.changes)
+
+  // SidebarCategory.tsx toggle-visibility
+  override suspend fun setCategoryHidden(category: CategoryId, hidden: Boolean): UndoToken {
+    syncController.syncChanges(localChange(CATEGORIES, category.value, "hidden", hidden))
+    return UndoToken(listOf(localChange(CATEGORIES, category.value, "hidden", !hidden)))
+  }
 
   // setCategoryCarryover()
   override suspend fun setCarryover(

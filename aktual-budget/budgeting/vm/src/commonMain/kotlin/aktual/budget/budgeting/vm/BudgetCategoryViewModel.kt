@@ -2,6 +2,7 @@ package aktual.budget.budgeting.vm
 
 import aktual.budget.budgeting.domain.BudgetMonth
 import aktual.budget.budgeting.domain.BudgetMonthCalculator
+import aktual.budget.budgeting.domain.BudgetWriter
 import aktual.budget.model.CategoryId
 import aktual.core.Calendar
 import aktual.di.BudgetScope
@@ -17,6 +18,7 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -26,6 +28,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
 import kotlinx.datetime.yearMonth
@@ -42,6 +45,7 @@ class BudgetCategoryViewModel(
   @Assisted private val category: CategoryId,
   @Assisted month: YearMonth,
   calculator: BudgetMonthCalculator,
+  private val writer: BudgetWriter,
   calendar: Calendar,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
@@ -78,6 +82,19 @@ class BudgetCategoryViewModel(
     if (loaded.history.any { it.month == month }) selected.update { month }
   }
 
+  // The calculator picks up the change
+  fun setHidden(hidden: Boolean) {
+    viewModelScope.launch {
+      try {
+        writer.setCategoryHidden(category, hidden)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed to set $category hidden = $hidden" }
+      }
+    }
+  }
+
   private fun List<BudgetMonth>.toState(
     selected: YearMonth,
     current: YearMonth,
@@ -85,10 +102,13 @@ class BudgetCategoryViewModel(
     val latest = lastOrNull() ?: return Failed
     val details = latest.categories.firstOrNull { it.id == category }
     if (details == null) return Failed
+    val group = latest.groups.firstOrNull { it.id == details.group }
     return BudgetCategoryState.Loaded(
       type = if (latest is Tracking) Tracking else Envelope,
       name = details.name,
-      group = latest.groups.firstOrNull { it.id == details.group }?.name.orEmpty(),
+      group = group?.name.orEmpty(),
+      isHidden = details.isHidden,
+      isGroupHidden = group?.isHidden == true,
       isIncome = details.isIncome,
       selected = selected,
       current = current,
