@@ -9,17 +9,13 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.wiggle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateBounds
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.StartOffset
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -282,28 +278,7 @@ private class CardDragState(
   }
 }
 
-@Composable
-private fun Modifier.wiggle(enabled: Boolean, index: Int): Modifier {
-  if (!enabled) return this
-  val transition = rememberInfiniteTransition()
-  val degrees by
-    transition.animateFloat(
-      initialValue = -WIGGLE_DEGREES,
-      targetValue = WIGGLE_DEGREES,
-      animationSpec =
-        infiniteRepeatable(
-          animation = tween(WIGGLE_MILLIS),
-          repeatMode = Reverse,
-          initialStartOffset = StartOffset(index * WIGGLE_STAGGER_MILLIS),
-        ),
-    )
-  return graphicsLayer { rotationZ = degrees }
-}
-
 private const val DRAGGED_SCALE = 1.03f
-private const val WIGGLE_DEGREES = 0.5f
-private const val WIGGLE_MILLIS = 140
-private const val WIGGLE_STAGGER_MILLIS = 60
 private const val NANOS_PER_SECOND = 1_000_000_000f
 private val AutoScrollEdge = 64.dp
 private val AutoScrollSpeed = 1000.dp

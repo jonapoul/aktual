@@ -175,6 +175,12 @@ internal constructor(
     viewModelScope.launch { pinned.unpin(id) }
   }
 
+  fun reorderReports(order: List<WidgetId>) {
+    val page = content.value.page ?: return
+    logcat.d { "Reordering reports on ${page.id}" }
+    viewModelScope.launch { sync.reorderWidgets(page.id, order) }
+  }
+
   fun deleteReport(id: WidgetId) {
     logcat.d { "Deleting report $id" }
     viewModelScope.launch { sync.deleteWidget(id) }

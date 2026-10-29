@@ -48,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -69,6 +70,7 @@ internal fun DashboardItem(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   customReportNames: ImmutableMap<CustomReportId, String> = persistentMapOf(),
+  isEditing: Boolean = false,
 ) {
   val flow = remember(item) { observer(item) }
   val chartData by flow.collectAsStateWithLifecycle(initialValue = null)
@@ -83,6 +85,7 @@ internal fun DashboardItem(
     onAction = onAction,
     modifier = modifier,
     customReportNames = customReportNames,
+    isEditing = isEditing,
   )
 }
 
@@ -97,62 +100,29 @@ private fun DashboardItem(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   customReportNames: ImmutableMap<CustomReportId, String> = persistentMapOf(),
+  isEditing: Boolean = false,
 ) {
   var showRenameDialog by remember { mutableStateOf(false) }
   var showDeleteDialog by remember { mutableStateOf(false) }
 
-  val renameAction =
-    SwipeAction(
-      text = Strings.reportsDashboardRename,
-      icon = AktualIcons.Pencil1,
-      background = lerp(colors.tableBackground, Black, fraction = 0.1f),
-      foreground = colors.tableText,
-      onClick = { showRenameDialog = true },
-    )
-  val deleteAction =
-    SwipeAction(
-      text = Strings.reportsDashboardDelete,
-      icon = AktualIcons.Trash,
-      background = colors.errorText,
-      foreground = colors.errorText.contrastingTextColor(),
-      onClick = { showDeleteDialog = true },
-    )
-
-  val pinAction =
-    SwipeAction(
-      text = if (isPinned) Strings.reportsDashboardUnpin else Strings.reportsDashboardPin,
-      icon = AktualIcons.Pin,
-      background = lerp(colors.tableBackground, Black, fraction = 0.2f),
-      foreground = colors.tableText,
-      onClick = {
-        onOpenChange(false)
-        onAction(if (isPinned) Action.Unpin(item.id) else Action.Pin(item.id))
-      },
-    )
-
-  // Swiping still works while loading, so a chart that never loads can be deleted. The home page
-  // only has room for a few reports, so pinning goes once it's full
-  SwipeToReveal(
-    actions = buildList {
-        if (isPinned || canPin) add(pinAction)
-        if (item.isRenamable) add(renameAction)
-        add(deleteAction)
-      }
-        .toImmutableList(),
-    isOpen = isOpen,
-    onOpenChange = onOpenChange,
-    modifier = modifier,
-  ) {
-    ReportCard(
-      chartData = chartData,
-      onClick = {
-        when {
-          isOpen -> onOpenChange(false)
-          chartData != null -> onAction(Action.OpenItem(item.id))
-        }
-      },
-      onAction = onAction,
-    )
+  // The chart stays loaded while editing, so the card doesn't reload when editing starts or stops.
+  // The Box keeps the modifier on one node, so a drag gesture survives editing starting
+  Box(modifier = modifier) {
+    if (isEditing) {
+      EditingReportCard(chartData = chartData, onAction = onAction)
+    } else {
+      SwipeableReportCard(
+        item = item,
+        chartData = chartData,
+        isPinned = isPinned,
+        canPin = canPin,
+        isOpen = isOpen,
+        onOpenChange = onOpenChange,
+        onAction = onAction,
+        onRename = { showRenameDialog = true },
+        onDelete = { showDeleteDialog = true },
+      )
+    }
   }
 
   if (showRenameDialog) {
@@ -199,6 +169,86 @@ private fun DashboardItem(
     }
   }
 }
+
+@Composable
+private fun SwipeableReportCard(
+  item: DashboardItem,
+  chartData: ChartData?,
+  isPinned: Boolean,
+  canPin: Boolean,
+  isOpen: Boolean,
+  onOpenChange: (Boolean) -> Unit,
+  onAction: ActionListener,
+  onRename: () -> Unit,
+  onDelete: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val renameAction =
+    SwipeAction(
+      text = Strings.reportsDashboardRename,
+      icon = AktualIcons.Pencil1,
+      background = lerp(colors.tableBackground, Black, fraction = 0.1f),
+      foreground = colors.tableText,
+      onClick = onRename,
+    )
+  val deleteAction =
+    SwipeAction(
+      text = Strings.reportsDashboardDelete,
+      icon = AktualIcons.Trash,
+      background = colors.errorText,
+      foreground = colors.errorText.contrastingTextColor(),
+      onClick = onDelete,
+    )
+
+  val pinAction =
+    SwipeAction(
+      text = if (isPinned) Strings.reportsDashboardUnpin else Strings.reportsDashboardPin,
+      icon = AktualIcons.Pin,
+      background = lerp(colors.tableBackground, Black, fraction = 0.2f),
+      foreground = colors.tableText,
+      onClick = {
+        onOpenChange(false)
+        onAction(if (isPinned) Action.Unpin(item.id) else Action.Pin(item.id))
+      },
+    )
+
+  // Swiping still works while loading, so a chart that never loads can be deleted. The home page
+  // only has room for a few reports, so pinning goes once it's full
+  SwipeToReveal(
+    actions = buildList {
+        if (isPinned || canPin) add(pinAction)
+        if (item.isRenamable) add(renameAction)
+        add(deleteAction)
+      }
+        .toImmutableList(),
+    isOpen = isOpen,
+    onOpenChange = onOpenChange,
+    modifier = modifier,
+  ) {
+    ReportCard(
+      chartData = chartData,
+      onClick = {
+        when {
+          isOpen -> onOpenChange(false)
+          chartData != null -> onAction(Action.OpenItem(item.id))
+        }
+      },
+      onAction = onAction,
+    )
+  }
+}
+
+// Covers the card, so its chart doesn't react while editing
+@Composable
+private fun EditingReportCard(
+  chartData: ChartData?,
+  onAction: ActionListener,
+  modifier: Modifier = Modifier,
+) =
+  Box(modifier = modifier) {
+    ReportCard(chartData = chartData, onClick = {}, onAction = onAction)
+    Box(modifier = Modifier.matchParentSize().pointerInput(Unit) {})
+  }
 
 @Composable
 private fun ReportCard(
