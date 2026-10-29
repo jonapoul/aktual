@@ -7,6 +7,7 @@ import aktual.core.icons.Calendar3
 import aktual.core.icons.Cloud
 import aktual.core.icons.material.Apps
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.OpenInNew
 import aktual.core.l10n.Drawables
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
@@ -99,13 +100,13 @@ fun InfoScreen(
     buildState = buildState,
     onAction = { action ->
       when (action) {
-        OpenSourceCode -> uriHandler.openUri(viewModel.repoUrl)
         ReportIssue -> uriHandler.openUri(viewModel.reportIssueUrl)
         CheckUpdates -> viewModel.fetchLatestRelease()
         NavBack -> back()
         ViewLicenses -> toLicenses()
         ManageStorage -> toManageStorage()
         ViewLogs -> toLogs()
+        is OpenUrl -> uriHandler.openUri(action.url)
       }
     },
   )
@@ -156,7 +157,7 @@ private fun InfoScreenContent(
       verticalArrangement = Arrangement.spacedBy(Dimens.Huge),
     ) {
       InfoHeader(buildState.year, contentModifier)
-      InfoBuildState(buildState, contentModifier)
+      InfoBuildState(buildState, onAction, contentModifier)
       InfoButtons(onAction, contentModifier)
 
       BottomSpacing()
@@ -202,7 +203,11 @@ private fun InfoHeader(year: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun InfoBuildState(buildState: BuildState, modifier: Modifier = Modifier) {
+private fun InfoBuildState(
+  buildState: BuildState,
+  onAction: InfoActionHandler,
+  modifier: Modifier = Modifier,
+) {
   Column(
     modifier =
       modifier
@@ -214,6 +219,7 @@ private fun InfoBuildState(buildState: BuildState, modifier: Modifier = Modifier
       icon = MaterialIcons.Apps,
       title = Strings.infoAppVersion,
       subtitle = buildState.versions.app,
+      onClick = { onAction(OpenUrl(buildState.appSourceUrl)) },
     )
 
     BuildStateItem(
@@ -221,6 +227,7 @@ private fun InfoBuildState(buildState: BuildState, modifier: Modifier = Modifier
       icon = AktualIcons.Cloud,
       title = Strings.infoServerVersion,
       subtitle = buildState.versions.server ?: Strings.infoServerVersionUnknown,
+      onClick = { onAction(OpenUrl(buildState.serverSourceUrl)) },
     )
 
     BuildStateItem(
@@ -245,7 +252,11 @@ private fun BuildStateItem(
       modifier
         .fillMaxWidth()
         .height(ItemHeight)
-        .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
+        .clickable(
+          enabled = onClick != null,
+          role = Button,
+          onClick = { onClick?.invoke() },
+        )
         .padding(horizontal = ItemPadding),
     verticalAlignment = CenterVertically,
   ) {
@@ -270,6 +281,15 @@ private fun BuildStateItem(
         color = colors.pillTextSubdued,
       )
     }
+
+    if (onClick != null) {
+      Icon(
+        modifier = Modifier.padding(ItemPadding),
+        imageVector = MaterialIcons.OpenInNew,
+        contentDescription = null,
+        tint = colors.pillText,
+      )
+    }
   }
 }
 
@@ -291,4 +311,6 @@ private val PreviewBuildState =
     versions = AktualVersions(app = "1.2.3", server = "2.3.4"),
     buildDate = "12:34 GMT, 1st Feb 2026",
     year = 2026,
+    appSourceUrl = "https://github.com/jonapoul/aktual/tree/v1.2.3",
+    serverSourceUrl = "https://github.com/actualbudget/actual/tree/v2.3.4",
   )

@@ -66,7 +66,6 @@ class AboutViewModel(
 
   private var checkUpdatesJob: Job? = null
 
-  val repoUrl: String = buildConfig.repoUrl
   val reportIssueUrl: String = "${buildConfig.repoUrl}/issues/new"
 
   init {
@@ -130,6 +129,8 @@ class AboutViewModel(
       versions = versions,
       buildDate = DateTimeFormatter.RFC_1123_DATE_TIME.format(zonedDateTime),
       year = zonedDateTime.year,
+      appSourceUrl = buildConfig.repoUrl,
+      serverSourceUrl = "https://github.com/actualbudget/actual",
     )
   }
 
