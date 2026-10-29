@@ -13,6 +13,8 @@ internal sealed interface Action {
 
   data object DeleteAccount : Action
 
+  @JvmInline value class RenameAccount(val name: String) : Action
+
   data class SetDensity(val density: TransactionsDensity) : Action
 
   data class SetAlternateRowColours(val enabled: Boolean) : Action

@@ -7,11 +7,13 @@ import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.report.BudgetAnalysisState
 import aktual.test.setPreviewContent
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.v2.runComposeUiTest
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -69,6 +71,24 @@ class BudgetAnalysisScaffoldTest {
     // then
     val edit = actions.single() as Edit
     assertThat(edit.transform(SETTINGS).showBalance).isFalse()
+  }
+
+  @Test
+  fun `Menu renames the report`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<BudgetAnalysisAction>()
+    setPreviewContent {
+      BudgetAnalysisScaffold(state = state(isEditing = false), onAction = { actions += it })
+    }
+
+    // when
+    onNodeWithTag(Tags.ReportMenu).performClick()
+    onNodeWithText("Rename").performClick()
+    onNode(hasSetTextAction()).performTextReplacement("Budget vs actual")
+    onNodeWithText("Save").performClick()
+
+    // then
+    assertThat(actions).containsExactly(BudgetAnalysisAction.Rename("Budget vs actual"))
   }
 
   private fun state(isEditing: Boolean) =

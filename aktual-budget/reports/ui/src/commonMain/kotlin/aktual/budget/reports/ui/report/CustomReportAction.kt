@@ -11,4 +11,6 @@ internal sealed interface CustomReportAction {
   value class Edit(val transform: (CustomReportConfig) -> CustomReportConfig) : CustomReportAction
 
   @JvmInline value class DrillDown(val drilldown: CustomDrilldown) : CustomReportAction
+
+  @JvmInline value class Rename(val name: String) : CustomReportAction
 }

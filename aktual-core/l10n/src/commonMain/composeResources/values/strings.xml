@@ -1081,6 +1081,7 @@
   <string name="reports_title">Reports</string>
   <string name="reports_dashboard_title">Reports</string>
   <string name="reports_dashboard_rename">Rename</string>
+  <string name="reports_report_menu">Report options</string>
   <string name="reports_dashboard_delete">Delete</string>
   <string name="reports_dashboard_pin">Pin to home</string>
   <string name="reports_dashboard_unpin">Unpin from home</string>
@@ -1806,6 +1807,12 @@
   <string name="transactions_transfer_from">Transfer from %1$s</string>
   <string name="transactions_view_options">View options</string>
   <string name="transactions_menu">Menu</string>
+  <string name="transactions_rename_account">Rename account</string>
+  <string name="transactions_rename_account_placeholder">Account name</string>
+  <string name="transactions_rename_account_confirm">Save</string>
+  <string name="transactions_rename_account_cancel">Cancel</string>
+  <string name="transactions_rename_account_duplicate">Name %1$s already exists.</string>
+  <string name="transactions_rename_account_failed">Couldn’t rename account</string>
   <string name="transactions_delete_account">Delete account</string>
   <string name="transactions_delete_account_title">Delete account?</string>
   <string name="transactions_delete_account_message">This deletes the account and all of its transactions permanently. Money in it may vanish from your budget. Transfers to other accounts stay there, but are no longer transfers.</string>

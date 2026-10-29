@@ -39,6 +39,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 
 // Shows a custom report, and edits its config with the chart previewing each change. Changes stay
 // after the editor closes, until reverted or the screen is left
@@ -51,6 +53,7 @@ internal fun CustomReportScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val editorData by viewModel.editorData.collectAsStateWithLifecycle()
+  val takenNames by viewModel.takenNames.collectAsStateWithLifecycle()
   var showDiscard by rememberSaveable { mutableStateOf(false) }
   val loaded = state as? Loaded
   val isEditing = loaded?.isEditing == true
@@ -65,6 +68,7 @@ internal fun CustomReportScreen(
   CustomReportScaffold(
     state = state,
     editorData = editorData,
+    takenNames = takenNames,
     onAction = { action ->
       when (action) {
         ReportEditorAction.Back -> leave()
@@ -74,6 +78,7 @@ internal fun CustomReportScreen(
         ReportEditorAction.Save -> viewModel.save()
         is Edit -> viewModel.edit(action.transform)
         is DrillDown -> drillDown(action.drilldown)
+        is Rename -> viewModel.rename(action.name)
       }
     },
   )
@@ -102,6 +107,7 @@ internal fun CustomReportScaffold(
   onAction: (CustomReportAction) -> Unit,
   modifier: Modifier = Modifier,
   editorData: CustomReportEditorData? = null,
+  takenNames: ImmutableSet<String> = persistentSetOf(),
 ) {
   val loaded = state as? Loaded
   val preview = loaded?.preview
@@ -131,6 +137,15 @@ internal fun CustomReportScaffold(
         zoom = zoom,
         onShowInfo = { showInfo = true },
         onAction = onAction,
+        menu = {
+          if (loaded != null && !loaded.isNew) {
+            ReportMenu(
+              name = loaded.name,
+              takenNames = takenNames,
+              onRename = { onAction(CustomReportAction.Rename(it)) },
+            )
+          }
+        },
       )
     },
   ) { innerPadding ->

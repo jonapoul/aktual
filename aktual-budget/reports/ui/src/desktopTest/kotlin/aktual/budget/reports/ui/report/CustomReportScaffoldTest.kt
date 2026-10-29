@@ -6,17 +6,20 @@ import aktual.budget.reports.vm.report.CustomReportState
 import aktual.test.setPreviewContent
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.v2.runComposeUiTest
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isTrue
 import kotlin.test.Test
+import kotlinx.collections.immutable.persistentSetOf
 
 class CustomReportScaffoldTest {
   @Test
@@ -148,6 +151,40 @@ class CustomReportScaffoldTest {
     // then
     val edit = actions.single() as Edit
     assertThat(edit.transform(PREVIEW_CUSTOM_DATA.config).showEmpty).isTrue()
+  }
+
+  @Test
+  fun `Menu renames the report, but not to a taken name`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<CustomReportAction>()
+    setPreviewContent {
+      CustomReportScaffold(
+        state = state(isEditing = false),
+        takenNames = persistentSetOf("Taken"),
+        onAction = { actions += it },
+      )
+    }
+    onNodeWithTag(Tags.ReportMenu).performClick()
+    onNodeWithText("Rename").performClick()
+
+    // when
+    onNode(hasSetTextAction()).performTextReplacement("Taken")
+
+    // then
+    onNodeWithText("Save").assertIsNotEnabled()
+
+    // when
+    onNode(hasSetTextAction()).performTextReplacement("Groceries")
+    onNodeWithText("Save").performClick()
+
+    // then
+    assertThat(actions).containsExactly(CustomReportAction.Rename("Groceries"))
+  }
+
+  @Test
+  fun `Menu is hidden while editing`() = runComposeUiTest {
+    setPreviewContent { CustomReportScaffold(state = state(isEditing = true), onAction = {}) }
+    onNodeWithTag(Tags.ReportMenu).assertDoesNotExist()
   }
 
   private fun state(isEditing: Boolean, hasChanges: Boolean = false) =

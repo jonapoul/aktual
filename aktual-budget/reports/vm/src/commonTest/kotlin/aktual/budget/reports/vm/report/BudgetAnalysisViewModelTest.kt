@@ -163,6 +163,26 @@ class BudgetAnalysisViewModelTest {
     }
   }
 
+  @Test
+  fun `Renaming keeps unsaved changes`() = runAnalysisTest {
+    viewModel.state.test {
+      awaitLoaded { it.preview != null }
+      viewModel.startEditing()
+      viewModel.edit { it.copy(graphType = Line) }
+      awaitLoaded { it.hasChanges }
+
+      viewModel.rename("Budget vs actual")
+      scope.advanceUntilIdle()
+
+      val renamed = awaitLoaded { it.name == "Budget vs actual" }
+      assertThat(renamed).all {
+        prop(Loaded::hasChanges).isTrue()
+        prop(Loaded::draft).prop(BudgetAnalysisSettings::graphType).isEqualTo(Line)
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private data class Harness(
     val viewModel: BudgetAnalysisViewModel,
     val dao: DashboardDao,

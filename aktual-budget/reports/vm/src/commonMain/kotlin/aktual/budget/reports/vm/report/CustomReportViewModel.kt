@@ -10,6 +10,7 @@ import aktual.budget.reports.vm.ChartDataLoader
 import aktual.budget.reports.vm.CustomReportConfig
 import aktual.budget.reports.vm.CustomReportMeta
 import aktual.budget.reports.vm.CustomReportSync
+import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.QueryEditorDataLoader
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.report.CustomReportState.Loaded
@@ -26,6 +27,9 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +50,7 @@ import logcat.logcat
 @Stable
 @AssistedInject
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("LongParameterList")
 class CustomReportViewModel
 internal constructor(
   @Assisted id: WidgetId,
@@ -57,6 +62,7 @@ internal constructor(
   private val chartDataLoader: ChartDataLoader,
   queryEditorDataLoader: QueryEditorDataLoader,
   private val sync: CustomReportSync,
+  private val dashboardSync: DashboardSync,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val saved: StateFlow<SavedReport> =
@@ -81,6 +87,14 @@ internal constructor(
   val state: StateFlow<CustomReportState> =
     combine(saved, draft, preview, isEditing, ::toCustomReportState)
       .stateIn(viewModelScope, Eagerly, Loading)
+
+  // Other reports' names, which a rename can't take
+  val takenNames: StateFlow<ImmutableSet<String>> =
+    combine(saved, customReports.observeNames()) { saved, names ->
+        val id = (saved as? Found)?.meta?.id
+        names.filterKeys { it != id }.values.toImmutableSet()
+      }
+      .stateIn(viewModelScope, Eagerly, persistentSetOf())
 
   // Null until loaded, and only loaded while the editor is open
   val editorData: StateFlow<CustomReportEditorData?> =
@@ -123,6 +137,19 @@ internal constructor(
     viewModelScope.launch {
       logcat.d { "Saving custom report ${saved.meta.id}" }
       sync.update(saved.meta.id, config, draft)
+    }
+  }
+
+  fun rename(name: String) {
+    val id = (saved.value as? Found)?.meta?.id ?: return
+    viewModelScope.launch {
+      val error = sync.validateName(name, id)
+      if (error == null) {
+        logcat.d { "Renaming custom report $id to $name" }
+        dashboardSync.renameCustomReport(id, name)
+      } else {
+        logcat.w { "Can't rename $id to '$name': $error" }
+      }
     }
   }
 

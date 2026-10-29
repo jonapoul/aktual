@@ -25,6 +25,7 @@ import aktual.budget.model.TransactionsSpec
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.tags.domain.toTagLabels
 import aktual.budget.transactions.domain.AccountViewPrefs
+import aktual.budget.transactions.domain.TransactionWriter
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
@@ -56,6 +57,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -90,6 +92,7 @@ class TransactionsViewModel(
   private val categoryDao: CategoryDao,
   private val bankSyncController: BankSyncController,
   private val deleter: AccountDeleter,
+  private val writer: TransactionWriter,
   private val viewPrefs: AccountViewPrefs,
   private val transactionPreferences: TransactionPreferences,
   newTransactions: NewTransactions,
@@ -112,8 +115,12 @@ class TransactionsViewModel(
   // Buffered, so an event sent while the screen is being recreated waits for it
   private val mutableEvents = Channel<TransactionsEvent>(Channel.BUFFERED)
   private var deleteJob: Job? = null
+  private val mutableOtherAccountNames = MutableStateFlow<ImmutableSet<String>>(persistentSetOf())
 
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
+
+  // Names a rename can't take, closed accounts included. See upstream's validateAccountName()
+  val otherAccountNames: StateFlow<ImmutableSet<String>> = mutableOtherAccountNames.asStateFlow()
 
   val events: Flow<TransactionsEvent> = mutableEvents.receiveAsFlow()
 
@@ -251,6 +258,9 @@ class TransactionsViewModel(
         viewModelScope.launch {
           val account = accountDao[accountSpec.id] ?: error("No account matching $accountSpec")
           mutableLoadedAccount.update { SpecificAccount(account) }
+          val names =
+            accountDao.getAllWithStatus().filter { it.id != accountSpec.id }.mapNotNull { it.name }
+          mutableOtherAccountNames.update { names.toImmutableSet() }
         }
 
       accountSpec is Group -> mutableLoadedAccount.update { LoadedAccount.Group(accountSpec.group) }
@@ -359,6 +369,28 @@ class TransactionsViewModel(
       } catch (e: Exception) {
         logcat.e(e) { "Failed deleting account $account" }
         mutableEvents.trySend(DeleteAccountFailed)
+      }
+    }
+  }
+
+  fun renameAccount(name: String) {
+    val account = accountId ?: return
+    viewModelScope.launch {
+      try {
+        writer.write { renameAccount(account, name) }
+        logcat.i { "Renamed account $account" }
+        mutableLoadedAccount.update { loaded ->
+          if (loaded is SpecificAccount) {
+            SpecificAccount(loaded.account.copy(name = name))
+          } else {
+            loaded
+          }
+        }
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed renaming account $account" }
+        mutableEvents.trySend(RenameAccountFailed)
       }
     }
   }

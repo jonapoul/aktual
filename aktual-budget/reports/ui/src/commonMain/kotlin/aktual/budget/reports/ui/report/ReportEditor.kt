@@ -62,6 +62,7 @@ internal fun ReportEditorTopBar(
   zoom: ChartZoomState,
   onShowInfo: () -> Unit,
   onAction: (ReportEditorAction) -> Unit,
+  menu: @Composable () -> Unit = {},
 ) =
   TopAppBar(
     colors = colors.transparentTopAppBarColors(),
@@ -132,6 +133,7 @@ internal fun ReportEditorTopBar(
           onClick = { onAction(StartEditing) },
         )
       }
+      if (!isEditing) menu()
     },
   )
 

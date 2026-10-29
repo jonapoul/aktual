@@ -1,6 +1,7 @@
 package aktual.budget.reports.ui.report
 
 import aktual.budget.model.WidgetId
+import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.charts.ChartInfoSheet
@@ -14,6 +15,8 @@ import aktual.budget.reports.ui.string
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.dashboard.DashboardItem
+import aktual.budget.reports.vm.dashboard.isRenamable
+import aktual.budget.reports.vm.dashboard.name
 import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.report.ReportViewModel
 import aktual.core.icons.AktualIcons
@@ -103,6 +106,7 @@ fun ReportScreen(
       @Suppress("ElseCaseInsteadOfExhaustiveWhen")
       when (action) {
         NavBack -> if (hasUnsavedText) showDiscardDialog = true else back()
+        is Rename -> viewModel.rename(action.name)
         is SaveText -> viewModel.saveText(action.content, action.align)
         is SetUnsavedText -> hasUnsavedText = action.hasUnsavedText
         is SetSummaryType -> viewModel.setSummaryType(action.type)
@@ -171,7 +175,8 @@ internal fun ReportScaffold(
             text =
               when {
                 data is CustomData && data.title.isNotBlank() -> data.title
-                state is Loaded -> state.type.string()
+                state is Loaded ->
+                  state.item.name?.takeIf { it.isNotBlank() } ?: state.type.string()
                 else -> Strings.reportsDashboardTitle
               },
           )
@@ -191,6 +196,12 @@ internal fun ReportScaffold(
               imageVector = AktualIcons.InformationOutline,
               contentDescription = Strings.reportsChartInfo,
               onClick = { showInfo = true },
+            )
+          }
+          if (state is Loaded && state.item.isRenamable) {
+            ReportMenu(
+              name = state.item.name.orEmpty(),
+              onRename = { name -> onAction(Action.Rename(state.item, name)) },
             )
           }
         },
