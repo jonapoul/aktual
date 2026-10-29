@@ -95,12 +95,41 @@ internal fun calculateSankey(
   categoryOrder: List<String>,
   params: SankeyParams,
 ): SankeyData {
+  fun graph(topN: Int) = sankeyGraph(entries, transfers, categoryOrder, params, topN)
+  val full = graph(params.topN)
+
+  // Stops at the first limit that groups nothing, since every larger one gives the same graph
+  val reduced = mutableListOf<SankeyGraph>()
+  for (topN in MIN_SANKEY_NODES until params.topN) {
+    val smaller = graph(topN)
+    if (smaller == full) break
+    reduced += smaller
+  }
+
+  return SankeyData(
+    title = title,
+    start = start,
+    end = end,
+    showPercentages = params.showPercentages,
+    nodes = full.nodes,
+    links = full.links,
+    reduced = reduced.toImmutableList(),
+  )
+}
+
+private fun sankeyGraph(
+  entries: List<SankeyEntry>,
+  transfers: List<SankeyTransferPair>,
+  categoryOrder: List<String>,
+  params: SankeyParams,
+  topN: Int,
+): SankeyGraph {
   val graph = transactionsGraph(entries, transfers, params.groupAccounts)
-  val grouped = groupOtherNodes(graph, params.topN, global = params.sort == Global)
+  val grouped = groupOtherNodes(graph, topN, global = params.sort == Global)
   val sorted = sortGraph(graph, params.sort, categoryOrder)
   filterLayers(sorted, params.layerFrom, params.layerTo)
   cleanUpNodes(sorted)
-  return toSankeyData(title, start, end, sorted, grouped, params.showPercentages)
+  return toSankeyGraph(sorted, grouped)
 }
 
 // Merges each pair of transfer transactions into one net flow between two accounts
@@ -387,14 +416,7 @@ private fun accountDepths(graph: Graph): Map<String, Int> {
   return depths
 }
 
-private fun toSankeyData(
-  title: String?,
-  start: YearMonth,
-  end: YearMonth,
-  graph: Graph,
-  grouped: GroupedItems,
-  showPercentages: Boolean,
-): SankeyData {
+private fun toSankeyGraph(graph: Graph, grouped: GroupedItems): SankeyGraph {
   val columns = columns(graph)
   val values = graph.keys.associateWith { graph.nodeValue(it) }
   val columnTotals =
@@ -436,14 +458,7 @@ private fun toSankeyData(
     }
   }
 
-  return SankeyData(
-    title = title,
-    start = start,
-    end = end,
-    showPercentages = showPercentages,
-    nodes = nodes.toImmutableList(),
-    links = links.toImmutableList(),
-  )
+  return SankeyGraph(nodes = nodes.toImmutableList(), links = links.toImmutableList())
 }
 
 private fun GroupedItems.itemsFor(

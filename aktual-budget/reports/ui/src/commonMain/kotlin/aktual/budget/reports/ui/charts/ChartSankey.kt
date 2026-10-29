@@ -7,6 +7,7 @@ import aktual.budget.reports.vm.SankeyGroupedItem
 import aktual.budget.reports.vm.SankeyLabel
 import aktual.budget.reports.vm.SankeyLink
 import aktual.budget.reports.vm.SankeyNode
+import aktual.budget.reports.vm.limitTo
 import aktual.core.l10n.Strings
 import aktual.core.model.Percent
 import aktual.core.theme.Colors
@@ -97,7 +98,12 @@ internal fun SankeyChart(
         )
       }
     } else {
-      Chart(modifier = chartModifier.padding(4.dp), data = data, compact = compact)
+      BoxWithConstraints(modifier = chartModifier.padding(4.dp)) {
+        val maxNodes =
+          if (constraints.hasBoundedHeight) (maxHeight / HEIGHT_PER_NODE).toInt() else Int.MAX_VALUE
+        val limited = remember(data, maxNodes) { data.limitTo(maxNodes) }
+        Chart(data = limited, compact = compact)
+      }
     }
   }
 
@@ -436,6 +442,8 @@ private val NODE_WIDTH = 8.dp
 private val NODE_PADDING = 16.dp
 private val LABEL_GAP = 4.dp
 private val TAP_SLOP = 8.dp
+// Shorter charts group more of each layer's smallest nodes into "Other", as upstream's topNNodes()
+private val HEIGHT_PER_NODE = 35.dp
 private val TOOLTIP_GAP = 12.dp
 private val TOOLTIP_MAX_WIDTH = 240.dp
 private val TOOLTIP_ELEVATION = 4.dp
