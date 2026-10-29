@@ -8,11 +8,16 @@ import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.db.SqlPreparedStatement
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.withContext
 
 /**
  * Closing the androidx driver finalizes cached statements on connections that other threads may
  * still be using, which crashes in native code. This rejects new calls once closed, and only closes
- * [delegate] when the last call in flight finishes.
+ * [delegate] when the last call in flight finishes. Transactions already in flight can still
+ * finish.
  */
 internal class DeferredCloseSqlDriver(private val delegate: SqlDriver) :
   SqlDriver by delegate, TransactionDispatcher {
@@ -44,7 +49,9 @@ internal class DeferredCloseSqlDriver(private val delegate: SqlDriver) :
   }
 
   override suspend fun <R> dispatch(transaction: suspend () -> R): R = guard {
-    if (delegate is TransactionDispatcher) delegate.dispatch(transaction) else transaction()
+    withContext(InTransaction()) {
+      if (delegate is TransactionDispatcher) delegate.dispatch(transaction) else transaction()
+    }
   }
 
   override fun close() {
@@ -57,8 +64,9 @@ internal class DeferredCloseSqlDriver(private val delegate: SqlDriver) :
   }
 
   private suspend fun <T> guard(block: suspend () -> T): T {
+    val inTransaction = currentCoroutineContext()[InTransaction] != null
     lock.withLock {
-      check(!closed) { "Database is closed" }
+      check(!closed || inTransaction) { "Database is closed" }
       inFlight++
     }
     try {
@@ -67,5 +75,9 @@ internal class DeferredCloseSqlDriver(private val delegate: SqlDriver) :
       val closeNow = lock.withLock { --inFlight == 0 && closed }
       if (closeNow) delegate.close()
     }
+  }
+
+  private class InTransaction : AbstractCoroutineContextElement(InTransaction) {
+    companion object Key : CoroutineContext.Key<InTransaction>
   }
 }

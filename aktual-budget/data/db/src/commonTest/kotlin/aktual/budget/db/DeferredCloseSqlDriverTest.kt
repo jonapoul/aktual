@@ -64,6 +64,23 @@ class DeferredCloseSqlDriverTest {
   }
 
   @Test
+  fun transactionInFlightCanFinishAfterClose() = runTest {
+    val transaction = async {
+      driver.dispatch {
+        delegate.gate.await()
+        driver.execute(null, "SQL", 0).await()
+      }
+    }
+    runCurrent()
+
+    driver.close()
+    delegate.gate.complete(Unit)
+    assertThat(transaction.await()).isEqualTo(1L)
+    assertThat(delegate.executed).isTrue()
+    assertThat(delegate.closeCount).isEqualTo(1)
+  }
+
+  @Test
   fun rejectsCallsAfterClose() = runTest {
     driver.close()
     assertFailure { driver.execute(null, "SQL", 0).await() }.isInstanceOf<IllegalStateException>()
