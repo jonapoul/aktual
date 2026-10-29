@@ -8,6 +8,7 @@ import aktual.budget.reports.vm.SummaryChartType
 import aktual.budget.reports.vm.TextAlign
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
 internal sealed interface Action {
@@ -48,6 +49,8 @@ internal sealed interface Action {
   data class RenamePage(val id: DashboardPageId, val name: String) : Action
 
   @JvmInline value class DeletePage(val id: DashboardPageId) : Action
+
+  @JvmInline value class Reorder(val order: ImmutableList<WidgetId>) : Action
 }
 
 @Immutable

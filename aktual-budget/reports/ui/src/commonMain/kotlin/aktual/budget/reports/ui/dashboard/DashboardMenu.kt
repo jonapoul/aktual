@@ -10,6 +10,8 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.Pencil1
 import aktual.core.icons.Trash
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
@@ -53,6 +55,8 @@ internal fun DashboardMenu(
   canDelete: Boolean,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
+  canReorder: Boolean = false,
+  onReorder: () -> Unit = {},
 ) {
   var expanded by remember { mutableStateOf(false) }
   var dialog by remember { mutableStateOf<PageDialog?>(null) }
@@ -69,9 +73,14 @@ internal fun DashboardMenu(
       DashboardMenuItems(
         hasPage = page != null,
         canDelete = canDelete,
+        canReorder = canReorder,
         onClick = { clicked ->
           expanded = false
           dialog = clicked
+        },
+        onReorder = {
+          expanded = false
+          onReorder()
         },
       )
     }
@@ -129,6 +138,8 @@ private fun DashboardMenuItems(
   hasPage: Boolean,
   canDelete: Boolean,
   onClick: (PageDialog) -> Unit,
+  canReorder: Boolean = false,
+  onReorder: () -> Unit = {},
 ) {
   AktualDropdownMenuItem(
     text = Strings.reportsDashboardNewPage,
@@ -141,6 +152,14 @@ private fun DashboardMenuItems(
       text = Strings.reportsDashboardRenamePage,
       leadingIcon = AktualIcons.Pencil1,
       onClick = { onClick(Rename) },
+    )
+  }
+
+  if (canReorder) {
+    AktualDropdownMenuItem(
+      text = Strings.reportsDashboardReorder,
+      leadingIcon = MaterialIcons.Sort,
+      onClick = onReorder,
     )
   }
 
@@ -179,7 +198,12 @@ private fun PreviewDashboardMenuItems(
 ) =
   PreviewWithColorParams(params) {
     Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {
-      DashboardMenuItems(hasPage = true, canDelete = params.data, onClick = {})
+      DashboardMenuItems(
+        hasPage = true,
+        canDelete = params.data,
+        canReorder = params.data,
+        onClick = {},
+      )
     }
   }
 

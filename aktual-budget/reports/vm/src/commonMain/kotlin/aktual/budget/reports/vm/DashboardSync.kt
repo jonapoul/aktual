@@ -123,6 +123,30 @@ internal class DashboardSync(
     )
   }
 
+  // Only writes the positions that changed
+  suspend fun reorderWidgets(page: DashboardPageId, order: List<WidgetId>) {
+    val boxes =
+      dao.getPositionAndSize(page).map { row ->
+        WidgetBox(
+          id = row.id,
+          x = row.x ?: 0L,
+          y = row.y ?: 0L,
+          width = row.width ?: DashboardDao.DEFAULT_WIDTH,
+          height = row.height ?: DashboardDao.DEFAULT_HEIGHT,
+        )
+      }
+    val before = boxes.associateBy { it.id }
+    val changes =
+      reorderLayout(boxes, order).flatMap { box ->
+        val old = before.getValue(box.id)
+        listOfNotNull(
+          localChange(DASHBOARD, box.id.value, "x", box.x).takeIf { box.x != old.x },
+          localChange(DASHBOARD, box.id.value, "y", box.y).takeIf { box.y != old.y },
+        )
+      }
+    if (changes.isNotEmpty()) sync.syncChanges(changes)
+  }
+
   suspend fun deleteWidget(id: WidgetId) = sync.syncChanges(tombstone(DASHBOARD, id.value))
 
   suspend fun renameCustomReport(id: CustomReportId, name: String) =

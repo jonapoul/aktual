@@ -330,6 +330,19 @@ class DashboardSyncTest {
   private fun BudgetDatabase.dao(scheduler: TestCoroutineScheduler) =
     DashboardDao(this, TestCoroutineContexts(StandardTestDispatcher(scheduler)))
 
+  @Test
+  fun `Reordering moves widgets into each other's slots`() = runSyncTest { dao ->
+    dao.insert(WidgetId("a"), page = PAGE_1, type = NetWorth, x = 0, y = 0, meta = null)
+    dao.insert(WidgetId("b"), page = PAGE_1, type = NetWorth, x = 4, y = 0, meta = null)
+    dao.insert(WidgetId("c"), page = PAGE_1, type = NetWorth, x = 8, y = 0, meta = null)
+
+    reorderWidgets(PAGE_1, listOf(WidgetId("b"), WidgetId("a"), WidgetId("c")))
+
+    assertThat(dao.observeByPage(PAGE_1).first())
+      .extracting { it.id to it.x }
+      .containsExactly(WidgetId("b") to 0L, WidgetId("a") to 4L, WidgetId("c") to 8L)
+  }
+
   private fun runSyncTest(action: suspend DashboardSync.(DashboardDao) -> Unit) =
     runSyncedDatabaseTest { scope, controller ->
       dashboardPagesQueries.withoutResult {
