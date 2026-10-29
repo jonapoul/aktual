@@ -24,21 +24,23 @@ class AndroidxSqlDriverFactory(private val files: BudgetFiles) : SqlDriverFactor
     val fileAlreadyExists = dbFile.exists()
     logcat.d(TAG) { "AndroidxSqlDriverFactory.create $dbFile fileAlreadyExists=$fileAlreadyExists" }
 
-    return AndroidxSqliteDriver(
-      driver = BundledSQLiteDriver(),
-      databaseType = AndroidxSqliteDatabaseType.File(dbFile),
-      schema = BudgetDatabase.Schema,
-      configuration =
-        AndroidxSqliteConfiguration(
-          isForeignKeyConstraintsEnabled = true,
-          journalMode = WAL,
-        ),
-      migrateEmptySchema = false,
-      onConfigure = { logcat.d(TAG) { "onConfigure $dbFile" } },
-      onCreate = { onCreate(dbFile, fileAlreadyExists) },
-      onUpdate = { before, after -> logcat.d(TAG) { "onUpdate $dbFile $before $after" } },
-      onOpen = { logcat.d(TAG) { "onOpen $dbFile" } },
-    )
+    val driver =
+      AndroidxSqliteDriver(
+        driver = BundledSQLiteDriver(),
+        databaseType = AndroidxSqliteDatabaseType.File(dbFile),
+        schema = BudgetDatabase.Schema,
+        configuration =
+          AndroidxSqliteConfiguration(
+            isForeignKeyConstraintsEnabled = true,
+            journalMode = WAL,
+          ),
+        migrateEmptySchema = false,
+        onConfigure = { logcat.d(TAG) { "onConfigure $dbFile" } },
+        onCreate = { onCreate(dbFile, fileAlreadyExists) },
+        onUpdate = { before, after -> logcat.d(TAG) { "onUpdate $dbFile $before $after" } },
+        onOpen = { logcat.d(TAG) { "onOpen $dbFile" } },
+      )
+    return DeferredCloseSqlDriver(driver)
   }
 
   private suspend fun SqlDriver.onCreate(dbFile: File, fileAlreadyExists: Boolean) {
