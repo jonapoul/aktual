@@ -17,9 +17,9 @@ CREATE TABLE IF NOT EXISTS dashboard(
 );
 
 getIdsByPage: SELECT id FROM dashboard WHERE dashboard_page_id = ? AND tombstone = 0;
-getByPage: SELECT * FROM dashboard WHERE dashboard_page_id = ? AND tombstone = 0 ORDER BY y DESC, x DESC;
+getByPage: SELECT * FROM dashboard WHERE dashboard_page_id = ? AND tombstone = 0 ORDER BY y, x;
 getPositionAndSize: SELECT x, y, width, height FROM dashboard WHERE dashboard_page_id = ? AND tombstone = 0 ORDER BY y DESC, x DESC;
 insert: INSERT INTO dashboard(id, type, width, height, x, y, meta, dashboard_page_id) VALUES (?,?,?,?,?,?,?,?);
 getById: SELECT * FROM dashboard WHERE id = ? AND tombstone = 0;
-getAll: SELECT * FROM dashboard WHERE tombstone = 0 ORDER BY y DESC, x DESC;
+getAll: SELECT * FROM dashboard WHERE tombstone = 0 ORDER BY y, x;
 getMeta: SELECT meta FROM dashboard WHERE id = ?;

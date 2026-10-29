@@ -167,7 +167,7 @@ class PinnedReportsTest {
           persistentListOf(
             ReportPage(
               PAGE_1,
-              persistentListOf(summary(C), summary(B), summary(A)),
+              persistentListOf(summary(A), summary(B), summary(C)),
             ),
             ReportPage(PAGE_2, persistentListOf(summary(D))),
           ),
