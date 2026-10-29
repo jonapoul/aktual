@@ -66,8 +66,7 @@ class DeferredCloseSqlDriverTest {
   @Test
   fun rejectsCallsAfterClose() = runTest {
     driver.close()
-    assertFailure { driver.execute(null, "SQL", 0).await() }
-      .isInstanceOf<IllegalStateException>()
+    assertFailure { driver.execute(null, "SQL", 0).await() }.isInstanceOf<IllegalStateException>()
     assertThat(delegate.executed).isFalse()
   }
 
