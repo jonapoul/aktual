@@ -61,7 +61,7 @@ fun Colors.dropDownMenuItem(): MenuItemColors =
 
 @Composable
 fun Colors.textField(
-  focusedContainer: Color = formInputBackground,
+  focusedContainer: Color = fieldBackground(),
   unfocusedContainer: Color = focusedContainer,
   border: Color = formInputBorder,
   unfocusedBorder: Color = border,
@@ -96,25 +96,24 @@ fun Colors.textField(
 
 @Composable
 fun Colors.exposedDropDownMenu(): TextFieldColors =
-  textField(focusedContainer = dropdownBackground())
+  textField()
     .copy(focusedTrailingIconColor = formInputText, unfocusedTrailingIconColor = formInputText)
 
 // Darker than the surface behind it in dark themes, lighter in light themes. If the surface is
 // already too close to black or white for that, shift it a little the other way instead
 @Stable
-fun Colors.dropdownBackground(surface: Color): Color {
-  val shifted = lerp(surface, if (isLight) White else Black, DROPDOWN_SHIFT)
-  return if (contrast(shifted, surface) >= DROPDOWN_MIN_CONTRAST) {
+fun Colors.fieldBackground(surface: Color): Color {
+  val shifted = lerp(surface, if (isLight) White else Black, FIELD_SHIFT)
+  return if (contrast(shifted, surface) >= FIELD_MIN_CONTRAST) {
     shifted
   } else {
-    lerp(surface, if (isLight) Black else White, DROPDOWN_FALLBACK_SHIFT)
+    lerp(surface, if (isLight) Black else White, FIELD_FALLBACK_SHIFT)
   }
 }
 
 @Composable
 @ReadOnlyComposable
-fun Colors.dropdownBackground(): Color =
-  dropdownBackground(LocalSurfaceColor.current ?: pageBackground)
+fun Colors.fieldBackground(): Color = fieldBackground(LocalSurfaceColor.current ?: pageBackground)
 
 private fun contrast(a: Color, b: Color): Float {
   val lumA = a.luminance() + CONTRAST_OFFSET
@@ -122,9 +121,9 @@ private fun contrast(a: Color, b: Color): Float {
   return maxOf(lumA, lumB) / minOf(lumA, lumB)
 }
 
-private const val DROPDOWN_SHIFT = 0.2f
-private const val DROPDOWN_FALLBACK_SHIFT = 0.08f
-private const val DROPDOWN_MIN_CONTRAST = 1.1f
+private const val FIELD_SHIFT = 0.2f
+private const val FIELD_FALLBACK_SHIFT = 0.08f
+private const val FIELD_MIN_CONTRAST = 1.1f
 private const val CONTRAST_OFFSET = 0.05f
 
 @Composable
