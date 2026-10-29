@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# Runs testAll on all modules where files have changed on the current branch (vs main).
+# Runs testAll on all modules where files have changed on the current
+# branch (vs origin/main, or main if there is no remote branch).
 #
 # Usage:
 #   ./scripts/test.sh              # Run testAll on changed modules
@@ -15,7 +16,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 . "$SCRIPT_DIR/lib/modules.sh"
 
 DRY_RUN=false
-MAIN_BRANCH="main"
+MAIN_BRANCH="$(git_default_base)"
 
 for arg in "$@"; do
   case "$arg" in

@@ -1,18 +1,26 @@
 # shellcheck shell=bash
 # Helpers for mapping changed files to Gradle modules and running a per-module task.
 # Source from a bash script (`. "$SCRIPT_DIR/lib/modules.sh"`); uses associative arrays,
-# so this is bash-only, not POSIX sh. Pulls in git.sh for the change-detection helpers.
+# so this is bash 4+ only, not POSIX sh. Pulls in git.sh for the change-detection helpers.
+# Sourcing it moves to the repo root, since git paths and ./gradlew are relative to it.
+
+if ((BASH_VERSINFO[0] < 4)); then
+  echo "Error: needs bash 4+, found $BASH_VERSION (on macOS: brew install bash)" >&2
+  exit 1
+fi
 
 MODULES_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=git.sh
 . "$MODULES_LIB_DIR/git.sh"
 
-# Print every Gradle module path (e.g. :aktual-core:ui) declared in settings.gradle.kts, sorted.
-# Only matches lines that are exactly a quoted module path (the include() block) so other
-# quoted ":aktual..." strings elsewhere in the file (kover excludedProjects, atlas
-# pathTransforms, etc.) aren't picked up as phantom or duplicate modules.
+cd "$(git -C "$MODULES_LIB_DIR" rev-parse --show-toplevel)"
+
+# Print every Gradle module path (e.g. :aktual-core:ui, :detekt-rules) declared in
+# settings.gradle.kts, sorted. Only matches lines that are exactly a quoted module path (the
+# include() blocks) so other quoted ":aktual..." strings elsewhere in the file (kover
+# excludedProjects, atlas pathTransforms, etc.) aren't picked up as phantom or duplicate modules.
 all_gradle_modules() {
-  grep -oP '^\s*"\K:aktual[^"]+(?=",?\s*$)' settings.gradle.kts | sort
+  sed -nE 's/^[[:space:]]*"(:[^"]+)",?[[:space:]]*$/\1/p' settings.gradle.kts | sort
 }
 
 # List of repo-root-relative patterns (in .gitignore syntax) that, when changed, affect
@@ -20,9 +28,13 @@ all_gradle_modules() {
 # narrower file after sourcing, e.g. when a task only depends on a few config files.
 GITIGNORE_TRIGGERS="$MODULES_LIB_DIR/.global-triggers"
 
-# Optional regex for changed lines in gradle/libs.versions.toml. When set, a catalog change only
-# triggers a run across all modules if one of its added/removed lines matches.
+# Optional regex for the search terms of changed version catalog entries (see catalog.py, e.g.
+# libs.versions.detekt). When set, a catalog change triggers a run across all modules if one of
+# them matches.
 CATALOG_TRIGGER_PATTERN=""
+
+# Paths that never affect a module task (docs, generated module READMEs), dropped before matching.
+IGNORED_PATHS_PATTERN='\.md$'
 
 # Return 0 if any of the newline-separated paths on stdin match a pattern in
 # .global-triggers. Matching is delegated to `git check-ignore` against a throwaway
@@ -40,27 +52,37 @@ matches_gitignore_triggers() {
   return "$rc"
 }
 
-# Return 0 if CATALOG_TRIGGER_PATTERN is set and matches a line of the version catalog that
-# changed since the given ref.
+# Print the search terms for the version catalog entries changed since the given ref (see
+# catalog.py), or "ALL" if the catalog can't be compared.
 # Args: $1 = base ref.
-matches_catalog_trigger() {
-  [[ -n "$CATALOG_TRIGGER_PATTERN" ]] || return 1
-  local lines
-  lines=$(git diff -U0 "$1" -- gradle/libs.versions.toml 2>/dev/null | grep -E '^[+-][^+-]' || true)
-  grep -qE "$CATALOG_TRIGGER_PATTERN" <<< "$lines"
+catalog_changed_terms() {
+  local terms
+  if terms=$(python3 "$MODULES_LIB_DIR/catalog.py" "$1" 2>/dev/null); then
+    printf '%s\n' "$terms"
+  else
+    echo "ALL"
+  fi
 }
 
-# Print the Gradle module paths whose build files use a version catalog entry that changed since
-# the given ref, or "ALL" if a changed entry is used by build-logic or the root
-# build (or the catalog can't be compared). Matching is by prefix, so it errs towards more modules.
-# Args: $1 = base ref.
+# Return 0 if CATALOG_TRIGGER_PATTERN is set and matches one of the given catalog terms.
+# Args: $1 = output of catalog_changed_terms.
+matches_catalog_trigger() {
+  [[ -n "$CATALOG_TRIGGER_PATTERN" && -n "$1" ]] || return 1
+  [[ "$1" == "ALL" ]] && return 0
+  grep -qE "$CATALOG_TRIGGER_PATTERN" <<< "$1"
+}
+
+# Print the Gradle module paths whose build files use one of the given catalog terms, or "ALL" if
+# one is used by build-logic or the root build (or the catalog can't be compared). Matching is by
+# prefix, so it errs towards more modules.
+# Args: $1 = output of catalog_changed_terms.
 catalog_affected_modules() {
-  local terms
-  if ! terms=$(python3 "$MODULES_LIB_DIR/catalog.py" "$1" 2>/dev/null); then
+  local terms="$1"
+  [[ -z "$terms" ]] && return 0
+  if [[ "$terms" == "ALL" ]]; then
     echo "ALL"
     return 0
   fi
-  [[ -z "$terms" ]] && return 0
 
   # `apply false` only puts a plugin on the classpath, the modules applying it are matched below
   local global_uses
@@ -92,7 +114,7 @@ changed_gradle_modules() {
     disk_path="${gradle_path#:}"
     disk_path="${disk_path//:/\/}"
     module_map["$disk_path"]="$gradle_path"
-  done < <(grep -oP '^\s*"\K:aktual[^"]+(?=",?\s*$)' settings.gradle.kts)
+  done < <(all_gradle_modules)
 
   # Sort module disk paths longest-first so deeper modules match before their parents
   local sorted_disk_paths
@@ -137,11 +159,12 @@ run_changed_module_task() {
     modules=$(all_gradle_modules)
   else
     local merge_base merge_base_short
-    merge_base=$(git_merge_base "$base_branch")
+    merge_base=$(git_merge_base "$base_branch") || return 1
     merge_base_short=$(git_short_sha "$merge_base")
 
+    # Deleted paths are kept, so a module that only lost a file still runs
     local changed_files
-    changed_files=$(git_changed_files "$merge_base")
+    changed_files=$(git_changed_paths "$merge_base" | grep -vE "$IGNORED_PATHS_PATTERN" || true)
     if [[ -z "$changed_files" ]]; then
       echo "No files changed since $base_branch ($merge_base_short), nothing to do."
       return 0
@@ -149,18 +172,21 @@ run_changed_module_task() {
 
     # A catalog change is narrowed down to the modules using the changed entries, rather than
     # counting as a global trigger by itself
-    local catalog="gradle/libs.versions.toml" catalog_changed=false other_files
-    if grep -qxF "$catalog" <<< "$changed_files" && matches_gitignore_triggers <<< "$catalog"; then
-      catalog_changed=true
+    local catalog="gradle/libs.versions.toml" catalog_changed=false catalog_terms="" other_files
+    if grep -qxF "$catalog" <<< "$changed_files"; then
+      catalog_terms=$(catalog_changed_terms "$merge_base")
+      if matches_gitignore_triggers <<< "$catalog"; then
+        catalog_changed=true
+      fi
     fi
     other_files=$(grep -vxF "$catalog" <<< "$changed_files" || true)
 
     local catalog_modules=""
     if [[ "$catalog_changed" == true ]]; then
-      catalog_modules=$(catalog_affected_modules "$merge_base")
+      catalog_modules=$(catalog_affected_modules "$catalog_terms")
     fi
     if [[ -n "$other_files" ]] && matches_gitignore_triggers <<< "$other_files" \
-      || matches_catalog_trigger "$merge_base" \
+      || matches_catalog_trigger "$catalog_terms" \
       || [[ "$catalog_modules" == "ALL" ]]; then
       echo "Build/config files changed since $base_branch ($merge_base_short) - running on all modules."
       modules=$(all_gradle_modules)
@@ -207,7 +233,7 @@ run_changed_module_task() {
     # Gradle reports each failure as "Execution failed for task ':foo:bar'", spread over
     # separate blocks at the end of the build. Collect the task paths into one short list.
     local failed
-    failed=$(grep -oP "Execution failed for task '\K[^']+" "$log" | sort -u)
+    failed=$(sed -nE "s/.*Execution failed for task '([^']+)'.*/\1/p" "$log" | sort -u)
     if [[ -n "$failed" ]]; then
       echo ""
       echo "Failed task(s):"

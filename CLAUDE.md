@@ -55,15 +55,15 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./gradlew :aktual-account:vm:testAll
 
 # Formatting
-./scripts/ktfmt.sh            # format files changed since main
+./scripts/ktfmt.sh            # format files changed since origin/main
 ./scripts/ktfmt.sh check      # check-only
 ./scripts/ktfmt.sh --force    # all files
 
-# Run a Gradle task on only the modules with changes since main (append --dry-run to preview, --force on
-# detekt.sh/lint.sh/compile.sh to run on all modules).
-# A change to the root build file, .github/actions/ or build-logic/ runs all modules. A libs.versions.toml change only
-# runs the modules using the changed entries, unless build-logic uses them. Detekt uses the narrower
-# scripts/lib/.global-triggers-detekt.
+# Run a Gradle task on only the modules with changes since origin/main (pass another ref to compare against it,
+# append --dry-run to preview, --force on detekt.sh/lint.sh/compile.sh to run on all modules). Work from any directory.
+# A change to the root build file, .github/actions/ or build-logic/ runs all modules (see scripts/lib/.global-triggers).
+# A libs.versions.toml change only runs the modules using the changed entries, unless build-logic uses them. Detekt
+# uses the narrower scripts/lib/.global-triggers-detekt. Markdown changes are ignored.
 ./scripts/detekt.sh           # detektCheck on changed modules
 ./scripts/lint.sh             # lint on changed modules (quite heavy, don't run unless needed)
 ./scripts/compile.sh          # compileAll on changed modules
