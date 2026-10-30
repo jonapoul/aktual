@@ -578,6 +578,7 @@
   <string name="home_accounts_empty">No accounts yet</string>
   <string name="home_accounts_empty_action">Add account</string>
   <string name="home_accounts_failed">Couldn't load accounts</string>
+  <string name="home_accounts_new_transaction">New transaction in %1$s</string>
   <string name="home_upcoming_title">Upcoming · %1$s</string>
   <string name="home_upcoming_window_current_month">this month</string>
   <string name="home_upcoming_see_all">See all</string>

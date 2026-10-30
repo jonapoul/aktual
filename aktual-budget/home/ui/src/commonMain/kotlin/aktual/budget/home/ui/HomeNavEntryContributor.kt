@@ -7,6 +7,7 @@ import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.CreateAccountNavigator
 import aktual.core.nav.EditScheduleNavigator
+import aktual.core.nav.EditTransactionNavigator
 import aktual.core.nav.HomeNavRoute
 import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.nav.ListSchedulesNavigator
@@ -26,6 +27,7 @@ class HomeNavEntryContributor : BudgetNavEntryContributor {
     budgetEntry<HomeNavRoute> {
       HomeScreen(
         transactions = TransactionsNavigator(stack),
+        editTransaction = EditTransactionNavigator(stack),
         bankSync = BankSyncNavigator(stack),
         bankSyncSettings = BankSyncSettingsNavigator(stack),
         createAccount = CreateAccountNavigator(stack),

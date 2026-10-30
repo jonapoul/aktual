@@ -10,10 +10,14 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncState
 import aktual.budget.model.AccountSyncState.Ok
 import aktual.budget.model.Amount
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.AccountSyncDot
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.BareIconButton
+import aktual.core.ui.ButtonShape
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -36,7 +40,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,6 +51,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -65,6 +72,13 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 
 private val RowMinHeight = 48.dp
+
+// From the end of a row to its balance, past the new transaction button. Header totals and the
+// shimmer use it too, so they line up with the balances. The button is 40dp, with a smaller filled
+// square drawn inside it so the touch target stays full size
+private val RowEndPadding = 4.dp
+private val NewTransactionButtonGap = 6.dp
+private val AmountEndInset = RowEndPadding + 40.dp + NewTransactionButtonGap
 
 @Composable
 internal fun AccountsCard(
@@ -160,7 +174,11 @@ private fun ColumnScope.AccountsSection(
   section.accounts.fastForEach { account ->
     key(account.id) {
       AnimatedVisibility(visible = account.id in visibleIds, enter = RowEnter, exit = RowExit) {
-        AccountRow(account = account, onClick = { onAction(OpenAccount(account.id)) })
+        AccountRow(
+          account = account,
+          onClick = { onAction(OpenAccount(account.id)) },
+          onNewTransaction = { onAction(NewTransaction(account.id)) },
+        )
       }
     }
   }
@@ -177,7 +195,7 @@ private fun HeaderRow(
   modifier: Modifier = Modifier,
 ) {
   Row(
-    modifier = modifier.fillMaxWidth().padding(horizontal = CardPadding),
+    modifier = modifier.fillMaxWidth().padding(start = CardPadding, end = AmountEndInset),
     horizontalArrangement = Arrangement.spacedBy(12.dp),
     verticalAlignment = CenterVertically,
   ) {
@@ -201,6 +219,7 @@ private fun HeaderRow(
 private fun AccountRow(
   account: AccountBalance,
   onClick: () -> Unit,
+  onNewTransaction: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Row(
@@ -209,34 +228,59 @@ private fun AccountRow(
         .fillMaxWidth()
         .heightIn(min = RowMinHeight)
         .hoverClickable(onClick = onClick)
-        .padding(horizontal = CardPadding),
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
+        .padding(start = CardPadding, end = RowEndPadding),
+    horizontalArrangement = Arrangement.spacedBy(NewTransactionButtonGap),
     verticalAlignment = CenterVertically,
   ) {
     Row(
       modifier = Modifier.weight(1f),
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      horizontalArrangement = Arrangement.spacedBy(12.dp),
       verticalAlignment = CenterVertically,
     ) {
-      Text(
-        modifier = Modifier.weight(1f, fill = false),
-        text = account.name,
-        style = typography.bodyLarge,
-        color = colors.pageText,
-        maxLines = 1,
-        overflow = Ellipsis,
-      )
+      Row(
+        modifier = Modifier.weight(1f),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = CenterVertically,
+      ) {
+        Text(
+          modifier = Modifier.weight(1f, fill = false),
+          text = account.name,
+          style = typography.bodyLarge,
+          color = colors.pageText,
+          maxLines = 1,
+          overflow = Ellipsis,
+        )
 
-      NewTransactionsBadge(account.newTransactions)
+        NewTransactionsBadge(account.newTransactions)
+      }
+
+      AccountSyncDot(account.syncState)
+
+      AmountText(
+        amount = account.balance,
+        style = typography.bodyLarge,
+        color = if (account.balance < Zero) colors.numberNegative else colors.pageText,
+      )
     }
 
-    AccountSyncDot(account.syncState)
-
-    AmountText(
-      amount = account.balance,
-      style = typography.bodyLarge,
-      color = if (account.balance < Zero) colors.numberNegative else colors.pageText,
-    )
+    val newTransaction = Strings.homeAccountsNewTransaction(account.name)
+    BareIconButton(
+      imageVector = AktualIcons.Add,
+      contentDescription = newTransaction,
+      onClick = onNewTransaction,
+    ) {
+      Box(
+        modifier = Modifier.size(28.dp).background(colors.buttonPrimaryBackground, ButtonShape),
+        contentAlignment = Center,
+      ) {
+        Icon(
+          modifier = Modifier.size(18.dp),
+          imageVector = AktualIcons.Add,
+          contentDescription = newTransaction,
+          tint = colors.buttonPrimaryText,
+        )
+      }
+    }
   }
 }
 
@@ -249,7 +293,7 @@ private fun ShimmerAccounts(modifier: Modifier = Modifier) {
     modifier =
       modifier
         .fillMaxWidth()
-        .padding(horizontal = CardPadding)
+        .padding(start = CardPadding, end = AmountEndInset)
         .padding(top = 4.dp)
         .shimmer(rememberShimmer(Window)),
   ) {
