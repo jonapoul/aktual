@@ -1,6 +1,8 @@
 package aktual.budget.reports.vm
 
 import aktual.budget.model.Amount
+import aktual.budget.model.ConditionSet
+import aktual.budget.model.ConditionsFilter
 import aktual.budget.model.FirstDayOfWeek
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.toImmutableList
@@ -19,6 +21,7 @@ internal fun calculateCalendar(
   range: YearMonthRange,
   transactions: List<CalendarTransaction>,
   firstDayOfWeek: FirstDayOfWeek,
+  conditions: ConditionSet? = null,
 ): CalendarData {
   val byDate = transactions.groupBy { it.date }
   val weekStart = firstDayOfWeek.toDayOfWeek()
@@ -31,8 +34,14 @@ internal fun calculateCalendar(
     expenses = months.fold(Zero) { acc, month -> acc + month.expenses },
     firstDayOfWeek = weekStart,
     months = months.toImmutableList(),
+    conditions = conditions?.takeIf { it.conditions.isNotEmpty() },
   )
 }
+
+// packages/desktop-client/src/components/reports/reports/Calendar.tsx: the report's own conditions,
+// plus the tapped day
+fun CalendarData.dayFilter(date: LocalDate): ConditionsFilter =
+  ConditionsFilter(listOfNotNull(conditions, ConditionSet(dateConditions(date..date))))
 
 // Days outside the month pad out the first and last weeks, numbered 0 so the chart leaves them
 // blank

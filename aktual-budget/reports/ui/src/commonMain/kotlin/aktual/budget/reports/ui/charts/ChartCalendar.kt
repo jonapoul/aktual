@@ -63,8 +63,10 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.onDay
 
 @Composable
 internal fun CalendarChart(
@@ -104,7 +106,7 @@ private fun CompactCalendarChart(
           month = month,
           firstDayOfWeek = data.firstDayOfWeek,
           compact = true,
-          onAction = onAction,
+          onClickDay = { date -> onAction(Action.ClickCalendarDay(data, date)) },
         )
       }
     }
@@ -133,7 +135,7 @@ private fun RegularCalendarChart(
           month = month,
           firstDayOfWeek = data.firstDayOfWeek,
           compact = false,
-          onAction = onAction,
+          onClickDay = { date -> onAction(Action.ClickCalendarDay(data, date)) },
         )
       }
     }
@@ -276,7 +278,7 @@ internal fun DayButton(
   day: CalendarDay,
   month: CalendarMonth,
   compact: Boolean,
-  onAction: ActionListener,
+  onClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   if (!day.isValid) return
@@ -289,7 +291,7 @@ internal fun DayButton(
           shape = CardShape,
         )
         // Compact charts sit in report cards, which handle clicks themselves
-        .clickable(enabled = day.isValid && !compact) { onAction(Action.ClickCalendarDay(day)) },
+        .clickable(enabled = day.isValid && !compact) { onClick(month.month.onDay(day.day)) },
     contentAlignment = Center,
   ) {
     Row(modifier = Modifier.fillMaxSize()) {
@@ -354,7 +356,7 @@ internal fun CalendarMonth(
   month: CalendarMonth,
   firstDayOfWeek: DayOfWeek,
   compact: Boolean,
-  onAction: ActionListener,
+  onClickDay: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
   minSize: Dp = 300.dp,
 ) =
@@ -402,7 +404,7 @@ internal fun CalendarMonth(
                 day = day,
                 month = month,
                 compact = compact,
-                onAction = onAction,
+                onClick = onClickDay,
               )
             }
           }
@@ -507,7 +509,7 @@ private fun PreviewDayButton(
       day = day,
       month = month,
       compact = false,
-      onAction = {},
+      onClick = {},
     )
   }
 
@@ -535,7 +537,7 @@ private fun PreviewCalendarMonth(
   @PreviewParameter(CalendarMonthProvider::class) params: ColorParams<CalendarMonthParams>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
-    CalendarMonth(month = month, firstDayOfWeek = MONDAY, compact = compact, onAction = {})
+    CalendarMonth(month = month, firstDayOfWeek = MONDAY, compact = compact, onClickDay = {})
   }
 
 private data class CalendarMonthParams(

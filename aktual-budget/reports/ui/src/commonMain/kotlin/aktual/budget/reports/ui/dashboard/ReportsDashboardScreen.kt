@@ -125,8 +125,8 @@ fun ReportsDashboardScreen(
         is DeleteSavedReport -> viewModel.deleteSavedReport(action.item)
         is Pin -> pin(action.id)
         is Unpin -> viewModel.unpinReport(action.id)
-        // Text, summary options and custom report drilldowns are only reachable from the report
-        // screen. Calendar day clicks aren't handled yet (#365)
+        // Text, summary options, calendar days and custom report drilldowns are only reachable
+        // from the report screen
         is ClickCalendarDay,
         is SetSummaryType,
         is SetAllTimeDivisor,

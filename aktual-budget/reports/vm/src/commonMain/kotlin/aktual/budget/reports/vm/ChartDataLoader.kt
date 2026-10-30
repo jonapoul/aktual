@@ -28,6 +28,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
+import aktual.budget.model.ConditionSet
 import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormatConfig
@@ -432,7 +433,8 @@ internal class ChartDataLoader(
   // packages/desktop-client/src/components/reports/spreadsheets/calendar-spreadsheet.ts
   // calendarSpreadsheet()
   fun calendar(meta: CalendarReportMeta): Flow<ChartData> {
-    val filter = TransactionFilter.compile(meta.conditions.orEmpty(), meta.conditionsOp ?: And)
+    val conditions = ConditionSet(meta.conditions.orEmpty(), meta.conditionsOp ?: And)
+    val filter = TransactionFilter.compile(conditions.conditions, conditions.op)
     return combine(dao.observeTransactionDateBounds(), formatPreferences.firstDayOfWeek.asFlow()) {
         bounds,
         firstDayOfWeek ->
@@ -454,7 +456,7 @@ internal class ChartDataLoader(
               rows
                 .filter { filter.matches(it.toFilterRow()) }
                 .map { CalendarTransaction(it.date, it.amount) }
-            calculateCalendar(meta.name.orEmpty(), range, transactions, firstDayOfWeek)
+            calculateCalendar(meta.name.orEmpty(), range, transactions, firstDayOfWeek, conditions)
           }
       }
       .flowOn(contexts.default)
