@@ -4,6 +4,7 @@ import aktual.budget.formula.ErrorValue
 import aktual.budget.formula.FormulaWarning
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
+import aktual.budget.model.ConditionSet
 import aktual.budget.model.WidgetType
 import aktual.core.model.Percent
 import androidx.compose.runtime.Immutable
@@ -269,6 +270,8 @@ data class CalendarData(
   val expenses: Amount,
   val firstDayOfWeek: DayOfWeek,
   val months: ImmutableList<CalendarMonth>,
+  // The report's own conditions, which a tapped day's transactions also have to match
+  val conditions: ConditionSet? = null,
 ) : ChartData
 
 @Immutable

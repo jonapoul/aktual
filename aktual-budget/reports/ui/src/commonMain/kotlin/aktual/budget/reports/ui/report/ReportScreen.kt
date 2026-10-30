@@ -9,6 +9,7 @@ import aktual.budget.reports.ui.charts.ChartZoomState
 import aktual.budget.reports.ui.charts.PREVIEW_AGE_OF_MONEY_DATA
 import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.ui.charts.info
+import aktual.budget.reports.ui.charts.rememberCalendarDrilldown
 import aktual.budget.reports.ui.charts.rememberChartZoomState
 import aktual.budget.reports.ui.montecarlo.MonteCarloReportScreen
 import aktual.budget.reports.ui.string
@@ -97,6 +98,7 @@ fun ReportScreen(
 
   var hasUnsavedText by rememberSaveable { mutableStateOf(false) }
   var showDiscardDialog by remember { mutableStateOf(false) }
+  val calendarDrilldown = rememberCalendarDrilldown(toTransactions)
 
   BackHandler(enabled = hasUnsavedText) { showDiscardDialog = true }
 
@@ -111,6 +113,7 @@ fun ReportScreen(
         is SetUnsavedText -> hasUnsavedText = action.hasUnsavedText
         is SetSummaryType -> viewModel.setSummaryType(action.type)
         is SetAllTimeDivisor -> viewModel.setSummaryAllTimeDivisor(action.allTime)
+        is ClickCalendarDay -> calendarDrilldown(action)
         else -> Unit
       }
     },

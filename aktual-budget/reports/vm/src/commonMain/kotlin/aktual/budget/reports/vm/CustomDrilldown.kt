@@ -85,7 +85,7 @@ private fun CustomData.drilldownDates(interval: CustomInterval?): LocalDateRange
   }
 }
 
-private fun dateConditions(dates: LocalDateRange) =
+internal fun dateConditions(dates: LocalDateRange) =
   listOf(
     condition(Date, GreaterThanOrEquals, JsonPrimitive(dates.start.toString())),
     condition(Date, LessThanOrEquals, JsonPrimitive(dates.endInclusive.toString())),
