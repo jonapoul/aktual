@@ -290,8 +290,11 @@ internal fun DayButton(
           color = if (!day.isValid) Transparent else colors.calendarCellBackground,
           shape = CardShape,
         )
-        // Compact charts sit in report cards, which handle clicks themselves
-        .clickable(enabled = day.isValid && !compact) { onClick(month.month.onDay(day.day)) },
+        // Compact charts sit in report cards, which handle clicks themselves. A disabled clickable
+        // would still consume the tap, so leave it off entirely
+        .then(
+          if (compact) Modifier else Modifier.clickable { onClick(month.month.onDay(day.day)) },
+        ),
     contentAlignment = Center,
   ) {
     Row(modifier = Modifier.fillMaxSize()) {
