@@ -275,6 +275,7 @@ internal fun CalendarSummary(
 internal fun DayButton(
   day: CalendarDay,
   month: CalendarMonth,
+  compact: Boolean,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
@@ -287,7 +288,8 @@ internal fun DayButton(
           color = if (!day.isValid) Transparent else colors.calendarCellBackground,
           shape = CardShape,
         )
-        .clickable(enabled = day.isValid) { onAction(Action.ClickCalendarDay(day)) },
+        // Compact charts sit in report cards, which handle clicks themselves
+        .clickable(enabled = day.isValid && !compact) { onAction(Action.ClickCalendarDay(day)) },
     contentAlignment = Center,
   ) {
     Row(modifier = Modifier.fillMaxSize()) {
@@ -399,6 +401,7 @@ internal fun CalendarMonth(
                 modifier = Modifier.size(width = itemWidth, height = itemHeight),
                 day = day,
                 month = month,
+                compact = compact,
                 onAction = onAction,
               )
             }
@@ -503,6 +506,7 @@ private fun PreviewDayButton(
       modifier = Modifier.size(size),
       day = day,
       month = month,
+      compact = false,
       onAction = {},
     )
   }
