@@ -289,7 +289,7 @@ internal fun DayButton(
           shape = CardShape,
         )
         // Compact charts sit in report cards, which handle clicks themselves
-        .clickable(enabled = !compact) { onAction(Action.ClickCalendarDay(day)) },
+        .clickable(enabled = day.isValid && !compact) { onAction(Action.ClickCalendarDay(day)) },
     contentAlignment = Center,
   ) {
     Row(modifier = Modifier.fillMaxSize()) {
