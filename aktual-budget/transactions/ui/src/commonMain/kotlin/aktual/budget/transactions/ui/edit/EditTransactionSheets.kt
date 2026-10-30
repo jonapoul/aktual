@@ -3,6 +3,9 @@ package aktual.budget.transactions.ui.edit
 import aktual.budget.model.AccountId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.model.ScheduleId
+import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.amountPrefix
 import aktual.budget.transactions.domain.MIN_TRANSACTION_DATE
 import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.vm.edit.EntityOption
@@ -11,6 +14,7 @@ import aktual.budget.transactions.vm.edit.TransactionOptions
 import aktual.budget.transactions.vm.edit.matching
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.Check
 import aktual.core.icons.ViewHide
 import aktual.core.icons.ViewShow
 import aktual.core.l10n.Strings
@@ -22,9 +26,13 @@ import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.NormalIconButton
+import aktual.core.ui.formatted
+import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.scrollbar
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,6 +46,8 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
@@ -51,6 +61,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -119,6 +130,14 @@ internal fun EditTransactionSheet(
         onCreateTag = { onAction(CreateTag(it)) },
       )
 
+    ScheduleLink ->
+      ScheduleSheet(
+        selected = draft.schedule,
+        options = form.options.schedules,
+        onDismiss = onDismiss,
+        onSelect = { onAction(SetSchedule(it)) },
+      )
+
     Amount,
     null -> Unit
   }
@@ -166,7 +185,8 @@ private fun PartSheet(
 
     Amount,
     Account,
-    Date -> Unit
+    Date,
+    ScheduleLink -> Unit
   }
 
 // As upstream's payee picker: "None" is only offered when there's a payee to remove, typing a
@@ -431,6 +451,122 @@ private fun CategoryBalance(balance: aktual.budget.model.Amount) =
       },
     maxLines = 1,
   )
+
+// As upstream's ScheduleLink modal, typing filters the schedules by their name, payee or account.
+// "None" unlinks it, so it's only offered while it's linked
+@Composable
+private fun ScheduleSheet(
+  selected: ScheduleId?,
+  options: ImmutableList<Schedule>,
+  onDismiss: () -> Unit,
+  onSelect: (ScheduleId?) -> Unit,
+) =
+  AktualModalBottomSheet(
+    onDismissRequest = onDismiss,
+    sheetState = rememberBottomSheetState(Hidden),
+  ) {
+    val query = rememberTextFieldState()
+    val name = query.text.toString().trim()
+    val matches = remember(options, name) { options.matching(name) }
+
+    AktualTextField(
+      modifier = Modifier.fillMaxWidth().padding(SearchPadding),
+      state = query,
+      placeholderText = Strings.transactionScheduleSearch,
+      singleLine = true,
+      clearable = true,
+    )
+
+    val listState = rememberLazyListState()
+    LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
+      if (selected != null && name.isEmpty()) {
+        item(key = NONE_KEY) {
+          BottomSheetListItem(
+            label = Strings.transactionNone,
+            isSelected = false,
+            onClick = {
+              onSelect(null)
+              onDismiss()
+            },
+          )
+        }
+      }
+
+      if (options.isEmpty()) {
+        item { GroupHeader(Strings.transactionScheduleEmpty) }
+      }
+
+      items(matches, key = { it.id.toString() }) { schedule ->
+        ScheduleItem(
+          schedule = schedule,
+          isSelected = schedule.id == selected,
+          onClick = {
+            onSelect(schedule.id)
+            onDismiss()
+          },
+        )
+      }
+    }
+  }
+
+private fun List<Schedule>.matching(query: String): ImmutableList<Schedule> = filter { schedule ->
+  query.isEmpty() ||
+    schedule.name?.contains(query, ignoreCase = true) == true ||
+    schedule.payeeName.contains(query, ignoreCase = true) ||
+    schedule.accountName.contains(query, ignoreCase = true)
+}
+  .toImmutableList()
+
+// Its name, then its payee and account, with its amount and next date on the end
+@Composable
+private fun ScheduleItem(schedule: Schedule, isSelected: Boolean, onClick: () -> Unit) =
+  ListItem(
+    modifier = Modifier.clickable(onClick = onClick),
+    headlineContent = {
+      Text(
+        text = schedule.name ?: Strings.listSchedulesUnnamedSchedule,
+        color = if (schedule.name == null) colors.pageTextSubdued else colors.pageText,
+        maxLines = 1,
+        overflow = Ellipsis,
+      )
+    },
+    supportingContent = {
+      Text(
+        text = "${schedule.payeeName} · ${schedule.accountName}",
+        color = colors.pageTextSubdued,
+        maxLines = 1,
+        overflow = Ellipsis,
+      )
+    },
+    trailingContent = {
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = CenterVertically,
+      ) {
+        if (isSelected) BottomSheetIcon(AktualIcons.Check)
+        ScheduleAmount(schedule)
+      }
+    },
+    colors = ListItemDefaults.colors(containerColor = Transparent),
+  )
+
+@Composable
+private fun ScheduleAmount(schedule: Schedule) =
+  Column(horizontalAlignment = End) {
+    Text(
+      text = schedule.amountOp.amountPrefix() + schedule.amount.formattedString(includeSign = true),
+      fontSize = BalanceSize,
+      style = LocalTextStyle.current.copy(fontFeatureSettings = "tnum"),
+      color = if (schedule.amount > Zero) colors.numberPositive else colors.numberNegative,
+      maxLines = 1,
+    )
+    Text(
+      text = schedule.nextDate.formatted(),
+      fontSize = BalanceSize,
+      color = colors.pageTextSubdued,
+      maxLines = 1,
+    )
+  }
 
 // Saving rejects dates before MIN_TRANSACTION_DATE, so they can't be picked. The range still holds
 // an older date that's already saved, which the picker would otherwise crash on

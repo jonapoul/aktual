@@ -16,6 +16,8 @@ internal enum class EditField {
   Account,
   Date,
   Notes,
+  // The schedule it's linked to
+  ScheduleLink,
 }
 
 // A field of the transaction, or of one of its split's parts

@@ -150,6 +150,7 @@ private fun EditTransactionViewModel.onFieldAction(action: FieldAction) =
     is SetNotes -> setNotes(action.notes)
     is SetCleared -> setCleared(action.cleared)
     is CreateTag -> createTag(action.tag)
+    is SetSchedule -> setSchedule(action.id)
   }
 
 private fun EditTransactionViewModel.onSplitAction(action: SplitAction) =

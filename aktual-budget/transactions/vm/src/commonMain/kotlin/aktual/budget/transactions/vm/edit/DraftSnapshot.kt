@@ -4,6 +4,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.domain.TransactionDraft
@@ -44,6 +45,7 @@ internal data class DraftSnapshot(
   val notes: String?,
   val cleared: Boolean,
   val reconciled: Boolean,
+  val schedule: ScheduleId? = null,
   val parts: List<PartSnapshot> = emptyList(),
 )
 
@@ -67,6 +69,7 @@ internal fun TransactionDraft.toSnapshot() =
     notes = fields.notes,
     cleared = fields.cleared,
     reconciled = fields.reconciled,
+    schedule = fields.schedule,
     parts =
       parts.map { part ->
         PartSnapshot(
@@ -92,6 +95,7 @@ internal fun DraftSnapshot.toDraft() =
         notes = notes,
         cleared = cleared,
         reconciled = reconciled,
+        schedule = schedule,
       ),
     parts =
       parts.map { part ->

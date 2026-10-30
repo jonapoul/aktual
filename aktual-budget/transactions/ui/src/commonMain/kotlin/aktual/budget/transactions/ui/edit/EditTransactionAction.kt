@@ -4,6 +4,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
@@ -54,6 +55,8 @@ internal data class PickingCategory(val isPicking: Boolean) : EditTransactionAct
 @JvmInline internal value class SetCleared(val cleared: Boolean) : FieldAction
 
 @JvmInline internal value class CreateTag(val tag: String) : FieldAction
+
+@JvmInline internal value class SetSchedule(val id: ScheduleId?) : FieldAction
 
 // What changes a split and its parts
 @Immutable internal sealed interface SplitAction : EditTransactionAction

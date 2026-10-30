@@ -11,10 +11,13 @@ import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.DbMetadataKey.Companion.BudgetShowHiddenCategories
 import aktual.budget.model.PayeeId
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.LoadedRules
 import aktual.budget.rules.domain.RuleTransaction
 import aktual.budget.rules.domain.TransactionRulesLoader
+import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.tags.domain.TagCreator
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.tags.domain.toTagLabels
@@ -102,6 +105,7 @@ internal constructor(
   private val tagCreator: TagCreator,
   private val localPreferences: BudgetLocalPreferences,
   budgetCalculator: BudgetMonthCalculator,
+  schedulesLoader: SchedulesLoader,
   tagsDao: TagsDao,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
@@ -170,6 +174,16 @@ internal constructor(
       }
       .stateIn(viewModelScope, Eagerly, persistentListOf())
 
+  // Followed, so the schedule row can name the one it's linked to
+  private val schedules: StateFlow<ImmutableList<Schedule>> =
+    schedulesLoader
+      .observe()
+      .catch { e ->
+        logcat.w(e) { "Failed loading schedules" }
+        emit(persistentListOf())
+      }
+      .stateIn(viewModelScope, Eagerly, persistentListOf())
+
   private var rules: LoadedRules? = null
   // What a new transaction started as
   private var initial: TransactionDraft? = null
@@ -204,6 +218,7 @@ internal constructor(
       val hasConflicts by mutableHasConflicts.collectAsState()
       val showHidden by showHiddenCategories.collectAsState()
       val balances by categoryBalances.collectAsState()
+      val scheduleOptions by schedules.collectAsState()
       val changedElsewhere =
         when {
           isGone -> ChangedElsewhere.Deleted
@@ -217,6 +232,7 @@ internal constructor(
         draft = draft,
         newPayees = newPayees,
         tags = tagOptions,
+        schedules = scheduleOptions,
         categories = CategoryView(showHidden, balances.of((draft ?: saved?.draft)?.month())),
         isWorking = isWorking,
         changedElsewhere = changedElsewhere,
@@ -245,6 +261,7 @@ internal constructor(
     draft: TransactionDraft?,
     newPayees: Map<PayeeId, String>,
     tags: ImmutableList<TagLabel>,
+    schedules: ImmutableList<Schedule>,
     categories: CategoryView,
     isWorking: Boolean,
     changedElsewhere: ChangedElsewhere?,
@@ -254,7 +271,9 @@ internal constructor(
     if (changedElsewhere == Deleted && draft == null) return Failure.NotFound
     if (entities == null) return Loading
     val form =
-      (draft ?: saved?.draft)?.let { form(it, entities, newPayees, tags, categories, saved) }
+      (draft ?: saved?.draft)?.let {
+        form(it, entities, newPayees, tags, schedules, categories, saved)
+      }
     return when (target) {
       is Existing -> existingState(saved, form, isWorking, changedElsewhere)
       is New -> newState(entities, form, isWorking)
@@ -300,6 +319,7 @@ internal constructor(
     entities: EditorEntities,
     newPayees: Map<PayeeId, String>,
     tags: ImmutableList<TagLabel>,
+    schedules: ImmutableList<Schedule>,
     categories: CategoryView,
     saved: Saved?,
   ): TransactionForm {
@@ -322,6 +342,7 @@ internal constructor(
             ?: transaction?.category.takeIf { id == saved?.fields?.category }
         },
       accountName = fields.account?.let(entities.accountNames::get),
+      schedule = fields.schedule?.let { id -> schedules.firstOrNull { it.id == id } },
       isOffBudget = fields.account in entities.offBudget,
       isTransfer = entities.isBudgetTransfer(fields.account, fields.payee),
       hasChanges =
@@ -334,7 +355,7 @@ internal constructor(
         entities.options
           .withoutTransfersTo(fields.account, entities)
           .withCategories(categories)
-          .copy(tags = tags),
+          .copy(tags = tags, schedules = schedules.linkable(fields.schedule)),
       parts = parts,
       splitRemaining = draft.splitDifference,
     )
@@ -547,6 +568,10 @@ internal constructor(
 
   fun setCleared(cleared: Boolean) = updateDraft(Cleared) { it.copy(cleared = cleared) }
 
+  // Null unlinks it. As upstream's onLinkSchedule, rules aren't run for it
+  fun setSchedule(schedule: ScheduleId?) =
+    updateDraft(field = null) { it.copy(schedule = schedule) }
+
   // As upstream's onUnlockReconciledInner, which leaves it cleared
   fun unlockReconciled() = updateDraft(field = null) { it.copy(reconciled = false) }
 
@@ -702,6 +727,7 @@ internal constructor(
             notes = fields.notes?.ifEmpty { null },
             cleared = fields.cleared,
             isParent = toSave.isSplit,
+            schedule = fields.schedule,
           )
         val id = insert(transaction)
         toSave.parts.forEach { insert(it.toNewTransaction(id, account, fields)) }

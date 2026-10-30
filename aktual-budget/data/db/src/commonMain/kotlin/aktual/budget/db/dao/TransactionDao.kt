@@ -61,6 +61,8 @@ data class TransactionDetail(
   val account: AccountId?,
   val payee: PayeeId?,
   val category: CategoryId?,
+  // The schedule it's linked to
+  val schedule: ScheduleId? = null,
 )
 
 // What a split child's editor needs on top of its row
@@ -452,6 +454,7 @@ private fun transactionDetail(
   accountId: AccountId?,
   payeeId: PayeeId?,
   categoryId: CategoryId?,
+  scheduleId: ScheduleId?,
 ) =
   TransactionDetail(
     row =
@@ -479,6 +482,7 @@ private fun transactionDetail(
     account = accountId,
     payee = payeeId,
     category = categoryId,
+    schedule = scheduleId,
   )
 
 // Null for closed accounts, which are grouped whichever budget they were in

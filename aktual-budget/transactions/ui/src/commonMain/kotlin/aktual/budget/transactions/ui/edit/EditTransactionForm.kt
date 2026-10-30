@@ -159,6 +159,8 @@ internal fun EditTransactionForm(
         SplitParts(form = form, fieldState = fieldState, isIncome = isIncome, onAction = onAction)
 
         DetailCard {
+          ScheduleRow(form = form, onClick = { fieldState.edit(ScheduleLink) })
+          CardDivider()
           NotesRow(
             notes = draft.notes,
             tags = form.options.tags,
@@ -374,10 +376,23 @@ private fun FieldsCard(
       onClick = { onEdit(Date) },
     )
     CardDivider()
+    ScheduleRow(form = form, onClick = { onEdit(ScheduleLink) })
+    CardDivider()
     NotesRow(notes = draft.notes, tags = form.options.tags, onClick = { onEdit(Notes) })
     CardDivider()
     StatusRow(draft = draft, onUnlock = onUnlock, onAction = onAction)
   }
+}
+
+// A schedule that's been deleted reads as none
+@Composable
+private fun ScheduleRow(form: TransactionForm, onClick: () -> Unit) {
+  val schedule = form.schedule
+  FieldRow(
+    label = Strings.transactionSchedule,
+    value = schedule?.let { it.name ?: Strings.listSchedulesUnnamedSchedule },
+    onClick = onClick,
+  )
 }
 
 @Composable

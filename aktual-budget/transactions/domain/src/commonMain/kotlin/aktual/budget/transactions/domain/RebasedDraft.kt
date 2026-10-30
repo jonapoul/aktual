@@ -53,6 +53,7 @@ private class Merger {
       notes = pick(base.notes, saved.notes, draft.notes, ::sameNotes),
       cleared = pick(base.cleared, saved.cleared, draft.cleared),
       reconciled = pick(base.reconciled, saved.reconciled, draft.reconciled),
+      schedule = pick(base.schedule, saved.schedule, draft.schedule),
     )
 
   fun parts(
