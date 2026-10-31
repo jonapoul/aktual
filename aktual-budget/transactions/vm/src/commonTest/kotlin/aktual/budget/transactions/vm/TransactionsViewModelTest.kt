@@ -130,8 +130,7 @@ class TransactionsViewModelTest {
     return down.flatMap { it.data } to up.asReversed().flatMap { it.data }
   }
 
-  private fun <K : Any> LoadResult<K, Transaction>.asPage() =
-    this as LoadResult.Page<K, Transaction>
+  private fun <K : Any> LoadResult<K, Transaction>.asPage() = this as Page<K, Transaction>
 
   private suspend fun TestScope.buildViewModel(spec: AccountSpec) {
     rootDir = createTempDirectory().toOkioPath()
