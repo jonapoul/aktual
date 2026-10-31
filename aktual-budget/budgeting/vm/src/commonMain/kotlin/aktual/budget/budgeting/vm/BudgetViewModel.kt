@@ -21,6 +21,7 @@ import aktual.budget.model.DbMetadataKey.Companion.MobileShowSpentColumn
 import aktual.budget.model.evaluateAmountInput
 import aktual.core.Calendar
 import aktual.core.model.unaryPlus
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -41,7 +42,6 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -178,13 +178,12 @@ internal constructor(
     if (lastUndo !== token) return
     lastUndo = null
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         writer.undo(token)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed to undo" }
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed to undo" }
+        }
     }
   }
 
@@ -232,15 +231,14 @@ internal constructor(
   // The calculator picks up the change, so only the undo is kept here
   private fun write(description: String, action: suspend BudgetWriter.() -> UndoToken?) {
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         val token = writer.action() ?: return@launch
         lastUndo = token
         mutableEvents.tryEmit(BudgetEvent.Updated(token))
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed to $description" }
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed to $description" }
+        }
     }
   }
 

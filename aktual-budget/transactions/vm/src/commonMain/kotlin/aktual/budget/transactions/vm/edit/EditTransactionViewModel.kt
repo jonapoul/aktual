@@ -47,6 +47,7 @@ import aktual.budget.transactions.vm.edit.EditTransactionState.Failure
 import aktual.budget.transactions.vm.toTransaction
 import aktual.core.Calendar
 import aktual.core.UuidGenerator
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -67,7 +68,6 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -397,19 +397,18 @@ internal constructor(
     ?.key
 
   private suspend fun observe() {
-    try {
+    runCatchingCancellable {
       val entities = loadEntities()
       mutableEntities.update { entities }
       when (target) {
         is New -> startDraft(target, entities)
         is Existing -> follow(target)
       }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.e(e) { "Failed loading $target" }
-      mutableFailure.update { EditTransactionState.OtherFailure(e.requireMessage()) }
     }
+      .onFailure { e ->
+        logcat.e(e) { "Failed loading $target" }
+        mutableFailure.update { EditTransactionState.OtherFailure(e.requireMessage()) }
+      }
   }
 
   private suspend fun startDraft(target: EditTransactionTarget.New, entities: EditorEntities) {
@@ -491,13 +490,12 @@ internal constructor(
   // A saved transaction only uses the rules' payees, to add one by name, so it's viewed and
   // edited without them if they fail to load
   private suspend fun loadPayeeLookup() {
-    try {
+    runCatchingCancellable {
       rules = rulesLoader.load()
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.w(e) { "Failed loading rules for $target" }
     }
+      .onFailure { e ->
+        logcat.w(e) { "Failed loading rules for $target" }
+      }
   }
 
   // Throws away any edits and closes, unless they're being saved
@@ -600,14 +598,13 @@ internal constructor(
   // As upstream, the tag's created straight away rather than when the transaction's saved
   fun createTag(tag: String) {
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         tagCreator.create(tag)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed creating tag $tag" }
-        mutableError.update { EditTransactionError.CreatingTag(e.requireMessage()) }
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed creating tag $tag" }
+          mutableError.update { EditTransactionError.CreatingTag(e.requireMessage()) }
+        }
     }
   }
 
@@ -739,16 +736,12 @@ internal constructor(
   private fun launchSave(save: suspend () -> Unit) {
     mutableIsWorking.update { true }
     viewModelScope.launch {
-      try {
-        save()
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed saving $target" }
-        mutableError.update { EditTransactionError.Saving(e.requireMessage()) }
-      } finally {
-        mutableIsWorking.update { false }
-      }
+      runCatchingCancellable { save() }
+        .onFailure { e ->
+          logcat.e(e) { "Failed saving $target" }
+          mutableError.update { EditTransactionError.Saving(e.requireMessage()) }
+        }
+      mutableIsWorking.update { false }
     }
   }
 
@@ -770,19 +763,17 @@ internal constructor(
 
     mutableIsWorking.update { true }
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         isDeleted = true
         writer.write(runTransfers = true) { delete(saved.details.transaction.id) }
         mutableEvents.tryEmit(Deleted)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        isDeleted = false
-        logcat.e(e) { "Failed deleting $target" }
-        mutableError.update { EditTransactionError.Deleting(e.requireMessage()) }
-      } finally {
-        mutableIsWorking.update { false }
       }
+        .onFailure { e ->
+          isDeleted = false
+          logcat.e(e) { "Failed deleting $target" }
+          mutableError.update { EditTransactionError.Deleting(e.requireMessage()) }
+        }
+      mutableIsWorking.update { false }
     }
   }
 

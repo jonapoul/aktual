@@ -9,6 +9,7 @@ import aktual.budget.rules.vm.RuleSearchText
 import aktual.budget.rules.vm.RulesLoader
 import aktual.budget.rules.vm.search.SearchRulesState.Failure
 import aktual.budget.rules.vm.search.SearchRulesState.Results
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -24,7 +25,6 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -92,18 +92,17 @@ internal constructor(
   fun reload() {
     failure.update { null }
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         val loaded =
           loader.load().map { rule ->
             SearchableRule(rule, searchText.of(rule), rule.toTransactionRule().payeeIds())
           }
         rules.update { loaded }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed loading rules" }
-        failure.update { e.requireMessage() }
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed loading rules" }
+          failure.update { e.requireMessage() }
+        }
     }
   }
 

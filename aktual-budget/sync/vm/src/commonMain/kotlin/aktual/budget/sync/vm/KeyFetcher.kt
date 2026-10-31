@@ -8,6 +8,7 @@ import aktual.budget.encryption.generateKeyFromPassword
 import aktual.budget.model.BudgetId
 import aktual.core.model.Password
 import aktual.core.model.Token
+import aktual.core.runCatchingCancellable
 import aktual.prefs.KeyPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
@@ -31,17 +32,16 @@ internal constructor(
 ) {
   suspend operator fun invoke(budgetId: BudgetId, keyPassword: Password): FetchKeyResult {
     logcat.d { "KeyFetcher $budgetId $token $keyPassword" }
-    val response =
-      try {
-        val request = GetUserKeyRequest(budgetId, token)
-        withContext(contexts.io) { syncApi.fetchUserKey(request) }
-      } catch (e: ResponseException) {
-        val failure = e.response.body<GetUserKeyResponse.Failure>()
-        logcat.e(e) { "Failure = $failure" }
-        return FetchKeyResult.ResponseFailure(failure.reason)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
+    val response = runCatchingCancellable {
+      val request = GetUserKeyRequest(budgetId, token)
+      withContext(contexts.io) { syncApi.fetchUserKey(request) }
+    }
+      .getOrElse { e ->
+        if (e is ResponseException) {
+          val failure = e.response.body<GetUserKeyResponse.Failure>()
+          logcat.e(e) { "Failure = $failure" }
+          return FetchKeyResult.ResponseFailure(failure.reason)
+        }
         logcat.e(e) { "Failed fetching key for $budgetId and $keyPassword" }
         return FetchKeyResult.IOFailure(e.requireMessage())
       }

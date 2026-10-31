@@ -11,6 +11,7 @@ import aktual.budget.tags.domain.toColorOrNull
 import aktual.budget.tags.domain.toHex
 import aktual.budget.tags.vm.list.toTagItem
 import aktual.core.UuidGenerator
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -32,7 +33,6 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -141,12 +141,10 @@ internal constructor(
         return@launch
       }
 
-      val existing =
-        try {
-          tagsDao.getTag(tagId)?.toTagItem()
-        } catch (e: CancellationException) {
-          throw e
-        } catch (e: Exception) {
+      val existing = runCatchingCancellable {
+        tagsDao.getTag(tagId)?.toTagItem()
+      }
+        .getOrElse { e ->
           logcat.e(e) { "Failed loading tag $tagId" }
           mutableFailure.update { EditTagState.Failure(cause = e.requireMessage()) }
           return@launch
@@ -169,18 +167,16 @@ internal constructor(
   }
 
   // the active tag names other than the one being edited, so renaming a tag to itself stays allowed
-  private suspend fun loadOtherTagNames(): PersistentSet<String> =
-    try {
-      tagsDao
-        .getTags()
-        .asSequence()
-        .mapNotNull { it.toTagItem() }
-        .filter { it.id != tagId }
-        .map { it.tag }
-        .toPersistentSet()
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
+  private suspend fun loadOtherTagNames(): PersistentSet<String> = runCatchingCancellable {
+    tagsDao
+      .getTags()
+      .asSequence()
+      .mapNotNull { it.toTagItem() }
+      .filter { it.id != tagId }
+      .map { it.tag }
+      .toPersistentSet()
+  }
+    .getOrElse { e ->
       logcat.e(e) { "Failed loading existing tag names" }
       persistentSetOf()
     }
@@ -206,7 +202,7 @@ internal constructor(
   fun save() {
     viewModelScope.launch {
       mutableSaveError.update { null }
-      try {
+      runCatchingCancellable {
         val tag = mutableTag.value.trim()
         val description = mutableDescription.value.trim()
         val color = mutableColor.value?.toHex()
@@ -239,12 +235,11 @@ internal constructor(
         // remember the colour so the next new tag can default to it
         color?.let { preferences.lastUsedTagColor.set(it) }
         mutableEvents.tryEmit(FinishedSaving)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed saving tag $tagId" }
-        mutableSaveError.update { e.requireMessage() }
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed saving tag $tagId" }
+          mutableSaveError.update { e.requireMessage() }
+        }
     }
   }
 

@@ -17,6 +17,7 @@ import aktual.budget.transactions.domain.AccountUpdate
 import aktual.budget.transactions.domain.Patch
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.core.Calendar
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding
@@ -132,12 +133,10 @@ internal constructor(
   private suspend inline fun catching(
     account: BankSyncAccount,
     block: () -> BankSyncResult,
-  ): BankSyncResult =
-    try {
-      block()
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
+  ): BankSyncResult = runCatchingCancellable {
+    block()
+  }
+    .getOrElse { e ->
       logcat.w(e) { "Failed syncing ${account.id}" }
       fail(account, BankSyncError.Internal(e.message))
     }
@@ -145,7 +144,7 @@ internal constructor(
   // simpleFinBatchSync() in packages/loot-core/src/server/accounts/sync.ts
   private suspend fun syncSimpleFin(accounts: List<BankSyncAccount>) {
     val (oldest, response) =
-      try {
+      runCatchingCancellable {
         val today = calendar.today()
         val oldest = accounts.associate { it.id to dao.oldestDate(it.id, today) }
         val request =
@@ -154,13 +153,12 @@ internal constructor(
             startDates = accounts.map { startDate(oldest[it.id]) },
           )
         oldest to api.simpleFinBatch(request)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.w(e) { "Failed downloading SimpleFIN accounts" }
-        for (account in accounts) report(fail(account, BankSyncError.Internal(e.message)))
-        return
       }
+        .getOrElse { e ->
+          logcat.w(e) { "Failed downloading SimpleFIN accounts" }
+          for (account in accounts) report(fail(account, BankSyncError.Internal(e.message)))
+          return
+        }
 
     for (account in accounts) {
       val result =
@@ -210,13 +208,12 @@ internal constructor(
 
   private suspend fun fail(account: BankSyncAccount, error: BankSyncError): BankSyncResult {
     logcat.w { "Bank sync failed for ${account.id}: $error" }
-    try {
+    runCatchingCancellable {
       updateAccount(account.id, error.status, synced = false)
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.w(e) { "Failed recording the status of ${account.id}" }
     }
+      .onFailure { e ->
+        logcat.w(e) { "Failed recording the status of ${account.id}" }
+      }
     return BankSyncResult.Failed(account.id, account.name, error)
   }
 

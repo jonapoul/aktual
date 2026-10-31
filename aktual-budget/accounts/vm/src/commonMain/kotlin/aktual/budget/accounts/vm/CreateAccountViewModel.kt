@@ -4,6 +4,7 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.core.Calendar
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -18,7 +19,6 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.flow.Flow
@@ -79,12 +79,10 @@ internal constructor(
 
   init {
     viewModelScope.launch {
-      val names =
-        try {
-          accountDao.getAllWithStatus().mapNotNull { it.name }.toPersistentSet()
-        } catch (e: CancellationException) {
-          throw e
-        } catch (e: Exception) {
+      val names = runCatchingCancellable {
+        accountDao.getAllWithStatus().mapNotNull { it.name }.toPersistentSet()
+      }
+        .getOrElse { e ->
           logcat.e(e) { "Failed loading account names" }
           persistentSetOf()
         }
@@ -119,17 +117,16 @@ internal constructor(
     mutableIsSaving.update { true }
 
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         val id = writer.write { createAccount(name, offBudget, amount, calendar.today()) }
         // Stays saving, so it can't be created twice before the screen closes
         eventChannel.send(CreateAccountEvent.Created(id))
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed creating account $name" }
-        mutableSaveError.update { e.requireMessage() }
-        mutableIsSaving.update { false }
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed creating account $name" }
+          mutableSaveError.update { e.requireMessage() }
+          mutableIsSaving.update { false }
+        }
     }
   }
 

@@ -14,9 +14,9 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.core.UuidGenerator
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import dev.zacsweers.metro.Inject
-import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.launch
 import logcat.logcat
 
@@ -88,16 +88,15 @@ class BankAccountLinker(
 
     if (row.account_sync_source != GoCardless || dao.bankUsers(bank) > 0) return true
     val requisition = dao.bankId(bank) ?: return true
-    return try {
+    return runCatchingCancellable {
       api.removeGoCardlessRequisition(requisition.value).also { removed ->
         if (!removed) logcat.w { "GoCardless refused to delete requisition $requisition" }
       }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.w(e) { "Failed deleting GoCardless requisition $requisition" }
-      false
     }
+      .getOrElse { e ->
+        logcat.w(e) { "Failed deleting GoCardless requisition $requisition" }
+        false
+      }
   }
 
   // Links [account] to [external], adding its bank first unless there already is one

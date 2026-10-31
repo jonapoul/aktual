@@ -2,6 +2,7 @@ package aktual.about.data
 
 import aktual.about.data.LatestReleaseState.UpdateAvailable
 import aktual.core.model.BuildConfig
+import aktual.core.runCatchingCancellable
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
 import github.api.GithubApi
@@ -9,7 +10,6 @@ import github.api.model.GithubRelease
 import io.ktor.client.plugins.ResponseException
 import io.ktor.serialization.JsonConvertException
 import java.io.IOException
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 
@@ -20,40 +20,37 @@ internal constructor(
   private val githubApi: GithubApi,
   private val buildConfig: BuildConfig,
 ) {
-  suspend fun fetchLatestRelease(): LatestReleaseState {
-    try {
-      val releases =
-        withContext(contexts.io) {
-          githubApi.getReleases(user = "jonapoul", repo = "aktual", perPage = PAGE_SIZE)
-        }
+  suspend fun fetchLatestRelease(): LatestReleaseState =
+    runCatchingCancellable { fetch() }.getOrElse { it.toFailure() }
 
-      // Pre-releases are only offered to debug builds
-      val latest =
-        releases
-          .filter { !it.isDraft && (buildConfig.isDebug || !it.isPrerelease) }
-          .maxByOrNull { it.publishedAt ?: DISTANT_PAST }
-      val publishedAt = latest?.publishedAt
-      return when {
-        latest == null || publishedAt == null -> NoReleases
-
-        buildConfig.versionName == latest.clippedVersion() -> NoNewUpdate
-
-        else ->
-          if (publishedAt > buildConfig.buildTime) {
-            UpdateAvailable(latest)
-          } else {
-            // It's the same version as current (or earlier?)
-            NoNewUpdate
-          }
+  private suspend fun fetch(): LatestReleaseState {
+    val releases =
+      withContext(contexts.io) {
+        githubApi.getReleases(user = "jonapoul", repo = "aktual", perPage = PAGE_SIZE)
       }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      return e.toFailure()
+
+    // Pre-releases are only offered to debug builds
+    val latest =
+      releases
+        .filter { !it.isDraft && (buildConfig.isDebug || !it.isPrerelease) }
+        .maxByOrNull { it.publishedAt ?: DISTANT_PAST }
+    val publishedAt = latest?.publishedAt
+    return when {
+      latest == null || publishedAt == null -> NoReleases
+
+      buildConfig.versionName == latest.clippedVersion() -> NoNewUpdate
+
+      else ->
+        if (publishedAt > buildConfig.buildTime) {
+          UpdateAvailable(latest)
+        } else {
+          // It's the same version as current (or earlier?)
+          NoNewUpdate
+        }
     }
   }
 
-  private fun Exception.toFailure(): LatestReleaseState {
+  private fun Throwable.toFailure(): LatestReleaseState {
     val errorMessage =
       when (this) {
         is ResponseException ->

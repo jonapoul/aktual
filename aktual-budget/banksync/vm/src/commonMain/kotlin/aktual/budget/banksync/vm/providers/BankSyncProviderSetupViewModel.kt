@@ -4,6 +4,7 @@ import aktual.budget.banksync.domain.BankSyncProviderSetup
 import aktual.budget.banksync.domain.ProviderCredential
 import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -18,7 +19,6 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -82,21 +82,19 @@ internal constructor(
     if (!current.canSave) return
     mutableState.update { it.copy(isSaving = true, error = null) }
     viewModelScope.launch {
-      val error =
-        try {
-          val values = current.fields.associate { it.credential to it.value }
-          when (val response = setup.save(source, values)) {
-            Success -> {
-              null
-            }
-            is Failed -> {
-              logcat.w { "Saving $source credentials refused: $response" }
-              response.toSetupError()
-            }
+      val error = runCatchingCancellable {
+        val values = current.fields.associate { it.credential to it.value }
+        when (val response = setup.save(source, values)) {
+          Success -> {
+            null
           }
-        } catch (e: CancellationException) {
-          throw e
-        } catch (e: Exception) {
+          is Failed -> {
+            logcat.w { "Saving $source credentials refused: $response" }
+            response.toSetupError()
+          }
+        }
+      }
+        .getOrElse { e ->
           logcat.e(e) { "Failed saving $source credentials" }
           SetupError.Other(e.requireMessage())
         }

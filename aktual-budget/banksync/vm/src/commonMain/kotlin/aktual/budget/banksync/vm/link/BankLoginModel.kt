@@ -3,10 +3,10 @@ package aktual.budget.banksync.vm.link
 import aktual.api.model.banksync.BankSyncTransactionsResponse.Failure
 import aktual.api.model.banksync.BankSyncTransactionsResponse.ProviderError
 import aktual.api.model.banksync.ExternalBankAccount
+import aktual.core.runCatchingCancellable
 import alakazam.kotlin.requireMessage
 import java.util.Locale
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,14 +69,13 @@ internal class BankLoginModel(
     if (loginJob?.isActive == true) return
     loginJob = scope.launch {
       setStatus(BankLoginStatus.Waiting(bank.name))
-      try {
+      runCatchingCancellable {
         setStatus(logIn(bank))
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed logging in to ${bank.id} through ${provider.name}" }
-        setStatus(BankLoginStatus.Failed(e.requireMessage()))
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed logging in to ${bank.id} through ${provider.name}" }
+          setStatus(BankLoginStatus.Failed(e.requireMessage()))
+        }
     }
   }
 
@@ -114,20 +113,18 @@ internal class BankLoginModel(
     banksJob?.cancel()
     mutableState.update { it.copy(banks = Loading) }
     banksJob = scope.launch {
-      val banks =
-        try {
-          when (val response = provider.banks(country)) {
-            is Success -> {
-              LoginBanks.Loaded(response.value.toImmutableList())
-            }
-            is Failed -> {
-              logcat.w { "Listing ${provider.name} banks in $country failed: ${response.error}" }
-              LoginBanks.Failure(response.error.cause())
-            }
+      val banks = runCatchingCancellable {
+        when (val response = provider.banks(country)) {
+          is Success -> {
+            LoginBanks.Loaded(response.value.toImmutableList())
           }
-        } catch (e: CancellationException) {
-          throw e
-        } catch (e: Exception) {
+          is Failed -> {
+            logcat.w { "Listing ${provider.name} banks in $country failed: ${response.error}" }
+            LoginBanks.Failure(response.error.cause())
+          }
+        }
+      }
+        .getOrElse { e ->
           logcat.e(e) { "Failed listing ${provider.name} banks in $country" }
           LoginBanks.Failure(e.requireMessage())
         }

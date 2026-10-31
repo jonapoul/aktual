@@ -9,6 +9,7 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -28,7 +29,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentMap
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -109,21 +109,18 @@ internal constructor(
     if (showLoading) mutableIsLoading.update { true }
     loadJob?.cancel()
     loadJob = viewModelScope.launch {
-      val sources =
-        try {
-          val accounts = loadAccounts()
-          mutableAccounts.update { accounts }
-          mutableFailure.update { null }
-          accounts.linked.keys
-        } catch (e: CancellationException) {
-          throw e
-        } catch (e: Exception) {
+      val sources = runCatchingCancellable {
+        val accounts = loadAccounts()
+        mutableAccounts.update { accounts }
+        mutableFailure.update { null }
+        accounts.linked.keys
+      }
+        .getOrElse { e ->
           logcat.e(e) { "Failed loading bank sync accounts" }
           mutableFailure.update { e.requireMessage() }
           emptySet()
-        } finally {
-          mutableIsLoading.update { false }
         }
+      mutableIsLoading.update { false }
 
       // Show the accounts straight away, then fill in each provider's status as it arrives
       checkProviders(sources)
@@ -167,22 +164,21 @@ internal constructor(
   }
 
   private suspend fun fetchStatus(source: AccountSyncSource): BankSyncProviderStatus =
-    try {
-      when (val response = api.status(source)) {
-        is BankSyncStatusResponse.Success -> {
-          if (response.configured) Configured else NotConfigured
-        }
-        is Rejected -> {
-          logcat.w { "Bank sync status for $source rejected: $response" }
-          Failed
+    runCatchingCancellable<BankSyncProviderStatus> {
+        when (val response = api.status(source)) {
+          is BankSyncStatusResponse.Success -> {
+            if (response.configured) Configured else NotConfigured
+          }
+          is Rejected -> {
+            logcat.w { "Bank sync status for $source rejected: $response" }
+            Failed
+          }
         }
       }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.w(e) { "Failed checking bank sync status for $source" }
-      Failed
-    }
+      .getOrElse { e ->
+        logcat.w(e) { "Failed checking bank sync status for $source" }
+        Failed
+      }
 }
 
 private class LoadedAccounts(

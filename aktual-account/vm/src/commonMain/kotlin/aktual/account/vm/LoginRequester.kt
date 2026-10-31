@@ -7,13 +7,13 @@ import aktual.api.model.account.LoginResponse
 import aktual.core.model.AvailableLoginMethod
 import aktual.core.model.LoginMethod
 import aktual.core.model.Password
+import aktual.core.runCatchingCancellable
 import aktual.di.RunLevelController
 import aktual.prefs.AppPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
 import java.io.IOException
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import logcat.logcat
 
@@ -25,12 +25,10 @@ internal constructor(
   private val preferences: AppPreferences,
   private val runLevelController: RunLevelController,
 ) {
-  suspend fun fetchLoginMethods(): List<AvailableLoginMethod> =
-    try {
-      withContext(contexts.io) { accountApi.loginMethods().methods }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
+  suspend fun fetchLoginMethods(): List<AvailableLoginMethod> = runCatchingCancellable {
+    withContext(contexts.io) { accountApi.loginMethods().methods }
+  }
+    .getOrElse { e ->
       logcat.w(e) { "Failed to fetch login methods" }
       emptyList()
     }
@@ -39,22 +37,21 @@ internal constructor(
     password: Password,
     loginMethod: LoginMethod = LoginMethod.Password,
   ): LoginResult {
-    val response =
-      try {
-        withContext(contexts.io) {
-          when (loginMethod) {
-            LoginMethod.Password -> accountApi.login(LoginRequest.Password(password))
-            Header -> accountApi.login(LoginRequest.Header(), password)
-            OpenId -> accountApi.login(LoginRequest.OpenId(password, returnUrl = ""))
-            Unknown -> error("Unsupported login method")
-          }
+    val response = runCatchingCancellable {
+      withContext(contexts.io) {
+        when (loginMethod) {
+          LoginMethod.Password -> accountApi.login(LoginRequest.Password(password))
+          Header -> accountApi.login(LoginRequest.Header(), password)
+          OpenId -> accountApi.login(LoginRequest.OpenId(password, returnUrl = ""))
+          Unknown -> error("Unsupported login method")
         }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: IOException) {
-        return LoginResult.NetworkFailure(e.requireMessage())
-      } catch (e: Exception) {
-        return LoginResult.OtherFailure(e.requireMessage())
+      }
+    }
+      .getOrElse { e ->
+        return when (e) {
+          is IOException -> LoginResult.NetworkFailure(e.requireMessage())
+          else -> LoginResult.OtherFailure(e.requireMessage())
+        }
       }
 
     return when (response) {

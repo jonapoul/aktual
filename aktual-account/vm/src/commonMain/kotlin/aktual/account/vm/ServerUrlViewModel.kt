@@ -8,6 +8,7 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
+import aktual.core.runCatchingCancellable
 import aktual.di.AppScope
 import aktual.di.RunLevelController
 import aktual.di.ViewModelContext
@@ -28,7 +29,6 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -120,17 +120,15 @@ internal constructor(
     mutableConfirmResult.reset()
     mutableIsLoading.update { true }
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         demoBudget.open()
         mutableNavDestination.send(ToDemo)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed opening demo budget" }
-        mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
-      } finally {
-        mutableIsLoading.update { false }
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed opening demo budget" }
+          mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
+        }
+      mutableIsLoading.update { false }
     }
   }
 
@@ -164,7 +162,7 @@ internal constructor(
   }
 
   private suspend fun checkIfNeedsBootstrap(url: ServerUrl, accountApi: AccountApi) {
-    try {
+    runCatchingCancellable {
       logcat.v { "checkIfNeedsBootstrap $url" }
 
       val response =
@@ -182,16 +180,15 @@ internal constructor(
           is Failure -> ConfirmResult.Failed(reason = response.reason.reason)
         }
       mutableConfirmResult.update { confirmResult }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.w(e) { "Failed checking bootstrap for $url" }
-
-      // hit an error, we can't use this URL?
-      preferences.serverUrl.delete()
-
-      mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
     }
+      .onFailure { e ->
+        logcat.w(e) { "Failed checking bootstrap for $url" }
+
+        // hit an error, we can't use this URL?
+        preferences.serverUrl.delete()
+
+        mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
+      }
   }
 
   private fun ConfirmResult?.navDestination(): NavDestination? =

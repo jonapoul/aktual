@@ -2,8 +2,8 @@ package aktual.budget.banksync.domain
 
 import aktual.budget.model.AccountId
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.core.runCatchingCancellable
 import dev.zacsweers.metro.Inject
-import kotlin.coroutines.cancellation.CancellationException
 import logcat.logcat
 
 /**
@@ -18,13 +18,12 @@ internal constructor(private val linker: BankAccountLinker, private val writer: 
   // couldn't be removed
   suspend fun delete(account: AccountId): Boolean {
     writer.write { deleteAccount(account) }
-    return try {
+    return runCatchingCancellable {
       linker.unlink(account)
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.w(e) { "Deleted $account but failed unlinking it" }
-      false
     }
+      .getOrElse { e ->
+        logcat.w(e) { "Deleted $account but failed unlinking it" }
+        false
+      }
   }
 }

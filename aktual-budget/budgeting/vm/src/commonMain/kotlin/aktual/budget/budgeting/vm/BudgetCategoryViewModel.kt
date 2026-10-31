@@ -5,6 +5,7 @@ import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.budgeting.domain.BudgetWriter
 import aktual.budget.model.CategoryId
 import aktual.core.Calendar
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -18,7 +19,6 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -86,13 +86,12 @@ internal constructor(
   // The calculator picks up the change
   fun setHidden(hidden: Boolean) {
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         writer.setCategoryHidden(category, hidden)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed to set $category hidden = $hidden" }
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed to set $category hidden = $hidden" }
+        }
     }
   }
 

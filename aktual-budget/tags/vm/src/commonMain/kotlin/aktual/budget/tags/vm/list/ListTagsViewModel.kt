@@ -9,6 +9,7 @@ import aktual.budget.model.TagSort
 import aktual.budget.model.tagsInNotes
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
@@ -21,7 +22,6 @@ import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -108,36 +108,34 @@ internal constructor(
   fun delete(id: TagId) {
     viewModelScope.launch {
       val item = (state.value as? Success)?.tags?.firstOrNull { it.id == id }
-      try {
+      runCatchingCancellable {
         // syncChanges applies the tombstone to the local db and queues it for sync
         syncController.syncChanges(tombstone(dataset = TAGS, row = id.toString()))
         if (item != null) {
           mutableEvents.tryEmit(ListTagsEvent.Deleted(item))
         }
         logcat.d { "Tombstoned tag $id" }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed deleting tag $id" }
-        mutableEvents.tryEmit(ListTagsEvent.DeleteFailed(item?.tag))
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed deleting tag $id" }
+          mutableEvents.tryEmit(ListTagsEvent.DeleteFailed(item?.tag))
+        }
     }
   }
 
   // The undo snackbar can outlive this screen, so the restore can't be tied to viewModelScope
   fun undoDelete(item: TagItem) {
     budgetScope.launch {
-      try {
+      runCatchingCancellable {
         // reverse the tombstone in the local db and queue the reversal for sync. The row's other
         // columns were never touched by the delete, so clearing the tombstone fully restores it
         syncController.syncChanges(untombstone(dataset = TAGS, row = item.id.toString()))
         logcat.d { "Restored tag ${item.id}" }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed restoring tag ${item.id}" }
-        mutableEvents.tryEmit(ListTagsEvent.RestoreFailed(item.tag))
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed restoring tag ${item.id}" }
+          mutableEvents.tryEmit(ListTagsEvent.RestoreFailed(item.tag))
+        }
     }
   }
 

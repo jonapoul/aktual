@@ -2,6 +2,7 @@ package aktual.prefs.vm.theme.custom
 
 import aktual.api.client.ThemeApi
 import aktual.core.model.ThemeId
+import aktual.core.runCatchingCancellable
 import aktual.core.theme.CustomColors
 import aktual.core.theme.CustomThemeCache
 import aktual.core.theme.CustomThemeRepo
@@ -29,7 +30,6 @@ import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentMap
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -149,7 +149,7 @@ internal constructor(
     onFailure: (String) -> Unit,
   ) {
     val themeId = summary.repo.toId()
-    try {
+    runCatchingCancellable {
       val cached = cache.theme(summary.repo)
       if (cached != null) {
         updateFetchState(themeId, CacheState.Cached(summary))
@@ -161,14 +161,13 @@ internal constructor(
         updateFetchState(themeId, CacheState.Cached(summary))
         onSuccess(theme)
       }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.e(e) { "Failed fetching theme ${summary.repo}" }
-      val reason = e.requireMessage()
-      updateFetchState(themeId, CacheState.Failed(reason))
-      onFailure(reason)
     }
+      .onFailure { e ->
+        logcat.e(e) { "Failed fetching theme ${summary.repo}" }
+        val reason = e.requireMessage()
+        updateFetchState(themeId, CacheState.Failed(reason))
+        onFailure(reason)
+      }
   }
 
   private fun buildItems(
@@ -208,7 +207,7 @@ internal constructor(
     mutableIsFetchingCatalog.update { true }
     mutableSummaries.update { persistentListOf() }
     mutableFailure.update { null }
-    try {
+    runCatchingCancellable {
       val summaries =
         cache
           .summaries()
@@ -223,14 +222,12 @@ internal constructor(
       if (showSnackbar) {
         mutableEvents.tryEmit(CacheRefreshed)
       }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.e(e) { "Failed fetching theme catalog" }
-      mutableFailure.update { FetchFailed }
-    } finally {
-      mutableIsFetchingCatalog.update { false }
     }
+      .onFailure { e ->
+        logcat.e(e) { "Failed fetching theme catalog" }
+        mutableFailure.update { FetchFailed }
+      }
+    mutableIsFetchingCatalog.update { false }
   }
 
   private suspend fun cacheState(summary: CustomThemeSummary): CacheState {

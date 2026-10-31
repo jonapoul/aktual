@@ -13,9 +13,9 @@ import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.notesContainTag
 import aktual.budget.rules.domain.ConditionsMatcher
 import aktual.budget.rules.domain.FilterRow
+import aktual.core.runCatchingCancellable
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import kotlinx.coroutines.CancellationException
 
 internal class TransactionsPagingSource(
   private val transactionDao: TransactionDao,
@@ -35,7 +35,7 @@ internal class TransactionsPagingSource(
   private val accountId = (spec.accountSpec as? SpecificAccount)?.id
 
   override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Transaction> =
-    try {
+    runCatchingCancellable {
       // Keys are row offsets, not page numbers, since the first load is bigger than the rest. A
       // prepend's key is the offset its page ends at
       val key = params.key ?: 0
@@ -81,9 +81,8 @@ internal class TransactionsPagingSource(
         prevKey = if (start > 0) start else null,
         nextKey = if (transactions.size < size) null else start + transactions.size,
       )
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
+    }
+    .getOrElse { e ->
       LoadResult.Error(e)
     }
 

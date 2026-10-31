@@ -8,6 +8,7 @@ import aktual.budget.model.untombstone
 import aktual.budget.payees.domain.PayeeMerger
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.rules.domain.CategoryLearningPref
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
@@ -19,7 +20,6 @@ import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -86,14 +86,13 @@ internal constructor(
 
   fun setLearningEnabled(enabled: Boolean) {
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         learning.set(enabled)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed setting category learning to $enabled" }
-        mutableEvents.tryEmit(UpdateFailed)
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed setting category learning to $enabled" }
+          mutableEvents.tryEmit(UpdateFailed)
+        }
     }
   }
 
@@ -101,35 +100,33 @@ internal constructor(
   fun delete(payee: PayeeItem) {
     if (payee.isTransfer) return
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         syncController.syncChanges(tombstone(PAYEES, payee.id.value))
         mutableEvents.tryEmit(ListPayeesEvent.Deleted(payee))
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed deleting payee ${payee.id}" }
-        mutableEvents.tryEmit(DeleteFailed)
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed deleting payee ${payee.id}" }
+          mutableEvents.tryEmit(DeleteFailed)
+        }
     }
   }
 
   // The undo snackbar can outlive this screen, so the restore can't be tied to viewModelScope
   fun undoDelete(payee: PayeeItem) {
     budgetScope.launch {
-      try {
+      runCatchingCancellable {
         syncController.syncChanges(untombstone(PAYEES, payee.id.value))
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed restoring payee ${payee.id}" }
-        mutableEvents.tryEmit(RestoreFailed)
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed restoring payee ${payee.id}" }
+          mutableEvents.tryEmit(RestoreFailed)
+        }
     }
   }
 
   fun merge(payee: PayeeItem, into: PayeeItem) {
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         val merge = merger.merge(into.id, listOf(payee.id))
         if (merge == null) {
           logcat.w { "Nothing to merge from ${payee.id} into ${into.id}" }
@@ -137,25 +134,23 @@ internal constructor(
         } else {
           mutableEvents.tryEmit(ListPayeesEvent.Merged(payee, into, merge))
         }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed merging ${payee.id} into ${into.id}" }
-        mutableEvents.tryEmit(MergeFailed)
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed merging ${payee.id} into ${into.id}" }
+          mutableEvents.tryEmit(MergeFailed)
+        }
     }
   }
 
   fun undoMerge(event: ListPayeesEvent.Merged) {
     budgetScope.launch {
-      try {
+      runCatchingCancellable {
         merger.undo(event.merge)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed undoing merge of ${event.payee.id}" }
-        mutableEvents.tryEmit(RestoreFailed)
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed undoing merge of ${event.payee.id}" }
+          mutableEvents.tryEmit(RestoreFailed)
+        }
     }
   }
 
@@ -163,14 +158,13 @@ internal constructor(
     if (payee.isTransfer) return
     val favorite = !payee.isFavorite
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         syncController.syncChanges(localChange(PAYEES, payee.id.value, "favorite", favorite))
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed setting favorite=$favorite on ${payee.id}" }
-        mutableEvents.tryEmit(UpdateFailed)
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed setting favorite=$favorite on ${payee.id}" }
+          mutableEvents.tryEmit(UpdateFailed)
+        }
     }
   }
 }

@@ -8,6 +8,7 @@ import aktual.budget.model.localChange
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.rules.domain.CategoryLearningPref
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -21,7 +22,6 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -125,7 +125,7 @@ internal constructor(
   fun save() {
     viewModelScope.launch {
       mutableSaveError.update { null }
-      try {
+      runCatchingCancellable {
         val name = mutableName.value.trim()
         val favorite = mutableFavorite.value
         val learn = mutableLearnCategories.value
@@ -137,12 +137,11 @@ internal constructor(
           localChange(PAYEES, row, "learn_categories", learn),
         )
         mutableEvents.tryEmit(FinishedSaving)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed saving payee $payeeId" }
-        mutableSaveError.update { e.requireMessage() }
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed saving payee $payeeId" }
+          mutableSaveError.update { e.requireMessage() }
+        }
     }
   }
 
