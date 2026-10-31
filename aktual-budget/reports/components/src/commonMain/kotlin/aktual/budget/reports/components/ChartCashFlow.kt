@@ -1,0 +1,331 @@
+package aktual.budget.reports.components
+
+import aktual.budget.model.Amount
+import aktual.budget.model.Amount.Companion.Zero
+import aktual.budget.reports.vm.CashFlowData
+import aktual.budget.reports.vm.CashFlowDatum
+import aktual.budget.reports.vm.CashFlowReportMeta
+import aktual.core.l10n.Strings
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.CardShape
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.WrapWidthTable
+import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
+import aktual.core.ui.isInPreview
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.compose.cartesian.data.columnModel
+import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
+import com.patrykandpatrick.vico.compose.cartesian.layer.ColumnCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.compose.common.Fill
+import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.runBlocking
+
+@Composable
+internal fun CashFlowChart(
+  data: CashFlowData,
+  compact: Boolean,
+  modifier: Modifier = Modifier,
+  includeHeader: Boolean = true,
+  zoom: ChartZoomState = rememberChartZoomState(data),
+) =
+  Column(modifier = modifier) {
+    if (includeHeader) {
+      if (compact) {
+        CompactHeader(data)
+      } else {
+        RegularHeader(data)
+      }
+    }
+
+    val modelProducer = remember { CartesianChartModelProducer() }
+    if (isInPreview()) {
+      runBlocking { modelProducer.populate(data, zoom.range) }
+    } else {
+      LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
+    }
+
+    val label = axisLabelComponent(compact)
+    val tick = axisTickComponent(compact)
+    val guideline = axisGuidelineComponent(compact)
+    val line = axisLineComponent(compact)
+
+    ZoomableChart(
+      modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
+      state = zoom,
+      enabled = !compact,
+    ) { chartModifier ->
+      CartesianChartHost(
+        modifier = chartModifier,
+        modelProducer = modelProducer,
+        scrollState = rememberVicoScrollState(scrollEnabled = false),
+        animationSpec = chartAnimationSpec(compact),
+        chart =
+          rememberCartesianChart(
+            rememberColumnCartesianLayer(
+              ColumnCartesianLayer.ColumnProvider.series(
+                rememberLineComponent(fill = Fill(colors.reportsBlue), thickness = 16.dp),
+              ),
+              rangeProvider = remember { ZoomRangeProvider() },
+            ),
+            rememberColumnCartesianLayer(
+              ColumnCartesianLayer.ColumnProvider.series(
+                rememberLineComponent(fill = Fill(colors.reportsRed), thickness = 16.dp),
+              ),
+              rangeProvider = remember { ZoomRangeProvider() },
+            ),
+            rememberLineCartesianLayer(
+              lineProvider =
+                LineCartesianLayer.LineProvider.series(
+                  LineCartesianLayer.rememberLine(
+                    fill = LineCartesianLayer.LineFill.single(Fill(colors.pageTextLight)),
+                    stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 3.dp),
+                  ),
+                ),
+              rangeProvider = remember { ZoomRangeProvider() },
+            ),
+            startAxis =
+              VerticalAxis.rememberStart(
+                line = line,
+                guideline = guideline,
+                label = label,
+                tick = tick,
+                valueFormatter = amountYAxisFormatter(),
+                itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { 8 }) },
+              ),
+            bottomAxis =
+              HorizontalAxis.rememberBottom(
+                line = line,
+                guideline = guideline,
+                label = label,
+                tick = tick,
+                valueFormatter = yearMonthXAxisFormatter(),
+                itemPlacer = hItemPlacer(compact),
+              ),
+            marker = if (compact) null else rememberMarker(),
+            markerVisibilityListener = rememberMarkerHaptics(compact),
+            decorations = listOf(rememberChartZoomDecoration(zoom)),
+          ),
+      )
+    }
+  }
+
+@Stable
+private fun calculateNetFlow(data: CashFlowData): Amount {
+  var total = Zero
+  for ((_, value) in data.items) {
+    total += value.income + value.expenses
+  }
+  return total
+}
+
+private data class SummaryData(
+  val income: Amount,
+  val expenses: Amount,
+  val transfers: Amount,
+  val net: Amount,
+)
+
+@Stable
+private fun summaryData(data: CashFlowData): SummaryData {
+  var income = Zero
+  var expenses = Zero
+  var transfers = Zero
+
+  for ((_, item) in data.items) {
+    income += item.income
+    expenses += item.expenses
+    transfers += item.transfers
+  }
+
+  return SummaryData(income, expenses, transfers, net = income + expenses + transfers)
+}
+
+@Composable
+private fun RegularHeader(
+  data: CashFlowData,
+  modifier: Modifier = Modifier,
+) =
+  Row(modifier = modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp).fillMaxWidth()) {
+    DateRangeText(
+      modifier = Modifier.weight(1f),
+      text = dateRange(data.items.keys),
+      color = colors.pageText,
+    )
+
+    val padding = PaddingValues(horizontal = 2.dp)
+    val normalStyle = typography.labelMedium.copy(textAlign = Start, color = colors.pageText)
+    val boldStyle = normalStyle.copy(textAlign = End, fontWeight = W600)
+    val summaryData = summaryData(data)
+
+    Column {
+      WrapWidthTable(
+        modifier = Modifier.heightIn(max = 200.dp),
+        ellipsize = false,
+        data =
+          persistentListOf(
+            persistentListOf(Strings.reportsCashFlowIncome, summaryData.income.formattedString()),
+            persistentListOf(
+              Strings.reportsCashFlowExpenses,
+              summaryData.expenses.formattedString(),
+            ),
+            persistentListOf(
+              Strings.reportsCashFlowTransfers,
+              summaryData.transfers.formattedString(),
+            ),
+          ),
+        textStyles = persistentListOf(normalStyle, boldStyle),
+        paddings = persistentListOf(padding, padding),
+      )
+
+      Text(
+        modifier = Modifier.padding(padding),
+        text = summaryData.net.formattedText(includeSign = true),
+        textAlign = End,
+        style = boldStyle,
+        color = if (summaryData.net.isPositive()) colors.noticeText else colors.errorText,
+      )
+    }
+  }
+
+@Composable
+private fun CompactHeader(
+  data: CashFlowData,
+  modifier: Modifier = Modifier,
+) =
+  Row(modifier = modifier.padding(4.dp), verticalAlignment = CenterVertically) {
+    Column(modifier = Modifier.weight(1f)) {
+      Text(
+        text = data.title ?: Strings.reportsChooseTypeCashFlow,
+        color = colors.pageText,
+        overflow = Ellipsis,
+      )
+      DateRangeText(dateRange(data.items.keys))
+    }
+
+    val netFlow = calculateNetFlow(data)
+    Text(
+      text = netFlow.formattedText(includeSign = true),
+      color = if (netFlow.isPositive()) colors.noticeText else colors.errorText,
+      overflow = Ellipsis,
+    )
+  }
+
+private suspend fun CartesianChartModelProducer.populate(data: CashFlowData, zoom: XRange?) =
+  with(data.items) {
+    val months = keys.map { it.monthNumber() }
+    runTransaction {
+      zoomTo(zoom)
+
+      columnModel { series(x = months, y = values.map { it.income.toDouble() }, zoom = zoom) }
+
+      columnModel { series(x = months, y = values.map { it.expenses.toDouble() }, zoom = zoom) }
+
+      lineModel { series(x = months, y = values.map { it.balance.toDouble() }, zoom = zoom) }
+    }
+  }
+
+@Preview
+@Composable
+private fun PreviewCashFlowChart(
+  @PreviewParameter(CashFlowChartProvider::class) params: ColorParams<CashFlowChartParams>,
+) =
+  PreviewWithColorParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
+    CashFlowChart(
+      modifier =
+        Modifier.background(colors.tableBackground, CardShape)
+          .let { m -> if (compact) m.height(300.dp) else m }
+          .width(WIDTH.dp)
+          .padding(5.dp),
+      data = data,
+      compact = compact,
+    )
+  }
+
+private data class CashFlowChartParams(
+  val data: CashFlowData,
+  val compact: Boolean,
+  val isPrivacyEnabled: Boolean = false,
+)
+
+private class CashFlowChartProvider :
+  ColorParamsProvider<CashFlowChartParams>(
+    CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = false),
+    CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = false, isPrivacyEnabled = true),
+    CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = true),
+  )
+
+val PREVIEW_CASH_FLOW_META = CashFlowReportMeta()
+
+val PREVIEW_CASH_FLOW_DATA =
+  CashFlowData(
+    title = "My Cash Flow",
+    items =
+      persistentMapOf(
+        date(2024, JULY) to
+          datum(income = 6683, expenses = -4695, transfers = -1779, balance = 4781),
+        date(2024, AUGUST) to
+          datum(income = 6071, expenses = -4111, transfers = -729, balance = 6012),
+        date(2024, SEPTEMBER) to
+          datum(income = 6041, expenses = -4233, transfers = -779, balance = 7041),
+        date(2024, OCTOBER) to
+          datum(income = 6041, expenses = -3602, transfers = -3819, balance = 5662),
+        date(2024, NOVEMBER) to
+          datum(income = 9200, expenses = -5191, transfers = -1111, balance = 8560),
+        date(2024, DECEMBER) to
+          datum(income = 27, expenses = -4536, transfers = -4508, balance = 2389),
+        date(2025, JANUARY) to
+          datum(income = 34551, expenses = -17336, transfers = -3477, balance = 15403),
+        date(2025, FEBRUARY) to
+          datum(income = 9913, expenses = -12977, transfers = -834, balance = 11505),
+        date(2025, MARCH) to
+          datum(income = 9850, expenses = -7413, transfers = -4146, balance = 9796),
+        date(2025, APRIL) to
+          datum(income = 10218, expenses = -6161, transfers = -4990, balance = 8862),
+        date(2025, MAY) to
+          datum(income = 9791, expenses = -5751, transfers = -2422, balance = 10480),
+        date(2025, JUNE) to datum(income = 143, expenses = -745, transfers = -4041, balance = 5836),
+      ),
+  )
+
+private fun datum(income: Int, expenses: Int, transfers: Int, balance: Int) =
+  CashFlowDatum(
+    income = Amount(income.toDouble()),
+    expenses = Amount(expenses.toDouble()),
+    transfers = Amount(transfers.toDouble()),
+    balance = Amount(balance.toDouble()),
+  )

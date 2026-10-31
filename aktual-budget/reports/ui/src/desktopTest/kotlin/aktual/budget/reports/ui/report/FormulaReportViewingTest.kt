@@ -1,8 +1,8 @@
 package aktual.budget.reports.ui.report
 
 import aktual.budget.model.Condition
+import aktual.budget.reports.components.PREVIEW_FORMULA_DATA
 import aktual.budget.reports.ui.Tags
-import aktual.budget.reports.ui.charts.PREVIEW_FORMULA_DATA
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.FormulaReportMeta
 import aktual.budget.reports.vm.QueryEditorData

@@ -11,8 +11,8 @@ kotlin {
     implementation(libs.androidx.paging.compose)
     implementation(libs.kotlinx.datetime)
     implementation(libs.shimmer)
-    implementation(project(":aktual-budget:banksync:ui"))
-    implementation(project(":aktual-budget:schedules:ui"))
+    implementation(project(":aktual-budget:banksync:components"))
+    implementation(project(":aktual-budget:schedules:components"))
     implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
   }

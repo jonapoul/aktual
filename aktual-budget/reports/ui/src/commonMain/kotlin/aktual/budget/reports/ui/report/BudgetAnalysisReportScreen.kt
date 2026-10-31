@@ -2,11 +2,11 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
-import aktual.budget.reports.ui.charts.ChartInfoSheet
-import aktual.budget.reports.ui.charts.PREVIEW_BUDGET_ANALYSIS_DATA
-import aktual.budget.reports.ui.charts.info
-import aktual.budget.reports.ui.charts.rememberChartZoomState
-import aktual.budget.reports.ui.string
+import aktual.budget.reports.components.ChartInfoSheet
+import aktual.budget.reports.components.PREVIEW_BUDGET_ANALYSIS_DATA
+import aktual.budget.reports.components.info
+import aktual.budget.reports.components.rememberChartZoomState
+import aktual.budget.reports.components.string
 import aktual.budget.reports.vm.BUDGET_ANALYSIS_FIELDS
 import aktual.budget.reports.vm.BudgetAnalysisSettings
 import aktual.budget.reports.vm.GraphType

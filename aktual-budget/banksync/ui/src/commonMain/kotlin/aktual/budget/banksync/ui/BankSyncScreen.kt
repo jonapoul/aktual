@@ -1,5 +1,6 @@
 package aktual.budget.banksync.ui
 
+import aktual.budget.banksync.components.showBankSyncSummary
 import aktual.budget.banksync.vm.BankSyncState
 import aktual.budget.banksync.vm.BankSyncViewModel
 import aktual.budget.banksync.vm.Empty

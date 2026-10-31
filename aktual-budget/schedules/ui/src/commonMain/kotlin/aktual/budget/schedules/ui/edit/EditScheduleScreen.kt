@@ -5,8 +5,8 @@ import aktual.budget.model.Amount
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.ScheduleId
+import aktual.budget.schedules.components.ScheduleStatusBadge
 import aktual.budget.schedules.domain.ScheduleStatus
-import aktual.budget.schedules.ui.list.ScheduleStatusBadge
 import aktual.budget.schedules.vm.edit.EditScheduleError
 import aktual.budget.schedules.vm.edit.EditScheduleState
 import aktual.budget.schedules.vm.edit.EditScheduleViewModel

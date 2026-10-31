@@ -2,14 +2,10 @@ package aktual.budget.reports.ui
 
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
-import aktual.budget.reports.vm.CalendarData
-import aktual.budget.reports.vm.CustomDrilldown
-import aktual.budget.reports.vm.SummaryChartType
-import aktual.budget.reports.vm.TextAlign
+import aktual.budget.reports.components.ChartAction
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.datetime.LocalDate
 
 @Immutable
 internal sealed interface Action {
@@ -27,17 +23,7 @@ internal sealed interface Action {
 
   @JvmInline value class Unpin(val id: WidgetId) : Action
 
-  @JvmInline value class SetSummaryType(val type: SummaryChartType) : Action
-
-  @JvmInline value class SetAllTimeDivisor(val allTime: Boolean) : Action
-
-  data class ClickCalendarDay(val data: CalendarData, val date: LocalDate) : Action
-
-  @JvmInline value class DrillDown(val drilldown: CustomDrilldown) : Action
-
-  data class SaveText(val content: String, val align: TextAlign) : Action
-
-  @JvmInline value class SetUnsavedText(val hasUnsavedText: Boolean) : Action
+  @JvmInline value class Chart(val action: ChartAction) : Action
 
   data object CreateNewReport : Action
 

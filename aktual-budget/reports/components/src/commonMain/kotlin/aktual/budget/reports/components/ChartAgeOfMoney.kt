@@ -1,0 +1,369 @@
+package aktual.budget.reports.components
+
+import aktual.budget.reports.vm.AgeOfMoneyData
+import aktual.budget.reports.vm.AgeOfMoneyTrend
+import aktual.core.l10n.Plurals
+import aktual.core.l10n.Strings
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
+import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.CardShape
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.isInPreview
+import alakazam.compose.VerticalSpacer
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianLayerRangeProvider
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianValueFormatter
+import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
+import com.patrykandpatrick.vico.compose.cartesian.decoration.HorizontalLine
+import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.compose.common.DashedShape
+import com.patrykandpatrick.vico.compose.common.Fill
+import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import com.patrykandpatrick.vico.compose.common.component.rememberShapeComponent
+import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
+import com.patrykandpatrick.vico.compose.common.data.ExtraStore
+import kotlin.math.roundToInt
+import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month.JANUARY
+import kotlinx.datetime.Month.JUNE
+import kotlinx.datetime.YearMonth
+
+private const val TARGET_AGE_DAYS = 30
+private const val OK_AGE_DAYS = 14
+
+@Composable
+internal fun AgeOfMoneyChart(
+  data: AgeOfMoneyData,
+  compact: Boolean,
+  modifier: Modifier = Modifier,
+  includeHeader: Boolean = true,
+  zoom: ChartZoomState = rememberChartZoomState(data),
+) {
+  Column(modifier = modifier) {
+    if (includeHeader) {
+      Header(modifier = Modifier.fillMaxWidth(), data = data)
+    }
+
+    Chart(
+      modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
+      data = data,
+      compact = compact,
+      zoom = zoom,
+    )
+  }
+}
+
+@Composable
+private fun Header(
+  data: AgeOfMoneyData,
+  modifier: Modifier = Modifier,
+) {
+  Row(
+    modifier = modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp).fillMaxWidth(),
+    verticalAlignment = CenterVertically,
+  ) {
+    Column(modifier = Modifier.weight(1f)) {
+      Text(
+        text = data.title ?: Strings.reportsChooseTypeAgeOfMoney,
+        overflow = Ellipsis,
+        color = colors.pageText,
+        style = typography.bodyLarge,
+      )
+
+      DateRangeText(dateRange(data.start, data.end))
+    }
+
+    Column(horizontalAlignment = Alignment.End) {
+      val age = data.currentAge
+      Text(
+        text =
+          if (age == null) {
+            Strings.reportsAgeOfMoneyNone
+          } else {
+            Plurals.reportsAgeOfMoneyDays(age, age)
+          },
+        textAlign = End,
+        style = typography.bodyLarge,
+        color = ageColor(age),
+      )
+
+      if (age != null) {
+        VerticalSpacer(4.dp)
+        Text(
+          text = data.trend.string(),
+          textAlign = End,
+          style = typography.bodySmall,
+          color = colors.pageTextSubdued,
+        )
+      }
+
+      if (data.insufficientData) {
+        VerticalSpacer(2.dp)
+        Text(
+          text = Strings.reportsAgeOfMoneyIncomplete,
+          textAlign = End,
+          style = typography.bodySmall,
+          color = colors.warningText,
+        )
+      }
+    }
+  }
+}
+
+@Composable
+@ReadOnlyComposable
+private fun ageColor(age: Int?): Color =
+  when {
+    age == null -> colors.reportsNumberNeutral
+    age >= TARGET_AGE_DAYS -> colors.reportsNumberPositive
+    age >= OK_AGE_DAYS -> colors.warningText
+    else -> colors.reportsNumberNegative
+  }
+
+@Composable
+private fun AgeOfMoneyTrend.string(): String =
+  when (this) {
+    Up -> Strings.reportsAgeOfMoneyImproving
+    Down -> Strings.reportsAgeOfMoneyDeclining
+    Stable -> Strings.reportsAgeOfMoneyStable
+  }
+
+@Composable
+private fun Chart(
+  data: AgeOfMoneyData,
+  compact: Boolean,
+  zoom: ChartZoomState,
+  modifier: Modifier = Modifier,
+) {
+  val modelProducer = remember { CartesianChartModelProducer() }
+
+  if (isInPreview()) {
+    runBlocking { modelProducer.populate(data, zoom.range) }
+  } else {
+    LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
+  }
+
+  val label = axisLabelComponent(compact)
+  val tick = axisTickComponent(compact)
+  val guideline = axisGuidelineComponent(compact)
+  val line = axisLineComponent(compact)
+  val dayFormatter = dayYAxisFormatter()
+
+  ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
+    CartesianChartHost(
+      modifier = chartModifier,
+      modelProducer = modelProducer,
+      scrollState = rememberVicoScrollState(scrollEnabled = false),
+      animationSpec = chartAnimationSpec(compact),
+      chart =
+        rememberCartesianChart(
+          rememberLineCartesianLayer(
+            rangeProvider = remember { ZoomRangeProvider(IncludeTargetAge) },
+            lineProvider =
+              LineCartesianLayer.LineProvider.series(
+                LineCartesianLayer.rememberLine(
+                  fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsChartFill)),
+                  areaFill =
+                    LineCartesianLayer.AreaFill.single(
+                      Fill(
+                        Brush.verticalGradient(
+                          listOf(
+                            colors.reportsChartFill.copy(alpha = 0.3f),
+                            colors.reportsChartFill.copy(alpha = 0.05f),
+                          ),
+                        ),
+                      ),
+                    ),
+                  pointProvider = if (compact) null else rememberPointProvider(),
+                  interpolator = LineCartesianLayer.Interpolator.catmullRom(),
+                ),
+              ),
+          ),
+          startAxis =
+            VerticalAxis.rememberStart(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter = dayFormatter,
+            ),
+          bottomAxis =
+            HorizontalAxis.rememberBottom(
+              line = line,
+              guideline = guideline,
+              label = label,
+              tick = tick,
+              valueFormatter = periodXAxisFormatter(data),
+              itemPlacer = hItemPlacer(compact),
+            ),
+          marker = if (compact) null else rememberMarker(),
+          markerVisibilityListener = rememberMarkerHaptics(compact),
+          decorations =
+            if (compact) {
+              emptyList()
+            } else {
+              listOf(rememberTargetLine(), rememberChartZoomDecoration(zoom))
+            },
+        ),
+    )
+  }
+}
+
+// Keep the target line in view even when every age is below it
+private object IncludeTargetAge : CartesianLayerRangeProvider {
+  override fun getMaxY(minY: Double, maxY: Double, extraStore: ExtraStore): Double =
+    maxOf(maxY, TARGET_AGE_DAYS.toDouble())
+}
+
+@Composable
+private fun rememberPointProvider(): LineCartesianLayer.PointProvider {
+  val component = rememberShapeComponent(fill = Fill(colors.reportsChartFill), shape = CircleShape)
+  return remember(component) {
+    LineCartesianLayer.PointProvider.single(LineCartesianLayer.Point(component, size = 6.dp))
+  }
+}
+
+@Composable
+private fun rememberTargetLine(): HorizontalLine {
+  val line =
+    rememberLineComponent(
+      fill = Fill(colors.reportsGreen),
+      thickness = 1.dp,
+      shape = remember { DashedShape(dashLength = 5.dp, gapLength = 5.dp) },
+    )
+  val label =
+    rememberTextComponent(
+      style = TextStyle(color = colors.reportsGreen, fontSize = textSizes.tiny),
+    )
+  val text = Plurals.reportsAgeOfMoneyDays(TARGET_AGE_DAYS, TARGET_AGE_DAYS)
+  return remember(line, label, text) {
+    HorizontalLine(
+      y = { TARGET_AGE_DAYS.toDouble() },
+      line = line,
+      labelComponent = label,
+      label = { text },
+      horizontalLabelPosition = End,
+      verticalLabelPosition = Bottom,
+    )
+  }
+}
+
+@Composable
+private fun dayYAxisFormatter(): CartesianValueFormatter {
+  val suffix = Strings.reportsAgeOfMoneyAxisSuffix
+  return remember(suffix) {
+    CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}$suffix" }
+  }
+}
+
+// x values are indexes into the periods, since daily and weekly periods don't map onto months
+@Composable
+private fun periodXAxisFormatter(data: AgeOfMoneyData): CartesianValueFormatter {
+  val monthStrings = monthStringsMap()
+  return remember(data, monthStrings) {
+    val periods = data.items.keys.toList()
+    CartesianValueFormatter { _, value, _ ->
+      val date = periods.getOrNull(value.roundToInt()) ?: return@CartesianValueFormatter ""
+      val month = monthStrings[date.month] ?: "???"
+      when (data.granularity) {
+        Daily,
+        Weekly -> "${date.day} $month"
+        Monthly,
+        Unknown -> "$month ${date.year.toString().substring(startIndex = 2)}"
+      }
+    }
+  }
+}
+
+private suspend fun CartesianChartModelProducer.populate(data: AgeOfMoneyData, zoom: XRange?) =
+  runTransaction {
+    zoomTo(zoom)
+    if (data.items.isEmpty()) return@runTransaction
+    lineModel {
+      series(x = data.items.keys.indices.toList(), y = data.items.values.toList(), zoom = zoom)
+    }
+  }
+
+@Preview
+@Composable
+private fun PreviewAgeOfMoneyChart(
+  @PreviewParameter(AgeOfMoneyChartProvider::class) params: ColorParams<AgeOfMoneyChartParams>,
+) =
+  PreviewWithColorParams(params) {
+    AgeOfMoneyChart(
+      modifier =
+        Modifier.background(colors.tableBackground, CardShape)
+          .width(WIDTH.dp)
+          .let { m -> if (compact) m.height(300.dp) else m }
+          .padding(5.dp),
+      data = data,
+      compact = compact,
+    )
+  }
+
+private data class AgeOfMoneyChartParams(val data: AgeOfMoneyData, val compact: Boolean)
+
+private class AgeOfMoneyChartProvider :
+  ColorParamsProvider<AgeOfMoneyChartParams>(
+    AgeOfMoneyChartParams(PREVIEW_AGE_OF_MONEY_DATA, compact = true),
+    AgeOfMoneyChartParams(PREVIEW_AGE_OF_MONEY_DATA, compact = false),
+    AgeOfMoneyChartParams(
+      PREVIEW_AGE_OF_MONEY_DATA.copy(currentAge = null, insufficientData = true),
+      compact = true,
+    ),
+  )
+
+val PREVIEW_AGE_OF_MONEY_DATA =
+  AgeOfMoneyData(
+    title = "Age of Money",
+    start = YearMonth(2026, JANUARY),
+    end = YearMonth(2026, JUNE),
+    granularity = Monthly,
+    items =
+      persistentMapOf(
+        LocalDate(2026, 1, 1) to 12,
+        LocalDate(2026, 2, 1) to 17,
+        LocalDate(2026, 3, 1) to 21,
+        LocalDate(2026, 4, 1) to 19,
+        LocalDate(2026, 5, 1) to 26,
+        LocalDate(2026, 6, 1) to 33,
+      ),
+    currentAge = 33,
+    trend = Up,
+    insufficientData = false,
+  )

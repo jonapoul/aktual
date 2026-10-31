@@ -11,6 +11,7 @@ kotlin {
     implementation(libs.compose.resources)
     implementation(libs.metrox.viewmodel)
     implementation(libs.shimmer)
+    implementation(project(":aktual-budget:banksync:components"))
     implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:ui"))

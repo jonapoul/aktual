@@ -1,18 +1,17 @@
 package aktual.budget.reports.ui.report
 
 import aktual.budget.model.WidgetId
+import aktual.budget.reports.components.ChartInfoSheet
+import aktual.budget.reports.components.ChartTags
+import aktual.budget.reports.components.ChartZoomState
+import aktual.budget.reports.components.PREVIEW_AGE_OF_MONEY_DATA
+import aktual.budget.reports.components.ReportChart
+import aktual.budget.reports.components.info
+import aktual.budget.reports.components.rememberChartZoomState
+import aktual.budget.reports.components.string
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
-import aktual.budget.reports.ui.Tags
-import aktual.budget.reports.ui.charts.ChartInfoSheet
-import aktual.budget.reports.ui.charts.ChartZoomState
-import aktual.budget.reports.ui.charts.PREVIEW_AGE_OF_MONEY_DATA
-import aktual.budget.reports.ui.charts.ReportChart
-import aktual.budget.reports.ui.charts.info
-import aktual.budget.reports.ui.charts.rememberCalendarDrilldown
-import aktual.budget.reports.ui.charts.rememberChartZoomState
 import aktual.budget.reports.ui.montecarlo.MonteCarloReportScreen
-import aktual.budget.reports.ui.string
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.dashboard.DashboardItem
@@ -109,11 +108,15 @@ fun ReportScreen(
       when (action) {
         NavBack -> if (hasUnsavedText) showDiscardDialog = true else back()
         is Rename -> viewModel.rename(action.name)
-        is SaveText -> viewModel.saveText(action.content, action.align)
-        is SetUnsavedText -> hasUnsavedText = action.hasUnsavedText
-        is SetSummaryType -> viewModel.setSummaryType(action.type)
-        is SetAllTimeDivisor -> viewModel.setSummaryAllTimeDivisor(action.allTime)
-        is ClickCalendarDay -> calendarDrilldown(action)
+        is Chart ->
+          when (val chart = action.action) {
+            is SaveText -> viewModel.saveText(chart.content, chart.align)
+            is SetUnsavedText -> hasUnsavedText = chart.hasUnsavedText
+            is SetSummaryType -> viewModel.setSummaryType(chart.type)
+            is SetAllTimeDivisor -> viewModel.setSummaryAllTimeDivisor(chart.allTime)
+            is ClickCalendarDay -> calendarDrilldown(chart)
+            is DrillDown -> Unit
+          }
         else -> Unit
       }
     },
@@ -187,7 +190,7 @@ internal fun ReportScaffold(
         actions = {
           if (zoom.range != null) {
             BareIconButton(
-              modifier = Modifier.testTag(Tags.ResetZoom),
+              modifier = Modifier.testTag(ChartTags.ResetZoom),
               imageVector = MaterialIcons.ZoomOut,
               contentDescription = Strings.reportsResetZoom,
               onClick = zoom::reset,
@@ -195,7 +198,7 @@ internal fun ReportScaffold(
           }
           if (info.isNotEmpty()) {
             BareIconButton(
-              modifier = Modifier.testTag(Tags.ChartInfo),
+              modifier = Modifier.testTag(ChartTags.ChartInfo),
               imageVector = AktualIcons.InformationOutline,
               contentDescription = Strings.reportsChartInfo,
               onClick = { showInfo = true },
@@ -256,7 +259,7 @@ private fun ReportContent(
           modifier = contentModifier.background(colors.tableBackground, CardShape).padding(8.dp),
           data = state.data,
           compact = false,
-          onAction = onAction,
+          onAction = { onAction(Action.Chart(it)) },
           zoom = zoom,
         )
     }

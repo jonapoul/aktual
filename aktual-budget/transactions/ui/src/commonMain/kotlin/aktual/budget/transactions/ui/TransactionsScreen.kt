@@ -1,6 +1,6 @@
 package aktual.budget.transactions.ui
 
-import aktual.budget.banksync.ui.showBankSyncSummary
+import aktual.budget.banksync.components.showBankSyncSummary
 import aktual.budget.db.dao.ClearedBalances
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount

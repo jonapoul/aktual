@@ -1,0 +1,712 @@
+package aktual.budget.reports.components
+
+import aktual.budget.model.Amount
+import aktual.budget.reports.vm.DateRange
+import aktual.budget.reports.vm.PercentageDivisor
+import aktual.budget.reports.vm.SummaryChartType
+import aktual.budget.reports.vm.SummaryData
+import aktual.budget.reports.vm.SummaryReportMeta
+import aktual.budget.reports.vm.TimeFrame
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CloseBracket
+import aktual.core.icons.Equals
+import aktual.core.icons.OpenBracket
+import aktual.core.icons.Sum
+import aktual.core.l10n.Strings
+import aktual.core.model.Percent
+import aktual.core.model.percent
+import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
+import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.CardShape
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.ProvideSurfaceColor
+import aktual.core.ui.ScaleToFitText
+import aktual.core.ui.checkbox
+import aktual.core.ui.formattedString
+import aktual.core.ui.formattedText
+import aktual.core.ui.stringShort
+import alakazam.compose.HorizontalSpacer
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize.Max
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.Stable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month.JANUARY
+import kotlinx.datetime.Month.JULY
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.yearMonth
+
+@Composable
+internal fun SummaryChart(
+  data: SummaryData,
+  compact: Boolean,
+  onAction: ChartActionListener,
+  modifier: Modifier = Modifier,
+  includeHeader: Boolean = true,
+) =
+  Column(modifier = modifier, horizontalAlignment = CenterHorizontally) {
+    if (includeHeader) {
+      Header(modifier = Modifier.fillMaxWidth(), data = data)
+    }
+
+    if (compact) {
+      Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Center) {
+        when (data) {
+          is AveragePerMonth -> CompactAmount(data.average)
+          is AveragePerYear -> CompactAmount(data.average)
+          is AveragePerTransaction -> CompactAmount(data.average)
+          is Percentage -> CompactPercent(data.percent)
+          is Sum -> CompactAmount(data.value)
+        }
+      }
+    } else {
+      when (data) {
+        is AveragePerMonth -> RegularPerMonth(data, onAction)
+        is AveragePerYear -> RegularPerYear(data, onAction)
+        is AveragePerTransaction -> RegularPerTransaction(data, onAction)
+        is Percentage -> RegularPercent(data, onAction)
+        is Sum -> RegularSum(data, onAction)
+      }
+    }
+  }
+
+@Composable
+private fun Header(
+  data: SummaryData,
+  modifier: Modifier = Modifier,
+) =
+  Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
+    Text(text = data.title, color = colors.pageText, style = typography.bodyLarge)
+
+    data.start?.yearMonth?.let { start ->
+      data.end?.yearMonth?.let { end ->
+        DateRangeText(dateRange(start, end))
+      }
+    }
+  }
+
+@Composable
+private fun CompactAmount(
+  amount: Amount,
+  modifier: Modifier = Modifier,
+) {
+  ScaleToFitText(
+    modifier = modifier.padding(16.dp),
+    style = summaryTextStyle(),
+    color =
+      when {
+        amount == Zero -> colors.reportsNumberNeutral
+        amount.isPositive() -> colors.reportsNumberPositive
+        else -> colors.reportsNumberNegative
+      },
+    text = amount.formattedString(includeSign = false),
+  )
+}
+
+@Composable
+private fun CompactPercent(
+  percent: Percent,
+  modifier: Modifier = Modifier,
+) {
+  ScaleToFitText(
+    modifier = modifier.padding(16.dp),
+    style = summaryTextStyle(),
+    color = if (percent == Zero) colors.reportsNumberNeutral else colors.reportsNumberPositive,
+    text = percent.toString(decimalPlaces = 2),
+  )
+}
+
+@Stable
+@Composable
+@ReadOnlyComposable
+private fun summaryTextStyle(style: TextStyle = LocalTextStyle.current) =
+  style.copy(fontFeatureSettings = """"tnum", "ss01", "ss04"""")
+
+@Composable
+private fun RegularPerMonth(
+  data: SummaryData.AveragePerMonth,
+  onAction: ChartActionListener,
+  modifier: Modifier = Modifier,
+) =
+  Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
+    ShowAs(data, onAction)
+
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = CenterVertically,
+    ) {
+      Column(
+        modifier = Modifier.weight(1f, fill = false).width(Max),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.Center,
+          verticalAlignment = CenterVertically,
+        ) {
+          SumColumn(data)
+          FilterDisplay()
+        }
+
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = Strings.reportsSummaryNumMonths,
+          fontSize = textSizes.heading,
+          textAlign = Center,
+          color = colors.pageText,
+        )
+      }
+
+      HorizontalSpacer(10.dp)
+      Equals()
+      HorizontalSpacer(10.dp)
+
+      Column(
+        modifier = Modifier.width(Max),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = data.total.formattedText(),
+          fontSize = textSizes.display,
+          textAlign = Center,
+          color = colors.pageText,
+        )
+
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = "%.2f".format(data.numMonths),
+          fontSize = textSizes.display,
+          textAlign = Center,
+          color = colors.pageText,
+        )
+      }
+    }
+
+    Result { CompactAmount(data.average) }
+  }
+
+@Composable
+private fun RegularPerYear(
+  data: SummaryData.AveragePerYear,
+  onAction: ChartActionListener,
+  modifier: Modifier = Modifier,
+) =
+  Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
+    ShowAs(data, onAction)
+
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = CenterVertically,
+    ) {
+      Column(
+        modifier = Modifier.weight(1f, fill = false).width(Max),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.Center,
+          verticalAlignment = CenterVertically,
+        ) {
+          SumColumn(data)
+          FilterDisplay()
+        }
+
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = Strings.reportsSummaryNumYears,
+          fontSize = textSizes.heading,
+          textAlign = Center,
+          color = colors.pageText,
+        )
+      }
+
+      HorizontalSpacer(10.dp)
+      Equals()
+      HorizontalSpacer(10.dp)
+
+      Column(
+        modifier = Modifier.width(Max),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = data.total.formattedText(),
+          fontSize = textSizes.display,
+          textAlign = Center,
+          color = colors.pageText,
+        )
+
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = "%.2f".format(data.numYears),
+          fontSize = textSizes.display,
+          textAlign = Center,
+          color = colors.pageText,
+        )
+      }
+    }
+
+    Result { CompactAmount(data.average) }
+  }
+
+@Composable
+private fun RegularPerTransaction(
+  data: SummaryData.AveragePerTransaction,
+  onAction: ChartActionListener,
+  modifier: Modifier = Modifier,
+) =
+  Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
+    ShowAs(data, onAction)
+
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = CenterVertically,
+    ) {
+      Column(
+        modifier = Modifier.weight(1f, fill = false).width(Max),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.Center,
+          verticalAlignment = CenterVertically,
+        ) {
+          SumColumn(data)
+          FilterDisplay()
+        }
+
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = Strings.reportsSummaryNumTransactions,
+          fontSize = textSizes.heading,
+          textAlign = Center,
+          color = colors.pageText,
+        )
+      }
+
+      HorizontalSpacer(10.dp)
+      Equals()
+      HorizontalSpacer(10.dp)
+
+      Column(
+        modifier = Modifier.width(Max),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = data.total.formattedText(),
+          fontSize = textSizes.display,
+          textAlign = Center,
+          color = colors.pageText,
+        )
+
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = data.numTransactions.toString(),
+          fontSize = textSizes.display,
+          textAlign = Center,
+          color = colors.pageText,
+        )
+      }
+    }
+
+    Result { CompactAmount(data.average) }
+  }
+
+@Composable
+private fun RegularPercent(
+  data: SummaryData.Percentage,
+  onAction: ChartActionListener,
+  modifier: Modifier = Modifier,
+) =
+  Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
+    ShowAs(data, onAction)
+    DivisorCheckbox(data, onAction)
+
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = CenterVertically,
+    ) {
+      Column(
+        modifier = Modifier.weight(1f, fill = false).width(Max),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.Center,
+          verticalAlignment = CenterVertically,
+        ) {
+          SumColumn(data)
+          FilterDisplay()
+        }
+
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.Center,
+          verticalAlignment = CenterVertically,
+        ) {
+          SumColumn(data.divisor)
+          FilterDisplay()
+        }
+      }
+
+      HorizontalSpacer(10.dp)
+      Equals()
+      HorizontalSpacer(10.dp)
+
+      Column(
+        modifier = Modifier.width(Max),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = data.numerator.formattedText(),
+          fontSize = textSizes.display,
+          textAlign = Center,
+          color = colors.pageText,
+        )
+
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = data.denominator.formattedText(),
+          fontSize = textSizes.display,
+          textAlign = Center,
+          color = colors.pageText,
+        )
+      }
+    }
+
+    Result { CompactPercent(data.percent) }
+  }
+
+@Composable
+private fun RegularSum(
+  data: SummaryData.Sum,
+  onAction: ChartActionListener,
+  modifier: Modifier = Modifier,
+) =
+  Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
+    ShowAs(data, onAction)
+
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = CenterVertically,
+    ) {
+      SumColumn(data)
+      FilterDisplay()
+    }
+
+    Result { CompactAmount(data.value) }
+  }
+
+@Composable
+private fun Result(
+  modifier: Modifier = Modifier,
+  content: @Composable () -> Unit,
+) =
+  Row(
+    modifier = modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.Center,
+    verticalAlignment = CenterVertically,
+  ) {
+    Equals()
+    HorizontalSpacer(10.dp)
+    Box(modifier = Modifier.width(250.dp)) { content() }
+  }
+
+@Composable
+private fun ShowAs(
+  data: SummaryData,
+  onAction: ChartActionListener,
+  modifier: Modifier = Modifier,
+) =
+  Row(modifier = modifier.wrapContentSize(), verticalAlignment = CenterVertically) {
+    Text(text = Strings.reportsSummaryShowAs, color = colors.pageText)
+
+    HorizontalSpacer(5.dp)
+
+    val chartTypeMap: ImmutableMap<String, SummaryChartType> =
+      SummaryChartType.entries.associateBy { string(it) }.toImmutableMap()
+
+    val currentType =
+      when (data) {
+        is AveragePerMonth -> AveragePerMonth
+        is AveragePerYear -> AveragePerYear
+        is AveragePerTransaction -> AveragePerTransaction
+        is Percentage -> Percentage
+        is Sum -> SummaryChartType.Sum
+      }
+
+    // Summary charts are always drawn on a table card
+    ProvideSurfaceColor(colors.tableBackground) {
+      AktualExposedDropDownMenu(
+        modifier = Modifier.wrapContentSize(),
+        value = string(currentType),
+        options = chartTypeMap.keys.toImmutableList(),
+        onValueChange = { string ->
+          val type = chartTypeMap.getValue(string)
+          onAction(ChartAction.SetSummaryType(type))
+        },
+      )
+    }
+  }
+
+@Composable
+private fun SumColumn(range: DateRange) =
+  Column(
+    modifier = Modifier.wrapContentSize(),
+    horizontalAlignment = CenterHorizontally,
+  ) {
+    range.start?.let { Text(text = string(it), color = colors.pageTextSubdued) }
+
+    Icon(
+      modifier = Modifier.size(50.dp),
+      imageVector = AktualIcons.Sum,
+      contentDescription = null,
+      tint = colors.pageText,
+    )
+
+    range.end?.let { Text(text = string(it), color = colors.pageTextSubdued) }
+  }
+
+@Composable
+private fun DivisorCheckbox(
+  data: SummaryData.Percentage,
+  onAction: ChartActionListener,
+  modifier: Modifier = Modifier,
+) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
+    Checkbox(
+      modifier = Modifier.minimumInteractiveComponentSize(),
+      checked = data.divisor is AllTime,
+      onCheckedChange = { newValue -> onAction(ChartAction.SetAllTimeDivisor(newValue)) },
+      colors = colors.checkbox(),
+    )
+
+    HorizontalSpacer(4.dp)
+
+    Text(
+      modifier = Modifier.weight(1f),
+      text = Strings.reportsSummaryAllTimeDivisor,
+      color = colors.pageText,
+    )
+  }
+}
+
+@Composable
+private fun FilterDisplay() =
+  Row(modifier = Modifier.wrapContentSize(), verticalAlignment = CenterVertically) {
+    Icon(
+      modifier = Modifier.size(50.dp),
+      imageVector = AktualIcons.OpenBracket,
+      contentDescription = null,
+      tint = colors.pageText,
+    )
+
+    // TODO handle filtering here https://github.com/jonapoul/aktual/issues/361
+    Text(
+      modifier = Modifier.weight(1f, fill = false),
+      text = Strings.reportsSummaryAll,
+      fontSize = textSizes.heading,
+      textAlign = Center,
+      color = colors.pageTextPositive,
+    )
+
+    Icon(
+      modifier = Modifier.size(50.dp),
+      imageVector = AktualIcons.CloseBracket,
+      contentDescription = null,
+      tint = colors.pageText,
+    )
+  }
+
+@Composable
+private fun Equals(modifier: Modifier = Modifier) =
+  Icon(
+    modifier = modifier.size(50.dp),
+    imageVector = AktualIcons.Equals,
+    contentDescription = null,
+    tint = colors.pageText,
+  )
+
+// E.g. "Jan 24"
+@Composable
+private fun string(date: LocalDate): String {
+  val month = date.month.stringShort()
+  val year = date.year.toString().substring(startIndex = 2)
+  return "$month $year"
+}
+
+@Composable
+private fun string(type: SummaryChartType): String =
+  when (type) {
+    Sum -> Strings.reportsSummarySum
+    AveragePerMonth -> Strings.reportsSummaryPerMonth
+    AveragePerYear -> Strings.reportsSummaryPerYear
+    AveragePerTransaction -> Strings.reportsSummaryPerTransaction
+    Percentage -> Strings.reportsSummaryPercentage
+  }
+
+@Preview
+@Composable
+private fun PreviewSummaryChart(
+  @PreviewParameter(SummaryChartProvider::class) params: ColorParams<SummaryChartParams>,
+) =
+  PreviewWithColorParams(params, isPrivacyEnabled = params.data.private) {
+    SummaryChart(
+      modifier =
+        Modifier.background(colors.tableBackground, CardShape)
+          .width(WIDTH.dp)
+          .let { m -> if (compact) m.height(300.dp) else m }
+          .padding(5.dp),
+      data = data,
+      compact = compact,
+      onAction = {},
+    )
+  }
+
+private data class SummaryChartParams(
+  val data: SummaryData,
+  val compact: Boolean,
+  val private: Boolean = false,
+)
+
+private class SummaryChartProvider :
+  ColorParamsProvider<SummaryChartParams>(
+    SummaryChartParams(SUM_DATA, compact = true),
+    SummaryChartParams(SUM_DATA, compact = false),
+    SummaryChartParams(SUM_DATA, compact = false, private = true),
+    SummaryChartParams(PERCENT_DATA, compact = true),
+    SummaryChartParams(PER_MONTH_DATA, compact = true),
+    SummaryChartParams(PER_MONTH_DATA, compact = false),
+    SummaryChartParams(PER_YEAR_DATA, compact = true),
+    SummaryChartParams(PER_YEAR_DATA, compact = false),
+    SummaryChartParams(PER_TRANSACTION_DATA, compact = true),
+    SummaryChartParams(PER_TRANSACTION_DATA, compact = false),
+    SummaryChartParams(PER_TRANSACTION_DATA, compact = false, private = true),
+    SummaryChartParams(
+      PERCENT_DATA.copy(divisor = AllTime),
+      compact = false,
+      private = true,
+    ),
+    SummaryChartParams(
+      PERCENT_DATA.copy(divisor = PercentageDivisor.Specific(START_DATE, END_DATE)),
+      compact = false,
+      private = true,
+    ),
+  )
+
+private val SUM_DATA =
+  SummaryData.Sum(title = "My Sum Summary", start = START_DATE, end = END_DATE, value = AMOUNT)
+
+private val PER_MONTH_DATA =
+  SummaryData.AveragePerMonth(
+    title = "My Per-Month Summary",
+    start = START_DATE,
+    end = END_DATE,
+    numMonths = 18.19f,
+    total = Amount(6198.55),
+    average = Amount(340.70),
+  )
+
+private val PER_YEAR_DATA =
+  SummaryData.AveragePerYear(
+    title = "My Per-Year Summary",
+    start = START_DATE,
+    end = END_DATE,
+    numYears = 1.52f,
+    total = Amount(6198.55),
+    average = Amount(4078.00),
+  )
+
+val PER_TRANSACTION_DATA =
+  SummaryData.AveragePerTransaction(
+    title = "My Per-Transaction Summary",
+    start = START_DATE,
+    end = END_DATE,
+    numTransactions = 1327,
+    total = Amount(6198.55),
+    average = Amount(4.67),
+  )
+
+private val PERCENT_DATA =
+  SummaryData.Percentage(
+    title = "My Percent Summary",
+    start = START_DATE,
+    end = END_DATE,
+    numerator = Amount(6198.55),
+    denominator = Amount(4043.87),
+    percent = 153.28.percent,
+    divisor = AllTime,
+  )
+
+val PER_TRANSACTION_META =
+  SummaryReportMeta(
+    conditions = emptyList(),
+    conditionsOp = And,
+    timeFrame =
+      TimeFrame(start = YearMonth(2024, JANUARY), end = YearMonth(2025, JULY), mode = Static),
+    content = """{"type":"avgPerTransact","fontSize":98}""",
+  )

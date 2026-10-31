@@ -1,7 +1,7 @@
 package aktual.budget.reports.ui.report
 
+import aktual.budget.reports.components.PREVIEW_BUDGET_ANALYSIS_DATA
 import aktual.budget.reports.ui.Tags
-import aktual.budget.reports.ui.charts.PREVIEW_BUDGET_ANALYSIS_DATA
 import aktual.budget.reports.vm.BudgetAnalysisSettings
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.report.BudgetAnalysisState

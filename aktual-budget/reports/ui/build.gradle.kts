@@ -9,10 +9,8 @@ kotlin {
     api(project(":aktual-core:nav"))
     api(project(":aktual-core:ui"))
     implementation(libs.kotlinx.datetime)
-    implementation(libs.markdown.core)
-    implementation(libs.markdown.m3)
-    implementation(libs.shimmer)
     implementation(libs.vico)
+    implementation(project(":aktual-budget:reports:components"))
     implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
   }

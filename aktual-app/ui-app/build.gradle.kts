@@ -6,7 +6,7 @@ kotlin {
     api(project(":aktual-about:ui"))
     api(project(":aktual-account:ui"))
     api(project(":aktual-budget:list:ui"))
-    api(project(":aktual-budget:sync:ui"))
+    api(project(":aktual-budget:sync:components"))
     api(project(":aktual-metrics:ui"))
     api(project(":aktual-prefs:ui"))
   }

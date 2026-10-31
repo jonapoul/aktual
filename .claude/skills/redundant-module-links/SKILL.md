@@ -101,4 +101,4 @@ Both checks cover main source sets only. Atlas doesn't record test dependencies,
 ## Notes
 
 - All reported redundant links can be removed together. Removing a redundant link never breaks the chain another removal relies on.
-- Some routes are incidental, e.g. `about:vm` getting `budget` through `di:runlevel > di:graphs`, or `list:ui` getting `core:ui` through `sync:ui`. Mention these in the summary so the explicit link can be kept if preferred.
+- Some routes are incidental, e.g. `about:vm` getting `budget` through `di:runlevel > di:graphs`, or `list:ui` getting `core:ui` through `sync:components`. Mention these in the summary so the explicit link can be kept if preferred.

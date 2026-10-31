@@ -1,7 +1,7 @@
 package aktual.budget.navrail.ui
 
-import aktual.budget.accounts.ui.AddAccountSheet
-import aktual.budget.accounts.ui.addAccount
+import aktual.budget.accounts.components.AddAccountSheet
+import aktual.budget.accounts.components.addAccount
 import aktual.budget.navrail.vm.BudgetNavRailViewModel
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3

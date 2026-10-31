@@ -2,12 +2,12 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
-import aktual.budget.reports.ui.charts.ChartInfoSheet
-import aktual.budget.reports.ui.charts.ChartZoomState
-import aktual.budget.reports.ui.charts.PREVIEW_CUSTOM_DATA
-import aktual.budget.reports.ui.charts.info
-import aktual.budget.reports.ui.charts.rememberChartZoomState
-import aktual.budget.reports.ui.string
+import aktual.budget.reports.components.ChartInfoSheet
+import aktual.budget.reports.components.ChartZoomState
+import aktual.budget.reports.components.PREVIEW_CUSTOM_DATA
+import aktual.budget.reports.components.info
+import aktual.budget.reports.components.rememberChartZoomState
+import aktual.budget.reports.components.string
 import aktual.budget.reports.vm.report.CustomReportEditorData
 import aktual.budget.reports.vm.report.CustomReportState
 import aktual.budget.reports.vm.report.CustomReportViewModel

@@ -8,11 +8,11 @@ import aktual.budget.model.Operator.IsApprox
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
+import aktual.budget.schedules.components.ScheduleStatusBadge
+import aktual.budget.schedules.components.label
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.ScheduleStatus
 import aktual.budget.schedules.domain.amountPrefix
-import aktual.budget.schedules.ui.list.ScheduleStatusBadge
-import aktual.budget.schedules.ui.list.label
 import aktual.budget.transactions.domain.MIN_TRANSACTION_DATE
 import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.vm.edit.EntityOption
