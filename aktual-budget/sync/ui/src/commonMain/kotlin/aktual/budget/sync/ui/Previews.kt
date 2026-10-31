@@ -9,9 +9,9 @@ import aktual.budget.sync.vm.SyncStep.DownloadingDatabase
 import aktual.budget.sync.vm.SyncStep.FetchingFileInfo
 import aktual.budget.sync.vm.SyncStep.ValidatingDatabase
 import aktual.budget.sync.vm.SyncStepState
+import aktual.budget.sync.vm.SyncStepState.DefiniteProgress
 import aktual.budget.sync.vm.SyncStepState.Failed
-import aktual.budget.sync.vm.SyncStepState.InProgress.Definite
-import aktual.budget.sync.vm.SyncStepState.InProgress.Indefinite
+import aktual.budget.sync.vm.SyncStepState.IndefiniteProgress
 import aktual.budget.sync.vm.SyncStepState.NotStarted
 import aktual.budget.sync.vm.SyncStepState.Succeeded
 import aktual.core.model.percent
@@ -42,8 +42,8 @@ internal class SyncBudgetDialogProvider :
       passwordState = Inactive,
       stepStates =
         persistentMapOf(
-          FetchingFileInfo to Indefinite,
-          DownloadingDatabase to Definite(50.percent),
+          FetchingFileInfo to IndefiniteProgress,
+          DownloadingDatabase to DefiniteProgress(50.percent),
           ValidatingDatabase to NotStarted,
         ),
     ),

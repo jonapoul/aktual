@@ -226,7 +226,7 @@ private fun EditScheduleScaffold(
             reason =
               when (state) {
                 NotFound -> Strings.editScheduleFailureNotFound
-                is Other -> state.reason
+                is OtherFailure -> state.reason
               },
             action =
               FailureAction(
@@ -743,7 +743,7 @@ internal val PreviewLoaded =
 private class EditScheduleStateProvider :
   ColorParamsProvider<EditScheduleState>(
     Loading,
-    EditScheduleState.Failure.NotFound,
+    NotFound,
     PreviewLoaded,
     PreviewLoaded.copy(isEditing = true, hasChanges = true),
     PreviewNew,

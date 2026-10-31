@@ -142,7 +142,7 @@ internal constructor(
       throw e
     } catch (e: Exception) {
       logcat.e(e) { "Failed loading schedule $scheduleId" }
-      mutableFailure.update { Failure.Other(e.requireMessage()) }
+      mutableFailure.update { EditScheduleState.OtherFailure(e.requireMessage()) }
     }
   }
 

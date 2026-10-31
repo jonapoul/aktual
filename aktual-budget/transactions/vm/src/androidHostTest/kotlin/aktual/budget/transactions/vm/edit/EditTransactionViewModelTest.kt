@@ -185,7 +185,7 @@ class EditTransactionViewModelTest {
     viewModel.state.test {
       var state = awaitItem()
       while (state == Loading) state = awaitItem()
-      assertThat(state).isEqualTo(EditTransactionState.Failure.NotFound)
+      assertThat(state).isEqualTo(NotFound)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -620,7 +620,7 @@ class EditTransactionViewModelTest {
         viewModel.revert()
         var state = awaitItem()
         while (state is Loaded) state = awaitItem()
-        assertThat(state).isEqualTo(EditTransactionState.Failure.NotFound)
+        assertThat(state).isEqualTo(NotFound)
         cancelAndIgnoreRemainingEvents()
       }
     }
@@ -640,7 +640,7 @@ class EditTransactionViewModelTest {
 
         var state = awaitItem()
         while (state is Loaded) state = awaitItem()
-        assertThat(state).isEqualTo(EditTransactionState.Failure.NotFound)
+        assertThat(state).isEqualTo(NotFound)
         cancelAndIgnoreRemainingEvents()
       }
     }

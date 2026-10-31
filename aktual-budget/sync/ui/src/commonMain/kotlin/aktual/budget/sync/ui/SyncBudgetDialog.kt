@@ -6,7 +6,6 @@ import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.sync.vm.SyncOverallState
 import aktual.budget.sync.vm.SyncStep
 import aktual.budget.sync.vm.SyncStepState
-import aktual.budget.sync.vm.SyncStepState.InProgress
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.ExclamationOutline
 import aktual.core.l10n.Strings
@@ -237,11 +236,11 @@ private fun SyncStepState(state: SyncStepState, modifier: Modifier = Modifier) {
         TintedDot(size = 6.dp, color = colors.reportsNumberNeutral)
       }
 
-      is InProgress.Indefinite -> {
+      is IndefiniteProgress -> {
         CircularProgressIndicator(modifier = Modifier.size(ITEM_SIZE), color = colors.reportsBlue)
       }
 
-      is InProgress.Definite -> {
+      is DefiniteProgress -> {
         CircularProgressIndicator(
           progress = { state.progress.floatValue / 100f },
           modifier = Modifier.size(ITEM_SIZE),

@@ -145,11 +145,11 @@ data class TransactionOptions(
 sealed interface EditTransactionState {
   data object Loading : EditTransactionState
 
-  sealed interface Failure : EditTransactionState {
-    data object NotFound : Failure
+  sealed interface Failure : EditTransactionState
 
-    @JvmInline value class Other(val reason: String) : Failure
-  }
+  data object NotFound : Failure
+
+  @JvmInline value class OtherFailure(val reason: String) : Failure
 
   // A new transaction needs an account to go in and, as upstream has it, a category to pick
   sealed interface Empty : EditTransactionState

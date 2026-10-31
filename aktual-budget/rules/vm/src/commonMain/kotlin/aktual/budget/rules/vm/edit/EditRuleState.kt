@@ -14,13 +14,13 @@ sealed interface EditRuleState {
       get() = !rule.hasUnknownValues
   }
 
-  sealed interface Failure : EditRuleState {
-    data object NoMatch : Failure
+  sealed interface Failure : EditRuleState
 
-    @JvmInline value class Saving(val reason: String) : Failure
+  data object NotFound : Failure
 
-    @JvmInline value class Other(val reason: String) : Failure
-  }
+  @JvmInline value class SaveFailed(val reason: String) : Failure
+
+  @JvmInline value class OtherFailure(val reason: String) : Failure
 }
 
 @Stable
@@ -33,6 +33,6 @@ internal fun editRuleState(
   when {
     loading -> Loading
     failure != null -> failure
-    rule == null -> EditRuleState.Failure.NoMatch
+    rule == null -> NotFound
     else -> EditRuleState.Success(rule, working)
   }

@@ -283,9 +283,9 @@ private val Failure.reason: String
   @Composable
   get() =
     when (this) {
-      NoMatch -> Strings.editRuleFailedNoMatch
-      is Saving -> Strings.editRuleFailedSaving(reason)
-      is Other -> Strings.editRuleFailedOther(reason)
+      NotFound -> Strings.editRuleFailedNoMatch
+      is SaveFailed -> Strings.editRuleFailedSaving(reason)
+      is OtherFailure -> Strings.editRuleFailedOther(reason)
     }
 
 /** Make sure this stays in sync with [LoadedContent] */
@@ -388,5 +388,5 @@ private class EditRuleStateProvider :
     EditRuleStateParams(Success(PreviewRule1, isWorking = false)),
     EditRuleStateParams(Success(PreviewRule1, isWorking = true)),
     EditRuleStateParams(Loading),
-    EditRuleStateParams(Failure.Other("Something broke")),
+    EditRuleStateParams(EditRuleState.OtherFailure("Something broke")),
   )

@@ -268,7 +268,7 @@ internal constructor(
   ): EditTransactionState {
     if (failure != null) return failure
     // A draft stays open when its transaction's deleted elsewhere, so it isn't lost
-    if (changedElsewhere == Deleted && draft == null) return Failure.NotFound
+    if (changedElsewhere == Deleted && draft == null) return NotFound
     if (entities == null) return Loading
     val form =
       (draft ?: saved?.draft)?.let {
@@ -408,7 +408,7 @@ internal constructor(
       throw e
     } catch (e: Exception) {
       logcat.e(e) { "Failed loading $target" }
-      mutableFailure.update { Failure.Other(e.requireMessage()) }
+      mutableFailure.update { EditTransactionState.OtherFailure(e.requireMessage()) }
     }
   }
 
