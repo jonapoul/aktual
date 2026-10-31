@@ -40,7 +40,7 @@ plugins {
   id("org.jetbrains.kotlin.jvm") version "2.4.21" apply false
   id("org.jetbrains.kotlin.multiplatform") version "2.4.21" apply false
 
-  id("com.autonomousapps.build-health") version "3.19.2"
+  id("com.autonomousapps.build-health") version "3.20.0"
   id("com.github.burrunan.s3-build-cache") version "1.9.10"
   id("com.gradle.develocity") version "4.6.1"
   id("dev.jonpoulton.atlas") version "0.7.1"
