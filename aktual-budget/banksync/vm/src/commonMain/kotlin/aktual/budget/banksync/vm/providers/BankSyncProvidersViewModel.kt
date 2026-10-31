@@ -90,23 +90,27 @@ internal constructor(
   fun reset(source: AccountSyncSource) {
     if (!mutableResetting.compareAndSet(expect = null, update = source)) return
     viewModelScope.launch {
-      val event = runCatchingCancellable {
-        when (val response = setup.reset(source)) {
-          Success -> {
-            mutableStatuses.update { it + (source to BankSyncProviderStatus.NotConfigured) }
-            BankSyncProvidersEvent.Reset
+      val event =
+        try {
+          runCatchingCancellable {
+            when (val response = setup.reset(source)) {
+              Success -> {
+                mutableStatuses.update { it + (source to BankSyncProviderStatus.NotConfigured) }
+                BankSyncProvidersEvent.Reset
+              }
+              is Failed -> {
+                logcat.w { "Resetting $source refused: $response" }
+                BankSyncProvidersEvent.ResetFailed(response.toSetupError())
+              }
+            }
           }
-          is Failed -> {
-            logcat.w { "Resetting $source refused: $response" }
-            BankSyncProvidersEvent.ResetFailed(response.toSetupError())
-          }
+            .getOrElse { e ->
+              logcat.e(e) { "Failed resetting $source" }
+              BankSyncProvidersEvent.ResetFailed(SetupError.Other(e.requireMessage()))
+            }
+        } finally {
+          mutableResetting.update { null }
         }
-      }
-        .getOrElse { e ->
-          logcat.e(e) { "Failed resetting $source" }
-          BankSyncProvidersEvent.ResetFailed(SetupError.Other(e.requireMessage()))
-        }
-      mutableResetting.update { null }
       mutableEvents.emit(event)
     }
   }

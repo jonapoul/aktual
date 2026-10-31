@@ -191,19 +191,22 @@ internal constructor(
     if (external == null || !mutableIsLinking.compareAndSet(expect = false, update = true)) return
     val target = mutableTarget.value
     viewModelScope.launch {
-      runCatchingCancellable {
-        when {
-          account != null -> linker.link(account, source, external)
-          target is New -> linker.create(source, external, target.offBudget)
-          else -> error("Nothing to link ${external.accountId} to")
+      try {
+        runCatchingCancellable {
+          when {
+            account != null -> linker.link(account, source, external)
+            target is New -> linker.create(source, external, target.offBudget)
+            else -> error("Nothing to link ${external.accountId} to")
+          }
+          mutableEvents.emit(Linked)
         }
-        mutableEvents.emit(Linked)
+          .onFailure { e ->
+            logcat.e(e) { "Failed linking ${account ?: "a new account"} to $accountId" }
+            mutableEvents.emit(LinkBankAccountEvent.LinkFailed(e.requireMessage()))
+          }
+      } finally {
+        mutableIsLinking.update { false }
       }
-        .onFailure { e ->
-          logcat.e(e) { "Failed linking ${account ?: "a new account"} to $accountId" }
-          mutableEvents.emit(LinkBankAccountEvent.LinkFailed(e.requireMessage()))
-        }
-      mutableIsLinking.update { false }
     }
   }
 

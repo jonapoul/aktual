@@ -109,18 +109,22 @@ internal constructor(
     if (showLoading) mutableIsLoading.update { true }
     loadJob?.cancel()
     loadJob = viewModelScope.launch {
-      val sources = runCatchingCancellable {
-        val accounts = loadAccounts()
-        mutableAccounts.update { accounts }
-        mutableFailure.update { null }
-        accounts.linked.keys
-      }
-        .getOrElse { e ->
-          logcat.e(e) { "Failed loading bank sync accounts" }
-          mutableFailure.update { e.requireMessage() }
-          emptySet()
+      val sources =
+        try {
+          runCatchingCancellable {
+            val accounts = loadAccounts()
+            mutableAccounts.update { accounts }
+            mutableFailure.update { null }
+            accounts.linked.keys
+          }
+            .getOrElse { e ->
+              logcat.e(e) { "Failed loading bank sync accounts" }
+              mutableFailure.update { e.requireMessage() }
+              emptySet()
+            }
+        } finally {
+          mutableIsLoading.update { false }
         }
-      mutableIsLoading.update { false }
 
       // Show the accounts straight away, then fill in each provider's status as it arrives
       checkProviders(sources)

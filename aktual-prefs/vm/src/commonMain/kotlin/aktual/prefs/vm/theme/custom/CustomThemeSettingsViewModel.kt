@@ -207,27 +207,30 @@ internal constructor(
     mutableIsFetchingCatalog.update { true }
     mutableSummaries.update { persistentListOf() }
     mutableFailure.update { null }
-    runCatchingCancellable {
-      val summaries =
-        cache
-          .summaries()
-          .ifEmpty { themeApi.fetchCatalog().also { cache.save(it) } }
-          .toPersistentList()
-      mutableSummaries.update { summaries }
+    try {
+      runCatchingCancellable {
+        val summaries =
+          cache
+            .summaries()
+            .ifEmpty { themeApi.fetchCatalog().also { cache.save(it) } }
+            .toPersistentList()
+        mutableSummaries.update { summaries }
 
-      val cacheStates =
-        summaries.associate { s -> s.repo.toId() to cacheState(s) }.toPersistentMap()
-      mutableCachedThemes.update { cacheStates }
+        val cacheStates =
+          summaries.associate { s -> s.repo.toId() to cacheState(s) }.toPersistentMap()
+        mutableCachedThemes.update { cacheStates }
 
-      if (showSnackbar) {
-        mutableEvents.tryEmit(CacheRefreshed)
+        if (showSnackbar) {
+          mutableEvents.tryEmit(CacheRefreshed)
+        }
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed fetching theme catalog" }
+          mutableFailure.update { FetchFailed }
+        }
+    } finally {
+      mutableIsFetchingCatalog.update { false }
     }
-      .onFailure { e ->
-        logcat.e(e) { "Failed fetching theme catalog" }
-        mutableFailure.update { FetchFailed }
-      }
-    mutableIsFetchingCatalog.update { false }
   }
 
   private suspend fun cacheState(summary: CustomThemeSummary): CacheState {

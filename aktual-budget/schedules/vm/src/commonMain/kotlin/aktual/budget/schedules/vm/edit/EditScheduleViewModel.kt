@@ -239,30 +239,33 @@ internal constructor(
 
     mutableIsWorking.update { true }
     viewModelScope.launch {
-      runCatchingCancellable {
-        if (scheduleId == null) {
-          writer.create(loaded.form)
-          mutableEvents.tryEmit(Created)
-        } else {
-          val ruleId = saved.ruleId ?: error("Schedule $scheduleId has no rule")
-          writer.update(scheduleId, ruleId, saved.conditions, saved.actions, loaded.form)
-          loadSaved()?.let { reloaded ->
-            mutableSaved.update { reloaded }
-            mutableForm.update { reloaded.form }
-          }
-          mutableIsEditing.update { false }
-        }
-      }
-        .onFailure { e ->
-          if (e is DuplicateScheduleNameException) {
-            logcat.w(e) { "Duplicate name saving $scheduleId" }
-            mutableError.update { EditScheduleError.DuplicateName(loaded.form.name.trim()) }
+      try {
+        runCatchingCancellable {
+          if (scheduleId == null) {
+            writer.create(loaded.form)
+            mutableEvents.tryEmit(Created)
           } else {
-            logcat.e(e) { "Failed saving $scheduleId" }
-            mutableError.update { EditScheduleError.Saving(e.requireMessage()) }
+            val ruleId = saved.ruleId ?: error("Schedule $scheduleId has no rule")
+            writer.update(scheduleId, ruleId, saved.conditions, saved.actions, loaded.form)
+            loadSaved()?.let { reloaded ->
+              mutableSaved.update { reloaded }
+              mutableForm.update { reloaded.form }
+            }
+            mutableIsEditing.update { false }
           }
         }
-      mutableIsWorking.update { false }
+          .onFailure { e ->
+            if (e is DuplicateScheduleNameException) {
+              logcat.w(e) { "Duplicate name saving $scheduleId" }
+              mutableError.update { EditScheduleError.DuplicateName(loaded.form.name.trim()) }
+            } else {
+              logcat.e(e) { "Failed saving $scheduleId" }
+              mutableError.update { EditScheduleError.Saving(e.requireMessage()) }
+            }
+          }
+      } finally {
+        mutableIsWorking.update { false }
+      }
     }
   }
 
@@ -272,15 +275,18 @@ internal constructor(
 
     mutableIsWorking.update { true }
     viewModelScope.launch {
-      runCatchingCancellable {
-        writer.delete(id, saved.ruleId)
-        mutableEvents.tryEmit(Deleted)
-      }
-        .onFailure { e ->
-          logcat.e(e) { "Failed deleting $id" }
-          mutableError.update { EditScheduleError.Deleting(e.requireMessage()) }
+      try {
+        runCatchingCancellable {
+          writer.delete(id, saved.ruleId)
+          mutableEvents.tryEmit(Deleted)
         }
-      mutableIsWorking.update { false }
+          .onFailure { e ->
+            logcat.e(e) { "Failed deleting $id" }
+            mutableError.update { EditScheduleError.Deleting(e.requireMessage()) }
+          }
+      } finally {
+        mutableIsWorking.update { false }
+      }
     }
   }
 

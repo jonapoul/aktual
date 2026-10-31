@@ -736,12 +736,15 @@ internal constructor(
   private fun launchSave(save: suspend () -> Unit) {
     mutableIsWorking.update { true }
     viewModelScope.launch {
-      runCatchingCancellable { save() }
-        .onFailure { e ->
-          logcat.e(e) { "Failed saving $target" }
-          mutableError.update { EditTransactionError.Saving(e.requireMessage()) }
-        }
-      mutableIsWorking.update { false }
+      try {
+        runCatchingCancellable { save() }
+          .onFailure { e ->
+            logcat.e(e) { "Failed saving $target" }
+            mutableError.update { EditTransactionError.Saving(e.requireMessage()) }
+          }
+      } finally {
+        mutableIsWorking.update { false }
+      }
     }
   }
 
@@ -763,17 +766,20 @@ internal constructor(
 
     mutableIsWorking.update { true }
     viewModelScope.launch {
-      runCatchingCancellable {
-        isDeleted = true
-        writer.write(runTransfers = true) { delete(saved.details.transaction.id) }
-        mutableEvents.tryEmit(Deleted)
-      }
-        .onFailure { e ->
-          isDeleted = false
-          logcat.e(e) { "Failed deleting $target" }
-          mutableError.update { EditTransactionError.Deleting(e.requireMessage()) }
+      try {
+        runCatchingCancellable {
+          isDeleted = true
+          writer.write(runTransfers = true) { delete(saved.details.transaction.id) }
+          mutableEvents.tryEmit(Deleted)
         }
-      mutableIsWorking.update { false }
+          .onFailure { e ->
+            isDeleted = false
+            logcat.e(e) { "Failed deleting $target" }
+            mutableError.update { EditTransactionError.Deleting(e.requireMessage()) }
+          }
+      } finally {
+        mutableIsWorking.update { false }
+      }
     }
   }
 

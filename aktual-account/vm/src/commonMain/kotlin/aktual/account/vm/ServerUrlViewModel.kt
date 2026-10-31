@@ -120,15 +120,18 @@ internal constructor(
     mutableConfirmResult.reset()
     mutableIsLoading.update { true }
     viewModelScope.launch {
-      runCatchingCancellable {
-        demoBudget.open()
-        mutableNavDestination.send(ToDemo)
-      }
-        .onFailure { e ->
-          logcat.e(e) { "Failed opening demo budget" }
-          mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
+      try {
+        runCatchingCancellable {
+          demoBudget.open()
+          mutableNavDestination.send(ToDemo)
         }
-      mutableIsLoading.update { false }
+          .onFailure { e ->
+            logcat.e(e) { "Failed opening demo budget" }
+            mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
+          }
+      } finally {
+        mutableIsLoading.update { false }
+      }
     }
   }
 
