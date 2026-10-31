@@ -3,6 +3,7 @@ package aktual.core.connection
 import aktual.api.client.BaseApi
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.PingStateHolder
+import aktual.core.runCatchingCancellable
 import aktual.di.Closeable
 import aktual.di.Initializable
 import aktual.di.ServerChosenCoroutineScope
@@ -15,7 +16,6 @@ import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import io.ktor.client.plugins.ResponseException
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -65,20 +65,20 @@ class ServerVersionFetcher(
   private suspend fun fetchVersionUntilSuccess() {
     while (loopController.shouldLoop()) {
       logcat.v { "fetchVersion" }
-      try {
+      runCatchingCancellable {
         val response = withContext(contexts.io) { baseApi.fetchInfo() }
         logcat.v { "Fetched %s".format(response) }
         versionsStateHolder.set(response.build.version)
         break
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: ResponseException) {
-        logcat.w(e) { "HTTP failure fetching server info" }
-        delay(RETRY_DELAY)
-      } catch (e: Exception) {
-        logcat.w(e) { "Failed fetching server info" }
-        delay(RETRY_DELAY)
       }
+        .onFailure { e ->
+          if (e is ResponseException) {
+            logcat.w(e) { "HTTP failure fetching server info" }
+          } else {
+            logcat.w(e) { "Failed fetching server info" }
+          }
+          delay(RETRY_DELAY)
+        }
     }
   }
 

@@ -1,6 +1,7 @@
 package aktual.metrics.vm
 
 import aktual.api.client.MetricsApi
+import aktual.core.runCatchingCancellable
 import aktual.di.LoggedInScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -14,7 +15,6 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import java.io.IOException
 import kotlin.time.Clock
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,22 +51,27 @@ internal constructor(
   private suspend fun fetchMetrics(counter: Int) {
     logcat.d { "fetchMetrics counter=$counter" }
     mutableState.update { Loading }
-    try {
+    runCatchingCancellable {
       val response = withContext(contexts.io) { metricsApi.getMetrics() }
       logcat.v { "fetchMetrics success: $response" }
       val state = MetricsState.Success(response.memory, response.uptime, lastUpdate = clock.now())
       mutableState.update { state }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: IOException) {
-      logcat.e(e) { "Failed I/O when fetching metrics" }
-      mutableState.update { Disconnected }
-    } catch (e: SerializationException) {
-      logcat.e(e) { "Failed deserializing metrics response" }
-      mutableState.update { Failure(e.requireMessage()) }
-    } catch (e: Exception) {
-      logcat.e(e) { "Failed fetching metrics" }
-      mutableState.update { Failure(e.requireMessage()) }
     }
+      .onFailure { e ->
+        when (e) {
+          is IOException -> {
+            logcat.e(e) { "Failed I/O when fetching metrics" }
+            mutableState.update { Disconnected }
+          }
+          is SerializationException -> {
+            logcat.e(e) { "Failed deserializing metrics response" }
+            mutableState.update { Failure(e.requireMessage()) }
+          }
+          else -> {
+            logcat.e(e) { "Failed fetching metrics" }
+            mutableState.update { Failure(e.requireMessage()) }
+          }
+        }
+      }
   }
 }

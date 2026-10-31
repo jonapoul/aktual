@@ -5,5 +5,6 @@ kotlin {
     api(libs.alakazam.kotlin)
     api(project(":aktual-api"))
     implementation(libs.kotlinx.serialization.core)
+    implementation(project(":aktual-core"))
   }
 }
