@@ -9,10 +9,10 @@ import aktual.budget.model.DbMetadataKey.Companion.LastSyncedTimestamp
 import aktual.budget.model.MerkleOperations
 import aktual.budget.model.Timestamp
 import aktual.budget.proto.SyncRequestEncoder
+import aktual.core.runCatchingCancellable
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.update
 import logcat.logcat
 import okio.IOException
@@ -25,16 +25,16 @@ internal class IncrementalSyncer(
   private val clock: Clock,
   private val syncDao: SyncDao,
 ) {
-  suspend fun sync(): SyncResult =
-    try {
-      fullSync(sinceTimestamp = null, count = 0, prevDiffTime = null)
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: IOException) {
-      SyncResult.NetworkError(e)
-    } catch (e: Exception) {
-      logcat.e(e) { "Failed syncing" }
-      SyncResult.OtherError(e)
+  suspend fun sync(): SyncResult = runCatchingCancellable {
+    fullSync(sinceTimestamp = null, count = 0, prevDiffTime = null)
+  }
+    .getOrElse { e ->
+      if (e is IOException) {
+        SyncResult.NetworkError(e)
+      } else {
+        logcat.e(e) { "Failed syncing" }
+        SyncResult.OtherError(e)
+      }
     }
 
   private tailrec suspend fun fullSync(

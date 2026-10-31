@@ -33,6 +33,7 @@ import aktual.budget.transactions.vm.LoadedAccount.SpecificCategory
 import aktual.budget.transactions.vm.LoadedAccount.SpecificTag
 import aktual.budget.transactions.vm.LoadedAccount.Uncategorised
 import aktual.core.model.BudgetServer
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -58,7 +59,6 @@ import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableSet
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -298,13 +298,12 @@ internal constructor(
         newTransactions.counts
           .filter { accountId in it }
           .collect {
-            try {
+            runCatchingCancellable {
               newTransactions.markSeen(accountId)
-            } catch (e: CancellationException) {
-              throw e
-            } catch (e: Exception) {
-              logcat.w(e) { "Failed marking $accountId seen" }
             }
+              .onFailure { e ->
+                logcat.w(e) { "Failed marking $accountId seen" }
+              }
           }
       }
     }
@@ -338,13 +337,12 @@ internal constructor(
         ExtraBalances -> ShowExtraBalances(account)
       }
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         viewPrefs.set(key, enabled)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.w(e) { "Failed setting $key" }
       }
+        .onFailure { e ->
+          logcat.w(e) { "Failed setting $key" }
+        }
     }
   }
 
@@ -361,23 +359,22 @@ internal constructor(
     val account = accountId ?: return
     if (deleteJob?.isActive == true) return
     deleteJob = viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         val loginRemoved = deleter.delete(account)
         logcat.i { "Deleted account $account" }
         mutableEvents.trySend(if (loginRemoved) AccountDeleted else AccountDeletedBankLoginKept)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed deleting account $account" }
-        mutableEvents.trySend(DeleteAccountFailed)
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed deleting account $account" }
+          mutableEvents.trySend(DeleteAccountFailed)
+        }
     }
   }
 
   fun renameAccount(name: String) {
     val account = accountId ?: return
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         writer.write { renameAccount(account, name) }
         logcat.i { "Renamed account $account" }
         mutableLoadedAccount.update { loaded ->
@@ -387,12 +384,11 @@ internal constructor(
             loaded
           }
         }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed renaming account $account" }
-        mutableEvents.trySend(RenameAccountFailed)
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed renaming account $account" }
+          mutableEvents.trySend(RenameAccountFailed)
+        }
     }
   }
 

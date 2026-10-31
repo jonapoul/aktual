@@ -5,6 +5,7 @@ import aktual.budget.banksync.domain.BankSyncProviderSetup
 import aktual.budget.banksync.vm.BankSyncProviderStatus
 import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -18,7 +19,6 @@ import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -92,21 +92,22 @@ internal constructor(
     viewModelScope.launch {
       val event =
         try {
-          when (val response = setup.reset(source)) {
-            Success -> {
-              mutableStatuses.update { it + (source to BankSyncProviderStatus.NotConfigured) }
-              BankSyncProvidersEvent.Reset
-            }
-            is Failed -> {
-              logcat.w { "Resetting $source refused: $response" }
-              BankSyncProvidersEvent.ResetFailed(response.toSetupError())
+          runCatchingCancellable {
+            when (val response = setup.reset(source)) {
+              Success -> {
+                mutableStatuses.update { it + (source to BankSyncProviderStatus.NotConfigured) }
+                BankSyncProvidersEvent.Reset
+              }
+              is Failed -> {
+                logcat.w { "Resetting $source refused: $response" }
+                BankSyncProvidersEvent.ResetFailed(response.toSetupError())
+              }
             }
           }
-        } catch (e: CancellationException) {
-          throw e
-        } catch (e: Exception) {
-          logcat.e(e) { "Failed resetting $source" }
-          BankSyncProvidersEvent.ResetFailed(SetupError.Other(e.requireMessage()))
+            .getOrElse { e ->
+              logcat.e(e) { "Failed resetting $source" }
+              BankSyncProvidersEvent.ResetFailed(SetupError.Other(e.requireMessage()))
+            }
         } finally {
           mutableResetting.update { null }
         }
@@ -115,22 +116,21 @@ internal constructor(
   }
 
   private suspend fun fetchStatus(source: AccountSyncSource): BankSyncProviderStatus =
-    try {
-      when (val response = api.status(source)) {
-        is Success -> {
-          if (response.configured) Configured else NotConfigured
-        }
-        is Rejected -> {
-          logcat.w { "Bank sync status for $source rejected: $response" }
-          Failed
+    runCatchingCancellable<BankSyncProviderStatus> {
+        when (val response = api.status(source)) {
+          is Success -> {
+            if (response.configured) Configured else NotConfigured
+          }
+          is Rejected -> {
+            logcat.w { "Bank sync status for $source rejected: $response" }
+            Failed
+          }
         }
       }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.w(e) { "Failed checking bank sync status for $source" }
-      Failed
-    }
+      .getOrElse { e ->
+        logcat.w(e) { "Failed checking bank sync status for $source" }
+        Failed
+      }
 
   private companion object {
     // As upstream lists them

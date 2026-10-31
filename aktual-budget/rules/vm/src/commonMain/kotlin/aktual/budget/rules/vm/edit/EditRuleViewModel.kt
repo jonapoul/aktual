@@ -24,6 +24,7 @@ import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Failure
 import aktual.budget.rules.vm.hasUnknownValues
 import aktual.core.UuidGenerator
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -43,7 +44,6 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -136,14 +136,13 @@ internal constructor(
     mutableIsWorking.update { true }
     viewModelScope.launch {
       try {
-        rulesDao.tombstone(setOf(id))
-        mutableEvents.tryEmit(DeletedRule)
-        val change = tombstone(dataset = RULES, row = id.toString())
-        syncController.syncChanges(change)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed tombstoning $id" }
+        runCatchingCancellable {
+          rulesDao.tombstone(setOf(id))
+          mutableEvents.tryEmit(DeletedRule)
+          val change = tombstone(dataset = RULES, row = id.toString())
+          syncController.syncChanges(change)
+        }
+          .onFailure { e -> logcat.e(e) { "Failed tombstoning $id" } }
       } finally {
         mutableIsWorking.update { false }
       }
@@ -155,32 +154,33 @@ internal constructor(
 
     viewModelScope.launch {
       try {
-        val model = mutableRule.value
-        if (model == null) {
-          logcat.w { "Tried to save without a rule?" }
-        } else if (model.hasUnknownValues) {
-          logcat.w { "Not saving $model, it has unknown values" }
-        } else {
-          val rule =
-            with(model) {
-              Rules(
-                id = id,
-                stage = stage,
-                conditions = conditions,
-                actions = actions,
-                tombstone = false,
-                conditions_op = conditionsOp,
-              )
-            }
-          rulesDao.insert(rule)
-          logcat.i { "Saved $rule" }
-          syncController.syncChanges(insertChanges(rule))
+        runCatchingCancellable {
+          val model = mutableRule.value
+          if (model == null) {
+            logcat.w { "Tried to save without a rule?" }
+          } else if (model.hasUnknownValues) {
+            logcat.w { "Not saving $model, it has unknown values" }
+          } else {
+            val rule =
+              with(model) {
+                Rules(
+                  id = id,
+                  stage = stage,
+                  conditions = conditions,
+                  actions = actions,
+                  tombstone = false,
+                  conditions_op = conditionsOp,
+                )
+              }
+            rulesDao.insert(rule)
+            logcat.i { "Saved $rule" }
+            syncController.syncChanges(insertChanges(rule))
+          }
         }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed saving $ruleId" }
-        mutableFailure.update { EditRuleState.SaveFailed(e.requireMessage()) }
+          .onFailure { e ->
+            logcat.e(e) { "Failed saving $ruleId" }
+            mutableFailure.update { EditRuleState.SaveFailed(e.requireMessage()) }
+          }
       } finally {
         mutableIsWorking.update { false }
       }

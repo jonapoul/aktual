@@ -9,6 +9,7 @@ import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.SyncState
 import aktual.budget.model.SyncState.SyncFailed
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.Closeable
@@ -20,7 +21,6 @@ import dev.zacsweers.metro.ForScope
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -52,12 +52,10 @@ internal constructor(
     schedule()
   }
 
-  private suspend fun rebuildScheduleJsonPaths() =
-    try {
-      syncDao.rebuildScheduleJsonPaths()
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
+  private suspend fun rebuildScheduleJsonPaths() = runCatchingCancellable {
+    syncDao.rebuildScheduleJsonPaths()
+  }
+    .getOrElse { e ->
       // The database closes with the budget, which can happen while this is still running
       currentCoroutineContext().ensureActive()
       logcat.e(e) { "Failed rebuilding schedule JSON paths" }

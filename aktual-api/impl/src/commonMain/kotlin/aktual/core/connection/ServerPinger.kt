@@ -3,6 +3,7 @@ package aktual.core.connection
 import aktual.api.client.HealthApi
 import aktual.core.model.PingState
 import aktual.core.model.PingStateHolder
+import aktual.core.runCatchingCancellable
 import aktual.di.Closeable
 import aktual.di.Initializable
 import aktual.di.ServerChosenCoroutineScope
@@ -14,7 +15,6 @@ import dev.zacsweers.metro.ForScope
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
@@ -55,16 +55,15 @@ class ServerPinger(
   }
 
   private suspend fun attemptPing(healthApi: HealthApi): PingState {
-    return try {
-      val response = healthApi.getHealth()
-      logcat.v { "Succeeded pinging server: $response" }
-      if (response.status == "UP") Success else Unknown
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.w(e) { "Failed pinging server" }
-      Failure
-    }
+    return runCatchingCancellable<PingState> {
+        val response = healthApi.getHealth()
+        logcat.v { "Succeeded pinging server: $response" }
+        if (response.status == "UP") Success else Unknown
+      }
+      .getOrElse { e ->
+        logcat.w(e) { "Failed pinging server" }
+        Failure
+      }
   }
 
   private companion object {

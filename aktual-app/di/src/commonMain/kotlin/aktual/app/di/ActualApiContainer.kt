@@ -7,6 +7,7 @@ import aktual.api.model.account.FailureReason
 import aktual.core.TokenExpiredNotifier
 import aktual.core.model.AktualJson
 import aktual.core.model.BuildConfig
+import aktual.core.runCatchingCancellable
 import aktual.di.AppScope
 import aktual.prefs.AppPreferences
 import dev.zacsweers.metro.BindingContainer
@@ -18,7 +19,6 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.ResponseException
-import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.Serializable
 
 @BindingContainer
@@ -37,7 +37,7 @@ object ActualApiContainer {
       HttpResponseValidator {
         handleResponseExceptionWithRequest { exception, _ ->
           if (exception is ResponseException) {
-            try {
+            runCatchingCancellable {
               val isExpired =
                 exception.response.body<ErrorBody>().reason == FailureReason.TokenExpired.reason
               if (isExpired && preferences.token.get() != null) {
@@ -46,11 +46,10 @@ object ActualApiContainer {
                 // clear the backstack and push LoginNavRoute while already on the login screen.
                 notifyTokenExpired()
               }
-            } catch (e: CancellationException) {
-              throw e
-            } catch (_: Exception) {
-              // Body wasn't parseable as an error response, ignore
             }
+              .onFailure {
+                // Body wasn't parseable as an error response, ignore
+              }
           }
           // Always re-throw the original exception
           throw exception

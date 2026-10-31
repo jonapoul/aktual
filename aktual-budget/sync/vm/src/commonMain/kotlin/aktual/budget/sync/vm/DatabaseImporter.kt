@@ -10,12 +10,12 @@ import aktual.budget.model.DbMetadataKey.Companion.GroupId
 import aktual.budget.model.DbMetadataKey.Companion.LastUploaded
 import aktual.core.Calendar
 import aktual.core.model.AktualJson
+import aktual.core.runCatchingCancellable
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import logcat.logcat
@@ -35,12 +35,10 @@ internal constructor(
   suspend operator fun invoke(userFile: UserFile, zipPath: Path): ImportResult {
     val directory = budgetFiles.directory(userFile.fileId, mkdirs = true)
 
-    val result =
-      try {
-        invokeImpl(userFile, zipPath)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
+    val result = runCatchingCancellable {
+      invokeImpl(userFile, zipPath)
+    }
+      .getOrElse { e ->
         logcat.e(e) { "Unexpected failure importing $userFile from $zipPath" }
         ImportResult.OtherFailure(e.requireMessage())
       }

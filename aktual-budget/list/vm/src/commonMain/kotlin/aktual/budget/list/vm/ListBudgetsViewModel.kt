@@ -12,6 +12,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.directoryId
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
+import aktual.core.runCatchingCancellable
 import aktual.di.LoggedInScope
 import aktual.di.RunLevelController
 import aktual.di.ViewModelContext
@@ -27,7 +28,6 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -147,14 +147,13 @@ internal constructor(
       clearLastOpenedIfMatches(id)
 
       // delete remote
-      try {
+      runCatchingCancellable {
         val request = DeleteUserFileRequest(id, token)
         syncApi.delete(request)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed deleting $id" }
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed deleting $id" }
+        }
 
       // close dialog
       logcat.d { "Successfully deleted $id" }

@@ -11,6 +11,7 @@ import aktual.budget.banksync.domain.TransactionDirection
 import aktual.budget.banksync.domain.with
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.model.AccountId
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -29,7 +30,6 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -89,7 +89,7 @@ internal constructor(
 
   init {
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         val row = accountDao[account]
         if (row == null) {
           mutableFailure.update { BankSyncSettingsState.Failure(cause = null) }
@@ -99,12 +99,11 @@ internal constructor(
         val fields = TransactionDirection.entries.associateWith { fieldsLoader.load(account, it) }
         mutableSettings.update { settings }
         mutableLoaded.update { Loaded(row.name, settings, fields) }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed loading bank sync settings for $account" }
-        mutableFailure.update { BankSyncSettingsState.Failure(e.requireMessage()) }
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed loading bank sync settings for $account" }
+          mutableFailure.update { BankSyncSettingsState.Failure(e.requireMessage()) }
+        }
     }
   }
 
@@ -126,31 +125,29 @@ internal constructor(
 
   fun save() {
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         val settings = mutableSettings.value
         writer.save(account, settings)
         mutableLoaded.update { it?.copy(saved = settings) }
         mutableEvents.emit(Saved)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed saving bank sync settings for $account" }
-        mutableEvents.emit(BankSyncSettingsEvent.SaveFailed(e.requireMessage()))
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed saving bank sync settings for $account" }
+          mutableEvents.emit(BankSyncSettingsEvent.SaveFailed(e.requireMessage()))
+        }
     }
   }
 
   fun unlink() {
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         linker.unlink(account)
         mutableEvents.emit(Unlinked)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed unlinking $account" }
-        mutableEvents.emit(BankSyncSettingsEvent.UnlinkFailed(e.requireMessage()))
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed unlinking $account" }
+          mutableEvents.emit(BankSyncSettingsEvent.UnlinkFailed(e.requireMessage()))
+        }
     }
   }
 

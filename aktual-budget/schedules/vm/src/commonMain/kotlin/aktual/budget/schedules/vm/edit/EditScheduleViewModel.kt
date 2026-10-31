@@ -15,6 +15,7 @@ import aktual.budget.schedules.domain.ScheduleStatus
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.edit.EditScheduleState.Failure
 import aktual.core.Calendar
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -34,7 +35,6 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -129,7 +129,7 @@ internal constructor(
     }
 
   private suspend fun load() {
-    try {
+    runCatchingCancellable {
       mutableEntities.update { loadEntities() }
       val saved = loadSaved()
       if (saved == null) {
@@ -138,12 +138,11 @@ internal constructor(
         mutableSaved.update { saved }
         mutableForm.update { saved.form }
       }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.e(e) { "Failed loading schedule $scheduleId" }
-      mutableFailure.update { EditScheduleState.OtherFailure(e.requireMessage()) }
     }
+      .onFailure { e ->
+        logcat.e(e) { "Failed loading schedule $scheduleId" }
+        mutableFailure.update { EditScheduleState.OtherFailure(e.requireMessage()) }
+      }
   }
 
   private suspend fun loadEntities(): Entities {
@@ -241,26 +240,29 @@ internal constructor(
     mutableIsWorking.update { true }
     viewModelScope.launch {
       try {
-        if (scheduleId == null) {
-          writer.create(loaded.form)
-          mutableEvents.tryEmit(Created)
-        } else {
-          val ruleId = saved.ruleId ?: error("Schedule $scheduleId has no rule")
-          writer.update(scheduleId, ruleId, saved.conditions, saved.actions, loaded.form)
-          loadSaved()?.let { reloaded ->
-            mutableSaved.update { reloaded }
-            mutableForm.update { reloaded.form }
+        runCatchingCancellable {
+          if (scheduleId == null) {
+            writer.create(loaded.form)
+            mutableEvents.tryEmit(Created)
+          } else {
+            val ruleId = saved.ruleId ?: error("Schedule $scheduleId has no rule")
+            writer.update(scheduleId, ruleId, saved.conditions, saved.actions, loaded.form)
+            loadSaved()?.let { reloaded ->
+              mutableSaved.update { reloaded }
+              mutableForm.update { reloaded.form }
+            }
+            mutableIsEditing.update { false }
           }
-          mutableIsEditing.update { false }
         }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: DuplicateScheduleNameException) {
-        logcat.w(e) { "Duplicate name saving $scheduleId" }
-        mutableError.update { EditScheduleError.DuplicateName(loaded.form.name.trim()) }
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed saving $scheduleId" }
-        mutableError.update { EditScheduleError.Saving(e.requireMessage()) }
+          .onFailure { e ->
+            if (e is DuplicateScheduleNameException) {
+              logcat.w(e) { "Duplicate name saving $scheduleId" }
+              mutableError.update { EditScheduleError.DuplicateName(loaded.form.name.trim()) }
+            } else {
+              logcat.e(e) { "Failed saving $scheduleId" }
+              mutableError.update { EditScheduleError.Saving(e.requireMessage()) }
+            }
+          }
       } finally {
         mutableIsWorking.update { false }
       }
@@ -274,13 +276,14 @@ internal constructor(
     mutableIsWorking.update { true }
     viewModelScope.launch {
       try {
-        writer.delete(id, saved.ruleId)
-        mutableEvents.tryEmit(Deleted)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed deleting $id" }
-        mutableError.update { EditScheduleError.Deleting(e.requireMessage()) }
+        runCatchingCancellable {
+          writer.delete(id, saved.ruleId)
+          mutableEvents.tryEmit(Deleted)
+        }
+          .onFailure { e ->
+            logcat.e(e) { "Failed deleting $id" }
+            mutableError.update { EditScheduleError.Deleting(e.requireMessage()) }
+          }
       } finally {
         mutableIsWorking.update { false }
       }

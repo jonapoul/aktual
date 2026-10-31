@@ -2,10 +2,10 @@ package aktual.core.theme
 
 import aktual.api.client.ThemeApi
 import aktual.core.model.ThemeId
+import aktual.core.runCatchingCancellable
 import aktual.di.AppScope
 import aktual.prefs.ThemePreferences
 import dev.zacsweers.metro.ContributesBinding
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -60,20 +60,19 @@ internal constructor(
   }
 
   private suspend fun fetchAndCache(repo: CustomThemeRepo, isSystemInDarkTheme: Boolean): Colors {
-    try {
+    return runCatchingCancellable {
       val summaries = cache.summaries().ifEmpty { api.fetchCatalog() }
       val summary =
         summaries.firstOrNull { it.repo == repo } ?: return fallback(isSystemInDarkTheme)
       val theme = api.fetchTheme(summary)
       cache.save(theme)
-      return theme
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      val default = fallback(isSystemInDarkTheme)
-      logcat.w(e) { "Failed fetching theme from $repo, returning $default" }
-      return default
+      theme
     }
+      .getOrElse { e ->
+        val default = fallback(isSystemInDarkTheme)
+        logcat.w(e) { "Failed fetching theme from $repo, returning $default" }
+        default
+      }
   }
 
   private fun ThemeId.toRepo(): CustomThemeRepo? {

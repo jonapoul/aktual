@@ -11,6 +11,7 @@ import aktual.budget.model.localChange
 import aktual.budget.schedules.domain.UnpostedSchedules
 import aktual.core.model.BudgetServer
 import aktual.core.nav.BudgetNavEntryContributor
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -26,7 +27,6 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -81,7 +81,7 @@ internal constructor(
 
   fun rename(name: String) {
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         // The server keeps its own copy of the name for the budget list, see saveMetadataPrefs in
         // packages/loot-core/src/server/preferences/app.ts
         val cloudFileId = localPreferences[CloudFileId]
@@ -90,11 +90,10 @@ internal constructor(
         }
         localPreferences.update { metadata -> metadata.set(BudgetName, name) }
         sync.syncChanges(budgetNameChange(name))
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed renaming budget" }
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed renaming budget" }
+        }
     }
   }
 
