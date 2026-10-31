@@ -1,7 +1,7 @@
 package aktual.budget.reports.ui.report
 
-import aktual.budget.reports.ui.charts.intervalLabels
-import aktual.budget.reports.ui.charts.label
+import aktual.budget.reports.components.intervalLabels
+import aktual.budget.reports.components.label
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.CustomDrilldown

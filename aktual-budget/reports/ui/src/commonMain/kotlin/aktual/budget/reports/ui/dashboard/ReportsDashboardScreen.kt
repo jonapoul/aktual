@@ -3,9 +3,10 @@ package aktual.budget.reports.ui.dashboard
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
+import aktual.budget.reports.components.PREVIEW_CASH_FLOW_DATA
+import aktual.budget.reports.components.ShimmerDashboardItem
 import aktual.budget.reports.ui.Action.Reorder
 import aktual.budget.reports.ui.ActionListener
-import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.dashboard.DashboardPage
@@ -125,14 +126,8 @@ fun ReportsDashboardScreen(
         is DeleteSavedReport -> viewModel.deleteSavedReport(action.item)
         is Pin -> pin(action.id)
         is Unpin -> viewModel.unpinReport(action.id)
-        // Text, summary options, calendar days and custom report drilldowns are only reachable
-        // from the report screen
-        is ClickCalendarDay,
-        is SetSummaryType,
-        is SetAllTimeDivisor,
-        is SaveText,
-        is SetUnsavedText,
-        is DrillDown -> Unit
+        // Chart actions are only reachable from the report screen
+        is Chart -> Unit
         CreateNewReport -> viewModel.createReport()
         OpenSearch -> toSearch()
         is SelectPage -> viewModel.selectPage(action.id)

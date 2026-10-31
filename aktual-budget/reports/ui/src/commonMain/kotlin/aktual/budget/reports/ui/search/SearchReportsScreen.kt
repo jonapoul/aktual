@@ -2,8 +2,8 @@ package aktual.budget.reports.ui.search
 
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
+import aktual.budget.reports.components.string
 import aktual.budget.reports.ui.dashboard.displayName
-import aktual.budget.reports.ui.string
 import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.search.SearchReportsGroup
 import aktual.budget.reports.vm.search.SearchReportsItem

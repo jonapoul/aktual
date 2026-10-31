@@ -99,6 +99,7 @@ data class MonteCarloResults(
   val runs: ImmutableList<MonteCarloRun>,
 )
 
+@Immutable
 data class MonteCarloFanBand(
   val age: Int,
   val p5: Amount,
@@ -112,7 +113,7 @@ data class MonteCarloFanBand(
   val worstRun: Amount,
 )
 
-data class MonteCarloDepletion(val age: Int, val count: Int)
+@Immutable data class MonteCarloDepletion(val age: Int, val count: Int)
 
 data class MonteCarloRun(
   val index: Int,

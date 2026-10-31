@@ -196,6 +196,7 @@ include(
   ":aktual-budget:payees:domain",
   ":aktual-budget:payees:ui",
   ":aktual-budget:payees:vm",
+  ":aktual-budget:reports:components",
   ":aktual-budget:reports:ui",
   ":aktual-budget:reports:vm",
   ":aktual-budget:rules:domain",

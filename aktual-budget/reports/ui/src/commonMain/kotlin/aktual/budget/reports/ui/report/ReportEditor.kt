@@ -1,10 +1,11 @@
 package aktual.budget.reports.ui.report
 
-import aktual.budget.reports.ui.ActionListener
+import aktual.budget.reports.components.ChartActionListener
+import aktual.budget.reports.components.ChartTags
+import aktual.budget.reports.components.ChartZoomState
+import aktual.budget.reports.components.ReportChart
+import aktual.budget.reports.components.info
 import aktual.budget.reports.ui.Tags
-import aktual.budget.reports.ui.charts.ChartZoomState
-import aktual.budget.reports.ui.charts.ReportChart
-import aktual.budget.reports.ui.charts.info
 import aktual.budget.reports.vm.ChartData
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Delete
@@ -109,7 +110,7 @@ internal fun ReportEditorTopBar(
       }
       if (!isEditing && zoom.range != null) {
         BareIconButton(
-          modifier = Modifier.testTag(Tags.ResetZoom),
+          modifier = Modifier.testTag(ChartTags.ResetZoom),
           imageVector = MaterialIcons.ZoomOut,
           contentDescription = Strings.reportsResetZoom,
           onClick = zoom::reset,
@@ -117,7 +118,7 @@ internal fun ReportEditorTopBar(
       }
       if (!isEditing && preview?.info()?.isNotEmpty() == true) {
         BareIconButton(
-          modifier = Modifier.testTag(Tags.ChartInfo),
+          modifier = Modifier.testTag(ChartTags.ChartInfo),
           imageVector = AktualIcons.InformationOutline,
           contentDescription = Strings.reportsChartInfo,
           onClick = onShowInfo,
@@ -144,7 +145,7 @@ internal fun ReportEditorContent(
   isEditing: Boolean,
   zoom: ChartZoomState,
   modifier: Modifier = Modifier,
-  onChartAction: ActionListener = ActionListener {},
+  onChartAction: ChartActionListener = ChartActionListener {},
   below: @Composable ColumnScope.() -> Unit,
 ) =
   Column(modifier = modifier.padding(Dimens.ScreenPadding)) {
@@ -177,7 +178,7 @@ private fun ChartCard(
   preview: ChartData?,
   isEditing: Boolean,
   zoom: ChartZoomState,
-  onAction: ActionListener,
+  onAction: ChartActionListener,
   modifier: Modifier = Modifier,
 ) =
   Box(modifier = modifier.background(colors.tableBackground, CardShape).padding(8.dp)) {

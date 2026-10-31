@@ -7,8 +7,8 @@ import aktual.budget.home.vm.ReportsCardState.Loaded
 import aktual.budget.model.Amount
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
-import aktual.budget.reports.ui.pinned.PinnedReportChart
-import aktual.budget.reports.ui.pinned.displayName
+import aktual.budget.reports.components.PinnedReportChart
+import aktual.budget.reports.components.displayName
 import aktual.budget.reports.vm.NetWorthData
 import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.pinned.PinnedReport

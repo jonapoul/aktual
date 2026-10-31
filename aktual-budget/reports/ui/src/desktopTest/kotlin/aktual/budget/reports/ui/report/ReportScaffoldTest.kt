@@ -1,9 +1,10 @@
 package aktual.budget.reports.ui.report
 
 import aktual.budget.model.WidgetId
+import aktual.budget.reports.components.ChartTags
+import aktual.budget.reports.components.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.Tags
-import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.report.ReportState
@@ -24,10 +25,10 @@ class ReportScaffoldTest {
   fun `Reset zoom button shows in the top bar while zoomed`() = runComposeUiTest {
     // given
     setPreviewContent { ReportScaffold(state = STATE, onAction = {}) }
-    onNodeWithTag(Tags.ResetZoom).assertDoesNotExist()
+    onNodeWithTag(ChartTags.ResetZoom).assertDoesNotExist()
 
     // when zooming
-    onNodeWithTag(Tags.ZoomableChart).performTouchInput {
+    onNodeWithTag(ChartTags.ZoomableChart).performTouchInput {
       down(centerLeft.copy(x = width * 0.3f))
       advanceEventTime(LONG_PRESS_MS)
       moveTo(center.copy(x = width * 0.6f))
@@ -35,26 +36,26 @@ class ReportScaffoldTest {
     }
 
     // then
-    onNodeWithTag(Tags.ResetZoom).assertExists()
+    onNodeWithTag(ChartTags.ResetZoom).assertExists()
 
     // when resetting
-    onNodeWithTag(Tags.ResetZoom).performClick()
+    onNodeWithTag(ChartTags.ResetZoom).performClick()
 
     // then
-    onNodeWithTag(Tags.ResetZoom).assertDoesNotExist()
+    onNodeWithTag(ChartTags.ResetZoom).assertDoesNotExist()
   }
 
   @Test
   fun `Info button shows the chart explanation`() = runComposeUiTest {
     // given
     setPreviewContent { ReportScaffold(state = STATE, onAction = {}) }
-    onNodeWithTag(Tags.ChartInfoSheet).assertDoesNotExist()
+    onNodeWithTag(ChartTags.ChartInfoSheet).assertDoesNotExist()
 
     // when
-    onNodeWithTag(Tags.ChartInfo).performClick()
+    onNodeWithTag(ChartTags.ChartInfo).performClick()
 
     // then
-    onNodeWithTag(Tags.ChartInfoSheet).assertExists()
+    onNodeWithTag(ChartTags.ChartInfoSheet).assertExists()
   }
 
   @Test

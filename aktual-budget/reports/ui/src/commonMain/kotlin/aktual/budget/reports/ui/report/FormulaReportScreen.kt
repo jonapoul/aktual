@@ -2,12 +2,12 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
+import aktual.budget.reports.components.FormulaChart
+import aktual.budget.reports.components.PREVIEW_FORMULA_DATA
+import aktual.budget.reports.components.resolveColor
+import aktual.budget.reports.components.string
 import aktual.budget.reports.ui.Tags
-import aktual.budget.reports.ui.charts.FormulaChart
-import aktual.budget.reports.ui.charts.PREVIEW_FORMULA_DATA
-import aktual.budget.reports.ui.charts.resolveColor
 import aktual.budget.reports.ui.dashboard.NameDialog
-import aktual.budget.reports.ui.string
 import aktual.budget.reports.vm.FormulaData
 import aktual.budget.reports.vm.FormulaEdits
 import aktual.budget.reports.vm.FormulaQuery

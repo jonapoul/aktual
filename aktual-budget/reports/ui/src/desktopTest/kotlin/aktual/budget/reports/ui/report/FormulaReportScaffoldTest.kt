@@ -1,7 +1,7 @@
 package aktual.budget.reports.ui.report
 
+import aktual.budget.reports.components.PREVIEW_FORMULA_DATA
 import aktual.budget.reports.ui.Tags
-import aktual.budget.reports.ui.charts.PREVIEW_FORMULA_DATA
 import aktual.budget.reports.vm.report.FormulaReportState
 import aktual.budget.reports.vm.toEdits
 import aktual.test.setPreviewContent

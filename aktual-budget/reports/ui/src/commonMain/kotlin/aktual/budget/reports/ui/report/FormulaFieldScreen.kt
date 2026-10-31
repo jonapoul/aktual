@@ -1,11 +1,11 @@
 package aktual.budget.reports.ui.report
 
 import aktual.budget.formula.ErrorValue
+import aktual.budget.reports.components.PREVIEW_FORMULA_DATA
+import aktual.budget.reports.components.displayString
+import aktual.budget.reports.components.message
+import aktual.budget.reports.components.resolveColor
 import aktual.budget.reports.ui.Tags
-import aktual.budget.reports.ui.charts.PREVIEW_FORMULA_DATA
-import aktual.budget.reports.ui.charts.displayString
-import aktual.budget.reports.ui.charts.message
-import aktual.budget.reports.ui.charts.resolveColor
 import aktual.budget.reports.vm.FormulaData
 import aktual.budget.reports.vm.FormulaOutput
 import aktual.core.l10n.Strings

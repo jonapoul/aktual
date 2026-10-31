@@ -1,7 +1,7 @@
 package aktual.budget.reports.ui.report
 
+import aktual.budget.reports.components.string
 import aktual.budget.reports.ui.Tags
-import aktual.budget.reports.ui.charts.string
 import aktual.budget.reports.vm.CUSTOM_BALANCE_TYPES
 import aktual.budget.reports.vm.CUSTOM_GROUP_BYS
 import aktual.budget.reports.vm.CUSTOM_INTERVALS

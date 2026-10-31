@@ -11,7 +11,7 @@ kotlin {
     implementation(libs.shimmer)
     implementation(project(":aktual-budget:accounts:components"))
     implementation(project(":aktual-budget:accounts:vm"))
-    implementation(project(":aktual-budget:reports:ui"))
+    implementation(project(":aktual-budget:reports:components"))
     implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:ui"))

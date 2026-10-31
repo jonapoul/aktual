@@ -1,7 +1,7 @@
 package aktual.budget.reports.ui.report
 
+import aktual.budget.reports.components.PREVIEW_CUSTOM_DATA
 import aktual.budget.reports.ui.Tags
-import aktual.budget.reports.ui.charts.PREVIEW_CUSTOM_DATA
 import aktual.budget.reports.vm.report.CustomReportState
 import aktual.test.setPreviewContent
 import androidx.compose.ui.test.assertCountEquals

@@ -1,6 +1,6 @@
 package aktual.budget.reports.ui.montecarlo
 
-import aktual.budget.reports.ui.charts.successColor
+import aktual.budget.reports.components.successColor
 import aktual.budget.reports.vm.HISTORICAL_FIRST_YEAR
 import aktual.budget.reports.vm.HISTORICAL_LAST_YEAR
 import aktual.budget.reports.vm.montecarlo.MonteCarloGraphView

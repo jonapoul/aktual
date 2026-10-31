@@ -1,12 +1,15 @@
 package aktual.budget.reports.ui.dashboard
 
 import aktual.budget.model.CustomReportId
+import aktual.budget.reports.components.ChartHeight
+import aktual.budget.reports.components.ChartPadding
+import aktual.budget.reports.components.PER_TRANSACTION_DATA
+import aktual.budget.reports.components.PREVIEW_CASH_FLOW_DATA
+import aktual.budget.reports.components.PREVIEW_NET_WORTH_DATA
+import aktual.budget.reports.components.ReportChart
+import aktual.budget.reports.components.ShimmerDashboardItem
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
-import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
-import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
-import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
-import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.CustomReportMeta
 import aktual.budget.reports.vm.UnsupportedData
@@ -46,15 +49,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.valentinilk.shimmer.rememberShimmer
-import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
@@ -270,25 +269,12 @@ private fun ReportCard(
         modifier = Modifier.fillMaxWidth().padding(ChartPadding).height(ChartHeight),
         data = chartData,
         compact = true,
-        onAction = onAction,
+        onAction = { onAction(Action.Chart(it)) },
       )
     } else {
-      LoadingChart(modifier = Modifier.fillMaxWidth().height(ChartHeight + ChartPadding * 2))
+      ShimmerDashboardItem()
     }
   }
-
-internal val ChartHeight = 200.dp
-internal val ChartPadding = 8.dp
-
-@Composable
-internal fun ShimmerDashboardItem(modifier: Modifier = Modifier) =
-  LoadingChart(modifier = modifier.fillMaxWidth().height(ChartHeight + ChartPadding * 2))
-
-@Composable
-private fun LoadingChart(modifier: Modifier = Modifier) {
-  val shimmer = rememberShimmer(Window)
-  Box(modifier = modifier.clip(CardShape).shimmer(shimmer).background(colors.tableText))
-}
 
 // A custom report widget shows a saved report, which can be deleted as well as taken off the
 // dashboard. Not once it's already gone

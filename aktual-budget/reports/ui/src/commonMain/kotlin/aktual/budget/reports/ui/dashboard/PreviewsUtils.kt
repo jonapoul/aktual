@@ -1,9 +1,9 @@
 package aktual.budget.reports.ui.dashboard
 
 import aktual.budget.model.WidgetId
-import aktual.budget.reports.ui.charts.PER_TRANSACTION_META
-import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_META
-import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_META
+import aktual.budget.reports.components.PER_TRANSACTION_META
+import aktual.budget.reports.components.PREVIEW_CASH_FLOW_META
+import aktual.budget.reports.components.PREVIEW_NET_WORTH_META
 import aktual.budget.reports.vm.dashboard.DashboardItem
 
 internal val PREVIEW_DASHBOARD_ITEM_1 =
