@@ -12,6 +12,7 @@ kotlin {
     implementation(libs.kotlinx.datetime)
     implementation(libs.shimmer)
     implementation(project(":aktual-budget:banksync:ui"))
+    implementation(project(":aktual-budget:schedules:ui"))
     implementation(project(":aktual-core:l10n"))
   }
 }

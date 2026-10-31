@@ -2,10 +2,15 @@ package aktual.budget.transactions.ui.edit
 
 import aktual.budget.model.AccountId
 import aktual.budget.model.CategoryId
+import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
+import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.ScheduleStatus
 import aktual.budget.schedules.domain.amountPrefix
+import aktual.budget.schedules.ui.list.ScheduleStatusBadge
+import aktual.budget.schedules.ui.list.label
 import aktual.budget.transactions.domain.MIN_TRANSACTION_DATE
 import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.vm.edit.EntityOption
@@ -24,13 +29,19 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
+import aktual.core.ui.Chip
+import aktual.core.ui.ChipDefaults
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.NormalIconButton
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -41,7 +52,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
@@ -57,16 +70,27 @@ import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toJavaLocalDate
@@ -453,7 +477,8 @@ private fun CategoryBalance(balance: aktual.budget.model.Amount) =
   )
 
 // As upstream's ScheduleLink modal, typing filters the schedules by their name, payee or account.
-// "None" unlinks it, so it's only offered while it's linked
+// The chips narrow them to the picked statuses, or show them all when none are picked. "None"
+// unlinks it, so it's only offered while it's linked
 @Composable
 private fun ScheduleSheet(
   selected: ScheduleId?,
@@ -465,57 +490,109 @@ private fun ScheduleSheet(
     onDismissRequest = onDismiss,
     sheetState = rememberBottomSheetState(Hidden),
   ) {
-    val query = rememberTextFieldState()
-    val name = query.text.toString().trim()
-    val matches = remember(options, name) { options.matching(name) }
-
-    AktualTextField(
-      modifier = Modifier.fillMaxWidth().padding(SearchPadding),
-      state = query,
-      placeholderText = Strings.transactionScheduleSearch,
-      singleLine = true,
-      clearable = true,
+    var statuses by remember { mutableStateOf<ImmutableSet<ScheduleStatus>>(persistentSetOf()) }
+    ScheduleSheetContent(
+      selected = selected,
+      options = options,
+      query = rememberTextFieldState(),
+      statuses = statuses,
+      onToggleStatus = { status ->
+        statuses =
+          (if (status in statuses) statuses - status else statuses + status).toImmutableSet()
+      },
+      onSelect = { id ->
+        onSelect(id)
+        onDismiss()
+      },
     )
+  }
 
-    val listState = rememberLazyListState()
-    LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
-      if (selected != null && name.isEmpty()) {
-        item(key = NONE_KEY) {
-          BottomSheetListItem(
-            label = Strings.transactionNone,
-            isSelected = false,
-            onClick = {
-              onSelect(null)
-              onDismiss()
-            },
-          )
-        }
-      }
+@Composable
+private fun ScheduleSheetContent(
+  selected: ScheduleId?,
+  options: ImmutableList<Schedule>,
+  query: TextFieldState,
+  statuses: ImmutableSet<ScheduleStatus>,
+  onToggleStatus: (ScheduleStatus) -> Unit,
+  onSelect: (ScheduleId?) -> Unit,
+) = Column {
+  val name = query.text.toString().trim()
+  val matches = remember(options, name, statuses) { options.matching(name, statuses) }
 
-      if (options.isEmpty()) {
-        item { GroupHeader(Strings.transactionScheduleEmpty) }
-      }
+  AktualTextField(
+    modifier = Modifier.fillMaxWidth().padding(SearchPadding),
+    state = query,
+    placeholderText = Strings.transactionScheduleSearch,
+    singleLine = true,
+    clearable = true,
+  )
 
-      items(matches, key = { it.id.toString() }) { schedule ->
-        ScheduleItem(
-          schedule = schedule,
-          isSelected = schedule.id == selected,
-          onClick = {
-            onSelect(schedule.id)
-            onDismiss()
-          },
+  StatusChips(options = options, selected = statuses, onToggle = onToggleStatus)
+
+  val listState = rememberLazyListState()
+  LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
+    if (selected != null && name.isEmpty() && statuses.isEmpty()) {
+      item(key = NONE_KEY) {
+        BottomSheetListItem(
+          label = Strings.transactionNone,
+          isSelected = false,
+          onClick = { onSelect(null) },
         )
       }
     }
-  }
 
-private fun List<Schedule>.matching(query: String): ImmutableList<Schedule> = filter { schedule ->
-  query.isEmpty() ||
-    schedule.name?.contains(query, ignoreCase = true) == true ||
-    schedule.payeeName.contains(query, ignoreCase = true) ||
-    schedule.accountName.contains(query, ignoreCase = true)
+    if (options.isEmpty()) {
+      item { GroupHeader(Strings.transactionScheduleEmpty) }
+    }
+
+    items(matches, key = { it.id.toString() }) { schedule ->
+      ScheduleItem(
+        schedule = schedule,
+        isSelected = schedule.id == selected,
+        onClick = { onSelect(schedule.id) },
+      )
+    }
+  }
+}
+
+private fun List<Schedule>.matching(
+  query: String,
+  statuses: Set<ScheduleStatus>,
+): ImmutableList<Schedule> = filter { schedule ->
+  (statuses.isEmpty() || schedule.status in statuses) &&
+    (query.isEmpty() ||
+      schedule.name?.contains(query, ignoreCase = true) == true ||
+      schedule.payeeName.contains(query, ignoreCase = true) ||
+      schedule.accountName.contains(query, ignoreCase = true))
 }
   .toImmutableList()
+
+// Only the statuses some schedule has, and none at all when they'd all have the same one
+@Composable
+private fun StatusChips(
+  options: ImmutableList<Schedule>,
+  selected: ImmutableSet<ScheduleStatus>,
+  onToggle: (ScheduleStatus) -> Unit,
+) {
+  val statuses = remember(options) { options.mapTo(mutableSetOf()) { it.status }.sorted() }
+  if (statuses.size < 2) return
+
+  Row(
+    modifier =
+      Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(SearchPadding),
+    horizontalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing * 2),
+  ) {
+    statuses.fastForEach { status ->
+      val isSelected = status in selected
+      Chip(
+        modifier = Modifier.semantics { this.selected = isSelected },
+        text = status.label(),
+        colors = ChipDefaults.selectableColors(isSelected),
+        onClick = { onToggle(status) },
+      )
+    }
+  }
+}
 
 // Its name, then its payee and account, with its amount and next date on the end
 @Composable
@@ -560,12 +637,18 @@ private fun ScheduleAmount(schedule: Schedule) =
       color = if (schedule.amount > Zero) colors.numberPositive else colors.numberNegative,
       maxLines = 1,
     )
-    Text(
-      text = schedule.nextDate.formatted(),
-      fontSize = BalanceSize,
-      color = colors.pageTextSubdued,
-      maxLines = 1,
-    )
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing),
+      verticalAlignment = CenterVertically,
+    ) {
+      ScheduleStatusBadge(schedule.status)
+      Text(
+        text = schedule.nextDate.formatted(),
+        fontSize = BalanceSize,
+        color = colors.pageTextSubdued,
+        maxLines = 1,
+      )
+    }
   }
 
 // Saving rejects dates before MIN_TRANSACTION_DATE, so they can't be picked. The range still holds
@@ -613,3 +696,82 @@ private val GroupHeaderSize = textSizes.smallPlus
 private val BalanceSize = textSizes.medium
 private val SearchPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
 private const val NONE_KEY = "none"
+
+@Preview
+@Composable
+private fun PreviewScheduleSheet(
+  @PreviewParameter(ScheduleSheetProvider::class) params: ColorParams<ScheduleSheetPreview>,
+) =
+  PreviewWithColorParams(params) {
+    ScheduleSheetContent(
+      selected = selected,
+      options = options,
+      query = rememberTextFieldState(),
+      statuses = statuses,
+      onToggleStatus = {},
+      onSelect = {},
+    )
+  }
+
+@Immutable
+private data class ScheduleSheetPreview(
+  val options: ImmutableList<Schedule>,
+  val selected: ScheduleId? = null,
+  val statuses: ImmutableSet<ScheduleStatus> = persistentSetOf(),
+)
+
+private class ScheduleSheetProvider :
+  ColorParamsProvider<ScheduleSheetPreview>(
+    ScheduleSheetPreview(PREVIEW_SCHEDULES, selected = PREVIEW_SCHEDULES[1].id),
+    ScheduleSheetPreview(PREVIEW_SCHEDULES, statuses = persistentSetOf(ScheduleStatus.Due)),
+    ScheduleSheetPreview(persistentListOf()),
+  )
+
+private val PREVIEW_SCHEDULE =
+  Schedule(
+    id = ScheduleId("rent"),
+    name = "Rent",
+    ruleId = RuleId("rent"),
+    nextDate = LocalDate(2026, 11, 1),
+    isCompleted = false,
+    postsTransaction = false,
+    customUpcomingLength = null,
+    payeeId = PayeeId("landlord"),
+    payeeName = "Landlord",
+    accountId = AccountId("current"),
+    accountName = "Current",
+    amount = aktual.budget.model.Amount(-120000),
+    amountOp = Operator.Is,
+    date = LocalDate(2026, 11, 1),
+    status = Upcoming,
+  )
+
+private val PREVIEW_SCHEDULES =
+  persistentListOf(
+    PREVIEW_SCHEDULE,
+    PREVIEW_SCHEDULE.copy(
+      id = ScheduleId("energy"),
+      name = null,
+      payeeName = "Energy Co.",
+      amount = aktual.budget.model.Amount(-8500),
+      amountOp = Operator.IsApprox,
+      nextDate = LocalDate(2026, 10, 31),
+      status = Due,
+    ),
+    PREVIEW_SCHEDULE.copy(
+      id = ScheduleId("salary"),
+      name = "Salary",
+      payeeName = "Employer",
+      amount = aktual.budget.model.Amount(250000),
+      nextDate = LocalDate(2026, 10, 28),
+      status = Paid,
+    ),
+    PREVIEW_SCHEDULE.copy(
+      id = ScheduleId("gym"),
+      name = "Gym",
+      payeeName = "Gym Ltd.",
+      amount = aktual.budget.model.Amount(-3000),
+      nextDate = LocalDate(2026, 12, 5),
+      status = Scheduled,
+    ),
+  )

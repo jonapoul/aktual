@@ -146,7 +146,7 @@ private fun LabelValue(
 }
 
 @Composable
-internal fun ScheduleStatusBadge(
+fun ScheduleStatusBadge(
   status: ScheduleStatus,
   modifier: Modifier = Modifier,
 ) {
@@ -159,23 +159,25 @@ internal fun ScheduleStatusBadge(
       Completed -> colors.tableRowHeaderBackground to colors.tableHeaderText
       Scheduled -> colors.tableRowHeaderBackground to colors.tableRowHeaderText
     }
-  val label =
-    when (status) {
-      Missed -> Strings.listSchedulesStatusMissed
-      Due -> Strings.listSchedulesStatusDue
-      Upcoming -> Strings.listSchedulesStatusUpcoming
-      Paid -> Strings.listSchedulesStatusPaid
-      Completed -> Strings.listSchedulesStatusCompleted
-      Scheduled -> Strings.listSchedulesStatusScheduled
-    }
   Chip(
     modifier = modifier,
-    text = label,
+    text = status.label(),
     colors = ChipDefaults.colors(bgColor, textColor),
     size = Small,
     textStyle = typography.labelSmall,
   )
 }
+
+@Composable
+fun ScheduleStatus.label(): String =
+  when (this) {
+    Missed -> Strings.listSchedulesStatusMissed
+    Due -> Strings.listSchedulesStatusDue
+    Upcoming -> Strings.listSchedulesStatusUpcoming
+    Paid -> Strings.listSchedulesStatusPaid
+    Completed -> Strings.listSchedulesStatusCompleted
+    Scheduled -> Strings.listSchedulesStatusScheduled
+  }
 
 /** Keep in sync with [ListSchedulesItem] */
 @Composable
