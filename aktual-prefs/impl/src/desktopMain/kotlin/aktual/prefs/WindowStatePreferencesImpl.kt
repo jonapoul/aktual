@@ -17,7 +17,8 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
 @ContributesBinding(AppScope::class)
-class WindowStatePreferencesImpl(dataStore: DataStore<Preferences>) : WindowStatePreferences {
+class WindowStatePreferencesImpl internal constructor(dataStore: DataStore<Preferences>) :
+  WindowStatePreferences {
   override val position: Preference<WindowPosition> =
     dataStore
       .translated(

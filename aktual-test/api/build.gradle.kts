@@ -10,8 +10,8 @@ kotlin {
     api(libs.kotlinx.serialization.json)
     api(libs.ktor.core)
     api(libs.ktor.test)
-    api(project(":aktual-test"))
     implementation(project(":aktual-api:impl"))
+    implementation(project(":aktual-test"))
   }
 }
 

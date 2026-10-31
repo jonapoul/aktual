@@ -20,7 +20,8 @@ import kotlinx.coroutines.launch
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class ScheduleSettingsViewModel(
+class ScheduleSettingsViewModel
+internal constructor(
   preferences: SchedulePreferences,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {

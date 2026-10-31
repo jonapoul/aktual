@@ -20,6 +20,7 @@ kotlin {
     api(project(":aktual-prefs"))
     implementation(libs.compose.viewmodelNavigation3)
     implementation(libs.logcat)
+    implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:logging"))
   }

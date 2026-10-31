@@ -58,7 +58,8 @@ import logcat.logcat
 
 @Stable
 @AssistedInject
-class EditRuleViewModel(
+class EditRuleViewModel
+internal constructor(
   @Assisted private val ruleId: RuleId?,
   @Assisted private val payee: PayeeId?,
   private val uuidGenerator: UuidGenerator,

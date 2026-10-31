@@ -41,7 +41,8 @@ import logcat.logcat
  */
 @Stable
 @AssistedInject
-class BudgetCategoryViewModel(
+class BudgetCategoryViewModel
+internal constructor(
   @Assisted private val category: CategoryId,
   @Assisted month: YearMonth,
   calculator: BudgetMonthCalculator,

@@ -69,7 +69,8 @@ import logcat.logcat
 @Stable
 @Suppress("TooManyFunctions") // One per budget write upstream offers
 @AssistedInject
-class BudgetViewModel(
+class BudgetViewModel
+internal constructor(
   @Assisted private val month: YearMonth?,
   private val calculator: BudgetMonthCalculator,
   private val writer: BudgetWriter,

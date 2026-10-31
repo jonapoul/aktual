@@ -38,7 +38,8 @@ import logcat.logcat
  */
 @Stable
 @AssistedInject
-class BankSyncProviderSetupViewModel(
+class BankSyncProviderSetupViewModel
+internal constructor(
   @Assisted private val source: AccountSyncSource,
   private val setup: BankSyncProviderSetup,
   server: BudgetServer,

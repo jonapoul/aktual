@@ -32,7 +32,7 @@ interface NameFetcher {
 
 @Suppress("ElseCaseInsteadOfExhaustiveWhen")
 @ContributesBinding(BudgetScope::class)
-class NameFetcherImpl(database: BudgetDatabase) : NameFetcher {
+class NameFetcherImpl internal constructor(database: BudgetDatabase) : NameFetcher {
   private val accounts = AccountDao(database)
   private val categories = CategoryDao(database)
   private val categoryGroups = CategoryGroupDao(database)

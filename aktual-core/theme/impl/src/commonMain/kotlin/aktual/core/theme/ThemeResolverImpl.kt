@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import logcat.logcat
 
 @ContributesBinding(AppScope::class)
-class ThemeResolverImpl(
+class ThemeResolverImpl
+internal constructor(
   private val preferences: ThemePreferences,
   private val api: ThemeApi,
   private val cache: CustomThemeCache,

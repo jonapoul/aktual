@@ -12,7 +12,8 @@ import logcat.logcat
  * failed delete would leave the account unlinked and its bank login possibly gone.
  */
 @Inject
-class AccountDeleter(private val linker: BankAccountLinker, private val writer: TransactionWriter) {
+class AccountDeleter
+internal constructor(private val linker: BankAccountLinker, private val writer: TransactionWriter) {
   // False if the account was deleted but couldn't be unlinked, or its GoCardless bank login
   // couldn't be removed
   suspend fun delete(account: AccountId): Boolean {

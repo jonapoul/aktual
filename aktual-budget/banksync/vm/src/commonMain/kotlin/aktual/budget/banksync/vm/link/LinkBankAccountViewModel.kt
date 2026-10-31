@@ -55,7 +55,8 @@ import logcat.logcat
  */
 @Stable
 @AssistedInject
-class LinkBankAccountViewModel(
+class LinkBankAccountViewModel
+internal constructor(
   @Assisted private val account: AccountId?,
   private val accountDao: AccountDao,
   private val api: BankSyncApi,

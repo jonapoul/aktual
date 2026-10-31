@@ -43,7 +43,8 @@ import logcat.logcat
 
 @Stable
 @AssistedInject
-class InspectThemeViewModel(
+class InspectThemeViewModel
+internal constructor(
   @Assisted private val themeId: ThemeId,
   private val themeResolver: ThemeResolver,
   private val cache: CustomThemeCache,

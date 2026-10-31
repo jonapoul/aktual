@@ -60,7 +60,8 @@ data class BankSyncImportResult(val added: List<TransactionId>, val updated: Lis
  * changed, and payees are only created if something ends up using them.
  */
 @Inject
-class BankSyncImporter(
+class BankSyncImporter
+internal constructor(
   private val writer: TransactionWriter,
   private val rulesLoader: TransactionRulesLoader,
   private val settingsLoader: BankSyncSettingsLoader,

@@ -20,7 +20,7 @@ import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(AppScope::class)
-class BudgetListNavEntryContributor(private val runLevelState: RunLevelState) :
+class BudgetListNavEntryContributor internal constructor(private val runLevelState: RunLevelState) :
   NavEntryContributor {
   override fun EntryProviderScope<NavKey>.contribute(stack: NavStack<NavKey>) {
     entry<ListBudgetsNavRoute> {

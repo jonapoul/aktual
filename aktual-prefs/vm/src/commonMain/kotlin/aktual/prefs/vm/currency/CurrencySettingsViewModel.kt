@@ -20,7 +20,8 @@ import kotlinx.coroutines.flow.StateFlow
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class CurrencySettingsViewModel(
+class CurrencySettingsViewModel
+internal constructor(
   preferences: CurrencyPreferences,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {

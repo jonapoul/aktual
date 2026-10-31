@@ -4,7 +4,6 @@ kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin)
     api(project(":aktual-api"))
-    api(project(":aktual-di:core"))
     implementation(libs.kotlinx.serialization.core)
   }
 }

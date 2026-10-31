@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.map
 // An account's transaction list options, kept in the synced prefs upstream's account screens use.
 // Each is off unless it says 'true', as upstream reads them
 @Inject
-class AccountViewPrefs(
+class AccountViewPrefs
+internal constructor(
   private val preferences: PreferencesDao,
   private val syncController: BudgetSyncController,
 ) {

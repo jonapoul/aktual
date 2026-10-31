@@ -22,7 +22,8 @@ import okio.buffer
 import okio.use
 
 @ContributesBinding(AppScope::class)
-class FileDecrypterImpl(
+class FileDecrypterImpl
+internal constructor(
   private val contexts: CoroutineContexts,
   private val keys: EncryptionKeys,
   private val files: BudgetFiles,

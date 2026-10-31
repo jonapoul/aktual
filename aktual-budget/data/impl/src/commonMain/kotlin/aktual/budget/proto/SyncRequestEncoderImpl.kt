@@ -13,7 +13,8 @@ import okio.Buffer
 import okio.ByteString
 
 @ContributesBinding(BudgetScope::class)
-class SyncRequestEncoderImpl(
+class SyncRequestEncoderImpl
+internal constructor(
   private val encrypter: BufferEncrypter,
   private val prefs: BudgetLocalPreferences,
 ) : SyncRequestEncoder {

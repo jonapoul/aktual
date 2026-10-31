@@ -42,7 +42,8 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class CustomThemeSettingsViewModel(
+class CustomThemeSettingsViewModel
+internal constructor(
   private val preferences: ThemePreferences,
   private val themeApi: ThemeApi,
   private val cache: CustomThemeCache,

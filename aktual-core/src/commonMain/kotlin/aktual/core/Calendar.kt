@@ -30,7 +30,9 @@ fun interface Calendar {
     .distinctUntilChanged()
 
   @ContributesBinding(AppScope::class)
-  class System(private val clock: Clock, private val timeZones: TimeZoneProvider) : Calendar {
+  class System
+  internal constructor(private val clock: Clock, private val timeZones: TimeZoneProvider) :
+    Calendar {
     override fun today(): LocalDate = clock.todayIn(timeZones.get())
 
     override fun now(): LocalDateTime = clock.now().toLocalDateTime(timeZones.get())

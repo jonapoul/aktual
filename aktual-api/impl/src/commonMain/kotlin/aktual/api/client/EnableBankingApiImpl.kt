@@ -32,7 +32,8 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
 
 @ContributesBinding(BudgetScope::class)
-class EnableBankingApiImpl(
+class EnableBankingApiImpl
+internal constructor(
   @param:AktualClient private val client: HttpClient,
   private val server: BudgetServer,
 ) : EnableBankingApi {

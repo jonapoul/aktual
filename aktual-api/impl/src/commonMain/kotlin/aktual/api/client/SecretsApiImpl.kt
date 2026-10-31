@@ -23,7 +23,8 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
 @ContributesBinding(BudgetScope::class)
-class SecretsApiImpl(
+class SecretsApiImpl
+internal constructor(
   @param:AktualClient private val client: HttpClient,
   private val server: BudgetServer,
 ) : SecretsApi {

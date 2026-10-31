@@ -12,6 +12,7 @@ kotlin {
     api(project(":aktual-core:theme:model"))
     api(project(":aktual-prefs"))
     implementation(libs.androidx.datastore.prefs)
+    implementation(project(":aktual-di:core"))
   }
 
   commonTestDependencies {

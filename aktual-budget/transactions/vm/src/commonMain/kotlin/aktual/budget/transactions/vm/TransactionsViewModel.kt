@@ -83,7 +83,8 @@ import logcat.logcat
 @Stable
 @AssistedInject
 @Suppress("LongParameterList")
-class TransactionsViewModel(
+class TransactionsViewModel
+internal constructor(
   @Assisted private val spec: TransactionsSpec,
   private val prefs: BudgetLocalPreferences,
   private val accountDao: AccountDao,

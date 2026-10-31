@@ -23,7 +23,8 @@ import kotlinx.coroutines.launch
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class SearchLicensesViewModel(
+class SearchLicensesViewModel
+internal constructor(
   private val licensesRepository: LicensesRepository,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {

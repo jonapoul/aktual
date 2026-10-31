@@ -46,7 +46,8 @@ import logcat.logcat
  */
 @Stable
 @AssistedInject
-class BankSyncSettingsViewModel(
+class BankSyncSettingsViewModel
+internal constructor(
   @Assisted private val account: AccountId,
   private val accountDao: AccountDao,
   private val loader: BankSyncSettingsLoader,

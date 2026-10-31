@@ -17,7 +17,8 @@ import kotlinx.coroutines.withContext
 import logcat.logcat
 
 @Inject
-class BudgetInfoFetcher(
+class BudgetInfoFetcher
+internal constructor(
   private val token: Token,
   private val syncApi: SyncApi,
   private val contexts: CoroutineContexts,

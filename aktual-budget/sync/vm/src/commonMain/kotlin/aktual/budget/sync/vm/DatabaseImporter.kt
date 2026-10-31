@@ -25,7 +25,8 @@ import okio.buffer
 
 /** Adapted from packages/loot-core/src/server/cloud-storage.ts importBuffer() */
 @Inject
-class DatabaseImporter(
+class DatabaseImporter
+internal constructor(
   private val contexts: CoroutineContexts,
   private val fileSystem: FileSystem,
   private val budgetFiles: BudgetFiles,

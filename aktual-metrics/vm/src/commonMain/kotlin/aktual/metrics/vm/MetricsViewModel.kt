@@ -28,7 +28,8 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(LoggedInScope::class)
-class MetricsViewModel(
+class MetricsViewModel
+internal constructor(
   private val metricsApi: MetricsApi,
   private val contexts: CoroutineContexts,
   private val clock: Clock,

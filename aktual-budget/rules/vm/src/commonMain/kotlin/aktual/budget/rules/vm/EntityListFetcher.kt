@@ -23,7 +23,7 @@ interface EntityListFetcher {
 }
 
 @ContributesBinding(BudgetScope::class)
-class EntityListFetcherImpl(database: BudgetDatabase) : EntityListFetcher {
+class EntityListFetcherImpl internal constructor(database: BudgetDatabase) : EntityListFetcher {
   private val payees = PayeeDao(database)
   private val accounts = AccountDao(database)
   private val categories = CategoryDao(database)

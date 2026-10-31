@@ -39,7 +39,8 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(BudgetScope::class)
-class ListTagsViewModel(
+class ListTagsViewModel
+internal constructor(
   private val tagsDao: TagsDao,
   private val transactionDao: TransactionDao,
   private val syncController: BudgetSyncController,

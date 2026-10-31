@@ -32,7 +32,8 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(BudgetScope::class)
-class ListRulesViewModel(
+class ListRulesViewModel
+internal constructor(
   loader: RulesLoader,
   private val syncController: BudgetSyncController,
   val nameFetcher: NameFetcher,

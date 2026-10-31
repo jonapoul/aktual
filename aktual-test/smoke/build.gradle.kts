@@ -23,6 +23,7 @@ kotlin {
     implementation(project(":aktual-budget:sync:vm"))
     implementation(project(":aktual-budget:tags:vm"))
     implementation(project(":aktual-budget:transactions:vm"))
+    implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:model"))
     implementation(project(":aktual-di:bindings"))
     implementation(project(":aktual-metrics:vm"))

@@ -10,7 +10,8 @@ import io.ktor.client.request.get
 import io.ktor.http.path
 
 @ContributesBinding(ServerChosenScope::class)
-class BaseApiImpl(
+class BaseApiImpl
+internal constructor(
   @param:AktualClient private val client: HttpClient,
   private val serverUrl: ServerUrl,
 ) : BaseApi {

@@ -21,7 +21,8 @@ import dev.zacsweers.metro.ContributesIntoSet
 import kotlinx.coroutines.launch
 
 @ContributesIntoSet(AppScope::class)
-class BudgetNavRailNavEntryContributor(
+class BudgetNavRailNavEntryContributor
+internal constructor(
   private val runLevelState: RunLevelState,
   private val demoBudget: DemoBudget,
   private val scope: AppCoroutineScope,

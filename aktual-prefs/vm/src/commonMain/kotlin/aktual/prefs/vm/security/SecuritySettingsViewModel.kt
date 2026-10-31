@@ -25,7 +25,8 @@ import kotlinx.coroutines.launch
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class SecuritySettingsViewModel(
+class SecuritySettingsViewModel
+internal constructor(
   private val preferences: SecurityPreferences,
   private val authenticator: AppLockAuthenticator,
   viewModelContext: ViewModelContext,

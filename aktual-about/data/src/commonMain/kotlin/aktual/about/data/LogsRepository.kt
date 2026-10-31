@@ -25,7 +25,8 @@ import okio.Path
 import okio.buffer
 
 @Inject
-class LogsRepository(
+class LogsRepository
+internal constructor(
   private val storage: LogStorage,
   private val fileSystem: FileSystem,
   private val contexts: CoroutineContexts,

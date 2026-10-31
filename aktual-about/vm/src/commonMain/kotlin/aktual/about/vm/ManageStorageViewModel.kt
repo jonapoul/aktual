@@ -45,7 +45,8 @@ import okio.Path
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class ManageStorageViewModel(
+class ManageStorageViewModel
+internal constructor(
   private val files: BudgetFiles,
   private val appDirectory: AppDirectory,
   private val logStorage: LogStorage,

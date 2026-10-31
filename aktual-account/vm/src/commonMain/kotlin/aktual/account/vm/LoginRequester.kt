@@ -18,7 +18,8 @@ import kotlinx.coroutines.withContext
 import logcat.logcat
 
 @Inject
-class LoginRequester(
+class LoginRequester
+internal constructor(
   private val accountApi: AccountApi,
   private val contexts: CoroutineContexts,
   private val preferences: AppPreferences,
