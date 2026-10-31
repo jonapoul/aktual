@@ -48,7 +48,7 @@ WHERE p.tombstone = 0 AND (p.transfer_acct IS NULL OR a.id IS NOT NULL)
 ORDER BY name COLLATE NOCASE;
 
 -- Alive non-transfer payees without alive transactions, that no rule's legacy description
--- condition points at
+-- condition points at. Adapted from db/index.ts orphanedPayeesQuery()
 getUnusedIds:
 SELECT p.id
   FROM payees p

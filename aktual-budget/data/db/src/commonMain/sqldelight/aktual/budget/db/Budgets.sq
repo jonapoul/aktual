@@ -89,7 +89,8 @@ LEFT JOIN category_groups g ON c.cat_group = g.id
 WHERE c.tombstone = 0 AND b.month = :month;
 
 -- The earliest month with a budget row or an on-budget transaction. Transactions are read from the
--- table, with v_transactions_internal_alive's filters inlined, so trans_category_date applies
+-- table, with v_transactions_internal_alive's filters inlined, so trans_category_date applies.
+-- Adapted from packages/loot-core/src/server/budget/actions.ts getFirstActivityMonth()
 zeroBudgetFirstActivity:
 SELECT MIN(month) AS month
 FROM (

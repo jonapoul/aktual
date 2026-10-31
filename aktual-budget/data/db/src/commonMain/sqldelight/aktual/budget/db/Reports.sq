@@ -170,6 +170,7 @@ JOIN category_groups g ON g.id = c.cat_group AND g.tombstone = 0
 WHERE b.month >= :start AND b.month <= :end AND (g.is_income = 1 OR g.hidden = 0)
 GROUP BY b.month, g.is_income;
 
+-- Adapted from packages/desktop-client/src/spreadsheet/bindings.ts accountBalance()
 monteCarloAccountBalances:
 SELECT
   a.id AS account,

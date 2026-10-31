@@ -55,7 +55,8 @@ SELECT id, name, closed, offbudget FROM accounts WHERE tombstone = 0 ORDER BY so
 
 -- Every account with its current balance, closed ones included. As upstream's sidebar, the balance
 -- sums every live transaction, future-dated too, skipping split children since their parent's
--- amount already covers them. last_activity is the date of the account's latest transaction
+-- amount already covers them. last_activity is the date of the account's latest transaction.
+-- Adapted from packages/desktop-client/src/spreadsheet/bindings.ts accountBalance()
 getAllWithBalances:
 SELECT a.id, a.name, a.offbudget, a.closed, a.account_sync_source, a.account_id,
     a.bank_sync_status, a.last_sync, CAST(IFNULL(t.balance, 0) AS INTEGER) AS balance,
