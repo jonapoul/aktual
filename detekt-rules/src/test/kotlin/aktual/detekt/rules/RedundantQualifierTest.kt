@@ -490,7 +490,13 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
         )
       """
         .trimIndent(),
-      "setOf(\n    Role.Admin,\n    Role.Basic,\n  )" to "setOf<Role>(Admin, Basic)",
+      """
+      setOf(
+          Role.Admin,
+          Role.Basic,
+        )
+      """
+        .trimIndent() to "setOf<Role>(Admin, Basic)",
     )
 
   @Test
