@@ -16,3 +16,4 @@ local.properties
 # gradle-profiler output, see scripts/gradleConfiguration*.sh
 /profiling/*-out/
 /profiling/gradle-user-home/
+__pycache__/
