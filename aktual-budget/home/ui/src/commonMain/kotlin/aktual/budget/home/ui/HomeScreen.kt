@@ -18,6 +18,7 @@ import aktual.core.nav.BankSyncNavigator
 import aktual.core.nav.BankSyncSettingsNavigator
 import aktual.core.nav.CreateAccountNavigator
 import aktual.core.nav.EditScheduleNavigator
+import aktual.core.nav.EditTransactionNavigator
 import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.nav.ListSchedulesNavigator
 import aktual.core.nav.ReportNavigator
@@ -81,6 +82,7 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 internal fun HomeScreen(
   transactions: TransactionsNavigator,
+  editTransaction: EditTransactionNavigator,
   bankSync: BankSyncNavigator,
   bankSyncSettings: BankSyncSettingsNavigator,
   createAccount: CreateAccountNavigator,
@@ -100,6 +102,7 @@ internal fun HomeScreen(
     onAction = { action ->
       when (action) {
         is OpenAccount -> transactions(action.id)
+        is NewTransaction -> editTransaction.create(account = action.account)
         OpenBankSync -> bankSync()
         AddAccount ->
           addAccount(
