@@ -68,9 +68,7 @@ internal fun LazyListScope.bankLogin(
     is Failed -> {
       item(key = "login-failed") { LoginFailed(status) }
     }
-    Idle -> {
-      // Just the banks
-    }
+    Idle -> {}
   }
 
   when (val banks = login.banks) {

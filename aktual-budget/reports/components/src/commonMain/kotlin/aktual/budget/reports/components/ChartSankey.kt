@@ -376,8 +376,7 @@ private fun GroupedItemRow(item: SankeyGroupedItem, modifier: Modifier = Modifie
   }
 
 // Puts the tooltip beside the tapped point, flipping to the left when it would run off the right
-// edge,
-// and keeps it inside the chart
+// edge, and keeps it inside the chart
 private fun Modifier.tooltipPosition(position: Offset): Modifier =
   layout { measurable, constraints ->
     val placeable = measurable.measure(constraints.copy(minWidth = 0, minHeight = 0))

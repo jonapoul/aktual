@@ -197,7 +197,7 @@ private class ScrollbarNode(
 
     if (gestureState == CLICKING) {
       gestureState = DRAGGING
-      updateWidthMultiplier() // Ensure scrollbar stays expanded when dragging starts
+      updateWidthMultiplier()
     }
 
     if (gestureState == DRAGGING) {
@@ -208,9 +208,9 @@ private class ScrollbarNode(
   private fun handleRelease() {
     gestureState = IDLE
     dragStartOffset = null
-    updateWidthMultiplier() // Shrink scrollbar if not hovering
+    updateWidthMultiplier()
     if (!isHovered) {
-      showAndStartAutoFadeIfEnabled() // Restart fade if not hovering
+      showAndStartAutoFadeIfEnabled()
     }
   }
 
@@ -221,10 +221,8 @@ private class ScrollbarNode(
       updateWidthMultiplier()
 
       if (isHovered) {
-        // Cancel fade when hovering
         fadeJob?.cancel()
       } else if (gestureState == IDLE) {
-        // Only restart fade when un-hovering if we're not dragging
         showAndStartAutoFadeIfEnabled()
       }
     }
@@ -245,7 +243,6 @@ private class ScrollbarNode(
       isHovered = false
       updateWidthMultiplier() // Will stay expanded if dragging
       if (gestureState == IDLE) {
-        // Only restart fade when pointer exits if we're not dragging
         showAndStartAutoFadeIfEnabled()
       }
     }
@@ -264,9 +261,9 @@ private class ScrollbarNode(
   override fun onCancelPointerInput() {
     gestureState = IDLE
     dragStartOffset = null
-    updateWidthMultiplier() // Shrink scrollbar if not hovering
+    updateWidthMultiplier()
     if (!isHovered) {
-      showAndStartAutoFadeIfEnabled() // Restart fade if not hovering
+      showAndStartAutoFadeIfEnabled()
     }
   }
 

@@ -53,7 +53,6 @@ internal fun InputFields(
       }
     }
 
-    // Feed user edits to parent
     LaunchedEffect(textState) {
       snapshotFlow { textState.text.toString() }
         .collect { text -> onAction(EnterUrl(text.lowercase())) }

@@ -8,12 +8,8 @@ import aktual.core.l10n.Strings
 import aktual.core.model.unaryPlus
 import androidx.compose.runtime.Composable
 
-// Ported from
-// packages/desktop-client/src/components/reports/reports/monte-carlo/monteCarloYearStory.ts.
-// The plain-language summary of one simulated year, following cause to effect: what the withdrawal
-// rule decided and why, whether the minimum spending floor stepped in, how the year's spending was
-// funded, and where any unspent money ended up. The numbers behind each decision live in the
-// working, not here
+// packages/desktop-client/src/components/reports/reports/monte-carlo/monteCarloYearStory.ts. The
+// plain-language summary of one simulated year, following cause to effect
 @Composable
 internal fun yearStory(
   row: McRunDetailRow,

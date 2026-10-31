@@ -65,8 +65,7 @@ fun <T : Any> AktualSlidingToggleButton(
       // Child 0: The Indicator
       Box(
         modifier =
-          Modifier.fillMaxSize() // Will be constrained by the Layout logic
-            .background(colors.selectedBackground(isEnabled), ButtonShape),
+          Modifier.fillMaxSize().background(colors.selectedBackground(isEnabled), ButtonShape),
       )
 
       // Children 1 to N: The Labels
@@ -91,22 +90,19 @@ fun <T : Any> AktualSlidingToggleButton(
     val count = options.size
     val itemWidth = constraints.maxWidth / count
 
-    // 2. Measure labels first to determine the tallest one
+    // Measure labels first to determine the tallest one
     val labelMeasurables = measurables.subList(1, measurables.size)
     val labelPlaceables = labelMeasurables.map {
       it.measure(constraints.copy(minWidth = itemWidth, maxWidth = itemWidth))
     }
 
-    // Determine the height based on the tallest label
     val maxHeight = labelPlaceables.maxOf { it.height }
 
-    // 3. Measure the indicator (the first child) with the calculated dimensions
+    // The indicator is the first child
     val indicatorPlaceable =
       measurables[0].measure(Constraints.fixed(width = itemWidth, height = maxHeight))
 
-    // 4. Set the layout size
     layout(constraints.maxWidth, maxHeight) {
-      // Place Indicator
       indicatorPlaceable.placeRelative(x = (animatedIndex * itemWidth).roundToInt(), y = 0)
 
       labelPlaceables.forEachIndexed { index, placeable ->

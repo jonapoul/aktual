@@ -41,9 +41,8 @@ object ActualApiContainer {
               val isExpired =
                 exception.response.body<ErrorBody>().reason == FailureReason.TokenExpired.reason
               if (isExpired && preferences.token.get() != null) {
-                // Only notify for authenticated-session failures, not login-time failures.
-                // During login, there's no stored token, so firing the global handler would
-                // clear the backstack and push LoginNavRoute while already on the login screen.
+                // Only for authenticated sessions. At login there's no stored token yet, so this
+                // would clear the backstack while already on the login screen
                 notifyTokenExpired()
               }
             }
@@ -51,7 +50,6 @@ object ActualApiContainer {
                 // Body wasn't parseable as an error response, ignore
               }
           }
-          // Always re-throw the original exception
           throw exception
         }
       }

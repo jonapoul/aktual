@@ -215,7 +215,7 @@ private fun WidgetType(
       data = type.sampleData(),
       compact = true,
       includeHeader = false,
-      onAction = {}, // no-op
+      onAction = {},
     )
   }
 }

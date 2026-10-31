@@ -209,9 +209,7 @@ private fun Content(
           }
         }
 
-        Unknown -> {
-          // No-op
-        }
+        Unknown -> {}
       }
 
       if (loginFailure != null) {

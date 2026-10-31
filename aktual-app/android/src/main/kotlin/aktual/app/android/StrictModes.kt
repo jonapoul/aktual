@@ -12,8 +12,6 @@ internal fun threadPolicy() =
   StrictMode.ThreadPolicy.Builder()
     .ifVersionAtLeast(UPSIDE_DOWN_CAKE) { detectExplicitGc() }
     .detectCustomSlowCalls()
-    // .detectDiskReads() // probably should use these two, but too much faff
-    // .detectDiskWrites()
     .detectNetwork()
     .detectResourceMismatches()
     .detectUnbufferedIo()
@@ -34,10 +32,6 @@ internal fun vmPolicy() =
     .detectLeakedClosableObjects()
     .detectLeakedRegistrationObjects()
     .detectLeakedSqlLiteObjects()
-    // .detectNonSdkApiUsage() // blocks usage of layout inspector
-    // .ifVersionAtLeast(S) { detectUnsafeIntentLaunch() } // blocks bitwarden - too much faff
-    // .detectUntaggedSockets() // need to add manual tags to all network requests - too much
-    // faff
     .penaltyLog()
     .penaltyDeath()
     .build()

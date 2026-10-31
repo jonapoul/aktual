@@ -4,7 +4,7 @@ import aktual.core.AppCloser
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 
-// No-op on desktop. TODO: handle keyboard shortcuts?
+// TODO: handle keyboard shortcuts?
 @Composable actual fun BackHandler(enabled: Boolean, onBack: () -> Unit) = Unit
 
 @Composable

@@ -32,7 +32,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 - Before using or adding an icon, check upstream Actual for an equivalent and prefer it over Material. See [aktual-core/icons](aktual-core/icons/CLAUDE.md).
 - In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.
 - Put tests in `commonTest` so they run on both targets. Use `androidHostTest` only for tests needing real Android behaviour (`Context`, `Bundle`, `Looper`, Compose UI), with `@RunWith(RobolectricTestRunner::class)`. Host tests run on plain JUnit otherwise, with Android stubs returning defaults (`isReturnDefaultValues`).
-- Wrap comments at 100 columns. That is where `ktfmt --google-style` wraps them, not the `max_line_length` of 120 in `.editorconfig`.
+- Wrap comments at 100 columns, counting the indent and the `// ` prefix (an 8-space indent leaves 89 characters of text). That is where `ktfmt --google-style` wraps them, not the `max_line_length` of 120 in `.editorconfig`. ktfmt doesn't reflow comments: it moves the overflow of each long line onto a new `//` line of its own, leaving stubs like `// Existing` mid-paragraph. When writing or editing a multi-line comment, rewrap the whole paragraph so every line fits, and check the result after ktfmt runs.
 
 ## Build commands
 

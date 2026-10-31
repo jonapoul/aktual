@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 
-/** Shimmer placeholder that mimics the layout of [BudgetListItem]. */
 @Composable
 internal fun ShimmerBudgetList(
   numLoadingItems: Int,
@@ -54,7 +53,6 @@ internal fun ShimmerBudgetListItem(modifier: Modifier = Modifier) {
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = CenterVertically,
   ) {
-    // Mimics the text column in BudgetListItem
     Column(modifier = Modifier.weight(1f)) {
       // Budget name placeholder (real: 16sp W700 ≈ 20dp)
       Box(

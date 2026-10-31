@@ -6,12 +6,10 @@ import okio.Path
 
 // Adapted from packages/loot-core/src/server/encryption/encryption-internals.ts
 
-/** Decrypts a file at the given [filePath] and creates another at [decryptedZip]. */
 fun interface FileDecrypter {
   suspend operator fun invoke(id: BudgetId, meta: Meta, filePath: Path): DecryptResult
 }
 
-/** Decrypts a [Buffer] of bytes and returns another containing the decrypted data */
 fun interface BufferDecrypter {
   suspend operator fun invoke(meta: Meta, buffer: Buffer): DecryptResult
 }

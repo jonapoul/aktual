@@ -12,7 +12,6 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import org.jetbrains.compose.resources.getString
 
-// shows the delete confirmation with an undo action, invoking onUndo if the user taps it
 internal suspend fun SnackbarHostState.showDeleted(
   event: ListTagsEvent.Deleted,
   onUndo: (TagItem) -> Unit,

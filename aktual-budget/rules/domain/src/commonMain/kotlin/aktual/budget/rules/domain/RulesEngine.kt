@@ -119,7 +119,6 @@ internal class CompiledRule(
 
     val result = parentActions.fold(subject) { s, action -> action.exec(s) }
     return when {
-      // No splits, no need to do anything else
       splitCount == 1 -> result
       // Rules with splits can't be applied to child transactions
       result.transaction.isChild -> result

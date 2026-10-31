@@ -190,9 +190,7 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
     )
 
   SideEffect(progress) {
-    // Only clear this from the root overlay, because we only want to stop excluding these areas
-    // when the blur effect
-    // is totally gone
+    // Only stop excluding these areas once the blur is totally gone
     if (progress == 0f) {
       dialogBlurState.excludedFromBlur.clear()
     }

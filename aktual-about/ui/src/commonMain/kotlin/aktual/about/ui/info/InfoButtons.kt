@@ -26,8 +26,6 @@ internal fun InfoButtons(onAction: InfoActionHandler, modifier: Modifier = Modif
     val density = LocalDensity.current
     val fontScale = density.fontScale
 
-    // Adjust breakpoints based on font scale to accommodate larger text
-    // Base values: 400dp for narrow->grid, 700dp for grid->row
     val narrowBreakpoint = (400 * fontScale).dp
     val wideBreakpoint = (700 * fontScale).dp
 

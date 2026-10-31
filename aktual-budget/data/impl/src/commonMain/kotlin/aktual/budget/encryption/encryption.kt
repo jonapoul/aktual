@@ -112,8 +112,7 @@ internal fun encryptToSink(
   val gcmSpec = GCMParameterSpec(AUTH_TAG_LENGTH, iv)
   cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec)
 
-  // Encrypt to a temporary buffer to extract the auth tag
-  // In GCM mode, the cipher automatically appends the auth tag to the ciphertext
+  // In GCM mode, the cipher appends the auth tag to the ciphertext
   val encryptedWithTag = Buffer()
   CipherSink(encryptedWithTag.buffer(), cipher).buffer().use { cipherSink ->
     source.buffer().use { src -> cipherSink.writeAll(src) }
@@ -124,10 +123,8 @@ internal fun encryptToSink(
   val totalSize = encryptedWithTag.size
   val ciphertextSize = totalSize - authTagLengthBytes
 
-  // Write the ciphertext (without auth tag) directly to the sink
   sink.buffer().use { s -> s.write(encryptedWithTag, ciphertextSize) }
 
-  // Extract the auth tag (last 16 bytes)
   val authTag = ByteArray(authTagLengthBytes)
   encryptedWithTag.read(authTag)
 

@@ -356,10 +356,10 @@ private val MARKDOWN_1 =
 
           Box(
               modifier = Modifier
-                  .height(150.dp) // fixed height container
+                  .height(150.dp)
                   .fillMaxWidth()
                   .background(MaterialTheme.colors.surface)
-                  .verticalScroll(scrollState) // enables vertical scrolling
+                  .verticalScroll(scrollState)
                   .padding(8.dp)
           ) {
               BasicTextField(
@@ -369,7 +369,7 @@ private val MARKDOWN_1 =
                       .fillMaxWidth(),
                   textStyle = TextStyle.Default.copy(color = MaterialTheme.colors.onSurface),
                   cursorBrush = SolidColor(MaterialTheme.colors.primary),
-                  maxLines = Int.MAX_VALUE, // allow unlimited lines
+                  maxLines = Int.MAX_VALUE,
               )
           }
       }

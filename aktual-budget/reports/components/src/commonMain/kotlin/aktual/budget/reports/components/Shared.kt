@@ -227,7 +227,7 @@ private const val MONTHS_PER_YEAR = 12L
 internal fun YearMonth.monthNumber(): Long = year * MONTHS_PER_YEAR + month.number
 
 internal fun YearMonth.Companion.fromMonthNumber(number: Long): YearMonth {
-  val adjustedNumber = number - 1 // Convert to 0-based indexing
+  val adjustedNumber = number - 1
   return YearMonth(
     year = (adjustedNumber / MONTHS_PER_YEAR).toInt(),
     month = Month((adjustedNumber % MONTHS_PER_YEAR + 1).toInt()),

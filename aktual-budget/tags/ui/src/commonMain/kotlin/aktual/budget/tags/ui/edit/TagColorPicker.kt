@@ -145,7 +145,6 @@ internal fun TagColorPicker(
       horizontalArrangement = Arrangement.spacedBy(EditTagDS.colorPickerSectionSpacing),
       verticalAlignment = CenterVertically,
     ) {
-      // always visible: the hex field
       ColorPickerTextField(
         modifier = Modifier.weight(1f),
         hexState = hexState,

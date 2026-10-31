@@ -110,7 +110,7 @@ class InitialRouteUseCase(private val runLevelState: RunLevelState) {
       .all()
       .map { graphs ->
         when (graphs.lastOrNull()) {
-          null -> null // not initialised yet?
+          null -> null
           is AppGraph -> ServerUrlNavRoute
           is ServerChosenGraph -> LoginNavRoute
           is LoggedInGraph -> ListBudgetsNavRoute

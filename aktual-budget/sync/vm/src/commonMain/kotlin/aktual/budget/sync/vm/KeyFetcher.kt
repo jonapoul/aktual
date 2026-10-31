@@ -50,7 +50,6 @@ internal constructor(
     val key = generateKeyFromPassword(keyPassword, salt)
     keyPreferences[keyId] = key.encoded
 
-    // test the new key
     try {
       val buffer = Buffer()
       buffer.write(test.value)

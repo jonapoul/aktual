@@ -62,8 +62,7 @@ internal constructor(
   private val mutableColor = MutableStateFlow<Color?>(null)
   private val mutableColorError = MutableStateFlow(false)
 
-  // the reason the last save attempt failed, shown in an error dialog so the user isn't left
-  // guessing
+  // The reason the last save failed, shown in an error dialog
   private val mutableSaveError = MutableStateFlow<String?>(null)
   val saveError: StateFlow<String?> = mutableSaveError.asStateFlow()
 
@@ -95,7 +94,6 @@ internal constructor(
       }
     }
 
-  // true when the working edits differ from what was originally loaded
   val hasUnsavedChanges: StateFlow<Boolean> =
     viewModelScope.launchMolecule(Immediate) {
       val loaded by mutableLoaded.collectAsState()
@@ -106,7 +104,6 @@ internal constructor(
       l != null && (tag != l.tag || description != l.description || color != l.color)
     }
 
-  // true when the entered name already belongs to another tag
   val isDuplicateName: StateFlow<Boolean> =
     viewModelScope.launchMolecule(Immediate) {
       val tag by mutableTag.collectAsState()
@@ -114,8 +111,6 @@ internal constructor(
       tag.trim() in existingNames
     }
 
-  // a tag is saveable when its name is non-blank, unique, and the colour field isn't in an error
-  // state
   val canSave: StateFlow<Boolean> =
     viewModelScope.launchMolecule(Immediate) {
       val tag by mutableTag.collectAsState()

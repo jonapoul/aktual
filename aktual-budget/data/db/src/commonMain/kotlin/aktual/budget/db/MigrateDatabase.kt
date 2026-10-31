@@ -97,10 +97,9 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
         """
           .trimIndent(),
       ),
-    // NOT an upstream migration: Aktual's own view, which has no file in
-    // packages/loot-core/migrations.
-    // Existing databases only get new schema through this list, so it creates v_schedule_recurring
-    // (see Schedules.sq). The version is a timestamp after the last upstream migration
+    // NOT an upstream migration: Aktual's own v_schedule_recurring view (see Schedules.sq).
+    // Existing databases only get new schema through this list. Versioned after the last upstream
+    // migration
     1791936000000L to
       listOf(
         """
@@ -118,12 +117,8 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
 
 private const val TAG = "MigrateDatabase"
 
-// Keep ADD COLUMN migrations idempotent. Schema.create runs on every Actual DB we open (all
-// report user_version 0) and creates any table missing from the file with the full current schema,
-// so a column like tags.hidden on a pre-tags DB already exists before migrations run. Catching the
-// failure is unreliable: on the androidx host-test target it arrives as a message-less
-// android.database.SQLException. So we pre-check the column via PRAGMA and skip the ALTER if
-// present.
+// Keep ADD COLUMN migrations idempotent. Schema.create can add the column before migrations run,
+// and catching the duplicate-column failure is unreliable, so check for it via PRAGMA first
 private suspend fun execute(driver: SqlDriver, statement: String) {
   ADD_COLUMN_REGEX.find(statement)?.let { match ->
     val (table, column) = match.destructured

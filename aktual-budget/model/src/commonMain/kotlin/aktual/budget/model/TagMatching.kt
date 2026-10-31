@@ -1,20 +1,16 @@
 package aktual.budget.model
 
-// A tag (#name) is "linked" to a transaction when its token appears in the transaction notes.
-// A token is a '#' not immediately preceded by another '#' (so '##' is skipped), followed by one
-// or more non-'#', non-whitespace characters. Note this does not require a whitespace boundary on
-// the left, so "word#tag" still matches "tag". Matching is case-insensitive. Mirrors the hasTags
-// filter in upstream Actual (packages/loot-core/src/server/rules/condition.ts) and the tag
-// extraction in tags/app.ts, both of which use this exact pattern.
+// A tag token is a '#' not preceded by another '#', then one or more non-'#', non-whitespace
+// characters. No boundary is needed on the left, so "word#tag" matches "tag". Same pattern as
+// hasTags in packages/loot-core/src/server/rules/condition.ts and tags/app.ts
 private val TAG_TOKEN = Regex("""(?<!#)#([^#\s]+)""")
 
-// The distinct tag names (lowercased, without the leading '#') referenced in [notes].
+// Lowercased, without the leading '#'
 fun tagsInNotes(notes: String): Set<String> =
   TAG_TOKEN.findAll(notes).mapTo(mutableSetOf()) { it.groupValues[1].lowercase() }
 
-// extractTagsFromText() in packages/loot-core/src/shared/tags.ts: the distinct tag names in
-// [notes],
-// in the order they first appear. Unlike [tagsInNotes] this is case-sensitive, as tag identity is
+// extractTagsFromText() in packages/loot-core/src/shared/tags.ts. Case-sensitive and in the order
+// they first appear
 fun tagNamesInNotes(notes: String): List<String> =
   TAG_TOKEN.findAll(notes).map { it.groupValues[1] }.distinct().toList()
 
@@ -22,5 +18,4 @@ fun tagNamesInNotes(notes: String): List<String> =
 fun tagRangesInNotes(notes: String): List<IntRange> =
   TAG_TOKEN.findAll(notes).map { it.range }.toList()
 
-// Whether [notes] references the tag named [tag] (case-insensitive).
 fun notesContainTag(notes: String, tag: String): Boolean = tag.lowercase() in tagsInNotes(notes)

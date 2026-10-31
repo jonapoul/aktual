@@ -24,17 +24,14 @@ fun AktualNavHost(
     backStack = navStack,
     modifier = modifier,
     onBack = { navStack.pop() },
-    // Forward: new screen slides in from right, old screen slides out to left
     transitionSpec = {
       slideInHorizontally(initialOffsetX = { width -> width }) togetherWith
         slideOutHorizontally(targetOffsetX = { width -> -width })
     },
-    // Back: previous screen slides in from left, current screen slides out to right
     popTransitionSpec = {
       slideInHorizontally(initialOffsetX = { width -> -width }) togetherWith
         slideOutHorizontally(targetOffsetX = { width -> width })
     },
-    // Predictive back gesture: same as pop
     predictivePopTransitionSpec = {
       slideInHorizontally(initialOffsetX = { width -> -width }) togetherWith
         slideOutHorizontally(targetOffsetX = { width -> width })
