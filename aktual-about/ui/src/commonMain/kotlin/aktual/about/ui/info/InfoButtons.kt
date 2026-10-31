@@ -24,7 +24,8 @@ import androidx.compose.ui.unit.dp
 internal fun InfoButtons(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
   BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
     val density = LocalDensity.current
-    val fontScale = density.fontScale
+
+    @Suppress("RestrictedApi") val fontScale = density.fontScale
 
     val narrowBreakpoint = (400 * fontScale).dp
     val wideBreakpoint = (700 * fontScale).dp
