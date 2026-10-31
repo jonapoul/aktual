@@ -8,8 +8,10 @@ import aktual.budget.model.ScheduleSort
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
 import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.ScheduleTransactionPoster
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.edit.ScheduleWriter
+import aktual.core.Calendar
 import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
@@ -25,6 +27,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
@@ -33,6 +36,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import logcat.logcat
 
 @Stable
@@ -43,7 +47,9 @@ internal constructor(
   loader: SchedulesLoader,
   private val syncController: BudgetSyncController,
   private val writer: ScheduleWriter,
+  private val poster: ScheduleTransactionPoster,
   private val preferences: SchedulePreferences,
+  calendar: Calendar,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -88,6 +94,11 @@ internal constructor(
       .stateIn(viewModelScope, Eagerly, initialValue = Loading)
 
   val showCompleted: StateFlow<Boolean> = preferences.showCompleted.asStateFlow(viewModelScope)
+
+  val today: StateFlow<LocalDate> =
+    calendar
+      .observeToday()
+      .stateIn(viewModelScope, WhileSubscribed(stopTimeoutMillis = 5_000), calendar.today())
 
   fun retry() {
     retries.tryEmit(Unit)
@@ -150,6 +161,29 @@ internal constructor(
         .onFailure { e ->
           logcat.e(e) { "Failed restarting schedule ${schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.RestartFailed(schedule))
+        }
+    }
+  }
+
+  fun post(schedule: Schedule, date: LocalDate) {
+    viewModelScope.launch {
+      runCatchingCancellable {
+        val transactions = poster.post(schedule.id, date)
+        mutableEvents.tryEmit(ListSchedulesEvent.Posted(schedule, transactions.toImmutableList()))
+      }
+        .onFailure { e ->
+          logcat.e(e) { "Failed posting schedule ${schedule.id}" }
+          mutableEvents.tryEmit(ListSchedulesEvent.PostFailed(schedule))
+        }
+    }
+  }
+
+  fun undoPost(event: ListSchedulesEvent.Posted) {
+    viewModelScope.launch {
+      runCatchingCancellable { poster.unpost(event.transactions) }
+        .onFailure { e ->
+          logcat.e(e) { "Failed undoing post of schedule ${event.schedule.id}" }
+          mutableEvents.tryEmit(ListSchedulesEvent.UnpostFailed(event.schedule))
         }
     }
   }

@@ -7,12 +7,16 @@ import aktual.budget.schedules.ui.list.ListSchedulesPreview.scheduleA
 import aktual.budget.schedules.ui.list.ListSchedulesPreview.scheduleB
 import aktual.budget.schedules.vm.list.Empty
 import aktual.budget.schedules.vm.list.Failure
+import aktual.budget.schedules.vm.list.ListSchedulesEvent
 import aktual.budget.schedules.vm.list.ListSchedulesEvent.CompleteFailed
 import aktual.budget.schedules.vm.list.ListSchedulesEvent.Completed
 import aktual.budget.schedules.vm.list.ListSchedulesEvent.DeleteFailed
 import aktual.budget.schedules.vm.list.ListSchedulesEvent.Deleted
+import aktual.budget.schedules.vm.list.ListSchedulesEvent.PostFailed
+import aktual.budget.schedules.vm.list.ListSchedulesEvent.Posted
 import aktual.budget.schedules.vm.list.ListSchedulesEvent.RestartFailed
 import aktual.budget.schedules.vm.list.ListSchedulesEvent.RestoreFailed
+import aktual.budget.schedules.vm.list.ListSchedulesEvent.UnpostFailed
 import aktual.budget.schedules.vm.list.ListSchedulesState
 import aktual.budget.schedules.vm.list.ListSchedulesViewModel
 import aktual.budget.schedules.vm.list.Loading
@@ -45,6 +49,7 @@ import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.Snackbars
 import aktual.core.ui.SortDialog
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -93,19 +98,21 @@ internal fun ListSchedulesScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val showCompleted by viewModel.showCompleted.collectAsStateWithLifecycle()
+  val today by viewModel.today.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
+  var posting by remember { mutableStateOf<Schedule?>(null) }
 
   LaunchedEffect(viewModel) {
-    viewModel.events.collect { event ->
-      when (event) {
-        is Deleted -> snackbars.show { showDeleted(event, onUndo = viewModel::undoDelete) }
-        is DeleteFailed -> snackbars.show { showDeleteFailed(event) }
-        is RestoreFailed -> snackbars.show { showRestoreFailed(event) }
-        is Completed -> snackbars.show { showCompleted(event, onUndo = viewModel::undoComplete) }
-        is CompleteFailed -> snackbars.show { showCompleteFailed(event) }
-        is RestartFailed -> snackbars.show { showRestartFailed(event) }
-      }
-    }
+    viewModel.events.collect { event -> snackbars.showEvent(event, viewModel) }
+  }
+
+  posting?.let { schedule ->
+    PostScheduleSheet(
+      schedule = schedule,
+      today = today,
+      onPost = { date -> viewModel.post(schedule, date) },
+      onDismiss = { posting = null },
+    )
   }
 
   ListSchedulesScaffold(
@@ -119,7 +126,7 @@ internal fun ListSchedulesScreen(
         is Open -> editSchedule(action.id)
         OpenSearch -> toSearch()
         is Delete -> viewModel.delete(action.schedule)
-        is Post -> snackbars.show { showPostUnsupported() }
+        is Post -> posting = action.schedule
         is Complete -> viewModel.complete(action.schedule)
         is Restart -> viewModel.restart(action.schedule)
         is SetSort -> viewModel.setSort(action.sort)
@@ -128,6 +135,19 @@ internal fun ListSchedulesScreen(
     },
   )
 }
+
+private fun Snackbars.showEvent(event: ListSchedulesEvent, viewModel: ListSchedulesViewModel) =
+  when (event) {
+    is Deleted -> show { showDeleted(event, onUndo = viewModel::undoDelete) }
+    is DeleteFailed -> show { showDeleteFailed(event) }
+    is RestoreFailed -> show { showRestoreFailed(event) }
+    is Completed -> show { showCompleted(event, onUndo = viewModel::undoComplete) }
+    is CompleteFailed -> show { showCompleteFailed(event) }
+    is RestartFailed -> show { showRestartFailed(event) }
+    is Posted -> show { showPosted(event, onUndo = viewModel::undoPost) }
+    is PostFailed -> show { showPostFailed(event) }
+    is UnpostFailed -> show { showUnpostFailed(event) }
+  }
 
 @Composable
 private fun ListSchedulesScaffold(
