@@ -25,8 +25,8 @@ internal data class ActiveField(val field: EditField, val part: TransactionId? =
 // What's being edited, and the text typed for it if that's an amount. They're kept together so a
 // key can't land on the amount that was being typed before
 @Stable
-internal class EditFieldState(initial: ActiveField? = null) {
-  var active by mutableStateOf(initial)
+internal class EditFieldState {
+  var active by mutableStateOf<ActiveField?>(null)
     private set
 
   val amountText = TextFieldState()

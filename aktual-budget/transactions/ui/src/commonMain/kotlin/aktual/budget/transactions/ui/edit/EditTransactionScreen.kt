@@ -182,12 +182,8 @@ private fun EditTransactionScaffold(
 ) {
   val loaded = state as? Loaded
   val form = loaded?.mode?.form
-  val isLoaded = form != null
-  val isCreating = loaded?.mode is Create
   var dialog by remember { mutableStateOf<TransactionDialog?>(null) }
-  // A new transaction starts with the keypad open
-  val fieldState =
-    remember(isLoaded) { EditFieldState(if (isCreating) ActiveField(EditField.Amount) else null) }
+  val fieldState = remember { EditFieldState() }
   val isAmountValid = !fieldState.isTypingAmount || fieldState.amountText.isValidAmount()
 
   // Backing out checks first if that would lose any changes
