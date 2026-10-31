@@ -28,16 +28,16 @@ internal fun <K : Any, V : Any> Assert<Page<K, V>>.withData(expected: List<V>) =
 internal fun <K : Any, V : Any> Assert<Page<K, V>>.withData(vararg expected: V) =
   withData(expected.toList())
 
-internal fun <K : Any, V : Any> Assert<Page<K, V>>.withPrevKey(expected: K?) = transform { page ->
-  if (page.prevKey != expected) {
-    expected("page with prevKey $expected, got ${page.prevKey}")
+internal fun <V : Any> Assert<Page<PageKey, V>>.withPrevOffset(expected: Int?) = transform { page ->
+  if (page.prevKey?.offset != expected) {
+    expected("page with prev offset $expected, got ${page.prevKey}")
   }
   page
 }
 
-internal fun <K : Any, V : Any> Assert<Page<K, V>>.withNextKey(expected: K?) = transform { page ->
-  if (page.nextKey != expected) {
-    expected("page with nextKey $expected, got ${page.nextKey}")
+internal fun <V : Any> Assert<Page<PageKey, V>>.withNextOffset(expected: Int?) = transform { page ->
+  if (page.nextKey?.offset != expected) {
+    expected("page with next offset $expected, got ${page.nextKey}")
   }
   page
 }

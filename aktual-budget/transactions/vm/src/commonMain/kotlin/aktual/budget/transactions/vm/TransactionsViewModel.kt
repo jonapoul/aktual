@@ -112,7 +112,7 @@ internal constructor(
     MutableStateFlow<PersistentSet<TransactionId>>(persistentSetOf())
   private val accountId = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id
   private val isRemote = server is Remote
-  private var currentPagingSource: PagingSource<Int, Transaction>? = null
+  private var currentPagingSource: PagingSource<PageKey, Transaction>? = null
   // Buffered, so an event sent while the screen is being recreated waits for it
   private val mutableEvents = Channel<TransactionsEvent>(Channel.BUFFERED)
   private var deleteJob: Job? = null

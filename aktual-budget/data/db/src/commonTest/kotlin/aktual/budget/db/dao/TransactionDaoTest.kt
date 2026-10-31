@@ -289,6 +289,33 @@ internal class TransactionDaoTest {
   }
 
   @Test
+  fun `A known balance gives the same page as summing the table`() = runDaoTest { transactions ->
+    // given
+    transactions.insert("t1", ON_1, CATEGORY, PAYEE, LocalDate(2026, 1, 1), amount = 10.0)
+    transactions.insert("t2", ON_1, CATEGORY, PAYEE, LocalDate(2026, 1, 2), amount = 20.0)
+    transactions.insert("t3", ON_1, CATEGORY, PAYEE, LocalDate(2026, 1, 3), amount = 5.0)
+    transactions.insert("t4", ON_1, CATEGORY, PAYEE, LocalDate(2026, 1, 4), amount = 7.0)
+    val account = AccountId(ON_1)
+
+    // when
+    val all = transactions.getPaged(limit = 2, offset = 1)
+    val byAccount = transactions.getByAccountPaged(account, limit = 2, offset = 1)
+    val byGroup = transactions.getByGroupPaged(OnBudget, limit = 2, offset = 1)
+
+    // then the balance after t3 carried down, or after t1 carried up, gives the same page
+    val top = KnownBalance.Top(3500L)
+    val below = KnownBalance.Below(1000L)
+    assertThat(all.balances).containsExactly(3500L, 3000L)
+    assertThat(all.top).isEqualTo(3500L)
+    assertThat(transactions.getPaged(limit = 2, offset = 1, known = top)).isEqualTo(all)
+    assertThat(transactions.getPaged(limit = 2, offset = 1, known = below)).isEqualTo(all)
+    assertThat(transactions.getByAccountPaged(account, 2, 1, known = top)).isEqualTo(byAccount)
+    assertThat(transactions.getByAccountPaged(account, 2, 1, known = below)).isEqualTo(byAccount)
+    assertThat(transactions.getByGroupPaged(OnBudget, 2, 1, known = top)).isEqualTo(byGroup)
+    assertThat(transactions.getByGroupPaged(OnBudget, 2, 1, known = below)).isEqualTo(byGroup)
+  }
+
+  @Test
   fun `Hiding reconciled rows keeps the balances of the whole account`() =
     runDaoTest { transactions ->
       // given
