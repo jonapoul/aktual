@@ -48,9 +48,10 @@ internal constructor(
       }
     }
       .getOrElse { e ->
-        return when (e) {
-          is IOException -> LoginResult.NetworkFailure(e.requireMessage())
-          else -> LoginResult.OtherFailure(e.requireMessage())
+        return if (e is IOException) {
+          LoginResult.NetworkFailure(e.requireMessage())
+        } else {
+          LoginResult.OtherFailure(e.requireMessage())
         }
       }
 
