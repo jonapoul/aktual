@@ -44,7 +44,6 @@ import aktual.prefs.vm.currency.CurrencySettingsViewModel
 import aktual.prefs.vm.format.FormatSettingsViewModel
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.inspect.search.SearchThemeViewModel
-import aktual.prefs.vm.schedules.ScheduleSettingsViewModel
 import aktual.prefs.vm.security.SecuritySettingsViewModel
 import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
@@ -171,8 +170,6 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun password() = testVm<ChangePasswordViewModel>()
 
   @Test fun reportDashboard() = testVm<ReportsDashboardViewModel>()
-
-  @Test fun scheduleSettings() = testVm<ScheduleSettingsViewModel>()
 
   @Test fun searchPayees() = testSavedStateVM<SearchPayeesViewModel>()
 

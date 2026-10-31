@@ -8,7 +8,7 @@ Preferences and settings, split into `vm` (state) and `ui` (Compose). `ui:core` 
 
 1. **Feed a config (if needed).** If the pref contributes to a config object (e.g. `BlurConfig`, `FormatConfig`), update the corresponding use case in `aktual-app/nav/src/commonMain/.../UseCases.kt`.
 
-1. **Add to state.** Each settings screen has its own `*SettingsState` under `aktual-prefs/vm/.../<screen>/` (`systemui`, `security`, `format`, `currency`, `schedules`, `transactions`). Add a field using the appropriate wrapper:
+1. **Add to state.** Each settings screen has its own `*SettingsState` under `aktual-prefs/vm/.../<screen>/` (`systemui`, `security`, `format`, `currency`, `transactions`). Add a field using the appropriate wrapper:
    - `BooleanPreference` - toggle
    - `SliderPreference` - float slider (wrap in a factory for range; see `HazeRadiusPreference`)
    - `ListPreference<T>` - enum dropdown

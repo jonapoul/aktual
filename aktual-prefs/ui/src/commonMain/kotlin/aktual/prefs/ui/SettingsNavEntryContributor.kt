@@ -11,8 +11,6 @@ import aktual.core.nav.InspectThemeNavRoute
 import aktual.core.nav.InspectThemeNavigator
 import aktual.core.nav.NavEntryContributor
 import aktual.core.nav.NavStack
-import aktual.core.nav.ScheduleSettingsNavRoute
-import aktual.core.nav.ScheduleSettingsNavigator
 import aktual.core.nav.SearchThemeNavRoute
 import aktual.core.nav.SearchThemeNavigator
 import aktual.core.nav.SecuritySettingsNavRoute
@@ -28,7 +26,6 @@ import aktual.prefs.ui.format.FormatSettingsScreen
 import aktual.prefs.ui.inspect.InspectThemeScreen
 import aktual.prefs.ui.inspect.search.SearchThemeScreen
 import aktual.prefs.ui.root.SettingsScreen
-import aktual.prefs.ui.schedules.ScheduleSettingsScreen
 import aktual.prefs.ui.security.SecuritySettingsScreen
 import aktual.prefs.ui.systemui.SystemUiSettingsScreen
 import aktual.prefs.ui.theme.ThemeSettingsScreen
@@ -44,15 +41,12 @@ class SettingsNavEntryContributor : NavEntryContributor {
       SettingsScreen(
         back = BackNavigator(stack),
         toThemeSettings = ThemeSettingsNavigator(stack),
-        toScheduleSettings = ScheduleSettingsNavigator(stack),
         toSystemUiSettings = SystemUiSettingsNavigator(stack),
         toSecuritySettings = SecuritySettingsNavigator(stack),
         toFormatSettings = FormatSettingsNavigator(stack),
         toCurrencySettings = CurrencySettingsNavigator(stack),
       )
     }
-
-    entry<ScheduleSettingsNavRoute> { ScheduleSettingsScreen(BackNavigator(stack)) }
 
     entry<SystemUiSettingsNavRoute> { SystemUiSettingsScreen(BackNavigator(stack)) }
 

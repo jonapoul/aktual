@@ -12,7 +12,6 @@ import aktual.core.nav.EditScheduleNavRoute
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.nav.ListSchedulesNavRoute
 import aktual.core.nav.NavStack
-import aktual.core.nav.ScheduleSettingsNavigator
 import aktual.core.nav.SearchSchedulesNavRoute
 import aktual.core.nav.SearchSchedulesNavigator
 import aktual.di.BudgetScope
@@ -29,7 +28,6 @@ class SchedulesNavEntryContributor : BudgetNavEntryContributor {
       ListSchedulesScreen(
         editSchedule = EditScheduleNavigator(stack),
         toSearch = SearchSchedulesNavigator(stack),
-        toSettings = ScheduleSettingsNavigator(appStack),
       )
     }
 

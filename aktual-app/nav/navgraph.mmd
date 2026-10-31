@@ -9,7 +9,6 @@ flowchart TD
   manageStorage["Manage Storage"]
   password["Change Password"]
   settings["Settings"]
-  scheduleSettings["Schedule Settings"]
   transactionSettings["Transaction Settings"]
   systemUiSettings["System UI Settings"]
   securitySettings["Security Settings"]
@@ -71,7 +70,6 @@ flowchart TD
   budgetList --tap change url--> url
   budgetList --tap about--> info
 
-  settings --tap schedules--> scheduleSettings
   settings --tap theme--> themeSettings
   settings --tap transactions--> transactionSettings
   settings --tap system UI--> systemUiSettings
@@ -156,7 +154,6 @@ flowchart TD
 
   listSchedules --tap schedule--> editSchedule
   listSchedules --tap search--> searchSchedules
-  listSchedules --tap settings--> scheduleSettings
   searchSchedules --tap schedule--> editSchedule
 
   listRules --tap rule--> editRule

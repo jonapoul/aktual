@@ -1,7 +1,6 @@
 package aktual.prefs.ui.root
 
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.Calendar3
 import aktual.core.icons.System
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.CurrencyPound
@@ -12,7 +11,6 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.CurrencySettingsNavigator
 import aktual.core.nav.FormatSettingsNavigator
-import aktual.core.nav.ScheduleSettingsNavigator
 import aktual.core.nav.SecuritySettingsNavigator
 import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavigator
@@ -29,7 +27,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 fun SettingsScreen(
   back: BackNavigator,
   toThemeSettings: ThemeSettingsNavigator,
-  toScheduleSettings: ScheduleSettingsNavigator,
   toSystemUiSettings: SystemUiSettingsNavigator,
   toSecuritySettings: SecuritySettingsNavigator,
   toFormatSettings: FormatSettingsNavigator,
@@ -40,7 +37,6 @@ fun SettingsScreen(
       when (action) {
         NavBack -> back()
         NavToThemeSettings -> toThemeSettings()
-        NavToScheduleSettings -> toScheduleSettings()
         NavToSystemUiSettings -> toSystemUiSettings()
         NavToSecuritySettings -> toSecuritySettings()
         NavToFormatSettings -> toFormatSettings()
@@ -62,13 +58,6 @@ private fun SettingsScaffold(onAction: SettingsActionHandler) {
         title = Strings.settingsTheme,
         icon = AktualIcons.System,
         onClick = { onAction(NavToThemeSettings) },
-      )
-    }
-    item {
-      SubSettingsItem(
-        title = Strings.settingsSchedules,
-        icon = AktualIcons.Calendar3,
-        onClick = { onAction(NavToScheduleSettings) },
       )
     }
     item {

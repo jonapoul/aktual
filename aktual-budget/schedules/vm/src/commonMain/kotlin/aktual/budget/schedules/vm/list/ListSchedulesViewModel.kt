@@ -13,6 +13,7 @@ import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.prefs.SchedulePreferences
+import aktual.prefs.asStateFlow
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -84,6 +85,8 @@ internal constructor(
       }
       .stateIn(viewModelScope, Eagerly, initialValue = Loading)
 
+  val showCompleted: StateFlow<Boolean> = preferences.showCompleted.asStateFlow(viewModelScope)
+
   fun retry() {
     retries.tryEmit(Unit)
   }
@@ -123,6 +126,10 @@ internal constructor(
       preferences.sortField.set(sort.field)
       preferences.sortDirection.set(sort.direction)
     }
+  }
+
+  fun setShowCompleted(show: Boolean) {
+    viewModelScope.launch { preferences.showCompleted.set(show) }
   }
 
   private fun ScheduleSort.comparator(): Comparator<Schedule> {
