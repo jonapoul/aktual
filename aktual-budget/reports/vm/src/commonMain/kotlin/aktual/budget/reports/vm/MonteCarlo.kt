@@ -213,7 +213,6 @@ internal fun runMonteCarlo(
       pots[i].accessAge?.let { max(1, it - config.currentAge + 1) } ?: 1
     }
 
-  // Tax
   val taxModel = config.taxModel
   val potTaxRates =
     DoubleArray(potCount) { pots[it].withdrawalTaxRate.coerceIn(0.0, MC_MAX_WITHDRAWAL_TAX_RATE) }
@@ -763,9 +762,7 @@ internal fun runMonteCarlo(
 
               None,
               FloorCeiling,
-              Unknown -> {
-                // No-op
-              }
+              Unknown -> {}
             }
             val isFactorRule =
               rule.type == Guardrails || rule.type == Ratcheting || rule.type == Boundaries

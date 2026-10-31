@@ -158,8 +158,7 @@ data class SankeyNode(
 )
 
 // source and target are indices into SankeyData.nodes. grouped lists the nodes merged into an
-// "Other"
-// node at either end, biggest first
+// "Other" node at either end, biggest first
 data class SankeyLink(
   val source: Int,
   val target: Int,

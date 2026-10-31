@@ -133,7 +133,6 @@ internal constructor(
     it.set(BudgetMonthCount, count.coerceIn(1, MAX_MONTH_COUNT))
   }
 
-  // How many month columns the screen has room for
   fun setFittingMonths(count: Int) = fittingMonths.update { count.coerceIn(1, MAX_MONTH_COUNT) }
 
   fun toggleSpent() = localPreferences.update { it.toggle(MobileShowSpentColumn) }

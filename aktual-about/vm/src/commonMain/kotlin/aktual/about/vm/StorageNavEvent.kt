@@ -10,6 +10,5 @@ sealed interface StorageNavEvent {
   /** A specific budget was deleted and it was the currently-active budget. */
   data class ActiveBudgetCleared(val id: BudgetId) : StorageNavEvent
 
-  /** Preferences (token + serverUrl) were cleared. */
   data object PreferencesCleared : StorageNavEvent
 }

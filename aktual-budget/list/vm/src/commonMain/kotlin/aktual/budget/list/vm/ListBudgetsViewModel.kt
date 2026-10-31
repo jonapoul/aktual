@@ -139,14 +139,12 @@ internal constructor(
     mutableDeletingState.update { DeletingState.Active(deletingRemote = true) }
 
     viewModelScope.launch {
-      // delete local
       with(files) {
         val budgetDir = directory(id)
         withContext(contexts.io) { fileSystem.deleteRecursively(budgetDir) }
       }
       clearLastOpenedIfMatches(id)
 
-      // delete remote
       runCatchingCancellable {
         val request = DeleteUserFileRequest(id, token)
         syncApi.delete(request)
@@ -155,12 +153,10 @@ internal constructor(
           logcat.e(e) { "Failed deleting $id" }
         }
 
-      // close dialog
       logcat.d { "Successfully deleted $id" }
       clearDeletingState()
       mutableCloseDialog.emit(true)
 
-      // re-fetch from server
       fetchState()
     }
   }

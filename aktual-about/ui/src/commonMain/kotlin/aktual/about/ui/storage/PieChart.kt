@@ -106,7 +106,6 @@ private fun DrawScope.drawPie(
       )
     }
 
-    // Label position
     val labelRadius =
       if (strokeWidthPx > 0f) {
         radius - strokeWidthPx + strokeWidthPx / 2f

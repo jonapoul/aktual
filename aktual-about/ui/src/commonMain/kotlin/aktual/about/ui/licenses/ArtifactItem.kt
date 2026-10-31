@@ -223,7 +223,6 @@ private fun LibraryTableRow(
   modifier: Modifier = Modifier,
 ) {
   if (value.isNullOrEmpty()) {
-    // Nothing to show
     return
   }
 

@@ -107,7 +107,6 @@ internal fun AmountTextField(
     }
   }
 
-  // Feed user input (text + sign) back to parent
   LaunchedEffect(textState) {
     snapshotFlow { textState.text.toString() to isPositive }
       .distinctUntilChanged()

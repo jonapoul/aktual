@@ -5,8 +5,7 @@ import kotlin.math.min
 import kotlinx.collections.immutable.toImmutableList
 
 // The edit operations behind upstream's configuration editor, from MonteCarloConfiguration.tsx and
-// the components next to it in
-// packages/desktop-client/src/components/reports/reports/monte-carlo/
+// the components next to it in packages/desktop-client/src/components/reports/reports/monte-carlo/
 
 const val MC_MIN_AGE = 16
 const val MC_MAX_AGE = 120

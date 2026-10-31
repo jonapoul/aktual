@@ -96,8 +96,7 @@ internal constructor(
   private suspend fun handleLoginResult(loginResult: LoginResult) {
     logcat.d { "loginResult = $loginResult" }
     if (loginResult is Success) {
-      // wait for a second before triggering the navigation, so the user gets the success
-      // message
+      // Give the user time to see the success message
       delay(SUCCESS_DELAY)
       mutableToken.send(loginResult.token)
     }

@@ -9,7 +9,6 @@ import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.IntoMap
 import dev.zacsweers.metro.Provides
 
-/** Used in ServerUrlViewModel */
 @BindingContainer
 @ContributesTo(ServerChosenScope::class)
 object ServerChosenContainer {

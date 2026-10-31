@@ -138,7 +138,6 @@ internal constructor(
         }
 
         is FetchKeyResult.Success -> {
-          // val key = keyGenerator(fetched.key)
           keyPreferences[keyId] = fetched.key
 
           val result = decrypter(budgetId, meta, cachedData.encryptedPath)
@@ -167,7 +166,7 @@ internal constructor(
       val downloadedPath = fileDownloadDeferred.await()
 
       logStatesJob?.cancel()
-      logStates() // make sure we log the final state
+      logStates()
 
       if (userFile == null || downloadedPath == null) {
         logcat.w { "Failed syncing?" }
@@ -180,10 +179,8 @@ internal constructor(
       val meta = userFile.encryptMeta
       val decryptResult =
         if (meta != null) {
-          // Encrypted payload, so decrypt it and return the decrypted zip's path
           decrypter(userFile.fileId, meta, downloadedPath)
         } else {
-          // Unencrypted, so just copy the payload to the expected place
           val targetPath = files.decryptedZip(budgetId)
           files.fileSystem.copy(source = downloadedPath, target = targetPath)
           DecryptResult.NotNeeded(targetPath)
@@ -282,7 +279,6 @@ internal constructor(
         MissingKey -> {
           cachedData = CachedEncryptedData(encryptedPath, userFile, meta)
 
-          // wait a little before showing the dialog
           viewModelScope.launch {
             delay(500.milliseconds)
             mutablePasswordState.update { KeyPasswordState.Active(Empty) }

@@ -80,7 +80,7 @@ fun PrimaryTextButton(
 }
 
 @Composable
-@Suppress("ModifierNotUsedAtRoot") // there's probably a better solution
+@Suppress("ModifierNotUsedAtRoot")
 fun PrimaryTextButtonWithLoading(
   text: String,
   isLoading: Boolean,
@@ -99,7 +99,6 @@ fun PrimaryTextButtonWithLoading(
 ) {
   PrimaryTextButton(
     text = text,
-    //    modifier = modifier,
     modifier = Modifier.testTag(Tags.PrimaryTextButtonWithLoading),
     isEnabled = isEnabled && !isLoading,
     contentPadding = contentPadding,

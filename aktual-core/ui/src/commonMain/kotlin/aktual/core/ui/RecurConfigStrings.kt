@@ -84,7 +84,7 @@ private fun RecurConfig.monthlyRange(): String {
       .asSequence()
       .sortedWith(RecurPatternComparator)
       .filter { it.value != -1 }
-      .plus(patterns.filter { it.value == -1 }) // Add on all -1 values to the end
+      .plus(patterns.filter { it.value == -1 })
       .toList()
 
   val uniqueDays = sortedPatterns.fastMap { it.type }.distinct()

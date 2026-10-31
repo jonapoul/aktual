@@ -128,9 +128,7 @@ class SyncApiImpl(
       }
       .body<DeleteUserFileResponse.Success>()
 
-  /**
-   * Bridging between [kotlinx.io.Source] and [okio.Sink], since they don't interoperate out the box
-   */
+  // kotlinx.io and okio don't interoperate out of the box
   private fun KxSource.transferTo(sink: OkioSink) {
     val buffer = ByteArray(SINK_BUFFER_SIZE)
     val bufferedSink = sink.buffer()

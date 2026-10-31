@@ -163,7 +163,6 @@ private fun EditTagScaffold(
 
   var showDiscardDialog by remember { mutableStateOf(false) }
 
-  // intercept the system back so unsaved changes prompt a confirmation first
   BackHandler(enabled = hasChanges) { showDiscardDialog = true }
 
   val hazeState = rememberHazedTopBarState()
@@ -248,7 +247,6 @@ private fun EditTagTopBar(
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
       if (hasChanges) {
-        // unsaved changes: a red cross that prompts the discard confirmation
         IconButton(onClick = onRequestDiscard) {
           Icon(
             imageVector = AktualIcons.Delete,

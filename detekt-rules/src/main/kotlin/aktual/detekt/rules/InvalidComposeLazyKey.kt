@@ -11,11 +11,7 @@ import org.jetbrains.kotlin.analysis.api.types.KaClassType
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtLambdaExpression
 
-/**
- * Intended for compose LazyColumn items, might match others too? We'll see
- *
- * Will update if so
- */
+// Intended for compose LazyColumn items, though it might match others too
 internal class InvalidComposeLazyKey(config: Config) :
   Rule(
     config = config,

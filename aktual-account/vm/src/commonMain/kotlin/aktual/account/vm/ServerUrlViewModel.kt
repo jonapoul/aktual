@@ -90,7 +90,6 @@ internal constructor(
         mutableProtocol.update { savedUrl.protocol }
       }
 
-      // Also clear any previous login state
       preferences.token.delete()
     }
 
@@ -187,7 +186,6 @@ internal constructor(
       .onFailure { e ->
         logcat.w(e) { "Failed checking bootstrap for $url" }
 
-        // hit an error, we can't use this URL?
         preferences.serverUrl.delete()
 
         mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }

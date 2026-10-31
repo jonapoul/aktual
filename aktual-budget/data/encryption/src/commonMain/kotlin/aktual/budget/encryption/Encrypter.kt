@@ -7,12 +7,10 @@ import okio.Path
 
 // Adapted from packages/loot-core/src/server/encryption/encryption-internals.ts
 
-/** Encrypts a file at the given [filePath] and creates another at the encrypted path. */
 fun interface FileEncrypter {
   suspend operator fun invoke(id: BudgetId, keyId: KeyId, filePath: Path): EncryptResult
 }
 
-/** Encrypts a [Buffer] of bytes and returns another containing the encrypted data */
 fun interface BufferEncrypter {
   suspend operator fun invoke(keyId: KeyId, buffer: Buffer): EncryptResult
 }

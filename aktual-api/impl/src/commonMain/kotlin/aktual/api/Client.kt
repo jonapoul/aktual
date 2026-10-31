@@ -32,8 +32,6 @@ fun buildKtorClient(
         logger = AktualKtorLogger(tag)
         level = HEADERS
         format = OkHttp
-        // filter { request -> true }
-        // sanitizeHeader { header -> header == Authorization }
       }
     }
 

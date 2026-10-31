@@ -58,7 +58,6 @@ class SyncDao(
     )
   }
 
-  /** Fetch all CRDT messages with timestamps after [since]. */
   suspend fun getMessagesSince(since: Timestamp): List<Message> =
     crdtQueries.getMessagesSince(since).awaitAsList().map { row ->
       Message(
@@ -127,7 +126,6 @@ class SyncDao(
     driver.notifyListeners(SCHEDULES_JSON_PATHS)
   }
 
-  /** Read the current merkle trie from the messages_clock table. */
   suspend fun getCurrentMerkle(): JsonObject {
     val row = clockQueries.getFirst().awaitAsOneOrNull() ?: return MerkleOperations.emptyTrie()
     val clock = row.clock ?: return MerkleOperations.emptyTrie()
@@ -146,7 +144,7 @@ class SyncDao(
     val existing =
       crdtQueries.getTimestamp(msg.dataset, msg.row, msg.column, envelope.timestamp).awaitAsList()
     when {
-      existing.isEmpty() -> envelope to false // New message
+      existing.isEmpty() -> envelope to false
       existing.first() != envelope.timestamp -> envelope to true // Old message (local is newer)
       else -> null // Exact duplicate already in CRDT log, skip entirely
     }
@@ -165,7 +163,6 @@ class SyncDao(
   ) {
     if (dataset == PREFS_DATASET) return
 
-    // Try UPDATE first
     val updated =
       driver.await(
         identifier = null,
@@ -180,7 +177,6 @@ class SyncDao(
         bindString(1, row)
       }
 
-    // If no rows updated, INSERT
     if (updated == 0L) {
       driver.await(
         identifier = null,

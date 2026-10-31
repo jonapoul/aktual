@@ -77,7 +77,6 @@ object MerkleOperations {
     return JsonObject(result)
   }
 
-  /** Convert a trie key back to a timestamp in milliseconds. */
   fun keyToTimestamp(key: String): Long {
     val fullKey = key + "0".repeat(KEY_LENGTH - key.length)
     return fullKey.toLong(radix = 3) * 1000L * 60L
@@ -115,7 +114,6 @@ object MerkleOperations {
     val c1 = 0xcc9e2d51.toInt()
     val c2 = 0x1b873593
 
-    // Body
     for (i in 0 until nblocks) {
       val offset = i * 4
       var k1 =
@@ -133,7 +131,6 @@ object MerkleOperations {
       h1 = h1 * 5 + 0xe6546b64.toInt()
     }
 
-    // Tail
     val tail = nblocks * 4
     var k1 = 0
     when (len and 3) {
@@ -163,7 +160,6 @@ object MerkleOperations {
       }
     }
 
-    // Finalization
     h1 = h1 xor len
     h1 = h1 xor (h1 ushr 16)
     h1 *= 0x85ebca6b.toInt()

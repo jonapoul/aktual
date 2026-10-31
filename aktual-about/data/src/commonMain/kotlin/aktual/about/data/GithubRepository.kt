@@ -46,7 +46,6 @@ internal constructor(
         if (publishedAt > buildConfig.buildTime) {
           UpdateAvailable(latest)
         } else {
-          // It's the same version as current (or earlier?)
           NoNewUpdate
         }
     }

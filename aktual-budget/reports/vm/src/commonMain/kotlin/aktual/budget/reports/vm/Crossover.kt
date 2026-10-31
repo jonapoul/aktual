@@ -63,9 +63,7 @@ internal fun crossoverRange(
 }
 
 // packages/desktop-client/src/components/reports/spreadsheets/crossover-spreadsheet.ts
-// recalculate()
-// expenses and balances line up with months. Expenses are positive spend, balances are at the end
-// of each month.
+// recalculate(). Expenses are positive spend, balances are at the end of each month
 internal fun calculateCrossover(
   title: String?,
   months: List<YearMonth>,

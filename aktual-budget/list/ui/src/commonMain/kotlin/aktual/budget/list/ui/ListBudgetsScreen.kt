@@ -201,9 +201,8 @@ private fun StateContent(
   contentPadding: PaddingValues,
 ) {
   if (state is Success && state.budgets.isNotEmpty()) {
-    // Scroll-under path: LazyColumn fills the full PullToRefreshBox (which extends behind
-    // the top bar), and applies contentPadding at the top so items rest below the bar but
-    // can scroll up through it.
+    // LazyColumn fills the box behind the top bar, with top contentPadding so items can scroll
+    // under it
     ContentSuccess(
       budgets = state.budgets,
       listState = listState,
@@ -218,11 +217,9 @@ private fun StateContent(
       horizontalAlignment = CenterHorizontally,
     ) {
       when (state) {
-        is Loading -> {
-          ShimmerBudgetList(state.numLoadingItems)
-        }
+        is Loading -> ShimmerBudgetList(state.numLoadingItems)
 
-        is Failure -> {
+        is Failure ->
           FailureScreen(
             title = Strings.budgetFailureMessage,
             reason = state.reason ?: Strings.budgetFailureDefaultMessage,
@@ -234,12 +231,8 @@ private fun StateContent(
                 icon = AktualIcons.Refresh,
               ),
           )
-        }
 
-        is Success -> {
-          // Empty-budgets case
-          ContentEmpty(onCreateBudgetInBrowser = { onAction(OpenInBrowser) })
-        }
+        is Success -> ContentEmpty(onCreateBudgetInBrowser = { onAction(OpenInBrowser) })
       }
 
       BottomSpacing()

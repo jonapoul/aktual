@@ -14,7 +14,6 @@ import logcat.logcat
 /** Return false => pass event up to the parent. In this case that means it gets ignored entirely */
 internal class KeyboardEventHandler(private val backStack: NavStack<NavKey>) {
   // Intercept keys before any composable handles them
-  // Use for: app-level shortcuts that should always work
   fun onKeyEvent(event: KeyEvent): Boolean =
     with(event) {
       logcat.v { "onKeyEvent = ${event.string()}" }
@@ -23,8 +22,7 @@ internal class KeyboardEventHandler(private val backStack: NavStack<NavKey>) {
       }
     }
 
-  // Handle keys after composables have their chance
-  // Use for: app-level shortcuts that shouldn't interfere with text input
+  // Handle keys after composables have their chance, so text input isn't affected
   fun onPreviewKeyEvent(event: KeyEvent): Boolean =
     with(event) {
       logcat.v { "onPreviewKeyEvent = ${event.string()}" }

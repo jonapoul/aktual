@@ -61,12 +61,8 @@ class ScheduleDao(database: BudgetDatabase) {
     insert(schedule_id = id, payee = payee, account = account, amount = amount, date = date)
   }
 
-  // Returns the latest transaction date per schedule for transactions on or after fromDate.
-  // Use the global minimum fromDate across all schedules; callers check against per-schedule
-  // thresholds.
-  // Returns the latest transaction date per schedule for transactions on or after fromDate.
-  // Use the global minimum fromDate across all schedules; callers check against per-schedule
-  // thresholds.
+  // The latest transaction date per schedule, on or after fromDate. Pass the earliest fromDate of
+  // all schedules, callers check each schedule's own threshold
   suspend fun latestTransactionDates(fromDate: LocalDate): Map<ScheduleId, LocalDate> =
     transactions.withResult { transactionDatesFromDate(fromDate).awaitAsList() }.latestDates()
 
