@@ -20,8 +20,10 @@ internal constructor(
   private val githubApi: GithubApi,
   private val buildConfig: BuildConfig,
 ) {
-  suspend fun fetchLatestRelease(): LatestReleaseState =
-    runCatchingCancellable { fetch() }.getOrElse { it.toFailure() }
+  suspend fun fetchLatestRelease(): LatestReleaseState = runCatchingCancellable {
+    fetch()
+  }
+    .getOrElse { it.toFailure() }
 
   private suspend fun fetch(): LatestReleaseState {
     val releases =
