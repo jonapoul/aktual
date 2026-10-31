@@ -1,6 +1,8 @@
 package aktual.prefs.vm.currency
 
 import aktual.prefs.CurrencyPreferencesImpl
+import aktual.prefs.vm.BooleanPreference
+import aktual.prefs.vm.ListPreference
 import aktual.test.buildPreferences
 import aktual.test.viewModelContext
 import alakazam.test.unconfinedDispatcher
@@ -24,14 +26,18 @@ class CurrencySettingsViewModelTest {
 
       preferences.currency.set(Euro)
       assertThat(awaitItem()).all {
-        prop("symbolPosition") { it.symbolPosition.enabled }.isTrue()
-        prop("spaceBetweenAmountAndSymbol") { it.spaceBetweenAmountAndSymbol.enabled }.isTrue()
+        prop(CurrencySettingsState::symbolPosition).prop(ListPreference<*>::enabled).isTrue()
+        prop(CurrencySettingsState::spaceBetweenAmountAndSymbol)
+          .prop(BooleanPreference::enabled)
+          .isTrue()
       }
 
       preferences.currency.set(None)
       assertThat(awaitItem()).all {
-        prop("symbolPosition") { it.symbolPosition.enabled }.isFalse()
-        prop("spaceBetweenAmountAndSymbol") { it.spaceBetweenAmountAndSymbol.enabled }.isFalse()
+        prop(CurrencySettingsState::symbolPosition).prop(ListPreference<*>::enabled).isFalse()
+        prop(CurrencySettingsState::spaceBetweenAmountAndSymbol)
+          .prop(BooleanPreference::enabled)
+          .isFalse()
       }
 
       cancelAndIgnoreRemainingEvents()

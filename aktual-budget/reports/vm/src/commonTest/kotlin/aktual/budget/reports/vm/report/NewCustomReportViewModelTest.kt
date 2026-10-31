@@ -1,6 +1,7 @@
 package aktual.budget.reports.vm.report
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.Dashboard
 import aktual.budget.db.Dashboard_pages
 import aktual.budget.db.dao.BudgetDao
 import aktual.budget.db.dao.CustomReportsDao
@@ -69,9 +70,9 @@ class NewCustomReportViewModelTest {
 
     val widget = dashboard.observeByPage(PAGE).first().single()
     assertThat(widget).all {
-      prop("id") { it.id }.isEqualTo(WIDGET)
-      prop("type") { it.type }.isEqualTo(Custom)
-      prop("meta") { it.meta }.isEqualTo(JsonObject(mapOf("id" to JsonPrimitive(REPORT.value))))
+      prop(Dashboard::id).isEqualTo(WIDGET)
+      prop(Dashboard::type).isEqualTo(Custom)
+      prop(Dashboard::meta).isEqualTo(JsonObject(mapOf("id" to JsonPrimitive(REPORT.value))))
     }
   }
 

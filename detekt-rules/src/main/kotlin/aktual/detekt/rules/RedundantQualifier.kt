@@ -138,12 +138,7 @@ internal class RedundantQualifier(config: Config) :
     if (!enabled || expression.typeArgumentList != null) return
 
     val callee = expression.calleeExpression as? KtNameReferenceExpression ?: return
-    val arguments = expression.valueArguments
-    if (arguments.size < 2) return
-    val qualified = arguments.map { argument ->
-      if (argument.isNamed() || argument.getSpreadElement() != null) return
-      argument.getArgumentExpression() as? KtDotQualifiedExpression ?: return
-    }
+    val qualified = qualifiedArguments(expression) ?: return
     val names = qualified.map { it.selectorExpression as? KtNameReferenceExpression ?: return }
     val receiver = qualified.map { it.receiverExpression.text }.distinct().singleOrNull() ?: return
 
@@ -202,6 +197,14 @@ internal class RedundantQualifier(config: Config) :
       if (isShadowed(typeReference, symbol)) return@analyze
       report(typeReference, name.getReferencedName(), "the expected type is known")
     }
+  }
+
+  // Every argument of the call, if there are at least two and all are plain `Type.Name` ones
+  private fun qualifiedArguments(call: KtCallExpression): List<KtDotQualifiedExpression>? {
+    val arguments = call.valueArguments
+    if (arguments.size < 2) return null
+    if (arguments.any { it.isNamed() || it.getSpreadElement() != null }) return null
+    return arguments.map { it.getArgumentExpression() as? KtDotQualifiedExpression ?: return null }
   }
 
   private fun report(element: KtElement, replacement: String, reason: String) =
@@ -297,13 +300,18 @@ internal class RedundantQualifier(config: Config) :
       KtTokens.ELVIS -> if (binary.right == operand) binary.left?.expressionType else null
       // `roles += Role.Admin` doesn't pass an expected type down
       in KtTokens.AUGMENTED_ASSIGNMENTS -> null
-      // Operators and infix calls, like `amount > Amount.Zero` or `Role.Admin in roles`
-      else -> {
-        val resolved = binary.resolveToCall()?.successfulFunctionCallOrNull()
-        val signature = resolved?.valueArgumentMapping?.get(operand)
-        signature?.returnType?.takeUnless { isInferred(binary, operand) { type -> type } }
-      }
+      else -> callOperandType(binary, operand)
     }
+
+  // Operators and infix calls, like `amount > Amount.Zero` or `Role.Admin in roles`
+  private fun KaSession.callOperandType(
+    binary: KtBinaryExpression,
+    operand: KtExpression,
+  ): KaType? {
+    val resolved = binary.resolveToCall()?.successfulFunctionCallOrNull()
+    val signature = resolved?.valueArgumentMapping?.get(operand)
+    return signature?.returnType?.takeUnless { isInferred(binary, operand) { type -> type } }
+  }
 
   // The result of a `try` or `catch` block takes the expected type of the whole `try`
   private fun KaSession.tryResultType(expression: KtExpression): KaType? {
@@ -433,8 +441,10 @@ internal class RedundantQualifier(config: Config) :
     }
 
   // Java parameters have platform types like `TimeUnit!`
-  private fun KaType.isClass(symbol: KaClassLikeSymbol): Boolean =
-    ((this as? KaFlexibleType)?.lowerBound ?: this).let { (it as? KaClassType)?.symbol == symbol }
+  private fun KaType.isClass(symbol: KaClassLikeSymbol): Boolean {
+    val type = (this as? KaFlexibleType)?.lowerBound ?: this
+    return (type as? KaClassType)?.symbol == symbol
+  }
 
   // A plain name that already means something else here wins over CSR
   private fun KaSession.isShadowed(position: KtElement, target: KaSymbol): Boolean {

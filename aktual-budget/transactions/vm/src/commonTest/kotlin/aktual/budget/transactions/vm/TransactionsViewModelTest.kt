@@ -3,6 +3,7 @@ package aktual.budget.transactions.vm
 import aktual.budget.banksync.domain.BankSyncError
 import aktual.budget.banksync.domain.BankSyncResult
 import aktual.budget.banksync.domain.BankSyncSummary
+import aktual.budget.db.Accounts
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.ClearedBalances
@@ -1219,10 +1220,10 @@ class TransactionsViewModelTest {
       assertThat(awaitItem()).isEqualTo(AccountDeleted)
     }
     assertThat(accounts[BANKED]).isNotNull().all {
-      prop("tombstone") { it.tombstone }.isEqualTo(true)
-      prop("bank") { it.bank }.isNull()
-      prop("account_id") { it.account_id }.isNull()
-      prop("account_sync_source") { it.account_sync_source }.isNull()
+      prop(Accounts::tombstone).isEqualTo(true)
+      prop(Accounts::bank).isNull()
+      prop(Accounts::account_id).isNull()
+      prop(Accounts::account_sync_source).isNull()
     }
     assertThat(transactions.row(TransactionId("x"))?.tombstone).isEqualTo(true)
   }
@@ -1236,7 +1237,8 @@ class TransactionsViewModelTest {
       assertThat(awaitItem()).isEqualTo(Loading)
       assertThat(awaitItem())
         .isInstanceOf<LoadedAccount.SpecificAccount>()
-        .prop("name") { it.account.name }
+        .prop(LoadedAccount.SpecificAccount::account)
+        .prop(Accounts::name)
         .isEqualTo("Amex")
 
       // when
@@ -1245,7 +1247,8 @@ class TransactionsViewModelTest {
       // then
       assertThat(awaitItem())
         .isInstanceOf<LoadedAccount.SpecificAccount>()
-        .prop("name") { it.account.name }
+        .prop(LoadedAccount.SpecificAccount::account)
+        .prop(Accounts::name)
         .isEqualTo("Savings")
     }
     assertThat(accounts[AccountId("a")]?.name).isEqualTo("Savings")

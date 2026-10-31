@@ -27,8 +27,8 @@ class SplitOpsTest {
     val split = draft(amount = 5000, payee = PAYEE, category = CATEGORY).split(newId)
 
     assertThat(split).all {
-      prop("payee") { it.fields.payee }.isNull()
-      prop("amount") { it.fields.amount }.isEqualTo(Amount(5000))
+      prop(TransactionDraft::fields).prop(TransactionFields::payee).isNull()
+      prop(TransactionDraft::fields).prop(TransactionFields::amount).isEqualTo(Amount(5000))
       prop(TransactionDraft::splitDifference).isEqualTo(Amount(5000))
       prop(TransactionDraft::parts)
         .containsExactly(
@@ -103,8 +103,8 @@ class SplitOpsTest {
     val updated = split.withFields(split.fields.copy(notes = "updated note"))
 
     assertThat(updated).all {
-      prop("notes") { it.fields.notes }.isEqualTo("updated note")
-      prop("amount") { it.fields.amount }.isEqualTo(Amount(2500))
+      prop(TransactionDraft::fields).prop(TransactionFields::notes).isEqualTo("updated note")
+      prop(TransactionDraft::fields).prop(TransactionFields::amount).isEqualTo(Amount(2500))
       prop(TransactionDraft::splitDifference).isNull()
       prop(TransactionDraft::parts).isEqualTo(split.parts)
     }
@@ -160,7 +160,7 @@ class SplitOpsTest {
       prop(TransactionDraft::parts).isEmpty()
       // Must delete error if no children
       prop(TransactionDraft::splitDifference).isNull()
-      prop("amount") { it.fields.amount }.isEqualTo(Amount(2500))
+      prop(TransactionDraft::fields).prop(TransactionFields::amount).isEqualTo(Amount(2500))
     }
   }
 
