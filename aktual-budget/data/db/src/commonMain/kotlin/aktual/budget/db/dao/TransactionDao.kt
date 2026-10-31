@@ -61,7 +61,6 @@ data class TransactionDetail(
   val account: AccountId?,
   val payee: PayeeId?,
   val category: CategoryId?,
-  // The schedule it's linked to
   val schedule: ScheduleId? = null,
 )
 

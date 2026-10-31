@@ -81,7 +81,6 @@ data class TransactionFields(
   val notes: String?,
   val cleared: Boolean,
   val reconciled: Boolean,
-  // The schedule it's linked to
   val schedule: ScheduleId? = null,
 )
 

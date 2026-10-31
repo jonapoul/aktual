@@ -16,7 +16,6 @@ internal enum class EditField {
   Account,
   Date,
   Notes,
-  // The schedule it's linked to
   ScheduleLink,
 }
 
