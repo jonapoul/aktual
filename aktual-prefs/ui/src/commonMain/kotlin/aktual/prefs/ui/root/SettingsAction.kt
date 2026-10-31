@@ -8,8 +8,6 @@ internal data object NavBack : SettingsAction
 
 internal data object NavToThemeSettings : SettingsAction
 
-internal data object NavToScheduleSettings : SettingsAction
-
 internal data object NavToSystemUiSettings : SettingsAction
 
 internal data object NavToSecuritySettings : SettingsAction

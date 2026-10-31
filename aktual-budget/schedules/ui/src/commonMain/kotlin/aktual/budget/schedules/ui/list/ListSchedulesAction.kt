@@ -19,9 +19,9 @@ internal data object OpenSearch : ListSchedulesAction
 
 @JvmInline internal value class Post(val schedule: Schedule) : ListSchedulesAction
 
-internal data object OpenSettings : ListSchedulesAction
-
 @JvmInline internal value class SetSort(val sort: ScheduleSort) : ListSchedulesAction
+
+@JvmInline internal value class SetShowCompleted(val show: Boolean) : ListSchedulesAction
 
 @Immutable
 internal fun interface ListSchedulesActionHandler {

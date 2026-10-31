@@ -24,7 +24,6 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditScheduleNavigator
-import aktual.core.nav.ScheduleSettingsNavigator
 import aktual.core.nav.SearchSchedulesNavigator
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualDropdownMenu
@@ -86,11 +85,11 @@ import kotlinx.collections.immutable.persistentListOf
 internal fun ListSchedulesScreen(
   editSchedule: EditScheduleNavigator,
   toSearch: SearchSchedulesNavigator,
-  toSettings: ScheduleSettingsNavigator,
   modifier: Modifier = Modifier,
   viewModel: ListSchedulesViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val showCompleted by viewModel.showCompleted.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
@@ -106,6 +105,7 @@ internal fun ListSchedulesScreen(
   ListSchedulesScaffold(
     modifier = modifier,
     state = state,
+    showCompleted = showCompleted,
     onAction = { action ->
       when (action) {
         Retry -> viewModel.retry()
@@ -114,8 +114,8 @@ internal fun ListSchedulesScreen(
         OpenSearch -> toSearch()
         is Delete -> viewModel.delete(action.schedule)
         is Post -> snackbars.show { showPostUnsupported() }
-        OpenSettings -> toSettings()
         is SetSort -> viewModel.setSort(action.sort)
+        is SetShowCompleted -> viewModel.setShowCompleted(action.show)
       }
     },
   )
@@ -124,6 +124,7 @@ internal fun ListSchedulesScreen(
 @Composable
 private fun ListSchedulesScaffold(
   state: ListSchedulesState,
+  showCompleted: Boolean,
   onAction: ListSchedulesActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -131,6 +132,15 @@ private fun ListSchedulesScaffold(
   val listState = rememberLazyListState()
   val successState = state as? Success
   var showSortDialog by remember { mutableStateOf(false) }
+  var showSettingsSheet by remember { mutableStateOf(false) }
+
+  if (showSettingsSheet) {
+    ListSchedulesSettingsSheet(
+      showCompleted = showCompleted,
+      onAction = onAction,
+      onDismiss = { showSettingsSheet = false },
+    )
+  }
 
   if (showSortDialog) {
     val sort = successState?.sort ?: Default
@@ -169,9 +179,9 @@ private fun ListSchedulesScaffold(
             onClick = { onAction(CreateNew) },
           )
           ListSchedulesMenu(
-            onAction = onAction,
             showSort = successState != null,
             onSort = { showSortDialog = true },
+            onSettings = { showSettingsSheet = true },
           )
         },
       )
@@ -298,9 +308,9 @@ private fun ContentSuccess(
 
 @Composable
 private fun ListSchedulesMenu(
-  onAction: ListSchedulesActionHandler,
   showSort: Boolean,
   onSort: () -> Unit,
+  onSettings: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var expanded by remember { mutableStateOf(false) }
@@ -314,14 +324,14 @@ private fun ListSchedulesMenu(
 
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
       ListSchedulesMenuItems(
-        onAction = { action ->
-          expanded = false
-          onAction(action)
-        },
         showSort = showSort,
         onSort = {
           expanded = false
           onSort()
+        },
+        onSettings = {
+          expanded = false
+          onSettings()
         },
       )
     }
@@ -329,11 +339,7 @@ private fun ListSchedulesMenu(
 }
 
 @Composable
-private fun ListSchedulesMenuItems(
-  onAction: ListSchedulesActionHandler,
-  showSort: Boolean,
-  onSort: () -> Unit,
-) {
+private fun ListSchedulesMenuItems(showSort: Boolean, onSort: () -> Unit, onSettings: () -> Unit) {
   if (showSort) {
     AktualDropdownMenuItem(
       text = Strings.sort,
@@ -344,7 +350,7 @@ private fun ListSchedulesMenuItems(
   AktualDropdownMenuItem(
     text = Strings.listSchedulesSettings,
     leadingIcon = AktualIcons.Cog,
-    onClick = { onAction(OpenSettings) },
+    onClick = onSettings,
   )
 }
 
@@ -366,7 +372,7 @@ private fun PreviewListSchedulesMenuItems(
 ) =
   PreviewWithColors(colors) {
     Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {
-      ListSchedulesMenuItems(onAction = {}, showSort = true, onSort = {})
+      ListSchedulesMenuItems(showSort = true, onSort = {}, onSettings = {})
     }
   }
 
@@ -376,7 +382,7 @@ private fun PreviewListSchedulesScaffold(
   @PreviewParameter(ListSchedulesProvider::class) params: ColorParams<ListSchedulesState>,
 ) =
   PreviewWithColorParams(params) {
-    ListSchedulesScaffold(state = this, onAction = {})
+    ListSchedulesScaffold(state = this, showCompleted = false, onAction = {})
   }
 
 private class ListSchedulesProvider :

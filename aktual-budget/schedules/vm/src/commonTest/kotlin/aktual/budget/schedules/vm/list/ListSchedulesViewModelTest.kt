@@ -30,6 +30,8 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -153,6 +155,22 @@ class ListSchedulesViewModelTest {
     assertThat(viewModel.state.awaitSchedules())
       .extracting(Schedule::name)
       .containsExactly("Rent", "Old")
+  }
+
+  @Test
+  fun `setShowCompleted persists the choice`() = runDatabaseTest { scope ->
+    val preferences = SchedulePreferencesImpl(scope.buildPreferences())
+    val viewModel = createViewModel(scope, TestSyncController(), preferences)
+
+    viewModel.showCompleted.test {
+      assertThat(awaitItem()).isFalse()
+
+      viewModel.setShowCompleted(true)
+      assertThat(awaitItem()).isTrue()
+      assertThat(preferences.showCompleted.get()).isTrue()
+
+      cancelAndIgnoreRemainingEvents()
+    }
   }
 
   @Test
