@@ -8,6 +8,8 @@ import aktual.budget.db.test.insertAccounts
 import aktual.budget.db.test.insertRule
 import aktual.budget.db.test.insertSchedule
 import aktual.budget.db.test.insertScheduleJsonPaths
+import aktual.budget.db.test.run
+import aktual.budget.db.test.runDriverTest
 import aktual.budget.db.withoutResult
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
@@ -16,10 +18,12 @@ import aktual.budget.model.Condition
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import aktual.test.assertThatNextEmissionIsEqualTo
-import aktual.test.runDatabaseTest
+import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.containsExactlyInAnyOrder
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
@@ -29,6 +33,8 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
 internal class TransactionDaoTest {
+  private lateinit var driver: SqlDriver
+
   @Test
   fun `Categorised transactions aren't uncategorised`() = runDaoTest { transactions ->
     // given
@@ -399,6 +405,55 @@ internal class TransactionDaoTest {
       .isEqualTo(mapOf("t1" to true, "t2" to false, "t3" to null))
   }
 
+  @Test
+  fun `Notes lists include split parts with their parent and skip deleted rows`() =
+    runDaoTest { transactions ->
+      // given
+      val split = LocalDate(2026, 1, 2)
+      transactions.insert("t1", ON_1, CATEGORY, PAYEE, DATE, notes = "#a")
+      transactions.insert("p", ON_1, null, PAYEE, split, notes = "split", isParent = true)
+      transactions.insert("c1", ON_1, CATEGORY, PAYEE, split, notes = "#b", parent = "p")
+      transactions.insert("t2", ON_2, CATEGORY, PAYEE, LocalDate(2026, 1, 3))
+      transactions.insert("gone", ON_1, CATEGORY, PAYEE, DATE, notes = "#gone")
+      transactions.insert("dead", ON_1, null, PAYEE, DATE, isParent = true)
+      transactions.insert("orphan", ON_1, CATEGORY, PAYEE, DATE, notes = "#orphan", parent = "dead")
+      driver.run("UPDATE transactions SET tombstone = 1 WHERE id IN ('gone', 'dead')")
+
+      // when
+      val all = transactions.getIdsAndNotes()
+      val account = transactions.getIdsAndNotesByAccount(AccountId(ON_1))
+
+      // then
+      assertThat(all)
+        .containsExactly(
+          notes("t2", null),
+          notes("c1", "#b", parent = "p"),
+          notes("p", "split"),
+          notes("t1", "#a"),
+        )
+      assertThat(account)
+        .containsExactly(notes("c1", "#b", parent = "p"), notes("p", "split"), notes("t1", "#a"))
+      assertThat(transactions.getNotesContainingHash()).containsExactlyInAnyOrder("#a", "#b")
+    }
+
+  @Test
+  fun `Notes lists of an account or group skip deleted accounts`() = runDaoTest { transactions ->
+    // given
+    insertAccounts(buildAccount(id = AccountId(DELETED_ACCOUNT), name = "Deleted"))
+    driver.run("UPDATE accounts SET tombstone = 1 WHERE id = '$DELETED_ACCOUNT'")
+    transactions.insert("t1", ON_1, CATEGORY, PAYEE, DATE)
+    transactions.insert("t2", DELETED_ACCOUNT, CATEGORY, PAYEE, DATE)
+
+    // then
+    assertThat(transactions.getIdsAndNotes().map { it.id.toString() }).containsExactly("t1", "t2")
+    assertThat(transactions.getIdsAndNotesByAccount(AccountId(DELETED_ACCOUNT))).isEmpty()
+    assertThat(transactions.getIdsAndNotesByGroup(OnBudget).map { it.id.toString() })
+      .containsExactly("t1")
+  }
+
+  private fun notes(id: String, notes: String?, parent: String? = null) =
+    TransactionNotes(TransactionId(id), notes, parent?.let(::TransactionId))
+
   private suspend fun BudgetDatabase.insertSchedule(id: String, date: String) {
     val conditions =
       Json.decodeFromString(
@@ -437,7 +492,8 @@ internal class TransactionDaoTest {
   }
 
   private fun runDaoTest(action: suspend BudgetDatabase.(TransactionDao) -> Unit) =
-    runDatabaseTest {
+    runDriverTest { driver, _ ->
+      this@TransactionDaoTest.driver = driver
       insertAccounts(
         buildAccount(id = AccountId(ON_1)),
         buildAccount(id = AccountId(ON_2), name = "Savings"),
@@ -495,6 +551,7 @@ internal class TransactionDaoTest {
     const val ON_2 = "on2"
     const val OFF = "off"
     const val CLOSED = "closed"
+    const val DELETED_ACCOUNT = "deleted-account"
     const val PAYEE = "payee"
     const val CATEGORY = "category"
     const val DELETED_CATEGORY = "deleted-category"
