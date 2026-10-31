@@ -6,6 +6,6 @@ import dev.zacsweers.metro.ContributesBinding
 import java.io.InputStream
 
 @ContributesBinding(AppScope::class)
-class AndroidAssets(private val context: Context) : Assets {
+class AndroidAssets internal constructor(private val context: Context) : Assets {
   override fun getStream(name: String): InputStream = context.assets.open(name)
 }

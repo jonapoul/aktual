@@ -8,7 +8,8 @@ import okio.Path
 import okio.Path.Companion.toOkioPath
 
 @ContributesBinding(AppScope::class)
-class AndroidAppDirectory(private val context: Context, private val fileSystem: FileSystem) :
+class AndroidAppDirectory
+internal constructor(private val context: Context, private val fileSystem: FileSystem) :
   AppDirectory {
   private val path by lazy {
     val path =

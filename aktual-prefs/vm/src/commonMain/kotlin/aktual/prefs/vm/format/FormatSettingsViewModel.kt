@@ -20,7 +20,8 @@ import kotlinx.coroutines.flow.StateFlow
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class FormatSettingsViewModel(preferences: FormatPreferences, viewModelContext: ViewModelContext) :
+class FormatSettingsViewModel
+internal constructor(preferences: FormatPreferences, viewModelContext: ViewModelContext) :
   ViewModel(viewModelContext.newScope()) {
   val state: StateFlow<FormatSettingsState> =
     viewModelScope.launchMolecule(Immediate) {

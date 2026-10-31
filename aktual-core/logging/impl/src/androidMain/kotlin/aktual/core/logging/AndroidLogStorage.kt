@@ -7,6 +7,6 @@ import okio.Path
 import okio.Path.Companion.toOkioPath
 
 @ContributesBinding(AppScope::class)
-class AndroidLogStorage(private val context: Context) : LogStorage {
+class AndroidLogStorage internal constructor(private val context: Context) : LogStorage {
   override fun directory(): Path = context.filesDir.toOkioPath() / ".." / "logs"
 }

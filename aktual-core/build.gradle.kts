@@ -11,7 +11,7 @@ kotlin {
     api(libs.kotlinx.datetime)
     api(libs.okio)
     api(project(":aktual-core:model"))
-    api(project(":aktual-di:core"))
+    implementation(project(":aktual-di:core"))
   }
 
   androidMainDependencies {

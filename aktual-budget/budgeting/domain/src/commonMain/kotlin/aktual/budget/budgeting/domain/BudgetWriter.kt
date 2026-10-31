@@ -107,7 +107,8 @@ interface BudgetWriter {
 data class UndoToken(val changes: List<LocalChange>)
 
 @ContributesBinding(BudgetScope::class)
-class BudgetWriterImpl(
+class BudgetWriterImpl
+internal constructor(
   private val syncController: BudgetSyncController,
   private val budgetDao: BudgetDao,
   private val preferencesDao: PreferencesDao,

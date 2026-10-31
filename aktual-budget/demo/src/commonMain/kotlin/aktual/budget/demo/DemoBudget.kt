@@ -21,7 +21,8 @@ import logcat.logcat
 @Inject
 @SingleIn(AppScope::class)
 @ContributesIntoSet(AppScope::class, binding<@ForScope(AppScope::class) Initializable>())
-class DemoBudget(
+class DemoBudget
+internal constructor(
   private val files: BudgetFiles,
   private val driverFactory: SqlDriverFactory,
   private val runLevelController: RunLevelController,

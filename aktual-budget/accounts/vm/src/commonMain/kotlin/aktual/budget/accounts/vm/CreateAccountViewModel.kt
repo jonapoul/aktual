@@ -36,7 +36,8 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(BudgetScope::class)
-class CreateAccountViewModel(
+class CreateAccountViewModel
+internal constructor(
   private val writer: TransactionWriter,
   private val accountDao: AccountDao,
   private val calendar: Calendar,

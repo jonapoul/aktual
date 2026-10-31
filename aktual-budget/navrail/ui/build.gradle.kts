@@ -6,7 +6,6 @@ kotlin {
   commonMainDependencies {
     api(libs.compose.animation)
     api(libs.compose.foundation)
-    api(project(":aktual-budget:demo"))
     api(project(":aktual-budget:navrail:vm"))
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.compose.navigation3.ui)
@@ -14,6 +13,8 @@ kotlin {
     implementation(libs.compose.viewmodelNavigation3)
     implementation(libs.kotlinx.serialization.json)
     implementation(project(":aktual-budget:accounts:ui"))
+    implementation(project(":aktual-budget:demo"))
+    implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
   }
 }

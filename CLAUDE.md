@@ -10,7 +10,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ## General
 
 - **IMPORTANT**: After any architectural/structural change, grep `**/CLAUDE.md` for references that need updating (scopes, annotations, module paths, DI patterns). Don't wait to be asked.
-- Limit visibility where possible: make a type `internal` unless another module uses it. A public VM that injects internal types needs an `internal constructor`.
+- Limit visibility where possible: make a type `internal` unless another module uses it. Give injected classes (`@Inject`, `@AssistedInject`, `@Contributes*`) an `internal constructor` unless another module calls it, so their dependencies stay out of the public API. Metro still wires them across modules.
 - Prefer `kotlinx.immutable` collections in the UI layer, not plain `List`/`Set`.
 - Prefer `stateFlow.update { x }` over `stateFlow.value = x`.
 - The project compiles with `-Xcontext-sensitive-resolution` (CSR). Write enum entries, sealed subtypes and companion properties unqualified wherever the expected type is known, and don't import the entry. The `RedundantQualifier` detekt rule flags any you miss. Don't qualify just in case.

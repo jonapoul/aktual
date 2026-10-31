@@ -24,7 +24,8 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class LicensesViewModel(
+class LicensesViewModel
+internal constructor(
   private val licensesRepository: LicensesRepository,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {

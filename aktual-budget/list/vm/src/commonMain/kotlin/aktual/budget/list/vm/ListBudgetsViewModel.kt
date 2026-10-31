@@ -44,7 +44,8 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(LoggedInScope::class)
-class ListBudgetsViewModel(
+class ListBudgetsViewModel
+internal constructor(
   private val token: Token,
   private val preferences: AppPreferences,
   private val budgetListFetcher: BudgetListFetcher,

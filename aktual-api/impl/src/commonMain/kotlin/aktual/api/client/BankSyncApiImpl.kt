@@ -36,7 +36,8 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.put
 
 @ContributesBinding(BudgetScope::class)
-class BankSyncApiImpl(
+class BankSyncApiImpl
+internal constructor(
   @param:AktualClient private val client: HttpClient,
   private val server: BudgetServer,
   private val prefs: BudgetLocalPreferences,

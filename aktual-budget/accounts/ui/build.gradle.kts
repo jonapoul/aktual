@@ -9,6 +9,7 @@ kotlin {
     api(project(":aktual-core:nav"))
     api(project(":aktual-core:ui"))
     implementation(libs.metrox.viewmodel)
+    implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
   }
 }

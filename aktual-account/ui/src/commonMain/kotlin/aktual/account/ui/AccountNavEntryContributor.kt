@@ -25,7 +25,8 @@ import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(AppScope::class)
-class AccountNavEntryContributor(private val runLevelState: RunLevelState) : NavEntryContributor {
+class AccountNavEntryContributor internal constructor(private val runLevelState: RunLevelState) :
+  NavEntryContributor {
   override fun EntryProviderScope<NavKey>.contribute(stack: NavStack<NavKey>) {
     entry<ChangePasswordNavRoute> {
       ChangePasswordScreen(

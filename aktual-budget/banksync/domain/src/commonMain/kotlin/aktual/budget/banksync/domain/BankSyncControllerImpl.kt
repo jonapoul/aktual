@@ -42,7 +42,8 @@ import logcat.logcat
 @Inject
 @SingleIn(BudgetScope::class)
 @ContributesBinding(BudgetScope::class, binding<BankSyncController>())
-class BankSyncControllerImpl(
+class BankSyncControllerImpl
+internal constructor(
   private val api: BankSyncApi,
   private val importer: BankSyncImporter,
   private val writer: TransactionWriter,

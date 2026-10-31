@@ -14,7 +14,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 
 @Inject
-class GithubRepository(
+class GithubRepository
+internal constructor(
   private val contexts: CoroutineContexts,
   private val githubApi: GithubApi,
   private val buildConfig: BuildConfig,

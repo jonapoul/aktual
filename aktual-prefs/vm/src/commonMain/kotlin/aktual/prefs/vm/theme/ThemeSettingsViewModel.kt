@@ -31,7 +31,8 @@ import kotlinx.coroutines.launch
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class ThemeSettingsViewModel(
+class ThemeSettingsViewModel
+internal constructor(
   private val preferences: ThemePreferences,
   cache: CustomThemeCache,
   viewModelContext: ViewModelContext,

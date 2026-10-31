@@ -20,7 +20,8 @@ import kotlinx.coroutines.flow.StateFlow
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class SystemUiSettingsViewModel(
+class SystemUiSettingsViewModel
+internal constructor(
   preferences: SystemUiPreferences,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {

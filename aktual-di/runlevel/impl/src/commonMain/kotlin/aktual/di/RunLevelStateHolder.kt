@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.update
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class, binding<RunLevelController>())
 @ContributesBinding(AppScope::class, binding<RunLevelState>())
-class RunLevelStateHolder(private val driverFactory: SqlDriverFactory) :
+class RunLevelStateHolder internal constructor(private val driverFactory: SqlDriverFactory) :
   StateHolder<List<AktualGraph>>(initialState = emptyList()),
   Closeable,
   RunLevelState,

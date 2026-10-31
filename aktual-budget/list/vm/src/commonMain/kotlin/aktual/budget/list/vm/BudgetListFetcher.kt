@@ -16,7 +16,8 @@ import kotlinx.coroutines.withContext
 import logcat.logcat
 
 @Inject
-class BudgetListFetcher(private val syncApi: SyncApi, private val contexts: CoroutineContexts) {
+class BudgetListFetcher
+internal constructor(private val syncApi: SyncApi, private val contexts: CoroutineContexts) {
   suspend fun fetchBudgets(token: Token): FetchBudgetsResult =
     try {
       val response = withContext(contexts.io) { syncApi.fetchUserFiles(token) }

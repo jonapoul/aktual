@@ -38,7 +38,8 @@ import logcat.logcat
 
 @Stable
 @AssistedInject
-class AboutViewModel(
+class AboutViewModel
+internal constructor(
   @Assisted private val savedState: SavedStateHandle,
   private val buildConfig: BuildConfig,
   private val githubRepository: GithubRepository,

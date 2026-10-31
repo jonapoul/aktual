@@ -7,7 +7,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelGraph
 
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
-class AktualViewModelFactory(graph: ViewModelGraph) : MetroViewModelFactory() {
+class AktualViewModelFactory internal constructor(graph: ViewModelGraph) : MetroViewModelFactory() {
   override val viewModelProviders = graph.viewModelProviders
   override val manualAssistedFactoryProviders = graph.manualAssistedFactoryProviders
   override val assistedFactoryProviders = graph.assistedFactoryProviders

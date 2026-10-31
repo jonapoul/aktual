@@ -7,7 +7,8 @@ import aktual.prefs.AppPreferences
 import dev.zacsweers.metro.ContributesBinding
 
 @ContributesBinding(AppScope::class)
-class RunLevelInitialiserImpl(
+class RunLevelInitialiserImpl
+internal constructor(
   private val preferences: AppPreferences,
   private val files: BudgetFiles,
   private val runLevelController: RunLevelController,

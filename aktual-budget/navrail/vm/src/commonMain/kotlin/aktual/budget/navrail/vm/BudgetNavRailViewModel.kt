@@ -38,7 +38,8 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(BudgetScope::class)
-class BudgetNavRailViewModel(
+class BudgetNavRailViewModel
+internal constructor(
   contributors: Set<BudgetNavEntryContributor>,
   private val localPreferences: BudgetLocalPreferences,
   private val server: BudgetServer,

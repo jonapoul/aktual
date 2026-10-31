@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 
 @Inject
-class RulesLoader(private val rulesDao: RulesDao) {
+class RulesLoader internal constructor(private val rulesDao: RulesDao) {
   suspend fun load(): ImmutableList<Rule> =
     rulesDao.getAll().map(::toRule).sortedWith(RuleComparator).toImmutableList()
 

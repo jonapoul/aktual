@@ -42,7 +42,8 @@ fun interface CategoryLearner {
 }
 
 @ContributesBinding(BudgetScope::class)
-class CategoryLearnerImpl(
+class CategoryLearnerImpl
+internal constructor(
   private val learningDao: CategoryLearningDao,
   private val rulesDao: RulesDao,
   private val pref: CategoryLearningPref,

@@ -12,7 +12,8 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 @Stable
 @ViewModelKey
 @ContributesIntoMap(BudgetScope::class)
-class AddAccountViewModel(server: BudgetServer, viewModelContext: ViewModelContext) :
+class AddAccountViewModel
+internal constructor(server: BudgetServer, viewModelContext: ViewModelContext) :
   ViewModel(viewModelContext.newScope()) {
   // Bank sync goes through the server, so without one there's nothing to choose between
   val canBankSync: Boolean = server is Remote

@@ -21,7 +21,8 @@ import kotlinx.coroutines.flow.flowOn
 import logcat.logcat
 
 @Inject
-class BudgetFileDownloader(
+class BudgetFileDownloader
+internal constructor(
   private val contexts: CoroutineContexts,
   private val budgetFiles: BudgetFiles,
   private val syncApi: SyncApi,

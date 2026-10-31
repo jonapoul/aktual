@@ -13,6 +13,7 @@ kotlin {
     implementation(libs.markdown.m3)
     implementation(libs.shimmer)
     implementation(libs.vico)
+    implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
   }
 }

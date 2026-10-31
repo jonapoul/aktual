@@ -27,7 +27,8 @@ import okio.buffer
 import okio.use
 
 @ContributesBinding(AppScope::class)
-class BufferEncrypterImpl(
+class BufferEncrypterImpl
+internal constructor(
   private val contexts: CoroutineContexts,
   private val keys: EncryptionKeys,
   private val random: Random,
@@ -48,7 +49,8 @@ class BufferEncrypterImpl(
 }
 
 @ContributesBinding(AppScope::class)
-class FileEncrypterImpl(
+class FileEncrypterImpl
+internal constructor(
   private val contexts: CoroutineContexts,
   private val keys: EncryptionKeys,
   private val random: Random,

@@ -13,6 +13,7 @@ kotlin {
     implementation(libs.colorpicker)
     implementation(libs.compose.resources)
     implementation(libs.metrox.viewmodel)
+    implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
   }
 }

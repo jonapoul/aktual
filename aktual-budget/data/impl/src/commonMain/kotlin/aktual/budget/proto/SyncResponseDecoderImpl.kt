@@ -19,7 +19,8 @@ import okio.Source
 import okio.buffer
 
 @ContributesBinding(AppScope::class)
-class SyncResponseDecoderImpl(private val decrypter: BufferDecrypter) : SyncResponseDecoder {
+class SyncResponseDecoderImpl internal constructor(private val decrypter: BufferDecrypter) :
+  SyncResponseDecoder {
   override suspend fun invoke(source: Source, metadata: DbMetadata): SyncResponse {
     val byteString = source.buffer().use { it.readByteString() }
     val response = ProtoSyncResponse.ADAPTER.decode(byteString)

@@ -15,11 +15,13 @@ kotlin {
     compileOnly(libs.compose.runtime)
     implementation(libs.kotlinx.serialization.json)
     implementation(project(":aktual-core:logging"))
+    implementation(project(":aktual-di:core"))
   }
 
   commonTestDependencies {
     implementation(project(":aktual-app:di"))
     implementation(project(":aktual-di:bindings"))
+    implementation(project(":aktual-test"))
     implementation(project(":aktual-test:api"))
   }
 }

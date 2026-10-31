@@ -32,7 +32,8 @@ interface NewTransactions {
 
 @Inject
 @ContributesBinding(BudgetScope::class, binding<NewTransactions>())
-class NewTransactionsImpl(
+class NewTransactionsImpl
+internal constructor(
   private val transactionDao: TransactionDao,
   private val preferences: PreferencesDao,
   private val syncController: BudgetSyncController,

@@ -29,7 +29,8 @@ import kotlinx.coroutines.launch
 
 @Stable
 @AssistedInject
-class SearchThemeViewModel(
+class SearchThemeViewModel
+internal constructor(
   @Assisted private val themeId: ThemeId,
   private val themeResolver: ThemeResolver,
   viewModelContext: ViewModelContext,

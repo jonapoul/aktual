@@ -25,6 +25,7 @@ kotlin {
     api(project(":aktual-prefs:impl"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okio)
+    implementation(project(":aktual-core:logging"))
   }
 }
 

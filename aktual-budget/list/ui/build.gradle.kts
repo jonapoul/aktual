@@ -9,9 +9,10 @@ kotlin {
     api(libs.compose.ui)
     api(project(":aktual-budget:list:vm"))
     api(project(":aktual-core:nav"))
-    api(project(":aktual-core:ui"))
     implementation(libs.shimmer)
     implementation(project(":aktual-budget:sync:ui"))
+    implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
+    implementation(project(":aktual-core:ui"))
   }
 }

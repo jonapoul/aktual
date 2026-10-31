@@ -37,7 +37,8 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(BudgetScope::class)
-class BankSyncProvidersViewModel(
+class BankSyncProvidersViewModel
+internal constructor(
   private val api: BankSyncApi,
   private val setup: BankSyncProviderSetup,
   private val server: BudgetServer,

@@ -45,7 +45,8 @@ import logcat.logcat
 
 @Stable
 @AssistedInject
-class EditTagViewModel(
+class EditTagViewModel
+internal constructor(
   @Assisted private val tagId: TagId?,
   private val tagsDao: TagsDao,
   private val uuidGenerator: UuidGenerator,

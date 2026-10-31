@@ -20,6 +20,7 @@ kotlin {
 
   commonTestDependencies {
     implementation(libs.ktor.test)
+    implementation(project(":aktual-test"))
     implementation(project(":aktual-test:api"))
   }
 }

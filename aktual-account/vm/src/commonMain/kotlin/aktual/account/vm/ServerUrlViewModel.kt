@@ -44,7 +44,8 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class ServerUrlViewModel(
+class ServerUrlViewModel
+internal constructor(
   private val contexts: CoroutineContexts,
   private val preferences: AppPreferences,
   private val runLevelController: RunLevelController,

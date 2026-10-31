@@ -22,7 +22,8 @@ import okio.buffer
 
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
-class CustomThemeCacheImpl(
+class CustomThemeCacheImpl
+internal constructor(
   appDirectory: AppDirectory,
   private val fileSystem: FileSystem,
   private val contexts: CoroutineContexts,

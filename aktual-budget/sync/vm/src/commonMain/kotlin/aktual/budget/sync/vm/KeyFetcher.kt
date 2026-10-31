@@ -21,7 +21,8 @@ import logcat.logcat
 import okio.Buffer
 
 @Inject
-class KeyFetcher(
+class KeyFetcher
+internal constructor(
   private val token: Token,
   private val syncApi: SyncApi,
   private val contexts: CoroutineContexts,

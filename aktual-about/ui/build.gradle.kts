@@ -9,9 +9,11 @@ kotlin {
     api(libs.compose.ui)
     api(project(":aktual-about:vm"))
     api(project(":aktual-core:nav"))
-    api(project(":aktual-core:ui"))
     implementation(libs.androidx.compose.annotation)
+    implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
+    implementation(project(":aktual-core:logging"))
+    implementation(project(":aktual-core:ui"))
   }
 
   androidMainDependencies {

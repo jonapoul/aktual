@@ -47,7 +47,8 @@ import okio.Path
 
 @Stable
 @AssistedInject
-class SyncBudgetViewModel(
+class SyncBudgetViewModel
+internal constructor(
   @Assisted private val budgetId: BudgetId,
   private val fileDownloader: BudgetFileDownloader,
   private val infoFetcher: BudgetInfoFetcher,

@@ -22,7 +22,8 @@ import okio.buffer
 import okio.source
 
 @ContributesBinding(BudgetScope::class)
-class BudgetSyncApiImpl(
+class BudgetSyncApiImpl
+internal constructor(
   @param:AktualClient private val client: HttpClient,
   private val server: BudgetServer,
   private val prefs: BudgetLocalPreferences,
