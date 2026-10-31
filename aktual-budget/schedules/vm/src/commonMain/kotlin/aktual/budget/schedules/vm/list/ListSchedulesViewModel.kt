@@ -10,6 +10,7 @@ import aktual.budget.model.untombstone
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.edit.ScheduleWriter
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -22,7 +23,6 @@ import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -96,70 +96,61 @@ internal constructor(
   // deleteSchedule() in packages/loot-core/src/server/schedules/app.ts
   fun delete(schedule: Schedule) {
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         syncController.syncChanges(schedule.tombstones(::tombstone))
         mutableEvents.tryEmit(ListSchedulesEvent.Deleted(schedule))
         logcat.i { "Deleted schedule ${schedule.id}" }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed deleting schedule ${schedule.id}" }
-        mutableEvents.tryEmit(ListSchedulesEvent.DeleteFailed(schedule))
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed deleting schedule ${schedule.id}" }
+          mutableEvents.tryEmit(ListSchedulesEvent.DeleteFailed(schedule))
+        }
     }
   }
 
   fun undoDelete(schedule: Schedule) {
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         syncController.syncChanges(schedule.tombstones(::untombstone))
         logcat.i { "Restored schedule ${schedule.id}" }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed restoring schedule ${schedule.id}" }
-        mutableEvents.tryEmit(ListSchedulesEvent.RestoreFailed(schedule))
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed restoring schedule ${schedule.id}" }
+          mutableEvents.tryEmit(ListSchedulesEvent.RestoreFailed(schedule))
+        }
     }
   }
 
   fun complete(schedule: Schedule) {
     viewModelScope.launch {
-      try {
+      runCatchingCancellable {
         writer.complete(schedule.id)
         mutableEvents.tryEmit(ListSchedulesEvent.Completed(schedule))
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed completing schedule ${schedule.id}" }
-        mutableEvents.tryEmit(ListSchedulesEvent.CompleteFailed(schedule))
       }
+        .onFailure { e ->
+          logcat.e(e) { "Failed completing schedule ${schedule.id}" }
+          mutableEvents.tryEmit(ListSchedulesEvent.CompleteFailed(schedule))
+        }
     }
   }
 
   fun undoComplete(schedule: Schedule) {
     viewModelScope.launch {
-      try {
-        writer.uncomplete(schedule.id)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed undoing completion of schedule ${schedule.id}" }
-        mutableEvents.tryEmit(ListSchedulesEvent.RestoreFailed(schedule))
-      }
+      runCatchingCancellable { writer.uncomplete(schedule.id) }
+        .onFailure { e ->
+          logcat.e(e) { "Failed undoing completion of schedule ${schedule.id}" }
+          mutableEvents.tryEmit(ListSchedulesEvent.RestoreFailed(schedule))
+        }
     }
   }
 
   fun restart(schedule: Schedule) {
     viewModelScope.launch {
-      try {
-        writer.restart(schedule.id)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed restarting schedule ${schedule.id}" }
-        mutableEvents.tryEmit(ListSchedulesEvent.RestartFailed(schedule))
-      }
+      runCatchingCancellable { writer.restart(schedule.id) }
+        .onFailure { e ->
+          logcat.e(e) { "Failed restarting schedule ${schedule.id}" }
+          mutableEvents.tryEmit(ListSchedulesEvent.RestartFailed(schedule))
+        }
     }
   }
 

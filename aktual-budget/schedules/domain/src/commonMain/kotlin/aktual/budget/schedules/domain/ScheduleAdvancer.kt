@@ -26,6 +26,7 @@ import aktual.budget.model.nextDateAfter
 import aktual.budget.model.parseScheduleAmount
 import aktual.budget.rules.domain.RuleTransaction
 import aktual.core.Calendar
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.Initializable
@@ -34,7 +35,6 @@ import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.ForScope
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -103,11 +103,10 @@ internal constructor(
   }
 
   private suspend fun tryAdvance(today: LocalDate, canPost: Boolean): Run? =
-    try {
+    runCatchingCancellable {
       mutex.withLock { advance(today, canPost) }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
+    }
+    .getOrElse { e ->
       // The database closes with the budget, which can happen while this is still running
       currentCoroutineContext().ensureActive()
       logcat.e(e) { "Failed advancing schedules" }

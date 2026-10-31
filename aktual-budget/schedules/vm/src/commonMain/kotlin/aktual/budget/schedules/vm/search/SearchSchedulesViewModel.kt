@@ -4,6 +4,7 @@ import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Failure
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Results
+import aktual.core.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -21,7 +22,6 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -64,15 +64,12 @@ internal constructor(
   fun reload() {
     failure.update { null }
     viewModelScope.launch {
-      try {
-        val loaded = loader.load()
-        schedules.update { loaded }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.e(e) { "Failed loading schedules" }
-        failure.update { e.requireMessage() }
-      }
+      runCatchingCancellable { loader.load() }
+        .onSuccess { loaded -> schedules.update { loaded } }
+        .onFailure { e ->
+          logcat.e(e) { "Failed loading schedules" }
+          failure.update { e.requireMessage() }
+        }
     }
   }
 
