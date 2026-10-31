@@ -2,6 +2,8 @@ package aktual.budget.schedules.ui.list
 
 import aktual.budget.schedules.domain.Schedule
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.Check
+import aktual.core.icons.Refresh
 import aktual.core.icons.Trash
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.PostAdd
@@ -19,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -29,31 +32,8 @@ internal fun SwipeableListSchedulesItem(
   onAction: ListSchedulesActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val deleteBackground = colors.errorText
   SwipeToReveal(
-    actions =
-      persistentListOf(
-        SwipeAction(
-          text = Strings.listSchedulesPost,
-          icon = MaterialIcons.PostAdd,
-          background = lerp(colors.tableBackground, Black, fraction = 0.1f),
-          foreground = colors.tableText,
-          onClick = {
-            onOpenChange(false)
-            onAction(Post(schedule))
-          },
-        ),
-        SwipeAction(
-          text = Strings.listSchedulesDelete,
-          icon = AktualIcons.Trash,
-          background = deleteBackground,
-          foreground = deleteBackground.contrastingTextColor(),
-          onClick = {
-            onOpenChange(false)
-            onAction(Delete(schedule))
-          },
-        ),
-      ),
+    actions = swipeActions(schedule, onOpenChange, onAction),
     isOpen = isOpen,
     onOpenChange = onOpenChange,
     modifier = modifier,
@@ -63,18 +43,72 @@ internal fun SwipeableListSchedulesItem(
   }
 }
 
-@Preview
 @Composable
-private fun PreviewSwipeableListSchedulesItem(
-  @PreviewParameter(SwipeableProvider::class) params: ColorParams<Boolean>,
-) =
-  PreviewWithColorParams(params) {
-    SwipeableListSchedulesItem(
-      schedule = ListSchedulesPreview.scheduleA,
-      isOpen = this,
-      onOpenChange = {},
-      onAction = {},
+private fun swipeActions(
+  schedule: Schedule,
+  onOpenChange: (Boolean) -> Unit,
+  onAction: ListSchedulesActionHandler,
+): ImmutableList<SwipeAction> {
+  fun action(action: ListSchedulesAction): () -> Unit = {
+    onOpenChange(false)
+    onAction(action)
+  }
+
+  val deleteBackground = colors.errorText
+  val delete =
+    SwipeAction(
+      text = Strings.listSchedulesDelete,
+      icon = AktualIcons.Trash,
+      background = deleteBackground,
+      foreground = deleteBackground.contrastingTextColor(),
+      onClick = action(Delete(schedule)),
+    )
+
+  if (schedule.isCompleted) {
+    val restartBackground = colors.buttonPrimaryBackground
+    return persistentListOf(
+      SwipeAction(
+        text = Strings.listSchedulesRestart,
+        icon = AktualIcons.Refresh,
+        background = restartBackground,
+        foreground = restartBackground.contrastingTextColor(),
+        onClick = action(Restart(schedule)),
+      ),
+      delete,
     )
   }
 
-private class SwipeableProvider : ColorParamsProvider<Boolean>(false, true)
+  val completeBackground = colors.noticeBackground
+  return persistentListOf(
+    SwipeAction(
+      text = Strings.listSchedulesPost,
+      icon = MaterialIcons.PostAdd,
+      background = lerp(colors.tableBackground, Black, fraction = 0.1f),
+      foreground = colors.tableText,
+      onClick = action(Post(schedule)),
+    ),
+    SwipeAction(
+      text = Strings.listSchedulesComplete,
+      icon = AktualIcons.Check,
+      background = completeBackground,
+      foreground = completeBackground.contrastingTextColor(),
+      onClick = action(Complete(schedule)),
+    ),
+    delete,
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewSwipeableListSchedulesItem(
+  @PreviewParameter(SwipeableProvider::class) params: ColorParams<Schedule>,
+) =
+  PreviewWithColorParams(params) {
+    SwipeableListSchedulesItem(schedule = this, isOpen = true, onOpenChange = {}, onAction = {})
+  }
+
+private class SwipeableProvider :
+  ColorParamsProvider<Schedule>(
+    ListSchedulesPreview.scheduleA,
+    ListSchedulesPreview.scheduleCompleted,
+  )

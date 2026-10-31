@@ -10,4 +10,10 @@ sealed interface ListSchedulesEvent {
   @JvmInline value class DeleteFailed(val schedule: Schedule) : ListSchedulesEvent
 
   @JvmInline value class RestoreFailed(val schedule: Schedule) : ListSchedulesEvent
+
+  @JvmInline value class Completed(val schedule: Schedule) : ListSchedulesEvent
+
+  @JvmInline value class CompleteFailed(val schedule: Schedule) : ListSchedulesEvent
+
+  @JvmInline value class RestartFailed(val schedule: Schedule) : ListSchedulesEvent
 }

@@ -9,6 +9,7 @@ import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.SchedulesLoader
+import aktual.budget.schedules.vm.edit.ScheduleWriter
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -41,6 +42,7 @@ class ListSchedulesViewModel
 internal constructor(
   loader: SchedulesLoader,
   private val syncController: BudgetSyncController,
+  private val writer: ScheduleWriter,
   private val preferences: SchedulePreferences,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
@@ -117,6 +119,46 @@ internal constructor(
       } catch (e: Exception) {
         logcat.e(e) { "Failed restoring schedule ${schedule.id}" }
         mutableEvents.tryEmit(ListSchedulesEvent.RestoreFailed(schedule))
+      }
+    }
+  }
+
+  fun complete(schedule: Schedule) {
+    viewModelScope.launch {
+      try {
+        writer.complete(schedule.id)
+        mutableEvents.tryEmit(ListSchedulesEvent.Completed(schedule))
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed completing schedule ${schedule.id}" }
+        mutableEvents.tryEmit(ListSchedulesEvent.CompleteFailed(schedule))
+      }
+    }
+  }
+
+  fun undoComplete(schedule: Schedule) {
+    viewModelScope.launch {
+      try {
+        writer.uncomplete(schedule.id)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed undoing completion of schedule ${schedule.id}" }
+        mutableEvents.tryEmit(ListSchedulesEvent.RestoreFailed(schedule))
+      }
+    }
+  }
+
+  fun restart(schedule: Schedule) {
+    viewModelScope.launch {
+      try {
+        writer.restart(schedule.id)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed restarting schedule ${schedule.id}" }
+        mutableEvents.tryEmit(ListSchedulesEvent.RestartFailed(schedule))
       }
     }
   }

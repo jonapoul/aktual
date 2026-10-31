@@ -229,7 +229,7 @@ private fun Condition?.toScheduleAmount(): ScheduleAmount {
 
 private fun JsonElement?.longOrZero(): Long = (this as? JsonPrimitive)?.longOrNull ?: 0L
 
-private fun JsonElement.toScheduleDate(): ScheduleDate? =
+internal fun JsonElement.toScheduleDate(): ScheduleDate? =
   when (this) {
     is JsonObject ->
       ScheduleDate.Recurring(DbJson.decodeFromJsonElement(RecurConfig.serializer(), this))

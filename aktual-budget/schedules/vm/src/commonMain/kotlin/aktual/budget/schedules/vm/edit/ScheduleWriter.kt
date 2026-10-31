@@ -77,7 +77,7 @@ internal class ScheduleWriter(
       +localChange(SCHEDULES, schedule, "rule", rule)
       +localChange(SCHEDULES, schedule, "name", name)
       +localChange(SCHEDULES, schedule, "posts_transaction", form.postsTransaction)
-      +localChange(SCHEDULES, schedule, "completed", false)
+      +localChange(SCHEDULES, schedule, COMPLETED, false)
       +localChange(SCHEDULES, schedule, TOMBSTONE, false)
     }
 
@@ -135,6 +135,36 @@ internal class ScheduleWriter(
     logcat.i { "Deleted schedule $id" }
   }
 
+  // The "complete" action in packages/desktop-client/src/components/schedules/index.tsx
+  suspend fun complete(id: ScheduleId) {
+    setCompleted(id, completed = true)
+    logcat.i { "Completed schedule $id" }
+  }
+
+  // Undoes complete() without touching the next date, unlike restart()
+  suspend fun uncomplete(id: ScheduleId) {
+    setCompleted(id, completed = false)
+    logcat.i { "Uncompleted schedule $id" }
+  }
+
+  private suspend fun setCompleted(id: ScheduleId, completed: Boolean) =
+    syncController.syncChanges(
+      listOf(localChange(SCHEDULES, id.toString(), COMPLETED, completed)),
+    )
+
+  // The "restart" action in packages/desktop-client/src/components/schedules/index.tsx, which
+  // resets the next date from today
+  suspend fun restart(id: ScheduleId) {
+    val row = scheduleDao[id] ?: error("No schedule $id")
+    val date = row._conditions.orEmpty().scheduleConditions().date?.value?.toScheduleDate()
+    val changes = buildList {
+      if (date != null) addAll(resetNextDate(id, date))
+      +localChange(SCHEDULES, id.toString(), COMPLETED, false)
+    }
+    syncController.syncChanges(changes)
+    logcat.i { "Restarted schedule $id" }
+  }
+
   // setNextDate() with reset = true
   private suspend fun resetNextDate(id: ScheduleId, date: ScheduleDate): List<LocalChange> {
     val nextDate = date.nextDate(calendar.today())
@@ -189,3 +219,4 @@ internal fun ScheduleDate.nextDate(today: LocalDate): LocalDate? =
   }
 
 private const val TOMBSTONE = "tombstone"
+private const val COMPLETED = "completed"

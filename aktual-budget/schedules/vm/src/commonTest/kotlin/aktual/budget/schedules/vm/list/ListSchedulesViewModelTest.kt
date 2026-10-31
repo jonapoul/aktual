@@ -5,16 +5,21 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.DatabaseTables.SCHEDULES
+import aktual.budget.db.dao.DatabaseTables.SCHEDULES_NEXT_DATE
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.model.LocalChange
 import aktual.budget.model.ScheduleSort
+import aktual.budget.model.localChange
+import aktual.budget.model.messageValue
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.SchedulesLoader
+import aktual.budget.schedules.vm.edit.ScheduleWriter
 import aktual.core.Calendar
+import aktual.core.UuidGenerator
 import aktual.prefs.SchedulePreferences
 import aktual.prefs.SchedulePreferencesImpl
 import aktual.test.TestSyncController
@@ -22,6 +27,7 @@ import aktual.test.buildPreferences
 import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
+import alakazam.test.TestClock
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -33,6 +39,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import assertk.assertions.prop
+import kotlin.time.Instant
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -123,6 +130,93 @@ class ListSchedulesViewModelTest {
       assertThat(awaitItem()).isEqualTo(ListSchedulesEvent.DeleteFailed(rent))
     }
     assertThat(viewModel.state.awaitSchedules()).extracting(Schedule::name).containsExactly("Rent")
+  }
+
+  @Test
+  fun `Complete marks the schedule completed`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync)
+
+    viewModel.events.test {
+      val rent = viewModel.state.awaitSchedules().single()
+      viewModel.complete(rent)
+      scope.advanceUntilIdle()
+
+      assertThat(awaitItem()).isEqualTo(ListSchedulesEvent.Completed(rent))
+      assertThat(sync.changes).containsExactly(localChange(SCHEDULES, "a", "completed", true))
+    }
+  }
+
+  @Test
+  fun `Undo complete uncompletes the schedule without moving its next date`() =
+    runDatabaseTest { scope ->
+      insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
+      val sync = TestSyncController()
+      val viewModel = createViewModel(scope, sync)
+
+      val rent = viewModel.state.awaitSchedules().single()
+      viewModel.complete(rent)
+      scope.advanceUntilIdle()
+      sync.changes.clear()
+
+      viewModel.undoComplete(rent)
+      scope.advanceUntilIdle()
+
+      assertThat(sync.changes).containsExactly(localChange(SCHEDULES, "a", "completed", false))
+    }
+
+  @Test
+  fun `Restart uncompletes the schedule and resets its next date from today`() =
+    runDatabaseTest { scope ->
+      insertSchedule(
+        id = "a",
+        name = "Rent",
+        payee = "Landlord",
+        account = "Checking",
+        nextDate = LocalDate(2026, 1, 15),
+        completed = true,
+        date =
+          """{"start": "2026-01-15", "frequency": "monthly", "interval": 1, "endMode": "never"}""",
+      )
+      val sync = TestSyncController()
+      val preferences = SchedulePreferencesImpl(scope.buildPreferences())
+      preferences.showCompleted.set(true)
+      val viewModel = createViewModel(scope, sync, preferences)
+
+      viewModel.restart(viewModel.state.awaitSchedules().single())
+      scope.advanceUntilIdle()
+
+      assertThat(sync.changes)
+        .containsExactly(
+          LocalChange(
+            SCHEDULES_NEXT_DATE,
+            "a-next",
+            "base_next_date",
+            LocalDate(2026, 4, 15).messageValue(),
+          ),
+          localChange(
+            SCHEDULES_NEXT_DATE,
+            "a-next",
+            "base_next_date_ts",
+            NOW.toEpochMilliseconds(),
+          ),
+          localChange(SCHEDULES, "a", "completed", false),
+        )
+    }
+
+  @Test
+  fun `Failed complete reports it`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
+    val viewModel = createViewModel(scope, FailingSyncController)
+
+    viewModel.events.test {
+      val rent = viewModel.state.awaitSchedules().single()
+      viewModel.complete(rent)
+      scope.advanceUntilIdle()
+
+      assertThat(awaitItem()).isEqualTo(ListSchedulesEvent.CompleteFailed(rent))
+    }
   }
 
   @Test
@@ -267,14 +361,28 @@ class ListSchedulesViewModelTest {
         accountDao = AccountDao(this),
         payeeDao = PayeeDao(this),
         preferencesDao = PreferencesDao(this, TestCoroutineContexts(dispatcher)),
-        calendar = Calendar { LocalDate(2026, 4, 1) },
+        calendar = TODAY,
+      )
+    val writer =
+      ScheduleWriter(
+        scheduleDao = ScheduleDao(this),
+        syncController = sync,
+        uuidGenerator = UuidGenerator { error("unused") },
+        calendar = TODAY,
+        clock = TestClock(NOW),
       )
     return ListSchedulesViewModel(
       loader = loader,
       syncController = sync,
+      writer = writer,
       preferences = preferences,
       viewModelContext = scope.viewModelContext,
     )
+  }
+
+  private companion object {
+    val TODAY = Calendar { LocalDate(2026, 4, 1) }
+    val NOW = Instant.parse("2026-04-01T12:00:00Z")
   }
 
   private object FailingSyncController : BudgetSyncController {
