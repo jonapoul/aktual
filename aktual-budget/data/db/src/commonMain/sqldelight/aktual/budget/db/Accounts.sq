@@ -55,16 +55,20 @@ SELECT id, name, closed, offbudget FROM accounts WHERE tombstone = 0 ORDER BY so
 
 -- Every account with its current balance, closed ones included. As upstream's sidebar, the balance
 -- sums every live transaction, future-dated too, skipping split children since their parent's
--- amount already covers them. last_activity is the date of the account's latest transaction
--- packages/desktop-client/src/spreadsheet/bindings.ts accountBalance()
+-- amount already covers them. last_activity is the date of the account's latest transaction.
+-- Adapted from packages/desktop-client/src/spreadsheet/bindings.ts accountBalance()
 getAllWithBalances:
 SELECT a.id, a.name, a.offbudget, a.closed, a.account_sync_source, a.account_id,
-    a.bank_sync_status, a.last_sync, CAST(IFNULL(SUM(t.amount), 0) AS INTEGER) AS balance,
-    MAX(t.date) AS last_activity
+    a.bank_sync_status, a.last_sync, CAST(IFNULL(t.balance, 0) AS INTEGER) AS balance,
+    t.last_activity
   FROM accounts a
-  LEFT JOIN v_transactions_internal_alive t ON t.account = a.id AND IFNULL(t.is_child, 0) = 0
+  LEFT JOIN (
+    SELECT account, SUM(amount) AS balance, MAX(date) AS last_activity
+      FROM v_transactions_internal_alive
+      WHERE IFNULL(is_child, 0) = 0
+      GROUP BY account
+  ) t ON t.account = a.id
   WHERE a.tombstone = 0
-  GROUP BY a.id
   ORDER BY a.sort_order, a.name;
 
 -- Open accounts with their linked bank's name, for the bank sync screen

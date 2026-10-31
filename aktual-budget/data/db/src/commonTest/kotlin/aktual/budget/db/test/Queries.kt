@@ -15,10 +15,13 @@ import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.ScheduleJsonPathIndex
 import aktual.budget.model.ScheduleNextDateId
+import aktual.test.inMemoryDriverFactory
+import aktual.test.runDatabaseTest
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlDriver
 import kotlin.time.Instant
+import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.LocalDate
 
 // PRAGMA index_list returns one row per index. Column 1 is the index name. SQLDelight can't
@@ -151,3 +154,16 @@ internal suspend fun BudgetDatabase.insertPayeeMapping(id: String, targetId: Str
   }
 
 internal suspend fun BudgetDatabase.insertPayeeMapping(id: String) = insertPayeeMapping(id, id)
+
+// runDatabaseTest, plus the driver for setup SQL no query covers
+internal fun runDriverTest(action: suspend BudgetDatabase.(SqlDriver, TestScope) -> Unit) {
+  val factory = inMemoryDriverFactory()
+  lateinit var driver: SqlDriver
+  runDatabaseTest(driverFactory = { id -> factory.create(id).also { driver = it } }) { scope ->
+    action(driver, scope)
+  }
+}
+
+internal suspend fun SqlDriver.run(sql: String) {
+  execute(identifier = null, sql = sql, parameters = 0).await()
+}

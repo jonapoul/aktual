@@ -3,11 +3,13 @@ package aktual.budget.db.dao
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.test.buildAccount
 import aktual.budget.db.test.insertAccounts
+import aktual.budget.db.test.run
+import aktual.budget.db.test.runDriverTest
 import aktual.budget.db.withoutResult
 import aktual.budget.model.AccountId
 import aktual.budget.model.TransactionId
 import aktual.test.assertThatNextEmissionIsEqualTo
-import aktual.test.runDatabaseTest
+import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -16,6 +18,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 
 internal class AccountDaoTest {
+  private lateinit var driver: SqlDriver
+
   @Test
   fun `Balances count split parents once and skip deleted transactions`() =
     runDaoTest { accounts, transactions ->
@@ -97,6 +101,47 @@ internal class AccountDaoTest {
     }
   }
 
+  @Test
+  fun `Deleted accounts aren't listed and the rest are in sort order`() =
+    runDaoTest { accounts, transactions ->
+      // given
+      insertAccounts(
+        buildAccount(id = AccountId("a"), name = "A"),
+        buildAccount(id = AccountId("b"), name = "B"),
+        buildAccount(id = AccountId("c"), name = "C"),
+        buildAccount(id = AccountId("d"), name = "D"),
+      )
+      driver.run("UPDATE accounts SET sort_order = 2 WHERE id IN ('a', 'b')")
+      driver.run("UPDATE accounts SET sort_order = 1 WHERE id = 'c'")
+      driver.run("UPDATE accounts SET tombstone = 1 WHERE id = 'd'")
+      transactions.insert("t1", "a", "cat", "payee", DATE, amount = 10.0)
+      transactions.insert("t2", "d", "cat", "payee", DATE, amount = 20.0)
+
+      // then
+      accounts.observeBalances().test {
+        assertThatNextEmissionIsEqualTo(listOf("c" to 0L, "a" to 1_000L, "b" to 0L))
+      }
+    }
+
+  @Test
+  fun `Last activity skips deleted transactions and children of deleted splits`() =
+    runDaoTest { accounts, transactions ->
+      // given
+      insertAccounts(buildAccount(id = AccountId("a")))
+      transactions.insert("t1", "a", "cat", "payee", DATE, amount = 10.0)
+      transactions.insert("t2", "a", "cat", "payee", LocalDate(2026, 3, 1), amount = 5.0)
+      transactions.insert("p", "a", "cat", "payee", LocalDate(2026, 4, 1), isParent = true)
+      transactions.insert("c", "a", "cat", "payee", LocalDate(2026, 5, 1), parent = "p")
+      driver.run("UPDATE transactions SET tombstone = 1 WHERE id IN ('t2', 'p')")
+
+      // then
+      accounts.observeAllWithBalances().test {
+        val rows = awaitItem()
+        assertThat(rows.map { it.last_activity }).containsExactly(DATE)
+        assertThat(rows.map { it.balance }).containsExactly(1_000L)
+      }
+    }
+
   private fun AccountDao.observeBalances() =
     observeAllWithBalances().map { rows -> rows.map { it.id.value to it.balance } }
 
@@ -110,7 +155,8 @@ internal class AccountDaoTest {
   }
 
   private fun runDaoTest(action: suspend BudgetDatabase.(AccountDao, TransactionDao) -> Unit) =
-    runDatabaseTest {
+    runDriverTest { driver, _ ->
+      this@AccountDaoTest.driver = driver
       action(AccountDao(this), TransactionDao(this))
     }
 

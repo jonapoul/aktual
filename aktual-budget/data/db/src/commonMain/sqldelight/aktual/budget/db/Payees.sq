@@ -47,16 +47,15 @@ LEFT JOIN (
 WHERE p.tombstone = 0 AND (p.transfer_acct IS NULL OR a.id IS NOT NULL)
 ORDER BY name COLLATE NOCASE;
 
--- db/index.ts orphanedPayeesQuery: alive non-transfer payees without alive transactions, that no
--- rule's legacy description condition points at
+-- Alive non-transfer payees without alive transactions, that no rule's legacy description
+-- condition points at. Adapted from db/index.ts orphanedPayeesQuery()
 getUnusedIds:
 SELECT p.id
   FROM payees p
     LEFT JOIN payee_mapping pm ON pm.id = p.id
-    LEFT JOIN v_transactions_internal_alive t ON t.payee = pm.targetId
   WHERE p.tombstone = 0
     AND p.transfer_acct IS NULL
-    AND t.id IS NULL
+    AND NOT EXISTS (SELECT 1 FROM v_transactions_internal_alive t WHERE t.payee = pm.targetId)
     AND NOT EXISTS (
       SELECT 1
       FROM rules r,

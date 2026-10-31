@@ -147,6 +147,19 @@ internal class PayeeDaoTest {
   }
 
   @Test
+  fun `Payees of split parts are used unless the split is deleted`() =
+    runDaoTest { payees, transactions ->
+      // given
+      transactions.insert("p", ACCOUNT, null, "c", RECENT, isParent = true)
+      transactions.insert("p1", ACCOUNT, null, "a", RECENT, parent = "p")
+      insertDeletedCopy(transactions, id = "q", copyOf = "p", date = RECENT)
+      transactions.insert("q1", ACCOUNT, null, "b", RECENT, parent = "q")
+
+      // then
+      assertThat(payees.unused()).containsExactlyInAnyOrder(PayeeId("b"))
+    }
+
+  @Test
   fun `Payees in a rule's description condition aren't unused`() = runDaoTest { payees, _ ->
     // given
     insertRule("r1", Condition(field = Description, operator = Is, value = JsonPrimitive("a")))

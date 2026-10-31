@@ -567,22 +567,23 @@ SELECT
 -- parentId is only meaningful when isChild is set
 getIdsAndNotes:
 SELECT vt.id, vt.notes, vt.is_child AS isChild, t.parent_id AS parentId
-  FROM v_transactions AS vt
+  FROM v_transactions_internal_alive AS vt
   INNER JOIN transactions AS t ON t.id = vt.id
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
 
 getIdsAndNotesByAccount:
 SELECT vt.id, vt.notes, vt.is_child AS isChild, t.parent_id AS parentId
-  FROM v_transactions AS vt
+  FROM v_transactions_internal_alive AS vt
   INNER JOIN transactions AS t ON t.id = vt.id
+  INNER JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   WHERE vt.account = :account
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
 
 getIdsAndNotesByGroup:
 SELECT vt.id, vt.notes, vt.is_child AS isChild, t.parent_id AS parentId
-  FROM v_transactions AS vt
+  FROM v_transactions_internal_alive AS vt
   INNER JOIN transactions AS t ON t.id = vt.id
-  INNER JOIN accounts AS a ON a.id = vt.account
+  INNER JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   WHERE a.closed = :closed AND (:offBudget IS NULL OR a.offbudget = :offBudget)
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
 
@@ -649,7 +650,7 @@ ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
 
 -- notes of every live transaction containing a '#', for aggregating per-tag transaction counts
 notesContainingHash:
-SELECT notes FROM v_transactions WHERE notes LIKE '%#%';
+SELECT notes FROM v_transactions_internal_alive WHERE notes LIKE '%#%';
 
 getIdsCount:
 SELECT COUNT(*) FROM v_transactions;

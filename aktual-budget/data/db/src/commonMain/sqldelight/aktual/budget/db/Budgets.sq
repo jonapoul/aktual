@@ -88,16 +88,26 @@ LEFT JOIN categories c ON b.category = c.id
 LEFT JOIN category_groups g ON c.cat_group = g.id
 WHERE c.tombstone = 0 AND b.month = :month;
 
--- packages/loot-core/src/server/budget/actions.ts getFirstActivityMonth()
+-- The earliest month with a budget row or an on-budget transaction. Transactions are read from the
+-- table, with v_transactions_internal_alive's filters inlined, so trans_category_date applies.
+-- Adapted from packages/loot-core/src/server/budget/actions.ts getFirstActivityMonth()
 zeroBudgetFirstActivity:
 SELECT MIN(month) AS month
 FROM (
   SELECT CAST(month AS INTEGER) AS month FROM zero_budgets WHERE category = :category AND month <= :end
   UNION ALL
   SELECT CAST(t.date / 100 AS INTEGER) AS month
-  FROM v_transactions_internal_alive t
-  LEFT JOIN accounts a ON a.id = t.account
-  WHERE t.category = :category AND CAST(t.date / 100 AS INTEGER) <= :end AND a.offbudget = 0
+  FROM transactions t
+  JOIN accounts a ON a.id = t.acct
+  LEFT JOIN transactions t2 ON (t.isChild = 1 AND t2.id = t.parent_id)
+  WHERE
+    t.category IN (SELECT id FROM category_mapping WHERE transferId = :category) AND
+    t.date <= :end * 100 + 99 AND
+    a.offbudget = 0 AND
+    IFNULL(t.isParent, 0) != 1 AND
+    (t.isChild = 0 OR t.parent_id IS NOT NULL) AND
+    IFNULL(t.tombstone, 0) = 0 AND
+    (t.isChild = 0 OR t2.tombstone = 0)
 );
 
 reflectBudgetFirstActivity:
@@ -106,7 +116,15 @@ FROM (
   SELECT CAST(month AS INTEGER) AS month FROM reflect_budgets WHERE category = :category AND month <= :end
   UNION ALL
   SELECT CAST(t.date / 100 AS INTEGER) AS month
-  FROM v_transactions_internal_alive t
-  LEFT JOIN accounts a ON a.id = t.account
-  WHERE t.category = :category AND CAST(t.date / 100 AS INTEGER) <= :end AND a.offbudget = 0
+  FROM transactions t
+  JOIN accounts a ON a.id = t.acct
+  LEFT JOIN transactions t2 ON (t.isChild = 1 AND t2.id = t.parent_id)
+  WHERE
+    t.category IN (SELECT id FROM category_mapping WHERE transferId = :category) AND
+    t.date <= :end * 100 + 99 AND
+    a.offbudget = 0 AND
+    IFNULL(t.isParent, 0) != 1 AND
+    (t.isChild = 0 OR t.parent_id IS NOT NULL) AND
+    IFNULL(t.tombstone, 0) = 0 AND
+    (t.isChild = 0 OR t2.tombstone = 0)
 );
