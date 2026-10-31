@@ -3,6 +3,7 @@
     "allow": [
       "Bash(./gradlew *)",
       "Bash(./scripts/*)",
+      "Bash(.claude/skills/pr-screenshots/upload.sh:*)",
       "Bash(awk:*)",
       "Bash(cut:*)",
       "Bash(echo:*)",
