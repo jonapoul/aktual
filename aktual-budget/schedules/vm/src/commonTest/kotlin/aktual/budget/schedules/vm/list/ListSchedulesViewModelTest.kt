@@ -3,21 +3,30 @@ package aktual.budget.schedules.vm.list
 import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.DatabaseTables.SCHEDULES
 import aktual.budget.db.dao.DatabaseTables.SCHEDULES_NEXT_DATE
+import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.PreferencesDao
+import aktual.budget.db.dao.RuleContextDao
+import aktual.budget.db.dao.RulesDao
 import aktual.budget.db.dao.ScheduleDao
+import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.LocalChange
+import aktual.budget.model.MessageValue
 import aktual.budget.model.ScheduleSort
 import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
+import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.ScheduleTransactionPoster
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.edit.ScheduleWriter
+import aktual.budget.transactions.domain.TransactionWriter
 import aktual.core.Calendar
 import aktual.core.UuidGenerator
 import aktual.prefs.SchedulePreferences
@@ -35,8 +44,10 @@ import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
+import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.time.Instant
@@ -220,6 +231,66 @@ class ListSchedulesViewModelTest {
   }
 
   @Test
+  fun `Post adds the schedule's transaction on the chosen date`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync)
+
+    viewModel.events.test {
+      val rent = viewModel.state.awaitSchedules().single()
+      viewModel.post(rent, TODAY.today())
+      scope.advanceUntilIdle()
+
+      val event = awaitItem()
+      assertThat(event).isInstanceOf<ListSchedulesEvent.Posted>().all {
+        prop(ListSchedulesEvent.Posted::schedule).isEqualTo(rent)
+        prop(ListSchedulesEvent.Posted::transactions).hasSize(1)
+      }
+      assertThat(sync.posted("acct")).containsExactly(MessageValue.String("a-account"))
+      assertThat(sync.posted("date")).containsExactly(MessageValue.Number(20260401))
+      assertThat(sync.posted("amount")).containsExactly(MessageValue.Number(-1000))
+      assertThat(sync.posted("schedule")).containsExactly(MessageValue.String("a"))
+      assertThat(sync.posted("cleared")).containsExactly(MessageValue.Number(0))
+    }
+  }
+
+  @Test
+  fun `Undo post deletes the posted transaction`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, sync)
+
+    viewModel.events.test {
+      val rent = viewModel.state.awaitSchedules().single()
+      viewModel.post(rent, rent.nextDate)
+      scope.advanceUntilIdle()
+      val posted = awaitItem() as Posted
+      assertThat(sync.posted("date")).containsExactly(MessageValue.Number(20260501))
+      sync.changes.clear()
+
+      viewModel.undoPost(posted)
+      scope.advanceUntilIdle()
+
+      assertThat(sync.changes)
+        .containsExactly(tombstone(TRANSACTIONS, posted.transactions.single().value))
+    }
+  }
+
+  @Test
+  fun `Failed post reports it`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
+    val viewModel = createViewModel(scope, FailingSyncController)
+
+    viewModel.events.test {
+      val rent = viewModel.state.awaitSchedules().single()
+      viewModel.post(rent, TODAY.today())
+      scope.advanceUntilIdle()
+
+      assertThat(awaitItem()).isEqualTo(ListSchedulesEvent.PostFailed(rent))
+    }
+  }
+
+  @Test
   fun `Completed schedules are hidden by default`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
     insertSchedule(id = "b", name = "Old", payee = "Gym", account = "Checking", completed = true)
@@ -371,14 +442,43 @@ class ListSchedulesViewModelTest {
         calendar = TODAY,
         clock = TestClock(NOW),
       )
+    var nextId = 1
+    val uuidGenerator = UuidGenerator { "id-${nextId++}" }
+    val poster =
+      ScheduleTransactionPoster(
+        scheduleDao = ScheduleDao(this),
+        transactionWriter =
+          TransactionWriter(
+            syncController = sync,
+            accountDao = AccountDao(this),
+            categoryDao = CategoryDao(this),
+            payeeDao = PayeeDao(this),
+            transactionDao = TransactionDao(this),
+            categoryLearner = {},
+            uuidGenerator = uuidGenerator,
+            clock = TestClock(NOW),
+          ),
+        rulesLoader =
+          TransactionRulesLoader(
+            rulesDao = RulesDao(this),
+            contextDao = RuleContextDao(this),
+            uuidGenerator = uuidGenerator,
+          ),
+        uuidGenerator = uuidGenerator,
+      )
     return ListSchedulesViewModel(
       loader = loader,
       syncController = sync,
       writer = writer,
+      poster = poster,
       preferences = preferences,
+      calendar = TODAY,
       viewModelContext = scope.viewModelContext,
     )
   }
+
+  private fun TestSyncController.posted(column: String): List<MessageValue> =
+    changes.filter { it.dataset == TRANSACTIONS && it.column == column }.map { it.value }
 
   private companion object {
     val TODAY = Calendar { LocalDate(2026, 4, 1) }

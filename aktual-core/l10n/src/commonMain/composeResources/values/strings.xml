@@ -1625,7 +1625,12 @@
   <string name="list_schedules_post">Post</string>
   <string name="list_schedules_complete">Complete</string>
   <string name="list_schedules_restart">Restart</string>
-  <string name="list_schedules_post_unsupported">Posting transactions isn't supported yet</string>
+  <string name="list_schedules_post_title">Post transaction</string>
+  <string name="list_schedules_post_today">Post today</string>
+  <string name="list_schedules_post_scheduled">Post on scheduled date</string>
+  <string name="list_schedules_posted">Posted %1$s</string>
+  <string name="list_schedules_post_failed">Couldn't post %1$s</string>
+  <string name="list_schedules_unpost_failed">Couldn't remove the transaction for %1$s</string>
   <string name="list_schedules_deleted">Deleted %1$s</string>
   <string name="list_schedules_deleted_undo">Undo</string>
   <string name="list_schedules_delete_failed">Couldn't delete %1$s</string>

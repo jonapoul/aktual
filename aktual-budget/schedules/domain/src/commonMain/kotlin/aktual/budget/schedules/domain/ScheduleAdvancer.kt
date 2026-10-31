@@ -11,7 +11,6 @@ import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.db.schedules.GetAllActive
 import aktual.budget.model.AccountId
-import aktual.budget.model.Amount
 import aktual.budget.model.DbMetadataKey.Companion.LastScheduleRun
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
@@ -23,8 +22,6 @@ import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
 import aktual.budget.model.nextDate
 import aktual.budget.model.nextDateAfter
-import aktual.budget.model.parseScheduleAmount
-import aktual.budget.rules.domain.RuleTransaction
 import aktual.core.Calendar
 import aktual.core.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
@@ -196,16 +193,7 @@ internal constructor(
 
   // postTransactionForSchedule(), with the rules run as addTransactions() does
   private suspend fun Run.addTransaction(row: GetAllActive, date: LocalDate) {
-    val account = row._account?.let(::AccountId) ?: return
-    val transaction =
-      RuleTransaction(
-        account = account,
-        date = date,
-        amount = Amount(parseScheduleAmount(row._amount) ?: 0L),
-        payee = row._payee,
-        schedule = row.id,
-        cleared = false,
-      )
+    val transaction = row.toRuleTransaction(date) ?: return
     val result = posting.add(transaction) ?: return
     val schedule = result.schedule ?: return
     latestTxDates[schedule] = maxOf(latestTxDates[schedule] ?: result.date, result.date)

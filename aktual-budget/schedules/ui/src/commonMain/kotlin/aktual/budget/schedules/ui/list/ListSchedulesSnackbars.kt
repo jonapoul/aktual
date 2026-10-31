@@ -8,10 +8,12 @@ import aktual.core.l10n.list_schedules_completed
 import aktual.core.l10n.list_schedules_delete_failed
 import aktual.core.l10n.list_schedules_deleted
 import aktual.core.l10n.list_schedules_deleted_undo
-import aktual.core.l10n.list_schedules_post_unsupported
+import aktual.core.l10n.list_schedules_post_failed
+import aktual.core.l10n.list_schedules_posted
 import aktual.core.l10n.list_schedules_restart_failed
 import aktual.core.l10n.list_schedules_restore_failed
 import aktual.core.l10n.list_schedules_unnamed_schedule
+import aktual.core.l10n.list_schedules_unpost_failed
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import org.jetbrains.compose.resources.getString
@@ -64,9 +66,30 @@ internal suspend fun SnackbarHostState.showRestartFailed(event: ListSchedulesEve
   showSnackbar(getString(Res.string.list_schedules_restart_failed, event.schedule.label()))
 }
 
-// TODO: post the transaction once there's a transaction writer, see #1649
-internal suspend fun SnackbarHostState.showPostUnsupported() {
-  showSnackbar(getString(Res.string.list_schedules_post_unsupported))
+internal suspend fun SnackbarHostState.showPosted(
+  event: ListSchedulesEvent.Posted,
+  onUndo: (ListSchedulesEvent.Posted) -> Unit,
+) {
+  val result =
+    showSnackbar(
+      message = getString(Res.string.list_schedules_posted, event.schedule.label()),
+      actionLabel =
+        getString(Res.string.list_schedules_deleted_undo).takeIf {
+          event.transactions.isNotEmpty()
+        },
+      duration = SnackbarDuration.Long,
+    )
+  if (result == ActionPerformed) {
+    onUndo(event)
+  }
+}
+
+internal suspend fun SnackbarHostState.showPostFailed(event: ListSchedulesEvent.PostFailed) {
+  showSnackbar(getString(Res.string.list_schedules_post_failed, event.schedule.label()))
+}
+
+internal suspend fun SnackbarHostState.showUnpostFailed(event: ListSchedulesEvent.UnpostFailed) {
+  showSnackbar(getString(Res.string.list_schedules_unpost_failed, event.schedule.label()))
 }
 
 private suspend fun Schedule.label(): String =
