@@ -67,8 +67,19 @@ data class TransactionDetail(
 // What a split child's editor needs on top of its row
 data class ChildFields(val payee: PayeeId?, val category: CategoryId?, val sortOrder: Long?)
 
-// One page of the list, with the balance after each of its rows
-data class TransactionPage(val rows: List<TransactionRow>, val balances: List<Long>)
+// One page of the list, with the balance after each of its rows. top is the balance after its first
+// row, or after the row it would start at if it's empty
+data class TransactionPage(val rows: List<TransactionRow>, val balances: List<Long>, val top: Long)
+
+// A balance carried from a neighbouring page, so a page's needn't be summed from the table again
+@Immutable
+sealed interface KnownBalance {
+  // After the page's first row, for the page below another
+  data class Top(val balance: Long) : KnownBalance
+
+  // After the row just below the page, for the page above another
+  data class Below(val balance: Long) : KnownBalance
+}
 
 // An account's totals of its cleared and uncleared transactions
 @Immutable data class ClearedBalances(val cleared: Long, val uncleared: Long)
@@ -78,20 +89,20 @@ data class TransactionPage(val rows: List<TransactionRow>, val balances: List<Lo
 class TransactionDao(database: BudgetDatabase) {
   private val queries = database.transactionsQueries
 
-  suspend fun getPaged(limit: Long, offset: Long): TransactionPage = queries.withResult {
-    pageOf(
-      rows = getPaged(limit, offset, ::transactionRow).awaitAsList(),
-      topBalance = balanceFromOffset(offset).awaitAsOne(),
-    )
-  }
+  suspend fun getPaged(limit: Long, offset: Long, known: KnownBalance? = null): TransactionPage =
+    queries.withResult {
+      val rows = getPaged(limit, offset, ::transactionRow).awaitAsList()
+      pageOf(rows, topBalance = known.top(rows) ?: balanceFromOffset(offset).awaitAsOne())
+    }
 
   // Hiding reconciled rows leaves gaps in the page, so each row's balance is looked up instead of
-  // walked down from the first
+  // walked down from the first, and known is ignored
   suspend fun getByAccountPaged(
     account: AccountId,
     limit: Long,
     offset: Long,
     hideReconciled: Boolean = false,
+    known: KnownBalance? = null,
   ): TransactionPage = queries.withResult {
     val rows =
       getByAccountPaged(account, hideReconciled.toLong(), limit, offset, ::transactionRow)
@@ -102,9 +113,11 @@ class TransactionDao(database: BudgetDatabase) {
           .chunked(MAX_BIND_ARGS)
           .flatMap { chunk -> balancesAfterByAccount(account, chunk.map { it.id }).awaitAsList() }
           .associate { it.id to it.balance }
-      TransactionPage(rows, rows.map { balances[it.id] ?: 0L })
+      val pageBalances = rows.map { balances[it.id] ?: 0L }
+      TransactionPage(rows, pageBalances, top = pageBalances.firstOrNull() ?: 0L)
     } else {
-      pageOf(rows, topBalance = balanceFromOffsetByAccount(account, offset).awaitAsOne())
+      val top = known.top(rows) ?: balanceFromOffsetByAccount(account, offset).awaitAsOne()
+      pageOf(rows, topBalance = top)
     }
   }
 
@@ -112,13 +125,13 @@ class TransactionDao(database: BudgetDatabase) {
     group: AccountGroup,
     limit: Long,
     offset: Long,
+    known: KnownBalance? = null,
   ): TransactionPage = queries.withResult {
     val closed = group == Closed
     val offBudget = group.offBudget
-    pageOf(
-      rows = getByGroupPaged(closed, offBudget, limit, offset, ::transactionRow).awaitAsList(),
-      topBalance = balanceFromOffsetByGroup(closed, offBudget, offset).awaitAsOne(),
-    )
+    val rows = getByGroupPaged(closed, offBudget, limit, offset, ::transactionRow).awaitAsList()
+    val top = known.top(rows) ?: balanceFromOffsetByGroup(closed, offBudget, offset).awaitAsOne()
+    pageOf(rows, topBalance = top)
   }
 
   // Uncategorised transactions are a subset of their accounts, so the page has no balance
@@ -341,8 +354,19 @@ class TransactionDao(database: BudgetDatabase) {
 // Walks down the page from the balance after its first row
 private fun pageOf(rows: List<TransactionRow>, topBalance: Long): TransactionPage {
   var balance = topBalance
-  return TransactionPage(rows, rows.map { row -> balance.also { balance -= row.amount } })
+  return TransactionPage(
+    rows,
+    rows.map { row -> balance.also { balance -= row.amount } },
+    topBalance,
+  )
 }
+
+private fun KnownBalance?.top(rows: List<TransactionRow>): Long? =
+  when (this) {
+    is Top -> balance
+    is Below -> balance + rows.sumOf { it.amount }
+    null -> null
+  }
 
 private fun Boolean.toLong() = if (this) 1L else 0L
 
