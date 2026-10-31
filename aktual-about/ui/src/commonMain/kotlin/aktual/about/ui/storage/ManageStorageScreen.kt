@@ -368,6 +368,7 @@ private fun rememberSlices(
   colors: ImmutableList<Color>,
 ): ImmutableList<PieSlice> =
   remember(state, colors) {
+    @Suppress("BuildListAdds")
     buildList {
       state.budgets.forEachIndexed { index, budget ->
         +PieSlice(value = budget.size.numBytes.toFloat(), color = colors[index])
