@@ -1,4 +1,4 @@
-package aktual.budget.sync.ui
+package aktual.budget.sync.components
 
 import aktual.budget.sync.vm.KeyPasswordState
 import aktual.budget.sync.vm.KeyPasswordState.Active

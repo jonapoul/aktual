@@ -1,4 +1,4 @@
-package aktual.budget.accounts.ui
+package aktual.budget.accounts.components
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Library

@@ -1,7 +1,7 @@
 package aktual.budget.home.ui
 
-import aktual.budget.accounts.ui.AddAccountSheet
-import aktual.budget.accounts.ui.addAccount
+import aktual.budget.accounts.components.AddAccountSheet
+import aktual.budget.accounts.components.addAccount
 import aktual.budget.accounts.vm.AddAccountViewModel
 import aktual.budget.home.vm.AccountsCardState
 import aktual.budget.home.vm.AttentionCardState

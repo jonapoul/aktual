@@ -6,7 +6,7 @@ import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.directoryId
-import aktual.budget.sync.ui.SyncBudgetDialog
+import aktual.budget.sync.components.SyncBudgetDialog
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings

@@ -1,4 +1,4 @@
-package aktual.budget.sync.ui
+package aktual.budget.sync.components
 
 import aktual.core.model.Password
 import androidx.compose.runtime.Immutable

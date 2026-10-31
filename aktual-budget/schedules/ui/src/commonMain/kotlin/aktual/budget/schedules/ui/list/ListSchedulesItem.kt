@@ -1,15 +1,13 @@
 package aktual.budget.schedules.ui.list
 
+import aktual.budget.schedules.components.ScheduleStatusBadge
 import aktual.budget.schedules.domain.Schedule
-import aktual.budget.schedules.domain.ScheduleStatus
 import aktual.budget.schedules.domain.amountPrefix
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.Chip
-import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -145,40 +143,6 @@ private fun LabelValue(
   }
 }
 
-@Composable
-fun ScheduleStatusBadge(
-  status: ScheduleStatus,
-  modifier: Modifier = Modifier,
-) {
-  val (bgColor, textColor) =
-    when (status) {
-      Missed -> colors.errorBackground to colors.errorTextDarker
-      Due -> colors.warningBackground to colors.warningTextDark
-      Upcoming -> colors.upcomingBackground to colors.upcomingText
-      Paid -> colors.noticeBackgroundLight to colors.noticeText
-      Completed -> colors.tableRowHeaderBackground to colors.tableHeaderText
-      Scheduled -> colors.tableRowHeaderBackground to colors.tableRowHeaderText
-    }
-  Chip(
-    modifier = modifier,
-    text = status.label(),
-    colors = ChipDefaults.colors(bgColor, textColor),
-    size = Small,
-    textStyle = typography.labelSmall,
-  )
-}
-
-@Composable
-fun ScheduleStatus.label(): String =
-  when (this) {
-    Missed -> Strings.listSchedulesStatusMissed
-    Due -> Strings.listSchedulesStatusDue
-    Upcoming -> Strings.listSchedulesStatusUpcoming
-    Paid -> Strings.listSchedulesStatusPaid
-    Completed -> Strings.listSchedulesStatusCompleted
-    Scheduled -> Strings.listSchedulesStatusScheduled
-  }
-
 /** Keep in sync with [ListSchedulesItem] */
 @Composable
 internal fun ShimmerListSchedulesItem(modifier: Modifier = Modifier) {
@@ -230,14 +194,6 @@ internal fun ShimmerListSchedulesItem(modifier: Modifier = Modifier) {
     )
   }
 }
-
-@Preview
-@Composable
-private fun PreviewScheduleStatus(
-  @PreviewParameter(ScheduleStatusProvider::class) params: ColorParams<ScheduleStatus>,
-) = PreviewWithColorParams(params) { ScheduleStatusBadge(this) }
-
-private class ScheduleStatusProvider : ColorParamsProvider<ScheduleStatus>(ScheduleStatus.entries)
 
 @Preview
 @Composable

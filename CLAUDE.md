@@ -92,6 +92,7 @@ Feature-based modular layout. Module list: `settings.gradle.kts` / `ls modules/`
   - Every VM injects a `ViewModelContext` and passes it to its superclass: `ViewModel(viewModelContext.newScope())`. Never extend plain `ViewModel()`.
   - Tests pass `viewModelContext = viewModelContext` (the `TestScope.viewModelContext` helper in `aktual-test`) so the VM runs on the test scheduler. Use `unconfinedViewModelContext` instead when the test expects work to run eagerly, as it does on `Main.immediate` in the app. Don't use `Dispatchers.setMain`; the `SetMainDispatcher` detekt rule flags it. Compose UI tests pass `Default` (`ViewModelContext.Default`) instead, since the compose rule drives Main. Test graphs built with `TestCoroutineContainer` get one from its `contexts.main`.
 - **UI** - stateless Compose. Retrieves VMs via `metroViewModel()`. Receives navigator instances (e.g. `BackNavigator`) from its `NavEntryContributor`.
+- **Components** - optional `<feature>:components` module holding UI pieces that other features reuse (sheets, dialogs, badges, snackbars). A `ui` module must not depend on another feature's `ui` module; move the shared piece into `components` instead.
 
 ### Metro DI
 
