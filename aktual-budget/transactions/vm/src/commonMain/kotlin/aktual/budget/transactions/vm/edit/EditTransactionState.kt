@@ -152,11 +152,11 @@ sealed interface EditTransactionState {
   }
 
   // A new transaction needs an account to go in and, as upstream has it, a category to pick
-  sealed interface Empty : EditTransactionState {
-    data object NoAccounts : Empty
+  sealed interface Empty : EditTransactionState
 
-    data object NoCategories : Empty
-  }
+  data object NoCategories : Empty
+
+  data object NoAccounts : Empty
 
   data class Loaded(
     // Null for a new transaction

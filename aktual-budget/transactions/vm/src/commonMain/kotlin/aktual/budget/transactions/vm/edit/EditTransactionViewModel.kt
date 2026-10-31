@@ -301,9 +301,8 @@ internal constructor(
     isWorking: Boolean,
   ): EditTransactionState =
     when {
-      entities.options.accounts.isEmpty() -> EditTransactionState.Empty.NoAccounts
-      entities.options.categoryGroups.all { it.categories.isEmpty() } ->
-        EditTransactionState.Empty.NoCategories
+      entities.options.accounts.isEmpty() -> NoAccounts
+      entities.options.categoryGroups.all { it.categories.isEmpty() } -> NoCategories
       form == null -> Loading
       else ->
         EditTransactionState.Loaded(

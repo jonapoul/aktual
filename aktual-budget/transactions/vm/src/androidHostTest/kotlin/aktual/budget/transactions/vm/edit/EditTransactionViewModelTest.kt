@@ -1004,7 +1004,7 @@ class EditTransactionViewModelTest {
     viewModel.state.test {
       var state = awaitItem()
       while (state == Loading) state = awaitItem()
-      assertThat(state).isEqualTo(EditTransactionState.Empty.NoAccounts)
+      assertThat(state).isEqualTo(NoAccounts)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -1017,7 +1017,7 @@ class EditTransactionViewModelTest {
     viewModel.state.test {
       var state = awaitItem()
       while (state == Loading) state = awaitItem()
-      assertThat(state).isEqualTo(EditTransactionState.Empty.NoCategories)
+      assertThat(state).isEqualTo(NoCategories)
       cancelAndIgnoreRemainingEvents()
     }
   }

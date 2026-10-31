@@ -665,6 +665,6 @@ private class EditTransactionStateProvider :
       saved = null,
       mode = TransactionEditMode.Create(PREVIEW_NEW),
     ),
-    EditTransactionState.Empty.NoAccounts,
-    EditTransactionState.Empty.NoCategories,
+    NoAccounts,
+    NoCategories,
   )
