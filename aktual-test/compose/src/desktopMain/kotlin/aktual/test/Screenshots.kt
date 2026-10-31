@@ -12,13 +12,11 @@ import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.v2.runSkikoComposeUiTest
 import androidx.compose.ui.unit.Density
 import java.io.File
-import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Image
 
 /**
@@ -49,11 +47,10 @@ fun screenshot(
     waitForIdle()
     val node = if (fitContent) onNodeWithTag(CONTENT_TAG) else onRoot()
     val bitmap = node.captureToImage().asSkiaBitmap()
-    val bytes = Image.makeFromBitmap(bitmap).encodeToData(EncodedImageFormat.PNG)?.bytes
+    val bytes = Image.makeFromBitmap(bitmap).encodeToData(PNG)?.bytes
     val file = File("build/screenshots/$name.png").absoluteFile
     file.parentFile.mkdirs()
     file.writeBytes(requireNotNull(bytes) { "Failed encoding $name" })
-    println("Saved screenshot: $file")
   }
 }
 
