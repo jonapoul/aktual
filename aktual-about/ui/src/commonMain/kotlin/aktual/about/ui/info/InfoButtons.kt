@@ -25,8 +25,7 @@ internal fun InfoButtons(onAction: InfoActionHandler, modifier: Modifier = Modif
   BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
     val density = LocalDensity.current
 
-    @Suppress("RestrictedApi")
-    val fontScale = density.fontScale
+    @Suppress("RestrictedApi") val fontScale = density.fontScale
 
     val narrowBreakpoint = (400 * fontScale).dp
     val wideBreakpoint = (700 * fontScale).dp
