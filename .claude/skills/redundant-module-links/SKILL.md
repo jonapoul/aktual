@@ -52,7 +52,7 @@ python3 .claude/skills/redundant-module-links/unexposed_api.py --apply
 ./gradlew compileAll --continue
 ```
 
-A flipped link stops reaching modules that used it through the old `api` chain. For each "Unresolved reference" in another module, add `implementation(project(...))` for the module that owns the type to that module's build file, in the right source set (`commonTestDependencies` for test errors). Don't flip the link back. Watch for Metro `MissingBinding` errors too: a module that builds a graph (`aktual-app:*`, `aktual-test:smoke`) must depend on every module that contributes bindings, directly or through `api`.
+A flipped link stops reaching modules that used it through the old `api` chain. For each "Unresolved reference" in another module, add `implementation(project(...))` for the module that owns the type to that module's build file, in the right source set (`commonTestDependencies` for test errors). Don't flip the link back. Watch for Metro `MissingBinding` errors too: a module that builds a graph (`aktual-app:*`, `aktual-test:smoke`) must depend on every module that contributes bindings, directly or through `api`. The smoke tests depend on the VM modules directly, so they won't catch a VM that dropped out of the app graphs. The script guards against that, but launch the app if in doubt.
 
 Then regenerate atlas and remove redundant links:
 
@@ -86,6 +86,7 @@ Unexposed `api`:
 - Metro-generated classes (`$MetroFactory`, `$MetroContribution*`, `metro/hints`) and serializers are ignored. They're always public and expose every constructor param, but only graph code uses them.
 - Annotation arguments don't count, e.g. `@ContributesBinding(AppScope::class)` doesn't need `di:core` as `api`.
 - `aktual-app:*` modules are skipped, since `api` is fine at the top level.
+- A link stays `api` if flipping it would take a module with Metro contributions (anything with `metro/hints` classes, e.g. a VM module) off the compile classpath of `aktual-app:android` or `aktual-app:desktop`. Metro only aggregates contributions it can see there, and a missing one isn't a compile error: it fails at runtime, e.g. `Unknown model class ...ViewModel` from `MetroViewModelFactory`. The report lists these as kept. This is why UI -> VM links stay `api`.
 - Links added by a convention plugin are never changed.
 
 Redundant:

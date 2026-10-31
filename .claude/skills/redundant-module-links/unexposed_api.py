@@ -88,6 +88,26 @@ def closure(links, start):
   return seen
 
 
+GRAPH_MODULES = [":aktual-app:android", ":aktual-app:desktop"]
+
+
+def contributing_modules(dirs):
+  return {
+    m
+    for m, d in dirs.items()
+    if glob.glob(f"{d}/build/classes/kotlin/*/main/metro/hints/*")
+    or glob.glob(f"{d}/build/classes/kotlin/main/metro/hints/*")
+  }
+
+
+def graph_reach(links):
+  reach = set()
+  for graph in GRAPH_MODULES:
+    for target in links[graph]:
+      reach |= {target} | closure(links, target)
+  return reach
+
+
 def main():
   links, dirs = load_links()
   exposed = exposed_modules(dirs)
@@ -100,8 +120,13 @@ def main():
       depth[m] = 1 + max((depth_of(t) for t in links[m]), default=-1)
     return depth[m]
 
+  # Metro only sees contributions from modules on the graph module's compile classpath, and a
+  # missing one fails at runtime rather than compile time
+  contributing = contributing_modules(dirs)
+  reachable = graph_reach(links) & contributing
+
   # Bottom-up, so a flip lower down shrinks the api reach seen by modules above it
-  flips = []
+  flips, kept = [], []
   for module in sorted(dirs, key=lambda m: (depth_of(m), m)):
     if module.startswith(":aktual-app"):
       continue
@@ -113,10 +138,19 @@ def main():
       if exposed[module].keys() & ({dep} | closure(links, dep)):
         continue
       links[module][dep] = {"implementation"}
+      lost = reachable - graph_reach(links)
+      if lost:
+        links[module][dep] = configs
+        kept.append((module, dep, lost))
+        continue
       flips.append((module, dep))
 
   for module, dep in flips:
     print(f"{build_file(module)}: {dep}")
+  if kept:
+    print("\nNot exposed, but kept as api so the app graphs still see these contributions:")
+    for module, dep, lost in kept:
+      print(f"  {build_file(module)}: {dep}  ({', '.join(sorted(lost))})")
   print(f"\n{len(flips)} api link(s) could be implementation")
 
   if "--apply" in sys.argv:
