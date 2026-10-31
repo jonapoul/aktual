@@ -7,8 +7,11 @@ import aktual.budget.schedules.ui.list.ListSchedulesPreview.scheduleA
 import aktual.budget.schedules.ui.list.ListSchedulesPreview.scheduleB
 import aktual.budget.schedules.vm.list.Empty
 import aktual.budget.schedules.vm.list.Failure
+import aktual.budget.schedules.vm.list.ListSchedulesEvent.CompleteFailed
+import aktual.budget.schedules.vm.list.ListSchedulesEvent.Completed
 import aktual.budget.schedules.vm.list.ListSchedulesEvent.DeleteFailed
 import aktual.budget.schedules.vm.list.ListSchedulesEvent.Deleted
+import aktual.budget.schedules.vm.list.ListSchedulesEvent.RestartFailed
 import aktual.budget.schedules.vm.list.ListSchedulesEvent.RestoreFailed
 import aktual.budget.schedules.vm.list.ListSchedulesState
 import aktual.budget.schedules.vm.list.ListSchedulesViewModel
@@ -98,6 +101,9 @@ internal fun ListSchedulesScreen(
         is Deleted -> snackbars.show { showDeleted(event, onUndo = viewModel::undoDelete) }
         is DeleteFailed -> snackbars.show { showDeleteFailed(event) }
         is RestoreFailed -> snackbars.show { showRestoreFailed(event) }
+        is Completed -> snackbars.show { showCompleted(event, onUndo = viewModel::undoComplete) }
+        is CompleteFailed -> snackbars.show { showCompleteFailed(event) }
+        is RestartFailed -> snackbars.show { showRestartFailed(event) }
       }
     }
   }
@@ -114,6 +120,8 @@ internal fun ListSchedulesScreen(
         OpenSearch -> toSearch()
         is Delete -> viewModel.delete(action.schedule)
         is Post -> snackbars.show { showPostUnsupported() }
+        is Complete -> viewModel.complete(action.schedule)
+        is Restart -> viewModel.restart(action.schedule)
         is SetSort -> viewModel.setSort(action.sort)
         is SetShowCompleted -> viewModel.setShowCompleted(action.show)
       }

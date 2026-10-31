@@ -3,10 +3,13 @@ package aktual.budget.schedules.ui.list
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.vm.list.ListSchedulesEvent
 import aktual.core.l10n.Res
+import aktual.core.l10n.list_schedules_complete_failed
+import aktual.core.l10n.list_schedules_completed
 import aktual.core.l10n.list_schedules_delete_failed
 import aktual.core.l10n.list_schedules_deleted
 import aktual.core.l10n.list_schedules_deleted_undo
 import aktual.core.l10n.list_schedules_post_unsupported
+import aktual.core.l10n.list_schedules_restart_failed
 import aktual.core.l10n.list_schedules_restore_failed
 import aktual.core.l10n.list_schedules_unnamed_schedule
 import androidx.compose.material3.SnackbarDuration
@@ -34,6 +37,31 @@ internal suspend fun SnackbarHostState.showDeleteFailed(event: ListSchedulesEven
 
 internal suspend fun SnackbarHostState.showRestoreFailed(event: ListSchedulesEvent.RestoreFailed) {
   showSnackbar(getString(Res.string.list_schedules_restore_failed, event.schedule.label()))
+}
+
+internal suspend fun SnackbarHostState.showCompleted(
+  event: ListSchedulesEvent.Completed,
+  onUndo: (Schedule) -> Unit,
+) {
+  val result =
+    showSnackbar(
+      message = getString(Res.string.list_schedules_completed, event.schedule.label()),
+      actionLabel = getString(Res.string.list_schedules_deleted_undo),
+      duration = SnackbarDuration.Long,
+    )
+  if (result == ActionPerformed) {
+    onUndo(event.schedule)
+  }
+}
+
+internal suspend fun SnackbarHostState.showCompleteFailed(
+  event: ListSchedulesEvent.CompleteFailed,
+) {
+  showSnackbar(getString(Res.string.list_schedules_complete_failed, event.schedule.label()))
+}
+
+internal suspend fun SnackbarHostState.showRestartFailed(event: ListSchedulesEvent.RestartFailed) {
+  showSnackbar(getString(Res.string.list_schedules_restart_failed, event.schedule.label()))
 }
 
 // TODO: post the transaction once there's a transaction writer, see #1649
