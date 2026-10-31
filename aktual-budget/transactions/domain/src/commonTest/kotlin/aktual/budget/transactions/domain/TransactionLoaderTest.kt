@@ -1,5 +1,7 @@
 package aktual.budget.transactions.domain
 
+import aktual.budget.db.dao.TransactionDetail
+import aktual.budget.db.dao.TransactionRow
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
@@ -42,18 +44,17 @@ internal class TransactionLoaderTest {
 
     assertThat(loaded).isNotNull().all {
       prop(LoadedTransaction::children).isEmpty()
-      prop("cleared") { it.detail.cleared }.isFalse()
-      prop("reconciled") { it.detail.reconciled }.isFalse()
-      prop("parent") { it.detail.parent }.isNull()
-      prop("row") { it.detail.row }
-        .all {
-          prop("id") { it.id }.isEqualTo(id)
-          prop("accountName") { it.accountName }.isEqualTo(ACCOUNT.value)
-          prop("payeeName") { it.payeeName }.isEqualTo("Tesco")
-          prop("categoryName") { it.categoryName }.isEqualTo("Groceries")
-          prop("notes") { it.notes }.isEqualTo("Weekly shop")
-          prop("amount") { it.amount }.isEqualTo(-1234L)
-        }
+      prop(LoadedTransaction::detail).prop(TransactionDetail::cleared).isFalse()
+      prop(LoadedTransaction::detail).prop(TransactionDetail::reconciled).isFalse()
+      prop(LoadedTransaction::detail).prop(TransactionDetail::parent).isNull()
+      prop(LoadedTransaction::detail).prop(TransactionDetail::row).all {
+        prop(TransactionRow::id).isEqualTo(id)
+        prop(TransactionRow::accountName).isEqualTo(ACCOUNT.value)
+        prop(TransactionRow::payeeName).isEqualTo("Tesco")
+        prop(TransactionRow::categoryName).isEqualTo("Groceries")
+        prop(TransactionRow::notes).isEqualTo("Weekly shop")
+        prop(TransactionRow::amount).isEqualTo(-1234L)
+      }
     }
   }
 
@@ -64,9 +65,17 @@ internal class TransactionLoaderTest {
     val loaded = loader().load(parent)
 
     assertThat(loaded).isNotNull().all {
-      prop("id") { it.detail.row.id }.isEqualTo(parent)
-      prop("isParent") { it.detail.row.isParent }.isTrue()
-      prop("children") { it.children.map { c -> c.id } }.containsExactly(*children.toTypedArray())
+      prop(LoadedTransaction::detail)
+        .prop(TransactionDetail::row)
+        .prop(TransactionRow::id)
+        .isEqualTo(parent)
+      prop(LoadedTransaction::detail)
+        .prop(TransactionDetail::row)
+        .prop(TransactionRow::isParent)
+        .isTrue()
+      prop(LoadedTransaction::children)
+        .transform { rows -> rows.map { it.id } }
+        .containsExactly(*children.toTypedArray())
       prop(LoadedTransaction::parts)
         .containsExactly(
           SplitPart(children[0], Amount(-1000), category = GROCERIES, sortOrder = 2),
@@ -103,8 +112,13 @@ internal class TransactionLoaderTest {
     val loaded = loader().load(children.first())
 
     assertThat(loaded).isNotNull().all {
-      prop("id") { it.detail.row.id }.isEqualTo(parent)
-      prop("children") { it.children.map { c -> c.id } }.containsExactly(*children.toTypedArray())
+      prop(LoadedTransaction::detail)
+        .prop(TransactionDetail::row)
+        .prop(TransactionRow::id)
+        .isEqualTo(parent)
+      prop(LoadedTransaction::children)
+        .transform { rows -> rows.map { it.id } }
+        .containsExactly(*children.toTypedArray())
     }
   }
 

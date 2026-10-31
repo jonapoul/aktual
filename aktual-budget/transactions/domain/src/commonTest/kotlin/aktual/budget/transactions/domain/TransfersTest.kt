@@ -32,29 +32,29 @@ internal class TransfersTest {
       insert(NewTransaction(account = ONE, date = DATE, amount = Amount(5000), payee = payees.two))
     val other = otherSide(id)
     assertThat(row(other)).all {
-      prop("acct") { it.acct }.isEqualTo(TWO)
-      prop("amount") { it.amount }.isEqualTo(Amount(-5000))
-      prop("description") { it.description }.isEqualTo(payees.one)
-      prop("date") { it.date }.isEqualTo(DATE)
-      prop("notes") { it.notes }.isNull()
-      prop("category") { it.category }.isNull()
-      prop("cleared") { it.cleared }.isEqualTo(false)
-      prop("transferred_id") { it.transferred_id }.isEqualTo(id)
+      prop(Transactions::acct).isEqualTo(TWO)
+      prop(Transactions::amount).isEqualTo(Amount(-5000))
+      prop(Transactions::description).isEqualTo(payees.one)
+      prop(Transactions::date).isEqualTo(DATE)
+      prop(Transactions::notes).isNull()
+      prop(Transactions::category).isNull()
+      prop(Transactions::cleared).isEqualTo(false)
+      prop(Transactions::transferred_id).isEqualTo(id)
     }
 
     // The other side takes the notes, and keeps its date
     update(TransactionUpdate(id, date = LocalDate(2017, 1, 5), notes = Patch.To("This is a note")))
     assertThat(row(other)).all {
-      prop("notes") { it.notes }.isEqualTo("This is a note")
-      prop("date") { it.date }.isEqualTo(DATE)
-      prop("amount") { it.amount }.isEqualTo(Amount(-5000))
+      prop(Transactions::notes).isEqualTo("This is a note")
+      prop(Transactions::date).isEqualTo(DATE)
+      prop(Transactions::amount).isEqualTo(Amount(-5000))
     }
 
     update(TransactionUpdate(id, payee = Patch.To(payees.three)))
     assertThat(otherSide(id)).isEqualTo(other)
     assertThat(row(other)).all {
-      prop("acct") { it.acct }.isEqualTo(THREE)
-      prop("description") { it.description }.isEqualTo(payees.one)
+      prop(Transactions::acct).isEqualTo(THREE)
+      prop(Transactions::description).isEqualTo(payees.one)
     }
 
     val notTransferred = writer.write { insertPayee("Not transferred anymore") }
@@ -67,10 +67,10 @@ internal class TransfersTest {
     val second = otherSide(id)
     assertThat(second).isNotEqualTo(other)
     assertThat(row(second)).all {
-      prop("acct") { it.acct }.isEqualTo(TWO)
-      prop("notes") { it.notes }.isEqualTo("This is a note")
-      prop("date") { it.date }.isEqualTo(LocalDate(2017, 1, 5))
-      prop("tombstone") { it.tombstone }.isEqualTo(false)
+      prop(Transactions::acct).isEqualTo(TWO)
+      prop(Transactions::notes).isEqualTo("This is a note")
+      prop(Transactions::date).isEqualTo(LocalDate(2017, 1, 5))
+      prop(Transactions::tombstone).isEqualTo(false)
     }
 
     writer.write(runTransfers = true) { delete(id) }
@@ -100,8 +100,8 @@ internal class TransfersTest {
     update(TransactionUpdate(id, payee = Patch.To(payees.two)))
     assertThat(row(id).category).isNull()
     assertThat(row(otherSide(id))).all {
-      prop("acct") { it.acct }.isEqualTo(TWO)
-      prop("category") { it.category }.isNull()
+      prop(Transactions::acct).isEqualTo(TWO)
+      prop(Transactions::category).isNull()
     }
   }
 
@@ -130,8 +130,8 @@ internal class TransfersTest {
     assertThat(childOther).isNotEqualTo(parentOther)
     assertThat(row(child).description).isEqualTo(payees.one)
     assertThat(row(childOther)).all {
-      prop("acct") { it.acct }.isEqualTo(ONE)
-      prop("amount") { it.amount }.isEqualTo(Amount(-2000))
+      prop(Transactions::acct).isEqualTo(ONE)
+      prop(Transactions::amount).isEqualTo(Amount(-2000))
     }
     assertThat(row(parent).transferred_id).isNull()
   }
@@ -174,8 +174,8 @@ internal class TransfersTest {
     // Its payee is the account this side is in
     update(TransactionUpdate(id, account = THREE))
     assertThat(row(other)).all {
-      prop("acct") { it.acct }.isEqualTo(TWO)
-      prop("description") { it.description }.isEqualTo(payees.three)
+      prop(Transactions::acct).isEqualTo(TWO)
+      prop(Transactions::description).isEqualTo(payees.three)
     }
   }
 
@@ -210,10 +210,10 @@ internal class TransfersTest {
 
     assertThat(row(other).tombstone).isEqualTo(true)
     assertThat(row(child)).all {
-      prop("tombstone") { it.tombstone }.isEqualTo(false)
-      prop("transferred_id") { it.transferred_id }.isNull()
-      prop("description") { it.description }.isNull()
-      prop("parent_id") { it.parent_id }.isEqualTo(parent)
+      prop(Transactions::tombstone).isEqualTo(false)
+      prop(Transactions::transferred_id).isNull()
+      prop(Transactions::description).isNull()
+      prop(Transactions::parent_id).isEqualTo(parent)
     }
   }
 
@@ -253,9 +253,9 @@ internal class TransfersTest {
     val id = insert(NewTransaction(account = THREE, date = DATE, payee = toFour))
 
     assertThat(row(otherSide(id))).all {
-      prop("acct") { it.acct }.isEqualTo(FOUR)
-      prop("description") { it.description }.isEqualTo(payees.three)
-      prop("category") { it.category }.isNull()
+      prop(Transactions::acct).isEqualTo(FOUR)
+      prop(Transactions::description).isEqualTo(payees.three)
+      prop(Transactions::category).isNull()
     }
   }
 
@@ -265,12 +265,12 @@ internal class TransfersTest {
     val loader = TransactionLoader(transactionDao)
     val id =
       insert(NewTransaction(account = ONE, date = DATE, amount = Amount(5000), payee = payees.two))
-    assertThat(loader.load(id)).isNotNull().prop("flag") { it.hasReconciledTransfer }.isFalse()
+    assertThat(loader.load(id)).isNotNull().prop(LoadedTransaction::hasReconciledTransfer).isFalse()
 
     val other = otherSide(id)
     writer.write { update(TransactionUpdate(other, reconciled = true)) }
 
-    assertThat(loader.load(id)).isNotNull().prop("flag") { it.hasReconciledTransfer }.isTrue()
+    assertThat(loader.load(id)).isNotNull().prop(LoadedTransaction::hasReconciledTransfer).isTrue()
   }
 
   @Test
@@ -282,7 +282,10 @@ internal class TransfersTest {
       insert(NewTransaction(account = ONE, date = DATE, payee = payees.two, parentId = parent))
     writer.write { update(TransactionUpdate(otherSide(child), reconciled = true)) }
 
-    assertThat(loader.load(parent)).isNotNull().prop("flag") { it.hasReconciledTransfer }.isTrue()
+    assertThat(loader.load(parent))
+      .isNotNull()
+      .prop(LoadedTransaction::hasReconciledTransfer)
+      .isTrue()
   }
 
   @Test
@@ -299,9 +302,9 @@ internal class TransfersTest {
 
     for (id in listOf(transfer, parent, child)) assertThat(row(id).tombstone).isEqualTo(true)
     assertThat(row(other)).all {
-      prop("tombstone") { it.tombstone }.isEqualTo(false)
-      prop("transferred_id") { it.transferred_id }.isNull()
-      prop("description") { it.description }.isNull()
+      prop(Transactions::tombstone).isEqualTo(false)
+      prop(Transactions::transferred_id).isNull()
+      prop(Transactions::description).isNull()
     }
     assertThat(row(elsewhere).tombstone).isEqualTo(false)
     assertThat(accountDao[ONE]?.tombstone).isEqualTo(true)

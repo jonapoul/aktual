@@ -320,7 +320,10 @@ class EditTransactionViewModelTest {
       val last = states.lastOrNull()?.value ?: initial
       assertThat(last).isInstanceOf<Loaded>().all {
         prop(Loaded::isWorking).isFalse()
-        prop("hasChanges") { it.mode.form.hasChanges }.isFalse()
+        prop(Loaded::mode)
+          .prop(TransactionEditMode::form)
+          .prop(TransactionForm::hasChanges)
+          .isFalse()
       }
       assertThat(sync.calls)
         .containsExactly(
@@ -512,7 +515,9 @@ class EditTransactionViewModelTest {
         while (loaded.mode.form.draft.amount != Amount(-50.0)) loaded = awaitLoaded()
         assertThat(loaded).all {
           prop(Loaded::changedElsewhere).isNull()
-          prop("draft") { it.mode.form.draft }
+          prop(Loaded::mode)
+            .prop(TransactionEditMode::form)
+            .prop(TransactionForm::draft)
             .isEqualTo(SAVED.copy(amount = Amount(-50.0), notes = "Lunch"))
         }
 
@@ -546,7 +551,11 @@ class EditTransactionViewModelTest {
         assertThat(loaded).all {
           prop(Loaded::changedElsewhere).isEqualTo(Conflicting)
           prop(Loaded::canSave).isTrue()
-          prop("payee") { it.mode.form.draft.payee }.isEqualTo(PayeeId("b"))
+          prop(Loaded::mode)
+            .prop(TransactionEditMode::form)
+            .prop(TransactionForm::draft)
+            .prop(TransactionFields::payee)
+            .isEqualTo(PayeeId("b"))
         }
 
         viewModel.revert()
@@ -608,7 +617,11 @@ class EditTransactionViewModelTest {
         assertThat(loaded).all {
           prop(Loaded::changedElsewhere).isEqualTo(Deleted)
           prop(Loaded::canSave).isFalse()
-          prop("notes") { it.mode.form.draft.notes }.isEqualTo("Lunch")
+          prop(Loaded::mode)
+            .prop(TransactionEditMode::form)
+            .prop(TransactionForm::draft)
+            .prop(TransactionFields::notes)
+            .isEqualTo("Lunch")
         }
 
         viewModel.save()
@@ -908,8 +921,8 @@ class EditTransactionViewModelTest {
       var edit = awaitEdit()
       while (edit.parts.first().part.payee != null) edit = awaitEdit()
       assertThat(edit).all {
-        prop("account") { it.draft.account }.isEqualTo(AccountId("b"))
-        prop("payee") { it.draft.payee }.isEqualTo(PayeeId("a"))
+        prop(TransactionForm::draft).prop(TransactionFields::account).isEqualTo(AccountId("b"))
+        prop(TransactionForm::draft).prop(TransactionFields::payee).isEqualTo(PayeeId("a"))
         prop(TransactionForm::parts)
           .extracting { it.part.payee to it.isTransfer }
           .containsExactly(null to false, PayeeId("c") to false)

@@ -1,6 +1,7 @@
 package aktual.budget.banksync.domain
 
 import aktual.api.model.banksync.ExternalBankAccount
+import aktual.budget.db.Accounts
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
@@ -33,8 +34,8 @@ internal class BankAccountLinkerTest {
 
     val account = account(ACCOUNT)
     assertThat(account).all {
-      prop("account_id") { it.account_id }.isEqualTo("ACT-1")
-      prop("account_sync_source") { it.account_sync_source }.isEqualTo(SimpleFin)
+      prop(Accounts::account_id).isEqualTo("ACT-1")
+      prop(Accounts::account_sync_source).isEqualTo(SimpleFin)
     }
     val bank = checkNotNull(account.bank)
     assertThat(dao.bankId(bank)).isEqualTo(BankId("mybank.example.com"))
@@ -107,12 +108,12 @@ internal class BankAccountLinkerTest {
     runBackground()
 
     assertThat(account(created)).all {
-      prop("name") { it.name }.isEqualTo("Checking")
-      prop("offbudget") { it.offbudget }.isEqualTo(false)
-      prop("sort_order") { it.sort_order }.isEqualTo(16384.0)
-      prop("account_id") { it.account_id }.isEqualTo("ACT-1")
-      prop("account_sync_source") { it.account_sync_source }.isEqualTo(SimpleFin)
-      prop("last_sync") { it.last_sync }.isNotNull()
+      prop(Accounts::name).isEqualTo("Checking")
+      prop(Accounts::offbudget).isEqualTo(false)
+      prop(Accounts::sort_order).isEqualTo(16384.0)
+      prop(Accounts::account_id).isEqualTo("ACT-1")
+      prop(Accounts::account_sync_source).isEqualTo(SimpleFin)
+      prop(Accounts::last_sync).isNotNull()
     }
     val payee = sent.single { it.dataset == "payees" && it.column == "transfer_acct" }
     assertThat(payee.value).isEqualTo(string(created.value))
@@ -136,8 +137,8 @@ internal class BankAccountLinkerTest {
 
     assertThat(account(onBudget).sort_order).isEqualTo(36384.0)
     assertThat(account(offBudget)).all {
-      prop("offbudget") { it.offbudget }.isEqualTo(true)
-      prop("sort_order") { it.sort_order }.isEqualTo(16384.0)
+      prop(Accounts::offbudget).isEqualTo(true)
+      prop(Accounts::sort_order).isEqualTo(16384.0)
     }
   }
 
@@ -163,10 +164,10 @@ internal class BankAccountLinkerTest {
     linker(api).unlink(OTHER)
 
     assertThat(account(OTHER)).all {
-      prop("account_id") { it.account_id }.isNull()
-      prop("bank") { it.bank }.isNull()
-      prop("account_sync_source") { it.account_sync_source }.isNull()
-      prop("balance_current") { it.balance_current }.isNull()
+      prop(Accounts::account_id).isNull()
+      prop(Accounts::bank).isNull()
+      prop(Accounts::account_sync_source).isNull()
+      prop(Accounts::balance_current).isNull()
     }
     assertThat(api.removedRequisitions).isEmpty()
   }

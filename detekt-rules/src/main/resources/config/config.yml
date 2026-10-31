@@ -8,3 +8,5 @@ aktual:
     active: true
   SetMainDispatcher:
     active: true
+  StringPropName:
+    active: true

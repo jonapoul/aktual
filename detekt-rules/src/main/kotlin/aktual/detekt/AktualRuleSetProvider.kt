@@ -4,6 +4,7 @@ import aktual.detekt.rules.InjectedRawCoroutineScope
 import aktual.detekt.rules.InvalidComposeLazyKey
 import aktual.detekt.rules.RedundantQualifier
 import aktual.detekt.rules.SetMainDispatcher
+import aktual.detekt.rules.StringPropName
 import dev.detekt.api.RuleSet
 import dev.detekt.api.RuleSetId
 import dev.detekt.api.RuleSetProvider
@@ -20,6 +21,7 @@ class AktualRuleSetProvider : RuleSetProvider {
           ::InvalidComposeLazyKey,
           ::RedundantQualifier,
           ::SetMainDispatcher,
+          ::StringPropName,
         ),
     )
 }
