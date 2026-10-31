@@ -81,10 +81,12 @@ data class TransactionFields(
   val notes: String?,
   val cleared: Boolean,
   val reconciled: Boolean,
+  val schedule: ScheduleId? = null,
 )
 
 // One part of a split as its editor holds it. Its account, date, cleared and reconciled are its
 // parent's, as upstream's makeChild() has them
+@Immutable
 data class SplitPart(
   val id: TransactionId,
   val amount: Amount = Zero,

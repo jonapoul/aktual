@@ -1918,6 +1918,9 @@
   <string name="transaction_create_go_to_budget">Go to budget</string>
   <string name="transaction_payee_search">Find or add a payee</string>
   <string name="transaction_category_search">Find a category</string>
+  <string name="transaction_schedule">Schedule</string>
+  <string name="transaction_schedule_search">Find a schedule</string>
+  <string name="transaction_schedule_empty">No schedules to link to</string>
   <string name="transaction_category_hidden">%1$s (hidden)</string>
   <string name="transaction_category_show_hidden">Show hidden categories</string>
   <string name="transaction_category_hide_hidden">Hide hidden categories</string>

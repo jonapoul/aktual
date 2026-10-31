@@ -4,6 +4,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -61,6 +62,20 @@ class TransactionRebaseTest {
     val draft = PLAIN.withFields(PLAIN.fields.copy(payee = PayeeId("b")))
 
     assertThat(rebase(PLAIN, draft, draft)).isEqualTo(RebasedDraft(draft, hasConflicts = false))
+  }
+
+  @Test
+  fun `A schedule linked elsewhere is kept when the draft didn't change it`() {
+    val saved = PLAIN.withFields(PLAIN.fields.copy(schedule = ScheduleId("s")))
+    val draft = PLAIN.withFields(PLAIN.fields.copy(notes = "Lunch"))
+
+    assertThat(rebase(PLAIN, saved, draft))
+      .isEqualTo(
+        RebasedDraft(
+          PLAIN.withFields(PLAIN.fields.copy(schedule = ScheduleId("s"), notes = "Lunch")),
+          hasConflicts = false,
+        ),
+      )
   }
 
   @Test

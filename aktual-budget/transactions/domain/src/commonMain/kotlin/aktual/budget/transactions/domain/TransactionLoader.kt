@@ -31,6 +31,7 @@ data class LoadedTransaction(
         notes = detail.row.notes,
         cleared = detail.cleared,
         reconciled = detail.reconciled,
+        schedule = detail.schedule,
       )
 
   val draft: TransactionDraft

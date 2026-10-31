@@ -27,6 +27,7 @@ fun transactionDiff(
       payee = patch(saved.payee, draft.payee),
       category = patch(saved.category, draft.category),
       notes = patch(saved.notes.orEmpty(), draft.notes.orEmpty()) { it.ifEmpty { null } },
+      schedule = patch(saved.schedule, draft.schedule),
     )
   return update.takeIf { it != TransactionUpdate(id) }
 }

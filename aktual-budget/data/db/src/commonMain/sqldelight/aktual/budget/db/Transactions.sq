@@ -416,7 +416,8 @@ SELECT
   t.parent_id AS parentId,
   vt.account AS accountId,
   vt.payee AS payeeId,
-  c.id AS categoryId
+  c.id AS categoryId,
+  t.schedule AS scheduleId
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   INNER JOIN transactions AS t ON t.id = vt.id

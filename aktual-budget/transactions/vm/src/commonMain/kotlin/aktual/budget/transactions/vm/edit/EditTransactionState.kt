@@ -5,7 +5,9 @@ import aktual.budget.model.Amount
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
+import aktual.budget.schedules.domain.Schedule
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.domain.TransactionFields
@@ -41,6 +43,8 @@ data class TransactionForm(
   val payeeName: String?,
   val categoryName: String?,
   val accountName: String?,
+  // Null if it's not linked, or its schedule's gone
+  val schedule: Schedule? = null,
   // Transactions in an off budget account have no category
   val isOffBudget: Boolean,
   // Nor do transfers to another on budget account
@@ -110,6 +114,12 @@ fun ImmutableList<CategoryGroupOptions>.matching(
     .toImmutableList()
 }
 
+// As upstream's ScheduleLink, completed schedules aren't offered, unless it's linked to one already
+internal fun List<Schedule>.linkable(linked: ScheduleId?): ImmutableList<Schedule> = filter {
+  !it.isCompleted || it.id == linked
+}
+  .toImmutableList()
+
 // What the editor's pickers offer
 @Immutable
 data class TransactionOptions(
@@ -123,6 +133,8 @@ data class TransactionOptions(
   val suggestedPayees: ImmutableList<EntityOption<PayeeId>> = persistentListOf(),
   // What the notes can be tagged with, without the hidden ones
   val tags: ImmutableList<TagLabel> = persistentListOf(),
+  // What it can be linked to, soonest first
+  val schedules: ImmutableList<Schedule> = persistentListOf(),
   // Hidden categories are only in categoryGroups while they're shown, as the budget's
   // budget.showHiddenCategories has it
   val hasHiddenCategories: Boolean = false,
@@ -140,11 +152,11 @@ sealed interface EditTransactionState {
   }
 
   // A new transaction needs an account to go in and, as upstream has it, a category to pick
-  sealed interface Empty : EditTransactionState {
-    data object NoAccounts : Empty
+  sealed interface Empty : EditTransactionState
 
-    data object NoCategories : Empty
-  }
+  data object NoCategories : Empty
+
+  data object NoAccounts : Empty
 
   data class Loaded(
     // Null for a new transaction

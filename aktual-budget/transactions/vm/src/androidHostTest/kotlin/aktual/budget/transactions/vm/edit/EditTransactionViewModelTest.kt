@@ -17,6 +17,7 @@ import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.RuleContextDao
 import aktual.budget.db.dao.RulesDao
+import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.db.dao.SyncDao
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
@@ -32,11 +33,14 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.rules.domain.TransactionRulesLoader
+import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.tags.domain.TagCreator
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.domain.LastTransaction
@@ -59,6 +63,7 @@ import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.inMemoryDriverFactory
+import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
@@ -326,6 +331,38 @@ class EditTransactionViewModelTest {
           ),
         )
     }
+  }
+
+  @Test
+  fun `Linking a schedule is saved with the other edits`() = runDatabaseTest { scope ->
+    insertEntities()
+    insertSchedule(id = "rent", name = "Rent", payee = "Landlord", account = "Current")
+    insertSchedule(id = "old", name = "Old", payee = "Gym", account = "Current", completed = true)
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+    viewModel.state.test {
+      var edit = awaitEdit()
+      while (edit.options.schedules.isEmpty()) edit = awaitEdit()
+      assertThat(edit.schedule).isNull()
+      // Completed schedules aren't offered
+      assertThat(edit.options.schedules)
+        .extracting(Schedule::id)
+        .containsExactly(ScheduleId("rent"))
+
+      viewModel.setSchedule(ScheduleId("rent"))
+      while (!edit.hasChanges) edit = awaitEdit()
+      assertThat(edit.schedule).isNotNull().prop(Schedule::name).isEqualTo("Rent")
+
+      viewModel.save()
+      scope.advanceUntilIdle()
+      cancelAndIgnoreRemainingEvents()
+    }
+    assertThat(sync.calls)
+      .containsExactly(
+        listOf(LocalChange(TRANSACTIONS, "t", "schedule", MessageValue.String("rent"))),
+      )
   }
 
   @Test
@@ -967,7 +1004,7 @@ class EditTransactionViewModelTest {
     viewModel.state.test {
       var state = awaitItem()
       while (state == Loading) state = awaitItem()
-      assertThat(state).isEqualTo(EditTransactionState.Empty.NoAccounts)
+      assertThat(state).isEqualTo(NoAccounts)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -980,7 +1017,7 @@ class EditTransactionViewModelTest {
     viewModel.state.test {
       var state = awaitItem()
       while (state == Loading) state = awaitItem()
-      assertThat(state).isEqualTo(EditTransactionState.Empty.NoCategories)
+      assertThat(state).isEqualTo(NoCategories)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -1316,6 +1353,7 @@ class EditTransactionViewModelTest {
       // The rules, which add a payee by name, load alongside
       scope.advanceUntilIdle()
       first.setNotes("Lunch")
+      first.setSchedule(ScheduleId("rent"))
       first.createPayee("Tesco")
       awaitEdit()
       cancelAndIgnoreRemainingEvents()
@@ -1326,7 +1364,10 @@ class EditTransactionViewModelTest {
 
     second.state.test {
       assertThat(awaitEdit()).all {
-        prop(TransactionForm::draft).isEqualTo(SAVED.copy(notes = "Lunch", payee = PayeeId("uuid")))
+        prop(TransactionForm::draft)
+          .isEqualTo(
+            SAVED.copy(notes = "Lunch", payee = PayeeId("uuid"), schedule = ScheduleId("rent")),
+          )
         prop(TransactionForm::payeeName).isEqualTo("Tesco")
         prop(TransactionForm::hasChanges).isTrue()
       }
@@ -1556,6 +1597,14 @@ class EditTransactionViewModelTest {
           preferencesDao = PreferencesDao(this, contexts),
           calendar = TestCalendar(TODAY),
           contexts = contexts,
+        ),
+      schedulesLoader =
+        SchedulesLoader(
+          scheduleDao = ScheduleDao(this),
+          accountDao = accountDao,
+          payeeDao = payeeDao,
+          preferencesDao = PreferencesDao(this, contexts),
+          calendar = TestCalendar(TODAY),
         ),
       tagsDao = tags,
       viewModelContext = scope.viewModelContext,
