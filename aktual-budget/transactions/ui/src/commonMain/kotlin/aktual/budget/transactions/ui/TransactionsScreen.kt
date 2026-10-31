@@ -289,7 +289,10 @@ private fun rememberVisibleYear(
         listState.layoutInfo.visibleItemsInfo.fastFirstOrNull {
           it.index > 0 && it.offset + it.size > topBarHeight()
         }
-      topItem?.let { pagingItems.itemSnapshotList.getOrNull(it.index - 1)?.date?.year }
+      // Before the list's first layout, use the first transaction so the bar doesn't grow a frame
+      // later and animate every row down
+      val index = topItem?.let { it.index - 1 } ?: 0
+      pagingItems.itemSnapshotList.getOrNull(index)?.date?.year
     }
   }
 
