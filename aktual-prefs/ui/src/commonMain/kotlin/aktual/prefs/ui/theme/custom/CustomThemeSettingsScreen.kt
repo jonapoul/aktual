@@ -248,7 +248,7 @@ private fun FailedContent(
 ) {
   val cause =
     when (state) {
-      FetchingCatalog -> Strings.settingsThemeRefreshFailure
+      FetchFailed -> Strings.settingsThemeRefreshFailure
     }
 
   FailureScreen(
@@ -518,7 +518,7 @@ private val SUCCESS_STATE =
 private class CatalogStateProvider :
   ColorParamsProvider<CustomThemeSettingsParams>(
     CustomThemeSettingsParams(Loading),
-    CustomThemeSettingsParams(CatalogState.Failed.FetchingCatalog),
+    CustomThemeSettingsParams(FetchFailed),
     CustomThemeSettingsParams(SUCCESS_STATE),
     CustomThemeSettingsParams(SUCCESS_STATE, filter = Dark, showSortFilterSheet = true),
   )

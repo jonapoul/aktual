@@ -226,7 +226,7 @@ class CustomThemeSettingsViewModel(
       throw e
     } catch (e: Exception) {
       logcat.e(e) { "Failed fetching theme catalog" }
-      mutableFailure.update { FetchingCatalog }
+      mutableFailure.update { FetchFailed }
     } finally {
       mutableIsFetchingCatalog.update { false }
     }

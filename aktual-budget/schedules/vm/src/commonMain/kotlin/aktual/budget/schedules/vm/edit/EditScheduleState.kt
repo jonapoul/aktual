@@ -11,11 +11,11 @@ import kotlinx.datetime.LocalDate
 sealed interface EditScheduleState {
   data object Loading : EditScheduleState
 
-  sealed interface Failure : EditScheduleState {
-    data object NotFound : Failure
+  sealed interface Failure : EditScheduleState
 
-    @JvmInline value class Other(val reason: String) : Failure
-  }
+  data object NotFound : Failure
+
+  @JvmInline value class OtherFailure(val reason: String) : Failure
 
   data class Loaded(
     val form: ScheduleForm,

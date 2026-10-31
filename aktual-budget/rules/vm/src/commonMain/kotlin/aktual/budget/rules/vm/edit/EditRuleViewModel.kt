@@ -108,7 +108,7 @@ class EditRuleViewModel(
       try {
         val rule = rulesDao[ruleId]
         if (rule == null) {
-          mutableFailure.update { NoMatch }
+          mutableFailure.update { NotFound }
         } else {
           val model =
             Rule(
@@ -122,7 +122,7 @@ class EditRuleViewModel(
         }
       } catch (e: Exception) {
         logcat.e(e) { "Failed loading $ruleId" }
-        mutableFailure.update { Failure.Other(e.requireMessage()) }
+        mutableFailure.update { EditRuleState.OtherFailure(e.requireMessage()) }
       } finally {
         mutableIsLoading.update { false }
       }
@@ -179,7 +179,7 @@ class EditRuleViewModel(
         throw e
       } catch (e: Exception) {
         logcat.e(e) { "Failed saving $ruleId" }
-        mutableFailure.update { Failure.Saving(e.requireMessage()) }
+        mutableFailure.update { EditRuleState.SaveFailed(e.requireMessage()) }
       } finally {
         mutableIsWorking.update { false }
       }

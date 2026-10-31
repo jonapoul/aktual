@@ -11,10 +11,9 @@ sealed interface CatalogState {
 
   data class Success(val items: ImmutableList<CatalogItem>) : CatalogState
 
-  @Immutable
-  sealed interface Failed : CatalogState {
-    data object FetchingCatalog : Failed
-  }
+  @Immutable sealed interface Failed : CatalogState
+
+  data object FetchFailed : Failed
 }
 
 @Immutable

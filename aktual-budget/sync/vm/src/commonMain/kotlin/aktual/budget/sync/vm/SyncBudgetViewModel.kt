@@ -123,7 +123,7 @@ class SyncBudgetViewModel(
       error("Should never happen? state=$state, cachedData=$cachedData, meta=$meta, keyId=$keyId")
     }
 
-    setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
+    setStepState(ValidatingDatabase, IndefiniteProgress)
     viewModelScope.launch {
       when (val fetched = keyFetcher(budgetId, keyPassword = state.input)) {
         is FetchKeyResult.Failure -> {
@@ -173,7 +173,7 @@ class SyncBudgetViewModel(
         return@launch
       }
 
-      setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
+      setStepState(ValidatingDatabase, IndefiniteProgress)
 
       logcat.i { "Succeeded syncing: $userFile and $downloadedPath" }
       val meta = userFile.encryptMeta
@@ -197,7 +197,7 @@ class SyncBudgetViewModel(
   }
 
   private suspend fun fetchUserFileInfo(): UserFile? {
-    setStepState(FetchingFileInfo, SyncStepState.InProgress.Indefinite)
+    setStepState(FetchingFileInfo, IndefiniteProgress)
     return when (val result = infoFetcher.fetch(budgetId)) {
       is Failure -> {
         setStepState(FetchingFileInfo, SyncStepState.Failed(result.reason))
@@ -213,13 +213,13 @@ class SyncBudgetViewModel(
 
   private suspend fun downloadBudgetFileAsync(): Path? {
     var downloadedDbPath: Path? = null
-    setStepState(DownloadingDatabase, SyncStepState.InProgress.Indefinite)
+    setStepState(DownloadingDatabase, IndefiniteProgress)
 
     fileDownloader.download(budgetId).collect { state ->
       val stepState =
         when (state) {
           is InProgress -> {
-            SyncStepState.InProgress.Definite(state.toPercent())
+            SyncStepState.DefiniteProgress(state.toPercent())
           }
 
           is Failure -> {

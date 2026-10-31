@@ -7,11 +7,11 @@ import androidx.compose.runtime.Immutable
 sealed interface SyncStepState {
   data object NotStarted : SyncStepState
 
-  sealed interface InProgress : SyncStepState {
-    data object Indefinite : InProgress
+  sealed interface InProgress : SyncStepState
 
-    data class Definite(val progress: Percent) : InProgress
-  }
+  data object IndefiniteProgress : InProgress
+
+  data class DefiniteProgress(val progress: Percent) : InProgress
 
   sealed interface Stopped : SyncStepState
 

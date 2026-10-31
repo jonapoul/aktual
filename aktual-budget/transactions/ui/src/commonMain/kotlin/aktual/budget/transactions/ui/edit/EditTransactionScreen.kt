@@ -435,7 +435,7 @@ private fun LoadFailure(
     reason =
       when (state) {
         NotFound -> Strings.transactionFailureNotFound
-        is Other -> state.reason
+        is OtherFailure -> state.reason
       },
     action =
       FailureAction(
@@ -644,7 +644,7 @@ private val PREVIEW_NEW =
 private class EditTransactionStateProvider :
   ColorParamsProvider<EditTransactionState>(
     Loading,
-    EditTransactionState.Failure.NotFound,
+    NotFound,
     previewLoaded(TRANSACTION_1),
     previewLoaded(TRANSACTION_1, previewForm(TRANSACTION_1, hasChanges = true)),
     previewLoaded(TRANSACTION_1, previewForm(TRANSACTION_1, hasChanges = true))
