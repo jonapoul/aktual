@@ -1,8 +1,10 @@
 package aktual.budget.transactions.ui.edit
 
 import aktual.budget.model.AccountId
+import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
-import aktual.budget.model.Operator
+import aktual.budget.model.Operator.Is
+import aktual.budget.model.Operator.IsApprox
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
@@ -41,9 +43,9 @@ import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,7 +54,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -162,7 +163,7 @@ internal fun EditTransactionSheet(
         onSelect = { onAction(SetSchedule(it)) },
       )
 
-    Amount,
+    EditField.Amount,
     null -> Unit
   }
 }
@@ -207,7 +208,7 @@ private fun PartSheet(
         onCreateTag = { onAction(CreateTag(it)) },
       )
 
-    Amount,
+    EditField.Amount,
     Account,
     Date,
     ScheduleLink -> Unit
@@ -462,7 +463,7 @@ private fun CategorySheet(
 
 // Qualified, since Amount is also the field
 @Composable
-private fun CategoryBalance(balance: aktual.budget.model.Amount) =
+private fun CategoryBalance(balance: Amount) =
   Text(
     text = balance.formattedText(),
     fontSize = BalanceSize,
@@ -577,10 +578,10 @@ private fun StatusChips(
   val statuses = remember(options) { options.mapTo(mutableSetOf()) { it.status }.sorted() }
   if (statuses.size < 2) return
 
-  Row(
-    modifier =
-      Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(SearchPadding),
+  FlowRow(
+    modifier = Modifier.fillMaxWidth().padding(SearchPadding),
     horizontalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing * 2),
+    verticalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing * 2),
   ) {
     statuses.fastForEach { status ->
       val isSelected = status in selected
@@ -740,8 +741,8 @@ private val PREVIEW_SCHEDULE =
     payeeName = "Landlord",
     accountId = AccountId("current"),
     accountName = "Current",
-    amount = aktual.budget.model.Amount(-120000),
-    amountOp = Operator.Is,
+    amount = Amount(-120000),
+    amountOp = Is,
     date = LocalDate(2026, 11, 1),
     status = Upcoming,
   )
@@ -753,8 +754,8 @@ private val PREVIEW_SCHEDULES =
       id = ScheduleId("energy"),
       name = null,
       payeeName = "Energy Co.",
-      amount = aktual.budget.model.Amount(-8500),
-      amountOp = Operator.IsApprox,
+      amount = Amount(-8500),
+      amountOp = IsApprox,
       nextDate = LocalDate(2026, 10, 31),
       status = Due,
     ),
@@ -762,7 +763,7 @@ private val PREVIEW_SCHEDULES =
       id = ScheduleId("salary"),
       name = "Salary",
       payeeName = "Employer",
-      amount = aktual.budget.model.Amount(250000),
+      amount = Amount(250000),
       nextDate = LocalDate(2026, 10, 28),
       status = Paid,
     ),
@@ -770,7 +771,7 @@ private val PREVIEW_SCHEDULES =
       id = ScheduleId("gym"),
       name = "Gym",
       payeeName = "Gym Ltd.",
-      amount = aktual.budget.model.Amount(-3000),
+      amount = Amount(-3000),
       nextDate = LocalDate(2026, 12, 5),
       status = Scheduled,
     ),
