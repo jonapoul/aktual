@@ -51,6 +51,7 @@ fun screenshot(
     val file = File("build/screenshots/$name.png").absoluteFile
     file.parentFile.mkdirs()
     file.writeBytes(requireNotNull(bytes) { "Failed encoding $name" })
+    @Suppress("ForbiddenMethodCall") println("Saved screenshot: $file")
   }
 }
 
