@@ -1353,6 +1353,7 @@ class EditTransactionViewModelTest {
       // The rules, which add a payee by name, load alongside
       scope.advanceUntilIdle()
       first.setNotes("Lunch")
+      first.setSchedule(ScheduleId("rent"))
       first.createPayee("Tesco")
       awaitEdit()
       cancelAndIgnoreRemainingEvents()
@@ -1363,7 +1364,10 @@ class EditTransactionViewModelTest {
 
     second.state.test {
       assertThat(awaitEdit()).all {
-        prop(TransactionForm::draft).isEqualTo(SAVED.copy(notes = "Lunch", payee = PayeeId("uuid")))
+        prop(TransactionForm::draft)
+          .isEqualTo(
+            SAVED.copy(notes = "Lunch", payee = PayeeId("uuid"), schedule = ScheduleId("rent")),
+          )
         prop(TransactionForm::payeeName).isEqualTo("Tesco")
         prop(TransactionForm::hasChanges).isTrue()
       }

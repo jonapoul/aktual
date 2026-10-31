@@ -4,6 +4,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -67,6 +68,20 @@ class TransactionDiffTest {
           notes = Patch.To(null),
         ),
       )
+  }
+
+  @Test
+  fun `Linking a schedule patches it`() {
+    assertThat(transactionDiff(ID, SAVED, SAVED.copy(schedule = ScheduleId("s"))))
+      .isEqualTo(TransactionUpdate(id = ID, schedule = Patch.To(ScheduleId("s"))))
+  }
+
+  @Test
+  fun `Unlinking a schedule writes it as null`() {
+    val saved = SAVED.copy(schedule = ScheduleId("s"))
+
+    assertThat(transactionDiff(ID, saved, saved.copy(schedule = null)))
+      .isEqualTo(TransactionUpdate(id = ID, schedule = Patch.To(null)))
   }
 
   @Test
