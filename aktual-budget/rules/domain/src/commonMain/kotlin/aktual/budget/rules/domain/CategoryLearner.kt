@@ -16,7 +16,6 @@ import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.RuleId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
-import aktual.budget.model.serialName
 import aktual.core.Calendar
 import aktual.core.UuidGenerator
 import aktual.di.BudgetScope
@@ -126,7 +125,7 @@ internal constructor(
       localChange(RULES, row, "conditions", DbJson.encodeToString(listOf(condition))),
       localChange(RULES, row, "actions", DbJson.encodeToString(listOf(action))),
       localChange(RULES, row, "tombstone", false),
-      localChange(RULES, row, "conditions_op", ConditionOp.And.serialName()),
+      localChange(RULES, row, "conditions_op", ConditionOp.And),
     )
   }
 }

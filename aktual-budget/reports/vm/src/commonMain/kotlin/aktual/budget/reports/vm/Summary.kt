@@ -16,24 +16,11 @@ import kotlinx.serialization.json.Json
 // SummaryWidget.meta.content, stored as a JSON string
 @Serializable
 internal data class SummaryContent(
-  @SerialName("type") val type: String? = null,
+  @SerialName("type") val type: SummaryChartType = Sum,
   @SerialName("divisorConditions") val divisorConditions: List<Condition>? = null,
   @SerialName("divisorConditionsOp") val divisorConditionsOp: ConditionOp? = null,
   @SerialName("divisorAllTimeDateRange") val divisorAllTimeDateRange: Boolean? = null,
-) {
-  val chartType: SummaryChartType
-    get() = SummaryChartType.entries.firstOrNull { it.serialName == type } ?: Sum
-}
-
-internal val SummaryChartType.serialName: String
-  get() =
-    when (this) {
-      Sum -> "sum"
-      AveragePerMonth -> "avgPerMonth"
-      AveragePerYear -> "avgPerYear"
-      AveragePerTransaction -> "avgPerTransact"
-      Percentage -> "percentage"
-    }
+)
 
 private val summaryJson = Json { ignoreUnknownKeys = true }
 
@@ -66,7 +53,7 @@ internal fun calculateSummary(
   val start = params.start.firstDay
   val end = params.end.lastDay
   val total = amounts.sum()
-  return when (params.content.chartType) {
+  return when (params.content.type) {
     Sum -> {
       SummaryData.Sum(params.title, start, end, Amount(total))
     }

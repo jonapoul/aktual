@@ -1,5 +1,9 @@
 package aktual.budget.model
 
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonPrimitive
+
 /**
  * A local change to be recorded in the CRDT log. Corresponds to upstream's db.update/insert/delete_
  * in db/index.ts.
@@ -31,6 +35,19 @@ fun localChange(
   column: String,
   value: Boolean?,
 ) = LocalChange(dataset, row, column, value.messageValue())
+
+inline fun <reified E : Enum<E>> localChange(
+  dataset: String,
+  row: String,
+  column: String,
+  value: E?,
+) =
+  localChange(
+    dataset = dataset,
+    row = row,
+    column = column,
+    value = value?.let { Json.encodeToJsonElement(it).jsonPrimitive.content },
+  )
 
 fun tombstone(dataset: String, row: String): LocalChange =
   localChange(dataset, row, column = "tombstone", value = 1)
