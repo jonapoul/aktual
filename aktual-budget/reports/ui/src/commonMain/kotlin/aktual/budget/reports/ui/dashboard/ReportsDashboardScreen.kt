@@ -126,8 +126,10 @@ fun ReportsDashboardScreen(
         is DeleteSavedReport -> viewModel.deleteSavedReport(action.item)
         is Pin -> pin(action.id)
         is Unpin -> viewModel.unpinReport(action.id)
-        // Chart actions are only reachable from the report screen
-        is Chart -> Unit
+        // Chart and settings actions are only reachable from the report screen
+        is Chart,
+        is EditSettings,
+        SaveSettings -> Unit
         CreateNewReport -> viewModel.createReport()
         OpenSearch -> toSearch()
         is SelectPage -> viewModel.selectPage(action.id)

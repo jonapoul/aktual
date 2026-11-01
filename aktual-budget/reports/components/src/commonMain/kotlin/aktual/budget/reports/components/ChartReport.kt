@@ -36,7 +36,7 @@ fun ReportChart(
     is CashFlowData -> CashFlowChart(data, compact, modifier, includeHeader, zoom)
     is CrossoverData -> CrossoverChart(data, compact, modifier, includeHeader, zoom)
     is MonteCarloData -> MonteCarloChart(data, compact, modifier, includeHeader, zoom)
-    is NetWorthData -> NetWorthChart(data, compact, modifier, includeHeader, zoom, onAction)
+    is NetWorthData -> NetWorthChart(data, compact, modifier, includeHeader, zoom)
     is SankeyData -> SankeyChart(data, compact, modifier, includeHeader)
     is SummaryData -> SummaryChart(data, compact, onAction, modifier, includeHeader)
     is CalendarData -> CalendarChart(data, compact, onAction, modifier, includeHeader)

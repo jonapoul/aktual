@@ -1,9 +1,11 @@
 package aktual.budget.reports.ui.report
 
+import aktual.budget.reports.components.ChartTags
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.dashboard.NameDialog
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.InformationOutline
 import aktual.core.icons.Pencil1
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualDropdownMenu
@@ -23,9 +25,10 @@ import kotlinx.collections.immutable.persistentSetOf
 @Composable
 internal fun ReportMenu(
   name: String,
-  onRename: (String) -> Unit,
+  onRename: ((String) -> Unit)?,
   modifier: Modifier = Modifier,
   takenNames: ImmutableSet<String> = persistentSetOf(),
+  onShowInfo: (() -> Unit)? = null,
 ) {
   var expanded by remember { mutableStateOf(false) }
   var showRenameDialog by remember { mutableStateOf(false) }
@@ -39,18 +42,31 @@ internal fun ReportMenu(
     )
 
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-      AktualDropdownMenuItem(
-        text = Strings.reportsDashboardRename,
-        leadingIcon = AktualIcons.Pencil1,
-        onClick = {
-          expanded = false
-          showRenameDialog = true
-        },
-      )
+      if (onShowInfo != null) {
+        AktualDropdownMenuItem(
+          modifier = Modifier.testTag(ChartTags.ChartInfo),
+          text = Strings.reportsChartInfo,
+          leadingIcon = AktualIcons.InformationOutline,
+          onClick = {
+            expanded = false
+            onShowInfo()
+          },
+        )
+      }
+      if (onRename != null) {
+        AktualDropdownMenuItem(
+          text = Strings.reportsDashboardRename,
+          leadingIcon = AktualIcons.Pencil1,
+          onClick = {
+            expanded = false
+            showRenameDialog = true
+          },
+        )
+      }
     }
   }
 
-  if (showRenameDialog) {
+  if (showRenameDialog && onRename != null) {
     val nameTaken = Strings.reportsCustomEditorNameTaken
     NameDialog(
       title = Strings.reportsDashboardRenameReport,

@@ -2,6 +2,7 @@ package aktual.budget.reports.vm.report
 
 import aktual.budget.model.WidgetType
 import aktual.budget.reports.vm.ChartData
+import aktual.budget.reports.vm.ReportMeta
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import androidx.compose.runtime.Immutable
 
@@ -23,6 +24,12 @@ sealed interface ReportState {
   // And budget analysis reports, which have settings
   data object BudgetAnalysis : ReportState
 
-  data class Loaded(val type: WidgetType, val item: DashboardItem, val data: ChartData) :
-    ReportState
+  // The chart shows the draft, which follows the saved report until it's edited
+  data class Loaded(
+    val type: WidgetType,
+    val item: DashboardItem,
+    val data: ChartData,
+    val draft: ReportMeta = item.meta,
+    val hasChanges: Boolean = false,
+  ) : ReportState
 }

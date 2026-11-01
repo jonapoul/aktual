@@ -5,4 +5,5 @@ object ChartTags {
   const val ResetZoom = "ResetZoom"
   const val ChartInfo = "ChartInfo"
   const val ChartInfoSheet = "ChartInfoSheet"
+  const val ChartSettings = "ChartSettings"
 }

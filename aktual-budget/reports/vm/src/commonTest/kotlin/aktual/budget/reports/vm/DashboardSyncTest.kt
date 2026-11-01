@@ -122,20 +122,60 @@ class DashboardSyncTest {
   }
 
   @Test
-  fun `Setting the net worth mode keeps other values`() = runSyncTest { dao ->
+  fun `Setting meta writes only the changed settings`() = runSyncTest { dao ->
+    // The interval was changed elsewhere since the report was loaded
     dao.insert(
       WIDGET,
       page = PAGE_1,
       type = NetWorth,
       x = 0,
       y = 0,
-      meta = json("""{"name":"N","mode":"trend"}"""),
+      meta = json("""{"name":"Stored","mode":"trend","interval":"Yearly","extra":1}"""),
     )
+    val saved = NetWorthReportMeta(name = "Old", mode = Trend, interval = Monthly)
+    val draft =
+      saved.copy(
+        name = "Draft",
+        mode = Stacked,
+        timeFrame = TimeFrame(YearMonth(2025, 1), YearMonth(2025, 6), Static),
+      )
 
-    setNetWorthMode(WIDGET, Stacked)
+    setMeta(WIDGET, NetWorth, saved, draft)
 
     val meta = dao.observeByPage(PAGE_1).first().single().meta
-    assertThat(meta).isEqualTo(json("""{"name":"N","mode":"stacked"}"""))
+    assertThat(meta)
+      .isEqualTo(
+        json(
+          """
+          {
+            "name": "Stored",
+            "mode": "stacked",
+            "interval": "Yearly",
+            "extra": 1,
+            "timeFrame": {"start": "2025-01", "end": "2025-06", "mode": "static"}
+          }
+          """
+            .trimIndent(),
+        ),
+      )
+  }
+
+  @Test
+  fun `Setting meta removes cleared settings`() = runSyncTest { dao ->
+    dao.insert(
+      WIDGET,
+      page = PAGE_1,
+      type = NetWorth,
+      x = 0,
+      y = 0,
+      meta = json("""{"mode":"stacked","interval":"Weekly"}"""),
+    )
+    val saved = NetWorthReportMeta(mode = Stacked, interval = Weekly)
+
+    setMeta(WIDGET, NetWorth, saved, saved.copy(interval = null))
+
+    val meta = dao.observeByPage(PAGE_1).first().single().meta
+    assertThat(meta).isEqualTo(json("""{"mode":"stacked"}"""))
   }
 
   @Test
