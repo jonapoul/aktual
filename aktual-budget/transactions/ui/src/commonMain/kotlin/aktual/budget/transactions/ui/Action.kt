@@ -1,5 +1,6 @@
 package aktual.budget.transactions.ui
 
+import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.transactions.vm.AccountOption
@@ -26,6 +27,8 @@ internal sealed interface Action {
   data class ToggleSplit(val id: TransactionId) : Action
 
   data class OpenTransaction(val id: TransactionId) : Action
+
+  @JvmInline value class OpenTag(val id: TagId) : Action
 
   data object CreateTransaction : Action
 }

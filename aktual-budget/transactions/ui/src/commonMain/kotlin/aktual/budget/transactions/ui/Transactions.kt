@@ -192,6 +192,7 @@ private fun TransactionsFilled(
                 parts = parts,
                 onToggleSplit = onToggleSplit,
                 onOpen = onOpen,
+                onTagClick = { id -> onAction(Action.OpenTag(id)) },
               )
             Dense ->
               LedgerTableRow(
