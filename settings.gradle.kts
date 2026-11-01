@@ -112,12 +112,14 @@ atlas {
   pathTransforms { remove(":aktual-") }
 
   projectTypes {
-    hasPluginId(name = "ViewModel", pluginId = "aktual.module.viewmodel", color = "#914141") // pink
-    hasPluginId(name = "DI", pluginId = "aktual.module.di", color = "#a17103") // orange
-    hasPluginId(name = "UI", pluginId = "aktual.module.compose", color = "#6b6b01") // yellow
-    hasPluginId(name = "Kotlin", pluginId = "aktual.module.kotlin", color = "#160185") // indigo
-    pathContains(name = "App", pathContains = ":aktual-app:", color = "#7a0101") // red
-    hasPluginId(name = "JVM", pluginId = "aktual.module.jvm", color = "#2f015c") // violet
+    hasPluginId("ViewModel", "aktual.module.viewmodel", "#914141") // pink
+    hasPluginId("DI", "aktual.module.di", "#a17103") // orange
+    hasPluginId("UI", "aktual.module.compose", "#6b6b01") // yellow
+    hasPluginId("Android KMP", "aktual.module.kmp-android", "#03996f") // teal
+    hasPluginId("Kotlin", "aktual.module.kotlin", "#160185") // indigo
+    pathContains("App", ":aktual-app:", "#7a0101") // red
+    hasPluginId("Android", "aktual.module.android", "#0a8501") // violet
+    hasPluginId("JVM", "aktual.module.jvm", "#2f015c") // violet
     other(color = "#808080") // grey
   }
 
@@ -216,7 +218,9 @@ include(
   ":aktual-budget:transactions:ui",
   ":aktual-budget:transactions:vm",
   ":aktual-core",
+  ":aktual-core:android",
   ":aktual-core:icons",
+  ":aktual-core:jvm",
   ":aktual-core:l10n",
   ":aktual-core:logging",
   ":aktual-core:logging:impl",
@@ -239,6 +243,7 @@ include(
   ":aktual-prefs:ui",
   ":aktual-prefs:vm",
   ":aktual-test",
+  ":aktual-test:android",
   ":aktual-test:api",
   ":aktual-test:compose",
   ":aktual-test:smoke",

@@ -4,7 +4,10 @@ import blueprint.core.gitVersionDate
 import blueprint.core.gitVersionHash
 import blueprint.core.localProperties
 
-plugins { id("aktual.module.di") }
+plugins {
+  id("aktual.module.di")
+  id("aktual.module.kmp-android")
+}
 
 kotlin {
   commonMainDependencies {

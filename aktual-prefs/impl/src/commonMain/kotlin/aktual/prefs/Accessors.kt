@@ -3,7 +3,7 @@ package aktual.prefs
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 
-internal fun DataStore<Preferences>.boolean(
+fun DataStore<Preferences>.boolean(
   key: Preferences.Key<Boolean>,
   default: Boolean?,
 ): NullablePreference<Boolean> = SimpleNullablePreferenceImpl(this, key, default)
@@ -33,7 +33,7 @@ internal fun DataStore<Preferences>.long(
   default: Long?,
 ): NullablePreference<Long> = SimpleNullablePreferenceImpl(this, key, default)
 
-internal fun <Encoded : Any, Decoded : Any> DataStore<Preferences>.translated(
+fun <Encoded : Any, Decoded : Any> DataStore<Preferences>.translated(
   key: Preferences.Key<Encoded>,
   default: Decoded?,
   translator: Translator<Encoded, Decoded>,

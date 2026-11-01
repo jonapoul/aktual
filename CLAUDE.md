@@ -31,7 +31,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 - `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` - add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
 - Before using or adding an icon, check upstream Actual for an equivalent and prefer it over Material. See [aktual-core/icons](aktual-core/icons/CLAUDE.md).
 - In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.
-- Put tests in `commonTest` so they run on both targets. Use `androidHostTest` only for tests needing real Android behaviour (`Context`, `Bundle`, `Looper`, Compose UI), with `@RunWith(RobolectricTestRunner::class)`. Host tests run on plain JUnit otherwise, with Android stubs returning defaults (`isReturnDefaultValues`).
+- Put tests in `commonTest`. In modules with an android target they run on both targets. Use `androidHostTest` only for tests needing real Android behaviour (`Context`, `Bundle`, `Looper`, Compose UI), with `@RunWith(RobolectricTestRunner::class)`. Host tests run on plain JUnit otherwise, with Android stubs returning defaults (`isReturnDefaultValues`).
 - Wrap comments at 100 columns, counting the indent and the `// ` prefix (an 8-space indent leaves 89 characters of text). That is where `ktfmt --google-style` wraps them, not the `max_line_length` of 120 in `.editorconfig`. ktfmt doesn't reflow comments: it moves the overflow of each long line onto a new `//` line of its own, leaving stubs like `// Existing` mid-paragraph. When writing or editing a multi-line comment, rewrap the whole paragraph so every line fits, and check the result after ktfmt runs.
 
 ## Build commands
@@ -113,7 +113,7 @@ See [aktual-app:nav](aktual-app/nav/CLAUDE.md).
 ## Creating a new feature module
 
 1. Add `modules/<feature>/{domain,vm,ui}` and register in `settings.gradle.kts` with `module("<feature>:...")`.
-1. Apply the right module plugin per layer - `aktual.module.kotlin` (domain), `aktual.module.viewmodel` (vm), `aktual.module.compose` (ui). See [build-logic](gradle/build-logic/CLAUDE.md) for what each plugin sets up.
+1. Apply the right module plugin per layer - `aktual.module.kotlin` (domain), `aktual.module.viewmodel` (vm), `aktual.module.compose` (ui). `aktual.module.kotlin` and `aktual.module.di` are JVM-only; add `aktual.module.kmp-android` only if the module has android code or android tests, or exposes Compose types. See [build-logic](gradle/build-logic/CLAUDE.md) for what each plugin sets up.
 1. Dependencies: UI → VM (api) → Domain (api) → core models. Any module can depend on core UI / L10n / logging.
 1. Create a navigator + `NavKey` in `aktual-core:nav` (see `aktual-app/nav/CLAUDE.md`).
 1. Implement `NavEntryContributor` in the `:ui` module with `@ContributesIntoSet(AppScope::class)` (or `BudgetNavEntryContributor` with `@ContributesIntoSet(BudgetScope::class)` for budget screens).
@@ -126,6 +126,10 @@ Inside `kotlin { ... }`: `commonMainDependencies`, `desktopMainDependencies`, `a
 Keep each dependency block sorted: all `api` lines before `implementation` lines, and within each group `libs.*` before `project(...)`, alphabetically. CI fails on unsorted blocks (`checkSortDependencies`); `./gradlew sortDependencies` fixes them.
 
 ## Multiplatform
+
+Modules applying `aktual.module.kotlin` or `aktual.module.di` only target the JVM (`desktop`). `aktual.module.kmp-android` adds the android target on top, and `aktual.module.compose` / `aktual.module.viewmodel` include it. Other modules depending on a JVM-only module from their android target works fine.
+
+A JVM-only module's code also ships in the android app, so it must not contain desktop-only bindings. Platform implementations (`@ContributesBinding` classes needing `Context`, desktop file paths, window state) live in the non-KMP `aktual-core:android` (`aktual.module.android`) and `aktual-core:jvm` (`aktual.module.jvm`), which only the matching app module depends on. Android-only test helpers live in `aktual-test:android`.
 
 Default new code to `commonMain`. Code that only needs JDK APIs (`java.text`, `java.math`, ...) goes in `jvmSharedMain`, which both targets compile. Reach for `androidMain` / `desktopMain` only when truly platform-specific.
 

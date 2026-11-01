@@ -1,4 +1,6 @@
-plugins { id("aktual.module.kotlin") }
+plugins {
+  id("aktual.module.kmp-android")
+}
 
 kotlin {
   commonMainDependencies {

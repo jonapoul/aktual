@@ -84,9 +84,11 @@ gradlePlugin {
     "aktual.convention.style"(impl = "aktual.gradle.ConventionStyle")
     "aktual.convention.test"(impl = "aktual.gradle.ConventionTest")
 
+    "aktual.module.android"(impl = "aktual.gradle.ModuleAndroidLibrary")
     "aktual.module.compose"(impl = "aktual.gradle.ModuleCompose")
     "aktual.module.di"(impl = "aktual.gradle.ModuleDi")
     "aktual.module.jvm"(impl = "aktual.gradle.ModuleJvm")
+    "aktual.module.kmp-android"(impl = "aktual.gradle.ModuleKmpAndroid")
     "aktual.module.kotlin"(impl = "aktual.gradle.ModuleKotlin")
     "aktual.module.viewmodel"(impl = "aktual.gradle.ModuleViewModel")
   }

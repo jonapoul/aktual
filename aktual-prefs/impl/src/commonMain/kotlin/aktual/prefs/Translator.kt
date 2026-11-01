@@ -2,14 +2,14 @@ package aktual.prefs
 
 import alakazam.kotlin.SerializableByString
 
-internal interface Translator<Encoded, Decoded> {
+interface Translator<Encoded, Decoded> {
   fun encode(value: Decoded): Encoded
 
   // null falls back to the preference's default
   fun decode(value: Encoded): Decoded?
 }
 
-internal inline fun <reified E : Enum<E>> enumOrdinalTranslator() =
+inline fun <reified E : Enum<E>> enumOrdinalTranslator() =
   object : Translator<Int, E> {
     override fun encode(value: E): Int = value.ordinal
 

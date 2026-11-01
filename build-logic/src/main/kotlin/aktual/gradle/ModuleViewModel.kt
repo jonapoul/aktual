@@ -12,6 +12,7 @@ class ModuleViewModel : ProjectPlugin {
   override fun Project.applyTo() {
     with(pluginManager) {
       apply(ModuleKotlin::class)
+      apply(ModuleKmpAndroid::class)
       apply(ConventionCompose::class)
     }
 

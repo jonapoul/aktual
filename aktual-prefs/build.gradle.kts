@@ -1,4 +1,6 @@
-plugins { id("aktual.module.kotlin") }
+plugins {
+  id("aktual.module.kotlin")
+}
 
 kotlin {
   commonMainDependencies {
@@ -7,10 +9,5 @@ kotlin {
     api(project(":aktual-budget:model"))
     api(project(":aktual-core"))
     compileOnly(libs.androidx.compose.annotation)
-  }
-
-  desktopMainDependencies {
-    api(libs.compose.ui)
-    api(libs.compose.uiUnit)
   }
 }
