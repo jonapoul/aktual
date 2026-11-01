@@ -813,7 +813,7 @@ private fun PreviewScheduleSheet(
       selected = selected,
       options = options,
       completed = completed,
-      query = rememberTextFieldState(),
+      query = rememberTextFieldState(query),
       statuses = statuses,
       onToggleStatus = {},
       onSelect = {},
@@ -826,6 +826,7 @@ private data class ScheduleSheetPreview(
   val selected: ScheduleId? = null,
   val statuses: ImmutableSet<ScheduleStatus> = persistentSetOf(),
   val completed: ImmutableList<Schedule> = PREVIEW_COMPLETED,
+  val query: String = "",
 )
 
 private class ScheduleSheetProvider :
@@ -836,6 +837,7 @@ private class ScheduleSheetProvider :
       PREVIEW_SCHEDULES,
       statuses = persistentSetOf(ScheduleStatus.Completed),
     ),
+    ScheduleSheetPreview(PREVIEW_SCHEDULES, query = "Insurance"),
     ScheduleSheetPreview(persistentListOf(), completed = persistentListOf()),
   )
 
