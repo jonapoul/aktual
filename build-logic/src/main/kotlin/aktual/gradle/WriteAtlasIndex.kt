@@ -1,11 +1,16 @@
 package aktual.gradle
 
-import java.io.File
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.artifacts.component.ComponentArtifactIdentifier
+import org.gradle.api.artifacts.component.ProjectComponentIdentifier
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.tasks.Internal
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.work.DisableCachingByDefault
 
@@ -14,27 +19,28 @@ abstract class WriteAtlasIndex : DefaultTask() {
   init {
     group = "atlas"
     description = "Writes an HTML page linking to every module's generated chart"
-    doNotTrackState("Charts are found on disk at execution time")
+    doNotTrackState("Always prints the page's URL")
   }
 
-  @get:Internal abstract val rootDir: DirectoryProperty
+  @get:Input abstract val chartIds: ListProperty<ComponentArtifactIdentifier>
+
+  @get:InputFiles
+  @get:PathSensitive(PathSensitivity.ABSOLUTE)
+  abstract val chartFiles: ConfigurableFileCollection
 
   @get:OutputFile abstract val outputFile: RegularFileProperty
 
   @TaskAction
   fun run() {
-    val root = rootDir.get().asFile
     val charts =
-      root
-        .walkTopDown()
-        .onEnter { it == root || it.name !in SKIPPED_DIRS }
-        .mapNotNull { dir -> dir.resolve(CHART_PATH).takeIf(File::isFile) }
-        .sortedBy { it.modulePath(root) }
-        .toList()
+      chartIds
+        .get()
+        .map { (it.componentIdentifier as ProjectComponentIdentifier).projectPath }
+        .zip(chartFiles.files)
+        .sortedBy { (path, _) -> path }
 
     val json =
-      charts.joinToString(separator = ",\n", prefix = "[\n", postfix = "\n]") { chart ->
-        val path = chart.modulePath(root)
+      charts.joinToString(separator = ",\n", prefix = "[\n", postfix = "\n]") { (path, chart) ->
         val group = path.split(':').getOrElse(1) { path }
         val fields =
           listOf(
@@ -57,14 +63,7 @@ abstract class WriteAtlasIndex : DefaultTask() {
     logger.lifecycle("Atlas index: ${output.toPath().toUri()}")
   }
 
-  private fun File.modulePath(root: File): String {
-    val moduleDir = parentFile.parentFile.parentFile
-    return ":" + moduleDir.relativeTo(root).invariantSeparatorsPath.replace('/', ':')
-  }
-
   private companion object {
-    const val CHART_PATH = "build/atlas/chart.svg"
     const val TEMPLATE = "/atlas-index.html"
-    val SKIPPED_DIRS = setOf("build", "src", ".git", ".gradle", ".idea", "node_modules")
   }
 }
