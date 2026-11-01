@@ -16,7 +16,6 @@ import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.localChange
-import aktual.budget.model.serialName
 import aktual.budget.model.tombstone
 import aktual.budget.rules.vm.EntityListFetcher
 import aktual.budget.rules.vm.NameFetcher
@@ -256,7 +255,7 @@ internal constructor(
     return with(rule) {
       listOf(
         localChange(RULES, row, "id", row),
-        localChange(RULES, row, "stage", stage?.serialName()),
+        localChange(RULES, row, "stage", stage),
         localChange(
           RULES,
           row,
@@ -265,7 +264,7 @@ internal constructor(
         ),
         localChange(RULES, row, "actions", DbJson.encodeToString(actions.orEmpty())),
         localChange(RULES, row, "tombstone", tombstone),
-        localChange(RULES, row, "conditions_op", conditions_op?.serialName()),
+        localChange(RULES, row, "conditions_op", conditions_op),
       )
     }
   }

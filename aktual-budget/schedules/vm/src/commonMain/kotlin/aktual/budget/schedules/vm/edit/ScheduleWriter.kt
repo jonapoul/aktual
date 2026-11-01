@@ -16,7 +16,6 @@ import aktual.budget.model.ScheduleNextDateId
 import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
 import aktual.budget.model.nextDate
-import aktual.budget.model.serialName
 import aktual.budget.model.tombstone
 import aktual.core.Calendar
 import aktual.core.UuidGenerator
@@ -64,7 +63,7 @@ internal class ScheduleWriter(
       +LocalChange(RULES, rule, "stage", Null)
       +localChange(RULES, rule, "conditions", conditions.encode())
       +localChange(RULES, rule, "actions", actions.encode())
-      +localChange(RULES, rule, "conditions_op", ConditionOp.And.serialName())
+      +localChange(RULES, rule, "conditions_op", ConditionOp.And)
       +localChange(RULES, rule, TOMBSTONE, false)
 
       +localChange(SCHEDULES_NEXT_DATE, next, "schedule_id", schedule)

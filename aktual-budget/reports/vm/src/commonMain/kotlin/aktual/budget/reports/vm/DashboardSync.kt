@@ -11,7 +11,6 @@ import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.model.localChange
-import aktual.budget.model.serialName
 import aktual.budget.model.tombstone
 import dev.zacsweers.metro.Inject
 import kotlinx.serialization.builtins.MapSerializer
@@ -44,7 +43,7 @@ internal class DashboardSync(
   ) {
     sync.syncChanges(
       localChange(DASHBOARD, id.value, "id", id.value),
-      localChange(DASHBOARD, id.value, "type", type.serialName()),
+      localChange(DASHBOARD, id.value, "type", type),
       localChange(DASHBOARD, id.value, "width", DashboardDao.DEFAULT_WIDTH),
       localChange(DASHBOARD, id.value, "height", DashboardDao.DEFAULT_HEIGHT),
       localChange(DASHBOARD, id.value, "x", x),
@@ -96,10 +95,13 @@ internal class DashboardSync(
   }
 
   suspend fun setNetWorthMode(id: WidgetId, mode: NetWorthMode) =
-    patchMeta(id, "mode" to JsonPrimitive(mode.serialName()))
+    patchMeta(id, "mode" to DbJson.encodeToJsonElement(NetWorthMode.serializer(), mode))
 
   suspend fun setSummaryType(id: WidgetId, type: SummaryChartType) =
-    patchSummaryContent(id, "type" to JsonPrimitive(type.serialName))
+    patchSummaryContent(
+      id,
+      "type" to DbJson.encodeToJsonElement(SummaryChartType.serializer(), type),
+    )
 
   suspend fun setSummaryAllTimeDivisor(id: WidgetId, allTime: Boolean) =
     patchSummaryContent(id, "divisorAllTimeDateRange" to JsonPrimitive(allTime))
@@ -197,9 +199,6 @@ internal class DashboardSync(
       x + DashboardDao.DEFAULT_WIDTH to y
     }
   }
-
-  private fun WidgetType.serialName(): String =
-    WidgetType.serializer().descriptor.getElementName(ordinal)
 
   private companion object {
     const val CONTENT = "content"

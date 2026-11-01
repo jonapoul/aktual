@@ -409,7 +409,7 @@ internal class ChartDataLoader(
         val end = range.endInclusive.lastDay
         val amounts = customReports.observeTransactions(start, end, divisor = 1L)
         val divisorAmounts =
-          if (content.chartType == Percentage) {
+          if (content.type == Percentage) {
             val divisorFilter =
               TransactionFilter.compile(content.divisorConditions.orEmpty(), content.divisorOp)
             val allTime = content.divisorAllTimeDateRange == true

@@ -8,6 +8,7 @@ import aktual.budget.model.ConditionSet
 import aktual.budget.model.WidgetType
 import aktual.core.model.Percent
 import androidx.compose.runtime.Immutable
+import fallback.serializer.Fallback
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.ImmutableSet
@@ -18,6 +19,8 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Immutable sealed interface ChartData
 
@@ -258,12 +261,13 @@ interface DateRange {
   val end: LocalDate?
 }
 
+@Serializable
 enum class SummaryChartType {
-  Sum,
-  AveragePerMonth,
-  AveragePerYear,
-  AveragePerTransaction,
-  Percentage,
+  @SerialName("sum") @Fallback Sum,
+  @SerialName("avgPerMonth") AveragePerMonth,
+  @SerialName("avgPerYear") AveragePerYear,
+  @SerialName("avgPerTransact") AveragePerTransaction,
+  @SerialName("percentage") Percentage,
 }
 
 data class CalendarData(
