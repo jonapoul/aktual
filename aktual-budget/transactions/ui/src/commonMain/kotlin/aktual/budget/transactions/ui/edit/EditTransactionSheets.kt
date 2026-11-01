@@ -394,8 +394,11 @@ private fun AccountSheet(
   }
 
 private fun ImmutableList<EntityOption<AccountId>>.matching(query: String) =
-  if (query.isEmpty()) this
-  else filter { it.name.contains(query, ignoreCase = true) }.toImmutableList()
+  if (query.isEmpty()) {
+    this
+  } else {
+    filter { it.name.contains(query, ignoreCase = true) }.toImmutableList()
+  }
 
 private fun LazyListScope.accountItems(
   accounts: ImmutableList<EntityOption<AccountId>>,
