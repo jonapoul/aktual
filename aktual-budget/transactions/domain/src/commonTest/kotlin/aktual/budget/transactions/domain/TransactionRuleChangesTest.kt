@@ -80,9 +80,9 @@ class TransactionRuleChangesTest {
       .isEqualTo(
         listOf(
           TransactionField.Amount,
-          TransactionField.Category,
-          TransactionField.Notes,
-          TransactionField.Cleared,
+          Category,
+          Notes,
+          Cleared,
         ),
       )
     assertThat(TransactionField.entries.filter(filled::isEmpty)).isEqualTo(listOf(Notes))

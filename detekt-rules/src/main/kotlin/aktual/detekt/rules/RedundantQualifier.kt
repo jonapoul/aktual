@@ -84,6 +84,8 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
  * - properties in the companion of the expected type: `clickable(role = Role.Button)`
  * - two or more arguments of one type that decide a generic type, as a type argument would give
  *   them an expected type: `listOf(Role.Admin, Role.Basic)` can be `listOf<Role>(Admin, Basic)`
+ * - arguments that decide a generic type the call's own expected type already fixes:
+ *   `takesRoles(setOf(Role.Admin))` against `takesRoles(roles: Set<Role>)`
  *
  * Not reported, because the plain name wouldn't compile or would mean something else:
  * - overloads that disagree on the parameter type: `YearMonth(2025, Month.JANUARY)`
@@ -165,6 +167,8 @@ internal class RedundantQualifier(config: Config) :
           signature.returnType.isClass(owner)
       }
       if (!decided) return@analyze
+      // Each name is reported on its own instead
+      if (typeFromCallContext(expression, qualified.first()) != null) return@analyze
 
       val replacement =
         "${callee.text}<$receiver>(${names.joinToString { it.getReferencedName() }})"
@@ -280,9 +284,48 @@ internal class RedundantQualifier(config: Config) :
   }
 
   private fun KaSession.argumentType(argument: KtValueArgument, expression: KtExpression): KaType? {
-    val call = callOf(argument)
-    val inferred = call != null && isInferred(call, expression) { type -> type }
-    return if (inferred) null else expression.expectedType
+    val call = callOf(argument) ?: return expression.expectedType
+    return if (isInferred(call, expression) { type -> type }) {
+      typeFromCallContext(call, expression)
+    } else {
+      expression.expectedType
+    }
+  }
+
+  // `takesRoles(setOf(Role.Admin))` against `takesRoles(roles: Set<Role>)` gets T from the type
+  // the call itself is expected to have
+  private fun KaSession.typeFromCallContext(
+    call: KtCallExpression,
+    argument: KtExpression,
+  ): KaType? {
+    if (call.typeArgumentList != null) return null
+    val resolved = call.resolveToCall()?.successfulFunctionCallOrNull() ?: return null
+    val declared = resolved.valueArgumentMapping[argument]?.symbol?.returnType
+    if (declared !is KaTypeParameterType) return null
+    val parent = call.parent
+    val whole =
+      if (parent is KtDotQualifiedExpression && parent.selectorExpression == call) parent else call
+    val outer = expectedType(whole) ?: return null
+    return typeArgumentFor(resolved.symbol.returnType, declared.symbol, outer)
+  }
+
+  // The type `outer` gives the parameter, like `Role` for T when `Set<T>` is expected as
+  // `Set<Role>`
+  private fun KaSession.typeArgumentFor(
+    declared: KaType,
+    parameter: KaTypeParameterSymbol,
+    outer: KaType,
+  ): KaType? {
+    if (declared is KaTypeParameterType) return outer.takeIf { declared.symbol == parameter }
+    val outerClass =
+      ((outer as? KaFlexibleType)?.lowerBound ?: outer) as? KaClassType ?: return null
+    val match =
+      (sequenceOf(declared) + declared.allSupertypes).filterIsInstance<KaClassType>().firstOrNull {
+        it.symbol == outerClass.symbol
+      } ?: return null
+    val index =
+      match.typeArguments.indexOfFirst { (it.type as? KaTypeParameterType)?.symbol == parameter }
+    return outerClass.typeArguments.getOrNull(index)?.type
   }
 
   // `prefs[Key.Name]` against `operator fun <T> get(key: Key<T>)` decides T from the index

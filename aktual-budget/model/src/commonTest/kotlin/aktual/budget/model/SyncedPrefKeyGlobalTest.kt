@@ -16,12 +16,12 @@ class SyncedPrefKeyGlobalTest {
       burstValues(
         SyncedPrefKey.Global.BudgetType,
         SyncedPrefKey.Global.DateFormat,
-        SyncedPrefKey.Global.FirstDayOfWeekIdx,
-        SyncedPrefKey.Global.HideFraction,
-        SyncedPrefKey.Global.IsPrivacyEnabled,
-        SyncedPrefKey.Global.LearnCategories,
+        FirstDayOfWeekIdx,
+        HideFraction,
+        IsPrivacyEnabled,
+        LearnCategories,
         SyncedPrefKey.Global.NumberFormat,
-        SyncedPrefKey.Global.UpcomingScheduledTransactionLength,
+        UpcomingScheduledTransactionLength,
       ),
   ) {
     assertThat(SyncedPrefKey.decode(key.key)).isEqualTo(key)

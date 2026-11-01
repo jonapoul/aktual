@@ -453,7 +453,7 @@ internal constructor(
     set(key, this[key] != true)
 
   private inline fun <T> Iterable<T>.sumOf(selector: (T) -> Amount): Amount =
-    fold(Amount.Zero) { sum, item -> sum + selector(item) }
+    fold(Zero) { sum, item -> sum + selector(item) }
 
   private companion object {
     const val MAX_MONTH_COUNT = 4

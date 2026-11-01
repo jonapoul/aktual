@@ -296,4 +296,4 @@ private inline fun List<CategoryMonth>.filterBy(
 ): List<CategoryMonth> = filterIndexed { index, _ -> predicate(categories[index]) }
 
 private inline fun <T> Iterable<T>.sumOf(selector: (T) -> Amount): Amount =
-  fold(Amount.Zero) { sum, item -> sum + selector(item) }
+  fold(Zero) { sum, item -> sum + selector(item) }

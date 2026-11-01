@@ -835,10 +835,10 @@ private data class ScheduleSheetPreview(
 private class ScheduleSheetProvider :
   ColorParamsProvider<ScheduleSheetPreview>(
     ScheduleSheetPreview(PREVIEW_SCHEDULES, selected = PREVIEW_SCHEDULES[1].id),
-    ScheduleSheetPreview(PREVIEW_SCHEDULES, statuses = persistentSetOf(ScheduleStatus.Due)),
+    ScheduleSheetPreview(PREVIEW_SCHEDULES, statuses = persistentSetOf(Due)),
     ScheduleSheetPreview(
       PREVIEW_SCHEDULES,
-      statuses = persistentSetOf(ScheduleStatus.Completed),
+      statuses = persistentSetOf(Completed),
     ),
     ScheduleSheetPreview(PREVIEW_SCHEDULES, query = "Insurance"),
     ScheduleSheetPreview(persistentListOf(), completed = persistentListOf()),

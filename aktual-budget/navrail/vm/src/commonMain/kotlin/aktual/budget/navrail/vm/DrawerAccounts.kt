@@ -75,6 +75,6 @@ private fun List<GetAllWithBalances>.toSection(
   }
   return DrawerAccountSection(
     accounts = accounts.toImmutableList(),
-    total = accounts.fold(Amount.Zero) { sum, account -> sum + account.balance },
+    total = accounts.fold(Zero) { sum, account -> sum + account.balance },
   )
 }

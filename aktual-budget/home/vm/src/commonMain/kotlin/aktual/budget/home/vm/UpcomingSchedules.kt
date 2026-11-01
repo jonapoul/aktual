@@ -12,5 +12,5 @@ internal data class UpcomingSchedules(
   val schedules: ImmutableList<Schedule>,
 ) {
   val total: Amount
-    get() = schedules.fold(Amount.Zero) { sum, schedule -> sum + schedule.amount }
+    get() = schedules.fold(Zero) { sum, schedule -> sum + schedule.amount }
 }
