@@ -31,6 +31,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
+import aktual.core.ui.BottomSheetNoResults
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParams
@@ -378,6 +379,8 @@ private fun AccountSheet(
 
     val listState = rememberLazyListState()
     LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
+      if (name.isNotEmpty() && matches.isEmpty() && closedMatches.isEmpty()) noResults()
+
       accountItems(matches, selected, isClosed = false, onSelect, onDismiss)
 
       if (closedMatches.isNotEmpty()) {
@@ -496,6 +499,8 @@ private fun CategorySheet(
 
     val listState = rememberLazyListState()
     LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
+      if (name.isNotEmpty() && matches.isEmpty()) noResults()
+
       if (name.isEmpty()) {
         item(key = NONE_KEY) {
           BottomSheetListItem(
@@ -543,6 +548,9 @@ private fun CategorySheet(
       }
     }
   }
+
+private fun LazyListScope.noResults() =
+  item(key = NO_RESULTS_KEY) { BottomSheetNoResults(Modifier.animateItem()) }
 
 @Composable private fun hiddenName(name: String) = Strings.transactionCategoryHidden(name)
 
@@ -629,6 +637,8 @@ private fun ScheduleSheetContent(
 
     if (all.isEmpty()) {
       item { GroupHeader(Strings.transactionScheduleEmpty) }
+    } else if (matches.isEmpty() && (name.isNotEmpty() || statuses.isNotEmpty())) {
+      noResults()
     }
 
     items(matches, key = { it.id.toString() }) { schedule ->
@@ -791,6 +801,7 @@ private val BalanceSize = textSizes.medium
 private val SearchPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
 private const val NONE_KEY = "none"
 private const val CLOSED_KEY = "closed"
+private const val NO_RESULTS_KEY = "no-results"
 
 @Preview
 @Composable
