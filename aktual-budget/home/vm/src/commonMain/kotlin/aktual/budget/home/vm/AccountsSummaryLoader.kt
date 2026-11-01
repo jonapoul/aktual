@@ -38,7 +38,7 @@ private fun List<GetAllWithBalances>.toSection(
   newTransactions: Map<AccountId, Int>,
 ): AccountSection {
   val accounts = map { it.toAccountBalance(newTransactions) }.toImmutableList()
-  return AccountSection(accounts, total = accounts.fold(Amount.Zero) { sum, a -> sum + a.balance })
+  return AccountSection(accounts, total = accounts.fold(Zero) { sum, a -> sum + a.balance })
 }
 
 private fun GetAllWithBalances.toAccountBalance(newTransactions: Map<AccountId, Int>) =

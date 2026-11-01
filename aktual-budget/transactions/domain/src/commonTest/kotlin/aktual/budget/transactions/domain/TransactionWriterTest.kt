@@ -9,7 +9,6 @@ import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
-import aktual.budget.model.BankSyncStatus
 import aktual.budget.model.CategoryId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.PayeeId
@@ -593,7 +592,7 @@ internal class TransactionWriterTest {
           id = ACCOUNT,
           balanceCurrent = Patch.To(Amount(12_345)),
           lastSync = Patch.To(NOW),
-          bankSyncStatus = Patch.To(BankSyncStatus.Ok),
+          bankSyncStatus = Patch.To(Ok),
         ),
       )
     }
@@ -647,7 +646,7 @@ internal class TransactionWriterTest {
       val id = insert(NewTransaction(account = ACCOUNT, date = DATE, payee = payee))
       update(TransactionUpdate(id = id, amount = Amount(100)))
       insertStartingBalance(ACCOUNT, Amount(1000), DATE)
-      updateAccount(AccountUpdate(id = ACCOUNT, bankSyncStatus = Patch.To(BankSyncStatus.Ok)))
+      updateAccount(AccountUpdate(id = ACCOUNT, bankSyncStatus = Patch.To(Ok)))
     }
 
     assertThat(syncCalls.size).isEqualTo(1)

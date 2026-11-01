@@ -553,6 +553,30 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
   fun `reports a companion property as a fixed generic argument`() =
     assertReported("fun foo() = takesCountKey(Key.Count)", "Key.Count" to "Count")
 
+  @Test
+  fun `reports enum entry in a generic argument fixed by the parameter type`() =
+    assertReported("fun foo() = takesRoles(setOf(Role.Admin))", "Role.Admin" to "Admin")
+
+  @Test
+  fun `reports enum entry in a generic argument fixed by a supertype`() =
+    assertReported("fun foo() = takesRoles(mutableSetOf(Role.Admin))", "Role.Admin" to "Admin")
+
+  @Test
+  fun `reports enum entry in a generic argument fixed by the property type`() =
+    assertReported("val roles: List<Role> = listOf(Role.Admin)", "Role.Admin" to "Admin")
+
+  @Test
+  fun `reports each enum entry in a collection fixed by the parameter type`() =
+    assertReported(
+      "fun foo() = takesRoles(setOf(Role.Admin, Role.Basic))",
+      "Role.Admin" to "Admin",
+      "Role.Basic" to "Basic",
+    )
+
+  @Test
+  fun `does not report a generic argument widened by the expected type`() =
+    assertNotReported("val roles: List<Any> = listOf(Role.Admin)", "Role.Admin" to "Admin")
+
   private fun assertReported(@Language("kotlin") code: String, vararg fixes: Pair<String, String>) {
     val source = PREAMBLE + "\n" + code.trimIndent()
     val expected = fixes.map { (from, to) -> "'$from' can be written as '$to'" }
@@ -696,6 +720,8 @@ internal class RedundantQualifierTest(private val env: KotlinEnvironmentContaine
       }
 
       fun takesCountKey(key: Key<Int>) = key
+
+      fun takesRoles(roles: Set<Role>) = roles
       """
         .trimIndent()
   }

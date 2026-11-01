@@ -25,11 +25,11 @@ internal val MATH_FUNCTIONS: Map<String, FormulaFunction> =
     "PRODUCT" to aggregate(::strictlyNumbers) { NumberValue(it.fold(1.0) { a, b -> a * b }) },
     "MIN" to
       aggregate(::strictlyNumbers) {
-        NumberValue(zeroForInfinite(it.fold(Double.POSITIVE_INFINITY, ::min)))
+        NumberValue(zeroForInfinite(it.fold(POSITIVE_INFINITY, ::min)))
       },
     "MAX" to
       aggregate(::strictlyNumbers) {
-        NumberValue(zeroForInfinite(it.fold(Double.NEGATIVE_INFINITY, ::max)))
+        NumberValue(zeroForInfinite(it.fold(NEGATIVE_INFINITY, ::max)))
       },
     "COUNT" to
       aggregate({ NumberValue(if (it is NumberValue) 1.0 else 0.0) }) { NumberValue(it.sum()) },
@@ -43,11 +43,11 @@ internal val MATH_FUNCTIONS: Map<String, FormulaFunction> =
       },
     "MINA" to
       aggregate(::numbersBooleans) {
-        NumberValue(zeroForInfinite(it.fold(Double.POSITIVE_INFINITY, ::min)))
+        NumberValue(zeroForInfinite(it.fold(POSITIVE_INFINITY, ::min)))
       },
     "MAXA" to
       aggregate(::numbersBooleans) {
-        NumberValue(zeroForInfinite(it.fold(Double.NEGATIVE_INFINITY, ::max)))
+        NumberValue(zeroForInfinite(it.fold(NEGATIVE_INFINITY, ::max)))
       },
     "AVERAGEA" to
       aggregate(::numbersBooleans) {

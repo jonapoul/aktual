@@ -58,11 +58,10 @@ data class BudgetAnalysisData(
   val showBalance: Boolean,
   val balanceOnly: Boolean,
 ) : ChartData {
-  val totalBudgeted: Amount =
-    items.values.fold(Amount.Zero) { total, datum -> total + datum.budgeted }
-  val totalSpent: Amount = items.values.fold(Amount.Zero) { total, datum -> total + datum.spent }
+  val totalBudgeted: Amount = items.values.fold(Zero) { total, datum -> total + datum.budgeted }
+  val totalSpent: Amount = items.values.fold(Zero) { total, datum -> total + datum.spent }
   val totalOverspendingAdjustment: Amount =
-    items.values.fold(Amount.Zero) { total, datum -> total + datum.overspendingAdjustment }
+    items.values.fold(Zero) { total, datum -> total + datum.overspendingAdjustment }
   val endingBalance: Amount = items.values.lastOrNull()?.balance ?: Zero
 }
 

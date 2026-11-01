@@ -46,9 +46,9 @@ private fun group(
     name = name,
     isHidden = isHidden,
     isCollapsed = isCollapsed,
-    budgeted = categories.fold(Amount.Zero) { sum, c -> sum + c.budgeted },
-    spent = categories.fold(Amount.Zero) { sum, c -> sum + c.spent },
-    balance = categories.fold(Amount.Zero) { sum, c -> sum + c.balance },
+    budgeted = categories.fold(Zero) { sum, c -> sum + c.budgeted },
+    spent = categories.fold(Zero) { sum, c -> sum + c.spent },
+    balance = categories.fold(Zero) { sum, c -> sum + c.balance },
     categories = categories.toList().toImmutableList(),
   )
 

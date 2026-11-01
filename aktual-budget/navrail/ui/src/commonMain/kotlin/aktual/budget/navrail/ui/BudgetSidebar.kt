@@ -574,7 +574,7 @@ private val PREVIEW_ACCOUNTS =
 private fun section(vararg accounts: DrawerAccount) =
   DrawerAccountSection(
     accounts = persistentListOf(*accounts),
-    total = accounts.fold(Amount.Zero) { sum, account -> sum + account.balance },
+    total = accounts.fold(Zero) { sum, account -> sum + account.balance },
   )
 
 private fun account(
