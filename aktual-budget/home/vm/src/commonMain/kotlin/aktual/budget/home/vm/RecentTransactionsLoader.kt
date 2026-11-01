@@ -17,8 +17,7 @@ internal class RecentTransactionsLoader(private val transactionDao: TransactionD
       .observeChanges()
       .mapLatest {
         transactionDao
-          .getPaged(limit = limit.toLong(), offset = 0)
-          .rows
+          .getRecent(limit = limit.toLong())
           .map { it.toRecentTransaction() }
           .toImmutableList()
       }

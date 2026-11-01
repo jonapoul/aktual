@@ -61,6 +61,26 @@ class HomeViewModelRecentTest {
     viewModel.state.test { assertThat(awaitRecentIds()).containsExactly("parent") }
   }
 
+  @Test
+  fun `A transfer only shows its outgoing side`() = runDatabaseTest { scope ->
+    val dao = TransactionDao(this)
+    val date = LocalDate(2026, 4, 1)
+    dao.insert("in", "b", null, "p", date, amount = 50.0, transferId = "out")
+    dao.insert("out", "a", null, "p", date, amount = -50.0, transferId = "in")
+    val viewModel = createHomeViewModel(scope, CALENDAR)
+
+    viewModel.state.test { assertThat(awaitRecentIds()).containsExactly("out") }
+  }
+
+  @Test
+  fun `A transfer whose other side is missing still shows`() = runDatabaseTest { scope ->
+    TransactionDao(this)
+      .insert("in", "b", null, "p", LocalDate(2026, 4, 1), amount = 50.0, transferId = "out")
+    val viewModel = createHomeViewModel(scope, CALENDAR)
+
+    viewModel.state.test { assertThat(awaitRecentIds()).containsExactly("in") }
+  }
+
   private suspend fun ReceiveTurbine<HomeState>.awaitRecent() = awaitSettled().recent
 
   private suspend fun ReceiveTurbine<HomeState>.awaitRecentIds() =

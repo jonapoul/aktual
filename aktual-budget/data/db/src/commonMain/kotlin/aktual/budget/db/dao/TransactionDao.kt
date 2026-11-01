@@ -143,6 +143,10 @@ class TransactionDao(database: BudgetDatabase) {
     getUncategorisedPaged(account, limit, offset, ::transactionRow).awaitAsList()
   }
 
+  suspend fun getRecent(limit: Long): List<TransactionRow> = queries.withResult {
+    getRecent(limit, ::transactionRow).awaitAsList()
+  }
+
   // A category's transactions are a subset of their accounts, so the page has no balance
   suspend fun getByCategoryPaged(
     category: CategoryId,
