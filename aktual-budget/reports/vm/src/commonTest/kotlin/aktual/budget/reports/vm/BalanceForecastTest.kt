@@ -14,6 +14,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month.FEBRUARY
@@ -66,7 +67,7 @@ class BalanceForecastTest {
     val occurrences = config.occurrences(until = LocalDate(2026, 12, 31))
     assertThat(occurrences.dates)
       .containsExactly(LocalDate(2026, 1, 5), LocalDate(2026, 1, 19), LocalDate(2026, 2, 2))
-    assertThat(occurrences.exhausted).isEqualTo(true)
+    assertThat(occurrences.exhausted).isTrue()
   }
 
   @Test

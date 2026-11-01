@@ -32,6 +32,8 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.TestScope
@@ -286,13 +288,13 @@ class ListPayeesViewModelTest {
 
     viewModel.state.test {
       assertThatNextEmissionIsEqualTo(Loading)
-      assertThat((awaitItem() as Success).isLearningEnabled).isEqualTo(true)
+      assertThat((awaitItem() as Success).isLearningEnabled).isTrue()
 
       // when
       preferences[LearnCategories] = "false"
 
       // then
-      assertThat((awaitItem() as Success).isLearningEnabled).isEqualTo(false)
+      assertThat((awaitItem() as Success).isLearningEnabled).isFalse()
     }
   }
 
