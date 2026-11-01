@@ -18,7 +18,7 @@ Run the correct test task(s) for a Gradle module in this KMP project.
 Check which test source set directories exist for the module under `src/`:
 
 ```
-src/commonTest/     -> shared tests (run by both androidHostTest and desktopTest tasks)
+src/commonTest/     -> shared tests (run by desktopTest, and by testAndroidHostTest if the module has an android target)
 src/androidHostTest/ -> Android-specific tests (runs on host JVM, Robolectric where a class opts in)
 src/desktopTest/    -> JVM/Desktop-specific tests
 src/test/           -> Standard JVM test (JVM-only modules)
@@ -34,15 +34,18 @@ Check the module's `build.gradle.kts` for which convention plugin it uses:
 
 | Plugin | Module Type | Available Test Tasks |
 |--------|------------|---------------------|
-| `aktual.module.kotlin` | KMP | `allTests`, `testAndroidHostTest`, `desktopTest` |
-| `aktual.module.compose` | KMP + Compose | `allTests`, `testAndroidHostTest`, `desktopTest` |
-| `aktual.module.viewmodel` | KMP + Compose + VM | `allTests`, `testAndroidHostTest`, `desktopTest` |
-| `aktual.module.di` | KMP + DI | `allTests`, `testAndroidHostTest`, `desktopTest` |
-| `aktual.module.jvm` | JVM-only | `test` |
+| `aktual.module.kotlin` / `aktual.module.di` without `aktual.module.kmp-android` | KMP, JVM target only | `desktopTest` |
+| `aktual.module.kotlin` / `aktual.module.di` with `aktual.module.kmp-android` | KMP + Android | `allTests`, `testAndroidHostTest`, `desktopTest` |
+| `aktual.module.compose` | KMP + Android + Compose | `allTests`, `testAndroidHostTest`, `desktopTest` |
+| `aktual.module.viewmodel` | KMP + Android + Compose + VM | `allTests`, `testAndroidHostTest`, `desktopTest` |
+| `aktual.module.jvm` | Plain JVM, not KMP | `test` |
+| `aktual.module.android` | Plain Android library, not KMP | `testDebugUnitTest` |
 
 ### 3. Choose the right task
 
-For **KMP modules** (kotlin/compose/viewmodel/di plugins):
+For **KMP modules without an android target**: always use `desktopTest`.
+
+For **KMP modules with an android target** (compose/viewmodel, or `aktual.module.kmp-android` applied):
 
 | Source Sets Present | Recommended Task | Why |
 |-------------------|-----------------|-----|
@@ -79,5 +82,5 @@ After running, report:
 ## Important Notes
 
 - NEVER run `allTests` or `testAll` at the project root level - this runs all tests across all modules and will overload the system
-- When only `commonTest` exists, prefer `testAndroidHostTest` over `desktopTest` since it has Robolectric available for any Android-dependent code
+- In a module with an android target where only `commonTest` exists, prefer `testAndroidHostTest` over `desktopTest` since it has Robolectric available for any Android-dependent code
 - The `testAll` task (defined in ConventionTest.kt) is a convenience alias that depends on all `Test`-type tasks in the module - equivalent to `allTests` for KMP modules

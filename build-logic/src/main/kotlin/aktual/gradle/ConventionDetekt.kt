@@ -50,7 +50,12 @@ class ConventionDetekt : ProjectPlugin {
     // once. Those tasks stay quiet and don't fail, this one reports all their issues instead
     tasks.register("detektCheck", DetektReportTask::class.java) { t ->
       t.dependsOn(detektTasks)
-      t.checkstyleReports.from(dekektDir.map { it.asFileTree.matching { f -> f.include("*.xml") } })
+      // Only the enabled tasks, so stale reports of disabled ones are ignored
+      t.checkstyleReports.from(
+        provider {
+          detektTasks.names.filter { isEnabled(it) }.map { dekektDir.get().file("$it.xml") }
+        },
+      )
       t.basePath.set(rootProject.isolated.projectDirectory)
       t.reportFile.set(layout.buildDirectory.file("reports/detekt/issues.txt"))
       t.summary.set(summary)
@@ -58,7 +63,7 @@ class ConventionDetekt : ProjectPlugin {
     }
 
     detektTasks.configureEach { t ->
-      t.enabled = !t.name.contains("release", ignoreCase = true)
+      t.enabled = isEnabled(t.name)
       t.ignoreFailures.set(true)
 
       t.reports { r ->
@@ -79,5 +84,22 @@ class ConventionDetekt : ProjectPlugin {
     if (path != ":detekt-rules") {
       dependencies { "detektPlugins"(project(":detekt-rules")) }
     }
+  }
+
+  // The type-resolution tasks per compilation already cover each source set, and the android ones
+  // repeat the shared sources, so only keep those when there are android sources
+  private fun Project.isEnabled(taskName: String): Boolean {
+    val androidSourceSet = ANDROID_COMPILATION_TASKS[taskName]
+    return when {
+      taskName.contains("release", ignoreCase = true) -> false
+      taskName.endsWith("SourceSet") -> false
+      androidSourceSet != null -> file("src/$androidSourceSet").exists()
+      else -> true
+    }
+  }
+
+  private companion object {
+    val ANDROID_COMPILATION_TASKS =
+      mapOf("detektMainAndroid" to "androidMain", "detektHostTestAndroid" to "androidHostTest")
   }
 }

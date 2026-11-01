@@ -1,4 +1,6 @@
-plugins { id("aktual.module.kotlin") }
+plugins {
+  id("aktual.module.kotlin")
+}
 
 kotlin {
   commonMainDependencies {
@@ -23,10 +25,5 @@ kotlin {
     implementation(libs.sqldelight.async)
     implementation(libs.sqldelight.driver.sqlite)
     implementation(libs.sqldelight.runtime)
-  }
-
-  androidMainDependencies {
-    api(libs.androidx.test.core)
-    api(project(":aktual-prefs:impl"))
   }
 }

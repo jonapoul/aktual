@@ -15,4 +15,8 @@ kotlin {
     implementation(project(":aktual-app:di"))
     implementation(project(":aktual-test:api"))
   }
+
+  androidHostTestDependencies {
+    implementation(project(":aktual-core:android"))
+  }
 }

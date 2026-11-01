@@ -165,7 +165,9 @@ jobs:
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
-      - run: ./gradlew :aktual-app:android:assembleDebug
+      # R8 fails on missing classes, e.g. a JVM-only module calling a library whose android
+      # artifact differs from its JVM one, which a debug build only finds at runtime
+      - run: ./gradlew :aktual-app:android:assembleDebug :aktual-app:android:minifyReleaseWithR8
       - name: Upload debug APK
         id: upload-apk
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

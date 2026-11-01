@@ -13,8 +13,4 @@ kotlin {
     api(project(":aktual-core:model"))
     implementation(project(":aktual-di:core"))
   }
-
-  androidMainDependencies {
-    implementation(libs.androidx.core)
-  }
 }

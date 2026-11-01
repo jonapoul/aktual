@@ -1,6 +1,5 @@
 plugins {
   id("aktual.module.kotlin")
-  alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -17,9 +16,5 @@ kotlin {
 
   commonTestDependencies {
     implementation(project(":aktual-test"))
-  }
-
-  desktopMainDependencies {
-    api(libs.compose.ui)
   }
 }

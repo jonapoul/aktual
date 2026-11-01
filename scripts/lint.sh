@@ -28,4 +28,4 @@ for arg in "$@"; do
   esac
 done
 
-run_changed_module_task lint "$MAIN_BRANCH" "$DRY_RUN" "$FORCE"
+run_changed_module_task lintAll "$MAIN_BRANCH" "$DRY_RUN" "$FORCE"

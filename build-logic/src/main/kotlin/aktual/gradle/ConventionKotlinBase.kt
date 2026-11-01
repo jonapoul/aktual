@@ -30,6 +30,11 @@ class ConventionKotlinBase : ProjectPlugin {
     val compileTasks = tasks.withType(KotlinCompile::class)
     tasks.register("compileAll") { t -> t.dependsOn(compileTasks) }
 
+    // JVM-only KMP modules have no lint task, this lets scripts run lint on any module
+    tasks.register("lintAll") { t ->
+      t.dependsOn(provider { tasks.names.filter { it == "lint" } })
+    }
+
     // Lint's partial results hold offsets into the version catalog without tracking it as an input,
     // so a stale cached analysis crashes the report task once the catalog changes
     val versionCatalog = rootProject.isolated.projectDirectory.file("gradle/libs.versions.toml")

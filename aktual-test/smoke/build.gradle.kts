@@ -1,5 +1,5 @@
 plugins {
-  id("aktual.module.kotlin")
+  id("aktual.module.kmp-android")
   id("aktual.convention.db-test")
 }
 
@@ -33,10 +33,12 @@ kotlin {
 
   desktopTestDependencies {
     implementation(project(":aktual-app:desktop"))
+    implementation(project(":aktual-core:jvm"))
   }
 
   androidHostTestDependencies {
     implementation(libs.metrox.android)
     implementation(project(":aktual-app:android"))
+    implementation(project(":aktual-core:android"))
   }
 }

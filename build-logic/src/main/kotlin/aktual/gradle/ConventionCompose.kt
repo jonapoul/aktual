@@ -55,11 +55,11 @@ class ConventionCompose : ProjectPlugin {
       dependencies { "lintChecks"(libs["androidx.compose.lint"]) }
     }
 
-    pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-      dependencies {
-        "androidRuntimeClasspath"(libs["compose.uiTooling"])
-      }
+    pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
+      dependencies { "androidRuntimeClasspath"(libs["compose.uiTooling"]) }
+    }
 
+    pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
       kotlin {
         desktopMainDependencies {
           implementation(
