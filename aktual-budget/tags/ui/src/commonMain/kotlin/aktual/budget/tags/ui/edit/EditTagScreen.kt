@@ -319,39 +319,43 @@ private fun EditTagContent(
         .padding(Dimens.ScreenPadding),
     verticalArrangement = Arrangement.spacedBy(EditTagDS.fieldSpacing),
   ) {
-    Field(label = Strings.tagsCreateTagLabel, required = true) {
-      val isBlank = tagState.text.isBlank()
-      val error =
-        when {
-          isBlank -> Strings.tagsCreateTagRequired
-          isDuplicateName -> Strings.tagsCreateTagDuplicate
-          else -> null
-        }
-      AktualTextField(
-        modifier = Modifier.fillMaxWidth(),
-        state = tagState,
-        singleLine = true,
-        placeholderText = Strings.tagsCreateTagPlaceholder,
-        supportingText = error?.let { { Text(text = it, color = colors.errorText) } },
-      )
+    EditTagCard {
+      Field(label = Strings.tagsCreateTagLabel, required = true) {
+        val isBlank = tagState.text.isBlank()
+        val error =
+          when {
+            isBlank -> Strings.tagsCreateTagRequired
+            isDuplicateName -> Strings.tagsCreateTagDuplicate
+            else -> null
+          }
+        AktualTextField(
+          modifier = Modifier.fillMaxWidth(),
+          state = tagState,
+          singleLine = true,
+          placeholderText = Strings.tagsCreateTagPlaceholder,
+          supportingText = error?.let { { Text(text = it, color = colors.errorText) } },
+        )
+      }
+
+      Field(label = Strings.tagsCreateDescriptionLabel) {
+        AktualTextField(
+          modifier = Modifier.fillMaxWidth(),
+          state = descriptionState,
+          placeholderText = Strings.tagsCreateDescriptionPlaceholder,
+          keyboardOptions = KeyboardOptions(capitalization = Sentences),
+        )
+      }
     }
 
-    Field(label = Strings.tagsCreateDescriptionLabel) {
-      AktualTextField(
-        modifier = Modifier.fillMaxWidth(),
-        state = descriptionState,
-        placeholderText = Strings.tagsCreateDescriptionPlaceholder,
-        keyboardOptions = KeyboardOptions(capitalization = Sentences),
-      )
-    }
-
-    Field(label = Strings.tagsCreateColorLabel) {
-      TagColorPicker(
-        modifier = Modifier.fillMaxWidth(),
-        color = color,
-        onColorChange = onColorChange,
-        onErrorChange = onColorError,
-      )
+    EditTagCard {
+      Field(label = Strings.tagsCreateColorLabel) {
+        TagColorPicker(
+          modifier = Modifier.fillMaxWidth(),
+          color = color,
+          onColorChange = onColorChange,
+          onErrorChange = onColorError,
+        )
+      }
     }
 
     BottomSpacing()
@@ -370,14 +374,22 @@ private fun ShimmerEditTag(modifier: Modifier = Modifier) {
       modifier.fillMaxSize().padding(Dimens.ScreenPadding).shimmer(rememberShimmer(Window)),
     verticalArrangement = Arrangement.spacedBy(EditTagDS.fieldSpacing),
   ) {
-    repeat(times = 2) {
-      Column(verticalArrangement = Arrangement.spacedBy(EditTagDS.labelSpacing)) {
-        Box(label)
-        Box(field.fillMaxWidth().height(EditTagDS.shimmerFieldHeight))
+    Column(
+      modifier = Modifier.padding(EditTagDS.cardPadding),
+      verticalArrangement = Arrangement.spacedBy(EditTagDS.fieldSpacing),
+    ) {
+      repeat(times = 2) {
+        Column(verticalArrangement = Arrangement.spacedBy(EditTagDS.labelSpacing)) {
+          Box(label)
+          Box(field.fillMaxWidth().height(EditTagDS.shimmerFieldHeight))
+        }
       }
     }
 
-    Column(verticalArrangement = Arrangement.spacedBy(EditTagDS.labelSpacing)) {
+    Column(
+      modifier = Modifier.padding(EditTagDS.cardPadding),
+      verticalArrangement = Arrangement.spacedBy(EditTagDS.labelSpacing),
+    ) {
       Box(label)
       Column(verticalArrangement = Arrangement.spacedBy(EditTagDS.colorPickerSectionSpacing)) {
         Row(
@@ -412,6 +424,18 @@ private fun SaveButton(
     contentDescription = Strings.tagsCreateSave,
     enabled = enabled,
     onClick = { onAction(SaveTag) },
+  )
+}
+
+@Composable
+private inline fun EditTagCard(content: @Composable ColumnScope.() -> Unit) {
+  Column(
+    modifier =
+      Modifier.fillMaxWidth()
+        .background(colors.cardBackground, CardShape)
+        .padding(EditTagDS.cardPadding),
+    verticalArrangement = Arrangement.spacedBy(EditTagDS.fieldSpacing),
+    content = content,
   )
 }
 
