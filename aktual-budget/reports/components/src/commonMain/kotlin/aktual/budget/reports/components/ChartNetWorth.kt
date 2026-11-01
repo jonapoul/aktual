@@ -26,12 +26,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -90,12 +94,28 @@ internal fun NetWorthChart(
       )
     }
 
+    var selected by remember(data) { mutableStateOf<YearMonth?>(null) }
+    var highlighted by remember(data) { mutableStateOf<AccountId?>(null) }
+
     Chart(
       modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
       data = data,
       compact = compact,
       zoom = zoom,
+      highlighted = highlighted,
+      onSelectMonth = { selected = it },
     )
+
+    val month = selected ?: data.items.keys.maxOrNull()
+    if (!compact && month != null) {
+      NetWorthBreakdownList(
+        modifier = Modifier.fillMaxWidth().heightIn(max = BREAKDOWN_MAX_HEIGHT).padding(top = 8.dp),
+        data = data,
+        month = month,
+        highlighted = highlighted,
+        onHighlight = { highlighted = it },
+      )
+    }
   }
 
 @Composable
@@ -148,6 +168,8 @@ private fun Chart(
   data: NetWorthData,
   compact: Boolean,
   zoom: ChartZoomState,
+  highlighted: AccountId?,
+  onSelectMonth: (YearMonth?) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
@@ -174,7 +196,8 @@ private fun Chart(
           ),
       ),
     )
-  val stackedLines = rememberStackedLineProvider(data, compact)
+  val highlightedIndex = data.accounts.indexOfFirst { it.id == highlighted }.takeIf { it >= 0 }
+  val stackedLines = rememberStackedLineProvider(data, compact, highlightedIndex)
   val stackedMarker = rememberStackedMarkerFormatter(data)
 
   ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
@@ -219,7 +242,7 @@ private fun Chart(
                 )
               else -> rememberMarker()
             },
-          markerVisibilityListener = rememberMarkerHaptics(compact),
+          markerVisibilityListener = rememberMonthSelection(compact, onSelectMonth),
           decorations = listOf(rememberChartZoomDecoration(zoom)),
         ),
     )
@@ -240,6 +263,8 @@ private suspend fun CartesianChartModelProducer.populate(data: NetWorthData, zoo
     }
   }
 }
+
+private val BREAKDOWN_MAX_HEIGHT = 240.dp
 
 private val MODES = persistentListOf<NetWorthMode>(Trend, Stacked)
 

@@ -4,7 +4,9 @@ import aktual.budget.reports.vm.NetWorthData
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
@@ -16,6 +18,8 @@ import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer.LineFill
 import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer.LineProvider
 import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer.LineStroke
+import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarkerVisibilityListener
 import com.patrykandpatrick.vico.compose.cartesian.marker.DefaultCartesianMarker
 import com.patrykandpatrick.vico.compose.common.Fill
 import kotlin.math.roundToLong
@@ -38,14 +42,19 @@ internal fun netWorthStacks(data: NetWorthData): List<List<Double>> {
 internal fun NetWorthData.isStacked(): Boolean = mode == Stacked && accounts.isNotEmpty()
 
 @Composable
-internal fun rememberStackedLineProvider(data: NetWorthData, compact: Boolean): LineProvider {
+internal fun rememberStackedLineProvider(
+  data: NetWorthData,
+  compact: Boolean,
+  highlighted: Int?,
+): LineProvider {
   val colors = colors
-  return remember(data.accounts.size, colors, compact) {
+  return remember(data.accounts.size, colors, compact, highlighted) {
     // Shared by every band, holding the area under the line drawn before it
     val previous = Path()
     LineProvider.series(
       data.accounts.indices.map { index ->
-        val color = colors.qualitative(index)
+        val alpha = if (highlighted == null || highlighted == index) 1f else DIMMED_ALPHA
+        val color = colors.qualitative(index).copy(alpha = alpha)
         LineCartesianLayer.Line(
           fill = LineFill.single(Fill(color)),
           stroke =
@@ -54,7 +63,7 @@ internal fun rememberStackedLineProvider(data: NetWorthData, compact: Boolean): 
             ),
           areaFill =
             StackedBandFill(
-              color = color.copy(alpha = STACKED_FILL_ALPHA),
+              color = color.copy(alpha = STACKED_FILL_ALPHA * alpha),
               previous = previous,
               first = index == 0,
             ),
@@ -89,6 +98,37 @@ internal fun rememberStackedMarkerFormatter(
           }
           .asReversed()
       stackedMarkerText(label, stack, total, format)
+    }
+  }
+}
+
+// Shows the tapped month in the breakdown list, back to the latest month once the marker hides
+@Composable
+internal fun rememberMonthSelection(
+  compact: Boolean,
+  onSelect: (YearMonth?) -> Unit,
+): CartesianMarkerVisibilityListener? {
+  val haptics = rememberMarkerHaptics(compact) ?: return null
+  val currentOnSelect by rememberUpdatedState(onSelect)
+  return remember(haptics) {
+    object : CartesianMarkerVisibilityListener {
+      override fun onShown(marker: CartesianMarker, targets: List<CartesianMarker.Target>) {
+        haptics.onShown(marker, targets)
+        currentOnSelect(targets.month())
+      }
+
+      override fun onUpdated(marker: CartesianMarker, targets: List<CartesianMarker.Target>) {
+        haptics.onUpdated(marker, targets)
+        currentOnSelect(targets.month())
+      }
+
+      override fun onHidden(marker: CartesianMarker) {
+        haptics.onHidden(marker)
+        currentOnSelect(null)
+      }
+
+      private fun List<CartesianMarker.Target>.month() =
+        firstOrNull()?.x?.let { YearMonth.fromMonthNumber(it.roundToLong()) }
     }
   }
 }

@@ -1225,6 +1225,8 @@
 
   <string name="reports_net_worth_mode_trend">Trend</string>
   <string name="reports_net_worth_mode_stacked">Stacked</string>
+  <string name="reports_net_worth_total">Net worth</string>
+  <string name="reports_net_worth_change">Change</string>
   <string name="reports_net_worth_footer_title">How is net worth calculated?</string>
   <string name="reports_net_worth_footer">Net worth shows the balance of all accounts over time, including all of your investments. Your "net worth" is considered to be the amount you’d have if you sold all your assets and paid off as much debt as possible. If you hover over the graph, you can also see the amount of assets and debt individually. Stacked mode shows each account’s balance as its own band, which is harder to read when mixing accounts with positive and negative balances.</string>
 
