@@ -6,7 +6,7 @@ import blueprint.core.localProperties
 
 plugins {
   id("aktual.module.di")
-  id("aktual.module.kmp-android")
+  id("aktual.module.kotlin")
 }
 
 kotlin {

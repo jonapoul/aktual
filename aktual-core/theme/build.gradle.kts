@@ -1,5 +1,5 @@
 plugins {
-  id("aktual.module.kmp-android")
+  id("aktual.module.kotlin")
   alias(libs.plugins.kotlin.serialization)
 }
 
