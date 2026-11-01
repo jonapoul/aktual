@@ -213,12 +213,13 @@ internal fun ReportScaffold(
   }
 
   if (showSettings && loaded != null) {
-    ReportSettingsSheet(
-      draft = loaded.draft,
-      editorData = editorData,
-      onEdit = { transform -> onAction(Action.EditSettings(transform)) },
-      onDismiss = { showSettings = false },
-    )
+    loaded.draft
+      .settingsSheet()
+      ?.invoke(
+        editorData,
+        { transform -> onAction(Action.EditSettings(transform)) },
+        { showSettings = false },
+      )
   }
 
   Scaffold(

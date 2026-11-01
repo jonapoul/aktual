@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
-private typealias SettingsSheet =
+internal typealias SettingsSheet =
   @Composable
   (
     editorData: QueryEditorData?,
@@ -33,9 +33,10 @@ private typealias SettingsSheet =
     onDismiss: () -> Unit,
   ) -> Unit
 
-// Adding a report type here gives it the settings button and sheet
+// The sheet edits the report's draft, which the chart behind previews until it's saved. Adding a
+// report type here gives it the settings button and sheet
 @Suppress("ElseCaseInsteadOfExhaustiveWhen")
-private fun ReportMeta.settingsSheet(): SettingsSheet? =
+internal fun ReportMeta.settingsSheet(): SettingsSheet? =
   when (this) {
     is NetWorthReportMeta -> { data, onEdit, onDismiss ->
       NetWorthSettings(this, data, onEdit.typed(), onDismiss)
@@ -50,17 +51,6 @@ private fun ReportMeta.settingsSheet(): SettingsSheet? =
   }
 
 internal fun ReportMeta.hasSettings(): Boolean = settingsSheet() != null
-
-// Edits the report's draft, which the chart behind previews until it's saved
-@Composable
-internal fun ReportSettingsSheet(
-  draft: ReportMeta,
-  editorData: QueryEditorData?,
-  onEdit: ((ReportMeta) -> ReportMeta) -> Unit,
-  onDismiss: () -> Unit,
-) {
-  draft.settingsSheet()?.invoke(editorData, onEdit, onDismiss)
-}
 
 // Only touches its own type of report, in case the draft changes type under it
 private inline fun <reified T : ReportMeta> (((ReportMeta) -> ReportMeta) -> Unit).typed():
