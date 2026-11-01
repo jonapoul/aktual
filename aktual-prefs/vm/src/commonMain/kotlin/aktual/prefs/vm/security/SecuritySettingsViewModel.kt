@@ -37,6 +37,7 @@ internal constructor(
     viewModelScope.launchMolecule(Immediate) {
       val appLockEnabled by collectAsState(preferences.appLockEnabled)
       val appLockTimeout by collectAsState(preferences.appLockTimeout)
+      val hidePreview by collectAsState(preferences.hidePreviewInAppSwitcher)
       val isAvailable by isAvailable.collectAsState()
       SecuritySettingsState(
         appLockEnabled =
@@ -51,6 +52,13 @@ internal constructor(
             value = appLockTimeout,
             enabled = appLockEnabled,
             onChange = { launchAndSet(preferences.appLockTimeout, it) },
+          ),
+        // The app lock always hides the preview
+        hidePreviewInAppSwitcher =
+          BooleanPreference(
+            value = hidePreview || appLockEnabled,
+            enabled = !appLockEnabled,
+            onChange = { launchAndSet(preferences.hidePreviewInAppSwitcher, it) },
           ),
         isScreenLockAvailable = isAvailable,
       )

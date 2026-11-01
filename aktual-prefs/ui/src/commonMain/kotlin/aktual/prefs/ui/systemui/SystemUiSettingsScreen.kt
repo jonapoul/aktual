@@ -11,7 +11,6 @@ import aktual.core.icons.material.Dialogs
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Opacity
 import aktual.core.icons.material.RoundedCorner
-import aktual.core.icons.material.Security
 import aktual.core.icons.material.Texture
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -61,16 +60,6 @@ fun SystemUiSettingsScreen(
 @Composable
 private fun SystemUiSettingsScaffold(state: SystemUiSettingsState, onBack: () -> Unit) {
   SettingsListScaffold(title = Strings.settingsUiGroup, description = null, onBack = onBack) {
-    if (state.hidePreviewInAppSwitcher.visible) {
-      item {
-        BooleanPreferenceItem(
-          preference = state.hidePreviewInAppSwitcher,
-          title = Strings.settingsUiHidePreview,
-          subtitle = Strings.settingsUiHidePreviewDesc,
-          icon = MaterialIcons.Security,
-        )
-      }
-    }
     item {
       PreferenceGroup(title = Strings.settingsUiBarsTitle, subtitle = Strings.settingsUiBarsDesc) {
         BooleanPreferenceItem(
@@ -184,7 +173,6 @@ private fun PreviewSystemUiSettingsScaffold(
       onBack = {},
       state =
         SystemUiSettingsState(
-          hidePreviewInAppSwitcher = BooleanPreference(true),
           showStatusBar = BooleanPreference(true),
           barEffect = ListPreference(Blur),
           barBlurRadius = BlurRadiusPreference(5f),

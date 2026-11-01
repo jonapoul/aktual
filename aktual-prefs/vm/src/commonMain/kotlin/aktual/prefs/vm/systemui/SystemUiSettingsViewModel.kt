@@ -27,7 +27,6 @@ internal constructor(
 ) : ViewModel(viewModelContext.newScope()) {
   val state: StateFlow<SystemUiSettingsState> =
     viewModelScope.launchMolecule(Immediate) {
-      val hidePreviewInAppSwitcher by collectAsState(preferences.hidePreviewInAppSwitcher)
       val showBottomBar by collectAsState(preferences.showBottomBar)
       val barEffect by collectAsState(preferences.appBarEffect)
       val barBlurRadius by collectAsState(preferences.barBlurRadius)
@@ -38,12 +37,6 @@ internal constructor(
       val dialogBlurRadius by collectAsState(preferences.dialogBlurRadius)
       val dialogBlurAlpha by collectAsState(preferences.dialogBlurAlpha)
       SystemUiSettingsState(
-        hidePreviewInAppSwitcher =
-          BooleanPreference(
-            value = hidePreviewInAppSwitcher,
-            visible = ShouldShowHidePreviewInAppSwitcher,
-            onChange = { launchAndSet(preferences.hidePreviewInAppSwitcher, it) },
-          ),
         showStatusBar =
           BooleanPreference(
             value = showBottomBar,
