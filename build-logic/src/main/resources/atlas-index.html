@@ -73,6 +73,7 @@
     tbody tr:not(.group):hover { background: var(--row-hover); }
     tbody tr { scroll-margin-top: 40px; }
     tbody tr.selected { background: var(--row-selected); }
+    tr.none td { padding: 24px 8px; color: var(--muted); text-align: center; border-bottom: none; }
     a { color: var(--link); text-decoration: none; }
     a:hover { text-decoration: underline; }
     .size { display: flex; align-items: center; gap: 8px; }
@@ -127,6 +128,7 @@
   const generated = __GENERATED__;
   const charts = __CHARTS__;
 
+  const list = document.getElementById("list");
   const rows = document.getElementById("rows");
   const filter = document.getElementById("filter");
   const stats = document.getElementById("stats");
@@ -215,6 +217,10 @@
       row.addEventListener("mouseenter", () => select(index, false));
       rows.append(row);
     });
+    if (!visible.length) {
+      const columns = document.querySelectorAll("th").length;
+      rows.append(el("tr", { className: "none" }, [el("td", { colSpan: columns, textContent: "No matching modules" })]));
+    }
     select(items.findIndex(i => i.chart === selected), false);
 
     const total = visible.reduce((sum, c) => sum + c.size, 0);
@@ -246,6 +252,7 @@
   });
 
   render();
+  list.style.minWidth = list.offsetWidth + "px";
 </script>
 </body>
 </html>
