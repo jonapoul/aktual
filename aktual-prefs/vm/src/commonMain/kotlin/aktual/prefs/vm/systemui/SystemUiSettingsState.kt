@@ -9,28 +9,35 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class SystemUiSettingsState(
+  val hidePreviewInAppSwitcher: BooleanPreference,
   val showStatusBar: BooleanPreference,
-  val appBarEffect: ListPreference<BarEffect>,
-  val hazeDialogs: BooleanPreference,
-  val hazeRadiusDp: SliderPreference,
-  val hazeAlpha: SliderPreference,
+  val barEffect: ListPreference<BarEffect>,
+  val barBlurRadius: SliderPreference,
+  val barBlurAlpha: SliderPreference,
   val glassStyle: ListPreference<BarGlassStyle>,
   val glassCornerRadiusDp: SliderPreference,
-  val hidePreviewInAppSwitcher: BooleanPreference,
-) {
-  // Dialog blur uses the blur radius and alpha too
-  val showBlurSettings: Boolean
-    get() = appBarEffect.value == Blur || hazeDialogs.value
+  val blurDialogs: BooleanPreference,
+  val dialogBlurRadius: SliderPreference,
+  val dialogBlurAlpha: SliderPreference,
+)
 
-  val showGlassSettings: Boolean
-    get() = appBarEffect.value == Glass
-}
+fun BlurRadiusPreference(
+  value: Float,
+  visible: Boolean = true,
+  onChange: (Float) -> Unit = {},
+): SliderPreference =
+  SliderPreference(value = value, range = 0f..20f, visible = visible, onChange = onChange)
 
-fun HazeRadiusPreference(value: Float, onChange: (Float) -> Unit = {}): SliderPreference =
-  SliderPreference(value = value, range = 0f..20f, onChange = onChange)
+fun BlurAlphaPreference(
+  value: Float,
+  visible: Boolean = true,
+  onChange: (Float) -> Unit = {},
+): SliderPreference =
+  SliderPreference(value = value, range = 0f..1f, visible = visible, onChange = onChange)
 
-fun HazeAlphaPreference(value: Float, onChange: (Float) -> Unit = {}): SliderPreference =
-  SliderPreference(value = value, range = 0f..1f, onChange = onChange)
-
-fun GlassCornerRadiusPreference(value: Float, onChange: (Float) -> Unit = {}): SliderPreference =
-  SliderPreference(value = value, range = 0f..32f, onChange = onChange)
+fun GlassCornerRadiusPreference(
+  value: Float,
+  visible: Boolean = true,
+  onChange: (Float) -> Unit = {},
+): SliderPreference =
+  SliderPreference(value = value, range = 0f..32f, visible = visible, onChange = onChange)

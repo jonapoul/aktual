@@ -64,7 +64,8 @@ fun Modifier.hazedBottomBar(
     // when the effect is off, fall back to a flat fill with the same color, so the bar still
     // matches what the blurred/glass variant would have shown
     None -> background(color)
-    Blur -> hazeBlur(input = input, style = barBlurStyle(color, config))
+    Blur ->
+      hazeBlur(input = input, style = blurStyle(color, config.barBlurRadius, config.barBlurAlpha))
     Glass -> hazeGlass(input = input, style = barGlassStyle(color, config, Bottom))
   }
 }
@@ -117,7 +118,11 @@ fun Modifier.hazedTopBar(
   val input = HazeInput.Sources(state.hazeState)
   return when (state.effect) {
     None -> measured
-    Blur -> measured.hazeBlur(input = input, style = barBlurStyle(color, config, progress))
+    Blur ->
+      measured.hazeBlur(
+        input = input,
+        style = blurStyle(color, config.barBlurRadius, config.barBlurAlpha, progress),
+      )
     Glass ->
       measured.hazeGlass(
         input = input,
@@ -198,14 +203,20 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
   }
 
   if (progress > 0f) {
-    val blurStyle = barBlurStyle(colors.cardBackground, blurConfig, progress)
+    val style =
+      blurStyle(
+        colors.cardBackground,
+        blurConfig.dialogBlurRadius,
+        blurConfig.dialogBlurAlpha,
+        progress,
+      )
     val excluded = dialogBlurState.excludedFromBlur
     Box(
       modifier =
         modifier
           .fillMaxSize()
           .then(if (excluded.isEmpty()) Modifier else Modifier.clip(HoledShape(excluded)))
-          .hazeBlur(input = HazeInput.Sources(hazeState), style = blurStyle),
+          .hazeBlur(input = HazeInput.Sources(hazeState), style = style),
     )
   }
 }
@@ -238,12 +249,17 @@ private enum class BarPosition {
 }
 
 @Composable
-private fun barBlurStyle(color: Color, config: HazeConfig, progress: Float = 1f): HazeBlurStyle =
-  remember(color, config, progress) {
+private fun blurStyle(
+  color: Color,
+  radius: Dp,
+  alpha: Float,
+  progress: Float = 1f,
+): HazeBlurStyle =
+  remember(color, radius, alpha, progress) {
     HazeBlurStyle {
-      blurRadius(config.radius * progress)
+      blurRadius(radius * progress)
       backgroundColor(color.copy(alpha = color.alpha * progress))
-      colorEffects(listOf(HazeColorEffect.tint(color.copy(alpha = config.alpha * progress))))
+      colorEffects(listOf(HazeColorEffect.tint(color.copy(alpha = alpha * progress))))
     }
   }
 
@@ -280,8 +296,10 @@ private fun barGlassStyle(
 data class HazeConfig(
   val appBarEffect: BarEffect = Default,
   val dialogs: Boolean = true,
-  val radius: Dp = 5.dp,
-  val alpha: Float = 0.5f,
+  val barBlurRadius: Dp = 5.dp,
+  val barBlurAlpha: Float = 0.5f,
+  val dialogBlurRadius: Dp = 5.dp,
+  val dialogBlurAlpha: Float = 0.5f,
   val glassStyle: BarGlassStyle = Default,
   val glassCornerRadius: Dp = 24.dp,
 )

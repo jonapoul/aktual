@@ -27,55 +27,73 @@ internal constructor(
 ) : ViewModel(viewModelContext.newScope()) {
   val state: StateFlow<SystemUiSettingsState> =
     viewModelScope.launchMolecule(Immediate) {
+      val hidePreviewInAppSwitcher by collectAsState(preferences.hidePreviewInAppSwitcher)
       val showBottomBar by collectAsState(preferences.showBottomBar)
-      val appBarEffect by collectAsState(preferences.appBarEffect)
-      val hazeDialogs by collectAsState(preferences.hazeDialogs)
-      val hazeRadius by collectAsState(preferences.hazeRadius)
-      val hazeAlpha by collectAsState(preferences.hazeAlpha)
+      val barEffect by collectAsState(preferences.appBarEffect)
+      val barBlurRadius by collectAsState(preferences.barBlurRadius)
+      val barBlurAlpha by collectAsState(preferences.barBlurAlpha)
       val glassStyle by collectAsState(preferences.glassStyle)
       val glassCornerRadius by collectAsState(preferences.glassCornerRadius)
-      val hidePreviewInAppSwitcher by collectAsState(preferences.hidePreviewInAppSwitcher)
+      val blurDialogs by collectAsState(preferences.hazeDialogs)
+      val dialogBlurRadius by collectAsState(preferences.dialogBlurRadius)
+      val dialogBlurAlpha by collectAsState(preferences.dialogBlurAlpha)
       SystemUiSettingsState(
-        showStatusBar =
-          BooleanPreference(
-            value = showBottomBar,
-            onChange = { launchAndSet(preferences.showBottomBar, it) },
-          ),
-        appBarEffect =
-          ListPreference(
-            value = appBarEffect,
-            onChange = { launchAndSet(preferences.appBarEffect, it) },
-          ),
-        hazeDialogs =
-          BooleanPreference(
-            value = hazeDialogs,
-            onChange = { launchAndSet(preferences.hazeDialogs, it) },
-          ),
-        hazeRadiusDp =
-          HazeRadiusPreference(
-            value = hazeRadius,
-            onChange = { launchAndSet(preferences.hazeRadius, it) },
-          ),
-        hazeAlpha =
-          HazeAlphaPreference(
-            value = hazeAlpha,
-            onChange = { launchAndSet(preferences.hazeAlpha, it) },
-          ),
-        glassStyle =
-          ListPreference(
-            value = glassStyle,
-            onChange = { launchAndSet(preferences.glassStyle, it) },
-          ),
-        glassCornerRadiusDp =
-          GlassCornerRadiusPreference(
-            value = glassCornerRadius,
-            onChange = { launchAndSet(preferences.glassCornerRadius, it) },
-          ),
         hidePreviewInAppSwitcher =
           BooleanPreference(
             value = hidePreviewInAppSwitcher,
             visible = ShouldShowHidePreviewInAppSwitcher,
             onChange = { launchAndSet(preferences.hidePreviewInAppSwitcher, it) },
+          ),
+        showStatusBar =
+          BooleanPreference(
+            value = showBottomBar,
+            onChange = { launchAndSet(preferences.showBottomBar, it) },
+          ),
+        barEffect =
+          ListPreference(
+            value = barEffect,
+            onChange = { launchAndSet(preferences.appBarEffect, it) },
+          ),
+        barBlurRadius =
+          BlurRadiusPreference(
+            value = barBlurRadius,
+            visible = barEffect == Blur,
+            onChange = { launchAndSet(preferences.barBlurRadius, it) },
+          ),
+        barBlurAlpha =
+          BlurAlphaPreference(
+            value = barBlurAlpha,
+            visible = barEffect == Blur,
+            onChange = { launchAndSet(preferences.barBlurAlpha, it) },
+          ),
+        glassStyle =
+          ListPreference(
+            value = glassStyle,
+            visible = barEffect == Glass,
+            onChange = { launchAndSet(preferences.glassStyle, it) },
+          ),
+        glassCornerRadiusDp =
+          GlassCornerRadiusPreference(
+            value = glassCornerRadius,
+            visible = barEffect == Glass,
+            onChange = { launchAndSet(preferences.glassCornerRadius, it) },
+          ),
+        blurDialogs =
+          BooleanPreference(
+            value = blurDialogs,
+            onChange = { launchAndSet(preferences.hazeDialogs, it) },
+          ),
+        dialogBlurRadius =
+          BlurRadiusPreference(
+            value = dialogBlurRadius,
+            visible = blurDialogs,
+            onChange = { launchAndSet(preferences.dialogBlurRadius, it) },
+          ),
+        dialogBlurAlpha =
+          BlurAlphaPreference(
+            value = dialogBlurAlpha,
+            visible = blurDialogs,
+            onChange = { launchAndSet(preferences.dialogBlurAlpha, it) },
           ),
       )
     }

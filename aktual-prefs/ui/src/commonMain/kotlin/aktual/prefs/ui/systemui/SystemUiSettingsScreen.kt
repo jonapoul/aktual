@@ -26,9 +26,10 @@ import aktual.prefs.ui.SliderPreferenceItem
 import aktual.prefs.ui.core.PreferenceGroup
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
+import aktual.prefs.vm.SliderPreference
+import aktual.prefs.vm.systemui.BlurAlphaPreference
+import aktual.prefs.vm.systemui.BlurRadiusPreference
 import aktual.prefs.vm.systemui.GlassCornerRadiusPreference
-import aktual.prefs.vm.systemui.HazeAlphaPreference
-import aktual.prefs.vm.systemui.HazeRadiusPreference
 import aktual.prefs.vm.systemui.SystemUiSettingsState
 import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
 import androidx.compose.runtime.Composable
@@ -49,14 +50,6 @@ fun SystemUiSettingsScreen(
 @Composable
 private fun SystemUiSettingsScaffold(state: SystemUiSettingsState, onBack: () -> Unit) {
   SettingsListScaffold(title = Strings.settingsUiGroup, description = null, onBack = onBack) {
-    item {
-      BooleanPreferenceItem(
-        preference = state.showStatusBar,
-        title = Strings.settingsUiShowStatus,
-        subtitle = null,
-        icon = if (state.showStatusBar.value) AktualIcons.ViewShow else AktualIcons.ViewHide,
-      )
-    }
     if (state.hidePreviewInAppSwitcher.visible) {
       item {
         BooleanPreferenceItem(
@@ -68,54 +61,66 @@ private fun SystemUiSettingsScaffold(state: SystemUiSettingsState, onBack: () ->
       }
     }
     item {
-      PreferenceGroup(title = Strings.settingsUiEffectsTitle) {
+      PreferenceGroup(title = Strings.settingsUiBarsTitle, subtitle = Strings.settingsUiBarsDesc) {
+        BooleanPreferenceItem(
+          preference = state.showStatusBar,
+          title = Strings.settingsUiShowStatus,
+          subtitle = null,
+          icon = if (state.showStatusBar.value) AktualIcons.ViewShow else AktualIcons.ViewHide,
+        )
         ListPreferenceItem(
-          preference = state.appBarEffect,
+          preference = state.barEffect,
           optionString = { it.string() },
           optionSuffix = null,
           title = Strings.settingsUiBarEffect,
           subtitle = null,
           icon = MaterialIcons.BlurOn,
         )
+        BlurSettings(radius = state.barBlurRadius, alpha = state.barBlurAlpha)
+        ListPreferenceItem(
+          preference = state.glassStyle,
+          optionString = { it.string() },
+          optionSuffix = null,
+          title = Strings.settingsUiGlassStyle,
+          subtitle = null,
+          icon = MaterialIcons.Texture,
+        )
+        SliderPreferenceItem(
+          preference = state.glassCornerRadiusDp,
+          title = Strings.settingsUiGlassCornerRadius,
+          subtitle = null,
+          icon = MaterialIcons.RoundedCorner,
+        )
+      }
+    }
+    item {
+      PreferenceGroup(title = Strings.settingsUiDialogsTitle) {
         BooleanPreferenceItem(
-          preference = state.hazeDialogs,
+          preference = state.blurDialogs,
           title = Strings.settingsUiBlurDialogs,
           subtitle = null,
           icon = MaterialIcons.Dialogs,
         )
-        if (state.showBlurSettings) {
-          SliderPreferenceItem(
-            preference = state.hazeRadiusDp,
-            title = Strings.settingsUiBlurRadius,
-            subtitle = null,
-            icon = MaterialIcons.BlurCircular,
-          )
-          SliderPreferenceItem(
-            preference = state.hazeAlpha,
-            title = Strings.settingsUiBlurAlpha,
-            subtitle = null,
-            icon = MaterialIcons.Opacity,
-          )
-        }
-        if (state.showGlassSettings) {
-          ListPreferenceItem(
-            preference = state.glassStyle,
-            optionString = { it.string() },
-            optionSuffix = null,
-            title = Strings.settingsUiGlassStyle,
-            subtitle = null,
-            icon = MaterialIcons.Texture,
-          )
-          SliderPreferenceItem(
-            preference = state.glassCornerRadiusDp,
-            title = Strings.settingsUiGlassCornerRadius,
-            subtitle = null,
-            icon = MaterialIcons.RoundedCorner,
-          )
-        }
+        BlurSettings(radius = state.dialogBlurRadius, alpha = state.dialogBlurAlpha)
       }
     }
   }
+}
+
+@Composable
+private fun BlurSettings(radius: SliderPreference, alpha: SliderPreference) {
+  SliderPreferenceItem(
+    preference = radius,
+    title = Strings.settingsUiBlurRadius,
+    subtitle = null,
+    icon = MaterialIcons.BlurCircular,
+  )
+  SliderPreferenceItem(
+    preference = alpha,
+    title = Strings.settingsUiBlurAlpha,
+    subtitle = null,
+    icon = MaterialIcons.Opacity,
+  )
 }
 
 @Composable
@@ -143,14 +148,16 @@ private fun PreviewSystemUiSettingsScaffold(
       onBack = {},
       state =
         SystemUiSettingsState(
-          showStatusBar = BooleanPreference(true),
-          appBarEffect = ListPreference(Blur),
-          hazeDialogs = BooleanPreference(true),
-          hazeRadiusDp = HazeRadiusPreference(5f),
-          hazeAlpha = HazeAlphaPreference(0.5f),
-          glassStyle = ListPreference(Regular),
-          glassCornerRadiusDp = GlassCornerRadiusPreference(24f),
           hidePreviewInAppSwitcher = BooleanPreference(true),
+          showStatusBar = BooleanPreference(true),
+          barEffect = ListPreference(Blur),
+          barBlurRadius = BlurRadiusPreference(5f),
+          barBlurAlpha = BlurAlphaPreference(0.5f),
+          glassStyle = ListPreference(Regular, visible = false),
+          glassCornerRadiusDp = GlassCornerRadiusPreference(24f, visible = false),
+          blurDialogs = BooleanPreference(true),
+          dialogBlurRadius = BlurRadiusPreference(5f),
+          dialogBlurAlpha = BlurAlphaPreference(0.5f),
         ),
     )
   }

@@ -1,6 +1,8 @@
 package aktual.prefs.vm.systemui
 
 import aktual.prefs.SystemUiPreferencesImpl
+import aktual.prefs.vm.ListPreference
+import aktual.prefs.vm.SliderPreference
 import aktual.test.buildPreferences
 import aktual.test.viewModelContext
 import alakazam.test.unconfinedDispatcher
@@ -31,34 +33,43 @@ class SystemUiSettingsViewModelTest {
   }
 
   @Test
-  fun `Effect settings follow the bar effect and dialog blur`() = runTest {
+  fun `Bar settings follow the bar effect`() = runTest {
     val preferences = SystemUiPreferencesImpl(buildPreferences(unconfinedDispatcher))
     val viewModel = SystemUiSettingsViewModel(preferences, viewModelContext = viewModelContext)
 
     viewModel.state.test {
       assertThat(awaitItem()).all {
-        prop(SystemUiSettingsState::showBlurSettings).isTrue()
-        prop(SystemUiSettingsState::showGlassSettings).isFalse()
+        prop(SystemUiSettingsState::barBlurRadius).prop(SliderPreference::visible).isTrue()
+        prop(SystemUiSettingsState::glassStyle).prop(ListPreference<*>::visible).isFalse()
       }
 
       preferences.appBarEffect.set(Glass)
       assertThat(awaitItem()).all {
-        // Dialog blur is still on
-        prop(SystemUiSettingsState::showBlurSettings).isTrue()
-        prop(SystemUiSettingsState::showGlassSettings).isTrue()
-      }
-
-      preferences.hazeDialogs.set(false)
-      assertThat(awaitItem()).all {
-        prop(SystemUiSettingsState::showBlurSettings).isFalse()
-        prop(SystemUiSettingsState::showGlassSettings).isTrue()
+        prop(SystemUiSettingsState::barBlurRadius).prop(SliderPreference::visible).isFalse()
+        prop(SystemUiSettingsState::glassStyle).prop(ListPreference<*>::visible).isTrue()
       }
 
       preferences.appBarEffect.set(None)
       assertThat(awaitItem()).all {
-        prop(SystemUiSettingsState::showBlurSettings).isFalse()
-        prop(SystemUiSettingsState::showGlassSettings).isFalse()
+        prop(SystemUiSettingsState::barBlurRadius).prop(SliderPreference::visible).isFalse()
+        prop(SystemUiSettingsState::glassStyle).prop(ListPreference<*>::visible).isFalse()
       }
+
+      expectNoEvents()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Dialog blur settings follow the dialog blur toggle`() = runTest {
+    val preferences = SystemUiPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    val viewModel = SystemUiSettingsViewModel(preferences, viewModelContext = viewModelContext)
+
+    viewModel.state.test {
+      assertThat(awaitItem().dialogBlurRadius.visible).isTrue()
+
+      preferences.hazeDialogs.set(false)
+      assertThat(awaitItem().dialogBlurRadius.visible).isFalse()
 
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()

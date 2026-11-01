@@ -54,15 +54,19 @@ class HazeConfigUseCase(private val preferences: SystemUiPreferences) {
     scope.launchMolecule(Immediate) {
       val appBarEffect by preferences.appBarEffect.collectAsStateFlow(scope)
       val hazeDialogs by preferences.hazeDialogs.collectAsStateFlow(scope)
-      val hazeRadius by preferences.hazeRadius.collectAsStateFlow(scope)
-      val hazeAlpha by preferences.hazeAlpha.collectAsStateFlow(scope)
+      val barBlurRadius by preferences.barBlurRadius.collectAsStateFlow(scope)
+      val barBlurAlpha by preferences.barBlurAlpha.collectAsStateFlow(scope)
+      val dialogBlurRadius by preferences.dialogBlurRadius.collectAsStateFlow(scope)
+      val dialogBlurAlpha by preferences.dialogBlurAlpha.collectAsStateFlow(scope)
       val glassStyle by preferences.glassStyle.collectAsStateFlow(scope)
       val glassCornerRadius by preferences.glassCornerRadius.collectAsStateFlow(scope)
       HazeConfig(
         appBarEffect = appBarEffect,
         dialogs = hazeDialogs,
-        radius = hazeRadius.dp,
-        alpha = hazeAlpha,
+        barBlurRadius = barBlurRadius.dp,
+        barBlurAlpha = barBlurAlpha,
+        dialogBlurRadius = dialogBlurRadius.dp,
+        dialogBlurAlpha = dialogBlurAlpha,
         glassStyle = glassStyle,
         glassCornerRadius = glassCornerRadius.dp,
       )

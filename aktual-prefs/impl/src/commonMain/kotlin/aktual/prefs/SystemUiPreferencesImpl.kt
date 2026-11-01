@@ -27,11 +27,17 @@ class SystemUiPreferencesImpl(dataStore: DataStore<Preferences>) : SystemUiPrefe
   override val hazeDialogs: Preference<Boolean> =
     dataStore.boolean(key = booleanPreferencesKey("blurDialogs"), default = true).required()
 
-  override val hazeRadius: Preference<Float> =
+  override val barBlurRadius: Preference<Float> =
     dataStore.float(key = floatPreferencesKey("blurRadius"), default = 5f).required()
 
-  override val hazeAlpha: Preference<Float> =
+  override val barBlurAlpha: Preference<Float> =
     dataStore.float(key = floatPreferencesKey("blurAlpha"), default = 0.35f).required()
+
+  override val dialogBlurRadius: Preference<Float> =
+    dataStore.float(key = floatPreferencesKey("dialogBlurRadius"), default = 5f).required()
+
+  override val dialogBlurAlpha: Preference<Float> =
+    dataStore.float(key = floatPreferencesKey("dialogBlurAlpha"), default = 0.35f).required()
 
   override val glassStyle: Preference<BarGlassStyle> =
     dataStore
