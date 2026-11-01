@@ -52,14 +52,15 @@ internal constructor(
     schedule()
   }
 
-  private suspend fun rebuildScheduleJsonPaths() = runCatchingCancellable {
-    syncDao.rebuildScheduleJsonPaths()
-  }
-    .getOrElse { e ->
-      // The database closes with the budget, which can happen while this is still running
-      currentCoroutineContext().ensureActive()
-      logcat.e(e) { "Failed rebuilding schedule JSON paths" }
-    }
+  private suspend fun rebuildScheduleJsonPaths() =
+    runCatchingCancellable(
+      attempt = { syncDao.rebuildScheduleJsonPaths() },
+      onFailure = { e ->
+        // The database closes with the budget, which can happen while this is still running
+        currentCoroutineContext().ensureActive()
+        logcat.e(e) { "Failed rebuilding schedule JSON paths" }
+      },
+    )
 
   override suspend fun syncChanges(changes: List<LocalChange>) {
     syncDao.sendMessages(changes)

@@ -69,13 +69,13 @@ internal class BankLoginModel(
     if (loginJob?.isActive == true) return
     loginJob = scope.launch {
       setStatus(BankLoginStatus.Waiting(bank.name))
-      runCatchingCancellable {
-        setStatus(logIn(bank))
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = { setStatus(logIn(bank)) },
+        onFailure = { e ->
           logcat.e(e) { "Failed logging in to ${bank.id} through ${provider.name}" }
           setStatus(BankLoginStatus.Failed(e.requireMessage()))
-        }
+        },
+      )
     }
   }
 
@@ -113,21 +113,24 @@ internal class BankLoginModel(
     banksJob?.cancel()
     mutableState.update { it.copy(banks = Loading) }
     banksJob = scope.launch {
-      val banks = runCatchingCancellable {
-        when (val response = provider.banks(country)) {
-          is Success -> {
-            LoginBanks.Loaded(response.value.toImmutableList())
-          }
-          is Failed -> {
-            logcat.w { "Listing ${provider.name} banks in $country failed: ${response.error}" }
-            LoginBanks.Failure(response.error.cause())
-          }
-        }
-      }
-        .getOrElse { e ->
-          logcat.e(e) { "Failed listing ${provider.name} banks in $country" }
-          LoginBanks.Failure(e.requireMessage())
-        }
+      val banks =
+        runCatchingCancellable(
+          attempt = {
+            when (val response = provider.banks(country)) {
+              is Success -> {
+                LoginBanks.Loaded(response.value.toImmutableList())
+              }
+              is Failed -> {
+                logcat.w { "Listing ${provider.name} banks in $country failed: ${response.error}" }
+                LoginBanks.Failure(response.error.cause())
+              }
+            }
+          },
+          onFailure = { e ->
+            logcat.e(e) { "Failed listing ${provider.name} banks in $country" }
+            LoginBanks.Failure(e.requireMessage())
+          },
+        )
       mutableState.update { it.copy(banks = banks) }
     }
   }

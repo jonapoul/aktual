@@ -92,17 +92,19 @@ internal constructor(
   fun reload() {
     failure.update { null }
     viewModelScope.launch {
-      runCatchingCancellable {
-        val loaded =
-          loader.load().map { rule ->
-            SearchableRule(rule, searchText.of(rule), rule.toTransactionRule().payeeIds())
-          }
-        rules.update { loaded }
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          val loaded =
+            loader.load().map { rule ->
+              SearchableRule(rule, searchText.of(rule), rule.toTransactionRule().payeeIds())
+            }
+          rules.update { loaded }
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed loading rules" }
           failure.update { e.requireMessage() }
-        }
+        },
+      )
     }
   }
 

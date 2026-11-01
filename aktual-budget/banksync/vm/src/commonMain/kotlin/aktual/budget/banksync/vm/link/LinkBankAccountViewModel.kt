@@ -191,22 +191,21 @@ internal constructor(
     if (external == null || !mutableIsLinking.compareAndSet(expect = false, update = true)) return
     val target = mutableTarget.value
     viewModelScope.launch {
-      try {
-        runCatchingCancellable {
+      runCatchingCancellable(
+        attempt = {
           when {
             account != null -> linker.link(account, source, external)
             target is New -> linker.create(source, external, target.offBudget)
             else -> error("Nothing to link ${external.accountId} to")
           }
           mutableEvents.emit(Linked)
-        }
-          .onFailure { e ->
-            logcat.e(e) { "Failed linking ${account ?: "a new account"} to $accountId" }
-            mutableEvents.emit(LinkBankAccountEvent.LinkFailed(e.requireMessage()))
-          }
-      } finally {
-        mutableIsLinking.update { false }
-      }
+        },
+        onFailure = { e ->
+          logcat.e(e) { "Failed linking ${account ?: "a new account"} to $accountId" }
+          mutableEvents.emit(LinkBankAccountEvent.LinkFailed(e.requireMessage()))
+        },
+        finally = { mutableIsLinking.update { false } },
+      )
     }
   }
 
@@ -216,20 +215,23 @@ internal constructor(
     providers.firstOrNull()?.let(::select)
   }
 
-  private suspend fun loadAccount(id: AccountId): Boolean = runCatchingCancellable {
-    val row = accountDao[id]
-    if (row == null) {
-      mutableFailure.update { LinkBankAccountState.Failure(cause = null) }
-    } else {
-      mutableTarget.update { LinkTarget.Existing(row.name) }
-    }
-    row != null
-  }
-    .getOrElse { e ->
-      logcat.e(e) { "Failed loading $id" }
-      mutableFailure.update { LinkBankAccountState.Failure(e.requireMessage()) }
-      false
-    }
+  private suspend fun loadAccount(id: AccountId): Boolean =
+    runCatchingCancellable(
+      attempt = {
+        val row = accountDao[id]
+        if (row == null) {
+          mutableFailure.update { LinkBankAccountState.Failure(cause = null) }
+        } else {
+          mutableTarget.update { LinkTarget.Existing(row.name) }
+        }
+        row != null
+      },
+      onFailure = { e ->
+        logcat.e(e) { "Failed loading $id" }
+        mutableFailure.update { LinkBankAccountState.Failure(e.requireMessage()) }
+        false
+      },
+    )
 
   private fun selectedLogin(): BankLoginModel? = mutableSelected.value?.let(logins::get)
 
@@ -247,22 +249,25 @@ internal constructor(
   private fun load(source: AccountSyncSource) {
     mutableAccounts.update { it + (source to Listed(Loading)) }
     viewModelScope.launch {
-      val listed = runCatchingCancellable {
-        when (val response = api.accounts(source)) {
-          is Success -> {
-            val items = items(response.accounts)
-            Listed(ExternalAccounts.Loaded(items), response.accounts)
-          }
-          is Failed -> {
-            logcat.w { "Listing $source accounts failed: ${response.error}" }
-            Listed(ExternalAccounts.Failure(response.error.cause()))
-          }
-        }
-      }
-        .getOrElse { e ->
-          logcat.e(e) { "Failed listing $source accounts" }
-          Listed(ExternalAccounts.Failure(e.requireMessage()))
-        }
+      val listed =
+        runCatchingCancellable(
+          attempt = {
+            when (val response = api.accounts(source)) {
+              is Success -> {
+                val items = items(response.accounts)
+                Listed(ExternalAccounts.Loaded(items), response.accounts)
+              }
+              is Failed -> {
+                logcat.w { "Listing $source accounts failed: ${response.error}" }
+                Listed(ExternalAccounts.Failure(response.error.cause()))
+              }
+            }
+          },
+          onFailure = { e ->
+            logcat.e(e) { "Failed listing $source accounts" }
+            Listed(ExternalAccounts.Failure(e.requireMessage()))
+          },
+        )
       mutableAccounts.update { it + (source to listed) }
     }
   }
@@ -297,16 +302,19 @@ internal constructor(
     return configured.filterNotNull().toImmutableList()
   }
 
-  private suspend fun isConfigured(source: AccountSyncSource): Boolean = runCatchingCancellable {
-    when (val response = api.status(source)) {
-      is Success -> response.configured
-      is BankSyncStatusResponse.Rejected -> false
-    }
-  }
-    .getOrElse { e ->
-      logcat.w(e) { "Failed checking bank sync status for $source" }
-      false
-    }
+  private suspend fun isConfigured(source: AccountSyncSource): Boolean =
+    runCatchingCancellable(
+      attempt = {
+        when (val response = api.status(source)) {
+          is Success -> response.configured
+          is BankSyncStatusResponse.Rejected -> false
+        }
+      },
+      onFailure = { e ->
+        logcat.w(e) { "Failed checking bank sync status for $source" }
+        false
+      },
+    )
 
   private data class Listed(
     val state: ExternalAccounts,

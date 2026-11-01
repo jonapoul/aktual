@@ -36,67 +36,68 @@ internal class TransactionsPagingSource(
   private val accountId = (spec.accountSpec as? SpecificAccount)?.id
 
   override suspend fun load(params: LoadParams<PageKey>): LoadResult<PageKey, Transaction> =
-    runCatchingCancellable {
-      // Keys are row offsets, not page numbers, since the first load is bigger than the rest. A
-      // prepend's key is the offset its page ends at. A refresh can follow a change to the data, so
-      // it works the balance out again rather than carrying it
-      val key = params.key?.offset ?: 0
-      val known = params.key?.balance.takeIf { params !is Refresh }
-      val isPrepend = params is Prepend
-      val start = if (isPrepend) (key - params.loadSize).coerceAtLeast(0) else key
-      val size = if (isPrepend) key - start else params.loadSize
-      val offset = start.toLong()
-      val limit = size.toLong()
+    runCatchingCancellable(
+      attempt = {
+        // Keys are row offsets, not page numbers, since the first load is bigger than the rest. A
+        // prepend's key is the offset its page ends at. A refresh can follow a change to the data,
+        // so
+        // it works the balance out again rather than carrying it
+        val key = params.key?.offset ?: 0
+        val known = params.key?.balance.takeIf { params !is Refresh }
+        val isPrepend = params is Prepend
+        val start = if (isPrepend) (key - params.loadSize).coerceAtLeast(0) else key
+        val size = if (isPrepend) key - start else params.loadSize
+        val offset = start.toLong()
+        val limit = size.toLong()
 
-      val filtered = spec.filtered
-      val tagSpec = spec.tagSpec
-      var top: Long? = null
-      val transactions =
-        when {
-          // As category lists, a report's drilled down list has no balance and shows split parts
-          filtered != null -> {
-            val ids = filterIds ?: loadFilterIds(filtered.filter).also { filterIds = it }
-            transactionDao.getByIds(ids.page(offset, limit)).map {
-              it.toTransaction(balance = null)
+        val filtered = spec.filtered
+        val tagSpec = spec.tagSpec
+        var top: Long? = null
+        val transactions =
+          when {
+            // As category lists, a report's drilled down list has no balance and shows split parts
+            filtered != null -> {
+              val ids = filterIds ?: loadFilterIds(filtered.filter).also { filterIds = it }
+              transactionDao.getByIds(ids.page(offset, limit)).map {
+                it.toTransaction(balance = null)
+              }
+            }
+
+            // A running balance means little over a subset of the account, so tag lists have none
+            tagSpec is SpecificTag -> {
+              val tagged = filteredIds ?: loadFilteredIds(tagSpec.id).also { filteredIds = it }
+              val rows = transactionDao.getByIds(tagged.ids.page(offset, limit))
+              val children = childrenOf(rows)
+              rows.map { row ->
+                row.toTransaction(
+                  balance = null,
+                  children = children[row.id].orEmpty(),
+                  shownChildren = tagged.children,
+                )
+              }
+            }
+
+            else -> {
+              val page = loadPage(limit, offset, known)
+              top = page.top
+              page.transactions
             }
           }
 
-          // A running balance means little over a subset of the account, so tag lists have none
-          tagSpec is SpecificTag -> {
-            val tagged = filteredIds ?: loadFilteredIds(tagSpec.id).also { filteredIds = it }
-            val rows = transactionDao.getByIds(tagged.ids.page(offset, limit))
-            val children = childrenOf(rows)
-            rows.map { row ->
-              row.toTransaction(
-                balance = null,
-                children = children[row.id].orEmpty(),
-                shownChildren = tagged.children,
-              )
-            }
-          }
-
-          else -> {
-            val page = loadPage(limit, offset, known)
-            top = page.top
-            page.transactions
-          }
-        }
-
-      val bottom = top?.let { it - transactions.sumOf { row -> row.amount.toLong() } }
-      LoadResult.Page(
-        data = transactions,
-        prevKey = if (start > 0) PageKey(start, top?.let(KnownBalance::Below)) else null,
-        nextKey =
-          if (transactions.size < size) {
-            null
-          } else {
-            PageKey(start + transactions.size, bottom?.let(KnownBalance::Top))
-          },
-      )
-    }
-    .getOrElse { e ->
-      LoadResult.Error(e)
-    }
+        val bottom = top?.let { it - transactions.sumOf { row -> row.amount.toLong() } }
+        LoadResult.Page(
+          data = transactions,
+          prevKey = if (start > 0) PageKey(start, top?.let(KnownBalance::Below)) else null,
+          nextKey =
+            if (transactions.size < size) {
+              null
+            } else {
+              PageKey(start + transactions.size, bottom?.let(KnownBalance::Top))
+            },
+        )
+      },
+      onFailure = { e -> LoadResult.Error(e) },
+    )
 
   // A running balance means little over a subset of the account, so uncategorised lists have none
   private suspend fun loadPage(limit: Long, offset: Long, known: KnownBalance?): LoadedPage =

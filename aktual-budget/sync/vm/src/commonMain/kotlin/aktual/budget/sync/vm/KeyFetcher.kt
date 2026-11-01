@@ -32,19 +32,22 @@ internal constructor(
 ) {
   suspend operator fun invoke(budgetId: BudgetId, keyPassword: Password): FetchKeyResult {
     logcat.d { "KeyFetcher $budgetId $token $keyPassword" }
-    val response = runCatchingCancellable {
-      val request = GetUserKeyRequest(budgetId, token)
-      withContext(contexts.io) { syncApi.fetchUserKey(request) }
-    }
-      .getOrElse { e ->
-        if (e is ResponseException) {
-          val failure = e.response.body<GetUserKeyResponse.Failure>()
-          logcat.e(e) { "Failure = $failure" }
-          return FetchKeyResult.ResponseFailure(failure.reason)
-        }
-        logcat.e(e) { "Failed fetching key for $budgetId and $keyPassword" }
-        return FetchKeyResult.IOFailure(e.requireMessage())
-      }
+    val response =
+      runCatchingCancellable(
+        attempt = {
+          val request = GetUserKeyRequest(budgetId, token)
+          withContext(contexts.io) { syncApi.fetchUserKey(request) }
+        },
+        onFailure = { e ->
+          if (e is ResponseException) {
+            val failure = e.response.body<GetUserKeyResponse.Failure>()
+            logcat.e(e) { "Failure = $failure" }
+            return FetchKeyResult.ResponseFailure(failure.reason)
+          }
+          logcat.e(e) { "Failed fetching key for $budgetId and $keyPassword" }
+          return FetchKeyResult.IOFailure(e.requireMessage())
+        },
+      )
 
     val (keyId, salt, test) = response.data
     val key = generateKeyFromPassword(keyPassword, salt)

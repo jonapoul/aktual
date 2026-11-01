@@ -108,34 +108,38 @@ internal constructor(
   fun delete(id: TagId) {
     viewModelScope.launch {
       val item = (state.value as? Success)?.tags?.firstOrNull { it.id == id }
-      runCatchingCancellable {
-        // syncChanges applies the tombstone to the local db and queues it for sync
-        syncController.syncChanges(tombstone(dataset = TAGS, row = id.toString()))
-        if (item != null) {
-          mutableEvents.tryEmit(ListTagsEvent.Deleted(item))
-        }
-        logcat.d { "Tombstoned tag $id" }
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          // syncChanges applies the tombstone to the local db and queues it for sync
+          syncController.syncChanges(tombstone(dataset = TAGS, row = id.toString()))
+          if (item != null) {
+            mutableEvents.tryEmit(ListTagsEvent.Deleted(item))
+          }
+          logcat.d { "Tombstoned tag $id" }
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed deleting tag $id" }
           mutableEvents.tryEmit(ListTagsEvent.DeleteFailed(item?.tag))
-        }
+        },
+      )
     }
   }
 
   // The undo snackbar can outlive this screen, so the restore can't be tied to viewModelScope
   fun undoDelete(item: TagItem) {
     budgetScope.launch {
-      runCatchingCancellable {
-        // reverse the tombstone in the local db and queue the reversal for sync. The row's other
-        // columns were never touched by the delete, so clearing the tombstone fully restores it
-        syncController.syncChanges(untombstone(dataset = TAGS, row = item.id.toString()))
-        logcat.d { "Restored tag ${item.id}" }
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          // reverse the tombstone in the local db and queue the reversal for sync. The row's other
+          // columns were never touched by the delete, so clearing the tombstone fully restores it
+          syncController.syncChanges(untombstone(dataset = TAGS, row = item.id.toString()))
+          logcat.d { "Restored tag ${item.id}" }
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed restoring tag ${item.id}" }
           mutableEvents.tryEmit(ListTagsEvent.RestoreFailed(item.tag))
-        }
+        },
+      )
     }
   }
 

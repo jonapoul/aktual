@@ -135,17 +135,16 @@ internal constructor(
 
     mutableIsWorking.update { true }
     viewModelScope.launch {
-      try {
-        runCatchingCancellable {
+      runCatchingCancellable(
+        attempt = {
           rulesDao.tombstone(setOf(id))
           mutableEvents.tryEmit(DeletedRule)
           val change = tombstone(dataset = RULES, row = id.toString())
           syncController.syncChanges(change)
-        }
-          .onFailure { e -> logcat.e(e) { "Failed tombstoning $id" } }
-      } finally {
-        mutableIsWorking.update { false }
-      }
+        },
+        onFailure = { e -> logcat.e(e) { "Failed tombstoning $id" } },
+        finally = { mutableIsWorking.update { false } },
+      )
     }
   }
 
@@ -153,8 +152,8 @@ internal constructor(
     mutableIsWorking.update { true }
 
     viewModelScope.launch {
-      try {
-        runCatchingCancellable {
+      runCatchingCancellable(
+        attempt = {
           val model = mutableRule.value
           if (model == null) {
             logcat.w { "Tried to save without a rule?" }
@@ -176,14 +175,13 @@ internal constructor(
             logcat.i { "Saved $rule" }
             syncController.syncChanges(insertChanges(rule))
           }
-        }
-          .onFailure { e ->
-            logcat.e(e) { "Failed saving $ruleId" }
-            mutableFailure.update { EditRuleState.SaveFailed(e.requireMessage()) }
-          }
-      } finally {
-        mutableIsWorking.update { false }
-      }
+        },
+        onFailure = { e ->
+          logcat.e(e) { "Failed saving $ruleId" }
+          mutableFailure.update { EditRuleState.SaveFailed(e.requireMessage()) }
+        },
+        finally = { mutableIsWorking.update { false } },
+      )
     }
   }
 

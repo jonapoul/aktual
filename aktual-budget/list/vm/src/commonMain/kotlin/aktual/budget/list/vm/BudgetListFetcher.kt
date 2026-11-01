@@ -18,32 +18,35 @@ import logcat.logcat
 @Inject
 class BudgetListFetcher
 internal constructor(private val syncApi: SyncApi, private val contexts: CoroutineContexts) {
-  suspend fun fetchBudgets(token: Token): FetchBudgetsResult = runCatchingCancellable {
-    val response = withContext(contexts.io) { syncApi.fetchUserFiles(token) }
-    val result = FetchBudgetsResult.Success(response.data.toImmutableList())
-    logcat.d { "Fetched budgets: $result" }
-    result
-  }
-    .getOrElse { e ->
-      when (e) {
-        is ResponseException -> {
-          logcat.e(e) { "HTTP failure fetching budgets" }
-          parseResponseException(e)
+  suspend fun fetchBudgets(token: Token): FetchBudgetsResult =
+    runCatchingCancellable(
+      attempt = {
+        val response = withContext(contexts.io) { syncApi.fetchUserFiles(token) }
+        val result = FetchBudgetsResult.Success(response.data.toImmutableList())
+        logcat.d { "Fetched budgets: $result" }
+        result
+      },
+      onFailure = { e ->
+        when (e) {
+          is ResponseException -> {
+            logcat.e(e) { "HTTP failure fetching budgets" }
+            parseResponseException(e)
+          }
+          is JsonConvertException -> {
+            logcat.e(e) { "JSON failure fetching budgets" }
+            FetchBudgetsResult.InvalidResponse(e.requireMessage())
+          }
+          is IOException -> {
+            logcat.e(e) { "Network failure fetching budgets" }
+            FetchBudgetsResult.NetworkFailure(e.requireMessage())
+          }
+          else -> {
+            logcat.e(e) { "Failed fetching budgets" }
+            FetchBudgetsResult.OtherFailure(e.requireMessage())
+          }
         }
-        is JsonConvertException -> {
-          logcat.e(e) { "JSON failure fetching budgets" }
-          FetchBudgetsResult.InvalidResponse(e.requireMessage())
-        }
-        is IOException -> {
-          logcat.e(e) { "Network failure fetching budgets" }
-          FetchBudgetsResult.NetworkFailure(e.requireMessage())
-        }
-        else -> {
-          logcat.e(e) { "Failed fetching budgets" }
-          FetchBudgetsResult.OtherFailure(e.requireMessage())
-        }
-      }
-    }
+      },
+    )
 
   private suspend fun parseResponseException(e: ResponseException): FetchBudgetsResult =
     try {

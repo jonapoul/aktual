@@ -51,13 +51,14 @@ internal constructor(
   private suspend fun fetchMetrics(counter: Int) {
     logcat.d { "fetchMetrics counter=$counter" }
     mutableState.update { Loading }
-    runCatchingCancellable {
-      val response = withContext(contexts.io) { metricsApi.getMetrics() }
-      logcat.v { "fetchMetrics success: $response" }
-      val state = MetricsState.Success(response.memory, response.uptime, lastUpdate = clock.now())
-      mutableState.update { state }
-    }
-      .onFailure { e ->
+    runCatchingCancellable(
+      attempt = {
+        val response = withContext(contexts.io) { metricsApi.getMetrics() }
+        logcat.v { "fetchMetrics success: $response" }
+        val state = MetricsState.Success(response.memory, response.uptime, lastUpdate = clock.now())
+        mutableState.update { state }
+      },
+      onFailure = { e ->
         when (e) {
           is IOException -> {
             logcat.e(e) { "Failed I/O when fetching metrics" }
@@ -72,6 +73,7 @@ internal constructor(
             mutableState.update { Failure(e.requireMessage()) }
           }
         }
-      }
+      },
+    )
   }
 }

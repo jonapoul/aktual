@@ -110,21 +110,20 @@ internal constructor(
     loadJob?.cancel()
     loadJob = viewModelScope.launch {
       val sources =
-        try {
-          runCatchingCancellable {
+        runCatchingCancellable(
+          attempt = {
             val accounts = loadAccounts()
             mutableAccounts.update { accounts }
             mutableFailure.update { null }
             accounts.linked.keys
-          }
-            .getOrElse { e ->
-              logcat.e(e) { "Failed loading bank sync accounts" }
-              mutableFailure.update { e.requireMessage() }
-              emptySet()
-            }
-        } finally {
-          mutableIsLoading.update { false }
-        }
+          },
+          onFailure = { e ->
+            logcat.e(e) { "Failed loading bank sync accounts" }
+            mutableFailure.update { e.requireMessage() }
+            emptySet()
+          },
+          finally = { mutableIsLoading.update { false } },
+        )
 
       // Show the accounts straight away, then fill in each provider's status as it arrives
       checkProviders(sources)
@@ -168,7 +167,8 @@ internal constructor(
   }
 
   private suspend fun fetchStatus(source: AccountSyncSource): BankSyncProviderStatus =
-    runCatchingCancellable<BankSyncProviderStatus> {
+    runCatchingCancellable<BankSyncProviderStatus>(
+      attempt = {
         when (val response = api.status(source)) {
           is BankSyncStatusResponse.Success -> {
             if (response.configured) Configured else NotConfigured
@@ -178,11 +178,12 @@ internal constructor(
             Failed
           }
         }
-      }
-      .getOrElse { e ->
+      },
+      onFailure = { e ->
         logcat.w(e) { "Failed checking bank sync status for $source" }
         Failed
-      }
+      },
+    )
 }
 
 private class LoadedAccounts(

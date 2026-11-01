@@ -35,13 +35,14 @@ internal constructor(
   suspend operator fun invoke(userFile: UserFile, zipPath: Path): ImportResult {
     val directory = budgetFiles.directory(userFile.fileId, mkdirs = true)
 
-    val result = runCatchingCancellable {
-      invokeImpl(userFile, zipPath)
-    }
-      .getOrElse { e ->
-        logcat.e(e) { "Unexpected failure importing $userFile from $zipPath" }
-        ImportResult.OtherFailure(e.requireMessage())
-      }
+    val result =
+      runCatchingCancellable(
+        attempt = { invokeImpl(userFile, zipPath) },
+        onFailure = { e ->
+          logcat.e(e) { "Unexpected failure importing $userFile from $zipPath" }
+          ImportResult.OtherFailure(e.requireMessage())
+        },
+      )
 
     if (result is Failure) {
       fileSystem.deleteRecursively(directory)

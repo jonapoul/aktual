@@ -18,12 +18,12 @@ internal constructor(private val linker: BankAccountLinker, private val writer: 
   // couldn't be removed
   suspend fun delete(account: AccountId): Boolean {
     writer.write { deleteAccount(account) }
-    return runCatchingCancellable {
-      linker.unlink(account)
-    }
-      .getOrElse { e ->
+    return runCatchingCancellable(
+      attempt = { linker.unlink(account) },
+      onFailure = { e ->
         logcat.w(e) { "Deleted $account but failed unlinking it" }
         false
-      }
+      },
+    )
   }
 }

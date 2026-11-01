@@ -145,13 +145,13 @@ internal constructor(
       }
       clearLastOpenedIfMatches(id)
 
-      runCatchingCancellable {
-        val request = DeleteUserFileRequest(id, token)
-        syncApi.delete(request)
-      }
-        .onFailure { e ->
-          logcat.e(e) { "Failed deleting $id" }
-        }
+      runCatchingCancellable(
+        attempt = {
+          val request = DeleteUserFileRequest(id, token)
+          syncApi.delete(request)
+        },
+        onFailure = { e -> logcat.e(e) { "Failed deleting $id" } },
+      )
 
       logcat.d { "Successfully deleted $id" }
       clearDeletingState()

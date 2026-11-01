@@ -25,35 +25,39 @@ internal constructor(
   private val preferences: AppPreferences,
   private val runLevelController: RunLevelController,
 ) {
-  suspend fun fetchLoginMethods(): List<AvailableLoginMethod> = runCatchingCancellable {
-    withContext(contexts.io) { accountApi.loginMethods().methods }
-  }
-    .getOrElse { e ->
-      logcat.w(e) { "Failed to fetch login methods" }
-      emptyList()
-    }
+  suspend fun fetchLoginMethods(): List<AvailableLoginMethod> =
+    runCatchingCancellable(
+      attempt = { withContext(contexts.io) { accountApi.loginMethods().methods } },
+      onFailure = { e ->
+        logcat.w(e) { "Failed to fetch login methods" }
+        emptyList()
+      },
+    )
 
   suspend fun logIn(
     password: Password,
     loginMethod: LoginMethod = LoginMethod.Password,
   ): LoginResult {
-    val response = runCatchingCancellable {
-      withContext(contexts.io) {
-        when (loginMethod) {
-          LoginMethod.Password -> accountApi.login(LoginRequest.Password(password))
-          Header -> accountApi.login(LoginRequest.Header(), password)
-          OpenId -> accountApi.login(LoginRequest.OpenId(password, returnUrl = ""))
-          Unknown -> error("Unsupported login method")
-        }
-      }
-    }
-      .getOrElse { e ->
-        return if (e is IOException) {
-          LoginResult.NetworkFailure(e.requireMessage())
-        } else {
-          LoginResult.OtherFailure(e.requireMessage())
-        }
-      }
+    val response =
+      runCatchingCancellable(
+        attempt = {
+          withContext(contexts.io) {
+            when (loginMethod) {
+              LoginMethod.Password -> accountApi.login(LoginRequest.Password(password))
+              Header -> accountApi.login(LoginRequest.Header(), password)
+              OpenId -> accountApi.login(LoginRequest.OpenId(password, returnUrl = ""))
+              Unknown -> error("Unsupported login method")
+            }
+          }
+        },
+        onFailure = { e ->
+          return if (e is IOException) {
+            LoginResult.NetworkFailure(e.requireMessage())
+          } else {
+            LoginResult.OtherFailure(e.requireMessage())
+          }
+        },
+      )
 
     return when (response) {
       is Failure -> response.reason.toLoginResult()

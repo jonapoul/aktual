@@ -125,23 +125,25 @@ internal constructor(
   fun save() {
     viewModelScope.launch {
       mutableSaveError.update { null }
-      runCatchingCancellable {
-        val name = mutableName.value.trim()
-        val favorite = mutableFavorite.value
-        val learn = mutableLearnCategories.value
-        val row = payeeId.value
-        payeeDao.update(payeeId, name, favorite, learn)
-        syncController.syncChanges(
-          localChange(PAYEES, row, "name", name),
-          localChange(PAYEES, row, "favorite", favorite),
-          localChange(PAYEES, row, "learn_categories", learn),
-        )
-        mutableEvents.tryEmit(FinishedSaving)
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          val name = mutableName.value.trim()
+          val favorite = mutableFavorite.value
+          val learn = mutableLearnCategories.value
+          val row = payeeId.value
+          payeeDao.update(payeeId, name, favorite, learn)
+          syncController.syncChanges(
+            localChange(PAYEES, row, "name", name),
+            localChange(PAYEES, row, "favorite", favorite),
+            localChange(PAYEES, row, "learn_categories", learn),
+          )
+          mutableEvents.tryEmit(FinishedSaving)
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed saving payee $payeeId" }
           mutableSaveError.update { e.requireMessage() }
-        }
+        },
+      )
     }
   }
 

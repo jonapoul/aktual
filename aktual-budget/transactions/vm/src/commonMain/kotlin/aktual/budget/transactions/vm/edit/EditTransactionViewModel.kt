@@ -397,18 +397,20 @@ internal constructor(
     ?.key
 
   private suspend fun observe() {
-    runCatchingCancellable {
-      val entities = loadEntities()
-      mutableEntities.update { entities }
-      when (target) {
-        is New -> startDraft(target, entities)
-        is Existing -> follow(target)
-      }
-    }
-      .onFailure { e ->
+    runCatchingCancellable(
+      attempt = {
+        val entities = loadEntities()
+        mutableEntities.update { entities }
+        when (target) {
+          is New -> startDraft(target, entities)
+          is Existing -> follow(target)
+        }
+      },
+      onFailure = { e ->
         logcat.e(e) { "Failed loading $target" }
         mutableFailure.update { EditTransactionState.OtherFailure(e.requireMessage()) }
-      }
+      },
+    )
   }
 
   private suspend fun startDraft(target: EditTransactionTarget.New, entities: EditorEntities) {
@@ -490,12 +492,10 @@ internal constructor(
   // A saved transaction only uses the rules' payees, to add one by name, so it's viewed and
   // edited without them if they fail to load
   private suspend fun loadPayeeLookup() {
-    runCatchingCancellable {
-      rules = rulesLoader.load()
-    }
-      .onFailure { e ->
-        logcat.w(e) { "Failed loading rules for $target" }
-      }
+    runCatchingCancellable(
+      attempt = { rules = rulesLoader.load() },
+      onFailure = { e -> logcat.w(e) { "Failed loading rules for $target" } },
+    )
   }
 
   // Throws away any edits and closes, unless they're being saved
@@ -598,13 +598,13 @@ internal constructor(
   // As upstream, the tag's created straight away rather than when the transaction's saved
   fun createTag(tag: String) {
     viewModelScope.launch {
-      runCatchingCancellable {
-        tagCreator.create(tag)
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = { tagCreator.create(tag) },
+        onFailure = { e ->
           logcat.e(e) { "Failed creating tag $tag" }
           mutableError.update { EditTransactionError.CreatingTag(e.requireMessage()) }
-        }
+        },
+      )
     }
   }
 
@@ -736,15 +736,14 @@ internal constructor(
   private fun launchSave(save: suspend () -> Unit) {
     mutableIsWorking.update { true }
     viewModelScope.launch {
-      try {
-        runCatchingCancellable { save() }
-          .onFailure { e ->
-            logcat.e(e) { "Failed saving $target" }
-            mutableError.update { EditTransactionError.Saving(e.requireMessage()) }
-          }
-      } finally {
-        mutableIsWorking.update { false }
-      }
+      runCatchingCancellable(
+        attempt = { save() },
+        onFailure = { e ->
+          logcat.e(e) { "Failed saving $target" }
+          mutableError.update { EditTransactionError.Saving(e.requireMessage()) }
+        },
+        finally = { mutableIsWorking.update { false } },
+      )
     }
   }
 
@@ -766,20 +765,19 @@ internal constructor(
 
     mutableIsWorking.update { true }
     viewModelScope.launch {
-      try {
-        runCatchingCancellable {
+      runCatchingCancellable(
+        attempt = {
           isDeleted = true
           writer.write(runTransfers = true) { delete(saved.details.transaction.id) }
           mutableEvents.tryEmit(Deleted)
-        }
-          .onFailure { e ->
-            isDeleted = false
-            logcat.e(e) { "Failed deleting $target" }
-            mutableError.update { EditTransactionError.Deleting(e.requireMessage()) }
-          }
-      } finally {
-        mutableIsWorking.update { false }
-      }
+        },
+        onFailure = { e ->
+          isDeleted = false
+          logcat.e(e) { "Failed deleting $target" }
+          mutableError.update { EditTransactionError.Deleting(e.requireMessage()) }
+        },
+        finally = { mutableIsWorking.update { false } },
+      )
     }
   }
 

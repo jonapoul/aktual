@@ -25,17 +25,18 @@ internal class IncrementalSyncer(
   private val clock: Clock,
   private val syncDao: SyncDao,
 ) {
-  suspend fun sync(): SyncResult = runCatchingCancellable {
-    fullSync(sinceTimestamp = null, count = 0, prevDiffTime = null)
-  }
-    .getOrElse { e ->
-      if (e is IOException) {
-        SyncResult.NetworkError(e)
-      } else {
-        logcat.e(e) { "Failed syncing" }
-        SyncResult.OtherError(e)
-      }
-    }
+  suspend fun sync(): SyncResult =
+    runCatchingCancellable(
+      attempt = { fullSync(sinceTimestamp = null, count = 0, prevDiffTime = null) },
+      onFailure = { e ->
+        if (e is IOException) {
+          SyncResult.NetworkError(e)
+        } else {
+          logcat.e(e) { "Failed syncing" }
+          SyncResult.OtherError(e)
+        }
+      },
+    )
 
   private tailrec suspend fun fullSync(
     sinceTimestamp: Timestamp?,

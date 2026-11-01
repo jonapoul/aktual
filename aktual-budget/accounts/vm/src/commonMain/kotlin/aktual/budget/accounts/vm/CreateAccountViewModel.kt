@@ -79,13 +79,14 @@ internal constructor(
 
   init {
     viewModelScope.launch {
-      val names = runCatchingCancellable {
-        accountDao.getAllWithStatus().mapNotNull { it.name }.toPersistentSet()
-      }
-        .getOrElse { e ->
-          logcat.e(e) { "Failed loading account names" }
-          persistentSetOf()
-        }
+      val names =
+        runCatchingCancellable(
+          attempt = { accountDao.getAllWithStatus().mapNotNull { it.name }.toPersistentSet() },
+          onFailure = { e ->
+            logcat.e(e) { "Failed loading account names" }
+            persistentSetOf()
+          },
+        )
       mutableExistingNames.update { names }
     }
   }
@@ -117,16 +118,18 @@ internal constructor(
     mutableIsSaving.update { true }
 
     viewModelScope.launch {
-      runCatchingCancellable {
-        val id = writer.write { createAccount(name, offBudget, amount, calendar.today()) }
-        // Stays saving, so it can't be created twice before the screen closes
-        eventChannel.send(CreateAccountEvent.Created(id))
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          val id = writer.write { createAccount(name, offBudget, amount, calendar.today()) }
+          // Stays saving, so it can't be created twice before the screen closes
+          eventChannel.send(CreateAccountEvent.Created(id))
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed creating account $name" }
           mutableSaveError.update { e.requireMessage() }
           mutableIsSaving.update { false }
-        }
+        },
+      )
     }
   }
 

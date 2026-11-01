@@ -86,13 +86,13 @@ internal constructor(
 
   fun setLearningEnabled(enabled: Boolean) {
     viewModelScope.launch {
-      runCatchingCancellable {
-        learning.set(enabled)
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = { learning.set(enabled) },
+        onFailure = { e ->
           logcat.e(e) { "Failed setting category learning to $enabled" }
           mutableEvents.tryEmit(UpdateFailed)
-        }
+        },
+      )
     }
   }
 
@@ -100,57 +100,61 @@ internal constructor(
   fun delete(payee: PayeeItem) {
     if (payee.isTransfer) return
     viewModelScope.launch {
-      runCatchingCancellable {
-        syncController.syncChanges(tombstone(PAYEES, payee.id.value))
-        mutableEvents.tryEmit(ListPayeesEvent.Deleted(payee))
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          syncController.syncChanges(tombstone(PAYEES, payee.id.value))
+          mutableEvents.tryEmit(ListPayeesEvent.Deleted(payee))
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed deleting payee ${payee.id}" }
           mutableEvents.tryEmit(DeleteFailed)
-        }
+        },
+      )
     }
   }
 
   // The undo snackbar can outlive this screen, so the restore can't be tied to viewModelScope
   fun undoDelete(payee: PayeeItem) {
     budgetScope.launch {
-      runCatchingCancellable {
-        syncController.syncChanges(untombstone(PAYEES, payee.id.value))
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = { syncController.syncChanges(untombstone(PAYEES, payee.id.value)) },
+        onFailure = { e ->
           logcat.e(e) { "Failed restoring payee ${payee.id}" }
           mutableEvents.tryEmit(RestoreFailed)
-        }
+        },
+      )
     }
   }
 
   fun merge(payee: PayeeItem, into: PayeeItem) {
     viewModelScope.launch {
-      runCatchingCancellable {
-        val merge = merger.merge(into.id, listOf(payee.id))
-        if (merge == null) {
-          logcat.w { "Nothing to merge from ${payee.id} into ${into.id}" }
-          mutableEvents.tryEmit(MergeFailed)
-        } else {
-          mutableEvents.tryEmit(ListPayeesEvent.Merged(payee, into, merge))
-        }
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          val merge = merger.merge(into.id, listOf(payee.id))
+          if (merge == null) {
+            logcat.w { "Nothing to merge from ${payee.id} into ${into.id}" }
+            mutableEvents.tryEmit(MergeFailed)
+          } else {
+            mutableEvents.tryEmit(ListPayeesEvent.Merged(payee, into, merge))
+          }
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed merging ${payee.id} into ${into.id}" }
           mutableEvents.tryEmit(MergeFailed)
-        }
+        },
+      )
     }
   }
 
   fun undoMerge(event: ListPayeesEvent.Merged) {
     budgetScope.launch {
-      runCatchingCancellable {
-        merger.undo(event.merge)
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = { merger.undo(event.merge) },
+        onFailure = { e ->
           logcat.e(e) { "Failed undoing merge of ${event.payee.id}" }
           mutableEvents.tryEmit(RestoreFailed)
-        }
+        },
+      )
     }
   }
 
@@ -158,13 +162,15 @@ internal constructor(
     if (payee.isTransfer) return
     val favorite = !payee.isFavorite
     viewModelScope.launch {
-      runCatchingCancellable {
-        syncController.syncChanges(localChange(PAYEES, payee.id.value, "favorite", favorite))
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          syncController.syncChanges(localChange(PAYEES, payee.id.value, "favorite", favorite))
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed setting favorite=$favorite on ${payee.id}" }
           mutableEvents.tryEmit(UpdateFailed)
-        }
+        },
+      )
     }
   }
 }

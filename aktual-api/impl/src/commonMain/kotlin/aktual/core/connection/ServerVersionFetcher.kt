@@ -65,20 +65,22 @@ class ServerVersionFetcher(
   private suspend fun fetchVersionUntilSuccess() {
     while (loopController.shouldLoop()) {
       logcat.v { "fetchVersion" }
-      runCatchingCancellable {
-        val response = withContext(contexts.io) { baseApi.fetchInfo() }
-        logcat.v { "Fetched %s".format(response) }
-        versionsStateHolder.set(response.build.version)
-        break
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          val response = withContext(contexts.io) { baseApi.fetchInfo() }
+          logcat.v { "Fetched %s".format(response) }
+          versionsStateHolder.set(response.build.version)
+          break
+        },
+        onFailure = { e ->
           if (e is ResponseException) {
             logcat.w(e) { "HTTP failure fetching server info" }
           } else {
             logcat.w(e) { "Failed fetching server info" }
           }
           delay(RETRY_DELAY)
-        }
+        },
+      )
     }
   }
 
