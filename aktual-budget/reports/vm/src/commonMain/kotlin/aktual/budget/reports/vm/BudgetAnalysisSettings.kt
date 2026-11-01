@@ -25,9 +25,17 @@ data class BudgetAnalysisSettings(
 // The fields its filters can use, since it only filters categories
 val BUDGET_ANALYSIS_FIELDS = persistentListOf<Field>(Category, CategoryGroup)
 
-internal fun BudgetAnalysisReportMeta.toSettings(current: YearMonth) =
+// Fills in upstream's defaults, so the draft starts out the same as the saved report would show
+internal fun ReportMeta.withDefaults(current: YearMonth): ReportMeta =
+  if (this is BudgetAnalysisReportMeta) {
+    withSettings(settings(timeFrame ?: defaultTimeFrame(current)))
+  } else {
+    this
+  }
+
+fun BudgetAnalysisReportMeta.settings(timeFrame: TimeFrame) =
   BudgetAnalysisSettings(
-    timeFrame = timeFrame ?: defaultTimeFrame(current),
+    timeFrame = timeFrame,
     conditions = conditions.orEmpty().toImmutableList(),
     conditionsOp = conditionsOp ?: And,
     graphType = graphType?.takeIf { it != Unknown } ?: Bar,
@@ -36,7 +44,7 @@ internal fun BudgetAnalysisReportMeta.toSettings(current: YearMonth) =
     showHiddenCategories = showHiddenCategories == true,
   )
 
-internal fun BudgetAnalysisReportMeta.withSettings(settings: BudgetAnalysisSettings) =
+private fun BudgetAnalysisReportMeta.withSettings(settings: BudgetAnalysisSettings) =
   copy(
     timeFrame = settings.timeFrame,
     conditions = settings.conditions,

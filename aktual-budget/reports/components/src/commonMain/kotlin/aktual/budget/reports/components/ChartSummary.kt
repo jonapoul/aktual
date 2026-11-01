@@ -488,7 +488,7 @@ private fun ShowAs(
     HorizontalSpacer(5.dp)
 
     val chartTypeMap: ImmutableMap<String, SummaryChartType> =
-      SummaryChartType.entries.associateBy { string(it) }.toImmutableMap()
+      SummaryChartType.entries.associateBy { it.label() }.toImmutableMap()
 
     val currentType =
       when (data) {
@@ -503,7 +503,7 @@ private fun ShowAs(
     ProvideSurfaceColor(colors.tableBackground) {
       AktualExposedDropDownMenu(
         modifier = Modifier.wrapContentSize(),
-        value = string(currentType),
+        value = currentType.label(),
         options = chartTypeMap.keys.toImmutableList(),
         onValueChange = { string ->
           val type = chartTypeMap.getValue(string)
@@ -600,9 +600,9 @@ private fun string(date: LocalDate): String {
 }
 
 @Composable
-private fun string(type: SummaryChartType): String =
-  when (type) {
-    Sum -> Strings.reportsSummarySum
+fun SummaryChartType.label(): String =
+  when (this) {
+    SummaryChartType.Sum -> Strings.reportsSummarySum
     AveragePerMonth -> Strings.reportsSummaryPerMonth
     AveragePerYear -> Strings.reportsSummaryPerYear
     AveragePerTransaction -> Strings.reportsSummaryPerTransaction

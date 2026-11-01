@@ -47,6 +47,40 @@ internal fun ConditionsEditor(
 ) {
   var conditionIndex by rememberSaveable { mutableStateOf<Int?>(null) }
 
+  ConditionsList(
+    conditions = conditions,
+    conditionsOp = conditionsOp,
+    names = data.names,
+    onChange = onChange,
+    onOpen = { conditionIndex = it },
+    modifier = modifier,
+    fields = fields,
+  )
+
+  conditionIndex?.let { index ->
+    ConditionSheetAt(
+      index = index,
+      conditions = conditions,
+      conditionsOp = conditionsOp,
+      data = data,
+      onChange = onChange,
+      onDismiss = { conditionIndex = null },
+      fields = fields,
+    )
+  }
+}
+
+// Opens a condition by its index. Adding one opens it too, before it shows up in [conditions]
+@Composable
+internal fun ConditionsList(
+  conditions: ImmutableList<Condition>,
+  conditionsOp: ConditionOp,
+  names: ImmutableMap<String, String>,
+  onChange: (List<Condition>, ConditionOp) -> Unit,
+  onOpen: (Int) -> Unit,
+  modifier: Modifier = Modifier,
+  fields: ImmutableList<Field> = QUERY_FIELDS,
+) =
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(22.dp)) {
     Column {
       SectionLabel(Strings.reportsFormulaQueryMatch)
@@ -70,8 +104,8 @@ internal fun ConditionsEditor(
               if (index > 0) Divider()
               ConditionRow(
                 condition = condition,
-                names = data.names,
-                onClick = { conditionIndex = index },
+                names = names,
+                onClick = { onOpen(index) },
               )
             }
           }
@@ -82,7 +116,7 @@ internal fun ConditionsEditor(
         icon = AktualIcons.Add,
         text = Strings.reportsFormulaQueryAddCondition,
         onClick = {
-          conditionIndex = conditions.size
+          onOpen(conditions.size)
           val field: Field = if (Payee in fields) Payee else fields.first()
           onChange(conditions + newQueryCondition(field), conditionsOp)
         },
@@ -90,9 +124,19 @@ internal fun ConditionsEditor(
     }
   }
 
-  val index = conditionIndex
-  val condition = index?.let(conditions::getOrNull)
-  if (index != null && condition != null) {
+// Shows nothing until the condition exists, e.g. straight after adding it
+@Composable
+internal fun ConditionSheetAt(
+  index: Int,
+  conditions: ImmutableList<Condition>,
+  conditionsOp: ConditionOp,
+  data: QueryEditorData,
+  onChange: (List<Condition>, ConditionOp) -> Unit,
+  onDismiss: () -> Unit,
+  fields: ImmutableList<Field> = QUERY_FIELDS,
+) {
+  val condition = conditions.getOrNull(index)
+  if (condition != null) {
     ConditionSheet(
       condition = condition,
       data = data,
@@ -101,7 +145,7 @@ internal fun ConditionsEditor(
         onChange(conditions.toMutableList().apply { set(index, changed) }, conditionsOp)
       },
       onDelete = { onChange(conditions.toMutableList().apply { removeAt(index) }, conditionsOp) },
-      onDismiss = { conditionIndex = null },
+      onDismiss = onDismiss,
     )
   }
 }

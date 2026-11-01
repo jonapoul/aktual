@@ -1,5 +1,6 @@
 package aktual.budget.reports.vm
 
+import aktual.budget.db.DbJson
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
@@ -10,6 +11,9 @@ import kotlinx.datetime.YearMonth
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 // packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts
 
@@ -29,6 +33,36 @@ internal fun parseSummaryContent(raw: String?): SummaryContent =
   raw
     ?.let { runCatching { summaryJson.decodeFromString(SummaryContent.serializer(), it) } }
     ?.getOrNull() ?: SummaryContent()
+
+val SummaryReportMeta.summaryType: SummaryChartType
+  get() = parseSummaryContent(content).type
+
+val SummaryReportMeta.allTimeDivisor: Boolean
+  get() = parseSummaryContent(content).divisorAllTimeDateRange == true
+
+fun SummaryReportMeta.withSummaryType(type: SummaryChartType): SummaryReportMeta =
+  withContent("type" to DbJson.encodeToJsonElement(SummaryChartType.serializer(), type))
+
+fun SummaryReportMeta.withAllTimeDivisor(allTime: Boolean): SummaryReportMeta =
+  withContent("divisorAllTimeDateRange" to JsonPrimitive(allTime))
+
+// The content is a JSON string inside the meta, so keep its other values. Unreadable content is
+// replaced, like upstream falling back to a default when parsing fails
+private fun SummaryReportMeta.withContent(value: Pair<String, JsonElement>): SummaryReportMeta {
+  val current =
+    content?.let { runCatching { DbJson.parseToJsonElement(it) as? JsonObject }.getOrNull() }
+      ?: JsonObject(emptyMap())
+  return copy(content = DbJson.encodeToString(JsonObject(current + value)))
+}
+
+// Summaries whose content is written differently but reads the same show the same report
+internal fun ReportMeta.isSameAs(other: ReportMeta): Boolean =
+  if (this is SummaryReportMeta && other is SummaryReportMeta) {
+    copy(content = null) == other.copy(content = null) &&
+      parseSummaryContent(content) == parseSummaryContent(other.content)
+  } else {
+    this == other
+  }
 
 internal data class SummaryParams(
   val title: String,

@@ -2,26 +2,35 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.components.ChartTags
+import aktual.budget.reports.components.PREVIEW_BUDGET_ANALYSIS_DATA
 import aktual.budget.reports.components.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.Tags
+import aktual.budget.reports.vm.BudgetAnalysisReportMeta
 import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.ReportMeta
+import aktual.budget.reports.vm.SummaryData
+import aktual.budget.reports.vm.SummaryReportMeta
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.report.ReportState
+import aktual.budget.reports.vm.summaryType
 import aktual.test.setPreviewContent
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import assertk.assertions.prop
 import kotlin.test.Test
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 
 class ReportScaffoldTest {
@@ -122,11 +131,62 @@ class ReportScaffoldTest {
     onNodeWithTag(Tags.SaveReport).assertDoesNotExist()
   }
 
-  // Applies each edit the scaffold sent to the saved meta
-  private fun List<Action>.edited(): ReportMeta =
-    filterIsInstance<Action.EditSettings>().fold(STATE.item.meta) { meta, edit ->
-      edit.transform(meta)
-    }
+  @Test
+  fun `Settings sheet picks a summary type`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<Action>()
+    setPreviewContent { ReportScaffold(state = SUMMARY, onAction = { actions += it }) }
+
+    // when
+    onNodeWithTag(ChartTags.ChartSettings).performClick()
+    onNodeWithText("Show as").performClick()
+    onNodeWithText("Percentage").performClick()
+
+    // then
+    assertThat(actions.edited(SUMMARY))
+      .isInstanceOf<SummaryReportMeta>()
+      .prop(SummaryReportMeta::summaryType)
+      .isEqualTo(Percentage)
+  }
+
+  @Test
+  fun `Settings sheet picks a budget analysis graph`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<Action>()
+    setPreviewContent { ReportScaffold(state = ANALYSIS, onAction = { actions += it }) }
+
+    // when
+    onNodeWithTag(ChartTags.ChartSettings).performClick()
+    onNodeWithText("Graph").performClick()
+    onNodeWithText("Line").performClick()
+
+    // then
+    assertThat(actions.edited(ANALYSIS))
+      .isInstanceOf<BudgetAnalysisReportMeta>()
+      .prop(BudgetAnalysisReportMeta::graphType)
+      .isEqualTo(Line)
+  }
+
+  @Test
+  fun `Settings sheet toggles budget analysis switches`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<Action>()
+    setPreviewContent { ReportScaffold(state = ANALYSIS, onAction = { actions += it }) }
+
+    // when
+    onNodeWithTag(ChartTags.ChartSettings).performClick()
+    onNodeWithText("Show balance").performScrollTo().performClick()
+
+    // then
+    assertThat(actions.edited(ANALYSIS))
+      .isInstanceOf<BudgetAnalysisReportMeta>()
+      .prop(BudgetAnalysisReportMeta::showBalance)
+      .isEqualTo(false)
+  }
+
+  // Applies each edit the scaffold sent to the draft
+  private fun List<Action>.edited(state: ReportState.Loaded = STATE): ReportMeta =
+    filterIsInstance<Action.EditSettings>().fold(state.draft) { meta, edit -> edit.transform(meta) }
 
   @Test
   fun `Menu renames the report`() = runComposeUiTest {
@@ -155,5 +215,37 @@ class ReportScaffoldTest {
       )
 
     val CHANGED = STATE.copy(draft = NetWorthReportMeta(mode = Stacked), hasChanges = true)
+
+    val SUMMARY =
+      ReportState.Loaded(
+        type = Summary,
+        item = DashboardItem(id = WidgetId("summary"), x = 0, y = 0, meta = SummaryReportMeta()),
+        data =
+          SummaryData.Sum(
+            title = "Summary",
+            start = LocalDate(2025, 1, 1),
+            end = LocalDate(2025, 6, 30),
+            value = Zero,
+          ),
+      )
+
+    // As the view model makes it, with upstream's defaults filled in
+    val ANALYSIS_META =
+      BudgetAnalysisReportMeta(
+        timeFrame = TimeFrame(YearMonth(2025, 1), YearMonth(2025, 6), Static),
+        conditions = emptyList(),
+        conditionsOp = And,
+        graphType = Bar,
+        showBalance = true,
+        balanceOnly = false,
+        showHiddenCategories = false,
+      )
+
+    val ANALYSIS =
+      ReportState.Loaded(
+        type = BudgetAnalysis,
+        item = DashboardItem(id = WidgetId("analysis"), x = 0, y = 0, meta = ANALYSIS_META),
+        data = PREVIEW_BUDGET_ANALYSIS_DATA,
+      )
   }
 }

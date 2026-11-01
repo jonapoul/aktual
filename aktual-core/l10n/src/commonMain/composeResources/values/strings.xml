@@ -1158,6 +1158,7 @@
   <string name="reports_choose_type_disabled_dialog_dismiss">OK</string>
 
   <string name="reports_summary_show_as">Show as:</string>
+  <string name="reports_summary_type">Show as</string>
   <string name="reports_summary_sum">Sum</string>
   <string name="reports_summary_per_month">Average per month</string>
   <string name="reports_summary_per_year">Average per year</string>

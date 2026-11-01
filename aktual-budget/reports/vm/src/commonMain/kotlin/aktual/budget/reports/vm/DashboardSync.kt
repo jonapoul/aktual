@@ -20,7 +20,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.contentOrNull
 
 // Writes dashboard changes through the sync log, so they reach the server
 @Inject
@@ -87,13 +86,6 @@ internal class DashboardSync(
     patchMeta(id, (encoded as JsonObject).filterKeys { it in MONTE_CARLO_CONFIG_KEYS })
   }
 
-  // Leaves the name and anything unmodelled as they are, like upstream's save
-  suspend fun setBudgetAnalysis(id: WidgetId, settings: BudgetAnalysisSettings) {
-    val meta = BudgetAnalysisReportMeta().withSettings(settings)
-    val encoded = DbJson.encodeToJsonElement(BudgetAnalysisReportMeta.serializer(), meta)
-    patchMeta(id, (encoded as JsonObject).filterKeys { it in BUDGET_ANALYSIS_KEYS })
-  }
-
   // Writes only the settings that differ between the two, so the name, anything unmodelled and
   // anything changed elsewhere since are left as they are
   suspend fun setMeta(id: WidgetId, type: WidgetType, saved: ReportMeta, draft: ReportMeta) {
@@ -113,27 +105,6 @@ internal class DashboardSync(
   private fun encodeMeta(type: WidgetType, meta: ReportMeta): JsonObject {
     val serializer = ReportMeta.serializer(type) as KSerializer<ReportMeta>
     return DbJson.encodeToJsonElement(serializer, meta) as JsonObject
-  }
-
-  suspend fun setSummaryType(id: WidgetId, type: SummaryChartType) =
-    patchSummaryContent(
-      id,
-      "type" to DbJson.encodeToJsonElement(SummaryChartType.serializer(), type),
-    )
-
-  suspend fun setSummaryAllTimeDivisor(id: WidgetId, allTime: Boolean) =
-    patchSummaryContent(id, "divisorAllTimeDateRange" to JsonPrimitive(allTime))
-
-  // The summary's content is a JSON string inside the meta. Unreadable content is replaced, like
-  // upstream falling back to a default when parsing fails
-  private suspend fun patchSummaryContent(id: WidgetId, value: Pair<String, JsonElement>) {
-    val meta = dao.meta(id) ?: return
-    val raw = (meta[CONTENT] as? JsonPrimitive)?.contentOrNull
-    val content =
-      raw?.let { runCatching { DbJson.parseToJsonElement(it) as? JsonObject }.getOrNull() }
-        ?: JsonObject(emptyMap())
-    val patched = JsonObject(content + value)
-    patchMeta(id, CONTENT to JsonPrimitive(DbJson.encodeToString(patched)))
   }
 
   private suspend fun patchMeta(id: WidgetId, vararg values: Pair<String, JsonElement>) =
@@ -228,17 +199,6 @@ internal class DashboardSync(
       encodeDefaults = true
       explicitNulls = true
     }
-
-    val BUDGET_ANALYSIS_KEYS =
-      setOf(
-        "conditions",
-        "conditionsOp",
-        "timeFrame",
-        "graphType",
-        "showBalance",
-        "balanceOnly",
-        "showHiddenCategories",
-      )
 
     // The meta keys the Monte Carlo configuration owns, leaving the name and anything unmodelled
     val MONTE_CARLO_CONFIG_KEYS =

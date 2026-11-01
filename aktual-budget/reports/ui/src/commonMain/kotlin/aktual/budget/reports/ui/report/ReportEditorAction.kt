@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 
 // Shared by the reports that edit a draft of their settings, previewed by the chart until saved
 @Immutable
-internal sealed interface ReportEditorAction : CustomReportAction, BudgetAnalysisAction {
+internal sealed interface ReportEditorAction : CustomReportAction {
   data object Back : ReportEditorAction
 
   data object StartEditing : ReportEditorAction

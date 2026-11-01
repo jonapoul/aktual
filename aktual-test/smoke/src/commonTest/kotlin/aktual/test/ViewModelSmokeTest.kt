@@ -20,7 +20,6 @@ import aktual.budget.payees.vm.search.SearchPayeesViewModel
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.budget.reports.vm.montecarlo.MonteCarloViewModel
-import aktual.budget.reports.vm.report.BudgetAnalysisViewModel
 import aktual.budget.reports.vm.report.CustomReportViewModel
 import aktual.budget.reports.vm.report.FormulaReportViewModel
 import aktual.budget.reports.vm.report.NewCustomReportViewModel
@@ -199,10 +198,6 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test
   fun formulaReport() =
     testAssistedVM<FormulaReportViewModel, FormulaReportViewModel.Factory> { create(WIDGET_ID) }
-
-  @Test
-  fun budgetAnalysisReport() =
-    testAssistedVM<BudgetAnalysisViewModel, BudgetAnalysisViewModel.Factory> { create(WIDGET_ID) }
 
   @Test
   fun customReport() =

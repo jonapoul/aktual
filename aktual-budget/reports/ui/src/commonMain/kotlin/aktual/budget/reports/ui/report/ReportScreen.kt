@@ -16,11 +16,14 @@ import aktual.budget.reports.ui.montecarlo.MonteCarloReportScreen
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.QueryEditorData
+import aktual.budget.reports.vm.SummaryReportMeta
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.dashboard.isRenamable
 import aktual.budget.reports.vm.dashboard.name
 import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.report.ReportViewModel
+import aktual.budget.reports.vm.withAllTimeDivisor
+import aktual.budget.reports.vm.withSummaryType
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Delete
 import aktual.core.icons.Tuning
@@ -119,8 +122,8 @@ fun ReportScreen(
           when (val chart = action.action) {
             is SaveText -> viewModel.saveText(chart.content, chart.align)
             is SetUnsavedText -> hasUnsavedText = chart.hasUnsavedText
-            is SetSummaryType -> viewModel.setSummaryType(chart.type)
-            is SetAllTimeDivisor -> viewModel.setSummaryAllTimeDivisor(chart.allTime)
+            is SetSummaryType -> viewModel.editSummary { it.withSummaryType(chart.type) }
+            is SetAllTimeDivisor -> viewModel.editSummary { it.withAllTimeDivisor(chart.allTime) }
             is ClickCalendarDay -> calendarDrilldown(chart)
             is DrillDown -> Unit
           }
@@ -147,6 +150,11 @@ fun ReportScreen(
   }
 }
 
+private fun ReportViewModel.editSummary(transform: (SummaryReportMeta) -> SummaryReportMeta) =
+  edit { meta ->
+    if (meta is SummaryReportMeta) transform(meta) else meta
+  }
+
 // Some reports have their own screen, with its own view model. Returns whether it showed one
 @Composable
 private fun showOwnScreen(
@@ -159,7 +167,6 @@ private fun showOwnScreen(
     MonteCarlo -> MonteCarloReportScreen(id = id, back = back)
     Formula -> FormulaReportScreen(id = id, back = back)
     Custom -> CustomReportScreen(id = id, back = back, toTransactions = toTransactions)
-    BudgetAnalysis -> BudgetAnalysisReportScreen(id = id, back = back)
     Loading,
     NotFound,
     is Loaded -> return false
@@ -362,8 +369,7 @@ private fun ReportContent(
       // Shown by their own screens instead
       MonteCarlo,
       Formula,
-      Custom,
-      BudgetAnalysis -> Box(modifier = contentModifier)
+      Custom -> Box(modifier = contentModifier)
 
       is Loaded ->
         ReportChart(
