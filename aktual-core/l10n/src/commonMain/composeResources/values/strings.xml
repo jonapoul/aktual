@@ -2122,8 +2122,7 @@
   <string name="settings_ui_blur_dialogs">Blur behind dialogs</string>
   <string name="settings_ui_blur_radius">Blur radius</string>
   <string name="settings_ui_blur_alpha">Blur alpha</string>
-  <string name="settings_ui_blur_title">Blur</string>
-  <string name="settings_ui_glass_title">Glass</string>
+  <string name="settings_ui_effects_title">Bar and dialog effects</string>
   <string name="settings_ui_glass_style">Glass style</string>
   <string name="settings_ui_glass_style_regular">Regular</string>
   <string name="settings_ui_glass_style_clear">Clear</string>

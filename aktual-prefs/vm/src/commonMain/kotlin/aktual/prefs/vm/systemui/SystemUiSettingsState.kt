@@ -19,10 +19,10 @@ data class SystemUiSettingsState(
   val hidePreviewInAppSwitcher: BooleanPreference,
 ) {
   // Dialog blur uses the blur radius and alpha too
-  val showBlurGroup: Boolean
+  val showBlurSettings: Boolean
     get() = appBarEffect.value == Blur || hazeDialogs.value
 
-  val showGlassGroup: Boolean
+  val showGlassSettings: Boolean
     get() = appBarEffect.value == Glass
 }
 

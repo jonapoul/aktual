@@ -57,27 +57,33 @@ private fun SystemUiSettingsScaffold(state: SystemUiSettingsState, onBack: () ->
         icon = if (state.showStatusBar.value) AktualIcons.ViewShow else AktualIcons.ViewHide,
       )
     }
-    item {
-      ListPreferenceItem(
-        preference = state.appBarEffect,
-        optionString = { it.string() },
-        optionSuffix = null,
-        title = Strings.settingsUiBarEffect,
-        subtitle = null,
-        icon = MaterialIcons.BlurOn,
-      )
-    }
-    item {
-      BooleanPreferenceItem(
-        preference = state.hazeDialogs,
-        title = Strings.settingsUiBlurDialogs,
-        subtitle = null,
-        icon = MaterialIcons.Dialogs,
-      )
-    }
-    if (state.showBlurGroup) {
+    if (state.hidePreviewInAppSwitcher.visible) {
       item {
-        PreferenceGroup(title = Strings.settingsUiBlurTitle) {
+        BooleanPreferenceItem(
+          preference = state.hidePreviewInAppSwitcher,
+          title = Strings.settingsUiHidePreview,
+          subtitle = Strings.settingsUiHidePreviewDesc,
+          icon = MaterialIcons.Security,
+        )
+      }
+    }
+    item {
+      PreferenceGroup(title = Strings.settingsUiEffectsTitle) {
+        ListPreferenceItem(
+          preference = state.appBarEffect,
+          optionString = { it.string() },
+          optionSuffix = null,
+          title = Strings.settingsUiBarEffect,
+          subtitle = null,
+          icon = MaterialIcons.BlurOn,
+        )
+        BooleanPreferenceItem(
+          preference = state.hazeDialogs,
+          title = Strings.settingsUiBlurDialogs,
+          subtitle = null,
+          icon = MaterialIcons.Dialogs,
+        )
+        if (state.showBlurSettings) {
           SliderPreferenceItem(
             preference = state.hazeRadiusDp,
             title = Strings.settingsUiBlurRadius,
@@ -91,11 +97,7 @@ private fun SystemUiSettingsScaffold(state: SystemUiSettingsState, onBack: () ->
             icon = MaterialIcons.Opacity,
           )
         }
-      }
-    }
-    if (state.showGlassGroup) {
-      item {
-        PreferenceGroup(title = Strings.settingsUiGlassTitle) {
+        if (state.showGlassSettings) {
           ListPreferenceItem(
             preference = state.glassStyle,
             optionString = { it.string() },
@@ -111,16 +113,6 @@ private fun SystemUiSettingsScaffold(state: SystemUiSettingsState, onBack: () ->
             icon = MaterialIcons.RoundedCorner,
           )
         }
-      }
-    }
-    if (state.hidePreviewInAppSwitcher.visible) {
-      item {
-        BooleanPreferenceItem(
-          preference = state.hidePreviewInAppSwitcher,
-          title = Strings.settingsUiHidePreview,
-          subtitle = Strings.settingsUiHidePreviewDesc,
-          icon = MaterialIcons.Security,
-        )
       }
     }
   }

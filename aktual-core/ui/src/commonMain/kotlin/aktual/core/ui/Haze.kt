@@ -282,6 +282,6 @@ data class HazeConfig(
   val dialogs: Boolean = true,
   val radius: Dp = 5.dp,
   val alpha: Float = 0.5f,
-  val glassStyle: BarGlassStyle = BarGlassStyle.Default,
+  val glassStyle: BarGlassStyle = Default,
   val glassCornerRadius: Dp = 24.dp,
 )

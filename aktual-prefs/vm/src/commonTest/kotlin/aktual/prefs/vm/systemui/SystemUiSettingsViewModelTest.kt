@@ -31,33 +31,33 @@ class SystemUiSettingsViewModelTest {
   }
 
   @Test
-  fun `Groups follow the bar effect and dialog blur`() = runTest {
+  fun `Effect settings follow the bar effect and dialog blur`() = runTest {
     val preferences = SystemUiPreferencesImpl(buildPreferences(unconfinedDispatcher))
     val viewModel = SystemUiSettingsViewModel(preferences, viewModelContext = viewModelContext)
 
     viewModel.state.test {
       assertThat(awaitItem()).all {
-        prop(SystemUiSettingsState::showBlurGroup).isTrue()
-        prop(SystemUiSettingsState::showGlassGroup).isFalse()
+        prop(SystemUiSettingsState::showBlurSettings).isTrue()
+        prop(SystemUiSettingsState::showGlassSettings).isFalse()
       }
 
       preferences.appBarEffect.set(Glass)
       assertThat(awaitItem()).all {
         // Dialog blur is still on
-        prop(SystemUiSettingsState::showBlurGroup).isTrue()
-        prop(SystemUiSettingsState::showGlassGroup).isTrue()
+        prop(SystemUiSettingsState::showBlurSettings).isTrue()
+        prop(SystemUiSettingsState::showGlassSettings).isTrue()
       }
 
       preferences.hazeDialogs.set(false)
       assertThat(awaitItem()).all {
-        prop(SystemUiSettingsState::showBlurGroup).isFalse()
-        prop(SystemUiSettingsState::showGlassGroup).isTrue()
+        prop(SystemUiSettingsState::showBlurSettings).isFalse()
+        prop(SystemUiSettingsState::showGlassSettings).isTrue()
       }
 
       preferences.appBarEffect.set(None)
       assertThat(awaitItem()).all {
-        prop(SystemUiSettingsState::showBlurGroup).isFalse()
-        prop(SystemUiSettingsState::showGlassGroup).isFalse()
+        prop(SystemUiSettingsState::showBlurSettings).isFalse()
+        prop(SystemUiSettingsState::showGlassSettings).isFalse()
       }
 
       expectNoEvents()
