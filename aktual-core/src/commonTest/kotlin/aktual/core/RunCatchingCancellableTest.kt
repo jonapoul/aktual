@@ -21,8 +21,8 @@ class RunCatchingCancellableTest {
     val result =
       runCatchingCancellable(
         attempt = { throw e },
-        onFailure = {
-          caught = it
+        onFailure = { ex ->
+          caught = ex
           2
         },
       )
