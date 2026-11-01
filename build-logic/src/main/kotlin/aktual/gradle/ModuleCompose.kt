@@ -45,6 +45,7 @@ class ModuleCompose : ProjectPlugin {
 
       androidHostTestDependencies {
         implementation(libs["androidx.test.composeJunit4"])
+        implementation(libs["androidx.test.espresso"])
       }
     }
   }
