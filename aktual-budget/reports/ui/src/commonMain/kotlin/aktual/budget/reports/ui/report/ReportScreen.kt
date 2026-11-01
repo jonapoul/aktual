@@ -11,16 +11,19 @@ import aktual.budget.reports.components.rememberChartZoomState
 import aktual.budget.reports.components.string
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
+import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.montecarlo.MonteCarloReportScreen
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.CustomData
+import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.dashboard.isRenamable
 import aktual.budget.reports.vm.dashboard.name
 import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.report.ReportViewModel
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.InformationOutline
+import aktual.core.icons.Delete
+import aktual.core.icons.Tuning
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ZoomOut
 import aktual.core.l10n.Strings
@@ -28,6 +31,7 @@ import aktual.core.nav.BackNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
@@ -39,11 +43,13 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,7 +57,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -78,41 +87,38 @@ fun ReportScreen(
   viewModel: ReportViewModel = reportViewModel(id),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  if (state == MonteCarlo) {
-    MonteCarloReportScreen(id = id, back = back)
-    return
-  }
-  if (state == Formula) {
-    FormulaReportScreen(id = id, back = back)
-    return
-  }
-  if (state == Custom) {
-    CustomReportScreen(id = id, back = back, toTransactions = toTransactions)
-    return
-  }
-  if (state == BudgetAnalysis) {
-    BudgetAnalysisReportScreen(id = id, back = back)
-    return
-  }
+  if (showOwnScreen(state, id, back, toTransactions)) return
 
   var hasUnsavedText by rememberSaveable { mutableStateOf(false) }
   var showDiscardDialog by remember { mutableStateOf(false) }
   val calendarDrilldown = rememberCalendarDrilldown(toTransactions)
 
-  BackHandler(enabled = hasUnsavedText) { showDiscardDialog = true }
+  val loaded = state as? Loaded
+  BackHandler(enabled = hasUnsavedText || loaded?.hasChanges == true) { showDiscardDialog = true }
+
+  // Only the settings sheets pick from it
+  val editorData =
+    if (loaded?.draft?.hasSettings() == true) {
+      viewModel.queryEditorData.collectAsStateWithLifecycle().value
+    } else {
+      null
+    }
 
   ReportScaffold(
     state = state,
+    editorData = editorData,
     onAction = { action ->
       @Suppress("ElseCaseInsteadOfExhaustiveWhen")
       when (action) {
-        NavBack -> if (hasUnsavedText) showDiscardDialog = true else back()
+        NavBack ->
+          if (hasUnsavedText || viewModel.hasUnsavedChanges()) showDiscardDialog = true else back()
         is Rename -> viewModel.rename(action.name)
+        is EditSettings -> viewModel.edit(action.transform)
+        SaveSettings -> viewModel.save()
         is Chart ->
           when (val chart = action.action) {
             is SaveText -> viewModel.saveText(chart.content, chart.align)
             is SetUnsavedText -> hasUnsavedText = chart.hasUnsavedText
-            is SetNetWorthMode -> viewModel.setNetWorthMode(chart.mode)
             is SetSummaryType -> viewModel.setSummaryType(chart.type)
             is SetAllTimeDivisor -> viewModel.setSummaryAllTimeDivisor(chart.allTime)
             is ClickCalendarDay -> calendarDrilldown(chart)
@@ -125,14 +131,40 @@ fun ReportScreen(
 
   if (showDiscardDialog) {
     DiscardChangesDialog(
-      message = Strings.reportsTextDiscardMessage,
+      message =
+        if (hasUnsavedText) {
+          Strings.reportsTextDiscardMessage
+        } else {
+          Strings.reportsCustomEditorDiscardMessage
+        },
       onDiscard = {
         showDiscardDialog = false
+        viewModel.discard()
         back()
       },
       onCancel = { showDiscardDialog = false },
     )
   }
+}
+
+// Some reports have their own screen, with its own view model. Returns whether it showed one
+@Composable
+private fun showOwnScreen(
+  state: ReportState,
+  id: WidgetId,
+  back: BackNavigator,
+  toTransactions: TransactionsNavigator,
+): Boolean {
+  when (state) {
+    MonteCarlo -> MonteCarloReportScreen(id = id, back = back)
+    Formula -> FormulaReportScreen(id = id, back = back)
+    Custom -> CustomReportScreen(id = id, back = back, toTransactions = toTransactions)
+    BudgetAnalysis -> BudgetAnalysisReportScreen(id = id, back = back)
+    Loading,
+    NotFound,
+    is Loaded -> return false
+  }
+  return true
 }
 
 @Composable
@@ -159,59 +191,44 @@ internal fun ReportScaffold(
   state: ReportState,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
+  editorData: QueryEditorData? = null,
 ) {
-  val data = (state as? Loaded)?.data
+  val loaded = state as? Loaded
+  val data = loaded?.data
   val zoom = rememberChartZoomState(data)
   val info = data?.info() ?: persistentListOf()
   var showInfo by remember { mutableStateOf(false) }
+  var showSettings by remember { mutableStateOf(false) }
   val hazeState = rememberHazedTopBarState()
 
   if (showInfo) {
     ChartInfoSheet(info = info, onDismiss = { showInfo = false })
   }
 
+  if (showSettings && loaded != null) {
+    ReportSettingsSheet(
+      draft = loaded.draft,
+      editorData = editorData,
+      onEdit = { transform -> onAction(Action.EditSettings(transform)) },
+      onDismiss = { showSettings = false },
+    )
+  }
+
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
-      TopAppBar(
+      ReportTopBar(
         modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { 0f }),
-        colors = colors.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton(onClick = { onAction(NavBack) }) },
-        title = {
-          Text(
-            text =
-              when {
-                data is CustomData && data.title.isNotBlank() -> data.title
-                state is Loaded ->
-                  state.item.name?.takeIf { it.isNotBlank() } ?: state.type.string()
-                else -> Strings.reportsDashboardTitle
-              },
-          )
+        loaded = loaded,
+        zoom = zoom,
+        hasInfo = info.isNotEmpty(),
+        onShowInfo = { showInfo = true },
+        onShowSettings = { showSettings = true },
+        onSave = {
+          showSettings = false
+          onAction(SaveSettings)
         },
-        actions = {
-          if (zoom.range != null) {
-            BareIconButton(
-              modifier = Modifier.testTag(ChartTags.ResetZoom),
-              imageVector = MaterialIcons.ZoomOut,
-              contentDescription = Strings.reportsResetZoom,
-              onClick = zoom::reset,
-            )
-          }
-          if (info.isNotEmpty()) {
-            BareIconButton(
-              modifier = Modifier.testTag(ChartTags.ChartInfo),
-              imageVector = AktualIcons.InformationOutline,
-              contentDescription = Strings.reportsChartInfo,
-              onClick = { showInfo = true },
-            )
-          }
-          if (state is Loaded && state.item.isRenamable) {
-            ReportMenu(
-              name = state.item.name.orEmpty(),
-              onRename = { name -> onAction(Action.Rename(state.item, name)) },
-            )
-          }
-        },
+        onAction = onAction,
       )
     },
   ) { innerPadding ->
@@ -226,6 +243,99 @@ internal fun ReportScaffold(
       )
     }
   }
+}
+
+// Unsaved changes swap back for discard, and show save
+@Composable
+private fun ReportTopBar(
+  loaded: ReportState.Loaded?,
+  zoom: ChartZoomState,
+  hasInfo: Boolean,
+  onShowInfo: () -> Unit,
+  onShowSettings: () -> Unit,
+  onSave: () -> Unit,
+  onAction: ActionListener,
+  modifier: Modifier = Modifier,
+) {
+  val data = loaded?.data
+  val hasChanges = loaded?.hasChanges == true
+  TopAppBar(
+    modifier = modifier,
+    colors = colors.transparentTopAppBarColors(),
+    navigationIcon = {
+      if (hasChanges) {
+        IconButton(
+          modifier = Modifier.testTag(Tags.DiscardReport),
+          onClick = { onAction(NavBack) },
+        ) {
+          Icon(
+            imageVector = AktualIcons.Delete,
+            contentDescription = Strings.reportsTextDiscard,
+          )
+        }
+      } else {
+        NavBackIconButton(onClick = { onAction(NavBack) })
+      }
+    },
+    title = {
+      Column {
+        Text(
+          text =
+            when {
+              data is CustomData && data.title.isNotBlank() -> data.title
+              loaded != null -> loaded.item.name?.takeIf { it.isNotBlank() } ?: loaded.type.string()
+              else -> Strings.reportsDashboardTitle
+            },
+        )
+        AnimatedVisibility(visible = hasChanges) {
+          Text(
+            text = Strings.reportsCustomEditorUnsaved,
+            style = typography.labelMedium,
+            color = colors.warningText,
+          )
+        }
+      }
+    },
+    actions = {
+      if (hasChanges) {
+        PrimaryTextButton(
+          modifier = Modifier.padding(end = 8.dp).testTag(Tags.SaveReport),
+          text = Strings.reportsFormulaEditorSave,
+          shape = CircleShape,
+          onClick = onSave,
+        )
+      }
+      if (zoom.range != null) {
+        BareIconButton(
+          modifier = Modifier.testTag(ChartTags.ResetZoom),
+          imageVector = MaterialIcons.ZoomOut,
+          contentDescription = Strings.reportsResetZoom,
+          onClick = zoom::reset,
+        )
+      }
+      if (loaded?.draft?.hasSettings() == true) {
+        BareIconButton(
+          modifier = Modifier.testTag(ChartTags.ChartSettings),
+          imageVector = AktualIcons.Tuning,
+          contentDescription = Strings.reportsChartSettings,
+          onClick = onShowSettings,
+        )
+      }
+      val canRename = loaded != null && loaded.item.isRenamable
+      if (loaded != null && (canRename || hasInfo)) {
+        ReportMenu(
+          name = loaded.item.name.orEmpty(),
+          onRename =
+            if (canRename) {
+              { name -> onAction(Action.Rename(loaded.item, name)) }
+            } else {
+              null
+            },
+          onShowInfo = if (hasInfo) onShowInfo else null,
+        )
+      }
+    },
+  )
 }
 
 @Composable

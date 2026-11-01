@@ -5,6 +5,7 @@ internal object Tags {
   const val EditReport = "EditReport"
   const val CloseEditor = "CloseEditor"
   const val SaveReport = "SaveReport"
+  const val DiscardReport = "DiscardReport"
   const val ShowTitle = "ShowTitle"
   const val FormulaField = "FormulaField"
   const val FormulaResult = "FormulaResult"

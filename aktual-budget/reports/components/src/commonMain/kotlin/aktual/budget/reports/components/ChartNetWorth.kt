@@ -7,11 +7,9 @@ import aktual.budget.model.ConditionType.Boolean
 import aktual.budget.model.sumOf
 import aktual.budget.reports.vm.NetWorthAccount
 import aktual.budget.reports.vm.NetWorthData
-import aktual.budget.reports.vm.NetWorthMode
 import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.TimeFrame
 import aktual.core.l10n.Strings
-import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
@@ -72,27 +70,10 @@ internal fun NetWorthChart(
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
   zoom: ChartZoomState = rememberChartZoomState(data),
-  onAction: ChartActionListener = {},
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {
       Header(modifier = Modifier.fillMaxWidth(), data = data)
-    }
-
-    if (!compact) {
-      AktualSlidingToggleButton(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp),
-        selected = data.mode,
-        options = MODES,
-        onSelect = { mode -> onAction(ChartAction.SetNetWorthMode(mode)) },
-        string = { mode ->
-          if (mode == Stacked) {
-            Strings.reportsNetWorthModeStacked
-          } else {
-            Strings.reportsNetWorthModeTrend
-          }
-        },
-      )
     }
 
     var selected by remember(data) { mutableStateOf<YearMonth?>(null) }
@@ -266,8 +247,6 @@ private suspend fun CartesianChartModelProducer.populate(data: NetWorthData, zoo
 }
 
 private val BREAKDOWN_MAX_HEIGHT = 240.dp
-
-private val MODES = persistentListOf<NetWorthMode>(Trend, Stacked)
 
 @Preview
 @Composable

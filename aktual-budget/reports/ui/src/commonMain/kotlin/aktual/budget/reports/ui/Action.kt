@@ -3,6 +3,7 @@ package aktual.budget.reports.ui
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.components.ChartAction
+import aktual.budget.reports.vm.ReportMeta
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
@@ -24,6 +25,11 @@ internal sealed interface Action {
   @JvmInline value class Unpin(val id: WidgetId) : Action
 
   @JvmInline value class Chart(val action: ChartAction) : Action
+
+  // Changes the report's draft settings, saved by [SaveSettings]
+  @JvmInline value class EditSettings(val transform: (ReportMeta) -> ReportMeta) : Action
+
+  data object SaveSettings : Action
 
   data object CreateNewReport : Action
 

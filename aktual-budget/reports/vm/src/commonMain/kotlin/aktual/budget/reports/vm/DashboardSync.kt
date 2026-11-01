@@ -13,6 +13,7 @@ import aktual.budget.model.WidgetType
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import dev.zacsweers.metro.Inject
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
@@ -54,8 +55,7 @@ internal class DashboardSync(
     )
   }
 
-  suspend fun renameWidget(id: WidgetId, name: String) =
-    patchMeta(id, "name" to JsonPrimitive(name))
+  suspend fun renameWidget(id: WidgetId, name: String) = patchMeta(id, NAME to JsonPrimitive(name))
 
   suspend fun setWidgetText(id: WidgetId, content: String, align: TextAlign) =
     patchMeta(
@@ -94,8 +94,26 @@ internal class DashboardSync(
     patchMeta(id, (encoded as JsonObject).filterKeys { it in BUDGET_ANALYSIS_KEYS })
   }
 
-  suspend fun setNetWorthMode(id: WidgetId, mode: NetWorthMode) =
-    patchMeta(id, "mode" to DbJson.encodeToJsonElement(NetWorthMode.serializer(), mode))
+  // Writes only the settings that differ between the two, so the name, anything unmodelled and
+  // anything changed elsewhere since are left as they are
+  suspend fun setMeta(id: WidgetId, type: WidgetType, saved: ReportMeta, draft: ReportMeta) {
+    val before = encodeMeta(type, saved)
+    val after = encodeMeta(type, draft)
+    val changed = after.filter { (key, value) -> key != NAME && before[key] != value }
+    val removed = before.keys - after.keys - NAME
+    if (changed.isEmpty() && removed.isEmpty()) return
+    val meta = dao.meta(id) ?: return
+    val patched = JsonObject(meta - removed + changed)
+    sync.syncChanges(
+      localChange(DASHBOARD, id.value, "meta", DbJson.encodeToString(patched)),
+    )
+  }
+
+  @Suppress("UNCHECKED_CAST")
+  private fun encodeMeta(type: WidgetType, meta: ReportMeta): JsonObject {
+    val serializer = ReportMeta.serializer(type) as KSerializer<ReportMeta>
+    return DbJson.encodeToJsonElement(serializer, meta) as JsonObject
+  }
 
   suspend fun setSummaryType(id: WidgetId, type: SummaryChartType) =
     patchSummaryContent(
@@ -202,6 +220,7 @@ internal class DashboardSync(
 
   private companion object {
     const val CONTENT = "content"
+    const val NAME = "name"
 
     val QUERIES_SERIALIZER = MapSerializer(String.serializer(), FormulaQuery.serializer())
 
