@@ -16,9 +16,12 @@ import aktual.core.icons.material.Texture
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.theme.Colors
+import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PrimaryTextButton
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.ListPreferenceItem
 import aktual.prefs.ui.SettingsListScaffold
@@ -32,8 +35,16 @@ import aktual.prefs.vm.systemui.BlurRadiusPreference
 import aktual.prefs.vm.systemui.GlassCornerRadiusPreference
 import aktual.prefs.vm.systemui.SystemUiSettingsState
 import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -102,7 +113,32 @@ private fun SystemUiSettingsScaffold(state: SystemUiSettingsState, onBack: () ->
           icon = MaterialIcons.Dialogs,
         )
         BlurSettings(radius = state.dialogBlurRadius, alpha = state.dialogBlurAlpha)
+        TestDialogButton()
       }
+    }
+  }
+}
+
+@Composable
+private fun TestDialogButton() {
+  var showDialog by remember { mutableStateOf(false) }
+  PrimaryTextButton(
+    modifier = Modifier.fillMaxWidth().padding(Dimens.Large),
+    text = Strings.settingsUiTestDialog,
+    onClick = { showDialog = true },
+  )
+
+  if (showDialog) {
+    AktualAlertDialog(
+      title = Strings.settingsUiTestDialogTitle,
+      onDismissRequest = { showDialog = false },
+      buttons = {
+        TextButton(onClick = { showDialog = false }) {
+          Text(Strings.settingsUiTestDialogDismiss)
+        }
+      },
+    ) {
+      Text(Strings.settingsUiTestDialogMessage)
     }
   }
 }
@@ -153,8 +189,8 @@ private fun PreviewSystemUiSettingsScaffold(
           barEffect = ListPreference(Blur),
           barBlurRadius = BlurRadiusPreference(5f),
           barBlurAlpha = BlurAlphaPreference(0.5f),
-          glassStyle = ListPreference(Regular, visible = false),
-          glassCornerRadiusDp = GlassCornerRadiusPreference(24f, visible = false),
+          glassStyle = ListPreference(Regular, enabled = false),
+          glassCornerRadiusDp = GlassCornerRadiusPreference(24f, enabled = false),
           blurDialogs = BooleanPreference(true),
           dialogBlurRadius = BlurRadiusPreference(5f),
           dialogBlurAlpha = BlurAlphaPreference(0.5f),

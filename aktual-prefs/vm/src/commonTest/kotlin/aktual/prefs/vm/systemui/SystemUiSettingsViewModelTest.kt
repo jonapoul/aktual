@@ -39,20 +39,20 @@ class SystemUiSettingsViewModelTest {
 
     viewModel.state.test {
       assertThat(awaitItem()).all {
-        prop(SystemUiSettingsState::barBlurRadius).prop(SliderPreference::visible).isTrue()
-        prop(SystemUiSettingsState::glassStyle).prop(ListPreference<*>::visible).isFalse()
+        prop(SystemUiSettingsState::barBlurRadius).prop(SliderPreference::enabled).isTrue()
+        prop(SystemUiSettingsState::glassStyle).prop(ListPreference<*>::enabled).isFalse()
       }
 
       preferences.appBarEffect.set(Glass)
       assertThat(awaitItem()).all {
-        prop(SystemUiSettingsState::barBlurRadius).prop(SliderPreference::visible).isFalse()
-        prop(SystemUiSettingsState::glassStyle).prop(ListPreference<*>::visible).isTrue()
+        prop(SystemUiSettingsState::barBlurRadius).prop(SliderPreference::enabled).isFalse()
+        prop(SystemUiSettingsState::glassStyle).prop(ListPreference<*>::enabled).isTrue()
       }
 
       preferences.appBarEffect.set(None)
       assertThat(awaitItem()).all {
-        prop(SystemUiSettingsState::barBlurRadius).prop(SliderPreference::visible).isFalse()
-        prop(SystemUiSettingsState::glassStyle).prop(ListPreference<*>::visible).isFalse()
+        prop(SystemUiSettingsState::barBlurRadius).prop(SliderPreference::enabled).isFalse()
+        prop(SystemUiSettingsState::glassStyle).prop(ListPreference<*>::enabled).isFalse()
       }
 
       expectNoEvents()
@@ -61,15 +61,15 @@ class SystemUiSettingsViewModelTest {
   }
 
   @Test
-  fun `Dialog blur settings follow the dialog blur toggle`() = runTest {
+  fun `Dialog blur settings are disabled without dialog blur`() = runTest {
     val preferences = SystemUiPreferencesImpl(buildPreferences(unconfinedDispatcher))
     val viewModel = SystemUiSettingsViewModel(preferences, viewModelContext = viewModelContext)
 
     viewModel.state.test {
-      assertThat(awaitItem().dialogBlurRadius.visible).isTrue()
+      assertThat(awaitItem().dialogBlurRadius.enabled).isTrue()
 
       preferences.hazeDialogs.set(false)
-      assertThat(awaitItem().dialogBlurRadius.visible).isFalse()
+      assertThat(awaitItem().dialogBlurRadius.enabled).isFalse()
 
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()

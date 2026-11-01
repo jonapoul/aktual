@@ -2123,6 +2123,10 @@
   <string name="settings_ui_bar_effect_glass">Glass</string>
   <string name="settings_ui_dialogs_title">Dialogs</string>
   <string name="settings_ui_blur_dialogs">Blur behind dialogs</string>
+  <string name="settings_ui_test_dialog">Show test dialog</string>
+  <string name="settings_ui_test_dialog_title">Test dialog</string>
+  <string name="settings_ui_test_dialog_message">This is how dialogs look with your blur settings.</string>
+  <string name="settings_ui_test_dialog_dismiss">Close</string>
   <string name="settings_ui_blur_radius">Blur strength</string>
   <string name="settings_ui_blur_alpha">Tint strength</string>
   <string name="settings_ui_glass_style">Glass style</string>

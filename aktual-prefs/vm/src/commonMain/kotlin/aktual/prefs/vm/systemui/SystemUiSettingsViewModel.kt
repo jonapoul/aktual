@@ -57,25 +57,25 @@ internal constructor(
         barBlurRadius =
           BlurRadiusPreference(
             value = barBlurRadius,
-            visible = barEffect == Blur,
+            enabled = barEffect == Blur,
             onChange = { launchAndSet(preferences.barBlurRadius, it) },
           ),
         barBlurAlpha =
           BlurAlphaPreference(
             value = barBlurAlpha,
-            visible = barEffect == Blur,
+            enabled = barEffect == Blur,
             onChange = { launchAndSet(preferences.barBlurAlpha, it) },
           ),
         glassStyle =
           ListPreference(
             value = glassStyle,
-            visible = barEffect == Glass,
+            enabled = barEffect == Glass,
             onChange = { launchAndSet(preferences.glassStyle, it) },
           ),
         glassCornerRadiusDp =
           GlassCornerRadiusPreference(
             value = glassCornerRadius,
-            visible = barEffect == Glass,
+            enabled = barEffect == Glass,
             onChange = { launchAndSet(preferences.glassCornerRadius, it) },
           ),
         blurDialogs =
@@ -86,13 +86,13 @@ internal constructor(
         dialogBlurRadius =
           BlurRadiusPreference(
             value = dialogBlurRadius,
-            visible = blurDialogs,
+            enabled = blurDialogs,
             onChange = { launchAndSet(preferences.dialogBlurRadius, it) },
           ),
         dialogBlurAlpha =
           BlurAlphaPreference(
             value = dialogBlurAlpha,
-            visible = blurDialogs,
+            enabled = blurDialogs,
             onChange = { launchAndSet(preferences.dialogBlurAlpha, it) },
           ),
       )

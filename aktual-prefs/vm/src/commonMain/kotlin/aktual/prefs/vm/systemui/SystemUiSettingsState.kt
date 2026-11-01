@@ -23,21 +23,21 @@ data class SystemUiSettingsState(
 
 fun BlurRadiusPreference(
   value: Float,
-  visible: Boolean = true,
+  enabled: Boolean = true,
   onChange: (Float) -> Unit = {},
 ): SliderPreference =
-  SliderPreference(value = value, range = 0f..20f, visible = visible, onChange = onChange)
+  SliderPreference(value = value, range = 0f..20f, enabled = enabled, onChange = onChange)
 
 fun BlurAlphaPreference(
   value: Float,
-  visible: Boolean = true,
+  enabled: Boolean = true,
   onChange: (Float) -> Unit = {},
 ): SliderPreference =
-  SliderPreference(value = value, range = 0f..1f, visible = visible, onChange = onChange)
+  SliderPreference(value = value, range = 0f..1f, enabled = enabled, onChange = onChange)
 
 fun GlassCornerRadiusPreference(
   value: Float,
-  visible: Boolean = true,
+  enabled: Boolean = true,
   onChange: (Float) -> Unit = {},
 ): SliderPreference =
-  SliderPreference(value = value, range = 0f..32f, visible = visible, onChange = onChange)
+  SliderPreference(value = value, range = 0f..32f, enabled = enabled, onChange = onChange)
