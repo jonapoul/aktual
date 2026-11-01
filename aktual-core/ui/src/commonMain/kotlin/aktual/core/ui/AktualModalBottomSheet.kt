@@ -4,7 +4,9 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -66,6 +68,10 @@ fun AktualModalBottomSheet(
         }
       }
     },
-    content = { ProvideSurfaceColor(colors.modalBackground) { content() } },
+    content = {
+      ProvideSurfaceColor(colors.modalBackground) {
+        Column(modifier = Modifier.fillMaxWidth().animateContentSize()) { content() }
+      }
+    },
   )
 }
