@@ -80,6 +80,7 @@
     .bar { height: 6px; background: var(--bar); border-radius: 3px; }
     .barbox { width: 60px; display: flex; justify-content: flex-start; }
     .muted { color: var(--muted); }
+    .type { display: inline-block; padding: 0 6px; border-radius: 3px; color: #fff; }
     aside {
       flex: 1;
       min-width: 0;
@@ -111,6 +112,7 @@
       <thead>
         <tr>
           <th data-key="path">Module</th>
+          <th data-key="type">Type</th>
           <th data-key="size">Size</th>
           <th data-key="modified">Modified</th>
         </tr>
@@ -126,6 +128,12 @@
 <script>
   const generated = __GENERATED__;
   const charts = __CHARTS__;
+  const types = Object.fromEntries(__TYPES__.map(t => [t.projectPath, t.type]));
+  charts.forEach(c => {
+    const type = types[c.path];
+    c.type = type ? type.name : "";
+    c.color = type && type.color ? type.color : "";
+  });
 
   const list = document.getElementById("list");
   const rows = document.getElementById("rows");
@@ -185,7 +193,7 @@
   function render() {
     const query = filter.value.trim().toLowerCase();
     const visible = charts
-      .filter(c => c.path.toLowerCase().includes(query))
+      .filter(c => c.path.toLowerCase().includes(query) || c.type.toLowerCase().includes(query))
       .sort((a, b) => {
         const x = a[sortKey], y = b[sortKey];
         const order = x < y ? -1 : x > y ? 1 : 0;
@@ -198,6 +206,7 @@
       const width = Math.max(2, Math.round(chart.size / maxSize * 60));
       const row = el("tr", {}, [
         el("td", {}, [el("a", { href: chart.url, target: "_blank", textContent: chart.path })]),
+        el("td", {}, [el("span", { className: "type", textContent: chart.type, style: "background:" + chart.color })]),
         el("td", {}, [
           el("div", { className: "size" }, [
             el("span", { textContent: formatSize(chart.size) }),

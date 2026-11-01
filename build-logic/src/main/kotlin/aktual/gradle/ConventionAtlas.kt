@@ -1,5 +1,6 @@
 package aktual.gradle
 
+import atlas.core.tasks.CollateProjectTypes
 import atlas.core.tasks.WriteReadme
 import atlas.d2.tasks.ExecD2
 import org.gradle.api.Project
@@ -23,6 +24,11 @@ class ConventionAtlas : ProjectPlugin {
       tasks.register("atlasWriteIndex", WriteAtlasIndex::class.java) { t ->
         t.chartIds.set(artifacts.flatMap { a -> a.resolvedArtifacts.map { r -> r.map { it.id } } })
         t.chartFiles.from(artifacts.map { it.artifactFiles })
+        t.projectTypes.set(
+          tasks.named("collateProjectTypes", CollateProjectTypes::class.java).flatMap {
+            it.outputFile
+          },
+        )
         t.outputFile.set(layout.buildDirectory.file("atlas/index.html"))
       }
     tasks.register("atlasGenerate") { t ->
