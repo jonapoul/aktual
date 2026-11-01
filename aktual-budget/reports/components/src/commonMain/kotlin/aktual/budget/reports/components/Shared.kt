@@ -158,12 +158,24 @@ fun rememberMarker(
   valueFormatter: DefaultCartesianMarker.ValueFormatter =
     DefaultCartesianMarker.ValueFormatter.default(),
   lineCount: Int = 1,
+  labelPosition: DefaultCartesianMarker.LabelPosition = Top,
 ): CartesianMarker {
+  // Labels inside the chart need a background to stay readable over the lines and fills
+  val labelBackground =
+    if (labelPosition == AroundPoint) {
+      rememberShapeComponent(
+        fill = Fill(colors.tableBackground.copy(alpha = MARKER_BACKGROUND_ALPHA)),
+        shape = RoundedCornerShape(8.dp),
+      )
+    } else {
+      null
+    }
   val label =
     rememberTextComponent(
       style = TextStyle(color = colors.pageText, textAlign = Center),
       lineCount = lineCount,
       padding = Insets(8.dp, 4.dp),
+      background = labelBackground,
       minWidth = TextComponent.MinWidth.fixed(40.dp),
     )
   val indicatorFrontComponent =
@@ -172,6 +184,7 @@ fun rememberMarker(
   return rememberDefaultCartesianMarker(
     label = label,
     valueFormatter = valueFormatter,
+    labelPosition = labelPosition,
     indicator = { color ->
       LayeredComponent(
         back = ShapeComponent(Fill(color.copy(alpha = 0.15f)), markerShape),
@@ -188,6 +201,8 @@ fun rememberMarker(
     guideline = guideline,
   )
 }
+
+private const val MARKER_BACKGROUND_ALPHA = 0.9f
 
 @Composable
 fun rememberMarkerHaptics(compact: Boolean): CartesianMarkerVisibilityListener? {
