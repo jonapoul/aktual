@@ -665,8 +665,8 @@ private fun StatusChips(
 
   FlowRow(
     modifier = Modifier.fillMaxWidth().padding(SearchPadding),
-    horizontalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing * 2),
-    verticalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing * 2),
+    horizontalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing),
+    verticalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing),
   ) {
     statuses.fastForEach { status ->
       val isSelected = status in selected
