@@ -5,6 +5,7 @@ import aktual.budget.model.AccountGroup
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncState
 import aktual.budget.model.Amount
+import aktual.budget.model.sumOf
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -75,6 +76,6 @@ private fun List<GetAllWithBalances>.toSection(
   }
   return DrawerAccountSection(
     accounts = accounts.toImmutableList(),
-    total = accounts.fold(Zero) { sum, account -> sum + account.balance },
+    total = accounts.sumOf { it.balance },
   )
 }

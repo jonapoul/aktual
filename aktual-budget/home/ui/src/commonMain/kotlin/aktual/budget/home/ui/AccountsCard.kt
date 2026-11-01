@@ -10,6 +10,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncState
 import aktual.budget.model.AccountSyncState.Ok
 import aktual.budget.model.Amount
+import aktual.budget.model.sumOf
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.l10n.Strings
@@ -380,7 +381,7 @@ internal val PREVIEW_ACCOUNTS =
 private fun section(vararg accounts: AccountBalance) =
   AccountSection(
     accounts = persistentListOf(*accounts),
-    total = accounts.fold(Zero) { sum, account -> sum + account.balance },
+    total = accounts.sumOf { it.balance },
   )
 
 private fun account(

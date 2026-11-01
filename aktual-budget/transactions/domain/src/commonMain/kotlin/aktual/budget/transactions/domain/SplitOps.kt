@@ -2,6 +2,7 @@ package aktual.budget.transactions.domain
 
 import aktual.budget.model.Amount
 import aktual.budget.model.TransactionId
+import aktual.budget.model.sumOf
 
 // The split editing of packages/loot-core/src/shared/transactions.ts, on the one transaction its
 // editor holds rather than a list of them. A part's account, date, cleared and reconciled aren't
@@ -75,7 +76,7 @@ fun TransactionDraft.withoutPart(id: TransactionId): TransactionDraft =
 val TransactionDraft.splitDifference: Amount?
   get() {
     if (!isSplit) return null
-    val total = parts.fold(Amount.Zero) { sum, part -> sum + part.amount }
+    val total = parts.sumOf { it.amount }
     return (fields.amount - total).takeIf { it != Zero }
   }
 

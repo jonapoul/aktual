@@ -109,3 +109,21 @@ value class Amount(private val value: Long) : Comparable<Amount> {
       Locale.Builder().setLanguage(language).setRegion(region).build()
   }
 }
+
+fun Iterable<Amount>.sum(): Amount {
+  var total = 0L
+  for (amount in this) total += amount.toLong()
+  return Amount(total)
+}
+
+inline fun <T> Iterable<T>.sumOf(selector: (T) -> Amount): Amount {
+  var total = 0L
+  for (item in this) total += selector(item).toLong()
+  return Amount(total)
+}
+
+inline fun <T> Array<T>.sumOf(selector: (T) -> Amount): Amount {
+  var total = 0L
+  for (item in this) total += selector(item).toLong()
+  return Amount(total)
+}

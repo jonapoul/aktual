@@ -2,6 +2,7 @@ package aktual.budget.reports.components
 
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
+import aktual.budget.model.sum
 import aktual.budget.reports.vm.NetWorthData
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
@@ -73,8 +74,8 @@ internal fun netWorthBreakdown(data: NetWorthData, month: YearMonth): NetWorthBr
   return NetWorthBreakdown(
     month = month,
     rows = rows.toImmutableList(),
-    assets = amounts.filter { it > Zero }.fold(Zero, Amount::plus),
-    debts = amounts.filter { it < Zero }.fold(Zero, Amount::plus),
+    assets = amounts.filter { it > Zero }.sum(),
+    debts = amounts.filter { it < Zero }.sum(),
     total = total,
     change = data.items[month.minusMonth()]?.let { total - it },
   )

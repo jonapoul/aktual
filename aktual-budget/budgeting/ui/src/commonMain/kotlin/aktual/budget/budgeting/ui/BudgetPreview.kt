@@ -12,6 +12,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
+import aktual.budget.model.sumOf
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.YearMonth
@@ -46,9 +47,9 @@ private fun group(
     name = name,
     isHidden = isHidden,
     isCollapsed = isCollapsed,
-    budgeted = categories.fold(Zero) { sum, c -> sum + c.budgeted },
-    spent = categories.fold(Zero) { sum, c -> sum + c.spent },
-    balance = categories.fold(Zero) { sum, c -> sum + c.balance },
+    budgeted = categories.sumOf { it.budgeted },
+    spent = categories.sumOf { it.spent },
+    balance = categories.sumOf { it.balance },
     categories = categories.toList().toImmutableList(),
   )
 

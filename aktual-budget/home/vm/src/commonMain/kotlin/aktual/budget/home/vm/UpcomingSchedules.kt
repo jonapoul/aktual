@@ -2,6 +2,7 @@ package aktual.budget.home.vm
 
 import aktual.budget.model.Amount
 import aktual.budget.model.UpcomingLength
+import aktual.budget.model.sumOf
 import aktual.budget.schedules.domain.Schedule
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
@@ -12,5 +13,5 @@ internal data class UpcomingSchedules(
   val schedules: ImmutableList<Schedule>,
 ) {
   val total: Amount
-    get() = schedules.fold(Zero) { sum, schedule -> sum + schedule.amount }
+    get() = schedules.sumOf { it.amount }
 }

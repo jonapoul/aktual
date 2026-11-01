@@ -4,6 +4,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.ConditionSet
 import aktual.budget.model.ConditionsFilter
 import aktual.budget.model.FirstDayOfWeek
+import aktual.budget.model.sumOf
 import kotlin.math.absoluteValue
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DayOfWeek
@@ -30,8 +31,8 @@ internal fun calculateCalendar(
     title = title,
     start = range.start,
     end = range.endInclusive,
-    income = months.fold(Zero) { acc, month -> acc + month.income },
-    expenses = months.fold(Zero) { acc, month -> acc + month.expenses },
+    income = months.sumOf { it.income },
+    expenses = months.sumOf { it.expenses },
     firstDayOfWeek = weekStart,
     months = months.toImmutableList(),
     conditions = conditions?.takeIf { it.conditions.isNotEmpty() },
@@ -63,8 +64,8 @@ private fun calendarMonth(
     }
   val padding = CalendarDay(day = 0, income = Zero, expenses = Zero)
   return CalendarMonth(
-    income = days.fold(Zero) { acc, day -> acc + day.income },
-    expenses = days.fold(Zero) { acc, day -> acc + day.expenses },
+    income = days.sumOf { it.income },
+    expenses = days.sumOf { it.expenses },
     month = month,
     days = (List(leading) { padding } + days + List(trailing) { padding }).toImmutableList(),
   )

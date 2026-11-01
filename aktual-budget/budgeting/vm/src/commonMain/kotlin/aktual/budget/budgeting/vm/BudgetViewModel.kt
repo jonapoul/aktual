@@ -19,6 +19,7 @@ import aktual.budget.model.DbMetadataKey.Companion.BudgetMonthCount
 import aktual.budget.model.DbMetadataKey.Companion.BudgetShowHiddenCategories
 import aktual.budget.model.DbMetadataKey.Companion.MobileShowSpentColumn
 import aktual.budget.model.evaluateAmountInput
+import aktual.budget.model.sumOf
 import aktual.core.Calendar
 import aktual.core.model.unaryPlus
 import aktual.core.runCatchingCancellable
@@ -451,9 +452,6 @@ internal constructor(
 
   private fun DbMetadata.toggle(key: DbMetadataKey<Boolean>): DbMetadata =
     set(key, this[key] != true)
-
-  private inline fun <T> Iterable<T>.sumOf(selector: (T) -> Amount): Amount =
-    fold(Zero) { sum, item -> sum + selector(item) }
 
   private companion object {
     const val MAX_MONTH_COUNT = 4

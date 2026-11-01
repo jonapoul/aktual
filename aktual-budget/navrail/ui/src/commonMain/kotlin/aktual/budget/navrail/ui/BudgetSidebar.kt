@@ -6,6 +6,7 @@ import aktual.budget.model.AccountSyncState
 import aktual.budget.model.AccountSyncState.Failed
 import aktual.budget.model.AccountSyncState.Ok
 import aktual.budget.model.Amount
+import aktual.budget.model.sumOf
 import aktual.budget.navrail.vm.DrawerAccount
 import aktual.budget.navrail.vm.DrawerAccountSection
 import aktual.budget.navrail.vm.DrawerAccounts
@@ -574,7 +575,7 @@ private val PREVIEW_ACCOUNTS =
 private fun section(vararg accounts: DrawerAccount) =
   DrawerAccountSection(
     accounts = persistentListOf(*accounts),
-    total = accounts.fold(Zero) { sum, account -> sum + account.balance },
+    total = accounts.asList().sumOf { it.balance },
   )
 
 private fun account(

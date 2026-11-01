@@ -4,6 +4,7 @@ import aktual.budget.db.dao.CategoryBudget
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
+import aktual.budget.model.sumOf
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -294,6 +295,3 @@ private inline fun List<CategoryMonth>.filterBy(
   categories: List<BudgetCategory>,
   predicate: (BudgetCategory) -> Boolean,
 ): List<CategoryMonth> = filterIndexed { index, _ -> predicate(categories[index]) }
-
-private inline fun <T> Iterable<T>.sumOf(selector: (T) -> Amount): Amount =
-  fold(Zero) { sum, item -> sum + selector(item) }
