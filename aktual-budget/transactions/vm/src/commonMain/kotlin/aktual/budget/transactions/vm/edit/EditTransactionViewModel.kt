@@ -354,7 +354,8 @@ internal constructor(
         entities.options
           .withoutTransfersTo(fields.account, entities)
           .withCategories(categories)
-          .copy(tags = tags, schedules = schedules.linkable(fields.schedule)),
+          .withSchedules(schedules, fields.schedule)
+          .copy(tags = tags),
       parts = parts,
       splitRemaining = draft.splitDifference,
     )

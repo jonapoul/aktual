@@ -1933,6 +1933,9 @@
   <string name="transaction_schedule">Schedule</string>
   <string name="transaction_schedule_search">Find a schedule</string>
   <string name="transaction_schedule_empty">No schedules to link to</string>
+  <string name="transaction_account_closed">Closed accounts</string>
+  <string name="transaction_account_show_closed">Show closed accounts</string>
+  <string name="transaction_account_hide_closed">Hide closed accounts</string>
   <string name="transaction_category_hidden">%1$s (hidden)</string>
   <string name="transaction_category_show_hidden">Show hidden categories</string>
   <string name="transaction_category_hide_hidden">Hide hidden categories</string>
