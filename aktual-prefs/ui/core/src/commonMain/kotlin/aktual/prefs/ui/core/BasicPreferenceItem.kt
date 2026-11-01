@@ -57,6 +57,7 @@ fun BasicPreferenceItem(
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
   val contentColor = colors.settingsCardText.disabledIf(!enabled)
+  val includeBackground = includeBackground && !LocalInPreferenceGroup.current
 
   Row(
     modifier =

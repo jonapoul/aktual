@@ -402,7 +402,6 @@ private fun MappedFieldItem(
     subtitle = row.example?.let { Strings.bankSyncSettingsExample(it) },
     icon = fieldIcon(row.field),
     onClick = null,
-    includeBackground = false,
     bottomContent = {
       AktualExposedDropDownMenu(
         modifier = Modifier.fillMaxWidth(),
@@ -425,7 +424,6 @@ private fun OptionsGroup(
   PreferenceGroup(
     modifier = modifier.fillMaxWidth(),
     title = Strings.bankSyncSettingsOptions,
-    subtitle = null,
   ) {
     BooleanPreferenceItem(
       value = state.importPending,
@@ -434,7 +432,6 @@ private fun OptionsGroup(
       subtitle = null,
       icon = MaterialIcons.Timer,
       enabled = state.importTransactions,
-      includeBackground = false,
     )
     BooleanPreferenceItem(
       value = state.importNotes,
@@ -443,7 +440,6 @@ private fun OptionsGroup(
       subtitle = null,
       icon = AktualIcons.Pencil1,
       enabled = state.importTransactions,
-      includeBackground = false,
     )
     BooleanPreferenceItem(
       value = state.reimportDeleted,
@@ -452,7 +448,6 @@ private fun OptionsGroup(
       subtitle = Strings.bankSyncSettingsReimportDeletedHint,
       icon = AktualIcons.Refresh,
       enabled = state.importTransactions,
-      includeBackground = false,
     )
     BooleanPreferenceItem(
       value = state.updateDates,
@@ -461,7 +456,6 @@ private fun OptionsGroup(
       subtitle = Strings.bankSyncSettingsUpdateDatesHint,
       icon = AktualIcons.Calendar3,
       enabled = state.importTransactions,
-      includeBackground = false,
     )
     BooleanPreferenceItem(
       value = !state.importTransactions,
@@ -469,7 +463,6 @@ private fun OptionsGroup(
       title = Strings.bankSyncSettingsInvestment,
       subtitle = Strings.bankSyncSettingsInvestmentHint,
       icon = AktualIcons.Reports,
-      includeBackground = false,
     )
   }
 }
