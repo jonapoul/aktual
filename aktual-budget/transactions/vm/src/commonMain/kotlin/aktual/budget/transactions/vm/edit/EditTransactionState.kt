@@ -114,11 +114,18 @@ fun ImmutableList<CategoryGroupOptions>.matching(
     .toImmutableList()
 }
 
-// As upstream's ScheduleLink, completed schedules aren't offered, unless it's linked to one already
-internal fun List<Schedule>.linkable(linked: ScheduleId?): ImmutableList<Schedule> = filter {
-  !it.isCompleted || it.id == linked
+// As upstream's ScheduleLink, completed schedules are only offered once they're shown, unless it's
+// linked to one already
+internal fun TransactionOptions.withSchedules(
+  schedules: List<Schedule>,
+  linked: ScheduleId?,
+): TransactionOptions {
+  val (linkable, completed) = schedules.partition { !it.isCompleted || it.id == linked }
+  return copy(
+    schedules = linkable.toImmutableList(),
+    completedSchedules = completed.toImmutableList(),
+  )
 }
-  .toImmutableList()
 
 // What the editor's pickers offer
 @Immutable
@@ -128,6 +135,7 @@ data class TransactionOptions(
   // The payees that transfer to another account, named after it
   val transfers: ImmutableList<EntityOption<PayeeId>>,
   val categoryGroups: ImmutableList<CategoryGroupOptions>,
+  // Without the closed ones
   val accounts: ImmutableList<EntityOption<AccountId>>,
   // The favourite payees then the most used ones, shown before the rest
   val suggestedPayees: ImmutableList<EntityOption<PayeeId>> = persistentListOf(),
@@ -135,6 +143,9 @@ data class TransactionOptions(
   val tags: ImmutableList<TagLabel> = persistentListOf(),
   // What it can be linked to, soonest first
   val schedules: ImmutableList<Schedule> = persistentListOf(),
+  // Only listed once the picker shows them
+  val closedAccounts: ImmutableList<EntityOption<AccountId>> = persistentListOf(),
+  val completedSchedules: ImmutableList<Schedule> = persistentListOf(),
   // Hidden categories are only in categoryGroups while they're shown, as the budget's
   // budget.showHiddenCategories has it
   val hasHiddenCategories: Boolean = false,

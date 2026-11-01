@@ -337,6 +337,25 @@ class EditTransactionViewModelTest {
   }
 
   @Test
+  fun `Closed accounts are kept apart from the rest`() = runDatabaseTest { scope ->
+    insertEntities()
+    accountsQueries.withoutResult { closeAccount(AccountId("b")) }
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val viewModel = createViewModel(scope, id = "t")
+
+    viewModel.state.test {
+      val edit = awaitEdit()
+      assertThat(edit.options.accounts)
+        .extracting(EntityOption<AccountId>::name)
+        .containsExactly("Amex", "Chase")
+      assertThat(edit.options.closedAccounts)
+        .extracting(EntityOption<AccountId>::name)
+        .containsExactly("Barclays")
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Linking a schedule is saved with the other edits`() = runDatabaseTest { scope ->
     insertEntities()
     insertSchedule(id = "rent", name = "Rent", payee = "Landlord", account = "Current")
@@ -349,10 +368,13 @@ class EditTransactionViewModelTest {
       var edit = awaitEdit()
       while (edit.options.schedules.isEmpty()) edit = awaitEdit()
       assertThat(edit.schedule).isNull()
-      // Completed schedules aren't offered
+      // Completed schedules are kept apart, for the picker to show once asked
       assertThat(edit.options.schedules)
         .extracting(Schedule::id)
         .containsExactly(ScheduleId("rent"))
+      assertThat(edit.options.completedSchedules)
+        .extracting(Schedule::id)
+        .containsExactly(ScheduleId("old"))
 
       viewModel.setSchedule(ScheduleId("rent"))
       while (!edit.hasChanges) edit = awaitEdit()

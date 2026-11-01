@@ -59,7 +59,12 @@ internal suspend fun loadEditorEntities(
         hasHiddenCategories = groups.any { group -> group.categories.any { it.isHidden } },
         accounts =
           accounts
-            .filter { it.closed != true }
+            .filter { it.id !in closed }
+            .mapNotNull { row -> row.name?.let { EntityOption(row.id, it) } }
+            .toImmutableList(),
+        closedAccounts =
+          accounts
+            .filter { it.id in closed }
             .mapNotNull { row -> row.name?.let { EntityOption(row.id, it) } }
             .toImmutableList(),
       ),

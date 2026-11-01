@@ -74,14 +74,7 @@ fun <T : Any> ListBottomSheet(
       )
     }
 
-    if (filtered.isEmpty() && query.isNotEmpty()) {
-      Text(
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
-        text = Strings.searchNoResults,
-        color = colors.pageTextSubdued,
-        textAlign = Center,
-      )
-    }
+    if (filtered.isEmpty() && query.isNotEmpty()) BottomSheetMessage(Strings.searchNoResults)
 
     val listState = rememberLazyListState()
     LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
@@ -159,6 +152,15 @@ private fun Colors.listItem(): ListItemColors =
     headlineColor = pageText,
     leadingIconColor = pageText,
     trailingIconColor = pageText,
+  )
+
+@Composable
+fun BottomSheetMessage(text: String, modifier: Modifier = Modifier) =
+  Text(
+    modifier = modifier.fillMaxWidth().padding(16.dp),
+    text = text,
+    color = colors.pageTextSubdued,
+    textAlign = Center,
   )
 
 @Composable

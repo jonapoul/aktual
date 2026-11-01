@@ -31,11 +31,11 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
+import aktual.core.ui.BottomSheetMessage
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formatted
@@ -76,6 +76,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.End
@@ -139,6 +140,7 @@ internal fun EditTransactionSheet(
       AccountSheet(
         selected = draft.account,
         options = form.options.accounts,
+        closed = form.options.closedAccounts,
         onDismiss = onDismiss,
         onSelect = { onAction(SetAccount(it)) },
       )
@@ -159,6 +161,7 @@ internal fun EditTransactionSheet(
       ScheduleSheet(
         selected = draft.schedule,
         options = form.options.schedules,
+        completed = form.options.completedSchedules,
         onDismiss = onDismiss,
         onSelect = { onAction(SetSchedule(it)) },
       )
@@ -335,24 +338,124 @@ private fun GroupHeader(name: String, modifier: Modifier = Modifier) =
     color = colors.pageTextSubdued,
   )
 
+// Closed accounts are listed after the rest once they're shown, which they are from the start if
+// the transaction's in one
 @Composable
 private fun AccountSheet(
   selected: AccountId?,
   options: ImmutableList<EntityOption<AccountId>>,
+  closed: ImmutableList<EntityOption<AccountId>>,
   onDismiss: () -> Unit,
   onSelect: (AccountId) -> Unit,
 ) =
-  ListBottomSheet(
-    value =
-      options.firstOrNull { it.id == selected } ?: EntityOption(selected ?: AccountId(""), ""),
-    options = options,
-    onDismiss = onDismiss,
-    onSelect = { onSelect(it.id) },
+  AktualModalBottomSheet(
+    onDismissRequest = onDismiss,
     sheetState = rememberBottomSheetState(Hidden),
-    string = { it.name },
-    key = { it.id.toString() },
-    searchPlaceholder = Strings.searchAccounts,
-  )
+  ) {
+    var showClosed by rememberSaveable { mutableStateOf(closed.any { it.id == selected }) }
+    val query = rememberTextFieldState()
+    val name = query.text.toString().trim()
+    val matches = remember(options, name) { options.matching(name) }
+    val closedMatches =
+      remember(closed, name, showClosed) {
+        if (showClosed) closed.matching(name) else persistentListOf()
+      }
+
+    SearchRow(
+      query = query,
+      placeholder = Strings.searchAccounts,
+      toggle =
+        if (closed.isEmpty()) {
+          null
+        } else {
+          HidingToggle(
+            isShown = showClosed,
+            showText = Strings.transactionAccountShowClosed,
+            hideText = Strings.transactionAccountHideClosed,
+            onClick = { showClosed = !showClosed },
+          )
+        },
+    )
+
+    val listState = rememberLazyListState()
+    LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
+      if (name.isNotEmpty() && matches.isEmpty() && closedMatches.isEmpty()) noResults()
+
+      accountItems(matches, selected, isClosed = false, onSelect, onDismiss)
+
+      if (closedMatches.isNotEmpty()) {
+        item(key = CLOSED_KEY) {
+          GroupHeader(Strings.transactionAccountClosed, Modifier.animateItem())
+        }
+      }
+
+      accountItems(closedMatches, selected, isClosed = true, onSelect, onDismiss)
+    }
+  }
+
+private fun ImmutableList<EntityOption<AccountId>>.matching(query: String) =
+  if (query.isEmpty()) {
+    this
+  } else {
+    filter { it.name.contains(query, ignoreCase = true) }.toImmutableList()
+  }
+
+private fun LazyListScope.accountItems(
+  accounts: ImmutableList<EntityOption<AccountId>>,
+  selected: AccountId?,
+  isClosed: Boolean,
+  onSelect: (AccountId) -> Unit,
+  onDismiss: () -> Unit,
+) =
+  items(accounts, key = { it.id.toString() }) { account ->
+    BottomSheetListItem(
+      modifier = Modifier.animateItem(),
+      label = account.name,
+      isSelected = account.id == selected,
+      labelColor = if (isClosed) colors.pageTextSubdued else Unspecified,
+      onClick = {
+        onSelect(account.id)
+        onDismiss()
+      },
+    )
+  }
+
+@Immutable
+private data class HidingToggle(
+  val isShown: Boolean,
+  val showText: String,
+  val hideText: String,
+  val onClick: () -> Unit,
+)
+
+// The search field, with the eye button to show or hide what's hidden on its end
+@Composable
+private fun SearchRow(
+  query: TextFieldState,
+  placeholder: String,
+  toggle: HidingToggle? = null,
+) =
+  Row(
+    modifier = Modifier.fillMaxWidth().padding(SearchPadding),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    verticalAlignment = CenterVertically,
+  ) {
+    AktualTextField(
+      modifier = Modifier.weight(1f),
+      state = query,
+      placeholderText = placeholder,
+      singleLine = true,
+      clearable = true,
+    )
+
+    if (toggle != null) {
+      NormalIconButton(
+        imageVector = if (toggle.isShown) AktualIcons.ViewHide else AktualIcons.ViewShow,
+        contentDescription = if (toggle.isShown) toggle.hideText else toggle.showText,
+        onClick = toggle.onClick,
+      )
+    }
+  }
 
 // As upstream's category picker, typing filters the categories by their name or their group's.
 // Groups with no match are left out, and "None" is only offered until something's typed. Each
@@ -381,36 +484,26 @@ private fun CategorySheet(
     val groups = options.categoryGroups
     val matches = remember(groups, name) { groups.matching(name) }
 
-    Row(
-      modifier = Modifier.fillMaxWidth().padding(SearchPadding),
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalAlignment = CenterVertically,
-    ) {
-      AktualTextField(
-        modifier = Modifier.weight(1f),
-        state = query,
-        placeholderText = Strings.transactionCategorySearch,
-        singleLine = true,
-        clearable = true,
-      )
-
-      if (options.hasHiddenCategories) {
-        val showHidden = options.showHiddenCategories
-        NormalIconButton(
-          imageVector = if (showHidden) AktualIcons.ViewHide else AktualIcons.ViewShow,
-          contentDescription =
-            if (showHidden) {
-              Strings.transactionCategoryHideHidden
-            } else {
-              Strings.transactionCategoryShowHidden
-            },
-          onClick = onToggleHiding,
-        )
-      }
-    }
+    SearchRow(
+      query = query,
+      placeholder = Strings.transactionCategorySearch,
+      toggle =
+        if (options.hasHiddenCategories) {
+          HidingToggle(
+            isShown = options.showHiddenCategories,
+            showText = Strings.transactionCategoryShowHidden,
+            hideText = Strings.transactionCategoryHideHidden,
+            onClick = onToggleHiding,
+          )
+        } else {
+          null
+        },
+    )
 
     val listState = rememberLazyListState()
     LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
+      if (name.isNotEmpty() && matches.isEmpty()) noResults()
+
       if (name.isEmpty()) {
         item(key = NONE_KEY) {
           BottomSheetListItem(
@@ -459,6 +552,9 @@ private fun CategorySheet(
     }
   }
 
+private fun LazyListScope.noResults() =
+  item(key = NO_RESULTS_KEY) { BottomSheetMessage(Strings.searchNoResults, Modifier.animateItem()) }
+
 @Composable private fun hiddenName(name: String) = Strings.transactionCategoryHidden(name)
 
 // Qualified, since Amount is also the field
@@ -479,11 +575,13 @@ private fun CategoryBalance(balance: Amount) =
 
 // As upstream's ScheduleLink modal, typing filters the schedules by their name, payee or account.
 // The chips narrow them to the picked statuses, or show them all when none are picked. "None"
-// unlinks it, so it's only offered while it's linked
+// unlinks it, so it's only offered while it's linked. Completed schedules are only listed while
+// their chip is picked
 @Composable
 private fun ScheduleSheet(
   selected: ScheduleId?,
   options: ImmutableList<Schedule>,
+  completed: ImmutableList<Schedule>,
   onDismiss: () -> Unit,
   onSelect: (ScheduleId?) -> Unit,
 ) =
@@ -495,6 +593,7 @@ private fun ScheduleSheet(
     ScheduleSheetContent(
       selected = selected,
       options = options,
+      completed = completed,
       query = rememberTextFieldState(),
       statuses = statuses,
       onToggleStatus = { status ->
@@ -512,23 +611,20 @@ private fun ScheduleSheet(
 private fun ScheduleSheetContent(
   selected: ScheduleId?,
   options: ImmutableList<Schedule>,
+  completed: ImmutableList<Schedule>,
   query: TextFieldState,
   statuses: ImmutableSet<ScheduleStatus>,
   onToggleStatus: (ScheduleStatus) -> Unit,
   onSelect: (ScheduleId?) -> Unit,
 ) = Column {
   val name = query.text.toString().trim()
-  val matches = remember(options, name, statuses) { options.matching(name, statuses) }
+  val all = remember(options, completed) { (options + completed).toImmutableList() }
+  val shown = if (Completed in statuses) all else options
+  val matches = remember(shown, name, statuses) { shown.matching(name, statuses) }
 
-  AktualTextField(
-    modifier = Modifier.fillMaxWidth().padding(SearchPadding),
-    state = query,
-    placeholderText = Strings.transactionScheduleSearch,
-    singleLine = true,
-    clearable = true,
-  )
+  SearchRow(query = query, placeholder = Strings.transactionScheduleSearch)
 
-  StatusChips(options = options, selected = statuses, onToggle = onToggleStatus)
+  StatusChips(options = all, selected = statuses, onToggle = onToggleStatus)
 
   val listState = rememberLazyListState()
   LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
@@ -542,8 +638,10 @@ private fun ScheduleSheetContent(
       }
     }
 
-    if (options.isEmpty()) {
-      item { GroupHeader(Strings.transactionScheduleEmpty) }
+    if (all.isEmpty()) {
+      item { BottomSheetMessage(Strings.transactionScheduleEmpty) }
+    } else if (matches.isEmpty() && (name.isNotEmpty() || statuses.isNotEmpty())) {
+      noResults()
     }
 
     items(matches, key = { it.id.toString() }) { schedule ->
@@ -580,8 +678,8 @@ private fun StatusChips(
 
   FlowRow(
     modifier = Modifier.fillMaxWidth().padding(SearchPadding),
-    horizontalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing * 2),
-    verticalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing * 2),
+    horizontalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing),
+    verticalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing),
   ) {
     statuses.fastForEach { status ->
       val isSelected = status in selected
@@ -595,7 +693,7 @@ private fun StatusChips(
   }
 }
 
-// Its name, then its payee and account, with its amount and next date on the end
+// Its name, payee and account, with its amount, next date and status on the end
 @Composable
 private fun ScheduleItem(schedule: Schedule, isSelected: Boolean, onClick: () -> Unit) =
   ListItem(
@@ -603,18 +701,31 @@ private fun ScheduleItem(schedule: Schedule, isSelected: Boolean, onClick: () ->
     headlineContent = {
       Text(
         text = schedule.name ?: Strings.listSchedulesUnnamedSchedule,
-        color = if (schedule.name == null) colors.pageTextSubdued else colors.pageText,
+        color =
+          if (schedule.name == null || schedule.isCompleted) {
+            colors.pageTextSubdued
+          } else {
+            colors.pageText
+          },
         maxLines = 1,
         overflow = Ellipsis,
       )
     },
     supportingContent = {
-      Text(
-        text = "${schedule.payeeName} · ${schedule.accountName}",
-        color = colors.pageTextSubdued,
-        maxLines = 1,
-        overflow = Ellipsis,
-      )
+      Column {
+        Text(
+          text = schedule.payeeName,
+          color = colors.pageTextSubdued,
+          maxLines = 1,
+          overflow = Ellipsis,
+        )
+        Text(
+          text = schedule.accountName,
+          color = colors.pageTextSubdued,
+          maxLines = 1,
+          overflow = Ellipsis,
+        )
+      }
     },
     trailingContent = {
       Row(
@@ -638,18 +749,13 @@ private fun ScheduleAmount(schedule: Schedule) =
       color = if (schedule.amount > Zero) colors.numberPositive else colors.numberNegative,
       maxLines = 1,
     )
-    Row(
-      horizontalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing),
-      verticalAlignment = CenterVertically,
-    ) {
-      ScheduleStatusBadge(schedule.status)
-      Text(
-        text = schedule.nextDate.formatted(),
-        fontSize = BalanceSize,
-        color = colors.pageTextSubdued,
-        maxLines = 1,
-      )
-    }
+    Text(
+      text = schedule.nextDate.formatted(),
+      fontSize = BalanceSize,
+      color = colors.pageTextSubdued,
+      maxLines = 1,
+    )
+    ScheduleStatusBadge(schedule.status)
   }
 
 // Saving rejects dates before MIN_TRANSACTION_DATE, so they can't be picked. The range still holds
@@ -697,6 +803,8 @@ private val GroupHeaderSize = textSizes.smallPlus
 private val BalanceSize = textSizes.medium
 private val SearchPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
 private const val NONE_KEY = "none"
+private const val CLOSED_KEY = "closed"
+private const val NO_RESULTS_KEY = "no-results"
 
 @Preview
 @Composable
@@ -707,7 +815,8 @@ private fun PreviewScheduleSheet(
     ScheduleSheetContent(
       selected = selected,
       options = options,
-      query = rememberTextFieldState(),
+      completed = completed,
+      query = rememberTextFieldState(query),
       statuses = statuses,
       onToggleStatus = {},
       onSelect = {},
@@ -719,13 +828,20 @@ private data class ScheduleSheetPreview(
   val options: ImmutableList<Schedule>,
   val selected: ScheduleId? = null,
   val statuses: ImmutableSet<ScheduleStatus> = persistentSetOf(),
+  val completed: ImmutableList<Schedule> = PREVIEW_COMPLETED,
+  val query: String = "",
 )
 
 private class ScheduleSheetProvider :
   ColorParamsProvider<ScheduleSheetPreview>(
     ScheduleSheetPreview(PREVIEW_SCHEDULES, selected = PREVIEW_SCHEDULES[1].id),
     ScheduleSheetPreview(PREVIEW_SCHEDULES, statuses = persistentSetOf(ScheduleStatus.Due)),
-    ScheduleSheetPreview(persistentListOf()),
+    ScheduleSheetPreview(
+      PREVIEW_SCHEDULES,
+      statuses = persistentSetOf(ScheduleStatus.Completed),
+    ),
+    ScheduleSheetPreview(PREVIEW_SCHEDULES, query = "Insurance"),
+    ScheduleSheetPreview(persistentListOf(), completed = persistentListOf()),
   )
 
 private val PREVIEW_SCHEDULE =
@@ -774,5 +890,18 @@ private val PREVIEW_SCHEDULES =
       amount = Amount(-3000),
       nextDate = LocalDate(2026, 12, 5),
       status = Scheduled,
+    ),
+  )
+
+private val PREVIEW_COMPLETED =
+  persistentListOf(
+    PREVIEW_SCHEDULE.copy(
+      id = ScheduleId("loan"),
+      name = "Car loan",
+      payeeName = "Lender",
+      amount = Amount(-25000),
+      nextDate = LocalDate(2026, 6, 1),
+      isCompleted = true,
+      status = Completed,
     ),
   )
