@@ -13,6 +13,9 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.contrastingTextColor
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.width
@@ -27,9 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
@@ -53,7 +57,8 @@ import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
-@Immutable private data class Chip(val start: Int, val end: Int, val background: Color)
+@Immutable
+private data class Chip(val start: Int, val end: Int, val background: Color, val tag: TagId?)
 
 @Immutable private data class TaggedText(val text: AnnotatedString, val chips: List<Chip>)
 
@@ -68,6 +73,7 @@ internal fun TaggedNotes(
   color: Color,
   modifier: Modifier = Modifier,
   maxLines: Int = 1,
+  onTagClick: ((TagId) -> Unit)? = null,
 ) {
   val defaultBackground = colors.noteTagBackground
   val defaultText = colors.noteTagText
@@ -83,6 +89,22 @@ internal fun TaggedNotes(
     modifier =
       modifier
         .semantics { text = tagged.text }
+        .then(
+          if (onTagClick == null) {
+            Modifier
+          } else {
+            Modifier.pointerInput(onTagClick) {
+              awaitEachGesture {
+                val down = awaitFirstDown()
+                val tag = measured?.tagAt(down.position) ?: return@awaitEachGesture
+                down.consume()
+                val up = waitForUpOrCancellation() ?: return@awaitEachGesture
+                up.consume()
+                onTagClick(tag)
+              }
+            }
+          },
+        )
         .drawBehind {
           val result = measured ?: return@drawBehind
           result.chips.fastForEach { drawChip(result.layout, it) }
@@ -148,7 +170,8 @@ private fun taggedText(
     tagRangesInNotes(notes).fastForEach { range ->
       append(notes.substring(index, range.first))
       val token = notes.substring(range)
-      val tagColor = tags.firstOrNull { it.name.equals(token.drop(1), ignoreCase = true) }?.color
+      val tag = tags.firstOrNull { it.name.equals(token.drop(1), ignoreCase = true) }
+      val tagColor = tag?.color
       val start = length
       append(CHIP_PADDING)
       withStyle(
@@ -160,7 +183,7 @@ private fun taggedText(
         append(token)
       }
       append(CHIP_PADDING)
-      chips += Chip(start, length, tagColor ?: defaultBackground)
+      chips += Chip(start, length, tagColor ?: defaultBackground, tag?.id)
       index = range.last + 1
     }
     append(notes.substring(index))
@@ -170,24 +193,36 @@ private fun taggedText(
 
 // One rounded box per line the chip covers, in case a long tag wraps
 private fun DrawScope.drawChip(layout: TextLayoutResult, chip: Chip) {
-  val inset = ChipInset.toPx()
-  for (line in layout.getLineForOffset(chip.start)..layout.getLineForOffset(chip.end - 1)) {
-    val lineStart = maxOf(chip.start, layout.getLineStart(line))
-    val lineEnd = minOf(chip.end, layout.getLineEnd(line, visibleEnd = true))
-    if (lineEnd <= lineStart) continue
-
-    val left = layout.getHorizontalPosition(lineStart, usePrimaryDirection = true)
-    val right = layout.getHorizontalPosition(lineEnd, usePrimaryDirection = true)
-    val top = layout.getLineTop(line) + inset
-    val bottom = layout.getLineBottom(line) - inset
+  val radius = CornerRadius(ChipSize.Small.radius.toPx())
+  layout.chipRects(chip, ChipInset.toPx()).fastForEach { rect ->
     drawRoundRect(
       color = chip.background,
-      topLeft = Offset(left, top),
-      size = Size(right - left, bottom - top),
-      cornerRadius = CornerRadius(ChipSize.Small.radius.toPx()),
+      topLeft = rect.topLeft,
+      size = rect.size,
+      cornerRadius = radius,
     )
   }
 }
+
+private fun MeasuredText.tagAt(position: Offset): TagId? =
+  chips
+    .firstOrNull { chip ->
+      chip.tag != null && layout.chipRects(chip, inset = 0f).any { it.contains(position) }
+    }
+    ?.tag
+
+private fun TextLayoutResult.chipRects(chip: Chip, inset: Float): List<Rect> =
+  (getLineForOffset(chip.start)..getLineForOffset(chip.end - 1)).mapNotNull { line ->
+    val lineStart = maxOf(chip.start, getLineStart(line))
+    val lineEnd = minOf(chip.end, getLineEnd(line, visibleEnd = true))
+    if (lineEnd <= lineStart) return@mapNotNull null
+    Rect(
+      left = getHorizontalPosition(lineStart, usePrimaryDirection = true),
+      top = getLineTop(line) + inset,
+      right = getHorizontalPosition(lineEnd, usePrimaryDirection = true),
+      bottom = getLineBottom(line) - inset,
+    )
+  }
 
 // Non-breaking, so the padding never wraps away from its tag
 private const val CHIP_PADDING = " "

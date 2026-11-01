@@ -4,6 +4,7 @@ import aktual.budget.banksync.components.showBankSyncSummary
 import aktual.budget.db.dao.ClearedBalances
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
+import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
@@ -17,6 +18,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.DeletedAccountNavigator
 import aktual.core.nav.EditTransactionNavigator
+import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParams
@@ -67,6 +69,7 @@ fun TransactionsScreen(
   back: BackNavigator,
   accountDeleted: DeletedAccountNavigator,
   openTransaction: EditTransactionNavigator,
+  openTag: TransactionsNavigator,
   spec: TransactionsSpec,
   isRoot: Boolean = false,
   viewModel: TransactionsViewModel = metroViewModel(spec),
@@ -137,6 +140,7 @@ fun TransactionsScreen(
         is SetAccountOption -> viewModel.setAccountOption(action.option, action.enabled)
         is ToggleSplit -> viewModel.toggleSplit(action.id)
         is OpenTransaction -> openTransaction(action.id)
+        is OpenTag -> if (spec.tagSpec != TagSpec.SpecificTag(action.id)) openTag(action.id)
         CreateTransaction ->
           openTransaction.create(
             account = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id,

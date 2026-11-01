@@ -1,6 +1,7 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.model.Amount
+import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.tags.domain.TagLabel
@@ -79,6 +80,7 @@ internal fun LedgerRow(
   parts: SplitParts = Collapsed,
   onToggleSplit: () -> Unit = {},
   onOpen: () -> Unit = {},
+  onTagClick: ((TagId) -> Unit)? = null,
 ) {
   val dimens = LocalLedgerDimens.current
   Row(
@@ -107,6 +109,7 @@ internal fun LedgerRow(
           tags = tags,
           fontSize = dimens.secondLineSize,
           color = colors.pageTextLight,
+          onTagClick = onTagClick,
         )
       }
     }
