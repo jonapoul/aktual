@@ -6,7 +6,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.BooleanColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.PreviewWithColorParams
-import aktual.prefs.ui.core.BooleanPreferenceItem
+import aktual.prefs.components.BooleanPreferenceItem
 import aktual.prefs.vm.BooleanPreference
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable

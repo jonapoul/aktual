@@ -13,7 +13,7 @@ import aktual.core.ui.DesktopPreview
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.isCompactWidth
-import aktual.prefs.ui.core.BasicPreferenceItem
+import aktual.prefs.components.BasicPreferenceItem
 import aktual.prefs.vm.ListPreference
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

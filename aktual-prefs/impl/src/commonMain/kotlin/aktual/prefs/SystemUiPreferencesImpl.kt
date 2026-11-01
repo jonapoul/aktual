@@ -1,6 +1,7 @@
 package aktual.prefs
 
 import aktual.budget.model.BarEffect
+import aktual.budget.model.BarGlassStyle
 import aktual.di.AppScope
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -26,11 +27,29 @@ class SystemUiPreferencesImpl(dataStore: DataStore<Preferences>) : SystemUiPrefe
   override val hazeDialogs: Preference<Boolean> =
     dataStore.boolean(key = booleanPreferencesKey("blurDialogs"), default = true).required()
 
-  override val hazeRadius: Preference<Float> =
+  override val barBlurRadius: Preference<Float> =
     dataStore.float(key = floatPreferencesKey("blurRadius"), default = 5f).required()
 
-  override val hazeAlpha: Preference<Float> =
+  override val barBlurAlpha: Preference<Float> =
     dataStore.float(key = floatPreferencesKey("blurAlpha"), default = 0.35f).required()
+
+  override val dialogBlurRadius: Preference<Float> =
+    dataStore.float(key = floatPreferencesKey("dialogBlurRadius"), default = 5f).required()
+
+  override val dialogBlurAlpha: Preference<Float> =
+    dataStore.float(key = floatPreferencesKey("dialogBlurAlpha"), default = 0.35f).required()
+
+  override val glassStyle: Preference<BarGlassStyle> =
+    dataStore
+      .translated(
+        key = intPreferencesKey("glassStyle"),
+        default = BarGlassStyle.Default,
+        translator = enumOrdinalTranslator(),
+      )
+      .required()
+
+  override val glassCornerRadius: Preference<Float> =
+    dataStore.float(key = floatPreferencesKey("glassCornerRadius"), default = 24f).required()
 
   override val hidePreviewInAppSwitcher: Preference<Boolean> =
     dataStore

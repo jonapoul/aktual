@@ -1,6 +1,6 @@
 # aktual-prefs
 
-Preferences and settings, split into `vm` (state) and `ui` (Compose). `ui:core` holds the preference item composables shared with other features: `BasicPreferenceItem`, `PreferenceGroup` and the value-based `BooleanPreferenceItem`.
+Preferences and settings, split into `vm` (state) and `ui` (Compose). `components` holds the preference item composables shared with other features: `BasicPreferenceItem`, `PreferenceGroup` and the value-based `BooleanPreferenceItem`. Items inside a `PreferenceGroup` drop their own card background and use the group's.
 
 ## Adding a new setting
 

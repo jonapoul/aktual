@@ -1,4 +1,4 @@
-package aktual.prefs.ui.core
+package aktual.prefs.components
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.InformationOutline

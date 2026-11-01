@@ -1,4 +1,4 @@
-package aktual.prefs.ui.core
+package aktual.prefs.components
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.InformationOutline
@@ -57,17 +57,18 @@ fun BasicPreferenceItem(
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
   val contentColor = colors.settingsCardText.disabledIf(!enabled)
+  val shouldIncludeBackground = includeBackground && !LocalInPreferenceGroup.current
 
   Row(
     modifier =
       modifier
         .clip(CardShape)
-        .ifTrue(includeBackground) { background(colors.settingsCardBackground, CardShape) }
-        .ifTrue(includeBackground) { border(1.dp, colors.settingsCardBorder, CardShape) }
+        .ifTrue(shouldIncludeBackground) { background(colors.settingsCardBackground, CardShape) }
+        .ifTrue(shouldIncludeBackground) { border(1.dp, colors.settingsCardBorder, CardShape) }
         .ifNotNull(onClick) {
           clickable(enabled, onClick = it, interactionSource = interactionSource)
         }
-        .ifTrue(includeBackground) { padding(5.dp) },
+        .ifTrue(shouldIncludeBackground) { padding(5.dp) },
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = CenterVertically,
   ) {
@@ -111,7 +112,7 @@ fun BasicPreferenceItem(
       }
 
       if (bottomContent != null) {
-        if (includeBackground) {
+        if (shouldIncludeBackground) {
           ProvideSurfaceColor(colors.settingsCardBackground) { Column(content = bottomContent) }
         } else {
           Column(content = bottomContent)
