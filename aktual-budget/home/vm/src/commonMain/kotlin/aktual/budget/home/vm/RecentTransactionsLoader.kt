@@ -15,7 +15,7 @@ internal class RecentTransactionsLoader(private val transactionDao: TransactionD
   fun observe(limit: Int): Flow<ImmutableList<RecentTransaction>> =
     transactionDao
       .observeChanges()
-      .mapLatest {
+      .mapLatest { _ ->
         transactionDao
           .getRecent(limit = limit.toLong())
           .map { it.toRecentTransaction() }

@@ -216,6 +216,7 @@ private fun PreviewRecentCard(
 private class RecentCardStateProvider :
   ColorParamsProvider<RecentCardState>(PREVIEW_RECENT, Loading, Failed)
 
+@Suppress("StringLiteralDuplication")
 internal val PREVIEW_RECENT =
   Loaded(
     persistentListOf(
@@ -227,7 +228,7 @@ internal val PREVIEW_RECENT =
     ),
   )
 
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "MagicNumber")
 private fun recent(
   payee: String,
   account: String,
