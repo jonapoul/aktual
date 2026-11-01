@@ -112,6 +112,7 @@ fun ReportScreen(
           when (val chart = action.action) {
             is SaveText -> viewModel.saveText(chart.content, chart.align)
             is SetUnsavedText -> hasUnsavedText = chart.hasUnsavedText
+            is SetNetWorthMode -> viewModel.setNetWorthMode(chart.mode)
             is SetSummaryType -> viewModel.setSummaryType(chart.type)
             is SetAllTimeDivisor -> viewModel.setSummaryAllTimeDivisor(chart.allTime)
             is ClickCalendarDay -> calendarDrilldown(chart)

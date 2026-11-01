@@ -32,7 +32,13 @@ data class CashFlowDatum(
   val change: Amount = income + expenses + transfers,
 )
 
-data class NetWorthData(val title: String?, val items: ImmutableMap<YearMonth, Amount>) : ChartData
+data class NetWorthData(
+  val title: String?,
+  val items: ImmutableMap<YearMonth, Amount>,
+  val mode: NetWorthMode = Trend,
+  // In stacking order, see netWorthData
+  val accounts: ImmutableList<NetWorthAccount> = persistentListOf(),
+) : ChartData
 
 data class AgeOfMoneyData(
   val title: String?,

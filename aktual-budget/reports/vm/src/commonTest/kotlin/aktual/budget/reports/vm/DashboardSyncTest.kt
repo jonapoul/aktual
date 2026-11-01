@@ -122,6 +122,23 @@ class DashboardSyncTest {
   }
 
   @Test
+  fun `Setting the net worth mode keeps other values`() = runSyncTest { dao ->
+    dao.insert(
+      WIDGET,
+      page = PAGE_1,
+      type = NetWorth,
+      x = 0,
+      y = 0,
+      meta = json("""{"name":"N","mode":"trend"}"""),
+    )
+
+    setNetWorthMode(WIDGET, Stacked)
+
+    val meta = dao.observeByPage(PAGE_1).first().single().meta
+    assertThat(meta).isEqualTo(json("""{"name":"N","mode":"stacked"}"""))
+  }
+
+  @Test
   fun `Setting a summary type keeps other content`() = runSyncTest { dao ->
     dao.insert(
       WIDGET,

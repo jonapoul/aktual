@@ -24,20 +24,20 @@ WHERE t.is_parent = 0 AND a.offbudget = 0 AND t.amount != 0 AND t.date >= :start
 GROUP BY month, is_transfer, is_income;
 
 -- packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts createSpreadsheet()
-netWorthStartingBalance:
-SELECT IFNULL(SUM(t.amount), 0) AS total
-FROM v_transactions_internal_alive t
-JOIN accounts a ON a.id = t.account AND a.tombstone = 0
-WHERE t.is_parent = 0 AND t.date < :start;
-
-netWorthByMonth:
-SELECT
-  CAST(t.date / 100 AS INTEGER) AS month,
-  IFNULL(SUM(t.amount), 0) AS total
-FROM v_transactions_internal_alive t
-JOIN accounts a ON a.id = t.account AND a.tombstone = 0
-WHERE t.is_parent = 0 AND t.date >= :start AND t.date <= :end
-GROUP BY month;
+-- Each account's balance before :start as month 0, then its change in each month up to :end. One
+-- pass over the transactions, with accounts joined after grouping so it's once per row of output
+netWorthByAccount:
+SELECT b.account, a.name, b.month, b.total
+FROM (
+  SELECT
+    t.account,
+    CAST(CASE WHEN t.date < :start THEN 0 ELSE t.date / 100 END AS INTEGER) AS month,
+    IFNULL(SUM(t.amount), 0) AS total
+  FROM v_transactions_internal_alive t
+  WHERE t.is_parent = 0 AND t.date <= :end
+  GROUP BY t.account, month
+) b
+JOIN accounts a ON a.id = b.account AND a.tombstone = 0;
 
 -- packages/desktop-client/src/components/reports/spreadsheets/age-of-money-spreadsheet.ts createAgeOfMoneySpreadsheet()
 -- Transfers between on-budget accounts just move money around the pool, so they're left out

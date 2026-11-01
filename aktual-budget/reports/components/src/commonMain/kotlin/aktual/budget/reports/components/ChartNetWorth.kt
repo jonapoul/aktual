@@ -1,12 +1,16 @@
 package aktual.budget.reports.components
 
+import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionType.Boolean
+import aktual.budget.reports.vm.NetWorthAccount
 import aktual.budget.reports.vm.NetWorthData
+import aktual.budget.reports.vm.NetWorthMode
 import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.TimeFrame
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
@@ -22,12 +26,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -45,8 +53,11 @@ import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLa
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Month.DECEMBER
 import kotlinx.datetime.Month.JANUARY
 import kotlinx.datetime.Month.MARCH
 import kotlinx.datetime.YearMonth
@@ -60,18 +71,51 @@ internal fun NetWorthChart(
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
   zoom: ChartZoomState = rememberChartZoomState(data),
+  onAction: ChartActionListener = {},
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {
       Header(modifier = Modifier.fillMaxWidth(), data = data)
     }
 
+    if (!compact) {
+      AktualSlidingToggleButton(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp),
+        selected = data.mode,
+        options = MODES,
+        onSelect = { mode -> onAction(ChartAction.SetNetWorthMode(mode)) },
+        string = { mode ->
+          if (mode == Stacked) {
+            Strings.reportsNetWorthModeStacked
+          } else {
+            Strings.reportsNetWorthModeTrend
+          }
+        },
+      )
+    }
+
+    var selected by remember(data) { mutableStateOf<YearMonth?>(null) }
+    var highlighted by remember(data) { mutableStateOf<AccountId?>(null) }
+
     Chart(
       modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
       data = data,
       compact = compact,
       zoom = zoom,
+      highlighted = highlighted,
+      onSelectMonth = { selected = it },
     )
+
+    val month = selected ?: data.items.keys.maxOrNull()
+    if (!compact && month != null) {
+      NetWorthBreakdownList(
+        modifier = Modifier.fillMaxWidth().heightIn(max = BREAKDOWN_MAX_HEIGHT).padding(top = 8.dp),
+        data = data,
+        month = month,
+        highlighted = highlighted,
+        onHighlight = { highlighted = it },
+      )
+    }
   }
 
 @Composable
@@ -124,6 +168,8 @@ private fun Chart(
   data: NetWorthData,
   compact: Boolean,
   zoom: ChartZoomState,
+  highlighted: AccountId?,
+  onSelectMonth: (YearMonth?) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
@@ -138,6 +184,21 @@ private fun Chart(
   val tick = axisTickComponent(compact)
   val guideline = axisGuidelineComponent(compact)
   val line = axisLineComponent(compact)
+  val stacked = data.isStacked()
+  val trendLines =
+    LineCartesianLayer.LineProvider.series(
+      LineCartesianLayer.rememberLine(
+        fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsChartFill)),
+        areaFill =
+          LineCartesianLayer.AreaFill.double(
+            topFill = Fill(colors.reportsNumberPositive.copy(alpha = 0.2f)),
+            bottomFill = Fill(colors.reportsRed.copy(alpha = 0.2f)),
+          ),
+      ),
+    )
+  val highlightedIndex = data.accounts.indexOfFirst { it.id == highlighted }.takeIf { it >= 0 }
+  val stackedLines = rememberStackedLineProvider(data, compact, highlightedIndex)
+  val stackedMarker = rememberStackedMarkerFormatter(data)
 
   ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
     CartesianChartHost(
@@ -149,17 +210,7 @@ private fun Chart(
         rememberCartesianChart(
           rememberLineCartesianLayer(
             rangeProvider = remember { ZoomRangeProvider() },
-            lineProvider =
-              LineCartesianLayer.LineProvider.series(
-                LineCartesianLayer.rememberLine(
-                  fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsChartFill)),
-                  areaFill =
-                    LineCartesianLayer.AreaFill.double(
-                      topFill = Fill(colors.reportsNumberPositive.copy(alpha = 0.2f)),
-                      bottomFill = Fill(colors.reportsRed.copy(alpha = 0.2f)),
-                    ),
-                ),
-              ),
+            lineProvider = if (stacked) stackedLines else trendLines,
           ),
           startAxis =
             VerticalAxis.rememberStart(
@@ -179,23 +230,43 @@ private fun Chart(
               valueFormatter = yearMonthXAxisFormatter(),
               itemPlacer = hItemPlacer(compact),
             ),
-          marker = if (compact) null else rememberMarker(),
-          markerVisibilityListener = rememberMarkerHaptics(compact),
+          marker =
+            when {
+              compact -> null
+              stacked ->
+                rememberMarker(
+                  valueFormatter = stackedMarker,
+                  lineCount = markerLines(data.accounts.size),
+                  // A label this tall would squash the chart if Vico made room for it on top
+                  labelPosition = AroundPoint,
+                )
+              else -> rememberMarker()
+            },
+          markerVisibilityListener = rememberMonthSelection(compact, onSelectMonth),
           decorations = listOf(rememberChartZoomDecoration(zoom)),
         ),
     )
   }
 }
 
-private suspend fun CartesianChartModelProducer.populate(data: NetWorthData, zoom: XRange?) =
-  with(data.items) {
-    runTransaction {
-      zoomTo(zoom)
-      lineModel {
-        series(x = keys.map { it.monthNumber() }, y = values.map { it.toDouble() }, zoom = zoom)
+private suspend fun CartesianChartModelProducer.populate(data: NetWorthData, zoom: XRange?) {
+  val x = data.items.keys.map { it.monthNumber() }
+  val stacks = if (data.isStacked()) netWorthStacks(data) else null
+  runTransaction {
+    zoomTo(zoom)
+    lineModel {
+      if (stacks == null) {
+        series(x = x, y = data.items.values.map { it.toDouble() }, zoom = zoom)
+      } else {
+        stacks.forEach { y -> series(x = x, y = y, zoom = zoom) }
       }
     }
   }
+}
+
+private val BREAKDOWN_MAX_HEIGHT = 240.dp
+
+private val MODES = persistentListOf<NetWorthMode>(Trend, Stacked)
 
 @Preview
 @Composable
@@ -226,6 +297,9 @@ private class NetWorthChartProvider :
     NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = true, private = true),
     NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = false, private = false),
     NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = false, private = true),
+    NetWorthChartParams(PREVIEW_NET_WORTH_STACKED, compact = true, private = false),
+    NetWorthChartParams(PREVIEW_NET_WORTH_STACKED, compact = false, private = false),
+    NetWorthChartParams(PREVIEW_NET_WORTH_STACKED, compact = false, private = true),
   )
 
 val PREVIEW_NET_WORTH_META =
@@ -274,4 +348,38 @@ val PREVIEW_NET_WORTH_DATA =
         date(2025, MARCH) to Amount(256.0),
         date(2025, JUNE) to Amount(30000.0),
       ),
+  )
+
+private val PREVIEW_MONTHS = (YearMonth(2025, JANUARY)..YearMonth(2025, DECEMBER)).toList()
+
+private fun previewAccount(id: String, name: String, start: Double, step: Double) =
+  NetWorthAccount(
+    id = AccountId(id),
+    name = name,
+    balances =
+      PREVIEW_MONTHS.mapIndexed { i, month -> month to Amount(start + step * i) }
+        .toMap()
+        .toImmutableMap(),
+  )
+
+// Stacking order, smallest total first
+private val PREVIEW_STACKED_ACCOUNTS =
+  persistentListOf(
+    previewAccount("loan", "Car loan", start = -9_000.0, step = 400.0),
+    previewAccount("card", "Credit card", start = -2_500.0, step = 150.0),
+    previewAccount("checking", "Checking", start = 3_000.0, step = 120.0),
+    previewAccount("savings", "Savings", start = 8_000.0, step = 500.0),
+    previewAccount("isa", "Stocks ISA", start = 15_000.0, step = 900.0),
+  )
+
+val PREVIEW_NET_WORTH_STACKED =
+  NetWorthData(
+    title = PREVIEW_NET_WORTH_DATA.title,
+    items =
+      PREVIEW_MONTHS.associateWith { month ->
+          PREVIEW_STACKED_ACCOUNTS.fold(Amount.Zero) { sum, a -> sum + a.balances.getValue(month) }
+        }
+        .toImmutableMap(),
+    mode = Stacked,
+    accounts = PREVIEW_STACKED_ACCOUNTS,
   )

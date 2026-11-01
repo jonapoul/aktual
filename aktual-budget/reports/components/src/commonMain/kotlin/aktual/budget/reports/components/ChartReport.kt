@@ -1,5 +1,6 @@
 package aktual.budget.reports.components
 
+import aktual.budget.reports.components.ChartAction.DrillDown
 import aktual.budget.reports.vm.AgeOfMoneyData
 import aktual.budget.reports.vm.BalanceForecastData
 import aktual.budget.reports.vm.BudgetAnalysisData
@@ -35,14 +36,13 @@ fun ReportChart(
     is CashFlowData -> CashFlowChart(data, compact, modifier, includeHeader, zoom)
     is CrossoverData -> CrossoverChart(data, compact, modifier, includeHeader, zoom)
     is MonteCarloData -> MonteCarloChart(data, compact, modifier, includeHeader, zoom)
-    is NetWorthData -> NetWorthChart(data, compact, modifier, includeHeader, zoom)
+    is NetWorthData -> NetWorthChart(data, compact, modifier, includeHeader, zoom, onAction)
     is SankeyData -> SankeyChart(data, compact, modifier, includeHeader)
     is SummaryData -> SummaryChart(data, compact, onAction, modifier, includeHeader)
     is CalendarData -> CalendarChart(data, compact, onAction, modifier, includeHeader)
     is SpendingData -> SpendingChart(data, compact, modifier, includeHeader, zoom)
     is FormulaData -> FormulaChart(data, compact, modifier, includeHeader)
     is TextData -> TextChart(data, compact, onAction, modifier)
-    is CustomData ->
-      CustomChart(data, compact, modifier, includeHeader) { onAction(ChartAction.DrillDown(it)) }
+    is CustomData -> CustomChart(data, compact, modifier, includeHeader) { onAction(DrillDown(it)) }
     is UnsupportedData -> UnsupportedChart(data, modifier)
   }
