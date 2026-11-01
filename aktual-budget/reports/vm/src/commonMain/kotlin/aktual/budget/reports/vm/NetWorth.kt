@@ -36,6 +36,8 @@ internal fun netWorthData(
   val accounts =
     rows
       .groupBy { it.account }
+      .entries
+      .asSequence()
       .map { (id, accountRows) ->
         val changes = accountRows.filter { it.month != null }.associate { it.month to it.total }
         var balance = accountRows.filter { it.month == null }.sumOf { it.total }
@@ -54,6 +56,7 @@ internal fun netWorthData(
         compareBy<NetWorthAccount> { account -> account.balances.values.sumOf { it.toLong() } }
           .thenBy { it.name },
       )
+      .toList()
 
   val items = months.associateWith { month ->
     accounts.fold(Amount.Zero) { sum, account -> sum + account.balances.getValue(month) }

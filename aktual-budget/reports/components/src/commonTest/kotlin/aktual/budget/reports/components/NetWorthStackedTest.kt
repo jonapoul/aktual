@@ -46,13 +46,6 @@ class NetWorthStackedTest {
     val JAN = YearMonth(2026, 1)
     val FEB = YearMonth(2026, 2)
 
-    fun account(id: String, jan: Double, feb: Double) =
-      NetWorthAccount(
-        id = AccountId(id),
-        name = id,
-        balances = persistentMapOf(JAN to Amount(jan), FEB to Amount(feb)),
-      )
-
     val DATA =
       NetWorthData(
         title = null,
@@ -64,6 +57,13 @@ class NetWorthStackedTest {
             account("checking", jan = 10.0, feb = 10.0),
             account("savings", jan = 20.0, feb = 30.0),
           ),
+      )
+
+    fun account(id: String, jan: Double, feb: Double) =
+      NetWorthAccount(
+        id = AccountId(id),
+        name = id,
+        balances = persistentMapOf(JAN to Amount(jan), FEB to Amount(feb)),
       )
   }
 }

@@ -81,8 +81,11 @@ internal fun NetWorthChart(
         options = MODES,
         onSelect = { mode -> onAction(ChartAction.SetNetWorthMode(mode)) },
         string = { mode ->
-          if (mode == Stacked) Strings.reportsNetWorthModeStacked
-          else Strings.reportsNetWorthModeTrend
+          if (mode == Stacked) {
+            Strings.reportsNetWorthModeStacked
+          } else {
+            Strings.reportsNetWorthModeTrend
+          }
         },
       )
     }
@@ -346,7 +349,7 @@ private val PREVIEW_STACKED_ACCOUNTS =
 
 val PREVIEW_NET_WORTH_STACKED =
   NetWorthData(
-    title = "My Net Worth",
+    title = PREVIEW_NET_WORTH_DATA.title,
     items =
       PREVIEW_MONTHS.associateWith { month ->
           PREVIEW_STACKED_ACCOUNTS.fold(Amount.Zero) { sum, a -> sum + a.balances.getValue(month) }

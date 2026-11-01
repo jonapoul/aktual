@@ -1,6 +1,5 @@
 package aktual.budget.reports.components
 
-import aktual.budget.model.Amount
 import aktual.budget.reports.vm.NetWorthData
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
@@ -10,7 +9,6 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.compose.cartesian.CartesianDrawingContext
 import com.patrykandpatrick.vico.compose.cartesian.axis.Axis
@@ -85,7 +83,7 @@ internal fun rememberStackedMarkerFormatter(
           .mapIndexed { index, account ->
             CustomBar(
               name = account.name,
-              amount = account.balances[month] ?: Amount.Zero,
+              amount = account.balances[month] ?: Zero,
               color = colors.qualitative(index),
             )
           }
@@ -118,27 +116,25 @@ private class StackedBandFill(
     with(context) {
       val bounds = linePath.getBounds()
       val bottom = layerBounds.bottom
-      with(area) {
-        rewind()
-        addPath(linePath)
-        lineTo(if (isLtr) bounds.right else bounds.left, bottom)
-        lineTo(if (isLtr) bounds.left else bounds.right, bottom)
-        close()
-      }
+      area.rewind()
+      area.addPath(linePath)
+      area.lineTo(if (isLtr) bounds.right else bounds.left, bottom)
+      area.lineTo(if (isLtr) bounds.left else bounds.right, bottom)
+      area.close()
 
-      with(band) {
-        rewind()
-        fillType = PathFillType.EvenOdd
-        addPath(area)
-        if (first) {
-          val yRange = ranges.getYRange(verticalAxisPosition)
-          val zeroY =
-            (bottom - ((0.0 - yRange.minY) / yRange.length).toFloat() * layerBounds.height)
-              .coerceIn(layerBounds.top, bottom)
-          addRect(Rect(bounds.left, zeroY, bounds.right, bottom))
-        } else {
-          addPath(previous)
-        }
+      band.rewind()
+      band.fillType = EvenOdd
+      band.addPath(area)
+      if (first) {
+        val yRange = ranges.getYRange(verticalAxisPosition)
+        val zeroY =
+          (bottom - ((0.0 - yRange.minY) / yRange.length).toFloat() * layerBounds.height).coerceIn(
+            layerBounds.top,
+            bottom,
+          )
+        band.addRect(Rect(bounds.left, zeroY, bounds.right, bottom))
+      } else {
+        band.addPath(previous)
       }
 
       paint.color = color
