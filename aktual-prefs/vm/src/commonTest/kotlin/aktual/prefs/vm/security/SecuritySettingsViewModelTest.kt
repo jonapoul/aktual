@@ -150,6 +150,32 @@ class SecuritySettingsViewModelTest {
     }
   }
 
+  @Test
+  fun `Hide preview forced on by the app lock`() = runTest {
+    val preferences = SecurityPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    preferences.hidePreviewInAppSwitcher.set(false)
+    val viewModel =
+      SecuritySettingsViewModel(
+        preferences,
+        authenticator,
+        viewModelContext = unconfinedViewModelContext,
+      )
+
+    viewModel.state.test {
+      assertThat(awaitItem().hidePreviewInAppSwitcher).all {
+        prop(BooleanPreference::value).isFalse()
+        prop(BooleanPreference::enabled).isTrue()
+      }
+
+      preferences.appLockEnabled.set(true)
+      assertThat(awaitItem().hidePreviewInAppSwitcher).all {
+        prop(BooleanPreference::value).isTrue()
+        prop(BooleanPreference::enabled).isFalse()
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private class FakeAppLockAuthenticator : AppLockAuthenticator {
     var available = true
     var result = false

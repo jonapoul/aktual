@@ -9,7 +9,6 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class SystemUiSettingsState(
-  val hidePreviewInAppSwitcher: BooleanPreference,
   val showStatusBar: BooleanPreference,
   val barEffect: ListPreference<BarEffect>,
   val barBlurRadius: SliderPreference,

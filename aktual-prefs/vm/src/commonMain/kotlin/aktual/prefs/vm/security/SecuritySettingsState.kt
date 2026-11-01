@@ -9,5 +9,6 @@ import androidx.compose.runtime.Immutable
 data class SecuritySettingsState(
   val appLockEnabled: BooleanPreference,
   val appLockTimeout: ListPreference<AppLockTimeout>,
+  val hidePreviewInAppSwitcher: BooleanPreference,
   val isScreenLockAvailable: Boolean,
 )

@@ -50,9 +50,4 @@ class SystemUiPreferencesImpl(dataStore: DataStore<Preferences>) : SystemUiPrefe
 
   override val glassCornerRadius: Preference<Float> =
     dataStore.float(key = floatPreferencesKey("glassCornerRadius"), default = 24f).required()
-
-  override val hidePreviewInAppSwitcher: Preference<Boolean> =
-    dataStore
-      .boolean(key = booleanPreferencesKey("hidePreviewInAppSwitcher"), default = true)
-      .required()
 }

@@ -2136,12 +2136,12 @@
   <string name="settings_ui_glass_style_regular">Regular</string>
   <string name="settings_ui_glass_style_clear">Clear</string>
   <string name="settings_ui_glass_corner_radius">Corner radius</string>
-  <string name="settings_ui_hide_preview">Hide preview in app switcher</string>
-  <string name="settings_ui_hide_preview_desc">Hide app contents in the recents screen. Also blocks screenshots and screen recording.</string>
   <string name="settings_security">Security</string>
   <string name="settings_security_app_lock">App lock</string>
   <string name="settings_security_app_lock_desc">Ask for your fingerprint, face or screen lock when opening the app. Also hides app contents in the recents screen.</string>
   <string name="settings_security_app_lock_unavailable">Set up a screen lock in your device settings to use this</string>
+  <string name="settings_security_hide_preview">Hide preview in app switcher</string>
+  <string name="settings_security_hide_preview_desc">Hide app contents in the recents screen. Also blocks screenshots and screen recording.</string>
   <string name="settings_security_timeout">Lock after</string>
   <string name="settings_security_timeout_immediately">Immediately</string>
   <string name="settings_security_timeout_seconds_30">30 seconds</string>

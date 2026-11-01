@@ -20,4 +20,9 @@ class SecurityPreferencesImpl(dataStore: DataStore<Preferences>) : SecurityPrefe
         translator = enumOrdinalTranslator(),
       )
       .required()
+
+  override val hidePreviewInAppSwitcher: Preference<Boolean> =
+    dataStore
+      .boolean(key = booleanPreferencesKey("hidePreviewInAppSwitcher"), default = true)
+      .required()
 }

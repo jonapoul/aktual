@@ -13,5 +13,4 @@ interface SystemUiPreferences {
   val dialogBlurAlpha: Preference<Float>
   val glassStyle: Preference<BarGlassStyle>
   val glassCornerRadius: Preference<Float>
-  val hidePreviewInAppSwitcher: Preference<Boolean>
 }

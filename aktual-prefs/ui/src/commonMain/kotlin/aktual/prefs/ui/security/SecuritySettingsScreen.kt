@@ -1,5 +1,7 @@
 package aktual.prefs.ui.security
 
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.ViewHide
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Security
 import aktual.core.icons.material.Timer
@@ -65,6 +67,14 @@ private fun SecuritySettingsScaffold(state: SecuritySettingsState, onBack: () ->
         icon = MaterialIcons.Timer,
       )
     }
+    item {
+      BooleanPreferenceItem(
+        preference = state.hidePreviewInAppSwitcher,
+        title = Strings.settingsSecurityHidePreview,
+        subtitle = Strings.settingsSecurityHidePreviewDesc,
+        icon = AktualIcons.ViewHide,
+      )
+    }
   }
 }
 
@@ -89,11 +99,13 @@ private class SecuritySettingsProvider :
     SecuritySettingsState(
       appLockEnabled = BooleanPreference(true),
       appLockTimeout = ListPreference(Minutes1),
+      hidePreviewInAppSwitcher = BooleanPreference(true, enabled = false),
       isScreenLockAvailable = true,
     ),
     SecuritySettingsState(
       appLockEnabled = BooleanPreference(false, enabled = false),
       appLockTimeout = ListPreference(Immediately, enabled = false),
+      hidePreviewInAppSwitcher = BooleanPreference(false),
       isScreenLockAvailable = false,
     ),
   )

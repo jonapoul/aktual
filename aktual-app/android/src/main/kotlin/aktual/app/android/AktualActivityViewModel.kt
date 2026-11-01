@@ -12,7 +12,6 @@ import aktual.di.AppScope
 import aktual.di.RunLevelState
 import aktual.di.ViewModelContext
 import aktual.prefs.SecurityPreferences
-import aktual.prefs.SystemUiPreferences
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,7 +34,6 @@ class AktualActivityViewModel(
   hazeConfigUseCase: HazeConfigUseCase,
   initialRouteUseCase: InitialRouteUseCase,
   bottomBarStateUseCase: BottomBarStateUseCase,
-  systemUiPreferences: SystemUiPreferences,
   securityPreferences: SecurityPreferences,
   val runLevels: RunLevelState,
   viewModelContext: ViewModelContext,
@@ -55,7 +53,7 @@ class AktualActivityViewModel(
   // on by the app lock, since the recents snapshot is taken before the lock screen can draw
   val secureWindow: StateFlow<Boolean> =
     combine(
-        systemUiPreferences.hidePreviewInAppSwitcher.asFlow(),
+        securityPreferences.hidePreviewInAppSwitcher.asFlow(),
         securityPreferences.appLockEnabled.asFlow(),
       ) { hidePreview, lockEnabled ->
         hidePreview || lockEnabled
