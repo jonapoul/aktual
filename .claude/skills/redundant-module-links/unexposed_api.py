@@ -151,7 +151,8 @@ def main():
     print("\nNot exposed, but kept as api so the app graphs still see these contributions:")
     for module, dep, lost in kept:
       print(f"  {build_file(module)}: {dep}  ({', '.join(sorted(lost))})")
-  print(f"\n{len(flips)} api link(s) could be implementation")
+  s = "" if len(flips) == 1 else "s"
+  print(f"\n{len(flips)} api link{s} could be implementation")
 
   if "--apply" in sys.argv:
     for module, dep in flips:

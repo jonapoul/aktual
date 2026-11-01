@@ -102,7 +102,8 @@ def main():
     for module, dependency, route in undeclared:
       print(f"  {short(module)} -> {short(dependency)}  <- {' > '.join(short(m) for m in route)}")
 
-  print(f"\n{len(redundant)} redundant link(s)")
+  s = "" if len(redundant) == 1 else "s"
+  print(f"\n{len(redundant)} redundant link{s}")
 
   if "--apply" in sys.argv and redundant:
     lines_by_file = collections.defaultdict(set)
@@ -113,7 +114,8 @@ def main():
         lines = f.readlines()
       with open(path, "w") as f:
         f.writelines(l for i, l in enumerate(lines) if i + 1 not in remove)
-    print(f"Removed from {len(lines_by_file)} build file(s)")
+    s = "" if len(lines_by_file) == 1 else "s"
+    print(f"Removed from {len(lines_by_file)} build file{s}")
 
 
 if __name__ == "__main__":

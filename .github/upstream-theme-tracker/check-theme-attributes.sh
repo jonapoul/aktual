@@ -62,14 +62,16 @@ if [[ -z "$new_attrs" && -z "$removed_attrs" ]]; then
 fi
 
 if [[ -n "$new_attrs" ]]; then
-  new_count="$(echo "$new_attrs" | wc -l)"
-  echo "Found $new_count new attribute(s):"
+  new_count=$(grep -c . <<< "$new_attrs")
+  s=s; ((new_count == 1)) && s=
+  echo "Found $new_count new attribute$s:"
   echo "  ${new_attrs//$'\n'/$'\n'  }"
 fi
 
 if [[ -n "$removed_attrs" ]]; then
-  removed_count="$(echo "$removed_attrs" | wc -l)"
-  echo "Found $removed_count removed attribute(s):"
+  removed_count=$(grep -c . <<< "$removed_attrs")
+  s=s; ((removed_count == 1)) && s=
+  echo "Found $removed_count removed attribute$s:"
   echo "  ${removed_attrs//$'\n'/$'\n'  }"
 fi
 
@@ -200,14 +202,18 @@ if [[ -n "$existing_pr" ]]; then
 
   new_rows=""
   if [[ -n "$new_attrs" ]]; then
-    echo "$(echo "$new_attrs" | wc -l) added attribute(s) not yet listed in PR #$pr_number:"
+    new_count=$(grep -c . <<< "$new_attrs")
+    s=s; ((new_count == 1)) && s=
+    echo "$new_count added attribute$s not yet listed in PR #$pr_number:"
     echo "  ${new_attrs//$'\n'/$'\n'  }"
     new_rows="$(build_new_rows "$new_attrs")"
   fi
 
   removed_rows=""
   if [[ -n "$removed_attrs" ]]; then
-    echo "$(echo "$removed_attrs" | wc -l) removed attribute(s) not yet listed in PR #$pr_number:"
+    removed_count=$(grep -c . <<< "$removed_attrs")
+    s=s; ((removed_count == 1)) && s=
+    echo "$removed_count removed attribute$s not yet listed in PR #$pr_number:"
     echo "  ${removed_attrs//$'\n'/$'\n'  }"
     removed_rows="$(build_removed_rows "$removed_attrs")"
   fi
