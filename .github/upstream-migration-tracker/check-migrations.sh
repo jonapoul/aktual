@@ -74,7 +74,8 @@ if [[ ${#new_migrations[@]} -eq 0 ]]; then
   exit 0
 fi
 
-echo "Found ${#new_migrations[@]} new migration(s):"
+s=s; ((${#new_migrations[@]} == 1)) && s=
+echo "Found ${#new_migrations[@]} new migration$s:"
 printf '  %s\n' "${new_migrations[@]}"
 
 build_table_rows() {
@@ -154,7 +155,8 @@ if [[ -n "$existing_pr" ]]; then
     exit 0
   fi
 
-  echo "Found ${#new_migrations[@]} migration(s) not yet listed in PR #$pr_number:"
+  s=s; ((${#new_migrations[@]} == 1)) && s=
+  echo "Found ${#new_migrations[@]} migration$s not yet listed in PR #$pr_number:"
   printf '  %s\n' "${new_migrations[@]}"
 
   new_rows="$(build_table_rows "${new_migrations[@]}")"

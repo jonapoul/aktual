@@ -113,7 +113,8 @@ else
         exit 0
     fi
 
-    echo "$FILE_COUNT file(s) changed since $BASE_BRANCH ($MERGE_BASE_SHORT) (mode: $MODE)"
+    s=s; [ "$FILE_COUNT" -eq 1 ] && s=
+    echo "$FILE_COUNT file$s changed since $BASE_BRANCH ($MERGE_BASE_SHORT) (mode: $MODE)"
 fi
 
 list_files() {
@@ -163,6 +164,7 @@ fi
 if [ "$MODE" = "format" ]; then
     checksum_files > "$AFTER"
     CHANGED_COUNT=$(comm -13 "$BEFORE" "$AFTER" | grep -c . || true)
-    echo "$CHANGED_COUNT file(s) reformatted"
+    s=s; [ "$CHANGED_COUNT" -eq 1 ] && s=
+    echo "$CHANGED_COUNT file$s reformatted"
 fi
 exit 0

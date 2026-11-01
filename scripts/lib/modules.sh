@@ -192,7 +192,10 @@ run_changed_module_task() {
       modules=$(all_gradle_modules)
     else
       if [[ "$catalog_changed" == true ]]; then
-        echo "Version catalog changed - $(grep -c . <<< "$catalog_modules" || true) module(s) use the changed entries."
+        local catalog_count s=s
+        catalog_count=$(grep -c . <<< "$catalog_modules" || true)
+        ((catalog_count == 1)) && s=
+        echo "Version catalog changed - $catalog_count module$s use the changed entries."
       fi
       modules=$(printf '%s\n' "$(changed_gradle_modules "$other_files")" "$catalog_modules" | grep . | sort -u || true)
     fi
@@ -207,7 +210,9 @@ run_changed_module_task() {
     tasks+=("${gradle_path}:${task_suffix}")
   done <<< "$modules"
 
-  echo "Running $task_suffix on ${#tasks[@]} module(s):"
+  local s=s
+  ((${#tasks[@]} == 1)) && s=
+  echo "Running $task_suffix on ${#tasks[@]} module$s:"
   local task
   for task in "${tasks[@]}"; do
     echo "  $task"
