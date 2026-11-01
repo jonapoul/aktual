@@ -9,7 +9,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
-import aktual.prefs.ui.core.BooleanPreferenceItem
+import aktual.prefs.components.BooleanPreferenceItem
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

@@ -1,6 +1,6 @@
 package aktual.prefs.ui
 
-import aktual.prefs.ui.core.BooleanPreferenceItem
+import aktual.prefs.components.BooleanPreferenceItem
 import aktual.prefs.vm.BooleanPreference
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable

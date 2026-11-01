@@ -22,11 +22,11 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButton
+import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.ListPreferenceItem
 import aktual.prefs.ui.SettingsListScaffold
 import aktual.prefs.ui.SliderPreferenceItem
-import aktual.prefs.ui.core.PreferenceGroup
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.SliderPreference

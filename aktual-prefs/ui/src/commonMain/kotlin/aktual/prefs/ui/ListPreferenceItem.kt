@@ -9,7 +9,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.textField
-import aktual.prefs.ui.core.BasicPreferenceItem
+import aktual.prefs.components.BasicPreferenceItem
 import aktual.prefs.vm.ListPreference
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

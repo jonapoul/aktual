@@ -5,7 +5,7 @@ import aktual.core.model.ThemeId
 import aktual.core.theme.Colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
-import aktual.prefs.ui.core.BasicPreferenceItem
+import aktual.prefs.components.BasicPreferenceItem
 import aktual.prefs.vm.theme.LocalTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

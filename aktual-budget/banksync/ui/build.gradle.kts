@@ -15,6 +15,6 @@ kotlin {
     implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:ui"))
-    implementation(project(":aktual-prefs:ui:core"))
+    implementation(project(":aktual-prefs:components"))
   }
 }

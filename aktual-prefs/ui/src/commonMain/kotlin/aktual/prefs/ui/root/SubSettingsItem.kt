@@ -10,7 +10,7 @@ import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.disabled
 import aktual.core.ui.normalIconButton
-import aktual.prefs.ui.core.BasicPreferenceItem
+import aktual.prefs.components.BasicPreferenceItem
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable

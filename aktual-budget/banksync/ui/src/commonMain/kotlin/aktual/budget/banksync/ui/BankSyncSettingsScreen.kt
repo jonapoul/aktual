@@ -45,9 +45,9 @@ import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
-import aktual.prefs.ui.core.BasicPreferenceItem
-import aktual.prefs.ui.core.BooleanPreferenceItem
-import aktual.prefs.ui.core.PreferenceGroup
+import aktual.prefs.components.BasicPreferenceItem
+import aktual.prefs.components.BooleanPreferenceItem
+import aktual.prefs.components.PreferenceGroup
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
