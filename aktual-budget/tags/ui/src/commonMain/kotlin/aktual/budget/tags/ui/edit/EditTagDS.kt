@@ -5,6 +5,7 @@ import androidx.compose.ui.unit.dp
 internal object EditTagDS {
   val fieldSpacing = 16.dp
   val labelSpacing = 4.dp
+  val cardPadding = 12.dp
 
   val colorPickerSectionSpacing = 12.dp
   val colorWheelSize = 220.dp

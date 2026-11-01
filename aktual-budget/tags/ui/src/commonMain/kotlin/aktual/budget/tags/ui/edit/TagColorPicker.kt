@@ -18,11 +18,11 @@ import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.contrastingTextColor
 import aktual.core.ui.textField
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -171,53 +171,49 @@ internal fun TagColorPicker(
       )
     }
 
-    // the preset swatches - hidden while the advanced wheel/slider is showing
-    AnimatedVisibility(
-      visible = !advancedVisible,
-      enter = expandVertically() + fadeIn(),
-      exit = shrinkVertically() + fadeOut(),
-    ) {
-      FlowRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(EditTagDS.colorPresetSpacing),
-        verticalArrangement = Arrangement.spacedBy(EditTagDS.colorPresetSpacing),
-      ) {
-        TAG_COLOR_PRESETS.fastForEach { preset ->
-          PresetSwatch(
-            color = preset,
-            selected = preset == color,
-            onClick = { onColorChange(preset) },
+    AnimatedContent(
+      modifier = Modifier.fillMaxWidth(),
+      targetState = advancedVisible,
+      contentAlignment = TopCenter,
+      transitionSpec = { fadeIn() togetherWith fadeOut() using SizeTransform(clip = true) },
+    ) { advanced ->
+      if (advanced) {
+        Row(
+          modifier = Modifier.fillMaxWidth(fraction = EditTagDS.COLOR_PICKER_HORIZ_WEIGHT),
+          horizontalArrangement = Arrangement.spacedBy(EditTagDS.colorPickerSectionSpacing),
+          verticalAlignment = CenterVertically,
+        ) {
+          HsvColorPicker(
+            modifier = Modifier.weight(1f).size(EditTagDS.colorWheelSize),
+            controller = controller,
+            initialColor = color ?: TAG_COLOR_PRESETS.first(),
+            onColorChanged = { envelope -> if (envelope.fromUser) onColorChange(envelope.color) },
+          )
+
+          BrightnessSlider(
+            modifier =
+              Modifier.rotateVertically()
+                .width(EditTagDS.colorWheelSize)
+                .height(EditTagDS.brightnessSliderHeight)
+                .clip(CardShape)
+                .border(1.dp, colors.pageText, CardShape),
+            controller = controller,
           )
         }
-      }
-    }
-
-    AnimatedVisibility(
-      visible = advancedVisible,
-      enter = expandVertically() + fadeIn(),
-      exit = shrinkVertically() + fadeOut(),
-    ) {
-      Row(
-        modifier = Modifier.fillMaxWidth(fraction = EditTagDS.COLOR_PICKER_HORIZ_WEIGHT),
-        horizontalArrangement = Arrangement.spacedBy(EditTagDS.colorPickerSectionSpacing),
-        verticalAlignment = CenterVertically,
-      ) {
-        HsvColorPicker(
-          modifier = Modifier.weight(1f).size(EditTagDS.colorWheelSize),
-          controller = controller,
-          initialColor = color ?: TAG_COLOR_PRESETS.first(),
-          onColorChanged = { envelope -> if (envelope.fromUser) onColorChange(envelope.color) },
-        )
-
-        BrightnessSlider(
-          modifier =
-            Modifier.rotateVertically()
-              .width(EditTagDS.colorWheelSize)
-              .height(EditTagDS.brightnessSliderHeight)
-              .clip(CardShape)
-              .border(1.dp, colors.pageText, CardShape),
-          controller = controller,
-        )
+      } else {
+        FlowRow(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.spacedBy(EditTagDS.colorPresetSpacing),
+          verticalArrangement = Arrangement.spacedBy(EditTagDS.colorPresetSpacing),
+        ) {
+          TAG_COLOR_PRESETS.fastForEach { preset ->
+            PresetSwatch(
+              color = preset,
+              selected = preset == color,
+              onClick = { onColorChange(preset) },
+            )
+          }
+        }
       }
     }
   }
