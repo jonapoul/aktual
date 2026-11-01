@@ -92,13 +92,13 @@ class AmountTest {
   @Test
   fun `Sum amounts`() {
     assertThat(listOf(1.5.amount, (-0.25).amount, 2.0.amount).sum()).isEqualTo(3.25.amount)
-    assertThat(emptyList<Amount>().sum()).isEqualTo(Amount.Zero)
+    assertThat(emptyList<Amount>().sum()).isEqualTo(Zero)
   }
 
   @Test
   fun `Sum amounts by selector`() {
     assertThat(listOf(1.0, 2.5).sumOf { it.amount }).isEqualTo(3.5.amount)
-    assertThat(emptyList<Double>().sumOf { it.amount }).isEqualTo(Amount.Zero)
+    assertThat(emptyList<Double>().sumOf { it.amount }).isEqualTo(Zero)
   }
 
   private companion object {

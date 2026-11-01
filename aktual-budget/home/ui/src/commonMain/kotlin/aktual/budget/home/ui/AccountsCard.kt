@@ -381,7 +381,7 @@ internal val PREVIEW_ACCOUNTS =
 private fun section(vararg accounts: AccountBalance) =
   AccountSection(
     accounts = persistentListOf(*accounts),
-    total = accounts.sumOf { it.balance },
+    total = accounts.asList().sumOf { it.balance },
   )
 
 private fun account(
