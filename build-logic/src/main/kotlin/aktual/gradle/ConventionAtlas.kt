@@ -6,6 +6,22 @@ import org.gradle.api.Project
 
 class ConventionAtlas : ProjectPlugin {
   override fun Project.applyTo() {
+    if (this == rootProject) registerIndex() else configureModule()
+  }
+
+  private fun Project.registerIndex() {
+    val writeIndex =
+      tasks.register("atlasWriteIndex", WriteAtlasIndex::class.java) { t ->
+        t.rootDir.set(layout.projectDirectory)
+        t.outputFile.set(layout.buildDirectory.file("atlas/index.html"))
+      }
+    tasks.register("atlasGenerate") { t ->
+      t.group = "atlas"
+      t.dependsOn(writeIndex)
+    }
+  }
+
+  private fun Project.configureModule() {
     val chartOutputDir = layout.buildDirectory.dir("atlas")
 
     // module-dir/build/atlas/chart.svg
