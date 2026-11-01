@@ -10,17 +10,16 @@ Gradle convention plugins that centralize build config. Included build - `settin
 
 | ID | What it sets up |
 |----|-----------------|
-| `aktual.module.kotlin` | KMP with only the `desktop` JVM target, default hierarchy plus a `jvmShared` group over the JVM targets, coroutines, test deps. |
-| `aktual.module.kmp-android` | `ModuleKmpAndroid`: adds the Android library target, lint, Robolectric setup and android test deps (including `:aktual-test:android`) on top of `kotlin` (or `di`) |
+| `aktual.module.kotlin` | KMP with the Android library and `desktop` JVM targets, default hierarchy plus a `jvmShared` group over both, lint, Robolectric setup, coroutines, test deps (android ones including `:aktual-test:android`) |
 | `aktual.module.android` | `ModuleAndroidLibrary`: plain (non-KMP) Android library with lint, Robolectric unit tests and test deps. For android-only code like platform bindings |
-| `aktual.module.compose` | `kotlin` + `android` + Compose compiler/resources + Material3 + compose test deps |
-| `aktual.module.viewmodel` | `kotlin` + `android` + Compose compiler + Molecule + lifecycle-viewmodel + Metro DI, plus `aktual-test` for tests |
-| `aktual.module.di` | `kotlin` + Metro DI (no Compose, JVM-only unless `android` is added) |
+| `aktual.module.compose` | `kotlin` + Compose compiler/resources + Material3 + compose test deps |
+| `aktual.module.viewmodel` | `kotlin` + Compose compiler + Molecule + lifecycle-viewmodel + Metro DI, plus `aktual-test` for tests |
+| `aktual.module.di` | `kotlin` + Metro DI (no Compose) |
 | `aktual.module.jvm` | JVM-only (no KMP, no Android) + style + test deps |
 
 ### Convention plugins (composed by module plugins)
 
-- `ConventionKotlinBase` - warnings-as-errors, free compiler args like `-Xexpect-actual-classes`, `compileAll` task, `lintAll` task (runs `lint` if the module has it, used by `scripts/lint.sh`), Metro, buildconfig/lint workaround, sort-dependencies check
+- `ConventionKotlinBase` - warnings-as-errors, free compiler args like `-Xexpect-actual-classes`, `compileAll` task, `lintAll` task (runs `lint` if the module has it, e.g. not in `aktual.module.jvm` modules, used by `scripts/lint.sh`), Metro, buildconfig/lint workaround, sort-dependencies check
 - `ConventionKotlinJvm` - toolchain via `.java-version`
 - `ConventionCompose` - compiler plugin, metrics, stability
 - `ConventionDi` - Metro with full binding-graph validation + hints + shrink unused

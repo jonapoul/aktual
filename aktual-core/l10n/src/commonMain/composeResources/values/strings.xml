@@ -589,6 +589,11 @@
   <string name="home_upcoming_more">+%1$d more</string>
   <string name="home_upcoming_total">Total due</string>
   <string name="home_upcoming_failed">Couldn't load upcoming schedules</string>
+  <string name="home_recent_title">Recent transactions</string>
+  <string name="home_recent_hidden">Hidden while there are no transactions</string>
+  <string name="home_recent_see_all">See all</string>
+  <string name="home_recent_row_detail">%1$s · %2$s</string>
+  <string name="home_recent_failed">Couldn't load recent transactions</string>
 
   <!-- budget-list -->
   <string name="list_budgets_toolbar">Budgets</string>

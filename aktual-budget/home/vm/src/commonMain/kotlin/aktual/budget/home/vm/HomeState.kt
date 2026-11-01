@@ -20,6 +20,7 @@ data class HomeState(
   val thisMonth: ThisMonthCardState = Loading,
   val attention: AttentionCardState = Loading,
   val upcoming: UpcomingCardState = Loading,
+  val recent: RecentCardState = Loading,
   val accounts: AccountsCardState = Loading,
   val reports: ReportsCardState = Loading,
   // Every report that could be pinned, for picking one
@@ -32,6 +33,7 @@ data class HomeState(
       thisMonth != Failed &&
         attention == Empty &&
         upcoming == Empty &&
+        recent == Empty &&
         accounts == Empty &&
         reports == Empty
 }
@@ -114,6 +116,17 @@ sealed interface UpcomingCardState {
     val hiddenCount: Int,
     val total: Amount,
   ) : UpcomingCardState
+}
+
+@Immutable
+sealed interface RecentCardState {
+  data object Loading : RecentCardState
+
+  data object Empty : RecentCardState
+
+  data object Failed : RecentCardState
+
+  data class Loaded(val transactions: ImmutableList<RecentTransaction>) : RecentCardState
 }
 
 @Immutable

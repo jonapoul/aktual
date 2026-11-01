@@ -8,6 +8,7 @@ import aktual.budget.home.vm.AttentionCardState
 import aktual.budget.home.vm.HomeCardType
 import aktual.budget.home.vm.HomeState
 import aktual.budget.home.vm.HomeViewModel
+import aktual.budget.home.vm.RecentCardState
 import aktual.budget.home.vm.ReportsCardState
 import aktual.budget.home.vm.UpcomingCardState
 import aktual.core.icons.AktualIcons
@@ -115,6 +116,8 @@ internal fun HomeScreen(
         ReviewUncategorised -> transactions.uncategorised()
         is OpenSchedule -> editSchedule(action.id)
         OpenSchedules -> schedules()
+        is OpenTransaction -> editTransaction(action.id)
+        OpenTransactions -> transactions()
         Retry -> viewModel.retry()
         is OpenReport -> report(action.id)
         is PinReport -> viewModel.pinReport(action.id)
@@ -223,6 +226,13 @@ private fun HomeCardFor(
         HiddenCard(message = Strings.homeUpcomingHidden)
       } else {
         UpcomingCard(state = state.upcoming, onAction = onAction)
+      }
+
+    Recent ->
+      if (isEditing && state.recent.isHidden) {
+        HiddenCard(message = Strings.homeRecentHidden)
+      } else {
+        RecentCard(state = state.recent, onAction = onAction)
       }
 
     Accounts -> AccountsCard(state = state.accounts, onAction = onAction)
@@ -343,6 +353,9 @@ private val AttentionCardState.isHidden: Boolean
 private val UpcomingCardState.isHidden: Boolean
   get() = this == Empty
 
+private val RecentCardState.isHidden: Boolean
+  get() = this == Empty
+
 private val ReportsCardState.isHidden: Boolean
   get() = this == Empty
 
@@ -375,6 +388,7 @@ private val PREVIEW_HOME =
     thisMonth = PREVIEW_THIS_MONTH,
     attention = PREVIEW_ATTENTION,
     upcoming = PREVIEW_UPCOMING,
+    recent = PREVIEW_RECENT,
     accounts = AccountsCardState.Loaded(PREVIEW_ACCOUNTS),
     reports = PREVIEW_REPORTS,
     reportChoices = PREVIEW_REPORT_CHOICES,
@@ -389,6 +403,7 @@ private class HomeStateProvider :
       thisMonth = PREVIEW_THIS_MONTH,
       attention = Empty,
       upcoming = Empty,
+      recent = Empty,
       accounts = Empty,
       reports = Empty,
     ),
@@ -397,6 +412,7 @@ private class HomeStateProvider :
       thisMonth = Failed,
       attention = Failed,
       upcoming = Failed,
+      recent = Failed,
       accounts = Failed,
       reports = Failed,
     ),

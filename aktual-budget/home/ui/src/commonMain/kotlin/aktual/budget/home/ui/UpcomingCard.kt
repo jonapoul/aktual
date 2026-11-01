@@ -53,7 +53,7 @@ import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
 
 private val RowMinHeight = 56.dp
-private val BadgeWidth = 44.dp
+internal val DateBadgeWidth = 44.dp
 
 // Shows nothing when there's nothing upcoming
 @Composable
@@ -122,7 +122,7 @@ private fun ShimmerUpcoming(modifier: Modifier = Modifier) {
         horizontalArrangement = spacedBy(12.dp),
         verticalAlignment = CenterVertically,
       ) {
-        Box(modifier = bar.width(BadgeWidth).height(40.dp))
+        Box(modifier = bar.width(DateBadgeWidth).height(40.dp))
 
         Column(modifier = Modifier.weight(1f), verticalArrangement = spacedBy(6.dp)) {
           Box(modifier = bar.width(120.dp).height(16.dp))
@@ -221,11 +221,11 @@ private fun UpcomingRow(
 
 // The row's due text already says when it is
 @Composable
-private fun DateBadge(date: LocalDate, modifier: Modifier = Modifier) {
+internal fun DateBadge(date: LocalDate, modifier: Modifier = Modifier) {
   Column(
     modifier =
       modifier
-        .width(BadgeWidth)
+        .width(DateBadgeWidth)
         .background(colors.tableRowHeaderBackground, CardShape)
         .padding(vertical = 4.dp)
         .clearAndSetSemantics {},

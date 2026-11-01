@@ -3,7 +3,7 @@ import dev.jonpoulton.catalog.gradle.NameTransform
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("aktual.module.kmp-android")
+  id("aktual.module.kotlin")
   id("aktual.convention.compose")
   alias(libs.plugins.catalog)
 }

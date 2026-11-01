@@ -61,6 +61,7 @@ internal fun BudgetDatabase.createHomeViewModel(
       ),
     accountsSummaryLoader = AccountsSummaryLoader(AccountDao(accountsCard), newTransactions),
     upcomingSchedulesLoader = UpcomingSchedulesLoader(schedulesLoader, calendar),
+    recentTransactionsLoader = RecentTransactionsLoader(TransactionDao(this)),
     pinnedReports = pinnedReports,
     viewModelContext = scope.viewModelContext,
   )
@@ -89,4 +90,5 @@ private val HomeState.isSettled: Boolean
       attention != Loading &&
       accounts != Loading &&
       upcoming != Loading &&
+      recent != Loading &&
       reports != Loading

@@ -30,7 +30,7 @@ class ConventionKotlinBase : ProjectPlugin {
     val compileTasks = tasks.withType(KotlinCompile::class)
     tasks.register("compileAll") { t -> t.dependsOn(compileTasks) }
 
-    // JVM-only KMP modules have no lint task, this lets scripts run lint on any module
+    // Plain JVM modules have no lint task, this lets scripts run lint on any module
     tasks.register("lintAll") { t ->
       t.dependsOn(provider { tasks.names.filter { it == "lint" } })
     }

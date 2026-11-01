@@ -1,5 +1,5 @@
 plugins {
-  id("aktual.module.kmp-android")
+  id("aktual.module.kotlin")
   id("aktual.convention.db-test")
   alias(libs.plugins.sqldelight)
   idea
