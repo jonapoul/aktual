@@ -149,25 +149,27 @@ internal constructor(
     onFailure: (String) -> Unit,
   ) {
     val themeId = summary.repo.toId()
-    runCatchingCancellable {
-      val cached = cache.theme(summary.repo)
-      if (cached != null) {
-        updateFetchState(themeId, CacheState.Cached(summary))
-        onSuccess(cached)
-      } else {
-        mutableCachedThemes.update { states -> states.putting(themeId, Fetching) }
-        val theme = themeApi.fetchTheme(summary)
-        cache.save(theme)
-        updateFetchState(themeId, CacheState.Cached(summary))
-        onSuccess(theme)
-      }
-    }
-      .onFailure { e ->
+    runCatchingCancellable(
+      attempt = {
+        val cached = cache.theme(summary.repo)
+        if (cached != null) {
+          updateFetchState(themeId, CacheState.Cached(summary))
+          onSuccess(cached)
+        } else {
+          mutableCachedThemes.update { states -> states.putting(themeId, Fetching) }
+          val theme = themeApi.fetchTheme(summary)
+          cache.save(theme)
+          updateFetchState(themeId, CacheState.Cached(summary))
+          onSuccess(theme)
+        }
+      },
+      onFailure = { e ->
         logcat.e(e) { "Failed fetching theme ${summary.repo}" }
         val reason = e.requireMessage()
         updateFetchState(themeId, CacheState.Failed(reason))
         onFailure(reason)
-      }
+      },
+    )
   }
 
   private fun buildItems(
@@ -207,8 +209,8 @@ internal constructor(
     mutableIsFetchingCatalog.update { true }
     mutableSummaries.update { persistentListOf() }
     mutableFailure.update { null }
-    try {
-      runCatchingCancellable {
+    runCatchingCancellable(
+      attempt = {
         val summaries =
           cache
             .summaries()
@@ -223,14 +225,13 @@ internal constructor(
         if (showSnackbar) {
           mutableEvents.tryEmit(CacheRefreshed)
         }
-      }
-        .onFailure { e ->
-          logcat.e(e) { "Failed fetching theme catalog" }
-          mutableFailure.update { FetchFailed }
-        }
-    } finally {
-      mutableIsFetchingCatalog.update { false }
-    }
+      },
+      onFailure = { e ->
+        logcat.e(e) { "Failed fetching theme catalog" }
+        mutableFailure.update { FetchFailed }
+      },
+      finally = { mutableIsFetchingCatalog.update { false } },
+    )
   }
 
   private suspend fun cacheState(summary: CustomThemeSummary): CacheState {

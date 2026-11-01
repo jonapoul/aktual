@@ -86,12 +86,10 @@ internal constructor(
   // The calculator picks up the change
   fun setHidden(hidden: Boolean) {
     viewModelScope.launch {
-      runCatchingCancellable {
-        writer.setCategoryHidden(category, hidden)
-      }
-        .onFailure { e ->
-          logcat.e(e) { "Failed to set $category hidden = $hidden" }
-        }
+      runCatchingCancellable(
+        attempt = { writer.setCategoryHidden(category, hidden) },
+        onFailure = { e -> logcat.e(e) { "Failed to set $category hidden = $hidden" } },
+      )
     }
   }
 

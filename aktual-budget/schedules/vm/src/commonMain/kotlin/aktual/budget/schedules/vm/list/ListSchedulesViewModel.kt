@@ -107,84 +107,98 @@ internal constructor(
   // deleteSchedule() in packages/loot-core/src/server/schedules/app.ts
   fun delete(schedule: Schedule) {
     viewModelScope.launch {
-      runCatchingCancellable {
-        syncController.syncChanges(schedule.tombstones(::tombstone))
-        mutableEvents.tryEmit(ListSchedulesEvent.Deleted(schedule))
-        logcat.i { "Deleted schedule ${schedule.id}" }
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          syncController.syncChanges(schedule.tombstones(::tombstone))
+          mutableEvents.tryEmit(ListSchedulesEvent.Deleted(schedule))
+          logcat.i { "Deleted schedule ${schedule.id}" }
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed deleting schedule ${schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.DeleteFailed(schedule))
-        }
+        },
+      )
     }
   }
 
   fun undoDelete(schedule: Schedule) {
     viewModelScope.launch {
-      runCatchingCancellable {
-        syncController.syncChanges(schedule.tombstones(::untombstone))
-        logcat.i { "Restored schedule ${schedule.id}" }
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          syncController.syncChanges(schedule.tombstones(::untombstone))
+          logcat.i { "Restored schedule ${schedule.id}" }
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed restoring schedule ${schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.RestoreFailed(schedule))
-        }
+        },
+      )
     }
   }
 
   fun complete(schedule: Schedule) {
     viewModelScope.launch {
-      runCatchingCancellable {
-        writer.complete(schedule.id)
-        mutableEvents.tryEmit(ListSchedulesEvent.Completed(schedule))
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          writer.complete(schedule.id)
+          mutableEvents.tryEmit(ListSchedulesEvent.Completed(schedule))
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed completing schedule ${schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.CompleteFailed(schedule))
-        }
+        },
+      )
     }
   }
 
   fun undoComplete(schedule: Schedule) {
     viewModelScope.launch {
-      runCatchingCancellable { writer.uncomplete(schedule.id) }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = { writer.uncomplete(schedule.id) },
+        onFailure = { e ->
           logcat.e(e) { "Failed undoing completion of schedule ${schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.RestoreFailed(schedule))
-        }
+        },
+      )
     }
   }
 
   fun restart(schedule: Schedule) {
     viewModelScope.launch {
-      runCatchingCancellable { writer.restart(schedule.id) }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = { writer.restart(schedule.id) },
+        onFailure = { e ->
           logcat.e(e) { "Failed restarting schedule ${schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.RestartFailed(schedule))
-        }
+        },
+      )
     }
   }
 
   fun post(schedule: Schedule, date: LocalDate) {
     viewModelScope.launch {
-      runCatchingCancellable {
-        val transactions = poster.post(schedule.id, date)
-        mutableEvents.tryEmit(ListSchedulesEvent.Posted(schedule, transactions.toImmutableList()))
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          val transactions = poster.post(schedule.id, date)
+          mutableEvents.tryEmit(ListSchedulesEvent.Posted(schedule, transactions.toImmutableList()))
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed posting schedule ${schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.PostFailed(schedule))
-        }
+        },
+      )
     }
   }
 
   fun undoPost(event: ListSchedulesEvent.Posted) {
     viewModelScope.launch {
-      runCatchingCancellable { poster.unpost(event.transactions) }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = { poster.unpost(event.transactions) },
+        onFailure = { e ->
           logcat.e(e) { "Failed undoing post of schedule ${event.schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.UnpostFailed(event.schedule))
-        }
+        },
+      )
     }
   }
 

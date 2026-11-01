@@ -100,15 +100,15 @@ internal constructor(
   }
 
   private suspend fun tryAdvance(today: LocalDate, canPost: Boolean): Run? =
-    runCatchingCancellable {
-      mutex.withLock { advance(today, canPost) }
-    }
-    .getOrElse { e ->
-      // The database closes with the budget, which can happen while this is still running
-      currentCoroutineContext().ensureActive()
-      logcat.e(e) { "Failed advancing schedules" }
-      null
-    }
+    runCatchingCancellable(
+      attempt = { mutex.withLock { advance(today, canPost) } },
+      onFailure = { e ->
+        // The database closes with the budget, which can happen while this is still running
+        currentCoroutineContext().ensureActive()
+        logcat.e(e) { "Failed advancing schedules" }
+        null
+      },
+    )
 
   private suspend fun advance(today: LocalDate, canPost: Boolean): Run {
     val openAccounts = accountDao.getAllActive().mapTo(mutableSetOf()) { it.id }

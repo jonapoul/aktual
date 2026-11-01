@@ -37,18 +37,20 @@ object ActualApiContainer {
       HttpResponseValidator {
         handleResponseExceptionWithRequest { exception, _ ->
           if (exception is ResponseException) {
-            runCatchingCancellable {
-              val isExpired =
-                exception.response.body<ErrorBody>().reason == FailureReason.TokenExpired.reason
-              if (isExpired && preferences.token.get() != null) {
-                // Only for authenticated sessions. At login there's no stored token yet, so this
-                // would clear the backstack while already on the login screen
-                notifyTokenExpired()
-              }
-            }
-              .onFailure {
+            runCatchingCancellable(
+              attempt = {
+                val isExpired =
+                  exception.response.body<ErrorBody>().reason == FailureReason.TokenExpired.reason
+                if (isExpired && preferences.token.get() != null) {
+                  // Only for authenticated sessions. At login there's no stored token yet, so this
+                  // would clear the backstack while already on the login screen
+                  notifyTokenExpired()
+                }
+              },
+              onFailure = {
                 // Body wasn't parseable as an error response, ignore
-              }
+              },
+            )
           }
           throw exception
         }

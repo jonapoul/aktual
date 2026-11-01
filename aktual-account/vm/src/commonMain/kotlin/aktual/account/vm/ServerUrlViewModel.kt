@@ -119,18 +119,17 @@ internal constructor(
     mutableConfirmResult.reset()
     mutableIsLoading.update { true }
     viewModelScope.launch {
-      try {
-        runCatchingCancellable {
+      runCatchingCancellable(
+        attempt = {
           demoBudget.open()
           mutableNavDestination.send(ToDemo)
-        }
-          .onFailure { e ->
-            logcat.e(e) { "Failed opening demo budget" }
-            mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
-          }
-      } finally {
-        mutableIsLoading.update { false }
-      }
+        },
+        onFailure = { e ->
+          logcat.e(e) { "Failed opening demo budget" }
+          mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
+        },
+        finally = { mutableIsLoading.update { false } },
+      )
     }
   }
 
@@ -164,32 +163,34 @@ internal constructor(
   }
 
   private suspend fun checkIfNeedsBootstrap(url: ServerUrl, accountApi: AccountApi) {
-    runCatchingCancellable {
-      logcat.v { "checkIfNeedsBootstrap $url" }
+    runCatchingCancellable(
+      attempt = {
+        logcat.v { "checkIfNeedsBootstrap $url" }
 
-      val response =
-        try {
-          withContext(contexts.io) { accountApi.needsBootstrap() }
-        } catch (e: ResponseException) {
-          logcat.e(e) { "HTTP failure checking bootstrap for $url" }
-          e.response.body<NeedsBootstrapResponse.Failure>()
-        }
+        val response =
+          try {
+            withContext(contexts.io) { accountApi.needsBootstrap() }
+          } catch (e: ResponseException) {
+            logcat.e(e) { "HTTP failure checking bootstrap for $url" }
+            e.response.body<NeedsBootstrapResponse.Failure>()
+          }
 
-      logcat.v { "response = $response" }
-      val confirmResult =
-        when (response) {
-          is Success -> ConfirmResult.Succeeded(isBootstrapped = response.data.bootstrapped)
-          is Failure -> ConfirmResult.Failed(reason = response.reason.reason)
-        }
-      mutableConfirmResult.update { confirmResult }
-    }
-      .onFailure { e ->
+        logcat.v { "response = $response" }
+        val confirmResult =
+          when (response) {
+            is Success -> ConfirmResult.Succeeded(isBootstrapped = response.data.bootstrapped)
+            is Failure -> ConfirmResult.Failed(reason = response.reason.reason)
+          }
+        mutableConfirmResult.update { confirmResult }
+      },
+      onFailure = { e ->
         logcat.w(e) { "Failed checking bootstrap for $url" }
 
         preferences.serverUrl.delete()
 
         mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
-      }
+      },
+    )
   }
 
   private fun ConfirmResult?.navDestination(): NavDestination? =

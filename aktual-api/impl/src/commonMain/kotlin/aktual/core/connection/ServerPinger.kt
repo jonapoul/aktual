@@ -55,15 +55,17 @@ class ServerPinger(
   }
 
   private suspend fun attemptPing(healthApi: HealthApi): PingState {
-    return runCatchingCancellable<PingState> {
+    return runCatchingCancellable<PingState>(
+      attempt = {
         val response = healthApi.getHealth()
         logcat.v { "Succeeded pinging server: $response" }
         if (response.status == "UP") Success else Unknown
-      }
-      .getOrElse { e ->
+      },
+      onFailure = { e ->
         logcat.w(e) { "Failed pinging server" }
         Failure
-      }
+      },
+    )
   }
 
   private companion object {

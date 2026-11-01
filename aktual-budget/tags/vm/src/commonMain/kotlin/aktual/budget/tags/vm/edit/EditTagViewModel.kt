@@ -136,14 +136,15 @@ internal constructor(
         return@launch
       }
 
-      val existing = runCatchingCancellable {
-        tagsDao.getTag(tagId)?.toTagItem()
-      }
-        .getOrElse { e ->
-          logcat.e(e) { "Failed loading tag $tagId" }
-          mutableFailure.update { EditTagState.Failure(cause = e.requireMessage()) }
-          return@launch
-        }
+      val existing =
+        runCatchingCancellable(
+          attempt = { tagsDao.getTag(tagId)?.toTagItem() },
+          onFailure = { e ->
+            logcat.e(e) { "Failed loading tag $tagId" }
+            mutableFailure.update { EditTagState.Failure(cause = e.requireMessage()) }
+            return@launch
+          },
+        )
 
       if (existing == null) {
         // the tag was requested but doesn't exist - don't pretend it's a new one
@@ -162,19 +163,22 @@ internal constructor(
   }
 
   // the active tag names other than the one being edited, so renaming a tag to itself stays allowed
-  private suspend fun loadOtherTagNames(): PersistentSet<String> = runCatchingCancellable {
-    tagsDao
-      .getTags()
-      .asSequence()
-      .mapNotNull { it.toTagItem() }
-      .filter { it.id != tagId }
-      .map { it.tag }
-      .toPersistentSet()
-  }
-    .getOrElse { e ->
-      logcat.e(e) { "Failed loading existing tag names" }
-      persistentSetOf()
-    }
+  private suspend fun loadOtherTagNames(): PersistentSet<String> =
+    runCatchingCancellable(
+      attempt = {
+        tagsDao
+          .getTags()
+          .asSequence()
+          .mapNotNull { it.toTagItem() }
+          .filter { it.id != tagId }
+          .map { it.tag }
+          .toPersistentSet()
+      },
+      onFailure = { e ->
+        logcat.e(e) { "Failed loading existing tag names" }
+        persistentSetOf()
+      },
+    )
 
   // seed the working edits from the loaded values, so there are initially no unsaved changes
   private fun reset(loaded: Loaded) {
@@ -197,44 +201,52 @@ internal constructor(
   fun save() {
     viewModelScope.launch {
       mutableSaveError.update { null }
-      runCatchingCancellable {
-        val tag = mutableTag.value.trim()
-        val description = mutableDescription.value.trim()
-        val color = mutableColor.value?.toHex()
+      runCatchingCancellable(
+        attempt = {
+          val tag = mutableTag.value.trim()
+          val description = mutableDescription.value.trim()
+          val color = mutableColor.value?.toHex()
 
-        // another row may already own this name - the tag column is UNIQUE. getTag returns null
-        // for tombstoned rows, so a non-null owner that getTag can't see is a deleted tag still
-        // squatting on the name. Only the rename path needs the extra lookup, so skip it on create
-        val owner = tagsDao.getTagIdByName(tag)
-        val tombstonedOwner = tagId?.let { id ->
-          owner?.takeIf { it != id && tagsDao.getTag(it) == null }
-        }
+          // another row may already own this name - the tag column is UNIQUE. getTag returns null
+          // for tombstoned rows, so a non-null owner that getTag can't see is a deleted tag still
+          // squatting on the name. Only the rename path needs the extra lookup, so skip it on
+          // create
+          val owner = tagsDao.getTagIdByName(tag)
+          val tombstonedOwner = tagId?.let { id ->
+            owner?.takeIf { it != id && tagsDao.getTag(it) == null }
+          }
 
-        if (tagId != null && tombstonedOwner != null) {
-          // renaming onto a deleted tag's name: writing the name onto our row would trip the
-          // UNIQUE constraint, so retire the row we were editing and merge the edits onto the
-          // deleted row, resurrecting it under its original id
-          tagsDao.insert(id = tombstonedOwner, tag = tag, color = color, description = description)
-          syncController.syncChanges(
-            listOf(tombstone(dataset = TAGS, row = tagId.toString())) +
-              insertChanges(tombstonedOwner, tag, color, description),
-          )
-        } else {
-          // creating a tag reuses any existing row with the same name - even a tombstoned one -
-          // so the old id is resurrected rather than colliding with the UNIQUE constraint
-          // (matches createTag)
-          val id = tagId ?: owner ?: uuidGenerator(::TagId)
-          tagsDao.insert(id = id, tag = tag, color = color, description = description)
-          syncController.syncChanges(insertChanges(id, tag, color, description))
-        }
-        // remember the colour so the next new tag can default to it
-        color?.let { preferences.lastUsedTagColor.set(it) }
-        mutableEvents.tryEmit(FinishedSaving)
-      }
-        .onFailure { e ->
+          if (tagId != null && tombstonedOwner != null) {
+            // renaming onto a deleted tag's name: writing the name onto our row would trip the
+            // UNIQUE constraint, so retire the row we were editing and merge the edits onto the
+            // deleted row, resurrecting it under its original id
+            tagsDao.insert(
+              id = tombstonedOwner,
+              tag = tag,
+              color = color,
+              description = description,
+            )
+            syncController.syncChanges(
+              listOf(tombstone(dataset = TAGS, row = tagId.toString())) +
+                insertChanges(tombstonedOwner, tag, color, description),
+            )
+          } else {
+            // creating a tag reuses any existing row with the same name - even a tombstoned one -
+            // so the old id is resurrected rather than colliding with the UNIQUE constraint
+            // (matches createTag)
+            val id = tagId ?: owner ?: uuidGenerator(::TagId)
+            tagsDao.insert(id = id, tag = tag, color = color, description = description)
+            syncController.syncChanges(insertChanges(id, tag, color, description))
+          }
+          // remember the colour so the next new tag can default to it
+          color?.let { preferences.lastUsedTagColor.set(it) }
+          mutableEvents.tryEmit(FinishedSaving)
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed saving tag $tagId" }
           mutableSaveError.update { e.requireMessage() }
-        }
+        },
+      )
     }
   }
 

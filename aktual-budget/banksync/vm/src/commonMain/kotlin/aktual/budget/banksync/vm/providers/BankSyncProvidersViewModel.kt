@@ -91,8 +91,8 @@ internal constructor(
     if (!mutableResetting.compareAndSet(expect = null, update = source)) return
     viewModelScope.launch {
       val event =
-        try {
-          runCatchingCancellable {
+        runCatchingCancellable(
+          attempt = {
             when (val response = setup.reset(source)) {
               Success -> {
                 mutableStatuses.update { it + (source to BankSyncProviderStatus.NotConfigured) }
@@ -103,20 +103,20 @@ internal constructor(
                 BankSyncProvidersEvent.ResetFailed(response.toSetupError())
               }
             }
-          }
-            .getOrElse { e ->
-              logcat.e(e) { "Failed resetting $source" }
-              BankSyncProvidersEvent.ResetFailed(SetupError.Other(e.requireMessage()))
-            }
-        } finally {
-          mutableResetting.update { null }
-        }
+          },
+          onFailure = { e ->
+            logcat.e(e) { "Failed resetting $source" }
+            BankSyncProvidersEvent.ResetFailed(SetupError.Other(e.requireMessage()))
+          },
+          finally = { mutableResetting.update { null } },
+        )
       mutableEvents.emit(event)
     }
   }
 
   private suspend fun fetchStatus(source: AccountSyncSource): BankSyncProviderStatus =
-    runCatchingCancellable<BankSyncProviderStatus> {
+    runCatchingCancellable<BankSyncProviderStatus>(
+      attempt = {
         when (val response = api.status(source)) {
           is Success -> {
             if (response.configured) Configured else NotConfigured
@@ -126,11 +126,12 @@ internal constructor(
             Failed
           }
         }
-      }
-      .getOrElse { e ->
+      },
+      onFailure = { e ->
         logcat.w(e) { "Failed checking bank sync status for $source" }
         Failed
-      }
+      },
+    )
 
   private companion object {
     // As upstream lists them

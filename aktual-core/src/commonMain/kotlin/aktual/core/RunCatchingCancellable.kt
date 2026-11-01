@@ -3,11 +3,17 @@ package aktual.core
 import kotlin.coroutines.cancellation.CancellationException
 
 // Like runCatching, but rethrows CancellationException so coroutine cancellation still propagates
-inline fun <T> runCatchingCancellable(block: () -> T): Result<T> =
+inline fun <T> runCatchingCancellable(
+  attempt: () -> T,
+  onFailure: (Exception) -> T,
+  finally: () -> Unit = {},
+): T =
   try {
-    Result.success(block())
+    attempt()
   } catch (e: CancellationException) {
     throw e
   } catch (e: Exception) {
-    Result.failure(e)
+    onFailure(e)
+  } finally {
+    finally()
   }

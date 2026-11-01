@@ -22,13 +22,14 @@ internal class PasswordChanger(
   private val contexts: CoroutineContexts,
 ) {
   suspend fun submit(password: Password): ChangePasswordResult =
-    runCatchingCancellable<ChangePasswordResult> {
+    runCatchingCancellable<ChangePasswordResult>(
+      attempt = {
         val request = ChangePasswordRequest(password)
         val response = withContext(contexts.io) { accountApi.changePassword(request, token) }
         logcat.v { "Received response: $response" }
         Success
-      }
-      .getOrElse { e ->
+      },
+      onFailure = { e ->
         when (e) {
           is ResponseException -> {
             val body = e.response.body<ChangePasswordResponse.Failure>()
@@ -46,5 +47,6 @@ internal class PasswordChanger(
             ChangePasswordResult.OtherFailure(e.requireMessage())
           }
         }
-      }
+      },
+    )
 }

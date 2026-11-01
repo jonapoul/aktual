@@ -133,32 +133,35 @@ internal constructor(
   private suspend inline fun catching(
     account: BankSyncAccount,
     block: () -> BankSyncResult,
-  ): BankSyncResult = runCatchingCancellable {
-    block()
-  }
-    .getOrElse { e ->
-      logcat.w(e) { "Failed syncing ${account.id}" }
-      fail(account, BankSyncError.Internal(e.message))
-    }
+  ): BankSyncResult =
+    runCatchingCancellable(
+      attempt = { block() },
+      onFailure = { e ->
+        logcat.w(e) { "Failed syncing ${account.id}" }
+        fail(account, BankSyncError.Internal(e.message))
+      },
+    )
 
   // simpleFinBatchSync() in packages/loot-core/src/server/accounts/sync.ts
   private suspend fun syncSimpleFin(accounts: List<BankSyncAccount>) {
     val (oldest, response) =
-      runCatchingCancellable {
-        val today = calendar.today()
-        val oldest = accounts.associate { it.id to dao.oldestDate(it.id, today) }
-        val request =
-          SimpleFinBatchRequest(
-            accountIds = accounts.map { it.accountId },
-            startDates = accounts.map { startDate(oldest[it.id]) },
-          )
-        oldest to api.simpleFinBatch(request)
-      }
-        .getOrElse { e ->
+      runCatchingCancellable(
+        attempt = {
+          val today = calendar.today()
+          val oldest = accounts.associate { it.id to dao.oldestDate(it.id, today) }
+          val request =
+            SimpleFinBatchRequest(
+              accountIds = accounts.map { it.accountId },
+              startDates = accounts.map { startDate(oldest[it.id]) },
+            )
+          oldest to api.simpleFinBatch(request)
+        },
+        onFailure = { e ->
           logcat.w(e) { "Failed downloading SimpleFIN accounts" }
           for (account in accounts) report(fail(account, BankSyncError.Internal(e.message)))
           return
-        }
+        },
+      )
 
     for (account in accounts) {
       val result =
@@ -208,12 +211,10 @@ internal constructor(
 
   private suspend fun fail(account: BankSyncAccount, error: BankSyncError): BankSyncResult {
     logcat.w { "Bank sync failed for ${account.id}: $error" }
-    runCatchingCancellable {
-      updateAccount(account.id, error.status, synced = false)
-    }
-      .onFailure { e ->
-        logcat.w(e) { "Failed recording the status of ${account.id}" }
-      }
+    runCatchingCancellable(
+      attempt = { updateAccount(account.id, error.status, synced = false) },
+      onFailure = { e -> logcat.w(e) { "Failed recording the status of ${account.id}" } },
+    )
     return BankSyncResult.Failed(account.id, account.name, error)
   }
 

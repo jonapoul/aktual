@@ -177,12 +177,10 @@ internal constructor(
     if (lastUndo !== token) return
     lastUndo = null
     viewModelScope.launch {
-      runCatchingCancellable {
-        writer.undo(token)
-      }
-        .onFailure { e ->
-          logcat.e(e) { "Failed to undo" }
-        }
+      runCatchingCancellable(
+        attempt = { writer.undo(token) },
+        onFailure = { e -> logcat.e(e) { "Failed to undo" } },
+      )
     }
   }
 
@@ -230,14 +228,14 @@ internal constructor(
   // The calculator picks up the change, so only the undo is kept here
   private fun write(description: String, action: suspend BudgetWriter.() -> UndoToken?) {
     viewModelScope.launch {
-      runCatchingCancellable {
-        val token = writer.action() ?: return@launch
-        lastUndo = token
-        mutableEvents.tryEmit(BudgetEvent.Updated(token))
-      }
-        .onFailure { e ->
-          logcat.e(e) { "Failed to $description" }
-        }
+      runCatchingCancellable(
+        attempt = {
+          val token = writer.action() ?: return@launch
+          lastUndo = token
+          mutableEvents.tryEmit(BudgetEvent.Updated(token))
+        },
+        onFailure = { e -> logcat.e(e) { "Failed to $description" } },
+      )
     }
   }
 

@@ -81,19 +81,19 @@ internal constructor(
 
   fun rename(name: String) {
     viewModelScope.launch {
-      runCatchingCancellable {
-        // The server keeps its own copy of the name for the budget list, see saveMetadataPrefs in
-        // packages/loot-core/src/server/preferences/app.ts
-        val cloudFileId = localPreferences[CloudFileId]
-        if (server is Remote && cloudFileId != null) {
-          syncApi.renameBudget(cloudFileId, name)
-        }
-        localPreferences.update { metadata -> metadata.set(BudgetName, name) }
-        sync.syncChanges(budgetNameChange(name))
-      }
-        .onFailure { e ->
-          logcat.e(e) { "Failed renaming budget" }
-        }
+      runCatchingCancellable(
+        attempt = {
+          // The server keeps its own copy of the name for the budget list, see saveMetadataPrefs in
+          // packages/loot-core/src/server/preferences/app.ts
+          val cloudFileId = localPreferences[CloudFileId]
+          if (server is Remote && cloudFileId != null) {
+            syncApi.renameBudget(cloudFileId, name)
+          }
+          localPreferences.update { metadata -> metadata.set(BudgetName, name) }
+          sync.syncChanges(budgetNameChange(name))
+        },
+        onFailure = { e -> logcat.e(e) { "Failed renaming budget" } },
+      )
     }
   }
 

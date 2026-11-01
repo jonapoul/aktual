@@ -82,22 +82,25 @@ internal constructor(
     if (!current.canSave) return
     mutableState.update { it.copy(isSaving = true, error = null) }
     viewModelScope.launch {
-      val error = runCatchingCancellable {
-        val values = current.fields.associate { it.credential to it.value }
-        when (val response = setup.save(source, values)) {
-          Success -> {
-            null
-          }
-          is Failed -> {
-            logcat.w { "Saving $source credentials refused: $response" }
-            response.toSetupError()
-          }
-        }
-      }
-        .getOrElse { e ->
-          logcat.e(e) { "Failed saving $source credentials" }
-          SetupError.Other(e.requireMessage())
-        }
+      val error =
+        runCatchingCancellable(
+          attempt = {
+            val values = current.fields.associate { it.credential to it.value }
+            when (val response = setup.save(source, values)) {
+              Success -> {
+                null
+              }
+              is Failed -> {
+                logcat.w { "Saving $source credentials refused: $response" }
+                response.toSetupError()
+              }
+            }
+          },
+          onFailure = { e ->
+            logcat.e(e) { "Failed saving $source credentials" }
+            SetupError.Other(e.requireMessage())
+          },
+        )
       mutableState.update { it.copy(isSaving = false, error = error) }
       if (error == null) mutableEvents.emit(Saved)
     }

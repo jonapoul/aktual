@@ -298,12 +298,10 @@ internal constructor(
         newTransactions.counts
           .filter { accountId in it }
           .collect {
-            runCatchingCancellable {
-              newTransactions.markSeen(accountId)
-            }
-              .onFailure { e ->
-                logcat.w(e) { "Failed marking $accountId seen" }
-              }
+            runCatchingCancellable(
+              attempt = { newTransactions.markSeen(accountId) },
+              onFailure = { e -> logcat.w(e) { "Failed marking $accountId seen" } },
+            )
           }
       }
     }
@@ -337,12 +335,10 @@ internal constructor(
         ExtraBalances -> ShowExtraBalances(account)
       }
     viewModelScope.launch {
-      runCatchingCancellable {
-        viewPrefs.set(key, enabled)
-      }
-        .onFailure { e ->
-          logcat.w(e) { "Failed setting $key" }
-        }
+      runCatchingCancellable(
+        attempt = { viewPrefs.set(key, enabled) },
+        onFailure = { e -> logcat.w(e) { "Failed setting $key" } },
+      )
     }
   }
 
@@ -359,36 +355,40 @@ internal constructor(
     val account = accountId ?: return
     if (deleteJob?.isActive == true) return
     deleteJob = viewModelScope.launch {
-      runCatchingCancellable {
-        val loginRemoved = deleter.delete(account)
-        logcat.i { "Deleted account $account" }
-        mutableEvents.trySend(if (loginRemoved) AccountDeleted else AccountDeletedBankLoginKept)
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          val loginRemoved = deleter.delete(account)
+          logcat.i { "Deleted account $account" }
+          mutableEvents.trySend(if (loginRemoved) AccountDeleted else AccountDeletedBankLoginKept)
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed deleting account $account" }
           mutableEvents.trySend(DeleteAccountFailed)
-        }
+        },
+      )
     }
   }
 
   fun renameAccount(name: String) {
     val account = accountId ?: return
     viewModelScope.launch {
-      runCatchingCancellable {
-        writer.write { renameAccount(account, name) }
-        logcat.i { "Renamed account $account" }
-        mutableLoadedAccount.update { loaded ->
-          if (loaded is SpecificAccount) {
-            SpecificAccount(loaded.account.copy(name = name))
-          } else {
-            loaded
+      runCatchingCancellable(
+        attempt = {
+          writer.write { renameAccount(account, name) }
+          logcat.i { "Renamed account $account" }
+          mutableLoadedAccount.update { loaded ->
+            if (loaded is SpecificAccount) {
+              SpecificAccount(loaded.account.copy(name = name))
+            } else {
+              loaded
+            }
           }
-        }
-      }
-        .onFailure { e ->
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed renaming account $account" }
           mutableEvents.trySend(RenameAccountFailed)
-        }
+        },
+      )
     }
   }
 

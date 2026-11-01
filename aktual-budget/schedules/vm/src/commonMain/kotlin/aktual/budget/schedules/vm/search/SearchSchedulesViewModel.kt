@@ -64,12 +64,13 @@ internal constructor(
   fun reload() {
     failure.update { null }
     viewModelScope.launch {
-      runCatchingCancellable { loader.load() }
-        .onSuccess { loaded -> schedules.update { loaded } }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = { schedules.update { loader.load() } },
+        onFailure = { e ->
           logcat.e(e) { "Failed loading schedules" }
           failure.update { e.requireMessage() }
-        }
+        },
+      )
     }
   }
 

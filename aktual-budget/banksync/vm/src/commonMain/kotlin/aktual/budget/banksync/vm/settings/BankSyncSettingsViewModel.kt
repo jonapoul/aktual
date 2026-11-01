@@ -89,21 +89,23 @@ internal constructor(
 
   init {
     viewModelScope.launch {
-      runCatchingCancellable {
-        val row = accountDao[account]
-        if (row == null) {
-          mutableFailure.update { BankSyncSettingsState.Failure(cause = null) }
-          return@launch
-        }
-        val settings = loader.load(account)
-        val fields = TransactionDirection.entries.associateWith { fieldsLoader.load(account, it) }
-        mutableSettings.update { settings }
-        mutableLoaded.update { Loaded(row.name, settings, fields) }
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          val row = accountDao[account]
+          if (row == null) {
+            mutableFailure.update { BankSyncSettingsState.Failure(cause = null) }
+            return@launch
+          }
+          val settings = loader.load(account)
+          val fields = TransactionDirection.entries.associateWith { fieldsLoader.load(account, it) }
+          mutableSettings.update { settings }
+          mutableLoaded.update { Loaded(row.name, settings, fields) }
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed loading bank sync settings for $account" }
           mutableFailure.update { BankSyncSettingsState.Failure(e.requireMessage()) }
-        }
+        },
+      )
     }
   }
 
@@ -125,29 +127,33 @@ internal constructor(
 
   fun save() {
     viewModelScope.launch {
-      runCatchingCancellable {
-        val settings = mutableSettings.value
-        writer.save(account, settings)
-        mutableLoaded.update { it?.copy(saved = settings) }
-        mutableEvents.emit(Saved)
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          val settings = mutableSettings.value
+          writer.save(account, settings)
+          mutableLoaded.update { it?.copy(saved = settings) }
+          mutableEvents.emit(Saved)
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed saving bank sync settings for $account" }
           mutableEvents.emit(BankSyncSettingsEvent.SaveFailed(e.requireMessage()))
-        }
+        },
+      )
     }
   }
 
   fun unlink() {
     viewModelScope.launch {
-      runCatchingCancellable {
-        linker.unlink(account)
-        mutableEvents.emit(Unlinked)
-      }
-        .onFailure { e ->
+      runCatchingCancellable(
+        attempt = {
+          linker.unlink(account)
+          mutableEvents.emit(Unlinked)
+        },
+        onFailure = { e ->
           logcat.e(e) { "Failed unlinking $account" }
           mutableEvents.emit(BankSyncSettingsEvent.UnlinkFailed(e.requireMessage()))
-        }
+        },
+      )
     }
   }
 

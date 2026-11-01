@@ -88,15 +88,17 @@ class BankAccountLinker(
 
     if (row.account_sync_source != GoCardless || dao.bankUsers(bank) > 0) return true
     val requisition = dao.bankId(bank) ?: return true
-    return runCatchingCancellable {
-      api.removeGoCardlessRequisition(requisition.value).also { removed ->
-        if (!removed) logcat.w { "GoCardless refused to delete requisition $requisition" }
-      }
-    }
-      .getOrElse { e ->
+    return runCatchingCancellable(
+      attempt = {
+        api.removeGoCardlessRequisition(requisition.value).also { removed ->
+          if (!removed) logcat.w { "GoCardless refused to delete requisition $requisition" }
+        }
+      },
+      onFailure = { e ->
         logcat.w(e) { "Failed deleting GoCardless requisition $requisition" }
         false
-      }
+      },
+    )
   }
 
   // Links [account] to [external], adding its bank first unless there already is one

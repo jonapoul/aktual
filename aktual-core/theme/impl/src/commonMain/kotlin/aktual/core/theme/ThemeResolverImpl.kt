@@ -60,19 +60,21 @@ internal constructor(
   }
 
   private suspend fun fetchAndCache(repo: CustomThemeRepo, isSystemInDarkTheme: Boolean): Colors {
-    return runCatchingCancellable {
-      val summaries = cache.summaries().ifEmpty { api.fetchCatalog() }
-      val summary =
-        summaries.firstOrNull { it.repo == repo } ?: return fallback(isSystemInDarkTheme)
-      val theme = api.fetchTheme(summary)
-      cache.save(theme)
-      theme
-    }
-      .getOrElse { e ->
+    return runCatchingCancellable(
+      attempt = {
+        val summaries = cache.summaries().ifEmpty { api.fetchCatalog() }
+        val summary =
+          summaries.firstOrNull { it.repo == repo } ?: return fallback(isSystemInDarkTheme)
+        val theme = api.fetchTheme(summary)
+        cache.save(theme)
+        theme
+      },
+      onFailure = { e ->
         val default = fallback(isSystemInDarkTheme)
         logcat.w(e) { "Failed fetching theme from $repo, returning $default" }
         default
-      }
+      },
+    )
   }
 
   private fun ThemeId.toRepo(): CustomThemeRepo? {
