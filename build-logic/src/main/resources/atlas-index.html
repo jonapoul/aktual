@@ -19,14 +19,15 @@
     * { box-sizing: border-box; }
     body {
       margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
       background: var(--bg);
       color: var(--text);
       font: 14px/1.4 ui-monospace, "JetBrains Mono", Menlo, monospace;
     }
     header {
-      position: sticky;
-      top: 0;
-      z-index: 1;
       display: flex;
       flex-wrap: wrap;
       gap: 12px 24px;
@@ -49,9 +50,13 @@
       border-radius: 4px;
       font: inherit;
     }
-    main { display: flex; align-items: flex-start; gap: 16px; padding: 16px; }
-    table { flex: none; border-collapse: collapse; }
+    main { flex: 1; min-height: 0; display: flex; gap: 16px; padding: 16px; }
+    .list { flex: none; overflow-y: auto; }
+    table { border-collapse: collapse; }
     th {
+      position: sticky;
+      top: 0;
+      background: var(--bg);
       text-align: left;
       color: var(--muted);
       font-weight: normal;
@@ -66,7 +71,7 @@
     td { padding: 4px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
     tr.group td { color: var(--muted); padding-top: 14px; border-bottom: none; }
     tbody tr:not(.group):hover { background: var(--row-hover); }
-    tbody tr { scroll-margin-top: 100px; }
+    tbody tr { scroll-margin-top: 40px; }
     tbody tr.selected { background: var(--row-selected); }
     a { color: var(--link); text-decoration: none; }
     a:hover { text-decoration: underline; }
@@ -76,11 +81,8 @@
     .barbox { width: 60px; display: flex; justify-content: flex-start; }
     .muted { color: var(--muted); }
     aside {
-      position: sticky;
-      top: 80px;
       flex: 1;
       min-width: 0;
-      height: calc(100vh - 100px);
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -91,7 +93,10 @@
     }
     aside img { flex: 1; min-height: 0; width: 100%; object-fit: contain; }
     aside .empty { margin: auto; color: var(--muted); }
-    @media (max-width: 900px) { aside { display: none; } }
+    @media (max-width: 900px) {
+      aside { display: none; }
+      .list { flex: 1; }
+    }
   </style>
 </head>
 <body>
@@ -101,16 +106,18 @@
   <input id="filter" type="search" placeholder="Filter modules (/)" autofocus>
 </header>
 <main>
-  <table>
-    <thead>
-      <tr>
-        <th data-key="path">Module</th>
-        <th data-key="size">Size</th>
-        <th data-key="modified">Modified</th>
-      </tr>
-    </thead>
-    <tbody id="rows"></tbody>
-  </table>
+  <div class="list" id="list">
+    <table>
+      <thead>
+        <tr>
+          <th data-key="path">Module</th>
+          <th data-key="size">Size</th>
+          <th data-key="modified">Modified</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
   <aside>
     <div id="preview-title" class="muted">Hover a module to preview its chart</div>
     <img id="preview-img" alt="" hidden>
