@@ -41,11 +41,9 @@ abstract class WriteAtlasIndex : DefaultTask() {
 
     val json =
       charts.joinToString(separator = ",\n", prefix = "[\n", postfix = "\n]") { (path, chart) ->
-        val group = path.split(':').getOrElse(1) { path }
         val fields =
           listOf(
             "\"path\": \"$path\"",
-            "\"group\": \"$group\"",
             "\"url\": \"${chart.toPath().toUri()}\"",
             "\"size\": ${chart.length()}",
             "\"modified\": ${chart.lastModified()}",

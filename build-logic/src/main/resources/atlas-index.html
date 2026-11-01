@@ -69,8 +69,7 @@
     th[data-dir="asc"]::after { content: " \25B2"; }
     th[data-dir="desc"]::after { content: " \25BC"; }
     td { padding: 4px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-    tr.group td { color: var(--muted); padding-top: 14px; border-bottom: none; }
-    tbody tr:not(.group):hover { background: var(--row-hover); }
+    tbody tr:hover { background: var(--row-hover); }
     tbody tr { scroll-margin-top: 40px; }
     tbody tr.selected { background: var(--row-selected); }
     tr.none td { padding: 24px 8px; color: var(--muted); text-align: center; border-bottom: none; }
@@ -195,12 +194,7 @@
 
     rows.replaceChildren();
     items = [];
-    let lastGroup = null;
     visible.forEach(chart => {
-      if (sortKey === "path" && chart.group !== lastGroup) {
-        lastGroup = chart.group;
-        rows.append(el("tr", { className: "group" }, [el("td", { colSpan: 3, textContent: chart.group })]));
-      }
       const width = Math.max(2, Math.round(chart.size / maxSize * 60));
       const row = el("tr", {}, [
         el("td", {}, [el("a", { href: chart.url, target: "_blank", textContent: chart.path })]),
