@@ -8,6 +8,7 @@ import app.cash.burst.burstValues
 import assertk.assertThat
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
+import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
@@ -39,7 +40,7 @@ class GenerateDistinctColorsTest {
   ) {
     val default = generateDistinctColors(colors, count = 5)
     val custom = generateDistinctColors(colors, count = 5, saturation = 0.5f, lightness = 0.25f)
-    assertThat(default != custom).isEqualTo(true)
+    assertThat(default != custom).isTrue()
   }
 
   @Test

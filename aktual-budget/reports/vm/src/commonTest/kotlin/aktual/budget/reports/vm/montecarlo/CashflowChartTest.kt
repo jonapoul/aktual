@@ -11,6 +11,7 @@ import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
@@ -58,7 +59,7 @@ class CashflowChartTest {
     }
     assertThat(chart.years[1]).all {
       prop(CashflowYear::age).isEqualTo(65)
-      prop(CashflowYear::afterDepletion).isEqualTo(true)
+      prop(CashflowYear::afterDepletion).isTrue()
       prop(CashflowYear::amounts).containsExactly(0L, 0L, 0L, 0L, -3_000L, 0L, 0L, 0L)
     }
   }

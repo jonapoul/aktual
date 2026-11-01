@@ -143,14 +143,14 @@ class BankSyncApiTest {
         .containsExactly("TRN-pending-1", "TRN-booked-1")
       transform { it.transactions.booked.single() }
         .all {
-          transform { it.isBooked }.isEqualTo(true)
+          transform { it.isBooked }.isTrue()
           transform { it.date }.isEqualTo("2026-09-28")
           transform { it.payeeName }.isEqualTo("Employer Inc")
           transform { it.amount }.isEqualTo("2500.00")
           transform { it["notes"] }.isEqualTo("PAYROLL")
           transform { it["postedDate"] }.isEqualTo("2026-09-28")
         }
-      transform { it.transactions.pending.single().isBooked }.isEqualTo(false)
+      transform { it.transactions.pending.single().isBooked }.isFalse()
     }
   }
 
