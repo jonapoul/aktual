@@ -21,9 +21,6 @@ sealed interface ReportState {
   // And custom reports, which have an editor
   data object Custom : ReportState
 
-  // And budget analysis reports, which have settings
-  data object BudgetAnalysis : ReportState
-
   // The chart shows the draft, which follows the saved report until it's edited
   data class Loaded(
     val type: WidgetType,
