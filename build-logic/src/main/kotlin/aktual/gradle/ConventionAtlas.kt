@@ -6,7 +6,7 @@ import org.gradle.api.Project
 
 class ConventionAtlas : ProjectPlugin {
   override fun Project.applyTo() {
-    if (this == rootProject) registerIndex() else configureModule()
+    if (path == ":") registerIndex() else configureModule()
   }
 
   private fun Project.registerIndex() {
