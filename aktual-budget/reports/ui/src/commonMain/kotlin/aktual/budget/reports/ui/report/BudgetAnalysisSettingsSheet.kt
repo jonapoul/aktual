@@ -29,8 +29,9 @@ internal fun BudgetAnalysisSettings(
   // The draft always has a time frame, since upstream's defaults are filled in
   val settings = meta.timeFrame?.let(meta::settings) ?: return
 
+  // Falls back to the settings if the condition is gone, e.g. removed by a sync
   val index = conditionIndex
-  if (index != null && editorData != null) {
+  if (index != null && editorData != null && index in settings.conditions.indices) {
     ConditionSheetAt(
       index = index,
       conditions = settings.conditions,
