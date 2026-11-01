@@ -7,6 +7,7 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
@@ -28,6 +29,10 @@ abstract class WriteAtlasIndex : DefaultTask() {
   @get:PathSensitive(PathSensitivity.ABSOLUTE)
   abstract val chartFiles: ConfigurableFileCollection
 
+  @get:InputFile
+  @get:PathSensitive(PathSensitivity.NONE)
+  abstract val projectTypes: RegularFileProperty
+
   @get:OutputFile abstract val outputFile: RegularFileProperty
 
   @TaskAction
@@ -41,11 +46,9 @@ abstract class WriteAtlasIndex : DefaultTask() {
 
     val json =
       charts.joinToString(separator = ",\n", prefix = "[\n", postfix = "\n]") { (path, chart) ->
-        val group = path.split(':').getOrElse(1) { path }
         val fields =
           listOf(
             "\"path\": \"$path\"",
-            "\"group\": \"$group\"",
             "\"url\": \"${chart.toPath().toUri()}\"",
             "\"size\": ${chart.length()}",
             "\"modified\": ${chart.lastModified()}",
@@ -58,7 +61,8 @@ abstract class WriteAtlasIndex : DefaultTask() {
     output.writeText(
       template
         .replace("__GENERATED__", System.currentTimeMillis().toString())
-        .replace("__CHARTS__", json),
+        .replace("__CHARTS__", json)
+        .replace("__TYPES__", projectTypes.get().asFile.readText()),
     )
     logger.lifecycle("Atlas index: ${output.toPath().toUri()}")
   }
