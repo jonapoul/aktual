@@ -129,6 +129,8 @@ Keep each dependency block sorted: all `api` lines before `implementation` lines
 
 Modules applying `aktual.module.kotlin` or `aktual.module.di` only target the JVM (`desktop`). `aktual.module.kmp-android` adds the android target on top, and `aktual.module.compose` / `aktual.module.viewmodel` include it. Other modules depending on a JVM-only module from their android target works fine.
 
+A JVM-only module is compiled against its dependencies' JVM artifacts but runs on android against their android ones. That's fine for libraries with a single JVM artifact (coroutines, serialization, okio, datetime), but not for ones with a separate android artifact whose platform code you call, e.g. the sqldelight androidx driver (top-level functions compile to differently named classes, so the app crashes with `NoClassDefFoundError`). Keep such modules on `aktual.module.kmp-android`. PR CI runs `:aktual-app:android:minifyReleaseWithR8`, which fails on missing classes.
+
 A JVM-only module's code also ships in the android app, so it must not contain desktop-only bindings. Platform implementations (`@ContributesBinding` classes needing `Context`, desktop file paths, window state) live in the non-KMP `aktual-core:android` (`aktual.module.android`) and `aktual-core:jvm` (`aktual.module.jvm`), which only the matching app module depends on. Android-only test helpers live in `aktual-test:android`.
 
 Default new code to `commonMain`. Code that only needs JDK APIs (`java.text`, `java.math`, ...) goes in `jvmSharedMain`, which both targets compile. Reach for `androidMain` / `desktopMain` only when truly platform-specific.
