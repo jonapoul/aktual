@@ -16,6 +16,6 @@ class LocalChangeTest {
   @Test
   fun `Null enum is a null value`() {
     val stage: RuleStage? = null
-    assertThat(localChange("d", "r", "c", stage).value).isEqualTo(MessageValue.Null)
+    assertThat(localChange("d", "r", "c", stage).value).isEqualTo(Null)
   }
 }
