@@ -14,6 +14,7 @@
       --link: #8ab4f8;
       --bar: #3b5bdb;
       --row-hover: #16162a;
+      --row-selected: #1f2a4d;
     }
     * { box-sizing: border-box; }
     body {
@@ -65,6 +66,8 @@
     td { padding: 4px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
     tr.group td { color: var(--muted); padding-top: 14px; border-bottom: none; }
     tbody tr:not(.group):hover { background: var(--row-hover); }
+    tbody tr { scroll-margin-top: 100px; }
+    tbody tr.selected { background: var(--row-selected); }
     a { color: var(--link); text-decoration: none; }
     a:hover { text-decoration: underline; }
     .size { display: flex; align-items: center; gap: 8px; }
@@ -125,6 +128,8 @@
   const maxSize = Math.max(1, ...charts.map(c => c.size));
   let sortKey = "path";
   let sortDir = "asc";
+  let items = [];
+  let selected = null;
 
   function formatSize(bytes) {
     if (bytes < 1024) return bytes + " B";
@@ -153,6 +158,22 @@
     previewImg.hidden = false;
   }
 
+  function select(index, scroll) {
+    items.forEach((item, i) => item.row.classList.toggle("selected", i === index));
+    const item = items[index];
+    if (!item) return;
+    selected = item.chart;
+    preview(item.chart);
+    if (scroll) item.row.scrollIntoView({ block: "nearest" });
+  }
+
+  function move(delta) {
+    if (!items.length) return;
+    const current = items.findIndex(i => i.chart === selected);
+    const next = current < 0 ? 0 : Math.min(items.length - 1, Math.max(0, current + delta));
+    select(next, true);
+  }
+
   function render() {
     const query = filter.value.trim().toLowerCase();
     const visible = charts
@@ -164,6 +185,7 @@
       });
 
     rows.replaceChildren();
+    items = [];
     let lastGroup = null;
     visible.forEach(chart => {
       if (sortKey === "path" && chart.group !== lastGroup) {
@@ -181,9 +203,12 @@
         ]),
         el("td", { className: "muted", title: new Date(chart.modified).toLocaleString() }, [formatAge(chart.modified)]),
       ]);
-      row.addEventListener("mouseenter", () => preview(chart));
+      const index = items.length;
+      items.push({ chart, row });
+      row.addEventListener("mouseenter", () => select(index, false));
       rows.append(row);
     });
+    select(items.findIndex(i => i.chart === selected), false);
 
     const total = visible.reduce((sum, c) => sum + c.size, 0);
     stats.innerHTML = "<b>" + visible.length + "</b> of " + charts.length + " charts · <b>"
@@ -207,6 +232,9 @@
     if (e.key === "/" && document.activeElement !== filter) {
       e.preventDefault();
       filter.focus();
+    } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      move(e.key === "ArrowDown" ? 1 : -1);
     }
   });
 
