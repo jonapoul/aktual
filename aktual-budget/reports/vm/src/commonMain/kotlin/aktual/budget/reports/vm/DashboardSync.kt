@@ -11,6 +11,7 @@ import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.model.localChange
+import aktual.budget.model.serialName
 import aktual.budget.model.tombstone
 import dev.zacsweers.metro.Inject
 import kotlinx.serialization.builtins.MapSerializer
@@ -93,6 +94,9 @@ internal class DashboardSync(
     val encoded = DbJson.encodeToJsonElement(BudgetAnalysisReportMeta.serializer(), meta)
     patchMeta(id, (encoded as JsonObject).filterKeys { it in BUDGET_ANALYSIS_KEYS })
   }
+
+  suspend fun setNetWorthMode(id: WidgetId, mode: NetWorthMode) =
+    patchMeta(id, "mode" to JsonPrimitive(mode.serialName()))
 
   suspend fun setSummaryType(id: WidgetId, type: SummaryChartType) =
     patchSummaryContent(id, "type" to JsonPrimitive(type.serialName))

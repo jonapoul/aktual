@@ -9,6 +9,7 @@ import aktual.budget.reports.vm.CustomReportMeta
 import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.FormulaReportMeta
 import aktual.budget.reports.vm.MonteCarloReportMeta
+import aktual.budget.reports.vm.NetWorthMode
 import aktual.budget.reports.vm.SummaryChartType
 import aktual.budget.reports.vm.TextAlign
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
@@ -60,6 +61,10 @@ internal constructor(
   fun saveText(content: String, align: TextAlign) {
     logcat.d { "Saving text for $id" }
     viewModelScope.launch { sync.setWidgetText(id, content, align) }
+  }
+
+  fun setNetWorthMode(mode: NetWorthMode) {
+    viewModelScope.launch { sync.setNetWorthMode(id, mode) }
   }
 
   fun setSummaryType(type: SummaryChartType) {
