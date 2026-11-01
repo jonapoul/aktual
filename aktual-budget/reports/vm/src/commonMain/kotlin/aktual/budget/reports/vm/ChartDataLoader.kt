@@ -492,18 +492,21 @@ internal class ChartDataLoader(
         }
       val end = range.endInclusive
 
-      combine(
-        dao.observeNetWorthStartingBalance(start.firstDay),
-        dao.observeNetWorthByMonth(start.firstDay, end.lastDay),
-      ) { startingBalance, rows ->
-        val byMonth = rows.associate { it.month to it.total }
-        var balance = Amount(startingBalance)
-        val items =
-          (start..end).associateWith { month ->
-            balance += Amount(byMonth[month.toLong()] ?: 0L)
-            balance
-          }
-        NetWorthData(title = meta.name, items = items.toImmutableMap())
+      dao.observeNetWorthByAccount(start.firstDay, end.lastDay).map { rows ->
+        netWorthData(
+          title = meta.name,
+          mode = meta.mode,
+          months = (start..end).toList(),
+          rows =
+            rows.map { row ->
+              NetWorthRow(
+                account = row.account,
+                name = row.name,
+                month = row.month.takeIf { it != 0L }?.toYearMonth(),
+                total = row.total,
+              )
+            },
+        )
       }
     }
   }
@@ -900,6 +903,9 @@ internal class ChartDataLoader(
   private fun List<Condition>?.hasFilters() = !isNullOrEmpty()
 
   private fun YearMonth.toLong(): Long = year * YEAR_MONTH_FACTOR + month.ordinal + 1L
+
+  private fun Long.toYearMonth(): YearMonth =
+    YearMonth((this / YEAR_MONTH_FACTOR).toInt(), (this % YEAR_MONTH_FACTOR).toInt())
 
   private inline fun List<CashFlowByMonth>.total(predicate: (CashFlowByMonth) -> Boolean): Amount =
     Amount(filter(predicate).sumOf { it.total })

@@ -13,7 +13,7 @@ import aktual.budget.db.ForecastStartingBalances
 import aktual.budget.db.ForecastTrackingBudgetTotals
 import aktual.budget.db.ForecastTransferPayees
 import aktual.budget.db.MonteCarloAccountBalances
-import aktual.budget.db.NetWorthByMonth
+import aktual.budget.db.NetWorthByAccount
 import aktual.budget.db.SankeyCategoryTotals
 import aktual.budget.db.SankeyTransfers
 import aktual.budget.db.TransactionDateBounds
@@ -45,15 +45,12 @@ class ReportsDao(database: BudgetDatabase, private val contexts: CoroutineContex
   fun observeCashFlowByMonth(start: LocalDate, end: LocalDate): Flow<List<CashFlowByMonth>> =
     queries.cashFlowByMonth(start, end).asFlow().mapToList(contexts.default).distinctUntilChanged()
 
-  fun observeNetWorthStartingBalance(start: LocalDate): Flow<Long> =
+  fun observeNetWorthByAccount(start: LocalDate, end: LocalDate): Flow<List<NetWorthByAccount>> =
     queries
-      .netWorthStartingBalance(start)
+      .netWorthByAccount(start, end)
       .asFlow()
-      .mapToOne(contexts.default)
+      .mapToList(contexts.default)
       .distinctUntilChanged()
-
-  fun observeNetWorthByMonth(start: LocalDate, end: LocalDate): Flow<List<NetWorthByMonth>> =
-    queries.netWorthByMonth(start, end).asFlow().mapToList(contexts.default).distinctUntilChanged()
 
   fun observeAgeOfMoneyTransactions(end: LocalDate): Flow<List<AgeOfMoneyTransactions>> =
     queries.ageOfMoneyTransactions(end).asFlow().mapToList(contexts.default).distinctUntilChanged()
