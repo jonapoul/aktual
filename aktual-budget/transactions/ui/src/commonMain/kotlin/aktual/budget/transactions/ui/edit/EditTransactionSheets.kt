@@ -31,7 +31,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
-import aktual.core.ui.BottomSheetNoResults
+import aktual.core.ui.BottomSheetMessage
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParams
@@ -550,7 +550,7 @@ private fun CategorySheet(
   }
 
 private fun LazyListScope.noResults() =
-  item(key = NO_RESULTS_KEY) { BottomSheetNoResults(Modifier.animateItem()) }
+  item(key = NO_RESULTS_KEY) { BottomSheetMessage(Strings.searchNoResults, Modifier.animateItem()) }
 
 @Composable private fun hiddenName(name: String) = Strings.transactionCategoryHidden(name)
 
@@ -636,7 +636,7 @@ private fun ScheduleSheetContent(
     }
 
     if (all.isEmpty()) {
-      item { GroupHeader(Strings.transactionScheduleEmpty) }
+      item { BottomSheetMessage(Strings.transactionScheduleEmpty) }
     } else if (matches.isEmpty() && (name.isNotEmpty() || statuses.isNotEmpty())) {
       noResults()
     }

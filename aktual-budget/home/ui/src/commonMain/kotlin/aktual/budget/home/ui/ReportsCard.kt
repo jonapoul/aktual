@@ -29,6 +29,7 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
+import aktual.core.ui.BottomSheetMessage
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
@@ -277,14 +278,7 @@ private fun PickerContent(
       BareTextButton(text = Strings.homeReportsBack, onClick = onBack)
     }
 
-    if (available.isEmpty()) {
-      Text(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        text = Strings.homeReportsNoneToChoose,
-        style = typography.bodyMedium,
-        color = colors.pageTextSubdued,
-      )
-    }
+    if (available.isEmpty()) BottomSheetMessage(Strings.homeReportsNoneToChoose)
 
     available.fastForEach { page ->
       // A single page needs no heading
