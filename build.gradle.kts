@@ -26,6 +26,7 @@ plugins {
   alias(libs.plugins.straitjacket) apply false
   alias(libs.plugins.wire) apply false
 
+  id("aktual.convention.atlas")
   id("aktual.convention.idea")
 }
 

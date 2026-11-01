@@ -31,6 +31,7 @@ Gradle convention plugins that centralize build config. Included build - `settin
 - `ConventionTest` - Burst, `testAll`, Robolectric/MockK JVM args, `maxParallelForks` of a quarter of the CPU cores (1 to 4)
 - `ConventionTestDependencies`
 - `ConventionIdea`
+- `ConventionAtlas` - in modules, puts the chart at `build/atlas/chart.svg`. At the root, `atlasGenerate` also writes `build/atlas/index.html` (`WriteAtlasIndex`), linking to every module's chart, and prints its `file://` URL
 
 Helpers live in `aktual.gradle.dsl`:
 
