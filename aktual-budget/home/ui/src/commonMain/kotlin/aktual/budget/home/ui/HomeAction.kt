@@ -3,6 +3,7 @@ package aktual.budget.home.ui
 import aktual.budget.home.vm.HomeCardType
 import aktual.budget.model.AccountId
 import aktual.budget.model.ScheduleId
+import aktual.budget.model.TransactionId
 import aktual.budget.model.WidgetId
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
@@ -26,6 +27,10 @@ internal data object ReviewUncategorised : HomeAction
 @JvmInline internal value class OpenSchedule(val id: ScheduleId) : HomeAction
 
 internal data object OpenSchedules : HomeAction
+
+@JvmInline internal value class OpenTransaction(val id: TransactionId) : HomeAction
+
+internal data object OpenTransactions : HomeAction
 
 internal data object Retry : HomeAction
 

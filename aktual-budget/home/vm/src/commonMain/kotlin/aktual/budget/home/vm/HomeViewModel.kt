@@ -45,6 +45,7 @@ internal constructor(
   needsAttentionLoader: NeedsAttentionLoader,
   accountsSummaryLoader: AccountsSummaryLoader,
   upcomingSchedulesLoader: UpcomingSchedulesLoader,
+  recentTransactionsLoader: RecentTransactionsLoader,
   private val pinnedReports: PinnedReports,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
@@ -85,6 +86,15 @@ internal constructor(
         }
       val upcoming by upcomingFlow.collectAsState(initial = Loading)
 
+      val recentFlow =
+        remember(retries) {
+          recentTransactionsLoader
+            .observe(MAX_RECENT_ROWS)
+            .map { it.toRecentCardState() }
+            .orFailed("recent transactions", Failed)
+        }
+      val recent by recentFlow.collectAsState(initial = Loading)
+
       val reportsFlow =
         remember(retries) {
           pinnedReports.observe().map { it.toCardState() }.orFailed("reports", Failed)
@@ -100,6 +110,7 @@ internal constructor(
         thisMonth == Loading ||
           attention == Loading ||
           upcoming == Loading ||
+          recent == Loading ||
           accounts == Loading ||
           reports == Loading
 
@@ -108,6 +119,7 @@ internal constructor(
         thisMonth = if (isLoading) Loading else thisMonth,
         attention = if (isLoading) Loading else attention,
         upcoming = if (isLoading) Loading else upcoming,
+        recent = if (isLoading) Loading else recent,
         accounts = if (isLoading) Loading else accounts,
         reports = if (isLoading) Loading else reports,
         reportChoices = reportChoices,
@@ -208,6 +220,9 @@ internal constructor(
       )
     }
 
+  private fun ImmutableList<RecentTransaction>.toRecentCardState(): RecentCardState =
+    if (isEmpty()) Empty else RecentCardState.Loaded(this)
+
   private fun List<PinnedReport>.toCardState(): ReportsCardState =
     if (isEmpty()) {
       Empty
@@ -225,5 +240,6 @@ internal constructor(
 }
 
 private const val MAX_UPCOMING_ROWS = 5
+private const val MAX_RECENT_ROWS = 5
 private const val MAX_SYNC_FAILURE_ROWS = 3
 private const val MAX_COLLAPSED_ACCOUNTS = 5

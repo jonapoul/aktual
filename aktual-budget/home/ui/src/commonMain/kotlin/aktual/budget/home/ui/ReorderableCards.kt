@@ -340,6 +340,7 @@ private fun HomeCardType.label(): String =
     ThisMonth -> Strings.homeCardThisMonth
     Attention -> Strings.homeAttentionTitle
     Upcoming -> Strings.homeCardUpcoming
+    Recent -> Strings.homeRecentTitle
     Accounts -> Strings.homeAccountsTitle
     Reports -> Strings.homeCardReports
   }

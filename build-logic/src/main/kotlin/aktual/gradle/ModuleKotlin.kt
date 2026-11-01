@@ -1,11 +1,22 @@
+@file:Suppress("UnstableApiUsage")
+
 package aktual.gradle
 
+import aktual.gradle.dsl.androidTestLibraries
 import aktual.gradle.dsl.apply
+import aktual.gradle.dsl.buildNamespace
+import aktual.gradle.dsl.commonConfigure
+import aktual.gradle.dsl.configure
 import aktual.gradle.dsl.kotlin
 import aktual.gradle.dsl.testLibraries
 import blueprint.core.get
+import blueprint.core.intProperty
 import blueprint.core.libs
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+import com.android.build.gradle.LintPlugin
+import com.android.build.gradle.api.KotlinMultiplatformAndroidPlugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.androidHostTestDependencies
 import org.gradle.kotlin.dsl.commonMainDependencies
 import org.gradle.kotlin.dsl.commonTestDependencies
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
@@ -17,6 +28,8 @@ class ModuleKotlin : ProjectPlugin {
   override fun Project.applyTo() {
     with(pluginManager) {
       apply(KotlinMultiplatformPluginWrapper::class)
+      apply(KotlinMultiplatformAndroidPlugin::class)
+      apply(LintPlugin::class)
       apply(ConventionKotlinBase::class)
       apply(ConventionIdea::class)
       apply(ConventionStyle::class)
@@ -35,6 +48,27 @@ class ModuleKotlin : ProjectPlugin {
 
       jvm("desktop")
 
+      extensions.configure(KotlinMultiplatformAndroidLibraryTarget::class) {
+        namespace = buildNamespace()
+        minSdk = providers.intProperty("aktual.android.minSdk").get()
+        compileSdk = providers.intProperty("aktual.android.compileSdk").get()
+        packaging.resources.excludes.add("META-INF/*")
+        lint.commonConfigure(this@applyTo)
+        withHostTest {
+          // For Robolectric
+          isIncludeAndroidResources = true
+
+          // Android stubs return defaults instead of throwing, for tests not using Robolectric
+          isReturnDefaultValues = true
+        }
+      }
+
+      // Pin Robolectric to a supported SDK via a shared robolectric.properties on the
+      // androidHostTest classpath (see gradle/robolectric/robolectric.properties)
+      sourceSets.named("androidHostTest") { ss ->
+        ss.resources.srcDir(rootProject.isolated.projectDirectory.dir("gradle/robolectric"))
+      }
+
       compilerOptions {
         freeCompilerArgs.addAll("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
       }
@@ -47,6 +81,11 @@ class ModuleKotlin : ProjectPlugin {
       commonTestDependencies {
         implementation(kotlin("test"))
         testLibraries.forEach { lib -> implementation(lib) }
+      }
+
+      androidHostTestDependencies {
+        androidTestLibraries.forEach(::implementation)
+        implementation(project(":aktual-test:android"))
       }
     }
   }

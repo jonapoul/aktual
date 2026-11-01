@@ -6,6 +6,7 @@ import aktual.budget.db.withoutResult
 import aktual.budget.home.vm.AccountsCardState.Loaded
 import aktual.budget.home.vm.HomeCardType.Accounts
 import aktual.budget.home.vm.HomeCardType.Attention
+import aktual.budget.home.vm.HomeCardType.Recent
 import aktual.budget.home.vm.HomeCardType.Reports
 import aktual.budget.home.vm.HomeCardType.ThisMonth
 import aktual.budget.home.vm.HomeCardType.Upcoming
@@ -300,13 +301,13 @@ class HomeViewModelTest {
 
     viewModel.state.test {
       assertThat(awaitSettled().cards)
-        .containsExactly(ThisMonth, Attention, Upcoming, Accounts, Reports)
+        .containsExactly(ThisMonth, Attention, Upcoming, Recent, Accounts, Reports)
 
       viewModel.swap(Accounts, ThisMonth)
       assertThat(awaitItem().cards)
-        .containsExactly(Accounts, Attention, Upcoming, ThisMonth, Reports)
+        .containsExactly(Accounts, Attention, Upcoming, Recent, ThisMonth, Reports)
       assertThat(prefs[HomeCardOrder])
-        .isEqualTo(listOf("Accounts", "Attention", "Upcoming", "ThisMonth", "Reports"))
+        .isEqualTo(listOf("Accounts", "Attention", "Upcoming", "Recent", "ThisMonth", "Reports"))
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -321,9 +322,9 @@ class HomeViewModelTest {
 
       viewModel.reorder(listOf(Upcoming, ThisMonth, Attention))
       assertThat(awaitItem().cards)
-        .containsExactly(Upcoming, ThisMonth, Attention, Accounts, Reports)
+        .containsExactly(Upcoming, ThisMonth, Attention, Recent, Accounts, Reports)
       assertThat(prefs[HomeCardOrder])
-        .isEqualTo(listOf("Upcoming", "ThisMonth", "Attention", "Accounts", "Reports"))
+        .isEqualTo(listOf("Upcoming", "ThisMonth", "Attention", "Recent", "Accounts", "Reports"))
       cancelAndIgnoreRemainingEvents()
     }
   }

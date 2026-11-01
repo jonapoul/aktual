@@ -34,8 +34,7 @@ Check the module's `build.gradle.kts` for which convention plugin it uses:
 
 | Plugin | Module Type | Available Test Tasks |
 |--------|------------|---------------------|
-| `aktual.module.kotlin` / `aktual.module.di` without `aktual.module.kmp-android` | KMP, JVM target only | `desktopTest` |
-| `aktual.module.kotlin` / `aktual.module.di` with `aktual.module.kmp-android` | KMP + Android | `allTests`, `testAndroidHostTest`, `desktopTest` |
+| `aktual.module.kotlin` / `aktual.module.di` | KMP + Android | `allTests`, `testAndroidHostTest`, `desktopTest` |
 | `aktual.module.compose` | KMP + Android + Compose | `allTests`, `testAndroidHostTest`, `desktopTest` |
 | `aktual.module.viewmodel` | KMP + Android + Compose + VM | `allTests`, `testAndroidHostTest`, `desktopTest` |
 | `aktual.module.jvm` | Plain JVM, not KMP | `test` |
@@ -43,9 +42,7 @@ Check the module's `build.gradle.kts` for which convention plugin it uses:
 
 ### 3. Choose the right task
 
-For **KMP modules without an android target**: always use `desktopTest`.
-
-For **KMP modules with an android target** (compose/viewmodel, or `aktual.module.kmp-android` applied):
+For **KMP modules**:
 
 | Source Sets Present | Recommended Task | Why |
 |-------------------|-----------------|-----|

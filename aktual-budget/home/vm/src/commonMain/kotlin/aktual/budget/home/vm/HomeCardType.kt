@@ -7,6 +7,7 @@ enum class HomeCardType {
   ThisMonth,
   Attention,
   Upcoming,
+  Recent,
   Accounts,
   Reports,
 }

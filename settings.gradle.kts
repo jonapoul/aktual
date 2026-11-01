@@ -115,7 +115,6 @@ atlas {
     hasPluginId("ViewModel", "aktual.module.viewmodel", "#914141") // pink
     hasPluginId("DI", "aktual.module.di", "#a17103") // orange
     hasPluginId("UI", "aktual.module.compose", "#6b6b01") // yellow
-    hasPluginId("Android KMP", "aktual.module.kmp-android", "#03996f") // teal
     hasPluginId("Kotlin", "aktual.module.kotlin", "#160185") // indigo
     pathContains("App", ":aktual-app:", "#7a0101") // red
     hasPluginId("Android", "aktual.module.android", "#0a8501") // violet
