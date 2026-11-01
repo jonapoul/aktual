@@ -56,11 +56,15 @@ class HazeConfigUseCase(private val preferences: SystemUiPreferences) {
       val hazeDialogs by preferences.hazeDialogs.collectAsStateFlow(scope)
       val hazeRadius by preferences.hazeRadius.collectAsStateFlow(scope)
       val hazeAlpha by preferences.hazeAlpha.collectAsStateFlow(scope)
+      val glassStyle by preferences.glassStyle.collectAsStateFlow(scope)
+      val glassCornerRadius by preferences.glassCornerRadius.collectAsStateFlow(scope)
       HazeConfig(
         appBarEffect = appBarEffect,
         dialogs = hazeDialogs,
         radius = hazeRadius.dp,
         alpha = hazeAlpha,
+        glassStyle = glassStyle,
+        glassCornerRadius = glassCornerRadius.dp,
       )
     }
 }

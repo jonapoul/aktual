@@ -32,8 +32,9 @@ internal constructor(
       val hazeDialogs by collectAsState(preferences.hazeDialogs)
       val hazeRadius by collectAsState(preferences.hazeRadius)
       val hazeAlpha by collectAsState(preferences.hazeAlpha)
+      val glassStyle by collectAsState(preferences.glassStyle)
+      val glassCornerRadius by collectAsState(preferences.glassCornerRadius)
       val hidePreviewInAppSwitcher by collectAsState(preferences.hidePreviewInAppSwitcher)
-      val anyHazeEnabled = appBarEffect != None || hazeDialogs
       SystemUiSettingsState(
         showStatusBar =
           BooleanPreference(
@@ -53,14 +54,22 @@ internal constructor(
         hazeRadiusDp =
           HazeRadiusPreference(
             value = hazeRadius,
-            enabled = anyHazeEnabled,
             onChange = { launchAndSet(preferences.hazeRadius, it) },
           ),
         hazeAlpha =
           HazeAlphaPreference(
             value = hazeAlpha,
-            enabled = anyHazeEnabled,
             onChange = { launchAndSet(preferences.hazeAlpha, it) },
+          ),
+        glassStyle =
+          ListPreference(
+            value = glassStyle,
+            onChange = { launchAndSet(preferences.glassStyle, it) },
+          ),
+        glassCornerRadiusDp =
+          GlassCornerRadiusPreference(
+            value = glassCornerRadius,
+            onChange = { launchAndSet(preferences.glassCornerRadius, it) },
           ),
         hidePreviewInAppSwitcher =
           BooleanPreference(

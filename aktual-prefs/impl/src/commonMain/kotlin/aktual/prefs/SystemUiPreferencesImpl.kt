@@ -1,6 +1,7 @@
 package aktual.prefs
 
 import aktual.budget.model.BarEffect
+import aktual.budget.model.BarGlassStyle
 import aktual.di.AppScope
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -31,6 +32,18 @@ class SystemUiPreferencesImpl(dataStore: DataStore<Preferences>) : SystemUiPrefe
 
   override val hazeAlpha: Preference<Float> =
     dataStore.float(key = floatPreferencesKey("blurAlpha"), default = 0.35f).required()
+
+  override val glassStyle: Preference<BarGlassStyle> =
+    dataStore
+      .translated(
+        key = intPreferencesKey("glassStyle"),
+        default = BarGlassStyle.Default,
+        translator = enumOrdinalTranslator(),
+      )
+      .required()
+
+  override val glassCornerRadius: Preference<Float> =
+    dataStore.float(key = floatPreferencesKey("glassCornerRadius"), default = 24f).required()
 
   override val hidePreviewInAppSwitcher: Preference<Boolean> =
     dataStore
