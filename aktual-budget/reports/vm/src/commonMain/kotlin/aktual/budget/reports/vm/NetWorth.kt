@@ -2,6 +2,8 @@ package aktual.budget.reports.vm
 
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
+import aktual.budget.model.sum
+import aktual.budget.model.sumOf
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
@@ -40,7 +42,7 @@ internal fun netWorthData(
       .asSequence()
       .map { (id, accountRows) ->
         val changes = accountRows.filter { it.month != null }.associate { it.month to it.total }
-        var balance = accountRows.filter { it.month == null }.sumOf { it.total }
+        var balance = accountRows.filter { it.month == null }.map { it.total }.sum()
         val balances = months.associateWith { month ->
           balance += changes[month] ?: 0L
           Amount(balance)
@@ -53,13 +55,12 @@ internal fun netWorthData(
       }
       .filter { account -> account.balances.values.any { it != Zero } }
       .sortedWith(
-        compareBy<NetWorthAccount> { account -> account.balances.values.sumOf { it.toLong() } }
-          .thenBy { it.name },
+        compareBy<NetWorthAccount> { account -> account.balances.values.sum() }.thenBy { it.name },
       )
       .toList()
 
   val items = months.associateWith { month ->
-    accounts.fold(Amount.Zero) { sum, account -> sum + account.balances.getValue(month) }
+    accounts.sumOf { it.balances.getValue(month) }
   }
 
   return NetWorthData(

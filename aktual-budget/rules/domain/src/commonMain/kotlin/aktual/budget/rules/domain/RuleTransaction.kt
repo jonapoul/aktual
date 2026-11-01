@@ -6,6 +6,7 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
+import aktual.budget.model.sumOf
 import aktual.budget.model.tagsInNotes
 import kotlinx.datetime.LocalDate
 
@@ -47,7 +48,7 @@ data class RuleTransaction(
   val splitDifference: Amount?
     get() {
       if (!isParent) return null
-      val total = subtransactions.fold(Amount.Zero) { sum, child -> sum + child.amount }
+      val total = subtransactions.sumOf { it.amount }
       return (amount - total).takeIf { it != Zero }
     }
 }

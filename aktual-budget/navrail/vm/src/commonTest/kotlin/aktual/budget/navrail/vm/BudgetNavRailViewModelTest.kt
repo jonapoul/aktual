@@ -13,6 +13,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncResponse
 import aktual.budget.model.localChange
+import aktual.budget.model.sumOf
 import aktual.budget.schedules.domain.UnpostedSchedules
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
@@ -174,7 +175,7 @@ class BudgetNavRailViewModelTest {
   private fun section(vararg accounts: DrawerAccount) =
     DrawerAccountSection(
       accounts = persistentListOf(*accounts),
-      total = accounts.fold(Zero) { sum, account -> sum + account.balance },
+      total = accounts.asList().sumOf { it.balance },
     )
 
   private suspend fun BudgetDatabase.insertAccount(

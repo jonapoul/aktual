@@ -4,6 +4,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionType.Boolean
+import aktual.budget.model.sumOf
 import aktual.budget.reports.vm.NetWorthAccount
 import aktual.budget.reports.vm.NetWorthData
 import aktual.budget.reports.vm.NetWorthMode
@@ -377,7 +378,7 @@ val PREVIEW_NET_WORTH_STACKED =
     title = PREVIEW_NET_WORTH_DATA.title,
     items =
       PREVIEW_MONTHS.associateWith { month ->
-          PREVIEW_STACKED_ACCOUNTS.fold(Amount.Zero) { sum, a -> sum + a.balances.getValue(month) }
+          PREVIEW_STACKED_ACCOUNTS.sumOf { it.balances.getValue(month) }
         }
         .toImmutableMap(),
     mode = Stacked,

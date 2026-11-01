@@ -3,6 +3,7 @@ package aktual.budget.reports.components
 import aktual.budget.model.Amount
 import aktual.budget.model.GroupBy
 import aktual.budget.model.Interval
+import aktual.budget.model.sumOf
 import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.CustomDrilldown
 import aktual.budget.reports.vm.CustomGroup
@@ -317,7 +318,7 @@ internal fun stackedMarkerText(
   format: (Amount) -> AnnotatedString,
 ): AnnotatedString {
   val rows = stack.filter { it.amount != Zero }
-  val total = stack.fold(Amount.Zero) { sum, bar -> sum + bar.amount }
+  val total = stack.sumOf { it.amount }
   return buildAnnotatedString {
     withStyle(SpanStyle(fontWeight = Bold)) { append(label) }
     for (row in rows.take(MAX_MARKER_ROWS)) {

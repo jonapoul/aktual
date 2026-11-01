@@ -6,6 +6,7 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncState
 import aktual.budget.model.Amount
+import aktual.budget.model.sumOf
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -38,7 +39,7 @@ private fun List<GetAllWithBalances>.toSection(
   newTransactions: Map<AccountId, Int>,
 ): AccountSection {
   val accounts = map { it.toAccountBalance(newTransactions) }.toImmutableList()
-  return AccountSection(accounts, total = accounts.fold(Zero) { sum, a -> sum + a.balance })
+  return AccountSection(accounts, total = accounts.sumOf { it.balance })
 }
 
 private fun GetAllWithBalances.toAccountBalance(newTransactions: Map<AccountId, Int>) =

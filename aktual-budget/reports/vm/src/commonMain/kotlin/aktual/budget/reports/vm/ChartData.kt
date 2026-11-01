@@ -6,6 +6,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.ConditionSet
 import aktual.budget.model.WidgetType
+import aktual.budget.model.sumOf
 import aktual.core.model.Percent
 import androidx.compose.runtime.Immutable
 import fallback.serializer.Fallback
@@ -67,10 +68,9 @@ data class BudgetAnalysisData(
   val showBalance: Boolean,
   val balanceOnly: Boolean,
 ) : ChartData {
-  val totalBudgeted: Amount = items.values.fold(Zero) { total, datum -> total + datum.budgeted }
-  val totalSpent: Amount = items.values.fold(Zero) { total, datum -> total + datum.spent }
-  val totalOverspendingAdjustment: Amount =
-    items.values.fold(Zero) { total, datum -> total + datum.overspendingAdjustment }
+  val totalBudgeted: Amount = items.values.sumOf { it.budgeted }
+  val totalSpent: Amount = items.values.sumOf { it.spent }
+  val totalOverspendingAdjustment: Amount = items.values.sumOf { it.overspendingAdjustment }
   val endingBalance: Amount = items.values.lastOrNull()?.balance ?: Zero
 }
 
