@@ -9,6 +9,7 @@ import aktual.budget.db.ForecastSchedules
 import aktual.budget.db.ForecastTrackingBudgetTotals
 import aktual.budget.db.ForecastTransferPayees
 import aktual.budget.db.SankeyCategoryTotals
+import aktual.budget.db.SankeyTransfers
 import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.FormulaDao
 import aktual.budget.db.dao.PreferencesDao
@@ -58,6 +59,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
@@ -613,7 +615,6 @@ internal class ChartDataLoader(
 
   // packages/desktop-client/src/components/reports/reports/SankeyCard.tsx
   fun sankey(meta: SankeyReportMeta): Flow<ChartData> {
-    if (meta.conditions.hasFilters()) return unsupported(meta, Filters)
     if (meta.mode == Budgeted) return unsupported(meta, SankeyBudgeted)
 
     val params =
@@ -626,6 +627,7 @@ internal class ChartDataLoader(
         showPercentages = meta.showPercentages == true,
       )
     val showTransfers = meta.showTransfers == true && !params.groupAccounts
+    val filter = reportFilter(meta.conditions, meta.conditionsOp)
 
     return dao.observeTransactionDateBounds().flatMapLatest { bounds ->
       val today = calendar.today()
@@ -641,16 +643,7 @@ internal class ChartDataLoader(
       val start = range.start.coerceIn(earliest, latest)
       val end = range.endInclusive.coerceIn(earliest, latest).coerceAtLeast(start)
 
-      val transfers =
-        if (showTransfers) {
-          dao.observeSankeyTransfers(start.firstDay, end.lastDay)
-        } else {
-          flowOf(emptyList())
-        }
-
-      combine(dao.observeSankeyCategoryTotals(start.firstDay, end.lastDay), transfers) {
-        rows,
-        transferRows ->
+      sankeyInputs(filter, start.firstDay, end.lastDay, showTransfers).map { (rows, transferRows) ->
         calculateSankey(
           title = meta.name,
           start = start,
@@ -673,6 +666,26 @@ internal class ChartDataLoader(
         )
       }
     }
+  }
+
+  // Totalled in SQL without conditions. With them, the matching transactions are totalled here
+  private fun sankeyInputs(
+    filter: TransactionFilter,
+    start: LocalDate,
+    end: LocalDate,
+    showTransfers: Boolean,
+  ): Flow<Pair<List<SankeyCategoryTotals>, List<SankeyTransfers>>> {
+    if (!filter.isEmpty) {
+      return dao
+        .observeFilteredTransactions(filter, start, end)
+        .map { rows ->
+          sankeyCategoryTotals(rows) to if (showTransfers) sankeyTransfers(rows) else emptyList()
+        }
+        .flowOn(contexts.default)
+    }
+    val transfers =
+      if (showTransfers) dao.observeSankeyTransfers(start, end) else flowOf(emptyList())
+    return combine(dao.observeSankeyCategoryTotals(start, end), transfers, ::Pair)
   }
 
   // Expense totals are split by account, income totals by account and payee

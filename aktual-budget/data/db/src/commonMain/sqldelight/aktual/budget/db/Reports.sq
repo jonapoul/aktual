@@ -85,6 +85,43 @@ JOIN accounts a ON a.id = t.account
 WHERE t.is_parent = 0 AND t.date >= :start AND t.date <= :end
 GROUP BY month, a.id;
 
+-- Each transaction a report's conditions are matched against, which upstream's spreadsheets do in their AQL
+-- queries. Holds what the conditions can match, plus what the reports need to total the matches the way their own
+-- queries do. Reports without conditions use those queries instead
+reportTransactions:
+SELECT
+  t.id,
+  t.date,
+  t.amount,
+  t.account,
+  a.name AS account_name,
+  a.offbudget AS off_budget,
+  a.tombstone AS account_tombstone,
+  p.id AS payee,
+  p.name AS payee_name,
+  p.tombstone AS payee_tombstone,
+  t.imported_payee,
+  c.id AS category,
+  c.name AS category_name,
+  c.sort_order AS category_sort_order,
+  c.tombstone AS category_tombstone,
+  g.id AS category_group,
+  g.name AS category_group_name,
+  g.sort_order AS group_sort_order,
+  g.is_income,
+  g.tombstone AS group_tombstone,
+  t.notes,
+  t.cleared,
+  t.reconciled,
+  t.transfer_id,
+  t.is_parent
+FROM v_transactions_internal_alive t
+LEFT JOIN accounts a ON a.id = t.account
+LEFT JOIN categories c ON c.id = t.category
+LEFT JOIN category_groups g ON g.id = c.cat_group
+LEFT JOIN payees p ON p.id = t.payee
+WHERE t.is_parent = 0 AND t.date >= :start AND t.date <= :end;
+
 -- packages/desktop-client/src/components/reports/spreadsheets/sankey-spreadsheet.ts fetchCategoryData()
 sankeyCategoryTotals:
 SELECT
