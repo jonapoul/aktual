@@ -55,4 +55,4 @@ internal constructor(
     }
 }
 
-private val CurrencyOptions = Currency.entries.sortedBy { it.code }.toImmutableList()
+private val CurrencyOptions = Currency.entries.filter { it != Unknown }.toImmutableList()

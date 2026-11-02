@@ -2005,6 +2005,7 @@
   <string name="currency_uzs">Uzbek Soum</string>
   <string name="currency_vnd">Vietnamese Dong</string>
   <string name="currency_zar">South African Rand</string>
+  <string name="currency_unknown">Unknown</string>
 
   <!-- metrics -->
   <string name="metrics_toolbar">Server Metrics</string>

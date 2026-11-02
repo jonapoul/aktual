@@ -133,6 +133,7 @@ private fun Currency.string(): String =
     BangladeshiTaka -> Strings.currencyBdt
     NorwegianKrone -> Strings.currencyNok
     TanzanianShilling -> Strings.currencyTzs
+    Unknown -> Strings.currencyUnknown
   }
 
 @Composable

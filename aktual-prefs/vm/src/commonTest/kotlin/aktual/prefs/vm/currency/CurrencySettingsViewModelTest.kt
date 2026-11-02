@@ -10,6 +10,7 @@ import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
+import assertk.assertions.doesNotContain
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
@@ -47,12 +48,14 @@ class CurrencySettingsViewModelTest {
   }
 
   @Test
-  fun `Currency options are sorted by code`() = runTest {
+  fun `Currency options are sorted by code and exclude unknown`() = runTest {
     val preferences = CurrencyPreferencesImpl(buildPreferences(unconfinedDispatcher))
     val viewModel = CurrencySettingsViewModel(preferences, viewModelContext = viewModelContext)
 
     viewModel.state.test {
-      val codes = awaitItem().currency.options.map(Currency::code)
+      val options = awaitItem().currency.options
+      assertThat(options).doesNotContain(Currency.Unknown)
+      val codes = options.map(Currency::code)
       assertThat(codes).isEqualTo(codes.sorted())
       cancelAndIgnoreRemainingEvents()
     }

@@ -1,6 +1,10 @@
 package aktual.prefs
 
 import alakazam.kotlin.SerializableByString
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonPrimitive
 
 interface Translator<Encoded, Decoded> {
   fun encode(value: Decoded): Encoded
@@ -35,3 +39,14 @@ internal class NoOpTranslator<T> : Translator<T, T> {
 
   override fun decode(value: T): T = value
 }
+
+// Stores a serializable enum as its bare serial name. Decoding goes through the serializer, so an
+// unrecognised value lands on the enum's @Fallback entry.
+internal fun <E : Enum<E>> serialNameTranslator(serializer: KSerializer<E>) =
+  object : Translator<String, E> {
+    override fun encode(value: E): String =
+      Json.encodeToJsonElement(serializer, value).jsonPrimitive.content
+
+    override fun decode(value: String): E =
+      Json.decodeFromJsonElement(serializer, JsonPrimitive(value))
+  }
