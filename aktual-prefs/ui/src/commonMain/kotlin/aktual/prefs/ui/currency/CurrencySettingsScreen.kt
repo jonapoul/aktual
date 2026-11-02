@@ -91,7 +91,6 @@ private fun Currency.string(): String =
     UaeDirham -> Strings.currencyAed
     ArgentinianPeso -> Strings.currencyArs
     AustralianDollar -> Strings.currencyAud
-    BangladeshiTaka -> Strings.currencyBdt
     BrazilianReal -> Strings.currencyBrl
     BelarusianRuble -> Strings.currencyByn
     CanadianDollar -> Strings.currencyCad
@@ -115,7 +114,6 @@ private fun Currency.string(): String =
     SriLankanRupee -> Strings.currencyLkr
     MoldovanLeu -> Strings.currencyMdl
     MalaysianRinggit -> Strings.currencyMyr
-    NorwegianKrone -> Strings.currencyNok
     PhilippinePeso -> Strings.currencyPhp
     PolishZloty -> Strings.currencyPln
     QatariRiyal -> Strings.currencyQar
@@ -127,12 +125,14 @@ private fun Currency.string(): String =
     SingaporeDollar -> Strings.currencySgd
     ThaiBaht -> Strings.currencyThb
     TurkishLira -> Strings.currencyTry
-    TanzanianShilling -> Strings.currencyTzs
     UkrainianHryvnia -> Strings.currencyUah
     UsDollar -> Strings.currencyUsd
     UzbekSoum -> Strings.currencyUzs
     VietnameseDong -> Strings.currencyVnd
     SouthAfricanRand -> Strings.currencyZar
+    BangladeshiTaka -> Strings.currencyBdt
+    NorwegianKrone -> Strings.currencyNok
+    TanzanianShilling -> Strings.currencyTzs
   }
 
 @Composable

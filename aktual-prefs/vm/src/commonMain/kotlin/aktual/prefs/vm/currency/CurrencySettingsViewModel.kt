@@ -1,5 +1,6 @@
 package aktual.prefs.vm.currency
 
+import aktual.budget.model.Currency
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -15,6 +16,7 @@ import androidx.lifecycle.viewModelScope
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.StateFlow
 
 @Stable
@@ -34,6 +36,7 @@ internal constructor(
         currency =
           ListPreference(
             value = currency,
+            options = CurrencyOptions,
             onChange = { launchAndSet(preferences.currency, it) },
           ),
         symbolPosition =
@@ -51,3 +54,5 @@ internal constructor(
       )
     }
 }
+
+private val CurrencyOptions = Currency.entries.sortedBy { it.code }.toImmutableList()

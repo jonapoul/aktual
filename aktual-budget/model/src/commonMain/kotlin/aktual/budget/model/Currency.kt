@@ -2,6 +2,8 @@ package aktual.budget.model
 
 import androidx.compose.runtime.Immutable
 
+// Persisted by ordinal (see CurrencyPreferencesImpl), so only ever append new entries to the end.
+// UI lists sort by code instead.
 enum class Currency(
   val code: String,
   val symbol: String,
@@ -35,13 +37,6 @@ enum class Currency(
     symbol = "A$",
     decimalPlaces = 2,
     numberFormat = CommaDot,
-    symbolPosition = BeforeAmount,
-  ),
-  BangladeshiTaka(
-    code = "BDT",
-    symbol = "৳",
-    decimalPlaces = 2,
-    numberFormat = CommaDotIn,
     symbolPosition = BeforeAmount,
   ),
   BrazilianReal(
@@ -205,13 +200,6 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
-  NorwegianKrone(
-    code = "NOK",
-    symbol = "kr",
-    decimalPlaces = 2,
-    numberFormat = SpaceComma,
-    symbolPosition = AfterAmount,
-  ),
   PhilippinePeso(
     code = "PHP",
     symbol = "₱",
@@ -289,13 +277,6 @@ enum class Currency(
     numberFormat = DotComma,
     symbolPosition = BeforeAmount,
   ),
-  TanzanianShilling(
-    code = "TZS",
-    symbol = "TSh",
-    decimalPlaces = 2,
-    numberFormat = CommaDot,
-    symbolPosition = BeforeAmount,
-  ),
   UkrainianHryvnia(
     code = "UAH",
     symbol = "₴",
@@ -329,6 +310,27 @@ enum class Currency(
     symbol = "R",
     decimalPlaces = 2,
     numberFormat = SpaceComma,
+    symbolPosition = BeforeAmount,
+  ),
+  BangladeshiTaka(
+    code = "BDT",
+    symbol = "৳",
+    decimalPlaces = 2,
+    numberFormat = CommaDotIn,
+    symbolPosition = BeforeAmount,
+  ),
+  NorwegianKrone(
+    code = "NOK",
+    symbol = "kr",
+    decimalPlaces = 2,
+    numberFormat = SpaceComma,
+    symbolPosition = AfterAmount,
+  ),
+  TanzanianShilling(
+    code = "TZS",
+    symbol = "TSh",
+    decimalPlaces = 2,
+    numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   );
 
