@@ -122,12 +122,16 @@ enum class TransactionField {
   Cleared,
 }
 
-/** The bank sync fields of an account, written like upstream's db.update('accounts', ...). */
+/**
+ * The bank sync and reconciliation fields of an account, written like upstream's
+ * db.update('accounts', ...).
+ */
 data class AccountUpdate(
   val id: AccountId,
   val balanceCurrent: Patch<Amount?> = Keep,
   val lastSync: Patch<Instant?> = Keep,
   val bankSyncStatus: Patch<BankSyncStatus?> = Keep,
+  val lastReconciled: Patch<Instant?> = Keep,
 )
 
 /** packages/loot-core/src/server/accounts/payees.ts getStartingBalancePayee() */

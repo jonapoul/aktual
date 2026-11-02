@@ -9,9 +9,12 @@ import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.tags.domain.TagLabel
+import aktual.budget.transactions.ui.edit.ReconciledDialog
 import aktual.budget.transactions.vm.AccountViewOptions
 import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
+import aktual.budget.transactions.vm.ReconcileStart
+import aktual.budget.transactions.vm.Reconciling
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.l10n.Strings
@@ -87,6 +90,8 @@ fun TransactionsScreen(
   val clearedBalances by viewModel.clearedBalances.collectAsStateWithLifecycle()
   val tags by viewModel.tags.collectAsStateWithLifecycle()
   val otherAccountNames by viewModel.otherAccountNames.collectAsStateWithLifecycle()
+  val reconciling by viewModel.reconciling.collectAsStateWithLifecycle()
+  val reconcileStart by viewModel.reconcileStart.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
@@ -98,7 +103,10 @@ fun TransactionsScreen(
   val deleted = Strings.transactionsDeleteAccountDone
   val deleteFailed = Strings.transactionsDeleteAccountFailed
   val renameFailed = Strings.transactionsRenameAccountFailed
+  val reconcileFailed = Strings.transactionsReconcileFailed
+  val adjustmentNotes = Strings.transactionsReconcileAdjustmentNotes
   var showLoginKept by rememberSaveable { mutableStateOf(false) }
+  var confirmUnlock by remember { mutableStateOf<TransactionId?>(null) }
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
@@ -106,6 +114,7 @@ fun TransactionsScreen(
         AccountDeletedBankLoginKept -> showLoginKept = true
         DeleteAccountFailed -> snackbars.show(message = deleteFailed)
         RenameAccountFailed -> snackbars.show(message = renameFailed)
+        ReconcileFailed -> snackbars.show(message = reconcileFailed)
       }
     }
   }
@@ -128,17 +137,11 @@ fun TransactionsScreen(
     accountOptions = accountOptions,
     tags = tags,
     otherAccountNames = otherAccountNames,
+    reconciling = reconciling,
+    reconcileStart = reconcileStart,
     onAction = { action ->
       when (action) {
         NavBack -> back()
-        BankSync -> viewModel.bankSync()
-        DeleteAccount -> viewModel.deleteAccount()
-        is RenameAccount -> viewModel.renameAccount(action.name)
-        is SetDensity -> viewModel.setDensity(action.density)
-        is SetAlternateRowColours -> viewModel.setAlternateRowColours(action.enabled)
-        is SetExpandSplits -> viewModel.setExpandSplits(action.enabled)
-        is SetAccountOption -> viewModel.setAccountOption(action.option, action.enabled)
-        is ToggleSplit -> viewModel.toggleSplit(action.id)
         is OpenTransaction -> openTransaction(action.id)
         is OpenTag -> if (spec.tagSpec != TagSpec.SpecificTag(action.id)) openTag(action.id)
         CreateTransaction ->
@@ -146,9 +149,28 @@ fun TransactionsScreen(
             account = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id,
             category = (spec.categorySpec as? SpecificCategory)?.id,
           )
+        is ToggleCleared ->
+          if (action.reconciled) {
+            confirmUnlock = action.id
+          } else {
+            viewModel.setCleared(action.id, !action.cleared)
+          }
+        CreateReconcileAdjustment -> viewModel.createReconcileAdjustment(adjustmentNotes)
+        is ViewModelAction -> viewModel.handle(action)
       }
     },
   )
+
+  confirmUnlock?.let { id ->
+    ReconciledDialog(
+      message = Strings.transactionReconciledUnlock,
+      onConfirm = {
+        confirmUnlock = null
+        viewModel.unlockTransaction(id)
+      },
+      onCancel = { confirmUnlock = null },
+    )
+  }
 
   if (showLoginKept) {
     BankLoginKeptDialog(
@@ -157,6 +179,21 @@ fun TransactionsScreen(
         accountDeleted()
       },
     )
+  }
+}
+
+private fun TransactionsViewModel.handle(action: ViewModelAction) {
+  when (action) {
+    Action.BankSync -> bankSync()
+    Action.DeleteAccount -> deleteAccount()
+    is Action.RenameAccount -> renameAccount(action.name)
+    is Action.SetDensity -> setDensity(action.density)
+    is Action.SetAlternateRowColours -> setAlternateRowColours(action.enabled)
+    is Action.SetExpandSplits -> setExpandSplits(action.enabled)
+    is Action.SetAccountOption -> setAccountOption(action.option, action.enabled)
+    is Action.ToggleSplit -> toggleSplit(action.id)
+    is Action.StartReconciling -> startReconciling(action.target)
+    Action.FinishReconciling -> finishReconciling()
   }
 }
 
@@ -199,6 +236,8 @@ internal fun TransactionsScaffold(
   accountOptions: AccountViewOptions? = null,
   tags: ImmutableList<TagLabel> = persistentListOf(),
   otherAccountNames: ImmutableSet<String> = persistentSetOf(),
+  reconciling: Reconciling? = null,
+  reconcileStart: ReconcileStart? = null,
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -211,6 +250,7 @@ internal fun TransactionsScaffold(
     density = density,
     showBalance = showBalance && showRunningBalance,
     showAccount = loadedAccount !is SpecificAccount,
+    isReconciling = reconciling != null,
   ) {
     Scaffold(
       topBar = {
@@ -221,6 +261,7 @@ internal fun TransactionsScaffold(
             loadedAccount = loadedAccount,
             isRoot = isRoot,
             otherAccountNames = otherAccountNames,
+            reconcileStart = reconcileStart,
             onAction = onAction,
             onOpenViewOptions = { showViewOptions = true },
           )
@@ -229,6 +270,7 @@ internal fun TransactionsScaffold(
           if (showBalance && (density != Dense || clearedBalances != null)) {
             BalanceStrip(balance, clearedBalances = clearedBalances)
           }
+          reconciling?.let { ReconcilingBanner(it, onAction) }
           if (density == Dense) LedgerHeader()
           year?.let { YearDivider(it) }
         }

@@ -19,13 +19,18 @@ internal fun WithLedgerDimens(
   density: TransactionsDensity,
   showBalance: Boolean = true,
   showAccount: Boolean = true,
+  isReconciling: Boolean = false,
   content: @Composable () -> Unit,
 ) =
   CompositionLocalProvider(
     LocalLedgerDimens provides
-      remember(density, showBalance, showAccount) {
+      remember(density, showBalance, showAccount, isReconciling) {
         val dimens = LedgerDimens(density)
-        dimens.copy(showBalance = showBalance, showAccount = dimens.showAccount && showAccount)
+        dimens.copy(
+          showBalance = showBalance,
+          showAccount = dimens.showAccount && showAccount,
+          isReconciling = isReconciling,
+        )
       },
     content = content,
   )
@@ -51,6 +56,8 @@ internal data class LedgerDimens(
   val showAccount: Boolean = false,
   val showNotes: Boolean = false,
   val showBalance: Boolean = true,
+  // Rows end in a column to clear them, as upstream's do while reconciling
+  val isReconciling: Boolean = false,
 )
 
 internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
@@ -127,6 +134,7 @@ internal object DenseColumns {
   val date = 40.dp
   val amount = 74.dp
   val balance = 68.dp
+  val cleared = 32.dp
   const val PAYEE_WEIGHT = 1.2f
   const val CATEGORY_WEIGHT = 1f
 }

@@ -181,6 +181,11 @@ private fun TransactionsFilled(
           val parts = splits.partsOf(transaction.id)
           val onToggleSplit = { onAction(Action.ToggleSplit(transaction.id)) }
           val onOpen = { onAction(Action.OpenTransaction(transaction.id)) }
+          val onToggleCleared = {
+            onAction(
+              Action.ToggleCleared(transaction.id, transaction.cleared, transaction.reconciled),
+            )
+          }
 
           when (density) {
             Comfortable,
@@ -193,6 +198,7 @@ private fun TransactionsFilled(
                 onToggleSplit = onToggleSplit,
                 onOpen = onOpen,
                 onTagClick = { id -> onAction(Action.OpenTag(id)) },
+                onToggleClearedState = onToggleCleared,
               )
             Dense ->
               LedgerTableRow(
@@ -200,6 +206,7 @@ private fun TransactionsFilled(
                 parts = parts,
                 onToggleSplit = onToggleSplit,
                 onOpen = onOpen,
+                onToggleClearedState = onToggleCleared,
               )
           }
 

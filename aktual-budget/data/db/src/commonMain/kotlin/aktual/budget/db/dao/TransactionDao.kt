@@ -50,6 +50,8 @@ data class TransactionRow(
   val splitDifference: Long? = null,
   // Null when not from a schedule
   val scheduleRecurring: Boolean? = null,
+  val cleared: Boolean = true,
+  val reconciled: Boolean = false,
 )
 
 // One transaction as its detail screen shows it. parent is set on split children only
@@ -213,6 +215,10 @@ class TransactionDao(database: BudgetDatabase) {
       .map { it.awaitAsOne() }
       .distinctUntilChanged()
 
+  suspend fun clearedBalance(account: AccountId): Long = queries.withResult {
+    clearedBalancesByAccount(account).awaitAsOne().cleared
+  }
+
   // Rows come back in the order of the given IDs
   suspend fun getByIds(ids: List<TransactionId>): List<TransactionRow> = queries.withResult {
     val rows = getByIds(ids, ::transactionRow).awaitAsList().associateBy { it.id }
@@ -279,6 +285,10 @@ class TransactionDao(database: BudgetDatabase) {
     queries.withResult {
       getAccountTransfers(account).awaitAsList().associate { it.id to it.transferred_id }
     }
+
+  suspend fun unreconciledClearedIds(account: AccountId): List<TransactionId> = queries.withResult {
+    getUnreconciledClearedIds(account).awaitAsList()
+  }
 
   // Every child of these split parents, deleted or not, as upstream's idsWithChildren()
   suspend fun childIds(parents: Collection<TransactionId>): List<TransactionId> =
@@ -391,6 +401,8 @@ private fun transactionRow(
   offBudget: Long,
   isTransfer: Long,
   scheduleRecurring: Long?,
+  cleared: Boolean?,
+  reconciled: Boolean?,
 ) =
   TransactionRow(
     id = id,
@@ -408,6 +420,9 @@ private fun transactionRow(
     isTransfer = isTransfer != 0L,
     scheduleRecurring = scheduleRecurring?.let { it != 0L },
     splitDifference = error?.takeIf { isParent == true }?.splitDifference(),
+    // Upstream's column defaults
+    cleared = cleared != false,
+    reconciled = reconciled == true,
   )
 
 // The difference of upstream's SplitTransactionError, in
@@ -435,6 +450,8 @@ private fun childRow(
   offBudget: Long,
   isTransfer: Long,
   scheduleRecurring: Long?,
+  cleared: Boolean?,
+  reconciled: Boolean?,
   parentId: TransactionId?,
 ): Pair<TransactionId, TransactionRow> {
   val row =
@@ -454,6 +471,8 @@ private fun childRow(
       offBudget,
       isTransfer,
       scheduleRecurring,
+      cleared,
+      reconciled,
     )
   return (parentId ?: error("Child $id has no parent")) to row
 }
@@ -501,6 +520,8 @@ private fun transactionDetail(
         offBudget,
         isTransfer,
         scheduleRecurring,
+        cleared,
+        reconciled,
       ),
     // Upstream's column defaults
     cleared = cleared != false,

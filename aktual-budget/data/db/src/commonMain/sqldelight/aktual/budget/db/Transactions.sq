@@ -170,7 +170,9 @@ SELECT
   THEN 1 ELSE 0 END AS needsCategory,
   CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
   CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
-  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring,
+  vt.cleared,
+  vt.reconciled
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
@@ -205,7 +207,9 @@ SELECT
   THEN 1 ELSE 0 END AS needsCategory,
   CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
   CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
-  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring,
+  vt.cleared,
+  vt.reconciled
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
@@ -244,7 +248,9 @@ SELECT
   THEN 1 ELSE 0 END AS needsCategory,
   CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
   CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
-  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring,
+  vt.cleared,
+  vt.reconciled
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
@@ -282,7 +288,9 @@ SELECT
   THEN 1 ELSE 0 END AS needsCategory,
   CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
   CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
-  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring,
+  vt.cleared,
+  vt.reconciled
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
@@ -312,7 +320,9 @@ SELECT
   1 AS needsCategory,
   0 AS offBudget,
   0 AS isTransfer,
-  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring,
+  vt.cleared,
+  vt.reconciled
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
@@ -347,7 +357,9 @@ SELECT
   0 AS needsCategory,
   0 AS offBudget,
   0 AS isTransfer,
-  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring,
+  vt.cleared,
+  vt.reconciled
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   INNER JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
@@ -418,7 +430,9 @@ SELECT
   THEN 1 ELSE 0 END AS needsCategory,
   CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
   CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
-  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring
+  CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring,
+  vt.cleared,
+  vt.reconciled
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
   LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
@@ -512,6 +526,8 @@ SELECT
   CASE WHEN a.offbudget = 1 THEN 1 ELSE 0 END AS offBudget,
   CASE WHEN ta.id IS NOT NULL AND IFNULL(ta.offbudget, 0) = 0 THEN 1 ELSE 0 END AS isTransfer,
   CAST(CASE WHEN vt.schedule IS NULL THEN NULL ELSE COALESCE(sr.recurring, 0) END AS INTEGER) AS scheduleRecurring,
+  vt.cleared,
+  vt.reconciled,
   t.parent_id AS parentId
   FROM v_transactions_internal_alive AS vt
   LEFT JOIN v_schedule_recurring AS sr ON sr.schedule_id = vt.schedule
@@ -603,6 +619,27 @@ SELECT
   IFNULL(SUM(CASE WHEN vt.cleared = 0 THEN vt.amount ELSE 0 END), 0) AS uncleared
   FROM v_transactions_internal_alive AS vt
   WHERE vt.account = :account AND IFNULL(vt.is_child, 0) = 0;
+
+-- What lockTransactions() in desktop-client/src/accounts/reconciliation.ts marks reconciled: the
+-- account's cleared transactions that aren't yet, with the parts of each split among them
+getUnreconciledClearedIds:
+SELECT vt.id
+  FROM v_transactions_internal_alive AS vt
+  WHERE
+    vt.account = :account AND
+    IFNULL(vt.is_child, 0) = 0 AND
+    vt.cleared = 1 AND
+    IFNULL(vt.reconciled, 0) = 0
+UNION
+SELECT child.id
+  FROM v_transactions_internal_alive AS child
+  INNER JOIN transactions AS t ON t.id = child.id
+  INNER JOIN v_transactions_internal_alive AS parent ON parent.id = t.parent_id
+  WHERE
+    child.is_child = 1 AND
+    parent.account = :account AND
+    parent.cleared = 1 AND
+    IFNULL(parent.reconciled, 0) = 0;
 
 -- id + notes for every live transaction, for in-memory #tag filtering (no SQL regex available).
 -- parentId is only meaningful when isChild is set

@@ -30,6 +30,7 @@ private val aktualIcons =
       Bookmark,
       Calendar3,
       Check,
+      CheckCircle1,
       CheveronDown,
       CheveronLeft,
       CheveronRight,
