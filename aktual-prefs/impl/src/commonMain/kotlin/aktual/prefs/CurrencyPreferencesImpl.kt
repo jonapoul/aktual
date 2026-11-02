@@ -7,6 +7,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.zacsweers.metro.ContributesBinding
 
 @ContributesBinding(AppScope::class)
@@ -14,9 +15,9 @@ class CurrencyPreferencesImpl(dataStore: DataStore<Preferences>) : CurrencyPrefe
   override val currency: Preference<Currency> =
     dataStore
       .translated(
-        key = intPreferencesKey("currency"),
+        key = stringPreferencesKey("currencyCode"),
         default = DefaultCurrency,
-        translator = enumOrdinalTranslator(),
+        translator = serialNameTranslator(Currency.serializer()),
       )
       .required()
 

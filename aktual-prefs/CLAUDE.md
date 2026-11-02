@@ -25,6 +25,10 @@ Preferences and settings, split into `vm` (state) and `ui` (Compose). `component
 
 1. **Fix previews** that construct state objects directly.
 
+## Changing a stored key or format
+
+Don't just swap the key, or existing users lose their value. Add a `DataMigration<Preferences>` under `aktual-prefs/impl/.../migration/` and append it to `preferenceMigrations()`, which `DataStoreContainer` runs whenever the DataStore opens. For a move from one key to another with a value conversion, extend `PreferenceKeyMigration` (see `CurrencyOrdinalToCode`). Freeze any lookup data in the migration itself rather than reading the current enum, since that can change later.
+
 ## Adding a new settings screen
 
 The root `SettingsScreen` only lists links to the other settings screens.

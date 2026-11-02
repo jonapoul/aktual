@@ -73,6 +73,26 @@ class AmountTest {
     assertThat(Amount(150_000L).toDouble()).isEqualTo(1500.0)
   }
 
+  @Test
+  fun `Format upstream v26_11 currencies`() {
+    val amount = 1234567.89.amount
+    assertThat(amount.formattedIn(SouthAfricanRand))
+      .isEqualTo("R1${WEIRD_SPACE}234${WEIRD_SPACE}567,89")
+    assertThat(567.89.amount.formattedIn(BangladeshiTaka)).isEqualTo("৳567.89")
+    assertThat(amount.formattedIn(NorwegianKrone))
+      .isEqualTo("1${WEIRD_SPACE}234${WEIRD_SPACE}567,89kr")
+    assertThat(amount.formattedIn(TanzanianShilling)).isEqualTo("TSh1,234,567.89")
+    assertThat(amount.formattedIn(SwissFranc)).isEqualTo("CHF1’234’567.89")
+  }
+
+  private fun Amount.formattedIn(currency: Currency) =
+    toString(
+      numberFormatConfig = NumberFormatConfig(currency.numberFormat, hideFraction = false),
+      currencyConfig = CurrencyConfig(currency, currency.symbolPosition, includeSpace = false),
+      includeSign = false,
+      isPrivacyEnabled = false,
+    )
+
   private fun Amount.formatted(currencyConfig: CurrencyConfig) =
     toString(
       numberFormatConfig = NumberFormatConfig(CommaDot, hideFraction = false),

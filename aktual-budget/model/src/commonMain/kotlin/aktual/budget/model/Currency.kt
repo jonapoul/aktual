@@ -1,7 +1,11 @@
 package aktual.budget.model
 
 import androidx.compose.runtime.Immutable
+import fallback.serializer.Fallback
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 enum class Currency(
   val code: String,
   val symbol: String,
@@ -9,6 +13,7 @@ enum class Currency(
   val numberFormat: NumberFormat,
   val symbolPosition: CurrencySymbolPosition,
 ) {
+  @SerialName("")
   None(
     code = "",
     symbol = "",
@@ -16,6 +21,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("AED")
   UaeDirham(
     code = "AED",
     symbol = "د.إ",
@@ -23,6 +29,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("ARS")
   ArgentinianPeso(
     code = "ARS",
     symbol = "Arg$",
@@ -30,6 +37,7 @@ enum class Currency(
     numberFormat = DotComma,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("AUD")
   AustralianDollar(
     code = "AUD",
     symbol = "A$",
@@ -37,6 +45,15 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("BDT")
+  BangladeshiTaka(
+    code = "BDT",
+    symbol = "৳",
+    decimalPlaces = 2,
+    numberFormat = CommaDotIn,
+    symbolPosition = BeforeAmount,
+  ),
+  @SerialName("BRL")
   BrazilianReal(
     code = "BRL",
     symbol = "R$",
@@ -44,6 +61,7 @@ enum class Currency(
     numberFormat = DotComma,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("BYN")
   BelarusianRuble(
     code = "BYN",
     symbol = "Br",
@@ -51,6 +69,7 @@ enum class Currency(
     numberFormat = SpaceComma,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("CAD")
   CanadianDollar(
     code = "CAD",
     symbol = "CA$",
@@ -58,13 +77,15 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("CHF")
   SwissFranc(
     code = "CHF",
-    symbol = "Fr.",
+    symbol = "CHF",
     decimalPlaces = 2,
     numberFormat = ApostropheDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("CNY")
   YuanRenminbi(
     code = "CNY",
     symbol = "¥",
@@ -72,6 +93,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("COP")
   ColombianPeso(
     code = "COP",
     symbol = "Col$",
@@ -79,6 +101,7 @@ enum class Currency(
     numberFormat = DotComma,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("CRC")
   CostaRicanColon(
     code = "CRC",
     symbol = "₡",
@@ -86,6 +109,7 @@ enum class Currency(
     numberFormat = SpaceComma,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("CZK")
   CzechKoruna(
     code = "CZK",
     symbol = "Kč",
@@ -93,6 +117,7 @@ enum class Currency(
     numberFormat = SpaceComma,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("DKK")
   DanishKrone(
     code = "DKK",
     symbol = "kr",
@@ -100,6 +125,7 @@ enum class Currency(
     numberFormat = DotComma,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("EGP")
   EgyptianPound(
     code = "EGP",
     symbol = "ج.م",
@@ -107,6 +133,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("EUR")
   Euro(
     code = "EUR",
     symbol = "€",
@@ -114,6 +141,7 @@ enum class Currency(
     numberFormat = DotComma,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("GBP")
   PoundSterling(
     code = "GBP",
     symbol = "£",
@@ -121,6 +149,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("GTQ")
   GuatemalanQuetzal(
     code = "GTQ",
     symbol = "Q",
@@ -128,6 +157,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("HKD")
   HongKongDollar(
     code = "HKD",
     symbol = "HK$",
@@ -135,6 +165,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("HUF")
   HungarianForint(
     code = "HUF",
     symbol = "Ft",
@@ -142,6 +173,7 @@ enum class Currency(
     numberFormat = SpaceComma,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("IDR")
   IndonesianRupiah(
     code = "IDR",
     symbol = "Rp",
@@ -149,6 +181,7 @@ enum class Currency(
     numberFormat = DotComma,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("INR")
   IndianRupee(
     code = "INR",
     symbol = "₹",
@@ -156,6 +189,7 @@ enum class Currency(
     numberFormat = CommaDotIn,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("JMD")
   JamaicanDollar(
     code = "JMD",
     symbol = "J$",
@@ -163,6 +197,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("JPY")
   JapaneseYen(
     code = "JPY",
     symbol = "¥",
@@ -170,6 +205,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("KRW")
   SouthKoreanWon(
     code = "KRW",
     symbol = "₩",
@@ -177,6 +213,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("LKR")
   SriLankanRupee(
     code = "LKR",
     symbol = "Rs.",
@@ -184,6 +221,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("MDL")
   MoldovanLeu(
     code = "MDL",
     symbol = "L",
@@ -191,6 +229,7 @@ enum class Currency(
     numberFormat = DotComma,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("MYR")
   MalaysianRinggit(
     code = "MYR",
     symbol = "RM",
@@ -198,6 +237,15 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("NOK")
+  NorwegianKrone(
+    code = "NOK",
+    symbol = "kr",
+    decimalPlaces = 2,
+    numberFormat = SpaceComma,
+    symbolPosition = AfterAmount,
+  ),
+  @SerialName("PHP")
   PhilippinePeso(
     code = "PHP",
     symbol = "₱",
@@ -205,6 +253,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("PLN")
   PolishZloty(
     code = "PLN",
     symbol = "zł",
@@ -212,6 +261,7 @@ enum class Currency(
     numberFormat = SpaceComma,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("QAR")
   QatariRiyal(
     code = "QAR",
     symbol = "ر.ق",
@@ -219,6 +269,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("RON")
   RomanianLeu(
     code = "RON",
     symbol = "lei",
@@ -226,6 +277,7 @@ enum class Currency(
     numberFormat = DotComma,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("RSD")
   SerbianDinar(
     code = "RSD",
     symbol = "дин",
@@ -233,6 +285,7 @@ enum class Currency(
     numberFormat = DotComma,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("RUB")
   RussianRuble(
     code = "RUB",
     symbol = "₽",
@@ -240,6 +293,7 @@ enum class Currency(
     numberFormat = SpaceComma,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("SAR")
   SaudiRiyal(
     code = "SAR",
     symbol = "ر.س",
@@ -247,6 +301,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("SEK")
   SwedishKrona(
     code = "SEK",
     symbol = "kr",
@@ -254,6 +309,7 @@ enum class Currency(
     numberFormat = SpaceComma,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("SGD")
   SingaporeDollar(
     code = "SGD",
     symbol = "S$",
@@ -261,6 +317,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("THB")
   ThaiBaht(
     code = "THB",
     symbol = "฿",
@@ -268,6 +325,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("TRY")
   TurkishLira(
     code = "TRY",
     symbol = "₺",
@@ -275,6 +333,15 @@ enum class Currency(
     numberFormat = DotComma,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("TZS")
+  TanzanianShilling(
+    code = "TZS",
+    symbol = "TSh",
+    decimalPlaces = 2,
+    numberFormat = CommaDot,
+    symbolPosition = BeforeAmount,
+  ),
+  @SerialName("UAH")
   UkrainianHryvnia(
     code = "UAH",
     symbol = "₴",
@@ -282,6 +349,7 @@ enum class Currency(
     numberFormat = SpaceComma,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("USD")
   UsDollar(
     code = "USD",
     symbol = "$",
@@ -289,6 +357,7 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  @SerialName("UZS")
   UzbekSoum(
     code = "UZS",
     symbol = "UZS",
@@ -296,12 +365,29 @@ enum class Currency(
     numberFormat = SpaceComma,
     symbolPosition = AfterAmount,
   ),
+  @SerialName("VND")
   VietnameseDong(
     code = "VND",
     symbol = "₫",
     decimalPlaces = 2,
     numberFormat = DotComma,
     symbolPosition = AfterAmount,
+  ),
+  @SerialName("ZAR")
+  SouthAfricanRand(
+    code = "ZAR",
+    symbol = "R",
+    decimalPlaces = 2,
+    numberFormat = SpaceComma,
+    symbolPosition = BeforeAmount,
+  ),
+  @Fallback
+  Unknown(
+    code = "?",
+    symbol = "?",
+    decimalPlaces = 2,
+    numberFormat = CommaDot,
+    symbolPosition = BeforeAmount,
   );
 
   companion object {

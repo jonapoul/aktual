@@ -3,6 +3,7 @@ package aktual.app.di
 import aktual.core.AppDirectory
 import aktual.di.AppCoroutineScope
 import aktual.di.AppScope
+import aktual.prefs.migration.preferenceMigrations
 import alakazam.kotlin.CoroutineContexts
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
@@ -36,7 +37,7 @@ object DataStoreContainer {
         },
       produceFile = { dir.resolve("settings.preferences_pb") },
       scope = scope + contexts.io,
-      migrations = emptyList(),
+      migrations = preferenceMigrations(),
     )
   }
 }

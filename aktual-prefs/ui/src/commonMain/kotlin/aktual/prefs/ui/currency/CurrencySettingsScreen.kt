@@ -129,6 +129,11 @@ private fun Currency.string(): String =
     UsDollar -> Strings.currencyUsd
     UzbekSoum -> Strings.currencyUzs
     VietnameseDong -> Strings.currencyVnd
+    SouthAfricanRand -> Strings.currencyZar
+    BangladeshiTaka -> Strings.currencyBdt
+    NorwegianKrone -> Strings.currencyNok
+    TanzanianShilling -> Strings.currencyTzs
+    Unknown -> Strings.currencyUnknown
   }
 
 @Composable
