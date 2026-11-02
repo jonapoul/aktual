@@ -1963,6 +1963,7 @@
   <string name="currency_aed">UAE Dirham</string>
   <string name="currency_ars">Argentinian Peso</string>
   <string name="currency_aud">Australian Dollar</string>
+  <string name="currency_bdt">Bangladeshi Taka</string>
   <string name="currency_brl">Brazilian Real</string>
   <string name="currency_byn">Belarusian Ruble</string>
   <string name="currency_cad">Canadian Dollar</string>
@@ -1986,6 +1987,7 @@
   <string name="currency_lkr">Sri Lankan Rupee</string>
   <string name="currency_mdl">Moldovan Leu</string>
   <string name="currency_myr">Malaysian Ringgit</string>
+  <string name="currency_nok">Norwegian Krone</string>
   <string name="currency_php">Philippine Peso</string>
   <string name="currency_pln">Polish Złoty</string>
   <string name="currency_qar">Qatari Riyal</string>
@@ -1997,10 +1999,12 @@
   <string name="currency_sgd">Singapore Dollar</string>
   <string name="currency_thb">Thai Baht</string>
   <string name="currency_try">Turkish Lira</string>
+  <string name="currency_tzs">Tanzanian Shilling</string>
   <string name="currency_uah">Ukrainian Hryvnia</string>
   <string name="currency_usd">US Dollar</string>
   <string name="currency_uzs">Uzbek Soum</string>
   <string name="currency_vnd">Vietnamese Dong</string>
+  <string name="currency_zar">South African Rand</string>
 
   <!-- metrics -->
   <string name="metrics_toolbar">Server Metrics</string>

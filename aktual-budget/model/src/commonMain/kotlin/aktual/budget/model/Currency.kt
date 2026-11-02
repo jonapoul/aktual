@@ -37,6 +37,13 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  BangladeshiTaka(
+    code = "BDT",
+    symbol = "৳",
+    decimalPlaces = 2,
+    numberFormat = CommaDotIn,
+    symbolPosition = BeforeAmount,
+  ),
   BrazilianReal(
     code = "BRL",
     symbol = "R$",
@@ -60,7 +67,7 @@ enum class Currency(
   ),
   SwissFranc(
     code = "CHF",
-    symbol = "Fr.",
+    symbol = "CHF",
     decimalPlaces = 2,
     numberFormat = ApostropheDot,
     symbolPosition = BeforeAmount,
@@ -198,6 +205,13 @@ enum class Currency(
     numberFormat = CommaDot,
     symbolPosition = BeforeAmount,
   ),
+  NorwegianKrone(
+    code = "NOK",
+    symbol = "kr",
+    decimalPlaces = 2,
+    numberFormat = SpaceComma,
+    symbolPosition = AfterAmount,
+  ),
   PhilippinePeso(
     code = "PHP",
     symbol = "₱",
@@ -275,6 +289,13 @@ enum class Currency(
     numberFormat = DotComma,
     symbolPosition = BeforeAmount,
   ),
+  TanzanianShilling(
+    code = "TZS",
+    symbol = "TSh",
+    decimalPlaces = 2,
+    numberFormat = CommaDot,
+    symbolPosition = BeforeAmount,
+  ),
   UkrainianHryvnia(
     code = "UAH",
     symbol = "₴",
@@ -302,6 +323,13 @@ enum class Currency(
     decimalPlaces = 2,
     numberFormat = DotComma,
     symbolPosition = AfterAmount,
+  ),
+  SouthAfricanRand(
+    code = "ZAR",
+    symbol = "R",
+    decimalPlaces = 2,
+    numberFormat = SpaceComma,
+    symbolPosition = BeforeAmount,
   );
 
   companion object {
