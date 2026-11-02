@@ -76,7 +76,10 @@ internal fun ReconcilingBanner(
           textAlign = Center,
         )
 
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = CenterVertically) {
+        Row(
+          horizontalArrangement = Arrangement.spacedBy(10.dp),
+          verticalAlignment = CenterVertically,
+        ) {
           NormalTextButton(
             modifier = Modifier.weight(1f),
             text = Strings.transactionsReconcileCreateAdjustment,

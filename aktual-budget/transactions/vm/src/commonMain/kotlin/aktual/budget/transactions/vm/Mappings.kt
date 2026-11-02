@@ -26,5 +26,6 @@ internal fun reconcileStart(loaded: LoadedAccount, balances: ClearedBalances?): 
       lastReconciled = loaded.account.last_reconciled,
     )
   }
+
 internal fun hideReconciled(options: AccountViewOptions?, target: Amount?): Boolean =
   options?.hideReconciled == true && target == null
