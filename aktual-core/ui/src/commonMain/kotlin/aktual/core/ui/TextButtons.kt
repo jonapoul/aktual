@@ -277,7 +277,7 @@ private fun RowScope.DefaultTextButtonContent(
   suffix: (@Composable () -> Unit)?,
 ) {
   prefix?.invoke()
-  Text(text = text, style = style, fontSize = fontSize)
+  Text(text = text, style = style, fontSize = fontSize, textAlign = Center)
   suffix?.invoke()
 }
 

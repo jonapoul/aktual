@@ -50,6 +50,8 @@ data class Transaction(
   val splitRemaining: Amount? = null,
   // Set on a transaction from a schedule, and whether that schedule recurs
   val scheduleRecurring: Boolean? = null,
+  val cleared: Boolean = true,
+  val reconciled: Boolean = false,
 ) : Comparable<Transaction> {
   override fun compareTo(other: Transaction) = date.compareTo(other.date)
 }
@@ -100,6 +102,8 @@ internal fun TransactionRow.toTransaction(
     totalChildren = children.size,
     splitRemaining = splitDifference?.let(::Amount),
     scheduleRecurring = scheduleRecurring,
+    cleared = cleared,
+    reconciled = reconciled,
   )
 }
 

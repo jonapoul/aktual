@@ -9,6 +9,7 @@ import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -58,6 +59,7 @@ internal fun LedgerHeader(modifier: Modifier = Modifier) {
         textAlign = End,
       )
     }
+    if (dimens.isReconciling) Spacer(Modifier.width(DenseColumns.cleared))
   }
 }
 

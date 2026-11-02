@@ -11,8 +11,10 @@ import aktual.budget.transactions.vm.Transaction
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.ArrowsSynchronize
 import aktual.core.icons.Calendar3
+import aktual.core.icons.CheckCircle1
 import aktual.core.icons.CheveronDown
 import aktual.core.icons.LeftArrow2
+import aktual.core.icons.LockClosed
 import aktual.core.icons.RightArrow2
 import aktual.core.icons.Split
 import aktual.core.l10n.Plurals
@@ -81,6 +83,7 @@ internal fun LedgerRow(
   onToggleSplit: () -> Unit = {},
   onOpen: () -> Unit = {},
   onTagClick: ((TagId) -> Unit)? = null,
+  onToggleClearedState: () -> Unit = {},
 ) {
   val dimens = LocalLedgerDimens.current
   Row(
@@ -115,12 +118,57 @@ internal fun LedgerRow(
     }
 
     Column(
-      modifier = Modifier.padding(start = dimens.contentGap, end = dimens.rowEnd),
+      modifier =
+        Modifier.padding(
+          start = dimens.contentGap,
+          end = if (dimens.isReconciling) 0.dp else dimens.rowEnd,
+        ),
       horizontalAlignment = Alignment.End,
     ) {
       AmountText(transaction.amount, dimens)
       if (dimens.showBalance) BalanceText(transaction.balance, dimens)
     }
+
+    if (dimens.isReconciling) {
+      ClearedToggle(
+        modifier = Modifier.width(DenseColumns.cleared + dimens.rowEnd).height(dimens.rowHeight),
+        transaction = transaction,
+        onToggle = onToggleClearedState,
+      )
+    }
+  }
+}
+
+// Clears or unclears the row, or asks to unlock it if it's reconciled. As upstream's
+// ClearedStatusIcon in TransactionListItem.tsx
+@Composable
+private fun ClearedToggle(
+  transaction: Transaction,
+  onToggle: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val description =
+    when {
+      transaction.reconciled -> Strings.transactionsReconcileUnlock
+      transaction.cleared -> Strings.transactionsReconcileUnclear
+      else -> Strings.transactionsReconcileClear
+    }
+  Box(
+    modifier = modifier.clickable(onClickLabel = description, onClick = onToggle),
+    contentAlignment = Center,
+  ) {
+    Icon(
+      modifier = Modifier.size(16.dp),
+      imageVector =
+        if (transaction.reconciled) AktualIcons.LockClosed else AktualIcons.CheckCircle1,
+      contentDescription = description,
+      tint =
+        if (transaction.reconciled || transaction.cleared) {
+          colors.noticeTextLight
+        } else {
+          colors.pageTextSubdued
+        },
+    )
   }
 }
 
@@ -352,6 +400,7 @@ internal fun LedgerTableRow(
   parts: SplitParts = Collapsed,
   onToggleSplit: () -> Unit = {},
   onOpen: () -> Unit = {},
+  onToggleClearedState: () -> Unit = {},
 ) {
   val dimens = LocalLedgerDimens.current
   Row(
@@ -386,6 +435,13 @@ internal fun LedgerTableRow(
     AmountText(transaction.amount, dimens, Modifier.width(DenseColumns.amount))
     if (dimens.showBalance) {
       BalanceText(transaction.balance, dimens, Modifier.width(DenseColumns.balance))
+    }
+    if (dimens.isReconciling) {
+      ClearedToggle(
+        modifier = Modifier.width(DenseColumns.cleared).height(dimens.rowHeight),
+        transaction = transaction,
+        onToggle = onToggleClearedState,
+      )
     }
   }
 }

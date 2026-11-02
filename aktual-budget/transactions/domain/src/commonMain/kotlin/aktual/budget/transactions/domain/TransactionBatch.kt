@@ -292,7 +292,7 @@ internal constructor(
     this.changes += changes
   }
 
-  /** db.update('accounts', ...) with any of the bank sync fields. */
+  /** db.update('accounts', ...) with any of the bank sync or reconciliation fields. */
   fun updateAccount(update: AccountUpdate) {
     val columns =
       listOf(
@@ -301,6 +301,10 @@ internal constructor(
         "last_sync" to
           update.lastSync.messageValue { it.toEpochMilliseconds().toString().messageValue() },
         "bank_sync_status" to update.bankSyncStatus.messageValue { it.value.messageValue() },
+        "last_reconciled" to
+          update.lastReconciled.messageValue {
+            it.toEpochMilliseconds().toString().messageValue()
+          },
       )
     addAll(ACCOUNTS, update.id.value, columns)
   }

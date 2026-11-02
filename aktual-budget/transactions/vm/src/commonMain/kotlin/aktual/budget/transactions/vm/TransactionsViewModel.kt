@@ -25,6 +25,7 @@ import aktual.budget.model.TransactionsSpec
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.tags.domain.toTagLabels
 import aktual.budget.transactions.domain.AccountViewPrefs
+import aktual.budget.transactions.domain.Reconciler
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
@@ -53,6 +54,7 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlin.time.Clock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
@@ -67,11 +69,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -94,10 +93,12 @@ internal constructor(
   private val bankSyncController: BankSyncController,
   private val deleter: AccountDeleter,
   private val writer: TransactionWriter,
+  private val reconciler: Reconciler,
   private val viewPrefs: AccountViewPrefs,
   private val transactionPreferences: TransactionPreferences,
   newTransactions: NewTransactions,
   server: BudgetServer,
+  private val clock: Clock,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
@@ -117,6 +118,10 @@ internal constructor(
   private val mutableEvents = Channel<TransactionsEvent>(Channel.BUFFERED)
   private var deleteJob: Job? = null
   private val mutableOtherAccountNames = MutableStateFlow<ImmutableSet<String>>(persistentSetOf())
+  // The bank balance being reconciled against, while reconciling
+  private val mutableReconcileTarget = MutableStateFlow<Amount?>(null)
+  private val mutableReconcileBusy = MutableStateFlow(false)
+  private var reconcileJob: Job? = null
 
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
 
@@ -172,18 +177,34 @@ internal constructor(
       .map { options -> options?.showRunningBalance ?: (accountId == null) }
       .stateIn(viewModelScope, Eagerly, initialValue = accountId == null)
 
+  private val accountClearedBalances: StateFlow<ClearedBalances?> =
+    if (accountId == null) {
+      MutableStateFlow(null)
+    } else {
+      transactionDao
+        .observeClearedBalances(accountId)
+        .catch { e -> logcat.w(e) { "Failed loading cleared balances of $accountId" } }
+        .stateIn(viewModelScope, Eagerly, initialValue = null)
+    }
+
+  // Shown while reconciling too, for the cleared balance being matched
   val clearedBalances: StateFlow<ClearedBalances?> =
-    accountOptions
-      .map { it?.showExtraBalances == true }
-      .distinctUntilChanged()
-      .flatMapLatest { show ->
-        if (show && accountId != null) {
-          transactionDao.observeClearedBalances(accountId)
-        } else {
-          flowOf(null)
-        }
-      }
+    combine(accountClearedBalances, accountOptions, mutableReconcileTarget, ::balances)
       .stateIn(viewModelScope, Eagerly, initialValue = null)
+
+  val reconciling: StateFlow<Reconciling?> =
+    combine(mutableReconcileTarget, accountClearedBalances, mutableReconcileBusy, ::reconciling)
+      .stateIn(viewModelScope, Eagerly, initialValue = null)
+
+  // Null until the account and its cleared balance have loaded
+  val reconcileStart: StateFlow<ReconcileStart?> =
+    combine(mutableLoadedAccount, accountClearedBalances, ::reconcileStart)
+      .stateIn(viewModelScope, Eagerly, initialValue = null)
+
+  // Reconciled rows show while reconciling, as upstream's do
+  private val hideReconciled: StateFlow<Boolean> =
+    combine(accountOptions, mutableReconcileTarget, ::hideReconciled)
+      .stateIn(viewModelScope, Eagerly, initialValue = false)
 
   val canBankSync: StateFlow<Boolean> =
     mutableLoadedAccount
@@ -276,11 +297,7 @@ internal constructor(
 
     // Hiding reconciled transactions changes the rows in the list
     viewModelScope.launch {
-      accountOptions
-        .map { it?.hideReconciled == true }
-        .distinctUntilChanged()
-        .drop(count = 1)
-        .collect { currentPagingSource?.invalidate() }
+      hideReconciled.drop(count = 1).collect { currentPagingSource?.invalidate() }
     }
 
     // Invalidate PagingSource when transaction data changes.
@@ -392,12 +409,66 @@ internal constructor(
     }
   }
 
+  fun startReconciling(target: Amount) {
+    if (accountId == null) return
+    mutableReconcileTarget.update { target }
+  }
+
+  fun setCleared(id: TransactionId, cleared: Boolean) =
+    reconcile("Failed setting $id cleared") { reconciler.setCleared(id, cleared) }
+
+  fun unlockTransaction(id: TransactionId) =
+    reconcile("Failed unlocking $id") { reconciler.unlock(id) }
+
+  // notes is the adjustment's, in the user's language as upstream writes it
+  fun createReconcileAdjustment(notes: String) {
+    val account = accountId ?: return
+    val difference = reconciling.value?.difference ?: return
+    if (difference == Zero) return
+    reconcile("Failed adding adjustment to $account") {
+      reconciler.createAdjustment(account, difference, notes)
+    }
+  }
+
+  fun finishReconciling() {
+    val account = accountId ?: return
+    val target = mutableReconcileTarget.value ?: return
+    reconcile("Failed finishing reconciling $account") {
+      reconciler.finish(account, target)
+      mutableReconcileTarget.update { null }
+      val now = clock.now()
+      mutableLoadedAccount.update { loaded ->
+        if (loaded is SpecificAccount) {
+          SpecificAccount(loaded.account.copy(last_reconciled = now))
+        } else {
+          loaded
+        }
+      }
+    }
+  }
+
+  // One write at a time, so a double tap can't add two adjustments
+  private fun reconcile(failure: String, block: suspend () -> Unit) {
+    if (reconcileJob?.isActive == true) return
+    reconcileJob = viewModelScope.launch {
+      mutableReconcileBusy.update { true }
+      runCatchingCancellable(
+        attempt = { block() },
+        onFailure = { e ->
+          logcat.e(e) { failure }
+          mutableEvents.trySend(ReconcileFailed)
+        },
+        finally = { mutableReconcileBusy.update { false } },
+      )
+    }
+  }
+
   private fun buildPagingSource() =
     TransactionsPagingSource(
         transactionDao = transactionDao,
         tagsDao = tagsDao,
         spec = spec,
-        hideReconciled = accountOptions.value?.hideReconciled == true,
+        hideReconciled = hideReconciled.value,
       )
       .also { currentPagingSource = it }
 

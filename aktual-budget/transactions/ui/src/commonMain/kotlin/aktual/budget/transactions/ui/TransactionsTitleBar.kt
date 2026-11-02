@@ -1,8 +1,10 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.transactions.vm.LoadedAccount
+import aktual.budget.transactions.vm.ReconcileStart
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheckCircle1
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.Pencil1
 import aktual.core.icons.Trash
@@ -52,6 +54,7 @@ internal fun TransactionsTitleBar(
   onAction: ActionListener,
   onOpenViewOptions: () -> Unit,
   otherAccountNames: ImmutableSet<String> = persistentSetOf(),
+  reconcileStart: ReconcileStart? = null,
 ) {
   val title =
     when (loadedAccount) {
@@ -99,6 +102,7 @@ internal fun TransactionsTitleBar(
         TransactionsMenu(
           accountName = loadedAccount.account.name.orEmpty(),
           otherAccountNames = otherAccountNames,
+          reconcileStart = reconcileStart,
           onAction = onAction,
         )
       }
@@ -110,10 +114,12 @@ internal fun TransactionsTitleBar(
 private fun TransactionsMenu(
   accountName: String,
   otherAccountNames: ImmutableSet<String>,
+  reconcileStart: ReconcileStart?,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
   var expanded by remember { mutableStateOf(false) }
+  var showReconcile by remember { mutableStateOf(false) }
   var showRename by remember { mutableStateOf(false) }
   var confirmDelete by remember { mutableStateOf(false) }
 
@@ -124,6 +130,16 @@ private fun TransactionsMenu(
     )
 
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      if (reconcileStart != null) {
+        AktualDropdownMenuItem(
+          text = Strings.transactionsReconcile,
+          leadingIcon = AktualIcons.CheckCircle1,
+          onClick = {
+            expanded = false
+            showReconcile = true
+          },
+        )
+      }
       AktualDropdownMenuItem(
         text = Strings.transactionsRenameAccount,
         leadingIcon = AktualIcons.Pencil1,
@@ -141,6 +157,17 @@ private fun TransactionsMenu(
         },
       )
     }
+  }
+
+  if (showReconcile && reconcileStart != null) {
+    ReconcileDialog(
+      start = reconcileStart,
+      onConfirm = { target ->
+        showReconcile = false
+        onAction(Action.StartReconciling(target))
+      },
+      onDismiss = { showReconcile = false },
+    )
   }
 
   if (showRename) {

@@ -129,7 +129,7 @@ internal fun EditTransactionDialogs(
 }
 
 @Composable
-private fun ReconciledDialog(message: String, onConfirm: () -> Unit, onCancel: () -> Unit) =
+internal fun ReconciledDialog(message: String, onConfirm: () -> Unit, onCancel: () -> Unit) =
   ConfirmDialog(
     title = Strings.transactionReconciledTitle,
     message = message,
