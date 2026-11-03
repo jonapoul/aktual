@@ -190,6 +190,23 @@ sealed interface SankeyLabel {
   data object Income : SankeyLabel
 
   data object Other : SankeyLabel
+
+  // Budgeted mode, see createBudgetGraph() in upstream's sankey-spreadsheet.ts
+  data object Budgeted : SankeyLabel
+
+  data object AvailableFunds : SankeyLabel
+
+  data object ToBudget : SankeyLabel
+
+  data object Overbudgeted : SankeyLabel
+
+  data object Overspent : SankeyLabel
+
+  data class FromCategory(val category: String) : SankeyLabel
+
+  data class FromMonth(val month: YearMonth) : SankeyLabel
+
+  data class ForMonth(val month: YearMonth) : SankeyLabel
 }
 
 @Immutable
@@ -199,6 +216,10 @@ sealed interface SankeyColor {
   data object Primary : SankeyColor
 
   data object Negative : SankeyColor
+
+  data object Positive : SankeyColor
+
+  data object Neutral : SankeyColor
 }
 
 @Immutable
@@ -376,7 +397,6 @@ enum class UnsupportedReason {
   CustomBudgeted,
   MissingReport,
   ReportType,
-  SankeyBudgeted,
 }
 
 /**

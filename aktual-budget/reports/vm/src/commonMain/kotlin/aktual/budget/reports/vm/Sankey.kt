@@ -9,17 +9,40 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.minusMonth
+import kotlinx.datetime.plusMonth
 
 private const val OTHER_SUFFIX = "__OTHER_BUCKET"
 private const val NEGATIVE_SUFFIX = "__NEGATIVE"
 private const val ALL_ACCOUNTS = "all_income"
+private const val TO_BUDGET = "to_budget"
+private const val BUDGETED = "budgeted"
+private const val LAST_MONTH_OVERSPENT = "last_month_overspent"
+private const val FOR_NEXT_MONTH = "for_next_month"
+private const val FROM_PREVIOUS_MONTH = "from_previous_month"
+private const val AVAILABLE_INCOME = "available_income"
+
+// Never grouped into "Other"
+private val STRUCTURAL_KEYS =
+  setOf(
+    ALL_ACCOUNTS,
+    TO_BUDGET,
+    BUDGETED,
+    LAST_MONTH_OVERSPENT,
+    FOR_NEXT_MONTH,
+    FROM_PREVIOUS_MONTH,
+    AVAILABLE_INCOME,
+  )
 private const val PALETTE_SIZE = 9
 private const val HEX_RADIX = 16
 private const val COLOR_KEY_CHARS = 3
-internal const val DEFAULT_TOP_N_CATEGORIES = 15
+const val DEFAULT_TOP_N_CATEGORIES = 15
+
+// Upstream saves "All" as 1e5
+const val ALL_SANKEY_CATEGORIES = 100_000
 
 // Declared in the order they're drawn from left to right
-internal enum class SankeyLayer(val key: String) {
+enum class SankeyLayer(val key: String) {
   IncomePayee("payee"),
   IncomeCategory("income_category"),
   Account("account"),
@@ -62,6 +85,29 @@ internal data class SankeyTransferPair(
   val amount: Long,
 )
 
+// One budget category's total over the range: what an income category received, or what an expense
+// category had budgeted
+internal data class SankeyBudgetEntry(
+  val categoryGroupId: String,
+  val categoryGroup: String,
+  val categoryId: String,
+  val category: String,
+  val isIncome: Boolean,
+  val value: Long,
+)
+
+// packages/desktop-client/src/components/reports/spreadsheets/sankey-spreadsheet.ts
+// createBudgetSpreadsheet()
+internal data class SankeyBudget(
+  val entries: List<SankeyBudgetEntry>,
+  // From the last month
+  val toBudget: Long,
+  // Carried into the first month
+  val fromPreviousMonth: Long,
+  val lastMonthOverspent: Long,
+  val forNextMonth: Long,
+)
+
 internal data class SankeyParams(
   val topN: Int = DEFAULT_TOP_N_CATEGORIES,
   val sort: CategorySort = PerGroup,
@@ -94,8 +140,31 @@ internal fun calculateSankey(
   transfers: List<SankeyTransferPair>,
   categoryOrder: List<String>,
   params: SankeyParams,
+): SankeyData =
+  sankeyData(title, start, end, categoryOrder, params) {
+    transactionsGraph(entries, transfers, params.groupAccounts)
+  }
+
+// createBudgetGraph() and buildSankeyData()
+internal fun calculateBudgetSankey(
+  title: String?,
+  start: YearMonth,
+  end: YearMonth,
+  budget: SankeyBudget,
+  categoryOrder: List<String>,
+  params: SankeyParams,
+): SankeyData =
+  sankeyData(title, start, end, categoryOrder, params) { budgetGraph(budget, start, end) }
+
+private fun sankeyData(
+  title: String?,
+  start: YearMonth,
+  end: YearMonth,
+  categoryOrder: List<String>,
+  params: SankeyParams,
+  baseGraph: () -> Graph,
 ): SankeyData {
-  fun graph(topN: Int) = sankeyGraph(entries, transfers, categoryOrder, params, topN)
+  fun graph(topN: Int) = sankeyGraph(baseGraph(), categoryOrder, params, topN)
   val full = graph(params.topN)
 
   // Stops at the first limit that groups nothing, since every larger one gives the same graph
@@ -118,13 +187,11 @@ internal fun calculateSankey(
 }
 
 private fun sankeyGraph(
-  entries: List<SankeyEntry>,
-  transfers: List<SankeyTransferPair>,
+  graph: Graph,
   categoryOrder: List<String>,
   params: SankeyParams,
   topN: Int,
 ): SankeyGraph {
-  val graph = transactionsGraph(entries, transfers, params.groupAccounts)
   val grouped = groupOtherNodes(graph, topN, global = params.sort == Global)
   val sorted = sortGraph(graph, params.sort, categoryOrder)
   filterLayers(sorted, params.layerFrom, params.layerTo)
@@ -233,6 +300,61 @@ private fun transactionsGraph(
   return graph
 }
 
+private fun budgetGraph(budget: SankeyBudget, start: YearMonth, end: YearMonth) =
+  Graph().apply {
+    addNode(BUDGETED, GraphNode(Budget, Budgeted))
+    addNode(AVAILABLE_INCOME, GraphNode(Account, AvailableFunds))
+
+    for (entry in budget.entries) {
+      when {
+        entry.isIncome -> {
+          // Income category > Available funds
+          addNode(entry.categoryId, GraphNode(IncomeCategory, SankeyLabel.Text(entry.category)))
+          addLink(entry.categoryId, AVAILABLE_INCOME, entry.value)
+        }
+
+        entry.value >= 0 -> {
+          // Budgeted > Category group > Category
+          addNode(
+            entry.categoryGroupId,
+            GraphNode(CategoryGroup, SankeyLabel.Text(entry.categoryGroup)),
+          )
+          addNode(entry.categoryId, GraphNode(Category, SankeyLabel.Text(entry.category)))
+          addLink(entry.categoryGroupId, entry.categoryId, entry.value)
+          addLink(BUDGETED, entry.categoryGroupId, entry.value)
+          addLink(AVAILABLE_INCOME, BUDGETED, entry.value)
+        }
+
+        else -> {
+          // Money taken back out of a category goes into the budget
+          val label = SankeyLabel.FromCategory(entry.category)
+          addNode(entry.categoryId, GraphNode(Account, label, isNegative = true))
+          addLink(entry.categoryId, BUDGETED, abs(entry.value))
+          addLink(AVAILABLE_INCOME, BUDGETED, entry.value)
+        }
+      }
+    }
+
+    if (budget.toBudget > 0) {
+      addNode(TO_BUDGET, GraphNode(CategoryGroup, ToBudget))
+      addLink(AVAILABLE_INCOME, TO_BUDGET, budget.toBudget)
+    } else {
+      addNode(TO_BUDGET, GraphNode(Account, Overbudgeted, isNegative = true))
+      addLink(TO_BUDGET, BUDGETED, abs(budget.toBudget))
+      addLink(AVAILABLE_INCOME, BUDGETED, -abs(budget.toBudget))
+    }
+
+    addNode(
+      FROM_PREVIOUS_MONTH,
+      GraphNode(IncomeCategory, SankeyLabel.FromMonth(start.minusMonth())),
+    )
+    addLink(FROM_PREVIOUS_MONTH, AVAILABLE_INCOME, budget.fromPreviousMonth)
+    addNode(FOR_NEXT_MONTH, GraphNode(Budget, SankeyLabel.ForMonth(end.plusMonth())))
+    addLink(AVAILABLE_INCOME, FOR_NEXT_MONTH, budget.forNextMonth)
+    addNode(LAST_MONTH_OVERSPENT, GraphNode(Budget, Overspent))
+    addLink(AVAILABLE_INCOME, LAST_MONTH_OVERSPENT, abs(budget.lastMonthOverspent))
+  }
+
 private fun Graph.addNode(key: String, node: GraphNode) {
   if (key !in this) put(key, node)
 }
@@ -257,7 +379,7 @@ private fun groupOtherNodes(graph: Graph, topN: Int, global: Boolean): GroupedIt
     val smallestFirst =
       graph
         .filter { (key, node) ->
-          node.layer == layer && !key.isOther() && key != ALL_ACCOUNTS && !node.isNegative
+          node.layer == layer && !key.isOther() && key !in STRUCTURAL_KEYS && !node.isNegative
         }
         .keys
         .sortedBy { graph.nodeValue(it) }
@@ -480,10 +602,13 @@ private val SOURCE_COLORED =
     CategoryGroup,
   )
 
+// addColors() in sankey-spreadsheet.ts
 private fun nodeColor(key: String, node: GraphNode): SankeyColor =
   when {
-    node.isNegative -> Negative
-    key == ALL_ACCOUNTS -> Primary
+    node.isNegative || key == LAST_MONTH_OVERSPENT -> Negative
+    key == TO_BUDGET -> Positive
+    key == FROM_PREVIOUS_MONTH || key == FOR_NEXT_MONTH -> Neutral
+    key == ALL_ACCOUNTS || key == BUDGETED || key == AVAILABLE_INCOME -> Primary
     else -> Palette(paletteIndex(key))
   }
 
