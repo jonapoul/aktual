@@ -132,6 +132,18 @@ class NetWorthLoaderTest {
     }
 
   @Test
+  fun `Weekly range after today still has a period`() = runLoaderTest { loader, sync ->
+    sync.insertAccounts()
+    sync.transaction("old", 1000, account = "checking", date = 20260115)
+
+    val june = TimeFrame(YearMonth(2026, 6), YearMonth(2026, 6), Static)
+    loader.netWorth(meta(interval = Weekly, timeFrame = june)).test {
+      val data = awaitItem() as NetWorthData
+      assertThat(data.items).isEqualTo(persistentMapOf(LocalDate(2026, 5, 31) to Amount(1000)))
+    }
+  }
+
+  @Test
   fun `Yearly periods sum each year`() = runLoaderTest { loader, sync ->
     sync.insertAccounts()
     sync.transaction("old", 1000, account = "checking", date = 20250115)

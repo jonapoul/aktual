@@ -124,7 +124,8 @@ private fun Header(
     }
 
     Column(horizontalAlignment = Alignment.End) {
-      val netWorthLatest = remember(data) { data.items.maxBy { (period, _) -> period }.value }
+      val netWorthLatest =
+        remember(data) { data.items.maxByOrNull { (period, _) -> period }?.value ?: Zero }
       Text(
         text = netWorthLatest.formattedText(includeSign = false),
         textAlign = End,
@@ -136,7 +137,7 @@ private fun Header(
 
       val netWorthChange =
         remember(data, netWorthLatest) {
-          val netWorthFirst = data.items.minBy { (period, _) -> period }.value
+          val netWorthFirst = data.items.minByOrNull { (period, _) -> period }?.value ?: Zero
           netWorthLatest - netWorthFirst
         }
       Text(
