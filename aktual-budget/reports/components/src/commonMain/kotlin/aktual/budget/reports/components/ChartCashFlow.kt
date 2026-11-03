@@ -56,6 +56,7 @@ import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
 import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.runBlocking
@@ -122,7 +123,7 @@ internal fun CashFlowChart(
               ),
             marker = if (compact) null else rememberMarker(),
             markerVisibilityListener = rememberMarkerHaptics(compact),
-            decorations = listOf(rememberChartZoomDecoration(zoom)),
+            decorations = persistentListOf(rememberChartZoomDecoration(zoom)),
           ),
       )
     }
@@ -137,7 +138,7 @@ private fun rememberCashFlowChart(
   bottomAxis: HorizontalAxis<Axis.Position.Horizontal.Bottom>,
   marker: CartesianMarker?,
   markerVisibilityListener: CartesianMarkerVisibilityListener?,
-  decorations: List<Decoration>,
+  decorations: ImmutableList<Decoration>,
 ): CartesianChart {
   val income =
     rememberColumnCartesianLayer(
