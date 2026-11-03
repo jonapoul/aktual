@@ -102,7 +102,7 @@ internal class ChartDataLoader(
       is SankeyReportMeta -> sankey(meta)
       is SummaryReportMeta -> summary(meta)
       is CalendarReportMeta -> calendar(meta)
-      is SpendingReportMeta -> unsupported(meta, ReportType)
+      is SpendingReportMeta -> spending(meta)
       is UnsupportedReportMeta ->
         unsupported(meta, if (meta.type == Unknown) ReportType else InvalidMeta)
     }
@@ -484,6 +484,87 @@ internal class ChartDataLoader(
           }
       }
       .flowOn(contexts.default)
+  }
+
+  // packages/desktop-client/src/components/reports/reports/SpendingCard.tsx
+  fun spending(meta: SpendingReportMeta): Flow<ChartData> {
+    val filter = reportFilter(meta.conditions, meta.conditionsOp)
+    val mode = meta.spendingMode
+    return dao
+      .observeTransactionDateBounds()
+      .flatMapLatest { bounds ->
+        val today = calendar.today()
+        val months = meta.resolveMonths(today)
+        val averageMonths =
+          if (mode == Average) {
+            meta.averageRange.resolve(months.compare, bounds.earliest?.yearMonth)
+          } else {
+            emptyList()
+          }
+        val charted = buildSet {
+          add(months.compare)
+          when (mode) {
+            Budget -> Unit
+            Average -> addAll(averageMonths)
+            SingleMonth,
+            Unknown -> add(months.compareTo)
+          }
+        }
+        val budget = if (mode == Budget) spendingBudget(meta, months.compare) else flowOf(0L)
+        val params =
+          SpendingParams(
+            title = meta.name.orEmpty(),
+            dateRangeMode = meta.dateRangeMode,
+            months = months,
+            mode = mode,
+            averageMonths = averageMonths,
+            today = today,
+          )
+        combine(spendingTotals(filter, charted), budget) { totals, budgeted ->
+          calculateSpending(params, totals, budgeted)
+        }
+      }
+      .flowOn(contexts.default)
+  }
+
+  // One query per run of consecutive months, so a comparison a year back doesn't read the months
+  // between
+  private fun spendingTotals(
+    filter: TransactionFilter,
+    months: Set<YearMonth>,
+  ): Flow<Map<LocalDate, Long>> {
+    val runs = mutableListOf<MutableList<YearMonth>>()
+    for (month in months.sorted()) {
+      val run = runs.lastOrNull()
+      if (run != null && run.last().plusMonth() == month) run += month else runs += mutableListOf(month)
+    }
+    val flows = runs.map { run ->
+      dao.observeFilteredTransactions(filter, run.first().firstDay, run.last().lastDay)
+    }
+    return combine(flows) { rows -> spendingTotals(rows.toList().flatten()) }
+  }
+
+  // spending-spreadsheet.ts getSpendingBudgetFilters(): only category and category group
+  // conditions narrow the budgets
+  private fun spendingBudget(meta: SpendingReportMeta, month: YearMonth): Flow<Long> {
+    val filter = BudgetCategoryFilter(meta.conditions.orEmpty(), meta.conditionsOp ?: And)
+    return preferences
+      .observe(SyncedPrefKey.Global.BudgetType)
+      .flatMapLatest { budgetType ->
+        customReports.observeBudgets(
+          start = month,
+          end = month,
+          divisor = 1L,
+          isTracking = BudgetType.from(budgetType) == Tracking,
+        )
+      }
+      .map { rows ->
+        rows
+          .filter { row ->
+            filter.matches(row.category, row.category_name, row.category_group, row.category_group_name)
+          }
+          .sumOf { it.amount ?: 0L }
+      }
   }
 
   private fun List<CustomReportTransactions>.amountsMatching(filter: TransactionFilter) = filter {
