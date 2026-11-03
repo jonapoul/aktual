@@ -1,6 +1,8 @@
 package aktual.budget.reports.vm
 
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.minus
+import kotlinx.datetime.minusMonth
 
 // Fills in upstream's defaults, so the draft starts out the same as the saved report would show
 internal fun ReportMeta.withDefaults(current: YearMonth): ReportMeta =
@@ -27,6 +29,20 @@ internal fun ReportMeta.withDefaults(current: YearMonth): ReportMeta =
         conditionsOp = conditionsOp ?: And,
         timeFrame = timeFrame ?: TimeFrame(current, current, Full),
       )
+    is CrossoverReportMeta ->
+      copy(
+        timeFrame =
+          timeFrame
+            ?: TimeFrame(
+              current.minus(DEFAULT_CROSSOVER_MONTHS, MONTH),
+              current.minusMonth(),
+              Full,
+            ),
+        safeWithdrawalRate = safeWithdrawalRate ?: DEFAULT_SAFE_WITHDRAWAL_RATE,
+        projectionType = projectionType?.takeIf { it != Unknown } ?: Hampel,
+        showHiddenCategories = showHiddenCategories == true,
+        expenseAdjustmentFactor = expenseAdjustmentFactor ?: 1.0,
+      )
     is AgeOfMoneyReportMeta ->
       copy(
         conditions = conditions.orEmpty(),
@@ -36,7 +52,6 @@ internal fun ReportMeta.withDefaults(current: YearMonth): ReportMeta =
       )
 
     is BalanceForecastReportMeta,
-    is CrossoverReportMeta,
     is CustomReportMeta,
     is FormulaReportMeta,
     is MarkdownReportMeta,

@@ -19,7 +19,8 @@ private const val MONTHS_PER_YEAR = 12
 private const val MAX_PROJECTION_MONTHS = 600
 private const val HAMPEL_THRESHOLD = 3
 private const val MAD_SCALE = 1.4826
-private const val DEFAULT_CROSSOVER_MONTHS = 120
+internal const val DEFAULT_CROSSOVER_MONTHS = 120
+internal const val DEFAULT_SAFE_WITHDRAWAL_RATE = 0.04
 
 internal data class CrossoverParams(
   val safeWithdrawalRate: Double,

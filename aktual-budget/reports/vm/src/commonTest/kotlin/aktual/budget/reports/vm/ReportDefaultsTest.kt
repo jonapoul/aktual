@@ -48,6 +48,20 @@ class ReportDefaultsTest {
   }
 
   @Test
+  fun `Crossover defaults to ten years up to last month`() {
+    assertThat(CrossoverReportMeta(projectionType = Unknown).withDefaults(CURRENT))
+      .isEqualTo(
+        CrossoverReportMeta(
+          timeFrame = TimeFrame(YearMonth(2016, 1), YearMonth(2025, 12), Full),
+          safeWithdrawalRate = 0.04,
+          projectionType = Hampel,
+          showHiddenCategories = false,
+          expenseAdjustmentFactor = 1.0,
+        ),
+      )
+  }
+
+  @Test
   fun `Saved settings are kept`() {
     val meta =
       CashFlowReportMeta(

@@ -984,7 +984,6 @@ internal class ChartDataLoader(
 
   private companion object {
     const val YEAR_MONTH_FACTOR = 100L
-    const val DEFAULT_SAFE_WITHDRAWAL_RATE = 0.04
     const val DEFAULT_FORECAST_MONTHS = 12
     const val PERCENT_TENTHS = 1000.0
     const val TENTHS = 10.0

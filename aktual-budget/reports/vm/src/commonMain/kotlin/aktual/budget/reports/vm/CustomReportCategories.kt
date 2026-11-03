@@ -16,7 +16,13 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
-@Immutable data class CategoryChoice(val id: CategoryId, val name: String, val isHidden: Boolean)
+@Immutable
+data class CategoryChoice(
+  val id: CategoryId,
+  val name: String,
+  val isHidden: Boolean,
+  val isIncome: Boolean = false,
+)
 
 @Immutable
 data class CategoryGroupChoice(
@@ -40,7 +46,7 @@ internal fun categoryGroupChoices(
         categories =
           byGroup[group.id]
             .orEmpty()
-            .map { CategoryChoice(it.id, it.name.orEmpty(), it.hidden) }
+            .map { CategoryChoice(it.id, it.name.orEmpty(), it.hidden, it.is_income == true) }
             .toImmutableList(),
       )
     }

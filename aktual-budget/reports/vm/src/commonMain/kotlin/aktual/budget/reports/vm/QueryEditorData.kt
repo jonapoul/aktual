@@ -9,6 +9,7 @@ import aktual.budget.db.dao.ReportsDao
 import aktual.budget.model.Field
 import aktual.core.Calendar
 import androidx.compose.runtime.Immutable
+import app.cash.sqldelight.async.coroutines.awaitAsList
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
@@ -36,6 +37,10 @@ data class QueryEditorData(
   // Every entity's name by id, including hidden categories and closed accounts that saved
   // conditions can still point to
   val names: ImmutableMap<String, String>,
+  // Every category by group, hidden and income ones included
+  val categoryChoices: ImmutableList<CategoryGroupChoice> = persistentListOf(),
+  // Closed accounts included
+  val allAccounts: ImmutableList<QueryEntity> = persistentListOf(),
 )
 
 fun QueryEditorData.entities(field: Field): ImmutableList<QueryEntity> =
@@ -70,6 +75,7 @@ internal class QueryEditorDataLoader(
   private val categories = CategoryDao(database)
   private val categoryGroups = CategoryGroupDao(database)
   private val payees = PayeeDao(database)
+  private val budgets = database.budgetsQueries
 
   // Months from the first transaction, or at least a year back, like upstream's query editor
   fun load(): Flow<QueryEditorData> =
@@ -85,6 +91,12 @@ internal class QueryEditorDataLoader(
         currentMonth = current,
         months = YearMonthRange(earliest, latest),
         names = names(),
+        categoryChoices =
+          categoryGroupChoices(
+            groups = budgets.budgetCategoryGroups().awaitAsList(),
+            categories = budgets.budgetCategories().awaitAsList(),
+          ),
+        allAccounts = accounts.getAllWithStatus().entities({ it.id.toString() }, { it.name }),
       )
     }
 
