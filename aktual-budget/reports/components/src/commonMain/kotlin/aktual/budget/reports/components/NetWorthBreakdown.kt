@@ -33,18 +33,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.datetime.YearMonth
-import kotlinx.datetime.minusMonth
+import kotlinx.datetime.LocalDate
 
 @Immutable
 internal data class NetWorthBreakdown(
-  val month: YearMonth,
+  val period: LocalDate,
   // Top band first, like the chart reads. Empty in trend mode
   val rows: ImmutableList<NetWorthBreakdownRow>,
   val assets: Amount,
   val debts: Amount,
   val total: Amount,
-  // Null for the first month, which has nothing to compare with
+  // Null for the first period, which has nothing to compare with
   val change: Amount?,
 )
 
@@ -57,9 +56,9 @@ internal data class NetWorthBreakdownRow(
 )
 
 // NetWorthGraph.tsx's tooltip: each account in stacked mode, then assets, debts, net worth and the
-// change from the month before
-internal fun netWorthBreakdown(data: NetWorthData, month: YearMonth): NetWorthBreakdown {
-  val amounts = data.accounts.map { it.balances[month] ?: Zero }
+// change from the period before
+internal fun netWorthBreakdown(data: NetWorthData, period: LocalDate): NetWorthBreakdown {
+  val amounts = data.accounts.map { it.balances[period] ?: Zero }
   val rows =
     if (data.isStacked()) {
       data.accounts
@@ -70,31 +69,32 @@ internal fun netWorthBreakdown(data: NetWorthData, month: YearMonth): NetWorthBr
     } else {
       emptyList()
     }
-  val total = data.items[month] ?: Zero
+  val total = data.items[period] ?: Zero
+  val previous = data.items.keys.lastOrNull { it < period }
   return NetWorthBreakdown(
-    month = month,
+    period = period,
     rows = rows.toImmutableList(),
     assets = amounts.filter { it > Zero }.sum(),
     debts = amounts.filter { it < Zero }.sum(),
     total = total,
-    change = data.items[month.minusMonth()]?.let { total - it },
+    change = previous?.let { total - data.items.getValue(it) },
   )
 }
 
 @Composable
 internal fun NetWorthBreakdownList(
   data: NetWorthData,
-  month: YearMonth,
+  period: LocalDate,
   highlighted: AccountId?,
   onHighlight: (AccountId?) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val breakdown = remember(data, month) { netWorthBreakdown(data, month) }
+  val breakdown = remember(data, period) { netWorthBreakdown(data, period) }
   val monthStrings = monthStringsMap()
   Column(modifier = modifier.verticalScrollWithBar()) {
     Text(
       modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
-      text = "${monthStrings[month.month]} ${month.year}",
+      text = periodLabel(data.interval, period, monthStrings),
       color = colors.pageText,
       style = typography.bodyLarge,
       fontWeight = Bold,

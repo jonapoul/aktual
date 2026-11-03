@@ -22,8 +22,7 @@ import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarker
 import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarkerVisibilityListener
 import com.patrykandpatrick.vico.compose.cartesian.marker.DefaultCartesianMarker
 import com.patrykandpatrick.vico.compose.common.Fill
-import kotlin.math.roundToLong
-import kotlinx.datetime.YearMonth
+import kotlinx.datetime.LocalDate
 
 // packages/desktop-client/src/components/reports/graphs/NetWorthGraph.tsx: recharts' default
 // stacking, so each account's line is the running total of it and every account before it, and the
@@ -84,15 +83,15 @@ internal fun rememberStackedMarkerFormatter(
   return remember(data, colors, format, total, monthStrings) {
     DefaultCartesianMarker.ValueFormatter { _, targets ->
       val x = targets.firstOrNull()?.x ?: return@ValueFormatter " "
-      val month = YearMonth.fromMonthNumber(x.roundToLong())
-      val label = "${monthStrings[month.month]} ${month.year}"
+      val period = data.periodAt(x) ?: return@ValueFormatter " "
+      val label = periodLabel(data.interval, period, monthStrings)
       // Top band first, like the chart reads
       val stack =
         data.accounts
           .mapIndexed { index, account ->
             CustomBar(
               name = account.name,
-              amount = account.balances[month] ?: Zero,
+              amount = account.balances[period] ?: Zero,
               color = colors.qualitative(index),
             )
           }
@@ -102,24 +101,25 @@ internal fun rememberStackedMarkerFormatter(
   }
 }
 
-// Shows the tapped month in the breakdown list, back to the latest month once the marker hides
+// Shows the tapped period in the breakdown list, back to the latest one once the marker hides
 @Composable
-internal fun rememberMonthSelection(
+internal fun rememberPeriodSelection(
+  data: NetWorthData,
   compact: Boolean,
-  onSelect: (YearMonth?) -> Unit,
+  onSelect: (LocalDate?) -> Unit,
 ): CartesianMarkerVisibilityListener? {
   val haptics = rememberMarkerHaptics(compact) ?: return null
   val currentOnSelect by rememberUpdatedState(onSelect)
-  return remember(haptics) {
+  return remember(haptics, data) {
     object : CartesianMarkerVisibilityListener {
       override fun onShown(marker: CartesianMarker, targets: List<CartesianMarker.Target>) {
         haptics.onShown(marker, targets)
-        currentOnSelect(targets.month())
+        currentOnSelect(targets.period())
       }
 
       override fun onUpdated(marker: CartesianMarker, targets: List<CartesianMarker.Target>) {
         haptics.onUpdated(marker, targets)
-        currentOnSelect(targets.month())
+        currentOnSelect(targets.period())
       }
 
       override fun onHidden(marker: CartesianMarker) {
@@ -127,8 +127,7 @@ internal fun rememberMonthSelection(
         currentOnSelect(null)
       }
 
-      private fun List<CartesianMarker.Target>.month() =
-        firstOrNull()?.x?.let { YearMonth.fromMonthNumber(it.roundToLong()) }
+      private fun List<CartesianMarker.Target>.period() = firstOrNull()?.x?.let(data::periodAt)
     }
   }
 }

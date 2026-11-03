@@ -61,7 +61,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.datetime.YearMonth
+import kotlinx.datetime.LocalDate
 
 private val RowMinHeight = 48.dp
 
@@ -335,10 +335,10 @@ private fun previewReport(id: String, name: String?) =
       title = name,
       items =
         persistentMapOf(
-          YearMonth(2026, 1) to Amount(1_200_00),
-          YearMonth(2026, 2) to Amount(1_450_00),
-          YearMonth(2026, 3) to Amount(1_380_00),
-          YearMonth(2026, 4) to Amount(1_720_00),
+          LocalDate(2026, 1, 1) to Amount(1_200_00),
+          LocalDate(2026, 2, 1) to Amount(1_450_00),
+          LocalDate(2026, 3, 1) to Amount(1_380_00),
+          LocalDate(2026, 4, 1) to Amount(1_720_00),
         ),
     ),
   )

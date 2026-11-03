@@ -54,12 +54,15 @@ import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month.DECEMBER
 import kotlinx.datetime.Month.JANUARY
 import kotlinx.datetime.Month.MARCH
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.yearMonth
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 
@@ -76,7 +79,7 @@ internal fun NetWorthChart(
       Header(modifier = Modifier.fillMaxWidth(), data = data)
     }
 
-    var selected by remember(data) { mutableStateOf<YearMonth?>(null) }
+    var selected by remember(data) { mutableStateOf<LocalDate?>(null) }
     var highlighted by remember(data) { mutableStateOf<AccountId?>(null) }
 
     Chart(
@@ -85,15 +88,15 @@ internal fun NetWorthChart(
       compact = compact,
       zoom = zoom,
       highlighted = highlighted,
-      onSelectMonth = { selected = it },
+      onSelectPeriod = { selected = it },
     )
 
-    val month = selected ?: data.items.keys.maxOrNull()
-    if (!compact && month != null) {
+    val period = selected ?: data.items.keys.maxOrNull()
+    if (!compact && period != null) {
       NetWorthBreakdownList(
         modifier = Modifier.fillMaxWidth().heightIn(max = BREAKDOWN_MAX_HEIGHT).padding(top = 8.dp),
         data = data,
-        month = month,
+        period = period,
         highlighted = highlighted,
         onHighlight = { highlighted = it },
       )
@@ -117,11 +120,11 @@ private fun Header(
         style = typography.bodyLarge,
       )
 
-      DateRangeText(dateRange(data.items.keys))
+      DateRangeText(dateRange(data.items.keys.map { it.yearMonth }.toImmutableList()))
     }
 
     Column(horizontalAlignment = Alignment.End) {
-      val netWorthLatest = remember(data) { data.items.maxBy { (month, _) -> month }.value }
+      val netWorthLatest = remember(data) { data.items.maxBy { (period, _) -> period }.value }
       Text(
         text = netWorthLatest.formattedText(includeSign = false),
         textAlign = End,
@@ -133,7 +136,7 @@ private fun Header(
 
       val netWorthChange =
         remember(data, netWorthLatest) {
-          val netWorthFirst = data.items.minBy { (month, _) -> month }.value
+          val netWorthFirst = data.items.minBy { (period, _) -> period }.value
           netWorthLatest - netWorthFirst
         }
       Text(
@@ -151,7 +154,7 @@ private fun Chart(
   compact: Boolean,
   zoom: ChartZoomState,
   highlighted: AccountId?,
-  onSelectMonth: (YearMonth?) -> Unit,
+  onSelectPeriod: (LocalDate?) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
@@ -209,7 +212,7 @@ private fun Chart(
               guideline = guideline,
               label = label,
               tick = tick,
-              valueFormatter = yearMonthXAxisFormatter(),
+              valueFormatter = netWorthXAxisFormatter(data),
               itemPlacer = hItemPlacer(compact),
             ),
           marker =
@@ -224,7 +227,7 @@ private fun Chart(
                 )
               else -> rememberMarker()
             },
-          markerVisibilityListener = rememberMonthSelection(compact, onSelectMonth),
+          markerVisibilityListener = rememberPeriodSelection(data, compact, onSelectPeriod),
           decorations = listOf(rememberChartZoomDecoration(zoom)),
         ),
     )
@@ -232,7 +235,7 @@ private fun Chart(
 }
 
 private suspend fun CartesianChartModelProducer.populate(data: NetWorthData, zoom: XRange?) {
-  val x = data.items.keys.map { it.monthNumber() }
+  val x = data.items.keys.indices.toList()
   val stacks = if (data.isStacked()) netWorthStacks(data) else null
   runTransaction {
     zoomTo(zoom)
@@ -316,21 +319,22 @@ val PREVIEW_NET_WORTH_DATA =
     title = "My Net Worth",
     items =
       persistentMapOf(
-        date(2023, JANUARY) to Amount(-44_000.00),
-        date(2024, JANUARY) to Amount(-18_000.00),
-        date(2024, FEBRUARY) to Amount(21_000.34),
-        date(2024, MARCH) to Amount(25_000.67),
-        date(2024, JULY) to Amount(-10123.98),
-        date(2024, AUGUST) to Amount(-5123.69),
-        date(2024, DECEMBER) to Amount(-6789.12),
-        date(2025, JANUARY) to Amount(198.0),
-        date(2025, FEBRUARY) to Amount(1.98),
-        date(2025, MARCH) to Amount(256.0),
-        date(2025, JUNE) to Amount(30000.0),
+        date(2023, JANUARY).firstDay to Amount(-44_000.00),
+        date(2024, JANUARY).firstDay to Amount(-18_000.00),
+        date(2024, FEBRUARY).firstDay to Amount(21_000.34),
+        date(2024, MARCH).firstDay to Amount(25_000.67),
+        date(2024, JULY).firstDay to Amount(-10123.98),
+        date(2024, AUGUST).firstDay to Amount(-5123.69),
+        date(2024, DECEMBER).firstDay to Amount(-6789.12),
+        date(2025, JANUARY).firstDay to Amount(198.0),
+        date(2025, FEBRUARY).firstDay to Amount(1.98),
+        date(2025, MARCH).firstDay to Amount(256.0),
+        date(2025, JUNE).firstDay to Amount(30000.0),
       ),
   )
 
-private val PREVIEW_MONTHS = (YearMonth(2025, JANUARY)..YearMonth(2025, DECEMBER)).toList()
+private val PREVIEW_MONTHS =
+  (YearMonth(2025, JANUARY)..YearMonth(2025, DECEMBER)).map { it.firstDay }
 
 private fun previewAccount(id: String, name: String, start: Double, step: Double) =
   NetWorthAccount(

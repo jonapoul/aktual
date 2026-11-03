@@ -5,6 +5,7 @@ import aktual.budget.formula.FormulaWarning
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.ConditionSet
+import aktual.budget.model.Interval
 import aktual.budget.model.WidgetType
 import aktual.budget.model.sumOf
 import aktual.core.model.Percent
@@ -39,10 +40,12 @@ data class CashFlowDatum(
   val change: Amount = income + expenses + transfers,
 )
 
+// Keyed by the first day of each period
 data class NetWorthData(
   val title: String?,
-  val items: ImmutableMap<YearMonth, Amount>,
+  val items: ImmutableMap<LocalDate, Amount>,
   val mode: NetWorthMode = Trend,
+  val interval: Interval = Monthly,
   // In stacking order, see netWorthData
   val accounts: ImmutableList<NetWorthAccount> = persistentListOf(),
 ) : ChartData

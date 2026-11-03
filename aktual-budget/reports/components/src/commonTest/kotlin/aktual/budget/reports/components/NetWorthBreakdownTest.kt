@@ -15,7 +15,7 @@ import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.datetime.YearMonth
+import kotlinx.datetime.LocalDate
 
 class NetWorthBreakdownTest {
   @Test
@@ -34,7 +34,7 @@ class NetWorthBreakdownTest {
   }
 
   @Test
-  fun `First month has no change`() {
+  fun `First period has no change`() {
     assertThat(netWorthBreakdown(DATA, JAN)).prop(NetWorthBreakdown::change).isNull()
   }
 
@@ -50,8 +50,8 @@ class NetWorthBreakdownTest {
   }
 
   private companion object {
-    val JAN = YearMonth(2026, 1)
-    val FEB = YearMonth(2026, 2)
+    val JAN = LocalDate(2026, 1, 1)
+    val FEB = LocalDate(2026, 2, 1)
 
     val DATA =
       NetWorthData(

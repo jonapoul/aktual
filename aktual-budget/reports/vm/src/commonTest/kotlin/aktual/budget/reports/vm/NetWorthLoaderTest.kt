@@ -5,6 +5,8 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
+import aktual.budget.model.Condition
+import aktual.budget.model.Interval
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
 import assertk.assertThat
@@ -18,6 +20,8 @@ import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.yearMonth
+import kotlinx.serialization.json.JsonPrimitive
 
 class NetWorthLoaderTest {
   @Test
@@ -76,12 +80,13 @@ class NetWorthLoaderTest {
       netWorthData(
         title = null,
         mode = Stacked,
-        months = listOf(JAN, FEB),
+        interval = Monthly,
+        periods = listOf(JAN, FEB),
         rows =
           listOf(
-            row("big", month = null, total = 100),
-            row("small", month = JAN, total = 10),
-            row("debt", month = FEB, total = -50),
+            row("big", period = null, total = 100),
+            row("small", period = JAN, total = 10),
+            row("debt", period = FEB, total = -50),
           ),
       )
 
@@ -90,28 +95,85 @@ class NetWorthLoaderTest {
       .containsExactly("debt", "small", "big")
   }
 
+  @Test
+  fun `Conditions filter the balances`() = runLoaderTest { loader, sync ->
+    sync.insertAccounts()
+    sync.transaction("old", 1000, account = "checking", date = 20260115)
+    sync.transaction("card", -300, account = "card", date = 20260320)
+
+    loader.netWorth(meta(conditions = listOf(CHECKING))).test {
+      val data = awaitItem() as NetWorthData
+      assertThat(data.items)
+        .isEqualTo(persistentMapOf(JAN to Amount(1000), FEB to Amount(1000), MAR to Amount(1000)))
+    }
+  }
+
+  @Test
+  fun `Weekly periods start on the first day of the week and stop at today`() =
+    runLoaderTest { loader, sync ->
+      sync.insertAccounts()
+      sync.transaction("old", 1000, account = "checking", date = 20260115)
+      sync.transaction("apr", 200, account = "checking", date = 20260408)
+
+      val april = TimeFrame(APR, APR, Static)
+      loader.netWorth(meta(interval = Weekly, timeFrame = april)).test {
+        val data = awaitItem() as NetWorthData
+        assertThat(data.interval).isEqualTo(Weekly)
+        // Sundays, from the week before April up to today
+        assertThat(data.items)
+          .isEqualTo(
+            persistentMapOf(
+              LocalDate(2026, 3, 29) to Amount(1000),
+              LocalDate(2026, 4, 5) to Amount(1200),
+              LocalDate(2026, 4, 12) to Amount(1200),
+            ),
+          )
+      }
+    }
+
+  @Test
+  fun `Yearly periods sum each year`() = runLoaderTest { loader, sync ->
+    sync.insertAccounts()
+    sync.transaction("old", 1000, account = "checking", date = 20250115)
+    sync.transaction("new", 500, account = "checking", date = 20260210)
+
+    val years = TimeFrame(YearMonth(2025, 6), YearMonth(2026, 3), Static)
+    loader.netWorth(meta(interval = Yearly, timeFrame = years)).test {
+      val data = awaitItem() as NetWorthData
+      assertThat(data.items)
+        .isEqualTo(
+          persistentMapOf(LocalDate(2025, 1, 1) to Amount(1000), JAN to Amount(1500)),
+        )
+    }
+  }
+
   private suspend fun BudgetSyncController.insertAccounts() {
     row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
     row(ACCOUNTS, "card", "name" to "Card", "offbudget" to false)
   }
 
-  private fun account(id: String, name: String, vararg balances: Pair<YearMonth, Long>) =
+  private fun account(id: String, name: String, vararg balances: Pair<LocalDate, Long>) =
     NetWorthAccount(
       id = AccountId(id),
       name = name,
       balances = persistentMapOf(*balances.map { (m, a) -> m to Amount(a) }.toTypedArray()),
     )
 
-  private fun row(account: String, month: YearMonth?, total: Long) =
-    NetWorthRow(AccountId(account), name = account, month = month, total = total)
+  private fun row(account: String, period: LocalDate?, total: Long) =
+    NetWorthRow(AccountId(account), name = account, period = period, total = total)
 
-  private fun meta(mode: NetWorthMode) =
+  private fun meta(
+    mode: NetWorthMode = Trend,
+    interval: Interval? = null,
+    conditions: List<Condition>? = null,
+    timeFrame: TimeFrame = TimeFrame(FEB.yearMonth, MAR.yearMonth, Static),
+  ) =
     NetWorthReportMeta(
       name = "Net worth",
-      conditions = null,
+      conditions = conditions,
       conditionsOp = null,
-      timeFrame = TimeFrame(FEB, MAR, Static),
-      interval = null,
+      timeFrame = timeFrame,
+      interval = interval,
       mode = mode,
     )
 
@@ -125,8 +187,10 @@ class NetWorthLoaderTest {
 
   private companion object {
     val TODAY = LocalDate(2026, 4, 15)
-    val JAN = YearMonth(2026, 1)
-    val FEB = YearMonth(2026, 2)
-    val MAR = YearMonth(2026, 3)
+    val APR = YearMonth(2026, 4)
+    val JAN = LocalDate(2026, 1, 1)
+    val FEB = LocalDate(2026, 2, 1)
+    val MAR = LocalDate(2026, 3, 1)
+    val CHECKING = Condition(field = Account, operator = Is, value = JsonPrimitive("checking"))
   }
 }

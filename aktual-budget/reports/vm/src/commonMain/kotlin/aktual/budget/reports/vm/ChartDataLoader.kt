@@ -491,46 +491,65 @@ internal class ChartDataLoader(
   // packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts
   // createSpreadsheet()
   fun netWorth(meta: NetWorthReportMeta): Flow<ChartData> {
-    if (meta.conditions.hasFilters()) return unsupported(meta, Filters)
-
-    return dao.observeTransactionDateBounds().flatMapLatest { bounds ->
-      val today = calendar.today()
-      val range =
-        resolveTimeRange(
-          timeFrame = meta.timeFrame,
-          default = null,
-          today = today,
-          latestTransaction = bounds.latest,
-        )
-
-      // Go back one month to show the change into the first month, unless there's no data before it
-      val earliest = bounds.earliest
-      val start =
-        if (earliest != null && earliest >= range.start.firstDay) {
-          range.start
-        } else {
-          range.start.minusMonth()
+    val filter = reportFilter(meta.conditions, meta.conditionsOp)
+    val interval = meta.interval?.takeIf { it != Unknown } ?: Monthly
+    return combine(
+        dao.observeTransactionDateBounds(),
+        preferences.observe(SyncedPrefKey.Global.FirstDayOfWeekIdx),
+        ::Pair,
+      )
+      .flatMapLatest { (bounds, firstDayOfWeek) ->
+        val today = calendar.today()
+        val range =
+          resolveTimeRange(
+            timeFrame = meta.timeFrame,
+            default = null,
+            today = today,
+            latestTransaction = bounds.latest,
+          )
+        val periods =
+          NetWorthPeriods.of(
+            interval = interval,
+            range = range,
+            earliest = bounds.earliest,
+            today = today,
+            // Upstream treats an unset preference as Sunday
+            firstDayOfWeek = FirstDayOfWeek.from(firstDayOfWeek) ?: Sunday,
+          )
+        netWorthInputs(filter, periods).map { rows ->
+          netWorthData(
+            title = meta.name,
+            mode = meta.mode,
+            interval = interval,
+            periods = periods.keys(),
+            rows = rows,
+          )
         }
-      val end = range.endInclusive
+      }
+      .flowOn(contexts.default)
+  }
 
-      dao.observeNetWorthByAccount(start.firstDay, end.lastDay).map { rows ->
-        netWorthData(
-          title = meta.name,
-          mode = meta.mode,
-          months = (start..end).toList(),
-          rows =
-            rows.map { row ->
-              NetWorthRow(
-                account = row.account,
-                name = row.name,
-                month = row.month.takeIf { it != 0L }?.toYearMonth(),
-                total = row.total,
-              )
-            },
-        )
+  // Monthly totals come from SQL without conditions. Otherwise the transactions are grouped here
+  private fun netWorthInputs(
+    filter: TransactionFilter,
+    periods: NetWorthPeriods,
+  ): Flow<List<NetWorthRow>> =
+    if (filter.isEmpty && periods.interval == Monthly) {
+      dao.observeNetWorthByAccount(periods.start, periods.end).map { rows ->
+        rows.map { row ->
+          NetWorthRow(
+            account = row.account,
+            name = row.name,
+            period = row.month.takeIf { it != 0L }?.toYearMonth()?.firstDay,
+            total = row.total,
+          )
+        }
+      }
+    } else {
+      dao.observeFilteredTransactions(filter, ALL_TIME_START, periods.end).map { rows ->
+        netWorthRows(rows, periods)
       }
     }
-  }
 
   // packages/desktop-client/src/components/reports/spreadsheets/age-of-money-spreadsheet.ts
   // createAgeOfMoneySpreadsheet()
