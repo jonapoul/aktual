@@ -91,13 +91,13 @@ internal constructor(
     mutableProgress.update { BankSyncProgress(isRunning = true, pending = pending) }
     try {
       val simpleFin = accounts.filter { it.source == SimpleFin }
-      val batch = if (simpleFin.size > 1) simpleFin else emptyList()
+      val batch = if (simpleFin.size > 1) simpleFin else []
       if (batch.isNotEmpty()) syncSimpleFin(batch)
       for (account in accounts - batch.toSet()) {
         report(syncAccount(account))
       }
     } finally {
-      mutableProgress.update { it.copy(isRunning = false, pending = emptyList()) }
+      mutableProgress.update { it.copy(isRunning = false, pending = []) }
     }
     val results = mutableProgress.value.results
     mutableFinished.emit(results)

@@ -126,9 +126,7 @@ internal class BankAccountLinkerTest {
 
   @Test
   fun `New accounts go after the others on or off budget`() = runBankSyncTest {
-    syncChanges(
-      listOf(localChange(ACCOUNTS, ACCOUNT.value, "sort_order", 20000)),
-    )
+    syncChanges(localChange(ACCOUNTS, ACCOUNT.value, "sort_order", 20000))
     insertAccount(OTHER, offBudget = true)
     val linker = linker(api)
 
@@ -145,10 +143,8 @@ internal class BankAccountLinkerTest {
   @Test
   fun `New accounts ignore the order of deleted accounts`() = runBankSyncTest {
     syncChanges(
-      listOf(
-        localChange(ACCOUNTS, ACCOUNT.value, "sort_order", 20000),
-        localChange(ACCOUNTS, ACCOUNT.value, "tombstone", 1),
-      ),
+      localChange(ACCOUNTS, ACCOUNT.value, "sort_order", 20000),
+      localChange(ACCOUNTS, ACCOUNT.value, "tombstone", 1),
     )
 
     val created = linker(api).create(SimpleFin, EXTERNAL, offBudget = false)

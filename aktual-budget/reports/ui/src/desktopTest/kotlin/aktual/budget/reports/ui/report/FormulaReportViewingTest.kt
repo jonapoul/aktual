@@ -88,7 +88,7 @@ class FormulaReportViewingTest {
   fun `Condition with an unexpected value shows it raw`() = runComposeUiTest {
     // when
     val condition = Condition(Amount, LessThan, JsonPrimitive("abc"))
-    setViewer(meta(query(conditions = listOf(condition))))
+    setViewer(meta(query(conditions = [condition])))
 
     // then
     onNodeWithText("Amount is less than \"abc\"").assertExists()
@@ -144,19 +144,19 @@ class FormulaReportViewingTest {
 
   private companion object {
     val FOUR_CONDITIONS =
-      listOf(
+      [
         Condition(Payee, Is, JsonPrimitive("employer")),
         Condition(
           Category,
           OneOf,
-          JsonArray(listOf(JsonPrimitive("food"), JsonPrimitive("bills"))),
+          JsonArray([JsonPrimitive("food"), JsonPrimitive("bills")]),
         ),
         Condition(Notes, Contains, JsonPrimitive("rent")),
         Condition(Cleared, Is, JsonPrimitive(true)),
-      )
+      ]
 
     fun query(
-      conditions: List<Condition> = emptyList(),
+      conditions: List<Condition> = [],
       timeFrame: TimeFrame? = null,
     ) = FormulaQuery(conditions = conditions, conditionsOp = And, timeFrame = timeFrame)
 

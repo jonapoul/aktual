@@ -30,12 +30,12 @@ class CustomSpreadsheetTest {
     val sheet =
       spreadsheet(
         amounts =
-          listOf(
+          [
             row(JAN, category = FOOD, debts = -1000),
             row(JAN, category = FOOD, debts = -500, payee = SHOP),
             row(FEB, category = FUEL, debts = -2000),
             row(FEB, category = SALARY, assets = 50_000),
-          ),
+          ],
       )
 
     assertThat(sheet.groups.map { it.group }).containsExactly(FUEL_GROUP, FOOD_GROUP)
@@ -66,12 +66,12 @@ class CustomSpreadsheetTest {
       spreadsheet(
         config = CONFIG.copy(showOffBudget = true),
         amounts =
-          listOf(
+          [
             row(JAN, debts = -100),
             row(JAN, debts = -200, transferAccount = SAVINGS),
             row(JAN, debts = -400, offBudget = true),
             row(JAN, category = FOOD, debts = -800, offBudget = true),
-          ),
+          ],
       )
 
     assertThat(sheet.groups.associate { it.group to it.totals.debts })
@@ -87,13 +87,13 @@ class CustomSpreadsheetTest {
   @Test
   fun `Hidden, off budget and uncategorised amounts are left out unless asked for`() {
     val amounts =
-      listOf(
+      [
         row(JAN, category = FOOD, debts = -100),
         row(JAN, category = FUEL, debts = -200, categoryHidden = true),
         row(JAN, category = SALARY, debts = -400, groupHidden = true),
         row(JAN, debts = -800, offBudget = true),
         row(JAN, debts = -1600),
-      )
+      ]
 
     val hiding =
       spreadsheet(
@@ -112,7 +112,7 @@ class CustomSpreadsheetTest {
 
   @Test
   fun `Empty groups are only shown when asked for`() {
-    val amounts = listOf(row(JAN, category = FOOD, debts = -100))
+    val amounts = [row(JAN, category = FOOD, debts = -100)]
 
     assertThat(spreadsheet(amounts = amounts).groups.map { it.group }).containsExactly(FOOD_GROUP)
     assertThat(spreadsheet(config = CONFIG.copy(showEmpty = true), amounts = amounts).groups.size)
@@ -125,10 +125,10 @@ class CustomSpreadsheetTest {
       spreadsheet(
         config = CONFIG.copy(balanceType = Net),
         amounts =
-          listOf(
+          [
             row(JAN, category = FOOD, assets = 100, debts = -100),
             row(JAN, category = FUEL, assets = 300),
-          ),
+          ],
       )
 
     assertThat(sheet.groups.map { it.group }).containsExactly(FUEL_GROUP, FOOD_GROUP)
@@ -138,10 +138,10 @@ class CustomSpreadsheetTest {
   @Test
   fun `Payments sort by the most spent, deposits by the most received`() {
     val amounts =
-      listOf(
+      [
         row(JAN, category = FOOD, debts = -100, assets = 900),
         row(JAN, category = FUEL, debts = -300, assets = 100),
-      )
+      ]
 
     assertThat(spreadsheet(amounts = amounts).groups.map { it.group })
       .containsExactly(FUEL_GROUP, FOOD_GROUP)
@@ -172,7 +172,7 @@ class CustomSpreadsheetTest {
       spreadsheet(
         config = config,
         range = date(JAN)..date("2026-04-30"),
-        amounts = listOf(row(FEB, category = FOOD, debts = -100)),
+        amounts = [row(FEB, category = FOOD, debts = -100)],
       )
 
     assertThat(sheet.intervals.map { it.interval.start }).containsExactly(date(FEB))
@@ -191,10 +191,10 @@ class CustomSpreadsheetTest {
     val sheet =
       spreadsheet(
         amounts =
-          listOf(
+          [
             row(JAN, category = FOOD, debts = -100),
             row(FEB, category = FOOD, debts = -300),
-          ),
+          ],
       )
 
     assertThat(sheet.groups.single().intervals.map { it.change })
@@ -208,12 +208,12 @@ class CustomSpreadsheetTest {
         config = CONFIG.copy(showTrendLines = true),
         range = date(JAN)..date("2026-03-31"),
         amounts =
-          listOf(
+          [
             row(JAN, category = FOOD, debts = -100),
             row(FEB, category = FOOD, debts = -300),
             row(MAR, category = FOOD, debts = -200),
             row(FEB, category = FUEL, debts = -600),
-          ),
+          ],
       )
 
     assertThat(sheet.trends)
@@ -227,7 +227,7 @@ class CustomSpreadsheetTest {
 
   @Test
   fun `Trend lines are only fitted when the report shows them`() {
-    val amounts = listOf(row(JAN, category = FOOD, debts = -100))
+    val amounts = [row(JAN, category = FOOD, debts = -100)]
     assertThat(spreadsheet(amounts = amounts).trends).isEmpty()
 
     val oneInterval =
@@ -249,11 +249,11 @@ class CustomSpreadsheetTest {
         range = date("2026-01-01")..date("2026-01-14"),
         firstDayOfWeek = Sunday,
         amounts =
-          listOf(
+          [
             row(20260103, category = FOOD, debts = -100),
             row(20260104, category = FOOD, debts = -200),
             row(20260110, category = FOOD, debts = -400),
-          ),
+          ],
       )
 
     assertThat(sheet.intervals.map { it.interval })
@@ -274,10 +274,10 @@ class CustomSpreadsheetTest {
         config = config,
         range = date("2025-06-01")..date("2026-02-01"),
         amounts =
-          listOf(
+          [
             row(2025, category = FOOD, debts = -100),
             row(2026, category = FOOD, debts = -200),
-          ),
+          ],
       )
 
     assertThat(sheet.intervals.map { it.interval.start })
@@ -291,11 +291,11 @@ class CustomSpreadsheetTest {
       spreadsheet(
         config = CONFIG.copy(groupBy = Group),
         amounts =
-          listOf(
+          [
             row(JAN, category = FOOD, debts = -100),
             row(JAN, category = FUEL, debts = -200),
             row(JAN, debts = -400),
-          ),
+          ],
       )
 
     assertThat(sheet.groups.map { it.group })
@@ -313,10 +313,10 @@ class CustomSpreadsheetTest {
       spreadsheet(
         config = CONFIG.copy(groupBy = Payee),
         amounts =
-          listOf(
+          [
             row(JAN, category = FOOD, debts = -100, payee = SHOP),
             row(JAN, category = FUEL, debts = -200),
-          ),
+          ],
       )
 
     assertThat(sheet.groups.map { it.group }).containsExactly(CustomGroup.Payee(SHOP, "Shop"))
@@ -327,7 +327,7 @@ class CustomSpreadsheetTest {
     val sheet =
       spreadsheet(
         config = CONFIG.copy(groupBy = Account),
-        amounts = listOf(row(JAN, category = FOOD, debts = -100, account = SAVINGS)),
+        amounts = [row(JAN, category = FOOD, debts = -100, account = SAVINGS)],
       )
 
     assertThat(sheet.groups.map { it.group })
@@ -339,8 +339,8 @@ class CustomSpreadsheetTest {
     val sheet =
       spreadsheet(
         config = CONFIG.copy(groupBy = Payee),
-        amounts = listOf(row(JAN, category = FOOD, debts = -100)),
-        payees = emptyList(),
+        amounts = [row(JAN, category = FOOD, debts = -100)],
+        payees = [],
       )
 
     assertThat(sheet.intervals).isEmpty()
@@ -353,13 +353,13 @@ class CustomSpreadsheetTest {
       spreadsheet(
         config = CONFIG.copy(groupBy = Tag),
         tagged =
-          listOf(
+          [
             tagged(row(JAN, category = FOOD, debts = -100), "Lunch #work"),
             tagged(row(FEB, category = FOOD, debts = -200), "#work ##escaped #trip #unknown"),
             tagged(row(FEB, category = FUEL, debts = -400), "#trip #work"),
             tagged(row(FEB, category = FUEL, debts = -800), "#Work is a different tag"),
             tagged(row(FEB, category = FUEL, debts = -1600), null),
-          ),
+          ],
       )
 
     assertThat(sheet.groups.associate { it.group to it.totals.debts })
@@ -380,10 +380,10 @@ class CustomSpreadsheetTest {
           CONFIG.copy(groupBy = Tag, tagScope = CustomTagScope.Selected(persistentListOf(TRIP))),
         tags = TAGS + CustomReportTags(TagId("hidden"), "hidden", true),
         tagged =
-          listOf(
+          [
             tagged(row(JAN, category = FOOD, debts = -100), "#work"),
             tagged(row(JAN, category = FOOD, debts = -200), "#trip #work #hidden"),
-          ),
+          ],
       )
 
     assertThat(sheet.groups.associate { it.group to it.totals.debts })
@@ -410,16 +410,16 @@ class CustomSpreadsheetTest {
   @Test
   fun `Tags in a bucket are ordered by name, numbers by value`() {
     val tags =
-      listOf(
+      [
         CustomReportTags(TagId("b10"), "b10", false),
         CustomReportTags(TagId("b9"), "b9", false),
         CustomReportTags(TagId("a"), "A", false),
-      )
+      ]
     val sheet =
       spreadsheet(
         config = CONFIG.copy(groupBy = Tag),
         tags = tags,
-        tagged = listOf(tagged(row(JAN, category = FOOD, debts = -100), "#b10 #A #b9")),
+        tagged = [tagged(row(JAN, category = FOOD, debts = -100), "#b10 #A #b9")],
       )
 
     assertThat(sheet.groups.single().group)
@@ -446,9 +446,9 @@ class CustomSpreadsheetTest {
     config: CustomReportConfig = CONFIG,
     range: LocalDateRange = date(JAN)..date("2026-02-28"),
     firstDayOfWeek: FirstDayOfWeek = Sunday,
-    amounts: List<CustomReportAmounts> = emptyList(),
-    payees: List<CustomReportPayees> = listOf(CustomReportPayees(SHOP, "Shop")),
-    tagged: List<TaggedAmounts> = emptyList(),
+    amounts: List<CustomReportAmounts> = [],
+    payees: List<CustomReportPayees> = [CustomReportPayees(SHOP, "Shop")],
+    tagged: List<TaggedAmounts> = [],
     tags: List<CustomReportTags> = TAGS,
   ) =
     customSpreadsheet(
@@ -462,10 +462,10 @@ class CustomSpreadsheetTest {
           categoryGroups = GROUPS,
           payees = payees,
           accounts =
-            listOf(
+            [
               CustomReportAccounts(CHECKING, "Checking"),
               CustomReportAccounts(SAVINGS, "Savings"),
-            ),
+            ],
           tagged = tagged,
           tags = tags,
         ),
@@ -487,7 +487,7 @@ class CustomSpreadsheetTest {
     val WORK = TagId("work")
     val TRIP = TagId("trip")
 
-    val TAGS = listOf(CustomReportTags(WORK, "work", false), CustomReportTags(TRIP, "trip", null))
+    val TAGS = [CustomReportTags(WORK, "work", false), CustomReportTags(TRIP, "trip", null)]
     val WORK_BUCKET = CustomGroup.TagSet(persistentListOf(WORK), persistentListOf("work"))
     val TRIP_AND_WORK_BUCKET =
       CustomGroup.TagSet(persistentListOf(TRIP, WORK), persistentListOf("trip", "work"))
@@ -497,16 +497,16 @@ class CustomSpreadsheetTest {
     val SPENDING_GROUP = CustomGroup.Group(SPENDING, "Spending")
 
     val CATEGORIES =
-      listOf(
+      [
         CustomReportCategories(FOOD, "Food", SPENDING, 1.0, false, false),
         CustomReportCategories(FUEL, "Fuel", SPENDING, 2.0, false, false),
         CustomReportCategories(SALARY, "Salary", INCOME, 1.0, false, false),
-      )
+      ]
     val GROUPS =
-      listOf(
+      [
         CustomReportCategoryGroups(SPENDING, "Spending"),
         CustomReportCategoryGroups(INCOME, "Income"),
-      )
+      ]
 
     val CONFIG =
       checkNotNull(emptyCustomReport().toConfig())

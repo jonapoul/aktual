@@ -105,7 +105,7 @@ class ColorsResolverImplTest {
 
   @Test
   fun `Custom theme fetched when not in cache but summaries are cached`() = runThemeTest {
-    cache.putSummaries(listOf(ShadesOfCoffeeThemeSummary))
+    cache.putSummaries([ShadesOfCoffeeThemeSummary])
     api.themes[ShadesOfCoffeeThemeSummary] = ShadesOfCoffeeTheme
     preferences.useSystemDefault.set(false)
     preferences.constantTheme.set(ShadesOfCoffeeTheme.id)
@@ -116,7 +116,7 @@ class ColorsResolverImplTest {
 
   @Test
   fun `Custom theme fetched via catalog when nothing is cached`() = runThemeTest {
-    api.catalog = listOf(ShadesOfCoffeeThemeSummary)
+    api.catalog = [ShadesOfCoffeeThemeSummary]
     api.themes[ShadesOfCoffeeThemeSummary] = ShadesOfCoffeeTheme
     preferences.useSystemDefault.set(false)
     preferences.constantTheme.set(ShadesOfCoffeeTheme.id)
@@ -127,7 +127,7 @@ class ColorsResolverImplTest {
 
   @Test
   fun `Fetched custom theme is saved to cache`() = runThemeTest {
-    cache.putSummaries(listOf(ShadesOfCoffeeThemeSummary))
+    cache.putSummaries([ShadesOfCoffeeThemeSummary])
     api.themes[ShadesOfCoffeeThemeSummary] = ShadesOfCoffeeTheme
     preferences.useSystemDefault.set(false)
     preferences.constantTheme.set(ShadesOfCoffeeTheme.id)
@@ -139,7 +139,7 @@ class ColorsResolverImplTest {
 
   @Test
   fun `Custom theme fetch failure falls back based on system dark mode`() = runThemeTest {
-    cache.putSummaries(listOf(ShadesOfCoffeeThemeSummary))
+    cache.putSummaries([ShadesOfCoffeeThemeSummary])
     api.fetchThemeException = RuntimeException("Network error")
     preferences.useSystemDefault.set(false)
     preferences.constantTheme.set(ShadesOfCoffeeTheme.id)

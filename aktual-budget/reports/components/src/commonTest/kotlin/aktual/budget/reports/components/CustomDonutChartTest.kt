@@ -19,13 +19,13 @@ class CustomDonutChartTest {
 
   @Test
   fun `Debts are kept, since they're drawn positive`() {
-    val slices = listOf(bar("A", -10), bar("B", -5)).donutSlices(Debts)
+    val slices = [bar("A", -10), bar("B", -5)].donutSlices(Debts)
     assertThat(slices.map { it.name }).containsExactly("A", "B")
   }
 
   @Test
   fun `Negative and empty totals are left out`() {
-    val slices = listOf(bar("A", 10), bar("B", -5), bar("C", 0), bar("D", 3)).donutSlices(Total)
+    val slices = [bar("A", 10), bar("B", -5), bar("C", 0), bar("D", 3)].donutSlices(Total)
     assertThat(slices.map { it.name }).containsExactly("A", "D")
   }
 

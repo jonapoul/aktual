@@ -14,7 +14,7 @@ class FakeCustomThemeCache : CustomThemeCache {
 
   override suspend fun repos(): List<CustomThemeRepo> = themes.value.keys.toList()
 
-  override suspend fun summaries(): List<CustomThemeSummary> = emptyList()
+  override suspend fun summaries(): List<CustomThemeSummary> = []
 
   override suspend fun theme(repo: CustomThemeRepo): CustomColors? = themes.value[repo]
 

@@ -81,8 +81,8 @@ internal class BankSyncImporterTest {
     insertCategory(GROCERIES)
     insertRule(
       "tesco",
-      conditions = listOf(cond(ImportedPayee, Contains, "tesco")),
-      actions = listOf(set(PayeeName, "Tesco"), set(Category, GROCERIES.value)),
+      conditions = [cond(ImportedPayee, Contains, "tesco")],
+      actions = [set(PayeeName, "Tesco"), set(Category, GROCERIES.value)],
     )
 
     val result = import(bankTx("-1.00", payeeName = "TESCO STORES 1234", transactionId = "t1"))
@@ -98,8 +98,8 @@ internal class BankSyncImporterTest {
   fun `A rule deleting the transaction stops it being added`() = runBankSyncTest {
     insertRule(
       "delete",
-      conditions = listOf(cond(ImportedPayee, Contains, "fee")),
-      actions = listOf(RuleAction(value = JsonPrimitive(""), op = DeleteTransaction)),
+      conditions = [cond(ImportedPayee, Contains, "fee")],
+      actions = [RuleAction(value = JsonPrimitive(""), op = DeleteTransaction)],
     )
 
     val result =
@@ -255,7 +255,7 @@ internal class BankSyncImporterTest {
 
     val date = LocalDate(2026, 9, 28)
     assertThat(result.updated).containsExactlyInAnyOrder(parent, child, CHILD_2)
-    for (id in listOf(parent, child, CHILD_2)) {
+    for (id in [parent, child, CHILD_2]) {
       assertThat(row(id)).all {
         prop(Transactions::date).isEqualTo(date)
         prop(Transactions::cleared).isEqualTo(true)
@@ -360,10 +360,10 @@ internal class BankSyncImporterTest {
     val download =
       BankSyncDownload(
         transactions =
-          listOf(
+          [
               bankTx("-12.34", transactionId = "t1"),
               bankTx("5.00", date = "2026-09-28", transactionId = "t2"),
-            )
+            ]
             .map(::BankSyncTransaction),
         currentBalance = Amount(10_000),
       )
@@ -384,7 +384,7 @@ internal class BankSyncImporterTest {
   fun `Later syncs update the account's balance`() = runBankSyncTest {
     val download =
       BankSyncDownload(
-        listOf(BankSyncTransaction(bankTx("-1.00", transactionId = "t1"))),
+        [BankSyncTransaction(bankTx("-1.00", transactionId = "t1"))],
         currentBalance = Amount(500),
       )
 
@@ -399,7 +399,7 @@ internal class BankSyncImporterTest {
     preferences[SyncImportTransactions(ACCOUNT)] = "false"
     val download =
       BankSyncDownload(
-        listOf(BankSyncTransaction(bankTx("-1.00", transactionId = "t1"))),
+        [BankSyncTransaction(bankTx("-1.00", transactionId = "t1"))],
         currentBalance = Amount(500),
       )
 

@@ -232,7 +232,7 @@ internal fun substitution(
   index: Int,
   match: String,
   replacement: String,
-  groups: List<String> = emptyList(),
+  groups: List<String> = [],
 ): String = buildString {
   var i = 0
   while (i < replacement.length) {

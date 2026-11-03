@@ -121,7 +121,7 @@ private fun EntityPicker(
   if (showSheet) {
     EntitySheet(
       selected = entities.firstOrNull { it.id == id } ?: NOTHING,
-      options = remember(entities) { (listOf(NOTHING) + entities).toImmutableList() },
+      options = remember(entities) { ([NOTHING] + entities).toImmutableList() },
       onSelect = { entity ->
         onChange(if (entity == NOTHING) JsonNull else JsonPrimitive(entity.id))
       },

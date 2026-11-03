@@ -23,7 +23,7 @@ internal class FakeBankSyncController : BankSyncController {
 
   override suspend fun sync(accounts: Set<AccountId>): List<BankSyncResult> {
     synced += accounts
-    return emptyList()
+    return []
   }
 
   fun running(pending: List<AccountId>) = progress.update {

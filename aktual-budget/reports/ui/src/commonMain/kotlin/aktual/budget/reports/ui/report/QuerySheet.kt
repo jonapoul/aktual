@@ -37,7 +37,7 @@ internal fun QuerySheet(
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val sheetState =
-    rememberBottomSheetState(initialValue = Hidden, enabledValues = setOf(Hidden, Expanded))
+    rememberBottomSheetState(initialValue = Hidden, enabledValues = [Hidden, Expanded])
   val scope = rememberCoroutineScope()
   fun hide(then: () -> Unit) {
     scope

@@ -159,7 +159,7 @@ class TransactionsViewModelTest {
       )
 
     with(appGraph.runLevelController) {
-      init(listOf(appGraph))
+      init([appGraph])
       onServerChosen(Demo)
       onLoggedIn(TOKEN)
       val budgetGraph = onBudget(BUDGET_ID, METADATA)
@@ -635,7 +635,7 @@ class TransactionsViewModelTest {
       insertTransaction("t5", "c", "c", "c", date = DATE_3, amount = 3.0)
       insertTransaction("t6", "b", "b", "b", date = DATE_3, amount = 1.0)
     }
-    sync.sendMessages(listOf(localChange("transactions", row = "t3", "reconciled", true)))
+    sync.sendMessages([localChange("transactions", row = "t3", "reconciled", true)])
     advanceUntilIdle()
     val sources =
       mapOf(
@@ -677,7 +677,7 @@ class TransactionsViewModelTest {
     // when an older transaction moves every balance above it
     transactions.insertTransaction("old", "a", "a", "a", date = LocalDate(2025, 5, 1), amount = 5.0)
     advanceUntilIdle()
-    val state = PagingState(listOf(first, second), 2, PagingConfig(pageSize = 2), 0)
+    val state = PagingState([first, second], 2, PagingConfig(pageSize = 2), 0)
     val fresh = pagingSource(AllAccounts)
     val refreshed = fresh.load(LoadParams.Refresh(old.getRefreshKey(state), 2, false)).asPage()
 
@@ -1087,7 +1087,7 @@ class TransactionsViewModelTest {
       insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
       insertTransaction(id = "b", account = "a", category = "b", payee = "b", date = DATE_2)
     }
-    sync.sendMessages(listOf(localChange("transactions", row = "a", "reconciled", true)))
+    sync.sendMessages([localChange("transactions", row = "a", "reconciled", true)])
     advanceUntilIdle()
     assertThat(viewModel.pagingData.asSnapshot().map { it.id.toString() }).containsExactly("b", "a")
 
@@ -1111,10 +1111,10 @@ class TransactionsViewModelTest {
       insertTransaction(id = "b", account = "a", category = "b", payee = "b", amount = -23.45)
     }
     sync.sendMessages(
-      listOf(
+      [
         localChange("transactions", row = "a", "cleared", true),
         localChange("transactions", row = "b", "cleared", false),
-      ),
+      ],
     )
     advanceUntilIdle()
     viewModel.clearedBalances.test { assertThatNextEmissionIsEqualTo(null) }
@@ -1183,7 +1183,7 @@ class TransactionsViewModelTest {
 
     // when
     val edit = localChange("transactions", row = "a", column = "notes", "New")
-    sync.sendMessages(listOf(edit))
+    sync.sendMessages([edit])
     advanceUntilIdle()
 
     // then
@@ -1220,7 +1220,7 @@ class TransactionsViewModelTest {
     val all = factory.create(TransactionsSpec(AllAccounts))
 
     // The account query runs off the test scheduler, so wait for it before advancing
-    listOf(viewModel, unlinked, all).forEach { vm -> vm.loadedAccount.first { it != Loading } }
+    [viewModel, unlinked, all].forEach { vm -> vm.loadedAccount.first { it != Loading } }
     advanceUntilIdle()
 
     // then
@@ -1262,13 +1262,13 @@ class TransactionsViewModelTest {
       assertThatNextEmissionIsEqualTo(false)
 
       // when
-      bankSync.running(pending = listOf(AccountId("a"), LINKED))
+      bankSync.running(pending = [AccountId("a"), LINKED])
 
       // then
       assertThatNextEmissionIsEqualTo(true)
 
       // when
-      bankSync.running(pending = listOf(AccountId("a")))
+      bankSync.running(pending = [AccountId("a")])
 
       // then
       assertThatNextEmissionIsEqualTo(false)
@@ -1284,8 +1284,8 @@ class TransactionsViewModelTest {
       BankSyncResult.Synced(
         LINKED,
         "Linked",
-        added = listOf(TransactionId("t")),
-        updated = emptyList(),
+        added = [TransactionId("t")],
+        updated = [],
       )
 
     viewModel.bankSyncFinished.test {
@@ -1392,11 +1392,11 @@ class TransactionsViewModelTest {
       insertTransaction(id = "c", account = "b", category = "b", payee = "b")
     }
     sync.sendMessages(
-      listOf(
+      [
         localChange("transactions", row = "a", "cleared", true),
         localChange("transactions", row = "b", "cleared", false),
         localChange("transactions", row = "c", "cleared", true),
-      ),
+      ],
     )
     advanceUntilIdle()
 
@@ -1427,7 +1427,7 @@ class TransactionsViewModelTest {
     // given
     buildViewModel(SpecificAccount(AccountId("a")))
     transactions.insertTransaction(id = "a", account = "a", category = "a", payee = "a")
-    sync.sendMessages(listOf(localChange("transactions", row = "a", "cleared", true)))
+    sync.sendMessages([localChange("transactions", row = "a", "cleared", true)])
     advanceUntilIdle()
     viewModel.startReconciling(Amount(100.00))
     viewModel.reconciling.first { it?.cleared == Amount(123.45) }
@@ -1445,7 +1445,7 @@ class TransactionsViewModelTest {
     // given
     buildViewModel(SpecificAccount(AccountId("a")))
     transactions.insertTransaction(id = "a", account = "a", category = "a", payee = "a")
-    sync.sendMessages(listOf(localChange("transactions", row = "a", "cleared", true)))
+    sync.sendMessages([localChange("transactions", row = "a", "cleared", true)])
     advanceUntilIdle()
     viewModel.startReconciling(Amount(100.00))
     viewModel.reconciling
@@ -1480,7 +1480,7 @@ class TransactionsViewModelTest {
     awaitUntil { transactions.row(TransactionId("p2"))?.cleared == false }
 
     // then
-    for (id in listOf("p", "p1", "p2")) {
+    for (id in ["p", "p1", "p2"]) {
       assertThat(transactions.row(TransactionId(id))?.cleared).isEqualTo(false)
     }
   }
@@ -1494,10 +1494,10 @@ class TransactionsViewModelTest {
       insertTransaction(id = "p1", account = "a", category = "a", payee = "a", parent = "p")
     }
     sync.sendMessages(
-      listOf(
+      [
         localChange("transactions", row = "p", "reconciled", true),
         localChange("transactions", row = "p1", "reconciled", true),
-      ),
+      ],
     )
     advanceUntilIdle()
 
@@ -1518,7 +1518,7 @@ class TransactionsViewModelTest {
       insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
       insertTransaction(id = "b", account = "a", category = "b", payee = "b", date = DATE_2)
     }
-    sync.sendMessages(listOf(localChange("transactions", row = "a", "reconciled", true)))
+    sync.sendMessages([localChange("transactions", row = "a", "reconciled", true)])
     viewModel.setAccountOption(HideReconciledRows, enabled = true)
     viewModel.accountOptions.first { it?.hideReconciled == true }
     advanceUntilIdle()

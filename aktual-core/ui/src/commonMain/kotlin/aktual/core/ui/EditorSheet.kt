@@ -36,7 +36,7 @@ fun EditorSheet(
   val sheetState =
     rememberBottomSheetState(
       initialValue = Hidden,
-      enabledValues = setOf(Hidden, Expanded),
+      enabledValues = [Hidden, Expanded],
     )
   val scope = rememberCoroutineScope()
   fun hide(then: () -> Unit) {

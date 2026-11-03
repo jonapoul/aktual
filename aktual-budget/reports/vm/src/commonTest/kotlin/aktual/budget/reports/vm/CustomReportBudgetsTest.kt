@@ -17,7 +17,7 @@ import kotlinx.serialization.json.JsonPrimitive
 class CustomReportBudgetsTest {
   @Test
   fun `Positive budgets are assets and negative ones debts`() {
-    val amounts = budgetAmounts(listOf(row("food", 500), row("fuel", -200)), emptyList(), And)
+    val amounts = budgetAmounts([row("food", 500), row("fuel", -200)], [], And)
     assertThat(amounts.map { it.assets to it.debts }).containsExactly(500L to 0L, 0L to -200L)
   }
 
@@ -51,7 +51,7 @@ class CustomReportBudgetsTest {
   @Test
   fun `Any unreadable category condition turns filtering off`() {
     val conditions =
-      listOf(condition(Category, Is, string("food")), condition(Category, Is, JsonPrimitive(1)))
+      [condition(Category, Is, string("food")), condition(Category, Is, JsonPrimitive(1))]
     assertThat(matching(*conditions.toTypedArray())).containsExactly("food", "fuel", "rent")
   }
 
@@ -64,7 +64,7 @@ class CustomReportBudgetsTest {
   @Test
   fun `Or keeps rows matching any condition`() {
     val conditions =
-      listOf(condition(Category, Is, string("food")), condition(Category, Is, string("rent")))
+      [condition(Category, Is, string("food")), condition(Category, Is, string("rent"))]
     assertThat(budgetAmounts(ROWS, conditions, Or).map { it.category?.value })
       .containsExactly("food", "rent")
   }
@@ -88,11 +88,11 @@ class CustomReportBudgetsTest {
 
   private companion object {
     val ROWS =
-      listOf(
+      [
         row("food", 100, group = "spending", groupName = "Spending"),
         row("fuel", 200, group = "spending", groupName = "Spending"),
         row("rent", 300, group = "bills", groupName = "Bills"),
-      )
+      ]
 
     fun row(
       category: String,

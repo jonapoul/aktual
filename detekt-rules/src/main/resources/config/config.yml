@@ -4,6 +4,8 @@ aktual:
     active: true
   InvalidComposeLazyKey:
     active: true
+  PreferCollectionLiteral:
+    active: true
   RedundantQualifier:
     active: true
   SetMainDispatcher:

@@ -85,7 +85,7 @@ internal val FINANCIAL_FUNCTIONS: Map<String, FormulaFunction> =
       },
     "MIRR" to
       formulaFunction(Param(Range), Param(Numeric), Param(Numeric)) { args ->
-        exactNumbers(listOf(args.array(0))) { mirr(it, args.number(1), args.number(2)) }
+        exactNumbers([args.array(0)]) { mirr(it, args.number(1), args.number(2)) }
       },
     "FVSCHEDULE" to
       formulaFunction(Param(Numeric), Param(Range)) { args ->

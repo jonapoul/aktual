@@ -13,7 +13,7 @@ internal class CurrencyOrdinalToCode : PreferenceKeyMigration<Int, String>(OldKe
     // Currency codes in the enum's order back when the ordinal was stored. Frozen, so later changes
     // to the enum don't shift what old ordinals map to
     private val LegacyCodes =
-      listOf(
+      [
         "",
         "AED",
         "ARS",
@@ -56,6 +56,6 @@ internal class CurrencyOrdinalToCode : PreferenceKeyMigration<Int, String>(OldKe
         "USD",
         "UZS",
         "VND",
-      )
+      ]
   }
 }

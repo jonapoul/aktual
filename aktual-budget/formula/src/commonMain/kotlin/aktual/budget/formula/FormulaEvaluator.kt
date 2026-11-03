@@ -17,16 +17,16 @@ class FormulaEvaluator internal constructor(private val functions: Map<String, F
     variables: Map<String, FormulaValue> = emptyMap(),
   ): FormulaResult {
     if (!formula.startsWith("=")) {
-      return FormulaResult(ErrorValue(Generic, MissingEquals), emptyList())
+      return FormulaResult(ErrorValue(Generic, MissingEquals), [])
     }
 
     val root =
       try {
         FormulaParser.parse(formula)
       } catch (e: FormulaParseException) {
-        return FormulaResult(ErrorValue(Generic, e.reason, e.subject), emptyList())
+        return FormulaResult(ErrorValue(Generic, e.reason, e.subject), [])
       }
-    if (root.refersToFormulaCell()) return FormulaResult(ErrorValue(Cycle), emptyList())
+    if (root.refersToFormulaCell()) return FormulaResult(ErrorValue(Cycle), [])
 
     val scope = EvaluationScope(functions, variables.mapKeys { it.key.lowercase() })
     val value =
@@ -150,7 +150,7 @@ internal class EvaluationScope(
         val block =
           when (val value = evaluate(element)) {
             is ArrayValue -> value.rows
-            else -> listOf(listOf(value))
+            else -> [[value]]
           }
         if (row == null) {
           row = block.map { it.toMutableList() }

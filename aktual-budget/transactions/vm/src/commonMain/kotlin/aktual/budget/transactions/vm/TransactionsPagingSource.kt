@@ -205,8 +205,8 @@ internal class TransactionsPagingSource(
 
   // The ids to page over, in list order, with the split children to show under them
   private data class FilteredIds(
-    val ids: List<TransactionId> = emptyList(),
-    val children: Set<TransactionId> = emptySet(),
+    val ids: List<TransactionId> = [],
+    val children: Set<TransactionId> = [],
   )
 
   // Reload from the page nearest the scroll position, so a refresh keeps the user roughly in place

@@ -365,7 +365,7 @@ internal constructor(
 
   fun bankSync() {
     val account = accountId ?: return
-    if (!bankSyncController.start(setOf(account))) logcat.d { "Bank sync already running" }
+    if (!bankSyncController.start([account])) logcat.d { "Bank sync already running" }
   }
 
   fun deleteAccount() {

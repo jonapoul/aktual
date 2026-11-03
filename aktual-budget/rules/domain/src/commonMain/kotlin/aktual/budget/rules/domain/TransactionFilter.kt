@@ -431,7 +431,7 @@ fun normalise(value: String): String {
   return stripDiacritics(lower)
 }
 
-private val LETTER_REPLACEMENTS = listOf("ł" to "l", "ø" to "o", "ß" to "ss", "œ" to "oe")
+private val LETTER_REPLACEMENTS = ["ł" to "l", "ø" to "o", "ß" to "ss", "œ" to "oe"]
 
 /** Decomposes [value] and drops the combining marks, so "é" becomes "e" */
 internal expect fun stripDiacritics(value: String): String

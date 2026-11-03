@@ -60,12 +60,12 @@ class BankSyncProviderSetup(
     }
     val changes = trimmed.map { (credential, value) -> credential.secret to value }
     // A new token needs claiming again, which the access key came from
-    val cleared = if (source == SimpleFin) SIMPLEFIN_DERIVED else emptyList()
+    val cleared = if (source == SimpleFin) SIMPLEFIN_DERIVED else []
     return setAll(changes + cleared.map { it to null })
   }
 
   suspend fun reset(source: AccountSyncSource): SecretResponse {
-    val derived = if (source == SimpleFin) SIMPLEFIN_DERIVED else emptyList()
+    val derived = if (source == SimpleFin) SIMPLEFIN_DERIVED else []
     val all = ProviderCredential.of(source).map { it.secret } + derived
     return setAll(all.map { it to null })
   }
@@ -79,6 +79,6 @@ class BankSyncProviderSetup(
   }
 
   private companion object {
-    val SIMPLEFIN_DERIVED = listOf(BankSyncSecret.SimpleFinAccessKey)
+    val SIMPLEFIN_DERIVED = [BankSyncSecret.SimpleFinAccessKey]
   }
 }

@@ -57,11 +57,11 @@ class MerkleOperationsTest {
   fun `insert and diff roundtrip - synced after applying same messages`() {
     val trie = emptyTrie()
     val timestamps =
-      listOf(
+      [
         timestamp("2024-03-16T18:14:09.237Z", counter = 0, node = "aaaaaaaaaaaaaaaa"),
         timestamp("2024-03-16T18:15:00.000Z", counter = 1, node = "aaaaaaaaaaaaaaaa"),
         timestamp("2024-03-16T18:16:30.000Z", counter = 0, node = "bbbbbbbbbbbbbbbb"),
-      )
+      ]
     var t1 = trie
     var t2 = trie
     for (ts in timestamps) {
@@ -75,11 +75,11 @@ class MerkleOperationsTest {
   fun `prune keeps last n children at each level`() {
     val trie = emptyTrie()
     val timestamps =
-      listOf(
+      [
         timestamp("2024-01-01T00:00:00.000Z", counter = 0, node = "aaaaaaaaaaaaaaaa"),
         timestamp("2024-06-15T12:00:00.000Z", counter = 0, node = "aaaaaaaaaaaaaaaa"),
         timestamp("2024-12-31T23:59:00.000Z", counter = 0, node = "aaaaaaaaaaaaaaaa"),
-      )
+      ]
     var result = trie
     for (ts in timestamps) {
       result = insert(result, ts)

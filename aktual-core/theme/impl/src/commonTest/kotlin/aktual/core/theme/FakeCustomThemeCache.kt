@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.update
 
 class FakeCustomThemeCache : CustomThemeCache {
   private val storedThemes = MutableStateFlow(emptyMap<CustomThemeRepo, CustomColors>())
-  private var storedSummaries: List<CustomThemeSummary> = emptyList()
+  private var storedSummaries: List<CustomThemeSummary> = []
   val savedThemes = mutableListOf<CustomColors>()
 
   fun putTheme(theme: CustomColors) {
@@ -45,6 +45,6 @@ class FakeCustomThemeCache : CustomThemeCache {
   override suspend fun clear() {
     storedThemes.update { themes -> themes.filterKeys { it.isLocal } }
     savedThemes.clear()
-    storedSummaries = emptyList()
+    storedSummaries = []
   }
 }

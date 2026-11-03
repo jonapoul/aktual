@@ -63,7 +63,7 @@ private val NavItemButtonColors = IconButtonColorProvider { colors, isPressed ->
 private fun PreviewSubSettingsItem(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
-      listOf(true, false).forEach { isEnabled ->
+      [true, false].forEach { isEnabled ->
         SubSettingsItem(
           title = "Schedules",
           icon = AktualIcons.Calendar3,

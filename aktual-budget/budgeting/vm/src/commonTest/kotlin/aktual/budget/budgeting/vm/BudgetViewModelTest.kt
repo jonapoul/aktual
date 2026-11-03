@@ -89,8 +89,7 @@ class BudgetViewModelTest {
             carryover = false,
           ),
         )
-      assertThat(state.shown.income?.categories?.map { it.spent })
-        .isEqualTo(listOf(Amount(300_000L)))
+      assertThat(state.shown.income?.categories?.map { it.spent }).isEqualTo([Amount(300_000L)])
       assertThat(state.showSpent).isFalse()
       assertThat(state.showHidden).isFalse()
       cancelAndIgnoreRemainingEvents()
@@ -141,11 +140,11 @@ class BudgetViewModelTest {
 
       viewModel.toggleCollapsed(CategoryGroupId("usual"))
       assertThat(awaitLoaded().shown.groups.single().isCollapsed).isTrue()
-      assertThat(prefs.value[BudgetCollapsed]).isEqualTo(listOf("usual"))
+      assertThat(prefs.value[BudgetCollapsed]).isEqualTo(["usual"])
 
       viewModel.toggleCollapsed(CategoryGroupId("usual"))
       assertThat(awaitLoaded().shown.groups.single().isCollapsed).isFalse()
-      assertThat(prefs.value[BudgetCollapsed]).isEqualTo(emptyList())
+      assertThat(prefs.value[BudgetCollapsed]).isEqualTo([])
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -385,7 +384,7 @@ class BudgetViewModelTest {
     assertThat(viewModel.setBudget(YearMonth(2026, 4), CategoryId("food"), "120 + 30.50")).isTrue()
     testScheduler.advanceUntilIdle()
     assertThat(writer.calls)
-      .containsExactly(listOf("setBudget", YearMonth(2026, 4), CategoryId("food"), Amount(15_050L)))
+      .containsExactly(["setBudget", YearMonth(2026, 4), CategoryId("food"), Amount(15_050L)])
   }
 
   @Test
@@ -393,7 +392,7 @@ class BudgetViewModelTest {
     assertThat(viewModel.setBudget(YearMonth(2026, 4), CategoryId("food"), "-20")).isTrue()
     testScheduler.advanceUntilIdle()
     assertThat(writer.calls)
-      .containsExactly(listOf("setBudget", YearMonth(2026, 4), CategoryId("food"), Amount(-2_000L)))
+      .containsExactly(["setBudget", YearMonth(2026, 4), CategoryId("food"), Amount(-2_000L)])
   }
 
   @Test
@@ -416,11 +415,11 @@ class BudgetViewModelTest {
     testScheduler.advanceUntilIdle()
     assertThat(writer.calls)
       .containsExactly(
-        listOf("copySinglePreviousMonth", month, food),
-        listOf("setSingleAverage", month, food, 3),
-        listOf("setSingleAverage", month, food, 6),
-        listOf("setSingleAverage", month, food, 12),
-        listOf("copyUntilYearEnd", month, food),
+        ["copySinglePreviousMonth", month, food],
+        ["setSingleAverage", month, food, 3],
+        ["setSingleAverage", month, food, 6],
+        ["setSingleAverage", month, food, 12],
+        ["copyUntilYearEnd", month, food],
       )
   }
 
@@ -441,15 +440,15 @@ class BudgetViewModelTest {
     testScheduler.advanceUntilIdle()
     assertThat(writer.calls)
       .containsExactly(
-        listOf("transferCategory", month, Amount(2_000L), rent, food),
-        listOf("transferCategory", month, Amount(500L), rent, null),
-        listOf("coverOverspending", month, food, rent, Amount(45_000L)),
-        listOf("coverOverspending", month, food, null, Amount(100L)),
-        listOf("setCarryover", month, food, true),
-        listOf("holdForNextMonth", month, Amount(1_000L)),
-        listOf("resetHold", month),
-        listOf("transferAvailable", month, Amount(1_500L), food),
-        listOf("coverOverbudgeted", month, rent, Amount(5_000L)),
+        ["transferCategory", month, Amount(2_000L), rent, food],
+        ["transferCategory", month, Amount(500L), rent, null],
+        ["coverOverspending", month, food, rent, Amount(45_000L)],
+        ["coverOverspending", month, food, null, Amount(100L)],
+        ["setCarryover", month, food, true],
+        ["holdForNextMonth", month, Amount(1_000L)],
+        ["resetHold", month],
+        ["transferAvailable", month, Amount(1_500L), food],
+        ["coverOverbudgeted", month, rent, Amount(5_000L)],
       )
   }
 
@@ -473,9 +472,9 @@ class BudgetViewModelTest {
     testScheduler.advanceUntilIdle()
     assertThat(writer.calls)
       .containsExactly(
-        listOf("copyPreviousMonth", month),
-        listOf("setZero", month),
-        listOf("setAverage", month, 6),
+        ["copyPreviousMonth", month],
+        ["setZero", month],
+        ["setAverage", month, 6],
       )
   }
 
@@ -506,7 +505,7 @@ class BudgetViewModelTest {
       testScheduler.advanceUntilIdle()
 
       assertThat(writer.calls.filter { it.first() == "undo" })
-        .containsExactly(listOf("undo", second.token))
+        .containsExactly(["undo", second.token])
     }
   }
 
@@ -525,7 +524,7 @@ class BudgetViewModelTest {
 
   private fun runBudgetTest(
     month: YearMonth? = null,
-    extra: List<String> = emptyList(),
+    extra: List<String> = [],
     action: suspend TestScope.(BudgetViewModel, BudgetDatabase) -> Unit,
   ) = runTest {
     val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
@@ -565,7 +564,7 @@ class BudgetViewModelTest {
   private companion object {
     @Suppress("MaxLineLength")
     val SETUP =
-      listOf(
+      [
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('usual', 'Usual', 0, 1)",
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('income', 'Income', 1, 3)",
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('food', 'Food', 0, 'usual', 1)",
@@ -577,27 +576,27 @@ class BudgetViewModelTest {
         "INSERT INTO transactions(id, acct, category, amount, date) VALUES ('t2', 'on', 'food', -50000, 20260402)",
         "INSERT INTO transactions(id, acct, amount, date) VALUES ('t3', 'on', -1000, 20260403)",
         "INSERT INTO zero_budgets(id, month, category, amount) VALUES ('202604-food', 202604, 'food', 5000), ('202604-rent', 202604, 'rent', 300000)",
-      )
+      ]
 
     @Suppress("MaxLineLength")
     val HIDDEN =
-      listOf(
+      [
         "INSERT INTO category_groups(id, name, is_income, sort_order, hidden) VALUES ('old', 'Old', 0, 2, 1)",
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order, hidden) VALUES ('gym', 'Gym', 0, 'usual', 3, 1)",
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('club', 'Club', 0, 'old', 1)",
         "INSERT INTO category_mapping(id, transferId) VALUES ('gym', 'gym'), ('club', 'club')",
-      )
+      ]
 
     @Suppress("MaxLineLength")
     val FAR_TRACKING =
-      listOf(
+      [
         "INSERT INTO reflect_budgets(id, month, category, amount) VALUES ('202712-food', 202712, 'food', 5000)",
-      )
+      ]
 
     @Suppress("MaxLineLength")
     val TRACKING =
-      listOf(
+      [
         "INSERT INTO reflect_budgets(id, month, category, amount) VALUES ('202604-food', 202604, 'food', 5000), ('202604-rent', 202604, 'rent', 300000), ('202604-salary', 202604, 'salary', 280000)",
-      )
+      ]
   }
 }

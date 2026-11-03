@@ -41,7 +41,7 @@ class BalanceForecastTest {
       recur(
         Monthly,
         start = LocalDate(2026, 1, 1),
-        patterns = listOf(RecurPattern(-1, Day), RecurPattern(2, Monday)),
+        patterns = [RecurPattern(-1, Day), RecurPattern(2, Monday)],
       )
 
     assertThat(config.occurrences(until = LocalDate(2026, 2, 28)).dates)
@@ -106,10 +106,10 @@ class BalanceForecastTest {
 
     val occurrences =
       buildScheduleOccurrences(
-        schedules = listOf(schedule),
+        schedules = [schedule],
         end = LocalDate(2026, 3, 31),
         transferAccounts = emptyMap(),
-        postedDates = mapOf(SCHEDULE to listOf(LocalDate(2026, 2, 13))),
+        postedDates = mapOf(SCHEDULE to [LocalDate(2026, 2, 13)]),
       )
 
     assertThat(occurrences.map { it.date })
@@ -122,10 +122,10 @@ class BalanceForecastTest {
 
     val occurrences =
       buildScheduleOccurrences(
-        schedules = listOf(schedule),
+        schedules = [schedule],
         end = LocalDate(2026, 2, 28),
         transferAccounts = emptyMap(),
-        postedDates = mapOf(SCHEDULE to listOf(LocalDate(2026, 2, 13))),
+        postedDates = mapOf(SCHEDULE to [LocalDate(2026, 2, 13)]),
       )
 
     assertThat(occurrences.map { it.date })
@@ -139,7 +139,7 @@ class BalanceForecastTest {
 
     val occurrences =
       buildScheduleOccurrences(
-        schedules = listOf(schedule),
+        schedules = [schedule],
         end = LocalDate(2026, 1, 31),
         transferAccounts = mapOf(SAVINGS_PAYEE to SAVINGS),
         postedDates = emptyMap(),
@@ -154,18 +154,18 @@ class BalanceForecastTest {
     val data =
       calculateBalanceForecast(
         params = params(end = YearMonth(2026, MARCH), today = LocalDate(2026, 1, 20)),
-        accounts = setOf(CHECKING),
+        accounts = [CHECKING],
         startingBalances = mapOf(CHECKING to 1000L, SAVINGS to 99_999L),
         dailyTotals = mapOf(LocalDate(2026, 1, 5) to -200L),
         occurrences =
-          listOf(
+          [
             // Before today, so already covered by posted transactions
             occurrence(LocalDate(2026, 1, 15), amount = -50),
             occurrence(LocalDate(2026, 2, 15), amount = -300),
             occurrence(LocalDate(2026, 3, 1), amount = 500),
             // Not a selected account
             occurrence(LocalDate(2026, 3, 1), amount = 700, account = SAVINGS),
-          ),
+          ],
       )
 
     assertThat(data.items)
@@ -189,10 +189,10 @@ class BalanceForecastTest {
             today = LocalDate(2026, 1, 1),
             granularity = Daily,
           ),
-        accounts = setOf(CHECKING, null),
+        accounts = [CHECKING, null],
         startingBalances = mapOf(CHECKING to 100L),
         dailyTotals = emptyMap(),
-        occurrences = listOf(occurrence(LocalDate(2026, 2, 3), amount = -40, account = null)),
+        occurrences = [occurrence(LocalDate(2026, 2, 3), amount = -40, account = null)],
       )
 
     assertThat(data.items.size).isEqualTo(59)
@@ -205,10 +205,10 @@ class BalanceForecastTest {
     val data =
       calculateBalanceForecast(
         params = params(end = YearMonth(2026, FEBRUARY), today = LocalDate(2026, 1, 1)),
-        accounts = emptySet(),
+        accounts = [],
         startingBalances = mapOf(CHECKING to 100L),
         dailyTotals = emptyMap(),
-        occurrences = emptyList(),
+        occurrences = [],
       )
 
     assertThat(data.items).isEmpty()

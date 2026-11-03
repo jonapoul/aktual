@@ -151,9 +151,8 @@ internal class ChartDataLoader(
   ): Flow<ChartData> {
     val query = customReportQuery(config.interval, range)
     // Only the lists the report groups by. Categories are always needed, for categoryGroups
-    val payees = if (config.groupBy == Payee) customReports.observePayees() else flowOf(emptyList())
-    val accounts =
-      if (config.groupBy == Account) customReports.observeAccounts() else flowOf(emptyList())
+    val payees = if (config.groupBy == Payee) customReports.observePayees() else flowOf([])
+    val accounts = if (config.groupBy == Account) customReports.observeAccounts() else flowOf([])
 
     val filter = TransactionFilter.compile(config.conditions, config.conditionsOp)
     val isTagSplit = config.groupBy == Tag && config.balanceType != Budgeted
@@ -161,7 +160,7 @@ internal class ChartDataLoader(
       when {
         config.balanceType == Budgeted -> observeBudgetAmounts(config, range)
         // Split by tag, the transactions are summed with their notes instead
-        isTagSplit -> flowOf(emptyList())
+        isTagSplit -> flowOf([])
         filter.isEmpty -> customReports.observeAmounts(query.start, query.end, query.divisor)
         else ->
           customReports.observeTransactions(query.start, query.end, query.divisor).map { rows ->
@@ -177,7 +176,7 @@ internal class ChartDataLoader(
           taggedAmounts(rows, filter) to tags
         }
       } else {
-        flowOf(emptyList<TaggedAmounts>() to emptyList())
+        flowOf(emptyList<TaggedAmounts>() to [])
       }
 
     return combine(
@@ -445,7 +444,7 @@ internal class ChartDataLoader(
               )
               .map { rows -> rows.amountsMatching(divisorFilter) }
           } else {
-            flowOf(emptyList())
+            flowOf([])
           }
         combine(amounts, divisorAmounts) { rows, divisor ->
           calculateSummary(params, rows.amountsMatching(filter), divisor)
@@ -757,12 +756,11 @@ internal class ChartDataLoader(
       return dao
         .observeFilteredTransactions(filter, start, end)
         .map { rows ->
-          sankeyCategoryTotals(rows) to if (showTransfers) sankeyTransfers(rows) else emptyList()
+          sankeyCategoryTotals(rows) to if (showTransfers) sankeyTransfers(rows) else []
         }
         .flowOn(contexts.default)
     }
-    val transfers =
-      if (showTransfers) dao.observeSankeyTransfers(start, end) else flowOf(emptyList())
+    val transfers = if (showTransfers) dao.observeSankeyTransfers(start, end) else flowOf([])
     return combine(dao.observeSankeyCategoryTotals(start, end), transfers, ::Pair)
   }
 
@@ -797,7 +795,7 @@ internal class ChartDataLoader(
       .distinctBy { it.category }
       .sortedWith(compareBy({ it.group_sort_order }, { it.category_sort_order }))
       .groupBy { it.category_group }
-      .flatMap { (group, categories) -> listOf(group.value) + categories.map { it.category.value } }
+      .flatMap { (group, categories) -> [group.value] + categories.map { it.category.value } }
 
   // packages/desktop-client/src/components/reports/reports/BalanceForecastCard.tsx
   fun balanceForecast(meta: BalanceForecastReportMeta): Flow<ChartData> =
@@ -860,7 +858,7 @@ internal class ChartDataLoader(
       val selected = filters.accounts(inputs.accounts, accountFilter)
       val accounts: Set<AccountId?> =
         when {
-          selected.isEmpty() -> emptySet()
+          selected.isEmpty() -> []
           accountFilter == null -> selected + null
           else -> selected
         }

@@ -16,7 +16,7 @@ data class UserFile(
   @SerialName("encryptKeyId") val encryptKeyId: KeyId? = null,
   @SerialName("owner") val owner: String? = null,
   @SerialName("encryptMeta") val encryptMeta: EncryptMeta? = null,
-  @SerialName("usersWithAccess") val usersWithAccess: List<UserWithAccess> = emptyList(),
+  @SerialName("usersWithAccess") val usersWithAccess: List<UserWithAccess> = [],
 )
 
 @Serializable

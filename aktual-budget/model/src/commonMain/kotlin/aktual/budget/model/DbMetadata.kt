@@ -79,7 +79,7 @@ data class DbMetadata(val data: PersistentMap<String, JsonElement> = persistentM
   operator fun plus(other: Iterable<Pair<DbMetadataKey<*>, Any?>>): DbMetadata =
     DbMetadata(data + other)
 
-  operator fun plus(other: Pair<DbMetadataKey<*>, Any?>): DbMetadata = plus(listOf(other))
+  operator fun plus(other: Pair<DbMetadataKey<*>, Any?>): DbMetadata = plus([other])
 
   operator fun minus(key: DbMetadataKey<*>): DbMetadata = DbMetadata(data.removing(key.name))
 

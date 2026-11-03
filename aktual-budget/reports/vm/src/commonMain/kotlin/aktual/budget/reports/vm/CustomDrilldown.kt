@@ -53,7 +53,7 @@ fun CustomData.drilldownFilter(drilldown: CustomDrilldown): ConditionsFilter? {
   val tags =
     when (group) {
       is TagSet -> ExactTags(group.names, tagScope)
-      Untagged -> ExactTags(emptyList(), tagScope)
+      Untagged -> ExactTags([], tagScope)
       is Category,
       is Group,
       is Payee,
@@ -86,10 +86,10 @@ private fun CustomData.drilldownDates(interval: CustomInterval?): LocalDateRange
 }
 
 internal fun dateConditions(dates: LocalDateRange) =
-  listOf(
+  [
     condition(Date, GreaterThanOrEquals, JsonPrimitive(dates.start.toString())),
     condition(Date, LessThanOrEquals, JsonPrimitive(dates.endInclusive.toString())),
-  )
+  ]
 
 // Reports of only money in or out sum only that, net and total reports sum everything
 private fun CustomData.flowConditions(drilldown: CustomDrilldown): List<Condition> {
@@ -106,9 +106,9 @@ private fun CustomData.flowConditions(drilldown: CustomDrilldown): List<Conditio
     when (flow) {
       In -> ConditionOptions(inflow = true)
       Out -> ConditionOptions(outflow = true)
-      null -> return emptyList()
+      null -> return []
     }
-  return listOf(condition(Amount, GreaterThanOrEquals, JsonPrimitive(0), options))
+  return [condition(Amount, GreaterThanOrEquals, JsonPrimitive(0), options)]
 }
 
 // How customSpreadsheet() buckets each row: categorised on-budget rows go to their category and
@@ -122,30 +122,30 @@ private fun CustomGroup.conditionSets(): List<ConditionSet> =
     Uncategorized -> and(noCategory(), isTransfer(false), onBudget())
     Transfers -> and(noCategory(), isTransfer(true), onBudget())
     OffBudget -> and(offBudget())
-    UncategorizedAndOffBudget -> listOf(ConditionSet(listOf(noCategory(), offBudget()), Or))
+    UncategorizedAndOffBudget -> [ConditionSet([noCategory(), offBudget()], Or)]
     is TagSet,
-    Untagged -> emptyList()
+    Untagged -> []
   }
 
 // filterReportTransactions(), as customSpreadsheet() leaves out rows the report doesn't show
 private fun CustomData.shownRows(): List<ConditionSet> = buildList {
   if (!config.showHidden && hiddenCategories.isNotEmpty()) {
     val ids = JsonArray(hiddenCategories.map { JsonPrimitive(it.value) })
-    add(ConditionSet(listOf(condition(Category, NotOneOf, ids))))
+    add(ConditionSet([condition(Category, NotOneOf, ids)]))
   }
-  if (!config.showOffBudget) add(ConditionSet(listOf(onBudget())))
+  if (!config.showOffBudget) add(ConditionSet([onBudget()]))
   if (!config.showUncategorized) {
-    val anyCategory = condition(Category, NotOneOf, JsonArray(listOf(JsonNull)))
-    add(ConditionSet(listOf(anyCategory, offBudget()), Or))
+    val anyCategory = condition(Category, NotOneOf, JsonArray([JsonNull]))
+    add(ConditionSet([anyCategory, offBudget()], Or))
   }
 }
 
-private fun and(vararg conditions: Condition) = listOf(ConditionSet(conditions.toList()))
+private fun and(vararg conditions: Condition) = [ConditionSet(conditions.toList())]
 
 private fun isId(field: Field, id: String) = condition(field, Is, JsonPrimitive(id))
 
 // "is nothing" leaves out transfers, so this matches a missing category with oneOf instead
-private fun noCategory() = condition(Category, OneOf, JsonArray(listOf(JsonNull)))
+private fun noCategory() = condition(Category, OneOf, JsonArray([JsonNull]))
 
 private fun isTransfer(value: Boolean) = condition(Transfer, Is, JsonPrimitive(value))
 

@@ -136,7 +136,7 @@ internal constructor(
     viewModelScope.launch {
       runCatchingCancellable(
         attempt = {
-          rulesDao.tombstone(setOf(id))
+          rulesDao.tombstone([id])
           mutableEvents.tryEmit(DeletedRule)
           val change = tombstone(dataset = RULES, row = id.toString())
           syncController.syncChanges(change)
@@ -253,7 +253,7 @@ internal constructor(
   private fun insertChanges(rule: Rules): List<LocalChange> {
     val row = rule.id.toString()
     return with(rule) {
-      listOf(
+      [
         localChange(RULES, row, "id", row),
         localChange(RULES, row, "stage", stage),
         localChange(
@@ -265,7 +265,7 @@ internal constructor(
         localChange(RULES, row, "actions", DbJson.encodeToString(actions.orEmpty())),
         localChange(RULES, row, "tombstone", tombstone),
         localChange(RULES, row, "conditions_op", conditions_op),
-      )
+      ]
     }
   }
 

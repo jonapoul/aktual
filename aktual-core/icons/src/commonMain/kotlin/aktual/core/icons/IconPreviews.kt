@@ -21,7 +21,7 @@ private class AktualIconsProvider : CollectionPreviewParameterProvider<ImageVect
 
 private val aktualIcons =
   with(AktualIcons) {
-    listOf(
+    [
       Add,
       AlertTriangle,
       ArrowsSynchronize,
@@ -73,5 +73,5 @@ private val aktualIcons =
       ViewHide,
       ViewShow,
       Wallet,
-    )
+    ]
   }

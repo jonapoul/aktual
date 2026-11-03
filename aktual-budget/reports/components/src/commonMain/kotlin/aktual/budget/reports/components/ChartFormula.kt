@@ -197,7 +197,7 @@ private data class FormulaChartParams(val data: FormulaData)
 
 private class FormulaChartProvider :
   ColorParamsProvider<FormulaChartParams>(
-    listOf(
+    [
         formulaPreview(FormulaOutput.Money(Amount(123456))),
         formulaPreview(FormulaOutput.Money(Amount(-5000)), color = "#e11d48"),
         formulaPreview(
@@ -209,9 +209,9 @@ private class FormulaChartProvider :
         formulaPreview(FormulaOutput.Failure(ErrorValue(Name, UnknownFunction, "NOPE"))),
         formulaPreview(
           FormulaOutput.Money(Amount(0)),
-          warnings = listOf(UnknownQuery("Groceries")),
+          warnings = [UnknownQuery("Groceries")],
         ),
-      )
+      ]
       .map(::FormulaChartParams),
   )
 
@@ -226,7 +226,7 @@ private fun formulaPreview(
   color: String? = null,
   static: Boolean = false,
   showTitle: Boolean = true,
-  warnings: List<FormulaWarning> = emptyList(),
+  warnings: List<FormulaWarning> = [],
 ) =
   FormulaData(
     title = "Formula",

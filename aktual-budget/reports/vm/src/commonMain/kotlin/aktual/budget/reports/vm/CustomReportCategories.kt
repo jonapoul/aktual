@@ -129,7 +129,7 @@ private fun JsonElement.ids(): Set<CategoryId> =
   when (this) {
       is JsonArray -> mapNotNull { (it as? JsonPrimitive)?.takeIf { p -> p.isString } }
       is JsonPrimitive -> listOfNotNull(takeIf { isString })
-      is JsonObject -> emptyList()
+      is JsonObject -> []
     }
     .map { CategoryId(it.content) }
     .toSet()

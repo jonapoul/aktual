@@ -21,9 +21,9 @@ class NetWorthStackedTest {
 
     assertThat(stacks)
       .containsExactly(
-        listOf(-5.0, -3.0),
-        listOf(5.0, 7.0),
-        listOf(25.0, 37.0),
+        [-5.0, -3.0],
+        [5.0, 7.0],
+        [25.0, 37.0],
       )
   }
 

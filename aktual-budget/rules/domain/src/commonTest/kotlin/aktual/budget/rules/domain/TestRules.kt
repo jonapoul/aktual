@@ -85,19 +85,19 @@ internal fun splitAmount(splitIndex: Int, method: RuleAction.Method, value: Any?
 internal fun rule(
   id: String,
   conditions: List<Condition>,
-  actions: List<RuleAction> = emptyList(),
+  actions: List<RuleAction> = [],
   stage: RuleStage? = null,
   conditionsOp: ConditionOp = And,
 ) = TransactionRule(RuleId(id), conditions, actions, stage, conditionsOp)
 
 internal fun context(
-  payees: List<RulePayee> = emptyList(),
+  payees: List<RulePayee> = [],
   categoryGroups: Map<CategoryId, CategoryGroupId?> = emptyMap(),
   accounts: List<RuleAccount> =
-    listOf(
+    [
       RuleAccount(ACCOUNT, offBudget = false),
       RuleAccount(OFF_BUDGET_ACCOUNT, offBudget = true),
-    ),
+    ],
   uuids: Iterator<String> = generateSequence(1) { it + 1 }.map { "new-payee-$it" }.iterator(),
 ) = SnapshotRuleContext(accounts, payees, categoryGroups, uuidGenerator = { uuids.next() })
 
@@ -119,4 +119,4 @@ internal fun Condition.eval(transaction: RuleTransaction, context: RuleContext =
 internal fun TransactionRule.exec(
   transaction: RuleTransaction,
   context: RuleContext = context(),
-): RuleTransaction = RulesEngine(listOf(this)).run(transaction, context)
+): RuleTransaction = RulesEngine([this]).run(transaction, context)

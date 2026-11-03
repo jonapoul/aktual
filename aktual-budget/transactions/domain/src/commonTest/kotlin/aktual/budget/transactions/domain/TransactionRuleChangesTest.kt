@@ -14,7 +14,7 @@ class TransactionRuleChangesTest {
   fun `Rules fill empty fields`() {
     val after = DRAFT.copy(category = CategoryId("groceries"), notes = "weekly", cleared = true)
 
-    assertThat(applyRuleChanges(DRAFT, after, TransactionField.Amount, emptySet())).isEqualTo(after)
+    assertThat(applyRuleChanges(DRAFT, after, TransactionField.Amount, [])).isEqualTo(after)
   }
 
   @Test
@@ -28,7 +28,7 @@ class TransactionRuleChangesTest {
         date = LocalDate(2026, 1, 1),
       )
 
-    assertThat(applyRuleChanges(draft, after, Notes, emptySet())).isEqualTo(draft)
+    assertThat(applyRuleChanges(draft, after, Notes, [])).isEqualTo(draft)
   }
 
   @Test
@@ -36,7 +36,7 @@ class TransactionRuleChangesTest {
     val draft = DRAFT.copy(category = CategoryId("fuel"), notes = "mine")
     val after = draft.copy(category = CategoryId("groceries"), notes = "theirs")
 
-    assertThat(applyRuleChanges(draft, after, Payee, emptySet())).isEqualTo(after)
+    assertThat(applyRuleChanges(draft, after, Payee, [])).isEqualTo(after)
   }
 
   @Test
@@ -53,7 +53,7 @@ class TransactionRuleChangesTest {
     val draft = DRAFT.copy(notes = "milk")
     val after = draft.copy(notes = "#food milk (shop)")
 
-    assertThat(applyRuleChanges(draft, after, TransactionField.Amount, emptySet())).isEqualTo(after)
+    assertThat(applyRuleChanges(draft, after, TransactionField.Amount, [])).isEqualTo(after)
   }
 
   @Test
@@ -61,7 +61,7 @@ class TransactionRuleChangesTest {
     val draft = DRAFT.copy(notes = "#food milk")
     val after = draft.copy(notes = "#food #food milk")
 
-    assertThat(applyRuleChanges(draft, after, TransactionField.Amount, emptySet())).isEqualTo(draft)
+    assertThat(applyRuleChanges(draft, after, TransactionField.Amount, [])).isEqualTo(draft)
   }
 
   @Test
@@ -69,7 +69,7 @@ class TransactionRuleChangesTest {
     val draft = DRAFT.copy(notes = "milk")
     val after = draft.copy(notes = "groceries")
 
-    assertThat(applyRuleChanges(draft, after, TransactionField.Amount, emptySet())).isEqualTo(draft)
+    assertThat(applyRuleChanges(draft, after, TransactionField.Amount, [])).isEqualTo(draft)
   }
 
   @Test
@@ -78,14 +78,14 @@ class TransactionRuleChangesTest {
 
     assertThat(TransactionField.entries.filter(DRAFT::isEmpty))
       .isEqualTo(
-        listOf(
+        [
           TransactionField.Amount,
           Category,
           Notes,
           Cleared,
-        ),
+        ],
       )
-    assertThat(TransactionField.entries.filter(filled::isEmpty)).isEqualTo(listOf(Notes))
+    assertThat(TransactionField.entries.filter(filled::isEmpty)).isEqualTo([Notes])
   }
 
   private companion object {

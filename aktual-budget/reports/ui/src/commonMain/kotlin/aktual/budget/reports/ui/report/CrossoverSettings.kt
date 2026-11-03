@@ -218,7 +218,7 @@ internal fun AccountSheet(
       TextButton(onClick = { onChange(accounts.map { AccountId(it.id) }.toSet()) }) {
         Text(Strings.reportsCustomEditorSelectAll)
       }
-      TextButton(onClick = { onChange(emptySet()) }) {
+      TextButton(onClick = { onChange([]) }) {
         Text(Strings.reportsCustomEditorSelectNone)
       }
     }

@@ -58,9 +58,9 @@ class DashboardPagesTest {
   @Test
   fun `Can't delete the last page`() = runPagesTest { pages ->
     pages.all.test {
-      assertThatNextEmissionIsEqualTo(listOf(PAGE_1, PAGE_2))
+      assertThatNextEmissionIsEqualTo([PAGE_1, PAGE_2])
       pages.delete(PAGE_1.id)
-      assertThatNextEmissionIsEqualTo(listOf(PAGE_2))
+      assertThatNextEmissionIsEqualTo([PAGE_2])
       pages.delete(PAGE_2.id)
       expectNoEvents()
     }
@@ -76,7 +76,7 @@ class DashboardPagesTest {
   fun `Creates a page for a new report when there are none`() =
     runPagesTest(seed = false) { pages ->
       assertThat(pages.selectedOrCreate()).isEqualTo(NEW_ID)
-      pages.all.test { assertThatNextEmissionIsEqualTo(listOf(DashboardPage(NEW_ID, "Main"))) }
+      pages.all.test { assertThatNextEmissionIsEqualTo([DashboardPage(NEW_ID, "Main")]) }
     }
 
   private fun runPagesTest(seed: Boolean = true, action: suspend (DashboardPages) -> Unit) =

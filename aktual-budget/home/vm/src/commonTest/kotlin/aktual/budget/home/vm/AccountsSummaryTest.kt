@@ -22,13 +22,13 @@ internal class AccountsSummaryTest {
   @Test
   fun `Groups accounts and leaves closed ones out of the totals`() {
     val summary =
-      listOf(
+      [
           row("a", balance = 1_000),
           row("b", balance = 250),
           row("c", balance = -5_000, offBudget = true),
           row("d", balance = 99_999, closed = true),
           row("e", balance = 77_777, closed = true, offBudget = true),
-        )
+        ]
         .toAccountsSummary()
 
     assertThat(summary).all {
@@ -57,8 +57,9 @@ internal class AccountsSummaryTest {
   @Test
   fun `Carries each account's new transaction count`() {
     val summary =
-      listOf(row("a"), row("b"), row("c", offBudget = true))
-        .toAccountsSummary(mapOf(AccountId("a") to 3, AccountId("c") to 1))
+      [row("a"), row("b"), row("c", offBudget = true)].toAccountsSummary(
+        mapOf(AccountId("a") to 3, AccountId("c") to 1),
+      )
 
     val accounts = summary.onBudget.accounts + summary.offBudget.accounts
     assertThat(accounts.map { it.newTransactions }).containsExactly(3, 0, 1)
@@ -67,7 +68,7 @@ internal class AccountsSummaryTest {
   @Test
   fun `Maps sync state`() {
     val states =
-      listOf(
+      [
           row("unlinked", syncSource = null, status = Failed),
           row("no-remote-id", remoteId = null),
           row("never-synced"),
@@ -79,7 +80,7 @@ internal class AccountsSummaryTest {
           row("missing", status = AccountMissing),
           row("timeout", status = TimedOut),
           row("rate-limit", status = RateLimitExceeded),
-        )
+        ]
         .toAccountsSummary()
         .onBudget
         .accounts
@@ -104,7 +105,7 @@ internal class AccountsSummaryTest {
   @Test
   fun `Most recently active keeps order and totals`() {
     val summary =
-      listOf(
+      [
           row("a", balance = 100, lastActivity = day(1)),
           row("b", balance = 200, lastActivity = day(9)),
           row("c", balance = 300),
@@ -112,7 +113,7 @@ internal class AccountsSummaryTest {
           row("e", balance = 500, offBudget = true, lastActivity = day(7)),
           row("f", balance = 600, offBudget = true, lastActivity = day(2)),
           row("g", balance = 700, closed = true, lastActivity = day(10)),
-        )
+        ]
         .toAccountsSummary()
 
     assertThat(summary.mostRecentlyActive(limit = 3)).isNotNull().all {
@@ -130,7 +131,7 @@ internal class AccountsSummaryTest {
 
   @Test
   fun `Most recently active falls back to sort order without transactions`() {
-    val summary = listOf(row("a"), row("b"), row("c", offBudget = true)).toAccountsSummary()
+    val summary = [row("a"), row("b"), row("c", offBudget = true)].toAccountsSummary()
 
     assertThat(summary.mostRecentlyActive(limit = 2)).isNotNull().all {
       prop(AccountsSummary::onBudget).prop(AccountSection::accounts).ids().containsExactly("a", "b")
@@ -141,7 +142,7 @@ internal class AccountsSummaryTest {
   @Test
   fun `Most recently active is null when nothing would be hidden`() {
     val summary =
-      listOf(row("a"), row("b", offBudget = true), row("c", closed = true)).toAccountsSummary()
+      [row("a"), row("b", offBudget = true), row("c", closed = true)].toAccountsSummary()
 
     assertThat(summary.mostRecentlyActive(limit = 2)).isNull()
   }

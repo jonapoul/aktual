@@ -40,7 +40,7 @@ internal class SchedulePoster(
 
     // Gives the IDs of the posted transactions, without split children
     suspend fun post(): List<TransactionId> {
-      if (transactions.isEmpty()) return emptyList()
+      if (transactions.isEmpty()) return []
       val rows = transactions.flatMap {
         it.toNewTransactions(newId = { uuidGenerator(::TransactionId) })
       }

@@ -14,8 +14,8 @@ internal data class SimpleTime(val hours: Double, val minutes: Double, val secon
 internal data class SimpleDateTime(val date: SimpleDate, val time: SimpleTime)
 
 internal object SerialDates {
-  private val DAYS_IN_MONTH = listOf(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
-  private val DAYS_BEFORE_MONTH = listOf(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334)
+  private val DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  private val DAYS_BEFORE_MONTH = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
   private const val DAYS_PER_YEAR = 365.2425
   private const val MIN_VALID_YEAR = 1582
   private const val SECONDS_EPSILON = 100_000

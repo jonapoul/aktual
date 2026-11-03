@@ -9,7 +9,7 @@ import kotlin.test.Test
 class HexColorTest {
   @Test
   fun `Parses what toHexString writes`() {
-    for (color in listOf(Color(0xFF2B8FED), Color(0x802B8FED), Color(0x00000000))) {
+    for (color in [Color(0xFF2B8FED), Color(0x802B8FED), Color(0x00000000)]) {
       assertThat(color.toHexString().parseHexColorOrNull()).isEqualTo(color)
     }
   }
@@ -21,8 +21,7 @@ class HexColorTest {
 
   @Test
   fun `Rejects anything else`() {
-    for (text in
-      listOf("", "#", "#FFF", "#FFFFFFF", "#-FFFFF", "#+FFFFF", "#GGGGGG", "#FFFFFFFFFF")) {
+    for (text in ["", "#", "#FFF", "#FFFFFFF", "#-FFFFF", "#+FFFFF", "#GGGGGG", "#FFFFFFFFFF"]) {
       assertThat(text.parseHexColorOrNull()).isNull()
     }
   }

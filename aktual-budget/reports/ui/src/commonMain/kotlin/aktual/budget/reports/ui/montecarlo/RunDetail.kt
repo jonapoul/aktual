@@ -63,8 +63,8 @@ internal fun RunDetailView(
     // After a failure the capture continues with unfunded years for the cashflow chart; the table
     // ends at the failure
     val rows = remember(detail) { detail.rows.filter { !it.afterDepletion }.toImmutableList() }
-    var expanded by remember(detail.index) { mutableStateOf(emptySet<Int>()) }
-    var working by remember(detail.index) { mutableStateOf(emptySet<Int>()) }
+    var expanded by remember(detail.index) { mutableStateOf<Set<Int>>([]) }
+    var working by remember(detail.index) { mutableStateOf<Set<Int>>([]) }
 
     val startAge = config.currentAge
     val lastRow = rows.lastOrNull()
@@ -107,8 +107,8 @@ internal fun RunDetailView(
           },
         onClick = {
           if (allExpanded) {
-            expanded = emptySet()
-            working = emptySet()
+            expanded = []
+            working = []
           } else {
             expanded = rows.map { it.year }.toSet()
           }
@@ -401,7 +401,7 @@ private fun workingLines(row: McRunDetailRow, config: McConfig, surplusPotName: 
             }
           }
         } else {
-          emptyList()
+          []
         }
       if (streams.isEmpty()) +income else +"$income (${streams.joinToString("; ")})"
     }

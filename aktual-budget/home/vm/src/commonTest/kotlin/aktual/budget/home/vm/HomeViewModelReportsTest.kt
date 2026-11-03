@@ -20,7 +20,7 @@ import kotlinx.datetime.LocalDate
 class HomeViewModelReportsTest {
   @Test
   fun `Pinned reports show on their card`() = runDatabaseTest { scope ->
-    val pinned = FakePinnedReports(listOf(pinned("a"), pinned("b")))
+    val pinned = FakePinnedReports([pinned("a"), pinned("b")])
     val viewModel = createHomeViewModel(scope, CALENDAR, pinnedReports = pinned)
 
     viewModel.state.test {
@@ -34,7 +34,7 @@ class HomeViewModelReportsTest {
 
   @Test
   fun `No more reports can be pinned once the card is full`() = runDatabaseTest { scope ->
-    val pinned = FakePinnedReports(listOf(pinned("a"), pinned("b"), pinned("c")))
+    val pinned = FakePinnedReports([pinned("a"), pinned("b"), pinned("c")])
     val viewModel = createHomeViewModel(scope, CALENDAR, pinnedReports = pinned)
 
     viewModel.state.test {
@@ -45,7 +45,7 @@ class HomeViewModelReportsTest {
 
   @Test
   fun `A new budget with a pinned report has something to show`() = runDatabaseTest { scope ->
-    val pinned = FakePinnedReports(listOf(pinned("a")))
+    val pinned = FakePinnedReports([pinned("a")])
     val viewModel = createHomeViewModel(scope, CALENDAR, pinnedReports = pinned)
 
     viewModel.state.test { assertThat(awaitSettled().isEmpty).isFalse() }
@@ -53,7 +53,7 @@ class HomeViewModelReportsTest {
 
   @Test
   fun `Unpinning the last report empties the card`() = runDatabaseTest { scope ->
-    val pinned = FakePinnedReports(listOf(pinned("a")))
+    val pinned = FakePinnedReports([pinned("a")])
     val viewModel = createHomeViewModel(scope, CALENDAR, pinnedReports = pinned)
 
     viewModel.state.test {

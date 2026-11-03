@@ -110,7 +110,7 @@ class NewCustomReportViewModelTest {
       val calendar = Calendar { LocalDate(2026, 1, 1) }
       val dashboard = DashboardDao(this, contexts)
       val customReports = CustomReportsDao(this, contexts)
-      val ids = ArrayDeque(listOf(REPORT.value, WIDGET.value))
+      val ids = ArrayDeque([REPORT.value, WIDGET.value])
       val viewModel =
         NewCustomReportViewModel(
           page = PAGE,

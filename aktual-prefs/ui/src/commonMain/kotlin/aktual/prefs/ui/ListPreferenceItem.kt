@@ -42,7 +42,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
   modifier: Modifier = Modifier,
   includeBackground: Boolean = true,
   searchPlaceholder: String? = null,
-  searchTerms: (E) -> List<String> = { emptyList() },
+  searchTerms: (E) -> List<String> = { [] },
 ) {
   if (!preference.visible) return
   ListPreferenceItem(
@@ -78,7 +78,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
   enabled: Boolean = true,
   includeBackground: Boolean = true,
   searchPlaceholder: String? = null,
-  searchTerms: (E) -> List<String> = { emptyList() },
+  searchTerms: (E) -> List<String> = { [] },
 ) {
   var showSheet by remember { mutableStateOf(false) }
   val sheetState = rememberBottomSheetState(initialValue = Hidden)

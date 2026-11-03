@@ -21,9 +21,9 @@ class CrossoverTest {
   fun `Crosses over in the first projected month when income already covers expenses`() {
     val data =
       calculate(
-        months = listOf(JAN, FEB, MAR),
-        expenses = listOf(1000, 1000, 1000),
-        balances = listOf(300_000, 300_000, 300_000),
+        months = [JAN, FEB, MAR],
+        expenses = [1000, 1000, 1000],
+        balances = [300_000, 300_000, 300_000],
       )
 
     assertThat(data.crossover).isEqualTo(YearMonth(2024, APRIL))
@@ -40,9 +40,9 @@ class CrossoverTest {
   fun `Contributions grow the balance until it crosses over`() {
     val data =
       calculate(
-        months = listOf(JAN, FEB),
-        expenses = listOf(1000, 1000),
-        balances = listOf(0, 0),
+        months = [JAN, FEB],
+        expenses = [1000, 1000],
+        balances = [0, 0],
         params = PARAMS.copy(expectedContribution = 100_000),
       )
 
@@ -62,9 +62,9 @@ class CrossoverTest {
   fun `Adjustment factor scales the target income`() {
     val data =
       calculate(
-        months = listOf(JAN),
-        expenses = listOf(1000),
-        balances = listOf(0),
+        months = [JAN],
+        expenses = [1000],
+        balances = [0],
         params = PARAMS.copy(expectedContribution = 300_000, expenseAdjustmentFactor = 2.0),
       )
 
@@ -77,7 +77,7 @@ class CrossoverTest {
 
   @Test
   fun `No crossover within fifty years`() {
-    val data = calculate(months = listOf(JAN), expenses = listOf(1000), balances = listOf(0))
+    val data = calculate(months = [JAN], expenses = [1000], balances = [0])
 
     assertThat(data.crossover).isNull()
     assertThat(data.yearsToRetire).isNull()
@@ -88,9 +88,9 @@ class CrossoverTest {
   fun `Historical growth is used when there's no estimated return`() {
     val data =
       calculate(
-        months = listOf(JAN, FEB),
-        expenses = listOf(0, 0),
-        balances = listOf(100_000, 121_000),
+        months = [JAN, FEB],
+        expenses = [0, 0],
+        balances = [100_000, 121_000],
         params = PARAMS.copy(estimatedReturn = null),
       )
 
@@ -101,9 +101,9 @@ class CrossoverTest {
   fun `Historical growth is spread over leading zero months, like upstream`() {
     val data =
       calculate(
-        months = listOf(JAN, FEB, MAR),
-        expenses = listOf(0, 0, 0),
-        balances = listOf(0, 100_000, 121_000),
+        months = [JAN, FEB, MAR],
+        expenses = [0, 0, 0],
+        balances = [0, 100_000, 121_000],
         params = PARAMS.copy(estimatedReturn = null),
       )
 
@@ -116,7 +116,7 @@ class CrossoverTest {
 
   @Test
   fun `Nothing to show without months`() {
-    val data = calculate(months = emptyList(), expenses = emptyList(), balances = emptyList())
+    val data = calculate(months = [], expenses = [], balances = [])
 
     assertThat(data.items).isEmpty()
     assertThat(data.crossover).isNull()
@@ -124,14 +124,14 @@ class CrossoverTest {
 
   @Test
   fun `Median of an even count averages the middle two`() {
-    assertThat(median(listOf(4.0, 1.0, 3.0, 2.0))).isEqualTo(2.5)
-    assertThat(median(emptyList())).isEqualTo(0.0)
+    assertThat(median([4.0, 1.0, 3.0, 2.0])).isEqualTo(2.5)
+    assertThat(median([])).isEqualTo(0.0)
   }
 
   @Test
   fun `Hampel filter drops outliers`() {
-    assertThat(hampelFilteredMedian(listOf(10.0, 12.0, 11.0, 13.0, 500.0))).isEqualTo(11.5)
-    assertThat(hampelFilteredMedian(listOf(100.0, 100.0, 100.0, 10_000.0))).isEqualTo(100.0)
+    assertThat(hampelFilteredMedian([10.0, 12.0, 11.0, 13.0, 500.0])).isEqualTo(11.5)
+    assertThat(hampelFilteredMedian([100.0, 100.0, 100.0, 10_000.0])).isEqualTo(100.0)
   }
 
   private fun calculate(

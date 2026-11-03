@@ -43,7 +43,7 @@ class LogEntriesViewModelTest {
 
   @Test
   fun `Verbose is hidden by default`() = runTest {
-    every { repository.watch(YESTERDAY) } returns flowOf(listOf(VERBOSE_LINE, INFO_LINE))
+    every { repository.watch(YESTERDAY) } returns flowOf([VERBOSE_LINE, INFO_LINE])
     val viewModel = buildViewModel(YESTERDAY)
 
     viewModel.state.test {
@@ -53,7 +53,7 @@ class LogEntriesViewModelTest {
 
   @Test
   fun `Filter by query and tag`() = runTest {
-    every { repository.watch(YESTERDAY) } returns flowOf(listOf(INFO_LINE, ERROR_LINE))
+    every { repository.watch(YESTERDAY) } returns flowOf([INFO_LINE, ERROR_LINE])
     val viewModel = buildViewModel(YESTERDAY)
 
     viewModel.state.test {
@@ -68,7 +68,7 @@ class LogEntriesViewModelTest {
 
   @Test
   fun `Pausing today counts pending lines`() = runTest {
-    val lines = MutableStateFlow(listOf(INFO_LINE))
+    val lines = MutableStateFlow([INFO_LINE])
     every { repository.watch(TODAY) } returns lines
     val viewModel = buildViewModel(TODAY)
 
@@ -76,7 +76,7 @@ class LogEntriesViewModelTest {
       assertThat(lastLoaded()).prop(Loaded::live).isEqualTo(Following)
 
       viewModel.pause()
-      lines.value = listOf(INFO_LINE, ERROR_LINE)
+      lines.value = [INFO_LINE, ERROR_LINE]
       assertThat(lastLoaded()).all {
         prop(Loaded::live).isEqualTo(LiveState.Paused(pending = 1))
         prop(Loaded::lines).isEqualTo(persistentListOf(INFO_LINE))
@@ -91,8 +91,8 @@ class LogEntriesViewModelTest {
 
   @Test
   fun `Export shown lines`() = runTest {
-    every { repository.watch(YESTERDAY) } returns flowOf(listOf(INFO_LINE, ERROR_LINE))
-    coEvery { repository.dates() } returns emptyList()
+    every { repository.watch(YESTERDAY) } returns flowOf([INFO_LINE, ERROR_LINE])
+    coEvery { repository.dates() } returns []
     val viewModel = buildViewModel(YESTERDAY)
 
     viewModel.state.test {

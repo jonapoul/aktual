@@ -28,7 +28,7 @@ class CalendarDrilldownTest {
   @Test
   fun `A day keeps the report's own conditions`() {
     val payeeIsShop = Condition(field = Payee, operator = Is, value = JsonPrimitive(SHOP.value))
-    val matcher = matcher(data(ConditionSet(listOf(payeeIsShop))))
+    val matcher = matcher(data(ConditionSet([payeeIsShop])))
 
     assertThat(matcher.matches(row())).isTrue()
     assertThat(matcher.matches(row(payee = PayeeId("other")))).isFalse()
@@ -40,7 +40,7 @@ class CalendarDrilldownTest {
     calculateCalendar(
       title = "Calendar",
       range = YearMonth(2026, 2)..YearMonth(2026, 2),
-      transactions = emptyList(),
+      transactions = [],
       firstDayOfWeek = Monday,
       conditions = conditions,
     )

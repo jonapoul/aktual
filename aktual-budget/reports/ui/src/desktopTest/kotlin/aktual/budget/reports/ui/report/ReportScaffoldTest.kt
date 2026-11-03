@@ -386,7 +386,7 @@ class ReportScaffoldTest {
     val ANALYSIS_META =
       BudgetAnalysisReportMeta(
         timeFrame = TimeFrame(YearMonth(2025, 1), YearMonth(2025, 6), Static),
-        conditions = emptyList(),
+        conditions = [],
         conditionsOp = And,
         graphType = Bar,
         showBalance = true,

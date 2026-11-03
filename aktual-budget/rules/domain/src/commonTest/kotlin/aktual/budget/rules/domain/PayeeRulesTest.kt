@@ -23,12 +23,12 @@ class PayeeRulesTest {
     val rule =
       rule(
         conditions =
-          listOf(
+          [
             cond(Payee, Is, "a"),
             cond(Payee, IsNot, "b"),
-            cond(Payee, OneOf, listOf("c", "d")),
-            cond(Payee, NotOneOf, listOf("e")),
-          ),
+            cond(Payee, OneOf, ["c", "d"]),
+            cond(Payee, NotOneOf, ["e"]),
+          ],
       )
 
     assertThat(rule.payeeIds())
@@ -45,8 +45,8 @@ class PayeeRulesTest {
   fun `Payee ids include stored description fields and set payee actions`() {
     val rule =
       rule(
-        conditions = listOf(cond(Description, Is, "a")),
-        actions = listOf(set(Description, "b"), set(Payee, "c")),
+        conditions = [cond(Description, Is, "a")],
+        actions = [set(Description, "b"), set(Payee, "c")],
       )
 
     assertThat(rule.payeeIds()).containsExactlyInAnyOrder(PayeeId("a"), PayeeId("b"), PayeeId("c"))
@@ -57,13 +57,13 @@ class PayeeRulesTest {
     val rule =
       rule(
         conditions =
-          listOf(
+          [
             cond(Payee, Contains, "a"),
             cond(Payee, Matches, "b"),
             cond(PayeeName, Is, "c"),
             cond(Category, Is, "d"),
-          ),
-        actions = listOf(set(Category, "e"), action(AppendNotes, value = "f")),
+          ],
+        actions = [set(Category, "e"), action(AppendNotes, value = "f")],
       )
 
     assertThat(rule.payeeIds()).isEmpty()
@@ -71,18 +71,18 @@ class PayeeRulesTest {
 
   @Test
   fun `Counts each rule once per payee`() = runDatabaseTest {
-    insertRule("r1", conditions = listOf(cond(Payee, Is, "a")), actions = listOf(set(Payee, "a")))
-    insertRule("r2", conditions = listOf(cond(Payee, OneOf, listOf("a", "b"))))
+    insertRule("r1", conditions = [cond(Payee, Is, "a")], actions = [set(Payee, "a")])
+    insertRule("r2", conditions = [cond(Payee, OneOf, ["a", "b"])])
 
     assertThat(counter().count()).isEqualTo(mapOf(PayeeId("a") to 2, PayeeId("b") to 1))
   }
 
   @Test
   fun `Counts leave out deleted rules and rules of completed schedules`() = runDatabaseTest {
-    insertRule("active", conditions = listOf(cond(Payee, Is, "a")))
-    insertRule("completed", conditions = listOf(cond(Payee, Is, "a")))
-    insertRule("deleted", conditions = listOf(cond(Payee, Is, "a")), tombstone = true)
-    insertRule("deleted-schedule", conditions = listOf(cond(Payee, Is, "a")))
+    insertRule("active", conditions = [cond(Payee, Is, "a")])
+    insertRule("completed", conditions = [cond(Payee, Is, "a")])
+    insertRule("deleted", conditions = [cond(Payee, Is, "a")], tombstone = true)
+    insertRule("deleted-schedule", conditions = [cond(Payee, Is, "a")])
     insertSchedule("s1", rule = "active", completed = false)
     insertSchedule("s2", rule = "completed", completed = true)
     insertSchedule("s3", rule = "deleted-schedule", completed = true, tombstone = true)
@@ -91,8 +91,8 @@ class PayeeRulesTest {
   }
 
   private fun rule(
-    conditions: List<Condition> = emptyList(),
-    actions: List<RuleAction> = emptyList(),
+    conditions: List<Condition> = [],
+    actions: List<RuleAction> = [],
   ) = TransactionRule(id = RuleId("rule"), conditions = conditions, actions = actions)
 
   private fun BudgetDatabase.counter() = PayeeRuleCounter(RulesDao(this), RuleContextDao(this))
@@ -100,7 +100,7 @@ class PayeeRulesTest {
   private suspend fun BudgetDatabase.insertRule(
     id: String,
     conditions: List<Condition>,
-    actions: List<RuleAction> = emptyList(),
+    actions: List<RuleAction> = [],
     tombstone: Boolean = false,
   ) =
     RulesDao(this)

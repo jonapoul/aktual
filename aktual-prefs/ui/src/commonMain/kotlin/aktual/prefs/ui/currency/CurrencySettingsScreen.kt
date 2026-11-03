@@ -56,7 +56,7 @@ private fun CurrencySettingsScaffold(state: CurrencySettingsState, onBack: () ->
         title = Strings.settingsCurrencyDefault,
         subtitle = null,
         searchPlaceholder = Strings.settingsCurrencySearch,
-        searchTerms = { c -> listOf(c.code, c.symbol) },
+        searchTerms = { c -> [c.code, c.symbol] },
       )
     }
     item {

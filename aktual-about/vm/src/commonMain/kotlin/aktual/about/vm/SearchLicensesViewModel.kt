@@ -29,7 +29,7 @@ internal constructor(
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val mutableQuery = MutableStateFlow("")
-  private val artifacts = MutableStateFlow<List<ArtifactDetail>>(emptyList())
+  private val artifacts = MutableStateFlow<List<ArtifactDetail>>([])
 
   val query: StateFlow<String> = mutableQuery.asStateFlow()
 

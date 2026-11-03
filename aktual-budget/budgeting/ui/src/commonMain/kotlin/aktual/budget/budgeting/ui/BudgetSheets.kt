@@ -507,20 +507,20 @@ private fun SummarySheet(
 private fun BudgetSummary.rows(): List<Pair<String, Amount>> =
   when (this) {
     is Envelope ->
-      listOf(
+      [
         Strings.budgetingSummaryAvailable to available,
         Strings.budgetingSummaryOverspent to overspentLastMonth,
         Strings.budgetingBudgeted to -budgeted,
         Strings.budgetingSummaryHeld to -held,
-      )
+      ]
 
     is Tracking ->
-      listOf(
+      [
         "${Strings.budgetingSummaryIncome} · ${Strings.budgetingBudgeted}" to incomeBudgeted,
         "${Strings.budgetingSummaryIncome} · ${Strings.budgetingSummaryReceived}" to received,
         "${Strings.budgetingSummaryExpenses} · ${Strings.budgetingBudgeted}" to budgeted,
         "${Strings.budgetingSummaryExpenses} · ${Strings.budgetingSpent}" to spent,
-      )
+      ]
   }
 
 @Composable

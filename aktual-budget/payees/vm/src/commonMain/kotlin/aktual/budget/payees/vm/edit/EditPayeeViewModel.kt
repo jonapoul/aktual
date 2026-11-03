@@ -48,7 +48,7 @@ internal constructor(
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val loaded = MutableStateFlow<Loaded?>(null)
-  private val otherNames = MutableStateFlow(emptySet<String>())
+  private val otherNames = MutableStateFlow<Set<String>>([])
   private val mutableName = MutableStateFlow("")
   private val mutableFavorite = MutableStateFlow(false)
   private val mutableLearnCategories = MutableStateFlow(false)

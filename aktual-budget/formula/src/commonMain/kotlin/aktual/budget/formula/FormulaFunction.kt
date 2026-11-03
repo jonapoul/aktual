@@ -74,7 +74,7 @@ private suspend fun EvaluationScope.runFunction(
     if (expandRanges) {
       args.flatMap { arg ->
         val value = evaluate(arg)
-        if (value is ArrayValue) value.rows.flatten().map { it to true } else listOf(value to false)
+        if (value is ArrayValue) value.rows.flatten().map { it to true } else [value to false]
       }
     } else {
       args.map { evaluate(it) to false }
@@ -116,7 +116,7 @@ private fun coerceToType(value: FormulaValue, param: Param): FormulaValue? {
     Scalar,
     NoError,
     Anything -> scalar
-    Range -> scalar as? ErrorValue ?: ArrayValue(listOf(listOf(scalar)))
+    Range -> scalar as? ErrorValue ?: ArrayValue([[scalar]])
   }
 }
 

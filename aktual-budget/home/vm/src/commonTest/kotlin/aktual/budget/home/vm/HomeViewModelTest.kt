@@ -172,7 +172,7 @@ class HomeViewModelTest {
 
     viewModel.state.test {
       assertThat(awaitLoaded().recent?.onBudget?.accounts?.map { it.id.value })
-        .isEqualTo(listOf("a3", "a4", "a5", "a6", "a7"))
+        .isEqualTo(["a3", "a4", "a5", "a6", "a7"])
     }
   }
 
@@ -307,7 +307,7 @@ class HomeViewModelTest {
       assertThat(awaitItem().cards)
         .containsExactly(Accounts, Attention, Upcoming, Recent, ThisMonth, Reports)
       assertThat(prefs[HomeCardOrder])
-        .isEqualTo(listOf("Accounts", "Attention", "Upcoming", "Recent", "ThisMonth", "Reports"))
+        .isEqualTo(["Accounts", "Attention", "Upcoming", "Recent", "ThisMonth", "Reports"])
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -320,11 +320,11 @@ class HomeViewModelTest {
     viewModel.state.test {
       awaitSettled()
 
-      viewModel.reorder(listOf(Upcoming, ThisMonth, Attention))
+      viewModel.reorder([Upcoming, ThisMonth, Attention])
       assertThat(awaitItem().cards)
         .containsExactly(Upcoming, ThisMonth, Attention, Recent, Accounts, Reports)
       assertThat(prefs[HomeCardOrder])
-        .isEqualTo(listOf("Upcoming", "ThisMonth", "Attention", "Recent", "Accounts", "Reports"))
+        .isEqualTo(["Upcoming", "ThisMonth", "Attention", "Recent", "Accounts", "Reports"])
       cancelAndIgnoreRemainingEvents()
     }
   }

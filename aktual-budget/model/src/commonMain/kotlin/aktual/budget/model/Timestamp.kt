@@ -19,12 +19,12 @@ data class Timestamp(val instant: Instant, val counter: Long, val node: String) 
 
   override fun toString(): String {
     val counter = counter.toString(radix = 16).uppercase()
-    return listOf(
+    return [
         // Always with millis, like JS's toISOString(), so timestamps compare correctly as strings
         "${instant.toLocalDateTime(TimeZone.UTC).format(INSTANT_FORMAT)}Z",
         (BASE_COUNTER + counter).removeRange(startIndex = 0, endIndex = counter.length),
         "$BASE_NODE$node".removeRange(startIndex = 0, endIndex = 16),
-      )
+      ]
       .joinToString(SEPARATOR)
   }
 

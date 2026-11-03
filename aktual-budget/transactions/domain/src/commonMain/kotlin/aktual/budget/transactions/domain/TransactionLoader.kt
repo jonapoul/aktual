@@ -16,7 +16,7 @@ data class LoadedTransaction(
   val children: List<TransactionRow>,
   val balanceAfter: Long,
   // The children again, as their editor holds them
-  val parts: List<SplitPart> = emptyList(),
+  val parts: List<SplitPart> = [],
   // Whether it, or a part of it, is a transfer whose other side is reconciled
   val hasReconciledTransfer: Boolean = false,
 ) {
@@ -49,8 +49,7 @@ class TransactionLoader(private val transactionDao: TransactionDao) {
     val opened = transactionDao.detail(id) ?: return null
     val detail = opened.parent?.let { transactionDao.detail(it) } ?: opened
     val row = detail.row
-    val children =
-      if (row.isParent) transactionDao.childrenOf(listOf(row.id))[row.id].orEmpty() else emptyList()
+    val children = if (row.isParent) transactionDao.childrenOf([row.id])[row.id].orEmpty() else []
     return LoadedTransaction(
       detail = detail,
       children = children,
@@ -64,7 +63,7 @@ class TransactionLoader(private val transactionDao: TransactionDao) {
     parent: TransactionId,
     children: List<TransactionRow>,
   ): List<SplitPart> {
-    if (children.isEmpty()) return emptyList()
+    if (children.isEmpty()) return []
     val fields = transactionDao.childFields(parent)
     return children.map { child ->
       val ids = fields[child.id]

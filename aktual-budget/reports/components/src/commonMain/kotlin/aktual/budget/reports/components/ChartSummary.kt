@@ -704,7 +704,7 @@ private val PERCENT_DATA =
 
 val PER_TRANSACTION_META =
   SummaryReportMeta(
-    conditions = emptyList(),
+    conditions = [],
     conditionsOp = And,
     timeFrame =
       TimeFrame(start = YearMonth(2024, JANUARY), end = YearMonth(2025, JULY), mode = Static),

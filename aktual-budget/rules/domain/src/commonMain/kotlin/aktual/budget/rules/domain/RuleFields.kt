@@ -6,26 +6,26 @@ import kotlin.contracts.contract
 
 // TYPE_INFO in packages/loot-core/src/shared/rules.ts
 internal enum class FieldType(val ops: Set<Operator>) {
-  Date(setOf(Is, IsApprox, GreaterThan, GreaterThanOrEquals, LessThan, LessThanOrEquals)),
-  Id(setOf(Is, Contains, Matches, OneOf, IsNot, DoesNotContain, NotOneOf, OnBudget, OffBudget)),
-  Saved(emptySet()),
-  String(setOf(Is, Contains, Matches, OneOf, IsNot, DoesNotContain, NotOneOf, HasTags, HasAnyTag)),
+  Date([Is, IsApprox, GreaterThan, GreaterThanOrEquals, LessThan, LessThanOrEquals]),
+  Id([Is, Contains, Matches, OneOf, IsNot, DoesNotContain, NotOneOf, OnBudget, OffBudget]),
+  Saved([]),
+  String([Is, Contains, Matches, OneOf, IsNot, DoesNotContain, NotOneOf, HasTags, HasAnyTag]),
   Number(
-    setOf(Is, IsApprox, IsBetween, GreaterThan, GreaterThanOrEquals, LessThan, LessThanOrEquals),
+    [Is, IsApprox, IsBetween, GreaterThan, GreaterThanOrEquals, LessThan, LessThanOrEquals],
   ),
-  Boolean(setOf(Is)),
+  Boolean([Is]),
 }
 
 // FIELD_INFO in packages/loot-core/src/shared/rules.ts, keyed by the public field names
-internal enum class RuleField(val type: FieldType, val disallowedOps: Set<Operator> = emptySet()) {
-  ImportedPayee(FieldType.String, disallowedOps = setOf(HasTags, HasAnyTag)),
-  Payee(Id, disallowedOps = setOf(OnBudget, OffBudget)),
+internal enum class RuleField(val type: FieldType, val disallowedOps: Set<Operator> = []) {
+  ImportedPayee(FieldType.String, disallowedOps = [HasTags, HasAnyTag]),
+  Payee(Id, disallowedOps = [OnBudget, OffBudget]),
   PayeeName(FieldType.String),
   Date(FieldType.Date),
-  Notes(FieldType.String, disallowedOps = setOf(OneOf, NotOneOf)),
+  Notes(FieldType.String, disallowedOps = [OneOf, NotOneOf]),
   Amount(FieldType.Number),
-  Category(Id, disallowedOps = setOf(OnBudget, OffBudget)),
-  CategoryGroup(Id, disallowedOps = setOf(OnBudget, OffBudget)),
+  Category(Id, disallowedOps = [OnBudget, OffBudget]),
+  CategoryGroup(Id, disallowedOps = [OnBudget, OffBudget]),
   Account(Id),
   Cleared(FieldType.Boolean),
   Reconciled(FieldType.Boolean),

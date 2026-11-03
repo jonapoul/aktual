@@ -89,17 +89,17 @@ internal val PREVIEW_FORMULA_META =
         "groceries" to
           FormulaQuery(
             conditions =
-              listOf(
-                Condition(Category, OneOf, JsonArray(listOf(JsonPrimitive("food")))),
+              [
+                Condition(Category, OneOf, JsonArray([JsonPrimitive("food")])),
                 Condition(Field.Amount, LessThan, JsonPrimitive(-1000)),
                 Condition(Date, Is, buildJsonObject { put("frequency", "monthly") }),
-              ),
+              ],
             conditionsOp = And,
             timeFrame = TimeFrame(YearMonth(2025, 1), YearMonth(2025, 6), Static),
           ),
         "income" to
           FormulaQuery(
-            conditions = listOf(Condition(Payee, Is, JsonPrimitive("employer"))),
+            conditions = [Condition(Payee, Is, JsonPrimitive("employer"))],
             conditionsOp = Or,
             timeFrame = null,
           ),

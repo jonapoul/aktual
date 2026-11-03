@@ -48,7 +48,7 @@ internal class SyncDaoTest {
   @Test
   fun `Schedule fields follow the conditions when the rule changes`() = runSyncDaoTest { database ->
     sendMessages(schedule() + rule(conditions = CONDITIONS))
-    sendMessages(listOf(LocalChange(RULES, RULE, "conditions", REORDERED_CONDITIONS.string())))
+    sendMessages([LocalChange(RULES, RULE, "conditions", REORDERED_CONDITIONS.string())])
 
     assertThat(database.schedule()).all {
       prop(V_schedules::_account).isEqualTo(ACCOUNT)
@@ -84,10 +84,10 @@ internal class SyncDaoTest {
         assertThat(awaitItem()).isEmpty()
 
         val widget =
-          listOf(
+          [
             localChange(DASHBOARD, "w", "type", "net-worth"),
             localChange(DASHBOARD, "w", "tombstone", 0),
-          )
+          ]
         val envelopes = widget.mapIndexed { index, change ->
           val timestamp = Timestamp(Instant.parse("2026-11-03T12:00:00Z"), index.toLong(), NODE)
           val message = Message(change.dataset, change.row, change.column, timestamp, change.value)
@@ -101,18 +101,18 @@ internal class SyncDaoTest {
   }
 
   private fun schedule() =
-    listOf(
+    [
       LocalChange(SCHEDULES, SCHEDULE, "rule", RULE.string()),
       localChange(SCHEDULES, SCHEDULE, "completed", 0),
       localChange(SCHEDULES, SCHEDULE, "tombstone", 0),
-    )
+    ]
 
   private fun rule(conditions: String) =
-    listOf(
+    [
       LocalChange(RULES, RULE, "conditions", conditions.string()),
       LocalChange(RULES, RULE, "actions", ACTIONS.string()),
       localChange(RULES, RULE, "tombstone", 0),
-    )
+    ]
 
   private fun String.string() = MessageValue.String(this)
 

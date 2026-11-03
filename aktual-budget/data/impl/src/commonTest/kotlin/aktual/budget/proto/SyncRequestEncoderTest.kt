@@ -50,7 +50,7 @@ class SyncRequestEncoderTest {
     val time2 = Timestamp.parse("2025-12-14T11:53:11.335Z-0000-b5e4d1594ac5787b")
 
     val messages =
-      listOf(
+      [
         Message(dataset, row, "acct", time(0), MsgStr("a30f58c3-e097-4951-adfc-4d23b5228aa3")),
         Message(dataset, row, "cleared", time(1), MsgNum(0)),
         Message(dataset, row, "amount", time(2), MsgNum(0)),
@@ -64,7 +64,7 @@ class SyncRequestEncoderTest {
         ),
         Message(dataset, row, "date", time2(1), MsgNum(20_251_214)),
         Message(dataset, row, "sort_order", time2(2), MsgNum(1_765_713_190_167)),
-      )
+      ]
 
     val encoder = buildEncoder(key = null)
     val encoded = encoder(groupId, budgetId, since, messages)
@@ -87,7 +87,7 @@ class SyncRequestEncoderTest {
     val time3 = Timestamp.parse("2025-12-14T17:02:10.600Z-0000-8afeb8e9723b4e9e")
 
     val messages =
-      listOf(
+      [
         // new account
         Message("accounts", rowAcc, "name", time1(0), MsgStr("Dummy")),
         Message("accounts", rowAcc, "offbudget", time1(1), MsgNum(0)),
@@ -100,7 +100,7 @@ class SyncRequestEncoderTest {
 
         // mapping
         Message("payee_mapping", rowPay, "targetId", time3(0), MsgStr(rowPay)),
-      )
+      ]
 
     val encoder =
       buildEncoder(
@@ -132,7 +132,7 @@ class SyncRequestEncoderTest {
     val budgetId = BudgetId("2cc03f9c-4d94-4196-a0de-1750e645db18")
 
     val messages =
-      listOf(
+      [
         Message(
           dataset = "accounts",
           row = "044c125e-011b-471c-96a2-27641f4995ea",
@@ -140,7 +140,7 @@ class SyncRequestEncoderTest {
           timestamp = Timestamp.parse("2025-12-14T14:55:30.250Z-0000-b56c5557dc0f979f"),
           value = MsgNum(1),
         ),
-      )
+      ]
 
     val encoder =
       buildEncoder(

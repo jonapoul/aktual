@@ -87,7 +87,7 @@ internal class TransactionWriterTest {
     }
 
     // The view resolves the payee through payee_mapping
-    val view = database.transactionsQueries.getByIds(listOf(id)).awaitAsList().single()
+    val view = database.transactionsQueries.getByIds([id]).awaitAsList().single()
     assertThat(view.accountName).isEqualTo(ACCOUNT.value)
     assertThat(view.payeeName).isEqualTo("Tesco")
     assertThat(view.categoryName).isEqualTo("Groceries")
@@ -149,7 +149,7 @@ internal class TransactionWriterTest {
               parentId = parent,
             ),
           )
-        parent to listOf(child1, child2)
+        parent to [child1, child2]
       }
 
     // Parents never have a category
@@ -167,7 +167,7 @@ internal class TransactionWriterTest {
       }
     }
     assertThat(transactionDao.row(children[1])?.category).isEqualTo(HOUSEHOLD)
-    assertThat(transactionDao.childIds(listOf(parent)))
+    assertThat(transactionDao.childIds([parent]))
       .containsExactlyInAnyOrder(*children.toTypedArray())
 
     val parentMessages = messages().filter { it.row == parent.value }.map { it.column }
@@ -395,7 +395,7 @@ internal class TransactionWriterTest {
       prop(Transactions::isChild).isEqualTo(true)
       prop(Transactions::parent_id).isEqualTo(parent)
     }
-    assertThat(transactionDao.childIds(listOf(parent))).containsOnly(child)
+    assertThat(transactionDao.childIds([parent])).containsOnly(child)
 
     writer.write { update(TransactionUpdate(id = child, parentId = Patch.To(null))) }
     assertThat(transactionDao.row(child)).isNotNull().all {
@@ -573,7 +573,7 @@ internal class TransactionWriterTest {
   @Test
   fun `New accounts go after the others on or off budget`() = runWriterTest {
     insertAccount(ACCOUNT)
-    syncChanges(listOf(LocalChange(ACCOUNTS, ACCOUNT.value, "sort_order", number(20000))))
+    syncChanges(LocalChange(ACCOUNTS, ACCOUNT.value, "sort_order", number(20000)))
 
     val onBudget = writer.write { insertAccount("On", offBudget = false) }
     val offBudget = writer.write { insertAccount("Off", offBudget = true) }

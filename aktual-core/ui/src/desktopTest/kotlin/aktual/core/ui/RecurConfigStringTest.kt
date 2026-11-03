@@ -92,7 +92,7 @@ class RecurConfigStringTest {
           RecurConfig(
             frequency = Monthly,
             start = LocalDate(2021, APRIL, 25),
-            patterns = listOf(RecurPattern(value = 25, type = Day)),
+            patterns = [RecurPattern(value = 25, type = Day)],
           ),
       )
 
@@ -104,7 +104,7 @@ class RecurConfigStringTest {
             frequency = Monthly,
             start = LocalDate(2021, APRIL, 25),
             interval = 2,
-            patterns = listOf(RecurPattern(value = 25, type = Day)),
+            patterns = [RecurPattern(value = 25, type = Day)],
           ),
       )
 
@@ -115,7 +115,7 @@ class RecurConfigStringTest {
           RecurConfig(
             frequency = Monthly,
             start = LocalDate(2021, APRIL, 25),
-            patterns = listOf(RecurPattern(value = 31, type = Day)),
+            patterns = [RecurPattern(value = 31, type = Day)],
           ),
       )
 
@@ -126,7 +126,7 @@ class RecurConfigStringTest {
           RecurConfig(
             frequency = Monthly,
             start = LocalDate(2021, APRIL, 25),
-            patterns = listOf(RecurPattern(value = -1, type = Day)),
+            patterns = [RecurPattern(value = -1, type = Day)],
           ),
       )
 
@@ -137,7 +137,7 @@ class RecurConfigStringTest {
           RecurConfig(
             frequency = Monthly,
             start = LocalDate(2021, APRIL, 25),
-            patterns = listOf(RecurPattern(value = 2, type = Friday)),
+            patterns = [RecurPattern(value = 2, type = Friday)],
           ),
       )
 
@@ -148,7 +148,7 @@ class RecurConfigStringTest {
           RecurConfig(
             frequency = Monthly,
             start = LocalDate(2021, APRIL, 25),
-            patterns = listOf(RecurPattern(value = -1, type = Friday)),
+            patterns = [RecurPattern(value = -1, type = Friday)],
           ),
       )
 
@@ -161,11 +161,11 @@ class RecurConfigStringTest {
             frequency = Monthly,
             start = LocalDate(2021, APRIL, 25),
             patterns =
-              listOf(
+              [
                 RecurPattern(value = 15, type = Day),
                 RecurPattern(value = 3, type = Day),
                 RecurPattern(value = 20, type = Day),
-              ),
+              ],
           ),
       )
 
@@ -177,11 +177,11 @@ class RecurConfigStringTest {
             frequency = Monthly,
             start = LocalDate(2021, APRIL, 25),
             patterns =
-              listOf(
+              [
                 RecurPattern(value = 3, type = Day),
                 RecurPattern(value = -1, type = Day),
                 RecurPattern(value = 20, type = Day),
-              ),
+              ],
           ),
       )
 
@@ -194,11 +194,11 @@ class RecurConfigStringTest {
             frequency = Monthly,
             start = LocalDate(2021, APRIL, 25),
             patterns =
-              listOf(
+              [
                 RecurPattern(value = 3, type = Day),
                 RecurPattern(value = -1, type = Day),
                 RecurPattern(value = 2, type = Friday),
-              ),
+              ],
           ),
       )
 
@@ -211,12 +211,12 @@ class RecurConfigStringTest {
             frequency = Monthly,
             start = LocalDate(2021, APRIL, 25),
             patterns =
-              listOf(
+              [
                 RecurPattern(value = 1, type = Saturday),
                 RecurPattern(value = 2, type = Day),
                 RecurPattern(value = 3, type = Friday),
                 RecurPattern(value = 10, type = Day),
-              ),
+              ],
           ),
       )
 
@@ -229,7 +229,7 @@ class RecurConfigStringTest {
             frequency = Monthly,
             start = LocalDate(2023, SEPTEMBER, 13),
             interval = 1,
-            patterns = listOf(RecurPattern(value = 13, type = Day)),
+            patterns = [RecurPattern(value = 13, type = Day)],
             skipWeekend = false,
             endMode = Never,
             endOccurrences = 1,

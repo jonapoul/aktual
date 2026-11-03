@@ -27,10 +27,10 @@ class SankeyBudgetTest {
       calculate(
         SankeyBudget(
           entries =
-            listOf(
+            [
               entry("salary", "income", isIncome = true, value = 1000),
               entry("food", "bills", value = 600),
-            ),
+            ],
           toBudget = 300,
           fromPreviousMonth = 100,
           lastMonthOverspent = 0,
@@ -59,8 +59,7 @@ class SankeyBudgetTest {
     val data =
       calculate(
         SankeyBudget(
-          entries =
-            listOf(entry("food", "bills", value = 500), entry("fun", "bills", value = -100)),
+          entries = [entry("food", "bills", value = 500), entry("fun", "bills", value = -100)],
           toBudget = -50,
           fromPreviousMonth = 0,
           lastMonthOverspent = 0,
@@ -85,11 +84,11 @@ class SankeyBudgetTest {
   fun `Layers for each mode and fix ups when one end passes the other`() {
     assertThat(sankeyLayers(Budgeted))
       .isEqualTo(
-        listOf(IncomeCategory, Account, Budget, CategoryGroup, Category),
+        [IncomeCategory, Account, Budget, CategoryGroup, Category],
       )
     assertThat(sankeyLayers(Spent))
       .isEqualTo(
-        listOf(IncomePayee, IncomeCategory, Account, CategoryGroup, Category),
+        [IncomePayee, IncomeCategory, Account, CategoryGroup, Category],
       )
     assertThat(normalizeSankeyLayers(Budgeted, IncomePayee, Category))
       .isEqualTo(SankeyLayerRange(IncomeCategory, Category))
@@ -97,7 +96,7 @@ class SankeyBudgetTest {
       .isEqualTo(SankeyLayerRange(IncomePayee, Category))
     assertThat(normalizeSankeyLayers(Spent, CategoryGroup, Account, To))
       .isEqualTo(SankeyLayerRange(IncomePayee, Account))
-    assertThat(sankeyLayerChoices(Spent, To, Account)).isEqualTo(listOf(CategoryGroup, Category))
+    assertThat(sankeyLayerChoices(Spent, To, Account)).isEqualTo([CategoryGroup, Category])
   }
 
   @Test
@@ -105,12 +104,12 @@ class SankeyBudgetTest {
     val budget =
       sankeyBudget(
         months =
-          listOf(
+          [
             month(JANUARY_24, toBudget = 50, fromLastMonth = 20, overspent = -5),
             month(FEBRUARY_24, toBudget = 70, fromLastMonth = 30, overspent = -10),
-          ),
+          ],
         next = month(MARCH_24, toBudget = 0, fromLastMonth = 90, overspent = 0),
-        conditions = listOf(NOT_FUEL),
+        conditions = [NOT_FUEL],
         op = null,
       )
 
@@ -118,10 +117,10 @@ class SankeyBudgetTest {
       .isEqualTo(
         SankeyBudget(
           entries =
-            listOf(
+            [
               entry("salary", "income", isIncome = true, value = 2000),
               entry("food", "bills", value = 600),
-            ),
+            ],
           toBudget = 70,
           fromPreviousMonth = 20,
           lastMonthOverspent = -15,
@@ -144,7 +143,7 @@ class SankeyBudgetTest {
       start = JANUARY_24,
       end = JANUARY_24,
       budget = budget,
-      categoryOrder = emptyList(),
+      categoryOrder = [],
       params = SankeyParams(layerFrom = IncomeCategory, layerTo = Category),
     )
 
@@ -215,7 +214,7 @@ class SankeyBudgetTest {
       Condition(
         field = Category,
         operator = NotOneOf,
-        value = JsonArray(listOf(JsonPrimitive("fuel"))),
+        value = JsonArray([JsonPrimitive("fuel")]),
       )
 
     val DECEMBER_23 = YearMonth(2023, 12)

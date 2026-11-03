@@ -54,7 +54,7 @@ internal class BankSyncControllerImplTest {
     insertLinkedAccount(B)
     api.responses["provider-b"] = success()
 
-    val results = controller(api).sync(setOf(B))
+    val results = controller(api).sync([B])
 
     assertThat(results.map { it.account }).containsExactly(B)
   }
@@ -64,7 +64,7 @@ internal class BankSyncControllerImplTest {
     insertLinkedAccount(A, source = GoCardless, bankId = "requisition-1")
     insertLinkedAccount(B, source = EnableBanking, bankName = "ASPSP")
     insertLinkedAccount(C, source = Akahu)
-    api.responses += listOf("a", "b", "c").associate { "provider-$it" to success() }
+    api.responses += ["a", "b", "c"].associate { "provider-$it" to success() }
 
     controller(api).sync()
 
@@ -314,7 +314,7 @@ internal class BankSyncControllerImplTest {
       // Already running
       assertThat(controller.start()).isFalse()
 
-      assertThat(awaitItem()).isEqualTo(BankSyncProgress(isRunning = true, pending = listOf(A, B)))
+      assertThat(awaitItem()).isEqualTo(BankSyncProgress(isRunning = true, pending = [A, B]))
       var progress = awaitItem()
       while (progress.isRunning) progress = awaitItem()
 

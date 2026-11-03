@@ -221,7 +221,7 @@ internal class CompiledRule(
     val values =
       when (val v = condition.value) {
         is TextList -> v.values
-        is Text -> listOf(v.value)
+        is Text -> [v.value]
         else -> return true
       }
     val keys = values.map { indexKey(it, firstChar) ?: WILDCARD }.toSet()

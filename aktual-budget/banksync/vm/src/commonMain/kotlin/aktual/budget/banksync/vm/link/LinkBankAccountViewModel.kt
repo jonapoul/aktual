@@ -318,12 +318,11 @@ internal constructor(
 
   private data class Listed(
     val state: ExternalAccounts,
-    val accounts: List<ExternalBankAccount> = emptyList(),
+    val accounts: List<ExternalBankAccount> = [],
   )
 
   private companion object {
-    val PROVIDERS: List<AccountSyncSource> =
-      listOf(GoCardless, EnableBanking, SimpleFin, PluggyAi, Akahu)
+    val PROVIDERS: List<AccountSyncSource> = [GoCardless, EnableBanking, SimpleFin, PluggyAi, Akahu]
   }
 }
 

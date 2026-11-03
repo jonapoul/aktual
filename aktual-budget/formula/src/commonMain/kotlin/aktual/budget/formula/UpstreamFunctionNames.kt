@@ -3,7 +3,7 @@ package aktual.budget.formula
 // Every function upstream Actual supports: HyperFormula's built-ins plus Actual's own. Used to tell
 // functions Aktual hasn't implemented yet apart from ones that don't exist
 internal val UPSTREAM_FUNCTION_NAMES: Set<String> =
-  setOf(
+  [
     "ABS",
     "ACOS",
     "ACOSH",
@@ -409,4 +409,4 @@ internal val UPSTREAM_FUNCTION_NAMES: Set<String> =
     "YEARFRAC",
     "Z.TEST",
     "ZTEST",
-  )
+  ]

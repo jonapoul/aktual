@@ -45,7 +45,7 @@ class TransactionFilterTest {
     val row = row(notes = null)
     assertThat(filter(cond(Notes, IsNot, "x")).matches(row)).isTrue()
     assertThat(filter(cond(Notes, DoesNotContain, "x")).matches(row)).isTrue()
-    assertThat(filter(cond(ImportedPayee, NotOneOf, listOf("x"))).matches(row)).isTrue()
+    assertThat(filter(cond(ImportedPayee, NotOneOf, ["x"])).matches(row)).isTrue()
     assertThat(filter(cond(Payee, IsNot, "shop")).matches(row)).isTrue()
     assertThat(filter(cond(Payee, IsNot, null)).matches(row)).isFalse()
   }

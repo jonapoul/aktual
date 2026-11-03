@@ -149,14 +149,14 @@ class HomeViewModelAttentionTest {
 
     @Suppress("MaxLineLength")
     val SETUP =
-      listOf(
+      [
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('usual', 'Usual', 0, 1)",
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('income', 'Income', 1, 2)",
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('food', 'Food', 0, 'usual', 1)",
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('salary', 'Salary', 1, 'income', 1)",
         "INSERT INTO category_mapping(id, transferId) VALUES ('food', 'food'), ('salary', 'salary')",
         "INSERT INTO accounts(id, name, offbudget) VALUES ('on', 'On', 0)",
-      )
+      ]
 
     const val UNCATEGORISED =
       "INSERT INTO transactions(id, acct, amount, date) VALUES ('u1', 'on', -1000, 20260403)"

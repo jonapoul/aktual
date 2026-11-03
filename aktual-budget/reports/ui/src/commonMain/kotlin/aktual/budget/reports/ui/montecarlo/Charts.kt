@@ -78,7 +78,7 @@ internal fun FanChart(
   val edge = Fill(fill.copy(alpha = EDGE_ALPHA))
   val lines =
     if (view == All) {
-      listOf(
+      [
         LineCartesianLayer.rememberLine(
           fill = LineCartesianLayer.LineFill.single(edge),
           stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 1.dp),
@@ -91,21 +91,21 @@ internal fun FanChart(
           fill = LineCartesianLayer.LineFill.single(edge),
           stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 1.dp),
         ),
-      )
+      ]
     } else {
-      listOf(
+      [
         LineCartesianLayer.rememberLine(
           fill = LineCartesianLayer.LineFill.single(Fill(fill)),
           stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 2.dp),
           areaFill = LineCartesianLayer.AreaFill.single(Fill(fill.copy(alpha = FOCUSED_ALPHA))),
         ),
-      )
+      ]
     }
 
   val decorations =
     remember(bands, view, fill) {
       if (view == All) {
-        listOf(
+        [
           PercentileBand(
             bands,
             fill.copy(alpha = OUTER_ALPHA),
@@ -120,9 +120,9 @@ internal fun FanChart(
             MonteCarloFanBand::p25,
             MonteCarloFanBand::p75,
           ),
-        )
+        ]
       } else {
-        emptyList()
+        []
       }
     }
 
@@ -367,7 +367,7 @@ private fun column(color: Color) = LineComponent(fill = Fill(color), thickness =
 // The theme's qualitative palette, with tax in the negative colour
 internal fun seriesColor(colorIndex: Int, theme: Colors): Color =
   with(theme) {
-    listOf(
+    [
         chartQual1,
         chartQual2,
         chartQual3,
@@ -377,7 +377,7 @@ internal fun seriesColor(colorIndex: Int, theme: Colors): Color =
         chartQual7,
         chartQual8,
         chartQual9,
-      )
+      ]
       .getOrElse(colorIndex) { reportsNumberNegative }
   }
 

@@ -38,7 +38,7 @@ class QueryConditionsTest {
   fun `Changing operator keeps a value of the same kind`() {
     val condition = Condition(Payee, Is, JsonPrimitive("payee-1"))
     assertThat(condition.withOperator(IsNot).value).isEqualTo(JsonPrimitive("payee-1"))
-    assertThat(condition.withOperator(OneOf).value).isEqualTo(JsonArray(emptyList()))
+    assertThat(condition.withOperator(OneOf).value).isEqualTo(JsonArray([]))
     assertThat(condition.withOperator(Contains).value).isEqualTo(JsonPrimitive(""))
   }
 
@@ -62,13 +62,13 @@ class QueryConditionsTest {
     assertThat(Condition(Date, Is, JsonPrimitive("2024-01-05")).editableKind()).isEqualTo(Day)
     assertThat(Condition(Date, Is, JsonPrimitive("")).editableKind()).isEqualTo(Day)
     assertThat(Condition(Amount, GreaterThan, JsonPrimitive(-500)).editableKind()).isEqualTo(Money)
-    assertThat(Condition(Payee, NotOneOf, JsonArray(listOf(JsonPrimitive("a")))).editableKind())
+    assertThat(Condition(Payee, NotOneOf, JsonArray([JsonPrimitive("a")])).editableKind())
       .isEqualTo(EntityList)
   }
 
   @Test
   fun `Renaming keeps the order`() {
-    val query = FormulaQuery(emptyList(), conditionsOp = null, timeFrame = null)
+    val query = FormulaQuery([], conditionsOp = null, timeFrame = null)
     val queries = persistentMapOf("a" to query, "b" to query, "c" to query)
     assertThat(queries.renamed("b", "z").keys.toList()).containsExactly("a", "z", "c")
   }

@@ -130,8 +130,8 @@ private fun aggregate(
     val values =
       when {
         value is ArrayValue -> value.rows.flatten().map(coerce)
-        arg is CellReferenceNode -> listOf(coerce(value))
-        else -> listOf(coerce(coerceToNumber(value)))
+        arg is CellReferenceNode -> [coerce(value)]
+        else -> [coerce(coerceToNumber(value))]
       }
     for (coerced in values) {
       if (coerced is ErrorValue) return@FormulaFunction coerced

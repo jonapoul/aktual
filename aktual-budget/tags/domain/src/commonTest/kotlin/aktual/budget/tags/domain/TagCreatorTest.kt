@@ -46,13 +46,13 @@ class TagCreatorTest {
   }
 
   private fun changes(id: String, tag: String) =
-    listOf(
+    [
       LocalChange(TAGS, id, "id", MessageValue.String(id)),
       LocalChange(TAGS, id, "tag", MessageValue.String(tag)),
       LocalChange(TAGS, id, "color", Null),
       LocalChange(TAGS, id, "description", Null),
       LocalChange(TAGS, id, "tombstone", MessageValue.Number(0)),
-    )
+    ]
 
   private fun BudgetDatabase.tagsDao(scope: TestScope) =
     TagsDao(this, TestCoroutineContexts(scope.standardDispatcher))

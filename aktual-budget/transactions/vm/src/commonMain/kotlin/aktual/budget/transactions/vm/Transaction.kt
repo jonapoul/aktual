@@ -67,7 +67,7 @@ internal fun TransactionPage.toTransactions(
 // A null shownChildren shows every child
 internal fun TransactionRow.toTransaction(
   balance: Amount?,
-  children: List<TransactionRow> = emptyList(),
+  children: List<TransactionRow> = [],
   shownChildren: Set<TransactionId>? = null,
 ): Transaction {
   val payee = if (isParent) displayPayee(children) else this

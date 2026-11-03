@@ -42,14 +42,14 @@ class PinnedReportsTest {
     pinned.pin(B)
     pinned.pin(C)
     pinned.pin(D)
-    assertThat(prefs[HomeReports]).isEqualTo(listOf("a", "b", "c"))
+    assertThat(prefs[HomeReports]).isEqualTo(["a", "b", "c"])
   }
 
   @Test
   fun `Pinning a report twice keeps one pin`() = runPinnedTest { pinned, _, prefs ->
     pinned.pin(A)
     pinned.pin(A)
-    assertThat(prefs[HomeReports]).isEqualTo(listOf("a"))
+    assertThat(prefs[HomeReports]).isEqualTo(["a"])
   }
 
   @Test
@@ -57,7 +57,7 @@ class PinnedReportsTest {
     pinned.pin(A)
     pinned.pin(B)
     pinned.replace(A, C)
-    assertThat(prefs[HomeReports]).isEqualTo(listOf("c", "b"))
+    assertThat(prefs[HomeReports]).isEqualTo(["c", "b"])
   }
 
   @Test
@@ -65,7 +65,7 @@ class PinnedReportsTest {
     pinned.pin(A)
     pinned.pin(B)
     pinned.replace(A, B)
-    assertThat(prefs[HomeReports]).isEqualTo(listOf("a", "b"))
+    assertThat(prefs[HomeReports]).isEqualTo(["a", "b"])
   }
 
   @Test
@@ -73,7 +73,7 @@ class PinnedReportsTest {
     pinned.pin(A)
     pinned.pin(B)
     pinned.unpin(A)
-    assertThat(prefs[HomeReports]).isEqualTo(listOf("b"))
+    assertThat(prefs[HomeReports]).isEqualTo(["b"])
   }
 
   @Test
@@ -83,10 +83,10 @@ class PinnedReportsTest {
     pinned.pin(C)
     sync.deleteWidget(A)
 
-    pinned.ids.test { assertThatNextEmissionIsEqualTo(listOf(B, C)) }
+    pinned.ids.test { assertThatNextEmissionIsEqualTo([B, C]) }
 
     pinned.pin(D)
-    assertThat(prefs[HomeReports]).isEqualTo(listOf("b", "c", "d"))
+    assertThat(prefs[HomeReports]).isEqualTo(["b", "c", "d"])
   }
 
   @Test
@@ -107,10 +107,10 @@ class PinnedReportsTest {
     pinned.pin(UNTYPED)
     pinned.pin(B)
 
-    pinned.ids.test { assertThatNextEmissionIsEqualTo(listOf(A, B)) }
+    pinned.ids.test { assertThatNextEmissionIsEqualTo([A, B]) }
 
     pinned.pin(C)
-    assertThat(prefs[HomeReports]).isEqualTo(listOf("a", "b", "c"))
+    assertThat(prefs[HomeReports]).isEqualTo(["a", "b", "c"])
   }
 
   @Test
@@ -189,7 +189,7 @@ class PinnedReportsTest {
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val dao = DashboardDao(this, contexts)
     val sync = DashboardSync(dao, controller)
-    listOf(A to PAGE_1, B to PAGE_1, C to PAGE_1, D to PAGE_2).forEachIndexed { y, (id, page) ->
+    [A to PAGE_1, B to PAGE_1, C to PAGE_1, D to PAGE_2].forEachIndexed { y, (id, page) ->
       val meta = buildJsonObject { put("content", id.value) }
       sync.insertWidget(id, page.id, Markdown, x = 0, y = y.toLong(), meta = meta)
     }

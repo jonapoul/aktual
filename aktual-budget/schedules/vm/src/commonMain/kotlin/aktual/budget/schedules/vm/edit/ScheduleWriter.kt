@@ -55,8 +55,8 @@ internal class ScheduleWriter(
     val scheduleId = uuidGenerator(::ScheduleId)
     val ruleId = uuidGenerator(::RuleId)
     val nextDateId = uuidGenerator(::ScheduleNextDateId)
-    val conditions = form.toConditions(existing = emptyList())
-    val actions = listOf(RuleAction(value = JsonPrimitive(scheduleId.value), op = LinkSchedule))
+    val conditions = form.toConditions(existing = [])
+    val actions = [RuleAction(value = JsonPrimitive(scheduleId.value), op = LinkSchedule)]
     val nextDate = form.date.nextDate(calendar.today())
     val now = clock.now().toEpochMilliseconds()
 
@@ -153,9 +153,7 @@ internal class ScheduleWriter(
   }
 
   private suspend fun setCompleted(id: ScheduleId, completed: Boolean) =
-    syncController.syncChanges(
-      listOf(localChange(SCHEDULES, id.toString(), COMPLETED, completed)),
-    )
+    syncController.syncChanges(localChange(SCHEDULES, id.toString(), COMPLETED, completed))
 
   // The "restart" action in packages/desktop-client/src/components/schedules/index.tsx, which
   // resets the next date from today

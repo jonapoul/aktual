@@ -96,9 +96,9 @@ internal constructor(
         // it's only saved with the rest of the batch
         val startingBalance = insertStartingBalance(account, balance, date)
         val reconciled = reconcile(download.transactions, options, setAccount = false)
-        reconciled.copy(added = listOf(startingBalance) + reconciled.added)
+        reconciled.copy(added = [startingBalance] + reconciled.added)
       } else {
-        val transactions = if (settings.importTransactions) download.transactions else emptyList()
+        val transactions = if (settings.importTransactions) download.transactions else []
         val reconciled = reconcile(transactions, options, setAccount = true)
         download.currentBalance?.let { balance ->
           updateAccount(AccountUpdate(account, balanceCurrent = Patch.To(balance)))
@@ -244,8 +244,7 @@ internal constructor(
         hasMatched += exact.id
         if (exact.isParent) exactMatchedParents += exact.id
       }
-      val fuzzy =
-        if (exact == null) fuzzyCandidates(transaction, n.importedId, options) else emptyList()
+      val fuzzy = if (exact == null) fuzzyCandidates(transaction, n.importedId, options) else []
       Matched(transaction, n.importedId, n.rawSyncedData, fuzzy, exact)
     }
 

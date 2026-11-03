@@ -14,11 +14,11 @@ internal class BankSyncHelpersTest {
   private val download =
     BankSyncDownload(
       transactions =
-        listOf(
+        [
             bankTx("-12.34"),
             bankTx("0.1"),
             bankTx("-5.00", booked = false),
-          )
+          ]
           .map(::BankSyncTransaction),
       currentBalance = Amount(10_000),
     )
@@ -55,7 +55,7 @@ internal class BankSyncHelpersTest {
     val unlinked = candidate("unlinked", LocalDate(2026, 9, 29))
     val exact = candidate("exact", date, importedId = "t2")
 
-    val sorted = listOf(far, linked, unlinked, exact).sortedWith(fuzzyMatchOrder(date))
+    val sorted = [far, linked, unlinked, exact].sortedWith(fuzzyMatchOrder(date))
 
     assertThat(sorted).containsExactly(exact, unlinked, linked, far)
   }

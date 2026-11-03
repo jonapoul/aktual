@@ -74,7 +74,7 @@ fun transactionDiff(
     TransactionChanges(
       added =
         if (added.isEmpty()) {
-          emptyList()
+          []
         } else {
           val account = requireNotNull(draft.fields.account) { "A split's parts need an account" }
           added.map { it.toNewTransaction(id, account, draft.fields) }

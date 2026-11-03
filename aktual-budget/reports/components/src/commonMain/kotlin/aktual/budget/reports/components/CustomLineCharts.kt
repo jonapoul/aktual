@@ -263,7 +263,7 @@ private fun CustomData.intervalTap(onDrilldown: OnDrilldown): OnChartTap = { _, 
 
 // Each group's trend line, as a value per interval. Empty unless the report shows trend lines
 internal fun trendSeries(data: CustomData, legend: List<CustomBar>): List<List<Double>> {
-  if (!data.config.showTrendLines || data.trends.isEmpty()) return emptyList()
+  if (!data.config.showTrendLines || data.trends.isEmpty()) return []
   val last = data.intervals.lastIndex
   return data.groups.take(legend.size).map { group ->
     val trend = data.trends[group.group]

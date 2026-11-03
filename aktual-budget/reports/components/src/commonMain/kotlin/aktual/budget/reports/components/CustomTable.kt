@@ -279,13 +279,10 @@ internal fun customTableHeaders(data: CustomData): ImmutableList<String> {
     when {
       config.mode == Time -> intervalLabels(data)
       config.balanceType.metric == Total ->
-        listOf(Strings.reportsCustomTableDeposits, Strings.reportsCustomTablePayments)
-      else -> emptyList()
+        [Strings.reportsCustomTableDeposits, Strings.reportsCustomTablePayments]
+      else -> []
     }
-  return (listOf(first) +
-      middle +
-      Strings.reportsCustomTableTotals +
-      Strings.reportsCustomTableAverage)
+  return ([first] + middle + Strings.reportsCustomTableTotals + Strings.reportsCustomTableAverage)
     .toImmutableList()
 }
 
@@ -299,7 +296,7 @@ internal fun customTableRows(
   when (data.config.groupBy) {
     Category ->
       data.categoryGroups.flatMap { group ->
-        listOf(data.amountsRow(group, name, isGroupHeader = true)) +
+        [data.amountsRow(group, name, isGroupHeader = true)] +
           group.categories.map { data.amountsRow(it, name) } +
           CustomTableRow.Gap
       }
@@ -308,7 +305,7 @@ internal fun customTableRows(
       data.intervals.mapIndexed { index, interval ->
         CustomTableRow.Amounts(
           name = intervalNames[index],
-          amounts = data.amounts(interval.totals, listOf(interval.totals)),
+          amounts = data.amounts(interval.totals, [interval.totals]),
           drilldowns = data.drilldowns(CustomDrilldown(interval = interval.interval)),
         )
       }
@@ -352,8 +349,8 @@ private fun CustomData.amounts(
   val middle =
     when {
       config.mode == Time -> intervals.map { it[metric] }
-      metric == Total -> listOf(totals.assets, totals.debts)
-      else -> emptyList()
+      metric == Total -> [totals.assets, totals.debts]
+      else -> []
     }
   val average =
     if (intervalCount == 0) {
@@ -369,10 +366,10 @@ private fun CustomData.drilldowns(row: CustomDrilldown): ImmutableList<CustomDri
   val middle =
     when {
       // An interval's row has the one interval column
-      config.mode == Time && row.interval != null -> listOf(row)
+      config.mode == Time && row.interval != null -> [row]
       config.mode == Time -> intervals.map { row.copy(interval = it.interval) }
-      config.balanceType.metric == Total -> listOf(row.copy(flow = In), row.copy(flow = Out))
-      else -> emptyList()
+      config.balanceType.metric == Total -> [row.copy(flow = In), row.copy(flow = Out)]
+      else -> []
     }
   return (middle + row + row).toImmutableList()
 }

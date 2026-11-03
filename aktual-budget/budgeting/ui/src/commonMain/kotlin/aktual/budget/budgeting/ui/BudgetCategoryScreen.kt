@@ -449,7 +449,7 @@ private val PREVIEW_MONTH = YearMonth(2026, 10)
 private val PREVIEW_EARLIER_MONTH = YearMonth(2026, 7)
 private val PREVIEW_BUDGETED = Amount(35_000L)
 private val PREVIEW_SPENT =
-  listOf(31_000L, 28_500L, 36_200L, 33_000L, 29_900L, 41_000L, 34_400L, 30_100L, 35_000L, 27_800L)
+  [31_000L, 28_500L, 36_200L, 33_000L, 29_900L, 41_000L, 34_400L, 30_100L, 35_000L, 27_800L]
 
 private val PREVIEW_HISTORY =
   PREVIEW_SPENT.mapIndexed { index, spent ->

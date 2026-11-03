@@ -214,8 +214,8 @@ internal class PayeeDaoTest {
         Rules(
           id = RuleId(id),
           stage = null,
-          conditions = listOf(condition),
-          actions = emptyList(),
+          conditions = [condition],
+          actions = [],
           tombstone = tombstone,
           conditions_op = And,
         ),

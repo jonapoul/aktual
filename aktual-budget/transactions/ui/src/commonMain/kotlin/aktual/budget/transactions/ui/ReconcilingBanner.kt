@@ -109,7 +109,7 @@ private fun differenceText(reconciling: Reconciling): AnnotatedString {
   return buildAnnotatedString {
     append(text)
     var from = 0
-    for (value in listOf(cleared, difference, target)) {
+    for (value in [cleared, difference, target]) {
       val start = text.indexOf(value, from)
       if (start < 0) continue
       addStyle(SpanStyle(fontWeight = Bold), start, start + value.length)

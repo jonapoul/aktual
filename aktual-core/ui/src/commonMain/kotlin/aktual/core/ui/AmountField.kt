@@ -103,12 +103,12 @@ private fun OperatorKeys(onKey: (String) -> Unit, modifier: Modifier = Modifier)
 
 @Composable
 private fun operatorKeys(): List<Pair<String, String>> =
-  listOf(
+  [
     "+" to Strings.inputAdd,
     "−" to Strings.inputSubtract,
     "×" to Strings.inputMultiply,
     "÷" to Strings.inputDivide,
-  )
+  ]
 
 /**
  * A calculator keypad typing an amount into [state], for a screen that shows the amount itself in
@@ -270,4 +270,4 @@ private const val DECIMAL_POINT = "."
 private const val ZERO = "0"
 private const val BACKSPACE = "⌫"
 private val HARDWARE_OPERATORS = mapOf('+' to "+", '-' to "−", '*' to "×", '/' to "÷")
-private val DIGIT_ROWS = listOf(listOf("1", "2", "3"), listOf("4", "5", "6"), listOf("7", "8", "9"))
+private val DIGIT_ROWS = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]

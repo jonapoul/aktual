@@ -36,7 +36,7 @@ internal constructor(
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val mutableQuery = MutableStateFlow("")
-  private val properties = MutableStateFlow<List<ThemeProperty>>(emptyList())
+  private val properties = MutableStateFlow<List<ThemeProperty>>([])
 
   val query: StateFlow<String> = mutableQuery.asStateFlow()
 

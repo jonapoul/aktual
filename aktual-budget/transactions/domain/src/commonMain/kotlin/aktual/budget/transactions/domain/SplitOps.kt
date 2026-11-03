@@ -65,7 +65,7 @@ fun TransactionDraft.withPart(updated: SplitPart): TransactionDraft =
 fun TransactionDraft.withoutPart(id: TransactionId): TransactionDraft =
   when {
     parts.none { it.id == id } -> this
-    parts.size == 1 -> copy(parts = emptyList())
+    parts.size == 1 -> copy(parts = [])
     else -> copy(parts = parts.filterNot { it.id == id })
   }
 

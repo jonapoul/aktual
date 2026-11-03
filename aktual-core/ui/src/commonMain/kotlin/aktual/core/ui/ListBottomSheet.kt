@@ -47,7 +47,7 @@ fun <T : Any> ListBottomSheet(
   key: ((T) -> Any)? = null,
   isEnabled: (T) -> Boolean = { true },
   searchPlaceholder: String? = null,
-  searchTerms: (T) -> List<String> = { emptyList() },
+  searchTerms: (T) -> List<String> = { [] },
 ) {
   AktualModalBottomSheet(
     modifier = modifier,
@@ -56,7 +56,7 @@ fun <T : Any> ListBottomSheet(
   ) {
     val searchState = rememberTextFieldState()
     val query = searchState.text.toString().trim()
-    val labels = if (query.isEmpty()) emptyList() else options.map { string(it) }
+    val labels = if (query.isEmpty()) [] else options.map { string(it) }
     val filtered =
       remember(options, labels, query, searchTerms) {
         filterOptions(options, labels, query, searchTerms)

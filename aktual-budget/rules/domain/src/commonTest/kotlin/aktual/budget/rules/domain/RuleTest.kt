@@ -23,7 +23,7 @@ import kotlinx.datetime.LocalDate
 class RuleTest {
   @Test
   fun `Set sets a field`() {
-    val rule = rule("r", listOf(cond(Notes, Is, "James")), listOf(set(Notes, "Sarah")))
+    val rule = rule("r", [cond(Notes, Is, "James")], [set(Notes, "Sarah")])
     assertThat(rule.exec(tx(notes = "James")).notes).isEqualTo("Sarah")
     // Doesn't match
     assertThat(rule.exec(tx(notes = "James2")).notes).isEqualTo("James2")
@@ -34,8 +34,8 @@ class RuleTest {
     val rule =
       rule(
         "r",
-        listOf(cond(Notes, Is, "x")),
-        listOf(
+        [cond(Notes, Is, "x")],
+        [
           set(Category, "groceries"),
           set(Payee, "payee-2"),
           set(Account, "account-2"),
@@ -44,7 +44,7 @@ class RuleTest {
           set(Cleared, false),
           set(Reconciled, true),
           set(ImportedPayee, "Imported"),
-        ),
+        ],
       )
     assertThat(rule.exec(tx(notes = "x")))
       .isEqualTo(
@@ -64,14 +64,13 @@ class RuleTest {
 
   @Test
   fun `Setting an id to nothing clears it`() {
-    val rule = rule("r", listOf(cond(Notes, Is, "x")), listOf(set(Category, null)))
+    val rule = rule("r", [cond(Notes, Is, "x")], [set(Category, null)])
     assertThat(rule.exec(tx(notes = "x", category = "food")).category).isNull()
   }
 
   @Test
   fun `Empty account values are invalid`() {
-    val engine =
-      RulesEngine(listOf(rule("r", listOf(cond(Notes, Is, "x")), listOf(set(Account, "")))))
+    val engine = RulesEngine([rule("r", [cond(Notes, Is, "x")], [set(Account, "")])])
     assertThat(engine.invalidRules).containsExactly(RuleId("r"))
   }
 
@@ -85,14 +84,12 @@ class RuleTest {
 
   @Test
   fun `Prepend and append notes`() {
-    val prepend =
-      rule("r", listOf(cond(Field.Amount, Is, 1)), listOf(action(PrependNotes, value = "[A] ")))
+    val prepend = rule("r", [cond(Field.Amount, Is, 1)], [action(PrependNotes, value = "[A] ")])
     assertThat(prepend.exec(tx(amount = 1, notes = "Lunch")).notes).isEqualTo("[A] Lunch")
     assertThat(prepend.exec(tx(amount = 1, notes = null)).notes).isEqualTo("[A] ")
     assertThat(prepend.exec(tx(amount = 1, notes = "")).notes).isEqualTo("[A] ")
 
-    val append =
-      rule("r", listOf(cond(Field.Amount, Is, 1)), listOf(action(AppendNotes, value = " #food")))
+    val append = rule("r", [cond(Field.Amount, Is, 1)], [action(AppendNotes, value = " #food")])
     assertThat(append.exec(tx(amount = 1, notes = "Lunch")).notes).isEqualTo("Lunch #food")
     assertThat(append.exec(tx(amount = 1, notes = null)).notes).isEqualTo(" #food")
     assertThat(append.exec(tx(amount = 1, notes = "Lunch")).tags).isEqualTo(setOf("food"))
@@ -103,8 +100,8 @@ class RuleTest {
     val rule =
       rule(
         "r",
-        listOf(cond(Field.Amount, Is, 1)),
-        listOf(action(LinkSchedule, value = "schedule-1"), action(DeleteTransaction, value = "")),
+        [cond(Field.Amount, Is, 1)],
+        [action(LinkSchedule, value = "schedule-1"), action(DeleteTransaction, value = "")],
       )
     val result = rule.exec(tx(amount = 1))
     assertThat(result.schedule).isEqualTo(ScheduleId("schedule-1"))
@@ -116,12 +113,12 @@ class RuleTest {
     val rule =
       rule(
         "r",
-        listOf(cond(Notes, Is, "x")),
-        listOf(
+        [cond(Notes, Is, "x")],
+        [
           action(RuleAction.Op.Set, Notes, "", RuleAction.Options(template = "Hey {{notes}}")),
           action(RuleAction.Op.Set, Field.Amount, 0, RuleAction.Options(formula = "=100")),
           set(Category, "food"),
-        ),
+        ],
       )
     val result = rule.exec(tx(notes = "x", amount = 5))
     assertThat(result.notes).isEqualTo("x")
@@ -131,9 +128,8 @@ class RuleTest {
 
   @Test
   fun `Setting payee_name renames the payee`() {
-    val context = context(payees = listOf(RulePayee(PayeeId("amazon"), "Amazon")))
-    val rule =
-      rule("r", listOf(cond(ImportedPayee, Contains, "amzn")), listOf(set(PayeeName, "AMAZON")))
+    val context = context(payees = [RulePayee(PayeeId("amazon"), "Amazon")])
+    val rule = rule("r", [cond(ImportedPayee, Contains, "amzn")], [set(PayeeName, "AMAZON")])
     // Looked up case-insensitively
     assertThat(rule.exec(tx(importedPayee = "AMZN Mktp"), context).payee)
       .isEqualTo(PayeeId("amazon"))
@@ -142,8 +138,7 @@ class RuleTest {
   @Test
   fun `Setting payee_name to a new name creates the payee once`() {
     val context = context()
-    val rule =
-      rule("r", listOf(cond(ImportedPayee, Contains, "tesco")), listOf(set(PayeeName, "Tesco")))
+    val rule = rule("r", [cond(ImportedPayee, Contains, "tesco")], [set(PayeeName, "Tesco")])
     val first = rule.exec(tx(importedPayee = "TESCO 123"), context)
     val second = rule.exec(tx(importedPayee = "TESCO 456"), context)
     assertThat(first.payee).isEqualTo(PayeeId("new-payee-1"))
@@ -153,7 +148,7 @@ class RuleTest {
 
   @Test
   fun `Setting payee_name to nothing clears the payee`() {
-    val rule = rule("r", listOf(cond(Field.Amount, Is, 1)), listOf(set(PayeeName, "")))
+    val rule = rule("r", [cond(Field.Amount, Is, 1)], [set(PayeeName, "")])
     assertThat(rule.exec(tx(amount = 1, payee = "p")).payee).isNull()
   }
 
@@ -162,8 +157,8 @@ class RuleTest {
     val rule =
       rule(
         "r",
-        listOf(cond(Notes, Is, "James")),
-        listOf(set(Notes, "Sarah"), set(Category, "Sarah")),
+        [cond(Notes, Is, "James")],
+        [set(Notes, "Sarah"), set(Category, "Sarah")],
       )
     val result = rule.exec(tx(notes = "James"))
     assertThat(result.notes).isEqualTo("Sarah")
@@ -173,14 +168,14 @@ class RuleTest {
 
   @Test
   fun `Rule with a cleared condition matches on cleared status`() {
-    val rule = rule("r", listOf(cond(Cleared, Is, true)), listOf(set(Notes, "Sarah")))
+    val rule = rule("r", [cond(Cleared, Is, true)], [set(Notes, "Sarah")])
     assertThat(rule.exec(tx(cleared = true)).notes).isEqualTo("Sarah")
     assertThat(rule.exec(tx(cleared = false)).notes).isNull()
   }
 
   @Test
   fun `A rule without conditions never runs`() {
-    val rule = rule("r", emptyList(), listOf(set(Notes, "Sarah")))
+    val rule = rule("r", [], [set(Notes, "Sarah")])
     assertThat(rule.exec(tx()).notes).isNull()
   }
 
@@ -189,15 +184,15 @@ class RuleTest {
     val rule =
       rule(
         "r",
-        listOf(
+        [
           cond(Notes, Is, "James"),
           cond(
             Date,
             IsApprox,
             mapOf("start" to "2018-01-12", "frequency" to "monthly", "interval" to 3),
           ),
-        ),
-        listOf(set(Notes, "Sarah")),
+        ],
+        [set(Notes, "Sarah")],
         conditionsOp = And,
       )
     assertThat(rule.exec(tx(notes = "James", date = "2018-01-12")).notes).isEqualTo("Sarah")
@@ -211,15 +206,15 @@ class RuleTest {
     val rule =
       rule(
         "r",
-        listOf(
+        [
           cond(Notes, Is, "James"),
           cond(
             Date,
             IsApprox,
             mapOf("start" to "2018-01-12", "frequency" to "monthly", "interval" to 3),
           ),
-        ),
-        listOf(set(Notes, "Sarah")),
+        ],
+        [set(Notes, "Sarah")],
         conditionsOp = Or,
       )
     assertThat(rule.exec(tx(notes = "James", date = "2018-01-12")).notes).isEqualTo("Sarah")
@@ -233,8 +228,8 @@ class RuleTest {
     val rule =
       rule(
         "r",
-        listOf(cond(Notes, Is, "a"), cond(Field.Amount, Is, 1)),
-        listOf(set(Category, "c")),
+        [cond(Notes, Is, "a"), cond(Field.Amount, Is, 1)],
+        [set(Category, "c")],
         conditionsOp = Unknown,
       )
     assertThat(rule.exec(tx(notes = "a", amount = 2)).category).isNull()
@@ -251,10 +246,10 @@ class RuleTest {
   fun `Invalid rules are skipped and listed`() {
     val engine =
       RulesEngine(
-        listOf(
-          rule("bad", listOf(cond(Notes, Contains, "")), listOf(set(Category, "c"))),
-          rule("good", listOf(cond(Notes, Contains, "a")), listOf(set(Category, "c"))),
-        ),
+        [
+          rule("bad", [cond(Notes, Contains, "")], [set(Category, "c")]),
+          rule("good", [cond(Notes, Contains, "a")], [set(Category, "c")]),
+        ],
       )
     assertThat(engine.invalidRules).containsExactly(RuleId("bad"))
     assertThat(engine.rankedRules).containsExactly(RuleId("good"))
@@ -266,10 +261,10 @@ class RuleTest {
     val rule =
       rule(
         "r",
-        listOf(cond(Field.Amount, Is, 200)),
-        listOf(splitAmount(1, FixedAmount, 100), splitAmount(2, FixedAmount, 100)),
+        [cond(Field.Amount, Is, 200)],
+        [splitAmount(1, FixedAmount, 100), splitAmount(2, FixedAmount, 100)],
       )
-    val split = tx(amount = 200).copy(isParent = true, subtransactions = listOf(tx(amount = 200)))
+    val split = tx(amount = 200).copy(isParent = true, subtransactions = [tx(amount = 200)])
     assertThat(rule.exec(split)).isEqualTo(split)
     val child = tx(amount = 200).copy(isChild = true)
     assertThat(rule.exec(child)).isEqualTo(child)
@@ -278,9 +273,8 @@ class RuleTest {
   @Test
   fun `Rules on a transaction without splits leave it unsplit`() {
     val result =
-      rule("r", listOf(cond(Field.Amount, Is, 1)), listOf(set(Notes, "n", splitIndex = 0)))
-        .exec(tx(amount = 1))
+      rule("r", [cond(Field.Amount, Is, 1)], [set(Notes, "n", splitIndex = 0)]).exec(tx(amount = 1))
     assertThat(result.isParent).isFalse()
-    assertThat(result.subtransactions).isEqualTo(emptyList())
+    assertThat(result.subtransactions).isEqualTo([])
   }
 }

@@ -67,7 +67,7 @@ internal fun netWorthBreakdown(data: NetWorthData, period: LocalDate): NetWorthB
         }
         .asReversed()
     } else {
-      emptyList()
+      []
     }
   val total = data.items[period] ?: Zero
   val previous = data.items.keys.lastOrNull { it < period }

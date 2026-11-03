@@ -233,7 +233,7 @@ private fun PreviewLicenses(
 
 private val LOADED_STATE =
   LicensesState.Loaded(
-    List(size = 5) { listOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi) }
+    List(size = 5) { [AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi] }
       .flatten()
       .toImmutableList(),
   )

@@ -13,20 +13,20 @@ import kotlin.test.Test
 class BankSyncSummaryTest {
   @Test
   fun `Nothing synced has no summary`() {
-    assertThat(BankSyncSummary.of(emptyList())).isNull()
+    assertThat(BankSyncSummary.of([])).isNull()
   }
 
   @Test
   fun `One account`() {
-    assertThat(BankSyncSummary.of(listOf(synced("a", added = 2, updated = 1))))
+    assertThat(BankSyncSummary.of([synced("a", added = 2, updated = 1)]))
       .isEqualTo(Synced(name = "a", added = 2, updated = 1))
-    assertThat(BankSyncSummary.of(listOf(failed("a")))).isEqualTo(Failed(name = "a"))
+    assertThat(BankSyncSummary.of([failed("a")])).isEqualTo(Failed(name = "a"))
   }
 
   @Test
   fun `Several accounts total those that synced`() {
     val results =
-      listOf(synced("a", added = 2, updated = 1), failed("b"), synced("c", added = 3, updated = 0))
+      [synced("a", added = 2, updated = 1), failed("b"), synced("c", added = 3, updated = 0)]
 
     assertThat(BankSyncSummary.of(results))
       .isEqualTo(Several(synced = 2, failed = 1, added = 5, updated = 1))

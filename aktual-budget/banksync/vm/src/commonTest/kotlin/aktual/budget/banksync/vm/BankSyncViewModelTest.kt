@@ -193,7 +193,7 @@ class BankSyncViewModelTest {
     viewModel.state.test {
       assertThat(awaitSettledSuccess(cancel = false).isSyncing).isFalse()
 
-      controller.running(listOf(AccountId("b")))
+      controller.running([AccountId("b")])
       val state = awaitItem() as Success
       assertThat(state.isSyncing).isTrue()
       assertThat(state.providers.single().accounts.map { it.isSyncing })
@@ -218,7 +218,7 @@ class BankSyncViewModelTest {
         driver
           .execute(null, "UPDATE accounts SET bank_sync_status = 'ok' WHERE id = 'a'", 0)
           .await()
-        controller.finish(Synced(AccountId("a"), "A", added = emptyList(), updated = emptyList()))
+        controller.finish(Synced(AccountId("a"), "A", added = [], updated = []))
 
         assertThat(awaitItem())
           .isEqualTo(Finished(BankSyncSummary.Synced("A", added = 0, updated = 0)))

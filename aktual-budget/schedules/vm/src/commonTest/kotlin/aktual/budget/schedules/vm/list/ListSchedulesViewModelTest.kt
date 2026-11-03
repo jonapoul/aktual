@@ -409,7 +409,7 @@ class ListSchedulesViewModelTest {
   }
 
   private suspend fun StateFlow<ListSchedulesState>.awaitSchedules(): List<Schedule> {
-    var schedules: List<Schedule> = emptyList()
+    var schedules: List<Schedule> = []
     test { schedules = awaitSuccess().schedules }
     return schedules
   }

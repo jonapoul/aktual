@@ -50,14 +50,12 @@ class BankSyncSettingsLoader(private val preferences: PreferencesDao) {
 class BankSyncSettingsWriter(private val syncController: BudgetSyncController) {
   suspend fun save(account: AccountId, settings: BankSyncSettings) =
     syncController.syncChanges(
-      listOf(
-        change(CustomSyncMappings(account), settings.mappings.encode()),
-        change(SyncImportPending(account), settings.importPending),
-        change(SyncImportNotes(account), settings.importNotes),
-        change(SyncReimportDeleted(account), settings.reimportDeleted),
-        change(SyncImportTransactions(account), settings.importTransactions),
-        change(SyncUpdateDates(account), settings.updateDates),
-      ),
+      change(CustomSyncMappings(account), settings.mappings.encode()),
+      change(SyncImportPending(account), settings.importPending),
+      change(SyncImportNotes(account), settings.importNotes),
+      change(SyncReimportDeleted(account), settings.reimportDeleted),
+      change(SyncImportTransactions(account), settings.importTransactions),
+      change(SyncUpdateDates(account), settings.updateDates),
     )
 
   private fun change(key: PerAccount, value: Boolean) = change(key, value.toString())

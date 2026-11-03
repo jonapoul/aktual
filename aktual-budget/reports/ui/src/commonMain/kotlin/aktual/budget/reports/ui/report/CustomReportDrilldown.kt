@@ -49,6 +49,6 @@ private fun drilldownTitle(
       intervalNames.getOrNull(interval),
     )
     .filter { it.isNotBlank() }
-    .ifEmpty { listOf(data.title) }
+    .ifEmpty { [data.title] }
     .joinToString(" · ")
 }

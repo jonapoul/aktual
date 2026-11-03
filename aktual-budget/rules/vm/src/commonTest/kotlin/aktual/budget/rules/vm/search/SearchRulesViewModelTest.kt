@@ -37,7 +37,7 @@ import org.jetbrains.compose.resources.StringResource
 class SearchRulesViewModelTest {
   @Test
   fun `Blank query prompts for input`() = runDatabaseTest { scope ->
-    insertRule(id = "a", conditions = listOf(notesDoNotContain("rent")))
+    insertRule(id = "a", conditions = [notesDoNotContain("rent")])
     val viewModel = createViewModel(scope)
 
     viewModel.state.test {
@@ -50,9 +50,9 @@ class SearchRulesViewModelTest {
 
   @Test
   fun `Matches resolved entity names case-insensitively`() = runDatabaseTest { scope ->
-    insertRule(id = "a", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p1"))))
-    insertRule(id = "b", conditions = listOf(Condition(Payee, OneOf, ids("p2", "p3"))))
-    insertRule(id = "c", conditions = listOf(notesDoNotContain("other")))
+    insertRule(id = "a", conditions = [Condition(Payee, Is, JsonPrimitive("p1"))])
+    insertRule(id = "b", conditions = [Condition(Payee, OneOf, ids("p2", "p3"))])
+    insertRule(id = "c", conditions = [notesDoNotContain("other")])
     val viewModel = createViewModel(scope)
 
     viewModel.setQuery(" LANDLORD ")
@@ -64,8 +64,8 @@ class SearchRulesViewModelTest {
 
   @Test
   fun `Matches field and operator labels`() = runDatabaseTest { scope ->
-    insertRule(id = "a", conditions = listOf(notesDoNotContain("x")))
-    insertRule(id = "b", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p1"))))
+    insertRule(id = "a", conditions = [notesDoNotContain("x")])
+    insertRule(id = "b", conditions = [Condition(Payee, Is, JsonPrimitive("p1"))])
     val viewModel = createViewModel(scope)
 
     viewModel.setQuery("does not contain")
@@ -79,19 +79,18 @@ class SearchRulesViewModelTest {
   fun `Matches action values`() = runDatabaseTest { scope ->
     insertRule(
       id = "a",
-      conditions = listOf(notesDoNotContain("x")),
-      actions = listOf(RuleAction(value = JsonPrimitive("Monthly bill"), op = AppendNotes)),
+      conditions = [notesDoNotContain("x")],
+      actions = [RuleAction(value = JsonPrimitive("Monthly bill"), op = AppendNotes)],
     )
     insertRule(
       id = "b",
-      conditions = listOf(notesDoNotContain("x")),
-      actions = listOf(RuleAction(value = JsonPrimitive("s1"), op = LinkSchedule)),
+      conditions = [notesDoNotContain("x")],
+      actions = [RuleAction(value = JsonPrimitive("s1"), op = LinkSchedule)],
     )
     insertRule(
       id = "c",
-      conditions = listOf(notesDoNotContain("x")),
-      actions =
-        listOf(RuleAction(value = JsonPrimitive("c1"), op = RuleAction.Op.Set, field = Category)),
+      conditions = [notesDoNotContain("x")],
+      actions = [RuleAction(value = JsonPrimitive("c1"), op = RuleAction.Op.Set, field = Category)],
     )
     val viewModel = createViewModel(scope)
 
@@ -106,7 +105,7 @@ class SearchRulesViewModelTest {
 
   @Test
   fun `No matches shows no results`() = runDatabaseTest { scope ->
-    insertRule(id = "a", conditions = listOf(notesDoNotContain("rent")))
+    insertRule(id = "a", conditions = [notesDoNotContain("rent")])
     val viewModel = createViewModel(scope)
 
     viewModel.setQuery("xyz")
@@ -120,13 +119,12 @@ class SearchRulesViewModelTest {
 
   @Test
   fun `A payee filter lists its rules without a query`() = runDatabaseTest { scope ->
-    insertRule(id = "a", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p1"))))
-    insertRule(id = "b", conditions = listOf(Condition(Payee, OneOf, ids("p2", "p3"))))
+    insertRule(id = "a", conditions = [Condition(Payee, Is, JsonPrimitive("p1"))])
+    insertRule(id = "b", conditions = [Condition(Payee, OneOf, ids("p2", "p3"))])
     insertRule(
       id = "c",
-      conditions = listOf(notesDoNotContain("x")),
-      actions =
-        listOf(RuleAction(value = JsonPrimitive("p3"), op = RuleAction.Op.Set, field = Payee)),
+      conditions = [notesDoNotContain("x")],
+      actions = [RuleAction(value = JsonPrimitive("p3"), op = RuleAction.Op.Set, field = Payee)],
     )
     val viewModel = createViewModel(scope, payee = PayeeId("p3"))
 
@@ -138,8 +136,8 @@ class SearchRulesViewModelTest {
 
   @Test
   fun `A payee filter narrows the query matches`() = runDatabaseTest { scope ->
-    insertRule(id = "a", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p1"))))
-    insertRule(id = "b", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p3"))))
+    insertRule(id = "a", conditions = [Condition(Payee, Is, JsonPrimitive("p1"))])
+    insertRule(id = "b", conditions = [Condition(Payee, Is, JsonPrimitive("p3"))])
     val viewModel = createViewModel(scope, payee = PayeeId("p1"))
 
     viewModel.setQuery("landlord")
@@ -151,7 +149,7 @@ class SearchRulesViewModelTest {
 
   @Test
   fun `Clearing the payee filter prompts for input`() = runDatabaseTest { scope ->
-    insertRule(id = "a", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p1"))))
+    insertRule(id = "a", conditions = [Condition(Payee, Is, JsonPrimitive("p1"))])
     val viewModel = createViewModel(scope, payee = PayeeId("p1"))
 
     viewModel.state.test {
@@ -168,8 +166,8 @@ class SearchRulesViewModelTest {
 
   @Test
   fun `A recreated screen keeps its query and cleared payee filter`() = runDatabaseTest { scope ->
-    insertRule(id = "a", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p1"))))
-    insertRule(id = "b", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p3"))))
+    insertRule(id = "a", conditions = [Condition(Payee, Is, JsonPrimitive("p1"))])
+    insertRule(id = "b", conditions = [Condition(Payee, Is, JsonPrimitive("p3"))])
     val savedState = SavedStateHandle()
     with(createViewModel(scope, PayeeId("p1"), savedState)) {
       setQuery("landlord")
@@ -203,7 +201,7 @@ class SearchRulesViewModelTest {
   private suspend fun BudgetDatabase.insertRule(
     id: String,
     conditions: List<Condition>,
-    actions: List<RuleAction> = listOf(RuleAction(value = null, op = DeleteTransaction)),
+    actions: List<RuleAction> = [RuleAction(value = null, op = DeleteTransaction)],
   ) =
     RulesDao(this)
       .insert(

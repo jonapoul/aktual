@@ -185,7 +185,7 @@ internal class DashboardReorderState(
     // Keeps editing and the unsaved order across config changes
     fun saver(listState: LazyListState, scope: CoroutineScope) =
       listSaver(
-        save = { state -> if (state.isEditing) state.order.map { it.value } else emptyList() },
+        save = { state -> if (state.isEditing) state.order.map { it.value } else [] },
         restore = { saved ->
           DashboardReorderState(listState, scope).apply {
             isEditing = saved.isNotEmpty()

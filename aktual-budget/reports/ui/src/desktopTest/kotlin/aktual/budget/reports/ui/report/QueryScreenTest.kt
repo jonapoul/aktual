@@ -89,7 +89,7 @@ class QueryScreenTest {
   @Test
   fun `Conditions the editor can't handle only show a message`() = runComposeUiTest {
     // given
-    query = QUERY.copy(conditions = listOf(Condition(Date, Is, JsonObject(emptyMap()))))
+    query = QUERY.copy(conditions = [Condition(Date, Is, JsonObject(emptyMap()))])
     setScreen()
 
     // when
@@ -249,7 +249,7 @@ class QueryScreenTest {
     val PAYEE_CONDITION = Condition(Payee, Is, JsonPrimitive("employer"), type = Id)
     val QUERY =
       FormulaQuery(
-        conditions = listOf(PAYEE_CONDITION),
+        conditions = [PAYEE_CONDITION],
         conditionsOp = And,
         timeFrame = TimeFrame(MONTH, MONTH, SlidingWindow),
       )

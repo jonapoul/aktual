@@ -39,7 +39,7 @@ class ConditionTest {
   fun `Ops handle null fields`() {
     assertThat(cond(Notes, Contains, "foo").eval(tx(notes = null))).isFalse()
     assertThat(cond(Notes, Matches, "^fo*$").eval(tx(notes = null))).isFalse()
-    assertThat(cond(ImportedPayee, OneOf, listOf("foo")).eval(tx(importedPayee = null))).isFalse()
+    assertThat(cond(ImportedPayee, OneOf, ["foo"]).eval(tx(importedPayee = null))).isFalse()
     assertThat(cond(Payee, Is, null).eval(tx(payee = null))).isTrue()
     assertThat(cond(Notes, Is, "").eval(tx(notes = null))).isTrue()
   }
@@ -86,7 +86,7 @@ class ConditionTest {
         mapOf(
           "start" to "2019-01-01",
           "frequency" to "monthly",
-          "patterns" to listOf(mapOf("type" to "day", "value" to 15)),
+          "patterns" to [mapOf("type" to "day", "value" to 15)],
         ),
       )
     assertThat(c.eval(tx(date = "2018-03-15"))).isFalse()
@@ -109,7 +109,7 @@ class ConditionTest {
         mapOf(
           "start" to "2019-01-01",
           "frequency" to "monthly",
-          "patterns" to listOf(mapOf("type" to "day", "value" to 15)),
+          "patterns" to [mapOf("type" to "day", "value" to 15)],
         ),
       )
     assertThat(c.eval(tx(date = "2019-03-12"))).isFalse()
@@ -191,7 +191,7 @@ class ConditionTest {
     assertThat(c.eval(tx(payee = "FOO"))).isTrue()
     assertThat(c.eval(tx(payee = "foo2"))).isFalse()
 
-    c = cond(Payee, OneOf, listOf("foo", "bar"))
+    c = cond(Payee, OneOf, ["foo", "bar"])
     assertThat(c.eval(tx(payee = "foo"))).isTrue()
     assertThat(c.eval(tx(payee = "FOO"))).isTrue()
     assertThat(c.eval(tx(payee = "Bar"))).isTrue()
@@ -202,7 +202,7 @@ class ConditionTest {
     assertThat(c.eval(tx(payee = "bar"))).isTrue()
     assertThat(c.eval(tx(payee = null))).isTrue()
 
-    c = cond(Category, NotOneOf, listOf("foo", "bar"))
+    c = cond(Category, NotOneOf, ["foo", "bar"])
     assertThat(c.eval(tx(category = "foo"))).isFalse()
     assertThat(c.eval(tx(category = "baz"))).isTrue()
     // Null fields never match notOneOf
@@ -211,7 +211,7 @@ class ConditionTest {
 
   @Test
   fun `Contains on an id field reads the id, not the name`() {
-    val context = context(payees = listOf(RulePayee(PayeeId("payee-1"), "Amazon")))
+    val context = context(payees = [RulePayee(PayeeId("payee-1"), "Amazon")])
     assertThat(cond(Payee, Contains, "amazon").eval(tx(payee = "payee-1"), context)).isFalse()
     assertThat(cond(Payee, Contains, "yee-").eval(tx(payee = "payee-1"), context)).isTrue()
     assertThat(cond(Payee, DoesNotContain, "yee-").eval(tx(payee = "payee-1"), context)).isFalse()
@@ -225,7 +225,7 @@ class ConditionTest {
     assertThat(c.eval(tx(notes = "FOO"))).isTrue()
     assertThat(c.eval(tx(notes = "foo2"))).isFalse()
 
-    c = cond(ImportedPayee, OneOf, listOf("foo", "bar"))
+    c = cond(ImportedPayee, OneOf, ["foo", "bar"])
     assertThat(c.eval(tx(importedPayee = "foo"))).isTrue()
     assertThat(c.eval(tx(importedPayee = "FOO"))).isTrue()
     assertThat(c.eval(tx(importedPayee = "Bar"))).isTrue()
@@ -255,7 +255,7 @@ class ConditionTest {
     // A missing string counts as empty, so it doesn't contain anything
     assertThat(c.eval(tx(notes = null))).isTrue()
 
-    c = cond(ImportedPayee, NotOneOf, listOf("foo", "", null))
+    c = cond(ImportedPayee, NotOneOf, ["foo", "", null])
     assertThat(c.eval(tx(importedPayee = "Foo"))).isFalse()
     assertThat(c.eval(tx(importedPayee = "bar"))).isTrue()
   }
@@ -276,7 +276,7 @@ class ConditionTest {
 
   @Test
   fun `Ops are validated against the field`() {
-    assertFailure { compile(cond(Notes, OneOf, listOf("foo"))) }
+    assertFailure { compile(cond(Notes, OneOf, ["foo"])) }
       .messageContains("Invalid condition operator")
     assertFailure { compile(cond(ImportedPayee, HasTags, "#foo")) }
       .messageContains("Invalid condition operator")
@@ -411,7 +411,7 @@ class ConditionTest {
 
   @Test
   fun `hasTags reads the payee name`() {
-    val context = context(payees = listOf(RulePayee(PayeeId("p"), "Shop #online")))
+    val context = context(payees = [RulePayee(PayeeId("p"), "Shop #online")])
     assertThat(cond(PayeeName, HasTags, "#online").eval(tx(payee = "p"), context)).isTrue()
   }
 
@@ -440,7 +440,7 @@ class ConditionTest {
 
   @Test
   fun `payee_name reads the payee's name`() {
-    val context = context(payees = listOf(RulePayee(PayeeId("p"), "Kroger")))
+    val context = context(payees = [RulePayee(PayeeId("p"), "Kroger")])
     val c = cond(PayeeName, Contains, "KROG")
     assertThat(c.eval(tx(payee = "p"), context)).isTrue()
     assertThat(c.eval(tx(payee = null), context)).isFalse()

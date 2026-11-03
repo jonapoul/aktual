@@ -46,7 +46,7 @@ class LicensesViewModelTest {
       assertThatNextEmissionIsEqualTo(Error(message))
 
       // Given the repo now fetches successfully
-      coEvery { repository.loadLicenses() } returns Success(listOf(EXAMPLE_MODEL))
+      coEvery { repository.loadLicenses() } returns Success([EXAMPLE_MODEL])
 
       // When
       viewModel.load()
@@ -62,7 +62,7 @@ class LicensesViewModelTest {
   @Test
   fun `Handle empty licenses list`() = runTest {
     // Given the repo now fetches successfully, but nothing is in the list
-    coEvery { repository.loadLicenses() } returns Success(emptyList())
+    coEvery { repository.loadLicenses() } returns Success([])
 
     // When
     buildViewModel()
@@ -78,10 +78,10 @@ class LicensesViewModelTest {
   @Test
   fun `Sort licenses`() = runTest {
     // Given libraries in their default order
-    val apple = EXAMPLE_MODEL.copy(artifactId = "a", name = "apple", spdxLicenses = setOf(MIT))
+    val apple = EXAMPLE_MODEL.copy(artifactId = "a", name = "apple", spdxLicenses = [MIT])
     val zebra = EXAMPLE_MODEL.copy(artifactId = "b", name = "Zebra")
-    val unnamed = EXAMPLE_MODEL.copy(artifactId = "mango", name = null, spdxLicenses = emptySet())
-    val models = listOf(apple, zebra, unnamed)
+    val unnamed = EXAMPLE_MODEL.copy(artifactId = "mango", name = null, spdxLicenses = [])
+    val models = [apple, zebra, unnamed]
     coEvery { repository.loadLicenses() } returns Success(models)
 
     buildViewModel()
@@ -129,7 +129,7 @@ class LicensesViewModelTest {
         groupId = "com.website",
         artifactId = "something",
         name = "Something",
-        spdxLicenses = setOf(Apache2),
+        spdxLicenses = [Apache2],
         scm = ArtifactScm("www.website.com"),
         version = "1.2.3",
       )

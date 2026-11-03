@@ -90,14 +90,14 @@ class TransactionRebaseTest {
   @Test
   fun `Parts are merged by ID`() {
     val part3 = SplitPart(TransactionId("p3"), Amount(-500L), sortOrder = -3)
-    val saved = SPLIT.copy(parts = listOf(PART_1.copy(category = CategoryId("b")), PART_2, part3))
-    val draft = SPLIT.copy(parts = listOf(PART_1.copy(notes = "Food"), PART_2))
+    val saved = SPLIT.copy(parts = [PART_1.copy(category = CategoryId("b")), PART_2, part3])
+    val draft = SPLIT.copy(parts = [PART_1.copy(notes = "Food"), PART_2])
 
     assertThat(rebase(SPLIT, saved, draft))
       .isEqualTo(
         RebasedDraft(
           SPLIT.copy(
-            parts = listOf(PART_1.copy(category = CategoryId("b"), notes = "Food"), PART_2, part3),
+            parts = [PART_1.copy(category = CategoryId("b"), notes = "Food"), PART_2, part3],
           ),
           hasConflicts = false,
         ),
@@ -106,23 +106,23 @@ class TransactionRebaseTest {
 
   @Test
   fun `A part deleted elsewhere is dropped`() {
-    val saved = SPLIT.copy(parts = listOf(PART_1))
+    val saved = SPLIT.copy(parts = [PART_1])
 
-    val untouched = SPLIT.copy(parts = listOf(PART_1.copy(notes = "Food"), PART_2))
+    val untouched = SPLIT.copy(parts = [PART_1.copy(notes = "Food"), PART_2])
     assertThat(rebase(SPLIT, saved, untouched))
       .isEqualTo(
-        RebasedDraft(SPLIT.copy(parts = listOf(PART_1.copy(notes = "Food"))), hasConflicts = false),
+        RebasedDraft(SPLIT.copy(parts = [PART_1.copy(notes = "Food")]), hasConflicts = false),
       )
 
-    val changed = SPLIT.copy(parts = listOf(PART_1, PART_2.copy(notes = "Bags")))
+    val changed = SPLIT.copy(parts = [PART_1, PART_2.copy(notes = "Bags")])
     assertThat(rebase(SPLIT, saved, changed))
-      .isEqualTo(RebasedDraft(SPLIT.copy(parts = listOf(PART_1)), hasConflicts = true))
+      .isEqualTo(RebasedDraft(SPLIT.copy(parts = [PART_1]), hasConflicts = true))
   }
 
   @Test
   fun `Removing a part changed elsewhere is a conflict`() {
-    val saved = SPLIT.copy(parts = listOf(PART_1, PART_2.copy(amount = Amount(-900L))))
-    val draft = SPLIT.copy(parts = listOf(PART_1.copy(notes = "Food")))
+    val saved = SPLIT.copy(parts = [PART_1, PART_2.copy(amount = Amount(-900L))])
+    val draft = SPLIT.copy(parts = [PART_1.copy(notes = "Food")])
 
     assertThat(rebase(SPLIT, saved, draft)).isEqualTo(RebasedDraft(draft, hasConflicts = true))
   }
@@ -130,7 +130,7 @@ class TransactionRebaseTest {
   @Test
   fun `Parts added elsewhere aren't added to a draft that's no longer split`() {
     val part3 = SplitPart(TransactionId("p3"), Amount(-500L), sortOrder = -3)
-    val saved = SPLIT.copy(parts = listOf(PART_1, PART_2, part3))
+    val saved = SPLIT.copy(parts = [PART_1, PART_2, part3])
     val draft = TransactionDraft(SPLIT.fields)
 
     assertThat(rebase(SPLIT, saved, draft)).isEqualTo(RebasedDraft(draft, hasConflicts = true))
@@ -138,14 +138,14 @@ class TransactionRebaseTest {
 
   @Test
   fun `Parts added both ways keep the draft's as a conflict`() {
-    val saved = PLAIN.copy(parts = listOf(PART_1, PART_2))
+    val saved = PLAIN.copy(parts = [PART_1, PART_2])
     val draft =
       PLAIN.copy(
         parts =
-          listOf(
+          [
             SplitPart(TransactionId("p3"), Amount(-4000L), sortOrder = -1),
             SplitPart(TransactionId("p4"), Amount(-210L), sortOrder = -2),
-          ),
+          ],
       )
 
     assertThat(rebase(PLAIN, saved, draft)).isEqualTo(RebasedDraft(draft, hasConflicts = true))
@@ -161,8 +161,8 @@ class TransactionRebaseTest {
   @Test
   fun `A split that stops adding up keeps the draft's amounts as a conflict`() {
     val total = FIELDS.copy(payee = null, category = null, amount = Amount(-5000L))
-    val saved = TransactionDraft(total, listOf(PART_1.copy(amount = Amount(-4000L)), PART_2))
-    val draft = TransactionDraft(total, listOf(PART_1, PART_2.copy(amount = Amount(-1790L))))
+    val saved = TransactionDraft(total, [PART_1.copy(amount = Amount(-4000L)), PART_2])
+    val draft = TransactionDraft(total, [PART_1, PART_2.copy(amount = Amount(-1790L))])
 
     assertThat(rebase(SPLIT, saved, draft)).isEqualTo(RebasedDraft(draft, hasConflicts = true))
   }
@@ -187,6 +187,6 @@ class TransactionRebaseTest {
     val PART_1 =
       SplitPart(TransactionId("p1"), Amount(-3210L), category = CategoryId("a"), sortOrder = -1)
     val PART_2 = SplitPart(TransactionId("p2"), Amount(-1000L), notes = "Bin bags", sortOrder = -2)
-    val SPLIT = TransactionDraft(FIELDS.copy(payee = null, category = null), listOf(PART_1, PART_2))
+    val SPLIT = TransactionDraft(FIELDS.copy(payee = null, category = null), [PART_1, PART_2])
   }
 }

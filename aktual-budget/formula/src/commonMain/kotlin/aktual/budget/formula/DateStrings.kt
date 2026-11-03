@@ -8,8 +8,8 @@ import kotlinx.datetime.LocalDate
 // Port of HyperFormula's defaultParseToDateTime and DateTimeHelper, with upstream Actual's date
 // formats. Dates become Excel serial numbers: days since 1899-12-30, plus the time as a fraction
 
-private val DATE_FORMATS = listOf("DD/MM/YYYY", "YYYY-MM-DD", "YYYY/MM/DD")
-private val TIME_FORMATS = listOf("hh:mm", "hh:mm:ss.sss")
+private val DATE_FORMATS = ["DD/MM/YYYY", "YYYY-MM-DD", "YYYY/MM/DD"]
+private val TIME_FORMATS = ["hh:mm", "hh:mm:ss.sss"]
 private const val NULL_YEAR = 30
 private const val MIN_YEAR = 1582
 private const val SECONDS_PRECISION = 1000.0

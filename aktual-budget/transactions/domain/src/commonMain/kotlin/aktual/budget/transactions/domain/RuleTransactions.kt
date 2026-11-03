@@ -37,7 +37,7 @@ fun RuleTransaction.toNewTransactions(
       error = if (isSplit && difference != 0L) splitError(difference) else null,
       rawSyncedData = rawSyncedData,
     )
-  return listOf(parent) +
+  return [parent] +
     children.mapIndexed { index, child ->
       NewTransaction(
         id = newId(),
