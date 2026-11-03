@@ -1225,6 +1225,32 @@
   <string name="reports_sankey_spent">%1$s (Spent)</string>
   <string name="reports_sankey_income">Income</string>
   <string name="reports_sankey_other">Other</string>
+  <string name="reports_sankey_budgeted">Budgeted</string>
+  <string name="reports_sankey_available_funds">Available funds</string>
+  <string name="reports_sankey_to_budget">To budget</string>
+  <string name="reports_sankey_overbudgeted">Overbudgeted</string>
+  <string name="reports_sankey_overspent">Overspent</string>
+  <string name="reports_sankey_from">From %1$s</string>
+  <string name="reports_sankey_for">For %1$s</string>
+  <string name="reports_sankey_mode">Mode</string>
+  <string name="reports_sankey_mode_spent">Spent</string>
+  <string name="reports_sankey_top_categories">Show up to</string>
+  <string name="reports_sankey_top_all">All</string>
+  <string name="reports_sankey_sort">Category sort</string>
+  <string name="reports_sankey_sort_per_group">Per group</string>
+  <string name="reports_sankey_sort_global">All together</string>
+  <string name="reports_sankey_sort_budget">As budget</string>
+  <string name="reports_sankey_layer_from">From</string>
+  <string name="reports_sankey_layer_to">To</string>
+  <string name="reports_sankey_layer_payee">Payee</string>
+  <string name="reports_sankey_layer_income_category">Income category</string>
+  <string name="reports_sankey_layer_account">Account</string>
+  <string name="reports_sankey_layer_budget">Budget</string>
+  <string name="reports_sankey_layer_category_group">Category group</string>
+  <string name="reports_sankey_layer_category">Category</string>
+  <string name="reports_sankey_percentages">Show as percentages</string>
+  <string name="reports_sankey_group_accounts">Group accounts</string>
+  <string name="reports_sankey_transfers">Show transfers</string>
   <string name="reports_sankey_empty">No transactions in this period</string>
   <string name="reports_sankey_link">%1$s → %2$s</string>
 
@@ -1262,7 +1288,6 @@
   <string name="reports_unsupported_error_title">Error details</string>
   <string name="reports_unsupported_error_copy">Copy</string>
   <string name="reports_unsupported_error_close">Close</string>
-  <string name="reports_unsupported_sankey_budgeted">Budgeted Sankey reports aren't supported yet</string>
 
   <string name="reports_date_config_live">Live</string>
   <string name="reports_date_config_static">Static</string>

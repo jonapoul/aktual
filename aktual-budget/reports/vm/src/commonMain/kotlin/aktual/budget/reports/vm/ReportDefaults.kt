@@ -43,6 +43,7 @@ internal fun ReportMeta.withDefaults(current: YearMonth): ReportMeta =
         showHiddenCategories = showHiddenCategories == true,
         expenseAdjustmentFactor = expenseAdjustmentFactor ?: 1.0,
       )
+    is SankeyReportMeta -> withDefaults(current)
     is AgeOfMoneyReportMeta ->
       copy(
         conditions = conditions.orEmpty(),
@@ -56,8 +57,24 @@ internal fun ReportMeta.withDefaults(current: YearMonth): ReportMeta =
     is FormulaReportMeta,
     is MarkdownReportMeta,
     is MonteCarloReportMeta,
-    is SankeyReportMeta,
     is SpendingReportMeta,
     is SummaryReportMeta,
     is UnsupportedReportMeta -> this
   }
+
+private fun SankeyReportMeta.withDefaults(current: YearMonth): SankeyReportMeta {
+  val layers = normalizeSankeyLayers(mode, SankeyLayer.parse(layerFrom), SankeyLayer.parse(layerTo))
+  return copy(
+    conditions = conditions.orEmpty(),
+    conditionsOp = conditionsOp ?: And,
+    timeFrame = timeFrame ?: TimeFrame(current, current, SlidingWindow),
+    mode = if (mode == Budgeted) Budgeted else Spent,
+    topNCategories = topNCategories ?: DEFAULT_TOP_N_CATEGORIES,
+    categorySort = categorySort?.takeIf { it != Unknown } ?: PerGroup,
+    showPercentages = showPercentages == true,
+    groupAccounts = groupAccounts == true,
+    showTransfers = showTransfers == true,
+    layerFrom = layers.from.key,
+    layerTo = layers.to.key,
+  )
+}

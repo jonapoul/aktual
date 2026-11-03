@@ -65,6 +65,7 @@ import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
 import kotlinx.datetime.minusMonth
 import kotlinx.datetime.plus
+import kotlinx.datetime.plusMonth
 import kotlinx.datetime.yearMonth
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
@@ -667,14 +668,18 @@ internal class ChartDataLoader(
 
   // packages/desktop-client/src/components/reports/reports/SankeyCard.tsx
   fun sankey(meta: SankeyReportMeta): Flow<ChartData> {
-    if (meta.mode == Budgeted) return unsupported(meta, SankeyBudgeted)
-
+    val layers =
+      normalizeSankeyLayers(
+        mode = meta.mode,
+        from = SankeyLayer.parse(meta.layerFrom),
+        to = SankeyLayer.parse(meta.layerTo),
+      )
     val params =
       SankeyParams(
         topN = meta.topNCategories ?: DEFAULT_TOP_N_CATEGORIES,
         sort = meta.categorySort ?: PerGroup,
-        layerFrom = SankeyLayer.parse(meta.layerFrom) ?: IncomePayee,
-        layerTo = SankeyLayer.parse(meta.layerTo) ?: Category,
+        layerFrom = layers.from,
+        layerTo = layers.to,
         groupAccounts = meta.groupAccounts == true,
         showPercentages = meta.showPercentages == true,
       )
@@ -694,6 +699,25 @@ internal class ChartDataLoader(
       val latest = bounds.latest?.yearMonth ?: today.yearMonth
       val start = range.start.coerceIn(earliest, latest)
       val end = range.endInclusive.coerceIn(earliest, latest).coerceAtLeast(start)
+
+      if (meta.mode == Budgeted) {
+        return@flatMapLatest budgets.observeRange(start..end.plusMonth()).map { months ->
+          calculateBudgetSankey(
+            title = meta.name,
+            start = start,
+            end = end,
+            budget =
+              sankeyBudget(
+                months.dropLast(1),
+                months.lastOrNull(),
+                meta.conditions,
+                meta.conditionsOp,
+              ),
+            categoryOrder = budgetCategoryOrder(months.firstOrNull()),
+            params = params,
+          )
+        }
+      }
 
       sankeyInputs(filter, start.firstDay, end.lastDay, showTransfers).map { (rows, transferRows) ->
         calculateSankey(

@@ -151,7 +151,7 @@ internal fun AgeOfMoneySettings(
 // Settings for a report with a time frame, filters and maybe some display options between them.
 // The time frame picker and conditions replace the settings while open, then come back to them
 @Composable
-private fun FilteredReportSettings(
+internal fun FilteredReportSettings(
   timeFrame: TimeFrame?,
   conditions: ImmutableList<Condition>,
   conditionsOp: ConditionOp,

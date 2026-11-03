@@ -9,6 +9,7 @@ import aktual.budget.reports.vm.CrossoverReportMeta
 import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.ReportMeta
+import aktual.budget.reports.vm.SankeyReportMeta
 import aktual.budget.reports.vm.SummaryChartType
 import aktual.budget.reports.vm.SummaryReportMeta
 import aktual.budget.reports.vm.allTimeDivisor
@@ -57,6 +58,9 @@ internal fun ReportMeta.settingsSheet(): SettingsSheet? =
     }
     is CrossoverReportMeta -> { data, onEdit, onDismiss ->
       CrossoverSettings(this, data, onEdit.typed(), onDismiss)
+    }
+    is SankeyReportMeta -> { data, onEdit, onDismiss ->
+      SankeySettings(this, data, onEdit.typed(), onDismiss)
     }
     else -> null
   }

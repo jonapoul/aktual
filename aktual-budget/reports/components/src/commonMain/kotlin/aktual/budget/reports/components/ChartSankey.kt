@@ -410,6 +410,8 @@ private fun SankeyColor.resolve(theme: Colors): Color =
   when (this) {
     Primary -> theme.reportsBlue
     Negative -> theme.toBudgetNegative
+    Positive -> theme.toBudgetPositive
+    Neutral -> theme.reportsGray
     is Palette ->
       with(theme) {
         listOf(
@@ -433,6 +435,14 @@ private fun SankeyLabel.string(): String =
     is Text -> value
     SankeyLabel.Income -> Strings.reportsSankeyIncome
     Other -> Strings.reportsSankeyOther
+    Budgeted -> Strings.reportsSankeyBudgeted
+    AvailableFunds -> Strings.reportsSankeyAvailableFunds
+    ToBudget -> Strings.reportsSankeyToBudget
+    Overbudgeted -> Strings.reportsSankeyOverbudgeted
+    Overspent -> Strings.reportsSankeyOverspent
+    is FromCategory -> Strings.reportsSankeyFrom(category)
+    is FromMonth -> Strings.reportsSankeyFrom(month.stringShort())
+    is ForMonth -> Strings.reportsSankeyFor(month.stringShort())
   }
 
 @Composable private fun Amount.formatted(): AnnotatedString = formattedText(includeSign = false)

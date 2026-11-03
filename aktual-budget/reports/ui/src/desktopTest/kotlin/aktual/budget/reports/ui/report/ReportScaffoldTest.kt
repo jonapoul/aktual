@@ -7,14 +7,18 @@ import aktual.budget.reports.components.PREVIEW_BUDGET_ANALYSIS_DATA
 import aktual.budget.reports.components.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.components.PREVIEW_CROSSOVER_DATA
 import aktual.budget.reports.components.PREVIEW_NET_WORTH_DATA
+import aktual.budget.reports.components.PREVIEW_SANKEY_DATA
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.Tags
+import aktual.budget.reports.vm.ALL_SANKEY_CATEGORIES
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.BudgetAnalysisReportMeta
 import aktual.budget.reports.vm.CashFlowReportMeta
 import aktual.budget.reports.vm.CrossoverReportMeta
 import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.ReportMeta
+import aktual.budget.reports.vm.SankeyLayer
+import aktual.budget.reports.vm.SankeyReportMeta
 import aktual.budget.reports.vm.SummaryData
 import aktual.budget.reports.vm.SummaryReportMeta
 import aktual.budget.reports.vm.TimeFrame
@@ -261,6 +265,43 @@ class ReportScaffoldTest {
   }
 
   @Test
+  fun `Settings sheet switching sankey to budgeted moves the layers off payees`() =
+    runComposeUiTest {
+      // given
+      val actions = mutableListOf<Action>()
+      setPreviewContent { ReportScaffold(state = SANKEY, onAction = { actions += it }) }
+
+      // when
+      onNodeWithTag(ChartTags.ChartSettings).performClick()
+      onNodeWithText("Budgeted").performScrollTo().performClick()
+
+      // then
+      assertThat(actions.edited(SANKEY)).isInstanceOf<SankeyReportMeta>().all {
+        prop(SankeyReportMeta::mode).isEqualTo(Budgeted)
+        prop(SankeyReportMeta::layerFrom).isEqualTo(SankeyLayer.IncomeCategory.key)
+        prop(SankeyReportMeta::layerTo).isEqualTo(SankeyLayer.Category.key)
+      }
+    }
+
+  @Test
+  fun `Settings sheet picks a sankey category limit`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<Action>()
+    setPreviewContent { ReportScaffold(state = SANKEY, onAction = { actions += it }) }
+
+    // when
+    onNodeWithTag(ChartTags.ChartSettings).performClick()
+    onNodeWithText("Show up to").performScrollTo().performClick()
+    onNodeWithText("All").performClick()
+
+    // then
+    assertThat(actions.edited(SANKEY))
+      .isInstanceOf<SankeyReportMeta>()
+      .prop(SankeyReportMeta::topNCategories)
+      .isEqualTo(ALL_SANKEY_CATEGORIES)
+  }
+
+  @Test
   fun `Settings sheet picks an age of money granularity`() = runComposeUiTest {
     // given
     val actions = mutableListOf<Action>()
@@ -366,6 +407,13 @@ class ReportScaffoldTest {
         item =
           DashboardItem(id = WidgetId("crossover"), x = 0, y = 0, meta = CrossoverReportMeta()),
         data = PREVIEW_CROSSOVER_DATA,
+      )
+
+    val SANKEY =
+      ReportState.Loaded(
+        type = Sankey,
+        item = DashboardItem(id = WidgetId("sankey"), x = 0, y = 0, meta = SankeyReportMeta()),
+        data = PREVIEW_SANKEY_DATA,
       )
 
     val ANALYSIS =

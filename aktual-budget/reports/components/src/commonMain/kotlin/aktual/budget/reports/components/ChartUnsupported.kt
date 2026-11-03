@@ -53,7 +53,6 @@ internal fun UnsupportedChart(data: UnsupportedData, modifier: Modifier = Modifi
             InvalidMeta -> Strings.reportsUnsupportedInvalidMeta
             MissingReport -> Strings.reportsUnsupportedMissing
             ReportType -> Strings.reportsUnsupportedType
-            SankeyBudgeted -> Strings.reportsUnsupportedSankeyBudgeted
           },
         color = colors.pageTextSubdued,
         textAlign = Center,
