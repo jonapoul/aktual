@@ -27,11 +27,11 @@ class SplitActionsTest {
     val rule =
       rule(
         "r",
-        listOf(cond(Payee, Is, "123")),
-        listOf(splitAmount(1, FixedAmount, 100), set(Payee, "456", splitIndex = 1)),
+        [cond(Payee, Is, "123")],
+        [splitAmount(1, FixedAmount, 100), set(Payee, "456", splitIndex = 1)],
       )
     val result = rule.exec(tx(payee = "123", amount = 100))
-    assertThat(result.subtransactions.map { it.payee }).isEqualTo(listOf(PayeeId("456")))
+    assertThat(result.subtransactions.map { it.payee }).isEqualTo([PayeeId("456")])
   }
 
   @Test
@@ -39,14 +39,14 @@ class SplitActionsTest {
     val rule =
       rule(
         "r",
-        listOf(cond(Payee, Is, "123")),
-        listOf(
+        [cond(Payee, Is, "123")],
+        [
           set(Category, "food"),
           splitAmount(1, FixedAmount, 60),
           set(Notes, "first", splitIndex = 1),
           splitAmount(2, Remainder),
           set(Category, "fun", splitIndex = 2),
-        ),
+        ],
       )
     val parent = tx(payee = "123", amount = 100, notes = "parent", cleared = false)
     val result = rule.exec(parent)
@@ -58,7 +58,7 @@ class SplitActionsTest {
     assertThat(result.splitDifference).isNull()
     assertThat(result.subtransactions)
       .isEqualTo(
-        listOf(
+        [
           RuleTransaction(
             account = ACCOUNT,
             date = parent.date,
@@ -78,35 +78,35 @@ class SplitActionsTest {
             cleared = false,
             isChild = true,
           ),
-        ),
+        ],
       )
   }
 
   @Test
   fun `Basic fixed-amount`() {
-    assertThat(fixedAmountRule.amounts(200)).isEqualTo(listOf(100L, 100L))
+    assertThat(fixedAmountRule.amounts(200)).isEqualTo([100L, 100L])
   }
 
   @Test
   fun `Basic fixed-percent`() {
     val rule = splitRule(splitAmount(1, FixedPercent, 50), splitAmount(2, FixedPercent, 50))
-    assertThat(rule.amounts(200)).isEqualTo(listOf(100L, 100L))
+    assertThat(rule.amounts(200)).isEqualTo([100L, 100L])
   }
 
   @Test
   fun `Basic remainder`() {
     val rule = splitRule(splitAmount(1, Remainder), splitAmount(2, Remainder))
-    assertThat(rule.amounts(200)).isEqualTo(listOf(100L, 100L))
+    assertThat(rule.amounts(200)).isEqualTo([100L, 100L])
   }
 
   @Test
   fun `Percent is of the post-fixed-amount total`() {
-    assertThat(prioritizationRule.amounts(200)).isEqualTo(listOf(100L, 50L, 50L))
+    assertThat(prioritizationRule.amounts(200)).isEqualTo([100L, 50L, 50L])
   }
 
   @Test
   fun `Remainder and percent go negative if less than expected after fixed amounts`() {
-    assertThat(prioritizationRule.amounts(50)).isEqualTo(listOf(100L, -25L, -25L))
+    assertThat(prioritizationRule.amounts(50)).isEqualTo([100L, -25L, -25L])
   }
 
   @Test
@@ -117,29 +117,29 @@ class SplitActionsTest {
         splitAmount(2, FixedPercent, 100),
         splitAmount(3, Remainder),
       )
-    assertThat(rule.amounts(150)).isEqualTo(listOf(100L, 50L, 0L))
+    assertThat(rule.amounts(150)).isEqualTo([100L, 50L, 0L])
   }
 
   @Test
   fun `Remainder rounds correctly and only if necessary`() {
     val rule = splitRule(splitAmount(1, Remainder), splitAmount(2, Remainder))
-    assertThat(rule.amounts(-2397)).isEqualTo(listOf(-1198L, -1199L))
-    assertThat(rule.amounts(123)).isEqualTo(listOf(62L, 61L))
-    assertThat(rule.amounts(100)).isEqualTo(listOf(50L, 50L))
+    assertThat(rule.amounts(-2397)).isEqualTo([-1198L, -1199L])
+    assertThat(rule.amounts(123)).isEqualTo([62L, 61L])
+    assertThat(rule.amounts(100)).isEqualTo([50L, 50L])
   }
 
   @Test
   fun `Fixed amounts exceeding the total leave a difference`() {
     val result = fixedAmountRule.exec(tx(importedPayee = "James", amount = 100))
     assertThat(result.splitDifference).isEqualTo(Amount(-100))
-    assertThat(result.subtransactions.map { it.amount.toLong() }).isEqualTo(listOf(100L, 100L))
+    assertThat(result.subtransactions.map { it.amount.toLong() }).isEqualTo([100L, 100L])
   }
 
   @Test
   fun `Fixed amounts undershooting the total leave a difference`() {
     val result = fixedAmountRule.exec(tx(importedPayee = "James", amount = 300))
     assertThat(result.splitDifference).isEqualTo(Amount(100))
-    assertThat(result.subtransactions.map { it.amount.toLong() }).isEqualTo(listOf(100L, 100L))
+    assertThat(result.subtransactions.map { it.amount.toLong() }).isEqualTo([100L, 100L])
   }
 
   @Test
@@ -153,7 +153,7 @@ class SplitActionsTest {
         ),
         splitAmount(2, Remainder),
       )
-    assertThat(rule.amounts(1000)).isEqualTo(listOf(0L, 1000L))
+    assertThat(rule.amounts(1000)).isEqualTo([0L, 1000L])
   }
 
   @Test
@@ -165,12 +165,11 @@ class SplitActionsTest {
         splitAmount(2, Remainder),
       )
     val result = rule.exec(tx(importedPayee = "James", payee = "123", amount = 30))
-    assertThat(result.subtransactions.map { it.payee })
-      .isEqualTo(listOf(PayeeId("456"), PayeeId("456")))
+    assertThat(result.subtransactions.map { it.payee }).isEqualTo([PayeeId("456"), PayeeId("456")])
   }
 
   private fun splitRule(vararg actions: RuleAction) =
-    rule("r", listOf(cond(ImportedPayee, Is, "James")), actions.toList())
+    rule("r", [cond(ImportedPayee, Is, "James")], actions.toList())
 
   private fun TransactionRule.amounts(amount: Long): List<Long> =
     exec(tx(importedPayee = "James", amount = amount)).subtransactions.map { it.amount.toLong() }

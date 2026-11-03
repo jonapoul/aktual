@@ -44,7 +44,7 @@ class BankAccountLinker(
     val changes = mutableListOf<LocalChange>()
     changes.addLink(account, source, external)
     syncController.syncChanges(changes)
-    scope.launch { bankSync.sync(setOf(account)) }
+    scope.launch { bankSync.sync([account]) }
   }
 
   /**
@@ -63,7 +63,7 @@ class BankAccountLinker(
       add(buildList { addLink(id, source, external) })
       id
     }
-    scope.launch { bankSync.sync(setOf(account)) }
+    scope.launch { bankSync.sync([account]) }
     return account
   }
 
@@ -75,7 +75,7 @@ class BankAccountLinker(
     val row = checkNotNull(accountDao[account]) { "Account $account not found" }
     val bank = row.bank ?: return true
     val columns =
-      listOf(
+      [
         "account_id",
         "bank",
         "balance_current",
@@ -83,7 +83,7 @@ class BankAccountLinker(
         "balance_limit",
         "account_sync_source",
         "bank_sync_status",
-      )
+      ]
     syncController.syncChanges(columns.map { LocalChange(ACCOUNTS, account.value, it, Null) })
 
     if (row.account_sync_source != GoCardless || dao.bankUsers(bank) > 0) return true

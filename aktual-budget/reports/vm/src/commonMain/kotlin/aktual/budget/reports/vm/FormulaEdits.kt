@@ -44,7 +44,7 @@ fun FormulaEdits.withNewQuery(name: String, month: YearMonth): FormulaEdits =
   withQuery(
     name,
     FormulaQuery(
-      conditions = emptyList(),
+      conditions = [],
       conditionsOp = And,
       timeFrame = TimeFrame(month, month, SlidingWindow),
     ),

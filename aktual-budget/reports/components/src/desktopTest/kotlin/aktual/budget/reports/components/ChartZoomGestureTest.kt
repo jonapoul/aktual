@@ -74,7 +74,7 @@ class ChartZoomGestureTest {
         chart =
           rememberCartesianChart(
             rememberLineCartesianLayer(),
-            decorations = listOf(rememberChartZoomDecoration(zoom)),
+            decorations = [rememberChartZoomDecoration(zoom)],
           ),
       )
     }

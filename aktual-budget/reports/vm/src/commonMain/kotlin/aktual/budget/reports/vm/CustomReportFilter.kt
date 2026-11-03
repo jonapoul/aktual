@@ -13,7 +13,7 @@ internal fun filteredAmounts(
 ): List<CustomReportAmounts> =
   rows
     .filter { filter.matches(it.toFilterRow()) }
-    .groupBy { listOf(it.interval_key, it.account, it.payee, it.category, it.transfer_account) }
+    .groupBy { [it.interval_key, it.account, it.payee, it.category, it.transfer_account] }
     .values
     .map { group ->
       val first = group.first()

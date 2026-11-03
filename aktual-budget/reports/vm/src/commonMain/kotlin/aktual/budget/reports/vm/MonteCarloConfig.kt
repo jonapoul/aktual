@@ -382,7 +382,7 @@ fun McPot.investmentAt(currentAge: Int, age: Int): McYearInvestment {
 
 // resolveSpendingPhases(): sorted by starting age, with a default phase when none are set
 fun List<McSpendingPhase>.resolve(): List<McSpendingPhase> = ifEmpty {
-  listOf(McSpendingPhase())
+  [McSpendingPhase()]
 }
   .sortedBy { it.fromAge ?: MIN_VALUE }
 

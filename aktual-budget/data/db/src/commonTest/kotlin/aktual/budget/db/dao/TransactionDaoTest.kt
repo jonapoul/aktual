@@ -369,11 +369,11 @@ internal class TransactionDaoTest {
     transactions.insert("o1", ON_1, CATEGORY, PAYEE, DATE, parent = "other")
 
     // when
-    val children = transactions.childrenOf(listOf(TransactionId("p"), TransactionId("dead")))
+    val children = transactions.childrenOf([TransactionId("p"), TransactionId("dead")])
 
     // then
     assertThat(children.mapValues { (_, rows) -> rows.map { it.id.toString() } })
-      .isEqualTo(mapOf(TransactionId("p") to listOf("c0", "c1", "c2", "c3")))
+      .isEqualTo(mapOf(TransactionId("p") to ["c0", "c1", "c2", "c3"]))
     assertThat(children.getValue(TransactionId("p")).map { it.needsCategory })
       .containsExactly(false, false, false, true)
   }
@@ -407,7 +407,7 @@ internal class TransactionDaoTest {
 
     // when
     val rows = transactions.getPaged(limit = 10, offset = 0).rows
-    val children = transactions.childrenOf(listOf(TransactionId("p"))).getValue(TransactionId("p"))
+    val children = transactions.childrenOf([TransactionId("p")]).getValue(TransactionId("p"))
 
     // then
     assertThat(rows.associate { it.id.toString() to it.splitDifference })

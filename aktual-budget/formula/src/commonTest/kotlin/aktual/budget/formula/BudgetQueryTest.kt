@@ -90,8 +90,7 @@ class BudgetQueryTest {
         formula,
         variables =
           mapOf(
-            "CATEGORIES" to
-              ArrayValue(listOf(listOf(TextValue("cat-1")), listOf(TextValue("cat-2")))),
+            "CATEGORIES" to ArrayValue([[TextValue("cat-1")], [TextValue("cat-2")]]),
           ),
         data = DATA,
       )

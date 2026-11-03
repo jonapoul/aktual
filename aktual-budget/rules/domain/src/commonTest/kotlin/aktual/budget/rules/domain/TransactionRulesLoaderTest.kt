@@ -36,30 +36,30 @@ class TransactionRulesLoaderTest {
     insertRule(
       "rename",
       stage = Pre,
-      conditions = listOf(cond(ImportedDescription, Contains, "kroger")),
-      actions = listOf(set(Description, "old-kroger")),
+      conditions = [cond(ImportedDescription, Contains, "kroger")],
+      actions = [set(Description, "old-kroger")],
     )
     insertRule(
       "categorise",
-      conditions = listOf(cond(PayeeName, Is, "kroger"), cond(Account, OnBudget, null)),
-      actions = listOf(set(Category, "groceries")),
+      conditions = [cond(PayeeName, Is, "kroger"), cond(Account, OnBudget, null)],
+      actions = [set(Category, "groceries")],
     )
     insertRule(
       "group",
       stage = Post,
-      conditions = listOf(cond(CategoryGroup, Is, "food")),
-      actions = listOf(action(AppendNotes, value = " #food")),
+      conditions = [cond(CategoryGroup, Is, "food")],
+      actions = [action(AppendNotes, value = " #food")],
     )
     insertRule(
       "deleted",
-      conditions = listOf(cond(Notes, Is, "")),
-      actions = listOf(set(Notes, "deleted rule ran")),
+      conditions = [cond(Notes, Is, "")],
+      actions = [set(Notes, "deleted rule ran")],
       tombstone = true,
     )
     insertRule(
       "invalid",
-      conditions = listOf(cond(Notes, Contains, "")),
-      actions = emptyList(),
+      conditions = [cond(Notes, Contains, "")],
+      actions = [],
     )
     schedulesQueries.withoutResult {
       insert(
@@ -113,8 +113,8 @@ class TransactionRulesLoaderTest {
     insertAccount(ACCOUNT, offBudget = false)
     insertRule(
       "rename",
-      conditions = listOf(cond(ImportedPayee, Contains, "tesco")),
-      actions = listOf(set(PayeeName, "Tesco")),
+      conditions = [cond(ImportedPayee, Contains, "tesco")],
+      actions = [set(PayeeName, "Tesco")],
     )
 
     val loaded = loader(this).load()

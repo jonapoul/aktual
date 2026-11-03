@@ -275,5 +275,5 @@ private class QueryProvider :
   ColorParamsProvider<FormulaQuery>(
     PREVIEW_FORMULA_META.queries.getValue("groceries"),
     PREVIEW_FORMULA_META.queries.getValue("income"),
-    FormulaQuery(conditions = emptyList(), conditionsOp = And, timeFrame = null),
+    FormulaQuery(conditions = [], conditionsOp = And, timeFrame = null),
   )

@@ -34,7 +34,7 @@ internal constructor(
   suspend fun finish(account: AccountId, target: Amount): Boolean {
     val cleared = transactionDao.clearedBalance(account)
     val lock = cleared == target.toLong()
-    val ids = if (lock) transactionDao.unreconciledClearedIds(account) else emptyList()
+    val ids = if (lock) transactionDao.unreconciledClearedIds(account) else []
     writer.write {
       ids.forEach { update(TransactionUpdate(id = it, reconciled = true)) }
       updateAccount(AccountUpdate(id = account, lastReconciled = Patch.To(clock.now())))
@@ -83,5 +83,5 @@ internal constructor(
   }
 
   private suspend fun withParts(id: TransactionId): List<TransactionId> =
-    listOf(id) + transactionDao.childrenOf(listOf(id))[id].orEmpty().map { it.id }
+    [id] + transactionDao.childrenOf([id])[id].orEmpty().map { it.id }
 }

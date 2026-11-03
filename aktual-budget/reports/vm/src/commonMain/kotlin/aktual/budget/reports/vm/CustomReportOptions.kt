@@ -183,27 +183,27 @@ private fun CustomReportConfig.rules(): GraphRules =
 
 private fun totalRules(graph: GraphType): GraphRules =
   when (graph) {
-    TableGraph -> GraphRules(setOf(CategoryGroup), Category, emptySet(), Budget, false)
+    TableGraph -> GraphRules([CategoryGroup], Category, [], Budget, false)
     AreaGraph ->
       GraphRules(
         disabledGroupBys = GroupBy.entries.toSet() - GroupBy.Interval,
         defaultGroupBy = GroupBy.Interval,
-        disabledBalanceTypes = emptySet(),
+        disabledBalanceTypes = [],
         defaultSort = Desc,
         disableSort = true,
       )
-    DonutGraph -> GraphRules(emptySet(), Category, setOf(Net), Desc, false)
+    DonutGraph -> GraphRules([], Category, [Net], Desc, false)
     BarGraph,
     BarLineGraph,
     LineGraph,
     StackedBarGraph,
-    Unknown -> GraphRules(setOf(CategoryGroup), Category, emptySet(), Desc, false)
+    Unknown -> GraphRules([CategoryGroup], Category, [], Desc, false)
   }
 
 private fun timeRules(graph: GraphType): GraphRules {
   val disabledGroupBys = setOf(GroupBy.Interval, CategoryGroup)
-  val disabledBalanceTypes =
-    if (graph == TableGraph) setOf<BalanceType>(NetPayment, NetDeposit) else emptySet()
+  val disabledBalanceTypes: Set<BalanceType> =
+    if (graph == TableGraph) [NetPayment, NetDeposit] else []
   return GraphRules(disabledGroupBys, Category, disabledBalanceTypes, Desc, true)
 }
 
@@ -225,9 +225,9 @@ private fun barGraph(mode: CustomReportMode): GraphType =
 // bar button means a plain bar there
 private fun disabledGraphs(mode: CustomReportMode): Set<GraphType> =
   when (mode) {
-    Time -> setOf(AreaGraph, DonutGraph, BarGraph)
+    Time -> [AreaGraph, DonutGraph, BarGraph]
     Total,
-    Unknown -> setOf(LineGraph, StackedBarGraph)
+    Unknown -> [LineGraph, StackedBarGraph]
   }
 
 // disabledList.ts intervalOptions defaultRange
@@ -245,20 +245,20 @@ private fun defaultRange(interval: Interval): DateRangeType =
 private fun DateRangeType.intervals(): Set<Interval> =
   when (this) {
     ThisWeek,
-    LastWeek -> setOf(Daily, Weekly)
+    LastWeek -> [Daily, Weekly]
     ThisMonth,
     LastMonth,
     CurrentQuarter,
     PreviousQuarter,
     Last30Days,
-    Last3Months -> setOf(Daily, Weekly, Monthly)
+    Last3Months -> [Daily, Weekly, Monthly]
     Last6Months,
-    Last12Months -> setOf(Monthly)
+    Last12Months -> [Monthly]
     YearToDate,
     LastYear,
     PriorYearToDate,
-    AllTime -> setOf(Weekly, Monthly, Yearly)
-    Unknown -> emptySet()
+    AllTime -> [Weekly, Monthly, Yearly]
+    Unknown -> []
   }
 
 private val NOT_BUDGETED_GROUP_BYS = setOf<GroupBy>(Payee, Account, Tag)

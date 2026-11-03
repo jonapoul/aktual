@@ -108,7 +108,7 @@ class CustomReportSyncTest {
 
     sync.update(ID, Default, Default)
 
-    assertThat(controller.changes).isEqualTo(emptyList())
+    assertThat(controller.changes).isEqualTo([])
   }
 
   @Test
@@ -131,14 +131,12 @@ class CustomReportSyncTest {
   @Test
   fun `Changing the tag scope keeps other metadata`() = runSyncedDatabaseTest { scope, controller ->
     controller.syncChanges(
-      listOf(
-        localChange(CUSTOM_REPORTS, ID.value, "id", ID.value),
-        localChange(
-          CUSTOM_REPORTS,
-          ID.value,
-          "metadata",
-          """{"other":1,"tagScope":{"mode":"all"}}""",
-        ),
+      localChange(CUSTOM_REPORTS, ID.value, "id", ID.value),
+      localChange(
+        CUSTOM_REPORTS,
+        ID.value,
+        "metadata",
+        """{"other":1,"tagScope":{"mode":"all"}}""",
       ),
     )
     val dao = dao(scope.testScheduler)
@@ -177,7 +175,7 @@ class CustomReportSyncTest {
     val dao = dao(scope.testScheduler)
     val sync = CustomReportSync(dao, controller, CALENDAR)
     sync.insert(ID, "Spending", Default)
-    controller.syncChanges(listOf(tombstone(CUSTOM_REPORTS, ID.value)))
+    controller.syncChanges(tombstone(CUSTOM_REPORTS, ID.value))
 
     assertThat(sync.validateName("Spending")).isNull()
   }

@@ -44,7 +44,7 @@ internal object FormulaLexer {
   private val R1C1_REFERENCE = Regex("[rR][0-9]*[cC][0-9]*")
 
   private val PATTERNS =
-    listOf(
+    [
       TokenType.Plus to Regex("""\+"""),
       TokenType.Minus to Regex("-"),
       TokenType.Times to Regex("""\*"""),
@@ -71,7 +71,7 @@ internal object FormulaLexer {
       TokenType.Name to Regex("[${LETTER}_][$NON_RESERVED]*"),
       TokenType.Semicolon to Regex(";"),
       TokenType.Comma to Regex(","),
-    )
+    ]
 
   fun tokenize(input: String): List<Token> {
     val tokens = mutableListOf<Token>()

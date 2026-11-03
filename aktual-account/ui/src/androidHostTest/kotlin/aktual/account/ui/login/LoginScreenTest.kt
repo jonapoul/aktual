@@ -62,7 +62,7 @@ class LoginScreenTest {
 
     toBudgetListCalled = false
     toServerUrlCalled = false
-    loginRequester = mockk { coEvery { fetchLoginMethods() } returns emptyList() }
+    loginRequester = mockk { coEvery { fetchLoginMethods() } returns [] }
     setLoginResult { LoginResult.Success(TOKEN) }
 
     serverUrlNavigator =

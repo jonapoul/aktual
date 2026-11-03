@@ -29,14 +29,14 @@ class PayeeMergerTest {
     insertPayees()
 
     // when
-    val merge = merger.merge(ARGOS, listOf(TESCO))
+    val merge = merger.merge(ARGOS, [TESCO])
 
     // then
     assertThat(merge)
       .isEqualTo(
         PayeeMerge(
           target = ARGOS,
-          merged = listOf(TESCO),
+          merged = [TESCO],
           oldTargets = mapOf(TESCO to TESCO, OLD_TESCO to TESCO),
         ),
       )
@@ -47,7 +47,7 @@ class PayeeMergerTest {
   fun `Undoing a merge moves the transactions back`() = runMergerTest {
     // given
     insertPayees()
-    val merge = requireNotNull(merger.merge(ARGOS, listOf(TESCO)))
+    val merge = requireNotNull(merger.merge(ARGOS, [TESCO]))
 
     // when
     merger.undo(merge)
@@ -66,14 +66,14 @@ class PayeeMergerTest {
     TransactionDao(database).insert("t4", ACCOUNT, null, SAINSBURYS.value, DATE)
 
     // when
-    val merge = requireNotNull(merger.merge(ARGOS, listOf(SAINSBURYS, TESCO)))
+    val merge = requireNotNull(merger.merge(ARGOS, [SAINSBURYS, TESCO]))
 
     // then
     assertThat(merge)
       .isEqualTo(
         PayeeMerge(
           target = ARGOS,
-          merged = listOf(SAINSBURYS, TESCO),
+          merged = [SAINSBURYS, TESCO],
           oldTargets = mapOf(SAINSBURYS to TESCO, TESCO to TESCO, OLD_TESCO to TESCO),
         ),
       )
@@ -94,8 +94,8 @@ class PayeeMergerTest {
     insertPayees()
 
     // when
-    val intoTransfer = merger.merge(TRANSFER, listOf(TESCO))
-    val fromTransfer = merger.merge(ARGOS, listOf(TRANSFER))
+    val intoTransfer = merger.merge(TRANSFER, [TESCO])
+    val fromTransfer = merger.merge(ARGOS, [TRANSFER])
 
     // then
     assertThat(intoTransfer).isNull()
@@ -109,7 +109,7 @@ class PayeeMergerTest {
     insertPayees()
 
     // when
-    val merge = merger.merge(ARGOS, listOf(ARGOS))
+    val merge = merger.merge(ARGOS, [ARGOS])
 
     // then
     assertThat(merge).isNull()

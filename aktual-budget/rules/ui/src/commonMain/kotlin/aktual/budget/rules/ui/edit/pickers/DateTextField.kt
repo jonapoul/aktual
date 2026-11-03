@@ -156,7 +156,7 @@ private val PreviewRecurConfig =
         frequency = Monthly,
         start = LocalDate.parse("2025-03-02"),
         interval = 1,
-        patterns = emptyList(),
+        patterns = [],
         skipWeekend = false,
         endMode = Never,
         endOccurrences = 1,
@@ -166,9 +166,9 @@ private val PreviewRecurConfig =
 
 private class DateTextFieldProvider :
   CollectionPreviewParameterProvider<DateTextFieldParams>(
-    listOf(
+    [
       DateTextFieldParams(value = JsonNull),
       DateTextFieldParams(value = PreviewRecurConfig),
       DateTextFieldParams(value = PreviewRecurConfig, isEnabled = false),
-    ),
+    ],
   )

@@ -130,7 +130,7 @@ internal constructor(
     viewModelScope.launch {
       runCatchingCancellable(
         attempt = {
-          val merge = merger.merge(into.id, listOf(payee.id))
+          val merge = merger.merge(into.id, [payee.id])
           if (merge == null) {
             logcat.w { "Nothing to merge from ${payee.id} into ${into.id}" }
             mutableEvents.tryEmit(MergeFailed)

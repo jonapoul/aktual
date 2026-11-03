@@ -231,8 +231,7 @@ class ListPayeesViewModelTest {
       ListPayeesEvent.Merged(
         payee = tesco,
         target = ARGOS,
-        merge =
-          PayeeMerge(target = ARGOS.id, merged = listOf(TESCO), oldTargets = mapOf(TESCO to TESCO)),
+        merge = PayeeMerge(target = ARGOS.id, merged = [TESCO], oldTargets = mapOf(TESCO to TESCO)),
       )
 
     // when
@@ -382,9 +381,8 @@ class ListPayeesViewModelTest {
         Rules(
           id = RuleId(id),
           stage = null,
-          conditions =
-            listOf(Condition(field = Payee, operator = Is, value = JsonPrimitive(payee))),
-          actions = emptyList(),
+          conditions = [Condition(field = Payee, operator = Is, value = JsonPrimitive(payee))],
+          actions = [],
           tombstone = false,
           conditions_op = And,
         ),

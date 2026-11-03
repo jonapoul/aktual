@@ -30,7 +30,7 @@ internal constructor(
       attempt = { withContext(contexts.io) { accountApi.loginMethods().methods } },
       onFailure = { e ->
         logcat.w(e) { "Failed to fetch login methods" }
-        emptyList()
+        []
       },
     )
 

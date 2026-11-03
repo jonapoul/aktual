@@ -18,12 +18,12 @@ internal suspend fun BudgetSyncController.insertReportBudget() {
   row(CATEGORY_GROUPS, "bills", "name" to "Bills")
   row(CATEGORIES, "salary", "name" to "Salary", "cat_group" to "income", "is_income" to true)
   row(CATEGORIES, "food", "name" to "Food", "cat_group" to "bills")
-  for (id in listOf("salary", "food")) row(CATEGORY_MAPPING, id, "transferId" to id)
+  for (id in ["salary", "food"]) row(CATEGORY_MAPPING, id, "transferId" to id)
   row(PAYEES, "employer", "name" to "Employer")
   row(PAYEES, "to-savings", "transfer_acct" to "savings")
   row(PAYEES, "to-checking", "transfer_acct" to "checking")
   row(PAYEES, "to-invest", "transfer_acct" to "invest")
-  for (id in listOf("employer", "to-savings", "to-checking", "to-invest")) {
+  for (id in ["employer", "to-savings", "to-checking", "to-invest"]) {
     row(PAYEE_MAPPING, id, "targetId" to id)
   }
 

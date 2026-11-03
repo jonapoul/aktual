@@ -17,13 +17,13 @@ private data class FormatToken(val value: String, val isFormat: Boolean)
 
 private val DATE_FORMAT =
   Regex(
-    listOf(
+    [
         """\\.""",
         "dd|DD|d|D|mm|MM|m|M|YYYY|YY|yyyy|yy|HH|hh|H|h",
         """ss(\.(0+|s+))?|s""",
         "AM/PM|am/pm|A/P|a/p",
         """\[mm\]|\[MM\]|\[hh\]|\[HH\]""",
-      )
+      ]
       .joinToString(separator = "|", prefix = "(", postfix = ")"),
   )
 private val NUMBER_FORMAT = Regex("""(\\.|[#0]+(\.[#0]*)?)""")

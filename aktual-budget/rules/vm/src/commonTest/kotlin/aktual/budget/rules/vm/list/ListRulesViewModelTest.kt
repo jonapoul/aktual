@@ -98,8 +98,8 @@ class ListRulesViewModelTest {
         Rules(
           id = RuleId(id),
           stage = null,
-          conditions = listOf(Condition(Notes, DoesNotContain, JsonPrimitive(id))),
-          actions = listOf(RuleAction(value = null, op = DeleteTransaction)),
+          conditions = [Condition(Notes, DoesNotContain, JsonPrimitive(id))],
+          actions = [RuleAction(value = null, op = DeleteTransaction)],
           tombstone = false,
           conditions_op = And,
         ),

@@ -98,7 +98,7 @@ class QueryFunctionsTest {
               FakeQuery(
                 sum = -12345,
                 count = 7,
-                categories = listOf("cat-1", "cat-2"),
+                categories = ["cat-1", "cat-2"],
                 months = YearMonth(2023, 11)..YearMonth(2024, 2),
               ),
             "none" to FakeQuery(),

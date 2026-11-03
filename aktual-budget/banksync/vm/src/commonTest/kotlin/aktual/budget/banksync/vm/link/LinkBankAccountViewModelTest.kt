@@ -68,7 +68,7 @@ class LinkBankAccountViewModelTest {
   @Test
   fun `Lists the first configured provider's accounts`() = runLinkTest {
     insertLinked(AccountId("other"), "Other", remote = "ACT-2")
-    api.accounts[PluggyAi] = BankSyncAccountsResponse.Success(listOf(CHECKING, CARD))
+    api.accounts[PluggyAi] = BankSyncAccountsResponse.Success([CHECKING, CARD])
 
     createViewModel().state.test {
       assertThat(awaitChoosing())
@@ -103,7 +103,7 @@ class LinkBankAccountViewModelTest {
   fun `Providers are checked again once one's set up`() = runLinkTest {
     api.statuses[PluggyAi] = BankSyncStatusResponse.Success(configured = false)
     api.statuses[Akahu] = BankSyncStatusResponse.Success(configured = false)
-    api.accounts[PluggyAi] = BankSyncAccountsResponse.Success(listOf(CHECKING))
+    api.accounts[PluggyAi] = BankSyncAccountsResponse.Success([CHECKING])
     val viewModel = createViewModel()
 
     viewModel.state.test {
@@ -133,7 +133,7 @@ class LinkBankAccountViewModelTest {
     viewModel.state.test {
       assertThat(awaitChoosing().accounts).isEqualTo(ExternalAccounts.Failure("Bad token"))
 
-      api.accounts[PluggyAi] = BankSyncAccountsResponse.Success(listOf(CHECKING))
+      api.accounts[PluggyAi] = BankSyncAccountsResponse.Success([CHECKING])
       viewModel.reload()
       assertThat(awaitChoosing().accounts)
         .isEqualTo(
@@ -146,8 +146,8 @@ class LinkBankAccountViewModelTest {
 
   @Test
   fun `Selecting another provider lists its accounts`() = runLinkTest {
-    api.accounts[PluggyAi] = BankSyncAccountsResponse.Success(listOf(CHECKING))
-    api.accounts[Akahu] = BankSyncAccountsResponse.Success(listOf(CARD))
+    api.accounts[PluggyAi] = BankSyncAccountsResponse.Success([CHECKING])
+    api.accounts[Akahu] = BankSyncAccountsResponse.Success([CARD])
     val viewModel = createViewModel()
 
     viewModel.state.test {
@@ -167,7 +167,7 @@ class LinkBankAccountViewModelTest {
 
   @Test
   fun `Linking stores the link, syncs and announces it`() = runLinkTest {
-    api.accounts[PluggyAi] = BankSyncAccountsResponse.Success(listOf(CHECKING))
+    api.accounts[PluggyAi] = BankSyncAccountsResponse.Success([CHECKING])
     val viewModel = createViewModel()
 
     viewModel.state.test {
@@ -190,7 +190,7 @@ class LinkBankAccountViewModelTest {
   @Test
   @Flaky(reason = "Sometimes fails randomly")
   fun `Without an account, linking adds a new one`() = runLinkTest {
-    api.accounts[PluggyAi] = BankSyncAccountsResponse.Success(listOf(CHECKING))
+    api.accounts[PluggyAi] = BankSyncAccountsResponse.Success([CHECKING])
     val viewModel = createViewModel(account = null)
 
     viewModel.state.test {
@@ -216,7 +216,7 @@ class LinkBankAccountViewModelTest {
   @Test
   fun `GoCardless lists the banks to log in to`() =
     runLinkTest(goCardless = true) {
-      api.banks["GB"] = GoCardlessBanksResponse.Success(listOf(MONZO))
+      api.banks["GB"] = GoCardlessBanksResponse.Success([MONZO])
       api.banks["IE"] = GoCardlessBanksResponse.Failed(Rejected("Bad secret", null))
       val viewModel = createViewModel()
 
@@ -241,10 +241,10 @@ class LinkBankAccountViewModelTest {
   @Test
   fun `Logging in through GoCardless lists the shared accounts to link`() =
     runLinkTest(goCardless = true) {
-      api.banks["GB"] = GoCardlessBanksResponse.Success(listOf(MONZO))
+      api.banks["GB"] = GoCardlessBanksResponse.Success([MONZO])
       api.login = GoCardlessLoginResponse.Success(LINK, REQUISITION)
       api.polls += GoCardlessAccountsResponse.Pending
-      api.polls += GoCardlessAccountsResponse.Success(listOf(SHARED))
+      api.polls += GoCardlessAccountsResponse.Success([SHARED])
       val viewModel = createViewModel()
 
       viewModel.state.test {
@@ -279,7 +279,7 @@ class LinkBankAccountViewModelTest {
   @Test
   fun `GoCardless logins time out`() =
     runLinkTest(goCardless = true) {
-      api.banks["GB"] = GoCardlessBanksResponse.Success(listOf(MONZO))
+      api.banks["GB"] = GoCardlessBanksResponse.Success([MONZO])
       api.login = GoCardlessLoginResponse.Success(LINK, REQUISITION)
       val viewModel = createViewModel()
 
@@ -296,7 +296,7 @@ class LinkBankAccountViewModelTest {
   @Test
   fun `Cancelling a GoCardless login stops waiting`() =
     runLinkTest(goCardless = true) {
-      api.banks["GB"] = GoCardlessBanksResponse.Success(listOf(MONZO))
+      api.banks["GB"] = GoCardlessBanksResponse.Success([MONZO])
       api.login = GoCardlessLoginResponse.Success(LINK, REQUISITION)
       val viewModel = createViewModel()
 
@@ -316,9 +316,9 @@ class LinkBankAccountViewModelTest {
   @Test
   fun `Enable Banking logs in to the chosen bank as a business`() =
     runLinkTest(enableBanking = true) {
-      enableBankingApi.banks["GB"] = EnableBankingBanksResponse.Success(listOf(NORDEA))
+      enableBankingApi.banks["GB"] = EnableBankingBanksResponse.Success([NORDEA])
       enableBankingApi.login = EnableBankingLoginResponse.Success(EB_LINK, EB_STATE)
-      enableBankingApi.polls += EnableBankingAccountsResponse.Success(listOf(EB_SHARED))
+      enableBankingApi.polls += EnableBankingAccountsResponse.Success([EB_SHARED])
       val viewModel = createViewModel()
 
       viewModel.state.test {
@@ -369,7 +369,7 @@ class LinkBankAccountViewModelTest {
   @Test
   fun `Enable Banking logins time out`() =
     runLinkTest(enableBanking = true) {
-      enableBankingApi.banks["GB"] = EnableBankingBanksResponse.Success(listOf(NORDEA))
+      enableBankingApi.banks["GB"] = EnableBankingBanksResponse.Success([NORDEA])
       enableBankingApi.login = EnableBankingLoginResponse.Success(EB_LINK, EB_STATE)
       enableBankingApi.polls +=
         EnableBankingAccountsResponse.Failed(
@@ -390,7 +390,7 @@ class LinkBankAccountViewModelTest {
   @Test
   fun `Failed Enable Banking login shows why`() =
     runLinkTest(enableBanking = true) {
-      enableBankingApi.banks["GB"] = EnableBankingBanksResponse.Success(listOf(NORDEA))
+      enableBankingApi.banks["GB"] = EnableBankingBanksResponse.Success([NORDEA])
       enableBankingApi.login =
         EnableBankingLoginResponse.Failed(Rejected("Redirect URL not allowed", null))
       val viewModel = createViewModel()

@@ -41,7 +41,7 @@ class CashFlowLoaderTest {
   fun `Conditions filter the totals and the starting balance`() = runLoaderTest { loader, sync, _ ->
     sync.insertReportBudget()
 
-    loader.cashFlow(meta(conditions = listOf(FOOD))).test {
+    loader.cashFlow(meta(conditions = [FOOD])).test {
       val may = (awaitItem() as CashFlowData).items.getValue(MAY)
       assertThat(may).all {
         prop(CashFlowDatum::income).isEqualTo(Zero)

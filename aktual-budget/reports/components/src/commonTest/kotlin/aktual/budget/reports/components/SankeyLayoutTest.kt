@@ -27,7 +27,7 @@ import kotlinx.datetime.YearMonth
 class SankeyLayoutTest {
   @Test
   fun `No nodes gives an empty layout`() {
-    val layout = layout(data(nodes = emptyList(), links = emptyList()))
+    val layout = layout(data(nodes = [], links = []))
 
     assertThat(layout.nodes).isEmpty()
     assertThat(layout.links).isEmpty()
@@ -44,15 +44,15 @@ class SankeyLayoutTest {
   fun `Columns are spread evenly from the left edge to the right edge`() {
     val layout = layout(SIMPLE)
 
-    assertThat(layout.nodes.map { it.left }).isEqualTo(listOf(0f, 496f, 496f, 992f))
+    assertThat(layout.nodes.map { it.left }).isEqualTo([0f, 496f, 496f, 992f])
     assertThat(layout.nodes.map { it.width }).each { it.isEqualTo(NODE_WIDTH) }
   }
 
   @Test
   fun `A single column sits at the left edge`() {
-    val layout = layout(data(nodes = listOf(node(0, 100), node(0, 50)), links = emptyList()))
+    val layout = layout(data(nodes = [node(0, 100), node(0, 50)], links = []))
 
-    assertThat(layout.nodes.map { it.left }).isEqualTo(listOf(0f, 0f))
+    assertThat(layout.nodes.map { it.left }).isEqualTo([0f, 0f])
   }
 
   @Test
@@ -154,7 +154,7 @@ class SankeyLayoutTest {
     val layout = layout(SIMPLE)
     val label = Rect(left = 20f, top = 100f, right = 80f, bottom = 130f)
 
-    val hit = layout.hitTest(label.center, slop = 0f, labels = listOf(label, null, null, null))
+    val hit = layout.hitTest(label.center, slop = 0f, labels = [label, null, null, null])
     assertThat(hit).isEqualTo(SankeyHit.Node(0))
   }
 
@@ -191,14 +191,14 @@ class SankeyLayoutTest {
     // Income splits into two categories, which both flow into one account
     val SIMPLE =
       data(
-        nodes = listOf(node(0, 400), node(1, 300), node(1, 100), node(2, 400)),
-        links = listOf(link(0, 1, 300), link(0, 2, 100), link(1, 3, 300), link(2, 3, 100)),
+        nodes = [node(0, 400), node(1, 300), node(1, 100), node(2, 400)],
+        links = [link(0, 1, 300), link(0, 2, 100), link(1, 3, 300), link(2, 3, 100)],
       )
 
     // One source fanning out to 30 targets of varying sizes
     val MANY =
       data(
-        nodes = listOf(node(0, 4650)) + (1..30).map { node(1, it * 10L) },
+        nodes = [node(0, 4650)] + (1..30).map { node(1, it * 10L) },
         links = (1..30).map { link(0, it, it * 10L) },
       )
   }

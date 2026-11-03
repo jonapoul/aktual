@@ -174,10 +174,10 @@ private fun estimateTextWidth(
       ParagraphIntrinsics(
           text = text,
           style = textStyle,
-          annotations = emptyList(),
+          annotations = [],
           density = density,
           fontFamilyResolver = resolver,
-          placeholders = emptyList(),
+          placeholders = [],
           softWrap = true,
         )
         .maxIntrinsicWidth

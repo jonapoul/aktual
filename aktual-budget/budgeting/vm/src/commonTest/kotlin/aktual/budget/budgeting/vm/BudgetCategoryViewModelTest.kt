@@ -127,8 +127,8 @@ class BudgetCategoryViewModelTest {
 
     assertThat(writer.calls)
       .containsExactly(
-        listOf("setCategoryHidden", FOOD, true),
-        listOf("setCategoryHidden", FOOD, false),
+        ["setCategoryHidden", FOOD, true],
+        ["setCategoryHidden", FOOD, false],
       )
   }
 
@@ -196,7 +196,7 @@ class BudgetCategoryViewModelTest {
 
     @Suppress("MaxLineLength")
     val SETUP =
-      listOf(
+      [
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('usual', 'Usual', 0, 1)",
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('income', 'Income', 1, 3)",
         "INSERT INTO category_groups(id, name, is_income, sort_order, hidden) VALUES ('rare', 'Rare', 0, 2, 1)",
@@ -210,6 +210,6 @@ class BudgetCategoryViewModelTest {
         "INSERT INTO transactions(id, acct, category, amount, date) VALUES ('t2', 'on', 'food', -3000, 20260302)",
         "INSERT INTO transactions(id, acct, category, amount, date) VALUES ('t3', 'on', 'food', -50000, 20260402)",
         "INSERT INTO zero_budgets(id, month, category, amount) VALUES ('202603-food', 202603, 'food', 4000), ('202604-food', 202604, 'food', 5000)",
-      )
+      ]
   }
 }

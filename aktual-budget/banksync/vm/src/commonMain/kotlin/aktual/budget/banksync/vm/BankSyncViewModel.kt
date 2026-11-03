@@ -102,7 +102,7 @@ internal constructor(
   }
 
   fun sync(account: AccountId) {
-    if (!controller.start(setOf(account))) logcat.d { "Bank sync already running" }
+    if (!controller.start([account])) logcat.d { "Bank sync already running" }
   }
 
   fun reload(showLoading: Boolean = true) {
@@ -120,7 +120,7 @@ internal constructor(
           onFailure = { e ->
             logcat.e(e) { "Failed loading bank sync accounts" }
             mutableFailure.update { e.requireMessage() }
-            emptySet()
+            []
           },
           finally = { mutableIsLoading.update { false } },
         )
@@ -197,7 +197,7 @@ private class LoadedAccounts(
     progress: BankSyncProgress,
     canSync: Boolean,
   ): Success {
-    val syncing = if (progress.isRunning) progress.pending.toSet() else emptySet()
+    val syncing = if (progress.isRunning) progress.pending.toSet() else []
     return Success(
       providers =
         linked.entries

@@ -28,7 +28,7 @@ internal suspend fun evaluateWithWarnings(
 internal data class FakeQuery(
   val sum: Long = 0,
   val count: Long = 0,
-  val categories: List<String> = emptyList(),
+  val categories: List<String> = [],
   val months: YearMonthRange? = null,
 )
 

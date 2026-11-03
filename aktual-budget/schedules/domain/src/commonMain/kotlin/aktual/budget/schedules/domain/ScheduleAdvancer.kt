@@ -135,19 +135,19 @@ internal constructor(
   }
 
   private suspend fun advance(row: GetAllActive, run: Run): List<LocalChange> {
-    val nextDate = row.next_date ?: return emptyList()
+    val nextDate = row.next_date ?: return []
     val status = run.status(row, nextDate)
     val date = row.parseDate()
     val recurring = (date as? Recurring)?.config
 
     val posts = row.posts_transaction == true && (status != Paid || recurring != null)
     if (posts && status in Postable) return postDue(row, nextDate, status, recurring, run)
-    if (status != Paid) return emptyList()
+    if (status != Paid) return []
 
     return when (date) {
       is Recurring -> moveNextDate(row, nextDate, date.config.nextDate(from = run.today))
-      is Once -> if (date.date < run.today) complete(row) else emptyList()
-      null -> emptyList()
+      is Once -> if (date.date < run.today) complete(row) else []
+      null -> []
     }
   }
 
@@ -205,11 +205,11 @@ internal constructor(
     nextDate: LocalDate,
     newNextDate: LocalDate?,
   ): List<LocalChange> {
-    if (newNextDate == null || newNextDate == nextDate) return emptyList()
-    val existing = scheduleDao.baseNextDate(row.id) ?: return emptyList()
+    if (newNextDate == null || newNextDate == nextDate) return []
+    val existing = scheduleDao.baseNextDate(row.id) ?: return []
     val id = existing.id.toString()
     val timestamp = existing.base_next_date_ts?.toEpochMilliseconds()
-    return listOf(
+    return [
       LocalChange(SCHEDULES_NEXT_DATE, id, "local_next_date", newNextDate.messageValue()),
       LocalChange(
         SCHEDULES_NEXT_DATE,
@@ -217,11 +217,11 @@ internal constructor(
         "local_next_date_ts",
         timestamp?.let(MessageValue::Number) ?: MessageValue.Null,
       ),
-    )
+    ]
   }
 
   private fun complete(row: GetAllActive): List<LocalChange> =
-    listOf(localChange(SCHEDULES, row.id.toString(), "completed", true))
+    [localChange(SCHEDULES, row.id.toString(), "completed", true)]
 
   // _date is either a plain "YYYY-MM-DD" or a RecurConfig JSON object. A corrupted one is skipped,
   // as upstream does when it can't find the rule

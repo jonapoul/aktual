@@ -34,7 +34,7 @@ data class RuleTransaction(
   val isChild: Boolean = false,
   // Set by a delete-transaction action
   val tombstone: Boolean = false,
-  val subtransactions: List<RuleTransaction> = emptyList(),
+  val subtransactions: List<RuleTransaction> = [],
 ) {
   // The distinct tag names (lowercased, without the leading '#') in the notes
   val tags: Set<String>

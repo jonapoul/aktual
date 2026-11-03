@@ -288,14 +288,14 @@ private val PREVIEW_END = LocalDate(2025, Month.JUNE, 30)
 
 // Monthly assets and debts per category, January to June 2025
 private val PREVIEW_AMOUNTS =
-  listOf(
-    "Salary" to listOf(3200 to 0, 3200 to 0, 3300 to 0, 3300 to 0, 3300 to 0, 3500 to 0),
-    "Groceries" to listOf(0 to -420, 0 to -380, 0 to -455, 0 to -410, 15 to -390, 0 to -470),
-    "Rent" to listOf(0 to -1200, 0 to -1200, 0 to -1200, 0 to -1200, 0 to -1200, 0 to -1250),
-    "Eating out" to listOf(0 to -130, 0 to -85, 0 to -210, 0 to -60, 0 to -145, 0 to -190),
-    "Transport" to listOf(0 to -90, 0 to -95, 0 to -110, 0 to -90, 0 to -80, 0 to -120),
-    "Holiday" to listOf(0 to 0, 0 to 0, 0 to -650, 0 to 0, 0 to 0, 0 to -2400),
-  )
+  [
+    "Salary" to [3200 to 0, 3200 to 0, 3300 to 0, 3300 to 0, 3300 to 0, 3500 to 0],
+    "Groceries" to [0 to -420, 0 to -380, 0 to -455, 0 to -410, 15 to -390, 0 to -470],
+    "Rent" to [0 to -1200, 0 to -1200, 0 to -1200, 0 to -1200, 0 to -1200, 0 to -1250],
+    "Eating out" to [0 to -130, 0 to -85, 0 to -210, 0 to -60, 0 to -145, 0 to -190],
+    "Transport" to [0 to -90, 0 to -95, 0 to -110, 0 to -90, 0 to -80, 0 to -120],
+    "Holiday" to [0 to 0, 0 to 0, 0 to -650, 0 to 0, 0 to 0, 0 to -2400],
+  ]
 
 val PREVIEW_CUSTOM_DATA = previewCustomData(BarGraph, Category, Payment)
 

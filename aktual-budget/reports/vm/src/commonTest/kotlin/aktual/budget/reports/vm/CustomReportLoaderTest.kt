@@ -136,10 +136,10 @@ class CustomReportLoaderTest {
     sync.insertSpending()
     sync.insertBudgets()
     val conditions =
-      listOf(
+      [
         condition(Category, Is, JsonPrimitive("fuel")),
         condition(Payee, Is, JsonPrimitive("shop")),
-      )
+      ]
     insert(budgetedReport().copy(conditions = conditions, conditions_op = And))
 
     loader.custom(CustomReportMeta(ID)).test {
@@ -220,10 +220,10 @@ class CustomReportLoaderTest {
   fun `Filters keep the transactions matching all conditions`() = runLoaderTest { loader, sync ->
     sync.insertSpending()
     val conditions =
-      listOf(
-        condition(Category, OneOf, JsonArray(listOf(JsonPrimitive("food")))),
+      [
+        condition(Category, OneOf, JsonArray([JsonPrimitive("food")])),
         condition(Field.Amount, LessThan, JsonPrimitive(-500)),
-      )
+      ]
     insert(spendingReport().copy(conditions = conditions, conditions_op = And))
 
     loader.custom(CustomReportMeta(ID)).test {
@@ -238,10 +238,10 @@ class CustomReportLoaderTest {
   fun `Filters keep the transactions matching any condition`() = runLoaderTest { loader, sync ->
     sync.insertSpending()
     val conditions =
-      listOf(
+      [
         condition(Payee, Contains, JsonPrimitive("sho")),
         condition(Transfer, Is, JsonPrimitive(true)),
-      )
+      ]
     insert(spendingReport().copy(conditions = conditions, conditions_op = Or))
 
     loader.custom(CustomReportMeta(ID)).test {
@@ -258,7 +258,7 @@ class CustomReportLoaderTest {
   fun `Saved filter references are ignored`() = runLoaderTest { loader, sync ->
     sync.insertSpending()
     val saved = condition(Notes, Is, JsonPrimitive("x")).copy(customName = "Saved")
-    insert(spendingReport().copy(conditions = listOf(saved)))
+    insert(spendingReport().copy(conditions = [saved]))
 
     loader.custom(CustomReportMeta(ID)).test {
       val data = awaitItem() as CustomData
@@ -281,7 +281,7 @@ class CustomReportLoaderTest {
       sync.row(TRANSACTIONS, "plain", "notes" to "#work")
       sync.row(TRANSACTIONS, "split-food", "notes" to "#trip #work")
       sync.row(TRANSACTIONS, "split-fuel", "notes" to "#trip")
-      val conditions = listOf(condition(Category, OneOf, JsonArray(listOf(JsonPrimitive("food")))))
+      val conditions = [condition(Category, OneOf, JsonArray([JsonPrimitive("food")]))]
       insert(spendingReport().copy(group_by = Tag, conditions = conditions))
 
       loader.custom(CustomReportMeta(ID)).test {
@@ -315,13 +315,13 @@ class CustomReportLoaderTest {
     row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
     row(ACCOUNTS, "investing", "name" to "Investing", "offbudget" to true)
     row(CATEGORY_GROUPS, "spending", "name" to "Spending", "sort_order" to 1L)
-    for ((id, name) in listOf("food" to "Food", "fuel" to "Fuel")) {
+    for ((id, name) in ["food" to "Food", "fuel" to "Fuel"]) {
       row(CATEGORIES, id, "name" to name, "cat_group" to "spending", "sort_order" to 1L)
       row(CATEGORY_MAPPING, id, "transferId" to id)
     }
     row(PAYEES, "shop", "name" to "Shop")
     row(PAYEES, "to-investing", "transfer_acct" to "investing")
-    for (id in listOf("shop", "to-investing")) row(PAYEE_MAPPING, id, "targetId" to id)
+    for (id in ["shop", "to-investing"]) row(PAYEE_MAPPING, id, "targetId" to id)
 
     transaction("plain", -1000, category = "food", payee = "shop")
     transaction("split", -3500, isParent = true)

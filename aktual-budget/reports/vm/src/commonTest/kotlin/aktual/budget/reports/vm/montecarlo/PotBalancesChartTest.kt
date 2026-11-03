@@ -59,10 +59,10 @@ class PotBalancesChartTest {
       )
 
     val ROWS =
-      listOf(
+      [
         row(year = 1, potBalances = persistentListOf(100, 0, 250)),
         row(year = 2, potBalances = persistentListOf()).copy(afterDepletion = true),
-      )
+      ]
 
     fun row(year: Int, potBalances: ImmutableList<Long>) =
       McRunDetailRow(

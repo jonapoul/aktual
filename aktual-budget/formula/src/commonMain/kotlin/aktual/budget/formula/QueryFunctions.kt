@@ -21,8 +21,8 @@ internal fun queryFunctions(
       },
     "QUERY_EXTRACT_CATEGORIES" to
       queryFunction { name ->
-        val ids = data.queryCategories(name) ?: unknownQuery(name, emptyList())
-        ArrayValue(ids.ifEmpty { listOf("") }.map { listOf(TextValue(it)) })
+        val ids = data.queryCategories(name) ?: unknownQuery(name, [])
+        ArrayValue(ids.ifEmpty { [""] }.map { [TextValue(it)] })
       },
     "QUERY_EXTRACT_TIMEFRAME_START" to
       queryFunction { name -> TextValue(months(data, calendar, name).start.toString()) },

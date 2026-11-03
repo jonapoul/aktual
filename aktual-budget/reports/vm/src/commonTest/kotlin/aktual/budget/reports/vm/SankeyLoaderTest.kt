@@ -60,7 +60,7 @@ class SankeyLoaderTest {
   fun `Keeps the transactions matching the conditions`() = runLoaderTest { loader, sync, _ ->
     sync.insertBudget()
 
-    loader.sankey(meta(conditions = listOf(EMPLOYER, FOOD), op = Or)).test {
+    loader.sankey(meta(conditions = [EMPLOYER, FOOD], op = Or)).test {
       val data = awaitItem() as SankeyData
       assertThat(data.nodeKeys())
         .containsExactlyInAnyOrder("employer", "salary", "checking", "bills", "food")
@@ -72,7 +72,7 @@ class SankeyLoaderTest {
   fun `All conditions have to match by default`() = runLoaderTest { loader, sync, _ ->
     sync.insertBudget()
 
-    loader.sankey(meta(conditions = listOf(EMPLOYER, FOOD))).test {
+    loader.sankey(meta(conditions = [EMPLOYER, FOOD])).test {
       assertThat(awaitItem().nodeKeys()).isEmpty()
     }
   }
@@ -84,7 +84,7 @@ class SankeyLoaderTest {
     loader.sankey(meta(showTransfers = true)).test {
       assertThat(awaitItem().nodeKeys()).contains("savings")
     }
-    loader.sankey(meta(conditions = listOf(CHECKING), showTransfers = true)).test {
+    loader.sankey(meta(conditions = [CHECKING], showTransfers = true)).test {
       assertThat(awaitItem().nodeKeys()).doesNotContain("savings")
     }
   }
@@ -93,7 +93,7 @@ class SankeyLoaderTest {
   fun `Saved filter references are ignored`() = runLoaderTest { loader, sync, _ ->
     sync.insertBudget()
 
-    loader.sankey(meta(conditions = listOf(FOOD.copy(customName = "Saved")))).test {
+    loader.sankey(meta(conditions = [FOOD.copy(customName = "Saved")])).test {
       assertThat(awaitItem().nodeKeys())
         .containsExactlyInAnyOrder("employer", "salary", "checking", "bills", "food", "fuel")
     }
@@ -110,7 +110,7 @@ class SankeyLoaderTest {
     row(CATEGORIES, "food", "name" to "Food", "cat_group" to "bills", "sort_order" to 1L)
     row(CATEGORIES, "fuel", "name" to "Fuel", "cat_group" to "bills", "sort_order" to 2L)
     row(CATEGORIES, "old", "name" to "Old", "cat_group" to "bills", "tombstone" to true)
-    for (id in listOf("salary", "food", "fuel", "old")) row(
+    for (id in ["salary", "food", "fuel", "old"]) row(
       CATEGORY_MAPPING,
       id,
       "transferId" to id,
@@ -120,7 +120,7 @@ class SankeyLoaderTest {
     row(PAYEES, "gone", "name" to "Gone", "tombstone" to true)
     row(PAYEES, "to-savings", "transfer_acct" to "savings")
     row(PAYEES, "to-checking", "transfer_acct" to "checking")
-    for (id in listOf("employer", "shop", "gone", "to-savings", "to-checking")) {
+    for (id in ["employer", "shop", "gone", "to-savings", "to-checking"]) {
       row(PAYEE_MAPPING, id, "targetId" to id)
     }
 
@@ -163,7 +163,7 @@ class SankeyLoaderTest {
       Condition(
         field = Category,
         operator = OneOf,
-        value = JsonArray(listOf(JsonPrimitive("food"))),
+        value = JsonArray([JsonPrimitive("food")]),
       )
   }
 }

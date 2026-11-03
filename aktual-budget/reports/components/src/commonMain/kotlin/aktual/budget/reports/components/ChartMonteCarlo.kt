@@ -222,7 +222,7 @@ private fun Chart(
           markerVisibilityListener = rememberMarkerHaptics(compact),
           decorations =
             remember(data, fill) {
-              listOf(
+              [
                 PercentileBand(
                   data.bands,
                   fill.copy(alpha = OUTER_ALPHA),
@@ -237,7 +237,7 @@ private fun Chart(
                   MonteCarloBand::p25,
                   MonteCarloBand::p75,
                 ),
-              )
+              ]
             } + rememberChartZoomDecoration(zoom),
         ),
     )

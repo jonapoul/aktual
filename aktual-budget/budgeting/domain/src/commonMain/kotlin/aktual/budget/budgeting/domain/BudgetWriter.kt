@@ -127,7 +127,7 @@ internal constructor(
   // SidebarCategory.tsx toggle-visibility
   override suspend fun setCategoryHidden(category: CategoryId, hidden: Boolean): UndoToken {
     syncController.syncChanges(localChange(CATEGORIES, category.value, "hidden", hidden))
-    return UndoToken(listOf(localChange(CATEGORIES, category.value, "hidden", !hidden)))
+    return UndoToken([localChange(CATEGORIES, category.value, "hidden", !hidden)])
   }
 
   // setCategoryCarryover()

@@ -60,8 +60,8 @@ internal data class CustomReportInputs(
   val payees: List<CustomReportPayees>,
   val accounts: List<CustomReportAccounts>,
   // Only for reports split by tag, which sum these in place of [amounts]
-  val tagged: List<TaggedAmounts> = emptyList(),
-  val tags: List<CustomReportTags> = emptyList(),
+  val tagged: List<TaggedAmounts> = [],
+  val tags: List<CustomReportTags> = [],
 )
 
 /** A transaction's amounts, with the notes its tags are read from */
@@ -210,11 +210,11 @@ private fun categoryGroups(
   val groups =
     groupList
       .map { group ->
-        val children =
+        val children: List<CustomGroup> =
           if (group is Group) {
             categoriesByGroup[group.id].orEmpty().mapNotNull { namedCategories[it.id] }
           } else {
-            listOf<CustomGroup>(Uncategorized, Transfers, OffBudget)
+            [Uncategorized, Transfers, OffBudget]
           }
         calculator
           .group(group, sums.byGroup[group.key])
@@ -230,7 +230,7 @@ private fun categoryGroups(
 
   // Upstream checks the first group's intervals a second time, in place of the report's totals
   val series = groups.flatMap { group ->
-    (listOf(group) + group.categories).map { g -> g.intervals.map { it.totals } }
+    ([group] + group.categories).map { g -> g.intervals.map { it.totals } }
   }
   val trim = calculator.trimRange(trimIntervals, series)
   return groups.map { group ->
@@ -493,7 +493,7 @@ private fun sumTags(
   val tagsByName = scope.associateBy { it.tag }
   val buckets = LinkedHashSet<CustomGroup>()
   if (showEmpty) {
-    scope.forEach { buckets += tagBucket(listOf(it)) }
+    scope.forEach { buckets += tagBucket([it]) }
     buckets += CustomGroup.Untagged
   }
 

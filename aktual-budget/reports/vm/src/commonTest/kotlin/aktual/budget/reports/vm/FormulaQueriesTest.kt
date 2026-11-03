@@ -85,8 +85,8 @@ class FormulaQueriesTest {
         "none" to query(),
         "amount" to query(condition(Amount, GreaterThan, JsonPrimitive(0))),
       )
-    assertThat(queries.queryCategories("none")).isEqualTo(listOf("food", "fuel", "rent"))
-    assertThat(queries.queryCategories("amount")).isEqualTo(listOf("food", "fuel", "rent"))
+    assertThat(queries.queryCategories("none")).isEqualTo(["food", "fuel", "rent"])
+    assertThat(queries.queryCategories("amount")).isEqualTo(["food", "fuel", "rent"])
   }
 
   @Test
@@ -100,7 +100,7 @@ class FormulaQueriesTest {
             op = Or,
           ),
       )
-    assertThat(queries.queryCategories("or")).isEqualTo(listOf("rent", "fuel", "salary"))
+    assertThat(queries.queryCategories("or")).isEqualTo(["rent", "fuel", "salary"])
   }
 
   @Test
@@ -118,14 +118,14 @@ class FormulaQueriesTest {
             condition(Category, IsNot, text("food")),
           ),
       )
-    assertThat(queries.queryCategories("and")).isEqualTo(listOf("food", "fuel"))
-    assertThat(queries.queryCategories("none")).isEqualTo(emptyList())
+    assertThat(queries.queryCategories("and")).isEqualTo(["food", "fuel"])
+    assertThat(queries.queryCategories("none")).isEqualTo([])
   }
 
   @Test
   fun `Operators other than text and id ones match no categories`() = runQueriesTest {
     val queries = queries("tags" to query(condition(Category, HasTags, text("#x"))))
-    assertThat(queries.queryCategories("tags")).isEqualTo(emptyList())
+    assertThat(queries.queryCategories("tags")).isEqualTo([])
   }
 
   @Test

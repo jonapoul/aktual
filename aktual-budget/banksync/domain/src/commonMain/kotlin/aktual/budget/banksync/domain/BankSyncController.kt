@@ -18,7 +18,7 @@ interface BankSyncController {
 
   val finished: SharedFlow<List<BankSyncResult>>
 
-  fun start(accounts: Set<AccountId> = emptySet()): Boolean
+  fun start(accounts: Set<AccountId> = []): Boolean
 
-  suspend fun sync(accounts: Set<AccountId> = emptySet()): List<BankSyncResult>
+  suspend fun sync(accounts: Set<AccountId> = []): List<BankSyncResult>
 }

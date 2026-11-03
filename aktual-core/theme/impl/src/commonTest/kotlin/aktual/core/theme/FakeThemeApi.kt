@@ -3,7 +3,7 @@ package aktual.core.theme
 import aktual.api.client.ThemeApi
 
 class FakeThemeApi : ThemeApi {
-  var catalog: List<CustomThemeSummary> = emptyList()
+  var catalog: List<CustomThemeSummary> = []
   val themes = mutableMapOf<CustomThemeSummary, CustomColors>()
   var fetchCatalogException: Exception? = null
   var fetchThemeException: Exception? = null

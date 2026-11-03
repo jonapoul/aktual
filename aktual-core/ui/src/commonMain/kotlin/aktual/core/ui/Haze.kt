@@ -259,7 +259,7 @@ private fun blurStyle(
     HazeBlurStyle {
       blurRadius(radius * progress)
       backgroundColor(color.copy(alpha = color.alpha * progress))
-      colorEffects(listOf(HazeColorEffect.tint(color.copy(alpha = alpha * progress))))
+      colorEffects([HazeColorEffect.tint(color.copy(alpha = alpha * progress))])
     }
   }
 

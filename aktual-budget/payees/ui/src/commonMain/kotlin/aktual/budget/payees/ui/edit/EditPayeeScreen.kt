@@ -157,11 +157,11 @@ private fun editPayeeViewModel(id: PayeeId) =
 
 private fun payeeFilter(id: PayeeId) =
   ConditionsFilter(
-    listOf(
+    [
       ConditionSet(
-        listOf(Condition(field = Payee, operator = Is, type = Id, value = JsonPrimitive(id.value))),
+        [Condition(field = Payee, operator = Is, type = Id, value = JsonPrimitive(id.value))],
       ),
-    ),
+    ],
   )
 
 @Composable

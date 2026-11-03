@@ -471,9 +471,9 @@ internal class RedundantQualifier(config: Config) :
 
   private fun KaType.typeParameters(): List<KaTypeParameterSymbol> =
     when (this) {
-      is KaTypeParameterType -> listOf(symbol)
+      is KaTypeParameterType -> [symbol]
       is KaClassType -> typeArguments.flatMap { it.type?.typeParameters().orEmpty() }
-      else -> emptyList()
+      else -> []
     }
 
   private fun KaType.mentions(parameter: KaTypeParameterSymbol): Boolean =

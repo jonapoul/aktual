@@ -25,14 +25,14 @@ internal class MappableFieldsTest {
       .isEqualTo(
         mapOf(
           MappedField.Date to
-            listOf(FieldExample("date", "2026-09-30"), FieldExample("valueDate", "2026-09-29")),
+            [FieldExample("date", "2026-09-30"), FieldExample("valueDate", "2026-09-29")],
           MappedField.Payee to
-            listOf(
+            [
               FieldExample("payeeName", "Tesco"),
               FieldExample("remittanceInformationUnstructuredArrayString", "Card payment"),
-            ),
+            ],
           MappedField.Notes to
-            listOf(FieldExample("remittanceInformationUnstructuredArrayString", "Card payment")),
+            [FieldExample("remittanceInformationUnstructuredArrayString", "Card payment")],
         ),
       )
   }
@@ -47,14 +47,14 @@ internal class MappableFieldsTest {
 
     val fields = mappableFields(transaction)
 
-    assertThat(fields[Payee]).isEqualTo(listOf(FieldExample("merchant.name", "Tesco Extra")))
+    assertThat(fields[Payee]).isEqualTo([FieldExample("merchant.name", "Tesco Extra")])
     assertThat(fields[Notes])
       .isEqualTo(
-        listOf(
+        [
           FieldExample("category", "12"),
           FieldExample("merchant.name", "Tesco Extra"),
           FieldExample("transaction_id", "a"),
-        ),
+        ],
       )
   }
 
@@ -70,8 +70,8 @@ internal class MappableFieldsTest {
     )
 
     assertThat(loader.load(ACCOUNT, Payment)?.get(Payee))
-      .isEqualTo(listOf(FieldExample("payeeName", "New")))
+      .isEqualTo([FieldExample("payeeName", "New")])
     assertThat(loader.load(ACCOUNT, Deposit)?.get(Payee))
-      .isEqualTo(listOf(FieldExample("payeeName", "Salary")))
+      .isEqualTo([FieldExample("payeeName", "Salary")])
   }
 }

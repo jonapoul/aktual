@@ -23,29 +23,28 @@ import kotlinx.serialization.json.JsonPrimitive
 class ForecastFiltersTest {
   @Test
   fun `Account conditions narrow the accounts`() {
-    val filters = ForecastFilters(listOf(IS_CHECKING), op = null)
+    val filters = ForecastFilters([IS_CHECKING], op = null)
 
     assertThat(filters.accounts(ACCOUNTS, selected = null)).containsOnly(CHECKING)
   }
 
   @Test
   fun `Account conditions don't narrow the accounts when any condition can match`() {
-    val filters = ForecastFilters(listOf(IS_CHECKING, IS_EMPLOYER), op = Or)
+    val filters = ForecastFilters([IS_CHECKING, IS_EMPLOYER], op = Or)
 
-    assertThat(filters.accounts(ACCOUNTS, selected = setOf(SAVINGS))).containsOnly(SAVINGS)
+    assertThat(filters.accounts(ACCOUNTS, selected = [SAVINGS])).containsOnly(SAVINGS)
   }
 
   @Test
   fun `Account conditions narrow the chosen accounts when all conditions must match`() {
-    val filters = ForecastFilters(listOf(IS_CHECKING, IS_EMPLOYER), op = null)
+    val filters = ForecastFilters([IS_CHECKING, IS_EMPLOYER], op = null)
 
-    assertThat(filters.accounts(ACCOUNTS, selected = setOf(CHECKING, SAVINGS)))
-      .containsOnly(CHECKING)
+    assertThat(filters.accounts(ACCOUNTS, selected = [CHECKING, SAVINGS])).containsOnly(CHECKING)
   }
 
   @Test
   fun `Schedule occurrences have to match the conditions`() {
-    val filters = ForecastFilters(listOf(IS_EMPLOYER), op = null)
+    val filters = ForecastFilters([IS_EMPLOYER], op = null)
 
     assertThat(filters.matches(occurrence(payee = EMPLOYER), ACCOUNTS, PAYEES)).isTrue()
     assertThat(filters.matches(occurrence(payee = LANDLORD), ACCOUNTS, PAYEES)).isFalse()
@@ -75,7 +74,7 @@ class ForecastFiltersTest {
 
     val occurrences =
       buildScheduleOccurrences(
-        schedules = listOf(schedule),
+        schedules = [schedule],
         end = DATE,
         transferAccounts = mapOf(SAVINGS_PAYEE to SAVINGS),
         postedDates = emptyMap(),
@@ -102,15 +101,15 @@ class ForecastFiltersTest {
     val CHECKING_PAYEE = PayeeId("checking-payee")
     val SAVINGS_PAYEE = PayeeId("savings-payee")
     val ACCOUNTS =
-      listOf(
+      [
         ForecastAccounts(CHECKING, "Checking", false),
         ForecastAccounts(SAVINGS, "Savings", false),
-      )
+      ]
     val PAYEES =
-      listOf(
+      [
         ForecastPayees(EMPLOYER, "Employer", null),
         ForecastPayees(LANDLORD, "Landlord", null),
-      )
+      ]
     val IS_CHECKING = Condition(field = Account, operator = Is, value = JsonPrimitive("checking"))
     val IS_EMPLOYER = Condition(field = Payee, operator = Is, value = JsonPrimitive("employer"))
   }

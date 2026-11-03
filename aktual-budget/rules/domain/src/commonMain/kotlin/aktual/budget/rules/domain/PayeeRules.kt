@@ -46,7 +46,7 @@ private fun Condition.payeeIds(): List<PayeeId> =
     LessThanOrEquals,
     Matches,
     OffBudget,
-    OnBudget -> emptyList()
+    OnBudget -> []
   }
 
 private fun JsonElement.payeeId(): PayeeId? =

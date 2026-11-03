@@ -22,7 +22,7 @@ private class MaterialIconsProvider :
 
 private val materialIcons =
   with(MaterialIcons) {
-    listOf(
+    [
       Apps,
       ArrowDownward,
       ArrowUpward,
@@ -75,5 +75,5 @@ private val materialIcons =
       Title,
       Undo,
       ZoomOut,
-    )
+    ]
   }

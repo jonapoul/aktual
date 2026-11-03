@@ -79,18 +79,18 @@ class CustomBarChartsTest {
 
   @Test
   fun `Stack series run bottom up, so the first group is drawn last`() {
-    val stacks = listOf(listOf(bar("A", 1), bar("B", 2)), listOf(bar("A", 3), bar("B", 4)))
-    assertThat(stackSeries(stacks)).containsExactly(listOf(2.0, 4.0), listOf(1.0, 3.0))
+    val stacks = [[bar("A", 1), bar("B", 2)], [bar("A", 3), bar("B", 4)]]
+    assertThat(stackSeries(stacks)).containsExactly([2.0, 4.0], [1.0, 3.0])
   }
 
   @Test
   fun `No stacks give no series`() {
-    assertThat(stackSeries(emptyList())).isEmpty()
+    assertThat(stackSeries([])).isEmpty()
   }
 
   @Test
   fun `Marker skips empty groups and ends with the total`() {
-    val text = markerText(listOf(bar("A", 10), bar("B", 0), bar("C", 5)))
+    val text = markerText([bar("A", 10), bar("B", 0), bar("C", 5)])
     assertThat(text)
       .isEqualTo(
         """
@@ -116,7 +116,7 @@ class CustomBarChartsTest {
 
   @Test
   fun `Marker lines match the text of a full stack`() {
-    for (groups in listOf(1, 5, MAX_MARKER_ROWS, MAX_MARKER_ROWS + 2)) {
+    for (groups in [1, 5, MAX_MARKER_ROWS, MAX_MARKER_ROWS + 2]) {
       val stack = (1..groups).map { bar("G$it", it) }
       assertThat(markerLines(groups)).isEqualTo(markerText(stack).lines().size)
     }

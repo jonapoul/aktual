@@ -61,12 +61,12 @@ internal class RecordingBudgetWriter : BudgetWriter {
     record("setCategoryHidden", category, hidden)
 
   override suspend fun undo(token: UndoToken) {
-    calls += listOf("undo", token)
+    calls += ["undo", token]
   }
 
   // A new token per call, so tests can tell them apart
   private fun record(vararg call: Any?): UndoToken {
     calls += call.toList()
-    return UndoToken(emptyList())
+    return UndoToken([])
   }
 }

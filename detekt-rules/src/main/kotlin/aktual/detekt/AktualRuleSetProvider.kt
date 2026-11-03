@@ -2,6 +2,7 @@ package aktual.detekt
 
 import aktual.detekt.rules.InjectedRawCoroutineScope
 import aktual.detekt.rules.InvalidComposeLazyKey
+import aktual.detekt.rules.PreferCollectionLiteral
 import aktual.detekt.rules.RedundantQualifier
 import aktual.detekt.rules.SetMainDispatcher
 import aktual.detekt.rules.StringPropName
@@ -16,12 +17,13 @@ class AktualRuleSetProvider : RuleSetProvider {
     RuleSet(
       id = ruleSetId,
       rules =
-        listOf(
+        [
           ::InjectedRawCoroutineScope,
           ::InvalidComposeLazyKey,
+          ::PreferCollectionLiteral,
           ::RedundantQualifier,
           ::SetMainDispatcher,
           ::StringPropName,
-        ),
+        ],
     )
 }

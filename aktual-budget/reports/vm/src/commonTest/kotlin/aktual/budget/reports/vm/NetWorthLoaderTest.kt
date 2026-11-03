@@ -81,13 +81,13 @@ class NetWorthLoaderTest {
         title = null,
         mode = Stacked,
         interval = Monthly,
-        periods = listOf(JAN, FEB),
+        periods = [JAN, FEB],
         rows =
-          listOf(
+          [
             row("big", period = null, total = 100),
             row("small", period = JAN, total = 10),
             row("debt", period = FEB, total = -50),
-          ),
+          ],
       )
 
     assertThat(data.accounts)
@@ -101,7 +101,7 @@ class NetWorthLoaderTest {
     sync.transaction("old", 1000, account = "checking", date = 20260115)
     sync.transaction("card", -300, account = "card", date = 20260320)
 
-    loader.netWorth(meta(conditions = listOf(CHECKING))).test {
+    loader.netWorth(meta(conditions = [CHECKING])).test {
       val data = awaitItem() as NetWorthData
       assertThat(data.items)
         .isEqualTo(persistentMapOf(JAN to Amount(1000), FEB to Amount(1000), MAR to Amount(1000)))

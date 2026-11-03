@@ -21,7 +21,7 @@ class AgeOfMoneyLoaderTest {
     sync.insertReportBudget()
 
     val sql = dao.observeAgeOfMoneyTransactions(END).first().map { it.amount }
-    assertThat(filtered(dao, conditions = emptyList())).isEqualTo(sql)
+    assertThat(filtered(dao, conditions = [])).isEqualTo(sql)
     assertThat(sql).containsExactly(2000L, -400L, 1000L, -300L, -50L)
   }
 
@@ -29,7 +29,7 @@ class AgeOfMoneyLoaderTest {
   fun `Other conditions leave on-budget transfers out`() = runLoaderTest { sync, dao ->
     sync.insertReportBudget()
 
-    assertThat(filtered(dao, conditions = listOf(NOT_FOOD))).containsExactly(2000L, 1000L, -50L)
+    assertThat(filtered(dao, conditions = [NOT_FOOD])).containsExactly(2000L, 1000L, -50L)
   }
 
   @Test
@@ -37,7 +37,7 @@ class AgeOfMoneyLoaderTest {
     runLoaderTest { sync, dao ->
       sync.insertReportBudget()
 
-      assertThat(filtered(dao, conditions = listOf(CHECKING)))
+      assertThat(filtered(dao, conditions = [CHECKING]))
         .containsExactly(2000L, -400L, 1000L, -300L, -100L, -50L)
     }
 
@@ -46,7 +46,7 @@ class AgeOfMoneyLoaderTest {
     sync.insertReportBudget()
 
     val matches = CHECKING.copy(operator = Matches, value = JsonPrimitive("Check"))
-    assertThat(filtered(dao, conditions = listOf(matches)))
+    assertThat(filtered(dao, conditions = [matches]))
       .containsExactly(2000L, -400L, 1000L, -300L, -50L)
   }
 

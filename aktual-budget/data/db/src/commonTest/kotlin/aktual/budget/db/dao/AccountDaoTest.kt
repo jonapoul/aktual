@@ -32,7 +32,7 @@ internal class AccountDaoTest {
       insertDeleted(transactions, id = "t2", copyOf = "t1")
 
       // then
-      accounts.observeBalances().test { assertThatNextEmissionIsEqualTo(listOf("a" to 11_000L)) }
+      accounts.observeBalances().test { assertThatNextEmissionIsEqualTo(["a" to 11_000L]) }
     }
 
   @Test
@@ -43,7 +43,7 @@ internal class AccountDaoTest {
     transactions.insert("t2", "a", "cat", "payee", LocalDate(2999, 1, 1), amount = 5.0)
 
     // then
-    accounts.observeBalances().test { assertThatNextEmissionIsEqualTo(listOf("a" to 1_500L)) }
+    accounts.observeBalances().test { assertThatNextEmissionIsEqualTo(["a" to 1_500L]) }
   }
 
   @Test
@@ -78,13 +78,13 @@ internal class AccountDaoTest {
     insertAccounts(buildAccount(id = AccountId("a")))
 
     accounts.observeBalances().test {
-      assertThatNextEmissionIsEqualTo(listOf("a" to 0L))
+      assertThatNextEmissionIsEqualTo(["a" to 0L])
 
       // when
       transactions.insert("t1", "a", "cat", "payee", DATE, amount = 12.34)
 
       // then
-      assertThatNextEmissionIsEqualTo(listOf("a" to 1_234L))
+      assertThatNextEmissionIsEqualTo(["a" to 1_234L])
     }
   }
 
@@ -119,7 +119,7 @@ internal class AccountDaoTest {
 
       // then
       accounts.observeBalances().test {
-        assertThatNextEmissionIsEqualTo(listOf("c" to 0L, "a" to 1_000L, "b" to 0L))
+        assertThatNextEmissionIsEqualTo(["c" to 0L, "a" to 1_000L, "b" to 0L])
       }
     }
 

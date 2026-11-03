@@ -13,14 +13,14 @@ internal class LogExporter(private val repository: LogsRepository) {
   suspend fun export(
     scope: LogExportScope,
     target: LogExportTarget,
-    shown: List<LogLine> = emptyList(),
+    shown: List<LogLine> = [],
     shownDate: LocalDate? = null,
   ): LogExport {
     val today = repository.today()
     val text =
       when (scope) {
         Shown -> shown.joinToString(separator = "") { LogFileFormat.format(it) + "\n" }
-        is Day -> repository.read(listOf(scope.date))
+        is Day -> repository.read([scope.date])
         LastWeek -> repository.read(datesSince(today.minus(DatePeriod(days = LAST_WEEK_DAYS - 1))))
         All -> repository.read(datesSince(cutoff = null))
       }

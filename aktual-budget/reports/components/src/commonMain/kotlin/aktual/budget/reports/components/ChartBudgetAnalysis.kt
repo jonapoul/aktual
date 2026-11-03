@@ -179,13 +179,13 @@ private data class Layers(val columns: ImmutableList<Series>, val lines: Immutab
 
 // Like upstream, the bar chart still draws the balance as a line, and balance only is always a line
 private fun layers(data: BudgetAnalysisData): Layers {
-  val categories =
+  val categories: List<Series> =
     if (data.balanceOnly) {
-      emptyList()
+      []
     } else {
-      listOf<Series>(Budgeted, Spent, Overspending)
+      [Budgeted, Spent, Overspending]
     }
-  val balances = if (data.showBalance || data.balanceOnly) listOf(Series.Balance) else emptyList()
+  val balances: List<Series> = if (data.showBalance || data.balanceOnly) [Balance] else []
   return if (data.graphType == Bar && !data.balanceOnly) {
     Layers(categories.toImmutableList(), balances.toImmutableList())
   } else {
@@ -280,7 +280,7 @@ private fun rememberChart(layers: Layers, compact: Boolean, zoom: ChartZoomState
     )
   val marker = if (compact) null else rememberMarker()
   val markerListener = rememberMarkerHaptics(compact)
-  val decorations = listOf(rememberChartZoomDecoration(zoom))
+  val decorations = [rememberChartZoomDecoration(zoom)]
 
   // Vico takes layers as varargs, and there's always at least one of them
   return when {

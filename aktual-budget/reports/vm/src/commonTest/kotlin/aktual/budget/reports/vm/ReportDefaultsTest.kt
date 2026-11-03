@@ -12,7 +12,7 @@ class ReportDefaultsTest {
       .isEqualTo(
         CashFlowReportMeta(
           name = "Cash",
-          conditions = emptyList(),
+          conditions = [],
           conditionsOp = And,
           timeFrame = TimeFrame(CURRENT, CURRENT, SlidingWindow),
           showBalance = true,
@@ -25,7 +25,7 @@ class ReportDefaultsTest {
     assertThat(CalendarReportMeta().withDefaults(CURRENT))
       .isEqualTo(
         CalendarReportMeta(
-          conditions = emptyList(),
+          conditions = [],
           conditionsOp = And,
           timeFrame = TimeFrame(CURRENT, CURRENT, Full),
         ),
@@ -39,7 +39,7 @@ class ReportDefaultsTest {
       )
       .isEqualTo(
         AgeOfMoneyReportMeta(
-          conditions = emptyList(),
+          conditions = [],
           conditionsOp = And,
           timeFrame = TimeFrame(YearMonth(2025, 8), CURRENT, SlidingWindow),
           granularity = Monthly,
@@ -66,7 +66,7 @@ class ReportDefaultsTest {
     assertThat(BalanceForecastReportMeta().withDefaults(CURRENT))
       .isEqualTo(
         BalanceForecastReportMeta(
-          conditions = emptyList(),
+          conditions = [],
           conditionsOp = And,
           timeFrame = TimeFrame(YearMonth(2026, 1), YearMonth(2026, 12), Static),
           granularity = Monthly,
@@ -79,7 +79,7 @@ class ReportDefaultsTest {
   fun `Saved settings are kept`() {
     val meta =
       CashFlowReportMeta(
-        conditions = emptyList(),
+        conditions = [],
         conditionsOp = Or,
         timeFrame = TimeFrame(YearMonth(2024, 1), YearMonth(2024, 3), Static),
         showBalance = false,

@@ -113,7 +113,7 @@ class BudgetAnalysisTest {
       )
     val condition = Condition(field = Category, operator = Is, value = JsonPrimitive(RENT.value))
 
-    val data = calculate(*months, params = PARAMS.copy(conditions = listOf(condition)))
+    val data = calculate(*months, params = PARAMS.copy(conditions = [condition]))
 
     assertThat(data.totalBudgeted).isEqualTo(Amount(900))
     assertThat(data.totalSpent).isEqualTo(Amount(-900))
@@ -240,7 +240,7 @@ class BudgetAnalysisTest {
     val PARAMS =
       BudgetAnalysisParams(
         title = null,
-        conditions = emptyList(),
+        conditions = [],
         conditionsOp = And,
         showHiddenCategories = false,
         graphType = Bar,

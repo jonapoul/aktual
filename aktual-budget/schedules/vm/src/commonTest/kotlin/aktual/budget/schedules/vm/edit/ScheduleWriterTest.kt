@@ -41,7 +41,7 @@ class ScheduleWriterTest {
   fun `Editing a schedule that posts lets today's run happen again`() = runDatabaseTest {
     insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Current")
 
-    writer().update(ScheduleId("a"), RuleId("a-rule"), emptyList(), emptyList(), FORM)
+    writer().update(ScheduleId("a"), RuleId("a-rule"), [], [], FORM)
 
     assertThat(budgetPrefs[LastScheduleRun]).isNull()
   }

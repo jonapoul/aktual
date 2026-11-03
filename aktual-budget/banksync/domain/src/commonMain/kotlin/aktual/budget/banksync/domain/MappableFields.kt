@@ -57,7 +57,7 @@ private fun JsonElement.example(): String =
 private val MAPPABLE_FIELDS: Map<MappedField, List<String>> =
   mapOf(
     MappedField.Date to
-      listOf(
+      [
         "date",
         "bookingDate",
         "valueDate",
@@ -67,9 +67,9 @@ private val MAPPABLE_FIELDS: Map<MappedField, List<String>> =
         "value_date",
         "transaction_date",
         "originalDate",
-      ),
+      ],
     MappedField.Payee to
-      listOf(
+      [
         "payeeName",
         "creditorName",
         "debtorName",
@@ -91,9 +91,9 @@ private val MAPPABLE_FIELDS: Map<MappedField, List<String>> =
         "debtor.name",
         "account_servicer.name",
         "meta.other_account",
-      ),
+      ],
     MappedField.Notes to
-      listOf(
+      [
         "notes",
         "remittanceInformationUnstructured",
         "remittanceInformationUnstructuredArrayString",
@@ -117,5 +117,5 @@ private val MAPPABLE_FIELDS: Map<MappedField, List<String>> =
         "meta.reference",
         "meta.other_account",
         "meta.card_suffix",
-      ),
+      ],
   )

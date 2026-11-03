@@ -41,17 +41,16 @@ import kotlinx.serialization.json.JsonPrimitive
 class CategoryLearnerTest {
   @Test
   fun `The most common category needs at least 3 of the latest`() {
-    assertThat(probableCategory(categories(listOf(FOOD)))).isNull()
-    assertThat(probableCategory(categories(listOf(FOOD, FOOD, FOOD)))).isEqualTo(FOOD)
-    assertThat(probableCategory(categories(listOf(BEER, FOOD, FOOD, FOOD)))).isEqualTo(FOOD)
-    assertThat(probableCategory(categories(listOf(BEER, BEER, BEER, FOOD, FOOD, FOOD))))
-      .isEqualTo(BEER)
+    assertThat(probableCategory(categories([FOOD]))).isNull()
+    assertThat(probableCategory(categories([FOOD, FOOD, FOOD]))).isEqualTo(FOOD)
+    assertThat(probableCategory(categories([BEER, FOOD, FOOD, FOOD]))).isEqualTo(FOOD)
+    assertThat(probableCategory(categories([BEER, BEER, BEER, FOOD, FOOD, FOOD]))).isEqualTo(BEER)
   }
 
   @Test
   fun `An uncategorised newest transaction stops learning`() {
-    assertThat(probableCategory(categories(listOf(null, FOOD, FOOD, FOOD)))).isNull()
-    assertThat(probableCategory(categories(listOf(FOOD, null, FOOD, FOOD)))).isEqualTo(FOOD)
+    assertThat(probableCategory(categories([null, FOOD, FOOD, FOOD]))).isNull()
+    assertThat(probableCategory(categories([FOOD, null, FOOD, FOOD]))).isEqualTo(FOOD)
   }
 
   @Test
@@ -76,8 +75,8 @@ class CategoryLearnerTest {
         mapOf(
           "new-rule" to
             SentRule(
-              conditions = listOf(isPayee(FOO)),
-              actions = listOf(setCategory(FOOD)),
+              conditions = [isPayee(FOO)],
+              actions = [setCategory(FOOD)],
             ),
         ),
       )
@@ -112,13 +111,13 @@ class CategoryLearnerTest {
     assertThat(sync.changes.map { it.row to it.column })
       .containsExactlyInAnyOrder("r1" to "actions", "r2" to "actions")
     assertThat(sentRules().mapValues { it.value.actions })
-      .isEqualTo(mapOf("r1" to listOf(setCategory(FOOD)), "r2" to listOf(setCategory(FOOD))))
+      .isEqualTo(mapOf("r1" to [setCategory(FOOD)], "r2" to [setCategory(FOOD)]))
   }
 
   @Test
   fun `A oneOf rule already setting the winner stops a new rule`() = runLearnerTest {
     // given
-    rule("one-of", condition = oneOfPayees(listOf(FOO, BAR)), action = setCategory(FOOD))
+    rule("one-of", condition = oneOfPayees([FOO, BAR]), action = setCategory(FOOD))
     for (day in 1..3) transaction("t$day", day = day, category = FOOD)
 
     // when
@@ -131,7 +130,7 @@ class CategoryLearnerTest {
   @Test
   fun `A oneOf rule setting something else gets a new rule alongside`() = runLearnerTest {
     // given
-    rule("one-of", condition = oneOfPayees(listOf(FOO, BAR)), action = setCategory(BEER))
+    rule("one-of", condition = oneOfPayees([FOO, BAR]), action = setCategory(BEER))
     for (day in 1..3) transaction("t$day", day = day, category = FOOD)
 
     // when
@@ -229,8 +228,8 @@ class CategoryLearnerTest {
           Rules(
             id = RuleId(id),
             stage = null,
-            conditions = listOf(condition),
-            actions = listOf(action),
+            conditions = [condition],
+            actions = [action],
             tombstone = false,
             conditions_op = And,
           ),
@@ -252,11 +251,11 @@ class CategoryLearnerTest {
     suspend fun setUp() {
       AccountDao(database).insert(id = OPEN, name = "open")
       AccountDao(database).insert(id = CLOSED, name = "closed")
-      for (payee in listOf(FOO, BAR)) {
+      for (payee in [FOO, BAR]) {
         payeeDao.insert(payee, name = payee.value)
         database.payeeMappingQueries.withoutResult { insert(payee, payee) }
       }
-      for (category in listOf(FOOD, BEER, FUN)) {
+      for (category in [FOOD, BEER, FUN]) {
         database.categoryMappingQueries.withoutResult { insert(category, category) }
         database.categoriesQueries.withoutResult {
           insert(

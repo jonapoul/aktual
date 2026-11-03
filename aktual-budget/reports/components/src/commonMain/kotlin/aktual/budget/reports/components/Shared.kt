@@ -224,7 +224,7 @@ fun rememberMarkerHaptics(compact: Boolean): CartesianMarkerVisibilityListener? 
 
 // Upstream's qualitative colour scale, which wraps around once every colour is used
 internal fun Colors.qualitative(index: Int): Color =
-  listOf(
+  [
       chartQual1,
       chartQual2,
       chartQual3,
@@ -234,7 +234,7 @@ internal fun Colors.qualitative(index: Int): Color =
       chartQual7,
       chartQual8,
       chartQual9,
-    )
+    ]
     .let { it[index % it.size] }
 
 private const val MONTHS_PER_YEAR = 12L

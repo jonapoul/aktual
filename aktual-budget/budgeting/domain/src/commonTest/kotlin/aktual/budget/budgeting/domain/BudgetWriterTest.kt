@@ -691,7 +691,7 @@ internal class BudgetWriterTest {
 
     @Suppress("MaxLineLength")
     val SETUP =
-      listOf(
+      [
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('income-group', 'Income', 1, 2)",
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('group1', 'group1', 0, 1)",
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('income-cat', 'Income', 1, 'income-group', 1)",
@@ -699,7 +699,7 @@ internal class BudgetWriterTest {
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('cat2', 'cat2', 0, 'group1', 2)",
         "INSERT INTO category_mapping(id, transferId) VALUES ('income-cat', 'income-cat'), ('cat1', 'cat1'), ('cat2', 'cat2')",
         "INSERT INTO accounts(id, name, offbudget) VALUES ('account1', 'Account 1', 0)",
-      )
+      ]
 
     fun <T : Any> fixed(fixed: T) =
       object : Preference<T> {

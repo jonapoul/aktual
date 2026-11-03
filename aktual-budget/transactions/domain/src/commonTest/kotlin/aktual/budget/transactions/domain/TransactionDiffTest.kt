@@ -100,13 +100,13 @@ class TransactionDiffTest {
   @Test
   fun `Splitting makes the transaction a parent and adds its parts`() {
     val part = SplitPart(TransactionId("p1"), payee = PayeeId("a"), sortOrder = -1)
-    val draft = TransactionDraft(SAVED.copy(payee = null), listOf(part))
+    val draft = TransactionDraft(SAVED.copy(payee = null), [part])
 
     assertThat(transactionDiff(ID, TransactionDraft(SAVED), draft))
       .isEqualTo(
         TransactionChanges(
           added =
-            listOf(
+            [
               NewTransaction(
                 account = AccountId("a"),
                 date = LocalDate(2026, 10, 3),
@@ -117,48 +117,48 @@ class TransactionDiffTest {
                 sortOrder = -1,
                 id = TransactionId("p1"),
               ),
-            ),
+            ],
           updated =
-            listOf(
+            [
               TransactionUpdate(
                 id = ID,
                 isParent = true,
                 payee = Patch.To(null),
                 error = Patch.To(splitError(Amount(-4210L))),
               ),
-            ),
+            ],
         ),
       )
   }
 
   @Test
   fun `A changed part is updated along with the split error`() {
-    val draft = SPLIT.copy(parts = listOf(PART_1.copy(amount = Amount(-3000L)), PART_2))
+    val draft = SPLIT.copy(parts = [PART_1.copy(amount = Amount(-3000L)), PART_2])
 
     assertThat(transactionDiff(ID, SPLIT, draft))
       .isEqualTo(
         TransactionChanges(
           updated =
-            listOf(
+            [
               TransactionUpdate(id = ID, error = Patch.To(splitError(Amount(-210L)))),
               TransactionUpdate(id = PART_1.id, amount = Amount(-3000L)),
-            ),
+            ],
         ),
       )
   }
 
   @Test
   fun `Parts that add up again clear the split error`() {
-    val saved = SPLIT.copy(parts = listOf(PART_1.copy(amount = Amount(-3000L)), PART_2))
+    val saved = SPLIT.copy(parts = [PART_1.copy(amount = Amount(-3000L)), PART_2])
 
     assertThat(transactionDiff(ID, saved, SPLIT))
       .isEqualTo(
         TransactionChanges(
           updated =
-            listOf(
+            [
               TransactionUpdate(id = ID, error = Patch.To(null)),
               TransactionUpdate(id = PART_1.id, amount = Amount(-3210L)),
-            ),
+            ],
         ),
       )
   }
@@ -166,20 +166,20 @@ class TransactionDiffTest {
   @Test
   fun `Removed parts are deleted`() {
     val draft =
-      SPLIT.copy(parts = listOf(PART_1.copy(amount = Amount(-4210L), category = CategoryId("b"))))
+      SPLIT.copy(parts = [PART_1.copy(amount = Amount(-4210L), category = CategoryId("b"))])
 
     assertThat(transactionDiff(ID, SPLIT, draft))
       .isEqualTo(
         TransactionChanges(
           updated =
-            listOf(
+            [
               TransactionUpdate(
                 id = PART_1.id,
                 amount = Amount(-4210L),
                 category = Patch.To(CategoryId("b")),
               ),
-            ),
-          deleted = listOf(PART_2.id),
+            ],
+          deleted = [PART_2.id],
         ),
       )
   }
@@ -192,10 +192,10 @@ class TransactionDiffTest {
       .isEqualTo(
         TransactionChanges(
           updated =
-            listOf(
+            [
               TransactionUpdate(id = ID, isParent = false, category = Patch.To(CategoryId("a"))),
-            ),
-          deleted = listOf(PART_1.id, PART_2.id),
+            ],
+          deleted = [PART_1.id, PART_2.id],
         ),
       )
   }
@@ -208,7 +208,7 @@ class TransactionDiffTest {
 
     assertThat(transactionDiff(ID, saved, SPLIT.copy(fields = fields))?.updated)
       .isEqualTo(
-        listOf(ID, PART_1.id, PART_2.id).map { id ->
+        [ID, PART_1.id, PART_2.id].map { id ->
           TransactionUpdate(
             id = id,
             account = AccountId("b"),
@@ -237,6 +237,6 @@ class TransactionDiffTest {
     val PART_1 =
       SplitPart(TransactionId("p1"), Amount(-3210L), category = CategoryId("a"), sortOrder = -1)
     val PART_2 = SplitPart(TransactionId("p2"), Amount(-1000L), notes = "Bin bags", sortOrder = -2)
-    val SPLIT = TransactionDraft(SAVED.copy(payee = null, category = null), listOf(PART_1, PART_2))
+    val SPLIT = TransactionDraft(SAVED.copy(payee = null, category = null), [PART_1, PART_2])
   }
 }

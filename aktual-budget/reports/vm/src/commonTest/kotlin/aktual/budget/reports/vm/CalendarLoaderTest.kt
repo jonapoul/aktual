@@ -51,7 +51,7 @@ class CalendarLoaderTest {
   fun `Keeps the transactions matching the filters`() = runLoaderTest { loader, sync ->
     sync.insertSpending()
 
-    loader.calendar(meta(conditions = listOf(FOOD))).test {
+    loader.calendar(meta(conditions = [FOOD])).test {
       val data = awaitItem() as CalendarData
       assertThat(data.income).isEqualTo(Amount(900))
       assertThat(data.expenses).isEqualTo(Amount(2500))
@@ -101,7 +101,7 @@ class CalendarLoaderTest {
   private suspend fun BudgetSyncController.insertSpending() {
     row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
     row(CATEGORY_GROUPS, "spending", "name" to "Spending", "sort_order" to 1L)
-    for ((id, name) in listOf("food" to "Food", "fuel" to "Fuel")) {
+    for ((id, name) in ["food" to "Food", "fuel" to "Fuel"]) {
       row(CATEGORIES, id, "name" to name, "cat_group" to "spending", "sort_order" to 1L)
       row(CATEGORY_MAPPING, id, "transferId" to id)
     }
@@ -144,7 +144,7 @@ class CalendarLoaderTest {
       Condition(
         field = Category,
         operator = OneOf,
-        value = JsonArray(listOf(JsonPrimitive("food"))),
+        value = JsonArray([JsonPrimitive("food")]),
       )
   }
 }

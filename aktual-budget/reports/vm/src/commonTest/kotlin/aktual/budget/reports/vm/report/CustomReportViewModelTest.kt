@@ -199,7 +199,7 @@ class CustomReportViewModelTest {
   @Test
   fun `Can't rename to another report's name`() =
     runCustomTest(
-      others = listOf(emptyCustomReport(OTHER).copy(name = "Groceries", tombstone = false)),
+      others = [emptyCustomReport(OTHER).copy(name = "Groceries", tombstone = false)],
     ) {
       viewModel.takenNames.test {
         var names = awaitItem()
@@ -231,7 +231,7 @@ class CustomReportViewModelTest {
   private fun runCustomTest(
     meta: JsonObject? = META,
     report: CustomReports = emptyCustomReport(REPORT).copy(name = "Spending"),
-    others: List<CustomReports> = emptyList(),
+    others: List<CustomReports> = [],
     action: suspend Harness.() -> Unit,
   ) = runSyncedDatabaseTest { scope, controller ->
     dashboardPagesQueries.withoutResult { insert(Dashboard_pages(PAGE, "Main", tombstone = false)) }

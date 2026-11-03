@@ -216,7 +216,7 @@ class BudgetNavRailViewModelTest {
     appPreferences: AppPreferences = AppPreferencesImpl(scope.buildPreferences()),
   ) =
     BudgetNavRailViewModel(
-      contributors = emptySet(),
+      contributors = [],
       localPreferences = prefs,
       server = server,
       syncApi = api,

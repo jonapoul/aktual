@@ -133,12 +133,12 @@ fun buildCashflowChart(
   val groups = buildList {
     +CashflowGroup(Withdrawals, indices(potSeries), listMembers = true)
     if (incomeSeries.isNotEmpty()) +CashflowGroup(Income, indices(incomeSeries), true)
-    if (hasTax) +CashflowGroup(Tax, indices(listOf(taxSeries)), listMembers = false)
+    if (hasTax) +CashflowGroup(Tax, indices([taxSeries]), listMembers = false)
     +CashflowGroup(Spending, indices(phaseSeries), listMembers = true)
     if (contributionSeries.isNotEmpty()) {
       +CashflowGroup(Contributions, indices(contributionSeries), listMembers = true)
     }
-    if (hasSurplus) +CashflowGroup(Saved, indices(listOf(surplusSeries)), listMembers = false)
+    if (hasSurplus) +CashflowGroup(Saved, indices([surplusSeries]), listMembers = false)
   }
 
   // Each series' position among the phases, or -1 for other kinds

@@ -87,7 +87,7 @@ class EnableBankingApiTest {
     assertThat(response)
       .isEqualTo(
         EnableBankingBanksResponse.Success(
-          listOf(
+          [
             EnableBankingBank(
               name = "Mock ASPSP",
               country = "FI",
@@ -102,7 +102,7 @@ class EnableBankingApiTest {
               isBeta = true,
               maxConsentValidity = 15552000,
             ),
-          ),
+          ],
         ),
       )
   }
@@ -180,7 +180,7 @@ class EnableBankingApiTest {
     assertThat(response)
       .isEqualTo(
         EnableBankingAccountsResponse.Success(
-          listOf(
+          [
             ExternalBankAccount(
               accountId = "07cc67f4-45d6-494b-adac-09b5cbc7e2b5",
               name = "Current Account",
@@ -197,7 +197,7 @@ class EnableBankingApiTest {
               orgDomain = null,
               balance = Amount(-2050L),
             ),
-          ),
+          ],
         ),
       )
   }

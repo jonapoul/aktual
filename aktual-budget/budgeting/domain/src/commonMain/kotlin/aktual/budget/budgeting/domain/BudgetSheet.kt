@@ -41,7 +41,7 @@ internal data class BudgetData(
   val spent: Map<MonthCategory, Amount>,
   val budgets: Map<MonthCategory, CategoryBudget>,
   val buffered: Map<YearMonth, Amount> = emptyMap(),
-  val groups: List<BudgetGroup> = emptyList(),
+  val groups: List<BudgetGroup> = [],
 ) {
   // Upstream only reads the first income group
   val incomeGroup: CategoryGroupId? = categories.firstOrNull { it.isGroupIncome }?.group

@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
 internal class FakePinnedReports(
-  reports: List<PinnedReport> = emptyList(),
+  reports: List<PinnedReport> = [],
   choices: ImmutableList<ReportPage> = persistentListOf(),
 ) : PinnedReports {
   val reports = MutableStateFlow(reports)

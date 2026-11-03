@@ -238,7 +238,7 @@ internal class TransfersTest {
       insert(NewTransaction(account = ONE, date = DATE, amount = Amount(5000), payee = payees.two))
     val other = otherSide(id)
 
-    writer.write(runTransfers = true) { delete(listOf(id, other)) }
+    writer.write(runTransfers = true) { delete([id, other]) }
 
     assertThat(row(id).tombstone).isEqualTo(true)
     assertThat(row(other).tombstone).isEqualTo(true)
@@ -300,7 +300,7 @@ internal class TransfersTest {
 
     writer.write { deleteAccount(ONE) }
 
-    for (id in listOf(transfer, parent, child)) assertThat(row(id).tombstone).isEqualTo(true)
+    for (id in [transfer, parent, child]) assertThat(row(id).tombstone).isEqualTo(true)
     assertThat(row(other)).all {
       prop(Transactions::tombstone).isEqualTo(false)
       prop(Transactions::transferred_id).isNull()

@@ -50,7 +50,7 @@ class CustomColorsCacheImplTest {
 
   @Test
   fun `save and load summaries roundtrips correctly`() = runCacheTest {
-    val summaries = listOf(ShadesOfCoffeeThemeSummary)
+    val summaries = [ShadesOfCoffeeThemeSummary]
     cache.save(summaries)
     assertThat(cache.summaries()).isEqualTo(summaries)
   }
@@ -80,8 +80,8 @@ class CustomColorsCacheImplTest {
 
   @Test
   fun `overwriting summaries replaces existing`() = runCacheTest {
-    cache.save(listOf(ShadesOfCoffeeThemeSummary))
-    val updated = listOf(ShadesOfCoffeeThemeSummary.copy(name = "Updated"))
+    cache.save([ShadesOfCoffeeThemeSummary])
+    val updated = [ShadesOfCoffeeThemeSummary.copy(name = "Updated")]
     cache.save(updated)
     assertThat(cache.summaries()).isEqualTo(updated)
   }
@@ -132,7 +132,7 @@ class CustomColorsCacheImplTest {
       assertThat(awaitItem()).containsExactly(local)
     }
 
-    cache.save(listOf(ShadesOfCoffeeThemeSummary))
+    cache.save([ShadesOfCoffeeThemeSummary])
     assertThat(cache.summaries()).containsExactly(ShadesOfCoffeeThemeSummary)
   }
 }

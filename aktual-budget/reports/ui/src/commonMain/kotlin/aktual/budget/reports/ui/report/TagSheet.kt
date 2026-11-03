@@ -34,7 +34,7 @@ internal fun TagSheet(
       style = typography.bodyMedium,
       color = colors.tableHeaderText,
     )
-    TextButton(onClick = { onChange(emptySet()) }) { Text(Strings.reportsCustomEditorSelectNone) }
+    TextButton(onClick = { onChange([]) }) { Text(Strings.reportsCustomEditorSelectNone) }
 
     Column {
       tags.fastForEach { tag ->

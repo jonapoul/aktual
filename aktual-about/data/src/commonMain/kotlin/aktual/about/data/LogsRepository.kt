@@ -38,7 +38,7 @@ internal constructor(
   suspend fun files(): List<LogFile> =
     withContext(contexts.io) {
       val dir = storage.directory()
-      if (!fileSystem.exists(dir)) return@withContext emptyList()
+      if (!fileSystem.exists(dir)) return@withContext []
 
       fileSystem
         .list(dir)
@@ -56,7 +56,7 @@ internal constructor(
   suspend fun dates(): List<LocalDate> =
     withContext(contexts.io) {
       val dir = storage.directory()
-      if (!fileSystem.exists(dir)) return@withContext emptyList()
+      if (!fileSystem.exists(dir)) return@withContext []
       fileSystem.list(dir).mapNotNull { LogFileFormat.parseFileName(it.name) }.sortedDescending()
     }
 
@@ -137,6 +137,6 @@ internal constructor(
     val POLL_INTERVAL = 1.seconds
     const val TIMESTAMP_LENGTH = 23
     val NEWLINE = "\n".encodeUtf8()
-    val ERROR_MARKERS = listOf(" / E / ", " / A / ")
+    val ERROR_MARKERS = [" / E / ", " / A / "]
   }
 }

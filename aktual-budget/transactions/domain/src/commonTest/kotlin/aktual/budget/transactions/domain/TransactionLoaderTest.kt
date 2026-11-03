@@ -98,10 +98,10 @@ internal class TransactionLoaderTest {
 
     assertThat(loader().load(parent)?.parts)
       .isEqualTo(
-        listOf(
+        [
           SplitPart(children[0], Amount(-1000), category = GROCERIES, sortOrder = 2),
           SplitPart(TransactionId("added"), Amount(-2000), sortOrder = 1),
-        ),
+        ],
       )
   }
 
@@ -127,14 +127,14 @@ internal class TransactionLoaderTest {
     insertAccount(ACCOUNT)
     insertAccount(OTHER)
     val ids = writer.write {
-      listOf(
+      [
         insert(
           NewTransaction(account = ACCOUNT, date = LocalDate(2026, 9, 14), amount = Amount(100)),
         ),
         insert(NewTransaction(account = ACCOUNT, date = DATE, amount = Amount(20), sortOrder = 1)),
         insert(NewTransaction(account = ACCOUNT, date = DATE, amount = Amount(3), sortOrder = 2)),
         insert(NewTransaction(account = OTHER, date = DATE, amount = Amount(4000))),
-      )
+      ]
     }
 
     assertThat(ids.map { loader().load(it)?.balanceAfter }).containsExactly(100L, 120L, 123L, 4000L)
@@ -200,7 +200,7 @@ internal class TransactionLoaderTest {
             sortOrder = 1,
           ),
         )
-      parent to listOf(child1, child2)
+      parent to [child1, child2]
     }
   }
 

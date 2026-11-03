@@ -108,9 +108,9 @@ internal class BudgetMonthCalculatorTest {
       assertThatNextEmission()
         .transform { month -> month.groups.map { it.name to it.categories.map { c -> c.name } } }
         .containsExactly(
-          "Usual" to listOf("Food"),
+          "Usual" to ["Food"],
           "Empty" to emptyList<String>(),
-          "Income" to listOf("Salary"),
+          "Income" to ["Salary"],
         )
       cancelAndIgnoreRemainingEvents()
     }
@@ -248,7 +248,7 @@ internal class BudgetMonthCalculatorTest {
     // The off budget, deleted and uncategorised transactions don't count
     @Suppress("MaxLineLength", "TrimMultilineRawString")
     val SETUP =
-      listOf(
+      [
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('usual', 'Usual', 0, 1)",
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('income', 'Income', 1, 2)",
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('empty', 'Empty', 0, 3)",
@@ -279,6 +279,6 @@ internal class BudgetMonthCalculatorTest {
           ('202603-salary', 202603, 'salary', 280000)
         """,
         "INSERT INTO zero_budget_months(id, buffered) VALUES ('2026-03', 100000)",
-      )
+      ]
   }
 }

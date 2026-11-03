@@ -26,8 +26,8 @@ internal data class EditorSnapshot(
   // What the draft started from: what was saved when it was opened, or where a new transaction
   // started
   val base: DraftSnapshot? = null,
-  val newPayees: List<NewPayeeSnapshot> = emptyList(),
-  val emptied: Set<TransactionField> = emptySet(),
+  val newPayees: List<NewPayeeSnapshot> = [],
+  val emptied: Set<TransactionField> = [],
   val hasConflicts: Boolean = false,
   // An amount typed that rules haven't run on yet
   val hasUncommittedAmount: Boolean = false,
@@ -46,7 +46,7 @@ internal data class DraftSnapshot(
   val cleared: Boolean,
   val reconciled: Boolean,
   val schedule: ScheduleId? = null,
-  val parts: List<PartSnapshot> = emptyList(),
+  val parts: List<PartSnapshot> = [],
 )
 
 @Serializable

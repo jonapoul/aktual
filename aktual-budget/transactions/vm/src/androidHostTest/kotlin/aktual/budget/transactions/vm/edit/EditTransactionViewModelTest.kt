@@ -232,7 +232,7 @@ class EditTransactionViewModelTest {
           .containsExactlyInAnyOrder("Amex", "Barclays", "Chase", "Mortgage")
         prop(TransactionOptions::categoryGroups)
           .extracting { group -> group.categories.map { it.name } }
-          .containsExactly(listOf("Additional", "Building", "Car"))
+          .containsExactly(["Additional", "Building", "Car"])
       }
       cancelAndIgnoreRemainingEvents()
     }
@@ -328,11 +328,11 @@ class EditTransactionViewModelTest {
       }
       assertThat(sync.calls)
         .containsExactly(
-          listOf(
+          [
             LocalChange(TRANSACTIONS, "t", "category", Null),
             LocalChange(TRANSACTIONS, "t", "amount", MessageValue.Number(-2500)),
             LocalChange(TRANSACTIONS, "t", "notes", MessageValue.String("Lunch")),
-          ),
+          ],
         )
     }
   }
@@ -387,7 +387,7 @@ class EditTransactionViewModelTest {
     }
     assertThat(sync.calls)
       .containsExactly(
-        listOf(LocalChange(TRANSACTIONS, "t", "schedule", MessageValue.String("rent"))),
+        [LocalChange(TRANSACTIONS, "t", "schedule", MessageValue.String("rent"))],
       )
   }
 
@@ -436,7 +436,7 @@ class EditTransactionViewModelTest {
         while (loaded.isWorking || loaded.mode.form.hasChanges) loaded = awaitLoaded()
         assertThat(sync.calls)
           .containsExactly(
-            listOf(LocalChange(TRANSACTIONS, "t", "notes", MessageValue.String("Lunch"))),
+            [LocalChange(TRANSACTIONS, "t", "notes", MessageValue.String("Lunch"))],
           )
         cancelAndIgnoreRemainingEvents()
       }
@@ -513,7 +513,7 @@ class EditTransactionViewModelTest {
       viewModel.delete()
 
       assertThatNextEmissionIsEqualTo(Deleted)
-      assertThat(sync.calls).containsExactly(listOf(tombstone(TRANSACTIONS, "t")))
+      assertThat(sync.calls).containsExactly([tombstone(TRANSACTIONS, "t")])
     }
   }
 
@@ -530,7 +530,7 @@ class EditTransactionViewModelTest {
         viewModel.setNotes("Lunch")
         awaitEdit()
 
-        elsewhere.sendMessages(listOf(localChange(TRANSACTIONS, "t", "amount", -5000L)))
+        elsewhere.sendMessages([localChange(TRANSACTIONS, "t", "amount", -5000L)])
         scope.advanceUntilIdle()
 
         // The draft follows what it hasn't changed
@@ -548,7 +548,7 @@ class EditTransactionViewModelTest {
         scope.advanceUntilIdle()
         assertThat(sync.calls)
           .containsExactly(
-            listOf(LocalChange(TRANSACTIONS, "t", "notes", MessageValue.String("Lunch"))),
+            [LocalChange(TRANSACTIONS, "t", "notes", MessageValue.String("Lunch"))],
           )
         cancelAndIgnoreRemainingEvents()
       }
@@ -566,7 +566,7 @@ class EditTransactionViewModelTest {
         viewModel.setPayee(PayeeId("b"))
         awaitEdit()
 
-        elsewhere.sendMessages(listOf(localChange(TRANSACTIONS, "t", "description", "c")))
+        elsewhere.sendMessages([localChange(TRANSACTIONS, "t", "description", "c")])
         scope.advanceUntilIdle()
 
         var loaded = awaitLoaded()
@@ -632,7 +632,7 @@ class EditTransactionViewModelTest {
         viewModel.setNotes("Lunch")
         awaitEdit()
 
-        elsewhere.sendMessages(listOf(tombstone(TRANSACTIONS, "t")))
+        elsewhere.sendMessages([tombstone(TRANSACTIONS, "t")])
         scope.advanceUntilIdle()
 
         var loaded = awaitLoaded()
@@ -671,7 +671,7 @@ class EditTransactionViewModelTest {
       viewModel.state.test {
         awaitEdit()
 
-        elsewhere.sendMessages(listOf(tombstone(TRANSACTIONS, "t")))
+        elsewhere.sendMessages([tombstone(TRANSACTIONS, "t")])
         scope.advanceUntilIdle()
 
         var state = awaitItem()
@@ -828,10 +828,10 @@ class EditTransactionViewModelTest {
       while (loaded.isWorking || loaded.mode.form.hasChanges) loaded = awaitLoaded()
       assertThat(sync.calls)
         .containsExactly(
-          listOf(
+          [
             localChange(TRANSACTIONS, "p", "isParent", false),
             tombstone(TRANSACTIONS, "p1"),
-          ),
+          ],
         )
       cancelAndIgnoreRemainingEvents()
     }
@@ -976,11 +976,11 @@ class EditTransactionViewModelTest {
       assertThatNextEmissionIsEqualTo(Deleted)
       assertThat(sync.calls)
         .containsExactly(
-          listOf(tombstone(TRANSACTIONS, "t")),
-          listOf(
+          [tombstone(TRANSACTIONS, "t")],
+          [
             tombstone(TRANSACTIONS, "o"),
             LocalChange(TRANSACTIONS, "t", "transferred_id", Null),
-          ),
+          ],
         )
     }
   }
@@ -1339,13 +1339,13 @@ class EditTransactionViewModelTest {
       assertThat(tags.map { it.name to it.color }).containsExactly("food" to null)
       assertThat(sync.calls)
         .containsExactly(
-          listOf(
+          [
             LocalChange(TAGS, "tag", "id", MessageValue.String("tag")),
             LocalChange(TAGS, "tag", "tag", MessageValue.String("food")),
             LocalChange(TAGS, "tag", "color", Null),
             LocalChange(TAGS, "tag", "description", Null),
             LocalChange(TAGS, "tag", "tombstone", MessageValue.Number(0)),
-          ),
+          ],
         )
       cancelAndIgnoreRemainingEvents()
     }
@@ -1405,7 +1405,7 @@ class EditTransactionViewModelTest {
         prop(TransactionOptions::showHiddenCategories).isFalse()
         prop(TransactionOptions::categoryGroups)
           .extracting { group -> group.categories.map { it.name } }
-          .containsExactly(listOf("Additional", "Building", "Car"))
+          .containsExactly(["Additional", "Building", "Car"])
       }
 
       viewModel.toggleHiddenCategories()
@@ -1415,7 +1415,7 @@ class EditTransactionViewModelTest {
       assertThat(form.options.categoryGroups)
         .extracting { group -> group.categories.map { it.name to it.isHidden } }
         .containsExactly(
-          listOf("Additional" to false, "Building" to false, "Car" to false, "Drinks" to true),
+          ["Additional" to false, "Building" to false, "Car" to false, "Drinks" to true],
         )
       cancelAndIgnoreRemainingEvents()
     }
@@ -1543,7 +1543,7 @@ class EditTransactionViewModelTest {
   fun `A saved state that can't be read is ignored`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val savedState = SavedStateHandle(mapOf("draft" to encodeToSavedState(listOf("junk"))))
+    val savedState = SavedStateHandle(mapOf("draft" to encodeToSavedState(["junk"])))
     val viewModel = createViewModel(scope, id = "t", savedState = savedState)
 
     viewModel.state.test {
@@ -1649,12 +1649,11 @@ class EditTransactionViewModelTest {
         Rules(
           id = RuleId("rule"),
           stage = null,
-          conditions =
-            listOf(Condition(field = Payee, operator = Is, value = JsonPrimitive(payee))),
+          conditions = [Condition(field = Payee, operator = Is, value = JsonPrimitive(payee))],
           actions =
-            listOf(
+            [
               RuleAction(value = JsonPrimitive(category), op = RuleAction.Op.Set, field = Category),
-            ),
+            ],
           tombstone = false,
           conditions_op = And,
         ),
@@ -1668,9 +1667,9 @@ class EditTransactionViewModelTest {
           id = RuleId("split"),
           stage = null,
           conditions =
-            listOf(Condition(field = Category, operator = Is, value = JsonPrimitive(category))),
+            [Condition(field = Category, operator = Is, value = JsonPrimitive(category))],
           actions =
-            listOf(
+            [
               RuleAction(
                 value = JsonPrimitive(50),
                 op = SetSplitAmount,
@@ -1681,7 +1680,7 @@ class EditTransactionViewModelTest {
                 op = SetSplitAmount,
                 options = RuleAction.Options(method = Remainder, splitIndex = 2),
               ),
-            ),
+            ],
           tombstone = false,
           conditions_op = And,
         ),
@@ -1794,12 +1793,12 @@ class EditTransactionViewModelTest {
     // Food has 50.00 budgeted in June 2025
     @Suppress("MaxLineLength")
     val BUDGET =
-      listOf(
+      [
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('usual', 'Usual', 0, 1), ('income', 'Income', 1, 2)",
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('food', 'Food', 0, 'usual', 1), ('rent', 'Rent', 0, 'usual', 2), ('salary', 'Salary', 1, 'income', 1)",
         "INSERT INTO category_mapping(id, transferId) VALUES ('food', 'food'), ('rent', 'rent'), ('salary', 'salary')",
         "INSERT INTO zero_budgets(id, month, category, amount) VALUES ('202506-food', 202506, 'food', 5000)",
-      )
+      ]
 
     // What insertTransaction() gives a row on DATE_1
     val SORT_ORDER = DATE_1.toEpochDays().days.inWholeMilliseconds

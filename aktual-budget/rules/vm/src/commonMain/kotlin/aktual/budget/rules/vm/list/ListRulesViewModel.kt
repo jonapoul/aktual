@@ -62,7 +62,7 @@ internal constructor(
 
   fun delete(id: RuleId) {
     viewModelScope.launch {
-      syncController.syncChanges(listOf(tombstone(dataset = RULES, row = id.toString())))
+      syncController.syncChanges(tombstone(dataset = RULES, row = id.toString()))
       logcat.d { "Tombstoned rule $id" }
     }
   }

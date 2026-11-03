@@ -91,6 +91,6 @@ private val ThyriumThemeSummary =
   CustomThemeSummary(
     name = "Thyrium",
     repo = CustomThemeRepo(userName = "carlisle96", repoName = "thyrium-actual"),
-    colors = emptyList(),
+    colors = [],
     mode = Dark,
   )

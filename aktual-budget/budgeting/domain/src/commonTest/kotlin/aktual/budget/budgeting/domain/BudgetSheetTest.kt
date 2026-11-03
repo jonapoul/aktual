@@ -68,22 +68,22 @@ internal class BudgetSheetTest {
 
   @Test
   fun `Envelope group totals include hidden categories`() {
-    val categories = listOf(FOOD.copy(isHidden = true), RENT, SECRET, SALARY)
+    val categories = [FOOD.copy(isHidden = true), RENT, SECRET, SALARY]
     val data = envelope().copy(categories = categories, groups = GROUPS)
 
     assertThat(data.envelopeMonth(JAN, JAN))
       .groups()
       .containsExactly(
-        Totals("usual", budgeted = 40_000, spent = -35_000, balance = 5_000, listOf("food")),
+        Totals("usual", budgeted = 40_000, spent = -35_000, balance = 5_000, ["food"]),
         Totals(
           "bills",
           budgeted = 100_000,
           spent = -100_000,
           balance = 0,
-          listOf("rent", "secret"),
+          ["rent", "secret"],
         ),
-        Totals("empty", budgeted = 0, spent = 0, balance = 0, emptyList()),
-        Totals("income", budgeted = 0, spent = 300_000, balance = 0, listOf("salary")),
+        Totals("empty", budgeted = 0, spent = 0, balance = 0, []),
+        Totals("income", budgeted = 0, spent = 300_000, balance = 0, ["salary"]),
       )
   }
 
@@ -94,16 +94,16 @@ internal class BudgetSheetTest {
     assertThat(data.trackingMonth(JAN, JAN))
       .groups()
       .containsExactly(
-        Totals("usual", budgeted = 40_000, spent = -35_000, balance = 5_000, listOf("food")),
+        Totals("usual", budgeted = 40_000, spent = -35_000, balance = 5_000, ["food"]),
         Totals(
           "bills",
           budgeted = 100_000,
           spent = -100_000,
           balance = 0,
-          listOf("rent", "secret"),
+          ["rent", "secret"],
         ),
-        Totals("empty", budgeted = 0, spent = 0, balance = 0, emptyList()),
-        Totals("income", budgeted = 300_000, spent = 250_000, balance = 50_000, listOf("salary")),
+        Totals("empty", budgeted = 0, spent = 0, balance = 0, []),
+        Totals("income", budgeted = 300_000, spent = 250_000, balance = 50_000, ["salary"]),
       )
   }
 
@@ -178,7 +178,7 @@ internal class BudgetSheetTest {
 
   @Test
   fun `Envelope totals include hidden categories and groups`() {
-    val categories = listOf(FOOD.copy(isHidden = true), RENT.copy(isGroupHidden = true), SALARY)
+    val categories = [FOOD.copy(isHidden = true), RENT.copy(isGroupHidden = true), SALARY]
 
     assertThat(envelope().copy(categories = categories).envelopeMonth(JAN, JAN)).all {
       prop(Envelope::budgeted).isEqualTo(Amount(140_000L))
@@ -258,40 +258,40 @@ internal class BudgetSheetTest {
 
   private fun envelope(vararg overrides: CategoryBudget) =
     data(
-      categories = listOf(FOOD, RENT, SALARY),
+      categories = [FOOD, RENT, SALARY],
       spent =
-        listOf(
+        [
           spent(JAN, "salary", 300_000),
           spent(JAN, "food", -35_000),
           spent(JAN, "rent", -100_000),
           spent(FEB, "food", -50_000),
           spent(FEB, "rent", -100_000),
-        ),
+        ],
       budgets =
-        listOf(
+        [
           budget(JAN, "food", 40_000),
           budget(JAN, "rent", 100_000),
           budget(FEB, "food", 30_000),
           budget(FEB, "rent", 100_000),
-        ) + overrides,
+        ] + overrides,
     )
 
   private fun tracking(vararg overrides: CategoryBudget) =
     data(
-      categories = listOf(FOOD, RENT, SECRET, SALARY),
+      categories = [FOOD, RENT, SECRET, SALARY],
       spent =
-        listOf(
+        [
           spent(JAN, "salary", 250_000),
           spent(JAN, "food", -35_000),
           spent(JAN, "rent", -100_000),
           spent(JAN, "secret", -900),
-        ),
+        ],
       budgets =
-        listOf(
+        [
           budget(JAN, "food", 40_000),
           budget(JAN, "rent", 100_000),
           budget(JAN, "salary", 300_000),
-        ) + overrides,
+        ] + overrides,
     )
 
   // Later budgets replace earlier ones for the same month and category
@@ -323,12 +323,12 @@ internal class BudgetSheetTest {
     val SALARY = category("salary", group = "income", isIncome = true)
 
     val GROUPS =
-      listOf(
+      [
         group("usual"),
         group("bills"),
         group("empty"),
         group("income", isIncome = true),
-      )
+      ]
 
     fun group(id: String, isIncome: Boolean = false) =
       BudgetGroup(

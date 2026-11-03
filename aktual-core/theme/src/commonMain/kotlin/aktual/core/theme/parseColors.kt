@@ -460,7 +460,7 @@ private fun parsePropertyPair(line: String): Pair<String, String>? {
 // Follows var() references to other properties, returning null if one is missing or circular
 private fun Map<String, String>.resolveColor(
   value: String,
-  seen: Set<String> = emptySet(),
+  seen: Set<String> = [],
 ): Color? {
   val match = VarRegex.matchEntire(value) ?: return value.parseColor()
   val (_, name, fallback) = match.groupValues

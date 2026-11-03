@@ -35,7 +35,7 @@ class SummaryLoaderTest {
   fun `Sum keeps the transactions matching the filters`() = runLoaderTest { loader, sync ->
     sync.insertSpending()
 
-    loader.summary(meta(content = """{"type":"sum"}""", conditions = listOf(FOOD))).test {
+    loader.summary(meta(content = """{"type":"sum"}""", conditions = [FOOD])).test {
       assertThatNextEmissionIsEqualTo(SummaryData.Sum(TITLE, MAY_1, MAY_31, Amount(-1900)))
     }
   }
@@ -99,7 +99,7 @@ class SummaryLoaderTest {
     sync.insertSpending()
     val content = """{"type":"percentage","divisorConditions":[],"divisorAllTimeDateRange":false}"""
 
-    loader.summary(meta(content, conditions = listOf(FOOD))).test {
+    loader.summary(meta(content, conditions = [FOOD])).test {
       assertThatNextEmissionIsEqualTo(
         SummaryData.Percentage(
           title = TITLE,
@@ -119,7 +119,7 @@ class SummaryLoaderTest {
     sync.insertSpending()
     val content = """{"type":"percentage","divisorAllTimeDateRange":true}"""
 
-    loader.summary(meta(content, conditions = listOf(FOOD))).test {
+    loader.summary(meta(content, conditions = [FOOD])).test {
       assertThatNextEmissionIsEqualTo(
         SummaryData.Percentage(
           title = TITLE,
@@ -155,13 +155,13 @@ class SummaryLoaderTest {
     row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
     row(ACCOUNTS, "investing", "name" to "Investing", "offbudget" to true)
     row(CATEGORY_GROUPS, "spending", "name" to "Spending", "sort_order" to 1L)
-    for ((id, name) in listOf("food" to "Food", "fuel" to "Fuel")) {
+    for ((id, name) in ["food" to "Food", "fuel" to "Fuel"]) {
       row(CATEGORIES, id, "name" to name, "cat_group" to "spending", "sort_order" to 1L)
       row(CATEGORY_MAPPING, id, "transferId" to id)
     }
     row(PAYEES, "shop", "name" to "Shop")
     row(PAYEES, "to-investing", "transfer_acct" to "investing")
-    for (id in listOf("shop", "to-investing")) row(PAYEE_MAPPING, id, "targetId" to id)
+    for (id in ["shop", "to-investing"]) row(PAYEE_MAPPING, id, "targetId" to id)
 
     transaction("plain", -1000, category = "food", payee = "shop")
     transaction("split", -3500, isParent = true)
@@ -204,7 +204,7 @@ class SummaryLoaderTest {
       Condition(
         field = Category,
         operator = OneOf,
-        value = JsonArray(listOf(JsonPrimitive("food"))),
+        value = JsonArray([JsonPrimitive("food")]),
       )
   }
 }

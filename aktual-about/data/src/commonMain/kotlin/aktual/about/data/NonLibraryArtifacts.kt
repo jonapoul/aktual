@@ -16,7 +16,7 @@ internal val ActualBudget =
     artifactId = "actual",
     version = "",
     name = "Actual Budget",
-    spdxLicenses = setOf(Mit),
+    spdxLicenses = [Mit],
     scm = ArtifactScm(url = "https://github.com/actualbudget/actual"),
   )
 
@@ -26,7 +26,7 @@ internal val InterFont =
     artifactId = "inter",
     version = "3.19",
     name = "Inter",
-    spdxLicenses = setOf(OpenFont),
+    spdxLicenses = [OpenFont],
     scm = ArtifactScm(url = "https://github.com/rsms/inter"),
   )
 
@@ -36,7 +36,7 @@ internal val MaterialDesignIcons =
     artifactId = "material-design-icons",
     version = "",
     name = "Material Design Icons",
-    spdxLicenses = setOf(Apache2),
+    spdxLicenses = [Apache2],
     scm = ArtifactScm(url = "https://github.com/google/material-design-icons"),
   )
 
@@ -46,10 +46,10 @@ internal val RedactedScriptFont =
     artifactId = "redacted-font",
     version = "1.001",
     name = "Redacted Script",
-    spdxLicenses = setOf(OpenFont),
+    spdxLicenses = [OpenFont],
     scm = ArtifactScm(url = "https://github.com/christiannaths/redacted-font"),
   )
 
 // Copied or ported into the app rather than pulled in as dependencies, so licensee can't see them
 internal val NonLibraryArtifacts =
-  listOf(ActualBudget, InterFont, MaterialDesignIcons, RedactedScriptFont)
+  [ActualBudget, InterFont, MaterialDesignIcons, RedactedScriptFont]

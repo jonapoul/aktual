@@ -135,7 +135,6 @@ internal constructor(
 
   private companion object {
     // As upstream lists them
-    val PROVIDERS: List<AccountSyncSource> =
-      listOf(GoCardless, EnableBanking, SimpleFin, PluggyAi, Akahu)
+    val PROVIDERS: List<AccountSyncSource> = [GoCardless, EnableBanking, SimpleFin, PluggyAi, Akahu]
   }
 }

@@ -6,8 +6,8 @@ import aktual.budget.model.TransactionId
 
 data class BankSyncProgress(
   val isRunning: Boolean = false,
-  val pending: List<AccountId> = emptyList(),
-  val results: List<BankSyncResult> = emptyList(),
+  val pending: List<AccountId> = [],
+  val results: List<BankSyncResult> = [],
 )
 
 sealed interface BankSyncResult {

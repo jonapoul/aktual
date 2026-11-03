@@ -57,7 +57,7 @@ internal fun sankeyBudget(
 // Groups then their categories, in budget order
 internal fun budgetCategoryOrder(month: BudgetMonth?): List<String> =
   month?.groups.orEmpty().flatMap { group ->
-    listOf(group.id.value) + group.categories.map { it.id.value }
+    [group.id.value] + group.categories.map { it.id.value }
   }
 
 // Budget amounts aren't transactions, so only the category and category group conditions apply,

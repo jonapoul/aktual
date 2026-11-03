@@ -83,7 +83,7 @@ class LogsRepositoryTest {
     write("log-2026-10-17.log", "$TS / I / Api / Old\n")
     write("log-2026-10-18.log", "$TS / I / Api / New\n")
 
-    val text = repository().read(listOf(YESTERDAY, TODAY))
+    val text = repository().read([YESTERDAY, TODAY])
 
     assertThat(text)
       .isEqualTo(

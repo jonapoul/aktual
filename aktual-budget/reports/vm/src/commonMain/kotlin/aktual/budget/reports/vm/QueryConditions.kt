@@ -166,7 +166,7 @@ private fun defaultValue(kind: ConditionValueKind): JsonElement =
   when (kind) {
     Entity,
     NoValue -> JsonNull
-    EntityList -> JsonArray(emptyList())
+    EntityList -> JsonArray([])
     Text,
     Day -> JsonPrimitive("")
     Money -> JsonPrimitive(0)

@@ -132,7 +132,7 @@ class HomeViewModelThisMonthTest {
   private companion object {
     @Suppress("MaxLineLength")
     val SETUP =
-      listOf(
+      [
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('usual', 'Usual', 0, 1)",
         "INSERT INTO category_groups(id, name, is_income, sort_order) VALUES ('income', 'Income', 1, 2)",
         "INSERT INTO categories(id, name, is_income, cat_group, sort_order) VALUES ('food', 'Food', 0, 'usual', 1)",
@@ -141,7 +141,7 @@ class HomeViewModelThisMonthTest {
         "INSERT INTO accounts(id, name, offbudget) VALUES ('on', 'On', 0)",
         "INSERT INTO transactions(id, acct, category, amount, date) VALUES ('t1', 'on', 'salary', 300000, 20260401)",
         "INSERT INTO transactions(id, acct, category, amount, date) VALUES ('t2', 'on', 'food', -50000, 20260402)",
-      )
+      ]
 
     const val TRACKING_BUDGET =
       "INSERT INTO reflect_budgets(id, month, category, amount) VALUES " +

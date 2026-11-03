@@ -115,10 +115,10 @@ class CustomReportOptionsTest {
 
   @Test
   fun `Picking none or every tag covers all tags`() {
-    val visible = listOf(TagId("a"), TagId("b"), TagId("c"))
-    assertThat(DEFAULT.withTagScope(setOf(TagId("c"), TagId("a")), visible).tagScope)
+    val visible = [TagId("a"), TagId("b"), TagId("c")]
+    assertThat(DEFAULT.withTagScope([TagId("c"), TagId("a")], visible).tagScope)
       .isEqualTo(CustomTagScope.Selected(persistentListOf(TagId("a"), TagId("c"))))
-    assertThat(DEFAULT.withTagScope(emptySet(), visible).tagScope).isEqualTo(All)
+    assertThat(DEFAULT.withTagScope([], visible).tagScope).isEqualTo(All)
     assertThat(DEFAULT.withTagScope(visible.toSet(), visible).tagScope).isEqualTo(All)
   }
 

@@ -21,7 +21,7 @@ class SearchLicensesViewModelTest {
   private val repository = mockk<LicensesRepository>()
 
   private fun TestScope.buildViewModel(
-    artifacts: List<ArtifactDetail> = listOf(MANGO, KIWI, PLUM),
+    artifacts: List<ArtifactDetail> = [MANGO, KIWI, PLUM],
   ): SearchLicensesViewModel {
     coEvery { repository.loadLicenses() } returns Success(artifacts)
     return SearchLicensesViewModel(repository, viewModelContext = viewModelContext)
@@ -94,7 +94,7 @@ class SearchLicensesViewModelTest {
   @Test
   fun `Name matches come first`() = runTest {
     val byGroup = MANGO.copy(groupId = "com.plum", artifactId = "other", name = "Other")
-    val viewModel = buildViewModel(listOf(byGroup, PLUM))
+    val viewModel = buildViewModel([byGroup, PLUM])
 
     viewModel.state.test {
       assertThatNextEmissionIsEqualTo(NoQuery)
@@ -109,7 +109,7 @@ class SearchLicensesViewModelTest {
         groupId = "com.fruit",
         artifactId = "mango",
         name = "Mango",
-        spdxLicenses = setOf(Apache2),
+        spdxLicenses = [Apache2],
         version = "1.2.3",
       )
 
@@ -117,7 +117,7 @@ class SearchLicensesViewModelTest {
       MANGO.copy(
         artifactId = "kiwi",
         name = null,
-        spdxLicenses = setOf(Apache2.copy(identifier = "MIT", name = "MIT License")),
+        spdxLicenses = [Apache2.copy(identifier = "MIT", name = "MIT License")],
       )
 
     val PLUM = MANGO.copy(artifactId = "plum", name = "Plum", version = "7.8.9")

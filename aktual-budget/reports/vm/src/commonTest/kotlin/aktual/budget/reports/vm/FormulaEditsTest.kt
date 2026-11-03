@@ -17,7 +17,7 @@ class FormulaEditsTest {
     // then
     assertThat(edits.queries.keys.toList()).containsExactly("a", "b", "new")
     assertThat(edits.queries.getValue("new"))
-      .isEqualTo(FormulaQuery(emptyList(), And, TimeFrame(MONTH, MONTH, SlidingWindow)))
+      .isEqualTo(FormulaQuery([], And, TimeFrame(MONTH, MONTH, SlidingWindow)))
   }
 
   @Test
@@ -54,10 +54,8 @@ class FormulaEditsTest {
 
   private companion object {
     val MONTH = YearMonth(2025, 6)
-    val QUERY =
-      FormulaQuery(listOf(Condition(Payee, Is, JsonNull)), conditionsOp = And, timeFrame = null)
+    val QUERY = FormulaQuery([Condition(Payee, Is, JsonNull)], conditionsOp = And, timeFrame = null)
     val EDITS =
-      FormulaReportMeta(queries = mapOf("a" to QUERY, "b" to QUERY.copy(conditions = emptyList())))
-        .toEdits()
+      FormulaReportMeta(queries = mapOf("a" to QUERY, "b" to QUERY.copy(conditions = []))).toEdits()
   }
 }

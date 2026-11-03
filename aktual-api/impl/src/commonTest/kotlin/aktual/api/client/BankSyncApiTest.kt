@@ -300,7 +300,7 @@ class BankSyncApiTest {
     assertThat(response)
       .isEqualTo(
         BankSyncAccountsResponse.Success(
-          listOf(
+          [
             ExternalBankAccount(
               accountId = "ACT-1",
               name = "Checking",
@@ -317,7 +317,7 @@ class BankSyncApiTest {
               orgDomain = null,
               balance = Amount(-5678),
             ),
-          ),
+          ],
         ),
       )
   }
@@ -332,7 +332,7 @@ class BankSyncApiTest {
     assertThat(response)
       .isEqualTo(
         BankSyncAccountsResponse.Success(
-          listOf(
+          [
             // Bank accounts are named after their tax number, with invested money in the balance
             ExternalBankAccount(
               accountId = "pluggy-1",
@@ -350,7 +350,7 @@ class BankSyncApiTest {
               orgDomain = null,
               balance = Amount(30010),
             ),
-          ),
+          ],
         ),
       )
   }
@@ -373,7 +373,7 @@ class BankSyncApiTest {
     assertThat(response)
       .isEqualTo(
         BankSyncAccountsResponse.Success(
-          listOf(
+          [
             ExternalBankAccount(
               accountId = "acc_1",
               name = "Everyday",
@@ -382,7 +382,7 @@ class BankSyncApiTest {
               orgDomain = "ANZ",
               balance = Amount(4250),
             ),
-          ),
+          ],
         ),
       )
   }
@@ -430,7 +430,7 @@ class BankSyncApiTest {
     assertThat(response)
       .isEqualTo(
         GoCardlessBanksResponse.Success(
-          listOf(
+          [
             GoCardlessBank(
               id = "SANDBOXFINANCE_SFIN0000",
               name = "Sandbox Finance",
@@ -441,7 +441,7 @@ class BankSyncApiTest {
               name = "Monzo",
               logo = "https://cdn.nordigen.com/ais/MONZO_MONZGB2L.png",
             ),
-          ),
+          ],
         ),
       )
   }
@@ -524,7 +524,7 @@ class BankSyncApiTest {
     assertThat(response)
       .isEqualTo(
         GoCardlessAccountsResponse.Success(
-          listOf(
+          [
             ExternalBankAccount(
               accountId = "7e57ac6b-0f61-4a2d-9a0d-1c2b3d4e5f60",
               name = "Main Account (XXX 4321) EUR",
@@ -541,7 +541,7 @@ class BankSyncApiTest {
               orgDomain = null,
               balance = null,
             ),
-          ),
+          ],
         ),
       )
   }
@@ -581,8 +581,8 @@ class BankSyncApiTest {
   private companion object {
     val BATCH_REQUEST =
       SimpleFinBatchRequest(
-        accountIds = listOf("ACT-1", "ACT-2", "ACT-missing"),
-        startDates = listOf(LocalDate(2026, 7, 1), LocalDate(2026, 7, 2), LocalDate(2026, 7, 3)),
+        accountIds = ["ACT-1", "ACT-2", "ACT-missing"],
+        startDates = [LocalDate(2026, 7, 1), LocalDate(2026, 7, 2), LocalDate(2026, 7, 3)],
       )
     const val REQUISITION = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     val REQUEST = BankSyncTransactionsRequest(accountId = "abc", startDate = LocalDate(2026, 7, 1))

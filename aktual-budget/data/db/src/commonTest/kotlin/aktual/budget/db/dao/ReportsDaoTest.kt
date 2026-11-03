@@ -32,12 +32,12 @@ internal class ReportsDaoTest {
       transactions.insert("t3", "c", "cat", "payee", LocalDate(2026, 2, 1), amount = 20.0)
 
       // then
-      reports.observeMonteCarloAccountBalances(listOf(AccountId("a"), AccountId("b"))).test {
+      reports.observeMonteCarloAccountBalances([AccountId("a"), AccountId("b")]).test {
         assertThatNextEmissionIsEqualTo(
-          listOf(
+          [
             MonteCarloAccountBalances(account = AccountId("a"), total = 15_000),
             MonteCarloAccountBalances(account = AccountId("b"), total = 0),
-          ),
+          ],
         )
       }
     }
@@ -59,9 +59,9 @@ internal class ReportsDaoTest {
       driver.run("UPDATE transactions SET tombstone = 1 WHERE id IN ('t2', 'dead')")
 
       // then
-      reports.observeMonteCarloAccountBalances(listOf(AccountId("d"), AccountId("a"))).test {
+      reports.observeMonteCarloAccountBalances([AccountId("d"), AccountId("a")]).test {
         assertThatNextEmissionIsEqualTo(
-          listOf(MonteCarloAccountBalances(account = AccountId("a"), total = 11_000)),
+          [MonteCarloAccountBalances(account = AccountId("a"), total = 11_000)],
         )
       }
     }

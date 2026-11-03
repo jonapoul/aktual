@@ -99,7 +99,7 @@ data class SplitPart(
 // A transaction as its editor holds it. It's a split parent for as long as it has parts
 data class TransactionDraft(
   val fields: TransactionFields,
-  val parts: List<SplitPart> = emptyList(),
+  val parts: List<SplitPart> = [],
 ) {
   val isSplit: Boolean
     get() = parts.isNotEmpty()
@@ -107,9 +107,9 @@ data class TransactionDraft(
 
 // What saving a draft writes
 data class TransactionChanges(
-  val added: List<NewTransaction> = emptyList(),
-  val updated: List<TransactionUpdate> = emptyList(),
-  val deleted: List<TransactionId> = emptyList(),
+  val added: List<NewTransaction> = [],
+  val updated: List<TransactionUpdate> = [],
+  val deleted: List<TransactionId> = [],
 )
 
 enum class TransactionField {

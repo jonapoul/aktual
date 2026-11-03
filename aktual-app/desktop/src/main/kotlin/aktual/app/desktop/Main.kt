@@ -63,7 +63,7 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
       )
 
     LaunchedEffect(state) {
-      snapshotFlow { listOf(state.size, state.position, state.placement, state.isMinimized) }
+      snapshotFlow { [state.size, state.position, state.placement, state.isMinimized] }
         .collect { windowPrefs.save(state) }
     }
 

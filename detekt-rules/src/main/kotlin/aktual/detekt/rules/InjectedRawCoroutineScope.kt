@@ -31,7 +31,7 @@ internal class InjectedRawCoroutineScope(config: Config) :
       } else if (klass.isInjected()) {
         klass.primaryConstructorParameters
       } else {
-        emptyList()
+        []
       }
 
     params.forEach(::check)

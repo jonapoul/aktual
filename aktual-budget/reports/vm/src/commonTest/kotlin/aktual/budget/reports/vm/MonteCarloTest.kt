@@ -51,7 +51,7 @@ class MonteCarloTest {
       medianTotalWithdrawn = 60000000,
       earliestDepletionYear = 14,
       latestDepletionYear = 30,
-      worstRanked = listOf(2858, 1552, 3334, 135, 307),
+      worstRanked = [2858, 1552, 3334, 135, 307],
       worstRunPathSum = 283822454L,
     )
 
@@ -90,7 +90,7 @@ class MonteCarloTest {
       medianTotalWithdrawn = 160000000,
       earliestDepletionYear = 15,
       latestDepletionYear = 40,
-      worstRanked = listOf(654, 1336, 278, 1164, 1446),
+      worstRanked = [654, 1336, 278, 1164, 1446],
       worstRunPathSum = 572016274L,
     )
 
@@ -129,7 +129,7 @@ class MonteCarloTest {
       medianTotalWithdrawn = 135000000,
       earliestDepletionYear = 22,
       latestDepletionYear = 28,
-      worstRanked = listOf(38, 41, 37, 40, 45),
+      worstRanked = [38, 41, 37, 40, 45],
       worstRunPathSum = 1152175367L,
     )
 
@@ -168,7 +168,7 @@ class MonteCarloTest {
       medianTotalWithdrawn = 107920622,
       earliestDepletionYear = 16,
       latestDepletionYear = 40,
-      worstRanked = listOf(3760, 3001, 1257, 3934, 4556),
+      worstRanked = [3760, 3001, 1257, 3934, 4556],
       worstRunPathSum = 506013973L,
     )
 
@@ -207,7 +207,7 @@ class MonteCarloTest {
       medianTotalWithdrawn = 107925147,
       earliestDepletionYear = 15,
       latestDepletionYear = 30,
-      worstRanked = listOf(1467, 2807, 4904, 900, 3986),
+      worstRanked = [1467, 2807, 4904, 900, 3986],
       worstRunPathSum = 596959011L,
     )
 
@@ -246,7 +246,7 @@ class MonteCarloTest {
       medianTotalWithdrawn = 108963396,
       earliestDepletionYear = 14,
       latestDepletionYear = 30,
-      worstRanked = listOf(838, 4784, 903, 1739, 2515),
+      worstRanked = [838, 4784, 903, 1739, 2515],
       worstRunPathSum = 497462713L,
     )
 
@@ -285,7 +285,7 @@ class MonteCarloTest {
       medianTotalWithdrawn = 128155311,
       earliestDepletionYear = 17,
       latestDepletionYear = 40,
-      worstRanked = listOf(1161, 1737, 2966, 4755, 906),
+      worstRanked = [1161, 1737, 2966, 4755, 906],
       worstRunPathSum = 473531399L,
     )
 
@@ -324,7 +324,7 @@ class MonteCarloTest {
       medianTotalWithdrawn = 118888474,
       earliestDepletionYear = 22,
       latestDepletionYear = 55,
-      worstRanked = listOf(79, 357, 741, 1687, 720),
+      worstRanked = [79, 357, 741, 1687, 720],
       worstRunPathSum = 663418556L,
     )
 
@@ -363,7 +363,7 @@ class MonteCarloTest {
       medianTotalWithdrawn = 75000000,
       earliestDepletionYear = 17,
       latestDepletionYear = 30,
-      worstRanked = listOf(896, 359, 939, 46, 523),
+      worstRanked = [896, 359, 939, 46, 523],
       worstRunPathSum = 316874827L,
     )
 
@@ -402,7 +402,7 @@ class MonteCarloTest {
       medianTotalWithdrawn = 122500000,
       earliestDepletionYear = 16,
       latestDepletionYear = 35,
-      worstRanked = listOf(1511, 652, 797, 378, 926),
+      worstRanked = [1511, 652, 797, 378, 926],
       worstRunPathSum = 495222197L,
     )
 
@@ -441,7 +441,7 @@ class MonteCarloTest {
       medianTotalWithdrawn = 70069950,
       earliestDepletionYear = 13,
       latestDepletionYear = 30,
-      worstRanked = listOf(368, 4245, 235, 2810, 4518),
+      worstRanked = [368, 4245, 235, 2810, 4518],
       worstRunPathSum = 313236617L,
     )
 
@@ -520,12 +520,12 @@ class MonteCarloTest {
   @Test
   fun `Config survives a round trip through the meta`() {
     for (plan in
-      listOf(
+      [
         GUARDRAILS_LOCKED_POT,
         BOUNDARIES_TAX_BANDS,
         INCOME_CONTRIBUTIONS_SURPLUS,
         INVESTMENT_PHASES_HISTORICAL,
-      )) {
+      ]) {
       val meta = decode(plan)
       val config = meta.toConfig()
       assertThat(config.toMeta(meta).toConfig()).isEqualTo(config)

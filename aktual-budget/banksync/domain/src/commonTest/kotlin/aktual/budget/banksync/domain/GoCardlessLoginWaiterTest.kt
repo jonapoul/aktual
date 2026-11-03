@@ -19,7 +19,7 @@ internal class GoCardlessLoginWaiterTest {
 
   @Test
   fun `Polls until the login finishes`() = runTest {
-    val success = GoCardlessAccountsResponse.Success(listOf(ACCOUNT))
+    val success = GoCardlessAccountsResponse.Success([ACCOUNT])
     api.pollResponses += GoCardlessAccountsResponse.Pending
     api.pollResponses += GoCardlessAccountsResponse.Pending
     api.pollResponses += success

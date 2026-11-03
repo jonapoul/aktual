@@ -506,10 +506,10 @@ private fun BudgetNavEntries(
     popTransitionSpec = { slideIntoContainer(towards = End) togetherWith fadeOut() },
     predictivePopTransitionSpec = { slideIntoContainer(towards = End) togetherWith fadeOut() },
     entryDecorators =
-      listOf(
+      [
         rememberSaveableStateHolderNavEntryDecorator(),
         rememberViewModelStoreNavEntryDecorator(),
-      ),
+      ],
     entryProvider =
       entryProvider {
         val scope = BudgetEntryScope(selectedTab, this)

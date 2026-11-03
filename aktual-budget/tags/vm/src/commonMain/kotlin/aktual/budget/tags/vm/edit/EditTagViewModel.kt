@@ -227,7 +227,7 @@ internal constructor(
               description = description,
             )
             syncController.syncChanges(
-              listOf(tombstone(dataset = TAGS, row = tagId.toString())) +
+              [tombstone(dataset = TAGS, row = tagId.toString())] +
                 insertChanges(tombstonedOwner, tag, color, description),
             )
           } else {
@@ -257,13 +257,13 @@ internal constructor(
     description: String?,
   ): List<LocalChange> {
     val row = id.toString()
-    return listOf(
+    return [
       localChange(TAGS, row, "id", row),
       localChange(TAGS, row, "tag", tag),
       localChange(TAGS, row, "color", color),
       localChange(TAGS, row, "description", description),
       localChange(TAGS, row, "tombstone", false),
-    )
+    ]
   }
 
   private data class Loaded(

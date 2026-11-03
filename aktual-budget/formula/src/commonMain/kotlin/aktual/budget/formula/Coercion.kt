@@ -141,7 +141,7 @@ internal inline fun exactNumbers(
     }
   val numbers = mutableListOf<Double>()
   for (value in coerced) {
-    val elements = if (value is ArrayValue) value.rows.flatten() else listOf(value)
+    val elements = if (value is ArrayValue) value.rows.flatten() else [value]
     for (element in elements) {
       if (element is ErrorValue) return element
       if (element is NumberValue) numbers += element.value

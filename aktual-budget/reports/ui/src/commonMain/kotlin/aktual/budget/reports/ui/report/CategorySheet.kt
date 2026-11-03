@@ -47,7 +47,7 @@ internal fun CategorySheet(
       TextButton(onClick = { onChange(all.toSet()) }) {
         Text(Strings.reportsCustomEditorSelectAll)
       }
-      TextButton(onClick = { onChange(emptySet()) }) {
+      TextButton(onClick = { onChange([]) }) {
         Text(Strings.reportsCustomEditorSelectNone)
       }
     }
