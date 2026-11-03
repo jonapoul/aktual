@@ -64,7 +64,10 @@ class SpendingLoaderTest {
     loader.spending(SpendingReportMeta()).test {
       val data = awaitItem() as SpendingData
       assertThat(data.days.map { it.number })
-        .containsExactly(*(1..27).map(SpendingDayNumber::Specific).toTypedArray(), End)
+        .containsExactly(
+          *(1..27).map(SpendingDayNumber::Specific).toTypedArray(),
+          SpendingDayNumber.End,
+        )
       assertThat(data.comparisonOn(27)).isEqualTo(1450L)
       assertThat(data.comparisonOn(END)).isEqualTo(1750L)
     }
@@ -201,9 +204,9 @@ class SpendingLoaderTest {
 
   private fun SpendingData.dayAt(day: Int) = days[if (day == END) days.lastIndex else day - 1]
 
-  private fun SpendingData.targetOn(day: Int) = dayAt(day).target?.value
+  private fun SpendingData.targetOn(day: Int) = dayAt(day).target?.toLong()
 
-  private fun SpendingData.comparisonOn(day: Int) = dayAt(day).comparison?.value
+  private fun SpendingData.comparisonOn(day: Int) = dayAt(day).comparison?.toLong()
 
   private fun SpendingData.day(day: Int) = targetOn(day) to comparisonOn(day)
 

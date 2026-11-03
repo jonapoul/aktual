@@ -13,14 +13,16 @@ class SpendingTest {
   fun `Average range covers the months before the compared month`() {
     assertThat(SpendingAverageRange.LastMonths(3).resolve(JUNE, earliest = null))
       .containsExactly(YearMonth(2026, 3), YearMonth(2026, 4), YearMonth(2026, 5))
-    assertThat(null.resolve(JUNE, earliest = null)).isEqualTo(SpendingAverageRange.Default.resolve(JUNE, null))
+    assertThat(null.resolve(JUNE, earliest = null))
+      .isEqualTo(SpendingAverageRange.Default.resolve(JUNE, null))
   }
 
   @Test
   fun `Year to date average starts in January`() {
     assertThat(SpendingAverageRange.YearToDate.resolve(YearMonth(2026, 3), earliest = null))
       .containsExactly(YearMonth(2026, 1), YearMonth(2026, 2))
-    assertThat(SpendingAverageRange.YearToDate.resolve(YearMonth(2026, 1), earliest = null)).isEmpty()
+    assertThat(SpendingAverageRange.YearToDate.resolve(YearMonth(2026, 1), earliest = null))
+      .isEmpty()
   }
 
   @Test
@@ -52,7 +54,7 @@ class SpendingTest {
 
   @Test
   fun `Static budget and average modes keep the saved month`() {
-    for (mode in listOf(SpendingMode.Budget, SpendingMode.Average)) {
+    for (mode in listOf<SpendingMode>(Budget, Average)) {
       val meta = SpendingReportMeta(mode = mode, compare = "2026-02", isLive = false)
       assertThat(meta.resolveMonths(TODAY).compare).isEqualTo(YearMonth(2026, 2))
     }
@@ -60,7 +62,7 @@ class SpendingTest {
 
   @Test
   fun `Live budget and average modes chart this month`() {
-    for (mode in listOf(SpendingMode.Budget, SpendingMode.Average)) {
+    for (mode in listOf<SpendingMode>(Budget, Average)) {
       val meta = SpendingReportMeta(mode = mode, compare = "2026-02", compareTo = "2025-01")
       assertThat(meta.resolveMonths(TODAY)).isEqualTo(SpendingMonths(JUNE, JUNE))
     }

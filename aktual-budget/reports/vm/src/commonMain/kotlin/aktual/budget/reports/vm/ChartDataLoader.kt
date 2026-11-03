@@ -536,7 +536,11 @@ internal class ChartDataLoader(
     val runs = mutableListOf<MutableList<YearMonth>>()
     for (month in months.sorted()) {
       val run = runs.lastOrNull()
-      if (run != null && run.last().plusMonth() == month) run += month else runs += mutableListOf(month)
+      if (run != null && run.last().plusMonth() == month) {
+        run += month
+      } else {
+        runs += mutableListOf(month)
+      }
     }
     val flows = runs.map { run ->
       dao.observeFilteredTransactions(filter, run.first().firstDay, run.last().lastDay)
@@ -561,7 +565,12 @@ internal class ChartDataLoader(
       .map { rows ->
         rows
           .filter { row ->
-            filter.matches(row.category, row.category_name, row.category_group, row.category_group_name)
+            filter.matches(
+              row.category,
+              row.category_name,
+              row.category_group,
+              row.category_group_name,
+            )
           }
           .sumOf { it.amount ?: 0L }
       }

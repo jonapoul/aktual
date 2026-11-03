@@ -73,9 +73,9 @@ internal data class SpendingParams(
 )
 
 /**
- * Days 1 to 27 each hold the spending so far that month, and the last day holds the 28th to the
- * end of the month. Spending reads as positive, so a month that's spent 100 holds 100. [budget] is
- * the target month's budgeted total for the categories the report covers, only read in budget mode.
+ * Days 1 to 27 each hold the spending so far that month, and the last day holds the 28th to the end
+ * of the month. Spending reads as positive, so a month that's spent 100 holds 100. [budget] is the
+ * target month's budgeted total for the categories the report covers, only read in budget mode.
  */
 internal fun calculateSpending(
   params: SpendingParams,
@@ -87,10 +87,16 @@ internal fun calculateSpending(
   val target = { day: Int -> running.spentBy(compare, day, params.today) }
   val comparison: (Int) -> Long? =
     when (params.mode) {
-      Budget -> { day -> budgetBy(compare, day, budget) }
-      Average -> { day -> running.averageBy(params.averageMonths, day) }
+      Budget -> { day ->
+        budgetBy(compare, day, budget)
+      }
+      Average -> { day ->
+        running.averageBy(params.averageMonths, day)
+      }
       SingleMonth,
-      Unknown -> { day -> running.spentBy(compareTo, day, params.today) }
+      Unknown -> { day ->
+        running.spentBy(compareTo, day, params.today)
+      }
     }
 
   // SpendingCard.tsx difference: on today's day, or on the last day for any other month
@@ -104,8 +110,8 @@ internal fun calculateSpending(
     targetMonth = compare,
     comparison =
       when (params.mode) {
-        Budget -> Budgeted
-        Average -> Average
+        Budget -> SpendingComparison.Budgeted
+        Average -> SpendingComparison.Average
         SingleMonth,
         Unknown -> SpendingComparison.SingleMonth(compareTo)
       },
@@ -114,7 +120,7 @@ internal fun calculateSpending(
       (1..END_DAY)
         .map { day ->
           SpendingDay(
-            number = if (day == END_DAY) End else SpendingDayNumber.Specific(day),
+            number = if (day == END_DAY) SpendingDayNumber.End else SpendingDayNumber.Specific(day),
             target = target(day)?.let { Amount(-it) },
             comparison = comparison(day)?.let { Amount(-it) },
           )
