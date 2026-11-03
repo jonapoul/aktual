@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
@@ -31,7 +32,7 @@ internal fun CashFlowSettings(
 ) =
   FilteredReportSettings(
     timeFrame = meta.timeFrame,
-    conditions = meta.conditions.orEmpty(),
+    conditions = meta.conditions.orEmpty().toImmutableList(),
     conditionsOp = meta.conditionsOp ?: And,
     editorData = editorData,
     onTimeFrame = { timeFrame -> onEdit { it.copy(timeFrame = timeFrame) } },
@@ -56,7 +57,7 @@ internal fun CalendarSettings(
 ) =
   FilteredReportSettings(
     timeFrame = meta.timeFrame,
-    conditions = meta.conditions.orEmpty(),
+    conditions = meta.conditions.orEmpty().toImmutableList(),
     conditionsOp = meta.conditionsOp ?: And,
     editorData = editorData,
     onTimeFrame = { timeFrame -> onEdit { it.copy(timeFrame = timeFrame) } },
@@ -75,7 +76,7 @@ internal fun AgeOfMoneySettings(
 ) =
   FilteredReportSettings(
     timeFrame = meta.timeFrame,
-    conditions = meta.conditions.orEmpty(),
+    conditions = meta.conditions.orEmpty().toImmutableList(),
     conditionsOp = meta.conditionsOp ?: And,
     editorData = editorData,
     onTimeFrame = { timeFrame -> onEdit { it.copy(timeFrame = timeFrame) } },
@@ -101,7 +102,7 @@ internal fun AgeOfMoneySettings(
 @Composable
 private fun FilteredReportSettings(
   timeFrame: TimeFrame?,
-  conditions: List<Condition>,
+  conditions: ImmutableList<Condition>,
   conditionsOp: ConditionOp,
   editorData: QueryEditorData?,
   onTimeFrame: (TimeFrame) -> Unit,
@@ -111,15 +112,14 @@ private fun FilteredReportSettings(
 ) {
   var pickTimeFrame by rememberSaveable { mutableStateOf(false) }
   var conditionIndex by rememberSaveable { mutableStateOf<Int?>(null) }
-  val conditionList = conditions.toImmutableList()
 
   if (editorData != null) {
     // Falls back to the settings if the condition is gone, e.g. removed by a sync
     val index = conditionIndex
-    if (index != null && index in conditionList.indices) {
+    if (index != null && index in conditions.indices) {
       ConditionSheetAt(
         index = index,
-        conditions = conditionList,
+        conditions = conditions,
         conditionsOp = conditionsOp,
         data = editorData,
         onChange = onConditions,
@@ -153,7 +153,7 @@ private fun FilteredReportSettings(
       Column {
         SectionLabel(Strings.reportsCustomEditorFilters)
         ConditionsList(
-          conditions = conditionList,
+          conditions = conditions,
           conditionsOp = conditionsOp,
           names = editorData.names,
           onChange = onConditions,

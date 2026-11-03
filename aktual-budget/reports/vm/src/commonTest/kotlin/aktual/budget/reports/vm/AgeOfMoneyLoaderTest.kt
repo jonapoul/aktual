@@ -21,7 +21,7 @@ class AgeOfMoneyLoaderTest {
     sync.insertReportBudget()
 
     val sql = dao.observeAgeOfMoneyTransactions(END).first().map { it.amount }
-    assertThat(filtered(dao, conditions = listOf())).isEqualTo(sql)
+    assertThat(filtered(dao, conditions = emptyList())).isEqualTo(sql)
     assertThat(sql).containsExactly(2000L, -400L, 1000L, -300L, -50L)
   }
 

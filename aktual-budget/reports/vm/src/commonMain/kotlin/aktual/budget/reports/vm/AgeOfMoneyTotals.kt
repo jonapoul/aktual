@@ -17,25 +17,23 @@ internal fun ageOfMoneyTransactions(
 ): List<AgeOfMoneyTransaction> {
   val counterparts = counterpartFilter(conditions.orEmpty(), op ?: And)
   return rows
+    .asSequence()
     .filter { row ->
       row.off_budget == false && row.amount != 0L && row.countsTowardsAge(counterparts)
     }
     .sortedBy { it.date }
     .map { AgeOfMoneyTransaction(it.date, it.amount) }
+    .toList()
 }
 
 private fun ReportTransactions.countsTowardsAge(counterparts: TransactionFilter?): Boolean {
   val counterpart = transfer_acct
-  return when {
-    counterpart == null || transfer_off_budget == true -> true
-    counterparts == null || transfer_off_budget == null -> false
-    else -> {
-      val row =
-        toFilterRow()
-          .copy(account = counterpart, accountName = transfer_account_name, offBudget = false)
-      !counterparts.matches(row)
-    }
-  }
+  if (counterpart == null || transfer_off_budget == true) return true
+  if (counterparts == null || transfer_off_budget == null) return false
+  val row =
+    toFilterRow()
+      .copy(account = counterpart, accountName = transfer_account_name, offBudget = false)
+  return !counterparts.matches(row)
 }
 
 // Matches counterpart accounts inside the filtered set. Null when there are no account conditions,

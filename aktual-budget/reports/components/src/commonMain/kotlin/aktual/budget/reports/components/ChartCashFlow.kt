@@ -36,18 +36,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.Axis
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.compose.cartesian.data.columnModel
 import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
-import com.patrykandpatrick.vico.compose.cartesian.layer.CartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.decoration.Decoration
 import com.patrykandpatrick.vico.compose.cartesian.layer.ColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarkerVisibilityListener
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
@@ -96,8 +100,8 @@ internal fun CashFlowChart(
         scrollState = rememberVicoScrollState(scrollEnabled = false),
         animationSpec = chartAnimationSpec(compact),
         chart =
-          rememberCartesianChart(
-            *cashFlowLayers(data.showBalance),
+          rememberCashFlowChart(
+            showBalance = data.showBalance,
             startAxis =
               VerticalAxis.rememberStart(
                 line = line,
@@ -126,7 +130,15 @@ internal fun CashFlowChart(
 
 // The balance line is left out when hidden, along with its model in populate()
 @Composable
-private fun cashFlowLayers(showBalance: Boolean): Array<CartesianLayer<*>> {
+@Suppress("LongParameterList")
+private fun rememberCashFlowChart(
+  showBalance: Boolean,
+  startAxis: VerticalAxis<Axis.Position.Vertical.Start>,
+  bottomAxis: HorizontalAxis<Axis.Position.Horizontal.Bottom>,
+  marker: CartesianMarker?,
+  markerVisibilityListener: CartesianMarkerVisibilityListener?,
+  decorations: List<Decoration>,
+): CartesianChart {
   val income =
     rememberColumnCartesianLayer(
       ColumnCartesianLayer.ColumnProvider.series(
@@ -152,7 +164,28 @@ private fun cashFlowLayers(showBalance: Boolean): Array<CartesianLayer<*>> {
         ),
       rangeProvider = remember { ZoomRangeProvider() },
     )
-  return if (showBalance) arrayOf(income, expenses, balance) else arrayOf(income, expenses)
+  return if (showBalance) {
+    rememberCartesianChart(
+      income,
+      expenses,
+      balance,
+      startAxis = startAxis,
+      bottomAxis = bottomAxis,
+      marker = marker,
+      markerVisibilityListener = markerVisibilityListener,
+      decorations = decorations,
+    )
+  } else {
+    rememberCartesianChart(
+      income,
+      expenses,
+      startAxis = startAxis,
+      bottomAxis = bottomAxis,
+      marker = marker,
+      markerVisibilityListener = markerVisibilityListener,
+      decorations = decorations,
+    )
+  }
 }
 
 @Stable

@@ -44,9 +44,9 @@ class CashFlowLoaderTest {
     loader.cashFlow(meta(conditions = listOf(FOOD))).test {
       val may = (awaitItem() as CashFlowData).items.getValue(MAY)
       assertThat(may).all {
-        prop(CashFlowDatum::income).isEqualTo(Amount.Zero)
+        prop(CashFlowDatum::income).isEqualTo(Zero)
         prop(CashFlowDatum::expenses).isEqualTo(Amount(-300L))
-        prop(CashFlowDatum::transfers).isEqualTo(Amount.Zero)
+        prop(CashFlowDatum::transfers).isEqualTo(Zero)
         prop(CashFlowDatum::balance).isEqualTo(Amount(-700L))
       }
     }
