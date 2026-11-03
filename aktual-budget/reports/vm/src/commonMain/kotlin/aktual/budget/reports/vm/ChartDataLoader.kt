@@ -4,10 +4,11 @@ import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.db.CashFlowByMonth
 import aktual.budget.db.CustomReportAmounts
 import aktual.budget.db.CustomReportTransactions
+import aktual.budget.db.ForecastAccounts
+import aktual.budget.db.ForecastPayees
 import aktual.budget.db.ForecastPostedScheduleTransactions
 import aktual.budget.db.ForecastSchedules
 import aktual.budget.db.ForecastTrackingBudgetTotals
-import aktual.budget.db.ForecastTransferPayees
 import aktual.budget.db.SankeyCategoryTotals
 import aktual.budget.db.SankeyTransfers
 import aktual.budget.db.dao.CustomReportsDao
@@ -29,6 +30,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
+import aktual.budget.model.ConditionOp
 import aktual.budget.model.ConditionSet
 import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.FirstDayOfWeek
@@ -803,7 +805,7 @@ internal class ChartDataLoader(
       val today = calendar.today()
       val range =
         resolveTimeRange(
-          timeFrame = meta.timeFrame,
+          timeFrame = meta.forecastTimeFrame(),
           default =
             TimeFrame(
               start = today.yearMonth,
@@ -823,10 +825,10 @@ internal class ChartDataLoader(
           today = today,
         )
 
-      when {
-        isTracking -> trackingBudgetForecast(params)
-        meta.conditions.hasFilters() -> unsupported(meta, Filters)
-        else -> scheduleForecast(params, meta.accounts?.toSet())
+      if (isTracking) {
+        trackingBudgetForecast(params)
+      } else {
+        scheduleForecast(params, meta.accounts?.toSet(), meta.conditions, meta.conditionsOp)
       }
     }
 
@@ -835,27 +837,27 @@ internal class ChartDataLoader(
   private fun scheduleForecast(
     params: ForecastParams,
     accountFilter: Set<AccountId>?,
+    conditions: List<Condition>?,
+    op: ConditionOp?,
   ): Flow<ChartData> {
     val start = params.start.firstDay
     val end = params.end.lastDay
     val firstForecastDate = if (end < params.today) start else maxOf(start, params.today)
+    val filters = ForecastFilters(conditions, op)
 
     val scheduleInputs =
       combine(
         dao.observeForecastAccounts(),
         dao.observeForecastSchedules(),
         dao.observePostedScheduleTransactions(firstForecastDate.minus(POSTED_LOOKBACK_DAYS, DAY)),
-        dao.observeForecastTransferPayees(),
+        dao.observeForecastPayees(),
         ::ScheduleInputs,
       )
 
-    return combine(
-      scheduleInputs,
-      dao.observeForecastStartingBalances(start),
-      dao.observeForecastDailyTotals(start, end),
-    ) { inputs, startingRows, dailyRows ->
-      val live = inputs.accounts
-      val selected = (accountFilter?.let { ids -> live.filter { it in ids } } ?: live).toSet()
+    return combine(scheduleInputs, postedForecastTotals(filters.transactions, start, end)) {
+      inputs,
+      posted ->
+      val selected = filters.accounts(inputs.accounts, accountFilter)
       val accounts: Set<AccountId?> =
         when {
           selected.isEmpty() -> emptySet()
@@ -865,26 +867,62 @@ internal class ChartDataLoader(
 
       val postedDates =
         inputs.posted.filter { it.account in selected }.groupBy({ it.schedule }, { it.date })
+      val occurrences =
+        buildScheduleOccurrences(
+          schedules = inputs.schedules.mapNotNull(::forecastSchedule),
+          end = end,
+          transferAccounts =
+            inputs.payees.mapNotNull { p -> p.transfer_acct?.let { p.id to it } }.toMap(),
+          postedDates = postedDates,
+          transferPayees =
+            inputs.payees.mapNotNull { p -> p.transfer_acct?.let { it to p.id } }.toMap(),
+        )
 
       calculateBalanceForecast(
         params = params,
         accounts = accounts,
-        startingBalances = startingRows.associate { it.account to it.total },
+        startingBalances = posted.starting,
         dailyTotals =
-          dailyRows
+          posted.daily
             .filter { it.account in selected }
             .groupingBy { it.date }
             .fold(0L) { total, row -> total + row.total },
-        occurrences =
-          buildScheduleOccurrences(
-            schedules = inputs.schedules.mapNotNull(::forecastSchedule),
-            end = end,
-            transferAccounts = inputs.transferPayees.associate { it.id to it.transfer_acct },
-            postedDates = postedDates,
-          ),
+        occurrences = occurrences.filter { filters.matches(it, inputs.accounts, inputs.payees) },
       )
     }
   }
+
+  // Each account's balance before the forecast and its daily totals during it. Filtered forecasts
+  // only count the matching transactions, like upstream's getTransactions()
+  private fun postedForecastTotals(
+    filter: TransactionFilter,
+    start: LocalDate,
+    end: LocalDate,
+  ): Flow<PostedForecastTotals> =
+    if (filter.isEmpty) {
+      combine(
+        dao.observeForecastStartingBalances(start),
+        dao.observeForecastDailyTotals(start, end),
+      ) { starting, daily ->
+        PostedForecastTotals(
+          starting = starting.associate { it.account to it.total },
+          daily = daily.map { PostedForecastTotal(it.account, it.date, it.total) },
+        )
+      }
+    } else {
+      dao.observeFilteredTransactions(filter, ALL_TIME_START, end).map { rows ->
+        val (before, during) = rows.partition { it.date < start }
+        PostedForecastTotals(
+          starting = before.groupingBy { it.account }.fold(0L) { total, row -> total + row.amount },
+          daily =
+            during
+              .groupBy { it.account to it.date }
+              .map { (key, txs) ->
+                PostedForecastTotal(key.first, key.second, txs.sumOf { it.amount })
+              },
+        )
+      }
+    }
 
   // packages/loot-core/src/server/forecast/forecast-schedules.ts normalizeSchedule()
   private fun forecastSchedule(row: ForecastSchedules): ForecastSchedule? {
@@ -989,8 +1027,6 @@ internal class ChartDataLoader(
     return UnsupportedData(reason, type, name, stackTrace)
   }
 
-  private fun List<Condition>?.hasFilters() = !isNullOrEmpty()
-
   private fun YearMonth.toLong(): Long = year * YEAR_MONTH_FACTOR + month.ordinal + 1L
 
   private fun Long.toYearMonth(): YearMonth =
@@ -1000,15 +1036,25 @@ internal class ChartDataLoader(
     Amount(filter(predicate).sumOf { it.total })
 
   private data class ScheduleInputs(
-    val accounts: List<AccountId>,
+    val accounts: List<ForecastAccounts>,
     val schedules: List<ForecastSchedules>,
     val posted: List<ForecastPostedScheduleTransactions>,
-    val transferPayees: List<ForecastTransferPayees>,
+    val payees: List<ForecastPayees>,
+  )
+
+  private data class PostedForecastTotals(
+    val starting: Map<AccountId, Long>,
+    val daily: List<PostedForecastTotal>,
+  )
+
+  private data class PostedForecastTotal(
+    val account: AccountId,
+    val date: LocalDate,
+    val total: Long,
   )
 
   private companion object {
     const val YEAR_MONTH_FACTOR = 100L
-    const val DEFAULT_FORECAST_MONTHS = 12
     const val PERCENT_TENTHS = 1000.0
     const val TENTHS = 10.0
     const val DEFAULT_FORMULA = "=SUM(1, 2, 3)"

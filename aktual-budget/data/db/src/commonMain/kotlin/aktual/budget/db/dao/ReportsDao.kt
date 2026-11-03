@@ -6,12 +6,13 @@ import aktual.budget.db.CashFlowByMonth
 import aktual.budget.db.CrossoverBalancesByMonth
 import aktual.budget.db.CrossoverExpensesByMonth
 import aktual.budget.db.CrossoverStartingBalances
+import aktual.budget.db.ForecastAccounts
 import aktual.budget.db.ForecastDailyTotals
+import aktual.budget.db.ForecastPayees
 import aktual.budget.db.ForecastPostedScheduleTransactions
 import aktual.budget.db.ForecastSchedules
 import aktual.budget.db.ForecastStartingBalances
 import aktual.budget.db.ForecastTrackingBudgetTotals
-import aktual.budget.db.ForecastTransferPayees
 import aktual.budget.db.MonteCarloAccountBalances
 import aktual.budget.db.NetWorthByAccount
 import aktual.budget.db.ReportTransactions
@@ -103,7 +104,7 @@ class ReportsDao(database: BudgetDatabase, private val contexts: CoroutineContex
   fun observeSankeyTransfers(start: LocalDate, end: LocalDate): Flow<List<SankeyTransfers>> =
     queries.sankeyTransfers(start, end).asFlow().mapToList(contexts.default).distinctUntilChanged()
 
-  fun observeForecastAccounts(): Flow<List<AccountId>> =
+  fun observeForecastAccounts(): Flow<List<ForecastAccounts>> =
     queries.forecastAccounts().asFlow().mapToList(contexts.default).distinctUntilChanged()
 
   fun observeForecastStartingBalances(start: LocalDate): Flow<List<ForecastStartingBalances>> =
@@ -135,8 +136,8 @@ class ReportsDao(database: BudgetDatabase, private val contexts: CoroutineContex
       .mapToList(contexts.default)
       .distinctUntilChanged()
 
-  fun observeForecastTransferPayees(): Flow<List<ForecastTransferPayees>> =
-    queries.forecastTransferPayees().asFlow().mapToList(contexts.default).distinctUntilChanged()
+  fun observeForecastPayees(): Flow<List<ForecastPayees>> =
+    queries.forecastPayees().asFlow().mapToList(contexts.default).distinctUntilChanged()
 
   fun observeForecastOnBudgetBalance(): Flow<Long> =
     queries.forecastOnBudgetBalance().asFlow().mapToOne(contexts.default).distinctUntilChanged()

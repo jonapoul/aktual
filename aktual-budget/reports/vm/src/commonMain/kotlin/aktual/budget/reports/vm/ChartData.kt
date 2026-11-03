@@ -392,7 +392,6 @@ data class UnsupportedData(
 ) : ChartData
 
 enum class UnsupportedReason {
-  Filters,
   InvalidMeta,
   CustomBudgeted,
   MissingReport,

@@ -2,6 +2,7 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.reports.components.label
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
+import aktual.budget.reports.vm.BalanceForecastReportMeta
 import aktual.budget.reports.vm.BudgetAnalysisReportMeta
 import aktual.budget.reports.vm.CalendarReportMeta
 import aktual.budget.reports.vm.CashFlowReportMeta
@@ -61,6 +62,9 @@ internal fun ReportMeta.settingsSheet(): SettingsSheet? =
     }
     is SankeyReportMeta -> { data, onEdit, onDismiss ->
       SankeySettings(this, data, onEdit.typed(), onDismiss)
+    }
+    is BalanceForecastReportMeta -> { data, onEdit, onDismiss ->
+      BalanceForecastSettings(this, data, onEdit.typed(), onDismiss)
     }
     else -> null
   }

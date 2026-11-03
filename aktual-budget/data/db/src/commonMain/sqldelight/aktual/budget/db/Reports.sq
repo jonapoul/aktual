@@ -158,7 +158,7 @@ WHERE t.is_parent = 0 AND t.transfer_id IS NOT NULL AND t.date >= :start AND t.d
 
 -- packages/loot-core/src/server/forecast/forecast-accounts.ts getAccounts()
 forecastAccounts:
-SELECT id
+SELECT id, name, offbudget
 FROM accounts
 WHERE tombstone = 0;
 
@@ -190,10 +190,9 @@ SELECT t.schedule, t.account, t.date
 FROM v_transactions_internal_alive t
 WHERE t.schedule IS NOT NULL AND t.date >= :start;
 
-forecastTransferPayees:
-SELECT id, transfer_acct
-FROM payees
-WHERE transfer_acct IS NOT NULL;
+forecastPayees:
+SELECT id, name, transfer_acct
+FROM payees;
 
 -- packages/loot-core/src/server/forecast/forecast-tracking-budget.ts projectTrackingBudgetForecast()
 forecastOnBudgetBalance:

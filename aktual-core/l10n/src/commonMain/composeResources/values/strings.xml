@@ -1254,6 +1254,13 @@
   <string name="reports_sankey_empty">No transactions in this period</string>
   <string name="reports_sankey_link">%1$s → %2$s</string>
 
+  <string name="reports_balance_forecast_source">Forecast from</string>
+  <string name="reports_balance_forecast_source_schedules">Schedules</string>
+  <string name="reports_balance_forecast_source_tracking">Tracking budget</string>
+  <string name="reports_balance_forecast_accounts">Accounts</string>
+  <string name="reports_balance_forecast_granularity">Granularity</string>
+  <string name="reports_balance_forecast_daily">Daily</string>
+  <string name="reports_balance_forecast_monthly">Monthly</string>
   <string name="reports_balance_forecast_ending">Ending balance</string>
   <string name="reports_balance_forecast_low">Low: %1$s</string>
   <string name="reports_balance_forecast_empty">No accounts are included in this report. Adjust the accounts or date range to see a balance projection.</string>
@@ -1279,7 +1286,6 @@
   <string name="reports_net_worth_footer">Net worth shows the balance of all accounts over time, including all of your investments. Your "net worth" is considered to be the amount you’d have if you sold all your assets and paid off as much debt as possible. If you hover over the graph, you can also see the amount of assets and debt individually. Stacked mode shows each account’s balance as its own band, which is harder to read when mixing accounts with positive and negative balances.</string>
 
   <string name="reports_chart_settings">Chart settings</string>
-  <string name="reports_unsupported_filters">Reports with filters aren't supported yet</string>
   <string name="reports_unsupported_type">This report type isn't supported yet</string>
   <string name="reports_unsupported_invalid_meta">This report's settings couldn't be read</string>
   <string name="reports_unsupported_missing">This report has been deleted</string>

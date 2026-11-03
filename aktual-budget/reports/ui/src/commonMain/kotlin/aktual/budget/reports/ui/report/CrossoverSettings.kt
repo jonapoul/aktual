@@ -79,6 +79,7 @@ internal fun CrossoverSettings(
       }
       Accounts -> {
         AccountSheet(
+          title = Strings.reportsCrossoverIncomeAccounts,
           accounts = editorData.allAccounts,
           selected = meta.selectedAccounts(editorData),
           onChange = { selected -> onEdit { it.copy(incomeAccountIds = selected.toList()) } },
@@ -205,13 +206,14 @@ private fun NumberRow(label: String, field: @Composable () -> Unit) =
   ValueRow(label = label, onClick = null) { field() }
 
 @Composable
-private fun AccountSheet(
+internal fun AccountSheet(
+  title: String,
   accounts: ImmutableList<QueryEntity>,
   selected: ImmutableSet<AccountId>,
   onChange: (Set<AccountId>) -> Unit,
   onDismiss: () -> Unit,
 ) =
-  QuerySheet(title = Strings.reportsCrossoverIncomeAccounts, onDismiss = onDismiss) {
+  QuerySheet(title = title, onDismiss = onDismiss) {
     Row(horizontalArrangement = spacedBy(8.dp)) {
       TextButton(onClick = { onChange(accounts.map { AccountId(it.id) }.toSet()) }) {
         Text(Strings.reportsCustomEditorSelectAll)
@@ -244,7 +246,7 @@ private fun AccountSheet(
   }
 
 @Composable
-private fun countLabel(count: Int, total: Int): String =
+internal fun countLabel(count: Int, total: Int): String =
   if (count == total) {
     Strings.reportsCustomEditorCategoriesAll
   } else {
