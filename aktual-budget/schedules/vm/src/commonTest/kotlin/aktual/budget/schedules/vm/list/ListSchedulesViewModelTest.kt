@@ -31,6 +31,7 @@ import aktual.core.Calendar
 import aktual.core.UuidGenerator
 import aktual.prefs.SchedulePreferences
 import aktual.prefs.SchedulePreferencesImpl
+import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestSyncController
 import aktual.test.buildPreferences
 import aktual.test.insertSchedule
@@ -438,6 +439,7 @@ class ListSchedulesViewModelTest {
       ScheduleWriter(
         scheduleDao = ScheduleDao(this),
         syncController = sync,
+        budgetPrefs = TestBudgetLocalPreferences(),
         uuidGenerator = UuidGenerator { error("unused") },
         calendar = TODAY,
         clock = TestClock(NOW),

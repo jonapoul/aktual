@@ -38,6 +38,7 @@ import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
+import aktual.budget.rules.domain.CategoryLearner
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.SchedulesLoader
@@ -1117,6 +1118,85 @@ class EditTransactionViewModelTest {
   }
 
   @Test
+  fun `Editing a split made by a rule keeps its parts`() = runDatabaseTest { scope ->
+    insertEntities()
+    insertSplitRule(category = "b")
+    val sync = FakeSyncController()
+    val target = EditTransactionTarget.New(AccountId("a"))
+    val viewModel = createViewModel(scope, sync = sync, target = target)
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitCreate()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.setAmount(Amount(-100.0))
+      viewModel.setCategory(CategoryId("b"))
+      viewModel.setNotes("Lunch")
+      viewModel.setAccount(AccountId("b"))
+      viewModel.save()
+
+      assertThatNextEmissionIsEqualTo(Saved)
+      val changes = sync.calls.single()
+      assertThat(
+          changes.filter {
+            it.column in setOf("acct", "parent_id") || it.row == "uuid" && it.column == "notes"
+          },
+        )
+        .containsExactly(
+          localChange(TRANSACTIONS, "uuid", "acct", "b"),
+          localChange(TRANSACTIONS, "uuid", "notes", "Lunch"),
+          localChange(TRANSACTIONS, "part-1", "acct", "b"),
+          localChange(TRANSACTIONS, "part-1", "parent_id", "uuid"),
+          localChange(TRANSACTIONS, "part-2", "acct", "b"),
+          localChange(TRANSACTIONS, "part-2", "parent_id", "uuid"),
+        )
+    }
+  }
+
+  @Test
+  fun `Saving a new transaction learns its category`() = runDatabaseTest { scope ->
+    insertEntities()
+    val learned = mutableListOf<Set<TransactionId>>()
+    val target = EditTransactionTarget.New(AccountId("a"))
+    val viewModel = createViewModel(scope, target = target, learner = { learned += it.toSet() })
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitCreate()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.setAmount(Amount(-25.0))
+      viewModel.setPayee(PayeeId("a"))
+      viewModel.setCategory(CategoryId("b"))
+      viewModel.save()
+
+      assertThatNextEmissionIsEqualTo(Saved)
+      assertThat(learned).containsExactly(setOf(TransactionId("uuid")))
+    }
+  }
+
+  @Test
+  fun `Saving an edited category learns it`() = runDatabaseTest { scope ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val learned = mutableListOf<Set<TransactionId>>()
+    val viewModel = createViewModel(scope, id = "t", learner = { learned += it.toSet() })
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitEdit()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.setCategory(CategoryId("b"))
+      viewModel.save()
+
+      assertThatNextEmissionIsEqualTo(Saved)
+      assertThat(learned).containsExactly(setOf(TransactionId("t")))
+    }
+  }
+
+  @Test
   fun `Saving a new transaction inserts it and closes`() = runDatabaseTest { scope ->
     insertEntities()
     val sync = FakeSyncController()
@@ -1580,6 +1660,33 @@ class EditTransactionViewModelTest {
         ),
       )
 
+  // Splits transactions with this category into two halves
+  private suspend fun BudgetDatabase.insertSplitRule(category: String) =
+    RulesDao(this)
+      .insert(
+        Rules(
+          id = RuleId("split"),
+          stage = null,
+          conditions =
+            listOf(Condition(field = Category, operator = Is, value = JsonPrimitive(category))),
+          actions =
+            listOf(
+              RuleAction(
+                value = JsonPrimitive(50),
+                op = SetSplitAmount,
+                options = RuleAction.Options(method = FixedPercent, splitIndex = 1),
+              ),
+              RuleAction(
+                value = null,
+                op = SetSplitAmount,
+                options = RuleAction.Options(method = Remainder, splitIndex = 2),
+              ),
+            ),
+          tombstone = false,
+          conditions_op = And,
+        ),
+      )
+
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
     id: String = "t",
@@ -1589,6 +1696,7 @@ class EditTransactionViewModelTest {
     savedUuid: String = "uuid",
     savedState: SavedStateHandle = SavedStateHandle(),
     prefs: TestBudgetLocalPreferences = TestBudgetLocalPreferences(),
+    learner: CategoryLearner = CategoryLearner {},
   ): EditTransactionViewModel {
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val tags = tagsDao(scope)
@@ -1608,7 +1716,7 @@ class EditTransactionViewModelTest {
           categoryDao = categoryDao,
           payeeDao = payeeDao,
           transactionDao = transactionDao,
-          categoryLearner = {},
+          categoryLearner = learner,
           uuidGenerator = { savedUuid },
           clock = Clock.System,
         ),

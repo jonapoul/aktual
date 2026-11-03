@@ -55,6 +55,20 @@ class SearchPayeesViewModelTest {
   }
 
   @Test
+  fun `A recreated screen keeps its query`() = runDatabaseTest { scope ->
+    PayeeDao(this).insert(PayeeId("cafe"), "Café Nero")
+    PayeeDao(this).insert(PayeeId("tesco"), "Tesco")
+    val savedState = SavedStateHandle()
+    createViewModel(scope, savedState).setQuery("cafe")
+
+    val viewModel = createViewModel(scope, savedState)
+
+    viewModel.state.test {
+      assertThat(awaitResults()).extracting(PayeeItem::name).containsExactly("Café Nero")
+    }
+  }
+
+  @Test
   fun `No matches shows no results`() = runDatabaseTest { scope ->
     PayeeDao(this).insert(PayeeId("argos"), "Argos")
     val viewModel = createViewModel(scope)
@@ -91,9 +105,12 @@ class SearchPayeesViewModelTest {
     return state.payees
   }
 
-  private fun BudgetDatabase.createViewModel(scope: TestScope): SearchPayeesViewModel {
+  private fun BudgetDatabase.createViewModel(
+    scope: TestScope,
+    savedState: SavedStateHandle = SavedStateHandle(),
+  ): SearchPayeesViewModel {
     return SearchPayeesViewModel(
-      savedState = SavedStateHandle(),
+      savedState = savedState,
       loader = PayeesLoader(PayeeDao(this), PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
       viewModelContext = scope.viewModelContext,
     )

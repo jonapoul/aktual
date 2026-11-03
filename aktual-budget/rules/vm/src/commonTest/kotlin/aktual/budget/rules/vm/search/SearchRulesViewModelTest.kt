@@ -166,6 +166,23 @@ class SearchRulesViewModelTest {
     }
   }
 
+  @Test
+  fun `A recreated screen keeps its query and cleared payee filter`() = runDatabaseTest { scope ->
+    insertRule(id = "a", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p1"))))
+    insertRule(id = "b", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p3"))))
+    val savedState = SavedStateHandle()
+    with(createViewModel(scope, PayeeId("p1"), savedState)) {
+      setQuery("landlord")
+      clearPayee()
+    }
+
+    val viewModel = createViewModel(scope, PayeeId("p1"), savedState)
+
+    viewModel.state.test {
+      assertThat(awaitResults()).extracting { it.id.value }.containsExactly("a", "b")
+    }
+  }
+
   private suspend fun ReceiveTurbine<String?>.awaitNonNull(): String {
     var name = awaitItem()
     while (name == null) name = awaitItem()
@@ -203,10 +220,11 @@ class SearchRulesViewModelTest {
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
     payee: PayeeId? = null,
+    savedState: SavedStateHandle = SavedStateHandle(),
   ): SearchRulesViewModel {
     return SearchRulesViewModel(
       initialPayee = payee,
-      savedState = SavedStateHandle(),
+      savedState = savedState,
       loader = RulesLoader(RulesDao(this)),
       searchText = RuleSearchText(FakeNameFetcher, FakeStringLookup),
       nameFetcher = FakeNameFetcher,
