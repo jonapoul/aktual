@@ -36,21 +36,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.Axis
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.compose.cartesian.data.columnModel
 import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
+import com.patrykandpatrick.vico.compose.cartesian.decoration.Decoration
 import com.patrykandpatrick.vico.compose.cartesian.layer.ColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarkerVisibilityListener
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
 import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.runBlocking
@@ -95,29 +101,8 @@ internal fun CashFlowChart(
         scrollState = rememberVicoScrollState(scrollEnabled = false),
         animationSpec = chartAnimationSpec(compact),
         chart =
-          rememberCartesianChart(
-            rememberColumnCartesianLayer(
-              ColumnCartesianLayer.ColumnProvider.series(
-                rememberLineComponent(fill = Fill(colors.reportsBlue), thickness = 16.dp),
-              ),
-              rangeProvider = remember { ZoomRangeProvider() },
-            ),
-            rememberColumnCartesianLayer(
-              ColumnCartesianLayer.ColumnProvider.series(
-                rememberLineComponent(fill = Fill(colors.reportsRed), thickness = 16.dp),
-              ),
-              rangeProvider = remember { ZoomRangeProvider() },
-            ),
-            rememberLineCartesianLayer(
-              lineProvider =
-                LineCartesianLayer.LineProvider.series(
-                  LineCartesianLayer.rememberLine(
-                    fill = LineCartesianLayer.LineFill.single(Fill(colors.pageTextLight)),
-                    stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 3.dp),
-                  ),
-                ),
-              rangeProvider = remember { ZoomRangeProvider() },
-            ),
+          rememberCashFlowChart(
+            showBalance = data.showBalance,
             startAxis =
               VerticalAxis.rememberStart(
                 line = line,
@@ -138,11 +123,71 @@ internal fun CashFlowChart(
               ),
             marker = if (compact) null else rememberMarker(),
             markerVisibilityListener = rememberMarkerHaptics(compact),
-            decorations = listOf(rememberChartZoomDecoration(zoom)),
+            decorations = persistentListOf(rememberChartZoomDecoration(zoom)),
           ),
       )
     }
   }
+
+// The balance line is left out when hidden, along with its model in populate()
+@Composable
+@Suppress("LongParameterList")
+private fun rememberCashFlowChart(
+  showBalance: Boolean,
+  startAxis: VerticalAxis<Axis.Position.Vertical.Start>,
+  bottomAxis: HorizontalAxis<Axis.Position.Horizontal.Bottom>,
+  marker: CartesianMarker?,
+  markerVisibilityListener: CartesianMarkerVisibilityListener?,
+  decorations: ImmutableList<Decoration>,
+): CartesianChart {
+  val income =
+    rememberColumnCartesianLayer(
+      ColumnCartesianLayer.ColumnProvider.series(
+        rememberLineComponent(fill = Fill(colors.reportsBlue), thickness = 16.dp),
+      ),
+      rangeProvider = remember { ZoomRangeProvider() },
+    )
+  val expenses =
+    rememberColumnCartesianLayer(
+      ColumnCartesianLayer.ColumnProvider.series(
+        rememberLineComponent(fill = Fill(colors.reportsRed), thickness = 16.dp),
+      ),
+      rangeProvider = remember { ZoomRangeProvider() },
+    )
+  val balance =
+    rememberLineCartesianLayer(
+      lineProvider =
+        LineCartesianLayer.LineProvider.series(
+          LineCartesianLayer.rememberLine(
+            fill = LineCartesianLayer.LineFill.single(Fill(colors.pageTextLight)),
+            stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 3.dp),
+          ),
+        ),
+      rangeProvider = remember { ZoomRangeProvider() },
+    )
+  return if (showBalance) {
+    rememberCartesianChart(
+      income,
+      expenses,
+      balance,
+      startAxis = startAxis,
+      bottomAxis = bottomAxis,
+      marker = marker,
+      markerVisibilityListener = markerVisibilityListener,
+      decorations = decorations,
+    )
+  } else {
+    rememberCartesianChart(
+      income,
+      expenses,
+      startAxis = startAxis,
+      bottomAxis = bottomAxis,
+      marker = marker,
+      markerVisibilityListener = markerVisibilityListener,
+      decorations = decorations,
+    )
+  }
+}
 
 @Stable
 private fun calculateNetFlow(data: CashFlowData): Amount {
@@ -255,7 +300,9 @@ private suspend fun CartesianChartModelProducer.populate(data: CashFlowData, zoo
 
       columnModel { series(x = months, y = values.map { it.expenses.toDouble() }, zoom = zoom) }
 
-      lineModel { series(x = months, y = values.map { it.balance.toDouble() }, zoom = zoom) }
+      if (data.showBalance) {
+        lineModel { series(x = months, y = values.map { it.balance.toDouble() }, zoom = zoom) }
+      }
     }
   }
 
@@ -287,6 +334,7 @@ private class CashFlowChartProvider :
     CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = false),
     CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = false, isPrivacyEnabled = true),
     CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = true),
+    CashFlowChartParams(PREVIEW_CASH_FLOW_DATA.copy(showBalance = false), compact = false),
   )
 
 val PREVIEW_CASH_FLOW_META = CashFlowReportMeta()

@@ -7,7 +7,6 @@ import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.datetime.YearMonth
 
 // The settings a budget analysis report can edit, with upstream's defaults filled in. Upstream's
 // report is always monthly, so its interval isn't one of them
@@ -25,14 +24,6 @@ data class BudgetAnalysisSettings(
 // The fields its filters can use, since it only filters categories
 val BUDGET_ANALYSIS_FIELDS = persistentListOf<Field>(Category, CategoryGroup)
 
-// Fills in upstream's defaults, so the draft starts out the same as the saved report would show
-internal fun ReportMeta.withDefaults(current: YearMonth): ReportMeta =
-  if (this is BudgetAnalysisReportMeta) {
-    withSettings(settings(timeFrame ?: defaultTimeFrame(current)))
-  } else {
-    this
-  }
-
 fun BudgetAnalysisReportMeta.settings(timeFrame: TimeFrame) =
   BudgetAnalysisSettings(
     timeFrame = timeFrame,
@@ -44,7 +35,7 @@ fun BudgetAnalysisReportMeta.settings(timeFrame: TimeFrame) =
     showHiddenCategories = showHiddenCategories == true,
   )
 
-private fun BudgetAnalysisReportMeta.withSettings(settings: BudgetAnalysisSettings) =
+internal fun BudgetAnalysisReportMeta.withSettings(settings: BudgetAnalysisSettings) =
   copy(
     timeFrame = settings.timeFrame,
     conditions = settings.conditions,

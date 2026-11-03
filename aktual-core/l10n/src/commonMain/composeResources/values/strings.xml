@@ -1190,6 +1190,7 @@
   <string name="reports_age_of_money_what">Age of Money shows how many days, on average, your money sits in your budget before you spend it. A higher Age of Money means you’re spending older money, so you’re living on last month’s income rather than paycheck to paycheck. An age of 30 days or more is considered ideal - it means you’re typically spending money you earned a month ago.</string>
   <string name="reports_age_of_money_how_title">How is it calculated?</string>
   <string name="reports_age_of_money_how">When you spend money, it’s considered to come from your oldest income first. The age is the difference in days between when you received that income and when you spent it. The displayed value is the average age of your last 10 expenses.</string>
+  <string name="reports_age_of_money_granularity">Granularity</string>
 
   <string name="reports_budget_analysis_budgeted">Budgeted</string>
   <string name="reports_budget_analysis_spent">Spent</string>

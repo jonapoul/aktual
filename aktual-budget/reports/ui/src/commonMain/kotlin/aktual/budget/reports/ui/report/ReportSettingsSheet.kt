@@ -1,7 +1,10 @@
 package aktual.budget.reports.ui.report
 
 import aktual.budget.reports.components.label
+import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.BudgetAnalysisReportMeta
+import aktual.budget.reports.vm.CalendarReportMeta
+import aktual.budget.reports.vm.CashFlowReportMeta
 import aktual.budget.reports.vm.NetWorthMode
 import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.QueryEditorData
@@ -46,6 +49,15 @@ internal fun ReportMeta.settingsSheet(): SettingsSheet? =
     }
     is BudgetAnalysisReportMeta -> { data, onEdit, onDismiss ->
       BudgetAnalysisSettings(this, data, onEdit.typed(), onDismiss)
+    }
+    is CashFlowReportMeta -> { data, onEdit, onDismiss ->
+      CashFlowSettings(this, data, onEdit.typed(), onDismiss)
+    }
+    is CalendarReportMeta -> { data, onEdit, onDismiss ->
+      CalendarSettings(this, data, onEdit.typed(), onDismiss)
+    }
+    is AgeOfMoneyReportMeta -> { data, onEdit, onDismiss ->
+      AgeOfMoneySettings(this, data, onEdit.typed(), onDismiss)
     }
     else -> null
   }

@@ -2,11 +2,15 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.components.ChartTags
+import aktual.budget.reports.components.PREVIEW_AGE_OF_MONEY_DATA
 import aktual.budget.reports.components.PREVIEW_BUDGET_ANALYSIS_DATA
+import aktual.budget.reports.components.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.components.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.Tags
+import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.BudgetAnalysisReportMeta
+import aktual.budget.reports.vm.CashFlowReportMeta
 import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.ReportMeta
 import aktual.budget.reports.vm.SummaryData
@@ -184,6 +188,40 @@ class ReportScaffoldTest {
       .isEqualTo(false)
   }
 
+  @Test
+  fun `Settings sheet hides the cash flow balance`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<Action>()
+    setPreviewContent { ReportScaffold(state = CASH_FLOW, onAction = { actions += it }) }
+
+    // when
+    onNodeWithTag(ChartTags.ChartSettings).performClick()
+    onNodeWithText("Show balance").performScrollTo().performClick()
+
+    // then
+    assertThat(actions.edited(CASH_FLOW))
+      .isInstanceOf<CashFlowReportMeta>()
+      .prop(CashFlowReportMeta::showBalance)
+      .isEqualTo(false)
+  }
+
+  @Test
+  fun `Settings sheet picks an age of money granularity`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<Action>()
+    setPreviewContent { ReportScaffold(state = AGE_OF_MONEY, onAction = { actions += it }) }
+
+    // when
+    onNodeWithTag(ChartTags.ChartSettings).performClick()
+    onNodeWithText("Weekly").performClick()
+
+    // then
+    assertThat(actions.edited(AGE_OF_MONEY))
+      .isInstanceOf<AgeOfMoneyReportMeta>()
+      .prop(AgeOfMoneyReportMeta::granularity)
+      .isEqualTo(Weekly)
+  }
+
   // Applies each edit the scaffold sent to the draft
   private fun List<Action>.edited(state: ReportState.Loaded = STATE): ReportMeta =
     filterIsInstance<Action.EditSettings>().fold(state.draft) { meta, edit -> edit.transform(meta) }
@@ -239,6 +277,32 @@ class ReportScaffoldTest {
         showBalance = true,
         balanceOnly = false,
         showHiddenCategories = false,
+      )
+
+    val CASH_FLOW =
+      ReportState.Loaded(
+        type = CashFlow,
+        item =
+          DashboardItem(
+            id = WidgetId("cash"),
+            x = 0,
+            y = 0,
+            meta = CashFlowReportMeta(showBalance = true),
+          ),
+        data = PREVIEW_CASH_FLOW_DATA,
+      )
+
+    val AGE_OF_MONEY =
+      ReportState.Loaded(
+        type = AgeOfMoney,
+        item =
+          DashboardItem(
+            id = WidgetId("age"),
+            x = 0,
+            y = 0,
+            meta = AgeOfMoneyReportMeta(granularity = Monthly),
+          ),
+        data = PREVIEW_AGE_OF_MONEY_DATA,
       )
 
     val ANALYSIS =
