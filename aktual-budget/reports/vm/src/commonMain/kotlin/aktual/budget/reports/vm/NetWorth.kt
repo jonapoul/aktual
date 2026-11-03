@@ -39,7 +39,7 @@ internal data class NetWorthRow(
 // The periods a net worth report shows, from one period before the range so the first one shows
 // its change, unless there's no data before it. Daily and weekly periods stop at today, but there's
 // always at least one
-internal data class NetWorthPeriods(
+internal class NetWorthPeriods(
   val interval: Interval,
   val start: LocalDate,
   val end: LocalDate,
