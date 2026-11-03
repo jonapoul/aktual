@@ -91,6 +91,23 @@ class ReportScaffoldTest {
   }
 
   @Test
+  fun `Settings sheet edits the net worth interval`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<Action>()
+    setPreviewContent { ReportScaffold(state = STATE, onAction = { actions += it }) }
+
+    // when
+    onNodeWithTag(ChartTags.ChartSettings).performClick()
+    onNodeWithText("Yearly").performClick()
+
+    // then
+    assertThat(actions.edited())
+      .isInstanceOf<NetWorthReportMeta>()
+      .prop(NetWorthReportMeta::interval)
+      .isEqualTo(Yearly)
+  }
+
+  @Test
   fun `Settings sheet edits the net worth time frame`() = runComposeUiTest {
     // given
     val actions = mutableListOf<Action>()

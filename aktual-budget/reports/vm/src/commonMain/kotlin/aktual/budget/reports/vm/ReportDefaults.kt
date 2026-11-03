@@ -6,6 +6,14 @@ import kotlinx.datetime.YearMonth
 internal fun ReportMeta.withDefaults(current: YearMonth): ReportMeta =
   when (this) {
     is BudgetAnalysisReportMeta -> withSettings(settings(timeFrame ?: defaultTimeFrame(current)))
+    is NetWorthReportMeta ->
+      copy(
+        conditions = conditions.orEmpty(),
+        conditionsOp = conditionsOp ?: And,
+        timeFrame = timeFrame ?: defaultTimeFrame(current),
+        interval = interval?.takeIf { it != Unknown } ?: Monthly,
+        mode = if (mode == Stacked) Stacked else Trend,
+      )
     is CashFlowReportMeta ->
       copy(
         conditions = conditions.orEmpty(),
@@ -33,7 +41,6 @@ internal fun ReportMeta.withDefaults(current: YearMonth): ReportMeta =
     is FormulaReportMeta,
     is MarkdownReportMeta,
     is MonteCarloReportMeta,
-    is NetWorthReportMeta,
     is SankeyReportMeta,
     is SpendingReportMeta,
     is SummaryReportMeta,

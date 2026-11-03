@@ -12,7 +12,7 @@ import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.datetime.YearMonth
+import kotlinx.datetime.LocalDate
 
 class NetWorthStackedTest {
   @Test
@@ -43,8 +43,8 @@ class NetWorthStackedTest {
   }
 
   private companion object {
-    val JAN = YearMonth(2026, 1)
-    val FEB = YearMonth(2026, 2)
+    val JAN = LocalDate(2026, 1, 1)
+    val FEB = LocalDate(2026, 2, 1)
 
     val DATA =
       NetWorthData(
