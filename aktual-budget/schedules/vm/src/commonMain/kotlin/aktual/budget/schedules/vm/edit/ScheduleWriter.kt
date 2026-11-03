@@ -1,5 +1,6 @@
 package aktual.budget.schedules.vm.edit
 
+import aktual.budget.BudgetLocalPreferences
 import aktual.budget.BudgetSyncController
 import aktual.budget.db.DbJson
 import aktual.budget.db.dao.DatabaseTables.RULES
@@ -8,6 +9,7 @@ import aktual.budget.db.dao.DatabaseTables.SCHEDULES_NEXT_DATE
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
+import aktual.budget.model.DbMetadataKey.Companion.LastScheduleRun
 import aktual.budget.model.LocalChange
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
@@ -22,6 +24,7 @@ import aktual.core.UuidGenerator
 import aktual.core.model.unaryPlus
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
+import kotlinx.coroutines.flow.update
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JsonPrimitive
@@ -39,6 +42,7 @@ internal class DuplicateScheduleNameException(name: String) :
 internal class ScheduleWriter(
   private val scheduleDao: ScheduleDao,
   private val syncController: BudgetSyncController,
+  private val budgetPrefs: BudgetLocalPreferences,
   private val uuidGenerator: UuidGenerator,
   private val calendar: Calendar,
   private val clock: Clock,
@@ -80,6 +84,7 @@ internal class ScheduleWriter(
       +localChange(SCHEDULES, schedule, TOMBSTONE, false)
     }
 
+    allowPostingAgainToday(form)
     syncController.syncChanges(changes)
     scheduleDao.setJsonPaths(scheduleId, conditions.jsonPaths())
     logcat.i { "Created schedule $scheduleId" }
@@ -118,6 +123,7 @@ internal class ScheduleWriter(
       +localChange(SCHEDULES, schedule, "posts_transaction", form.postsTransaction)
     }
 
+    allowPostingAgainToday(form)
     syncController.syncChanges(changes)
     scheduleDao.setJsonPaths(id, conditions.jsonPaths())
     logcat.i { "Updated schedule $id" }
@@ -180,6 +186,12 @@ internal class ScheduleWriter(
       +LocalChange(SCHEDULES_NEXT_DATE, row, "base_next_date", nextDate.messageValue())
       +localChange(SCHEDULES_NEXT_DATE, row, "base_next_date_ts", now)
     }
+  }
+
+  // allowAutoPostingToRunAgainToday(): schedules are only advanced once a day, so one that posts
+  // and is due today would otherwise wait for tomorrow
+  private fun allowPostingAgainToday(form: ScheduleForm) {
+    if (form.postsTransaction) budgetPrefs.update { it.set(LastScheduleRun, null) }
   }
 
   private suspend fun checkNameIsFree(name: String?, id: ScheduleId?) {

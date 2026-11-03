@@ -1,23 +1,36 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.Dashboard
 import aktual.budget.db.V_schedules
 import aktual.budget.db.buildDatabase
+import aktual.budget.db.dao.DatabaseTables.DASHBOARD
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.DatabaseTables.SCHEDULES
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
+import aktual.budget.model.Message
+import aktual.budget.model.MessageEnvelope
 import aktual.budget.model.MessageValue
+import aktual.budget.model.Timestamp
+import aktual.budget.model.WidgetId
 import aktual.budget.model.localChange
 import aktual.test.inMemoryDriverFactory
+import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.async.coroutines.awaitAsOne
+import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.extracting
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlin.time.Clock
+import kotlin.time.Instant
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 
 internal class SyncDaoTest {
@@ -60,6 +73,33 @@ internal class SyncDaoTest {
     }
   }
 
+  @Test
+  fun `A dashboard change from another device reaches its observers`() = runTest {
+    inMemoryDriverFactory().create(BudgetId("abc-123")).use { driver ->
+      val database = buildDatabase(driver)
+      val sync = SyncDao(database, driver, Clock.System)
+      val contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
+
+      DashboardDao(database, contexts).observeAll().test {
+        assertThat(awaitItem()).isEmpty()
+
+        val widget =
+          listOf(
+            localChange(DASHBOARD, "w", "type", "net-worth"),
+            localChange(DASHBOARD, "w", "tombstone", 0),
+          )
+        val envelopes = widget.mapIndexed { index, change ->
+          val timestamp = Timestamp(Instant.parse("2026-11-03T12:00:00Z"), index.toLong(), NODE)
+          val message = Message(change.dataset, change.row, change.column, timestamp, change.value)
+          MessageEnvelope(timestamp, isEncrypted = false, content = message)
+        }
+        sync.applyMessages(envelopes, sync.getCurrentMerkle())
+
+        assertThat(awaitItem()).extracting(Dashboard::id).containsExactly(WidgetId("w"))
+      }
+    }
+  }
+
   private fun schedule() =
     listOf(
       LocalChange(SCHEDULES, SCHEDULE, "rule", RULE.string()),
@@ -92,6 +132,7 @@ internal class SyncDaoTest {
     const val SCHEDULE = "a2aea0d7-00fb-4cf1-ab38-8aa7fb19ab54"
     const val ACCOUNT = "78055dbe-680f-4605-bcd5-46a67feedcec"
     const val PAYEE = "2745db0b-b454-4877-a728-3c9f2b7056e5"
+    const val NODE = "93836f5283a57c87"
 
     const val ACTIONS = """[{"op":"link-schedule","value":"$SCHEDULE"}]"""
 
