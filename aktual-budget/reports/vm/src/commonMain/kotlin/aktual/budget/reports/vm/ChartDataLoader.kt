@@ -356,8 +356,7 @@ internal class ChartDataLoader(
   // packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.tsx
   // cashFlowByDate()
   fun cashFlow(meta: CashFlowReportMeta): Flow<ChartData> {
-    if (meta.conditions.hasFilters()) return unsupported(meta, Filters)
-
+    val filter = reportFilter(meta.conditions, meta.conditionsOp)
     return dao.observeTransactionDateBounds().flatMapLatest { bounds ->
       val today = calendar.today()
       val range =
@@ -370,10 +369,7 @@ internal class ChartDataLoader(
       val start = range.start
       val end = minOf(range.endInclusive, today.yearMonth)
 
-      combine(
-        dao.observeCashFlowStartingBalance(start.firstDay),
-        dao.observeCashFlowByMonth(start.firstDay, end.lastDay),
-      ) { startingBalance, rows ->
+      cashFlowInputs(filter, start.firstDay, end.lastDay).map { (startingBalance, rows) ->
         val byMonth = rows.groupBy { it.month }
         var balance = Amount(startingBalance)
         val items =
@@ -385,10 +381,33 @@ internal class ChartDataLoader(
             balance += income + expenses + transfers
             CashFlowDatum(income, expenses, transfers, balance)
           }
-        CashFlowData(title = meta.name, items = items.toImmutableMap())
+        CashFlowData(
+          title = meta.name,
+          items = items.toImmutableMap(),
+          showBalance = meta.showBalance != false,
+        )
       }
     }
   }
+
+  // Totalled in SQL without conditions. With them, the matching transactions are totalled here
+  private fun cashFlowInputs(
+    filter: TransactionFilter,
+    start: LocalDate,
+    end: LocalDate,
+  ): Flow<Pair<Long, List<CashFlowByMonth>>> =
+    if (filter.isEmpty) {
+      combine(
+        dao.observeCashFlowStartingBalance(start),
+        dao.observeCashFlowByMonth(start, end),
+        ::Pair,
+      )
+    } else {
+      dao
+        .observeFilteredTransactions(filter, ALL_TIME_START, end)
+        .map { rows -> cashFlowTotals(rows, start) }
+        .flowOn(contexts.default)
+    }
 
   // packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts
   // summarySpreadsheet()
@@ -516,8 +535,7 @@ internal class ChartDataLoader(
   // packages/desktop-client/src/components/reports/spreadsheets/age-of-money-spreadsheet.ts
   // createAgeOfMoneySpreadsheet()
   fun ageOfMoney(meta: AgeOfMoneyReportMeta): Flow<ChartData> {
-    if (meta.conditions.hasFilters()) return unsupported(meta, Filters)
-
+    val filter = reportFilter(meta.conditions, meta.conditionsOp)
     val granularity = meta.granularity?.takeIf { it != Unknown } ?: Monthly
     return dao.observeTransactionDateBounds().flatMapLatest { bounds ->
       val today = calendar.today()
@@ -532,8 +550,7 @@ internal class ChartDataLoader(
       val end = range.endInclusive
 
       // FIFO needs all the history, not just the displayed range
-      dao.observeAgeOfMoneyTransactions(minOf(end.lastDay, today)).map { rows ->
-        val transactions = rows.map { AgeOfMoneyTransaction(it.date, it.amount) }
+      ageOfMoneyInputs(meta, filter, minOf(end.lastDay, today)).map { transactions ->
         val (ages, insufficientData) = calculateAges(transactions)
         val displayed = ages.filter { it.date >= start.firstDay }
         val items = calculateGraphData(displayed, start, end, granularity, today)
@@ -550,6 +567,22 @@ internal class ChartDataLoader(
       }
     }
   }
+
+  private fun ageOfMoneyInputs(
+    meta: AgeOfMoneyReportMeta,
+    filter: TransactionFilter,
+    end: LocalDate,
+  ): Flow<List<AgeOfMoneyTransaction>> =
+    if (filter.isEmpty) {
+      dao.observeAgeOfMoneyTransactions(end).map { rows ->
+        rows.map { AgeOfMoneyTransaction(it.date, it.amount) }
+      }
+    } else {
+      dao
+        .observeFilteredTransactions(filter, ALL_TIME_START, end)
+        .map { rows -> ageOfMoneyTransactions(rows, meta.conditions, meta.conditionsOp) }
+        .flowOn(contexts.default)
+    }
 
   // packages/desktop-client/src/components/reports/reports/CrossoverCard.tsx
   fun crossover(meta: CrossoverReportMeta): Flow<ChartData> =

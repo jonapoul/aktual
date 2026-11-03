@@ -114,12 +114,16 @@ SELECT
   t.cleared,
   t.reconciled,
   t.transfer_id,
-  t.is_parent
+  t.is_parent,
+  p.transfer_acct,
+  ta.name AS transfer_account_name,
+  ta.offbudget AS transfer_off_budget
 FROM v_transactions_internal_alive t
 LEFT JOIN accounts a ON a.id = t.account
 LEFT JOIN categories c ON c.id = t.category
 LEFT JOIN category_groups g ON g.id = c.cat_group
 LEFT JOIN payees p ON p.id = t.payee
+LEFT JOIN accounts ta ON ta.id = p.transfer_acct
 WHERE t.is_parent = 0 AND t.date >= :start AND t.date <= :end;
 
 -- packages/desktop-client/src/components/reports/spreadsheets/sankey-spreadsheet.ts fetchCategoryData()

@@ -42,6 +42,7 @@ import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.compose.cartesian.data.columnModel
 import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
+import com.patrykandpatrick.vico.compose.cartesian.layer.CartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.ColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
@@ -96,28 +97,7 @@ internal fun CashFlowChart(
         animationSpec = chartAnimationSpec(compact),
         chart =
           rememberCartesianChart(
-            rememberColumnCartesianLayer(
-              ColumnCartesianLayer.ColumnProvider.series(
-                rememberLineComponent(fill = Fill(colors.reportsBlue), thickness = 16.dp),
-              ),
-              rangeProvider = remember { ZoomRangeProvider() },
-            ),
-            rememberColumnCartesianLayer(
-              ColumnCartesianLayer.ColumnProvider.series(
-                rememberLineComponent(fill = Fill(colors.reportsRed), thickness = 16.dp),
-              ),
-              rangeProvider = remember { ZoomRangeProvider() },
-            ),
-            rememberLineCartesianLayer(
-              lineProvider =
-                LineCartesianLayer.LineProvider.series(
-                  LineCartesianLayer.rememberLine(
-                    fill = LineCartesianLayer.LineFill.single(Fill(colors.pageTextLight)),
-                    stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 3.dp),
-                  ),
-                ),
-              rangeProvider = remember { ZoomRangeProvider() },
-            ),
+            *cashFlowLayers(data.showBalance),
             startAxis =
               VerticalAxis.rememberStart(
                 line = line,
@@ -143,6 +123,37 @@ internal fun CashFlowChart(
       )
     }
   }
+
+// The balance line is left out when hidden, along with its model in populate()
+@Composable
+private fun cashFlowLayers(showBalance: Boolean): Array<CartesianLayer<*>> {
+  val income =
+    rememberColumnCartesianLayer(
+      ColumnCartesianLayer.ColumnProvider.series(
+        rememberLineComponent(fill = Fill(colors.reportsBlue), thickness = 16.dp),
+      ),
+      rangeProvider = remember { ZoomRangeProvider() },
+    )
+  val expenses =
+    rememberColumnCartesianLayer(
+      ColumnCartesianLayer.ColumnProvider.series(
+        rememberLineComponent(fill = Fill(colors.reportsRed), thickness = 16.dp),
+      ),
+      rangeProvider = remember { ZoomRangeProvider() },
+    )
+  val balance =
+    rememberLineCartesianLayer(
+      lineProvider =
+        LineCartesianLayer.LineProvider.series(
+          LineCartesianLayer.rememberLine(
+            fill = LineCartesianLayer.LineFill.single(Fill(colors.pageTextLight)),
+            stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 3.dp),
+          ),
+        ),
+      rangeProvider = remember { ZoomRangeProvider() },
+    )
+  return if (showBalance) arrayOf(income, expenses, balance) else arrayOf(income, expenses)
+}
 
 @Stable
 private fun calculateNetFlow(data: CashFlowData): Amount {
@@ -255,7 +266,9 @@ private suspend fun CartesianChartModelProducer.populate(data: CashFlowData, zoo
 
       columnModel { series(x = months, y = values.map { it.expenses.toDouble() }, zoom = zoom) }
 
-      lineModel { series(x = months, y = values.map { it.balance.toDouble() }, zoom = zoom) }
+      if (data.showBalance) {
+        lineModel { series(x = months, y = values.map { it.balance.toDouble() }, zoom = zoom) }
+      }
     }
   }
 
@@ -287,6 +300,7 @@ private class CashFlowChartProvider :
     CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = false),
     CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = false, isPrivacyEnabled = true),
     CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = true),
+    CashFlowChartParams(PREVIEW_CASH_FLOW_DATA.copy(showBalance = false), compact = false),
   )
 
 val PREVIEW_CASH_FLOW_META = CashFlowReportMeta()

@@ -25,8 +25,11 @@ import kotlinx.serialization.Serializable
 
 @Immutable sealed interface ChartData
 
-data class CashFlowData(val title: String?, val items: ImmutableMap<YearMonth, CashFlowDatum>) :
-  ChartData
+data class CashFlowData(
+  val title: String?,
+  val items: ImmutableMap<YearMonth, CashFlowDatum>,
+  val showBalance: Boolean = true,
+) : ChartData
 
 data class CashFlowDatum(
   val income: Amount,
