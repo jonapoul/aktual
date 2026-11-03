@@ -5,12 +5,14 @@ import aktual.budget.reports.components.ChartTags
 import aktual.budget.reports.components.PREVIEW_AGE_OF_MONEY_DATA
 import aktual.budget.reports.components.PREVIEW_BUDGET_ANALYSIS_DATA
 import aktual.budget.reports.components.PREVIEW_CASH_FLOW_DATA
+import aktual.budget.reports.components.PREVIEW_CROSSOVER_DATA
 import aktual.budget.reports.components.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.BudgetAnalysisReportMeta
 import aktual.budget.reports.vm.CashFlowReportMeta
+import aktual.budget.reports.vm.CrossoverReportMeta
 import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.ReportMeta
 import aktual.budget.reports.vm.SummaryData
@@ -28,6 +30,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.v2.runComposeUiTest
+import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
@@ -223,6 +226,41 @@ class ReportScaffoldTest {
   }
 
   @Test
+  fun `Settings sheet turns on crossover custom growth at 6 percent`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<Action>()
+    setPreviewContent { ReportScaffold(state = CROSSOVER, onAction = { actions += it }) }
+
+    // when
+    onNodeWithTag(ChartTags.ChartSettings).performClick()
+    onNodeWithText("Use custom growth projections").performScrollTo().performClick()
+
+    // then
+    assertThat(actions.edited(CROSSOVER)).isInstanceOf<CrossoverReportMeta>().all {
+      prop(CrossoverReportMeta::estimatedReturn).isEqualTo(0.06)
+      prop(CrossoverReportMeta::expectedContribution).isEqualTo(0.0)
+    }
+  }
+
+  @Test
+  fun `Settings sheet picks a crossover projection type`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<Action>()
+    setPreviewContent { ReportScaffold(state = CROSSOVER, onAction = { actions += it }) }
+
+    // when
+    onNodeWithTag(ChartTags.ChartSettings).performClick()
+    onNodeWithText("Expense projection").performScrollTo().performClick()
+    onNodeWithText("Mean").performClick()
+
+    // then
+    assertThat(actions.edited(CROSSOVER))
+      .isInstanceOf<CrossoverReportMeta>()
+      .prop(CrossoverReportMeta::projectionType)
+      .isEqualTo(Mean)
+  }
+
+  @Test
   fun `Settings sheet picks an age of money granularity`() = runComposeUiTest {
     // given
     val actions = mutableListOf<Action>()
@@ -320,6 +358,14 @@ class ReportScaffoldTest {
             meta = AgeOfMoneyReportMeta(granularity = Monthly),
           ),
         data = PREVIEW_AGE_OF_MONEY_DATA,
+      )
+
+    val CROSSOVER =
+      ReportState.Loaded(
+        type = Crossover,
+        item =
+          DashboardItem(id = WidgetId("crossover"), x = 0, y = 0, meta = CrossoverReportMeta()),
+        data = PREVIEW_CROSSOVER_DATA,
       )
 
     val ANALYSIS =

@@ -5,6 +5,7 @@ import aktual.budget.reports.vm.AgeOfMoneyReportMeta
 import aktual.budget.reports.vm.BudgetAnalysisReportMeta
 import aktual.budget.reports.vm.CalendarReportMeta
 import aktual.budget.reports.vm.CashFlowReportMeta
+import aktual.budget.reports.vm.CrossoverReportMeta
 import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.ReportMeta
@@ -53,6 +54,9 @@ internal fun ReportMeta.settingsSheet(): SettingsSheet? =
     }
     is AgeOfMoneyReportMeta -> { data, onEdit, onDismiss ->
       AgeOfMoneySettings(this, data, onEdit.typed(), onDismiss)
+    }
+    is CrossoverReportMeta -> { data, onEdit, onDismiss ->
+      CrossoverSettings(this, data, onEdit.typed(), onDismiss)
     }
     else -> null
   }

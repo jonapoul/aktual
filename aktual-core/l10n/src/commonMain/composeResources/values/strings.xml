@@ -1206,6 +1206,19 @@
   <string name="reports_crossover_years">%1$s years</string>
   <string name="reports_crossover_none">N/A</string>
   <string name="reports_crossover_years_to_retire">Years to retire</string>
+  <string name="reports_crossover_inputs">Inputs</string>
+  <string name="reports_crossover_projection">Projection</string>
+  <string name="reports_crossover_expense_categories">Expense categories</string>
+  <string name="reports_crossover_income_accounts">Income accounts</string>
+  <string name="reports_crossover_withdrawal_rate">Safe withdrawal rate (%)</string>
+  <string name="reports_crossover_projection_type">Expense projection</string>
+  <string name="reports_crossover_projection_hampel">Hampel filtered median</string>
+  <string name="reports_crossover_projection_median">Median</string>
+  <string name="reports_crossover_projection_mean">Mean</string>
+  <string name="reports_crossover_target_income">Target income (%)</string>
+  <string name="reports_crossover_custom_growth">Use custom growth projections</string>
+  <string name="reports_crossover_expected_return">Expected return (annual %)</string>
+  <string name="reports_crossover_expected_contribution">Expected monthly contribution</string>
   <string name="reports_crossover_what_title">What is the crossover point?</string>
   <string name="reports_crossover_what">The crossover point is when your monthly investment income (from selected accounts using the safe withdrawal rate) meets or exceeds your total monthly expenses (from selected categories). The chart projects into the future using your estimated return until the lines cross.</string>
 
