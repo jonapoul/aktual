@@ -6,10 +6,13 @@ import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.CategoryGroupDao
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.ReportsDao
+import aktual.budget.model.BudgetType
 import aktual.budget.model.Field
+import aktual.budget.model.SyncedPrefKey
 import aktual.core.Calendar
 import androidx.compose.runtime.Immutable
 import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
@@ -41,6 +44,7 @@ data class QueryEditorData(
   val categoryChoices: ImmutableList<CategoryGroupChoice> = persistentListOf(),
   // Closed accounts included
   val allAccounts: ImmutableList<QueryEntity> = persistentListOf(),
+  val isTrackingBudget: Boolean = false,
 )
 
 fun QueryEditorData.entities(field: Field): ImmutableList<QueryEntity> =
@@ -76,6 +80,7 @@ internal class QueryEditorDataLoader(
   private val categoryGroups = CategoryGroupDao(database)
   private val payees = PayeeDao(database)
   private val budgets = database.budgetsQueries
+  private val preferences = database.preferencesQueries
 
   // Months from the first transaction, or at least a year back, like upstream's query editor
   fun load(): Flow<QueryEditorData> =
@@ -97,8 +102,12 @@ internal class QueryEditorDataLoader(
             categories = budgets.budgetCategories().awaitAsList(),
           ),
         allAccounts = accounts.getAllWithStatus().entities({ it.id.toString() }, { it.name }),
+        isTrackingBudget = BudgetType.from(budgetType()) == Tracking,
       )
     }
+
+  private suspend fun budgetType(): String? =
+    preferences.getValue(SyncedPrefKey.Global.BudgetType).awaitAsOneOrNull()?.value_
 
   private suspend fun names(): ImmutableMap<String, String> = buildMap {
     accounts.nameMap().forEach { (id, name) -> name?.let { put(id.toString(), it) } }

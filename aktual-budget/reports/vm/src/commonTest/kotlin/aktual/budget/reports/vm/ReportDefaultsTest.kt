@@ -62,6 +62,20 @@ class ReportDefaultsTest {
   }
 
   @Test
+  fun `Balance forecast defaults to the next twelve months of schedules`() {
+    assertThat(BalanceForecastReportMeta().withDefaults(CURRENT))
+      .isEqualTo(
+        BalanceForecastReportMeta(
+          conditions = emptyList(),
+          conditionsOp = And,
+          timeFrame = TimeFrame(YearMonth(2026, 1), YearMonth(2026, 12), Static),
+          granularity = Monthly,
+          source = Schedules,
+        ),
+      )
+  }
+
+  @Test
   fun `Saved settings are kept`() {
     val meta =
       CashFlowReportMeta(

@@ -3,6 +3,7 @@ package aktual.budget.reports.vm
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
 import kotlinx.datetime.minusMonth
+import kotlinx.datetime.plus
 
 // Fills in upstream's defaults, so the draft starts out the same as the saved report would show
 internal fun ReportMeta.withDefaults(current: YearMonth): ReportMeta =
@@ -44,6 +45,16 @@ internal fun ReportMeta.withDefaults(current: YearMonth): ReportMeta =
         expenseAdjustmentFactor = expenseAdjustmentFactor ?: 1.0,
       )
     is SankeyReportMeta -> withDefaults(current)
+    is BalanceForecastReportMeta ->
+      copy(
+        conditions = conditions.orEmpty(),
+        conditionsOp = conditionsOp ?: And,
+        timeFrame =
+          forecastTimeFrame()
+            ?: TimeFrame(current, current.plus(DEFAULT_FORECAST_MONTHS - 1, MONTH), Static),
+        granularity = granularity?.takeIf { it != Unknown } ?: Monthly,
+        source = if (source == TrackingBudget) TrackingBudget else Schedules,
+      )
     is AgeOfMoneyReportMeta ->
       copy(
         conditions = conditions.orEmpty(),
@@ -52,7 +63,6 @@ internal fun ReportMeta.withDefaults(current: YearMonth): ReportMeta =
         granularity = granularity?.takeIf { it != Unknown } ?: Monthly,
       )
 
-    is BalanceForecastReportMeta,
     is CustomReportMeta,
     is FormulaReportMeta,
     is MarkdownReportMeta,

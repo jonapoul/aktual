@@ -3,6 +3,7 @@ package aktual.budget.reports.ui.report
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.components.ChartTags
 import aktual.budget.reports.components.PREVIEW_AGE_OF_MONEY_DATA
+import aktual.budget.reports.components.PREVIEW_BALANCE_FORECAST_DATA
 import aktual.budget.reports.components.PREVIEW_BUDGET_ANALYSIS_DATA
 import aktual.budget.reports.components.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.components.PREVIEW_CROSSOVER_DATA
@@ -12,6 +13,7 @@ import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.ALL_SANKEY_CATEGORIES
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
+import aktual.budget.reports.vm.BalanceForecastReportMeta
 import aktual.budget.reports.vm.BudgetAnalysisReportMeta
 import aktual.budget.reports.vm.CashFlowReportMeta
 import aktual.budget.reports.vm.CrossoverReportMeta
@@ -302,6 +304,23 @@ class ReportScaffoldTest {
   }
 
   @Test
+  fun `Settings sheet picks a daily balance forecast`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<Action>()
+    setPreviewContent { ReportScaffold(state = FORECAST, onAction = { actions += it }) }
+
+    // when
+    onNodeWithTag(ChartTags.ChartSettings).performClick()
+    onNodeWithText("Daily").performScrollTo().performClick()
+
+    // then
+    assertThat(actions.edited(FORECAST))
+      .isInstanceOf<BalanceForecastReportMeta>()
+      .prop(BalanceForecastReportMeta::granularity)
+      .isEqualTo(Daily)
+  }
+
+  @Test
   fun `Settings sheet picks an age of money granularity`() = runComposeUiTest {
     // given
     val actions = mutableListOf<Action>()
@@ -407,6 +426,19 @@ class ReportScaffoldTest {
         item =
           DashboardItem(id = WidgetId("crossover"), x = 0, y = 0, meta = CrossoverReportMeta()),
         data = PREVIEW_CROSSOVER_DATA,
+      )
+
+    val FORECAST =
+      ReportState.Loaded(
+        type = BalanceForecast,
+        item =
+          DashboardItem(
+            id = WidgetId("forecast"),
+            x = 0,
+            y = 0,
+            meta = BalanceForecastReportMeta(),
+          ),
+        data = PREVIEW_BALANCE_FORECAST_DATA,
       )
 
     val SANKEY =

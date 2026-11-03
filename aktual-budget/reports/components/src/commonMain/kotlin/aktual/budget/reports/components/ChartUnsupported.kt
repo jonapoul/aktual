@@ -49,7 +49,6 @@ internal fun UnsupportedChart(data: UnsupportedData, modifier: Modifier = Modifi
         text =
           when (data.reason) {
             CustomBudgeted -> Strings.reportsUnsupportedCustomBudgeted
-            Filters -> Strings.reportsUnsupportedFilters
             InvalidMeta -> Strings.reportsUnsupportedInvalidMeta
             MissingReport -> Strings.reportsUnsupportedMissing
             ReportType -> Strings.reportsUnsupportedType
@@ -102,7 +101,6 @@ private fun PreviewUnsupportedChart(
 
 private class UnsupportedChartProvider :
   ColorParamsProvider<UnsupportedData>(
-    UnsupportedData(reason = Filters, type = CashFlow, name = "Groceries cash flow"),
     UnsupportedData(reason = ReportType, type = Calendar, name = null),
     UnsupportedData(
       reason = InvalidMeta,

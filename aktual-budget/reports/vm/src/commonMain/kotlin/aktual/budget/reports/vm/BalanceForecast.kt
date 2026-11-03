@@ -45,6 +45,9 @@ internal data class ForecastOccurrence(
   val account: AccountId?,
   val date: LocalDate,
   val amount: Long,
+  val payee: PayeeId? = null,
+  // The mirrored leg of a transfer schedule
+  val isTransfer: Boolean = false,
 )
 
 internal data class ForecastParams(
@@ -117,6 +120,8 @@ internal fun buildScheduleOccurrences(
   end: LocalDate,
   transferAccounts: Map<PayeeId, AccountId>,
   postedDates: Map<ScheduleId, List<LocalDate>>,
+  // Each account's own transfer payee, for the mirrored leg
+  transferPayees: Map<AccountId, PayeeId> = emptyMap(),
 ): List<ForecastOccurrence> {
   val occurrences = mutableListOf<ForecastOccurrence>()
   for (schedule in schedules) {
@@ -133,9 +138,18 @@ internal fun buildScheduleOccurrences(
       }
 
     for (date in dates) {
-      occurrences += ForecastOccurrence(schedule.id, schedule.account, date, schedule.amount)
+      occurrences +=
+        ForecastOccurrence(schedule.id, schedule.account, date, schedule.amount, schedule.payee)
       if (transferAccount != null) {
-        occurrences += ForecastOccurrence(schedule.id, transferAccount, date, -schedule.amount)
+        occurrences +=
+          ForecastOccurrence(
+            scheduleId = schedule.id,
+            account = transferAccount,
+            date = date,
+            amount = -schedule.amount,
+            payee = schedule.account?.let(transferPayees::get),
+            isTransfer = true,
+          )
       }
     }
   }
@@ -222,3 +236,14 @@ private fun Map<LocalDate, Amount>.byGranularity(granularity: ForecastGranularit
         .associate { (month, days) -> month.firstDay to days.maxBy { it.key }.value }
         .toImmutableMap()
   }
+
+internal const val DEFAULT_FORECAST_MONTHS = 12
+
+// packages/desktop-client/src/components/reports/reports/BalanceForecast.tsx. Older widgets saved
+// startDate and endDate months instead of a time frame
+fun BalanceForecastReportMeta.forecastTimeFrame(): TimeFrame? {
+  if (timeFrame != null) return timeFrame
+  val start = startDate?.let(YearMonth.Formats.ISO::parseOrNull) ?: return null
+  val end = endDate?.let(YearMonth.Formats.ISO::parseOrNull) ?: return null
+  return TimeFrame(start, end, Static)
+}
