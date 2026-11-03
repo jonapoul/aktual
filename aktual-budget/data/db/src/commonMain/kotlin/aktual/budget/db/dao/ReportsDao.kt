@@ -14,6 +14,7 @@ import aktual.budget.db.ForecastTrackingBudgetTotals
 import aktual.budget.db.ForecastTransferPayees
 import aktual.budget.db.MonteCarloAccountBalances
 import aktual.budget.db.NetWorthByAccount
+import aktual.budget.db.ReportTransactions
 import aktual.budget.db.SankeyCategoryTotals
 import aktual.budget.db.SankeyTransfers
 import aktual.budget.db.TransactionDateBounds
@@ -78,6 +79,13 @@ class ReportsDao(database: BudgetDatabase, private val contexts: CoroutineContex
   ): Flow<List<CrossoverBalancesByMonth>> =
     queries
       .crossoverBalancesByMonth(start, end)
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
+
+  fun observeReportTransactions(start: LocalDate, end: LocalDate): Flow<List<ReportTransactions>> =
+    queries
+      .reportTransactions(start, end)
       .asFlow()
       .mapToList(contexts.default)
       .distinctUntilChanged()
