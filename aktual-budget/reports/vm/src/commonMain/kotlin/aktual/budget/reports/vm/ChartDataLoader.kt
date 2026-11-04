@@ -955,8 +955,8 @@ internal class ChartDataLoader(
           else -> selected
         }
 
-      val postedDates =
-        inputs.posted.filter { it.account in selected }.groupBy({ it.schedule }, { it.date })
+      // Posting doesn't depend on the filters or which transfer leg is visible
+      val postedDates = inputs.posted.groupBy({ it.schedule }, { it.date })
       val occurrences =
         buildScheduleOccurrences(
           schedules = inputs.schedules.mapNotNull(::forecastSchedule),

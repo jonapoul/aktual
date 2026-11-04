@@ -186,7 +186,7 @@ WHERE tombstone = 0 AND completed = 0;
 -- packages/loot-core/src/shared/schedules.ts isScheduleOccurrencePosted()
 -- Split parents are kept too, so a posted split is found whichever row links the schedule
 forecastPostedScheduleTransactions:
-SELECT t.schedule, t.account, t.date
+SELECT t.schedule, t.date
 FROM v_transactions_internal_alive t
 WHERE t.schedule IS NOT NULL AND t.date >= :start;
 
