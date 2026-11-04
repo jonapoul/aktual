@@ -9,9 +9,8 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
 
 // packages/desktop-client/src/components/reports/spreadsheets/reportCategoryLists.ts: which
-// category
-// and group rows the report can show, whatever their activity. Selected categories with nothing in
-// them stay as empty rows, but showing empty rows never brings back the ones filtered out
+// category and group rows the report can show, whatever their activity. Selected categories with
+// nothing in them stay as empty rows, but showing empty rows never brings back filtered ones
 internal class CustomReportRows(
   config: CustomReportConfig,
   categories: List<CustomReportCategories>,
