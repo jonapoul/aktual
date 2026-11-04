@@ -10,11 +10,11 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Delete
 import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
-import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.Chip
+import aktual.core.ui.HostedSheet
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.TonalButton
 import aktual.core.ui.scrollbar
@@ -29,10 +29,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -53,14 +50,14 @@ import kotlinx.serialization.json.long
 internal fun ConditionValue(
   kind: ConditionValueKind,
   value: JsonElement,
-  entities: ImmutableList<QueryEntity>,
   names: ImmutableMap<String, String>,
   onChange: (JsonElement) -> Unit,
+  onPickEntity: () -> Unit,
 ) {
   when (kind) {
-    Entity -> EntityPicker(value, entities, names, onChange)
+    Entity -> EntityPicker(value, names, onPickEntity)
 
-    EntityList -> EntityListPicker(value as JsonArray, entities, names, onChange)
+    EntityList -> EntityListPicker(value as JsonArray, names, onChange, onPickEntity)
 
     Text ->
       CommitTextField(
@@ -106,37 +103,24 @@ internal fun ConditionValue(
 @Composable
 private fun EntityPicker(
   value: JsonElement,
-  entities: ImmutableList<QueryEntity>,
   names: ImmutableMap<String, String>,
-  onChange: (JsonElement) -> Unit,
+  onPick: () -> Unit,
 ) {
-  var showSheet by remember { mutableStateOf(false) }
   val id = value.jsonPrimitive.contentOrNull
   NormalTextButton(
     modifier = Modifier.fillMaxWidth(),
     text = if (id == null) Strings.reportsFormulaQueryNothing else names.nameOf(id),
-    onClick = { showSheet = true },
+    onClick = onPick,
   )
-
-  if (showSheet) {
-    EntitySheet(
-      selected = entities.firstOrNull { it.id == id } ?: NOTHING,
-      options = remember(entities) { (listOf(NOTHING) + entities).toImmutableList() },
-      onSelect = { entity ->
-        onChange(if (entity == NOTHING) JsonNull else JsonPrimitive(entity.id))
-      },
-      onDismiss = { showSheet = false },
-    )
-  }
 }
 
 // Chosen entities as removable chips
 @Composable
 private fun EntityListPicker(
   value: JsonArray,
-  entities: ImmutableList<QueryEntity>,
   names: ImmutableMap<String, String>,
   onChange: (JsonElement) -> Unit,
+  onPick: () -> Unit,
 ) =
   Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     val ids = value.map { it.jsonPrimitive.content }
@@ -157,23 +141,43 @@ private fun EntityListPicker(
       }
     }
 
-    var showSheet by remember { mutableStateOf(false) }
     TonalButton(
       modifier = Modifier.fillMaxWidth(),
       icon = AktualIcons.Add,
       text = Strings.reportsFormulaQueryChoose,
-      onClick = { showSheet = true },
+      onClick = onPick,
     )
-
-    if (showSheet) {
-      EntitySheet(
-        selected = NOTHING,
-        options = remember(entities, ids) { entities.filter { it.id !in ids }.toImmutableList() },
-        onSelect = { entity -> onChange(JsonArray((ids + entity.id).map(::JsonPrimitive))) },
-        onDismiss = { showSheet = false },
-      )
-    }
   }
+
+// Replaces the condition while open. Picking from a list adds to it rather than replacing it
+@Composable
+internal fun EntitySheet(
+  kind: ConditionValueKind,
+  value: JsonElement,
+  entities: ImmutableList<QueryEntity>,
+  onChange: (JsonElement) -> Unit,
+  onDismiss: () -> Unit,
+) {
+  if (kind == EntityList) {
+    val ids = (value as JsonArray).map { it.jsonPrimitive.content }
+    EntitySheet(
+      selected = NOTHING,
+      options = remember(entities, ids) { entities.filter { it.id !in ids }.toImmutableList() },
+      onSelect = { entity -> onChange(JsonArray((ids + entity.id).map(::JsonPrimitive))) },
+      onDismiss = onDismiss,
+    )
+  } else {
+    val id = value.jsonPrimitive.contentOrNull
+    EntitySheet(
+      selected = entities.firstOrNull { it.id == id } ?: NOTHING,
+      options = remember(entities) { (listOf(NOTHING) + entities).toImmutableList() },
+      onSelect = { entity ->
+        onChange(if (entity == NOTHING) JsonNull else JsonPrimitive(entity.id))
+      },
+      onDismiss = onDismiss,
+    )
+  }
+}
 
 // A list sheet with a search field, since there can be hundreds of payees
 @Composable
@@ -183,7 +187,7 @@ private fun EntitySheet(
   onSelect: (QueryEntity) -> Unit,
   onDismiss: () -> Unit,
 ) =
-  AktualModalBottomSheet(onDismissRequest = onDismiss) {
+  HostedSheet(onDismiss = onDismiss) {
     val search = rememberTextFieldState()
     val query = search.text.toString().trim()
     val nothing = Strings.reportsFormulaQueryNothing
@@ -207,10 +211,7 @@ private fun EntitySheet(
         BottomSheetListItem(
           label = if (entity == NOTHING) nothing else entity.name,
           isSelected = entity == selected,
-          onClick = {
-            onSelect(entity)
-            onDismiss()
-          },
+          onClick = { close { onSelect(entity) } },
         )
       }
     }

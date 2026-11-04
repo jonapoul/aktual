@@ -30,6 +30,7 @@ import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.SheetHost
 import aktual.core.ui.StuckHeaders
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -84,6 +85,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.monthsUntil
 import kotlinx.datetime.plus
@@ -190,11 +193,12 @@ private fun BudgetScaffold(
   val pageListStates = remember { PageListStates() }
   val visibleMonth by rememberUpdatedState((state as? Loaded)?.month)
   var showMonthPicker by remember { mutableStateOf(false) }
-  var sheet by remember { mutableStateOf<SheetRequest?>(null) }
+  // Sheets opened from a sheet stack on top of it, and go back to it when closed
+  var sheets by remember { mutableStateOf(persistentListOf<SheetRequest>()) }
   val latestOnAction by rememberUpdatedState(onAction)
   val handler = remember {
     BudgetActionHandler { action ->
-      if (action is OpenSheet) sheet = action.sheet else latestOnAction(action)
+      if (action is OpenSheet) sheets = persistentListOf(action.sheet) else latestOnAction(action)
     }
   }
   val focusRequester = remember { FocusRequester() }
@@ -270,38 +274,79 @@ private fun BudgetScaffold(
     MonthPickerSheet(state = state, onAction = handler, onDismiss = { showMonthPicker = false })
   }
 
-  val request = sheet
-  if (request != null && state is Loaded) {
+  if (state is Loaded) {
+    BudgetSheetStack(
+      sheets = sheets,
+      state = state,
+      onAction = handler,
+      onOpen = { sheet -> sheets = sheets.adding(sheet) },
+      onChange = { sheets = it },
+    )
+  }
+}
+
+// The top sheet shows as a page of one sheet, which goes back to the one below when closed
+@Composable
+private fun BudgetSheetStack(
+  sheets: PersistentList<SheetRequest>,
+  state: BudgetState.Loaded,
+  onAction: BudgetActionHandler,
+  onOpen: (SheetRequest) -> Unit,
+  onChange: (PersistentList<SheetRequest>) -> Unit,
+) {
+  val request = sheets.lastOrNull() ?: return
+  if (request is ConfirmMonthSheet) {
+    // A dialog, so it stays out of the sheet
     BudgetSheets(
       request = request,
       state = state,
-      onAction = handler,
-      onDismiss = { if (sheet == request) sheet = null },
+      onAction = onAction,
+      onDismiss = { onChange(persistentListOf()) },
+    )
+    return
+  }
+
+  val latestOnOpen by rememberUpdatedState(onOpen)
+  val sheetHandler =
+    remember(onAction) {
+      BudgetActionHandler { action ->
+        if (action is OpenSheet) latestOnOpen(action.sheet) else onAction(action)
+      }
+    }
+  SheetHost(onDismiss = { onChange(persistentListOf()) }) { host ->
+    BudgetSheets(
+      request = request,
+      state = state,
+      onAction = sheetHandler,
+      onDismiss =
+        if (sheets.size > 1) {
+          { onChange(sheets.removingAt(sheets.lastIndex)) }
+        } else {
+          host.dismiss
+        },
     )
   }
 }
 
 // Ctrl and the left or right arrow, as upstream's desktop budget
 private fun KeyEvent.changeMonth(state: BudgetState, onAction: BudgetActionHandler): Boolean {
-  if (state !is Loaded || type != KeyDown || !isCtrlPressed) {
-    return false
-  }
+  val canHandle = state is Loaded && type == KeyDown && isCtrlPressed
+  return canHandle &&
+    when (key) {
+      DirectionLeft if state.canGoBack -> {
+        onAction(PreviousMonth)
+        true
+      }
 
-  return when (key) {
-    DirectionLeft if state.canGoBack -> {
-      onAction(PreviousMonth)
-      true
-    }
+      DirectionRight if state.canGoForward -> {
+        onAction(NextMonth)
+        true
+      }
 
-    DirectionRight if state.canGoForward -> {
-      onAction(NextMonth)
-      true
+      else -> {
+        false
+      }
     }
-
-    else -> {
-      false
-    }
-  }
 }
 
 @Composable

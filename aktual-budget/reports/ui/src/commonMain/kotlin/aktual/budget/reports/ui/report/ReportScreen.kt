@@ -47,6 +47,7 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
+import aktual.core.ui.SheetHost
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -212,14 +213,15 @@ internal fun ReportScaffold(
     ChartInfoSheet(info = info, onDismiss = { showInfo = false })
   }
 
-  if (showSettings && loaded != null) {
-    loaded.draft
-      .settingsSheet()
-      ?.invoke(
+  val settingsSheet = loaded?.draft?.settingsSheet()
+  if (showSettings && settingsSheet != null) {
+    SheetHost(onDismiss = { showSettings = false }) { host ->
+      settingsSheet(
         editorData,
         { transform -> onAction(Action.EditSettings(transform)) },
-        { showSettings = false },
+        host.dismiss,
       )
+    }
   }
 
   Scaffold(

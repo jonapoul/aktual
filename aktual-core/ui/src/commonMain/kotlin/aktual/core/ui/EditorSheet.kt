@@ -10,16 +10,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 
 /**
  * A bottom sheet editing one value, with cancel and confirm buttons along the bottom. It opens
- * fully expanded, so it stays above the keyboard as it grows to fit it.
+ * fully expanded, so it stays above the keyboard as it grows to fit it. Inside a [SheetHost],
+ * confirming closes the whole sheet while cancelling only closes this page.
  */
 @Composable
 fun EditorSheet(
@@ -33,29 +31,12 @@ fun EditorSheet(
   subtitle: String? = null,
   content: @Composable EditorSheetScope.() -> Unit,
 ) {
-  val sheetState =
-    rememberBottomSheetState(
-      initialValue = Hidden,
-      enabledValues = setOf(Hidden, Expanded),
-    )
-  val scope = rememberCoroutineScope()
-  fun hide(then: () -> Unit) {
-    scope
-      .launch { sheetState.hide() }
-      .invokeOnCompletion {
-        then()
-        onDismiss()
-      }
-  }
-
-  AktualModalBottomSheet(
-    modifier = modifier,
-    onDismissRequest = onDismiss,
-    sheetState = sheetState,
-  ) {
+  HostedSheet(onDismiss = onDismiss) {
+    val sheet = this
     Column(
       modifier =
-        Modifier.verticalScroll(rememberScrollState())
+        modifier
+          .verticalScroll(rememberScrollState())
           .padding(horizontal = EditorSheetDS.padding)
           .padding(bottom = EditorSheetDS.padding),
       verticalArrangement = Arrangement.spacedBy(EditorSheetDS.spacing),
@@ -71,7 +52,7 @@ fun EditorSheet(
         }
       }
 
-      EditorSheetScope(column = this, hide = ::hide).content()
+      EditorSheetScope(column = this, hide = sheet::dismiss).content()
 
       Row(
         modifier = Modifier.fillMaxWidth(),
@@ -80,13 +61,13 @@ fun EditorSheet(
         NormalTextButton(
           modifier = Modifier.weight(1f),
           text = cancelText,
-          onClick = { hide {} },
+          onClick = { sheet.close {} },
         )
         PrimaryTextButton(
           modifier = Modifier.weight(1f),
           text = confirmText,
           isEnabled = canConfirm,
-          onClick = { hide(onConfirm) },
+          onClick = { sheet.dismiss(onConfirm) },
         )
       }
     }
