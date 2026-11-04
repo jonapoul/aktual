@@ -176,7 +176,7 @@ private fun SyncState(
     modifier =
       modifier
         .padding(horizontal = 4.dp)
-        .clickable(enabled = state is Inactive, onClick = onClickSync),
+        .clickable(enabled = state is Inactive || state is ClockDrift, onClick = onClickSync),
     horizontalArrangement = Arrangement.spacedBy(5.dp),
     verticalAlignment = CenterVertically,
   ) {
@@ -195,6 +195,7 @@ private fun SyncState(
 private fun SyncState.icon() =
   when (this) {
     NoToken -> AktualIcons.ExclamationOutline
+    ClockDrift -> AktualIcons.ExclamationOutline
     is SyncFailed -> AktualIcons.ExclamationOutline
     Syncing -> AktualIcons.ArrowsSynchronize
     Inactive -> AktualIcons.ArrowsSynchronize
@@ -204,6 +205,7 @@ private fun SyncState.icon() =
 private fun SyncState.text() =
   when (this) {
     NoToken -> Strings.syncNoToken
+    ClockDrift -> Strings.syncClockDrift
     is SyncFailed -> Strings.syncFailed
     Syncing -> Strings.syncSyncing
     Inactive -> Strings.sync
@@ -213,6 +215,7 @@ private fun SyncState.text() =
 private fun SyncState.tint(colors: Colors, attrs: BottomBarThemeAttrs) =
   when (this) {
     NoToken -> colors.warningText
+    ClockDrift -> colors.errorText
     is SyncFailed -> colors.errorText
     Syncing -> colors.reportsBlue
     Inactive -> attrs.foreground(colors)
@@ -250,6 +253,7 @@ private class BottomBarProvider :
     BottomBarParams(state = Success, budgetName = "My Budget"),
     BottomBarParams(state = Success, syncState = NoToken, budgetName = "My Budget"),
     BottomBarParams(state = Success, syncState = SyncFailed("abc"), budgetName = "My Budget"),
+    BottomBarParams(state = Success, syncState = ClockDrift, budgetName = "My Budget"),
     BottomBarParams(state = Success, syncState = Syncing, budgetName = "My Budget"),
     BottomBarParams(state = Failure),
     BottomBarParams(state = Unknown),

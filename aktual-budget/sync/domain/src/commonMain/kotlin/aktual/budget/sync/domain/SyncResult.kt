@@ -11,6 +11,8 @@ internal sealed interface SyncResult {
 
   data object OutOfSyncError : Error
 
+  data object ClockDriftError : Error
+
   data class MissingPrefError(val missingGroupId: Boolean, val missingBudgetId: Boolean) : Error
 
   data class OtherError(val cause: Throwable? = null) : Error

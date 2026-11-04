@@ -108,6 +108,13 @@ internal constructor(
         syncEvents.complete(Succeeded)
       }
 
+      ClockDriftError -> {
+        // Kept on screen, since every retry fails the same way until the device clock is fixed
+        update(ClockDrift)
+        syncEvents.complete(Failed)
+        return
+      }
+
       is SyncResult.Error -> {
         update(SyncFailed(result.toString()))
         syncEvents.complete(Failed)

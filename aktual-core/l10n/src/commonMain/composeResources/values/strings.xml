@@ -33,6 +33,7 @@
   <string name="sync">Sync</string>
   <string name="sync_no_token">No token</string>
   <string name="sync_failed">Sync failed</string>
+  <string name="sync_clock_drift">Sync failed, check your device time</string>
   <string name="sync_syncing">Syncing…</string>
 
   <string name="month_jan_short">Jan</string>

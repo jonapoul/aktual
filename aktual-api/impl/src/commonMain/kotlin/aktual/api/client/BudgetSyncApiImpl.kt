@@ -9,10 +9,12 @@ import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsChannel
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.path
@@ -31,19 +33,27 @@ internal constructor(
 ) : BudgetSyncApi {
   override suspend fun syncBudget(requestBody: ByteString): SyncResponse {
     val remote = remote()
-    val response = client.post {
-      url {
-        protocol = remote.url.protocol()
-        host = remote.url.baseUrl
-        path("/sync/sync")
-      }
-      header(AktualHeaders.TOKEN, remote.token)
-      setBody(requestBody.toByteArray())
+    val response =
+      try {
+        client.post {
+          url {
+            protocol = remote.url.protocol()
+            host = remote.url.baseUrl
+            path("/sync/sync")
+          }
+          header(AktualHeaders.TOKEN, remote.token)
+          setBody(requestBody.toByteArray())
 
-      // Required by the Actual sync server's express.raw() middleware.
-      // See packages/sync-server/src/app-sync.ts
-      contentType(ContentType("application", "actual-sync"))
-    }
+          // Required by the Actual sync server's express.raw() middleware.
+          // See packages/sync-server/src/app-sync.ts
+          contentType(ContentType("application", "actual-sync"))
+        }
+      } catch (e: ClientRequestException) {
+        if (e.response.status == BadRequest) {
+          throw SyncRejectedException(e.response.bodyAsText(), e)
+        }
+        throw e
+      }
 
     return decoder(
       source = response.bodyAsChannel().toInputStream().source().buffer(),
