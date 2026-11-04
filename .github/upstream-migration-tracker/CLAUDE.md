@@ -1,10 +1,10 @@
 # Upstream Migration Tracker
 
-Automated system that regularly checks for new database migrations in [actualbudget/actual](https://github.com/actualbudget/actual) and opens a PR when new ones are found.
+Automated system that checks daily for new database migrations in [actualbudget/actual](https://github.com/actualbudget/actual) and opens a PR when new ones are found.
 
 ## How It Works
 
-1. The GitHub Action (`.github/workflows/check-upstream-changes.yml`) runs every 6 hours and can be triggered manually. GitHub delays scheduled runs, often by several hours, so a new upstream migration can take a while to show up.
+1. The GitHub Action (`.github/workflows/check-upstream-changes.yml`) runs daily at 08:00 UTC and can be triggered manually.
 2. `check-migrations.sh` sparse-clones the upstream repo and compares migration files against `last-known-migration.txt`.
 3. If new migrations are found:
    - Updates `last-known-migration.txt` to the newest migration.

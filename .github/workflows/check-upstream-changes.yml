@@ -1,10 +1,9 @@
 name: Check Upstream Changes
 
 on:
-  # Every 6 hours. GitHub delays scheduled runs by hours, so a daily run could leave an upstream
-  # migration unreported for over a day
+  # 8am daily
   schedule:
-    - cron: '17 */6 * * *'
+    - cron: '0 8 * * *'
   workflow_dispatch:
 
 permissions:
