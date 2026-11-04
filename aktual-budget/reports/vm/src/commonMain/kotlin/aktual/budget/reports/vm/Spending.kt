@@ -64,7 +64,7 @@ internal fun spendingTotals(rows: List<ReportTransactions>): Map<LocalDate, Long
     .mapValues { (_, group) -> group.sumOf { it.amount } }
 
 internal data class SpendingParams(
-  val title: String,
+  val title: String?,
   val dateRangeMode: DateRangeMode,
   val months: SpendingMonths,
   val mode: SpendingMode,

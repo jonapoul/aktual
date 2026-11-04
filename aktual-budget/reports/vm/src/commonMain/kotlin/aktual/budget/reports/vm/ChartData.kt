@@ -333,7 +333,7 @@ data class ChartDateConfig(
 )
 
 data class SpendingData(
-  val title: String,
+  val title: String?,
   val mode: DateRangeMode,
   val targetMonth: YearMonth,
   val comparison: SpendingComparison,
