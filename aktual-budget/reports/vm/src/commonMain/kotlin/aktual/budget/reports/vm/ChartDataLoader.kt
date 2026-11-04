@@ -513,7 +513,7 @@ internal class ChartDataLoader(
         val budget = if (mode == Budget) spendingBudget(meta, months.compare) else flowOf(0L)
         val params =
           SpendingParams(
-            title = meta.name.orEmpty(),
+            title = meta.name,
             dateRangeMode = meta.dateRangeMode,
             months = months,
             mode = mode,
