@@ -787,7 +787,7 @@
   <string name="monte_carlo_working_boundaries_raise">Boundaries: the withdrawal rate (%1$s) fell below %2$s, so withdrawals were raised by %3$s: %4$s instead of the planned %5$s.</string>
   <string name="monte_carlo_working_boundaries_hold_earlier">Boundaries: the withdrawal rate (%1$s) stayed between %2$s and %3$s - no new change, but earlier adjustments still apply: %4$s instead of the planned %5$s.</string>
   <string name="monte_carlo_working_boundaries_hold">Boundaries: the withdrawal rate (%1$s) stayed between %2$s and %3$s - no change, taking the planned %4$s.</string>
-  <string name="monte_carlo_working_minimum">Raised to the minimum spending: %1$s.</string>
+  <string name="monte_carlo_working_minimum">Lifted by the minimum spending floor to %1$s.</string>
   <string name="monte_carlo_working_income_taxed">Income: %1$s gross − %2$s tax = %3$s received.</string>
   <string name="monte_carlo_working_income_untaxed">Income: %1$s, untaxed.</string>
   <string name="monte_carlo_working_income_stream">%1$s: %2$s</string>
@@ -993,7 +993,7 @@
   <string name="monte_carlo_rule_option_floor_ceiling">Floor &amp; ceiling (Bengen)</string>
   <string name="monte_carlo_rule_option_boundaries">Boundaries</string>
   <string name="monte_carlo_field_minimum_spending">Minimum spending</string>
-  <string name="monte_carlo_help_minimum_spending">The lowest amount you need to live on in any year, no matter what the rule says: when the rule cuts below it, the plan is lifted back up to it and that is what gets spent. Income counts towards it, so the pots only withdraw enough to top it up. It only applies in years with planned spending - a spending phase set to 0 takes nothing. Like your planned spending, it’s in today’s money and rises with inflation. Set to 0 for no floor.</string>
+  <string name="monte_carlo_help_minimum_spending">The lowest amount you need to live on, no matter what the rule says: when the rule cuts below it, spending is lifted back up to it. It never raises spending above what a phase plans - each year the floor is the lower of this amount and the phase’s planned spending, so a floor sized for full retirement simply holds cheaper part-time years at their plan. Income counts towards it, so the pots only withdraw enough to top it up. It only applies in years with planned spending - a spending phase set to 0 takes nothing. Like your planned spending, it’s in today’s money and rises with inflation. Set to 0 for no floor.</string>
   <string name="monte_carlo_rule_sentence_preservation">Capital preservation rule: if the withdrawal rate rises more than %1$s above the planned rate, cut withdrawals by %2$s.</string>
   <string name="monte_carlo_rule_sentence_prosperity">Prosperity rule: if the withdrawal rate falls more than %1$s below the planned rate, raise withdrawals by %2$s.</string>
   <string name="monte_carlo_rule_sentence_ratcheting">If the accessible balance stays above %1$s its starting level for %2$d years in a row, raise withdrawals by %3$s.</string>
