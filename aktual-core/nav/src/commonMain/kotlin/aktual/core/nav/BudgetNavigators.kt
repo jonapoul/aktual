@@ -36,7 +36,7 @@ class BudgetCategoryNavigator(private val stack: NavStack<BudgetNavKey>) {
 
 @Immutable
 class TransactionsNavigator(private val stack: NavStack<BudgetNavKey>) {
-  operator fun invoke() = stack.replaceAll(TransactionsNavRoute)
+  operator fun invoke() = stack.push(TransactionsNavRoute)
 
   operator fun invoke(id: TagId) = stack.push(TransactionsWithTagNavRoute(id))
 
