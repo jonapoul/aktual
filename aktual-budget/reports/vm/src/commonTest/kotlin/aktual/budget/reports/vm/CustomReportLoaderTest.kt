@@ -160,20 +160,9 @@ class CustomReportLoaderTest {
           title = "Spending",
           config = checkNotNull(report.toConfig()),
           range = TODAY..TODAY,
-          intervals =
-            persistentListOf(
-              CustomIntervalTotals(
-                interval = CustomInterval(LocalDate(2026, 5, 1), TODAY..TODAY),
-                totals = Zero,
-                stacked =
-                  persistentMapOf(
-                    CustomGroup.Uncategorized to Amount.Zero,
-                    CustomGroup.OffBudget to Amount.Zero,
-                    CustomGroup.Transfers to Amount.Zero,
-                  ),
-              ),
-            ),
-          intervalCount = 1,
+          // No categories, and the made-up rows are turned off, so there are no rows to show
+          intervals = persistentListOf(),
+          intervalCount = 0,
           groups = persistentListOf(),
           categoryGroups = persistentListOf(),
           totals = Zero,

@@ -10,19 +10,29 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
+import aktual.budget.model.Condition
+import aktual.budget.model.Field
 import aktual.budget.model.FirstDayOfWeek
+import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TagId
+import aktual.budget.reports.vm.CustomGroup.OffBudget
+import aktual.budget.reports.vm.CustomGroup.Transfers
 import aktual.budget.reports.vm.CustomGroup.Uncategorized
 import aktual.budget.reports.vm.CustomGroup.UncategorizedAndOffBudget
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateRange
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonPrimitive
 
 class CustomSpreadsheetTest {
   @Test
@@ -77,8 +87,8 @@ class CustomSpreadsheetTest {
     assertThat(sheet.groups.associate { it.group to it.totals.debts })
       .isEqualTo(
         mapOf(
-          CustomGroup.OffBudget to Amount(-1200),
-          CustomGroup.Transfers to Amount(-200),
+          OffBudget to Amount(-1200),
+          Transfers to Amount(-200),
           Uncategorized to Amount(-100),
         ),
       )
@@ -116,7 +126,128 @@ class CustomSpreadsheetTest {
 
     assertThat(spreadsheet(amounts = amounts).groups.map { it.group }).containsExactly(FOOD_GROUP)
     assertThat(spreadsheet(config = CONFIG.copy(showEmpty = true), amounts = amounts).groups.size)
-      .isEqualTo(CATEGORIES.size + 3)
+      .isEqualTo(CATEGORIES.size + 2)
+  }
+
+  @Test
+  fun `Empty rows only include the categories the filters select`() {
+    val config =
+      CONFIG.copy(conditions = persistentListOf(condition(Category, OneOf, ids("food", "fuel"))))
+    val amounts = listOf(row(JAN, category = FOOD, debts = -100))
+
+    val showing = spreadsheet(config = config.copy(showEmpty = true), amounts = amounts)
+    assertThat(showing.groups.map { it.group }).containsExactly(FOOD_GROUP, FUEL_GROUP)
+    assertThat(showing.totals.debts).isEqualTo(Amount(-100))
+
+    val hiding = spreadsheet(config = config, amounts = amounts)
+    assertThat(hiding.groups.map { it.group }).containsExactly(FOOD_GROUP)
+  }
+
+  @Test
+  fun `Empty rows leave out hidden categories and made-up rows that are turned off`() {
+    val sheet =
+      spreadsheet(
+        config =
+          CONFIG.copy(
+            showEmpty = true,
+            showHidden = false,
+            showUncategorized = false,
+            showOffBudget = false,
+          ),
+        categories = CATEGORIES + HIDDEN_CATEGORY,
+      )
+    assertThat(sheet.groups.map { it.group })
+      .containsExactlyInAnyOrder(FOOD_GROUP, FUEL_GROUP, SALARY_GROUP)
+  }
+
+  @Test
+  fun `Empty rows include hidden categories and made-up rows that are turned on`() {
+    val sheet =
+      spreadsheet(
+        config =
+          CONFIG.copy(
+            showEmpty = true,
+            showHidden = true,
+            showUncategorized = true,
+            showOffBudget = true,
+          ),
+        categories = CATEGORIES + HIDDEN_CATEGORY,
+      )
+    assertThat(sheet.groups.map { it.group })
+      .containsExactlyInAnyOrder(
+        FOOD_GROUP,
+        FUEL_GROUP,
+        SALARY_GROUP,
+        HIDDEN_GROUP,
+        OffBudget,
+        Transfers,
+        Uncategorized,
+      )
+  }
+
+  @Test
+  fun `Selecting categories leaves out the made-up rows`() {
+    val sheet =
+      spreadsheet(
+        config =
+          CONFIG.copy(
+            showEmpty = true,
+            showOffBudget = true,
+            conditions = persistentListOf(condition(Category, Is, JsonPrimitive("food"))),
+          ),
+      )
+    assertThat(sheet.groups.map { it.group }).containsExactlyInAnyOrder(FOOD_GROUP, OffBudget)
+  }
+
+  @Test
+  fun `Group rows only hold the selected categories`() {
+    val sheet =
+      spreadsheet(
+        config =
+          CONFIG.copy(
+            groupBy = Group,
+            showEmpty = true,
+            conditions =
+              persistentListOf(
+                condition(CategoryGroup, Is, JsonPrimitive("spending")),
+                condition(Category, IsNot, JsonPrimitive("fuel")),
+              ),
+          ),
+      )
+    assertThat(sheet.groups.map { it.group }).containsExactly(SPENDING_GROUP)
+    assertThat(sheet.categoryGroups.map { it.group }).containsExactly(SPENDING_GROUP)
+    assertThat(sheet.categoryGroups[0].categories.map { it.group }).containsExactly(FOOD_GROUP)
+  }
+
+  @Test
+  fun `Or with a condition on another field keeps every row`() {
+    val sheet =
+      spreadsheet(
+        config =
+          CONFIG.copy(
+            showEmpty = true,
+            conditionsOp = Or,
+            conditions =
+              persistentListOf(
+                condition(Category, Is, JsonPrimitive("food")),
+                condition(Notes, Contains, JsonPrimitive("test")),
+              ),
+          ),
+      )
+    assertThat(sheet.groups.size).isEqualTo(CATEGORIES.size + 2)
+  }
+
+  @Test
+  fun `No category keeps the uncategorised row but not transfers`() {
+    val sheet =
+      spreadsheet(
+        config =
+          CONFIG.copy(
+            showEmpty = true,
+            conditions = persistentListOf(condition(Category, Is, JsonNull)),
+          ),
+      )
+    assertThat(sheet.groups.map { it.group }).containsExactly(Uncategorized)
   }
 
   @Test
@@ -476,6 +607,7 @@ class CustomSpreadsheetTest {
     range: LocalDateRange = date(JAN)..date("2026-02-28"),
     firstDayOfWeek: FirstDayOfWeek = Sunday,
     amounts: List<CustomReportAmounts> = emptyList(),
+    categories: List<CustomReportCategories> = CATEGORIES,
     payees: List<CustomReportPayees> = listOf(CustomReportPayees(SHOP, "Shop")),
     tagged: List<TaggedAmounts> = emptyList(),
     tags: List<CustomReportTags> = TAGS,
@@ -487,7 +619,7 @@ class CustomSpreadsheetTest {
       inputs =
         CustomReportInputs(
           amounts = amounts,
-          categories = CATEGORIES,
+          categories = categories,
           categoryGroups = GROUPS,
           payees = payees,
           accounts =
@@ -523,6 +655,7 @@ class CustomSpreadsheetTest {
 
     val FOOD_GROUP = CustomGroup.Category(FOOD, "Food")
     val FUEL_GROUP = CustomGroup.Category(FUEL, "Fuel")
+    val SALARY_GROUP = CustomGroup.Category(SALARY, "Salary")
     val SPENDING_GROUP = CustomGroup.Group(SPENDING, "Spending")
 
     val CATEGORIES =
@@ -531,6 +664,10 @@ class CustomSpreadsheetTest {
         CustomReportCategories(FUEL, "Fuel", SPENDING, 2.0, false, false),
         CustomReportCategories(SALARY, "Salary", INCOME, 1.0, false, false),
       )
+    val HIDDEN = CategoryId("hidden")
+    val HIDDEN_CATEGORY = CustomReportCategories(HIDDEN, "Hidden", SPENDING, 3.0, true, false)
+    val HIDDEN_GROUP = CustomGroup.Category(HIDDEN, "Hidden")
+
     val GROUPS =
       listOf(
         CustomReportCategoryGroups(SPENDING, "Spending"),
@@ -558,6 +695,11 @@ class CustomSpreadsheetTest {
         netDebts = Amount(netDebts),
         total = Amount(assets + debts),
       )
+
+    fun condition(field: Field, operator: Operator, value: JsonElement) =
+      Condition(field = field, operator = operator, value = value)
+
+    fun ids(vararg values: String) = JsonArray(values.map(::JsonPrimitive))
 
     fun tagged(amounts: CustomReportAmounts, notes: String?) = TaggedAmounts(amounts, notes)
 

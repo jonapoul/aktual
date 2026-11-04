@@ -94,12 +94,15 @@ internal fun customSpreadsheet(
   val metric = config.balanceType.metric
   val calculator = GroupCalculator(intervals, metric, config.showEmpty)
 
+  val rows = CustomReportRows(config, inputs.categories, inputs.categoryGroups)
   val categoryList =
-    inputs.categories.map { CustomGroup.Category(it.id, it.name.orEmpty()) } +
-      listOf<CustomGroup>(Uncategorized, OffBudget, Transfers)
+    (inputs.categories.map { CustomGroup.Category(it.id, it.name.orEmpty()) } +
+        listOf<CustomGroup>(Uncategorized, OffBudget, Transfers))
+      .filter(rows::isEligible)
   val groupList =
-    inputs.categoryGroups.map { CustomGroup.Group(it.id, it.name.orEmpty()) } +
-      CustomGroup.UncategorizedAndOffBudget
+    (inputs.categoryGroups.map { CustomGroup.Group(it.id, it.name.orEmpty()) } +
+        CustomGroup.UncategorizedAndOffBudget)
+      .filter(rows::isEligible)
 
   val (items, itemSums) =
     when (config.groupBy) {
@@ -216,7 +219,7 @@ private fun categoryGroups(
           if (group is Group) {
             categoriesByGroup[group.id].orEmpty().mapNotNull { namedCategories[it.id] }
           } else {
-            listOf<CustomGroup>(Uncategorized, Transfers, OffBudget)
+            listOf<CustomGroup>(Uncategorized, Transfers, OffBudget).filter { it in categoryList }
           }
         calculator
           .group(group, sums.byGroup[group.key])
