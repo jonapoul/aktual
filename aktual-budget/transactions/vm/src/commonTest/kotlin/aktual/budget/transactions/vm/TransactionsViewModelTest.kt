@@ -1412,7 +1412,7 @@ class TransactionsViewModelTest {
 
     // when
     viewModel.finishReconciling()
-    awaitUntil { accounts[AccountId("a")]?.last_reconciled != null }
+    awaitUntil { viewModel.reconciling.value == null }
 
     // then
     viewModel.reconciling.test { assertThatNextEmissionIsEqualTo(null) }

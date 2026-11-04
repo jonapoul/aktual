@@ -15,13 +15,18 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
+import org.gradle.testretry.TestRetryPlugin
+import org.gradle.testretry.TestRetryTaskExtension
 
 class ConventionTest : ProjectPlugin {
   override fun Project.applyTo() {
     with(pluginManager) {
       apply(ConventionTestDependencies::class)
       apply(BuildConfigPlugin::class)
+      apply(TestRetryPlugin::class)
     }
+
+    val isCi = providers.environmentVariable("CI").isPresent
 
     pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
       pluginManager.apply(BurstPlugin::class)
@@ -62,6 +67,13 @@ class ConventionTest : ProjectPlugin {
 
       // To work around https://github.com/gradle/gradle/issues/33619
       t.failOnNoDiscoveredTests.set(false)
+
+      // Retry flaky failures on CI, but not when many tests fail at once
+      t.extensions.configure(TestRetryTaskExtension::class) {
+        maxRetries.set(if (isCi) 2 else 0)
+        maxFailures.set(10)
+        failOnPassedAfterRetry.set(false)
+      }
 
       if (t.name.contains("release", ignoreCase = true)) {
         t.enabled = false

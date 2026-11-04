@@ -52,6 +52,7 @@ dependencies {
   compileOnlyPlugin(libs.plugins.metro)
   compileOnlyPlugin(libs.plugins.sortDependencies)
   compileOnlyPlugin(libs.plugins.straitjacket)
+  compileOnlyPlugin(libs.plugins.testRetry)
 
   detektPlugins(libs.detektGradle)
 

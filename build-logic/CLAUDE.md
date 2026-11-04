@@ -27,7 +27,7 @@ Gradle convention plugins that centralize build config. Included build - `settin
 - `ConventionDetekt` - only the type-resolution task per compilation runs: the per-source-set tasks are disabled, and the android ones only run when the module has `androidMain` / `androidHostTest` sources. The detekt tasks are silent and never fail. `detektCheck` (`DetektReportTask`) merges their checkstyle reports, writes the sorted, deduplicated issues to the module's `build/reports/detekt/issues.txt` and fails if there are any. `DetektSummaryService` (a shared build service) collects the issues of every `detektCheck` in the invocation, prints them once at the end of the build as clickable `file://` links and writes them to the root `build/reports/detekt/all-issues.txt`. It needs `--continue` to cover modules after the first failure
 - `ConventionLicensee` - Apache-2.0/MIT/BSD/EPL-1.0
 - `ConventionSortDependencies` - checks dependency declarations are in canonical order via square/gradle-dependencies-sorter; run `./gradlew sortDependencies` to fix
-- `ConventionTest` - Burst, `testAll`, Robolectric/MockK JVM args, `maxParallelForks` of a quarter of the CPU cores (1 to 4)
+- `ConventionTest` - Burst, `testAll`, Robolectric/MockK JVM args, `maxParallelForks` of a quarter of the CPU cores (1 to 4), test-retry (up to 2 retries on CI only, off after 10 failures)
 - `ConventionTestDependencies`
 - `ConventionIdea`
 - `ConventionAtlas` - in modules, puts the chart at `build/atlas/chart.svg`. At the root, `atlasGenerate` also writes `build/atlas/index.html` (`WriteAtlasIndex`), linking to every module's chart, and prints its `file://` URL
