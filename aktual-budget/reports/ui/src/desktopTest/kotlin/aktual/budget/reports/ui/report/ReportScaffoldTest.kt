@@ -25,14 +25,19 @@ import aktual.budget.reports.vm.SummaryData
 import aktual.budget.reports.vm.SummaryReportMeta
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.dashboard.DashboardItem
+import aktual.budget.reports.vm.newQueryCondition
 import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.summaryType
+import aktual.core.ui.Tags as CoreTags
 import aktual.test.setPreviewContent
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.v2.runComposeUiTest
@@ -135,6 +140,62 @@ class ReportScaffoldTest {
         NetWorthReportMeta(timeFrame = TimeFrame(YearMonth(2025, 6), YearMonth(2025, 6), LastYear)),
       )
   }
+
+  @Test
+  fun `Done on the time frame picker goes back to the settings`() = runComposeUiTest {
+    // given
+    setPreviewContent {
+      ReportScaffold(state = ANALYSIS, editorData = PREVIEW_QUERY_DATA, onAction = {})
+    }
+    onNodeWithTag(ChartTags.ChartSettings).performClick()
+    onNodeWithTag(Tags.TimeFrameRow).performClick()
+    onNodeWithText("Last year").assertExists()
+    back().assertExists()
+
+    // when
+    onNodeWithTag(Tags.QuerySheetDone).performSemanticsAction(SemanticsActions.OnClick)
+    waitForIdle()
+
+    // then
+    onNodeWithText("Chart settings").assertExists()
+    onNodeWithText("Last year").assertDoesNotExist()
+    back().assertDoesNotExist()
+  }
+
+  @Test
+  fun `Back goes from a condition's entity list to the condition, then the settings`() =
+    runComposeUiTest {
+      // given
+      val state = ANALYSIS.copy(draft = ANALYSIS_META.copy(conditions = listOf(CATEGORY_CONDITION)))
+      setPreviewContent {
+        ReportScaffold(state = state, editorData = PREVIEW_QUERY_DATA, onAction = {})
+      }
+      onNodeWithTag(ChartTags.ChartSettings).performClick()
+      onNodeWithTag(Tags.ConditionRow).performScrollTo().performClick()
+      onNodeWithText("Edit condition").assertExists()
+      onNodeWithText("Nothing").performSemanticsAction(SemanticsActions.OnClick)
+      waitForIdle()
+      onNodeWithText("Food").assertExists()
+
+      // when
+      back().performSemanticsAction(SemanticsActions.OnClick)
+      waitForIdle()
+
+      // then
+      onNodeWithText("Food").assertDoesNotExist()
+      onNodeWithText("Edit condition").assertExists()
+
+      // when
+      back().performSemanticsAction(SemanticsActions.OnClick)
+      waitForIdle()
+
+      // then
+      onNodeWithText("Edit condition").assertDoesNotExist()
+      onNodeWithText("Chart settings").assertExists()
+      back().assertDoesNotExist()
+    }
+
+  private fun ComposeUiTest.back() = onNodeWithTag(CoreTags.SheetBack)
 
   @Test
   fun `Unsaved changes swap back for discard and show save`() = runComposeUiTest {
@@ -381,6 +442,8 @@ class ReportScaffoldTest {
             value = Zero,
           ),
       )
+
+    val CATEGORY_CONDITION = newQueryCondition(Category)
 
     // As the view model makes it, with upstream's defaults filled in
     val ANALYSIS_META =

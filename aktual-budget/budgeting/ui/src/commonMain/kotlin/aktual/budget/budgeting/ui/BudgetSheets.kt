@@ -13,13 +13,13 @@ import aktual.budget.model.toInputText
 import aktual.core.l10n.Strings
 import aktual.core.model.unaryPlus
 import aktual.core.ui.AktualAlertDialog
-import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AmountField
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.EditorSheet
+import aktual.core.ui.HostedSheet
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.keyboardFocusRequester
@@ -294,17 +294,20 @@ private fun OverspentMenuSheet(
             label = category.name,
             trailing = category.balance.formattedString(includeSign = true),
             onClick = { onAction(OpenSheet(SheetRequest.CoverSheet(month, category.id))) },
+            opensSheet = true,
           )
         }
         .toImmutableList(),
     onDismiss = onDismiss,
   )
 
+// An item that [opensSheet] shows it on top of the menu, rather than closing the menu first
 @Immutable
 internal data class MenuItem(
   val label: String,
   val onClick: () -> Unit,
   val trailing: String? = null,
+  val opensSheet: Boolean = false,
 )
 
 // packages/desktop-client/src/components/budget/envelope/BalanceMenu.tsx and
@@ -320,12 +323,14 @@ internal fun balanceActions(
     +MenuItem(
       label = Strings.budgetingBalanceTransfer,
       onClick = { onAction(OpenSheet(SheetRequest.TransferSheet(month, category.id))) },
+      opensSheet = true,
     )
   }
   if (type == Envelope && category.balance < Zero) {
     +MenuItem(
       label = Strings.budgetingBalanceCover,
       onClick = { onAction(OpenSheet(SheetRequest.CoverSheet(month, category.id))) },
+      opensSheet = true,
     )
   }
   +MenuItem(
@@ -347,9 +352,9 @@ private fun MenuSheet(
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  AktualModalBottomSheet(modifier = modifier, onDismissRequest = onDismiss) {
+  HostedSheet(onDismiss = onDismiss) {
     Text(
-      modifier = Modifier.padding(horizontal = SheetsDS.padding).padding(bottom = 8.dp),
+      modifier = modifier.padding(horizontal = SheetsDS.padding).padding(bottom = 8.dp),
       text = title,
       style = typography.headlineSmall,
     )
@@ -358,10 +363,7 @@ private fun MenuSheet(
         BottomSheetListItem(
           label = item.label,
           isSelected = false,
-          onClick = {
-            onDismiss()
-            item.onClick()
-          },
+          onClick = { if (item.opensSheet) item.onClick() else dismiss(item.onClick) },
           trailingContent = item.trailing?.let { trailing -> { AmountLabel(trailing) } },
         )
       }
@@ -457,9 +459,9 @@ private fun SummarySheet(
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  AktualModalBottomSheet(modifier = modifier, onDismissRequest = onDismiss) {
+  HostedSheet(onDismiss = onDismiss) {
     Column(
-      modifier = Modifier.padding(horizontal = SheetsDS.padding).padding(bottom = 8.dp),
+      modifier = modifier.padding(horizontal = SheetsDS.padding).padding(bottom = 8.dp),
       verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
       Text(text = month.stringLong(), style = typography.headlineSmall)
@@ -483,20 +485,14 @@ private fun SummarySheet(
         BottomSheetListItem(
           label = label,
           isSelected = false,
-          onClick = {
-            onDismiss()
-            onAction(OpenSheet(sheet))
-          },
+          onClick = { onAction(OpenSheet(sheet)) },
         )
       }
       if (summary.held != Zero) {
         BottomSheetListItem(
           label = Strings.budgetingHoldReset,
           isSelected = false,
-          onClick = {
-            onDismiss()
-            onAction(ResetHold(month))
-          },
+          onClick = { dismiss { onAction(ResetHold(month)) } },
         )
       }
     }

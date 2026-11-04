@@ -1,6 +1,7 @@
 package aktual.core.ui
 
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronLeft
 import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
@@ -23,11 +24,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 
 /**
  * A wrapper around [ModalBottomSheet] that signals [DialogBlurState] so the background blur overlay
  * animates in while this sheet is showing. Pass [blurBackground] as false to keep the content
- * behind the sheet readable.
+ * behind the sheet readable. A back button shows beside the drag handle while [onBack] is set.
  */
 @Composable
 fun AktualModalBottomSheet(
@@ -35,6 +37,7 @@ fun AktualModalBottomSheet(
   modifier: Modifier = Modifier,
   sheetState: SheetState = rememberBottomSheetState(initialValue = Hidden),
   blurBackground: Boolean = true,
+  onBack: (() -> Unit)? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val dialogBlurState = LocalDialogBlurState.current
@@ -62,6 +65,14 @@ fun AktualModalBottomSheet(
     contentColor = colors.pageText,
     dragHandle = {
       Box(modifier = Modifier.fillMaxWidth()) {
+        if (onBack != null) {
+          IconButton(
+            modifier = Modifier.align(CenterStart).testTag(Tags.SheetBack),
+            onClick = onBack,
+          ) {
+            Icon(imageVector = AktualIcons.CheveronLeft, contentDescription = Strings.navBack)
+          }
+        }
         BottomSheetDefaults.DragHandle(modifier = Modifier.align(Center))
         IconButton(modifier = Modifier.align(CenterEnd), onClick = onDismissRequest) {
           Icon(imageVector = AktualIcons.Delete, contentDescription = Strings.inputClose)
