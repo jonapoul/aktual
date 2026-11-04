@@ -172,11 +172,13 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
         selection = if (tapped?.hit == selection?.hit) null else tapped
         if (selection != null) haptics.performHapticFeedback(SegmentTick)
       }
+    val labelled = selection?.hit?.labelledNodes(data).orEmpty()
+    val visibleLabels = nodeLabels.mapIndexed { i, label -> label?.takeIf { i in labelled } }
     val tapModifier =
       if (compact) {
         Modifier
       } else {
-        Modifier.onTap(layout, nodeLabels.map { it?.bounds }) { onSelect(it) }
+        Modifier.onTap(layout, visibleLabels.map { it?.bounds }) { onSelect(it) }
       }
 
     Box(
@@ -200,7 +202,7 @@ private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modif
               val rect = layout.nodes.getOrNull(i) ?: return@forEachIndexed
               drawRect(color = node.color.resolve(theme), topLeft = rect.topLeft, size = rect.size)
 
-              nodeLabels.getOrNull(i)?.let { label -> drawNodeLabel(label) }
+              visibleLabels.getOrNull(i)?.let { label -> drawNodeLabel(label) }
             }
           }
         },
@@ -307,6 +309,15 @@ private fun DrawScope.drawNodeLabel(label: NodeLabel) {
 }
 
 private data class Selection(val hit: SankeyHit, val position: Offset)
+
+private fun SankeyHit.labelledNodes(data: SankeyData): Set<Int> =
+  when (this) {
+    is Node ->
+      data.links
+        .filter { it.source == index || it.target == index }
+        .flatMapTo(mutableSetOf(index)) { listOf(it.source, it.target) }
+    is Link -> data.links[index].let { setOf(it.source, it.target) }
+  }
 
 private fun SankeyHit.highlights(index: Int, link: SankeyLink): Boolean =
   when (this) {

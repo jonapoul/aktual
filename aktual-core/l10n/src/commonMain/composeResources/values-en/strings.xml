@@ -30,6 +30,7 @@
   <string name="reports_formula_editor_color_formula_help">Returns a colour for the result. RESULT is the formula's value, and theme_ names like theme_numberPositive are theme colours.</string>
   <string name="reports_formula_editor_theme_colors">Theme colours</string>
   <string name="reports_custom_editor_show_uncategorised">Show uncategorised</string>
+  <string name="reports_sankey_info_what">A Sankey plot visualises the flow of quantities between multiple categories, emphasising the distribution and proportional relationships of data streams.</string>
   <string name="payees_favorite">Favourite</string>
   <string name="payees_edit_favorite_help">Favourites are suggested first when picking a payee for a transaction.</string>
   <string name="payees_unfavorite">Unfavourite</string>
