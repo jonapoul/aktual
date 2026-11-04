@@ -1,6 +1,7 @@
 package aktual.budget.sync.domain
 
 import aktual.api.client.BudgetSyncApi
+import aktual.api.client.SyncRejectedException
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.db.dao.SyncDao
 import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
@@ -29,11 +30,20 @@ internal class IncrementalSyncer(
     runCatchingCancellable(
       attempt = { fullSync(sinceTimestamp = null, count = 0, prevDiffTime = null) },
       onFailure = { e ->
-        if (e is IOException) {
-          SyncResult.NetworkError(e)
-        } else {
-          logcat.e(e) { "Failed syncing" }
-          SyncResult.OtherError(e)
+        when {
+          e is IOException -> {
+            SyncResult.NetworkError(e)
+          }
+
+          e is SyncRejectedException && e.isClockDrift -> {
+            logcat.w { "Server rejected sync, device clock is too far ahead" }
+            SyncResult.ClockDriftError
+          }
+
+          else -> {
+            logcat.e(e) { "Failed syncing" }
+            SyncResult.OtherError(e)
+          }
         }
       },
     )

@@ -12,5 +12,8 @@ sealed interface SyncState {
 
   data object NoToken : Error
 
+  // The server rejected our changes because the device clock is too far ahead of it
+  data object ClockDrift : Error
+
   data class SyncFailed(val cause: String) : Error
 }
