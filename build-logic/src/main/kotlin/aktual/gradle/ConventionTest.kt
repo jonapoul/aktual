@@ -65,6 +65,13 @@ class ConventionTest : ProjectPlugin {
       // interception
       t.jvmArgs("--add-opens=java.base/jdk.internal.access=ALL-UNNAMED")
 
+      // Robolectric downloads android-all jars at runtime, outside the Gradle cache. Maven Central
+      // rate-limits CI with 429s, so use Google's mirror of it (#2247)
+      t.systemProperty(
+        "robolectric.dependency.repo.url",
+        "https://maven-central.storage-download.googleapis.com/maven2",
+      )
+
       // To work around https://github.com/gradle/gradle/issues/33619
       t.failOnNoDiscoveredTests.set(false)
 
