@@ -1254,6 +1254,12 @@
   <string name="reports_sankey_transfers">Show transfers</string>
   <string name="reports_sankey_empty">No transactions in this period</string>
   <string name="reports_sankey_link">%1$s → %2$s</string>
+  <string name="reports_sankey_info_what_title">What is a Sankey plot?</string>
+  <string name="reports_sankey_info_what">A Sankey plot visualizes the flow of quantities between multiple categories, emphasizing the distribution and proportional relationships of data streams.</string>
+  <string name="reports_sankey_info_views_title">View options</string>
+  <string name="reports_sankey_info_views">• Spent: Displays actual spending by category from transactions.\n• Budgeted: Shows how your budget is allocated across categories.</string>
+  <string name="reports_sankey_info_disclaimer_title">Disclaimer</string>
+  <string name="reports_sankey_info_disclaimer">A Sankey chart cannot directly represent negative numbers. In some cases, such as when funds are reallocated from categories with negative budgeting (e.g. using savings to cover overspending), the chart structure may differ from the main budget overview. As a result, some category totals and flows in this diagram may not exactly match the summary figures elsewhere in the app.</string>
 
   <string name="reports_balance_forecast_source">Forecast from</string>
   <string name="reports_balance_forecast_source_schedules">Schedules</string>

@@ -82,6 +82,13 @@ fun ChartData.info(): ImmutableList<ChartInfo> =
         ChartInfo(Strings.reportsNetWorthFooterTitle, Strings.reportsNetWorthFooter),
       )
 
+    is SankeyData ->
+      persistentListOf(
+        ChartInfo(Strings.reportsSankeyInfoWhatTitle, Strings.reportsSankeyInfoWhat),
+        ChartInfo(Strings.reportsSankeyInfoViewsTitle, Strings.reportsSankeyInfoViews),
+        ChartInfo(Strings.reportsSankeyInfoDisclaimerTitle, Strings.reportsSankeyInfoDisclaimer),
+      )
+
     is SpendingData ->
       persistentListOf(
         ChartInfo(Strings.reportsSpendingFooterTitle, Strings.reportsSpendingFooter),
@@ -90,7 +97,6 @@ fun ChartData.info(): ImmutableList<ChartInfo> =
     is CalendarData,
     is CustomData,
     is FormulaData,
-    is SankeyData,
     is SummaryData,
     is TextData,
     is UnsupportedData -> persistentListOf()
