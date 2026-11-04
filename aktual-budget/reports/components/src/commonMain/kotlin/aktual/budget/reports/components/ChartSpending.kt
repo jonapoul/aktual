@@ -232,10 +232,11 @@ private fun RegularLegend(
 
 private data class MtdSpending(val target: Amount, val comparison: Amount)
 
+// A month that hasn't started yet has spent nothing
 @Stable
 private fun calculateMtdSpending(data: SpendingData): MtdSpending {
-  val lastDay = data.days.last { it.target != null }
-  return MtdSpending(requireNotNull(lastDay.target), lastDay.comparison)
+  val lastDay = data.days.lastOrNull { it.target != null }
+  return MtdSpending(lastDay?.target ?: Zero, lastDay?.comparison ?: Zero)
 }
 
 @Composable
@@ -268,8 +269,9 @@ private suspend fun CartesianChartModelProducer.populate(data: SpendingData, zoo
       }
     }
 
-    val targetAmounts = days.mapNotNull { it.target?.toDouble() }
-    val comparisonAmounts = days.map { it.comparison.toDouble() }
+    // Vico can't draw an empty series, so a month that hasn't started yet is a point at zero
+    val targetAmounts = days.mapNotNull { it.target?.toDouble() }.ifEmpty { listOf(0.0) }
+    val comparisonAmounts = days.mapNotNull { it.comparison?.toDouble() }.ifEmpty { listOf(0.0) }
 
     runTransaction {
       zoomTo(zoom)

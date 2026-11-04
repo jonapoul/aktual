@@ -348,7 +348,7 @@ sealed interface SpendingDayNumber {
   data object End : SpendingDayNumber
 }
 
-data class SpendingDay(val number: SpendingDayNumber, val target: Amount?, val comparison: Amount)
+data class SpendingDay(val number: SpendingDayNumber, val target: Amount?, val comparison: Amount?)
 
 @Immutable
 sealed interface SpendingComparison {
