@@ -788,9 +788,9 @@ internal fun runMonteCarlo(
         }
 
         // The minimum spending floor only applies alongside a rule, in years with planned spending.
-        // Income counts towards it
+        // Income counts towards it, and it never lifts spending above the plan
         val minimumFromPots =
-          max(0.0, minimumSpending * cumulativeInflation - incomeTowardsSpending)
+          min(planned, max(0.0, minimumSpending * cumulativeInflation - incomeTowardsSpending))
         val hasMinimum = rule.type != None && minimumSpending > 0
         if (hasMinimum && planned > 0 && withdrawal < minimumFromPots) {
           withdrawal = minimumFromPots
@@ -1135,7 +1135,7 @@ private fun unfundedYear(
   val potFundedPlan = totalPlanned - incomeTowardsSpending
   var adjustedPlan = potFundedPlan * adjustmentFactor
   if (minimumThisYear != null && potFundedPlan > 0) {
-    adjustedPlan = max(adjustedPlan, minimumThisYear - incomeTowardsSpending)
+    adjustedPlan = max(adjustedPlan, min(potFundedPlan, minimumThisYear - incomeTowardsSpending))
   }
   val potZeros = List(potCount) { 0L }.toImmutableList()
   return McRunDetailRow(

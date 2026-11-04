@@ -7,6 +7,7 @@ import assertk.assertions.index
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlin.test.assertIs
@@ -137,39 +138,39 @@ class MonteCarloTest {
   fun `Guardrails with a locked pot and spending phases matches upstream`() =
     assertMatchesUpstream(
       meta = GUARDRAILS_LOCKED_POT,
-      successRate = 0.8824,
-      medianEndingBalance = 77669694,
-      medianDepletionYear = 35,
+      successRate = 0.9108,
+      medianEndingBalance = 83552475,
+      medianDepletionYear = 34,
       simulationCount = 5000,
       middle =
         McPercentileBand(
           year = 20,
-          p5 = 28514979,
-          p10 = 38522447,
-          p25 = 58692059,
-          p30 = 64008675,
-          p50 = 85168007,
-          p70 = 111596916,
-          p75 = 119459384,
-          p90 = 158023481,
+          p5 = 28912772,
+          p10 = 39138339,
+          p25 = 59335387,
+          p30 = 64249872,
+          p50 = 85589287,
+          p70 = 111457216,
+          p75 = 118395524,
+          p90 = 156615581,
         ),
       last =
         McPercentileBand(
           year = 40,
           p5 = 0,
-          p10 = 0,
-          p25 = 28291486,
-          p30 = 37323651,
-          p50 = 77669694,
-          p70 = 127956182,
-          p75 = 143975036,
-          p90 = 221184804,
+          p10 = 3124503,
+          p25 = 35507224,
+          p30 = 45077673,
+          p50 = 83552475,
+          p70 = 132114360,
+          p75 = 147020344,
+          p90 = 221442998,
         ),
-      medianTotalWithdrawn = 107920622,
-      earliestDepletionYear = 16,
+      medianTotalWithdrawn = 104412859,
+      earliestDepletionYear = 5,
       latestDepletionYear = 40,
-      worstRanked = listOf(3760, 3001, 1257, 3934, 4556),
-      worstRunPathSum = 506013973L,
+      worstRanked = listOf(3857, 431, 261, 4943, 874),
+      worstRunPathSum = 286301924L,
     )
 
   @Test
@@ -497,6 +498,38 @@ class MonteCarloTest {
       prop(McResult::successRate).isEqualTo(0.0)
       prop(McResult::medianDepletionYear).isEqualTo(14)
     }
+  }
+
+  @Test
+  fun `Minimum spending never lifts a cheaper phase above its plan`() {
+    // A 75k floor sized for full retirement must leave the 10k part-time years at their plan
+    val config =
+      McConfig(
+        pots =
+          persistentListOf(
+            McPot(
+              id = "a",
+              startingBalance = 100_000_000.0,
+              allocationPreset = Custom,
+              expectedReturnMean = 0.0,
+              returnStdDev = 0.0,
+            ),
+          ),
+        spendingPhases =
+          persistentListOf(
+            McSpendingPhase(id = "part-time", annualWithdrawal = 1_000_000.0),
+            McSpendingPhase(id = "retired", fromAge = 63, annualWithdrawal = 10_000_000.0),
+          ),
+        withdrawalRule = McWithdrawalRule(type = Guardrails),
+        minimumSpending = 7_500_000.0,
+        inflationMean = null,
+        currentAge = 60,
+        targetAge = 65,
+      )
+    val rows = runMonteCarlo(config, captureRunDetail = 0).runDetail.orEmpty()
+    assertThat(rows.map(McRunDetailRow::plannedSpending))
+      .containsExactly(1_000_000L, 1_000_000L, 1_000_000L, 10_000_000L, 10_000_000L)
+    assertThat(rows.none(McRunDetailRow::minimumApplied)).isTrue()
   }
 
   @Test
