@@ -141,6 +141,45 @@ class ReportMetaSerializationTest {
   }
 
   @Test
+  fun `Balance forecast series decode`() {
+    val meta =
+      decode<BalanceForecastReportMeta>(
+        BalanceForecast,
+        """
+        {"series":[
+          {"id":"a","name":"Checking","accounts":["acct-1"],"conditions":[],"conditionsOp":"and"},
+          {"id":"b","name":"All","conditions":[],"conditionsOp":"or"}
+        ]}
+        """
+          .trimIndent(),
+      )
+
+    assertThat(meta.series)
+      .isEqualTo(
+        listOf(
+          ForecastSeries(
+            id = "a",
+            name = "Checking",
+            accounts = listOf(AccountId("acct-1")),
+            conditionsOp = And,
+          ),
+          ForecastSeries(id = "b", name = "All", conditionsOp = Or),
+        ),
+      )
+  }
+
+  @Test
+  fun `Balance forecast series round trip`() {
+    val meta =
+      BalanceForecastReportMeta(
+        series = listOf(ForecastSeries(id = "a", name = "Card", accounts = listOf(AccountId("x")))),
+      )
+    val encoded = json.encodeToJsonElement(BalanceForecastReportMeta.serializer(), meta)
+    assertThat(json.decodeFromJsonElement(BalanceForecastReportMeta.serializer(), encoded))
+      .isEqualTo(meta)
+  }
+
+  @Test
   fun `Spending average range decodes each mode`() {
     assertThat(averageRange("""{"mode":"last-n-months","months":6}"""))
       .isEqualTo(SpendingAverageRange.LastMonths(6))
