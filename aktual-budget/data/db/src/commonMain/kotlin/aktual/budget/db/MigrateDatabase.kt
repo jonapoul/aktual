@@ -113,6 +113,13 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
         """
           .trimIndent(),
       ),
+
+    // packages/loot-core/migrations/1792441821604_dashboard_page_sort_order.sql
+    1792441821604L to
+      listOf(
+        "ALTER TABLE dashboard_pages ADD COLUMN sort_order REAL DEFAULT 1000000000",
+        "UPDATE dashboard_pages SET sort_order = rowid * 16384",
+      ),
   )
 
 private const val TAG = "MigrateDatabase"

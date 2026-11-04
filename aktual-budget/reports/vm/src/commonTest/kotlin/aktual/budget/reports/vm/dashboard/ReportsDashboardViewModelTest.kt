@@ -122,7 +122,11 @@ class ReportsDashboardViewModelTest {
     action: suspend BudgetDatabase.(ReportsDashboardViewModel, DashboardSync, TestScope) -> Unit,
   ) = runSyncedDatabaseTest { scope, controller ->
     dashboardPagesQueries.withoutResult {
-      pages.forEach { insert(Dashboard_pages(it.id, it.name, tombstone = false)) }
+      pages.forEachIndexed { i, page ->
+        insert(
+          Dashboard_pages(page.id, page.name, tombstone = false, sort_order = (i + 1) * 16384.0),
+        )
+      }
     }
     val dispatcher = StandardTestDispatcher(scope.testScheduler)
     // Keep viewModelScope on the test scheduler, so its queries can't outlive the database

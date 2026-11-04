@@ -37,10 +37,44 @@ internal class DashboardDaoTest {
   }
 
   @Test
-  fun `Observe pages without tombstones`() = runDaoTest {
+  fun `Observe pages without tombstones in sort order`() = runDaoTest {
     assertThat(observePages().first())
       .extracting(Dashboard_pages::id)
       .containsExactly(PAGE_1, PAGE_2)
+  }
+
+  @Test
+  fun `First page adopts widgets whose page doesn't exist`() = runDaoTest {
+    insert(WidgetId("a"), page = PAGE_1, type = NetWorth, x = 0, y = 0, meta = null)
+    insert(WidgetId("b"), page = PAGE_2, type = CashFlow, x = 0, y = 0, meta = null)
+    insert(
+      WidgetId("orphan"),
+      DashboardPageId("other-device"),
+      type = NetWorth,
+      x = 4,
+      y = 0,
+      meta = null,
+    )
+    insert(
+      WidgetId("deleted"),
+      DashboardPageId("deleted"),
+      type = NetWorth,
+      x = 8,
+      y = 0,
+      meta = null,
+    )
+
+    assertThat(observeShownOnPage(PAGE_1).first())
+      .extracting(Dashboard::id)
+      .containsExactly(WidgetId("a"), WidgetId("orphan"), WidgetId("deleted"))
+    assertThat(observeShownOnPage(PAGE_2).first())
+      .extracting(Dashboard::id)
+      .containsExactly(WidgetId("b"))
+  }
+
+  @Test
+  fun `Last page sort order includes deleted pages`() = runDaoTest {
+    assertThat(lastPageSortOrder()).isEqualTo(49152.0)
   }
 
   @Test
@@ -69,9 +103,17 @@ internal class DashboardDaoTest {
   private fun runDaoTest(action: suspend DashboardDao.(TestScope) -> Unit) =
     runDatabaseTest { scope ->
       dashboardPagesQueries.withoutResult {
-        insert(Dashboard_pages(PAGE_1, name = "One", tombstone = false))
-        insert(Dashboard_pages(PAGE_2, name = "Two", tombstone = false))
-        insert(Dashboard_pages(DashboardPageId("deleted"), name = "Gone", tombstone = true))
+        // Inserted out of order, to check pages come back sorted by sort_order
+        insert(Dashboard_pages(PAGE_2, name = "Two", tombstone = false, sort_order = 32768.0))
+        insert(Dashboard_pages(PAGE_1, name = "One", tombstone = false, sort_order = 16384.0))
+        insert(
+          Dashboard_pages(
+            DashboardPageId("deleted"),
+            name = "Gone",
+            tombstone = true,
+            sort_order = 49152.0,
+          ),
+        )
       }
       val dao =
         DashboardDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))

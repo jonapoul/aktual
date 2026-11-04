@@ -230,8 +230,8 @@ class SearchReportsViewModelTest {
   private fun runSearchTest(action: suspend (SearchReportsViewModel, DashboardSync) -> Unit) =
     runSyncedDatabaseTest { scope, controller ->
       dashboardPagesQueries.withoutResult {
-        insert(Dashboard_pages(PAGE_1.id, PAGE_1.name, tombstone = false))
-        insert(Dashboard_pages(PAGE_2.id, PAGE_2.name, tombstone = false))
+        insert(Dashboard_pages(PAGE_1.id, PAGE_1.name, tombstone = false, sort_order = 16384.0))
+        insert(Dashboard_pages(PAGE_2.id, PAGE_2.name, tombstone = false, sort_order = 32768.0))
       }
       val dispatcher = StandardTestDispatcher(scope.testScheduler)
       // Keep viewModelScope on the test scheduler, so its queries can't outlive the database

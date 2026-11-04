@@ -166,7 +166,7 @@ class FormulaReportViewModelTest {
   private fun runFormulaTest(meta: JsonObject? = META, action: suspend Harness.() -> Unit) =
     runSyncedDatabaseTest { scope, controller ->
       dashboardPagesQueries.withoutResult {
-        insert(Dashboard_pages(PAGE, "Main", tombstone = false))
+        insert(Dashboard_pages(PAGE, "Main", tombstone = false, sort_order = 16384.0))
       }
       val dispatcher = StandardTestDispatcher(scope.testScheduler)
       // Keep viewModelScope on the test scheduler, so its queries can't outlive the database

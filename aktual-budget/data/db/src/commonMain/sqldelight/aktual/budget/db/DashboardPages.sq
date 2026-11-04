@@ -4,7 +4,8 @@ import kotlin.Boolean;
 CREATE TABLE IF NOT EXISTS dashboard_pages(
   id TEXT AS DashboardPageId PRIMARY KEY,
   name TEXT,
-  tombstone INTEGER AS Boolean DEFAULT 0
+  tombstone INTEGER AS Boolean DEFAULT 0,
+  sort_order REAL DEFAULT 1000000000
 );
 
 insert:
@@ -13,8 +14,13 @@ insert:
 delete:
   DELETE FROM dashboard_pages WHERE id = ?;
 
+-- Upstream's defaultOrderBy for dashboard_pages, so the seeded page comes first on every device
 getAll:
-  SELECT * FROM dashboard_pages WHERE tombstone = 0 ORDER BY rowid;
+  SELECT * FROM dashboard_pages WHERE tombstone = 0 ORDER BY sort_order, id;
+
+-- Includes deleted pages, like upstream's createDashboardPage
+getLastSortOrder:
+  SELECT sort_order FROM dashboard_pages ORDER BY sort_order DESC, id DESC LIMIT 1;
 
 countActive:
   SELECT count(*) FROM dashboard_pages WHERE tombstone = 0;

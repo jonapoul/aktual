@@ -234,7 +234,9 @@ class CustomReportViewModelTest {
     others: List<CustomReports> = emptyList(),
     action: suspend Harness.() -> Unit,
   ) = runSyncedDatabaseTest { scope, controller ->
-    dashboardPagesQueries.withoutResult { insert(Dashboard_pages(PAGE, "Main", tombstone = false)) }
+    dashboardPagesQueries.withoutResult {
+      insert(Dashboard_pages(PAGE, "Main", tombstone = false, sort_order = 16384.0))
+    }
     customReportsQueries.withoutResult { (others + report).forEach { insert(it) } }
     val dispatcher = StandardTestDispatcher(scope.testScheduler)
     // Keep viewModelScope on the test scheduler, so its queries can't outlive the database

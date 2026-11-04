@@ -83,8 +83,8 @@ class DashboardPagesTest {
     runSyncedDatabaseTest { scope, controller ->
       if (seed) {
         dashboardPagesQueries.withoutResult {
-          insert(Dashboard_pages(PAGE_1.id, PAGE_1.name, tombstone = false))
-          insert(Dashboard_pages(PAGE_2.id, PAGE_2.name, tombstone = false))
+          insert(Dashboard_pages(PAGE_1.id, PAGE_1.name, tombstone = false, sort_order = 16384.0))
+          insert(Dashboard_pages(PAGE_2.id, PAGE_2.name, tombstone = false, sort_order = 32768.0))
         }
       }
       val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))

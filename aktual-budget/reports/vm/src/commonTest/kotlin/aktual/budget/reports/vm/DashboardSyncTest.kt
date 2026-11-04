@@ -283,6 +283,7 @@ class DashboardSyncTest {
     assertThat(dao.observePages().first())
       .extracting(Dashboard_pages::id)
       .containsExactly(PAGE_1, PAGE_2, PAGE_3)
+    assertThat(dao.observePages().first().last().sort_order).isEqualTo(49152.0)
   }
 
   @Test
@@ -337,8 +338,8 @@ class DashboardSyncTest {
   private fun runSyncTest(action: suspend DashboardSync.(DashboardDao) -> Unit) =
     runSyncedDatabaseTest { scope, controller ->
       dashboardPagesQueries.withoutResult {
-        insert(Dashboard_pages(PAGE_1, name = "One", tombstone = false))
-        insert(Dashboard_pages(PAGE_2, name = "Two", tombstone = false))
+        insert(Dashboard_pages(PAGE_1, name = "One", tombstone = false, sort_order = 16384.0))
+        insert(Dashboard_pages(PAGE_2, name = "Two", tombstone = false, sort_order = 32768.0))
       }
       val dao = dao(scope.testScheduler)
       action(DashboardSync(dao, controller), dao)
