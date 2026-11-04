@@ -111,7 +111,8 @@ fun CustomReportConfig.withBalanceType(option: BalanceType): CustomReportConfig 
   return config
 }
 
-// A live range the interval doesn't offer moves to the interval's default
+// A live range the interval doesn't offer moves to the interval's default, and a static one widens
+// to whole quarters for quarterly reports
 fun CustomReportConfig.withInterval(option: Interval): CustomReportConfig {
   val live = dates as? Live
   val newDates =
@@ -120,7 +121,13 @@ fun CustomReportConfig.withInterval(option: Interval): CustomReportConfig {
     } else {
       dates
     }
-  return copy(interval = option, dates = newDates)
+  val config = copy(interval = option, dates = newDates)
+  val static = newDates as? Static
+  return if (option == Quarterly && static != null) {
+    config.withStaticMonths(static.start.yearMonth, static.end.yearMonth)
+  } else {
+    config
+  }
 }
 
 // TagScopeSelector.tsx applyScope(): the picked tags in the order they're listed. None, or every
@@ -151,20 +158,23 @@ fun CustomReportConfig.withIncludeCurrent(includeCurrent: Boolean): CustomReport
 
 // The static range starts as whatever the live range covers now, whole months either side
 fun CustomReportConfig.withStaticDates(current: LocalDateRange): CustomReportConfig =
-  copy(
-    dates =
-      CustomReportDates.Static(
-        current.start.yearMonth.firstDay,
-        current.endInclusive.yearMonth.lastDay,
-      ),
-  )
+  withStaticMonths(current.start.yearMonth, current.endInclusive.yearMonth)
 
 fun CustomReportConfig.withLiveDates(): CustomReportConfig =
   copy(dates = CustomReportDates.Live(defaultRange(interval), includeCurrent = true))
 
-// Moving one end past the other moves both
-fun CustomReportConfig.withStaticMonths(start: YearMonth, end: YearMonth): CustomReportConfig =
-  copy(dates = CustomReportDates.Static(start.firstDay, maxOf(start, end).lastDay))
+// Moving one end past the other moves both. Quarterly reports cover whole quarters, as upstream's
+// pickers only offer quarters
+fun CustomReportConfig.withStaticMonths(start: YearMonth, end: YearMonth): CustomReportConfig {
+  val last = maxOf(start, end)
+  val dates =
+    if (interval == Quarterly) {
+      CustomReportDates.Static(quarter(start).start.firstDay, quarter(last).endInclusive.lastDay)
+    } else {
+      CustomReportDates.Static(start.firstDay, last.lastDay)
+    }
+  return copy(dates = dates)
+}
 
 private data class GraphRules(
   val disabledGroupBys: Set<GroupBy>,
@@ -235,6 +245,7 @@ private fun defaultRange(interval: Interval): DateRangeType =
   when (interval) {
     Daily -> ThisMonth
     Weekly -> Last3Months
+    Quarterly -> Last12Months
     Yearly -> YearToDate
     Monthly,
     Unknown -> Last6Months
@@ -248,16 +259,16 @@ private fun DateRangeType.intervals(): Set<Interval> =
     LastWeek -> setOf(Daily, Weekly)
     ThisMonth,
     LastMonth,
-    CurrentQuarter,
-    PreviousQuarter,
     Last30Days,
     Last3Months -> setOf(Daily, Weekly, Monthly)
+    CurrentQuarter,
+    PreviousQuarter -> setOf(Daily, Weekly, Monthly, Quarterly)
     Last6Months,
-    Last12Months -> setOf(Monthly)
+    Last12Months -> setOf(Monthly, Quarterly)
     YearToDate,
     LastYear,
     PriorYearToDate,
-    AllTime -> setOf(Weekly, Monthly, Yearly)
+    AllTime -> setOf(Weekly, Monthly, Quarterly, Yearly)
     Unknown -> emptySet()
   }
 

@@ -66,8 +66,8 @@ internal fun NetWorthSettings(
       SectionLabel(Strings.reportsCustomEditorInterval)
       AktualSlidingToggleButton(
         modifier = Modifier.fillMaxWidth(),
-        selected = meta.interval?.takeIf { it != Unknown } ?: Monthly,
-        options = Interval.known,
+        selected = meta.interval?.takeIf { it in NET_WORTH_INTERVALS } ?: Monthly,
+        options = NET_WORTH_INTERVALS,
         onSelect = { interval -> onEdit { it.copy(interval = interval) } },
         string = { it.label() },
       )
@@ -226,5 +226,8 @@ private fun AgeOfMoneyGranularity.label(): String =
   }
 
 private val NET_WORTH_MODES = persistentListOf<NetWorthMode>(Trend, Stacked)
+
+// Upstream only offers quarters in custom reports
+private val NET_WORTH_INTERVALS = persistentListOf<Interval>(Daily, Weekly, Monthly, Yearly)
 
 private val GRANULARITIES = persistentListOf<AgeOfMoneyGranularity>(Daily, Weekly, Monthly)

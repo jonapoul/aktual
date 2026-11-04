@@ -398,6 +398,7 @@ private fun Interval.unitName(): String =
     Weekly -> Strings.reportsCustomTableWeek
     Monthly,
     Unknown -> Strings.reportsCustomTableMonth
+    Quarterly -> Strings.reportsCustomTableQuarter
     Yearly -> Strings.reportsCustomTableYear
   }
 

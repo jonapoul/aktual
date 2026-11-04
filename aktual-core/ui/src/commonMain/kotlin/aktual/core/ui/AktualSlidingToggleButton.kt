@@ -161,6 +161,7 @@ private fun PreviewEnum(@PreviewParameter(ColorParameters::class) colors: Colors
           Daily -> "Daily"
           Weekly -> "Weekly"
           Monthly -> "Monthly"
+          Quarterly -> "Quarterly"
           Yearly -> "Yearly with loads more text clipped off"
           Unknown -> "Unknown"
         }

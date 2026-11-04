@@ -286,6 +286,33 @@ class CustomSpreadsheetTest {
   }
 
   @Test
+  fun `Quarterly amounts add up their months`() {
+    val config = CONFIG.copy(interval = Quarterly)
+    val sheet =
+      spreadsheet(
+        config = config,
+        range = date("2025-11-15")..date("2026-04-10"),
+        amounts =
+          listOf(
+            row(202511, category = FOOD, debts = -100),
+            row(202512, category = FOOD, debts = -200),
+            row(JAN, category = FOOD, debts = -300),
+            row(MAR, category = FOOD, debts = -400),
+            row(202604, category = FOOD, debts = -500),
+          ),
+      )
+
+    assertThat(sheet.intervals.map { it.interval })
+      .containsExactly(
+        CustomInterval(date("2025-10-01"), date("2025-11-15")..date("2025-12-31")),
+        CustomInterval(date(JAN), date(JAN)..date("2026-03-31")),
+        CustomInterval(date("2026-04-01"), date("2026-04-01")..date("2026-04-10")),
+      )
+    assertThat(sheet.intervals.map { it.totals.debts })
+      .containsExactly(Amount(-300), Amount(-700), Amount(-500))
+  }
+
+  @Test
   fun `By category group, with each group's categories`() {
     val sheet =
       spreadsheet(
@@ -435,6 +462,8 @@ class CustomSpreadsheetTest {
   fun `Monthly and yearly queries cover whole months and years`() {
     val range = date("2026-01-15")..date("2026-03-10")
     assertThat(customReportQuery(Monthly, range))
+      .isEqualTo(CustomReportQuery(date("2026-01-01"), date("2026-03-31"), divisor = 100))
+    assertThat(customReportQuery(Quarterly, range))
       .isEqualTo(CustomReportQuery(date("2026-01-01"), date("2026-03-31"), divisor = 100))
     assertThat(customReportQuery(Yearly, range))
       .isEqualTo(CustomReportQuery(date("2026-01-01"), date("2026-12-31"), divisor = 10_000))

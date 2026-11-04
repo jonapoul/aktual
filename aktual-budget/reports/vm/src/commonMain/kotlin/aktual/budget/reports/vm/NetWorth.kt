@@ -51,6 +51,7 @@ internal class NetWorthPeriods(
       Weekly -> weekStart(date, firstDayOfWeek)
       Yearly -> LocalDate(date.year, JANUARY, 1)
       Monthly,
+      Quarterly,
       Unknown -> date.yearMonth.firstDay
     }
 
@@ -63,6 +64,7 @@ internal class NetWorthPeriods(
       Weekly -> DatePeriod(days = DAYS_PER_WEEK)
       Yearly -> DatePeriod(years = 1)
       Monthly,
+      Quarterly,
       Unknown -> DatePeriod(months = 1)
     }
 
@@ -84,6 +86,7 @@ internal class NetWorthPeriods(
           Daily -> firstData ?: rangeStart.minus(1, DAY)
           Weekly -> weekStart(firstData ?: rangeStart.minus(1, DAY), firstDayOfWeek)
           Monthly,
+          Quarterly,
           Yearly,
           Unknown -> if (firstData != null) rangeStart else range.start.minusMonth().firstDay
         }
@@ -92,6 +95,7 @@ internal class NetWorthPeriods(
           Daily,
           Weekly -> minOf(range.endInclusive.lastDay, today)
           Monthly,
+          Quarterly,
           Yearly,
           Unknown -> range.endInclusive.lastDay
         }

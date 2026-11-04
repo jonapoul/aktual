@@ -24,6 +24,7 @@ internal fun periodLabel(
     Weekly -> "${period.day} ${months[period.month]} ${period.year}"
     Yearly -> period.year.toString()
     Monthly,
+    Quarterly,
     Unknown -> "${months[period.month]} ${period.year}"
   }
 
@@ -38,6 +39,7 @@ internal fun netWorthXAxisFormatter(data: NetWorthData): CartesianValueFormatter
         Weekly -> "${period.day} ${months[period.month]}"
         Yearly -> period.year.toString()
         Monthly,
+        Quarterly,
         Unknown -> "${months[period.month]} ${period.year.toString().substring(startIndex = 2)}"
       }
     }
