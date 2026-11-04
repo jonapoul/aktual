@@ -6,6 +6,7 @@ import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.BankId
+import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.localChange
 import assertk.all
 import assertk.assertFailure
@@ -110,7 +111,7 @@ internal class BankAccountLinkerTest {
     assertThat(account(created)).all {
       prop(Accounts::name).isEqualTo("Checking")
       prop(Accounts::offbudget).isEqualTo(false)
-      prop(Accounts::sort_order).isEqualTo(16384.0)
+      prop(Accounts::sort_order).isEqualTo(SORT_INCREMENT.toDouble())
       prop(Accounts::account_id).isEqualTo("ACT-1")
       prop(Accounts::account_sync_source).isEqualTo(SimpleFin)
       prop(Accounts::last_sync).isNotNull()
@@ -138,7 +139,7 @@ internal class BankAccountLinkerTest {
     assertThat(account(onBudget).sort_order).isEqualTo(36384.0)
     assertThat(account(offBudget)).all {
       prop(Accounts::offbudget).isEqualTo(true)
-      prop(Accounts::sort_order).isEqualTo(16384.0)
+      prop(Accounts::sort_order).isEqualTo(SORT_INCREMENT.toDouble())
     }
   }
 
@@ -153,7 +154,7 @@ internal class BankAccountLinkerTest {
 
     val created = linker(api).create(SimpleFin, EXTERNAL, offBudget = false)
 
-    assertThat(account(created).sort_order).isEqualTo(16384.0)
+    assertThat(account(created).sort_order).isEqualTo(SORT_INCREMENT.toDouble())
   }
 
   @Test

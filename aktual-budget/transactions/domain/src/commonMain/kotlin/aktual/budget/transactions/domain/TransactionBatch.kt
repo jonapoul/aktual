@@ -17,9 +17,9 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
+import aktual.budget.model.sortOrderAfter
 import aktual.budget.model.tombstone
 import aktual.core.UuidGenerator
-import kotlin.math.floor
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonObject
@@ -261,12 +261,11 @@ internal constructor(
   suspend fun insertAccount(name: String, offBudget: Boolean): AccountId {
     val id = uuidGenerator(::AccountId)
     val row = id.value
-    // Messages only carry whole numbers, so rounding down still puts it after a fractional order
-    val maxSortOrder = accountDao.maxSortOrder(offBudget)?.let(::floor)?.toLong() ?: 0L
+    val sortOrder = sortOrderAfter(accountDao.maxSortOrder(offBudget))
     changes += localChange(ACCOUNTS, row, "name", name)
     changes += localChange(ACCOUNTS, row, "offbudget", offBudget)
     changes += localChange(ACCOUNTS, row, "closed", false)
-    changes += localChange(ACCOUNTS, row, SORT_ORDER, maxSortOrder + SORT_INCREMENT)
+    changes += localChange(ACCOUNTS, row, SORT_ORDER, sortOrder)
     this.offBudget[id] = offBudget
     return id
   }
@@ -352,9 +351,6 @@ internal data class TouchedTransactions(
 val MIN_TRANSACTION_DATE = LocalDate(year = 1995, month = 1, day = 1)
 
 private const val STARTING_BALANCE = "Starting Balance"
-
-// packages/loot-core/src/shared/util.ts
-private const val SORT_INCREMENT = 16384L
 
 private const val SORT_ORDER = "sort_order"
 

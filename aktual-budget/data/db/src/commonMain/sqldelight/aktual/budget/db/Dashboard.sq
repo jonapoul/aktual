@@ -18,6 +18,24 @@ CREATE TABLE IF NOT EXISTS dashboard(
 
 getIdsByPage: SELECT id FROM dashboard WHERE dashboard_page_id = ? AND tombstone = 0;
 getByPage: SELECT * FROM dashboard WHERE dashboard_page_id = ? AND tombstone = 0 ORDER BY y, x;
+
+-- Like getByPage, but the first page also shows widgets whose page doesn't exist locally. Widgets
+-- synced from another device can point at that device's own seeded "Main" page, which never
+-- reaches this one, so they'd be hidden otherwise. useDashboardPageWidgets() upstream
+getByPageAdoptingOrphans:
+  SELECT * FROM dashboard
+  WHERE tombstone = 0
+    AND (
+      dashboard_page_id = :page
+      OR (
+        :page = (SELECT id FROM dashboard_pages WHERE tombstone = 0 ORDER BY sort_order, id LIMIT 1)
+        AND (
+          dashboard_page_id IS NULL
+          OR dashboard_page_id NOT IN (SELECT id FROM dashboard_pages WHERE tombstone = 0)
+        )
+      )
+    )
+  ORDER BY y, x;
 getPositionAndSize: SELECT id, x, y, width, height FROM dashboard WHERE dashboard_page_id = ? AND tombstone = 0 ORDER BY y, x;
 insert: INSERT INTO dashboard(id, type, width, height, x, y, meta, dashboard_page_id) VALUES (?,?,?,?,?,?,?,?);
 getById: SELECT * FROM dashboard WHERE id = ? AND tombstone = 0;

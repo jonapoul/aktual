@@ -6,6 +6,7 @@ import aktual.budget.db.dao.DashboardDao
 import aktual.budget.db.withoutResult
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
+import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.reports.vm.DashboardSync
@@ -230,8 +231,22 @@ class SearchReportsViewModelTest {
   private fun runSearchTest(action: suspend (SearchReportsViewModel, DashboardSync) -> Unit) =
     runSyncedDatabaseTest { scope, controller ->
       dashboardPagesQueries.withoutResult {
-        insert(Dashboard_pages(PAGE_1.id, PAGE_1.name, tombstone = false))
-        insert(Dashboard_pages(PAGE_2.id, PAGE_2.name, tombstone = false))
+        insert(
+          Dashboard_pages(
+            PAGE_1.id,
+            PAGE_1.name,
+            tombstone = false,
+            sort_order = SORT_INCREMENT.toDouble(),
+          ),
+        )
+        insert(
+          Dashboard_pages(
+            PAGE_2.id,
+            PAGE_2.name,
+            tombstone = false,
+            sort_order = 2.0 * SORT_INCREMENT,
+          ),
+        )
       }
       val dispatcher = StandardTestDispatcher(scope.testScheduler)
       // Keep viewModelScope on the test scheduler, so its queries can't outlive the database

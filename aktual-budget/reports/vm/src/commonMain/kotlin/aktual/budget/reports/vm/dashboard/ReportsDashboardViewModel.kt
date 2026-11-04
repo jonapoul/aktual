@@ -84,7 +84,7 @@ internal constructor(
         if (page == null) {
           flowOf(DashboardContent(page = null, items = persistentListOf()))
         } else {
-          dashboardDao.observeByPage(page.id).map { widgets ->
+          dashboardDao.observeShownOnPage(page.id).map { widgets ->
             DashboardContent(page, widgets.mapNotNull(decoder::decode).toImmutableList())
           }
         }

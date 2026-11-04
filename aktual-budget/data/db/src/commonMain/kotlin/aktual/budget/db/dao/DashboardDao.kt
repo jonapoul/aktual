@@ -65,6 +65,18 @@ class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineCont
   fun observeByPage(page: DashboardPageId): Flow<List<Dashboard>> =
     queries.getByPage(page).asFlow().mapToList(contexts.default).distinctUntilChanged()
 
+  // Also returns widgets whose page doesn't exist locally when the page is the first one
+  fun observeShownOnPage(page: DashboardPageId): Flow<List<Dashboard>> =
+    queries
+      .getByPageAdoptingOrphans(page)
+      .asFlow()
+      .mapToList(contexts.default)
+      .distinctUntilChanged()
+
+  suspend fun lastPageSortOrder(): Double? = pageQueries.withResult {
+    getLastSortOrder().awaitAsOneOrNull()?.sort_order
+  }
+
   fun observeAll(): Flow<List<Dashboard>> =
     queries.getAll().asFlow().mapToList(contexts.default).distinctUntilChanged()
 

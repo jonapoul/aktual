@@ -8,6 +8,7 @@ import aktual.budget.db.dao.DatabaseTables.CUSTOM_REPORTS
 import aktual.budget.db.withoutResult
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
+import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.WidgetId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
@@ -283,6 +284,7 @@ class DashboardSyncTest {
     assertThat(dao.observePages().first())
       .extracting(Dashboard_pages::id)
       .containsExactly(PAGE_1, PAGE_2, PAGE_3)
+    assertThat(dao.observePages().first().last().sort_order).isEqualTo(3.0 * SORT_INCREMENT)
   }
 
   @Test
@@ -337,8 +339,22 @@ class DashboardSyncTest {
   private fun runSyncTest(action: suspend DashboardSync.(DashboardDao) -> Unit) =
     runSyncedDatabaseTest { scope, controller ->
       dashboardPagesQueries.withoutResult {
-        insert(Dashboard_pages(PAGE_1, name = "One", tombstone = false))
-        insert(Dashboard_pages(PAGE_2, name = "Two", tombstone = false))
+        insert(
+          Dashboard_pages(
+            PAGE_1,
+            name = "One",
+            tombstone = false,
+            sort_order = SORT_INCREMENT.toDouble(),
+          ),
+        )
+        insert(
+          Dashboard_pages(
+            PAGE_2,
+            name = "Two",
+            tombstone = false,
+            sort_order = 2.0 * SORT_INCREMENT,
+          ),
+        )
       }
       val dao = dao(scope.testScheduler)
       action(DashboardSync(dao, controller), dao)

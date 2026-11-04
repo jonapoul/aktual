@@ -7,6 +7,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.CleanupGroupId
 import aktual.budget.model.CustomReportId
+import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
 import aktual.test.CoTemporaryFolder
@@ -21,6 +22,7 @@ import app.cash.sqldelight.db.SqlDriver
 import assertk.assertThat
 import assertk.assertions.exists
 import assertk.assertions.isEqualTo
+import assertk.assertions.isTrue
 import java.io.File
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -76,6 +78,7 @@ class DatabaseMigrationTest {
     checkMigration1787013118115(db)
     checkMigration1788468782000(db)
     checkAktualMigration1791936000000()
+    checkMigration1792441821604(db)
   }
 
   // Verify that the file was opened at all
@@ -154,6 +157,13 @@ class DatabaseMigrationTest {
         .get(dataset = "dataset", row = "row", column = "column")
         .awaitAsOneOrNull()
     assertNull(pending)
+  }
+
+  // Adds sort_order column to dashboard_pages, backfilled in insertion order
+  private suspend fun checkMigration1792441821604(db: BudgetDatabase) {
+    val sortOrders = db.dashboardPagesQueries.getAll().awaitAsList().map { it.sort_order }
+    assertThat(sortOrders).isEqualTo(sortOrders.sortedBy { it })
+    assertThat(sortOrders.all { it != null && it % SORT_INCREMENT == 0.0 }).isTrue()
   }
 
   // Not upstream: creates the v_schedule_recurring view, which throws if it doesn't exist

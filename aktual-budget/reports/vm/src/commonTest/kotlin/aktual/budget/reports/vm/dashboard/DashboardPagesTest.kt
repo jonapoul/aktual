@@ -4,6 +4,7 @@ import aktual.budget.db.Dashboard_pages
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.db.withoutResult
 import aktual.budget.model.DashboardPageId
+import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.test.TestBudgetLocalPreferences
@@ -83,8 +84,22 @@ class DashboardPagesTest {
     runSyncedDatabaseTest { scope, controller ->
       if (seed) {
         dashboardPagesQueries.withoutResult {
-          insert(Dashboard_pages(PAGE_1.id, PAGE_1.name, tombstone = false))
-          insert(Dashboard_pages(PAGE_2.id, PAGE_2.name, tombstone = false))
+          insert(
+            Dashboard_pages(
+              PAGE_1.id,
+              PAGE_1.name,
+              tombstone = false,
+              sort_order = SORT_INCREMENT.toDouble(),
+            ),
+          )
+          insert(
+            Dashboard_pages(
+              PAGE_2.id,
+              PAGE_2.name,
+              tombstone = false,
+              sort_order = 2.0 * SORT_INCREMENT,
+            ),
+          )
         }
       }
       val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))

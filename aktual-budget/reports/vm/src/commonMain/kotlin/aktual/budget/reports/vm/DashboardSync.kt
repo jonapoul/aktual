@@ -11,6 +11,7 @@ import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.model.localChange
+import aktual.budget.model.sortOrderAfter
 import aktual.budget.model.tombstone
 import dev.zacsweers.metro.Inject
 import kotlinx.serialization.KSerializer
@@ -152,10 +153,14 @@ internal class DashboardSync(
   suspend fun deleteCustomReport(id: CustomReportId) =
     sync.syncChanges(tombstone(CUSTOM_REPORTS, id.value))
 
+  // Appends after the existing pages. packages/loot-core/src/server/dashboard/app.ts
+  // createDashboardPage()
   suspend fun insertPage(id: DashboardPageId, name: String) {
+    val sortOrder = sortOrderAfter(dao.lastPageSortOrder())
     sync.syncChanges(
       localChange(DASHBOARD_PAGES, id.value, "id", id.value),
       localChange(DASHBOARD_PAGES, id.value, "name", name),
+      localChange(DASHBOARD_PAGES, id.value, "sort_order", sortOrder),
       localChange(DASHBOARD_PAGES, id.value, "tombstone", false),
     )
   }
