@@ -81,6 +81,7 @@ private fun CustomData.drilldownDates(interval: CustomInterval?): LocalDateRange
       LocalDate(start.year, JANUARY, 1)..LocalDate(start.year, DECEMBER, LAST_DAY_OF_DECEMBER)
     Daily,
     Weekly,
+    Quarterly,
     Unknown -> interval.range
   }
 }

@@ -62,6 +62,7 @@ internal fun Interval.label(): String =
     Daily -> Strings.reportsCustomEditorIntervalDaily
     Weekly -> Strings.reportsCustomEditorIntervalWeekly
     Monthly -> Strings.reportsCustomEditorIntervalMonthly
+    Quarterly -> Strings.reportsCustomEditorIntervalQuarterly
     Yearly -> Strings.reportsCustomEditorIntervalYearly
     Unknown -> Strings.reportsCustomEditorUnknown
   }

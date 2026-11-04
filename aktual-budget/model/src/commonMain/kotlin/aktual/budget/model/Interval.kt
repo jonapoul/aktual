@@ -11,6 +11,7 @@ enum class Interval {
   @SerialName("Daily") Daily,
   @SerialName("Weekly") Weekly,
   @SerialName("Monthly") Monthly,
+  @SerialName("Quarterly") Quarterly,
   @SerialName("Yearly") Yearly,
   @Fallback Unknown;
 

@@ -8,17 +8,19 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Field
+import aktual.budget.model.Interval
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 
-// Upstream's sidebar only offers budgeted amounts grouped by category or group, monthly or yearly.
-// Budgets have no payee or account, and are keyed by month, so anything else would come out empty
+// Upstream's sidebar only offers budgeted amounts grouped by category or group, and not daily or
+// weekly. Budgets have no payee or account, and are keyed by month, so anything else would come out
+// empty
 internal fun CustomReportConfig.canShowBudgeted(): Boolean =
   groupBy != Payee &&
     groupBy != Account &&
     groupBy != Tag &&
-    (interval == Monthly || interval == Yearly)
+    interval in setOf<Interval>(Monthly, Quarterly, Yearly)
 
 // packages/desktop-client/src/components/reports/spreadsheets/budgetDataQuery.ts fetchBudgetData():
 // each budget as the amounts row a transaction would make, positive budgets as assets and negative

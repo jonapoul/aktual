@@ -145,6 +145,34 @@ class CustomReportOptionsTest {
   }
 
   @Test
+  fun `Quarterly offers quarter ranges and longer`() {
+    assertThat(dateRangeOptions(Quarterly))
+      .containsExactly(
+        DateRangeType.CurrentQuarter,
+        DateRangeType.PreviousQuarter,
+        DateRangeType.Last6Months,
+        DateRangeType.Last12Months,
+        DateRangeType.YearToDate,
+        DateRangeType.LastYear,
+        DateRangeType.PriorYearToDate,
+        DateRangeType.AllTime,
+      )
+    assertThat(DEFAULT.withDateRange(ThisMonth).withInterval(Quarterly).dates)
+      .isEqualTo(CustomReportDates.Live(Last12Months, includeCurrent = false))
+  }
+
+  @Test
+  fun `Quarterly static dates cover whole quarters`() {
+    val quarterly = DEFAULT.withInterval(Quarterly)
+    assertThat(quarterly.withStaticMonths(YearMonth(2026, 2), YearMonth(2026, 5)).dates)
+      .isEqualTo(CustomReportDates.Static(LocalDate(2026, 1, 1), LocalDate(2026, 6, 30)))
+
+    val monthly = DEFAULT.withStaticMonths(YearMonth(2026, 2), YearMonth(2026, 5))
+    assertThat(monthly.withInterval(Quarterly).dates)
+      .isEqualTo(CustomReportDates.Static(LocalDate(2026, 1, 1), LocalDate(2026, 6, 30)))
+  }
+
+  @Test
   fun `Changing interval keeps a range it offers`() {
     val live = DEFAULT.copy(dates = CustomReportDates.Live(YearToDate, includeCurrent = true))
     assertThat(live.withInterval(Weekly).dates).isEqualTo(live.dates)

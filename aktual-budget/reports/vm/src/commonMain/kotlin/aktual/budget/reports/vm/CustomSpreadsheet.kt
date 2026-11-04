@@ -23,6 +23,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.Month.DECEMBER
 import kotlinx.datetime.Month.JANUARY
+import kotlinx.datetime.YearMonth
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -33,10 +34,11 @@ internal data class CustomReportQuery(val start: LocalDate, val end: LocalDate, 
 
 // packages/desktop-client/src/components/reports/spreadsheets/makeQuery.ts compares dates by the
 // interval they fall in, so monthly and yearly reports cover the whole of their first and last
-// month or year
+// month or year. Quarterly reports are queried by month, as upstream has no quarter to compare by
 internal fun customReportQuery(interval: Interval, range: LocalDateRange): CustomReportQuery =
   when (interval) {
-    Monthly ->
+    Monthly,
+    Quarterly ->
       CustomReportQuery(
         range.start.yearMonth.firstDay,
         range.endInclusive.yearMonth.lastDay,
@@ -570,12 +572,16 @@ private fun intervalStart(
   firstDayOfWeek: FirstDayOfWeek,
 ): LocalDate =
   when (interval) {
-    Monthly -> LocalDate((key / MONTH_DIVISOR).toInt(), (key % MONTH_DIVISOR).toInt(), 1)
+    Monthly -> monthOf(key).firstDay
+    Quarterly -> quarter(monthOf(key)).start.firstDay
     Yearly -> LocalDate(key.toInt(), 1, 1)
     Daily,
     Unknown -> dateOf(key)
     Weekly -> weekStart(dateOf(key), firstDayOfWeek)
   }
+
+private fun monthOf(key: Long) =
+  YearMonth((key / MONTH_DIVISOR).toInt(), (key % MONTH_DIVISOR).toInt())
 
 private fun dateOf(key: Long) =
   LocalDate(
@@ -584,8 +590,8 @@ private fun dateOf(key: Long) =
     (key % MONTH_DIVISOR).toInt(),
   )
 
-// packages/loot-core/src/shared/months.ts rangeInclusive() and its day, week and year versions:
-// every interval from the one holding the start date to the one holding the end
+// packages/loot-core/src/shared/months.ts rangeInclusive() and its day, week, quarter and year
+// versions: every interval from the one holding the start date to the one holding the end
 internal fun intervals(
   interval: Interval,
   range: LocalDateRange,
@@ -597,6 +603,7 @@ internal fun intervals(
       Unknown -> date
       Weekly -> weekStart(date, firstDayOfWeek)
       Monthly -> date.yearMonth.firstDay
+      Quarterly -> quarter(date.yearMonth).start.firstDay
       Yearly -> LocalDate(date.year, JANUARY, 1)
     }
 
@@ -606,6 +613,7 @@ internal fun intervals(
       Unknown -> start.plus(1, DAY)
       Weekly -> start.plus(1, WEEK)
       Monthly -> start.plus(1, MONTH)
+      Quarterly -> start.plus(MONTHS_PER_QUARTER, MONTH)
       Yearly -> start.plus(1, YEAR)
     }
 

@@ -290,6 +290,11 @@ fun CustomGroup.label(): String =
 private fun CustomInterval.label(interval: Interval): String =
   when (interval) {
     Monthly -> "${start.month.stringShort()} ${start.year.toString().takeLast(2)}"
+    Quarterly ->
+      Strings.reportsCustomQuarterLabel(
+        int1 = start.month.ordinal / MONTHS_PER_QUARTER + 1,
+        string2 = start.year.toString().takeLast(2),
+      )
     Yearly -> start.year.toString()
     Daily,
     Weekly,
@@ -426,6 +431,7 @@ internal class IndexedColumns(private val columns: List<LineComponent>) :
 
 private val BAR_THICKNESS = 16.dp
 private const val BAR_LABEL_ROTATION = -35f
+private const val MONTHS_PER_QUARTER = 3
 private const val AMOUNT_LABELS = 8
 private const val MAX_AXIS_LABELS = 12
 internal const val MAX_MARKER_ROWS = 10

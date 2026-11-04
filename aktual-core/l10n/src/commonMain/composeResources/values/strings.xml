@@ -1371,6 +1371,8 @@
   <string name="reports_custom_table_day">Day</string>
   <string name="reports_custom_table_week">Week</string>
   <string name="reports_custom_table_month">Month</string>
+  <string name="reports_custom_table_quarter">Quarter</string>
+  <string name="reports_custom_quarter_label">Q%1$d %2$s</string>
   <string name="reports_custom_table_year">Year</string>
   <string name="reports_formula_missing_equals">Formula must start with =</string>
   <string name="reports_formula_unexpected_character">Unexpected character %1$s</string>
@@ -1508,6 +1510,7 @@
   <string name="reports_custom_editor_interval_daily">Daily</string>
   <string name="reports_custom_editor_interval_weekly">Weekly</string>
   <string name="reports_custom_editor_interval_monthly">Monthly</string>
+  <string name="reports_custom_editor_interval_quarterly">Quarterly</string>
   <string name="reports_custom_editor_interval_yearly">Yearly</string>
   <string name="reports_custom_editor_sort">Sort</string>
   <string name="reports_custom_editor_sort_asc">Ascending</string>

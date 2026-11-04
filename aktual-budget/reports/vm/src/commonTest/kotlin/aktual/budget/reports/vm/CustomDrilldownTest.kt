@@ -31,6 +31,20 @@ class CustomDrilldownTest {
   }
 
   @Test
+  fun `A quarter matches the dates it covers`() {
+    val quarter =
+      CustomInterval(LocalDate(2026, 1, 1), LocalDate(2026, 1, 10)..LocalDate(2026, 3, 20))
+    val matcher =
+      data(CONFIG.copy(interval = Quarterly))
+        .matcher(CustomDrilldown(group = FOOD_GROUP, interval = quarter))
+
+    assertThat(matcher.matches(row(date = LocalDate(2026, 1, 10)))).isTrue()
+    assertThat(matcher.matches(row(date = LocalDate(2026, 3, 20)))).isTrue()
+    assertThat(matcher.matches(row(date = LocalDate(2026, 1, 9)))).isFalse()
+    assertThat(matcher.matches(row(date = LocalDate(2026, 3, 21)))).isFalse()
+  }
+
+  @Test
   fun `A category group matches each of its categories`() {
     val matcher = matcher(CustomDrilldown(group = SPENDING_GROUP))
 
