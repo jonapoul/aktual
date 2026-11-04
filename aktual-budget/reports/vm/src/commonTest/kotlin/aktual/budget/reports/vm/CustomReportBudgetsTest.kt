@@ -9,9 +9,12 @@ import aktual.budget.model.Operator
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 
 class CustomReportBudgetsTest {
@@ -74,6 +77,40 @@ class CustomReportBudgetsTest {
     assertThat(matching(condition(Category, Matches, string("(")))).isEmpty()
     assertThat(matching(condition(Category, Matches, string("x".repeat(257)))))
       .containsExactly("food", "fuel", "rent")
+  }
+
+  @Test
+  fun `Contains ignores case and accents`() {
+    val filter = BudgetCategoryFilter(listOf(condition(Category, Contains, string("CAFE"))), And)
+    assertThat(filter.matches(CategoryId("cafe"), "Café", null, null)).isTrue()
+  }
+
+  @Test
+  fun `Matches is case sensitive`() {
+    assertThat(matching(condition(Category, Matches, string("^R")))).isEmpty()
+  }
+
+  @Test
+  fun `Null IDs match only the uncategorised row`() {
+    val filter = BudgetCategoryFilter(listOf(condition(Category, Is, JsonNull)), And)
+    assertThat(filter.matches(null, null, null, null)).isTrue()
+    assertThat(matching(condition(Category, Is, JsonNull))).isEmpty()
+    assertThat(matching(condition(Category, OneOf, JsonArray(listOf(JsonNull, string("food"))))))
+      .containsExactly("food")
+  }
+
+  @Test
+  fun `Uncategorised rows have no name to contain anything`() {
+    val contains = BudgetCategoryFilter(listOf(condition(Category, Contains, string("x"))), And)
+    assertThat(contains.matches(null, null, null, null)).isFalse()
+    val doesNotContain =
+      BudgetCategoryFilter(listOf(condition(Category, DoesNotContain, string("x"))), And)
+    assertThat(doesNotContain.matches(null, null, null, null)).isTrue()
+  }
+
+  @Test
+  fun `Not one of an empty list matches nothing`() {
+    assertThat(matching(condition(Category, NotOneOf, JsonArray(emptyList())))).isEmpty()
   }
 
   private fun matching(vararg conditions: Condition): List<String?> =
