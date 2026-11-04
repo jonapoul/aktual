@@ -12,6 +12,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.PayeeId
+import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.TransactionId
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import assertk.all
@@ -535,7 +536,7 @@ internal class TransactionWriterTest {
       prop(Accounts::name).isEqualTo("Savings")
       prop(Accounts::offbudget).isEqualTo(false)
       prop(Accounts::closed).isEqualTo(false)
-      prop(Accounts::sort_order).isEqualTo(16384.0)
+      prop(Accounts::sort_order).isEqualTo(SORT_INCREMENT.toDouble())
     }
     val payee = checkNotNull(payeeDao.transferPayee(id))
     assertThat(payeeDao[payee]?.name).isEqualTo("")
@@ -579,7 +580,7 @@ internal class TransactionWriterTest {
     val offBudget = writer.write { insertAccount("Off", offBudget = true) }
 
     assertThat(accountDao[onBudget]?.sort_order).isEqualTo(36384.0)
-    assertThat(accountDao[offBudget]?.sort_order).isEqualTo(16384.0)
+    assertThat(accountDao[offBudget]?.sort_order).isEqualTo(SORT_INCREMENT.toDouble())
   }
 
   @Test

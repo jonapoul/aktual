@@ -11,6 +11,7 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.withoutResult
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
+import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.CustomReportConfig
 import aktual.budget.reports.vm.CustomReportSync
@@ -102,7 +103,9 @@ class NewCustomReportViewModelTest {
   private fun runNewTest(action: suspend Harness.() -> Unit) =
     runSyncedDatabaseTest { scope, controller ->
       dashboardPagesQueries.withoutResult {
-        insert(Dashboard_pages(PAGE, "Main", tombstone = false, sort_order = 16384.0))
+        insert(
+          Dashboard_pages(PAGE, "Main", tombstone = false, sort_order = SORT_INCREMENT.toDouble()),
+        )
       }
       val dispatcher = StandardTestDispatcher(scope.testScheduler)
       // Keep viewModelScope on the test scheduler, so its queries can't outlive the database

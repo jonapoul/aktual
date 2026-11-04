@@ -11,9 +11,9 @@ import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.model.localChange
+import aktual.budget.model.sortOrderAfter
 import aktual.budget.model.tombstone
 import dev.zacsweers.metro.Inject
-import kotlin.math.floor
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
@@ -156,8 +156,7 @@ internal class DashboardSync(
   // Appends after the existing pages. packages/loot-core/src/server/dashboard/app.ts
   // createDashboardPage()
   suspend fun insertPage(id: DashboardPageId, name: String) {
-    // Messages only carry whole numbers, so rounding down still puts it after a fractional order
-    val sortOrder = (dao.lastPageSortOrder()?.let(::floor)?.toLong() ?: 0L) + PAGE_SORT_INCREMENT
+    val sortOrder = sortOrderAfter(dao.lastPageSortOrder())
     sync.syncChanges(
       localChange(DASHBOARD_PAGES, id.value, "id", id.value),
       localChange(DASHBOARD_PAGES, id.value, "name", name),
@@ -198,9 +197,6 @@ internal class DashboardSync(
   private companion object {
     const val CONTENT = "content"
     const val NAME = "name"
-
-    // SORT_INCREMENT in packages/loot-core/src/server/db/sort.ts
-    const val PAGE_SORT_INCREMENT = 16384L
 
     val QUERIES_SERIALIZER = MapSerializer(String.serializer(), FormulaQuery.serializer())
 

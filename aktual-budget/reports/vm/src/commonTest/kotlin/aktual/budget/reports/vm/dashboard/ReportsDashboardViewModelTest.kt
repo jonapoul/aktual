@@ -9,6 +9,7 @@ import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.DashboardPageId
+import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.CustomReportMeta
 import aktual.budget.reports.vm.CustomReportSync
@@ -124,7 +125,12 @@ class ReportsDashboardViewModelTest {
     dashboardPagesQueries.withoutResult {
       pages.forEachIndexed { i, page ->
         insert(
-          Dashboard_pages(page.id, page.name, tombstone = false, sort_order = (i + 1) * 16384.0),
+          Dashboard_pages(
+            page.id,
+            page.name,
+            tombstone = false,
+            sort_order = (i + 1.0) * SORT_INCREMENT,
+          ),
         )
       }
     }

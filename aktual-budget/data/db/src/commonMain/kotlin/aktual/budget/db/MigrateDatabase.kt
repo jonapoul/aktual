@@ -1,5 +1,6 @@
 package aktual.budget.db
 
+import aktual.budget.model.SORT_INCREMENT
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlCursor
@@ -117,12 +118,16 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
     // packages/loot-core/migrations/1792441821604_dashboard_page_sort_order.sql
     1792441821604L to
       listOf(
-        "ALTER TABLE dashboard_pages ADD COLUMN sort_order REAL DEFAULT 1000000000",
-        "UPDATE dashboard_pages SET sort_order = rowid * 16384",
+        "ALTER TABLE dashboard_pages ADD COLUMN sort_order REAL DEFAULT $DEFAULT_DASHBOARD_PAGE_SORT_ORDER",
+        "UPDATE dashboard_pages SET sort_order = rowid * $SORT_INCREMENT",
       ),
   )
 
 private const val TAG = "MigrateDatabase"
+
+// Puts pages synced from a client that predates dashboard_pages.sort_order last. Must match the
+// column default in DashboardPages.sq
+internal const val DEFAULT_DASHBOARD_PAGE_SORT_ORDER = 1_000_000_000L
 
 // Keep ADD COLUMN migrations idempotent. Schema.create can add the column before migrations run,
 // and catching the duplicate-column failure is unreliable, so check for it via PRAGMA first

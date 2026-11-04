@@ -7,6 +7,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.CleanupGroupId
 import aktual.budget.model.CustomReportId
+import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
 import aktual.test.CoTemporaryFolder
@@ -162,7 +163,7 @@ class DatabaseMigrationTest {
   private suspend fun checkMigration1792441821604(db: BudgetDatabase) {
     val sortOrders = db.dashboardPagesQueries.getAll().awaitAsList().map { it.sort_order }
     assertThat(sortOrders).isEqualTo(sortOrders.sortedBy { it })
-    assertThat(sortOrders.all { it != null && it % 16384.0 == 0.0 }).isTrue()
+    assertThat(sortOrders.all { it != null && it % SORT_INCREMENT == 0.0 }).isTrue()
   }
 
   // Not upstream: creates the v_schedule_recurring view, which throws if it doesn't exist

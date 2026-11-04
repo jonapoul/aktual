@@ -5,6 +5,7 @@ import aktual.budget.db.Dashboard_pages
 import aktual.budget.db.GetPositionAndSize
 import aktual.budget.db.withoutResult
 import aktual.budget.model.DashboardPageId
+import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.WidgetId
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
@@ -74,7 +75,7 @@ internal class DashboardDaoTest {
 
   @Test
   fun `Last page sort order includes deleted pages`() = runDaoTest {
-    assertThat(lastPageSortOrder()).isEqualTo(49152.0)
+    assertThat(lastPageSortOrder()).isEqualTo(3.0 * SORT_INCREMENT)
   }
 
   @Test
@@ -104,14 +105,28 @@ internal class DashboardDaoTest {
     runDatabaseTest { scope ->
       dashboardPagesQueries.withoutResult {
         // Inserted out of order, to check pages come back sorted by sort_order
-        insert(Dashboard_pages(PAGE_2, name = "Two", tombstone = false, sort_order = 32768.0))
-        insert(Dashboard_pages(PAGE_1, name = "One", tombstone = false, sort_order = 16384.0))
+        insert(
+          Dashboard_pages(
+            PAGE_2,
+            name = "Two",
+            tombstone = false,
+            sort_order = 2.0 * SORT_INCREMENT,
+          ),
+        )
+        insert(
+          Dashboard_pages(
+            PAGE_1,
+            name = "One",
+            tombstone = false,
+            sort_order = SORT_INCREMENT.toDouble(),
+          ),
+        )
         insert(
           Dashboard_pages(
             DashboardPageId("deleted"),
             name = "Gone",
             tombstone = true,
-            sort_order = 49152.0,
+            sort_order = 3.0 * SORT_INCREMENT,
           ),
         )
       }
