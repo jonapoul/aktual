@@ -182,7 +182,18 @@ data class BalanceForecastReportMeta(
   @SerialName("timeFrame") val timeFrame: TimeFrame? = null,
   @SerialName("granularity") val granularity: ForecastGranularity? = null,
   @SerialName("source") val source: ForecastSource? = null,
+  @SerialName("series") val series: List<ForecastSeries>? = null,
 ) : ReportMeta
+
+@Immutable
+@Serializable
+data class ForecastSeries(
+  @SerialName("id") val id: String,
+  @SerialName("name") val name: String,
+  @SerialName("accounts") val accounts: List<AccountId>? = null,
+  @SerialName("conditions") val conditions: List<Condition> = emptyList(),
+  @SerialName("conditionsOp") val conditionsOp: ConditionOp? = null,
+)
 
 @Serializable
 data class AgeOfMoneyReportMeta(
