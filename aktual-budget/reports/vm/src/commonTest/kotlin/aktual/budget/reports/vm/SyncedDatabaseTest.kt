@@ -44,6 +44,7 @@ internal suspend fun BudgetSyncController.transaction(
   parent: String? = null,
   transfer: String? = null,
   isDeleted: Boolean = false,
+  schedule: String? = null,
 ) =
   row(
     TRANSACTIONS,
@@ -58,6 +59,7 @@ internal suspend fun BudgetSyncController.transaction(
     "parent_id" to parent,
     "transferred_id" to transfer,
     "tombstone" to isDeleted,
+    "schedule" to schedule,
   )
 
 internal suspend fun BudgetSyncController.row(
