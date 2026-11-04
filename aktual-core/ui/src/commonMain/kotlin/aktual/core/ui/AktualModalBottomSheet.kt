@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 
 /**
  * A wrapper around [ModalBottomSheet] that signals [DialogBlurState] so the background blur overlay
@@ -65,7 +66,10 @@ fun AktualModalBottomSheet(
     dragHandle = {
       Box(modifier = Modifier.fillMaxWidth()) {
         if (onBack != null) {
-          IconButton(modifier = Modifier.align(CenterStart), onClick = onBack) {
+          IconButton(
+            modifier = Modifier.align(CenterStart).testTag(Tags.SheetBack),
+            onClick = onBack,
+          ) {
             Icon(imageVector = AktualIcons.CheveronLeft, contentDescription = Strings.navBack)
           }
         }

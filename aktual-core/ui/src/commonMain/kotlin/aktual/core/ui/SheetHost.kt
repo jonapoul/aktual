@@ -6,11 +6,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import kotlinx.coroutines.launch
 
@@ -39,11 +38,13 @@ fun SheetHost(
     }
   }
 
+  val onBack = host.onBack
   AktualModalBottomSheet(
     onDismissRequest = onDismiss,
     sheetState = sheetState,
-    onBack = host.onBack,
+    onBack = onBack,
   ) {
+    BackHandler(enabled = onBack != null) { onBack?.invoke() }
     CompositionLocalProvider(LocalSheetHost provides host) { content(host) }
   }
 }
@@ -53,7 +54,20 @@ class SheetHostState internal constructor(private val hide: (then: () -> Unit) -
   /** Hides the sheet, then calls the host's `onDismiss` */
   val dismiss: () -> Unit = { hide {} }
 
-  internal var onBack by mutableStateOf<(() -> Unit)?>(null)
+  // Open sub-pages by key. The deepest one gets the back button, since a page can open another
+  // inside itself
+  private val subPages = mutableStateMapOf<Any, SubPage>()
+
+  internal val onBack: (() -> Unit)?
+    get() = subPages.values.maxByOrNull(SubPage::depth)?.onBack
+
+  internal fun register(key: Any, page: SubPage) {
+    subPages[key] = page
+  }
+
+  internal fun unregister(key: Any) {
+    subPages.remove(key)
+  }
 
   /** Hides the sheet, then runs [then] and the host's `onDismiss` */
   fun dismissThen(then: () -> Unit) = hide(then)
@@ -86,22 +100,33 @@ fun HostedSheet(onDismiss: () -> Unit, content: @Composable HostedSheetScope.() 
     return
   }
 
+  val parentDepth = LocalSheetDepth.current
+  val isSubPage = onDismiss !== host.dismiss
+  val depth = if (isSubPage) parentDepth + 1 else parentDepth
+  if (isSubPage) {
+    val latestOnDismiss by rememberUpdatedState(onDismiss)
+    val key = remember { Any() }
+    DisposableEffect(host, key, depth) {
+      host.register(key, SubPage(depth) { latestOnDismiss() })
+      onDispose { host.unregister(key) }
+    }
+  }
+
   val scope =
-    if (onDismiss === host.dismiss) {
-      HostedSheetScope(onClose = host::dismissThen, onDismiss = host::dismissThen)
-    } else {
-      BackHandler(onBack = onDismiss)
-      DisposableEffect(host, onDismiss) {
-        host.onBack = onDismiss
-        onDispose { if (host.onBack === onDismiss) host.onBack = null }
-      }
+    if (isSubPage) {
       val close = { then: () -> Unit ->
         then()
         onDismiss()
       }
       HostedSheetScope(onClose = close, onDismiss = host::dismissThen)
+    } else {
+      HostedSheetScope(onClose = host::dismissThen, onDismiss = host::dismissThen)
     }
-  scope.content()
+  CompositionLocalProvider(LocalSheetDepth provides depth) { scope.content() }
 }
 
+internal data class SubPage(val depth: Int, val onBack: () -> Unit)
+
 private val LocalSheetHost = staticCompositionLocalOf<SheetHostState?> { null }
+
+private val LocalSheetDepth = staticCompositionLocalOf { 0 }

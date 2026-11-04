@@ -287,7 +287,7 @@ private fun BudgetScaffold(
 
 // The top sheet shows as a page of one sheet, which goes back to the one below when closed
 @Composable
-private fun BudgetSheetStack(
+internal fun BudgetSheetStack(
   sheets: PersistentList<SheetRequest>,
   state: BudgetState.Loaded,
   onAction: BudgetActionHandler,
