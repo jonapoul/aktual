@@ -1273,6 +1273,21 @@
   <string name="reports_balance_forecast_empty">No accounts are included in this report. Adjust the accounts or date range to see a balance projection.</string>
   <string name="reports_balance_forecast_no_scheduled">No scheduled transactions in this range</string>
   <string name="reports_balance_forecast_tracking">Forecast = starting balance + budgeted income - budgeted expenses</string>
+  <string name="reports_balance_forecast_show_contributors">Show schedules</string>
+  <string name="reports_balance_forecast_contributors_title">What drives this forecast?</string>
+  <string name="reports_balance_forecast_contributors_description">Upcoming schedules follow this report’s range and filters. Tap a schedule to edit it. Recorded occurrences are left out of scheduled changes, and transfers between included accounts cancel out.</string>
+  <string name="reports_balance_forecast_opening">Opening balance</string>
+  <string name="reports_balance_forecast_recorded_net">Recorded transactions (net)</string>
+  <string name="reports_balance_forecast_scheduled_net">Scheduled changes (net)</string>
+  <string name="reports_balance_forecast_inflows">Scheduled inflows</string>
+  <string name="reports_balance_forecast_outflows">Scheduled outflows</string>
+  <string name="reports_balance_forecast_no_contributors">No scheduled contributions in this direction.</string>
+  <string name="reports_balance_forecast_total">Total</string>
+  <string name="reports_balance_forecast_unnamed">Unnamed schedule</string>
+  <string name="reports_balance_forecast_no_account">No account assigned</string>
+  <string name="reports_balance_forecast_transfer">Transfer</string>
+  <string name="reports_balance_forecast_show_all">Show all</string>
+  <string name="reports_balance_forecast_show_top">Show top five</string>
   <string name="reports_balance_forecast_how_title">How is the forecast calculated?</string>
   <string name="reports_balance_forecast_how">This forecast shows your running balance from posted transactions, plus upcoming scheduled transactions in the future. Recurring schedules are repeated up to the end of the range, and transfer schedules move money between both accounts. The forecast is only as accurate as your schedules.</string>
   <string name="reports_balance_forecast_tracking_how">The tracking budget forecast starts from your on-budget balance, then adds each month’s budgeted income and subtracts its budgeted expenses. It doesn’t use schedules or account filters.</string>

@@ -31,7 +31,8 @@ fun ReportChart(
 ) =
   when (data) {
     is AgeOfMoneyData -> AgeOfMoneyChart(data, compact, modifier, includeHeader, zoom)
-    is BalanceForecastData -> BalanceForecastChart(data, compact, modifier, includeHeader, zoom)
+    is BalanceForecastData ->
+      BalanceForecastChart(data, compact, modifier, includeHeader, zoom, onAction)
     is BudgetAnalysisData -> BudgetAnalysisChart(data, compact, modifier, includeHeader, zoom)
     is CashFlowData -> CashFlowChart(data, compact, modifier, includeHeader, zoom)
     is CrossoverData -> CrossoverChart(data, compact, modifier, includeHeader, zoom)

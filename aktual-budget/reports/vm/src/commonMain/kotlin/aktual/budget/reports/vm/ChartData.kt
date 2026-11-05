@@ -113,6 +113,8 @@ data class BalanceForecastData(
   val items: ImmutableMap<LocalDate, Amount>,
   val today: LocalDate,
   val scheduledCount: Int,
+  // Null for tracking budget forecasts and forecasts without accounts
+  val contributors: ForecastContributors? = null,
 ) : ChartData
 
 data class MonteCarloData(

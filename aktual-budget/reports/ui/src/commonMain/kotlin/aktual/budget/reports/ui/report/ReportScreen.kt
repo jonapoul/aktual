@@ -1,6 +1,7 @@
 package aktual.budget.reports.ui.report
 
 import aktual.budget.model.WidgetId
+import aktual.budget.reports.components.ChartAction
 import aktual.budget.reports.components.ChartInfoSheet
 import aktual.budget.reports.components.ChartTags
 import aktual.budget.reports.components.ChartZoomState
@@ -31,6 +32,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ZoomOut
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.EditScheduleNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
@@ -88,6 +90,7 @@ fun ReportScreen(
   id: WidgetId,
   back: BackNavigator,
   toTransactions: TransactionsNavigator,
+  toEditSchedule: EditScheduleNavigator,
   viewModel: ReportViewModel = reportViewModel(id),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -121,12 +124,10 @@ fun ReportScreen(
         SaveSettings -> viewModel.save()
         is Chart ->
           when (val chart = action.action) {
-            is SaveText -> viewModel.saveText(chart.content, chart.align)
             is SetUnsavedText -> hasUnsavedText = chart.hasUnsavedText
-            is SetSummaryType -> viewModel.editSummary { it.withSummaryType(chart.type) }
-            is SetAllTimeDivisor -> viewModel.editSummary { it.withAllTimeDivisor(chart.allTime) }
             is ClickCalendarDay -> calendarDrilldown(chart)
-            is DrillDown -> Unit
+            is EditSchedule -> toEditSchedule(chart.id)
+            else -> viewModel.onChartAction(chart)
           }
         else -> Unit
       }
@@ -150,6 +151,17 @@ fun ReportScreen(
     )
   }
 }
+
+private fun ReportViewModel.onChartAction(action: ChartAction) =
+  when (action) {
+    is SaveText -> saveText(action.content, action.align)
+    is SetSummaryType -> editSummary { it.withSummaryType(action.type) }
+    is SetAllTimeDivisor -> editSummary { it.withAllTimeDivisor(action.allTime) }
+    is SetUnsavedText,
+    is ClickCalendarDay,
+    is EditSchedule,
+    is DrillDown -> Unit
+  }
 
 private fun ReportViewModel.editSummary(transform: (SummaryReportMeta) -> SummaryReportMeta) =
   edit { meta ->

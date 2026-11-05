@@ -112,6 +112,18 @@
     <item quantity="one">%1$d scheduled transaction included</item>
     <item quantity="other">%1$d scheduled transactions included</item>
   </plurals>
+  <plurals name="reports_balance_forecast_occurrences">
+    <item quantity="one">%1$d occurrence</item>
+    <item quantity="other">%1$d occurrences</item>
+  </plurals>
+  <plurals name="reports_balance_forecast_other_schedules">
+    <item quantity="one">%1$d other schedule</item>
+    <item quantity="other">%1$d other schedules</item>
+  </plurals>
+  <plurals name="reports_balance_forecast_internal_transfers">
+    <item quantity="one">%1$d internal transfer occurrence has no net effect.</item>
+    <item quantity="other">%1$d internal transfer occurrences have no net effect.</item>
+  </plurals>
   <plurals name="reports_monte_carlo_simulations">
     <item quantity="one">%1$d simulation, in today’s money</item>
     <item quantity="other">%1$d simulations, in today’s money</item>

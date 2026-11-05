@@ -1,5 +1,6 @@
 package aktual.budget.reports.components
 
+import aktual.budget.model.ScheduleId
 import aktual.budget.reports.vm.CalendarData
 import aktual.budget.reports.vm.CustomDrilldown
 import aktual.budget.reports.vm.SummaryChartType
@@ -14,6 +15,8 @@ sealed interface ChartAction {
   @JvmInline value class SetAllTimeDivisor(val allTime: Boolean) : ChartAction
 
   data class ClickCalendarDay(val data: CalendarData, val date: LocalDate) : ChartAction
+
+  @JvmInline value class EditSchedule(val id: ScheduleId) : ChartAction
 
   @JvmInline value class DrillDown(val drilldown: CustomDrilldown) : ChartAction
 

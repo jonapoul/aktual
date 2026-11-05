@@ -1021,6 +1021,7 @@ internal class ChartDataLoader(
     val dateCondition = row._conditions?.firstOrNull { it.field == Date }
     return ForecastSchedule(
       id = row.id,
+      name = row.name,
       nextDate = row.next_date,
       date = date,
       account = row._account?.let(::AccountId),

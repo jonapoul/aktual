@@ -9,6 +9,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
@@ -27,7 +28,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -68,6 +73,7 @@ internal fun BalanceForecastChart(
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
   zoom: ChartZoomState = rememberChartZoomState(data),
+  onAction: ChartActionListener = ChartActionListener {},
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {
@@ -88,6 +94,28 @@ internal fun BalanceForecastChart(
         style = typography.bodySmall,
         color = colors.pageTextSubdued,
       )
+    }
+
+    // Like upstream, tracking budget forecasts have none
+    val contributors = data.contributors
+    if (!compact && contributors != null) {
+      var showContributors by rememberSaveable { mutableStateOf(false) }
+      NormalTextButton(
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        text = Strings.reportsBalanceForecastShowContributors,
+        onClick = { showContributors = true },
+      )
+
+      if (showContributors) {
+        ForecastContributorsSheet(
+          contributors = contributors,
+          onEditSchedule = { id ->
+            showContributors = false
+            onAction(ChartAction.EditSchedule(id))
+          },
+          onDismiss = { showContributors = false },
+        )
+      }
     }
   }
 
@@ -375,6 +403,7 @@ val PREVIEW_BALANCE_FORECAST_DATA =
         .toImmutableMap(),
     today = LocalDate(2026, 3, 14),
     scheduledCount = 36,
+    contributors = PREVIEW_FORECAST_CONTRIBUTORS,
   )
 
 private val PREVIEW_DAILY_BALANCE_FORECAST_DATA =
