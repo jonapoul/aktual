@@ -1,6 +1,6 @@
 plugins { id("aktual.module.compose") }
 
-optIn(EXPERIMENTAL_MATERIAL_3, "dev.chrisbanes.haze.ExperimentalHazeApi")
+optIn(EXPERIMENTAL_MATERIAL_3)
 
 kotlin {
   commonMainDependencies {
