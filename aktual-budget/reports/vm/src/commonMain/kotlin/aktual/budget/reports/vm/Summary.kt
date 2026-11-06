@@ -88,9 +88,7 @@ internal fun calculateSummary(
   val end = params.end.lastDay
   val total = amounts.sum()
   return when (params.content.type) {
-    Sum -> {
-      SummaryData.Sum(params.title, start, end, Amount(total))
-    }
+    Sum -> SummaryData.Sum(params.title, start, end, Amount(total))
 
     AveragePerMonth -> {
       val months = months(params.start, params.end)

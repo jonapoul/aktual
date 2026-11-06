@@ -59,9 +59,7 @@ class AboutNavEntryContributor : NavEntryContributor {
 
   private fun adjustStackIfInvalidated(stack: NavStack<NavKey>, event: StorageNavEvent) {
     when (event) {
-      is ActiveBudgetCleared -> {
-        stack.removeIf { it is BudgetNavRailNavRoute }
-      }
+      is ActiveBudgetCleared -> stack.removeIf { it is BudgetNavRailNavRoute }
 
       is PreferencesCleared,
       is AllFilesCleared -> {

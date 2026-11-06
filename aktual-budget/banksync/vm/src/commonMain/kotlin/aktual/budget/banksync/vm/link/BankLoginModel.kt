@@ -103,9 +103,7 @@ internal class BankLoginModel(
         onAccounts(response.value)
         Idle
       }
-      is Failed -> {
-        failed(response.error)
-      }
+      is Failed -> failed(response.error)
     }
   }
 
@@ -117,9 +115,7 @@ internal class BankLoginModel(
         runCatchingCancellable(
           attempt = {
             when (val response = provider.banks(country)) {
-              is Success -> {
-                LoginBanks.Loaded(response.value.toImmutableList())
-              }
+              is Success -> LoginBanks.Loaded(response.value.toImmutableList())
               is Failed -> {
                 logcat.w { "Listing ${provider.name} banks in $country failed: ${response.error}" }
                 LoginBanks.Failure(response.error.cause())

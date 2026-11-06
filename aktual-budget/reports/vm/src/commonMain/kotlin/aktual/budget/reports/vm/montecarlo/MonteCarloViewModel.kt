@@ -161,13 +161,9 @@ internal constructor(
       val selectedRun by mutableSelectedRun.collectAsState()
 
       when (val s = saved) {
-        Loading -> {
-          MonteCarloState.Loading
-        }
+        Loading -> MonteCarloState.Loading
 
-        NotFound -> {
-          MonteCarloState.NotFound
-        }
+        NotFound -> MonteCarloState.NotFound
 
         is Found -> {
           val current = config

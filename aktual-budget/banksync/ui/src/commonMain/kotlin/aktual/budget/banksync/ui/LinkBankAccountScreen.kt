@@ -172,9 +172,7 @@ private fun LinkBankAccountScaffold(
       PageBackground()
 
       when (state) {
-        Loading -> {
-          ShimmerLinkBankAccount(modifier = Modifier.padding(innerPadding))
-        }
+        Loading -> ShimmerLinkBankAccount(modifier = Modifier.padding(innerPadding))
         is Failure -> {
           FailureScreen(
             modifier = Modifier.padding(innerPadding),
@@ -325,9 +323,7 @@ private fun LazyListScope.choosing(
         )
       }
     }
-    is NeedsLogin -> {
-      bankLogin(state.selected, accounts.login, bankQuery, onBankQuery, onAction)
-    }
+    is NeedsLogin -> bankLogin(state.selected, accounts.login, bankQuery, onBankQuery, onAction)
     is Loaded -> {
       if (accounts.items.isEmpty()) {
         item(key = "empty") {

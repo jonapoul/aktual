@@ -24,14 +24,10 @@ fun RecurConfig.description(dateFormat: DateTimeFormat<LocalDate>): String {
         val count = endOccurrences ?: 1
         if (count == 1) Strings.recurEndOnce else Plurals.recurEndTimes(count, count)
       }
-      OnDate -> {
-        endDate?.let { Strings.recurEndUntil(dateFormat.format(it)) }
-      }
+      OnDate -> endDate?.let { Strings.recurEndUntil(dateFormat.format(it)) }
       Never,
       Unknown,
-      null -> {
-        null
-      }
+      null -> null
     }
 
   val frequency = frequencyDescription()
@@ -51,9 +47,7 @@ fun RecurConfig.description(dateFormat: DateTimeFormat<LocalDate>): String {
 fun RecurConfig.frequencyDescription(): String {
   val dt = interval ?: 1
   return when (frequency) {
-    Daily -> {
-      if (dt != 1) Plurals.recurEveryNDays(dt, dt) else Strings.recurEveryDay
-    }
+    Daily -> if (dt != 1) Plurals.recurEveryNDays(dt, dt) else Strings.recurEveryDay
     Weekly -> {
       val day = start.dayOfWeek.stringLong()
       if (dt != 1) Plurals.recurEveryNWeeks(dt, dt, day) else Strings.recurEveryWeek(day)
@@ -66,9 +60,7 @@ fun RecurConfig.frequencyDescription(): String {
       val date = Strings.recurMonthDay(start.month.stringLong(), ordinal(start.day))
       if (dt != 1) Plurals.recurEveryNYears(dt, dt, date) else Strings.recurEveryYear(date)
     }
-    Unknown -> {
-      Strings.recurUnknownFrequency
-    }
+    Unknown -> Strings.recurUnknownFrequency
   }
 }
 
@@ -91,12 +83,8 @@ private fun RecurConfig.monthlyRange(): String {
   val isSameDay = uniqueDays.size == 1 && Day !in uniqueDays
   val strings = sortedPatterns.fastMap { p ->
     when {
-      p.type == Day -> {
-        if (p.value == -1) Strings.recurLastDay else ordinal(p.value)
-      }
-      isSameDay -> {
-        if (p.value == -1) Strings.recurLast else ordinal(p.value)
-      }
+      p.type == Day -> if (p.value == -1) Strings.recurLastDay else ordinal(p.value)
+      isSameDay -> if (p.value == -1) Strings.recurLast else ordinal(p.value)
       else -> {
         val nth = if (p.value == -1) Strings.recurLast else ordinal(p.value)
         Strings.recurWeekday(nth, dayName(p.type))
@@ -111,15 +99,9 @@ private fun RecurConfig.monthlyRange(): String {
 @Composable
 private fun joinList(strings: ImmutableList<String>): String =
   when (strings.size) {
-    0 -> {
-      ""
-    }
-    1 -> {
-      strings[0]
-    }
-    2 -> {
-      Strings.recurListTwo(strings[0], strings[1])
-    }
+    0 -> ""
+    1 -> strings[0]
+    2 -> Strings.recurListTwo(strings[0], strings[1])
     else -> {
       val joined =
         strings.subList(1, strings.lastIndex).fastFold(strings[0]) { joined, string ->

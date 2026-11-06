@@ -12,15 +12,9 @@ internal fun budgetQueryFunction(data: FormulaDataSource): FormulaFunction =
     val start = args.text(2).toYearMonthOrNull()
     val end = args.text(3).toYearMonthOrNull()
     when {
-      dimension !in DIMENSIONS -> {
-        ErrorValue(Value, InvalidBudgetDimension, args.text(0))
-      }
-      start == null || end == null -> {
-        ErrorValue(Value, InvalidDate)
-      }
-      end.monthIndex() - start.monthIndex() >= MAX_MONTHS -> {
-        ErrorValue(Num, DateOutOfRange)
-      }
+      dimension !in DIMENSIONS -> ErrorValue(Value, InvalidBudgetDimension, args.text(0))
+      start == null || end == null -> ErrorValue(Value, InvalidDate)
+      end.monthIndex() - start.monthIndex() >= MAX_MONTHS -> ErrorValue(Num, DateOutOfRange)
       else -> {
         val months = generateSequence(start) { it.plus(1, MONTH) }.takeWhile { it <= end }.toList()
         val categories = categoryIds(args.value(1))
@@ -76,15 +70,9 @@ private suspend fun budgetValue(
   }
 
   return when (dimension) {
-    "budgeted" -> {
-      months.sumOf { month -> rows(month).sumOf { it.budgeted } }
-    }
-    "spent" -> {
-      months.sumOf { month -> rows(month).sumOf { it.spent } }
-    }
-    "goal" -> {
-      months.sumOf { month -> rows(month).sumOf { it.goal } }
-    }
+    "budgeted" -> months.sumOf { month -> rows(month).sumOf { it.budgeted } }
+    "spent" -> months.sumOf { month -> rows(month).sumOf { it.spent } }
+    "goal" -> months.sumOf { month -> rows(month).sumOf { it.goal } }
     else -> {
       val first = months.firstOrNull() ?: return 0L
       // Balances chain from the month before the first, one month at a time

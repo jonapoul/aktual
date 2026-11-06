@@ -325,14 +325,10 @@ private fun RecurConfig.repeatText(): String {
         val count = endOccurrences ?: 1
         Plurals.editScheduleSentenceTimes(count, count)
       }
-      OnDate -> {
-        endDate?.let { Strings.editScheduleSentenceUntil(it.formatted()) }
-      }
+      OnDate -> endDate?.let { Strings.editScheduleSentenceUntil(it.formatted()) }
       Never,
       Unknown,
-      null -> {
-        null
-      }
+      null -> null
     }
   return if (end == null) frequency else Strings.recurWithEnd(frequency, end)
 }

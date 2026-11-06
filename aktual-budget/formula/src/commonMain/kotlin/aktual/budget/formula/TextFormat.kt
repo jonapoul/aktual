@@ -78,33 +78,23 @@ private fun stringifyDateTime(dateTime: SimpleDateTime, format: String): String?
           append(padLeft(hours, length))
         }
         "d",
-        "dd" -> {
-          append(padLeft(date.day, length))
-        }
+        "dd" -> append(padLeft(date.day, length))
         "s",
-        "ss" -> {
-          append(padLeft(floor(time.seconds), length))
-        }
+        "ss" -> append(padLeft(floor(time.seconds), length))
         "m",
         "mm" -> {
           if (tokens.getOrNull(i + 1)?.value?.startsWith(':') == true) minutes = true
           append(padLeft(if (minutes) time.minutes else date.month, length))
           minutes = true
         }
-        "yy" -> {
-          append(padLeft(date.year % TWO_DIGIT_YEAR, length))
-        }
-        "yyyy" -> {
-          append(jsNumberToString(date.year))
-        }
+        "yy" -> append(padLeft(date.year % TWO_DIGIT_YEAR, length))
+        "yyyy" -> append(jsNumberToString(date.year))
         "am/pm",
         "a/p" -> {
           val (am, pm) = token.value.split('/')
           append(if (time.hours < HOURS_PER_HALF_DAY) am else pm)
         }
-        else -> {
-          append(fractionalSeconds(token.value, time.seconds) ?: return null)
-        }
+        else -> append(fractionalSeconds(token.value, time.seconds) ?: return null)
       }
     }
   }
@@ -142,12 +132,8 @@ private fun stringifyDuration(time: SimpleTime, format: String): String? {
           hours = 0.0
         }
         "s",
-        "ss" -> {
-          append(padLeft(floor(time.seconds), length))
-        }
-        else -> {
-          append(fractionalSeconds(token.value, time.seconds) ?: return null)
-        }
+        "ss" -> append(padLeft(floor(time.seconds), length))
+        else -> append(fractionalSeconds(token.value, time.seconds) ?: return null)
       }
     }
   }

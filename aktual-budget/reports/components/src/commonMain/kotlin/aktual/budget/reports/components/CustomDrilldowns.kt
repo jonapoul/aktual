@@ -58,9 +58,7 @@ private class DrilldownController(private val timeout: Duration, private val onT
         true
       }
 
-      is Move -> {
-        isPressed
-      }
+      is Move -> isPressed
 
       is Release -> {
         isPressed = false
@@ -77,9 +75,7 @@ private class DrilldownController(private val timeout: Duration, private val onT
       is LongPress,
       is Zoom,
       is Enter,
-      is Exit -> {
-        false
-      }
+      is Exit -> false
     }
 
   override fun shouldShowMarker(

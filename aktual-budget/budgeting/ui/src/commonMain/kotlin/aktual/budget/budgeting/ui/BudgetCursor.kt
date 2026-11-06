@@ -306,9 +306,7 @@ private fun InlineAmountEditor(
               finish(save = false, rows = 0)
               true
             }
-            else -> {
-              false
-            }
+            else -> false
           }
         },
     state = state,

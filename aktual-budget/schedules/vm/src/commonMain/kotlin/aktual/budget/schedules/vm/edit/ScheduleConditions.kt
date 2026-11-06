@@ -152,17 +152,13 @@ private fun RuleAction.isPlainAmountSet(): Boolean =
 // use the average
 private fun scheduledAmount(value: JsonElement): Long =
   when (value) {
-    is JsonPrimitive -> {
-      value.longOrNull ?: 0L
-    }
+    is JsonPrimitive -> value.longOrNull ?: 0L
     is JsonObject -> {
       val num1 = value["num1"]?.jsonPrimitive?.longOrNull ?: 0L
       val num2 = value["num2"]?.jsonPrimitive?.longOrNull ?: 0L
       ((num1 + num2) / 2.0).roundToLong()
     }
-    is JsonArray -> {
-      0L
-    }
+    is JsonArray -> 0L
   }
 
 internal data class JsonPaths(

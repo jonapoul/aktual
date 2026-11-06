@@ -54,9 +54,7 @@ private fun ruleName(rule: WithdrawalRuleType): String =
 @Composable
 private fun ruleDecisionSentence(explanation: McRuleExplanation, rule: McWithdrawalRule): String? =
   when (explanation) {
-    is Anchor -> {
-      Strings.monteCarloStoryAnchor
-    }
+    is Anchor -> Strings.monteCarloStoryAnchor
 
     is FloorCeiling -> {
       val unclamped = explanation.unclamped.money()
@@ -66,9 +64,7 @@ private fun ruleDecisionSentence(explanation: McRuleExplanation, rule: McWithdra
         Rate -> null
       }
     }
-    is Factor -> {
-      factorSentence(explanation, rule)
-    }
+    is Factor -> factorSentence(explanation, rule)
   }
 
 @Composable

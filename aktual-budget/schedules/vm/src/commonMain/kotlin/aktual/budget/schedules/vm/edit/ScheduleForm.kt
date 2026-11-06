@@ -41,12 +41,8 @@ val ScheduleAmount.isDeposit: Boolean
 fun ScheduleAmount.withDeposit(deposit: Boolean): ScheduleAmount {
   fun Amount.signed(): Amount = if (this > Zero == deposit || this == Zero) this else -this
   return when (this) {
-    is Exactly -> {
-      ScheduleAmount.Exactly(amount.signed())
-    }
-    is Approximately -> {
-      ScheduleAmount.Approximately(amount.signed())
-    }
+    is Exactly -> ScheduleAmount.Exactly(amount.signed())
+    is Approximately -> ScheduleAmount.Approximately(amount.signed())
     is Between -> {
       val a = from.signed()
       val b = to.signed()

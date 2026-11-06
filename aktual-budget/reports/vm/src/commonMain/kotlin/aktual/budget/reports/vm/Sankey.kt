@@ -433,9 +433,8 @@ private fun sortGraph(graph: Graph, sort: CategorySort, categoryOrder: List<Stri
 
   val order: MutableList<String> =
     when (sort) {
-      Global -> {
+      Global ->
         (byValue.filterNot { it.isOther() } + byValue.filter { it.isOther() }).toMutableList()
-      }
 
       BudgetOrder -> {
         val used = LinkedHashSet<String>()

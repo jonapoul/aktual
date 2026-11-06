@@ -216,13 +216,9 @@ internal constructor(
     fileDownloader.download(budgetId).collect { state ->
       val stepState =
         when (state) {
-          is InProgress -> {
-            SyncStepState.DefiniteProgress(state.toPercent())
-          }
+          is InProgress -> SyncStepState.DefiniteProgress(state.toPercent())
 
-          is Failure -> {
-            SyncStepState.Failed(state.message)
-          }
+          is Failure -> SyncStepState.Failed(state.message)
 
           is Done -> {
             downloadedDbPath = state.path
@@ -264,17 +260,11 @@ internal constructor(
   ) {
     val message =
       when (result) {
-        is FailedFetchingKey -> {
-          "Fetching key"
-        }
+        is FailedFetchingKey -> "Fetching key"
 
-        is UnknownAlgorithm -> {
-          "Unknown algorithm: ${result.algorithm}"
-        }
+        is UnknownAlgorithm -> "Unknown algorithm: ${result.algorithm}"
 
-        is OtherFailure -> {
-          "Other failure: ${result.message}"
-        }
+        is OtherFailure -> "Other failure: ${result.message}"
 
         MissingKey -> {
           cachedData = CachedEncryptedData(encryptedPath, userFile, meta)
@@ -295,9 +285,7 @@ internal constructor(
     logcat.i { "importResult=$result" }
 
     when (result) {
-      is Failure -> {
-        setStepState(ValidatingDatabase, SyncStepState.Failed(result.toString()))
-      }
+      is Failure -> setStepState(ValidatingDatabase, SyncStepState.Failed(result.toString()))
 
       is Success -> {
         runLevelController.onBudget(budgetId, result.meta)
