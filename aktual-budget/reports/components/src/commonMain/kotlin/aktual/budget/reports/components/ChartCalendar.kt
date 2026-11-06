@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize.Max
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -100,7 +101,8 @@ private fun CompactCalendarChart(
     ) {
       items(items = data.months, key = { it.month.toString() }) { month ->
         CalendarMonth(
-          modifier = Modifier.width(500.dp),
+          modifier =
+            if (data.months.size == 1) Modifier.fillParentMaxWidth() else Modifier.width(500.dp),
           month = month,
           firstDayOfWeek = data.firstDayOfWeek,
           compact = true,
@@ -352,6 +354,10 @@ private fun DayBarChart(
     Box(modifier = heightModifier.fillMaxWidth().background(color))
   }
 
+private val CalendarMonthCompactPadding =
+  PaddingValues(start = 10.dp, end = 10.dp, bottom = 10.dp, top = 0.dp)
+private val CalendarMonthRegularPadding = PaddingValues(all = 10.dp)
+
 @Composable
 internal fun CalendarMonth(
   month: CalendarMonth,
@@ -367,7 +373,7 @@ internal fun CalendarMonth(
         .background(colors.tableBackground, CardShape)
         .widthIn(min = minSize)
         .heightIn(min = minSize)
-        .padding(10.dp),
+        .padding(if (compact) CalendarMonthCompactPadding else CalendarMonthRegularPadding),
   ) {
     MonthHeader(
       modifier = Modifier.fillMaxWidth().wrapContentHeight(),
