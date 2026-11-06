@@ -5,7 +5,6 @@ import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
@@ -21,7 +20,7 @@ data class Timestamp(val instant: Instant, val counter: Long, val node: String) 
     val counter = counter.toString(radix = 16).uppercase()
     return listOf(
         // Always with millis, like JS's toISOString(), so timestamps compare correctly as strings
-        "${instant.toLocalDateTime(TimeZone.UTC).format(INSTANT_FORMAT)}Z",
+        "${instant.toLocalDateTime(UTC).format(INSTANT_FORMAT)}Z",
         (BASE_COUNTER + counter).removeRange(startIndex = 0, endIndex = counter.length),
         "$BASE_NODE$node".removeRange(startIndex = 0, endIndex = 16),
       )

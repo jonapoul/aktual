@@ -107,7 +107,7 @@ fun BasicPreferenceItem(
         }
 
         if (topRightContent != null) {
-          Box(modifier = Modifier.align(Alignment.TopEnd), content = topRightContent)
+          Box(modifier = Modifier.align(TopEnd), content = topRightContent)
         }
       }
 

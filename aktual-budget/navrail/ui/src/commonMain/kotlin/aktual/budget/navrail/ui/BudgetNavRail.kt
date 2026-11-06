@@ -135,7 +135,7 @@ internal fun BudgetNavRail(
   val tabStacks = rememberTabStacks()
   val transactionsStack = tabStacks.getValue(Transactions)
 
-  var selectedTab by rememberSaveable(stateSaver = TabSaver) { mutableStateOf(BudgetTab.Home) }
+  var selectedTab by rememberSaveable(stateSaver = TabSaver) { mutableStateOf(Home) }
   var dialog by rememberSaveable { mutableStateOf<NavRailDialog?>(null) }
 
   val activeStack = remember(tabStacks, selectedTab) { tabStacks.getValue(selectedTab) }
@@ -189,9 +189,7 @@ internal fun BudgetNavRail(
   }
 
   // NavDisplay only handles back when the stack has more than one entry
-  BackHandler(enabled = selectedTab != BudgetTab.Home && activeStack.size == 1) {
-    selectedTab = BudgetTab.Home
-  }
+  BackHandler(enabled = selectedTab != Home && activeStack.size == 1) { selectedTab = Home }
 
   if (isCompactWidth()) {
     DrawerNavLayout(

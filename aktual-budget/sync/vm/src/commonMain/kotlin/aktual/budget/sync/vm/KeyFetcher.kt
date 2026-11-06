@@ -68,7 +68,7 @@ internal constructor(
       throw e
     } catch (e: Exception) {
       logcat.e(e) { "Failed decrypting buffer from $response with key $key" }
-      return FetchKeyResult.TestFailure
+      return TestFailure
     } finally {
       // This is only inserted for the sake of the decryption test
       withContext(NonCancellable) { keyPreferences.delete(keyId) }
