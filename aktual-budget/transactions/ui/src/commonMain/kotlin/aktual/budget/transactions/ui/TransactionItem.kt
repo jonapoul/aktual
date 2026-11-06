@@ -280,17 +280,11 @@ private fun categoryText(
       }
 
       // Wins over a real category, as upstream's prettyCategory does
-      special != null -> {
-        withStyle(SpanStyle(fontStyle = Italic)) { append(special) }
-      }
+      special != null -> withStyle(SpanStyle(fontStyle = Italic)) { append(special) }
 
-      transaction.needsCategory -> {
-        withStyle(warning) { append(needsCategory) }
-      }
+      transaction.needsCategory -> withStyle(warning) { append(needsCategory) }
 
-      category != null -> {
-        append(category)
-      }
+      category != null -> append(category)
     }
 
     if (account != null) {

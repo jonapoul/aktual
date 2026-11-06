@@ -158,17 +158,11 @@ private fun ResultsViews(
     )
 
     when (state.resultsView) {
-      Chart -> {
-        PerformanceChart(state.graphView, results, onAction)
-      }
+      Chart -> PerformanceChart(state.graphView, results, onAction)
 
-      Cashflow -> {
-        CashflowView(state, onAction)
-      }
+      Cashflow -> CashflowView(state, onAction)
 
-      Pots -> {
-        PotBalancesView(state, onAction)
-      }
+      Pots -> PotBalancesView(state, onAction)
 
       Runs -> {
         val detail = state.runDetail

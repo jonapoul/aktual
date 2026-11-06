@@ -77,6 +77,8 @@ potential-bugs:
     active: false
 
 style:
+  BracesOnWhenStatements:
+    active: false
   CascadingCallWrapping:
     active: false
   DataClassContainsFunctions:

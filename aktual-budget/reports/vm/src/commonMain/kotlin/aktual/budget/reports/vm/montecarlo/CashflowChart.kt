@@ -174,27 +174,15 @@ fun buildCashflowChart(
 // Positive for money in, negative for money out
 private fun McRunDetailRow.amountFor(series: CashflowSeries, isActivePhase: Boolean): Long =
   when (series.kind) {
-    Pot -> {
-      potWithdrawals.getOrElse(series.index) { 0 }
-    }
+    Pot -> potWithdrawals.getOrElse(series.index) { 0 }
 
-    Income -> {
-      incomeAmounts.getOrElse(series.index) { 0 }
-    }
+    Income -> incomeAmounts.getOrElse(series.index) { 0 }
 
-    Phase -> {
-      if (isActivePhase) -plannedSpending else 0
-    }
+    Phase -> if (isActivePhase) -plannedSpending else 0
 
-    Tax -> {
-      -(taxPaid + incomeTax)
-    }
+    Tax -> -(taxPaid + incomeTax)
 
-    Contribution -> {
-      -contributionAmounts.getOrElse(series.index) { 0 }
-    }
+    Contribution -> -contributionAmounts.getOrElse(series.index) { 0 }
 
-    Surplus -> {
-      -surplusSaved
-    }
+    Surplus -> -surplusSaved
   }

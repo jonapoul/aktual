@@ -163,9 +163,8 @@ private fun SyncBudgetDialog(
               content = { Text(text = Strings.syncPasswordConfirm, color = color) },
             )
           }
-          overallState == Failed -> {
+          overallState == Failed ->
             TextButton(onClick = { onAction(Retry) }, content = { Text(text = Strings.syncRetry) })
-          }
         }
       },
     )
@@ -232,13 +231,10 @@ private fun SyncStepState(state: SyncStepState, modifier: Modifier = Modifier) {
     verticalArrangement = Arrangement.Top,
   ) {
     when (state) {
-      is NotStarted -> {
-        TintedDot(size = 6.dp, color = colors.reportsNumberNeutral)
-      }
+      is NotStarted -> TintedDot(size = 6.dp, color = colors.reportsNumberNeutral)
 
-      is IndefiniteProgress -> {
+      is IndefiniteProgress ->
         CircularProgressIndicator(modifier = Modifier.size(ITEM_SIZE), color = colors.reportsBlue)
-      }
 
       is DefiniteProgress -> {
         CircularProgressIndicator(
@@ -248,9 +244,7 @@ private fun SyncStepState(state: SyncStepState, modifier: Modifier = Modifier) {
         )
       }
 
-      is Succeeded -> {
-        TintedDot(size = 12.dp, color = colors.reportsNumberPositive)
-      }
+      is Succeeded -> TintedDot(size = 12.dp, color = colors.reportsNumberPositive)
 
       is Failed -> {
         Icon(

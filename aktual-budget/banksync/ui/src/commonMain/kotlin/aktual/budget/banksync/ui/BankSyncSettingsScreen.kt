@@ -181,9 +181,7 @@ private fun BankSyncSettingsScaffold(
       PageBackground()
 
       when (state) {
-        Loading -> {
-          ShimmerSettings(modifier = Modifier.padding(innerPadding))
-        }
+        Loading -> ShimmerSettings(modifier = Modifier.padding(innerPadding))
         is Failure -> {
           FailureScreen(
             modifier = Modifier.padding(innerPadding),

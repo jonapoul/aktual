@@ -65,9 +65,7 @@ internal fun LazyListScope.bankLogin(
       item(key = "login-waiting") { LoginWaiting(status, onAction) }
       return
     }
-    is Failed -> {
-      item(key = "login-failed") { LoginFailed(status) }
-    }
+    is Failed -> item(key = "login-failed") { LoginFailed(status) }
     Idle -> {}
   }
 

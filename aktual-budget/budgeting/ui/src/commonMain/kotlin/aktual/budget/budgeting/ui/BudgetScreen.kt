@@ -343,9 +343,7 @@ private fun KeyEvent.changeMonth(state: BudgetState, onAction: BudgetActionHandl
         true
       }
 
-      else -> {
-        false
-      }
+      else -> false
     }
 }
 

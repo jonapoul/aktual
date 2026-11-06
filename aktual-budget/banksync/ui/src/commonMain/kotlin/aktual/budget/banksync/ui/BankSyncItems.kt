@@ -120,9 +120,7 @@ internal fun BankSyncAccountItem(
     account.status?.let { AccountStatusChip(it) }
 
     when {
-      account.isSyncing -> {
-        SyncingIndicator()
-      }
+      account.isSyncing -> SyncingIndicator()
       sync != null -> {
         BareIconButton(
           imageVector = AktualIcons.ArrowsSynchronize,

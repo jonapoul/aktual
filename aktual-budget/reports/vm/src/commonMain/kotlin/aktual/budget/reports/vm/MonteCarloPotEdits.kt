@@ -20,13 +20,9 @@ fun McConfig.canRemove(pot: McPot): Boolean = !pot.isSurplus && pots.count { !it
 // takes its contributions with it
 fun McConfig.withSurplusKept(keep: Boolean, newId: () -> String): McConfig =
   when {
-    keep == keepsSurplus -> {
-      this
-    }
+    keep == keepsSurplus -> this
 
-    keep -> {
-      copy(pots = (listOf(surplusPot(newId())) + pots).toImmutableList())
-    }
+    keep -> copy(pots = (listOf(surplusPot(newId())) + pots).toImmutableList())
 
     else -> {
       val surplusIds = pots.filter { it.isSurplus }.map { it.id }.toSet()

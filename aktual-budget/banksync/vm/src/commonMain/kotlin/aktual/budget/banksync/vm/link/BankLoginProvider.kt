@@ -50,36 +50,23 @@ internal class GoCardlessLoginProvider(
 
   override suspend fun banks(country: String) =
     when (val response = api.goCardlessBanks(country, showDemo)) {
-      is Success -> {
-        LoginResponse.Success(response.banks.map { LoginBankItem(it.id, it.name) })
-      }
-      is Failed -> {
-        LoginResponse.Failed(response.error)
-      }
+      is Success -> LoginResponse.Success(response.banks.map { LoginBankItem(it.id, it.name) })
+      is Failed -> LoginResponse.Failed(response.error)
     }
 
   override suspend fun start(bankId: String, type: LoginAccountType?) =
     when (val response = api.goCardlessLogin(bankId)) {
-      is Success -> {
-        LoginResponse.Success(LoginLink(response.link, response.requisitionId))
-      }
-      is Failed -> {
-        LoginResponse.Failed(response.error)
-      }
+      is Success -> LoginResponse.Success(LoginLink(response.link, response.requisitionId))
+      is Failed -> LoginResponse.Failed(response.error)
     }
 
   override suspend fun await(token: String) =
     when (val response = waiter.await(token)) {
-      is Success -> {
-        LoginResponse.Success(response.accounts)
-      }
-      is Failed -> {
-        LoginResponse.Failed(response.error)
-      }
+      is Success -> LoginResponse.Success(response.accounts)
+      is Failed -> LoginResponse.Failed(response.error)
       // The waiter polls until it isn't pending, so this is giving up
-      Pending -> {
+      Pending ->
         LoginResponse.Failed(ProviderError(ProviderError.TIMED_OUT, ProviderError.TIMED_OUT))
-      }
     }
 }
 
@@ -100,9 +87,7 @@ internal class EnableBankingLoginProvider(private val api: EnableBankingApi) : B
         banks = response.banks.associateBy(::id)
         LoginResponse.Success(response.banks.map { LoginBankItem(id(it), it.name, it.isBeta) })
       }
-      is Failed -> {
-        LoginResponse.Failed(response.error)
-      }
+      is Failed -> LoginResponse.Failed(response.error)
     }
 
   override suspend fun start(bankId: String, type: LoginAccountType?): LoginResponse<LoginLink> {
@@ -114,23 +99,15 @@ internal class EnableBankingLoginProvider(private val api: EnableBankingApi) : B
         null -> Personal
       }
     return when (val response = api.login(bank, accountType)) {
-      is Success -> {
-        LoginResponse.Success(LoginLink(response.url, response.state))
-      }
-      is Failed -> {
-        LoginResponse.Failed(response.error)
-      }
+      is Success -> LoginResponse.Success(LoginLink(response.url, response.state))
+      is Failed -> LoginResponse.Failed(response.error)
     }
   }
 
   override suspend fun await(token: String) =
     when (val response = api.accounts(token)) {
-      is Success -> {
-        LoginResponse.Success(response.accounts)
-      }
-      is Failed -> {
-        LoginResponse.Failed(response.error)
-      }
+      is Success -> LoginResponse.Success(response.accounts)
+      is Failed -> LoginResponse.Failed(response.error)
     }
 
   private fun id(bank: EnableBankingBank) = "${bank.country}:${bank.name}"

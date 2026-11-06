@@ -210,9 +210,8 @@ private fun DatesSection(
           onChange = { include -> edit { it.withIncludeCurrent(include) } },
         )
       }
-      is Static -> {
+      is Static ->
         if (editorData != null) StaticMonths(dates = dates, editorData = editorData, edit = edit)
-      }
     }
   }
 

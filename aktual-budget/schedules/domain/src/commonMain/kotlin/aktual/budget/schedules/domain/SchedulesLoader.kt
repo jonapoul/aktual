@@ -147,13 +147,9 @@ class SchedulesLoader(
         fallback
       }
 
-      is JsonObject -> {
-        Json.decodeFromJsonElement(RecurConfig.serializer(), element).start
-      }
+      is JsonObject -> Json.decodeFromJsonElement(RecurConfig.serializer(), element).start
 
-      is JsonPrimitive -> {
-        LocalDate.parse(element.content)
-      }
+      is JsonPrimitive -> LocalDate.parse(element.content)
     }
   }
 }

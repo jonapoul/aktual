@@ -127,9 +127,7 @@ internal fun rememberConditionText(
               withStyle(styles.default) { append("]") }
             }
 
-            JsonNull -> {
-              error("Should never see null in a condition's value: $condition")
-            }
+            JsonNull -> error("Should never see null in a condition's value: $condition")
 
             is JsonObject -> {
               if (condition.field != Date || recurText == null) {
@@ -216,9 +214,7 @@ internal fun rememberActionText(
               withStyle(styles.highlighted) { append(content) }
             }
             DeleteTransaction,
-            Unknown -> {
-              withStyle(styles.default) { append(opText) }
-            }
+            Unknown -> withStyle(styles.default) { append(opText) }
             LinkSchedule -> {
               withStyle(styles.default) {
                 append(opText)
@@ -279,13 +275,9 @@ private fun actionNameFlow(action: RuleAction, nameFetcher: NameFetcher): Flow<S
       }
     }
 
-    LinkSchedule -> {
-      value?.let { nameFetcher.name(ScheduleId(it.content)) } ?: flowOf(null)
-    }
+    LinkSchedule -> value?.let { nameFetcher.name(ScheduleId(it.content)) } ?: flowOf(null)
 
-    else -> {
-      flowOf(null)
-    }
+    else -> flowOf(null)
   }
 }
 

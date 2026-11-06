@@ -262,9 +262,8 @@ private fun EditRuleContent(
       )
     }
 
-    Loading -> {
+    Loading ->
       LoadingContent(modifier = modifier, contentPadding = contentPadding, onAction = onAction)
-    }
 
     is Success -> {
       LoadedContent(
