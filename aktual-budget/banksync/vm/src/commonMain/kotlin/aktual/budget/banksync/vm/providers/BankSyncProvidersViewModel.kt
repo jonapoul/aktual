@@ -115,12 +115,10 @@ internal constructor(
   }
 
   private suspend fun fetchStatus(source: AccountSyncSource): BankSyncProviderStatus =
-    runCatchingCancellable<BankSyncProviderStatus>(
+    runCatchingCancellable(
       attempt = {
         when (val response = api.status(source)) {
-          is Success -> {
-            if (response.configured) Configured else NotConfigured
-          }
+          is Success -> if (response.configured) Configured else NotConfigured
           is Rejected -> {
             logcat.w { "Bank sync status for $source rejected: $response" }
             Failed

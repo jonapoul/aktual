@@ -92,13 +92,9 @@ fun ListBudgetsScreen(
       deletingState = deletingState,
       onAction = { action ->
         when (action) {
-          DeleteLocal -> {
-            viewModel.deleteLocal(budget.directoryId)
-          }
+          DeleteLocal -> viewModel.deleteLocal(budget.directoryId)
 
-          DeleteRemote -> {
-            if (budget is Cloud) viewModel.deleteRemote(budget.cloudFileId)
-          }
+          DeleteRemote -> if (budget is Cloud) viewModel.deleteRemote(budget.cloudFileId)
 
           Dismiss -> {
             budgetToDelete = null

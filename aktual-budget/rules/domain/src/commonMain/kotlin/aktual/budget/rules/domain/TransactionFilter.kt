@@ -409,15 +409,9 @@ fun likePatternToRegex(pattern: String): Regex {
         regex.append(Regex.escape(next.toString()))
         i++
       }
-      '%' -> {
-        regex.append(".*")
-      }
-      '?' -> {
-        regex.append('.')
-      }
-      else -> {
-        regex.append(Regex.escape(ch.toString()))
-      }
+      '%' -> regex.append(".*")
+      '?' -> regex.append('.')
+      else -> regex.append(Regex.escape(ch.toString()))
     }
     i++
   }

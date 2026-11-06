@@ -74,13 +74,9 @@ internal constructor(
 
   private suspend fun LoginResponse.Data.toLoginResult(): LoginResult =
     when (this) {
-      is Invalid -> {
-        InvalidPassword
-      }
+      is Invalid -> InvalidPassword
 
-      is Redirect -> {
-        LoginResult.Redirect(returnUrl)
-      }
+      is Redirect -> LoginResult.Redirect(returnUrl)
 
       is Valid -> {
         runLevelController.onLoggedIn(token)

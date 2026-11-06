@@ -87,9 +87,7 @@ internal constructor(
           attempt = {
             val values = current.fields.associate { it.credential to it.value }
             when (val response = setup.save(source, values)) {
-              Success -> {
-                null
-              }
+              Success -> null
               is Failed -> {
                 logcat.w { "Saving $source credentials refused: $response" }
                 response.toSetupError()

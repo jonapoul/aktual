@@ -99,9 +99,7 @@ class AktualActivity(
         authenticator.authenticate(prompt.title, prompt.subtitle)
       }
 
-      Unavailable -> {
-        onAuthResult(Unavailable)
-      }
+      Unavailable -> onAuthResult(Unavailable)
     }
   }
 
@@ -152,9 +150,7 @@ private fun Content(
       )
     }
 
-    Unlocked -> {
-      UnlockedContent(viewModel)
-    }
+    Unlocked -> UnlockedContent(viewModel)
   }
 }
 

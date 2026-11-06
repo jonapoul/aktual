@@ -167,9 +167,7 @@ internal constructor(
       val result =
         catching(account) {
           when (response) {
-            is Failed -> {
-              fail(account, response.error.toError())
-            }
+            is Failed -> fail(account, response.error.toError())
             is SimpleFinBatchResponse.Success -> {
               val download =
                 response.accounts[account.accountId]

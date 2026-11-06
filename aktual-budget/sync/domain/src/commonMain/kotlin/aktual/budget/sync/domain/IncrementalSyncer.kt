@@ -30,14 +30,12 @@ internal class IncrementalSyncer(
     runCatchingCancellable(
       attempt = { fullSync(sinceTimestamp = null, count = 0, prevDiffTime = null) },
       onFailure = { e ->
-        when {
-          e is IOException -> {
-            SyncResult.NetworkError(e)
-          }
+        when (e) {
+          is IOException -> SyncResult.NetworkError(e)
 
-          e is SyncRejectedException && e.isClockDrift -> {
+          is SyncRejectedException if e.isClockDrift -> {
             logcat.w { "Server rejected sync, device clock is too far ahead" }
-            SyncResult.ClockDriftError
+            ClockDriftError
           }
 
           else -> {

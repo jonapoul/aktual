@@ -93,13 +93,9 @@ internal fun Transactions(
       )
     }
 
-    refresh is Loading -> {
-      TransactionsLoading(innerPadding, modifier.padding(contentPadding))
-    }
+    refresh is Loading -> TransactionsLoading(innerPadding, modifier.padding(contentPadding))
 
-    else -> {
-      TransactionsEmpty(innerPadding, modifier.padding(contentPadding))
-    }
+    else -> TransactionsEmpty(innerPadding, modifier.padding(contentPadding))
   }
 }
 
