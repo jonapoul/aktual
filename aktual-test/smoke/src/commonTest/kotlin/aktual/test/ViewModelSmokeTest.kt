@@ -265,7 +265,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   protected inline fun <reified VM : ViewModel> testVm() = runTest {
     val viewModelFactory = appGraph.runLevelState.viewModelFactory().first()
-    viewModel = viewModelFactory.create(VM::class, CreationExtras.Empty)
+    viewModel = viewModelFactory.create(VM::class, Empty)
     assertThat(viewModel).isNotNull().isInstanceOf(VM::class)
   }
 
