@@ -10,6 +10,7 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.normalButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
@@ -101,9 +102,10 @@ internal fun BalanceForecastChart(
     if (!compact && contributors != null) {
       var showContributors by rememberSaveable { mutableStateOf(false) }
       NormalTextButton(
-        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        modifier = Modifier.fillMaxWidth(),
         text = Strings.reportsBalanceForecastShowContributors,
         onClick = { showContributors = true },
+        colors = { pressed -> colors.normalButton(pressed, container = colors.pageBackground) },
       )
 
       if (showContributors) {
