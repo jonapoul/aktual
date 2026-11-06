@@ -8,7 +8,6 @@ import aktual.test.readBytes
 import app.cash.burst.InterceptTest
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import kotlin.random.Random
 import kotlin.test.Test
 import okio.Buffer
 import okio.source
@@ -28,7 +27,7 @@ class EncryptTest {
         keyId = KeyId("test-key"),
         source = encryptedZip.source(),
         sink = temporaryFolder.sink(encrypted),
-        random = Random.Default,
+        random = Default,
       )
 
     // Decrypt the encrypted data
@@ -60,7 +59,7 @@ class EncryptTest {
         keyId = KeyId("test-key"),
         source = plaintextBuffer,
         sink = encryptedBuffer,
-        random = Random.Default,
+        random = Default,
       )
 
     // Decrypt the encrypted buffer

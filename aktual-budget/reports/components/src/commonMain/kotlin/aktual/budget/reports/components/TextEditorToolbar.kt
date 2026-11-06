@@ -76,7 +76,7 @@ private fun FormatButtons(onFormat: (MarkdownFormat) -> Unit) {
   FormatButton(MaterialIcons.FormatListBulleted, Strings.reportsTextFormatBullet) {
     onFormat(Bullet)
   }
-  FormatButton(MaterialIcons.Link, Strings.reportsTextFormatLink) { onFormat(MarkdownFormat.Link) }
+  FormatButton(MaterialIcons.Link, Strings.reportsTextFormatLink) { onFormat(Link) }
 }
 
 @Composable

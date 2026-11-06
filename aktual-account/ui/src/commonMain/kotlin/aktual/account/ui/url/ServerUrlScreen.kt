@@ -195,7 +195,7 @@ private fun ServerUrlContent(
     Spacer(modifier = Modifier.weight(1f))
 
     Box(modifier = Modifier.fillMaxWidth()) {
-      VersionsText(modifier = Modifier.align(Alignment.BottomEnd), versions = versions)
+      VersionsText(modifier = Modifier.align(BottomEnd), versions = versions)
     }
 
     BottomSpacing()

@@ -123,6 +123,7 @@ data class MonteCarloRun(
   val totalWithdrawn: Amount,
 )
 
+@Immutable
 data class MonteCarloRunDetail(
   val index: Int,
   // Includes the unfunded years after a failure, which only the charts show

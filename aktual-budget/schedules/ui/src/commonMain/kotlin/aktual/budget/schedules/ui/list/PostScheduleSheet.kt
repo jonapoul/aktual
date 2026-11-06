@@ -26,7 +26,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 
@@ -101,4 +100,4 @@ private fun PreviewPostScheduleSheet(
   }
 
 private class PostScheduleSheetProvider :
-  ColorParamsProvider<LocalDate>(scheduleA.nextDate.minus(1, DateTimeUnit.DAY), scheduleA.nextDate)
+  ColorParamsProvider<LocalDate>(scheduleA.nextDate.minus(1, DAY), scheduleA.nextDate)
