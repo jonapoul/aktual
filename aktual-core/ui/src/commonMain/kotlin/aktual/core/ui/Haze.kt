@@ -105,14 +105,15 @@ fun Modifier.hazedTopBar(
   val measured = onSizeChanged { barHeightPx = it.height }
   val currentScrollOffset by rememberUpdatedState(scrollOffset)
 
-  val progress by remember {
+  val progress = remember {
     derivedStateOf {
       val height = barHeightPx
       if (height <= 0) 0f else (currentScrollOffset() / height).coerceIn(0f, 1f)
     }
   }
+  val visible by remember { derivedStateOf { progress.value > 0f } }
 
-  if (progress <= 0f) return measured
+  if (!visible) return measured
 
   val color = colors.cardBackground
   val input = HazeInput.Sources(state.hazeState)
@@ -121,12 +122,12 @@ fun Modifier.hazedTopBar(
     Blur ->
       measured.hazeBlur(
         input = input,
-        style = blurStyle(color, config.barBlurRadius, config.barBlurAlpha, progress),
+        style = blurStyle(color, config.barBlurRadius, config.barBlurAlpha) { progress.value },
       )
     Glass ->
       measured.hazeGlass(
         input = input,
-        style = barGlassStyle(color, config, Top, progress),
+        style = barGlassStyle(color, config, Top) { progress.value },
       )
   }
 }
@@ -189,27 +190,25 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
   val dialogBlurState = LocalDialogBlurState.current
   val hazeState = LocalHazeState.current
 
-  val progress by
+  val progress =
     animateFloatAsState(
       targetValue = if (dialogBlurState.isActive && blurConfig.dialogs) 1f else 0f,
       animationSpec = DefaultAnimationSpec,
     )
+  val visible by remember { derivedStateOf { progress.value > 0f } }
 
-  SideEffect(progress) {
+  SideEffect(visible) {
     // Only stop excluding these areas once the blur is totally gone
-    if (progress == 0f) {
+    if (!visible) {
       dialogBlurState.excludedFromBlur.clear()
     }
   }
 
-  if (progress > 0f) {
+  if (visible) {
     val style =
-      blurStyle(
-        colors.cardBackground,
-        blurConfig.dialogBlurRadius,
-        blurConfig.dialogBlurAlpha,
-        progress,
-      )
+      blurStyle(colors.cardBackground, blurConfig.dialogBlurRadius, blurConfig.dialogBlurAlpha) {
+        progress.value
+      }
     val excluded = dialogBlurState.excludedFromBlur
     Box(
       modifier =
@@ -253,24 +252,29 @@ private fun blurStyle(
   color: Color,
   radius: Dp,
   alpha: Float,
-  progress: Float = 1f,
-): HazeBlurStyle =
-  remember(color, radius, alpha, progress) {
+  progress: () -> Float = { 1f },
+): HazeBlurStyle {
+  // Read inside the style block so haze picks up changes without recomposing
+  val currentProgress by rememberUpdatedState(progress)
+  return remember(color, radius, alpha) {
     HazeBlurStyle {
-      blurRadius(radius * progress)
-      backgroundColor(color.copy(alpha = color.alpha * progress))
-      colorEffects(listOf(HazeColorEffect.tint(color.copy(alpha = alpha * progress))))
+      val p = currentProgress()
+      blurRadius(radius * p)
+      backgroundColor(color.copy(alpha = color.alpha * p))
+      colorEffects(listOf(HazeColorEffect.tint(color.copy(alpha = alpha * p))))
     }
   }
+}
 
 @Composable
 private fun barGlassStyle(
   color: Color,
   config: HazeConfig,
   position: BarPosition,
-  progress: Float = 1f,
-): GlassStyle =
-  remember(color, config, position, progress) {
+  progress: () -> Float = { 1f },
+): GlassStyle {
+  val currentProgress by rememberUpdatedState(progress)
+  return remember(color, config, position) {
     val base: GlassStyle =
       when (config.glassStyle) {
         Regular -> regular
@@ -286,12 +290,14 @@ private fun barGlassStyle(
     // Only set colors and shape, so the optics and lighting come from the base style
     base then
       GlassStyle {
+        val p = currentProgress()
         shape(shape)
-        backgroundColor(color.copy(alpha = color.alpha * progress))
-        tint(color.copy(alpha = BarGlassTintAlpha * progress))
-        alpha(progress)
+        backgroundColor(color.copy(alpha = color.alpha * p))
+        tint(color.copy(alpha = BarGlassTintAlpha * p))
+        alpha(p)
       }
   }
+}
 
 data class HazeConfig(
   val appBarEffect: BarEffect = Default,
