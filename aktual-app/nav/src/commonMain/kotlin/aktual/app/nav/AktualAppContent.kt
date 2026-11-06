@@ -35,6 +35,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import dev.chrisbanes.haze.ExperimentalHazeApi
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 
@@ -48,6 +49,7 @@ fun rememberBackStack(viewModel: RootViewModel): NavStack<NavKey>? {
   return remember { NavStackImpl(closer, stack) }
 }
 
+@OptIn(ExperimentalHazeApi::class)
 @Composable
 fun AktualAppContent(
   viewModel: RootViewModel,
@@ -95,7 +97,7 @@ fun AktualAppContent(
             modifier =
               Modifier.fillMaxSize()
                 .consumeWindowInsets(WindowInsets.navigationBars)
-                .hazeSource(hazeState),
+                .hazeSource(hazeState, inputSharing = Auto),
             navStack = navStack,
             contributors = viewModel.navEntryContributors,
           )
