@@ -100,7 +100,8 @@ private fun CompactCalendarChart(
     ) {
       items(items = data.months, key = { it.month.toString() }) { month ->
         CalendarMonth(
-          modifier = Modifier.width(500.dp),
+          modifier =
+            if (data.months.size == 1) Modifier.fillParentMaxWidth() else Modifier.width(500.dp),
           month = month,
           firstDayOfWeek = data.firstDayOfWeek,
           compact = true,
