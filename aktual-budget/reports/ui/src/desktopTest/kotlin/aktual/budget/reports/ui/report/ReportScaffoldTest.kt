@@ -60,10 +60,12 @@ class ReportScaffoldTest {
 
     // when zooming
     onNodeWithTag(ChartTags.ZoomableChart).performTouchInput {
-      down(centerLeft.copy(x = width * 0.3f))
-      advanceEventTime(LONG_PRESS_MS)
-      moveTo(center.copy(x = width * 0.6f))
-      up()
+      down(0, center.copy(x = width * 0.4f))
+      down(1, center.copy(x = width * 0.6f))
+      moveTo(0, center.copy(x = width * 0.2f))
+      moveTo(1, center.copy(x = width * 0.8f))
+      up(0)
+      up(1)
     }
 
     // then
@@ -419,8 +421,6 @@ class ReportScaffoldTest {
   }
 
   private companion object {
-    const val LONG_PRESS_MS = 1_000L
-
     val STATE =
       ReportState.Loaded(
         type = NetWorth,
