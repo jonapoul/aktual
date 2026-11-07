@@ -23,6 +23,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
+import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
@@ -31,17 +32,23 @@ import aktual.core.ui.RounderCardShape
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.card
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.isCompactWidth
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
 import alakazam.compose.HorizontalSpacer
 import alakazam.kotlin.noOp
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,6 +56,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -118,11 +126,19 @@ internal fun InfoScaffold(
   onAction: InfoActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  Scaffold(modifier = modifier, topBar = { InfoTopBar(onAction) }) { innerPadding ->
+  val hazeState = rememberHazedTopBarState()
+  val scrollState = rememberScrollState()
+
+  Scaffold(
+    modifier = modifier,
+    topBar = { InfoTopBar(hazeState, scrollState, onAction) },
+  ) { innerPadding ->
     Box {
       WavyBackground()
       InfoScreenContent(
-        modifier = Modifier.padding(innerPadding),
+        modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
+        contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
+        scrollState = scrollState,
         buildState = buildState,
         onAction = onAction,
       )
@@ -131,8 +147,13 @@ internal fun InfoScaffold(
 }
 
 @Composable
-private fun InfoTopBar(onAction: InfoActionHandler) {
+private fun InfoTopBar(
+  hazeState: HazedTopBarState,
+  scrollState: ScrollState,
+  onAction: InfoActionHandler,
+) {
   TopAppBar(
+    modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = { NavBackIconButton { onAction(NavBack) } },
     title = {
@@ -143,6 +164,8 @@ private fun InfoTopBar(onAction: InfoActionHandler) {
 
 @Composable
 private fun InfoScreenContent(
+  contentPadding: PaddingValues,
+  scrollState: ScrollState,
   buildState: BuildState,
   onAction: InfoActionHandler,
   modifier: Modifier = Modifier,
@@ -152,7 +175,11 @@ private fun InfoScreenContent(
     val contentModifier = Modifier.widthIn(max = contentMaxWidth)
 
     Column(
-      modifier = Modifier.fillMaxWidth().verticalScrollWithBar().padding(Dimens.Large),
+      modifier =
+        Modifier.fillMaxWidth()
+          .verticalScrollWithBar(scrollState)
+          .padding(contentPadding)
+          .padding(Dimens.Large),
       horizontalAlignment = CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
     ) {
