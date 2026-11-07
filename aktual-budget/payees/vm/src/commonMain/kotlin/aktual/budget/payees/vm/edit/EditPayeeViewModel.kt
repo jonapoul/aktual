@@ -4,7 +4,9 @@ import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.model.PayeeId
+import aktual.budget.model.PayeeLocationId
 import aktual.budget.model.localChange
+import aktual.budget.payees.domain.PayeeLocations
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.rules.domain.CategoryLearningPref
@@ -12,6 +14,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import alakazam.kotlin.TimeZoneProvider
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -22,6 +25,9 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -34,6 +40,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.toLocalDateTime
 import logcat.logcat
 
 @Stable
@@ -44,7 +51,9 @@ internal constructor(
   loader: PayeesLoader,
   private val payeeDao: PayeeDao,
   private val syncController: BudgetSyncController,
+  private val payeeLocations: PayeeLocations,
   learning: CategoryLearningPref,
+  timeZones: TimeZoneProvider,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val loaded = MutableStateFlow<Loaded?>(null)
@@ -77,6 +86,27 @@ internal constructor(
         emit(Failure(e.requireMessage()))
       }
       .stateIn(viewModelScope, Eagerly, initialValue = Loading)
+
+  // Where the payee's been saved from the transaction editor, newest first
+  val locations: StateFlow<ImmutableList<SavedLocation>> =
+    payeeLocations
+      .observe(payeeId)
+      .map { locations ->
+        locations
+          .map { location ->
+            SavedLocation(
+              location.id,
+              location.coordinates,
+              location.createdAt?.toLocalDateTime(timeZones.get())?.date,
+            )
+          }
+          .toImmutableList()
+      }
+      .catch { e ->
+        logcat.e(e) { "Failed loading locations of $payeeId" }
+        emit(persistentListOf())
+      }
+      .stateIn(viewModelScope, Eagerly, initialValue = persistentListOf())
 
   val hasUnsavedChanges: StateFlow<Boolean> =
     combine(loaded, mutableName, mutableFavorite, mutableLearnCategories) { l, name, favorite, learn
@@ -121,6 +151,33 @@ internal constructor(
   fun setLearnCategories(learn: Boolean) = mutableLearnCategories.update { learn }
 
   fun dismissSaveError() = mutableSaveError.update { null }
+
+  fun deleteLocation(id: PayeeLocationId) {
+    viewModelScope.launch {
+      runCatchingCancellable(
+        attempt = {
+          payeeLocations.delete(id)
+          mutableEvents.tryEmit(EditPayeeEvent.LocationDeleted(id))
+        },
+        onFailure = { e ->
+          logcat.e(e) { "Failed deleting location $id" }
+          mutableEvents.tryEmit(LocationDeleteFailed)
+        },
+      )
+    }
+  }
+
+  fun restoreLocation(id: PayeeLocationId) {
+    viewModelScope.launch {
+      runCatchingCancellable(
+        attempt = { payeeLocations.restore(id) },
+        onFailure = { e ->
+          logcat.e(e) { "Failed restoring location $id" }
+          mutableEvents.tryEmit(LocationRestoreFailed)
+        },
+      )
+    }
+  }
 
   fun save() {
     viewModelScope.launch {
