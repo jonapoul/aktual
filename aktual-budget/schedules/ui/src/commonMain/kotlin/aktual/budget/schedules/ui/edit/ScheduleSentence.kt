@@ -9,7 +9,6 @@ import aktual.budget.schedules.vm.edit.isDeposit
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -50,6 +49,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.datetime.LocalDate
 
@@ -66,7 +66,10 @@ internal fun ScheduleSentence(
   activePart: SentencePart?,
   onClick: (SentencePart) -> Unit,
   modifier: Modifier = Modifier,
-  style: TextStyle = typography.titleSmall.copy(lineHeight = SentenceLineHeight),
+  style: TextStyle =
+    typography.titleSmall.copy(
+      lineHeight = if (state.isEditing) EditingLineHeight else ViewingLineHeight,
+    ),
 ) {
   val text = rememberScheduleSentence(state, activePart, onClick).redacted()
   val chipColors =
@@ -348,11 +351,13 @@ private const val CHIP_PADDING = " "
 
 private const val CHIP_BACKGROUND_ALPHA = 0.35f
 private val ChipRadius = 6.dp
-private val ChipGap = 5.dp
+private val ChipGap = 3.dp
 private val BorderWidth = 1.dp
 private val ActiveBorderWidth = 2.dp
 private val DashLength = 4.dp
-private val SentenceLineHeight = lineHeights.hero
+// Leaves room for the chips while editing
+private val EditingLineHeight = 38.sp
+private val ViewingLineHeight = 30.sp
 
 @Preview(widthDp = 390)
 @Composable

@@ -14,6 +14,7 @@ import aktual.core.nav.ListSchedulesNavRoute
 import aktual.core.nav.NavStack
 import aktual.core.nav.SearchSchedulesNavRoute
 import aktual.core.nav.SearchSchedulesNavigator
+import aktual.core.nav.TransactionsNavigator
 import aktual.di.BudgetScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
@@ -39,11 +40,19 @@ class SchedulesNavEntryContributor : BudgetNavEntryContributor {
     }
 
     budgetEntry<EditScheduleNavRoute> { route ->
-      EditScheduleScreen(id = route.id, back = BackNavigator(stack))
+      EditScheduleScreen(
+        id = route.id,
+        back = BackNavigator(stack),
+        viewTransactions = TransactionsNavigator(stack),
+      )
     }
 
     budgetEntry<CreateScheduleNavRoute> {
-      EditScheduleScreen(id = null, back = BackNavigator(stack))
+      EditScheduleScreen(
+        id = null,
+        back = BackNavigator(stack),
+        viewTransactions = TransactionsNavigator(stack),
+      )
     }
   }
 }

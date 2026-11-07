@@ -49,6 +49,9 @@ class TransactionsNavigator(private val stack: NavStack<BudgetNavKey>) {
 
   operator fun invoke(title: String, filter: ConditionsFilter) =
     stack.push(FilteredTransactionsNavRoute(title, filter))
+
+  operator fun invoke(title: String, schedule: ScheduleId) =
+    stack.push(ScheduleTransactionsNavRoute(title, schedule))
 }
 
 @Immutable

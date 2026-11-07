@@ -257,6 +257,10 @@ class TransactionDao(database: BudgetDatabase) {
     getFilterRows().awaitAsList()
   }
 
+  suspend fun getIdsBySchedule(schedule: ScheduleId): List<TransactionId> = queries.withResult {
+    getIdsBySchedule(schedule).awaitAsList()
+  }
+
   suspend fun getIdsAndNotesByCategory(
     category: CategoryId,
     dates: ClosedRange<LocalDate>,

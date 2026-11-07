@@ -726,6 +726,14 @@ LEFT JOIN payees AS p ON p.id = vt.payee
 WHERE vt.is_parent = 0
 ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
 
+-- Every live transaction linked to a schedule, in list order
+getIdsBySchedule:
+SELECT vt.id
+  FROM v_transactions_internal_alive AS vt
+  INNER JOIN transactions AS t ON t.id = vt.id
+  WHERE t.schedule = :schedule
+  ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
+
 -- notes of every live transaction containing a '#', for aggregating per-tag transaction counts
 notesContainingHash:
 SELECT notes FROM v_transactions_internal_alive WHERE notes LIKE '%#%';

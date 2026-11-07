@@ -20,6 +20,7 @@ import aktual.core.nav.DeletedAccountNavigator
 import aktual.core.nav.EditTransactionNavigator
 import aktual.core.nav.FilteredTransactionsNavRoute
 import aktual.core.nav.NavStack
+import aktual.core.nav.ScheduleTransactionsNavRoute
 import aktual.core.nav.TransactionNavRoute
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.nav.TransactionsNavigator
@@ -86,7 +87,17 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
         accountDeleted = DeletedAccountNavigator(stack),
         openTransaction = EditTransactionNavigator(stack),
         openTag = TransactionsNavigator(stack),
-        spec = TransactionsSpec(filtered = FilteredSpec(route.title, route.filter)),
+        spec = TransactionsSpec(filtered = FilteredSpec.Conditions(route.title, route.filter)),
+      )
+    }
+
+    budgetEntry<ScheduleTransactionsNavRoute> { route ->
+      TransactionsScreen(
+        back = BackNavigator(stack),
+        accountDeleted = DeletedAccountNavigator(stack),
+        openTransaction = EditTransactionNavigator(stack),
+        openTag = TransactionsNavigator(stack),
+        spec = TransactionsSpec(filtered = FilteredSpec.LinkedToSchedule(route.title, route.id)),
       )
     }
 
