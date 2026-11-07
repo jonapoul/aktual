@@ -33,6 +33,13 @@ fun localChange(
   dataset: String,
   row: String,
   column: String,
+  value: Double,
+) = LocalChange(dataset, row, column, MessageValue.Real(value))
+
+fun localChange(
+  dataset: String,
+  row: String,
+  column: String,
   value: Boolean?,
 ) = LocalChange(dataset, row, column, value.messageValue())
 
