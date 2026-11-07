@@ -74,6 +74,17 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/one-word-title.sh",
+            "timeout": 30
+          }
+        ]
+      }
     ]
   }
 }
