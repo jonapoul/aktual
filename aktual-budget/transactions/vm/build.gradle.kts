@@ -26,6 +26,7 @@ kotlin {
     api(project(":aktual-budget:schedules:domain"))
     api(project(":aktual-budget:tags:domain"))
     api(project(":aktual-prefs"))
+    implementation(project(":aktual-budget:payees:domain"))
   }
 
   commonTestDependencies {

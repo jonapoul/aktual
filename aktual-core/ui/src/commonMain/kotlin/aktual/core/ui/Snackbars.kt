@@ -1,8 +1,15 @@
 package aktual.core.ui
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarDuration.Short
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -37,6 +44,16 @@ internal constructor(
   fun show(key: Any? = null, message: String) = show(key) { showSnackbar(message) }
 }
 
+// Shown in error colours, as upstream's error notifications
+suspend fun SnackbarHostState.showErrorSnackbar(message: String): SnackbarResult =
+  showSnackbar(ErrorSnackbarVisuals(message))
+
+private class ErrorSnackbarVisuals(override val message: String) : SnackbarVisuals {
+  override val actionLabel: String? = null
+  override val withDismissAction: Boolean = false
+  override val duration: SnackbarDuration = Short
+}
+
 val LocalSnackbars = staticCompositionLocalOf<Snackbars> { error("No Snackbars provided") }
 
 @Composable
@@ -50,4 +67,16 @@ fun SnackbarsHost(snackbars: Snackbars, modifier: Modifier = Modifier) =
   SnackbarHost(
     hostState = snackbars.hostState,
     modifier = modifier.padding(bottom = LocalBottomSpacing.current + bottomNavBarPadding()),
-  )
+  ) { data ->
+    if (data.visuals is ErrorSnackbarVisuals) {
+      val colors = AktualTheme.colors
+      Snackbar(
+        snackbarData = data,
+        modifier = Modifier.border(Hairline, colors.errorBorder, SnackbarDefaults.shape),
+        containerColor = colors.errorBackground,
+        contentColor = colors.errorTextDark,
+      )
+    } else {
+      Snackbar(data)
+    }
+  }

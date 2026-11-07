@@ -16,6 +16,7 @@ import aktual.budget.schedules.domain.amountPrefix
 import aktual.budget.transactions.domain.MIN_TRANSACTION_DATE
 import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.vm.edit.EntityOption
+import aktual.budget.transactions.vm.edit.NearbyPayeeOption
 import aktual.budget.transactions.vm.edit.TransactionForm
 import aktual.budget.transactions.vm.edit.TransactionOptions
 import aktual.budget.transactions.vm.edit.matching
@@ -121,6 +122,7 @@ internal fun EditTransactionSheet(
         options = form.options.payees,
         suggested = form.options.suggestedPayees,
         transfers = form.options.transfers,
+        nearby = form.options.nearbyPayees,
         onDismiss = onDismiss,
         onSelect = { onAction(SetPayee(it)) },
         onCreate = { onAction(CreatePayee(it)) },
@@ -218,8 +220,8 @@ private fun PartSheet(
   }
 
 // As upstream's payee picker: "None" is only offered when there's a payee to remove, typing a
-// name that no payee has offers to create it, the suggested payees come first and the accounts to
-// transfer to come last
+// name that no payee has offers to create it, the nearby then suggested payees come first and the
+// accounts to transfer to come last
 @Composable
 private fun PayeeSheet(
   selected: PayeeId?,
@@ -229,6 +231,7 @@ private fun PayeeSheet(
   onDismiss: () -> Unit,
   onSelect: (PayeeId?) -> Unit,
   onCreate: (String) -> Unit,
+  nearby: ImmutableList<NearbyPayeeOption> = persistentListOf(),
 ) =
   AktualModalBottomSheet(
     onDismissRequest = onDismiss,
@@ -236,13 +239,23 @@ private fun PayeeSheet(
   ) {
     val query = rememberTextFieldState()
     val name = query.text.toString().trim()
+    val nearbyMatches =
+      remember(nearby, name) {
+        nearby.filter { it.name.contains(name, ignoreCase = true) }.toImmutableList()
+      }
+    // A nearby payee is only listed with them
+    val nearbyIds = remember(nearby) { nearby.map { it.id }.toSet() }
     val matches =
-      remember(options, name) {
-        options.filter { it.name.contains(name, ignoreCase = true) }.toImmutableList()
+      remember(options, name, nearbyIds) {
+        options
+          .filter { it.id !in nearbyIds && it.name.contains(name, ignoreCase = true) }
+          .toImmutableList()
       }
     val suggestedMatches =
-      remember(suggested, name) {
-        suggested.filter { it.name.contains(name, ignoreCase = true) }.toImmutableList()
+      remember(suggested, name, nearbyIds) {
+        suggested
+          .filter { it.id !in nearbyIds && it.name.contains(name, ignoreCase = true) }
+          .toImmutableList()
       }
     val transferMatches =
       remember(transfers, name) {
@@ -250,6 +263,7 @@ private fun PayeeSheet(
       }
     val isNew =
       name.isNotEmpty() &&
+        nearbyMatches.none { it.name.equals(name, ignoreCase = true) } &&
         matches.none { it.name.equals(name, ignoreCase = true) } &&
         suggestedMatches.none { it.name.equals(name, ignoreCase = true) } &&
         transferMatches.none { it.name.equals(name, ignoreCase = true) }
@@ -292,13 +306,18 @@ private fun PayeeSheet(
         }
       }
 
+      if (nearbyMatches.isNotEmpty()) {
+        item { GroupHeader(Strings.transactionPayeeNearby) }
+        nearbyPayeeItems(nearbyMatches, selected, onSelect, onDismiss)
+      }
+
       // The rest only need a header to tell them from the suggestions
       if (suggestedMatches.isNotEmpty()) {
         item { GroupHeader(Strings.transactionPayeeSuggested) }
         payeeItems(suggestedMatches, selected, onSelect, onDismiss)
-        if (matches.isNotEmpty()) {
-          item { GroupHeader(Strings.transactionPayeeAll) }
-        }
+      }
+      if (matches.isNotEmpty() && (suggestedMatches.isNotEmpty() || nearbyMatches.isNotEmpty())) {
+        item { GroupHeader(Strings.transactionPayeeAll) }
       }
 
       payeeItems(matches, selected, onSelect, onDismiss)
@@ -309,6 +328,30 @@ private fun PayeeSheet(
 
       payeeItems(transferMatches, selected, onSelect, onDismiss)
     }
+  }
+
+private fun LazyListScope.nearbyPayeeItems(
+  payees: ImmutableList<NearbyPayeeOption>,
+  selected: PayeeId?,
+  onSelect: (PayeeId?) -> Unit,
+  onDismiss: () -> Unit,
+) =
+  items(payees, key = { it.id.toString() }) { payee ->
+    BottomSheetListItem(
+      label = payee.name,
+      isSelected = payee.id == selected,
+      trailingContent = {
+        Text(
+          text = payee.distance.formatted(),
+          fontSize = DistanceSize,
+          color = colors.pageTextSubdued,
+        )
+      },
+      onClick = {
+        onSelect(payee.id)
+        onDismiss()
+      },
+    )
   }
 
 private fun LazyListScope.payeeItems(
@@ -800,6 +843,7 @@ private object TransactionDates : SelectableDates {
 private val GroupHeaderPadding =
   PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp)
 private val GroupHeaderSize = textSizes.smallPlus
+private val DistanceSize = textSizes.small
 private val BalanceSize = textSizes.medium
 private val SearchPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
 private const val NONE_KEY = "none"

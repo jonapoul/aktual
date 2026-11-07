@@ -8,15 +8,18 @@ import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.ui.tabularFigures
 import aktual.budget.transactions.vm.edit.ChangedElsewhere
+import aktual.budget.transactions.vm.edit.LocationAction
 import aktual.budget.transactions.vm.edit.TransactionForm
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
+import aktual.core.icons.Location
 import aktual.core.icons.Split
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AmountKeypad
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.RootOverlayContent
@@ -47,6 +50,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
@@ -351,6 +355,10 @@ private fun FieldsCard(
       label = Strings.transactionPayee,
       value = form.payeeName,
       onClick = { onEdit(Payee) },
+      trailingContent =
+        form.locationAction?.let { action ->
+          { LocationButton(action, isLocating = form.isLocating, onAction = onAction) }
+        },
     )
     HorizontalDivider()
     FieldRow(
@@ -384,6 +392,40 @@ private fun FieldsCard(
     StatusRow(draft = draft, onUnlock = onUnlock, onAction = onAction)
   }
 }
+
+@Composable
+private fun LocationButton(
+  action: LocationAction,
+  isLocating: Boolean,
+  onAction: EditTransactionActionHandler,
+) =
+  Box(modifier = Modifier.size(LocationButtonSize), contentAlignment = Center) {
+    if (isLocating) {
+      CircularProgressIndicator(
+        modifier = Modifier.size(LocationProgressSize),
+        color = colors.pageTextSubdued,
+        strokeWidth = 2.dp,
+      )
+    } else {
+      BareIconButton(
+        imageVector = AktualIcons.Location,
+        contentDescription =
+          when (action) {
+            FindNearby -> Strings.transactionLocationFindNearby
+            Save -> Strings.transactionLocationSave
+          },
+        onClick = {
+          onAction(
+            when (action) {
+              FindNearby -> FindNearbyPayees
+              Save -> SavePayeeLocation
+            },
+          )
+        },
+        size = LocationIconSize,
+      )
+    }
+  }
 
 // A schedule that's been deleted reads as none
 @Composable
@@ -504,6 +546,7 @@ internal fun FieldRow(
   minHeight: Dp = FieldRowHeight,
   labelWidth: Dp = FieldLabelWidth,
   valueContent: (@Composable (Modifier) -> Unit)? = null,
+  trailingContent: (@Composable () -> Unit)? = null,
 ) =
   Row(
     modifier =
@@ -533,6 +576,7 @@ internal fun FieldRow(
         overflow = Ellipsis,
       )
     }
+    trailingContent?.invoke()
     if (showChevron && enabled) {
       Icon(
         modifier = Modifier.size(ChevronSize).rotate(degrees = -90f),
@@ -587,6 +631,9 @@ internal val CursorWidth = 2.dp
 private val CursorHeight = 40.dp
 private val FieldRowHeight = 48.dp
 private val FieldRowPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+private val LocationButtonSize = 32.dp
+private val LocationIconSize = 20.dp
+private val LocationProgressSize = 18.dp
 private val SwitchRowPadding = PaddingValues(horizontal = 16.dp)
 private val FieldRowGap = 12.dp
 private val FieldLabelWidth = 84.dp

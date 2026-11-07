@@ -13,6 +13,8 @@ import aktual.budget.model.DbMetadataKey.Companion.BudgetShowHiddenCategories
 import aktual.budget.model.PayeeId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
+import aktual.budget.payees.domain.NearbyPayee
+import aktual.budget.payees.domain.PayeeLocations
 import aktual.budget.rules.domain.LoadedRules
 import aktual.budget.rules.domain.RuleTransaction
 import aktual.budget.rules.domain.TransactionRulesLoader
@@ -45,7 +47,9 @@ import aktual.budget.transactions.domain.withPart
 import aktual.budget.transactions.domain.withoutPart
 import aktual.budget.transactions.vm.edit.EditTransactionState.Failure
 import aktual.budget.transactions.vm.toTransaction
+import aktual.core.model.Coordinates
 import aktual.core.utils.Calendar
+import aktual.core.utils.LocationProvider
 import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
@@ -104,6 +108,8 @@ internal constructor(
   private val uuidGenerator: UuidGenerator,
   private val tagCreator: TagCreator,
   private val localPreferences: BudgetLocalPreferences,
+  private val payeeLocations: PayeeLocations,
+  private val locationProvider: LocationProvider,
   budgetCalculator: BudgetMonthCalculator,
   schedulesLoader: SchedulesLoader,
   tagsDao: TagsDao,
@@ -202,6 +208,11 @@ internal constructor(
     )
   val events: SharedFlow<EditTransactionEvent> = mutableEvents.asSharedFlow()
 
+  private val mutableLocation = MutableStateFlow(LocationSearch())
+
+  val needsLocationPermission: Boolean
+    get() = !locationProvider.hasPermission()
+
   // The reason the last save or delete failed, shown in a dialog
   val error: StateFlow<EditTransactionError?> = mutableError.asStateFlow()
 
@@ -219,6 +230,7 @@ internal constructor(
       val showHidden by showHiddenCategories.collectAsState()
       val balances by categoryBalances.collectAsState()
       val scheduleOptions by schedules.collectAsState()
+      val location by mutableLocation.collectAsState()
       val changedElsewhere =
         when {
           isGone -> ChangedElsewhere.Deleted
@@ -236,6 +248,7 @@ internal constructor(
         categories = CategoryView(showHidden, balances.of((draft ?: saved?.draft)?.month())),
         isWorking = isWorking,
         changedElsewhere = changedElsewhere,
+        location = location,
       )
     }
 
@@ -265,14 +278,24 @@ internal constructor(
     categories: CategoryView,
     isWorking: Boolean,
     changedElsewhere: ChangedElsewhere?,
+    location: LocationSearch,
   ): EditTransactionState {
     if (failure != null) return failure
     // A draft stays open when its transaction's deleted elsewhere, so it isn't lost
     if (changedElsewhere == Deleted && draft == null) return NotFound
     if (entities == null) return Loading
     val form =
-      (draft ?: saved?.draft)?.let {
-        form(it, entities, newPayees, tags, schedules, categories, saved)
+      (draft ?: saved?.draft)?.let { current ->
+        form(
+          draft = current,
+          entities = entities,
+          newPayees = newPayees,
+          tags = tags,
+          schedules = schedules,
+          categories = categories,
+          saved = saved,
+          location = location,
+        )
       }
     return when (target) {
       is Existing -> existingState(saved, form, isWorking, changedElsewhere)
@@ -321,6 +344,7 @@ internal constructor(
     schedules: ImmutableList<Schedule>,
     categories: CategoryView,
     saved: Saved?,
+    location: LocationSearch,
   ): TransactionForm {
     val fields = draft.fields
     val transaction = saved?.details?.transaction
@@ -355,11 +379,29 @@ internal constructor(
           .withoutTransfersTo(fields.account, entities)
           .withCategories(categories)
           .withSchedules(schedules, fields.schedule)
-          .copy(tags = tags),
+          .copy(tags = tags, nearbyPayees = location.nearby.toOptions(entities)),
       parts = parts,
       splitRemaining = draft.splitDifference,
+      locationAction = locationAction(fields.payee, entities),
+      isLocating = location.isWorking,
     )
   }
+
+  // A payee that's not created yet, or a transfer, has nowhere to save a location against
+  private fun locationAction(payee: PayeeId?, entities: EditorEntities): LocationAction? =
+    when {
+      !locationProvider.isSupported -> null
+      payee == null -> FindNearby
+      payee in entities.payeeNames && payee !in entities.transferAccounts -> Save
+      else -> null
+    }
+
+  private fun List<NearbyPayee>.toOptions(entities: EditorEntities) = mapNotNull { nearby ->
+    if (nearby.payee in entities.transferAccounts) return@mapNotNull null
+    val name = entities.payeeNames[nearby.payee] ?: return@mapNotNull null
+    NearbyPayeeOption(nearby.payee, name, nearby.distance)
+  }
+    .toImmutableList()
 
   private fun partForms(
     draft: TransactionDraft,
@@ -529,6 +571,57 @@ internal constructor(
     if (!hasUncommittedAmount) return
     hasUncommittedAmount = false
     updateDraft(TransactionField.Amount) { it }
+  }
+
+  fun findNearbyPayees() = locate { coordinates ->
+    val entities = mutableEntities.value ?: return@locate
+    val nearby = payeeLocations.nearby(coordinates)
+    mutableLocation.update { it.copy(nearby = nearby) }
+    val found = nearby.toOptions(entities).isNotEmpty()
+    mutableEvents.tryEmit(if (found) NearbyPayeesFound else NoNearbyPayees)
+  }
+
+  fun saveLocation() {
+    val payee = currentDraft()?.fields?.payee ?: return
+    val name = mutableEntities.value?.payeeNames?.get(payee) ?: return
+    locate { coordinates ->
+      runCatchingCancellable(
+        attempt = {
+          if (payeeLocations.hasNearby(payee, coordinates)) {
+            mutableEvents.tryEmit(EditTransactionEvent.LocationAlreadySaved(name))
+          } else {
+            payeeLocations.save(payee, coordinates)
+            mutableEvents.tryEmit(EditTransactionEvent.LocationSaved(name))
+          }
+        },
+        onFailure = { e ->
+          logcat.w(e) { "Failed saving location of $payee" }
+          mutableEvents.tryEmit(LocationSaveFailed)
+        },
+      )
+    }
+  }
+
+  private fun locate(action: suspend (Coordinates) -> Unit) {
+    if (mutableLocation.value.isWorking) return
+    mutableLocation.update { it.copy(isWorking = true) }
+    viewModelScope.launch {
+      runCatchingCancellable(
+        attempt = {
+          val coordinates = locationProvider.currentLocation()
+          if (coordinates == null) {
+            mutableEvents.tryEmit(LocationUnavailable)
+          } else {
+            action(coordinates)
+          }
+        },
+        onFailure = { e ->
+          logcat.w(e) { "Failed using location" }
+          mutableEvents.tryEmit(LocationUnavailable)
+        },
+        finally = { mutableLocation.update { it.copy(isWorking = false) } },
+      )
+    }
   }
 
   fun setPayee(payee: PayeeId?) = updateDraft(Payee) { it.copy(payee = payee) }
@@ -801,3 +894,9 @@ internal constructor(
       get() = draft.fields
   }
 }
+
+// Where the user last looked for nearby payees
+private data class LocationSearch(
+  val isWorking: Boolean = false,
+  val nearby: List<NearbyPayee> = emptyList(),
+)

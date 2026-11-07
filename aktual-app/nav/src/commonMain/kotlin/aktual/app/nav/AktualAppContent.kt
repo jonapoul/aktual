@@ -83,6 +83,7 @@ fun AktualAppContent(
     currencyPosition = formatConfig.symbolPosition,
     addCurrencySpace = formatConfig.spaceBetweenAmountAndSymbol,
     dateFormat = formatConfig.dateFormat,
+    distanceUnit = formatConfig.distanceUnit,
     hazeState = hazeState,
     hazeConfig = hazeConfig,
   ) {

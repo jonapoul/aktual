@@ -17,3 +17,23 @@ CREATE INDEX IF NOT EXISTS idx_payee_locations_payee_id ON payee_locations (paye
 CREATE INDEX IF NOT EXISTS idx_payee_locations_tombstone_payee_created ON payee_locations (tombstone, payee_id, created_at);
 
 CREATE INDEX IF NOT EXISTS idx_payee_locations_geo_tombstone ON payee_locations (tombstone, latitude, longitude);
+
+getForPayee:
+  SELECT id, latitude, longitude, created_at
+  FROM payee_locations
+  WHERE tombstone IS NOT 1 AND payee_id = ?
+  ORDER BY created_at DESC;
+
+-- A box around a point, since SQLite has no trig functions to measure distance with
+getInBounds:
+  SELECT pl.id, pl.payee_id, pl.latitude, pl.longitude
+  FROM payee_locations pl
+  JOIN payees p ON pl.payee_id = p.id
+  WHERE pl.tombstone IS NOT 1
+    AND p.tombstone IS NOT 1
+    AND pl.latitude BETWEEN :minLatitude AND :maxLatitude
+    AND pl.longitude BETWEEN :minLongitude AND :maxLongitude;
+
+insert:
+  INSERT INTO payee_locations (id, payee_id, latitude, longitude, created_at, tombstone)
+  VALUES (?, ?, ?, ?, ?, ?);

@@ -2,10 +2,17 @@ main:
   minSDK: 28
   targetSDK: 37
   permissions:
+  - android.permission.ACCESS_COARSE_LOCATION
+  - android.permission.ACCESS_FINE_LOCATION
   - android.permission.ACCESS_NETWORK_STATE
   - android.permission.INTERNET
   - android.permission.USE_BIOMETRIC
   - android.permission.USE_FINGERPRINT
+  features:
+  - android.hardware.location:
+      required: false
+  - android.hardware.location.gps:
+      required: false
   libraries:
   - androidx.window.extensions:
       required: false
@@ -55,4 +62,4 @@ variants:
     namespace: dev.jonpoulton.aktual.app
     permissions:
     - dev.jonpoulton.aktual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
-fingerprint: aab2bc0235d58789efb7928af662d846
+fingerprint: 56a4b49f3e97076021687a9839635f28

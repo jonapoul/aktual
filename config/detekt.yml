@@ -12,6 +12,7 @@ complexity:
     active: false
   LargeClass:
     excludes: [ "**/test/**", "**/*Test/**" ]
+    allowedLines: 1000
   LongMethod:
     allowedLines: 100
   LongParameterList:

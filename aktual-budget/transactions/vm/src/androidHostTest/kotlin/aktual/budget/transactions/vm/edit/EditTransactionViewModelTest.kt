@@ -14,6 +14,7 @@ import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.db.dao.DatabaseTables.TAGS
 import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.PayeeLocationDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.RuleContextDao
 import aktual.budget.db.dao.RulesDao
@@ -31,6 +32,7 @@ import aktual.budget.model.DbMetadataKey.Companion.BudgetShowHiddenCategories
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
+import aktual.budget.model.PayeeLocationId
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
@@ -38,6 +40,7 @@ import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
+import aktual.budget.payees.domain.PayeeLocations
 import aktual.budget.rules.domain.CategoryLearner
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.schedules.domain.Schedule
@@ -60,6 +63,8 @@ import aktual.budget.transactions.vm.insertCategory
 import aktual.budget.transactions.vm.insertPayee
 import aktual.budget.transactions.vm.insertTransaction
 import aktual.budget.transactions.vm.transaction
+import aktual.core.model.Coordinates
+import aktual.core.utils.LocationProvider
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -90,6 +95,7 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -127,6 +133,102 @@ class EditTransactionViewModelTest {
           prop(TransactionForm::hasChanges).isFalse()
         }
       }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Nearby payees are found where the user is`() = runDatabaseTest { scope ->
+    insertEntities()
+    insertLocation("far", payee = "a", north = 450.0)
+    insertLocation("near", payee = "b", north = 20.0)
+    insertLocation("away", payee = "c", north = 900.0)
+    val viewModel = createViewModel(scope, target = EditTransactionTarget.New(AccountId("a")))
+
+    viewModel.events.test {
+      viewModel.state.test {
+        assertThat(awaitCreate().locationAction).isEqualTo(FindNearby)
+        viewModel.findNearbyPayees()
+        var nearby = awaitCreate().options.nearbyPayees
+        while (nearby.isEmpty()) nearby = awaitCreate().options.nearbyPayees
+        assertThat(nearby).extracting(NearbyPayeeOption::name).containsExactly("B&Q", "Argos")
+        cancelAndIgnoreRemainingEvents()
+      }
+      assertThatNextEmissionIsEqualTo(NearbyPayeesFound)
+    }
+  }
+
+  @Test
+  fun `Finding nearby payees without a location reports it`() = runDatabaseTest { scope ->
+    insertEntities()
+    val viewModel =
+      createViewModel(
+        scope,
+        target = EditTransactionTarget.New(AccountId("a")),
+        location = FakeLocationProvider(coordinates = null),
+      )
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitCreate()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.findNearbyPayees()
+      assertThatNextEmissionIsEqualTo(LocationUnavailable)
+    }
+  }
+
+  @Test
+  fun `Saving a location writes it against the payee`() = runDatabaseTest { scope ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+    viewModel.events.test {
+      viewModel.state.test {
+        assertThat(awaitEdit().locationAction).isEqualTo(Save)
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.saveLocation()
+      assertThatNextEmissionIsEqualTo(EditTransactionEvent.LocationSaved("Argos"))
+    }
+    assertThat(sync.calls.single())
+      .extracting(LocalChange::column)
+      .containsExactly("payee_id", "latitude", "longitude", "created_at")
+  }
+
+  @Test
+  fun `A location near one already saved isn't saved again`() = runDatabaseTest { scope ->
+    insertEntities()
+    insertLocation("near", payee = "a", north = 20.0)
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitEdit()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.saveLocation()
+      assertThatNextEmissionIsEqualTo(EditTransactionEvent.LocationAlreadySaved("Argos"))
+    }
+    assertThat(sync.calls).isEmpty()
+  }
+
+  @Test
+  fun `There's no location action where locations aren't supported`() = runDatabaseTest { scope ->
+    insertEntities()
+    val viewModel =
+      createViewModel(
+        scope,
+        target = EditTransactionTarget.New(AccountId("a")),
+        location = FakeLocationProvider(isSupported = false),
+      )
+
+    viewModel.state.test {
+      assertThat(awaitCreate().locationAction).isNull()
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -1697,6 +1799,7 @@ class EditTransactionViewModelTest {
     savedState: SavedStateHandle = SavedStateHandle(),
     prefs: TestBudgetLocalPreferences = TestBudgetLocalPreferences(),
     learner: CategoryLearner = CategoryLearner {},
+    location: LocationProvider = FakeLocationProvider(),
   ): EditTransactionViewModel {
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val tags = tagsDao(scope)
@@ -1734,6 +1837,14 @@ class EditTransactionViewModelTest {
       uuidGenerator = { "part-${nextPart++}" },
       tagCreator = TagCreator(tagsDao = tags, uuidGenerator = { "tag" }, syncController = sync),
       localPreferences = prefs,
+      payeeLocations =
+        PayeeLocations(
+          dao = PayeeLocationDao(this),
+          syncController = sync,
+          uuidGenerator = { "location" },
+          clock = Clock.System,
+        ),
+      locationProvider = location,
       budgetCalculator =
         BudgetMonthCalculatorImpl(
           budgetDao = BudgetDao(this, contexts),
@@ -1753,6 +1864,25 @@ class EditTransactionViewModelTest {
       viewModelContext = scope.viewModelContext,
     )
   }
+
+  private class FakeLocationProvider(
+    private val coordinates: Coordinates? = HERE,
+    override val isSupported: Boolean = true,
+  ) : LocationProvider {
+    override fun hasPermission() = true
+
+    override suspend fun currentLocation() = coordinates
+  }
+
+  private suspend fun BudgetDatabase.insertLocation(id: String, payee: String, north: Double) =
+    payeeLocationsQueries.insert(
+      id = PayeeLocationId(id),
+      payee_id = PayeeId(payee),
+      latitude = HERE.latitude + north / METERS_PER_DEGREE,
+      longitude = HERE.longitude,
+      created_at = Instant.fromEpochMilliseconds(0),
+      tombstone = false,
+    )
 
   private fun BudgetDatabase.tagsDao(scope: TestScope) =
     TagsDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
@@ -1776,6 +1906,9 @@ class EditTransactionViewModelTest {
   }
 
   private companion object {
+    val HERE = Coordinates(51.5074, -0.1278)
+    const val METERS_PER_DEGREE = 111_195.0
+
     // What insertTransaction("t", account = "a", category = "a", payee = "a") stores
     val SAVED =
       TransactionFields(

@@ -3,6 +3,7 @@ package aktual.prefs
 import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
+import aktual.core.model.DistanceUnit
 import aktual.di.AppScope
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -39,6 +40,15 @@ class FormatPreferencesImpl(dataStore: DataStore<Preferences>) : FormatPreferenc
       .translated(
         key = intPreferencesKey("numberFormat"),
         default = NumberFormat.Default,
+        translator = enumOrdinalTranslator(),
+      )
+      .required()
+
+  override val distanceUnit: Preference<DistanceUnit> =
+    dataStore
+      .translated(
+        key = intPreferencesKey("distanceUnit"),
+        default = DistanceUnit.Default,
         translator = enumOrdinalTranslator(),
       )
       .required()

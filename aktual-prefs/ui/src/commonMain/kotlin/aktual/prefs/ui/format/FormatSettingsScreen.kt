@@ -5,12 +5,14 @@ import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
+import aktual.core.icons.Location
 import aktual.core.icons.material.CalendarViewWeek
 import aktual.core.icons.material.DecimalDecrease
 import aktual.core.icons.material.DecimalIncrease
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Speed125
 import aktual.core.l10n.Strings
+import aktual.core.model.DistanceUnit
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -89,6 +91,16 @@ private fun FormatSettingsScaffold(state: FormatSettingsState, onBack: () -> Uni
           },
       )
     }
+    item {
+      ListPreferenceItem(
+        preference = state.distanceUnit,
+        optionString = { u -> u.label() },
+        optionSuffix = null,
+        title = Strings.settingsFormatDistance,
+        subtitle = null,
+        icon = AktualIcons.Location,
+      )
+    }
   }
 }
 
@@ -111,6 +123,13 @@ private fun DateFormat.label(): String =
     MmDdYyyyDot -> Strings.settingsDateFormatMmDdYyyyDot
     DdMmYyyyDot -> Strings.settingsDateFormatDdMmYyyyDot
     DdMmYyyyDash -> Strings.settingsDateFormatDdMmYyyyDash
+  }
+
+@Composable
+private fun DistanceUnit.label(): String =
+  when (this) {
+    Metric -> Strings.settingsFormatDistanceMetric
+    Imperial -> Strings.settingsFormatDistanceImperial
   }
 
 @Composable
@@ -139,6 +158,7 @@ private fun PreviewFormatSettingsScaffold(
           dateFormat = ListPreference(dateFormat),
           firstDayOfWeek = ListPreference(firstDayOfWeek),
           hideFraction = BooleanPreference(hideFraction),
+          distanceUnit = ListPreference(Default),
         ),
     )
   }
