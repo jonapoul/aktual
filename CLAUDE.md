@@ -99,7 +99,7 @@ Feature-based modular layout. Module list: `settings.gradle.kts` / `ls modules/`
 
 Scopes: `AppScope` (app singletons), `ServerChosenScope` (after server URL is set), `LoggedInScope` (after authentication), `BudgetScope` (per-budget). All defined in `aktual-di:scopes`.
 
-Graphs: All graphs implement `AktualGraph`. Hierarchy: `AppGraph` (root) → `ServerChosenGraph` → `LoggedInGraph`, plus `AppGraph` → `BudgetGraph`. `BudgetGraph` hangs off the app graph so budgets can open without a server (the demo budget), so it can't see server-chosen/logged-in bindings - server details come through the `BudgetServer` it's created with (`Remote(url, token)` or `None`). Open run levels are still ordered app → server-chosen → logged-in → budget, and the VM factory merges every open level's VMs. Graph types live in `aktual-di:graphs`.
+Graphs: All graphs implement `AktualGraph`. Hierarchy: `AppGraph` (root) → `ServerChosenGraph` → `LoggedInGraph`, plus `AppGraph` → `BudgetGraph`. `BudgetGraph` hangs off the app graph so budgets can open without a server (the demo budget), so it can't see server-chosen/logged-in bindings - server details come through the `BudgetServer` it's created with (`Remote(url, token)` or `None`). Open run levels are still ordered app → server-chosen → logged-in → budget, and the VM factory merges every open level's VMs. Graph types live in `aktual-di:runlevel`.
 
 Graph lifecycle hooks (`Closeable` / `Initializable` set contributions) must be qualified with the contributing scope, e.g. `binding<@ForScope(BudgetScope::class) Closeable>()`. Unqualified, child graphs inherit parent contributions, so closing a child would close its parents' resources too.
 
