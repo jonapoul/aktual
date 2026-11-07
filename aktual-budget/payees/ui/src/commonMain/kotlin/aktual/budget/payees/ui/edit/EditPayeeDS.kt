@@ -14,4 +14,10 @@ internal object EditPayeeDS {
   val shimmerFieldHeight = 56.dp
   val shimmerChipWidth = 96.dp
   val shimmerChipHeight = 32.dp
+  val shimmerHelpWidth = 240.dp
+  val shimmerTextHeight = 12.dp
+  val shimmerDateWidth = 90.dp
+  val shimmerCoordinatesWidth = 130.dp
+  val shimmerIconSize = 24.dp
+  val shimmerLocationHeight = 40.dp
 }

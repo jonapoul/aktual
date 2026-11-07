@@ -11,6 +11,7 @@ import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.rules.domain.CategoryLearningPref
 import aktual.core.utils.runCatchingCancellable
+import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -52,6 +53,7 @@ internal constructor(
   private val payeeDao: PayeeDao,
   private val syncController: BudgetSyncController,
   private val payeeLocations: PayeeLocations,
+  private val budgetScope: BudgetCoroutineScope,
   learning: CategoryLearningPref,
   timeZones: TimeZoneProvider,
   viewModelContext: ViewModelContext,
@@ -167,8 +169,9 @@ internal constructor(
     }
   }
 
+  // The undo snackbar can outlive this screen, so the restore can't be tied to it
   fun restoreLocation(id: PayeeLocationId) {
-    viewModelScope.launch {
+    budgetScope.launch {
       runCatchingCancellable(
         attempt = { payeeLocations.restore(id) },
         onFailure = { e ->

@@ -97,6 +97,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -252,7 +253,11 @@ private fun EditPayeeScaffold(
       PageBackground()
 
       when (state) {
-        Loading -> ShimmerEditPayee(modifier = Modifier.padding(innerPadding))
+        Loading ->
+          ShimmerEditPayee(
+            numLocations = locations.size,
+            modifier = Modifier.padding(innerPadding),
+          )
 
         is Editing ->
           EditPayeeContent(
@@ -491,7 +496,7 @@ private fun LocationRow(location: SavedLocation, onAction: EditPayeeActionHandle
       contentDescription = null,
       tint = colors.pageTextSubdued,
     )
-    Column(modifier = Modifier.weight(1f)) {
+    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
       val date = location.date
       if (date != null) {
         Text(text = LocalDateFormatter.current.format(date), style = typography.bodyMedium)
@@ -536,7 +541,7 @@ private fun SwitchRow(
 
 /** Keep in sync with [EditPayeeContent] */
 @Composable
-private fun ShimmerEditPayee(modifier: Modifier = Modifier) {
+private fun ShimmerEditPayee(numLocations: Int, modifier: Modifier = Modifier) {
   val bar = Modifier.background(colors.pageText, CardShape)
   val label =
     bar.size(width = EditPayeeDS.shimmerLabelWidth, height = EditPayeeDS.shimmerLabelHeight)
@@ -571,6 +576,44 @@ private fun ShimmerEditPayee(modifier: Modifier = Modifier) {
           }
         }
       }
+    }
+
+    if (numLocations > 0) {
+      Column(
+        modifier = Modifier.padding(EditPayeeDS.cardPadding),
+        verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing),
+      ) {
+        Box(label)
+        Box(bar.size(width = EditPayeeDS.shimmerHelpWidth, height = EditPayeeDS.shimmerTextHeight))
+        repeat(numLocations) { ShimmerLocationRow() }
+      }
+    }
+  }
+}
+
+@Composable
+private fun ShimmerLocationRow() {
+  val bar = Modifier.background(colors.pageText, CardShape)
+  Row(
+    modifier = Modifier.fillMaxWidth().height(EditPayeeDS.shimmerLocationHeight),
+    horizontalArrangement = Arrangement.spacedBy(EditPayeeDS.locationSpacing),
+    verticalAlignment = CenterVertically,
+  ) {
+    Box(bar.size(EditPayeeDS.shimmerIconSize))
+    Column(
+      modifier = Modifier.weight(1f),
+      verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing),
+    ) {
+      Box(bar.size(width = EditPayeeDS.shimmerDateWidth, height = EditPayeeDS.shimmerTextHeight))
+      Box(
+        bar.size(
+          width = EditPayeeDS.shimmerCoordinatesWidth,
+          height = EditPayeeDS.shimmerTextHeight,
+        ),
+      )
+    }
+    Box(Modifier.size(EditPayeeDS.shimmerLocationHeight), contentAlignment = Center) {
+      Box(bar.size(EditPayeeDS.shimmerIconSize))
     }
   }
 }

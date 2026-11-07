@@ -20,12 +20,14 @@ import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.rules.domain.CategoryLearningPref
 import aktual.budget.rules.domain.PayeeRuleCounter
 import aktual.core.model.Coordinates
+import aktual.di.BudgetCoroutineScope
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
+import androidx.lifecycle.viewModelScope
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
@@ -36,6 +38,7 @@ import assertk.assertions.prop
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -202,19 +205,21 @@ class EditPayeeViewModelTest {
   }
 
   @Test
-  fun `Restoring a location untombstones it`() = runDatabaseTest { scope ->
-    // given
-    val sync = TestSyncController()
-    val viewModel = createViewModel(scope, TESCO.id, sync)
+  fun `Restoring a location untombstones it, even after the screen's closed`() =
+    runDatabaseTest { scope ->
+      // given
+      val sync = TestSyncController()
+      val viewModel = createViewModel(scope, TESCO.id, sync)
+      viewModel.viewModelScope.cancel()
 
-    // when
-    viewModel.restoreLocation(PayeeLocationId("loc"))
-    scope.testScheduler.advanceUntilIdle()
+      // when
+      viewModel.restoreLocation(PayeeLocationId("loc"))
+      scope.testScheduler.advanceUntilIdle()
 
-    // then
-    assertThat(sync.changes)
-      .containsExactly(LocalChange(PAYEE_LOCATIONS, "loc", "tombstone", MessageValue.Number(0)))
-  }
+      // then
+      assertThat(sync.changes)
+        .containsExactly(LocalChange(PAYEE_LOCATIONS, "loc", "tombstone", MessageValue.Number(0)))
+    }
 
   private suspend fun BudgetDatabase.insertLocation(id: String, payee: PayeeId) =
     payeeLocationsQueries.insert(
@@ -253,6 +258,7 @@ class EditPayeeViewModelTest {
           uuidGenerator = { "location" },
           clock = Clock.System,
         ),
+      budgetScope = BudgetCoroutineScope(scope),
       timeZones = { TimeZone.UTC },
       learning =
         CategoryLearningPref(
