@@ -186,7 +186,7 @@ internal fun MonteCarloScaffold(
 
         NotFound ->
           Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
-            Text(text = Strings.reportsNotFound, color = colors.pageText)
+            Text(text = Strings.reportsNotFound)
           }
 
         is Loaded ->

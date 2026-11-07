@@ -170,7 +170,6 @@ private fun NoneFoundContent(modifier: Modifier = Modifier) {
     modifier = modifier,
     title = Strings.licensesError,
     reason = Strings.licensesNoneFound,
-    background = colors.tableBackground,
     action = null,
   )
 }
@@ -211,7 +210,6 @@ private fun ErrorContent(
     modifier = modifier,
     title = Strings.licensesError,
     reason = Strings.licensesFailed(errorMessage),
-    background = colors.tableBackground,
     action =
       FailureAction(
         text = { Strings.licensesFailedRetry },

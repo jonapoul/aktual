@@ -330,6 +330,7 @@ private fun UnlinkButton(
     modifier = modifier.fillMaxWidth(),
     text = Strings.bankSyncSettingsUnlink,
     colors = { pressed -> colors.errorButton(pressed) },
+    border = colors.errorBorder,
     contentPadding = UnlinkButtonPadding,
     onClick = { showConfirm = true },
   )

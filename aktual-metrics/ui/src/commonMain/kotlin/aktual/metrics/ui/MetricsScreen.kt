@@ -25,8 +25,10 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.card
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.normalButton
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -34,7 +36,6 @@ import aktual.metrics.vm.MetricsState
 import aktual.metrics.vm.MetricsViewModel
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,7 +57,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -165,9 +165,7 @@ internal fun LoadingItem(modifier: Modifier = Modifier) {
     modifier =
       modifier
         .fillMaxWidth()
-        .clip(RowShape)
-        .background(colors.buttonNormalBackground, RowShape)
-        .border(Hairline, colors.pillBorderDark, RowShape)
+        .normalButton(colors, RowShape)
         .padding(horizontal = 15.dp, vertical = 12.dp)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
@@ -210,7 +208,6 @@ private fun FailureContent(
     modifier = modifier,
     title = Strings.metricsFailure,
     reason = message,
-    background = colors.tableBackground,
     action =
       FailureAction(
         text = { Strings.metricsFailureRetry },
@@ -226,13 +223,7 @@ private fun SuccessContent(
   modifier: Modifier = Modifier,
 ) {
   val lazyListState = rememberLazyListState()
-
-  val dataModifier =
-    Modifier.fillMaxWidth()
-      .clip(CardShape)
-      .background(colors.buttonNormalBackground, CardShape)
-      .border(Hairline, colors.pillBorderDark, CardShape)
-      .padding(Dimens.VeryLarge)
+  val dataModifier = Modifier.fillMaxWidth().card(colors).padding(Dimens.VeryLarge)
 
   LazyColumn(
     modifier = modifier.scrollbar(lazyListState),

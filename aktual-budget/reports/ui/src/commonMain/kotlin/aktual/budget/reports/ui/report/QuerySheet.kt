@@ -9,6 +9,7 @@ import aktual.core.ui.HostedSheet
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.buttonTextStyle
 import aktual.core.ui.errorButton
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -59,7 +60,7 @@ internal fun QuerySheetPage(
         .padding(bottom = 20.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
-    Text(text = title, style = typography.headlineSmall, color = colors.pageText)
+    Text(text = title, style = typography.headlineSmall)
 
     content()
 
@@ -73,6 +74,7 @@ internal fun QuerySheetPage(
           text = Strings.reportsFormulaQueryDeleteConditionConfirm,
           style = typography.buttonTextStyle,
           colors = { pressed -> colors.errorButton(pressed) },
+          border = BorderStroke(Hairline, colors.errorBorder),
           onClick = { close(onDelete) },
         )
       }

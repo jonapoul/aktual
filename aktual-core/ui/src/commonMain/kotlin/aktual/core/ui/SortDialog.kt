@@ -110,7 +110,7 @@ private fun SortOptionRow(isSelected: Boolean, onClick: () -> Unit, name: String
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     RadioButton(selected = isSelected, onClick = null, colors = colors.radioButton())
-    Text(text = name, style = typography.bodyLarge, color = colors.pageText)
+    Text(text = name, style = typography.bodyLarge)
   }
 }
 

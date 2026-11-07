@@ -146,7 +146,6 @@ private fun WideToolbar(
       modifier = Modifier.width(SidebarWidth - 64.dp),
       text = Strings.logsToolbar,
       style = typography.titleLarge,
-      color = colors.pageText,
     )
     LogSearchField(
       modifier = Modifier.weight(1f).widthIn(max = 520.dp),

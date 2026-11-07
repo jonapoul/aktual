@@ -170,7 +170,7 @@ internal fun CustomReportScaffold(
         }
         NotFound -> {
           Box(modifier = contentModifier, contentAlignment = Center) {
-            Text(text = Strings.reportsNotFound, color = colors.pageText)
+            Text(text = Strings.reportsNotFound)
           }
         }
         is Loaded -> {

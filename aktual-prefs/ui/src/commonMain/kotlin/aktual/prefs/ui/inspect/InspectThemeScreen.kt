@@ -330,7 +330,6 @@ private fun InspectThemeContent(
         modifier = modifier,
         title = Strings.settingsThemeInspectNotFound,
         reason = Strings.settingsThemeInspectNotFoundReason(state.id.value),
-        background = colors.tableBackground,
         action =
           FailureAction(
             text = { Strings.settingsThemeInspectRetry },

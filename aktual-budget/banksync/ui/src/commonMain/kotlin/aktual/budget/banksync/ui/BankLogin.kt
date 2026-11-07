@@ -209,7 +209,6 @@ private fun LoginWaiting(
         modifier = Modifier.weight(1f),
         text = Strings.bankSyncLinkLoginWaiting(status.bank),
         style = typography.bodyMedium,
-        color = colors.pageText,
       )
     }
 

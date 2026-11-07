@@ -178,7 +178,6 @@ private fun ListRulesContent(
         FailureScreen(
           title = Strings.rulesFailurePrefix,
           reason = state.cause ?: Strings.rulesFailureDefaultMessage,
-          background = colors.tableBackground,
           action =
             FailureAction(
               text = { Strings.syncRetry },
@@ -192,7 +191,6 @@ private fun ListRulesContent(
         FailureScreen(
           title = Strings.rulesEmpty,
           reason = null,
-          background = colors.tableBackground,
           action =
             FailureAction(
               text = { Strings.rulesEmptyCreate },

@@ -255,7 +255,6 @@ private fun FailedContent(
     modifier = modifier,
     title = Strings.settingsThemeRefreshPrefix,
     reason = cause,
-    background = colors.tableBackground,
     action =
       FailureAction(
         text = { Strings.settingsThemeRefreshRetry },

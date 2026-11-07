@@ -254,7 +254,7 @@ private fun PreviewTaggedNotesTruncated(
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
       PREVIEW_WIDTHS.fastForEach { width ->
         TaggedNotes(
-          modifier = Modifier.width(width).border(1.dp, colors.cardBorder),
+          modifier = Modifier.width(width).border(1.dp, colors.cardShadow),
           notes = "Lunch with #food and #holiday",
           tags = PREVIEW_TAGS,
           fontSize = ValueSize,

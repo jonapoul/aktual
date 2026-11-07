@@ -59,7 +59,6 @@ fun FormulaChart(
       Text(
         modifier = Modifier.fillMaxWidth(),
         text = title,
-        color = colors.pageText,
         style = typography.bodyLarge,
         overflow = Ellipsis,
         maxLines = 1,

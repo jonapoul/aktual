@@ -196,7 +196,6 @@ private fun UpcomingRow(
       Text(
         text = schedule.name?.takeIf { it.isNotBlank() } ?: schedule.payeeName,
         style = typography.bodyLarge,
-        color = colors.pageText,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -242,7 +241,6 @@ internal fun DateBadge(date: LocalDate, modifier: Modifier = Modifier) {
       text = date.day.toString(),
       style = typography.titleMedium.tabularFigures(),
       fontWeight = SemiBold,
-      color = colors.pageText,
       maxLines = 1,
     )
   }

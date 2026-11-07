@@ -21,29 +21,27 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.RounderCardShape
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.card
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
 import alakazam.compose.HorizontalSpacer
 import alakazam.kotlin.noOp
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -60,7 +58,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
@@ -150,14 +147,14 @@ private fun InfoScreenContent(
   onAction: InfoActionHandler,
   modifier: Modifier = Modifier,
 ) =
-  BoxWithConstraints(modifier = modifier.padding(Dimens.Huge)) {
+  BoxWithConstraints(modifier = modifier) {
     val contentMaxWidth = if (isCompactWidth()) maxWidth else maxWidth / 2
     val contentModifier = Modifier.widthIn(max = contentMaxWidth)
 
     Column(
-      modifier = Modifier.fillMaxWidth().verticalScrollWithBar(),
+      modifier = Modifier.fillMaxWidth().verticalScrollWithBar().padding(Dimens.Large),
       horizontalAlignment = CenterHorizontally,
-      verticalArrangement = Arrangement.spacedBy(Dimens.Huge),
+      verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
     ) {
       InfoHeader(buildState.year, contentModifier)
       InfoBuildState(buildState, onAction, contentModifier)
@@ -173,8 +170,7 @@ private fun InfoHeader(year: Int, modifier: Modifier = Modifier) {
     modifier =
       modifier
         .fillMaxWidth()
-        .background(colors.tableBackground, CardShape)
-        .border(Hairline, colors.tableBorder, CardShape)
+        .card(colors, RounderCardShape)
         .padding(horizontal = 20.dp, vertical = 10.dp),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = CenterVertically,
@@ -212,13 +208,10 @@ private fun InfoBuildState(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier =
-      modifier
-        .background(colors.tableBackground, CardShape)
-        .border(Hairline, colors.tableBorder, CardShape),
+    modifier = modifier.card(colors, RounderCardShape).padding(Dimens.Large),
+    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
     BuildStateItem(
-      modifier = Modifier.padding(ItemMargin).clip(CardShape),
       icon = MaterialIcons.Apps,
       title = Strings.infoAppVersion,
       subtitle = buildState.versions.app,
@@ -226,7 +219,7 @@ private fun InfoBuildState(
     )
 
     BuildStateItem(
-      modifier = Modifier.testTag(Tags.ServerVersionText).padding(ItemMargin).clip(CardShape),
+      modifier = Modifier.testTag(Tags.ServerVersionText),
       icon = AktualIcons.Cloud,
       title = Strings.infoServerVersion,
       subtitle = buildState.versions.server ?: Strings.infoServerVersionUnknown,
@@ -234,7 +227,6 @@ private fun InfoBuildState(
     )
 
     BuildStateItem(
-      modifier = Modifier.padding(ItemMargin).clip(CardShape),
       icon = AktualIcons.Calendar3,
       title = Strings.infoDate,
       subtitle = buildState.buildDate,
@@ -296,7 +288,6 @@ private fun BuildStateItem(
   }
 }
 
-private val ItemMargin = PaddingValues(horizontal = 6.dp, vertical = 3.dp)
 private val ItemPadding = 8.dp
 private val ItemHeight = 50.dp
 

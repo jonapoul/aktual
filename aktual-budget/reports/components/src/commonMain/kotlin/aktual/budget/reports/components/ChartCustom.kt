@@ -152,7 +152,6 @@ private fun CompactHeader(
     Text(
       modifier = Modifier.weight(1f),
       text = data.title,
-      color = colors.pageText,
       overflow = Ellipsis,
     )
 
@@ -174,7 +173,6 @@ private fun RegularHeader(
     Text(
       text = data.totals[data.config.balanceType.metric].formattedText(),
       style = typography.titleMedium,
-      color = colors.pageText,
     )
   }
 
@@ -211,7 +209,6 @@ private fun LegendItem(text: String, color: Color, modifier: Modifier = Modifier
       modifier = Modifier.padding(start = 4.dp),
       text = text,
       style = typography.bodySmall,
-      color = colors.pageText,
     )
   }
 

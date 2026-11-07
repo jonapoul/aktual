@@ -217,7 +217,6 @@ private fun PinnedContent(
           modifier = Modifier.weight(1f),
           text = name,
           style = typography.bodyLarge,
-          color = colors.pageText,
           maxLines = 1,
           overflow = Ellipsis,
         )

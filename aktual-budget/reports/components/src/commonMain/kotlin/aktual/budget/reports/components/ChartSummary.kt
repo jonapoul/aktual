@@ -108,7 +108,7 @@ private fun Header(
   modifier: Modifier = Modifier,
 ) =
   Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
-    Text(text = data.title, color = colors.pageText, style = typography.bodyLarge)
+    Text(text = data.title, style = typography.bodyLarge)
 
     data.start?.yearMonth?.let { start ->
       data.end?.yearMonth?.let { end ->
@@ -189,7 +189,6 @@ private fun RegularPerMonth(
           text = Strings.reportsSummaryNumMonths,
           fontSize = textSizes.heading,
           textAlign = Center,
-          color = colors.pageText,
         )
       }
 
@@ -207,7 +206,6 @@ private fun RegularPerMonth(
           text = data.total.formattedText(),
           fontSize = textSizes.display,
           textAlign = Center,
-          color = colors.pageText,
         )
 
         HorizontalDivider(thickness = 2.dp, color = colors.pageText)
@@ -217,7 +215,6 @@ private fun RegularPerMonth(
           text = "%.2f".format(data.numMonths),
           fontSize = textSizes.display,
           textAlign = Center,
-          color = colors.pageText,
         )
       }
     }
@@ -260,7 +257,6 @@ private fun RegularPerYear(
           text = Strings.reportsSummaryNumYears,
           fontSize = textSizes.heading,
           textAlign = Center,
-          color = colors.pageText,
         )
       }
 
@@ -278,7 +274,6 @@ private fun RegularPerYear(
           text = data.total.formattedText(),
           fontSize = textSizes.display,
           textAlign = Center,
-          color = colors.pageText,
         )
 
         HorizontalDivider(thickness = 2.dp, color = colors.pageText)
@@ -288,7 +283,6 @@ private fun RegularPerYear(
           text = "%.2f".format(data.numYears),
           fontSize = textSizes.display,
           textAlign = Center,
-          color = colors.pageText,
         )
       }
     }
@@ -331,7 +325,6 @@ private fun RegularPerTransaction(
           text = Strings.reportsSummaryNumTransactions,
           fontSize = textSizes.heading,
           textAlign = Center,
-          color = colors.pageText,
         )
       }
 
@@ -349,7 +342,6 @@ private fun RegularPerTransaction(
           text = data.total.formattedText(),
           fontSize = textSizes.display,
           textAlign = Center,
-          color = colors.pageText,
         )
 
         HorizontalDivider(thickness = 2.dp, color = colors.pageText)
@@ -359,7 +351,6 @@ private fun RegularPerTransaction(
           text = data.numTransactions.toString(),
           fontSize = textSizes.display,
           textAlign = Center,
-          color = colors.pageText,
         )
       }
     }
@@ -422,7 +413,6 @@ private fun RegularPercent(
           text = data.numerator.formattedText(),
           fontSize = textSizes.display,
           textAlign = Center,
-          color = colors.pageText,
         )
 
         HorizontalDivider(thickness = 2.dp, color = colors.pageText)
@@ -432,7 +422,6 @@ private fun RegularPercent(
           text = data.denominator.formattedText(),
           fontSize = textSizes.display,
           textAlign = Center,
-          color = colors.pageText,
         )
       }
     }
@@ -483,7 +472,7 @@ private fun ShowAs(
   modifier: Modifier = Modifier,
 ) =
   Row(modifier = modifier.wrapContentSize(), verticalAlignment = CenterVertically) {
-    Text(text = Strings.reportsSummaryShowAs, color = colors.pageText)
+    Text(text = Strings.reportsSummaryShowAs)
 
     HorizontalSpacer(5.dp)
 
@@ -550,7 +539,6 @@ private fun DivisorCheckbox(
     Text(
       modifier = Modifier.weight(1f),
       text = Strings.reportsSummaryAllTimeDivisor,
-      color = colors.pageText,
     )
   }
 }

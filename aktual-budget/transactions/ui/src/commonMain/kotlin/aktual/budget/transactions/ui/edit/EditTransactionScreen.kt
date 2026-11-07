@@ -47,6 +47,7 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
+import aktual.core.ui.card
 import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -485,7 +486,7 @@ private fun NothingToCreateWith(
 @Composable
 internal inline fun DetailCard(content: @Composable ColumnScope.() -> Unit) =
   Column(
-    modifier = Modifier.fillMaxWidth().background(colors.cardBackground, DetailCardShape),
+    modifier = Modifier.fillMaxWidth().background(colors.buttonNormalBackground, DetailCardShape),
     content = content,
   )
 
@@ -494,11 +495,7 @@ internal inline fun DetailCard(content: @Composable ColumnScope.() -> Unit) =
 @Composable
 internal fun BalanceAfter(balance: Amount, modifier: Modifier = Modifier) =
   Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .background(colors.cardBackground, DetailCardShape)
-        .padding(BalancePadding),
+    modifier = modifier.fillMaxWidth().card(colors).padding(BalancePadding),
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.SpaceBetween,
   ) {

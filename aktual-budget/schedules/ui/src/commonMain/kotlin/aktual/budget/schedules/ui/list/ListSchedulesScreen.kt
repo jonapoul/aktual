@@ -263,7 +263,6 @@ private fun ListSchedulesContent(
           title = Strings.listSchedulesEmpty,
           reason = null,
           icon = null,
-          background = colors.tableBackground,
           action =
             FailureAction(
               text = { Strings.listSchedulesEmptyCreate },
@@ -276,7 +275,6 @@ private fun ListSchedulesContent(
         FailureScreen(
           title = Strings.listSchedulesFailurePrefix,
           reason = state.cause ?: Strings.listSchedulesFailureDefaultMessage,
-          background = colors.tableBackground,
           action =
             FailureAction(
               text = { Strings.syncRetry },

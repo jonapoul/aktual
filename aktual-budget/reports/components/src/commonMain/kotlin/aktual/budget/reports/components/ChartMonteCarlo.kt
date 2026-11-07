@@ -92,7 +92,6 @@ private fun Header(
       modifier = Modifier.weight(1f),
       text = data.title ?: Strings.reportsChooseTypeMonteCarlo,
       overflow = Ellipsis,
-      color = colors.pageText,
       style = typography.bodyLarge,
     )
 

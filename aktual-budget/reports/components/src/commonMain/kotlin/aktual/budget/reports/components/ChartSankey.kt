@@ -113,7 +113,6 @@ private fun Header(data: SankeyData, modifier: Modifier = Modifier) =
     Text(
       text = data.title ?: Strings.reportsChooseTypeSankey,
       overflow = Ellipsis,
-      color = colors.pageText,
       style = typography.bodyLarge,
     )
 

@@ -192,7 +192,6 @@ private fun BankSyncContent(
           title = Strings.bankSyncEmpty,
           reason = Strings.bankSyncNotice,
           icon = AktualIcons.Library,
-          background = colors.tableBackground,
           action =
             FailureAction(
                 text = { Strings.bankSyncAddAccount },
@@ -206,7 +205,6 @@ private fun BankSyncContent(
         FailureScreen(
           title = Strings.bankSyncFailureTitle,
           reason = state.cause ?: Strings.bankSyncFailureMessage,
-          background = colors.tableBackground,
           action =
             FailureAction(
               text = { Strings.syncRetry },

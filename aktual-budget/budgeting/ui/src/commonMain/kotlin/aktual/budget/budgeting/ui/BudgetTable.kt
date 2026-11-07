@@ -261,7 +261,6 @@ private fun Breakdown(lines: ImmutableList<Pair<String, Amount>>, modifier: Modi
           text = amount.formattedText(),
           fontSize = textSizes.smallPlus,
           style = TextStyle.Default.tabularFigures(),
-          color = colors.pageText,
           maxLines = 1,
         )
       }

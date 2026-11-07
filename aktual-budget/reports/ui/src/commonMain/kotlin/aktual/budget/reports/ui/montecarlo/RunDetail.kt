@@ -96,7 +96,6 @@ internal fun RunDetailView(
           },
         style = typography.bodyMedium,
         fontWeight = SemiBold,
-        color = colors.pageText,
       )
       BareTextButton(
         text =
@@ -448,7 +447,6 @@ private fun DetailText(text: String, modifier: Modifier = Modifier) =
     modifier = modifier,
     text = text.redacted(),
     style = typography.bodySmall,
-    color = colors.pageText,
   )
 
 @Composable

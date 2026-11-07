@@ -78,7 +78,6 @@ internal fun ForecastContributorsList(
     Text(
       modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
       text = Strings.reportsBalanceForecastContributorsTitle,
-      color = colors.pageText,
       style = typography.bodyLarge,
       fontWeight = Bold,
     )
@@ -154,7 +153,6 @@ private fun ContributorsTable(
     Text(
       modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
       text = title,
-      color = colors.pageText,
       style = typography.bodyMedium,
       fontWeight = Bold,
     )

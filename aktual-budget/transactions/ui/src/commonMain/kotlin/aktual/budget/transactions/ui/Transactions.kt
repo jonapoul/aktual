@@ -83,7 +83,6 @@ internal fun Transactions(
         modifier = modifier.padding(contentPadding),
         title = Strings.transactionsLoadFailed,
         reason = refresh.error.message,
-        background = colors.tableBackground,
         action =
           FailureAction(
             text = { Strings.syncRetry },

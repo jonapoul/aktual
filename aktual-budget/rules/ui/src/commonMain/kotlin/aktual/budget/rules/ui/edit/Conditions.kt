@@ -22,6 +22,7 @@ import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryIconButton
 import aktual.core.ui.ProvideSurfaceColor
+import aktual.core.ui.card
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -47,20 +48,25 @@ internal fun Conditions(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier =
-      modifier.fillMaxWidth().background(colors.cardBackground, CardShape).padding(CARD_PADDING),
+    modifier = modifier.fillMaxWidth().card(colors).padding(CARD_PADDING),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     ProvideSurfaceColor(colors.cardBackground) {
       Row(verticalAlignment = Alignment.Top) {
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          Text(text = Strings.editRuleConditions, style = typography.titleSmall)
+          Text(
+            text = Strings.editRuleConditions,
+            style = typography.titleSmall,
+          )
 
           Row(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = CenterVertically,
           ) {
-            Text(text = Strings.editRuleConditionsDescPrefix, style = typography.bodyLarge)
+            Text(
+              text = Strings.editRuleConditionsDescPrefix,
+              style = typography.bodyLarge,
+            )
 
             AktualExposedDropDownMenu(
               value = rule.conditionsOp,
@@ -72,7 +78,10 @@ internal fun Conditions(
               contentPadding = BUTTON_PADDING,
             )
 
-            Text(text = Strings.editRuleConditionsDescSuffix, style = typography.bodyLarge)
+            Text(
+              text = Strings.editRuleConditionsDescSuffix,
+              style = typography.bodyLarge,
+            )
           }
         }
         PrimaryIconButton(

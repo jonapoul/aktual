@@ -117,7 +117,6 @@ internal fun LogLevelRow(
       modifier = Modifier.weight(1f),
       text = priority.label(),
       style = typography.bodyMedium,
-      color = colors.pageText,
     )
     Text(text = count.toString(), style = typography.labelSmall, color = colors.pageTextLight)
   }

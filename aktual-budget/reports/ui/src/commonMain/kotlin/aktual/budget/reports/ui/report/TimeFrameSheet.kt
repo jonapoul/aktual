@@ -65,7 +65,7 @@ private fun ModeRow(mode: TimeFrameMode, isSelected: Boolean, onSelect: () -> Un
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     RadioButton(selected = isSelected, onClick = null, colors = colors.radioButton())
-    Text(text = mode.label(), style = typography.bodyLarge, color = colors.pageText)
+    Text(text = mode.label(), style = typography.bodyLarge)
   }
 
 @Composable

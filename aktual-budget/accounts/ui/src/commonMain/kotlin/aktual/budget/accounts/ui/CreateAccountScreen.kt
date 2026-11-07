@@ -173,7 +173,6 @@ private fun ColumnScope.CreateAccountForm(
     Text(
       text = Strings.accountsCreateName,
       style = typography.bodyLarge,
-      color = colors.pageText,
     )
     AktualTextField(
       modifier = Modifier.fillMaxWidth(),
@@ -197,7 +196,6 @@ private fun ColumnScope.CreateAccountForm(
       Text(
         text = Strings.accountsCreateOffBudget,
         style = typography.bodyLarge,
-        color = colors.pageText,
       )
       Text(
         text = Strings.accountsCreateOffBudgetHint,
@@ -216,7 +214,6 @@ private fun ColumnScope.CreateAccountForm(
     Text(
       text = Strings.accountsCreateBalance,
       style = typography.bodyLarge,
-      color = colors.pageText,
     )
     Row(
       verticalAlignment = CenterVertically,

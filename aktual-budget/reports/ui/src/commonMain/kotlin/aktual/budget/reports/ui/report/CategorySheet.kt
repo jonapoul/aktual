@@ -115,7 +115,6 @@ internal fun CheckRow(
     Text(
       text = text,
       style = if (isBold) typography.titleSmall else typography.bodyLarge,
-      color = colors.pageText,
     )
   }
 

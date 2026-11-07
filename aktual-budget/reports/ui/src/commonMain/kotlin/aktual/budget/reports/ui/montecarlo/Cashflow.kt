@@ -178,7 +178,7 @@ internal fun LegendGroup(heading: String, series: ImmutableList<CashflowSeries>,
           horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
           Swatch(seriesColor(entry.colorIndex, colors), size = 12.dp)
-          Text(text = entry.label(config), style = typography.bodySmall, color = colors.pageText)
+          Text(text = entry.label(config), style = typography.bodySmall)
         }
       }
     }

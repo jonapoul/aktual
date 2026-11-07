@@ -103,7 +103,6 @@ private fun Header(
       Text(
         text = data.title ?: Strings.reportsChooseTypeAgeOfMoney,
         overflow = Ellipsis,
-        color = colors.pageText,
         style = typography.bodyLarge,
       )
 

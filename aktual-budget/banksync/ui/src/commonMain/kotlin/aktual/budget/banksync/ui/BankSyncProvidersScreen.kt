@@ -12,7 +12,6 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -24,14 +23,13 @@ import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.card
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -198,12 +196,7 @@ private fun ProviderItem(
   val name = providerName(item.source)
 
   Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .background(colors.tableBackground, CardShape)
-        .border(Hairline, colors.tableBorder, CardShape)
-        .padding(BankSyncDS.itemCardPadding),
+    modifier = modifier.fillMaxWidth().card(colors).padding(BankSyncDS.itemCardPadding),
     horizontalArrangement = Arrangement.spacedBy(BankSyncDS.itemHorizontalSpacing),
     verticalAlignment = CenterVertically,
   ) {

@@ -53,7 +53,7 @@ internal fun CheckUpdatesLoadingDialogContent(
 
         HorizontalSpacer(15.dp)
 
-        Text(text = Strings.infoCheckingUpdatesLoading, color = colors.pageText)
+        Text(text = Strings.infoCheckingUpdatesLoading)
       }
     },
     buttons = {

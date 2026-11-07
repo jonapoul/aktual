@@ -154,7 +154,7 @@ private fun BankSyncProviderSetupContent(
     verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsFieldSpacing),
   ) {
     intro(state.source)?.let { intro ->
-      Text(text = intro, style = typography.bodyMedium, color = colors.pageText)
+      Text(text = intro, style = typography.bodyMedium)
     }
 
     providerSite(state.source)?.let { site ->
@@ -198,7 +198,7 @@ private fun RedirectUrl(url: String, modifier: Modifier = Modifier) {
     verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsLabelSpacing),
   ) {
     Text(text = Strings.bankSyncSetupEnableBankingRedirect, style = typography.bodyMedium)
-    SelectionContainer { Text(text = url, style = typography.bodyMedium, color = colors.pageText) }
+    SelectionContainer { Text(text = url, style = typography.bodyMedium) }
     if (!url.startsWith("https://")) {
       Text(
         text = Strings.bankSyncSetupEnableBankingInsecure,

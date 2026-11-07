@@ -4,6 +4,7 @@ import aktual.budget.reports.components.ChartActionListener
 import aktual.budget.reports.components.ChartTags
 import aktual.budget.reports.components.ChartZoomState
 import aktual.budget.reports.components.ReportChart
+import aktual.budget.reports.components.dashboardItem
 import aktual.budget.reports.components.info
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.ChartData
@@ -141,7 +142,7 @@ private fun ChartCard(
       CircularProgressIndicator(modifier = Modifier.align(Center), color = colors.pageText)
     } else {
       ReportChart(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().dashboardItem(colors),
         data = preview,
         compact = false,
         onAction = onAction,

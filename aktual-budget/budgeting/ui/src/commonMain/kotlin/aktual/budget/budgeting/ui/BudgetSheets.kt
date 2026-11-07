@@ -528,7 +528,6 @@ private fun SummaryRow(label: String, amount: Amount, bold: Boolean = false) {
       fontSize = textSizes.medium,
       fontWeight = if (bold) SemiBold else Normal,
       style = TextStyle.Default.tabularFigures(),
-      color = colors.pageText,
     )
   }
 }

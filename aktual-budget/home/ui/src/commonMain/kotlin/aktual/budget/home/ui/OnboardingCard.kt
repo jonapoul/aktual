@@ -35,7 +35,6 @@ internal fun OnboardingCard(onAction: HomeActionHandler, modifier: Modifier = Mo
         text = Strings.homeOnboardingTitle,
         style = typography.titleMedium,
         fontWeight = SemiBold,
-        color = colors.pageText,
         textAlign = Center,
       )
 

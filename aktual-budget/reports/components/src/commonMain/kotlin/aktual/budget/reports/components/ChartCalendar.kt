@@ -232,7 +232,6 @@ internal fun CalendarSummary(
       Text(
         modifier = Modifier.weight(1f),
         text = data.title,
-        color = colors.pageText,
         overflow = Ellipsis,
       )
 
@@ -245,7 +244,6 @@ internal fun CalendarSummary(
       Text(
         modifier = Modifier.weight(1f),
         text = Strings.reportsCalendarIncome,
-        color = colors.pageText,
         textAlign = End,
       )
       Text(
@@ -260,7 +258,6 @@ internal fun CalendarSummary(
       Text(
         modifier = Modifier.weight(1f),
         text = Strings.reportsCalendarExpenses,
-        color = colors.pageText,
         textAlign = End,
       )
       Text(

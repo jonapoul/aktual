@@ -65,7 +65,6 @@ internal fun RuleStageHeader(stage: RuleStage, count: Int, modifier: Modifier = 
   ) {
     Text(
       text = stage.string(),
-      color = colors.pageText,
       fontSize = textSizes.medium,
       fontWeight = SemiBold,
     )

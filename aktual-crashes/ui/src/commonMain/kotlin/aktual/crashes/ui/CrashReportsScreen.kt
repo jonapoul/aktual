@@ -15,7 +15,6 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -28,10 +27,13 @@ import aktual.core.ui.SearchMessage
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.card
 import aktual.core.ui.contrastingTextColor
+import aktual.core.ui.errorButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.normalButton
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -65,7 +67,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -131,6 +132,8 @@ internal fun CrashReportsScaffold(
               Modifier.fillMaxWidth()
                 .padding(horizontal = Dimens.Large, vertical = Dimens.VeryLarge),
             text = Strings.crashesDeleteAll,
+            colors = { pressed -> colors.errorButton(pressed) },
+            border = colors.errorBorder,
             onClick = { showDeleteAll = true },
           )
           BottomSpacing()
@@ -216,12 +219,7 @@ private fun CrashReportsList(
 @Composable
 private fun CrashReportsSummary(count: Int, modifier: Modifier = Modifier) =
   Column(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .background(colors.cardBackground, CardShape)
-        .border(Hairline, colors.cardShadow, CardShape)
-        .padding(Dimens.VeryLarge),
+    modifier = modifier.fillMaxWidth().card(colors).padding(Dimens.VeryLarge),
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
     Text(
@@ -232,7 +230,6 @@ private fun CrashReportsSummary(count: Int, modifier: Modifier = Modifier) =
     Text(
       text = Plurals.crashesSummaryCount(count, count),
       style = typography.headlineMedium,
-      color = colors.pageText,
     )
     Text(
       text = Strings.crashesSummaryRetention,
@@ -252,8 +249,7 @@ private fun CrashReportItem(
       modifier
         .fillMaxWidth()
         .heightIn(min = 56.dp)
-        .clip(RowShape)
-        .background(colors.tableBackground)
+        .normalButton(colors, RowShape)
         .clickable(onClick = onClick)
         .padding(
           start = Dimens.VeryLarge,

@@ -267,14 +267,12 @@ private fun LazyListScope.choosing(
           Text(
             text = Strings.bankSyncLinkChoose(target.name ?: Strings.bankSyncUnnamedAccount),
             style = typography.bodyMedium,
-            color = colors.pageText,
           )
         }
         is New -> {
           Text(
             text = Strings.bankSyncLinkNewChoose,
             style = typography.bodyMedium,
-            color = colors.pageText,
           )
           AktualSlidingToggleButton(
             modifier = Modifier.fillMaxWidth(),

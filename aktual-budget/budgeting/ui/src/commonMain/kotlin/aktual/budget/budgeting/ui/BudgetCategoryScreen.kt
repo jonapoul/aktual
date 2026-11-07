@@ -18,7 +18,6 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -28,6 +27,7 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
+import aktual.core.ui.card
 import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
@@ -36,7 +36,6 @@ import aktual.core.ui.stringShort
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -55,7 +54,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -179,7 +177,6 @@ internal fun BudgetCategoryScaffold(
             modifier = Modifier.padding(innerPadding),
             title = Strings.budgetingCategoryFailure,
             reason = null,
-            background = colors.tableBackground,
             action = null,
           )
 
@@ -241,14 +238,13 @@ private fun MonthCard(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = modifier.fillMaxWidth().card().padding(CategoryDS.cardPadding),
+    modifier = modifier.fillMaxWidth().card(colors).padding(CategoryDS.cardPadding),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     Text(
       text = month.month.stringLong(),
       fontSize = textSizes.mediumPlus,
       fontWeight = SemiBold,
-      color = colors.pageText,
     )
 
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -278,7 +274,6 @@ private fun Figure(label: String, amount: Amount, modifier: Modifier = Modifier)
       fontSize = textSizes.large,
       fontWeight = Medium,
       style = TextStyle.Default.tabularFigures(),
-      color = colors.pageText,
     )
   }
 }
@@ -291,14 +286,13 @@ private fun HistoryCard(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = modifier.fillMaxWidth().card().padding(CategoryDS.cardPadding),
+    modifier = modifier.fillMaxWidth().card(colors).padding(CategoryDS.cardPadding),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     Text(
       text = Strings.budgetingCategoryHistory,
       fontSize = textSizes.mediumPlus,
       fontWeight = SemiBold,
-      color = colors.pageText,
     )
 
     Legend(isIncome = state.isIncome)
@@ -429,11 +423,6 @@ private fun HistoryChart(
     drawLine(axis, Offset(0f, zero), Offset(size.width, zero), strokeWidth = 1.dp.toPx())
   }
 }
-
-@Composable
-@ReadOnlyComposable
-private fun Modifier.card(): Modifier =
-  background(colors.tableBackground, CardShape).border(1.dp, colors.tableBorder, CardShape)
 
 private fun Amount.cents(): Long = toLong()
 

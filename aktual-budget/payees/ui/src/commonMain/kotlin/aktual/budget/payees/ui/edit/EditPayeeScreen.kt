@@ -44,6 +44,7 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.TextFieldShape
+import aktual.core.ui.card
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -426,7 +427,7 @@ private fun SwitchRow(
       modifier = Modifier.weight(1f),
       verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing),
     ) {
-      Text(text = label, style = typography.labelLarge, color = colors.pageText)
+      Text(text = label, style = typography.labelLarge)
       Text(text = help, style = typography.bodySmall, color = colors.pageTextSubdued)
     }
     Switch(
@@ -481,10 +482,7 @@ private fun ShimmerEditPayee(modifier: Modifier = Modifier) {
 @Composable
 private inline fun EditPayeeCard(content: @Composable ColumnScope.() -> Unit) {
   Column(
-    modifier =
-      Modifier.fillMaxWidth()
-        .background(colors.cardBackground, CardShape)
-        .padding(EditPayeeDS.cardPadding),
+    modifier = Modifier.fillMaxWidth().card(colors).padding(EditPayeeDS.cardPadding),
     verticalArrangement = Arrangement.spacedBy(EditPayeeDS.fieldSpacing),
     content = content,
   )
@@ -506,7 +504,7 @@ private inline fun Field(
       } else {
         AnnotatedString(label)
       }
-    Text(text = labelText, style = typography.labelLarge, color = colors.pageText)
+    Text(text = labelText, style = typography.labelLarge)
     content()
   }
 }

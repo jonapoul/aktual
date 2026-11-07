@@ -211,6 +211,7 @@ private fun TextChartButtons(
           modifier = Modifier.weight(1f),
           text = Strings.reportsTextDiscard,
           colors = { pressed -> colors.errorButton(pressed) },
+          border = colors.errorBorder,
           onClick = onCancel,
         )
       } else {
