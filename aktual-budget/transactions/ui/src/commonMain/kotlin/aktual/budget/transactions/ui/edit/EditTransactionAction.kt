@@ -35,6 +35,10 @@ internal data object ToggleHiddenCategories : EditTransactionAction
 
 internal data class PickingCategory(val isPicking: Boolean) : EditTransactionAction
 
+internal data object FindNearbyPayees : EditTransactionAction
+
+internal data object SavePayeeLocation : EditTransactionAction
+
 // What changes one of the transaction's own fields
 @Immutable internal sealed interface FieldAction : EditTransactionAction
 

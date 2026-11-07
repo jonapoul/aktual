@@ -52,6 +52,7 @@ private val aktualIcons =
       LeftArrow2,
       Library,
       LightBulb,
+      Location,
       LockClosed,
       Merge,
       MoonStars,

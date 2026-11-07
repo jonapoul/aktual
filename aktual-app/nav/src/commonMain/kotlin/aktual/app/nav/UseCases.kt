@@ -9,6 +9,7 @@ import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.DbMetadataKey.Companion.BudgetName
 import aktual.budget.model.NumberFormat
+import aktual.core.model.DistanceUnit
 import aktual.core.model.PingStateHolder
 import aktual.core.nav.BudgetNavRailNavRoute
 import aktual.core.nav.ListBudgetsNavRoute
@@ -81,6 +82,7 @@ data class FormatConfig(
   val symbolPosition: CurrencySymbolPosition,
   val spaceBetweenAmountAndSymbol: Boolean,
   val isPrivacyEnabled: Boolean,
+  val distanceUnit: DistanceUnit,
 )
 
 @Inject
@@ -99,6 +101,7 @@ class FormatConfigUseCase(
       val currencySpaceBetweenAmountAndSymbol by
         currencies.spaceBetweenAmountAndSymbol.collectAsStateFlow(scope)
       val isPrivacyEnabled by prefs.isPrivacyEnabled.collectAsStateFlow(scope)
+      val distanceUnit by formats.distanceUnit.collectAsStateFlow(scope)
       FormatConfig(
         dateFormat = dateFormat,
         numberFormat = numberFormat,
@@ -107,6 +110,7 @@ class FormatConfigUseCase(
         symbolPosition = currencySymbolPosition,
         spaceBetweenAmountAndSymbol = currencySpaceBetweenAmountAndSymbol,
         isPrivacyEnabled = isPrivacyEnabled,
+        distanceUnit = distanceUnit,
       )
     }
 }

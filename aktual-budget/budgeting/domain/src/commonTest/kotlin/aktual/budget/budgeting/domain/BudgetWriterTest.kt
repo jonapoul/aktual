@@ -24,6 +24,7 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.localChange
+import aktual.core.model.DistanceUnit
 import aktual.core.utils.Calendar
 import aktual.prefs.CurrencyPreferences
 import aktual.prefs.FormatPreferences
@@ -667,6 +668,7 @@ internal class BudgetWriterTest {
     override val dateFormat = fixed(DateFormat.Default)
     override val firstDayOfWeek = fixed(FirstDayOfWeek.Default)
     override val numberFormat = fixed(NumberFormat.Default)
+    override val distanceUnit = fixed(DistanceUnit.Default)
   }
 
   private object TestCurrencyPreferences : CurrencyPreferences {

@@ -14,6 +14,7 @@ import aktual.budget.transactions.ui.color
 import aktual.budget.transactions.ui.tabularFigures
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.edit.EditTransactionError
+import aktual.budget.transactions.vm.edit.EditTransactionEvent
 import aktual.budget.transactions.vm.edit.EditTransactionState
 import aktual.budget.transactions.vm.edit.EditTransactionTarget
 import aktual.budget.transactions.vm.edit.EditTransactionViewModel
@@ -29,7 +30,14 @@ import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.Trash
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Undo
+import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.transaction_location_already_saved
+import aktual.core.l10n.transaction_location_denied
+import aktual.core.l10n.transaction_location_none_nearby
+import aktual.core.l10n.transaction_location_save_failed
+import aktual.core.l10n.transaction_location_saved
+import aktual.core.l10n.transaction_location_unavailable
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
@@ -42,6 +50,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -73,6 +82,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -94,6 +104,7 @@ import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import org.jetbrains.compose.resources.getString
 
 @Composable
 internal fun EditTransactionScreen(
@@ -105,6 +116,8 @@ internal fun EditTransactionScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val error by viewModel.error.collectAsStateWithLifecycle()
+  val fieldState = remember { EditFieldState() }
+  val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
@@ -112,7 +125,29 @@ internal fun EditTransactionScreen(
         Deleted,
         Saved,
         Discarded -> back()
+        NearbyPayeesFound -> fieldState.edit(Payee)
+        else -> snackbars.show { showLocationEvent(event) }
       }
+    }
+  }
+
+  // What to do with the location once permission's given
+  var pendingLocation by remember { mutableStateOf<(() -> Unit)?>(null) }
+  val requestPermission = rememberLocationPermissionRequest { isGranted ->
+    val pending = pendingLocation
+    pendingLocation = null
+    if (isGranted) {
+      pending?.invoke()
+    } else {
+      snackbars.show { showSnackbar(getString(Res.string.transaction_location_denied)) }
+    }
+  }
+  fun withLocation(action: () -> Unit) {
+    if (viewModel.needsLocationPermission) {
+      pendingLocation = action
+      requestPermission()
+    } else {
+      action()
     }
   }
 
@@ -120,6 +155,7 @@ internal fun EditTransactionScreen(
     modifier = modifier,
     state = state,
     error = error,
+    fieldState = fieldState,
     onAction = { action ->
       when (action) {
         NavigateBack -> back()
@@ -133,6 +169,8 @@ internal fun EditTransactionScreen(
         GoToBudget -> toBudget()
         ToggleHiddenCategories -> viewModel.toggleHiddenCategories()
         is PickingCategory -> viewModel.setPickingCategory(action.isPicking)
+        FindNearbyPayees -> withLocation(viewModel::findNearbyPayees)
+        SavePayeeLocation -> withLocation(viewModel::saveLocation)
         is FieldAction -> viewModel.onFieldAction(action)
         is SplitAction -> viewModel.onSplitAction(action)
       }
@@ -167,6 +205,23 @@ private fun EditTransactionViewModel.onSplitAction(action: SplitAction) =
     is SetPartNotes -> setPartNotes(action.id, action.notes)
   }
 
+private suspend fun SnackbarHostState.showLocationEvent(event: EditTransactionEvent) {
+  val message =
+    when (event) {
+      NoNearbyPayees -> getString(Res.string.transaction_location_none_nearby)
+      LocationUnavailable -> getString(Res.string.transaction_location_unavailable)
+      LocationSaveFailed -> getString(Res.string.transaction_location_save_failed)
+      is LocationSaved -> getString(Res.string.transaction_location_saved, event.payee)
+      is LocationAlreadySaved ->
+        getString(Res.string.transaction_location_already_saved, event.payee)
+      Deleted,
+      Saved,
+      Discarded,
+      NearbyPayeesFound -> return
+    }
+  showSnackbar(message)
+}
+
 @Composable
 private fun editTransactionViewModel(target: EditTransactionTarget) =
   assistedMetroViewModel<EditTransactionViewModel, EditTransactionViewModel.Factory>(
@@ -180,11 +235,11 @@ private fun EditTransactionScaffold(
   error: EditTransactionError?,
   onAction: EditTransactionActionHandler,
   modifier: Modifier = Modifier,
+  fieldState: EditFieldState = remember { EditFieldState() },
 ) {
   val loaded = state as? Loaded
   val form = loaded?.mode?.form
   var dialog by remember { mutableStateOf<TransactionDialog?>(null) }
-  val fieldState = remember { EditFieldState() }
   val isAmountValid = !fieldState.isTypingAmount || fieldState.amountText.isValidAmount()
 
   // Backing out checks first if that would lose any changes

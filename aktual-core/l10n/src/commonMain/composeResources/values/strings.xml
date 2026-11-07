@@ -2077,6 +2077,19 @@
   <string name="transaction_payee_create">Create payee “%1$s”</string>
   <string name="transaction_payee_suggested">Suggested payees</string>
   <string name="transaction_payee_all">Payees</string>
+  <string name="transaction_payee_nearby">Nearby payees</string>
+  <string name="transaction_location_find_nearby">Find nearby payees</string>
+  <string name="transaction_location_save">Save location for this payee</string>
+  <string name="transaction_location_saved">Location saved for %1$s</string>
+  <string name="transaction_location_already_saved">%1$s already has a location saved near here</string>
+  <string name="transaction_location_none_nearby">No payees saved near here</string>
+  <string name="transaction_location_unavailable">Couldn’t get your location</string>
+  <string name="transaction_location_save_failed">Couldn’t save the location</string>
+  <string name="transaction_location_denied">Location permission wasn’t given</string>
+  <string name="distance_meters">%1$s m</string>
+  <string name="distance_kilometers">%1$s km</string>
+  <string name="distance_feet">%1$s ft</string>
+  <string name="distance_miles">%1$s mi</string>
   <string name="transaction_notes_add_tag">Add tag</string>
   <string name="transaction_notes_create_tag">Create tag</string>
 
@@ -2246,6 +2259,9 @@
   <string name="settings_date_format_dd_mm_yyyy_dot">DD.MM.YYYY</string>
   <string name="settings_date_format_dd_mm_yyyy_dash">DD-MM-YYYY</string>
   <string name="settings_format_first_day">First day of the week</string>
+  <string name="settings_format_distance">Distance units</string>
+  <string name="settings_format_distance_metric">Metric (m, km)</string>
+  <string name="settings_format_distance_imperial">Imperial (ft, mi)</string>
 
   <string name="settings_currency">Currency</string>
   <string name="settings_currency_desc">These affect how amounts are displayed throughout the application. Changing the currency will affect the number format, symbol position, and whether fractions are shown. These can be adjusted after the currency is set.</string>

@@ -12,6 +12,7 @@ import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.vm.Transaction
+import aktual.core.model.Distance
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -55,6 +56,9 @@ data class TransactionForm(
   val parts: ImmutableList<SplitPartForm> = persistentListOf(),
   // What's left to assign while a split's parts don't add up to its amount
   val splitRemaining: Amount? = null,
+  // What the payee's location button does. Null where there's no location to use
+  val locationAction: LocationAction? = null,
+  val isLocating: Boolean = false,
 ) {
   val isSplit: Boolean
     get() = parts.isNotEmpty()
@@ -150,7 +154,18 @@ data class TransactionOptions(
   // budget.showHiddenCategories has it
   val hasHiddenCategories: Boolean = false,
   val showHiddenCategories: Boolean = false,
+  // Payees saved near where the user last looked, nearest first
+  val nearbyPayees: ImmutableList<NearbyPayeeOption> = persistentListOf(),
 )
+
+@Immutable data class NearbyPayeeOption(val id: PayeeId, val name: String, val distance: Distance)
+
+enum class LocationAction {
+  // With no payee, looks for the ones saved near here
+  FindNearby,
+  // Saves where the user is against the payee
+  Save,
+}
 
 @Immutable
 sealed interface EditTransactionState {
@@ -215,4 +230,16 @@ sealed interface EditTransactionEvent {
   data object Saved : EditTransactionEvent
 
   data object Discarded : EditTransactionEvent
+
+  data object NearbyPayeesFound : EditTransactionEvent
+
+  data object NoNearbyPayees : EditTransactionEvent
+
+  data object LocationUnavailable : EditTransactionEvent
+
+  @JvmInline value class LocationSaved(val payee: String) : EditTransactionEvent
+
+  @JvmInline value class LocationAlreadySaved(val payee: String) : EditTransactionEvent
+
+  data object LocationSaveFailed : EditTransactionEvent
 }

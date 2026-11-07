@@ -13,19 +13,6 @@ data class Coordinates(val latitude: Double, val longitude: Double) {
     require(longitude in -MAX_LONGITUDE..MAX_LONGITUDE) { "Invalid longitude $longitude" }
   }
 
-  // Haversine, as upstream's calculateDistance
-  fun distanceTo(other: Coordinates): Distance {
-    val deltaLatitude = Math.toRadians(other.latitude - latitude)
-    val deltaLongitude = Math.toRadians(other.longitude - longitude)
-    val a =
-      sin(deltaLatitude / 2) * sin(deltaLatitude / 2) +
-        cos(Math.toRadians(latitude)) *
-          cos(Math.toRadians(other.latitude)) *
-          sin(deltaLongitude / 2) *
-          sin(deltaLongitude / 2)
-    return Distance(meters = 2 * EARTH_RADIUS_METERS * asin(sqrt(a.coerceAtMost(1.0))))
-  }
-
   companion object {
     const val MAX_LATITUDE = 90.0
     const val MAX_LONGITUDE = 180.0
@@ -38,4 +25,17 @@ data class Coordinates(val latitude: Double, val longitude: Double) {
       return Coordinates(latitude, longitude)
     }
   }
+}
+
+// Haversine, as upstream's calculateDistance
+fun Coordinates.distanceTo(other: Coordinates): Distance {
+  val deltaLatitude = Math.toRadians(other.latitude - latitude)
+  val deltaLongitude = Math.toRadians(other.longitude - longitude)
+  val a =
+    sin(deltaLatitude / 2) * sin(deltaLatitude / 2) +
+      cos(Math.toRadians(latitude)) *
+        cos(Math.toRadians(other.latitude)) *
+        sin(deltaLongitude / 2) *
+        sin(deltaLongitude / 2)
+  return Distance(meters = 2 * Coordinates.EARTH_RADIUS_METERS * asin(sqrt(a.coerceAtMost(1.0))))
 }

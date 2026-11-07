@@ -29,6 +29,7 @@ internal constructor(preferences: FormatPreferences, viewModelContext: ViewModel
       val dateFormat by collectAsState(preferences.dateFormat)
       val firstDayOfWeek by collectAsState(preferences.firstDayOfWeek)
       val hideFraction by collectAsState(preferences.hideFraction)
+      val distanceUnit by collectAsState(preferences.distanceUnit)
       FormatSettingsState(
         numberFormat =
           ListPreference(
@@ -49,6 +50,11 @@ internal constructor(preferences: FormatPreferences, viewModelContext: ViewModel
           BooleanPreference(
             value = hideFraction,
             onChange = { launchAndSet(preferences.hideFraction, it) },
+          ),
+        distanceUnit =
+          ListPreference(
+            value = distanceUnit,
+            onChange = { launchAndSet(preferences.distanceUnit, it) },
           ),
       )
     }

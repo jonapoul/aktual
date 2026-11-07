@@ -11,6 +11,7 @@ import aktual.budget.model.NumberFormat
 import aktual.budget.model.NumberFormatConfig
 import aktual.core.l10n.Res
 import aktual.core.l10n.redacted_script
+import aktual.core.model.DistanceUnit
 import aktual.core.theme.BottomBarThemeAttrs
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -126,6 +127,8 @@ fun LocalDate.formatted(formatter: DateTimeFormat<LocalDate> = LocalDateFormatte
 val LocalNumberFormatConfig =
   compositionLocalOf<NumberFormatConfig> { error("No NumberFormatConfig value provided") }
 
+val LocalDistanceUnit = compositionLocalOf { DistanceUnit.Default }
+
 val LocalCurrencyConfig =
   compositionLocalOf<CurrencyConfig> { error("No CurrencyConfig value provided") }
 
@@ -212,6 +215,7 @@ fun WithCompositionLocals(
   currencyPosition: CurrencySymbolPosition = Default,
   addCurrencySpace: Boolean = true,
   dateFormat: DateFormat = Default,
+  distanceUnit: DistanceUnit = Default,
   hazeState: HazeState = rememberHazeState(),
   hazeConfig: HazeConfig = remember { HazeConfig() },
   dialogBlurState: DialogBlurState = remember { DialogBlurState() },
@@ -223,6 +227,7 @@ fun WithCompositionLocals(
     LocalNumberFormatConfig provides NumberFormatConfig(format, hideFraction),
     LocalCurrencyConfig provides CurrencyConfig(currency, currencyPosition, addCurrencySpace),
     LocalPrivacyEnabled provides isPrivacyEnabled,
+    LocalDistanceUnit provides distanceUnit,
     LocalHazeState provides hazeState,
     LocalHazeConfig provides hazeConfig,
     LocalDialogBlurState provides dialogBlurState,

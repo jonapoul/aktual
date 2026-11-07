@@ -12,6 +12,7 @@ import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
+import aktual.core.model.DistanceUnit
 import aktual.core.utils.Calendar
 import aktual.prefs.CurrencyPreferences
 import aktual.prefs.FormatPreferences
@@ -48,6 +49,7 @@ internal object TestFormatPreferences : FormatPreferences {
   override val dateFormat = fixed(DateFormat.Default)
   override val firstDayOfWeek = fixed(FirstDayOfWeek.Default)
   override val numberFormat = fixed(NumberFormat.Default)
+  override val distanceUnit = fixed(DistanceUnit.Default)
 }
 
 internal object TestCurrencyPreferences : CurrencyPreferences {
