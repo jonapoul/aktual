@@ -466,7 +466,11 @@ private fun LocationsField(
   onAction: EditPayeeActionHandler,
 ) =
   Column(verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing)) {
-    Text(text = Strings.payeesEditLocationsLabel, style = typography.labelLarge)
+    Text(
+      text = Strings.payeesEditLocationsLabel,
+      style = typography.labelLarge,
+      color = colors.pageText,
+    )
     Text(
       text = Strings.payeesEditLocationsHelp,
       style = typography.bodySmall,
