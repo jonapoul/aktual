@@ -21,6 +21,8 @@ plugins {
   id("aktual.convention.test")
 }
 
+val isCi = providers.environmentVariable("CI").isPresent
+
 // Local builds share a version code, so any of them can be installed over another
 val appVersionCode = providers.environmentVariable("CI").flatMap { gitVersionCode() }.orElse(1)
 val gitVersionName = gitVersionDate()
@@ -96,6 +98,16 @@ android {
       isMinifyEnabled = false
     }
 
+    // Debug build without LeakCanary, installable alongside dev and release. Only exists on CI
+    if (isCi) {
+      register("ci") {
+        initWith(getByName("debug"))
+        applicationIdSuffix = ".ci"
+        versionNameSuffix = "-ci"
+        matchingFallbacks += "debug"
+      }
+    }
+
     release {
       signingConfig = signingConfigs.findByName("release")
       isMinifyEnabled = true
@@ -109,6 +121,8 @@ android {
   }
 
   manifestLock {
+    // The ci build type only exists on CI, so its variant gets a lock file of its own
+    if (isCi) lockFile = layout.projectDirectory.file("src/main/AndroidManifest.ci.lock.yaml")
     failOnLockChange = true
     content {
       sdkVersion = true
@@ -127,6 +141,11 @@ androidComponents {
   beforeVariants { variant ->
     variant.enableAndroidTest =
       variant.enableAndroidTest && projectDir.resolve("src/androidTest").exists()
+  }
+
+  // Every CI build shares a version code, so any of them can be installed over another
+  onVariants(selector().withBuildType("ci")) { variant ->
+    variant.outputs.forEach { output -> output.versionCode.set(1) }
   }
 
   onVariants(selector().withBuildType("release")) { variant ->
