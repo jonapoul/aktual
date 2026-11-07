@@ -2,7 +2,7 @@
 
 package aktual.budget.formula
 
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import kotlin.math.floor
 import kotlin.math.truncate
 import kotlinx.datetime.LocalDate

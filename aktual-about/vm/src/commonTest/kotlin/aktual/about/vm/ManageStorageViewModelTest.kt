@@ -1,9 +1,9 @@
 package aktual.about.vm
 
 import aktual.about.vm.ManageStorageState.Loaded
-import aktual.core.AppDirectory
 import aktual.core.logging.LogStorage
 import aktual.core.model.bytes
+import aktual.core.utils.AppDirectory
 import aktual.test.CoTemporaryFolder
 import aktual.test.testBudgetFiles
 import aktual.test.unconfinedViewModelContext

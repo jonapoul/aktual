@@ -4,8 +4,8 @@ import aktual.budget.budgeting.domain.BudgetMonth
 import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.budgeting.domain.BudgetWriter
 import aktual.budget.model.CategoryId
-import aktual.core.Calendar
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.Calendar
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

@@ -3,8 +3,8 @@ package aktual.budget.accounts.vm
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.transactions.domain.TransactionWriter
-import aktual.core.Calendar
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.Calendar
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

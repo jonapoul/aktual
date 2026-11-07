@@ -14,7 +14,7 @@ kotlin {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.sqldelight.runtime)
     implementation(project(":aktual-budget:data:db"))
-    implementation(project(":aktual-core"))
     implementation(project(":aktual-core:logging"))
+    implementation(project(":aktual-core:utils"))
   }
 }

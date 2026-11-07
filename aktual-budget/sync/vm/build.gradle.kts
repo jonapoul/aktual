@@ -5,7 +5,7 @@ kotlin {
     api(libs.alakazam.kotlin)
     api(libs.kotlinx.datetime)
     api(project(":aktual-budget:data:encryption"))
-    api(project(":aktual-core"))
+    api(project(":aktual-core:utils"))
     api(project(":aktual-di:runlevel"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.core)

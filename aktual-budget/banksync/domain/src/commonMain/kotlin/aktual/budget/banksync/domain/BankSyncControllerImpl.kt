@@ -16,8 +16,8 @@ import aktual.budget.model.BankSyncStatus
 import aktual.budget.transactions.domain.AccountUpdate
 import aktual.budget.transactions.domain.Patch
 import aktual.budget.transactions.domain.TransactionWriter
-import aktual.core.Calendar
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.Calendar
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding

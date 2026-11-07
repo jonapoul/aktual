@@ -23,7 +23,7 @@ import aktual.budget.reports.vm.report.CustomReportState.Loaded
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.budget.reports.vm.toConfig
 import aktual.budget.reports.vm.withMode
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts

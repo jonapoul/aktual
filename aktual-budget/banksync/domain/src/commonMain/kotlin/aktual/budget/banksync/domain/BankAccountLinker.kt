@@ -13,8 +13,8 @@ import aktual.budget.model.BankId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.TransactionWriter
-import aktual.core.UuidGenerator
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.UuidGenerator
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch

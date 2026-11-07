@@ -1,6 +1,6 @@
 package aktual.budget.formula
 
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import kotlin.math.pow
 
 // Evaluates upstream Actual's formulas the way HyperFormula does, as if the formula were the only

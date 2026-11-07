@@ -20,8 +20,8 @@ import aktual.budget.transactions.domain.TransactionBatch
 import aktual.budget.transactions.domain.TransactionUpdate
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.budget.transactions.domain.toNewTransactions
-import aktual.core.Calendar
-import aktual.core.UuidGenerator
+import aktual.core.utils.Calendar
+import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.Inject
 import kotlin.math.abs
 import kotlin.math.floor

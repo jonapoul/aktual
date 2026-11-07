@@ -11,7 +11,7 @@ import aktual.budget.model.localChange
 import aktual.budget.schedules.domain.UnpostedSchedules
 import aktual.core.model.BudgetServer
 import aktual.core.nav.BudgetNavEntryContributor
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

@@ -1,4 +1,4 @@
-package aktual.core
+package aktual.core.utils
 
 import assertk.assertFailure
 import assertk.assertThat

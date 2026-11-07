@@ -12,7 +12,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.directoryId
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.LoggedInScope
 import aktual.di.RunLevelController
 import aktual.di.ViewModelContext

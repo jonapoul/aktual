@@ -7,8 +7,8 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.RuleTransaction
 import aktual.budget.rules.domain.TransactionRulesLoader
-import aktual.core.Calendar
-import aktual.core.UuidGenerator
+import aktual.core.utils.Calendar
+import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import logcat.logcat

@@ -5,7 +5,7 @@ import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.DbMetadataKey
 import aktual.budget.reports.vm.DashboardSync
-import aktual.core.UuidGenerator
+import aktual.core.utils.UuidGenerator
 import androidx.compose.runtime.Immutable
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow

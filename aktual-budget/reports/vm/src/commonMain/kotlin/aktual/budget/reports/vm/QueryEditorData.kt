@@ -9,7 +9,7 @@ import aktual.budget.db.dao.ReportsDao
 import aktual.budget.model.BudgetType
 import aktual.budget.model.Field
 import aktual.budget.model.SyncedPrefKey
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import androidx.compose.runtime.Immutable
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull

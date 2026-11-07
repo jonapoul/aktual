@@ -1,5 +1,6 @@
 package aktual.core
 
+import aktual.core.utils.AppDirectory
 import aktual.di.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import java.io.File

@@ -1,4 +1,4 @@
-package aktual.core
+package aktual.core.utils
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo

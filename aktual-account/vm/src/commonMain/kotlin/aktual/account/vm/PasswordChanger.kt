@@ -5,7 +5,7 @@ import aktual.api.model.account.ChangePasswordRequest
 import aktual.api.model.account.ChangePasswordResponse
 import aktual.core.model.Password
 import aktual.core.model.Token
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject

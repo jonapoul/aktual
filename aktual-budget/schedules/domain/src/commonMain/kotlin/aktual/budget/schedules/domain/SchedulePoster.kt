@@ -10,7 +10,7 @@ import aktual.budget.rules.domain.RuleTransaction
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.budget.transactions.domain.toNewTransactions
-import aktual.core.UuidGenerator
+import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.Inject
 import kotlinx.datetime.LocalDate
 import logcat.logcat

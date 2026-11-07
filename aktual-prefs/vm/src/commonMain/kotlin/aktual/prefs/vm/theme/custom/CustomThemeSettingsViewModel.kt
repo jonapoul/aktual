@@ -2,11 +2,11 @@ package aktual.prefs.vm.theme.custom
 
 import aktual.api.client.ThemeApi
 import aktual.core.model.ThemeId
-import aktual.core.runCatchingCancellable
 import aktual.core.theme.CustomColors
 import aktual.core.theme.CustomThemeCache
 import aktual.core.theme.CustomThemeRepo
 import aktual.core.theme.CustomThemeSummary
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

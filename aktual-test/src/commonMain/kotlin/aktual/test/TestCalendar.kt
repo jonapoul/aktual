@@ -1,6 +1,6 @@
 package aktual.test
 
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update

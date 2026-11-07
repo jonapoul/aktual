@@ -4,7 +4,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
-import aktual.core.UuidGenerator
+import aktual.core.utils.UuidGenerator
 
 /**
  * What the engine needs to know about the rest of the budget while running rules: the lookups that

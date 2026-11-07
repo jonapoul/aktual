@@ -6,7 +6,7 @@ import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.rules.domain.CategoryLearner
-import aktual.core.UuidGenerator
+import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn

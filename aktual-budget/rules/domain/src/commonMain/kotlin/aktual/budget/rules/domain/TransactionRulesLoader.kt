@@ -3,7 +3,7 @@ package aktual.budget.rules.domain
 import aktual.budget.db.dao.RuleContextDao
 import aktual.budget.db.dao.RulesDao
 import aktual.budget.model.PayeeId
-import aktual.core.UuidGenerator
+import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.Inject
 
 /**

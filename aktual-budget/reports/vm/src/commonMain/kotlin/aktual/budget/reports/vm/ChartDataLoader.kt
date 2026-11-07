@@ -40,8 +40,8 @@ import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.WidgetType
 import aktual.budget.model.parseScheduleAmount
 import aktual.budget.rules.domain.TransactionFilter
-import aktual.core.Calendar
 import aktual.core.model.Percent
+import aktual.core.utils.Calendar
 import aktual.prefs.CurrencyPreferences
 import aktual.prefs.FormatPreferences
 import alakazam.kotlin.CoroutineContexts

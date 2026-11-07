@@ -1,6 +1,6 @@
 package aktual.app.di
 
-import aktual.core.AppDirectory
+import aktual.core.utils.AppDirectory
 import aktual.di.AppCoroutineScope
 import aktual.di.AppScope
 import aktual.prefs.migration.preferenceMigrations

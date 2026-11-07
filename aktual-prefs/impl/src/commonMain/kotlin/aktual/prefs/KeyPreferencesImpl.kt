@@ -1,8 +1,8 @@
 package aktual.prefs
 
-import aktual.core.EncryptionKeys
 import aktual.core.model.KeyId
 import aktual.core.model.base64
+import aktual.core.utils.EncryptionKeys
 import aktual.di.AppScope
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

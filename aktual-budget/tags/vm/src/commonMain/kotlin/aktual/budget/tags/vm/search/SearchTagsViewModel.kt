@@ -4,7 +4,7 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.tags.vm.list.TagItem
 import aktual.budget.tags.vm.list.toTagItem
 import aktual.budget.tags.vm.search.SearchTagsState.Results
-import aktual.core.snippet
+import aktual.core.utils.snippet
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

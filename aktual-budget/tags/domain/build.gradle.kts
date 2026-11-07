@@ -6,7 +6,7 @@ kotlin {
   commonMainDependencies {
     api(libs.compose.uiGraphics)
     api(project(":aktual-budget:data:db"))
-    api(project(":aktual-core"))
+    api(project(":aktual-core:utils"))
     compileOnly(libs.compose.runtime)
   }
 

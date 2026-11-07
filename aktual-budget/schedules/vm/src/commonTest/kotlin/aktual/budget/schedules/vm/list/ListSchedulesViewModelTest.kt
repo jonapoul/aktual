@@ -27,8 +27,8 @@ import aktual.budget.schedules.domain.ScheduleTransactionPoster
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.edit.ScheduleWriter
 import aktual.budget.transactions.domain.TransactionWriter
-import aktual.core.Calendar
-import aktual.core.UuidGenerator
+import aktual.core.utils.Calendar
+import aktual.core.utils.UuidGenerator
 import aktual.prefs.SchedulePreferences
 import aktual.prefs.SchedulePreferencesImpl
 import aktual.test.TestBudgetLocalPreferences

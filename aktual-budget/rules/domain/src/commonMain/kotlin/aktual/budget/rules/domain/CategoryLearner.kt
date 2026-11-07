@@ -16,8 +16,8 @@ import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.RuleId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
-import aktual.core.Calendar
-import aktual.core.UuidGenerator
+import aktual.core.utils.Calendar
+import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding
 import kotlinx.datetime.DateTimeUnit.Companion.DAY

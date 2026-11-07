@@ -19,7 +19,7 @@ import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
 import aktual.budget.model.sortOrderAfter
 import aktual.budget.model.tombstone
-import aktual.core.UuidGenerator
+import aktual.core.utils.UuidGenerator
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonObject

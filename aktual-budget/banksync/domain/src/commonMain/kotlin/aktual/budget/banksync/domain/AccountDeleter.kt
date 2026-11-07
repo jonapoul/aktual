@@ -2,7 +2,7 @@ package aktual.budget.banksync.domain
 
 import aktual.budget.model.AccountId
 import aktual.budget.transactions.domain.TransactionWriter
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import dev.zacsweers.metro.Inject
 import logcat.logcat
 

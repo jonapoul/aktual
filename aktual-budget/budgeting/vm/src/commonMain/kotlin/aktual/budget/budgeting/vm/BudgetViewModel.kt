@@ -20,9 +20,9 @@ import aktual.budget.model.DbMetadataKey.Companion.BudgetShowHiddenCategories
 import aktual.budget.model.DbMetadataKey.Companion.MobileShowSpentColumn
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.sumOf
-import aktual.core.Calendar
 import aktual.core.model.unaryPlus
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.Calendar
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

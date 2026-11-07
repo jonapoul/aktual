@@ -16,7 +16,7 @@ import aktual.budget.model.ScheduleId
 import aktual.budget.model.SyncedPrefKey.Global.UpcomingScheduledTransactionLength
 import aktual.budget.model.UpcomingLength
 import aktual.budget.model.upcomingDays
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList

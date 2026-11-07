@@ -1,6 +1,6 @@
 package aktual.core.ui
 
-import aktual.core.AppCloser
+import aktual.core.utils.AppCloser
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 

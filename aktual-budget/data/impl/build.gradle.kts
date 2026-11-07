@@ -13,7 +13,7 @@ kotlin {
     api(project(":aktual-budget"))
     api(project(":aktual-budget:data:encryption"))
     api(project(":aktual-budget:data:proto"))
-    api(project(":aktual-core"))
+    api(project(":aktual-core:utils"))
     implementation(project(":aktual-core:logging"))
   }
 

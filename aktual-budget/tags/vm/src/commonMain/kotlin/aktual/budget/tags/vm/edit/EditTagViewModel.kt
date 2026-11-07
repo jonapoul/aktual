@@ -10,8 +10,8 @@ import aktual.budget.model.tombstone
 import aktual.budget.tags.domain.toColorOrNull
 import aktual.budget.tags.domain.toHex
 import aktual.budget.tags.vm.list.toTagItem
-import aktual.core.UuidGenerator
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.UuidGenerator
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

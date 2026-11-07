@@ -1,7 +1,7 @@
 package aktual.app.di
 
-import aktual.core.TokenExpiredEvent
-import aktual.core.TokenExpiredNotifier
+import aktual.core.utils.TokenExpiredEvent
+import aktual.core.utils.TokenExpiredNotifier
 import aktual.di.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.SingleIn

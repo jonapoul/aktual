@@ -10,7 +10,7 @@ import aktual.budget.model.DbMetadataKey.Companion.LastSyncedTimestamp
 import aktual.budget.model.MerkleOperations
 import aktual.budget.model.Timestamp
 import aktual.budget.proto.SyncRequestEncoder
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes

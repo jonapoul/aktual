@@ -10,7 +10,7 @@ import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Failure
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Results
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext

@@ -9,7 +9,6 @@ import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.DbMetadataKey.Companion.BudgetName
 import aktual.budget.model.NumberFormat
-import aktual.core.TokenExpiredEvent
 import aktual.core.model.PingStateHolder
 import aktual.core.nav.BudgetNavRailNavRoute
 import aktual.core.nav.ListBudgetsNavRoute
@@ -17,6 +16,7 @@ import aktual.core.nav.LoginNavRoute
 import aktual.core.nav.ServerUrlNavRoute
 import aktual.core.ui.BottomBarState
 import aktual.core.ui.HazeConfig
+import aktual.core.utils.TokenExpiredEvent
 import aktual.di.AppGraph
 import aktual.di.BudgetGraph
 import aktual.di.LoggedInGraph

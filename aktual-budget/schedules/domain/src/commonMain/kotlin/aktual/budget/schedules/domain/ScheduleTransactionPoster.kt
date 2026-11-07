@@ -5,7 +5,7 @@ import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.transactions.domain.TransactionWriter
-import aktual.core.UuidGenerator
+import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.Inject
 import kotlinx.datetime.LocalDate
 import logcat.logcat

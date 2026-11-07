@@ -3,7 +3,7 @@ package aktual.core.connection
 import aktual.api.client.HealthApi
 import aktual.core.model.PingState
 import aktual.core.model.PingStateHolder
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.Closeable
 import aktual.di.Initializable
 import aktual.di.ServerChosenCoroutineScope

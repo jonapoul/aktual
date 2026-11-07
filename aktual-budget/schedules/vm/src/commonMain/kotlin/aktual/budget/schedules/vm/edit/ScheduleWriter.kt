@@ -19,9 +19,9 @@ import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
 import aktual.budget.model.nextDate
 import aktual.budget.model.tombstone
-import aktual.core.Calendar
-import aktual.core.UuidGenerator
 import aktual.core.model.unaryPlus
+import aktual.core.utils.Calendar
+import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlinx.coroutines.flow.update

@@ -4,11 +4,11 @@ import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.reports.vm.DashboardSync
-import aktual.core.UuidGenerator
 import aktual.core.l10n.Res
 import aktual.core.l10n.StringLookup
 import aktual.core.l10n.reports_text_default
 import aktual.core.model.Empty
+import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

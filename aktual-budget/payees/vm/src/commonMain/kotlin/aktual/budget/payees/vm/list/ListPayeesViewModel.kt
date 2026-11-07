@@ -8,7 +8,7 @@ import aktual.budget.model.untombstone
 import aktual.budget.payees.domain.PayeeMerger
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.rules.domain.CategoryLearningPref
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext

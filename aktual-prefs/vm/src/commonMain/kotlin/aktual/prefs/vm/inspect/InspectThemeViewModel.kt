@@ -1,6 +1,5 @@
 package aktual.prefs.vm.inspect
 
-import aktual.core.UuidGenerator
 import aktual.core.model.ThemeId
 import aktual.core.theme.Colors
 import aktual.core.theme.CustomColors
@@ -8,6 +7,7 @@ import aktual.core.theme.CustomThemeCache
 import aktual.core.theme.CustomThemeRepo
 import aktual.core.theme.ThemeResolver
 import aktual.core.theme.toCustomColors
+import aktual.core.utils.UuidGenerator
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

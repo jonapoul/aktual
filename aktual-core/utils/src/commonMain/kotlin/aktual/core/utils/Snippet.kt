@@ -1,4 +1,4 @@
-package aktual.core
+package aktual.core.utils
 
 /**
  * Starts shortly before the first case-insensitive match of [query], so it's still visible when

@@ -4,7 +4,7 @@ import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Failure
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Results
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

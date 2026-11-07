@@ -1,7 +1,7 @@
 package aktual.test
 
 import aktual.budget.BudgetFiles
-import aktual.core.AppDirectory
+import aktual.core.utils.AppDirectory
 import aktual.di.AppCoroutineScope
 import aktual.di.ViewModelContext
 import alakazam.kotlin.CoroutineContexts

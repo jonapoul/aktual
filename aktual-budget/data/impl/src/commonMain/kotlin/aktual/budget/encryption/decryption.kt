@@ -2,7 +2,7 @@ package aktual.budget.encryption
 
 import aktual.budget.BudgetFiles
 import aktual.budget.model.BudgetId
-import aktual.core.EncryptionKeys
+import aktual.core.utils.EncryptionKeys
 import aktual.di.AppScope
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage

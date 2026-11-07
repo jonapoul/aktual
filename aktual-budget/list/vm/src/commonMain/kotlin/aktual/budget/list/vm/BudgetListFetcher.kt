@@ -3,7 +3,7 @@ package aktual.budget.list.vm
 import aktual.api.client.SyncApi
 import aktual.api.model.sync.ListUserFilesResponse
 import aktual.core.model.Token
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject

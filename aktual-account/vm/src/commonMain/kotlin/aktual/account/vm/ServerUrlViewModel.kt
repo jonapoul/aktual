@@ -8,7 +8,7 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.AppScope
 import aktual.di.RunLevelController
 import aktual.di.ViewModelContext

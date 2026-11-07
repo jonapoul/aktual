@@ -14,7 +14,7 @@ import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.notesContainTag
 import aktual.budget.rules.domain.ConditionsMatcher
 import aktual.budget.rules.domain.FilterRow
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 

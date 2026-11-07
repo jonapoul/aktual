@@ -8,9 +8,9 @@ import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.model.DbMetadataKey.Companion.EncryptKeyId
 import aktual.budget.model.DbMetadataKey.Companion.GroupId
 import aktual.budget.model.DbMetadataKey.Companion.LastUploaded
-import aktual.core.Calendar
 import aktual.core.model.AktualJson
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.Calendar
+import aktual.core.utils.runCatchingCancellable
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
