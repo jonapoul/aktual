@@ -77,6 +77,7 @@ class LicensesRepositoryTest {
               MaterialDesignIcons,
               slf4jApi,
               InterFont,
+              Flagpack,
             ),
         ),
       )

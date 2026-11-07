@@ -1,0 +1,47 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="24dp"
+    android:viewportWidth="32"
+    android:viewportHeight="24">
+    <group>
+        <clip-path
+            android:pathData="M0 0h32v24h-32z"/>
+        <group>
+            <path
+                android:fillColor="#FFFFFFFF"
+                android:pathData="M0 0h32v24h-32z"/>
+            <path
+                android:fillColor="#FFF7FCFF"
+                android:fillType="evenOdd"
+                android:pathData="M0 0H32V24H0V0Z"/>
+            <path
+                android:fillColor="#FFE31D1C"
+                android:pathData="M0.03 5h32v2.9h-32z"/>
+            <path
+                android:fillColor="#FFE31D1C"
+                android:pathData="M0.03 10.2h32v2.9h-32z"/>
+            <path
+                android:fillColor="#FFE31D1C"
+                android:pathData="M0.11 15.2h32v2.5h-32z"/>
+            <path
+                android:fillColor="#FFE31D1C"
+                android:pathData="M0.11 20.2h32v2.7h-32z"/>
+            <path
+                android:fillColor="#FFE31D1C"
+                android:fillType="evenOdd"
+                android:pathData="M0 0H32V2.5H0V0Z"/>
+            <path
+                android:fillColor="#FF3D58DB"
+                android:fillType="evenOdd"
+                android:pathData="M0 0H16V12H0V0Z"/>
+            <path
+                android:fillColor="#FFFECA00"
+                android:fillType="evenOdd"
+                android:pathData="M3.59 6.2C3.59 7.58 4.24 8.88 5.56 8.88 7.54 8.88 7.92 8.46 8.85 7.88 9.07 8.37 8.33 10.46 5.53 10.46 3.3 10.42 1.49 8.62 1.49 6.2 1.49 3.42 3.53 1.92 5.48 1.94 7.19 1.94 9.01 2.91 8.96 4.16 8.15 3.37 7.27 3.37 5.81 3.37 4.35 3.37 3.59 4.83 3.59 6.2Z"/>
+            <path
+                android:fillColor="#FFFECA00"
+                android:fillType="evenOdd"
+                android:pathData="M11 7.3L10.07 8.65 10.12 7.01 8.57 7.56 9.57 6.26 8 5.8 9.57 5.34 8.57 4.04 10.12 4.59 10.07 2.95 11 4.3 11.93 2.95 11.88 4.59 13.43 4.04 12.43 5.34 14 5.8 12.43 6.26 13.43 7.56 11.88 7.01 11.93 8.65 11 7.3Z"/>
+        </group>
+    </group>
+</vector>

@@ -12,8 +12,11 @@ import aktual.core.ui.textField
 import aktual.prefs.components.BasicPreferenceItem
 import aktual.prefs.vm.ListPreference
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -24,10 +27,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -43,6 +48,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
   includeBackground: Boolean = true,
   searchPlaceholder: String? = null,
   searchTerms: (E) -> List<String> = { emptyList() },
+  optionPrefix: (@Composable (E) -> Unit)? = null,
 ) {
   if (!preference.visible) return
   ListPreferenceItem(
@@ -59,6 +65,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
     includeBackground = includeBackground,
     searchPlaceholder = searchPlaceholder,
     searchTerms = searchTerms,
+    optionPrefix = optionPrefix,
   )
 }
 
@@ -79,6 +86,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
   includeBackground: Boolean = true,
   searchPlaceholder: String? = null,
   searchTerms: (E) -> List<String> = { emptyList() },
+  optionPrefix: (@Composable (E) -> Unit)? = null,
 ) {
   var showSheet by remember { mutableStateOf(false) }
   val sheetState = rememberBottomSheetState(initialValue = Hidden)
@@ -107,7 +115,21 @@ internal fun <E : Enum<E>> ListPreferenceItem(
           readOnly = true,
           isEnabled = enabled,
           trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) },
-          leadingIcon = optionSuffix?.let { suffix -> { suffix(value) } },
+          leadingIcon =
+            if (optionPrefix != null || optionSuffix != null) {
+              {
+                Row(
+                  modifier = Modifier.padding(horizontal = 12.dp),
+                  horizontalArrangement = Arrangement.spacedBy(8.dp),
+                  verticalAlignment = CenterVertically,
+                ) {
+                  optionPrefix?.invoke(value)
+                  optionSuffix?.invoke(value)
+                }
+              }
+            } else {
+              null
+            },
           colors = colors.textField(border = colors.buttonNormalBorder),
         )
         Box(modifier = Modifier.matchParentSize().clickable(enabled) { showSheet = true })
@@ -123,6 +145,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
       onSelect = onValueChange,
       sheetState = sheetState,
       string = optionString,
+      leadingContent = optionPrefix,
       trailingContent = optionSuffix,
       key = { it.ordinal },
       searchPlaceholder = searchPlaceholder,

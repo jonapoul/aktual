@@ -20,6 +20,16 @@ internal val ActualBudget =
     scm = ArtifactScm(url = "https://github.com/actualbudget/actual"),
   )
 
+internal val Flagpack =
+  ArtifactDetail(
+    groupId = "yummygum",
+    artifactId = "flagpack-core",
+    version = "2.1.0",
+    name = "Flagpack",
+    spdxLicenses = setOf(Mit),
+    scm = ArtifactScm(url = "https://github.com/Yummygum/flagpack-core"),
+  )
+
 internal val InterFont =
   ArtifactDetail(
     groupId = "rsms",
@@ -52,4 +62,4 @@ internal val RedactedScriptFont =
 
 // Copied or ported into the app rather than pulled in as dependencies, so licensee can't see them
 internal val NonLibraryArtifacts =
-  listOf(ActualBudget, InterFont, MaterialDesignIcons, RedactedScriptFont)
+  listOf(ActualBudget, Flagpack, InterFont, MaterialDesignIcons, RedactedScriptFont)
