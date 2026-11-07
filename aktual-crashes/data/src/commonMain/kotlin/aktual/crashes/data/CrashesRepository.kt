@@ -9,6 +9,7 @@ import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.withContext
 import okio.FileSystem
+import okio.IOException
 import okio.Path
 
 @Inject
@@ -36,8 +37,7 @@ internal constructor(
 
   suspend fun read(file: CrashFile): String? =
     withContext(contexts.io) {
-      val path = path(file)
-      if (fileSystem.exists(path)) fileSystem.read(path) { readUtf8() } else null
+      readText(path(file))
     }
 
   suspend fun delete(file: CrashFile) =
@@ -59,8 +59,15 @@ internal constructor(
   }
 
   private fun readReport(path: Path): CrashReport? {
-    if (!fileSystem.exists(path)) return null
-    val text = fileSystem.read(path) { readUtf8() }
+    val text = readText(path) ?: return null
     return CrashReportFormat.parse(CrashFile(path.name), text)
   }
+
+  // The file can be pruned or unreadable, so skip it rather than failing the whole list
+  private fun readText(path: Path): String? =
+    try {
+      fileSystem.read(path) { readUtf8() }
+    } catch (_: IOException) {
+      null
+    }
 }

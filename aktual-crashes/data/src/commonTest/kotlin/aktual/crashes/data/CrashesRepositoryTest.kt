@@ -38,6 +38,18 @@ class CrashesRepositoryTest {
   }
 
   @Test
+  fun `Skip unreadable reports`() = runTest {
+    write(OLDER, "java.lang.Error: Old")
+    fileSystem.createDirectories(crashDir / NEWER.name)
+
+    val repository = repository()
+
+    assertThat(repository.reports().map(CrashReport::file)).containsExactly(OLDER)
+    assertThat(repository.report(NEWER)).isNull()
+    assertThat(repository.read(NEWER)).isNull()
+  }
+
+  @Test
   fun `Nothing listed without a directory`() = runTest {
     assertThat(repository().reports()).isEmpty()
   }
