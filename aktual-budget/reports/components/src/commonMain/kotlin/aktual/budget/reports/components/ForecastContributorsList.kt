@@ -5,6 +5,8 @@ import aktual.budget.model.ScheduleId
 import aktual.budget.model.sum
 import aktual.budget.reports.vm.ForecastContributor
 import aktual.budget.reports.vm.ForecastContributors
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
@@ -28,8 +30,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -235,8 +239,8 @@ private fun AmountRow(
     modifier =
       modifier
         .fillMaxWidth()
-        .padding(horizontal = 4.dp, vertical = 4.dp)
-        .then(if (onClickName == null) Modifier else Modifier.clickable(onClick = onClickName)),
+        .then(if (onClickName == null) Modifier else Modifier.clickable(onClick = onClickName))
+        .padding(horizontal = 4.dp, vertical = 4.dp),
     verticalAlignment = CenterVertically,
   ) {
     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -267,11 +271,25 @@ private fun AmountRow(
       style = typography.bodyMedium,
       fontWeight = if (isBold) Bold else null,
     )
+
+    // Keeps amounts aligned with the clickable rows
+    if (onClickName == null) {
+      HorizontalSpacer(CHEVRON_PADDING + CHEVRON_SIZE)
+    } else {
+      Icon(
+        modifier = Modifier.padding(start = CHEVRON_PADDING).size(CHEVRON_SIZE),
+        imageVector = AktualIcons.CheveronRight,
+        contentDescription = null,
+        tint = colors.pageTextSubdued,
+      )
+    }
   }
 
 @Composable private fun Divider() = HorizontalDivider(color = colors.tableBorder)
 
 private const val TOP_COUNT = 5
+private val CHEVRON_SIZE = 16.dp
+private val CHEVRON_PADDING = 4.dp
 
 @Preview
 @Composable
