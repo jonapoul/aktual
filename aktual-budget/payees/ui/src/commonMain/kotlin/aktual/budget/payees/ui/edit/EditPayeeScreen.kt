@@ -350,53 +350,60 @@ private fun EditPayeeContent(
         .padding(Dimens.ScreenPadding),
     verticalArrangement = Arrangement.spacedBy(EditPayeeDS.fieldSpacing),
   ) {
-    Field(label = Strings.payeesEditNameLabel, required = !payee.isTransfer) {
-      val supporting =
-        when {
-          payee.isTransfer -> Strings.payeesEditTransferHelp to colors.pageTextSubdued
-          nameState.text.isBlank() -> Strings.payeesEditNameRequired to colors.errorText
-          isDuplicateName -> Strings.payeesEditNameDuplicate to colors.warningText
-          else -> null
-        }
-      AktualTextField(
-        modifier = Modifier.fillMaxWidth(),
-        state = nameState,
-        singleLine = true,
-        readOnly = payee.isTransfer,
-        placeholderText = Strings.payeesEditNamePlaceholder,
-        supportingText = supporting?.let { (text, color) -> { Text(text = text, color = color) } },
-      )
+    EditPayeeCard {
+      Field(label = Strings.payeesEditNameLabel, required = !payee.isTransfer) {
+        val supporting =
+          when {
+            payee.isTransfer -> Strings.payeesEditTransferHelp to colors.pageTextSubdued
+            nameState.text.isBlank() -> Strings.payeesEditNameRequired to colors.errorText
+            isDuplicateName -> Strings.payeesEditNameDuplicate to colors.warningText
+            else -> null
+          }
+        AktualTextField(
+          modifier = Modifier.fillMaxWidth(),
+          state = nameState,
+          singleLine = true,
+          readOnly = payee.isTransfer,
+          placeholderText = Strings.payeesEditNamePlaceholder,
+          supportingText =
+            supporting?.let { (text, color) -> { Text(text = text, color = color) } },
+        )
+      }
     }
 
-    SwitchRow(
-      label = Strings.payeesFavorite,
-      help = Strings.payeesEditFavoriteHelp,
-      checked = isFavorite,
-      onCheckedChange = { onAction(SetFavorite(it)) },
-      enabled = !payee.isTransfer,
-    )
-
-    // Upstream only offers the per-payee switch while the global pref is on
-    if (isLearningEnabled) {
+    EditPayeeCard {
       SwitchRow(
-        label = Strings.payeesEditLearnLabel,
-        help = Strings.payeesEditLearnHelp,
-        checked = learnsCategories,
-        onCheckedChange = { onAction(SetLearnCategories(it)) },
+        label = Strings.payeesFavorite,
+        help = Strings.payeesEditFavoriteHelp,
+        checked = isFavorite,
+        onCheckedChange = { onAction(SetFavorite(it)) },
         enabled = !payee.isTransfer,
       )
+
+      // Upstream only offers the per-payee switch while the global pref is on
+      if (isLearningEnabled) {
+        SwitchRow(
+          label = Strings.payeesEditLearnLabel,
+          help = Strings.payeesEditLearnHelp,
+          checked = learnsCategories,
+          onCheckedChange = { onAction(SetLearnCategories(it)) },
+          enabled = !payee.isTransfer,
+        )
+      }
     }
 
-    Field(label = Strings.payeesEditRulesLabel) {
-      RuleCountChip(numRules = payee.numRules, onClick = { onAction(OpenRules(payee)) })
-    }
+    EditPayeeCard {
+      Field(label = Strings.payeesEditRulesLabel) {
+        RuleCountChip(numRules = payee.numRules, onClick = { onAction(OpenRules(payee)) })
+      }
 
-    Field(label = Strings.payeesEditTransactionsLabel) {
-      val title = if (payee.isTransfer) Strings.payeesTransfer(payee.name) else payee.name
-      PayeeChip(
-        text = Plurals.payeesNumTransactions(payee.numTransactions, payee.numTransactions),
-        onClick = { onAction(OpenTransactions(title)) },
-      )
+      Field(label = Strings.payeesEditTransactionsLabel) {
+        val title = if (payee.isTransfer) Strings.payeesTransfer(payee.name) else payee.name
+        PayeeChip(
+          text = Plurals.payeesNumTransactions(payee.numTransactions, payee.numTransactions),
+          onClick = { onAction(OpenTransactions(title)) },
+        )
+      }
     }
 
     BottomSpacing()
@@ -443,7 +450,10 @@ private fun ShimmerEditPayee(modifier: Modifier = Modifier) {
       modifier.fillMaxSize().padding(Dimens.ScreenPadding).shimmer(rememberShimmer(Window)),
     verticalArrangement = Arrangement.spacedBy(EditPayeeDS.fieldSpacing),
   ) {
-    Column(verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing)) {
+    Column(
+      modifier = Modifier.padding(EditPayeeDS.cardPadding),
+      verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing),
+    ) {
       Box(label)
       Box(
         Modifier.background(colors.pageText, TextFieldShape)
@@ -452,13 +462,32 @@ private fun ShimmerEditPayee(modifier: Modifier = Modifier) {
       )
     }
 
-    repeat(times = 3) {
-      Column(verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing)) {
-        Box(label)
-        Box(chip)
+    repeat(times = 2) {
+      Column(
+        modifier = Modifier.padding(EditPayeeDS.cardPadding),
+        verticalArrangement = Arrangement.spacedBy(EditPayeeDS.fieldSpacing),
+      ) {
+        repeat(times = 2) {
+          Column(verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing)) {
+            Box(label)
+            Box(chip)
+          }
+        }
       }
     }
   }
+}
+
+@Composable
+private inline fun EditPayeeCard(content: @Composable ColumnScope.() -> Unit) {
+  Column(
+    modifier =
+      Modifier.fillMaxWidth()
+        .background(colors.cardBackground, CardShape)
+        .padding(EditPayeeDS.cardPadding),
+    verticalArrangement = Arrangement.spacedBy(EditPayeeDS.fieldSpacing),
+    content = content,
+  )
 }
 
 @Composable
