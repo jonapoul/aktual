@@ -126,30 +126,22 @@ internal fun EditTransactionScreen(
         Saved,
         Discarded -> back()
         NearbyPayeesFound -> fieldState.edit(Payee)
-        else -> snackbars.show { showLocationEvent(event) }
+        NoNearbyPayees,
+        LocationUnavailable,
+        LocationSaveFailed,
+        is LocationSaved,
+        is LocationAlreadySaved -> snackbars.show { showLocationEvent(event) }
       }
     }
   }
 
-  // What to do with the location once permission's given
-  var pendingLocation by remember { mutableStateOf<(() -> Unit)?>(null) }
-  val requestPermission = rememberLocationPermissionRequest { isGranted ->
-    val pending = pendingLocation
-    pendingLocation = null
-    if (isGranted) {
-      pending?.invoke()
-    } else {
-      snackbars.show { showSnackbar(getString(Res.string.transaction_location_denied)) }
-    }
-  }
-  fun withLocation(action: () -> Unit) {
-    if (viewModel.needsLocationPermission) {
-      pendingLocation = action
-      requestPermission()
-    } else {
-      action()
-    }
-  }
+  val withLocation =
+    rememberWithLocation(
+      needsPermission = { viewModel.needsLocationPermission },
+      onDeny = {
+        snackbars.show { showSnackbar(getString(Res.string.transaction_location_denied)) }
+      },
+    )
 
   EditTransactionScaffold(
     modifier = modifier,

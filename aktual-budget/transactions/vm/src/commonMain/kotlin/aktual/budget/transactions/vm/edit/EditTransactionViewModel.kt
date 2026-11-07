@@ -141,7 +141,6 @@ internal constructor(
   private val mutableIsGone = MutableStateFlow(false)
   // Whether what's saved changed under the draft in a way that saving it overwrites
   private val mutableHasConflicts = MutableStateFlow(false)
-  private val mutableLocation = MutableStateFlow(LocationSearch())
   private var isDeleted = false
   // A draft kept from before the process was killed
   private val restored: EditorSnapshot? = savedState.restoreEditorSnapshot()
@@ -208,6 +207,11 @@ internal constructor(
       onBufferOverflow = DROP_OLDEST,
     )
   val events: SharedFlow<EditTransactionEvent> = mutableEvents.asSharedFlow()
+
+  private val mutableLocation = MutableStateFlow(LocationSearch())
+
+  val needsLocationPermission: Boolean
+    get() = !locationProvider.hasPermission()
 
   // The reason the last save or delete failed, shown in a dialog
   val error: StateFlow<EditTransactionError?> = mutableError.asStateFlow()
@@ -281,8 +285,17 @@ internal constructor(
     if (changedElsewhere == Deleted && draft == null) return NotFound
     if (entities == null) return Loading
     val form =
-      (draft ?: saved?.draft)?.let {
-        form(it, entities, newPayees, tags, schedules, categories, saved, location)
+      (draft ?: saved?.draft)?.let { current ->
+        form(
+          draft = current,
+          entities = entities,
+          newPayees = newPayees,
+          tags = tags,
+          schedules = schedules,
+          categories = categories,
+          saved = saved,
+          location = location,
+        )
       }
     return when (target) {
       is Existing -> existingState(saved, form, isWorking, changedElsewhere)
@@ -560,9 +573,6 @@ internal constructor(
     updateDraft(TransactionField.Amount) { it }
   }
 
-  val needsLocationPermission: Boolean
-    get() = !locationProvider.hasPermission()
-
   fun findNearbyPayees() = locate { coordinates ->
     val entities = mutableEntities.value ?: return@locate
     val nearby = payeeLocations.nearby(coordinates)
@@ -572,7 +582,7 @@ internal constructor(
   }
 
   fun saveLocation() {
-    val payee = (mutableDraft.value ?: mutableSaved.value?.draft)?.fields?.payee ?: return
+    val payee = currentDraft()?.fields?.payee ?: return
     val name = mutableEntities.value?.payeeNames?.get(payee) ?: return
     locate { coordinates ->
       runCatchingCancellable(
