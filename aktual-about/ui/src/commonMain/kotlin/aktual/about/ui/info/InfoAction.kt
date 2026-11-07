@@ -14,7 +14,9 @@ internal data object ReportIssue : InfoAction
 
 internal data object ManageStorage : InfoAction
 
-internal data object ViewLogs : InfoAction
+internal data object AppLogs : InfoAction
+
+internal data object ViewCrashReports : InfoAction
 
 internal data class OpenUrl(val url: String) : InfoAction
 

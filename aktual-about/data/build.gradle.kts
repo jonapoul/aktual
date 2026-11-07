@@ -10,7 +10,7 @@ kotlin {
     api(libs.ktor.core)
     api(project(":aktual-api"))
     api(project(":aktual-core"))
-    api(project(":aktual-core:logging:impl"))
+    api(project(":aktual-core:logging:format"))
     compileOnly(libs.androidx.compose.annotation)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.serialization.json)

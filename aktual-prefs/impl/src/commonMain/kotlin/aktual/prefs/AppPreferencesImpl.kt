@@ -1,6 +1,7 @@
 package aktual.prefs
 
 import aktual.budget.model.BudgetId
+import aktual.core.model.CrashFile
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.di.AppScope
@@ -38,5 +39,12 @@ class AppPreferencesImpl(dataStore: DataStore<Preferences>) : AppPreferences {
       key = stringPreferencesKey("lastOpenedBudgetId"),
       default = null,
       translator = toStringTranslator(::BudgetId),
+    )
+
+  override val lastSeenCrash: NullablePreference<CrashFile> =
+    dataStore.translated(
+      key = stringPreferencesKey("lastSeenCrash"),
+      default = null,
+      translator = toStringTranslator(::CrashFile),
     )
 }

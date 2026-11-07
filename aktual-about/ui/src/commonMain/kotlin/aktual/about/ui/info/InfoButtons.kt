@@ -75,7 +75,15 @@ private fun LogsButton(onAction: InfoActionHandler, modifier: Modifier = Modifie
   NormalTextButton(
     modifier = modifier,
     text = Strings.infoLogs,
-    onClick = { onAction(ViewLogs) },
+    onClick = { onAction(AppLogs) },
+  )
+
+@Composable
+private fun CrashReportsButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
+  NormalTextButton(
+    modifier = modifier,
+    text = Strings.infoCrashes,
+    onClick = { onAction(ViewCrashReports) },
   )
 
 @Composable
@@ -87,6 +95,7 @@ private fun InfoButtonsColumn(onAction: InfoActionHandler) =
     LicensesButton(onAction, buttonModifier)
     ManageStorageButton(onAction, buttonModifier)
     LogsButton(onAction, buttonModifier)
+    CrashReportsButton(onAction, buttonModifier)
   }
 
 @Composable
@@ -96,20 +105,26 @@ private fun InfoButtonsGrid(onAction: InfoActionHandler) =
     horizontalAlignment = CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(0.dp),
   ) {
-    CheckUpdatesButton(onAction, Modifier.fillMaxWidth())
     Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),
     ) {
+      CheckUpdatesButton(onAction, Modifier.weight(1f))
       ReportButton(onAction, Modifier.weight(1f))
-      LicensesButton(onAction, Modifier.weight(1f))
     }
     Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),
     ) {
+      LicensesButton(onAction, Modifier.weight(1f))
       ManageStorageButton(onAction, Modifier.weight(1f))
+    }
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),
+    ) {
       LogsButton(onAction, Modifier.weight(1f))
+      CrashReportsButton(onAction, Modifier.weight(1f))
     }
   }
 
@@ -124,6 +139,7 @@ private fun InfoButtonsRow(onAction: InfoActionHandler) =
     LicensesButton(onAction, Modifier.weight(1f))
     ManageStorageButton(onAction, Modifier.weight(1f))
     LogsButton(onAction, Modifier.weight(1f))
+    CrashReportsButton(onAction, Modifier.weight(1f))
   }
 
 private val HORIZONTAL_SPACING = 8.dp

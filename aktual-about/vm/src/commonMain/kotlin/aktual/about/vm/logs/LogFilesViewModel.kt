@@ -1,5 +1,7 @@
 package aktual.about.vm.logs
 
+import aktual.about.data.LogExport
+import aktual.about.data.LogExportTarget
 import aktual.about.data.LogsRepository
 import aktual.core.model.Bytes
 import aktual.core.model.bytes

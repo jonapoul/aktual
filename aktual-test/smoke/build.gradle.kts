@@ -25,6 +25,7 @@ kotlin {
     implementation(project(":aktual-budget:transactions:vm"))
     implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:model"))
+    implementation(project(":aktual-crashes:vm"))
     implementation(project(":aktual-di:bindings"))
     implementation(project(":aktual-metrics:vm"))
     implementation(project(":aktual-prefs:vm"))

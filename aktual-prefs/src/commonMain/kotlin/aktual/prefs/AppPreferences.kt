@@ -1,6 +1,7 @@
 package aktual.prefs
 
 import aktual.budget.model.BudgetId
+import aktual.core.model.CrashFile
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 
@@ -11,4 +12,5 @@ interface AppPreferences {
   val isPrivacyEnabled: Preference<Boolean>
   val mostRecentNumBudgets: Preference<Int>
   val lastOpenedBudgetId: NullablePreference<BudgetId>
+  val lastSeenCrash: NullablePreference<CrashFile>
 }

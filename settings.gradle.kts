@@ -155,6 +155,7 @@ atlas {
 }
 
 include(
+  ":aktual-about:components",
   ":aktual-about:data",
   ":aktual-about:ui",
   ":aktual-about:vm",
@@ -222,6 +223,7 @@ include(
   ":aktual-core:jvm",
   ":aktual-core:l10n",
   ":aktual-core:logging",
+  ":aktual-core:logging:format",
   ":aktual-core:logging:impl",
   ":aktual-core:model",
   ":aktual-core:nav",
@@ -229,6 +231,10 @@ include(
   ":aktual-core:theme:impl",
   ":aktual-core:theme:model",
   ":aktual-core:ui",
+  ":aktual-crashes:data",
+  ":aktual-crashes:dialog",
+  ":aktual-crashes:ui",
+  ":aktual-crashes:vm",
   ":aktual-di:bindings",
   ":aktual-di:core",
   ":aktual-di:graphs",

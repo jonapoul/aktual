@@ -12,6 +12,7 @@ import aktual.core.l10n.Drawables
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.CrashReportsNavigator
 import aktual.core.nav.LicensesNavigator
 import aktual.core.nav.LogsNavigator
 import aktual.core.nav.ManageStorageNavigator
@@ -74,6 +75,7 @@ fun InfoScreen(
   toLicenses: LicensesNavigator,
   toManageStorage: ManageStorageNavigator,
   toLogs: LogsNavigator,
+  toCrashReports: CrashReportsNavigator,
   viewModel: AboutViewModel = metroViewModel(),
 ) {
   val uriHandler = LocalUriHandler.current
@@ -105,7 +107,8 @@ fun InfoScreen(
         NavBack -> back()
         ViewLicenses -> toLicenses()
         ManageStorage -> toManageStorage()
-        ViewLogs -> toLogs()
+        AppLogs -> toLogs()
+        ViewCrashReports -> toCrashReports()
         is OpenUrl -> uriHandler.openUri(action.url)
       }
     },

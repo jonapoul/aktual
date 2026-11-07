@@ -4,6 +4,7 @@ import aktual.app.nav.AktualAppContent
 import aktual.app.nav.rememberBackStack
 import aktual.core.l10n.Drawables
 import aktual.core.l10n.Strings
+import aktual.core.logging.CrashReporter
 import aktual.core.logging.KermitFileLogger
 import aktual.core.logging.TimestampedPrintStreamLogger
 import aktual.core.ui.LoadingScreenIfNull
@@ -44,11 +45,28 @@ fun main() {
     loggers += KermitFileLogger(logStorage, minPriority)
   }
 
+  val buildConfig = graph.buildConfig
+  CrashReporter(
+      storage = logStorage,
+      version = "${buildConfig.versionName} (${buildConfig.gitHash})",
+      platform = desktopPlatform(),
+      clock = graph.clock,
+    )
+    .install()
+
   logcat.i(TAG) { "App started" }
-  logcat.d(TAG) { "buildConfig = ${graph.buildConfig}" }
+  logcat.d(TAG) { "buildConfig = $buildConfig" }
 
   val viewModelStoreOwner = JvmViewModelStoreOwner()
   composeApp(graph, viewModelStoreOwner)
+}
+
+private fun desktopPlatform(): String {
+  val os = System.getProperty("os.name")
+  val version = System.getProperty("os.version")
+  val arch = System.getProperty("os.arch")
+  val java = System.getProperty("java.version")
+  return "$os $version ($arch), Java $java"
 }
 
 private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStoreOwner) {

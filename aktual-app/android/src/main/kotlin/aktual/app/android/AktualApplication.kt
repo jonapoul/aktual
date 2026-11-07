@@ -1,8 +1,13 @@
 package aktual.app.android
 
 import aktual.core.logging.AktualAndroidLogcatLogger
+import aktual.core.logging.CrashReporter
 import aktual.core.logging.KermitFileLogger
 import android.app.Application
+import android.os.Build.MANUFACTURER
+import android.os.Build.MODEL
+import android.os.Build.VERSION.RELEASE
+import android.os.Build.VERSION.SDK_INT
 import android.os.StrictMode
 import dev.zacsweers.metro.createGraphFactory
 import dev.zacsweers.metrox.android.MetroAppComponentProviders
@@ -38,7 +43,15 @@ class AktualApplication : Application(), MetroApplication {
       loggers += KermitFileLogger(logStorage, minPriority)
     }
 
+    val buildConfig = graph.buildConfig
+    CrashReporter(
+        storage = logStorage,
+        version = "${buildConfig.versionName} (${buildConfig.gitHash})",
+        platform = "Android $RELEASE (API $SDK_INT), $MANUFACTURER $MODEL",
+      )
+      .install()
+
     logcat.i { "onCreate" }
-    logcat.d { "buildConfig = ${graph.buildConfig}" }
+    logcat.d { "buildConfig = $buildConfig" }
   }
 }

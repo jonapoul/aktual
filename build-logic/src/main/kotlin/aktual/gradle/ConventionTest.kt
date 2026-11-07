@@ -33,6 +33,7 @@ class ConventionTest : ProjectPlugin {
     }
 
     extensions.configure(BuildConfigExtension::class) {
+      generateAtSync.set(false)
       sourceSets.named("test") { ss ->
         ss.forClass("Resources") { spec ->
           spec.packageName("aktual.test")
