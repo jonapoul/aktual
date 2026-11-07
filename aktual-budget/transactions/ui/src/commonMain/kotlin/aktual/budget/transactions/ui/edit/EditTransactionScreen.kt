@@ -62,6 +62,7 @@ import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
+import aktual.core.ui.showErrorSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -139,7 +140,7 @@ internal fun EditTransactionScreen(
     rememberWithLocation(
       needsPermission = { viewModel.needsLocationPermission },
       onDeny = {
-        snackbars.show { showSnackbar(getString(Res.string.transaction_location_denied)) }
+        snackbars.show { showErrorSnackbar(getString(Res.string.transaction_location_denied)) }
       },
     )
 
@@ -198,20 +199,18 @@ private fun EditTransactionViewModel.onSplitAction(action: SplitAction) =
   }
 
 private suspend fun SnackbarHostState.showLocationEvent(event: EditTransactionEvent) {
-  val message =
-    when (event) {
-      NoNearbyPayees -> getString(Res.string.transaction_location_none_nearby)
-      LocationUnavailable -> getString(Res.string.transaction_location_unavailable)
-      LocationSaveFailed -> getString(Res.string.transaction_location_save_failed)
-      is LocationSaved -> getString(Res.string.transaction_location_saved, event.payee)
-      is LocationAlreadySaved ->
-        getString(Res.string.transaction_location_already_saved, event.payee)
-      Deleted,
-      Saved,
-      Discarded,
-      NearbyPayeesFound -> return
-    }
-  showSnackbar(message)
+  when (event) {
+    NoNearbyPayees -> showSnackbar(getString(Res.string.transaction_location_none_nearby))
+    LocationUnavailable -> showErrorSnackbar(getString(Res.string.transaction_location_unavailable))
+    LocationSaveFailed -> showErrorSnackbar(getString(Res.string.transaction_location_save_failed))
+    is LocationSaved -> showSnackbar(getString(Res.string.transaction_location_saved, event.payee))
+    is LocationAlreadySaved ->
+      showSnackbar(getString(Res.string.transaction_location_already_saved, event.payee))
+    Deleted,
+    Saved,
+    Discarded,
+    NearbyPayeesFound -> Unit
+  }
 }
 
 @Composable
