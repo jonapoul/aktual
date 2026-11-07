@@ -9,6 +9,7 @@ import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.core.model.Coordinates
 import aktual.core.model.Distance
+import aktual.core.model.distanceTo
 import aktual.core.model.meters
 import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.Inject
@@ -85,7 +86,9 @@ class PayeeLocations(
       }
       .filter { it.distance <= maxDistance }
       .groupBy { it.payee }
-      .map { (_, locations) -> locations.minBy { it.distance } }
+      .values
+      .asSequence()
+      .map { locations -> locations.minBy { it.distance } }
       .sortedBy { it.distance }
       .take(MAX_NEARBY)
       .toList()
