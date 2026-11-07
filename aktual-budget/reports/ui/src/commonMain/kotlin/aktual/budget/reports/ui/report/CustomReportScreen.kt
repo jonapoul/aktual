@@ -22,6 +22,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.SheetHost
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -42,8 +43,8 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
-// Shows a custom report, and edits its config with the chart previewing each change. Changes stay
-// after the editor closes, until reverted or the screen is left
+// Shows a custom report, and edits its config in a sheet with the chart previewing each change.
+// Changes stay after the sheet closes, until reverted or the screen is left
 @Composable
 internal fun CustomReportScreen(
   id: WidgetId,
@@ -56,14 +57,11 @@ internal fun CustomReportScreen(
   val takenNames by viewModel.takenNames.collectAsStateWithLifecycle()
   var showDiscard by rememberSaveable { mutableStateOf(false) }
   val loaded = state as? Loaded
-  val isEditing = loaded?.isEditing == true
 
   val leave = { if (viewModel.hasUnsavedChanges()) showDiscard = true else back() }
   val drillDown = rememberDrilldown(loaded?.preview, toTransactions)
 
-  BackHandler(enabled = isEditing || loaded?.hasChanges == true) {
-    if (isEditing) viewModel.stopEditing() else leave()
-  }
+  BackHandler(enabled = loaded?.hasChanges == true) { leave() }
 
   CustomReportScaffold(
     state = state,
@@ -118,6 +116,19 @@ internal fun CustomReportScaffold(
     ChartInfoSheet(info = preview.info(), onDismiss = { showInfo = false })
   }
 
+  val draft = loaded?.draft
+  if (loaded?.isEditing == true && draft != null) {
+    SheetHost(onDismiss = { onAction(ReportEditorAction.StopEditing) }) { host ->
+      CustomReportSettings(
+        draft = draft,
+        preview = preview,
+        editorData = editorData,
+        onAction = onAction,
+        onDismiss = host.dismiss,
+      )
+    }
+  }
+
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
@@ -129,7 +140,6 @@ internal fun CustomReportScaffold(
             loaded?.isNew == true -> Strings.reportsCustomEditorNew
             else -> WidgetType.Custom.string()
           },
-        isEditing = loaded?.isEditing == true,
         hasChanges = loaded?.hasChanges == true,
         canSave = loaded?.draft != null && (loaded.hasChanges || loaded.isNew),
         canEdit = loaded?.draft != null,
@@ -167,7 +177,6 @@ internal fun CustomReportScaffold(
           CustomReportContent(
             modifier = contentModifier,
             state = state,
-            editorData = editorData,
             zoom = zoom,
             onAction = onAction,
           )
@@ -180,31 +189,19 @@ internal fun CustomReportScaffold(
 @Composable
 private fun CustomReportContent(
   state: CustomReportState.Loaded,
-  editorData: CustomReportEditorData?,
   zoom: ChartZoomState,
   onAction: (CustomReportAction) -> Unit,
   modifier: Modifier = Modifier,
-) {
-  val draft = state.draft
-  val isEditing = state.isEditing && draft != null
+) =
   ReportEditorContent(
     modifier = modifier,
     preview = state.preview,
-    isEditing = isEditing,
     zoom = zoom,
     onChartAction = { action ->
       if (action is DrillDown) onAction(CustomReportAction.DrillDown(action.drilldown))
     },
   ) {
-    if (isEditing) {
-      CustomReportSettings(
-        modifier = Modifier.editorSettingsModifier(),
-        draft = draft,
-        preview = state.preview,
-        editorData = editorData,
-        onAction = onAction,
-      )
-    } else if (draft == null) {
+    if (state.draft == null) {
       Text(
         modifier = Modifier.padding(8.dp),
         text = Strings.reportsCustomEditorUnreadable,
@@ -213,7 +210,6 @@ private fun CustomReportContent(
       )
     }
   }
-}
 
 @PortraitPreview
 @Composable

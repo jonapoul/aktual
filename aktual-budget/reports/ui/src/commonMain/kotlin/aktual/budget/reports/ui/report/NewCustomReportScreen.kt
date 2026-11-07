@@ -34,7 +34,6 @@ internal fun NewCustomReportScreen(
   var showDiscard by rememberSaveable { mutableStateOf(false) }
   var showSave by rememberSaveable { mutableStateOf(false) }
   val loaded = state as? Loaded
-  val isEditing = loaded?.isEditing == true
 
   val currentToSavedReport by rememberUpdatedState(toSavedReport)
   LaunchedEffect(Unit) { viewModel.savedEvent.collectLatest { currentToSavedReport(it) } }
@@ -42,9 +41,7 @@ internal fun NewCustomReportScreen(
   val leave = { if (viewModel.hasUnsavedChanges()) showDiscard = true else back() }
   val drillDown = rememberDrilldown(loaded?.preview, toTransactions)
 
-  BackHandler(enabled = isEditing || loaded?.hasChanges == true) {
-    if (isEditing) viewModel.stopEditing() else leave()
-  }
+  BackHandler(enabled = loaded?.hasChanges == true) { leave() }
 
   CustomReportScaffold(
     state = state,
