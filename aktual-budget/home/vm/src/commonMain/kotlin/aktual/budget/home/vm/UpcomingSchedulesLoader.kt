@@ -2,7 +2,7 @@ package aktual.budget.home.vm
 
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.domain.upcoming
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

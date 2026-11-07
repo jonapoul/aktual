@@ -18,7 +18,7 @@ import aktual.budget.reports.vm.chartDataLoader
 import aktual.budget.reports.vm.emptyCustomReport
 import aktual.budget.reports.vm.pinned.PinnedReportsImpl
 import aktual.budget.reports.vm.runSyncedDatabaseTest
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo

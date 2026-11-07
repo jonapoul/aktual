@@ -4,10 +4,10 @@ import aktual.api.buildKtorClient
 import aktual.api.client.AktualClient
 import aktual.api.client.ThemeClient
 import aktual.api.model.account.FailureReason
-import aktual.core.TokenExpiredNotifier
 import aktual.core.model.AktualJson
 import aktual.core.model.BuildConfig
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.TokenExpiredNotifier
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.AppScope
 import aktual.prefs.AppPreferences
 import dev.zacsweers.metro.BindingContainer

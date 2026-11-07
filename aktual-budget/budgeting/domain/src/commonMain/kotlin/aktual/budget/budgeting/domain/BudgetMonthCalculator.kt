@@ -9,7 +9,7 @@ import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
 import aktual.budget.model.SyncedPrefKey
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import aktual.di.BudgetScope
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.ContributesBinding

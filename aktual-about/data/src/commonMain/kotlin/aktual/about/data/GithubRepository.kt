@@ -2,7 +2,7 @@ package aktual.about.data
 
 import aktual.about.data.LatestReleaseState.UpdateAvailable
 import aktual.core.model.BuildConfig
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
 import github.api.GithubApi

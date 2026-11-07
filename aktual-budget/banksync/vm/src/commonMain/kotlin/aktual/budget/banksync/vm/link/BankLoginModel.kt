@@ -3,7 +3,7 @@ package aktual.budget.banksync.vm.link
 import aktual.api.model.banksync.BankSyncTransactionsResponse.Failure
 import aktual.api.model.banksync.BankSyncTransactionsResponse.ProviderError
 import aktual.api.model.banksync.ExternalBankAccount
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import alakazam.kotlin.requireMessage
 import java.util.Locale
 import kotlinx.collections.immutable.toImmutableList

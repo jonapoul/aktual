@@ -8,7 +8,7 @@ kotlin {
     api(libs.androidx.navigation3.runtime)
     api(libs.compose.runtime)
     api(project(":aktual-budget:model"))
-    api(project(":aktual-core"))
+    api(project(":aktual-core:utils"))
     implementation(project(":aktual-core:logging"))
   }
 }

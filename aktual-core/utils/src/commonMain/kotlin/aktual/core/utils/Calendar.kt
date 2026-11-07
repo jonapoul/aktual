@@ -1,4 +1,4 @@
-package aktual.core
+package aktual.core.utils
 
 import aktual.di.AppScope
 import alakazam.kotlin.TimeZoneProvider

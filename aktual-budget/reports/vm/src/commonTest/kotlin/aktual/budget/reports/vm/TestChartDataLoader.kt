@@ -12,7 +12,7 @@ import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import aktual.prefs.CurrencyPreferences
 import aktual.prefs.FormatPreferences
 import aktual.prefs.Preference

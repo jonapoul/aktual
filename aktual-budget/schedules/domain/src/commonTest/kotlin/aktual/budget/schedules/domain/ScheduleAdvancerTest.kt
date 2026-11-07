@@ -29,7 +29,7 @@ import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.transactions.domain.TransactionWriter
-import aktual.core.UuidGenerator
+import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetCoroutineScope
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar

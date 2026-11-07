@@ -9,7 +9,7 @@ import aktual.budget.rules.vm.RuleSearchText
 import aktual.budget.rules.vm.RulesLoader
 import aktual.budget.rules.vm.search.SearchRulesState.Failure
 import aktual.budget.rules.vm.search.SearchRulesState.Results
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

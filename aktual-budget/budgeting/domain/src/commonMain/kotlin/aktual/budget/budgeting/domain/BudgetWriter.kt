@@ -20,7 +20,7 @@ import aktual.budget.model.NumberFormatConfig
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import aktual.di.BudgetScope
 import aktual.prefs.CurrencyPreferences
 import aktual.prefs.FormatPreferences

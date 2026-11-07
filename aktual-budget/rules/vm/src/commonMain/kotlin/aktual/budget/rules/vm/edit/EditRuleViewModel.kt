@@ -22,8 +22,8 @@ import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Failure
 import aktual.budget.rules.vm.hasUnknownValues
-import aktual.core.UuidGenerator
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.UuidGenerator
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

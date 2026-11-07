@@ -1,7 +1,7 @@
 package aktual.prefs
 
-import aktual.core.EncryptionKeys
 import aktual.core.model.KeyId
+import aktual.core.utils.EncryptionKeys
 import kotlinx.coroutines.flow.Flow
 import okio.ByteString
 

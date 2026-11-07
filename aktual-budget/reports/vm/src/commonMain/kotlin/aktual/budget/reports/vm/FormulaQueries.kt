@@ -13,7 +13,7 @@ import aktual.budget.model.ConditionOp
 import aktual.budget.model.Field
 import aktual.budget.rules.domain.FilterRow
 import aktual.budget.rules.domain.TransactionFilter
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth

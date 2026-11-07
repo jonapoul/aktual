@@ -2,7 +2,7 @@ package aktual.core.theme
 
 import aktual.api.client.ThemeApi
 import aktual.core.model.ThemeId
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.AppScope
 import aktual.prefs.ThemePreferences
 import dev.zacsweers.metro.ContributesBinding

@@ -12,7 +12,7 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts

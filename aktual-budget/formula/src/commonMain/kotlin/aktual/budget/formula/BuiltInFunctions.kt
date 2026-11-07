@@ -1,6 +1,6 @@
 package aktual.budget.formula
 
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 
 internal fun builtInFunctions(calendar: Calendar): Map<String, FormulaFunction> =
   LOGICAL_FUNCTIONS +

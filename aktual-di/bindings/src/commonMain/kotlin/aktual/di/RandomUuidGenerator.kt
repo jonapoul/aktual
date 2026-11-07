@@ -1,6 +1,6 @@
 package aktual.di
 
-import aktual.core.UuidGenerator
+import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.ContributesBinding
 import kotlin.uuid.Uuid
 

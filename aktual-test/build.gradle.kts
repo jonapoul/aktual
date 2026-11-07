@@ -20,7 +20,7 @@ kotlin {
     api(libs.okio)
     api(libs.turbine)
     api(project(":aktual-budget:data:db"))
-    api(project(":aktual-core"))
+    api(project(":aktual-core:utils"))
     implementation(libs.kotlinx.immutable)
     implementation(libs.sqldelight.async)
     implementation(libs.sqldelight.driver.sqlite)

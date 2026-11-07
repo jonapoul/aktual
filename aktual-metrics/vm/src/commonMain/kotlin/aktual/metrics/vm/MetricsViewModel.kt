@@ -1,7 +1,7 @@
 package aktual.metrics.vm
 
 import aktual.api.client.MetricsApi
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.LoggedInScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

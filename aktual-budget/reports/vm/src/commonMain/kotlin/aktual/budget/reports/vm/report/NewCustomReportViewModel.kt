@@ -14,7 +14,7 @@ import aktual.budget.reports.vm.CustomReportMeta
 import aktual.budget.reports.vm.CustomReportSync
 import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.QueryEditorDataLoader
-import aktual.core.UuidGenerator
+import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

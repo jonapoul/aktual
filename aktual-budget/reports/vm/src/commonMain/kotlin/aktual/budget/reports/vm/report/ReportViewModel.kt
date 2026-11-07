@@ -17,7 +17,7 @@ import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.isSameAs
 import aktual.budget.reports.vm.withDefaults
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext

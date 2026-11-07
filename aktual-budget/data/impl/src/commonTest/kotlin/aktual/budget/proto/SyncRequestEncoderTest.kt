@@ -8,8 +8,8 @@ import aktual.budget.model.Message
 import aktual.budget.model.MessageValue.Number as MsgNum
 import aktual.budget.model.MessageValue.String as MsgStr
 import aktual.budget.model.Timestamp
-import aktual.core.EncryptionKeys
 import aktual.core.model.base64
+import aktual.core.utils.EncryptionKeys
 import aktual.test.RESOURCES_DIR
 import aktual.test.TestBudgetLocalPreferences
 import alakazam.test.TestCoroutineContexts

@@ -4,7 +4,7 @@ import aktual.budget.banksync.domain.BankSyncProviderSetup
 import aktual.budget.banksync.domain.ProviderCredential
 import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

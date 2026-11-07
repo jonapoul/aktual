@@ -45,9 +45,9 @@ import aktual.budget.transactions.domain.withPart
 import aktual.budget.transactions.domain.withoutPart
 import aktual.budget.transactions.vm.edit.EditTransactionState.Failure
 import aktual.budget.transactions.vm.toTransaction
-import aktual.core.Calendar
-import aktual.core.UuidGenerator
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.Calendar
+import aktual.core.utils.UuidGenerator
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

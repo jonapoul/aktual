@@ -18,7 +18,7 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.ReportDate
 import aktual.budget.model.SortBy
 import aktual.budget.model.messageValue
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import dev.zacsweers.metro.Inject
 import kotlinx.datetime.minus
 import kotlinx.datetime.yearMonth

@@ -11,7 +11,7 @@ import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.dashboard.DashboardPages
 import aktual.budget.reports.vm.dashboard.displayName
 import aktual.budget.reports.vm.search.SearchReportsState.Results
-import aktual.core.snippet
+import aktual.core.utils.snippet
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

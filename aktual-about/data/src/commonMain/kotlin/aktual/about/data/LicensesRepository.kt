@@ -1,7 +1,7 @@
 package aktual.about.data
 
-import aktual.core.Assets
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.Assets
+import aktual.core.utils.runCatchingCancellable
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject

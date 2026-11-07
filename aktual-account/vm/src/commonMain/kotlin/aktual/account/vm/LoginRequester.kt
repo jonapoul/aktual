@@ -7,7 +7,7 @@ import aktual.api.model.account.LoginResponse
 import aktual.core.model.AvailableLoginMethod
 import aktual.core.model.LoginMethod
 import aktual.core.model.Password
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.RunLevelController
 import aktual.prefs.AppPreferences
 import alakazam.kotlin.CoroutineContexts

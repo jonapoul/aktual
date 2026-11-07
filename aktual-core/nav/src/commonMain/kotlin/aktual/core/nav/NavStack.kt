@@ -1,6 +1,6 @@
 package aktual.core.nav
 
-import aktual.core.AppCloser
+import aktual.core.utils.AppCloser
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.StateObject

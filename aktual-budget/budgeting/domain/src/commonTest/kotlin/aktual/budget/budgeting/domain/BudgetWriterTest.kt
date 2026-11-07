@@ -24,7 +24,7 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.localChange
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import aktual.prefs.CurrencyPreferences
 import aktual.prefs.FormatPreferences
 import aktual.prefs.Preference

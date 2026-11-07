@@ -6,7 +6,7 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.TagId
 import aktual.budget.model.localChange
 import aktual.budget.model.untombstone
-import aktual.core.UuidGenerator
+import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.Inject
 
 // Creates a tag with just a name, as upstream's tags-create does from a transaction's notes. A tag

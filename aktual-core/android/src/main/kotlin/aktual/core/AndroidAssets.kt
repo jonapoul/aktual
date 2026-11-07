@@ -1,5 +1,6 @@
 package aktual.core
 
+import aktual.core.utils.Assets
 import aktual.di.AppScope
 import android.content.Context
 import dev.zacsweers.metro.ContributesBinding

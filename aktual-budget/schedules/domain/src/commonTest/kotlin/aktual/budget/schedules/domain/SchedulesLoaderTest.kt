@@ -10,7 +10,7 @@ import aktual.budget.model.ScheduleId
 import aktual.budget.model.ScheduleNextDateId
 import aktual.budget.model.SyncedPrefKey.Global.UpcomingScheduledTransactionLength
 import aktual.budget.model.UpcomingLength
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import aktual.test.assertThatNextEmission
 import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest

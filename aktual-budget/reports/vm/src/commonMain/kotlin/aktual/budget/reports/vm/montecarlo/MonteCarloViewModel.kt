@@ -21,7 +21,7 @@ import aktual.budget.reports.vm.updatePot
 import aktual.budget.reports.vm.withInvestmentPhaseAdded
 import aktual.budget.reports.vm.withLiveBalances
 import aktual.budget.reports.vm.withSurplusKept
-import aktual.core.UuidGenerator
+import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

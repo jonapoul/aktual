@@ -14,8 +14,8 @@ import aktual.budget.model.upcomingDates
 import aktual.budget.schedules.domain.ScheduleStatus
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.edit.EditScheduleState.Failure
-import aktual.core.Calendar
-import aktual.core.runCatchingCancellable
+import aktual.core.utils.Calendar
+import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

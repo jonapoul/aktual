@@ -1,4 +1,4 @@
-package aktual.core
+package aktual.core.utils
 
 fun interface UuidGenerator {
   operator fun invoke(): String

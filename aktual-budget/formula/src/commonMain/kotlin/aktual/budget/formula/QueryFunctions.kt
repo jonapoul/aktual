@@ -1,6 +1,6 @@
 package aktual.budget.formula
 
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import kotlinx.datetime.YearMonthRange
 import kotlinx.datetime.yearMonth
 

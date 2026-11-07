@@ -16,7 +16,7 @@ import aktual.budget.reports.vm.chartDataLoader
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.report.FormulaReportState.Loaded
 import aktual.budget.reports.vm.runSyncedDatabaseTest
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import aktual.di.BudgetCoroutineScope
 import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts

@@ -23,7 +23,7 @@ import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.report.ReportState.Loaded
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.budget.reports.vm.withSummaryType
-import aktual.core.Calendar
+import aktual.core.utils.Calendar
 import aktual.di.BudgetCoroutineScope
 import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts

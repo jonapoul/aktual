@@ -1,4 +1,4 @@
-package aktual.core
+package aktual.core.utils
 
 import aktual.core.model.KeyId
 import okio.ByteString
