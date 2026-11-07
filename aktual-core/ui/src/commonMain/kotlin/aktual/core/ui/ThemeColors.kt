@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package aktual.core.ui
 
 import aktual.core.theme.Colors
