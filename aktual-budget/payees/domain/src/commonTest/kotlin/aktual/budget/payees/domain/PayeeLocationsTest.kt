@@ -63,6 +63,26 @@ class PayeeLocationsTest {
   }
 
   @Test
+  fun `Nearby payees are found across the antimeridian`() = runDatabaseTest {
+    insertPayee(SHOP)
+    insertLocation("shop", SHOP, Coordinates(latitude = 0.0, longitude = 179.999))
+
+    val nearby = locations().nearby(Coordinates(latitude = 0.0, longitude = -179.999))
+
+    assertThat(nearby).extracting(NearbyPayee::location).containsExactly(PayeeLocationId("shop"))
+  }
+
+  @Test
+  fun `Nearby payees are found near a pole`() = runDatabaseTest {
+    insertPayee(SHOP)
+    insertLocation("shop", SHOP, Coordinates(latitude = 89.9999, longitude = 90.0))
+
+    val nearby = locations().nearby(Coordinates(latitude = 89.9999, longitude = -90.0))
+
+    assertThat(nearby).extracting(NearbyPayee::location).containsExactly(PayeeLocationId("shop"))
+  }
+
+  @Test
   fun `Nearby skips what's out of range or deleted`() = runDatabaseTest {
     insertPayee(SHOP)
     insertPayee(CAFE, tombstone = true)

@@ -8,6 +8,7 @@ import aktual.budget.model.PayeeLocationId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.core.model.Coordinates
+import aktual.core.model.Coordinates.Companion.MAX_LONGITUDE
 import aktual.core.model.Distance
 import aktual.core.model.distanceTo
 import aktual.core.model.meters
@@ -70,12 +71,17 @@ class PayeeLocations(
   ): List<NearbyPayee> {
     val latitudeDelta = Math.toDegrees(maxDistance.meters / Coordinates.EARTH_RADIUS_METERS)
     val longitudeDelta = latitudeDelta / cos(Math.toRadians(coordinates.latitude))
+    val minLongitude = coordinates.longitude - longitudeDelta
+    val maxLongitude = coordinates.longitude + longitudeDelta
+    // A box that crosses the antimeridian, or spans it near a pole, can't be one BETWEEN, so
+    // longitude is left to the exact distance
+    val wraps = minLongitude < -MAX_LONGITUDE || maxLongitude > MAX_LONGITUDE
     val rows =
       dao.inBounds(
         minLatitude = coordinates.latitude - latitudeDelta,
         maxLatitude = coordinates.latitude + latitudeDelta,
-        minLongitude = coordinates.longitude - longitudeDelta,
-        maxLongitude = coordinates.longitude + longitudeDelta,
+        minLongitude = if (wraps) -MAX_LONGITUDE else minLongitude,
+        maxLongitude = if (wraps) MAX_LONGITUDE else maxLongitude,
       )
     return rows
       .asSequence()

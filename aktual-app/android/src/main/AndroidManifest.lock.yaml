@@ -8,6 +8,11 @@ main:
   - android.permission.INTERNET
   - android.permission.USE_BIOMETRIC
   - android.permission.USE_FINGERPRINT
+  features:
+  - android.hardware.location:
+      required: false
+  - android.hardware.location.gps:
+      required: false
   libraries:
   - androidx.window.extensions:
       required: false
@@ -57,4 +62,4 @@ variants:
     namespace: dev.jonpoulton.aktual.app
     permissions:
     - dev.jonpoulton.aktual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
-fingerprint: 274d029b2a0b45047037fe19d597d741
+fingerprint: 56a4b49f3e97076021687a9839635f28
