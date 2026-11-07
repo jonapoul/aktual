@@ -1,5 +1,7 @@
 package aktual.budget.reports.ui.report
 
+import aktual.budget.model.Condition
+import aktual.budget.model.ConditionOp
 import aktual.budget.reports.components.string
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.CUSTOM_BALANCE_TYPES
@@ -64,21 +66,54 @@ import kotlinx.datetime.YearMonthRange
 import kotlinx.datetime.yearMonth
 
 // packages/desktop-client/src/components/reports/ReportSidebar.tsx and ReportTopbar.tsx. Each
-// change goes through the options' rules, so the draft never holds a combination upstream disables
+// change goes through the options' rules, so the draft never holds a combination upstream disables.
+// A picker or condition replaces the settings while open, then comes back to them
 @Composable
 internal fun CustomReportSettings(
   draft: CustomReportConfig,
   preview: ChartData?,
   editorData: CustomReportEditorData?,
   onAction: (CustomReportAction) -> Unit,
-  modifier: Modifier = Modifier,
+  onDismiss: () -> Unit,
 ) {
   var sheet by rememberSaveable { mutableStateOf<CustomSheet?>(null) }
+  var conditionIndex by rememberSaveable { mutableStateOf<Int?>(null) }
   val edit = { transform: (CustomReportConfig) -> CustomReportConfig ->
     onAction(CustomReportAction.Edit(transform))
   }
+  val onConditions = { conditions: List<Condition>, op: ConditionOp ->
+    edit { it.copy(conditions = conditions.toImmutableList(), conditionsOp = op) }
+  }
 
-  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(20.dp)) {
+  if (editorData != null) {
+    // Falls back to the settings if the condition is gone, e.g. removed by a sync
+    val index = conditionIndex
+    if (index != null && index in draft.conditions.indices) {
+      ConditionSheetAt(
+        index = index,
+        conditions = draft.conditions,
+        conditionsOp = draft.conditionsOp,
+        data = editorData.query,
+        onChange = onConditions,
+        onDismiss = { conditionIndex = null },
+      )
+      return
+    }
+  }
+
+  val open = sheet
+  if (open != null && open.canShow(draft, editorData)) {
+    PickerSheet(
+      sheet = open,
+      draft = draft,
+      editorData = editorData,
+      edit = edit,
+      onDismiss = { sheet = null },
+    )
+    return
+  }
+
+  QuerySheet(title = Strings.reportsChartSettings, onDismiss = onDismiss) {
     DisplaySection(draft = draft, editorData = editorData, edit = edit, open = { sheet = it })
     DatesSection(draft = draft, preview = preview, editorData = editorData, edit = edit) {
       sheet = it
@@ -89,26 +124,30 @@ internal fun CustomReportSettings(
     if (editorData != null) {
       Column {
         SectionLabel(Strings.reportsCustomEditorFilters)
-        ConditionsEditor(
+        ConditionsList(
           conditions = draft.conditions,
           conditionsOp = draft.conditionsOp,
-          data = editorData.query,
-          onChange = { conditions, op ->
-            edit { it.copy(conditions = conditions.toImmutableList(), conditionsOp = op) }
-          },
+          names = editorData.query.names,
+          onChange = onConditions,
+          onOpen = { conditionIndex = it },
         )
       }
     }
   }
-
-  CustomSheets(
-    sheet = sheet,
-    draft = draft,
-    editorData = editorData,
-    edit = edit,
-    onDismiss = { sheet = null },
-  )
 }
+
+// Some pickers need the editor data, or live dates
+private fun CustomSheet.canShow(draft: CustomReportConfig, editorData: CustomReportEditorData?) =
+  when (this) {
+    Range -> draft.dates is Live
+    Categories,
+    TagScope -> editorData != null
+    Graph,
+    Split,
+    Type,
+    Interval,
+    Sort -> true
+  }
 
 private enum class CustomSheet {
   Graph,
@@ -320,16 +359,16 @@ private fun CategoriesSection(
   }
 
 @Composable
-@Suppress("CyclomaticComplexMethod")
-private fun CustomSheets(
-  sheet: CustomSheet?,
+@Suppress("CyclomaticComplexMethod", "CanBeNonNullable")
+private fun PickerSheet(
+  sheet: CustomSheet,
   draft: CustomReportConfig,
   editorData: CustomReportEditorData?,
   edit: ((CustomReportConfig) -> CustomReportConfig) -> Unit,
   onDismiss: () -> Unit,
 ) {
   when (sheet) {
-    Graph -> {
+    Graph ->
       OptionSheet(
         title = Strings.reportsCustomEditorGraph,
         options = draft.graphOptions,
@@ -339,8 +378,7 @@ private fun CustomSheets(
         onSelect = { graph -> edit { it.withGraphType(graph) } },
         onDismiss = onDismiss,
       )
-    }
-    Split -> {
+    Split ->
       OptionSheet(
         title = Strings.reportsCustomEditorSplit,
         options = CUSTOM_GROUP_BYS,
@@ -350,8 +388,7 @@ private fun CustomSheets(
         onSelect = { groupBy -> edit { it.withGroupBy(groupBy) } },
         onDismiss = onDismiss,
       )
-    }
-    Type -> {
+    Type ->
       OptionSheet(
         title = Strings.reportsCustomEditorType,
         options = CUSTOM_BALANCE_TYPES,
@@ -361,8 +398,7 @@ private fun CustomSheets(
         onSelect = { type -> edit { it.withBalanceType(type) } },
         onDismiss = onDismiss,
       )
-    }
-    Interval -> {
+    Interval ->
       OptionSheet(
         title = Strings.reportsCustomEditorInterval,
         options = CUSTOM_INTERVALS,
@@ -372,8 +408,7 @@ private fun CustomSheets(
         onSelect = { interval -> edit { it.withInterval(interval) } },
         onDismiss = onDismiss,
       )
-    }
-    Sort -> {
+    Sort ->
       OptionSheet(
         title = Strings.reportsCustomEditorSort,
         options = CUSTOM_SORT_BYS,
@@ -383,26 +418,23 @@ private fun CustomSheets(
         onSelect = { sort -> edit { it.copy(sortBy = sort) } },
         onDismiss = onDismiss,
       )
-    }
     Range -> {
-      val live = draft.dates as? Live
-      if (live != null) {
-        OptionSheet(
-          title = Strings.reportsCustomEditorRange,
-          options = dateRangeOptions(draft.interval),
-          selected = live.type,
-          isEnabled = { true },
-          label = { it.string() },
-          onSelect = { type -> edit { it.withDateRange(type) } },
-          onDismiss = onDismiss,
-        )
-      }
+      val live = draft.dates as? Live ?: return
+      OptionSheet(
+        title = Strings.reportsCustomEditorRange,
+        options = dateRangeOptions(draft.interval),
+        selected = live.type,
+        isEnabled = { true },
+        label = { it.string() },
+        onSelect = { type -> edit { it.withDateRange(type) } },
+        onDismiss = onDismiss,
+      )
     }
-    Categories -> {
-      if (editorData != null) {
-        val all = editorData.allCategories()
+    Categories ->
+      editorData?.let { data ->
+        val all = data.allCategories()
         CategorySheet(
-          groups = editorData.categories,
+          groups = data.categories,
           selected = draft.conditions.selectedCategories(all),
           showHidden = draft.showHidden,
           onChange = { selected ->
@@ -411,20 +443,17 @@ private fun CustomSheets(
           onDismiss = onDismiss,
         )
       }
-    }
-    TagScope -> {
-      if (editorData != null) {
+    TagScope ->
+      editorData?.let { data ->
         TagSheet(
-          tags = editorData.tags,
-          selected = draft.selectedTags(editorData),
+          tags = data.tags,
+          selected = draft.selectedTags(data),
           onChange = { selected ->
-            edit { it.withTagScope(selected, editorData.tags.map(TagLabel::id)) }
+            edit { it.withTagScope(selected, data.tags.map(TagLabel::id)) }
           },
           onDismiss = onDismiss,
         )
       }
-    }
-    null -> {}
   }
 }
 

@@ -1,5 +1,6 @@
 package aktual.budget.reports.ui.report
 
+import aktual.budget.reports.components.ChartTags
 import aktual.budget.reports.components.PREVIEW_CUSTOM_DATA
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.report.CustomReportState
@@ -23,7 +24,7 @@ import kotlinx.collections.immutable.persistentSetOf
 
 class CustomReportScaffoldTest {
   @Test
-  fun `Viewing offers to edit, without settings`() = runComposeUiTest {
+  fun `Viewing offers settings, without showing them`() = runComposeUiTest {
     // given
     val actions = mutableListOf<CustomReportAction>()
     setPreviewContent {
@@ -31,7 +32,7 @@ class CustomReportScaffoldTest {
     }
 
     // when
-    onNodeWithTag(Tags.EditReport).performClick()
+    onNodeWithTag(ChartTags.ChartSettings).performClick()
 
     // then
     onAllNodesWithTag(Tags.CustomSetting).assertCountEquals(0)
@@ -40,22 +41,37 @@ class CustomReportScaffoldTest {
   }
 
   @Test
-  fun `Revert and close send their actions`() = runComposeUiTest {
+  fun `Revert sends its action`() = runComposeUiTest {
     // given
     val actions = mutableListOf<CustomReportAction>()
     setPreviewContent {
       CustomReportScaffold(
-        state = state(isEditing = true, hasChanges = true),
+        state = state(isEditing = false, hasChanges = true),
         onAction = { actions += it },
       )
     }
 
     // when
     onNodeWithTag(Tags.RevertReport).performClick()
-    onNodeWithTag(Tags.CloseEditor).performClick()
 
     // then
-    assertThat(actions).containsExactly(ReportEditorAction.Revert, ReportEditorAction.StopEditing)
+    assertThat(actions).containsExactly(ReportEditorAction.Revert)
+  }
+
+  @Test
+  fun `Done closes the settings sheet`() = runComposeUiTest {
+    // given
+    val actions = mutableListOf<CustomReportAction>()
+    setPreviewContent {
+      CustomReportScaffold(state = state(isEditing = true), onAction = { actions += it })
+    }
+
+    // when
+    onNodeWithTag(Tags.QuerySheetDone).performScrollTo().performClick()
+    waitForIdle()
+
+    // then
+    assertThat(actions).containsExactly(ReportEditorAction.StopEditing)
   }
 
   @Test
@@ -79,7 +95,7 @@ class CustomReportScaffoldTest {
   @Test
   fun `Saving isn't offered without changes`() = runComposeUiTest {
     setPreviewContent {
-      CustomReportScaffold(state = state(isEditing = true), onAction = {})
+      CustomReportScaffold(state = state(isEditing = false), onAction = {})
     }
 
     onNodeWithTag(Tags.SaveReport).assertDoesNotExist()
@@ -179,12 +195,6 @@ class CustomReportScaffoldTest {
 
     // then
     assertThat(actions).containsExactly(CustomReportAction.Rename("Groceries"))
-  }
-
-  @Test
-  fun `Menu is hidden while editing`() = runComposeUiTest {
-    setPreviewContent { CustomReportScaffold(state = state(isEditing = true), onAction = {}) }
-    onNodeWithTag(Tags.ReportMenu).assertDoesNotExist()
   }
 
   private fun state(isEditing: Boolean, hasChanges: Boolean = false) =
