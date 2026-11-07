@@ -1839,7 +1839,7 @@ class EditTransactionViewModelTest {
       localPreferences = prefs,
       payeeLocations =
         PayeeLocations(
-          dao = PayeeLocationDao(this),
+          dao = PayeeLocationDao(this, contexts),
           syncController = sync,
           uuidGenerator = { "location" },
           clock = Clock.System,

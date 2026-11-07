@@ -1,12 +1,14 @@
 package aktual.budget.payees.domain
 
 import aktual.budget.BudgetSyncController
+import aktual.budget.db.GetForPayee
 import aktual.budget.db.dao.DatabaseTables.PAYEE_LOCATIONS
 import aktual.budget.db.dao.PayeeLocationDao
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
+import aktual.budget.model.untombstone
 import aktual.core.model.Coordinates
 import aktual.core.model.Coordinates.Companion.MAX_LONGITUDE
 import aktual.core.model.Distance
@@ -16,8 +18,15 @@ import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.Inject
 import kotlin.math.cos
 import kotlin.time.Clock
+import kotlin.time.Instant
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
-data class PayeeLocation(val id: PayeeLocationId, val coordinates: Coordinates)
+data class PayeeLocation(
+  val id: PayeeLocationId,
+  val coordinates: Coordinates,
+  val createdAt: Instant?,
+)
 
 data class NearbyPayee(val payee: PayeeId, val location: PayeeLocationId, val distance: Distance)
 
@@ -52,11 +61,19 @@ class PayeeLocations(
     syncController.syncChanges(listOf(tombstone(PAYEE_LOCATIONS, id.value)))
   }
 
+  suspend fun restore(id: PayeeLocationId) {
+    syncController.syncChanges(listOf(untombstone(PAYEE_LOCATIONS, id.value)))
+  }
+
   // Newest first
   suspend fun forPayee(payee: PayeeId): List<PayeeLocation> =
-    dao.forPayee(payee).mapNotNull { row ->
-      Coordinates.orNull(row.latitude, row.longitude)?.let { PayeeLocation(row.id, it) }
-    }
+    dao.forPayee(payee).mapNotNull { it.toLocation() }
+
+  fun observe(payee: PayeeId): Flow<List<PayeeLocation>> =
+    dao.observeForPayee(payee).map { rows -> rows.mapNotNull { it.toLocation() } }
+
+  private fun GetForPayee.toLocation(): PayeeLocation? =
+    Coordinates.orNull(latitude, longitude)?.let { PayeeLocation(id, it, created_at) }
 
   suspend fun hasNearby(
     payee: PayeeId,
