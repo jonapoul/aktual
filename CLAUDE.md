@@ -29,6 +29,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
   - CSR can't infer a type argument from the name, so it doesn't apply where the parameter type mentions the call's own type parameter, like `get(key: DbMetadataKey<T>)`. Statically import `DbMetadataKey` companion keys instead (`import aktual.budget.model.DbMetadataKey.Companion.BudgetName`, then `prefs[BudgetName]`).
   - Don't name new enum entries or sealed subtypes after Kotlin types (`Number`, `Any`, `Boolean`, `Error`), since that forces a qualifier at every use.
 - `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` - add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
+- When copying or porting third-party code or assets into the repo (fonts, icons, images, ported source) rather than adding a Gradle dependency, add an entry to `NonLibraryArtifacts` in `aktual-about/data/.../NonLibraryArtifacts.kt` so it shows on the licenses screen.
 - Before using or adding an icon, check upstream Actual for an equivalent and prefer it over Material. See [aktual-core/icons](aktual-core/icons/CLAUDE.md).
 - In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.
 - Put tests in `commonTest`. In modules with an android target they run on both targets. Use `androidHostTest` only for tests needing real Android behaviour (`Context`, `Bundle`, `Looper`, Compose UI), with `@RunWith(RobolectricTestRunner::class)`. Host tests run on plain JUnit otherwise, with Android stubs returning defaults (`isReturnDefaultValues`).
@@ -147,7 +148,7 @@ Default new code to `commonMain`. Code that only needs JDK APIs (`java.text`, `j
 - [aktual-app/desktop](aktual-app/desktop/CLAUDE.md) - building desktop releases
 - [aktual-app/nav](aktual-app/nav/CLAUDE.md) - navigation architecture
 - [aktual-core/l10n](aktual-core/l10n/CLAUDE.md) - localization
-- [aktual-core/icons](aktual-core/icons/CLAUDE.md) - custom + Material icons
+- [aktual-core/icons](aktual-core/icons/CLAUDE.md) - custom + Material icons, country flags
 - [aktual-core/ui](aktual-core/ui/CLAUDE.md) - `AktualTheme` tokens (colors, typography, text sizes, line heights, letter spacing)
 - [aktual-prefs](aktual-prefs/CLAUDE.md) - adding a new setting
 - [aktual-test/api](aktual-test/api/CLAUDE.md) - test HTTP mocks + generated fixtures

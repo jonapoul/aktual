@@ -1,0 +1,54 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="24dp"
+    android:viewportWidth="32"
+    android:viewportHeight="24">
+    <group>
+        <clip-path
+            android:pathData="M0 0h32v24h-32z"/>
+        <group>
+            <path
+                android:fillColor="#FFFFFFFF"
+                android:pathData="M0 0h32v24h-32z"/>
+            <path
+                android:fillColor="#FFF7FCFF"
+                android:fillType="evenOdd"
+                android:pathData="M0 0H32V24H0V0Z"/>
+            <path
+                android:fillColor="#FFE31D1C"
+                android:fillType="evenOdd"
+                android:pathData="M0 14.67V16.67H32V14.67H0Z"/>
+            <path
+                android:fillColor="#FFE31D1C"
+                android:fillType="evenOdd"
+                android:pathData="M0 18.33V20.33H32V18.33H0Z"/>
+            <path
+                android:fillColor="#FFE31D1C"
+                android:fillType="evenOdd"
+                android:pathData="M0 7.33V9.33H32V7.33H0Z"/>
+            <path
+                android:fillColor="#FFE31D1C"
+                android:fillType="evenOdd"
+                android:pathData="M0 22V24H32V22H0Z"/>
+            <path
+                android:fillColor="#FFE31D1C"
+                android:fillType="evenOdd"
+                android:pathData="M0 11V13H32V11H0Z"/>
+            <path
+                android:fillColor="#FFE31D1C"
+                android:fillType="evenOdd"
+                android:pathData="M0 0V2H32V0H0Z"/>
+            <path
+                android:fillColor="#FFE31D1C"
+                android:fillType="evenOdd"
+                android:pathData="M0 3.67V5.67H32V3.67H0Z"/>
+            <path
+                android:fillColor="#FF2E42A5"
+                android:pathData="M0 0h20v13h-20z"/>
+            <path
+                android:fillColor="#FFF7FCFF"
+                android:fillType="evenOdd"
+                android:pathData="M1.72 2.94L1 3.45 1.24 2.54 0.6 1.97H1.44L1.72 1.23 2.05 1.97H2.77L2.21 2.54 2.42 3.45 1.72 2.94ZM5.72 2.94L5 3.45 5.24 2.54 4.6 1.97H5.44L5.72 1.23 6.05 1.97H6.77L6.21 2.54 6.42 3.45 5.72 2.94ZM9 3.45L9.72 2.94 10.42 3.45 10.21 2.54 10.77 1.97H10.05L9.72 1.23 9.44 1.97H8.6L9.24 2.54 9 3.45ZM13.72 2.94L13 3.45 13.24 2.54 12.6 1.97H13.44L13.72 1.23 14.05 1.97H14.77L14.21 2.54 14.42 3.45 13.72 2.94ZM1 7.45L1.72 6.94 2.42 7.45 2.21 6.54 2.77 5.97H2.05L1.72 5.23 1.44 5.97H0.6L1.24 6.54 1 7.45ZM5.72 6.94L5 7.45 5.24 6.54 4.6 5.97H5.44L5.72 5.23 6.05 5.97H6.77L6.21 6.54 6.42 7.45 5.72 6.94ZM9 7.45L9.72 6.94 10.42 7.45 10.21 6.54 10.77 5.97H10.05L9.72 5.23 9.44 5.97H8.6L9.24 6.54 9 7.45ZM13.72 6.94L13 7.45 13.24 6.54 12.6 5.97H13.44L13.72 5.23 14.05 5.97H14.77L14.21 6.54 14.42 7.45 13.72 6.94ZM1 11.45L1.72 10.94 2.42 11.45 2.21 10.54 2.77 9.97H2.05L1.72 9.23 1.44 9.97H0.6L1.24 10.54 1 11.45ZM5.72 10.94L5 11.45 5.24 10.54 4.6 9.97H5.44L5.72 9.23 6.05 9.97H6.77L6.21 10.54 6.42 11.45 5.72 10.94ZM9 11.45L9.72 10.94 10.42 11.45 10.21 10.54 10.77 9.97H10.05L9.72 9.23 9.44 9.97H8.6L9.24 10.54 9 11.45ZM13.72 10.94L13 11.45 13.24 10.54 12.6 9.97H13.44L13.72 9.23 14.05 9.97H14.77L14.21 10.54 14.42 11.45 13.72 10.94ZM17 3.45L17.72 2.94 18.42 3.45 18.21 2.54 18.77 1.97H18.05L17.72 1.23 17.44 1.97H16.6L17.24 2.54 17 3.45ZM17.72 6.94L17 7.45 17.24 6.54 16.6 5.97H17.44L17.72 5.23 18.05 5.97H18.77L18.21 6.54 18.42 7.45 17.72 6.94ZM17 11.45L17.72 10.94 18.42 11.45 18.21 10.54 18.77 9.97H18.05L17.72 9.23 17.44 9.97H16.6L17.24 10.54 17 11.45ZM3.72 4.94L3 5.45 3.24 4.54 2.6 3.97H3.44L3.72 3.23 4.05 3.97H4.77L4.21 4.54 4.42 5.45 3.72 4.94ZM7 5.45L7.72 4.94 8.42 5.45 8.21 4.54 8.77 3.97H8.05L7.72 3.23 7.44 3.97H6.6L7.24 4.54 7 5.45ZM11.72 4.94L11 5.45 11.24 4.54 10.6 3.97H11.44L11.72 3.23 12.05 3.97H12.77L12.21 4.54 12.42 5.45 11.72 4.94ZM3 9.45L3.72 8.94 4.42 9.45 4.21 8.54 4.77 7.97H4.05L3.72 7.23 3.44 7.97H2.6L3.24 8.54 3 9.45ZM7.72 8.94L7 9.45 7.24 8.54 6.6 7.97H7.44L7.72 7.23 8.05 7.97H8.77L8.21 8.54 8.42 9.45 7.72 8.94ZM11 9.45L11.72 8.94 12.42 9.45 12.21 8.54 12.77 7.97H12.05L11.72 7.23 11.44 7.97H10.6L11.24 8.54 11 9.45ZM15.72 4.94L15 5.45 15.24 4.54 14.6 3.97H15.44L15.72 3.23 16.05 3.97H16.77L16.21 4.54 16.42 5.45 15.72 4.94ZM15 9.45L15.72 8.94 16.42 9.45 16.21 8.54 16.77 7.97H16.05L15.72 7.23 15.44 7.97H14.6L15.24 8.54 15 9.45Z"/>
+        </group>
+    </group>
+</vector>
