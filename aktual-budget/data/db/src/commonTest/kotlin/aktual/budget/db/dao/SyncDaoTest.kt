@@ -5,6 +5,7 @@ import aktual.budget.db.Dashboard
 import aktual.budget.db.V_schedules
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.DatabaseTables.DASHBOARD
+import aktual.budget.db.dao.DatabaseTables.PAYEE_LOCATIONS
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.DatabaseTables.SCHEDULES
 import aktual.budget.model.BudgetId
@@ -18,6 +19,7 @@ import aktual.budget.model.localChange
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.async.coroutines.awaitAsOne
+import app.cash.sqldelight.db.QueryResult
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
@@ -97,6 +99,41 @@ internal class SyncDaoTest {
 
         assertThat(awaitItem()).extracting(Dashboard::id).containsExactly(WidgetId("w"))
       }
+    }
+  }
+
+  @Test
+  fun `A payee location from another device keeps its fractional coordinates`() = runTest {
+    inMemoryDriverFactory().create(BudgetId("abc-123")).use { driver ->
+      val sync = SyncDao(buildDatabase(driver), driver, Clock.System)
+      val timestamp = Timestamp(Instant.parse("2026-11-03T12:00:00Z"), 0, NODE)
+      val message =
+        Message(
+          PAYEE_LOCATIONS,
+          "loc",
+          "latitude",
+          timestamp,
+          MessageValue.decode("N:51.5074"),
+        )
+      val envelope = MessageEnvelope(timestamp, isEncrypted = false, content = message)
+
+      sync.applyMessages(listOf(envelope), sync.getCurrentMerkle())
+
+      val latitude =
+        driver
+          .executeQuery(
+            identifier = null,
+            sql = "SELECT latitude FROM payee_locations WHERE id = 'loc'",
+            mapper = { cursor ->
+              QueryResult.Value(if (cursor.next().value) cursor.getDouble(0) else null)
+            },
+            parameters = 0,
+          )
+          .await()
+      assertThat(latitude).isEqualTo(51.5074)
+      assertThat(sync.getMessagesSince(Timestamp.fromMilliseconds(millis = 0)))
+        .extracting(Message::value)
+        .containsExactly(MessageValue.Real(51.5074))
     }
   }
 
