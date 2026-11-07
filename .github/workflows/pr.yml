@@ -167,13 +167,13 @@ jobs:
       - uses: ./.github/actions/setup-gradle-properties
       # R8 fails on missing classes, e.g. a JVM-only module calling a library whose android
       # artifact differs from its JVM one, which a debug build only finds at runtime
-      - run: ./gradlew :aktual-app:android:assembleDebug :aktual-app:android:minifyReleaseWithR8
-      - name: Upload debug APK
+      - run: ./gradlew :aktual-app:android:assembleCi :aktual-app:android:minifyReleaseWithR8
+      - name: Upload CI APK
         id: upload-apk
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: android-debug
-          path: aktual-app/android/build/outputs/apk/debug/*.apk
+          name: android-ci
+          path: aktual-app/android/build/outputs/apk/ci/*.apk
           if-no-files-found: error
       - name: Comment APK link
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
@@ -185,7 +185,7 @@ jobs:
           URL: https://nightly.link/${{ github.repository }}/actions/artifacts/${{ steps.upload-apk.outputs.artifact-id }}.zip
         run: |
           marker='<!-- debug-apk -->'
-          body="$marker"$'\n'"[Debug APK]($URL) for ${SHA::7}"
+          body="$marker"$'\n'"[CI APK]($URL) for ${SHA::7}"
           id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
             --jq "[.[] | select(.body | startswith(\"$marker\"))][0].id // empty" | head -n 1)
           if [[ -n "$id" ]]; then

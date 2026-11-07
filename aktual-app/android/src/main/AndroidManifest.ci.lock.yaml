@@ -1,0 +1,62 @@
+main:
+  minSDK: 28
+  targetSDK: 37
+  permissions:
+  - android.permission.ACCESS_NETWORK_STATE
+  - android.permission.INTERNET
+  - android.permission.USE_BIOMETRIC
+  - android.permission.USE_FINGERPRINT
+  libraries:
+  - androidx.window.extensions:
+      required: false
+  - androidx.window.sidecar:
+      required: false
+  nativeLibraries:
+  - libandroidx.graphics.path:
+      requiredBy: androidx.graphics:graphics-path
+      abis:
+      - arm64-v8a
+      - armeabi-v7a
+      - x86
+      - x86_64
+  - libdatastore_shared_counter:
+      requiredBy: androidx.datastore:datastore-core-android
+      abis:
+      - arm64-v8a
+      - armeabi-v7a
+      - x86
+      - x86_64
+  - libsqliteJni:
+      requiredBy: androidx.sqlite:sqlite-bundled-android
+      abis:
+      - arm64-v8a
+      - armeabi-v7a
+      - x86
+      - x86_64
+  exports:
+    activity:
+    - aktual.app.android.AktualActivity
+    receiver:
+    - androidx.profileinstaller.ProfileInstallReceiver
+variants:
+  debug:
+    namespace: dev.jonpoulton.aktual.app.dev
+    permissions:
+    - android.permission.POST_NOTIFICATIONS
+    - android.permission.READ_EXTERNAL_STORAGE
+    - android.permission.WRITE_EXTERNAL_STORAGE
+    - dev.jonpoulton.aktual.app.dev.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+    exports:
+      activity:
+      - leakcanary.internal.activity.LeakActivity
+      activity-alias:
+      - leakcanary.internal.activity.LeakLauncherActivity
+  release:
+    namespace: dev.jonpoulton.aktual.app
+    permissions:
+    - dev.jonpoulton.aktual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+  ci:
+    namespace: dev.jonpoulton.aktual.app.ci
+    permissions:
+    - dev.jonpoulton.aktual.app.ci.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+fingerprint: 155aa2d6b9fcac1f9dc960de037745f6
