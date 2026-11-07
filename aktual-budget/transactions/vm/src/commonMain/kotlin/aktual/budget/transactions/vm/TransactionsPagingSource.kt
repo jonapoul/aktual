@@ -7,7 +7,7 @@ import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.dao.TransactionNotes
 import aktual.budget.db.dao.TransactionRow
 import aktual.budget.model.Amount
-import aktual.budget.model.ConditionsFilter
+import aktual.budget.model.FilteredSpec
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
@@ -30,7 +30,8 @@ internal class TransactionsPagingSource(
   // source is created whenever the data is invalidated.
   private var filteredIds: FilteredIds? = null
 
-  // The same for a report's drilled down list, whose conditions are matched in memory
+  // The same for a report's drilled down list, whose conditions are matched in memory, and a
+  // schedule's linked transactions
   private var filterIds: List<TransactionId>? = null
 
   private val accountId = (spec.accountSpec as? SpecificAccount)?.id
@@ -57,7 +58,7 @@ internal class TransactionsPagingSource(
           when {
             // As category lists, a report's drilled down list has no balance and shows split parts
             filtered != null -> {
-              val ids = filterIds ?: loadFilterIds(filtered.filter).also { filterIds = it }
+              val ids = filterIds ?: loadFilterIds(filtered).also { filterIds = it }
               transactionDao.getByIds(ids.page(offset, limit)).map {
                 it.toTransaction(balance = null)
               }
@@ -178,10 +179,14 @@ internal class TransactionsPagingSource(
     }
   }
 
-  private suspend fun loadFilterIds(filter: ConditionsFilter): List<TransactionId> {
-    val matcher = ConditionsMatcher(filter)
-    return transactionDao.getFilterRows().filter { matcher.matches(it.toFilterRow()) }.map { it.id }
-  }
+  private suspend fun loadFilterIds(filtered: FilteredSpec): List<TransactionId> =
+    when (filtered) {
+      is Conditions -> {
+        val matcher = ConditionsMatcher(filtered.filter)
+        transactionDao.getFilterRows().filter { matcher.matches(it.toFilterRow()) }.map { it.id }
+      }
+      is LinkedToSchedule -> transactionDao.getIdsBySchedule(filtered.id)
+    }
 
   private fun List<TransactionId>.page(offset: Long, limit: Long): List<TransactionId> {
     val from = offset.toInt().coerceIn(0, size)

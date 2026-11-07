@@ -14,8 +14,15 @@ data class TransactionsSpec(
   val filtered: FilteredSpec? = null,
 )
 
-// A list drilled down to from a report
-data class FilteredSpec(val title: String, val filter: ConditionsFilter)
+// A list narrowed to some transactions, under its own title
+sealed interface FilteredSpec {
+  val title: String
+
+  // Drilled down to from a report
+  data class Conditions(override val title: String, val filter: ConditionsFilter) : FilteredSpec
+
+  data class LinkedToSchedule(override val title: String, val id: ScheduleId) : FilteredSpec
+}
 
 sealed interface AccountSpec {
   data object AllAccounts : AccountSpec

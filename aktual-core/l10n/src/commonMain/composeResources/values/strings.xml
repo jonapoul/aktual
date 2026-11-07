@@ -1793,6 +1793,7 @@
   <string name="edit_schedule_posts_transaction_hint">Adds the transaction on the date, instead of waiting for a matching one</string>
   <string name="edit_schedule_posts_transaction_on">Adds transactions automatically</string>
   <string name="edit_schedule_posts_transaction_off">Waits for matching transactions</string>
+  <string name="edit_schedule_view_transactions">View transactions</string>
   <string name="edit_schedule_amount_title">Amount</string>
   <string name="edit_schedule_amount_payment">Payment</string>
   <string name="edit_schedule_amount_deposit">Deposit</string>

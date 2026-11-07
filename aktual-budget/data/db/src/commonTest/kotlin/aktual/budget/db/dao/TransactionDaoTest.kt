@@ -16,6 +16,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
 import aktual.budget.model.PayeeId
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import aktual.test.assertThatNextEmissionIsEqualTo
 import app.cash.sqldelight.db.SqlDriver
@@ -431,6 +432,22 @@ internal class TransactionDaoTest {
     assertThat(rows.associate { it.id.toString() to it.scheduleRecurring })
       .isEqualTo(mapOf("t1" to true, "t2" to false, "t3" to null))
   }
+
+  @Test
+  fun `Ids by schedule only include that schedule's transactions, newest first`() =
+    runDaoTest { transactions ->
+      // given
+      transactions.insert("t1", ON_1, CATEGORY, PAYEE, DATE, schedule = "rent")
+      transactions.insert("t2", ON_1, CATEGORY, PAYEE, LocalDate(2026, 1, 2), schedule = "rent")
+      transactions.insert("t3", ON_1, CATEGORY, PAYEE, DATE, schedule = "other")
+      transactions.insert("t4", ON_1, CATEGORY, PAYEE, DATE)
+
+      // when
+      val ids = transactions.getIdsBySchedule(ScheduleId("rent"))
+
+      // then
+      assertThat(ids.map { it.toString() }).containsExactly("t2", "t1")
+    }
 
   @Test
   fun `Notes lists include split parts with their parent and skip deleted rows`() =

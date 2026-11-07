@@ -20,6 +20,8 @@ internal data object DeleteSchedule : EditScheduleAction
 
 internal data object DismissError : EditScheduleAction
 
+@JvmInline internal value class ViewTransactions(val title: String) : EditScheduleAction
+
 @JvmInline internal value class SetName(val name: String) : EditScheduleAction
 
 @JvmInline internal value class SetPayee(val id: PayeeId) : EditScheduleAction

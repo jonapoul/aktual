@@ -16,6 +16,7 @@ import aktual.budget.schedules.vm.edit.ScheduleDate
 import aktual.budget.schedules.vm.edit.ScheduleForm
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronLeft
+import aktual.core.icons.CheveronRight
 import aktual.core.icons.Delete
 import aktual.core.icons.Pencil1
 import aktual.core.icons.Trash
@@ -24,6 +25,7 @@ import aktual.core.icons.material.Save
 import aktual.core.icons.material.SaveAs
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
@@ -50,9 +52,17 @@ import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.stringInitial
 import aktual.core.ui.switch
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -89,6 +99,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -103,6 +114,7 @@ import kotlinx.datetime.LocalDate
 internal fun EditScheduleScreen(
   id: ScheduleId?,
   back: BackNavigator,
+  viewTransactions: TransactionsNavigator,
   modifier: Modifier = Modifier,
   viewModel: EditScheduleViewModel = editScheduleViewModel(id),
 ) {
@@ -130,6 +142,7 @@ internal fun EditScheduleScreen(
         SaveSchedule -> viewModel.save()
         DeleteSchedule -> viewModel.delete()
         DismissError -> viewModel.dismissError()
+        is ViewTransactions -> if (id != null) viewTransactions(action.title, id)
         is SetName -> viewModel.setName(action.name)
         is SetPayee -> viewModel.setPayee(action.id)
         is SetAccount -> viewModel.setAccount(action.id)
@@ -187,27 +200,32 @@ private fun EditScheduleScaffold(
         modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = {
-          if (loaded?.isEditing == true) {
-            IconButton(onClick = { onBack() }) {
-              Icon(
-                imageVector = AktualIcons.Delete,
-                contentDescription = Strings.editScheduleStopEditing,
-              )
+          EditModeContent(isEditing = loaded?.isEditing == true) { editing ->
+            if (editing) {
+              IconButton(onClick = { onBack() }) {
+                Icon(
+                  imageVector = AktualIcons.Delete,
+                  contentDescription = Strings.editScheduleStopEditing,
+                )
+              }
+            } else {
+              NavBackIconButton(onClick = { onBack() })
             }
-          } else {
-            NavBackIconButton(onClick = { onBack() })
           }
         },
         title = {
-          Text(text = toolbarTitle(loaded))
+          val title = toolbarTitle(loaded)
+          EditModeContent(isEditing = loaded?.isEditing == true) { Text(text = title) }
         },
         actions = {
           if (loaded != null) {
-            TopBarActions(
-              state = loaded,
-              onAction = onAction,
-              onDelete = { dialog = Dialog.Delete },
-            )
+            EditModeContent(isEditing = loaded.isEditing, contentAlignment = CenterEnd) { editing ->
+              TopBarActions(
+                state = loaded.copy(isEditing = editing),
+                onAction = onAction,
+                onDelete = { dialog = Dialog.Delete },
+              )
+            }
           }
         },
       )
@@ -360,43 +378,56 @@ private fun EditScheduleContent(
         .padding(Dimens.ScreenPadding),
     verticalArrangement = Arrangement.spacedBy(EditScheduleDS.sectionSpacing),
   ) {
-    if (state.isEditing) {
-      NameField(name = state.form.name, onNameChange = { onAction(SetName(it)) })
-    } else {
-      Header(name = state.form.name, status = state.status)
+    EditModeContent(isEditing = state.isEditing) { editing ->
+      if (editing) {
+        NameField(name = state.form.name, onNameChange = { onAction(SetName(it)) })
+      } else {
+        Header(name = state.form.name, status = state.status)
+      }
     }
 
-    ScheduleSentence(
-      state = state,
-      activePart = sheet,
-      onClick = { part -> sheet = part },
-    )
+    EditModeContent(isEditing = state.isEditing) { editing ->
+      ScheduleSentence(
+        state = state.copy(isEditing = editing),
+        activePart = sheet,
+        onClick = { part -> sheet = part },
+      )
+    }
 
-    if (state.isEditing) {
-      Text(
-        text = Strings.editScheduleHint,
-        style = typography.bodySmall,
-        color = colors.pageTextSubdued,
-      )
+    EditModeContent(isEditing = state.isEditing) { editing ->
+      if (editing) {
+        Column(verticalArrangement = Arrangement.spacedBy(EditScheduleDS.sectionSpacing)) {
+          Text(
+            text = Strings.editScheduleHint,
+            style = typography.bodySmall,
+            color = colors.pageTextSubdued,
+          )
 
-      PostsTransactionRow(
-        posts = state.form.postsTransaction,
-        onChange = { onAction(SetPostsTransaction(it)) },
-      )
-    } else {
-      Text(
-        text =
-          if (state.form.postsTransaction) {
-            Strings.editSchedulePostsTransactionOn
-          } else {
-            Strings.editSchedulePostsTransactionOff
-          },
-        style = typography.bodySmall,
-        color = colors.pageTextSubdued,
-      )
+          PostsTransactionRow(
+            posts = state.form.postsTransaction,
+            onChange = { onAction(SetPostsTransaction(it)) },
+          )
+        }
+      } else {
+        Text(
+          text =
+            if (state.form.postsTransaction) {
+              Strings.editSchedulePostsTransactionOn
+            } else {
+              Strings.editSchedulePostsTransactionOff
+            },
+          style = typography.bodySmall,
+          color = colors.pageTextSubdued,
+        )
+      }
     }
 
     UpcomingDates(dates = state.upcomingDates)
+
+    AnimatedVisibility(visible = !state.isEditing && !state.isNew) {
+      val title = state.form.name.ifBlank { Strings.listSchedulesUnnamedSchedule }
+      ViewTransactionsLink(onClick = { onAction(ViewTransactions(title)) })
+    }
 
     BottomSpacing()
   }
@@ -645,6 +676,57 @@ private fun UpcomingDates(dates: ImmutableList<LocalDate>, modifier: Modifier = 
         }
       }
     }
+  }
+}
+
+// Swaps between the viewing and editing forms of a piece of the screen
+@Composable
+private fun EditModeContent(
+  isEditing: Boolean,
+  modifier: Modifier = Modifier,
+  contentAlignment: Alignment = TopStart,
+  content: @Composable (isEditing: Boolean) -> Unit,
+) {
+  AnimatedContent(
+    modifier = modifier,
+    targetState = isEditing,
+    contentAlignment = contentAlignment,
+    transitionSpec = {
+      val spec = tween<Float>(EditScheduleDS.MODE_SWITCH_MILLIS)
+      fadeIn(spec) togetherWith fadeOut(spec) using SizeTransform(clip = false)
+    },
+    label = "EditModeContent",
+  ) { editing ->
+    content(editing)
+  }
+}
+
+@Composable
+private fun ViewTransactionsLink(onClick: () -> Unit, modifier: Modifier = Modifier) {
+  Row(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .clip(CardShape)
+        .background(colors.tableBackground)
+        .border(EditScheduleDS.hairline, colors.tableBorder, CardShape)
+        .clickable(onClick = onClick)
+        .padding(EditScheduleDS.rowPadding),
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing),
+  ) {
+    Text(
+      modifier = Modifier.weight(1f),
+      text = Strings.editScheduleViewTransactions,
+      style = typography.bodyMedium,
+      color = colors.pageText,
+    )
+    Icon(
+      modifier = Modifier.size(EditScheduleDS.linkIconSize),
+      imageVector = AktualIcons.CheveronRight,
+      contentDescription = null,
+      tint = colors.pageTextSubdued,
+    )
   }
 }
 

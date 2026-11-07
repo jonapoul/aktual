@@ -50,6 +50,10 @@ data class CategoryTransactionsNavRoute(val category: CategoryId, val month: Yea
 data class FilteredTransactionsNavRoute(val title: String, val filter: ConditionsFilter) :
   BudgetNavKey.Transactions
 
+@Serializable
+data class ScheduleTransactionsNavRoute(val title: String, val id: ScheduleId) :
+  BudgetNavKey.Transactions
+
 @Serializable data class TransactionNavRoute(val id: TransactionId) : BudgetNavKey.Transactions
 
 // Starts the new transaction in the account or category of the list it was added from
