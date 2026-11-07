@@ -520,7 +520,7 @@ private fun SwitchRow(
       modifier = Modifier.weight(1f),
       verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing),
     ) {
-      Text(text = label, style = typography.labelLarge)
+      Text(text = label, style = typography.labelLarge, color = colors.pageText)
       Text(text = help, style = typography.bodySmall, color = colors.pageTextSubdued)
     }
     Switch(
@@ -598,7 +598,7 @@ private inline fun Field(
       } else {
         AnnotatedString(label)
       }
-    Text(text = labelText, style = typography.labelLarge)
+    Text(text = labelText, style = typography.labelLarge, color = colors.pageText)
     content()
   }
 }
