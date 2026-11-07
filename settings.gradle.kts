@@ -164,7 +164,6 @@ include(
   ":aktual-api",
   ":aktual-api:di",
   ":aktual-api:impl",
-  ":aktual-api:model",
   ":aktual-app:android",
   ":aktual-app:desktop",
   ":aktual-app:di",
