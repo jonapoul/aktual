@@ -441,6 +441,7 @@ private fun StatusRow(
     )
   }
 
+/** Keep in sync with ShimmerTransaction */
 @Composable
 internal fun HeroAmount(
   amount: Amount,
@@ -492,6 +493,7 @@ internal fun HeroAmount(
   }
 }
 
+/** Keep in sync with ShimmerTransaction */
 @Composable
 internal fun FieldRow(
   label: String,

@@ -13,7 +13,6 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
@@ -22,6 +21,8 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
+import aktual.core.ui.ShimmerChip
+import aktual.core.ui.ShimmerLine
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -31,11 +32,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -310,32 +309,12 @@ internal fun ShimmerBankSyncAccountItem(modifier: Modifier = Modifier) {
       modifier = Modifier.weight(1f),
       verticalArrangement = Arrangement.spacedBy(BankSyncDS.itemContentSpacing),
     ) {
-      Box(
-        modifier =
-          Modifier.fillMaxWidth(fraction = 0.45f)
-            .height(BankSyncDS.shimmerItemTextHeight)
-            .background(colors.pageText, CardShape),
-      )
-      Box(
-        modifier =
-          Modifier.fillMaxWidth(fraction = 0.35f)
-            .height(BankSyncDS.shimmerItemTextHeightSmall)
-            .background(colors.pageText, CardShape),
-      )
-      Box(
-        modifier =
-          Modifier.fillMaxWidth(fraction = 0.6f)
-            .height(BankSyncDS.shimmerItemTextHeightSmall)
-            .background(colors.pageText, CardShape),
-      )
+      ShimmerLine(typography.bodyMedium, Modifier.fillMaxWidth(fraction = 0.45f))
+      ShimmerLine(typography.bodySmall, Modifier.fillMaxWidth(fraction = 0.35f))
+      ShimmerLine(typography.bodySmall, Modifier.fillMaxWidth(fraction = 0.6f))
     }
 
-    Box(
-      modifier =
-        Modifier.height(BankSyncDS.shimmerItemTextHeight)
-          .width(BankSyncDS.shimmerChipWidth)
-          .background(colors.pageText, CardShape),
-    )
+    ShimmerChip(typography.labelSmall, Modifier.width(BankSyncDS.shimmerChipWidth), size = Small)
   }
 }
 

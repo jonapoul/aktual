@@ -391,9 +391,10 @@ private fun TopBarActions(
 }
 
 // Stands in for the amount and the fields card while the transaction loads
+/** Keep in sync with [HeroAmount] and [FieldRow] */
 @Composable
 private fun ShimmerTransaction(modifier: Modifier = Modifier) {
-  val bar = Modifier.background(colors.tableText, ShimmerBarShape)
+  val bar = Modifier.background(colors.pageText, ShimmerBarShape)
   Column(
     modifier =
       modifier.fillMaxSize().padding(horizontal = CardInset).shimmer(rememberShimmer(Window)),

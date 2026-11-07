@@ -35,6 +35,7 @@ internal fun ShimmerBudgetList(
   }
 }
 
+/** Keep in sync with [BudgetListItem] */
 @Composable
 internal fun ShimmerBudgetListItem(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(Window)

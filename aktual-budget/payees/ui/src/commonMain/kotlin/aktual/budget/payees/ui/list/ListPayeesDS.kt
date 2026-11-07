@@ -10,8 +10,6 @@ internal object ListPayeesDS {
   val favoriteIconSize = 16.dp
   val learningIconSize = 12.dp
 
-  val shimmerNameHeight = 16.dp
-  val shimmerSubtitleHeight = 12.dp
   val shimmerChipWidth = 96.dp
   const val SHIMMER_ITEMS = 10
 }

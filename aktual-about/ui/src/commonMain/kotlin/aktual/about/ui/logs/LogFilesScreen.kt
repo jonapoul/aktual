@@ -19,7 +19,6 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -29,6 +28,8 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.SearchMessage
+import aktual.core.ui.ShimmerBlock
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.WavyBackground
@@ -51,7 +52,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -72,12 +72,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.Bottom
-import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
@@ -188,6 +185,7 @@ private fun LogFilesList(
   }
 }
 
+/** Keep in sync with [ShimmerLogFilesSummary] */
 @Composable
 private fun LogFilesSummary(state: LogFilesState.Loaded, modifier: Modifier = Modifier) =
   Column(
@@ -248,6 +246,7 @@ private fun SwipeableLogFileItem(
   }
 }
 
+/** Keep in sync with [ShimmerLogFileItem] */
 @Composable
 private fun LogFileItem(
   file: LogFile,
@@ -330,16 +329,12 @@ private fun ShimmerLogFilesSummary(modifier: Modifier = Modifier) =
         .shimmer(rememberShimmer(Window)),
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
-    ShimmerLine(typography.labelMedium, ShimmerLabelHeight, Modifier.fillMaxWidth(fraction = 0.3f))
+    ShimmerLine(typography.labelMedium, Modifier.fillMaxWidth(fraction = 0.3f))
     Row(verticalAlignment = Bottom, horizontalArrangement = spacedBy(8.dp)) {
-      ShimmerLine(
-        typography.headlineMedium,
-        ShimmerHeadlineHeight,
-        Modifier.width(ShimmerCountWidth),
-      )
-      ShimmerLine(typography.bodyMedium, ShimmerBodyHeight, Modifier.width(ShimmerSizeWidth))
+      ShimmerLine(typography.headlineMedium, Modifier.width(ShimmerCountWidth))
+      ShimmerLine(typography.bodyMedium, Modifier.width(ShimmerSizeWidth))
     }
-    ShimmerLine(typography.labelMedium, ShimmerLabelHeight, Modifier.fillMaxWidth(fraction = 0.4f))
+    ShimmerLine(typography.labelMedium, Modifier.fillMaxWidth(fraction = 0.4f))
   }
 
 /** Keep in sync with [LogFileItem] */
@@ -350,23 +345,14 @@ private fun ShimmerLogFileItem() =
     verticalAlignment = CenterVertically,
     horizontalArrangement = spacedBy(Dimens.VeryLarge),
   ) {
-    Box(Modifier.size(ShimmerIconSize).background(colors.pageText, CardShape))
+    ShimmerBlock(Modifier.size(ShimmerIconSize))
     Column(modifier = Modifier.weight(1f), verticalArrangement = spacedBy(2.dp)) {
-      ShimmerLine(typography.bodyMedium, ShimmerBodyHeight, Modifier.fillMaxWidth(fraction = 0.3f))
+      ShimmerLine(typography.bodyMedium, Modifier.fillMaxWidth(fraction = 0.3f))
       ShimmerLine(
         typography.labelSmall.copy(fontFamily = Monospace),
-        ShimmerLabelHeight,
         Modifier.fillMaxWidth(fraction = 0.6f),
       )
     }
-  }
-
-/** A bar vertically centred in the height of one line of [style], so it matches real text */
-@Composable
-private fun ShimmerLine(style: TextStyle, barHeight: Dp, modifier: Modifier = Modifier) =
-  Box(modifier = modifier, contentAlignment = CenterStart) {
-    Text(text = "", style = style, maxLines = 1)
-    Box(Modifier.fillMaxWidth().height(barHeight).background(colors.pageText, CardShape))
   }
 
 private fun Modifier.logFileRow(colors: Colors, onClick: (() -> Unit)? = null) =
@@ -428,9 +414,6 @@ private fun PreviewLogFiles(
     LogFilesScaffold(state = this, canShare = true, onAction = {})
   }
 
-private val ShimmerLabelHeight = 9.dp
-private val ShimmerBodyHeight = 11.dp
-private val ShimmerHeadlineHeight = 22.dp
 private val ShimmerCountWidth = 80.dp
 private val ShimmerSizeWidth = 40.dp
 private val ShimmerIconSize = 24.dp

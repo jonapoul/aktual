@@ -19,6 +19,8 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipColors
+import aktual.core.ui.ShimmerBlock
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.StuckHeaders
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
@@ -71,6 +73,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.YearMonth
 
 // packages/desktop-client/src/components/mobile/budget/BudgetTable.tsx
+// Keep in sync with [ShimmerBudgetTable]
 internal fun LazyListScope.budgetTable(
   budget: MonthBudget,
   type: BudgetType,
@@ -680,31 +683,46 @@ internal fun balanceColors(balance: Amount): ChipColors =
     else -> ChipColors(colors.pillBackground, colors.pillText)
   }
 
-// Keep in sync with budgetTable
+/** Keep in sync with [budgetTable] */
 @Composable
 internal fun ShimmerBudgetTable(modifier: Modifier = Modifier) {
-  val bar = Modifier.background(colors.tableText, CardShape)
-  Column(
-    modifier = modifier.fillMaxWidth().shimmer(rememberShimmer(Window)),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-  ) {
-    Box(modifier = bar.fillMaxWidth().height(72.dp))
+  val header = TextStyle(fontSize = textSizes.smallPlus)
+  val row = TextStyle(fontSize = textSizes.medium)
+  Column(modifier = modifier.fillMaxWidth().shimmer(rememberShimmer(Window))) {
+    ShimmerBlock(Modifier.fillMaxWidth().padding(bottom = 8.dp).height(72.dp))
+    ShimmerTableRow(BudgetDS.headerHeight, header, nameFraction = 0.3f)
     repeat(times = SHIMMER_GROUPS) {
-      Box(modifier = bar.fillMaxWidth().height(BudgetDS.headerHeight))
+      ShimmerTableRow(BudgetDS.headerHeight, row, nameFraction = 0.5f)
       repeat(times = SHIMMER_CATEGORIES) {
-        Row(
-          modifier = Modifier.fillMaxWidth().padding(start = BudgetDS.categoryIndent),
-          horizontalArrangement = Arrangement.spacedBy(12.dp),
-          verticalAlignment = CenterVertically,
-        ) {
-          Box(modifier = bar.weight(1f).height(20.dp))
-          Box(modifier = bar.width(72.dp).height(20.dp))
-          Box(modifier = bar.width(64.dp).height(20.dp))
-        }
+        ShimmerTableRow(
+          height = BudgetDS.rowHeight,
+          style = row,
+          nameFraction = 0.6f,
+          modifier = Modifier.padding(start = CategoryInset),
+        )
       }
     }
   }
 }
+
+@Composable
+private fun ShimmerTableRow(
+  height: Dp,
+  style: TextStyle,
+  nameFraction: Float,
+  modifier: Modifier = Modifier,
+) =
+  TableRow(modifier = modifier, height = height) {
+    Box(modifier = Modifier.weight(1f)) {
+      ShimmerLine(style, Modifier.fillMaxWidth(nameFraction))
+    }
+    Box(modifier = Modifier.width(BudgetDS.valueWidth), contentAlignment = CenterEnd) {
+      ShimmerLine(style, Modifier.width(64.dp))
+    }
+    Box(modifier = Modifier.width(BudgetDS.balanceWidth), contentAlignment = CenterEnd) {
+      ShimmerLine(style, Modifier.width(56.dp))
+    }
+  }
 
 internal fun TextStyle.tabularFigures() = copy(fontFeatureSettings = "tnum")
 

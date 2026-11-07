@@ -11,10 +11,11 @@ import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.ShimmerBlock
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.redacted
@@ -64,34 +65,37 @@ internal fun ThisMonthCard(
   }
 }
 
-// Keep this in sync with ThisMonthContent
+/** Keep in sync with [ThisMonthContent] */
 @Composable
 private fun ShimmerThisMonth(modifier: Modifier = Modifier) {
-  val bar = Modifier.background(colors.tableText, CardShape)
-
   Column(
     modifier =
       modifier.fillMaxWidth().padding(horizontal = CardPadding).shimmer(rememberShimmer(Window)),
     verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {
-    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-      Box(modifier = bar.width(72.dp).height(16.dp))
-      Box(modifier = bar.width(64.dp).height(16.dp))
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = CenterVertically,
+    ) {
+      ShimmerLine(typography.titleSmall, Modifier.width(72.dp))
+      ShimmerLine(typography.labelMedium, Modifier.width(64.dp))
     }
 
-    Box(modifier = bar.width(160.dp).height(32.dp))
+    ShimmerLine(typography.headlineMedium, Modifier.width(160.dp))
 
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-      Box(modifier = bar.fillMaxWidth().height(ProgressBarHeight))
+      ShimmerBlock(Modifier.fillMaxWidth().height(ProgressBarHeight), CircleShape)
 
       Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-        Box(modifier = bar.width(88.dp).height(14.dp))
-        Box(modifier = bar.width(112.dp).height(14.dp))
+        ShimmerLine(typography.bodySmall, Modifier.width(88.dp))
+        ShimmerLine(typography.bodySmall, Modifier.width(112.dp))
       }
     }
   }
 }
 
+/** Keep in sync with [ShimmerThisMonth] */
 @Composable
 private fun ThisMonthContent(state: Loaded, modifier: Modifier = Modifier) {
   Column(

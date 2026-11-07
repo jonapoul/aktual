@@ -248,6 +248,7 @@ private fun EditingReportCard(
     Box(modifier = Modifier.matchParentSize().pointerInput(Unit) {})
   }
 
+/** Keep in sync with [ShimmerDashboardItem] */
 @Composable
 private fun ReportCard(
   chartData: ChartData?,

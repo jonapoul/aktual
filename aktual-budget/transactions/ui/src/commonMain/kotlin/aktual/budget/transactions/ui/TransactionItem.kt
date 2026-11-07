@@ -20,10 +20,10 @@ import aktual.core.icons.Split
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.redacted
@@ -72,7 +72,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
-// Comfortable and Compact
+// Comfortable and Compact. Keep in sync with [LedgerShimmerRow]
 @Composable
 internal fun LedgerRow(
   transaction: Transaction,
@@ -386,7 +386,7 @@ private fun rowClick(
   }
 }
 
-// Dense
+// Dense. Keep in sync with [LedgerShimmerRow]
 @Composable
 internal fun LedgerTableRow(
   transaction: Transaction,
@@ -616,11 +616,11 @@ private fun LocalDate.dayAndMonth(): String {
   return "$day/$month"
 }
 
+/** Keep in sync with [LedgerRow] and [LedgerTableRow] */
 @Composable
 internal fun LedgerShimmerRow(modifier: Modifier = Modifier) {
   val dimens = LocalLedgerDimens.current
-  val barHeight = dimens.rowHeight / SHIMMER_BAR_FRACTION
-  val bar = Modifier.height(barHeight).background(colors.tableText, CardShape)
+  val bar = Modifier.height(dimens.rowHeight / SHIMMER_BAR_FRACTION)
 
   Row(
     modifier =
@@ -632,9 +632,9 @@ internal fun LedgerShimmerRow(modifier: Modifier = Modifier) {
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(dimens.contentGap),
   ) {
-    Box(modifier = bar.width(dimens.railWidth - dimens.rowEnd))
-    Box(modifier = bar.weight(1f))
-    Box(modifier = bar.width(DenseColumns.amount))
+    ShimmerBlock(bar.width(dimens.railWidth - dimens.rowEnd))
+    ShimmerBlock(bar.weight(1f))
+    ShimmerBlock(bar.width(DenseColumns.amount))
   }
 }
 

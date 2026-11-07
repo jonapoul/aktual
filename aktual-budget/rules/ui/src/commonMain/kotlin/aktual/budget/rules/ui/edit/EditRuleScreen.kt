@@ -285,7 +285,7 @@ private val Failure.reason: String
       is OtherFailure -> Strings.editRuleFailedOther(reason)
     }
 
-/** Make sure this stays in sync with [LoadedContent] */
+/** Keep in sync with [LoadedContent] */
 @Suppress("unused")
 @Composable
 private fun LoadingContent(
@@ -296,7 +296,7 @@ private fun LoadingContent(
   // TBC
 }
 
-/** Make sure this stays in sync with [LoadingContent] */
+/** Keep in sync with [LoadingContent] */
 @Composable
 private fun LoadedContent(
   rule: Rule,

@@ -360,6 +360,7 @@ private fun TopBarActions(
   }
 }
 
+/** Keep in sync with [ShimmerSchedule] */
 @Composable
 private fun EditScheduleContent(
   state: EditScheduleState.Loaded,
@@ -437,6 +438,7 @@ private fun EditScheduleContent(
 }
 
 // Stands in for the header, sentence and upcoming dates while the schedule loads
+/** Keep in sync with [EditScheduleContent] */
 @Composable
 private fun ShimmerSchedule(modifier: Modifier = Modifier) {
   val bar = Modifier.background(colors.pageText, CardShape)
