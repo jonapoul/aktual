@@ -275,7 +275,9 @@ private fun ReportIssueDialog(onExport: () -> Unit, onOpen: () -> Unit, onDismis
     buttons = {
       TextButton(onClick = onDismiss) { Text(Strings.crashesCancel) }
       TextButton(onClick = onExport) { Text(Strings.crashesReportExport) }
-      PrimaryTextButton(text = Strings.crashesReportOpen, onClick = onOpen)
+      TextButton(onClick = onOpen) {
+        Text(Strings.crashesReportOpen, color = colors.pageTextPositive)
+      }
     },
   ) {
     Text(text = Strings.crashesReportMessage)

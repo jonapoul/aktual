@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package aktual.core.ui
 
 import aktual.core.theme.Colors
@@ -115,6 +117,11 @@ fun Colors.fieldBackground(surface: Color): Color {
 @ReadOnlyComposable
 fun Colors.fieldBackground(): Color = fieldBackground(LocalSurfaceColor.current ?: pageBackground)
 
+// Lighter in dark themes, darker in light themes
+@Stable
+fun Colors.highlighted(color: Color): Color =
+  lerp(color, if (isLight) Black else White, HIGHLIGHT_SHIFT)
+
 private fun contrast(a: Color, b: Color): Float {
   val lumA = a.luminance() + CONTRAST_OFFSET
   val lumB = b.luminance() + CONTRAST_OFFSET
@@ -125,6 +132,7 @@ private const val FIELD_SHIFT = 0.2f
 private const val FIELD_FALLBACK_SHIFT = 0.08f
 private const val FIELD_MIN_CONTRAST = 1.1f
 private const val CONTRAST_OFFSET = 0.05f
+private const val HIGHLIGHT_SHIFT = 0.1f
 
 @Composable
 fun Colors.primaryButton(isPressed: Boolean): ButtonColors =
@@ -139,10 +147,10 @@ fun Colors.primaryButton(isPressed: Boolean): ButtonColors =
 fun Colors.normalButton(
   isPressed: Boolean,
   container: Color = buttonNormalBackground,
-  containerPressed: Color = buttonNormalSelectedBackground,
+  containerPressed: Color = highlighted(container),
   containerDisabled: Color = buttonNormalDisabledBackground,
   text: Color = buttonNormalText,
-  textPressed: Color = buttonNormalSelectedText,
+  textPressed: Color = text,
   textDisabled: Color = buttonNormalDisabledText,
 ): ButtonColors =
   ButtonDefaults.buttonColors(

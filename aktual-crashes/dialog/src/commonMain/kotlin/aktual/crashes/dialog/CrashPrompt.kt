@@ -9,9 +9,9 @@ import aktual.core.nav.CrashReportNavigator
 import aktual.core.nav.NavStack
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.PrimaryTextButton
 import aktual.crashes.vm.CrashPromptViewModel
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -49,7 +49,9 @@ private fun CrashPromptDialog(report: CrashReport, onView: () -> Unit, onDismiss
     icon = AktualIcons.AlertTriangle,
     buttons = {
       TextButton(onClick = onDismiss) { Text(Strings.crashesPromptDismiss) }
-      PrimaryTextButton(text = Strings.crashesPromptView, onClick = onView)
+      TextButton(onClick = onView) {
+        Text(Strings.crashesPromptView, color = colors.pageTextPositive)
+      }
     },
   ) {
     Text(text = Strings.crashesPromptMessage)

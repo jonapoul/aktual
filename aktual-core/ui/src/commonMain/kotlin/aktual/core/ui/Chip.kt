@@ -70,9 +70,9 @@ object ChipDefaults {
     with(colors) {
       if (isSelected) {
         ChipColors(
-          background = pillBackgroundSelected,
+          background = formInputBackgroundSelected,
           content = pillTextSelected,
-          border = pillBackgroundSelected,
+          border = pillBorderSelected,
         )
       } else {
         ChipColors(background = pillBackground, content = pillText, border = pillBorder)
