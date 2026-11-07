@@ -1,5 +1,6 @@
 package aktual.gradle
 
+import atlas.core.tasks.CollateProjectLinks
 import atlas.core.tasks.CollateProjectTypes
 import atlas.core.tasks.WriteReadme
 import atlas.d2.tasks.ExecD2
@@ -26,6 +27,11 @@ class ConventionAtlas : ProjectPlugin {
         t.chartFiles.from(artifacts.map { it.artifactFiles })
         t.projectTypes.set(
           tasks.named("collateProjectTypes", CollateProjectTypes::class.java).flatMap {
+            it.outputFile
+          },
+        )
+        t.projectLinks.set(
+          tasks.named("collateProjectLinks", CollateProjectLinks::class.java).flatMap {
             it.outputFile
           },
         )

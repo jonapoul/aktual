@@ -37,9 +37,9 @@
       border-bottom: 1px solid var(--border);
     }
     h1 { margin: 0; font-size: 18px; }
-    .stats { color: var(--muted); }
+    .stats { margin-left: auto; color: var(--muted); }
     .stats b { color: var(--text); font-weight: normal; }
-    input {
+    input[type="search"] {
       flex: 1;
       min-width: 200px;
       max-width: 400px;
@@ -50,6 +50,7 @@
       border-radius: 4px;
       font: inherit;
     }
+    label { display: flex; align-items: center; gap: 6px; color: var(--muted); cursor: pointer; }
     main { flex: 1; min-height: 0; display: flex; gap: 16px; padding: 16px; }
     .list { flex: none; overflow-y: auto; }
     table { border-collapse: collapse; }
@@ -103,8 +104,9 @@
 <body>
 <header>
   <h1>Atlas charts</h1>
-  <span class="stats" id="stats"></span>
   <input id="filter" type="search" placeholder="Filter modules (/)" autofocus>
+  <label><input id="deep" type="checkbox"> Search inside charts</label>
+  <span class="stats" id="stats"></span>
 </header>
 <main>
   <div class="list" id="list">
@@ -135,9 +137,21 @@
     c.color = type && type.color ? type.color : "";
   });
 
+  const deps = {};
+  __LINKS__.forEach(l => (deps[l.fromPath] ||= []).push(l.toPath));
+  const closures = {};
+  function closure(path) {
+    if (closures[path]) return closures[path];
+    const seen = closures[path] = new Set([path]);
+    (deps[path] || []).forEach(d => closure(d).forEach(p => seen.add(p)));
+    return seen;
+  }
+  charts.forEach(c => c.mentions = [...closure(c.path)]);
+
   const list = document.getElementById("list");
   const rows = document.getElementById("rows");
   const filter = document.getElementById("filter");
+  const deep = document.getElementById("deep");
   const stats = document.getElementById("stats");
   const previewTitle = document.getElementById("preview-title");
   const previewImg = document.getElementById("preview-img");
@@ -190,10 +204,21 @@
     select(next, true);
   }
 
+  function fuzzy(text, query) {
+    let i = 0;
+    for (const ch of text.toLowerCase()) {
+      if (ch === query[i]) i++;
+      if (i === query.length) return true;
+    }
+    return i === query.length;
+  }
+
   function render() {
-    const query = filter.value.trim().toLowerCase();
+    const terms = filter.value.toLowerCase().split(/\s+/).filter(Boolean);
     const visible = charts
-      .filter(c => c.path.toLowerCase().includes(query) || c.type.toLowerCase().includes(query))
+      .filter(c => deep.checked
+        ? c.mentions.some(m => terms.every(t => fuzzy(m, t)))
+        : terms.every(t => fuzzy(c.path, t) || fuzzy(c.type, t)))
       .sort((a, b) => {
         const x = a[sortKey], y = b[sortKey];
         const order = x < y ? -1 : x > y ? 1 : 0;
@@ -244,6 +269,7 @@
   document.querySelector('th[data-key="path"]').dataset.dir = "asc";
 
   filter.addEventListener("input", render);
+  deep.addEventListener("change", render);
   document.addEventListener("keydown", e => {
     if (e.key === "/" && document.activeElement !== filter) {
       e.preventDefault();
