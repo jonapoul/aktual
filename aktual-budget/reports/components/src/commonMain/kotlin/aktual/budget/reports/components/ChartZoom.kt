@@ -1,8 +1,11 @@
 package aktual.budget.reports.components
 
 import aktual.core.ui.AktualTheme.colors
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculateCentroid
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,12 +16,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.graphics.LinearGradientShader
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.compose.cartesian.CartesianDrawingContext
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianLayerRangeProvider
@@ -35,8 +42,8 @@ import kotlin.math.roundToInt
 internal typealias XRange = ClosedFloatingPointRange<Double>
 
 /**
- * Lets a full screen chart be zoomed into an x range, by long pressing then dragging across it (or
- * just dragging with a mouse). Dragging without the long press still moves the marker.
+ * Lets a full screen chart be zoomed into an x range, by pinching with two fingers (or dragging
+ * across it with a mouse). Dragging with one finger still moves the marker.
  */
 @Stable
 class ChartZoomState {
@@ -50,8 +57,25 @@ class ChartZoomState {
   // Captured each draw to map pointer positions to x values. Plain var so draws don't recompose
   private var geometry: ZoomGeometry? = null
 
+  // The x range of the whole chart, from its last draw without a zoom range
+  private var bounds: XRange? = null
+
+  // The chart layout when an in-progress pinch began
+  private var pinch: Pinch? = null
+
+  // Model changes after zooming only move the range, so they're drawn in place without animating
+  private var hasZoomed by mutableStateOf(false)
+
   fun reset() {
-    range = null
+    updateRange(null)
+  }
+
+  internal fun animationSpec(compact: Boolean): AnimationSpec<Float>? =
+    if (hasZoomed) null else chartAnimationSpec(compact)
+
+  private fun updateRange(range: XRange?) {
+    hasZoomed = true
+    this.range = range
   }
 
   internal fun startSelection(x: Float) {
@@ -69,12 +93,43 @@ class ChartZoomState {
   internal fun finishSelection() {
     val (from, to) = selection ?: return
     selection = null
-    geometry?.range(from, to)?.let { range = it }
+    geometry?.range(from, to)?.let(::updateRange)
   }
 
-  internal fun decoration(fill: Fill): Decoration = SelectionDecoration(ShapeComponent(fill))
+  internal fun startPinch(centroid: Float) {
+    val geometry = geometry ?: return
+    val bounds = bounds ?: return
+    pinch = Pinch(geometry, bounds, centroid)
+  }
 
-  private inner class SelectionDecoration(private val shape: ShapeComponent) : Decoration {
+  internal fun movePinch(zoom: Float, centroid: Float) {
+    val pinch = pinch ?: return
+    updateRange(
+      pinch.geometry.pinched(pinch.bounds, from = pinch.centroid, to = centroid, zoom = zoom),
+    )
+  }
+
+  internal fun finishPinch() {
+    pinch = null
+  }
+
+  private data class Pinch(val geometry: ZoomGeometry, val bounds: XRange, val centroid: Float)
+
+  internal fun decoration(
+    fill: Fill,
+    edgeColor: Color,
+    trackColor: Color,
+  ): Decoration = SelectionDecoration(ShapeComponent(fill), edgeColor, trackColor)
+
+  private inner class SelectionDecoration(
+    private val shape: ShapeComponent,
+    private val edgeColor: Color,
+    trackColor: Color,
+  ) : Decoration {
+    private val edgePaint = Paint()
+    private val trackPaint = Paint().apply { color = trackColor }
+    private val thumbPaint = Paint().apply { color = edgeColor.copy(alpha = 1f) }
+
     override fun drawOverLayers(context: CartesianDrawingContext) =
       with(context) {
         val bounds = layerBounds
@@ -89,12 +144,68 @@ class ChartZoomState {
             xStep = ranges.xStep,
           )
         this@ChartZoomState.geometry = geometry
+        val full = this@ChartZoomState.bounds
+        val isZoomed = model.extraStore.getOrNull(ZoomRangeKey) != null
+        if (!isZoomed) {
+          this@ChartZoomState.bounds = ranges.minX..ranges.maxX
+        } else if (full != null) {
+          if (ranges.minX > full.start) drawEdge(atStart = true)
+          if (ranges.maxX < full.endInclusive) drawEdge(atStart = false)
+          drawScrollbar(full)
+        }
 
         val (from, to) = selection ?: return@with
         val left = min(from, to).coerceIn(bounds.left, bounds.right)
         val right = max(from, to).coerceIn(bounds.left, bounds.right)
         shape.draw(context, left, bounds.top, right, bounds.bottom)
       }
+
+    // Shows where the visible range sits within the whole chart, along the bottom of the plot
+    private fun CartesianDrawingContext.drawScrollbar(full: XRange) {
+      val span = full.endInclusive - full.start
+      if (span <= 0.0) return
+      val bounds = layerBounds
+      val height = with(density) { ZOOM_SCROLLBAR_HEIGHT.toPx() }
+      val top = bounds.bottom - height
+      val startFraction = ((ranges.minX - full.start) / span).toFloat()
+      val endFraction = ((ranges.maxX - full.start) / span).toFloat()
+      val (from, to) =
+        if (isLtr) {
+          startFraction to endFraction
+        } else {
+          1f - endFraction to 1f - startFraction
+        }
+      canvas.drawRect(
+        left = bounds.left,
+        top = top,
+        right = bounds.right,
+        bottom = bounds.bottom,
+        paint = trackPaint,
+      )
+      canvas.drawRect(
+        left = bounds.left + from * bounds.width,
+        top = top,
+        right = bounds.left + to * bounds.width,
+        bottom = bounds.bottom,
+        paint = thumbPaint,
+      )
+    }
+
+    // Fades in from an edge with data hidden past it
+    private fun CartesianDrawingContext.drawEdge(atStart: Boolean) {
+      val bounds = layerBounds
+      val width = with(density) { ZOOM_EDGE_WIDTH.toPx() }
+      val isLeft = atStart == isLtr
+      val edge = if (isLeft) bounds.left else bounds.right
+      val inner = if (isLeft) edge + width else edge - width
+      edgePaint.shader =
+        LinearGradientShader(
+          from = Offset(edge, 0f),
+          to = Offset(inner, 0f),
+          colors = listOf(edgeColor, Transparent),
+        )
+      canvas.drawRect(min(edge, inner), bounds.top, max(edge, inner), bounds.bottom, edgePaint)
+    }
   }
 }
 
@@ -120,15 +231,41 @@ internal class ZoomGeometry(
     val isWholeRange = first <= minX && last >= maxX
     return if (last - first >= xStep && !isWholeRange) first..last else null
   }
+
+  /**
+   * The range after pinching by [zoom] from this layout, keeping the x value under the [from]
+   * centroid under the [to] centroid. Snaps to x values and stays within [bounds], with null when
+   * that covers everything.
+   */
+  fun pinched(bounds: XRange, from: Float, to: Float, zoom: Float): XRange? {
+    if (spacing == 0f || xStep <= 0.0 || maxX <= minX) return null
+    val fullSpan = bounds.endInclusive - bounds.start
+    val span = ((maxX - minX) / zoom).coerceIn(min(xStep, fullSpan), fullSpan)
+    val anchor = minX + (from - start) / spacing * xStep
+    val unclamped = anchor - (to - start) / spacing * xStep * (span / (maxX - minX))
+    val first = unclamped.coerceIn(bounds.start, bounds.endInclusive - span)
+    val firstSteps = ((first - bounds.start) / xStep).roundToInt()
+    val spanSteps = max((span / xStep).roundToInt(), 1)
+    val snappedFirst = bounds.start + firstSteps * xStep
+    val snappedLast = min(snappedFirst + spanSteps * xStep, bounds.endInclusive)
+    val isWholeRange = snappedFirst <= bounds.start && snappedLast >= bounds.endInclusive
+    return if (isWholeRange) null else snappedFirst..snappedLast
+  }
 }
 
 @Composable
 fun rememberChartZoomState(data: Any?): ChartZoomState = remember(data) { ChartZoomState() }
 
 @Composable
-internal fun rememberChartZoomDecoration(state: ChartZoomState): Decoration {
+internal fun rememberChartZoomDecoration(
+  state: ChartZoomState,
+): Decoration {
   val color = colors.reportsBlue.copy(alpha = SELECTION_ALPHA)
-  return remember(state, color) { state.decoration(Fill(color)) }
+  val edgeColor = colors.reportsBlue.copy(alpha = ZOOM_EDGE_ALPHA)
+  val trackColor = colors.reportsBlue.copy(alpha = ZOOM_TRACK_ALPHA)
+  return remember(state, color, edgeColor, trackColor) {
+    state.decoration(Fill(color), edgeColor, trackColor)
+  }
 }
 
 /**
@@ -144,57 +281,68 @@ internal fun ZoomableChart(
   modifier: Modifier = Modifier,
   content: @Composable BoxScope.(Modifier) -> Unit,
 ) {
-  val haptics = LocalHapticFeedback.current
-  val gestures = if (enabled) Modifier.zoomGestures(state, haptics) else Modifier
+  val gestures = if (enabled) Modifier.zoomGestures(state) else Modifier
   Box(modifier = modifier.testTag(ChartTags.ZoomableChart).then(gestures)) {
     content(Modifier.fillMaxSize())
   }
 }
 
-private fun Modifier.zoomGestures(state: ChartZoomState, haptics: HapticFeedback): Modifier =
-  pointerInput(state, haptics) {
+private fun Modifier.zoomGestures(state: ChartZoomState): Modifier =
+  pointerInput(state) {
     // Vico handles presses and moves for the marker without checking consumption, so listen on the
-    // initial pass. The marker keeps following the pointer while selecting, showing the edge value
+    // initial pass
     awaitEachGesture {
       val down = awaitFirstDown(requireUnconsumed = false, pass = Initial)
-      if (!awaitSelectionStart(down)) return@awaitEachGesture
-
-      haptics.performHapticFeedback(LongPress)
-      state.startSelection(down.position.x)
-      try {
-        var change: PointerInputChange?
-        do {
-          change = awaitPointerEvent(Initial).changes.firstOrNull { it.id == down.id }
-          change?.consume()
-          if (change?.pressed == true) state.moveSelection(change.position.x)
-        } while (change?.pressed == true)
-        if (change != null) state.finishSelection()
-      } finally {
-        state.cancelSelection()
-      }
+      if (down.type == Mouse) awaitMouseSelection(state, down) else awaitPinch(state)
     }
   }
 
-// True after a long press, or once a mouse drags past the touch slop
-private suspend fun AwaitPointerEventScope.awaitSelectionStart(down: PointerInputChange): Boolean {
-  // Null when nothing happened before the timeout, i.e. a long press
-  val beforeLongPress =
-    withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) {
-      var started: Boolean? = null
-      while (started == null) {
-        val event = awaitPointerEvent(Initial)
-        val change = event.changes.firstOrNull { it.id == down.id }
-        started =
-          when {
-            change == null || !change.pressed || event.changes.size > 1 -> false
-            (change.position - down.position).getDistance() > viewConfiguration.touchSlop ->
-              down.type == Mouse
-            else -> null
-          }
+// Zooms while two or more fingers are down, until they all lift
+private suspend fun AwaitPointerEventScope.awaitPinch(state: ChartZoomState) {
+  var zoom: Float? = null
+  try {
+    do {
+      val event = awaitPointerEvent(Initial)
+      val pressed = event.changes.count { it.pressed && it.previousPressed }
+      if (pressed >= 2) {
+        val centroid = event.calculateCentroid(useCurrent = true).x
+        if (zoom == null) {
+          zoom = 1f
+          state.startPinch(event.calculateCentroid(useCurrent = false).x)
+        }
+        zoom *= event.calculateZoom()
+        state.movePinch(zoom, centroid)
+        event.changes.forEach { it.consume() }
       }
-      started == true
+    } while (event.changes.any { it.pressed })
+  } finally {
+    state.finishPinch()
+  }
+}
+
+// Selects the range dragged across, once the mouse moves past the touch slop. The marker keeps
+// following the pointer while selecting, showing the edge value
+private suspend fun AwaitPointerEventScope.awaitMouseSelection(
+  state: ChartZoomState,
+  down: PointerInputChange,
+) {
+  var change: PointerInputChange?
+  do {
+    change = awaitPointerEvent(Initial).changes.firstOrNull { it.id == down.id }
+    if (change?.pressed != true) return
+  } while ((change.position - down.position).getDistance() <= viewConfiguration.touchSlop)
+
+  state.startSelection(down.position.x)
+  try {
+    while (change?.pressed == true) {
+      change.consume()
+      state.moveSelection(change.position.x)
+      change = awaitPointerEvent(Initial).changes.firstOrNull { it.id == down.id }
     }
-  return beforeLongPress == null || beforeLongPress
+    if (change != null) state.finishSelection()
+  } finally {
+    state.cancelSelection()
+  }
 }
 
 private object ZoomRangeKey : ExtraStore.Key<XRange>()
@@ -273,3 +421,7 @@ private fun nearest(points: List<ZoomPoint>, zoom: XRange): List<ZoomPoint> =
   )
 
 private const val SELECTION_ALPHA = 0.2f
+private const val ZOOM_EDGE_ALPHA = 0.35f
+private val ZOOM_EDGE_WIDTH = 24.dp
+private const val ZOOM_TRACK_ALPHA = 0.15f
+private val ZOOM_SCROLLBAR_HEIGHT = 3.dp

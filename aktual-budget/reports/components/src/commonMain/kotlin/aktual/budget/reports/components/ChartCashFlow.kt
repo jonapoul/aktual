@@ -56,10 +56,12 @@ import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
 import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import kotlin.math.roundToLong
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.YearMonth
 
 @Composable
 internal fun CashFlowChart(
@@ -74,7 +76,7 @@ internal fun CashFlowChart(
       if (compact) {
         CompactHeader(data)
       } else {
-        RegularHeader(data)
+        RegularHeader(data, zoom)
       }
     }
 
@@ -99,7 +101,7 @@ internal fun CashFlowChart(
         modifier = chartModifier,
         modelProducer = modelProducer,
         scrollState = rememberVicoScrollState(scrollEnabled = false),
-        animationSpec = chartAnimationSpec(compact),
+        animationSpec = zoom.animationSpec(compact),
         chart =
           rememberCashFlowChart(
             showBalance = data.showBalance,
@@ -119,7 +121,7 @@ internal fun CashFlowChart(
                 label = label,
                 tick = tick,
                 valueFormatter = yearMonthXAxisFormatter(),
-                itemPlacer = hItemPlacer(compact),
+                itemPlacer = hItemPlacer(lines = false),
               ),
             marker = if (compact) null else rememberMarker(),
             markerVisibilityListener = rememberMarkerHaptics(compact),
@@ -223,12 +225,15 @@ private fun summaryData(data: CashFlowData): SummaryData {
 @Composable
 private fun RegularHeader(
   data: CashFlowData,
+  zoom: ChartZoomState,
   modifier: Modifier = Modifier,
 ) =
   Row(modifier = modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp).fillMaxWidth()) {
     DateRangeText(
       modifier = Modifier.weight(1f),
       text = dateRange(data.items.keys),
+      zoom = zoom,
+      toMonth = { x -> YearMonth.fromMonthNumber(x.roundToLong()) },
       color = colors.pageText,
     )
 

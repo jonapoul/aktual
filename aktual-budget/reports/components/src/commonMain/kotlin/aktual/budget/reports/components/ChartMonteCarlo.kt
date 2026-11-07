@@ -178,7 +178,7 @@ private fun Chart(
       modifier = chartModifier,
       modelProducer = modelProducer,
       scrollState = rememberVicoScrollState(scrollEnabled = false),
-      animationSpec = chartAnimationSpec(compact),
+      animationSpec = zoom.animationSpec(compact),
       chart =
         rememberCartesianChart(
           rememberLineCartesianLayer(
@@ -199,6 +199,7 @@ private fun Chart(
                 ),
               ),
           ),
+          layerPadding = { EdgeLayerPadding },
           startAxis =
             VerticalAxis.rememberStart(
               line = line,
@@ -248,7 +249,11 @@ private fun Chart(
 fun ageItemPlacer(ageCount: Int): HorizontalAxis.ItemPlacer {
   val spacing = (ageCount / AGE_LABELS).coerceAtLeast(1)
   return remember(spacing) {
-    HorizontalAxis.ItemPlacer.aligned(offset = { 0 }, spacing = { spacing })
+    HorizontalAxis.ItemPlacer.aligned(
+      offset = { 0 },
+      spacing = { spacing },
+      shiftExtremeLabels = true,
+    )
   }
 }
 

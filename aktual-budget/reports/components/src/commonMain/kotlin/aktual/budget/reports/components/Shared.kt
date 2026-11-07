@@ -39,6 +39,7 @@ import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisLineComponen
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisTickComponent
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.compose.cartesian.decoration.Decoration
+import com.patrykandpatrick.vico.compose.cartesian.layer.CartesianLayerPadding
 import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarker
 import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarkerVisibilityListener
 import com.patrykandpatrick.vico.compose.cartesian.marker.DefaultCartesianMarker
@@ -95,12 +96,13 @@ fun axisLabelComponent(compact: Boolean) =
     )
   }
 
+// Line charts pull the end labels inward so the lines run to the plot edges. Column charts keep
+// the labels centred under their columns, which pad the plot anyway. Line charts need
+// EdgeLayerPadding too
 @Composable
-internal fun hItemPlacer(compact: Boolean) =
-  if (compact) {
-    remember { HorizontalAxis.ItemPlacer.aligned(offset = { 0 }, spacing = { 1 }) }
-  } else {
-    remember { HorizontalAxis.ItemPlacer.aligned(offset = { 0 }, spacing = { 1 }) }
+internal fun hItemPlacer(lines: Boolean) =
+  remember(lines) {
+    HorizontalAxis.ItemPlacer.aligned(offset = { 0 }, spacing = { 1 }, shiftExtremeLabels = lines)
   }
 
 // Compact charts skip animating for smoother list scrolling. 500ms tween mirrors vico's default
@@ -275,6 +277,28 @@ internal fun DateRangeText(
     style = typography.bodyMedium,
   )
 
+// Swaps in the visible months while zoomed, mapping x values with [toMonth]
+@Composable
+internal fun DateRangeText(
+  text: String,
+  zoom: ChartZoomState,
+  toMonth: (Double) -> YearMonth?,
+  modifier: Modifier = Modifier,
+  color: Color = colors.pageTextSubdued,
+) {
+  val zoomed =
+    zoom.range?.let { range ->
+      val start = toMonth(range.start) ?: return@let null
+      val end = toMonth(range.endInclusive) ?: return@let null
+      dateRange(start, end)
+    }
+  DateRangeText(
+    modifier = modifier,
+    text = zoomed ?: text,
+    color = if (zoomed == null) color else colors.reportsBlue,
+  )
+}
+
 @Composable
 fun DateRangeType.string() =
   when (this) {
@@ -308,3 +332,6 @@ class VerticalLine(private val x: Double, private val line: LineComponent) : Dec
       line.drawVertical(context, canvasX, layerBounds.top, layerBounds.bottom)
     }
 }
+
+// Vico skips axis labels on the exact edges of the plot, so line charts keep a sliver of padding
+internal val EdgeLayerPadding = CartesianLayerPadding(unscalableStart = 1.dp, unscalableEnd = 1.dp)

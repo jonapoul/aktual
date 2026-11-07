@@ -9,6 +9,7 @@ import blueprint.core.gitVersionDate
 import blueprint.core.intProperty
 import blueprint.core.javaVersion
 import blueprint.core.localProperties
+import com.android.build.api.variant.HostTestBuilder.Companion.UNIT_TEST_TYPE
 
 plugins {
   alias(libs.plugins.kotlin.serialization)
@@ -21,7 +22,8 @@ plugins {
   id("aktual.convention.test")
 }
 
-val isCi = providers.environmentVariable("CI").isPresent
+// Only the CI job that builds the ci APK sets this, so other builds and the manifest lock skip it
+val hasCiBuildType = providers.gradleProperty("aktual.android.ciBuildType").isPresent
 
 // Local builds share a version code, so any of them can be installed over another
 val appVersionCode = providers.environmentVariable("CI").flatMap { gitVersionCode() }.orElse(1)
@@ -37,7 +39,6 @@ android {
     targetSdk = providers.intProperty(key = "aktual.android.targetSdk").get()
     versionCode = appVersionCode.get()
     versionName = gitVersionName.get()
-    multiDexEnabled = true
     base.archivesName = "$applicationId-$versionName"
     testInstrumentationRunnerArguments["disableAnalytics"] = "true"
   }
@@ -98,13 +99,17 @@ android {
       isMinifyEnabled = false
     }
 
-    // Debug build without LeakCanary, installable alongside dev and release. Only exists on CI
-    if (isCi) {
+    // Debug build without LeakCanary, installable alongside dev and release
+    if (hasCiBuildType) {
       register("ci") {
         initWith(getByName("debug"))
         applicationIdSuffix = ".ci"
         versionNameSuffix = "-ci"
         matchingFallbacks += "debug"
+        signingConfigs
+          .getByName("release")
+          .takeIf { it.storeFile != null }
+          ?.let { signingConfig = it }
       }
     }
 
@@ -121,8 +126,6 @@ android {
   }
 
   manifestLock {
-    // The ci build type only exists on CI, so its variant gets a lock file of its own
-    if (isCi) lockFile = layout.projectDirectory.file("src/main/AndroidManifest.ci.lock.yaml")
     failOnLockChange = true
     content {
       sdkVersion = true
@@ -141,6 +144,9 @@ androidComponents {
   beforeVariants { variant ->
     variant.enableAndroidTest =
       variant.enableAndroidTest && projectDir.resolve("src/androidTest").exists()
+
+    // Android Studio's Compose Preview needs unit tests enabled on every variant
+    variant.hostTests[UNIT_TEST_TYPE]?.enable = true
   }
 
   // Every CI build shares a version code, so any of them can be installed over another
