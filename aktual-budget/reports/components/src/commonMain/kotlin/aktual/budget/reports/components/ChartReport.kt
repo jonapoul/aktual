@@ -20,6 +20,7 @@ import aktual.budget.reports.vm.UnsupportedData
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
+/** When [compact], keep in sync with [ShimmerChart] */
 @Composable
 fun ReportChart(
   data: ChartData,

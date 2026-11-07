@@ -16,6 +16,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.normalButton
 import aktual.core.ui.rememberHighlighted
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
@@ -136,8 +137,7 @@ internal fun ShimmerArtifactItem(modifier: Modifier = Modifier) {
     modifier =
       modifier
         .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
-        .background(colors.buttonNormalBackground, CardShape)
-        .border(Hairline, colors.pillBorderDark, CardShape)
+        .normalButton(colors)
         .padding(Dimens.Large)
         .shimmer(rememberShimmer(Window)),
     verticalAlignment = CenterVertically,

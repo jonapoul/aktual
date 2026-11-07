@@ -19,12 +19,12 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.ButtonShape
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NewTransactionsBadge
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
+import aktual.core.ui.ShimmerLine
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
@@ -38,7 +38,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -216,6 +215,7 @@ private fun HeaderRow(
   }
 }
 
+/** Keep in sync with [ShimmerAccounts] */
 @Composable
 private fun AccountRow(
   account: AccountBalance,
@@ -284,11 +284,9 @@ private fun AccountRow(
   }
 }
 
-// Keep this in sync with AccountRow
+/** Keep in sync with [HeaderRow] and [AccountRow] */
 @Composable
 private fun ShimmerAccounts(modifier: Modifier = Modifier) {
-  val bar = Modifier.background(colors.tableText, CardShape)
-
   Column(
     modifier =
       modifier
@@ -303,8 +301,8 @@ private fun ShimmerAccounts(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = CenterVertically,
       ) {
-        Box(modifier = bar.width(140.dp).height(16.dp))
-        Box(modifier = bar.width(72.dp).height(16.dp))
+        ShimmerLine(typography.bodyLarge, Modifier.width(140.dp))
+        ShimmerLine(typography.bodyLarge, Modifier.width(72.dp))
       }
     }
   }

@@ -14,10 +14,12 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.RowShape
+import aktual.core.ui.ShimmerLine
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +36,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import java.util.Locale
 import kotlinx.collections.immutable.toImmutableList
 
@@ -72,7 +76,7 @@ internal fun LazyListScope.bankLogin(
   when (val banks = login.banks) {
     Loading -> {
       items(count = BankSyncDS.SHIMMER_ACCOUNT_ITEMS, key = { "bank-shimmer-$it" }) {
-        ShimmerBankSyncAccountItem()
+        ShimmerBankRow()
       }
     }
     is Failure -> {
@@ -250,6 +254,7 @@ private fun LoginFailed(status: BankLoginStatus.Failed, modifier: Modifier = Mod
   }
 }
 
+/** Keep in sync with [ShimmerBankRow] */
 @Composable
 private fun BankRow(bank: LoginBankItem, onClick: () -> Unit, modifier: Modifier = Modifier) {
   Text(
@@ -267,6 +272,23 @@ private fun BankRow(bank: LoginBankItem, onClick: () -> Unit, modifier: Modifier
     maxLines = 1,
     overflow = Ellipsis,
   )
+}
+
+/** Keep in sync with [BankRow] */
+@Composable
+private fun ShimmerBankRow(modifier: Modifier = Modifier) {
+  Box(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .clip(RowShape)
+        .background(colors.tableBackground, RowShape)
+        .border(Hairline, colors.tableBorder, RowShape)
+        .padding(BankSyncDS.itemCardPadding)
+        .shimmer(rememberShimmer(Window)),
+  ) {
+    ShimmerLine(typography.bodyMedium, Modifier.fillMaxWidth(fraction = 0.5f))
+  }
 }
 
 // Named in the user's language, falling back to the ISO code

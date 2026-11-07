@@ -18,16 +18,18 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.ChipSize
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.ShimmerBlock
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.stringLong
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -67,7 +69,7 @@ internal fun UpcomingCard(
   HomeCard(modifier = modifier) {
     when (state) {
       Empty -> Unit
-      Loading -> ShimmerUpcoming()
+      Loading -> ShimmerDatedRows(SHIMMER_ROWS)
       Failed -> CardError(message = Strings.homeUpcomingFailed, onAction = onAction)
       is Loaded -> UpcomingContent(state, onAction)
     }
@@ -99,21 +101,21 @@ private fun UpcomingContent(
   }
 }
 
-// Keep this in sync with UpcomingHeader and UpcomingRow
+/** Keep in sync with [UpcomingHeader], [UpcomingRow] and [RecentCard] */
 @Composable
-private fun ShimmerUpcoming(modifier: Modifier = Modifier) {
-  val bar = Modifier.background(colors.tableText, CardShape)
-
+internal fun ShimmerDatedRows(rows: Int, modifier: Modifier = Modifier) {
   Column(modifier = modifier.fillMaxWidth().shimmer(rememberShimmer(Window))) {
     Row(
       modifier = Modifier.fillMaxWidth().padding(horizontal = CardPadding),
-      horizontalArrangement = Arrangement.SpaceBetween,
+      horizontalArrangement = spacedBy(12.dp),
+      verticalAlignment = CenterVertically,
     ) {
-      Box(modifier = bar.width(140.dp).height(24.dp))
-      Box(modifier = bar.width(48.dp).height(24.dp))
+      ShimmerLine(typography.titleSmall, Modifier.width(140.dp))
+      Spacer(Modifier.weight(1f))
+      ShimmerBlock(Modifier.width(48.dp).height(24.dp), ChipSize.Small.shape)
     }
 
-    repeat(SHIMMER_ROWS) {
+    repeat(rows) {
       Row(
         modifier =
           Modifier.fillMaxWidth()
@@ -122,14 +124,14 @@ private fun ShimmerUpcoming(modifier: Modifier = Modifier) {
         horizontalArrangement = spacedBy(12.dp),
         verticalAlignment = CenterVertically,
       ) {
-        Box(modifier = bar.width(DateBadgeWidth).height(40.dp))
+        ShimmerDateBadge()
 
-        Column(modifier = Modifier.weight(1f), verticalArrangement = spacedBy(6.dp)) {
-          Box(modifier = bar.width(120.dp).height(16.dp))
-          Box(modifier = bar.width(160.dp).height(12.dp))
+        Column(modifier = Modifier.weight(1f), verticalArrangement = spacedBy(2.dp)) {
+          ShimmerLine(typography.bodyLarge, Modifier.width(120.dp))
+          ShimmerLine(typography.bodySmall, Modifier.width(160.dp))
         }
 
-        Box(modifier = bar.width(64.dp).height(16.dp))
+        ShimmerLine(typography.bodyLarge, Modifier.width(64.dp))
       }
     }
   }
@@ -219,6 +221,7 @@ private fun UpcomingRow(
 }
 
 // The row's due text already says when it is
+/** Keep in sync with [ShimmerDateBadge] */
 @Composable
 internal fun DateBadge(date: LocalDate, modifier: Modifier = Modifier) {
   Column(
@@ -243,6 +246,21 @@ internal fun DateBadge(date: LocalDate, modifier: Modifier = Modifier) {
       fontWeight = SemiBold,
       maxLines = 1,
     )
+  }
+}
+
+/** Keep in sync with [DateBadge] */
+@Composable
+private fun ShimmerDateBadge(modifier: Modifier = Modifier) {
+  Column(
+    modifier =
+      modifier
+        .width(DateBadgeWidth)
+        .background(colors.pageText, CardShape)
+        .padding(vertical = 4.dp),
+  ) {
+    Text(text = "", style = typography.labelSmall, maxLines = 1)
+    Text(text = "", style = typography.titleMedium, maxLines = 1)
   }
 }
 

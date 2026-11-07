@@ -97,6 +97,7 @@ internal fun ReportsCard(
   }
 }
 
+/** Keep in sync with [ShimmerReports] */
 @Composable
 private fun ReportsContent(
   state: Loaded,
@@ -120,11 +121,15 @@ private fun ReportsContent(
   }
 }
 
+/** Keep in sync with [ReportsContent] */
 @Composable
 private fun ShimmerReports(modifier: Modifier = Modifier) {
   Column(modifier = modifier.fillMaxWidth()) {
     ReportsHeader(onManage = null)
-    PinnedReportChart(modifier = Modifier.padding(horizontal = CardPadding), data = null)
+    PinnedReportChart(
+      modifier = Modifier.fillMaxWidth().padding(horizontal = CardPadding - ChartInset),
+      data = null,
+    )
   }
 }
 

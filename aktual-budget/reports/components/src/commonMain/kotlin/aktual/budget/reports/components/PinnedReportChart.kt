@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun PinnedReportChart(data: ChartData?, modifier: Modifier = Modifier) {
   if (data == null) {
-    ShimmerDashboardItem(modifier = modifier)
+    ShimmerChart(modifier = modifier)
   } else {
     ReportChart(
       modifier = modifier.fillMaxWidth().padding(ChartPadding).height(ChartHeight),

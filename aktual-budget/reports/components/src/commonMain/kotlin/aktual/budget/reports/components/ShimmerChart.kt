@@ -6,10 +6,9 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.tableRow
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,17 +24,21 @@ import com.valentinilk.shimmer.shimmer
 val ChartHeight = 200.dp
 val ChartPadding = 8.dp
 
+/** Keep in sync with ReportCard on the dashboard */
 @Composable
-fun ShimmerDashboardItem(modifier: Modifier = Modifier) {
+fun ShimmerDashboardItem(modifier: Modifier = Modifier) =
+  ShimmerChart(modifier = modifier.dashboardItem(colors))
+
+/** Keep in sync with [ReportChart] */
+@Composable
+fun ShimmerChart(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(Window)
   Column(
-    modifier =
-      modifier.dashboardItem(colors).padding(ChartPadding).height(ChartHeight).shimmer(shimmer),
+    modifier = modifier.fillMaxWidth().padding(ChartPadding).height(ChartHeight).shimmer(shimmer),
     verticalArrangement = Arrangement.spacedBy(Dimens.Large),
   ) {
-    val bar = Modifier.background(colors.tableText, CardShape)
-    Box(modifier = bar.fillMaxWidth(fraction = 0.4f).height(Dimens.VeryLarge))
-    Box(modifier = bar.fillMaxWidth().weight(1f))
+    ShimmerBlock(Modifier.fillMaxWidth(fraction = 0.4f).height(Dimens.VeryLarge))
+    ShimmerBlock(Modifier.fillMaxWidth().weight(1f))
   }
 }
 

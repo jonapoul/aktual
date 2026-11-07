@@ -10,6 +10,5 @@ internal object ListTagsDS {
   const val HIDDEN_ALPHA = 0.5f
 
   val shimmerChipWidth = 88.dp
-  val shimmerTextHeight = 15.dp
   const val SHIMMER_ITEMS = 10
 }

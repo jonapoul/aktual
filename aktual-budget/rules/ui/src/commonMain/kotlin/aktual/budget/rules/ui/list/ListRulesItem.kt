@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -83,7 +82,7 @@ internal fun ListRulesItem(
   }
 }
 
-/** Keep this in sync with [ShimmerListRulesItem] */
+/** Keep in sync with [ShimmerListRulesItem] */
 @Composable
 internal fun ListRulesItemRow(
   rule: Rule,
@@ -169,7 +168,7 @@ private fun ListRulesItemActions(
   }
 }
 
-/** Keep this in sync with [ListRulesItemRow] */
+/** Keep in sync with [ListRulesItemRow] */
 @Composable
 internal fun ShimmerListRulesItem(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(Window)
@@ -187,11 +186,17 @@ internal fun ShimmerListRulesItem(modifier: Modifier = Modifier) {
   }
 }
 
+// Same padding and text height as rulePill
 @Composable
 private fun ShimmerPill(fraction: Float) =
   Box(
-    modifier = Modifier.fillMaxWidth(fraction).height(20.dp).background(colors.pageText, CardShape),
-  )
+    modifier =
+      Modifier.fillMaxWidth(fraction)
+        .background(colors.pageText, CardShape)
+        .padding(horizontal = 6.dp, vertical = 3.dp),
+  ) {
+    Text(text = "", maxLines = 1)
+  }
 
 private fun Modifier.ruleRow(colors: Colors, onClick: (() -> Unit)?): Modifier =
   fillMaxWidth()

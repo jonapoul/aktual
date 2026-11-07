@@ -329,6 +329,7 @@ private fun SaveErrorDialog(message: String, onDismiss: () -> Unit) {
   )
 }
 
+/** Keep in sync with [ShimmerEditPayee] */
 @Composable
 private fun EditPayeeContent(
   payee: PayeeItem,
@@ -439,6 +440,7 @@ private fun SwitchRow(
   }
 }
 
+/** Keep in sync with [EditPayeeContent] */
 @Composable
 private fun ShimmerEditPayee(modifier: Modifier = Modifier) {
   val bar = Modifier.background(colors.pageText, CardShape)

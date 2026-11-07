@@ -13,7 +13,6 @@ import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -23,26 +22,23 @@ import aktual.core.ui.HazedTopBarSpacing
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.RowShape
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.card
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
-import aktual.core.ui.normalButton
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.metrics.vm.MetricsState
 import aktual.metrics.vm.MetricsViewModel
 import alakazam.compose.VerticalSpacer
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -150,51 +146,33 @@ private fun MetricsContent(
   }
 }
 
+/** Keep in sync with [SuccessContent] */
 @Composable
 private fun LoadingContent(modifier: Modifier = Modifier) {
-  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
-    repeat(times = 3) { LoadingItem() }
+  val shimmer = rememberShimmer(Window)
+  val dataModifier = Modifier.fillMaxWidth().card(colors).padding(Dimens.VeryLarge).shimmer(shimmer)
+
+  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(VERTICAL_SPACING)) {
+    repeat(times = 2) { LoadingRow(modifier = dataModifier) }
+
+    Column(modifier = dataModifier) {
+      ShimmerLine(typography.titleLarge, Modifier.fillMaxWidth(fraction = 0.3f))
+      VerticalSpacer(10.dp)
+      repeat(times = MEMORY_ROWS) { LoadingRow() }
+    }
   }
 }
 
+/** Keep in sync with [SuccessContentRow] */
 @Composable
-internal fun LoadingItem(modifier: Modifier = Modifier) {
-  val shimmer = rememberShimmer(Window)
-
+private fun LoadingRow(modifier: Modifier = Modifier) {
   Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .normalButton(colors, RowShape)
-        .padding(horizontal = 15.dp, vertical = 12.dp)
-        .shimmer(shimmer),
-    horizontalArrangement = Arrangement.Start,
+    modifier = modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = CenterVertically,
   ) {
-    Column(modifier = Modifier.weight(1f)) {
-      Box(
-        modifier =
-          Modifier.fillMaxWidth(fraction = 0.55f)
-            .height(20.dp)
-            .background(colors.pageText, CardShape),
-      )
-
-      Box(
-        modifier =
-          Modifier.padding(top = 4.dp)
-            .fillMaxWidth(fraction = 0.35f)
-            .height(18.dp)
-            .background(colors.pageText, CardShape),
-      )
-
-      Box(
-        modifier =
-          Modifier.padding(top = 4.dp)
-            .fillMaxWidth(fraction = 0.45f)
-            .height(20.dp)
-            .background(colors.pageText, CardShape),
-      )
-    }
+    ShimmerLine(typography.bodyLarge, Modifier.fillMaxWidth(fraction = 0.35f))
+    ShimmerLine(typography.bodyMedium, Modifier.fillMaxWidth(fraction = 0.3f))
   }
 }
 
@@ -217,6 +195,7 @@ private fun FailureContent(
   )
 }
 
+/** Keep in sync with [LoadingContent] */
 @Composable
 private fun SuccessContent(
   state: MetricsState.Success,
@@ -291,6 +270,7 @@ private fun formatted(duration: Duration): String =
   }
 
 private val VERTICAL_SPACING = 8.dp
+private const val MEMORY_ROWS = 5
 
 private val TIMESTAMP_FORMAT = DateTimeComponents.Format {
   date(LocalDate.Formats.ISO)
@@ -319,6 +299,7 @@ private fun formatted(instant: Instant): String {
   return "$timestamp\n($dt ago)"
 }
 
+/** Keep in sync with [LoadingRow] */
 @Composable
 private fun SuccessContentRow(title: String, value: String, modifier: Modifier = Modifier) {
   Row(modifier = modifier.fillMaxWidth(), verticalAlignment = CenterVertically) {

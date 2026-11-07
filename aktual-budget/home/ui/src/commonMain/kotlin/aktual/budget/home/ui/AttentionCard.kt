@@ -19,17 +19,16 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
-import androidx.compose.foundation.background
+import aktual.core.ui.ShimmerBlock
+import aktual.core.ui.ShimmerLine
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -95,6 +94,7 @@ internal fun AttentionCard(
   }
 }
 
+/** Keep in sync with [ShimmerAttention] */
 @Composable
 private fun AttentionContent(
   state: Loaded,
@@ -119,16 +119,14 @@ private fun AttentionContent(
   }
 }
 
-// Keep this in sync with AttentionRow
+/** Keep in sync with [AttentionContent] and [AttentionRow] */
 @Composable
 private fun ShimmerAttention(modifier: Modifier = Modifier) {
-  val bar = Modifier.background(colors.tableText, CardShape)
-
   Column(
     modifier =
       modifier.fillMaxWidth().padding(horizontal = CardPadding).shimmer(rememberShimmer(Window)),
   ) {
-    Box(modifier = bar.width(120.dp).height(16.dp))
+    ShimmerLine(typography.titleSmall, Modifier.width(120.dp))
 
     repeat(SHIMMER_ROWS) {
       Row(
@@ -136,10 +134,10 @@ private fun ShimmerAttention(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = CenterVertically,
       ) {
-        Box(modifier = Modifier.size(IconSize).background(colors.tableText, CircleShape))
-        Box(modifier = bar.width(160.dp).height(16.dp))
-        Box(modifier = Modifier.weight(1f))
-        Box(modifier = bar.width(48.dp).height(16.dp))
+        ShimmerBlock(Modifier.size(IconSize), CircleShape)
+        ShimmerLine(typography.bodyLarge, Modifier.width(160.dp))
+        Spacer(Modifier.weight(1f))
+        ShimmerLine(typography.bodyMedium, Modifier.width(48.dp))
       }
     }
   }
@@ -153,6 +151,7 @@ private fun AttentionItem.SyncFailed.fixAction(): HomeAction =
     else -> OpenBankSyncSettings(account)
   }
 
+/** Keep in sync with [ShimmerAttention] */
 @Composable
 private fun AttentionRow(
   item: AttentionItem,

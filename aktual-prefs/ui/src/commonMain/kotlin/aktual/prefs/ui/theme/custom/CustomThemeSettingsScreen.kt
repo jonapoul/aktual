@@ -35,6 +35,8 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
+import aktual.core.ui.ShimmerBlock
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.disabledIf
 import aktual.core.ui.hazedTopBar
@@ -67,6 +69,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -74,7 +77,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -275,6 +277,7 @@ private fun LoadingContent(contentPadding: PaddingValues, modifier: Modifier = M
   }
 }
 
+/** Keep in sync with [CustomThemeItem] */
 @Composable
 private fun LoadingItem(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(Window)
@@ -291,47 +294,26 @@ private fun LoadingItem(modifier: Modifier = Modifier) {
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = CenterVertically,
   ) {
-    // Checkbox
-    Box(
-      modifier = Modifier.minimumInteractiveComponentSize().background(colors.pageText, CardShape),
-    )
+    ShimmerBlock(Modifier.padding(8.dp).size(20.dp), CircleShape)
 
-    // Text
-    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-      Box(
-        modifier =
-          Modifier.fillMaxWidth(fraction = 0.55f)
-            .height(20.dp)
-            .background(colors.pageText, CardShape),
-      )
+    Column(
+      modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
+      verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+      Column {
+        ShimmerLine(typography.bodyMedium, Modifier.fillMaxWidth(fraction = 0.55f))
+        ShimmerLine(typography.bodySmall, Modifier.fillMaxWidth(fraction = 0.35f))
+      }
 
-      Box(
-        modifier =
-          Modifier.fillMaxWidth(fraction = 0.35f)
-            .height(15.dp)
-            .background(colors.pageText, CardShape),
-      )
-
-      // Preview colours
       Row(
         modifier = Modifier.wrapContentWidth(),
         horizontalArrangement = Arrangement.spacedBy(PREVIEW_SPACING),
       ) {
-        repeat(times = 6) {
-          Box(
-            modifier =
-              Modifier.weight(PREVIEW_WEIGHT)
-                .height(PREVIEW_HEIGHT)
-                .background(colors.pageText, CardShape),
-          )
-        }
+        repeat(times = 6) { ShimmerBlock(Modifier.weight(PREVIEW_WEIGHT).height(PREVIEW_HEIGHT)) }
       }
     }
 
-    // Inspect button
-    Box(
-      modifier = Modifier.minimumInteractiveComponentSize().background(colors.pageText, CardShape),
-    )
+    ShimmerBlock(Modifier.padding(8.dp).size(24.dp))
   }
 }
 
@@ -357,6 +339,7 @@ private fun SuccessContent(
   }
 }
 
+/** Keep in sync with [LoadingItem] */
 @Composable
 private fun CustomThemeItem(
   item: CatalogItem,

@@ -25,7 +25,6 @@ import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -38,6 +37,8 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
+import aktual.core.ui.ShimmerBlock
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -218,10 +219,9 @@ private fun LinkBankAccountScaffold(
 }
 
 // Stands in for the header and the account list while the providers load
+/** Keep in sync with [choosing] */
 @Composable
 private fun ShimmerLinkBankAccount(modifier: Modifier = Modifier) {
-  val bar = Modifier.background(colors.pageText, CardShape)
-
   Column(
     modifier = modifier.fillMaxSize().padding(horizontal = Dimens.ScreenPadding),
     verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
@@ -231,8 +231,8 @@ private fun ShimmerLinkBankAccount(modifier: Modifier = Modifier) {
         Modifier.fillMaxWidth().padding(BankSyncDS.headerPadding).shimmer(rememberShimmer(Window)),
       verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsItemSpacing),
     ) {
-      Box(bar.fillMaxWidth(fraction = 0.7f).height(BankSyncDS.shimmerItemTextHeightSmall))
-      Box(bar.fillMaxWidth().height(BankSyncDS.shimmerToggleHeight))
+      ShimmerLine(typography.bodyMedium, Modifier.fillMaxWidth(fraction = 0.7f))
+      ShimmerBlock(Modifier.fillMaxWidth().height(BankSyncDS.shimmerToggleHeight))
     }
 
     repeat(BankSyncDS.SHIMMER_ACCOUNT_ITEMS) { ShimmerBankSyncAccountItem() }
@@ -251,6 +251,7 @@ private fun backAction(onAction: LinkBankAccountActionHandler) =
     onClick = { onAction(CloseLink) },
   )
 
+// Keep in sync with [ShimmerLinkBankAccount]
 private fun LazyListScope.choosing(
   state: LinkBankAccountState.Choosing,
   bankQuery: String,

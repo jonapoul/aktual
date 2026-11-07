@@ -9,16 +9,16 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
-import aktual.core.ui.ChipSize
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
+import aktual.core.ui.ShimmerChip
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.TagChip
@@ -27,11 +27,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -89,20 +87,8 @@ internal fun ShimmerTagItem(modifier: Modifier = Modifier) {
         .shimmer(rememberShimmer(Window)),
     verticalArrangement = Arrangement.spacedBy(ListTagsDS.itemContentSpacing),
   ) {
-    Box(
-      modifier =
-        Modifier.width(ListTagsDS.shimmerChipWidth)
-          .background(colors.pageText, ChipSize.Regular.shape)
-          .padding(ChipSize.Regular.contentPadding),
-    ) {
-      Text(text = "", style = typography.bodyMedium, maxLines = 1)
-    }
-    Box(
-      modifier =
-        Modifier.fillMaxWidth(fraction = 0.7f)
-          .height(ListTagsDS.shimmerTextHeight)
-          .background(colors.pageText, CardShape),
-    )
+    ShimmerChip(typography.bodyMedium, Modifier.width(ListTagsDS.shimmerChipWidth))
+    ShimmerLine(typography.bodySmall, Modifier.fillMaxWidth(fraction = 0.7f))
   }
 }
 

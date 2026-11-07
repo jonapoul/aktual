@@ -40,7 +40,7 @@ import kotlinx.collections.immutable.persistentListOf
 /**
  * actual/packages/desktop-client/src/components/manager/BudgetList.tsx
  *
- * When updating this, make sure to also change [ShimmerBudgetListItem]
+ * Keep in sync with [ShimmerBudgetListItem]
  */
 @Composable
 internal fun BudgetListItem(

@@ -299,6 +299,7 @@ private fun SaveErrorDialog(message: String, onDismiss: () -> Unit) {
   )
 }
 
+/** Keep in sync with [ShimmerEditTag] */
 @Composable
 private fun EditTagContent(
   tagState: TextFieldState,
@@ -364,6 +365,7 @@ private fun EditTagContent(
 }
 
 // Stands in for the tag, description and colour fields while the tag loads
+/** Keep in sync with [EditTagContent] */
 @Composable
 private fun ShimmerEditTag(modifier: Modifier = Modifier) {
   val bar = Modifier.background(colors.pageText, CardShape)

@@ -38,6 +38,8 @@ import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.ShimmerBlock
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.errorButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -209,6 +211,7 @@ private fun BankSyncSettingsScaffold(
   }
 }
 
+/** Keep in sync with [ShimmerSettings] */
 @Composable
 private fun BankSyncSettingsContent(
   state: BankSyncSettingsState.Editing,
@@ -244,25 +247,24 @@ private fun BankSyncSettingsContent(
 }
 
 // Stands in for the field mapping and options groups while the settings load
+/** Keep in sync with [BankSyncSettingsContent] */
 @Composable
 private fun ShimmerSettings(modifier: Modifier = Modifier) {
-  val bar = Modifier.background(colors.pageText, CardShape)
-
   Column(
     modifier =
       modifier.fillMaxSize().padding(Dimens.ScreenPadding).shimmer(rememberShimmer(Window)),
     verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsItemSpacing),
   ) {
     ShimmerGroup {
-      Box(bar.fillMaxWidth().height(BankSyncDS.shimmerToggleHeight))
+      ShimmerBlock(Modifier.fillMaxWidth().height(BankSyncDS.shimmerToggleHeight))
       repeat(BankSyncDS.SHIMMER_MAPPED_FIELDS) {
         ShimmerGroupRow {
           Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsLabelSpacing),
           ) {
-            Box(bar.fillMaxWidth(fraction = 0.4f).height(BankSyncDS.shimmerItemTextHeight))
-            Box(bar.fillMaxWidth().height(BankSyncDS.shimmerDropDownHeight))
+            ShimmerLine(typography.bodyLarge, Modifier.fillMaxWidth(fraction = 0.4f))
+            ShimmerBlock(Modifier.fillMaxWidth().height(BankSyncDS.shimmerDropDownHeight))
           }
         }
       }
@@ -271,13 +273,13 @@ private fun ShimmerSettings(modifier: Modifier = Modifier) {
     ShimmerGroup {
       repeat(BankSyncDS.SHIMMER_OPTIONS) {
         ShimmerGroupRow {
-          Box(bar.weight(1f).height(BankSyncDS.shimmerItemTextHeight))
-          Box(
+          ShimmerLine(typography.bodyLarge, Modifier.weight(1f))
+          ShimmerBlock(
             Modifier.size(
-                width = BankSyncDS.shimmerSwitchWidth,
-                height = BankSyncDS.shimmerSwitchHeight,
-              )
-              .background(colors.pageText, CircleShape),
+              width = BankSyncDS.shimmerSwitchWidth,
+              height = BankSyncDS.shimmerSwitchHeight,
+            ),
+            CircleShape,
           )
         }
       }
@@ -295,11 +297,7 @@ private fun ShimmerGroup(content: @Composable ColumnScope.() -> Unit) {
         .padding(BankSyncDS.shimmerGroupPadding),
     verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsFieldSpacing),
   ) {
-    Box(
-      Modifier.fillMaxWidth(fraction = 0.3f)
-        .height(BankSyncDS.shimmerItemTextHeight)
-        .background(colors.pageText, CardShape),
-    )
+    ShimmerLine(typography.titleMedium, Modifier.fillMaxWidth(fraction = 0.3f))
     content()
   }
 }
@@ -311,7 +309,7 @@ private fun ShimmerGroupRow(content: @Composable RowScope.() -> Unit) {
     horizontalArrangement = Arrangement.spacedBy(BankSyncDS.settingsFieldSpacing),
     verticalAlignment = CenterVertically,
   ) {
-    Box(Modifier.size(BankSyncDS.shimmerIconSize).background(colors.pageText, CardShape))
+    ShimmerBlock(Modifier.size(BankSyncDS.shimmerIconSize))
     content()
   }
 }
