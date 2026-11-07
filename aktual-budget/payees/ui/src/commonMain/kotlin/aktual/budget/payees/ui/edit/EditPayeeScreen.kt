@@ -4,6 +4,7 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionSet
 import aktual.budget.model.ConditionsFilter
 import aktual.budget.model.PayeeId
+import aktual.budget.model.PayeeLocationId
 import aktual.budget.payees.ui.list.PayeeChip
 import aktual.budget.payees.ui.list.PayeesPreview
 import aktual.budget.payees.ui.list.RuleCountChip
@@ -113,6 +114,7 @@ import kotlin.math.abs
 import kotlin.math.roundToLong
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonPrimitive
 import org.jetbrains.compose.resources.getString
 
@@ -616,9 +618,26 @@ private fun PreviewEditPayeeScreen(
       isLearningEnabled = true,
       hasChanges = false,
       canSave = true,
+      locations =
+        PreviewLocations.takeIf { (this as? Editing)?.payee?.isTransfer == false }
+          ?: persistentListOf(),
       onAction = {},
     )
   }
+
+private val PreviewLocations =
+  persistentListOf(
+    SavedLocation(
+      id = PayeeLocationId("a"),
+      coordinates = Coordinates(latitude = 51.50735, longitude = -0.12776),
+      date = LocalDate(2026, 11, 7),
+    ),
+    SavedLocation(
+      id = PayeeLocationId("b"),
+      coordinates = Coordinates(latitude = 51.51322, longitude = -0.08806),
+      date = null,
+    ),
+  )
 
 private class EditPayeeStateProvider :
   ColorParamsProvider<EditPayeeState>(
