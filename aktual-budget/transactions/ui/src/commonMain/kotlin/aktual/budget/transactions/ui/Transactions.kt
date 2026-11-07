@@ -167,7 +167,7 @@ private fun TransactionsFilled(
         Column(modifier = Modifier.fillMaxWidth().animateItem().background(background)) {
           // A hairline between days, or between every row when dense
           if (index > 0 && (showDate || density == Dense)) {
-            HorizontalDivider(color = colors.tableBorder)
+            HorizontalDivider()
           }
 
           // The first year is already pinned under the top bar

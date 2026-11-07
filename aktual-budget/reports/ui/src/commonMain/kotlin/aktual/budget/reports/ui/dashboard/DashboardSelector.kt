@@ -69,7 +69,6 @@ internal fun DashboardSelector(
       Icon(
         imageVector = AktualIcons.CheveronDown,
         contentDescription = Strings.reportsDashboardChoose,
-        tint = colors.pageText,
       )
     }
 

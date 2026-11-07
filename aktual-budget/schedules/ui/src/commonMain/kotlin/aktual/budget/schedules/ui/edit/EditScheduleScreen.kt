@@ -477,7 +477,7 @@ private fun ShimmerSchedule(modifier: Modifier = Modifier) {
 
       Column(modifier = Modifier.fillMaxWidth().card(colors)) {
         repeat(EditScheduleDS.SHIMMER_UPCOMING_ROWS) { index ->
-          if (index > 0) HorizontalDivider(color = colors.tableBorder)
+          if (index > 0) HorizontalDivider()
           Row(
             modifier = Modifier.fillMaxWidth().padding(EditScheduleDS.rowPadding),
             horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing),

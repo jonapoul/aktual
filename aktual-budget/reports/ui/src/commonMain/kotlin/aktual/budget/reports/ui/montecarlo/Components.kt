@@ -78,7 +78,6 @@ internal fun CollapsibleSectionCard(
       Icon(
         imageVector = if (isExpanded) AktualIcons.CheveronDown else AktualIcons.CheveronRight,
         contentDescription = null,
-        tint = colors.pageText,
       )
       SectionTitle(modifier = Modifier.weight(1f), text = title)
     }

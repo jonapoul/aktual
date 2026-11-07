@@ -137,7 +137,7 @@ internal fun LogDayScaffold(
           onAction = onAction,
         )
         LogFilterChips(filters, onAction, onOpenLevels = { if (state is Loaded) showLevels = true })
-        HorizontalDivider(color = colors.tableBorder)
+        HorizontalDivider()
         if (state is Loaded && filters.query.isNotBlank()) LogMatchCount(state.lines.size)
       }
     },

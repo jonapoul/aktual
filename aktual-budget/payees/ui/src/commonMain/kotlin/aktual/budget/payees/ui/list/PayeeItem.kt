@@ -74,7 +74,6 @@ internal fun PayeeItem(
         modifier = Modifier.size(ListPayeesDS.favoriteIconSize),
         imageVector = AktualIcons.Bookmark,
         contentDescription = Strings.payeesFavorite,
-        tint = colors.pageText,
       )
     }
 

@@ -183,7 +183,7 @@ private fun HomeScaffold(
           onAction = onAction,
         )
 
-        VerticalDivider(color = colors.tableBorder)
+        VerticalDivider()
 
         HomeContent(
           state = state,

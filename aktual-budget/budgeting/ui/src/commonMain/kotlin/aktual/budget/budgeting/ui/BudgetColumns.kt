@@ -384,7 +384,7 @@ private fun SummaryCard(
       }
     }
 
-    HorizontalDivider(color = colors.tableBorder)
+    HorizontalDivider()
 
     val headline = summary.headline()
     SummaryLine {

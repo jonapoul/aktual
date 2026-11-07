@@ -47,6 +47,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -160,13 +161,13 @@ internal fun EditTransactionForm(
 
         DetailCard {
           ScheduleRow(form = form, onClick = { fieldState.edit(ScheduleLink) })
-          CardDivider()
+          HorizontalDivider()
           NotesRow(
             notes = draft.notes,
             tags = form.options.tags,
             onClick = { fieldState.edit(Notes) },
           )
-          CardDivider()
+          HorizontalDivider()
           StatusRow(draft = draft, onUnlock = onUnlock, onAction = onAction)
         }
       } else {
@@ -351,7 +352,7 @@ private fun FieldsCard(
       value = form.payeeName,
       onClick = { onEdit(Payee) },
     )
-    CardDivider()
+    HorizontalDivider()
     FieldRow(
       label = Strings.transactionCategory,
       value =
@@ -363,23 +364,23 @@ private fun FieldsCard(
       enabled = !form.isOffBudget && !form.isTransfer,
       onClick = { onEdit(Category) },
     )
-    CardDivider()
+    HorizontalDivider()
     FieldRow(
       label = Strings.transactionAccount,
       value = form.accountName,
       onClick = { onEdit(Account) },
     )
-    CardDivider()
+    HorizontalDivider()
     FieldRow(
       label = Strings.transactionDate,
       value = "${draft.date.dayOfWeek.stringLong()} ${draft.date.formatted()}",
       onClick = { onEdit(Date) },
     )
-    CardDivider()
+    HorizontalDivider()
     ScheduleRow(form = form, onClick = { onEdit(ScheduleLink) })
-    CardDivider()
+    HorizontalDivider()
     NotesRow(notes = draft.notes, tags = form.options.tags, onClick = { onEdit(Notes) })
-    CardDivider()
+    HorizontalDivider()
     StatusRow(draft = draft, onUnlock = onUnlock, onAction = onAction)
   }
 }

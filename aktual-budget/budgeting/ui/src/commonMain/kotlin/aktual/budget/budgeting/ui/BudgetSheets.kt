@@ -466,7 +466,7 @@ private fun SummarySheet(
     ) {
       Text(text = month.stringLong(), style = typography.headlineSmall)
       for ((label, amount) in summary.rows()) SummaryRow(label, amount)
-      HorizontalDivider(color = colors.tableBorder)
+      HorizontalDivider()
       val headline = summary.headline()
       SummaryRow(headline.label, headline.amount, bold = true)
     }

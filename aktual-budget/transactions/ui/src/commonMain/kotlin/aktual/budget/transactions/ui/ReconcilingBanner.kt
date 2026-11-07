@@ -96,7 +96,7 @@ internal fun ReconcilingBanner(
       }
     }
 
-    HorizontalDivider(color = colors.tableBorder)
+    HorizontalDivider()
   }
 
 // The amounts in bold, as upstream's

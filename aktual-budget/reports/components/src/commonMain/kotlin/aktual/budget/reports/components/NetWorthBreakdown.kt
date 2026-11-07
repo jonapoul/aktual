@@ -113,7 +113,6 @@ internal fun NetWorthBreakdownList(
     if (breakdown.rows.isNotEmpty()) {
       HorizontalDivider(
         modifier = Modifier.padding(vertical = 4.dp),
-        color = colors.tableBorder,
       )
     }
 

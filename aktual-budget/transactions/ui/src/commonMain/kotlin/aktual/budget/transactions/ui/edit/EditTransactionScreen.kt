@@ -410,7 +410,7 @@ private fun ShimmerTransaction(modifier: Modifier = Modifier) {
 
     DetailCard {
       repeat(SHIMMER_ROWS) { index ->
-        if (index > 0) CardDivider()
+        if (index > 0) HorizontalDivider()
         Row(
           modifier = Modifier.fillMaxWidth().padding(RowPadding),
           verticalAlignment = CenterVertically,
@@ -489,8 +489,6 @@ internal inline fun DetailCard(content: @Composable ColumnScope.() -> Unit) =
     modifier = Modifier.fillMaxWidth().background(colors.buttonNormalBackground, DetailCardShape),
     content = content,
   )
-
-@Composable internal fun CardDivider() = HorizontalDivider(color = colors.tableBorder)
 
 @Composable
 internal fun BalanceAfter(balance: Amount, modifier: Modifier = Modifier) =

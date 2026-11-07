@@ -514,7 +514,6 @@ private fun SumColumn(range: DateRange) =
       modifier = Modifier.size(50.dp),
       imageVector = AktualIcons.Sum,
       contentDescription = null,
-      tint = colors.pageText,
     )
 
     range.end?.let { Text(text = string(it), color = colors.pageTextSubdued) }
@@ -550,7 +549,6 @@ private fun FilterDisplay() =
       modifier = Modifier.size(50.dp),
       imageVector = AktualIcons.OpenBracket,
       contentDescription = null,
-      tint = colors.pageText,
     )
 
     // TODO handle filtering here https://github.com/jonapoul/aktual/issues/361
@@ -566,7 +564,6 @@ private fun FilterDisplay() =
       modifier = Modifier.size(50.dp),
       imageVector = AktualIcons.CloseBracket,
       contentDescription = null,
-      tint = colors.pageText,
     )
   }
 
@@ -576,7 +573,6 @@ private fun Equals(modifier: Modifier = Modifier) =
     modifier = modifier.size(50.dp),
     imageVector = AktualIcons.Equals,
     contentDescription = null,
-    tint = colors.pageText,
   )
 
 // E.g. "Jan 24"
