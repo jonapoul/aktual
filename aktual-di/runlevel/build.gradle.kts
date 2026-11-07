@@ -1,8 +1,12 @@
-plugins { id("aktual.module.kotlin") }
+plugins { id("aktual.module.di") }
 
 kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin)
-    api(project(":aktual-di:graphs"))
+    api(libs.kotlinx.coroutines.core)
+    api(libs.metrox.viewmodel)
+    api(libs.sqldelight.runtime)
+    api(project(":aktual-budget"))
+    api(project(":aktual-core:model"))
   }
 }
