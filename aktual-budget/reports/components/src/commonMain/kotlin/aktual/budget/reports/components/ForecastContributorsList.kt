@@ -12,16 +12,17 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.Chip
-import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedText
+import aktual.core.ui.normalButton
 import aktual.core.ui.verticalScrollWithBar
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -188,7 +189,7 @@ private fun ContributorsTable(
     )
 
     if (contributors.size > TOP_COUNT) {
-      LinkChip(
+      NormalTextButton(
         modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
         text =
           if (showAll) {
@@ -197,6 +198,9 @@ private fun ContributorsTable(
             Strings.reportsBalanceForecastShowAll
           },
         onClick = { showAll = !showAll },
+        colors = { pressed ->
+          colors.normalButton(pressed, container = colors.tableRowHeaderBackground)
+        },
       )
     }
   }
@@ -217,23 +221,6 @@ private fun ContributorRow(contributor: ForecastContributor, onClick: () -> Unit
 }
 
 @Composable
-private fun LinkChip(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) =
-  Chip(
-    modifier = modifier,
-    text = text,
-    size = Small,
-    textStyle = typography.bodyMedium,
-    colors =
-      ChipDefaults.colors(
-        background = Transparent,
-        content = colors.pageText,
-        border = colors.pillBorder,
-      ),
-    onClick = onClick,
-    role = Button,
-  )
-
-@Composable
 private fun AmountRow(
   name: String,
   amount: Amount,
@@ -242,26 +229,25 @@ private fun AmountRow(
   includeSign: Boolean = false,
   isBold: Boolean = false,
   nameColor: Color = colors.pageText,
-  // Shows the name as a chip
   onClickName: (() -> Unit)? = null,
 ) =
   Row(
-    modifier = modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .padding(horizontal = 4.dp, vertical = 4.dp)
+        .then(if (onClickName == null) Modifier else Modifier.clickable(onClick = onClickName)),
     verticalAlignment = CenterVertically,
   ) {
     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-      if (onClickName == null) {
-        Text(
-          text = name,
-          color = nameColor,
-          style = typography.bodyMedium,
-          fontWeight = if (isBold) Bold else null,
-          maxLines = 2,
-          overflow = Ellipsis,
-        )
-      } else {
-        LinkChip(text = name, onClick = onClickName)
-      }
+      Text(
+        text = name,
+        color = nameColor,
+        style = typography.bodyMedium,
+        fontWeight = if (isBold) Bold else null,
+        maxLines = 2,
+        overflow = Ellipsis,
+      )
 
       if (subtitle != null) {
         Text(text = subtitle, color = colors.pageTextSubdued, style = typography.bodySmall)

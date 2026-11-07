@@ -10,11 +10,11 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NormalTextButton
-import aktual.core.ui.normalButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.isInPreview
+import aktual.core.ui.normalButton
 import aktual.core.ui.redacted
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
@@ -105,7 +105,9 @@ internal fun BalanceForecastChart(
         modifier = Modifier.fillMaxWidth(),
         text = Strings.reportsBalanceForecastShowContributors,
         onClick = { showContributors = true },
-        colors = { pressed -> colors.normalButton(pressed, container = colors.pageBackground) },
+        colors = { pressed ->
+          colors.normalButton(pressed, container = colors.tableRowHeaderBackground)
+        },
       )
 
       if (showContributors) {
