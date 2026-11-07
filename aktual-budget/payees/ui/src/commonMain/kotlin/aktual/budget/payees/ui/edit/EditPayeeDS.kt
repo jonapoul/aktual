@@ -7,6 +7,7 @@ internal object EditPayeeDS {
   val labelSpacing = 4.dp
   val switchSpacing = 12.dp
   val cardPadding = 12.dp
+  val locationSpacing = 8.dp
 
   val shimmerLabelWidth = 80.dp
   val shimmerLabelHeight = 15.dp

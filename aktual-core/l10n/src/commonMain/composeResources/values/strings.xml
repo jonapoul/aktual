@@ -1083,6 +1083,14 @@
   <string name="payees_edit_transfer_help">Transfer payees are named after their account, so they can't be edited.</string>
   <string name="payees_edit_rules_label">Rules</string>
   <string name="payees_edit_transactions_label">Transactions</string>
+  <string name="payees_edit_locations_label">Saved locations</string>
+  <string name="payees_edit_locations_help">Used to suggest this payee when you add a transaction nearby</string>
+  <string name="payees_edit_location_coordinates">%1$s, %2$s</string>
+  <string name="payees_edit_location_open">Open in map</string>
+  <string name="payees_edit_location_delete">Delete location</string>
+  <string name="payees_location_deleted">Location deleted</string>
+  <string name="payees_location_delete_failed">Couldn't delete location</string>
+  <string name="payees_location_restore_failed">Couldn't restore location</string>
   <string name="payees_edit_save">Save</string>
   <string name="payees_edit_failure_prefix">Failed loading payee</string>
   <string name="payees_edit_not_found">This payee no longer exists</string>

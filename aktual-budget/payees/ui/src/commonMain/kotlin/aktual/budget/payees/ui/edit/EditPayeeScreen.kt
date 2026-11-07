@@ -8,19 +8,26 @@ import aktual.budget.payees.ui.list.PayeeChip
 import aktual.budget.payees.ui.list.PayeesPreview
 import aktual.budget.payees.ui.list.RuleCountChip
 import aktual.budget.payees.ui.openRules
+import aktual.budget.payees.vm.edit.EditPayeeEvent.LocationDeleted
 import aktual.budget.payees.vm.edit.EditPayeeState
 import aktual.budget.payees.vm.edit.EditPayeeViewModel
 import aktual.budget.payees.vm.edit.Editing
 import aktual.budget.payees.vm.edit.Failure
 import aktual.budget.payees.vm.edit.Loading
+import aktual.budget.payees.vm.edit.SavedLocation
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronLeft
 import aktual.core.icons.Delete
+import aktual.core.icons.Location
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Save
 import aktual.core.l10n.Plurals
+import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.payees_location_delete_failed
+import aktual.core.l10n.payees_location_restore_failed
+import aktual.core.model.Coordinates
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchRulesNavigator
@@ -39,6 +46,8 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarState
+import aktual.core.ui.LocalDateFormatter
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -49,10 +58,12 @@ import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
+import aktual.core.ui.showErrorSnackbar
 import aktual.core.ui.switch
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -87,16 +98,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlin.math.abs
+import kotlin.math.roundToLong
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.json.JsonPrimitive
+import org.jetbrains.compose.resources.getString
 
 @Composable
 internal fun EditPayeeScreen(
@@ -116,11 +134,24 @@ internal fun EditPayeeScreen(
   val canSave by viewModel.canSave.collectAsStateWithLifecycle()
   val isDuplicateName by viewModel.isDuplicateName.collectAsStateWithLifecycle()
   val saveError by viewModel.saveError.collectAsStateWithLifecycle()
+  val locations by viewModel.locations.collectAsStateWithLifecycle()
+  val snackbars = LocalSnackbars.current
+  val uriHandler = LocalUriHandler.current
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
         FinishedSaving -> back()
+        is LocationDeleted ->
+          snackbars.show { showLocationDeleted(event, onUndo = viewModel::restoreLocation) }
+        LocationDeleteFailed ->
+          snackbars.show {
+            showErrorSnackbar(getString(Res.string.payees_location_delete_failed))
+          }
+        LocationRestoreFailed ->
+          snackbars.show {
+            showErrorSnackbar(getString(Res.string.payees_location_restore_failed))
+          }
       }
     }
   }
@@ -135,6 +166,7 @@ internal fun EditPayeeScreen(
     canSave = canSave,
     isDuplicateName = isDuplicateName,
     saveError = saveError,
+    locations = locations,
     onAction = { action ->
       when (action) {
         NavigateBack -> back()
@@ -145,6 +177,8 @@ internal fun EditPayeeScreen(
         is SetLearnCategories -> viewModel.setLearnCategories(action.learn)
         is OpenRules -> openRules(action.payee, editRule, searchRules)
         is OpenTransactions -> toTransactions(action.title, payeeFilter(id))
+        is OpenLocation -> uriHandler.openUri(action.coordinates.mapUrl())
+        is DeleteLocation -> viewModel.deleteLocation(action.id)
       }
     },
   )
@@ -177,6 +211,7 @@ private fun EditPayeeScaffold(
   isLearningEnabled: Boolean = false,
   isDuplicateName: Boolean = false,
   saveError: String? = null,
+  locations: ImmutableList<SavedLocation> = persistentListOf(),
 ) {
   val editing = state as? Editing
   val nameState = rememberTextFieldState()
@@ -226,6 +261,7 @@ private fun EditPayeeScaffold(
             learnsCategories = learnsCategories,
             isLearningEnabled = isLearningEnabled,
             isDuplicateName = isDuplicateName,
+            locations = locations,
             scrollState = scrollState,
             contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
             onAction = onAction,
@@ -338,6 +374,7 @@ private fun EditPayeeContent(
   learnsCategories: Boolean,
   isLearningEnabled: Boolean,
   isDuplicateName: Boolean,
+  locations: ImmutableList<SavedLocation>,
   scrollState: ScrollState,
   contentPadding: PaddingValues,
   onAction: EditPayeeActionHandler,
@@ -408,7 +445,62 @@ private fun EditPayeeContent(
       }
     }
 
+    if (locations.isNotEmpty()) {
+      EditPayeeCard { LocationsField(locations, onAction) }
+    }
+
     BottomSpacing()
+  }
+}
+
+@Composable
+private fun LocationsField(
+  locations: ImmutableList<SavedLocation>,
+  onAction: EditPayeeActionHandler,
+) =
+  Column(verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing)) {
+    Text(text = Strings.payeesEditLocationsLabel, style = typography.labelLarge)
+    Text(
+      text = Strings.payeesEditLocationsHelp,
+      style = typography.bodySmall,
+      color = colors.pageTextSubdued,
+    )
+    locations.fastForEach { location -> LocationRow(location, onAction) }
+  }
+
+@Composable
+private fun LocationRow(location: SavedLocation, onAction: EditPayeeActionHandler) {
+  val coordinates = location.coordinates
+  val coordinatesText =
+    Strings.payeesEditLocationCoordinates(
+      coordinates.latitude.fiveDecimals(),
+      coordinates.longitude.fiveDecimals(),
+    )
+  Row(
+    modifier =
+      Modifier.fillMaxWidth().clickable(onClickLabel = Strings.payeesEditLocationOpen) {
+        onAction(OpenLocation(coordinates))
+      },
+    horizontalArrangement = Arrangement.spacedBy(EditPayeeDS.locationSpacing),
+    verticalAlignment = CenterVertically,
+  ) {
+    Icon(
+      imageVector = AktualIcons.Location,
+      contentDescription = null,
+      tint = colors.pageTextSubdued,
+    )
+    Column(modifier = Modifier.weight(1f)) {
+      val date = location.date
+      if (date != null) {
+        Text(text = LocalDateFormatter.current.format(date), style = typography.bodyMedium)
+      }
+      Text(text = coordinatesText, style = typography.bodySmall, color = colors.pageTextSubdued)
+    }
+    BareIconButton(
+      imageVector = AktualIcons.Delete,
+      contentDescription = Strings.payeesEditLocationDelete,
+      onClick = { onAction(DeleteLocation(location.id)) },
+    )
   }
 }
 
@@ -535,3 +627,16 @@ private class EditPayeeStateProvider :
     Editing(PayeesPreview.transfer),
     Failure(cause = null),
   )
+
+private fun Coordinates.mapUrl(): String =
+  "https://www.openstreetmap.org/?mlat=$latitude&mlon=$longitude#map=$MAP_ZOOM/$latitude/$longitude"
+
+private fun Double.fiveDecimals(): String {
+  val scaled = (this * FIVE_DECIMALS).roundToLong()
+  val whole = abs(scaled) / FIVE_DECIMALS.toLong()
+  val fraction = (abs(scaled) % FIVE_DECIMALS.toLong()).toString().padStart(length = 5, '0')
+  return "${if (scaled < 0) "-" else ""}$whole.$fraction"
+}
+
+private const val MAP_ZOOM = 18
+private const val FIVE_DECIMALS = 100_000.0
