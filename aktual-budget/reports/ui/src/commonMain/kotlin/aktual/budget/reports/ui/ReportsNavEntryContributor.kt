@@ -11,6 +11,7 @@ import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.CreateReportNavRoute
 import aktual.core.nav.CreateReportNavigator
+import aktual.core.nav.EditScheduleNavigator
 import aktual.core.nav.NavStack
 import aktual.core.nav.NewCustomReportNavRoute
 import aktual.core.nav.NewCustomReportNavigator
@@ -48,6 +49,7 @@ class ReportsNavEntryContributor : BudgetNavEntryContributor {
         id = route.id,
         back = BackNavigator(stack),
         toTransactions = TransactionsNavigator(stack),
+        toEditSchedule = EditScheduleNavigator(stack),
       )
     }
 

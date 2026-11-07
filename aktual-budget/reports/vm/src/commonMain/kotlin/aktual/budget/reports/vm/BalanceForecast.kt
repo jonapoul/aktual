@@ -30,6 +30,7 @@ internal sealed interface ScheduleDate {
 
 internal data class ForecastSchedule(
   val id: ScheduleId,
+  val name: String? = null,
   val nextDate: LocalDate?,
   val date: ScheduleDate,
   // Null for schedules without an account
@@ -48,6 +49,9 @@ internal data class ForecastOccurrence(
   val payee: PayeeId? = null,
   // The mirrored leg of a transfer schedule
   val isTransfer: Boolean = false,
+  val scheduleName: String? = null,
+  // Set on both legs of a transfer schedule
+  val isTransferSchedule: Boolean = false,
 )
 
 internal data class ForecastParams(
@@ -139,7 +143,15 @@ internal fun buildScheduleOccurrences(
 
     for (date in dates) {
       occurrences +=
-        ForecastOccurrence(schedule.id, schedule.account, date, schedule.amount, schedule.payee)
+        ForecastOccurrence(
+          scheduleId = schedule.id,
+          account = schedule.account,
+          date = date,
+          amount = schedule.amount,
+          payee = schedule.payee,
+          scheduleName = schedule.name,
+          isTransferSchedule = transferAccount != null,
+        )
       if (transferAccount != null) {
         occurrences +=
           ForecastOccurrence(
@@ -149,6 +161,8 @@ internal fun buildScheduleOccurrences(
             amount = -schedule.amount,
             payee = schedule.account?.let(transferPayees::get),
             isTransfer = true,
+            scheduleName = schedule.name,
+            isTransferSchedule = true,
           )
       }
     }
@@ -178,10 +192,14 @@ internal fun calculateBalanceForecast(
   val scheduledByDay =
     included.groupingBy { it.date }.fold(0L) { total, occurrence -> total + occurrence.amount }
 
-  var balance = accounts.sumOf { account -> account?.let(startingBalances::get) ?: 0L }
+  val openingBalance = accounts.sumOf { account -> account?.let(startingBalances::get) ?: 0L }
+  var balance = openingBalance
+  var recordedNet = 0L
   val daily = LinkedHashMap<LocalDate, Amount>()
   for (day in forecastStart..forecastEnd) {
-    balance += (dailyTotals[day] ?: 0L) + (scheduledByDay[day] ?: 0L)
+    val recorded = dailyTotals[day] ?: 0L
+    recordedNet += recorded
+    balance += recorded + (scheduledByDay[day] ?: 0L)
     daily[day] = Amount(balance)
   }
 
@@ -194,6 +212,17 @@ internal fun calculateBalanceForecast(
     items = if (accounts.isEmpty()) persistentMapOf() else daily.byGranularity(params.granularity),
     today = params.today,
     scheduledCount = included.distinctBy { it.date to it.scheduleId }.size,
+    contributors =
+      if (accounts.isEmpty()) {
+        null
+      } else {
+        summarizeForecastContributors(
+          included = included,
+          openingBalance = openingBalance,
+          recordedNet = recordedNet,
+          endingBalance = balance,
+        )
+      },
   )
 }
 
