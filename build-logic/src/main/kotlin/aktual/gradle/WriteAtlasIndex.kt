@@ -33,6 +33,10 @@ abstract class WriteAtlasIndex : DefaultTask() {
   @get:PathSensitive(PathSensitivity.NONE)
   abstract val projectTypes: RegularFileProperty
 
+  @get:InputFile
+  @get:PathSensitive(PathSensitivity.NONE)
+  abstract val projectLinks: RegularFileProperty
+
   @get:OutputFile abstract val outputFile: RegularFileProperty
 
   @TaskAction
@@ -62,7 +66,8 @@ abstract class WriteAtlasIndex : DefaultTask() {
       template
         .replace("__GENERATED__", System.currentTimeMillis().toString())
         .replace("__CHARTS__", json)
-        .replace("__TYPES__", projectTypes.get().asFile.readText()),
+        .replace("__TYPES__", projectTypes.get().asFile.readText())
+        .replace("__LINKS__", projectLinks.get().asFile.readText()),
     )
     logger.lifecycle("Atlas index: ${output.toPath().toUri()}")
   }
