@@ -70,9 +70,9 @@ object ChipDefaults {
     with(colors) {
       if (isSelected) {
         ChipColors(
-          background = pillBackgroundSelected,
+          background = formInputBackgroundSelected,
           content = pillTextSelected,
-          border = pillBackgroundSelected,
+          border = pillBorderSelected,
         )
       } else {
         ChipColors(background = pillBackground, content = pillText, border = pillBorder)
@@ -138,7 +138,7 @@ fun Chip(
             Modifier.border(1.dp, colors.border, size.shape)
           } else {
             Modifier
-          },
+          }
         )
         .then(if (onClick == null) Modifier else Modifier.clickable(role = role, onClick = onClick))
         .padding(size.contentPadding),
