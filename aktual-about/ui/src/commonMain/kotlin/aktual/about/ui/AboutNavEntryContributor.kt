@@ -9,6 +9,7 @@ import aktual.about.ui.storage.ManageStorageScreen
 import aktual.about.vm.StorageNavEvent
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.BudgetNavRailNavRoute
+import aktual.core.nav.CrashReportsNavigator
 import aktual.core.nav.InfoNavRoute
 import aktual.core.nav.LicensesNavRoute
 import aktual.core.nav.LicensesNavigator
@@ -36,6 +37,7 @@ class AboutNavEntryContributor : NavEntryContributor {
         toLicenses = LicensesNavigator(stack),
         toManageStorage = ManageStorageNavigator(stack),
         toLogs = LogsNavigator(stack),
+        toCrashReports = CrashReportsNavigator(stack),
       )
     }
 

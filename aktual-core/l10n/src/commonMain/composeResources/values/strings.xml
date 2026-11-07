@@ -162,7 +162,7 @@
   <string name="storage_cancel">Cancel</string>
   <string name="storage_confirm_delete">Delete</string>
   <string name="storage_confirm_clear">Clear</string>
-  <string name="info_logs">View logs</string>
+  <string name="info_logs">App logs</string>
   <string name="logs_toolbar">Logs</string>
   <string name="logs_summary_title">Stored on this device</string>
   <string name="logs_summary_retention">Kept for 30 days</string>
@@ -217,6 +217,38 @@
   <string name="logs_export_share">Share</string>
   <string name="logs_export_save">Save to file</string>
   <string name="logs_export_copy">Copy to clipboard</string>
+  <string name="info_crashes">Crash reports</string>
+  <string name="crashes_toolbar">Crash Reports</string>
+  <string name="crashes_summary_title">Stored on this device</string>
+  <string name="crashes_summary_retention">Kept for 30 days, up to 50 reports</string>
+  <string name="crashes_empty">No crashes recorded</string>
+  <string name="crashes_delete_all">Delete all</string>
+  <string name="crashes_delete_all_title">Delete All Crash Reports?</string>
+  <string name="crashes_delete_all_message">This will delete every crash report on this device. This is not reversible.</string>
+  <string name="crashes_delete_title">Delete Crash Report?</string>
+  <string name="crashes_delete_message">This will delete this crash report from this device. This is not reversible.</string>
+  <string name="crashes_delete">Delete</string>
+  <string name="crashes_cancel">Cancel</string>
+  <string name="crashes_missing">This crash report no longer exists</string>
+  <string name="crashes_version">Version</string>
+  <string name="crashes_platform">Platform</string>
+  <string name="crashes_thread">Thread</string>
+  <string name="crashes_time">Time</string>
+  <string name="crashes_stack_trace">Stack trace</string>
+  <string name="crashes_export">Export</string>
+  <string name="crashes_report">Report on GitHub</string>
+  <string name="crashes_export_title">Export Crash Report</string>
+  <string name="crashes_export_include">What to include</string>
+  <string name="crashes_export_with_logs">Report and that day's logs</string>
+  <string name="crashes_export_report_only">Report only</string>
+  <string name="crashes_report_title">Report on GitHub</string>
+  <string name="crashes_report_message">The issue will be filled in with this crash. GitHub can't receive files from the app, so export the report first if you want to attach it with its logs.</string>
+  <string name="crashes_report_export">Export first</string>
+  <string name="crashes_report_open">Open GitHub</string>
+  <string name="crashes_prompt_title">Aktual Crashed</string>
+  <string name="crashes_prompt_message">The app closed unexpectedly last time. You can view the crash report and report it on GitHub to help get it fixed.</string>
+  <string name="crashes_prompt_dismiss">Dismiss</string>
+  <string name="crashes_prompt_view">View report</string>
 
   <!-- account -->
 =  <string name="login_title">Sign in to this Aktual instance</string>

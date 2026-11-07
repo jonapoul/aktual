@@ -6,11 +6,10 @@ kotlin {
   commonMainDependencies {
     api(libs.logcat)
     api(libs.okio)
-    compileOnly(libs.androidx.compose.annotation)
+    api(project(":aktual-core:logging:format"))
     implementation(libs.kermit)
     implementation(libs.kotlinx.datetime)
     implementation(project(":aktual-core:logging"))
-    implementation(project(":aktual-di:core"))
   }
 
   commonTestDependencies {

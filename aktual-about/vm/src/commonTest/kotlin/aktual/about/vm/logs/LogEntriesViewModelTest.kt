@@ -1,5 +1,6 @@
 package aktual.about.vm.logs
 
+import aktual.about.data.LogExport
 import aktual.about.data.LogsRepository
 import aktual.about.vm.logs.LogEntriesState.Loaded
 import aktual.core.logging.LogLine

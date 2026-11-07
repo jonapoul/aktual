@@ -16,6 +16,10 @@
     <item quantity="one">%1$d matching line</item>
     <item quantity="other">%1$d matching lines</item>
   </plurals>
+  <plurals name="crashes_summary_count">
+    <item quantity="one">%1$d crash</item>
+    <item quantity="other">%1$d crashes</item>
+  </plurals>
 
   <!-- budget-bank-sync -->
   <plurals name="bank_sync_minutes_ago">

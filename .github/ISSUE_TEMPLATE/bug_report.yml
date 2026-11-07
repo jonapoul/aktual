@@ -3,17 +3,20 @@ description: Something isn't working
 labels: [bug]
 body:
   - type: textarea
+    id: what-happened
     attributes:
       label: What happened?
       description: Include steps to reproduce if you can
     validations:
       required: true
   - type: input
+    id: version
     attributes:
       label: App version
     validations:
       required: true
   - type: dropdown
+    id: platform
     attributes:
       label: Platform
       options:
@@ -21,3 +24,9 @@ body:
         - Desktop
     validations:
       required: true
+  - type: textarea
+    id: crash-report
+    attributes:
+      label: Crash report
+      description: If the app crashed, export the report from About > Crash reports and attach the file here, or paste it in
+      render: text

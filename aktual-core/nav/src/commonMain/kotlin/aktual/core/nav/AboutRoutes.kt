@@ -1,5 +1,6 @@
 package aktual.core.nav
 
+import aktual.core.model.CrashFile
 import androidx.navigation3.runtime.NavKey
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
@@ -15,3 +16,7 @@ import kotlinx.serialization.Serializable
 @Serializable data object LogsNavRoute : NavKey
 
 @Serializable data class LogDayNavRoute(val date: LocalDate) : NavKey
+
+@Serializable data object CrashReportsNavRoute : NavKey
+
+@Serializable data class CrashReportNavRoute(val file: CrashFile) : NavKey

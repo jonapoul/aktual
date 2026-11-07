@@ -1,8 +1,9 @@
 package aktual.about.ui.logs
 
+import aktual.about.components.ExportTargetRow
+import aktual.about.data.LogExportTarget
 import aktual.about.vm.logs.LogExportScope
 import aktual.about.vm.logs.LogExportScope.Day
-import aktual.about.vm.logs.LogExportTarget
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Copy
 import aktual.core.icons.material.MaterialIcons
@@ -18,27 +19,18 @@ import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.RowShape
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -109,36 +101,25 @@ private fun LogExportSheetContent(
 
     Column(verticalArrangement = spacedBy(Dimens.Medium)) {
       if (canShare) {
-        ExportTargetRow(MaterialIcons.Share, Strings.logsExportShare) {
-          onExport(selected, LogExportTarget.Share)
-        }
+        ExportTargetRow(
+          icon = MaterialIcons.Share,
+          text = Strings.logsExportShare,
+          onClick = { onExport(selected, LogExportTarget.Share) },
+        )
       }
-      ExportTargetRow(MaterialIcons.Save, Strings.logsExportSave) {
-        onExport(selected, LogExportTarget.Save)
-      }
-      ExportTargetRow(AktualIcons.Copy, Strings.logsExportCopy) {
-        onExport(selected, LogExportTarget.Copy)
-      }
+      ExportTargetRow(
+        icon = MaterialIcons.Save,
+        text = Strings.logsExportSave,
+        onClick = { onExport(selected, LogExportTarget.Save) },
+      )
+      ExportTargetRow(
+        icon = AktualIcons.Copy,
+        text = Strings.logsExportCopy,
+        onClick = { onExport(selected, LogExportTarget.Copy) },
+      )
     }
   }
 }
-
-@Composable
-private fun ExportTargetRow(icon: ImageVector, text: String, onClick: () -> Unit) =
-  Row(
-    modifier =
-      Modifier.fillMaxWidth()
-        .height(52.dp)
-        .clip(RowShape)
-        .background(colors.tableBackground)
-        .clickable(onClick = onClick)
-        .padding(horizontal = Dimens.VeryLarge),
-    verticalAlignment = CenterVertically,
-    horizontalArrangement = spacedBy(14.dp),
-  ) {
-    Icon(imageVector = icon, contentDescription = null, tint = colors.pageTextLight)
-    Text(text = text, style = typography.bodyLarge, color = colors.tableText)
-  }
 
 @Composable
 private fun LogExportScope.label(today: LocalDate?): String =

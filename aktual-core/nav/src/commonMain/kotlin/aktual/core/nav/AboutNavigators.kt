@@ -1,5 +1,6 @@
 package aktual.core.nav
 
+import aktual.core.model.CrashFile
 import androidx.compose.runtime.Immutable
 import androidx.navigation3.runtime.NavKey
 import kotlinx.datetime.LocalDate
@@ -32,4 +33,14 @@ class LogsNavigator(private val stack: NavStack<NavKey>) {
 @Immutable
 class LogDayNavigator(private val stack: NavStack<NavKey>) {
   operator fun invoke(date: LocalDate) = stack.push(LogDayNavRoute(date))
+}
+
+@Immutable
+class CrashReportsNavigator(private val stack: NavStack<NavKey>) {
+  operator fun invoke() = stack.push(CrashReportsNavRoute)
+}
+
+@Immutable
+class CrashReportNavigator(private val stack: NavStack<NavKey>) {
+  operator fun invoke(file: CrashFile) = stack.push(CrashReportNavRoute(file))
 }

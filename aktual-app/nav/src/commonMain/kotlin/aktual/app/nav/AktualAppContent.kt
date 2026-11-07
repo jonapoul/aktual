@@ -13,6 +13,7 @@ import aktual.core.ui.RootOverlay
 import aktual.core.ui.WithCompositionLocals
 import aktual.core.ui.hazedBottomBar
 import aktual.core.ui.rememberAppCloser
+import aktual.crashes.dialog.CrashPrompt
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -124,6 +125,7 @@ fun AktualAppContent(
         }
 
         rootOverlay.Content()
+        CrashPrompt(navStack)
       }
     }
   }

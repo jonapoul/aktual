@@ -37,7 +37,11 @@ import aktual.budget.tags.vm.search.SearchTagsViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.budget.transactions.vm.edit.EditTransactionTarget
 import aktual.budget.transactions.vm.edit.EditTransactionViewModel
+import aktual.core.model.CrashFile
 import aktual.core.theme.DarkColors
+import aktual.crashes.vm.CrashPromptViewModel
+import aktual.crashes.vm.CrashReportViewModel
+import aktual.crashes.vm.CrashReportsViewModel
 import aktual.metrics.vm.MetricsViewModel
 import aktual.prefs.vm.currency.CurrencySettingsViewModel
 import aktual.prefs.vm.format.FormatSettingsViewModel
@@ -123,6 +127,16 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   protected open fun optionallySkip() = Unit
 
   @Test fun about() = testSavedStateVM<AboutViewModel>()
+
+  @Test fun crashPrompt() = testVm<CrashPromptViewModel>()
+
+  @Test fun crashReports() = testVm<CrashReportsViewModel>()
+
+  @Test
+  fun crashReport() =
+    testAssistedVM<CrashReportViewModel, CrashReportViewModel.Factory> {
+      create(CrashFile("crash-20261018-120000-000.txt"))
+    }
 
   @Test fun bankSync() = testVm<BankSyncViewModel>()
 
