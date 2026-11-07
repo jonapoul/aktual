@@ -36,6 +36,7 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.bottomNavBarPadding
+import aktual.core.ui.card
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -136,7 +137,7 @@ internal fun LogDayScaffold(
           onAction = onAction,
         )
         LogFilterChips(filters, onAction, onOpenLevels = { if (state is Loaded) showLevels = true })
-        HorizontalDivider(color = colors.tableBorder)
+        HorizontalDivider()
         if (state is Loaded && filters.query.isNotBlank()) LogMatchCount(state.lines.size)
       }
     },
@@ -357,7 +358,7 @@ private fun LogLines(
 
 @Composable
 private fun LiveBar(live: LiveState, onAction: LogsActionHandler) =
-  Column(modifier = Modifier.fillMaxWidth().background(colors.cardBackground)) {
+  Column(modifier = Modifier.fillMaxWidth().card(colors)) {
     Row(
       modifier =
         Modifier.fillMaxWidth().height(56.dp).padding(start = Dimens.Huge, end = Dimens.Large),

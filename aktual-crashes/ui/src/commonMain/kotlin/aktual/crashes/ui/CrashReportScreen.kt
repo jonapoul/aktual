@@ -27,13 +27,13 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.card
 import aktual.core.ui.horizontalScrollWithBar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
 import aktual.crashes.vm.CrashReportState
 import aktual.crashes.vm.CrashReportViewModel
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -215,7 +215,6 @@ private fun CrashReportContent(report: CrashReport) =
         text = report.stackTrace.replace("\t", "    "),
         style = typography.labelSmall,
         fontFamily = Monospace,
-        color = colors.pageText,
         softWrap = false,
       )
     }
@@ -233,15 +232,12 @@ private fun CrashDetail(label: String, value: String) =
       color = colors.pageTextLight,
     )
     SelectionContainer(modifier = Modifier.weight(1f)) {
-      Text(text = value, style = typography.labelMedium, color = colors.pageText)
+      Text(text = value, style = typography.labelMedium)
     }
   }
 
 private fun Modifier.crashCard(colors: Colors): Modifier =
-  fillMaxWidth()
-    .background(colors.cardBackground, CardShape)
-    .border(Hairline, colors.cardShadow, CardShape)
-    .padding(Dimens.VeryLarge)
+  fillMaxWidth().card(colors, CardShape).padding(Dimens.VeryLarge)
 
 @Composable
 private fun CrashReportBottomBar(onReport: () -> Unit, onExport: () -> Unit) =

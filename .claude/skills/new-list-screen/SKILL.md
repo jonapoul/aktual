@@ -429,7 +429,6 @@ private fun List{Name}Content(
           title = Strings.list{Name}Empty,
           reason = null,
           icon = null,
-          background = theme.tableBackground,
           action = null,
         )
       }

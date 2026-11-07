@@ -17,7 +17,6 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualExposedDropDownMenu
-import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.TonalButton
@@ -179,7 +178,6 @@ private fun WithdrawalRuleFields(config: McConfig, onAction: MonteCarloActionHan
           Strings.monteCarloRuleNote
         },
       style = typography.bodySmall,
-      color = colors.pageText,
     )
   }
 }

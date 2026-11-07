@@ -281,7 +281,6 @@ private fun CompactHeader(
     Column(modifier = Modifier.weight(1f)) {
       Text(
         text = data.title ?: Strings.reportsChooseTypeCashFlow,
-        color = colors.pageText,
         overflow = Ellipsis,
       )
       DateRangeText(dateRange(data.items.keys))

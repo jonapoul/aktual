@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 internal fun UnsupportedChart(data: UnsupportedData, modifier: Modifier = Modifier) =
   Column(modifier = modifier.padding(4.dp)) {
     val type = data.type.string()
-    Text(text = data.name ?: type, color = colors.pageText, overflow = Ellipsis, maxLines = 1)
+    Text(text = data.name ?: type, overflow = Ellipsis, maxLines = 1)
     if (data.name != null) {
       Text(text = type, color = colors.pageTextSubdued, overflow = Ellipsis, maxLines = 1)
     }

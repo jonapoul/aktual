@@ -43,7 +43,6 @@ internal fun ContentEmpty(
 
     Text(
       text = Strings.budgetSuccessEmptySecond,
-      color = colors.pageText,
       textAlign = Center,
       fontSize = textSizes.extraLarge,
     )

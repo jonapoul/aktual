@@ -83,7 +83,6 @@ internal fun ItemCard(
           text = title,
           style = typography.titleSmall,
           fontWeight = SemiBold,
-          color = colors.pageText,
         )
         titleHelp?.let { HelpTooltip(it) }
       }

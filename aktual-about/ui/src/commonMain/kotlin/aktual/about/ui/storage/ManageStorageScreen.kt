@@ -18,7 +18,6 @@ import aktual.core.ui.AktualTheme
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -28,9 +27,10 @@ import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
+import aktual.core.ui.RounderCardShape
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.disabled
+import aktual.core.ui.card
 import aktual.core.ui.errorButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -40,8 +40,7 @@ import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -189,17 +188,15 @@ private fun ManageStorageLoadedContent(
       modifier = modifier.scrollbar(listState),
       state = listState,
       horizontalAlignment = CenterHorizontally,
-      verticalArrangement = Arrangement.spacedBy(16.dp),
+      verticalArrangement = spacedBy(Dimens.Large),
     ) {
       item {
-        PieChart(
-          state,
-          colors,
-          modifier = Modifier.fillParentMaxWidth(fraction = 0.5f).aspectRatio(1f),
+        PieChartItem(
+          state = state,
+          colors = colors,
+          pieChartModifier = Modifier.fillParentMaxWidth(fraction = 0.5f).aspectRatio(1f),
         )
       }
-
-      item { TotalStorageText(state) }
 
       item { BudgetsSummary(state, colors, onAction) }
 
@@ -210,20 +207,20 @@ private fun ManageStorageLoadedContent(
       item { BottomSpacing() }
     }
   } else {
-    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+    Row(modifier = modifier, horizontalArrangement = spacedBy(16.dp)) {
       Column(modifier = Modifier.weight(1f), horizontalAlignment = CenterHorizontally) {
-        PieChart(state, colors, modifier = Modifier.padding(20.dp).weight(1f).aspectRatio(1f))
-
-        TotalStorageText(state)
-
-        BottomSpacing()
+        PieChartItem(
+          state = state,
+          colors = colors,
+          pieChartModifier = Modifier.padding(20.dp).weight(1f).aspectRatio(1f),
+        )
       }
 
       LazyColumn(
         modifier = Modifier.weight(1f).scrollbar(listState),
         state = listState,
         horizontalAlignment = CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = spacedBy(16.dp),
       ) {
         item { BudgetsSummary(state, colors, onAction) }
 
@@ -238,8 +235,39 @@ private fun ManageStorageLoadedContent(
 }
 
 @Composable
+private fun PieChartItem(
+  state: ManageStorageState.Loaded,
+  colors: ImmutableList<Color>,
+  modifier: Modifier = Modifier,
+  pieChartModifier: Modifier = Modifier,
+  includeBottomSpacing: Boolean = false,
+) =
+  Column(
+    modifier =
+      modifier.fillMaxWidth().card(AktualTheme.colors, RounderCardShape).padding(Dimens.VeryLarge),
+    verticalArrangement = spacedBy(Dimens.Large),
+    horizontalAlignment = CenterHorizontally,
+  ) {
+    PieChart(
+      state = state,
+      colors = colors,
+      modifier = pieChartModifier,
+    )
+
+    TotalStorageText(state)
+
+    if (includeBottomSpacing) {
+      BottomSpacing()
+    }
+  }
+
+@Composable
 private fun ActionButtons(onAction: ManageStorageActionHandler) {
-  Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
+  Column(
+    modifier = Modifier.fillMaxWidth().card(colors, RounderCardShape).padding(Dimens.VeryLarge),
+    horizontalAlignment = CenterHorizontally,
+    verticalArrangement = spacedBy(Dimens.Medium),
+  ) {
     NormalTextButton(
       text = Strings.storageClearCache,
       onClick = { onAction(RequestClearCache) },
@@ -268,11 +296,8 @@ private fun CacheSummary(
 ) {
   Column(
     modifier =
-      Modifier.fillMaxWidth()
-        .background(AktualTheme.colors.pillBackground.disabled, CardShape)
-        .border(Hairline, AktualTheme.colors.pillBorderDark, CardShape)
-        .padding(Dimens.Large),
-    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+      Modifier.fillMaxWidth().card(AktualTheme.colors, RounderCardShape).padding(Dimens.VeryLarge),
+    verticalArrangement = spacedBy(Dimens.Medium),
   ) {
     LegendRow(
       label = Strings.storageCache,
@@ -302,11 +327,8 @@ private fun BudgetsSummary(
 ) {
   Column(
     modifier =
-      Modifier.fillMaxWidth()
-        .background(AktualTheme.colors.pillBackground.disabled, CardShape)
-        .border(Hairline, AktualTheme.colors.pillBorderDark, CardShape)
-        .padding(Dimens.Large),
-    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+      Modifier.fillMaxWidth().card(AktualTheme.colors, RounderCardShape).padding(Dimens.VeryLarge),
+    verticalArrangement = spacedBy(Dimens.Medium),
   ) {
     Text(
       text = Strings.storageBudgets,
@@ -340,7 +362,6 @@ private fun TotalStorageText(state: ManageStorageState.Loaded) {
     Text(
       text = "${Strings.storageTotal}: ${state.totalSize}",
       style = typography.titleMedium,
-      color = colors.pageText,
     )
     Text(
       text = percentTotalStorage(state),
@@ -397,7 +418,6 @@ private fun BudgetRow(budget: BudgetStorageItem, color: Color, onDelete: () -> U
     Text(
       text = budget.name,
       style = typography.bodyMedium,
-      color = colors.pageText,
       modifier = Modifier.weight(1f),
     )
     Text(
@@ -429,7 +449,6 @@ private fun LegendRow(label: String, size: String, color: Color) {
     Text(
       text = label,
       style = typography.bodyMedium,
-      color = colors.pageText,
       modifier = Modifier.weight(1f),
     )
     Text(text = size, style = typography.labelMedium, color = colors.pageTextSubdued)

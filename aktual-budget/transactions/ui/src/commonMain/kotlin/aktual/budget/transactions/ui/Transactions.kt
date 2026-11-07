@@ -83,7 +83,6 @@ internal fun Transactions(
         modifier = modifier.padding(contentPadding),
         title = Strings.transactionsLoadFailed,
         reason = refresh.error.message,
-        background = colors.tableBackground,
         action =
           FailureAction(
             text = { Strings.syncRetry },
@@ -168,7 +167,7 @@ private fun TransactionsFilled(
         Column(modifier = Modifier.fillMaxWidth().animateItem().background(background)) {
           // A hairline between days, or between every row when dense
           if (index > 0 && (showDate || density == Dense)) {
-            HorizontalDivider(color = colors.tableBorder)
+            HorizontalDivider()
           }
 
           // The first year is already pinned under the top bar

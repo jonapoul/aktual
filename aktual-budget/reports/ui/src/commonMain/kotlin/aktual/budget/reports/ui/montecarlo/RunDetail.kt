@@ -96,7 +96,6 @@ internal fun RunDetailView(
           },
         style = typography.bodyMedium,
         fontWeight = SemiBold,
-        color = colors.pageText,
       )
       BareTextButton(
         text =
@@ -128,7 +127,7 @@ internal fun RunDetailView(
     Box(modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) {
       Column {
         HeaderRow(columns)
-        HorizontalDivider(modifier = Modifier.width(columns.width), color = colors.tableBorder)
+        HorizontalDivider(modifier = Modifier.width(columns.width))
         for (row in rows) {
           val isExpanded = row.year in expanded
           YearRow(
@@ -159,7 +158,7 @@ internal fun RunDetailView(
               modifier = Modifier.width(columns.width),
             )
           }
-          HorizontalDivider(modifier = Modifier.width(columns.width), color = colors.tableBorder)
+          HorizontalDivider(modifier = Modifier.width(columns.width))
         }
       }
     }
@@ -272,7 +271,6 @@ private fun YearRow(
           } else {
             Strings.monteCarloDetailShowBreakdown
           },
-        tint = colors.pageText,
       )
     }
     TableCell("$age", Modifier.width(AGE_WIDTH), textAlign = Start)
@@ -448,7 +446,6 @@ private fun DetailText(text: String, modifier: Modifier = Modifier) =
     modifier = modifier,
     text = text.redacted(),
     style = typography.bodySmall,
-    color = colors.pageText,
   )
 
 @Composable
@@ -498,7 +495,7 @@ private fun PotTable(
       )
       PotHeading(Strings.monteCarloDetailPotEnd)
     }
-    HorizontalDivider(color = colors.tableBorder)
+    HorizontalDivider()
 
     config.pots.forEachIndexed { i, pot ->
       Row(

@@ -44,10 +44,12 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.card
 import aktual.core.ui.formatted
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.normalButton
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.stringInitial
 import aktual.core.ui.switch
@@ -61,7 +63,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -474,14 +475,9 @@ private fun ShimmerSchedule(modifier: Modifier = Modifier) {
           bar.width(EditScheduleDS.shimmerLabelWidth).height(EditScheduleDS.shimmerTextHeight),
       )
 
-      Column(
-        modifier =
-          Modifier.fillMaxWidth()
-            .background(colors.tableBackground, CardShape)
-            .border(EditScheduleDS.hairline, colors.tableBorder, CardShape),
-      ) {
+      Column(modifier = Modifier.fillMaxWidth().card(colors)) {
         repeat(EditScheduleDS.SHIMMER_UPCOMING_ROWS) { index ->
-          if (index > 0) HorizontalDivider(color = colors.tableBorder)
+          if (index > 0) HorizontalDivider()
           Row(
             modifier = Modifier.fillMaxWidth().padding(EditScheduleDS.rowPadding),
             horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing),
@@ -647,22 +643,18 @@ private fun UpcomingDates(dates: ImmutableList<LocalDate>, modifier: Modifier = 
     Text(text = Strings.editScheduleUpcoming, style = typography.labelLarge)
 
     Column(
-      modifier =
-        Modifier.fillMaxWidth()
-          .background(colors.tableBackground, CardShape)
-          .border(EditScheduleDS.hairline, colors.tableBorder, CardShape),
+      modifier = Modifier.fillMaxWidth().card(colors),
     ) {
       if (dates.isEmpty()) {
         Text(
           modifier = Modifier.padding(EditScheduleDS.rowPadding),
           text = Strings.editScheduleUpcomingNone,
           style = typography.bodyMedium,
-          color = colors.pageTextSubdued,
         )
       }
 
       dates.forEachIndexed { index, date ->
-        if (index > 0) HorizontalDivider(color = colors.tableBorder)
+        if (index > 0) HorizontalDivider(color = colors.cardShadow)
         Row(
           modifier = Modifier.fillMaxWidth().padding(EditScheduleDS.rowPadding),
           horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing),
@@ -670,9 +662,8 @@ private fun UpcomingDates(dates: ImmutableList<LocalDate>, modifier: Modifier = 
           Text(
             text = date.dayOfWeek.stringInitial(),
             style = typography.bodyMedium,
-            color = colors.pageTextSubdued,
           )
-          Text(text = date.formatted(), style = typography.bodyMedium, color = colors.pageText)
+          Text(text = date.formatted(), style = typography.bodyMedium)
         }
       }
     }
@@ -707,9 +698,7 @@ private fun ViewTransactionsLink(onClick: () -> Unit, modifier: Modifier = Modif
     modifier =
       modifier
         .fillMaxWidth()
-        .clip(CardShape)
-        .background(colors.tableBackground)
-        .border(EditScheduleDS.hairline, colors.tableBorder, CardShape)
+        .normalButton(colors)
         .clickable(onClick = onClick)
         .padding(EditScheduleDS.rowPadding),
     verticalAlignment = Alignment.CenterVertically,
@@ -719,13 +708,11 @@ private fun ViewTransactionsLink(onClick: () -> Unit, modifier: Modifier = Modif
       modifier = Modifier.weight(1f),
       text = Strings.editScheduleViewTransactions,
       style = typography.bodyMedium,
-      color = colors.pageText,
     )
     Icon(
       modifier = Modifier.size(EditScheduleDS.linkIconSize),
       imageVector = AktualIcons.CheveronRight,
       contentDescription = null,
-      tint = colors.pageTextSubdued,
     )
   }
 }

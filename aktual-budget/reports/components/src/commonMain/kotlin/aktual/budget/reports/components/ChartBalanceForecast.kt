@@ -137,7 +137,6 @@ private fun Header(
       Text(
         text = data.title ?: Strings.reportsChooseTypeBalanceForecast,
         overflow = Ellipsis,
-        color = colors.pageText,
         style = typography.bodyLarge,
       )
 

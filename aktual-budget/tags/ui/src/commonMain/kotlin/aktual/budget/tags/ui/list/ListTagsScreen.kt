@@ -207,7 +207,6 @@ private fun ListTagsContent(
       FailureScreen(
         title = Strings.tagsFailurePrefix,
         reason = state.cause ?: Strings.tagsFailureDefaultMessage,
-        background = colors.tableBackground,
         action =
           FailureAction(
             text = { Strings.syncRetry },
@@ -221,7 +220,6 @@ private fun ListTagsContent(
         title = Strings.tagsEmpty,
         reason = null,
         icon = null,
-        background = colors.tableBackground,
         action =
           FailureAction(
             text = { Strings.tagsCreate },

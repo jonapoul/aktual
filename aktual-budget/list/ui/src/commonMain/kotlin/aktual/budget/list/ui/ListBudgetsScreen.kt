@@ -185,7 +185,6 @@ private fun ScaffoldTitle() {
     text = Strings.listBudgetsToolbar,
     maxLines = 1,
     overflow = Ellipsis,
-    color = colors.pageText,
   )
 }
 
@@ -219,7 +218,6 @@ private fun StateContent(
           FailureScreen(
             title = Strings.budgetFailureMessage,
             reason = state.reason ?: Strings.budgetFailureDefaultMessage,
-            background = colors.tableBackground,
             action =
               FailureAction(
                 text = { Strings.budgetFailureRetry },

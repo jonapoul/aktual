@@ -368,7 +368,6 @@ private fun BudgetContent(
         modifier = modifier,
         title = Strings.budgetingFailureTitle,
         reason = Strings.budgetingFailureMessage,
-        background = colors.tableBackground,
         action =
           FailureAction(
             text = { Strings.syncRetry },
@@ -385,7 +384,6 @@ private fun BudgetContent(
             title = Strings.budgetingEmpty,
             reason = null,
             icon = null,
-            background = colors.tableBackground,
             action = null,
           )
 

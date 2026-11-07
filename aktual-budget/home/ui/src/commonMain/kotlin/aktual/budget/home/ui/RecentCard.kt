@@ -157,7 +157,6 @@ private fun RecentRow(
       Text(
         text = transaction.payeeLabel(),
         style = typography.bodyLarge,
-        color = colors.pageText,
         maxLines = 1,
         overflow = Ellipsis,
       )

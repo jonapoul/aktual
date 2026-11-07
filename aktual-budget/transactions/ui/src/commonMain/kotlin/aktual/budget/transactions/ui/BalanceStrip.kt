@@ -74,7 +74,7 @@ internal fun BalanceStrip(
       }
     }
 
-    HorizontalDivider(color = colors.tableBorder)
+    HorizontalDivider()
   }
 
 @Composable

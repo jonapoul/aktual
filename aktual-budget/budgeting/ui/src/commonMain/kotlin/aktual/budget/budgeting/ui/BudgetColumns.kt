@@ -349,7 +349,6 @@ private fun SummaryCard(
         text = column.month.stringLong(),
         fontSize = textSizes.mediumPlus,
         fontWeight = SemiBold,
-        color = colors.pageText,
         maxLines = 1,
       )
       if (isCurrent) {
@@ -385,7 +384,7 @@ private fun SummaryCard(
       }
     }
 
-    HorizontalDivider(color = colors.tableBorder)
+    HorizontalDivider()
 
     val headline = summary.headline()
     SummaryLine {

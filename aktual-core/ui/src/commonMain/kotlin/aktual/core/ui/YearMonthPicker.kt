@@ -108,7 +108,7 @@ internal fun PickDateDialogContent(
     title = Strings.yearMonthPickerTitle,
     buttons = {
       TextButton(onClick = onDismiss) {
-        Text(text = Strings.yearMonthPickerCancel, color = colors.pageText)
+        Text(text = Strings.yearMonthPickerCancel)
       }
 
       TextButton(enabled = isWithinRange, onClick = { onValueChange(currentValue) }) {

@@ -24,8 +24,8 @@ import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.contrastingTextColor
 import aktual.core.ui.isCompactWidth
+import aktual.core.ui.tableRow
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -195,9 +195,7 @@ private fun ShimmerPill(fraction: Float) =
 
 private fun Modifier.ruleRow(colors: Colors, onClick: (() -> Unit)?): Modifier =
   fillMaxWidth()
-    .clip(RowShape)
-    .background(colors.tableBackground, RowShape)
-    .border(Hairline, colors.tableBorder, RowShape)
+    .tableRow(colors)
     .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
     .padding(horizontal = 12.dp, vertical = 10.dp)
 

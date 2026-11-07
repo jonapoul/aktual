@@ -6,7 +6,7 @@ import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
-import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -51,6 +52,7 @@ fun PrimaryTextButton(
   isEnabled: Boolean = true,
   contentPadding: PaddingValues = DefaultButtonPadding,
   shape: Shape = ButtonShape,
+  border: Color = AktualTheme.colors.buttonPrimaryBorder,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = typography.buttonTextStyle,
   fontSize: TextUnit = Unspecified,
@@ -66,6 +68,7 @@ fun PrimaryTextButton(
   BasicTextButton(
     text = text,
     modifier = modifier,
+    border = BorderStroke(Hairline, border),
     isEnabled = isEnabled,
     contentPadding = contentPadding,
     shape = shape,
@@ -89,6 +92,7 @@ fun PrimaryTextButtonWithLoading(
   isEnabled: Boolean = true,
   contentPadding: PaddingValues = DefaultButtonPadding,
   shape: Shape = ButtonShape,
+  border: Color = AktualTheme.colors.buttonPrimaryBorder,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = typography.buttonTextStyle,
   fontSize: TextUnit = Unspecified,
@@ -97,12 +101,14 @@ fun PrimaryTextButtonWithLoading(
     AktualTheme.colors.primaryButton(pressed)
   },
 ) {
+  val enabled = isEnabled && !isLoading
   PrimaryTextButton(
     text = text,
     modifier = Modifier.testTag(Tags.PrimaryTextButtonWithLoading),
-    isEnabled = isEnabled && !isLoading,
+    isEnabled = enabled,
     contentPadding = contentPadding,
     shape = shape,
+    border = if (enabled) border else border.disabled,
     interactionSource = interactionSource,
     style = style,
     fontSize = fontSize,
@@ -138,6 +144,7 @@ fun NormalTextButton(
   isEnabled: Boolean = true,
   contentPadding: PaddingValues = DefaultButtonPadding,
   shape: Shape = ButtonShape,
+  border: Color = AktualTheme.colors.buttonNormalBorder,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = typography.buttonTextStyle,
   fontSize: TextUnit = Unspecified,
@@ -153,6 +160,7 @@ fun NormalTextButton(
   BareTextButton(
     text = text,
     modifier = modifier,
+    border = BorderStroke(Hairline, border),
     isEnabled = isEnabled,
     contentPadding = contentPadding,
     shape = shape,
@@ -180,7 +188,8 @@ fun TonalButton(
   val border = colors.buttonPrimaryBorder.disabledIf(!isEnabled)
   BasicTextButton(
     text = text,
-    modifier = modifier.heightIn(min = TonalButtonHeight).border(1.dp, border, ButtonShape),
+    modifier = modifier.heightIn(min = TonalButtonHeight),
+    border = BorderStroke(1.dp, border),
     isEnabled = isEnabled,
     contentPadding = contentPadding,
     interactionSource = interactionSource,
@@ -216,6 +225,7 @@ fun BareTextButton(
   colors: @Composable (Boolean) -> ButtonColors = { pressed ->
     AktualTheme.colors.bareButton(pressed)
   },
+  border: BorderStroke? = null,
   content: @Composable RowScope.() -> Unit = {
     DefaultTextButtonContent(text, style, fontSize, prefix, suffix)
   },
@@ -223,6 +233,7 @@ fun BareTextButton(
   BasicTextButton(
     text = text,
     modifier = modifier,
+    border = border,
     isEnabled = isEnabled,
     contentPadding = contentPadding,
     shape = shape,
@@ -245,6 +256,7 @@ fun BasicTextButton(
   isEnabled: Boolean = true,
   contentPadding: PaddingValues = DefaultButtonPadding,
   shape: Shape = ButtonShape,
+  border: BorderStroke? = null,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = LocalTextStyle.current,
   fontSize: TextUnit = Unspecified,
@@ -260,11 +272,12 @@ fun BasicTextButton(
     modifier = modifier.widthIn(min = 1.dp),
     enabled = isEnabled,
     shape = shape,
+    border = border,
     colors = colors(isPressed),
     contentPadding = contentPadding,
     interactionSource = interactionSource,
     onClick = onClick,
-    content = { content() },
+    content = content,
   )
 }
 

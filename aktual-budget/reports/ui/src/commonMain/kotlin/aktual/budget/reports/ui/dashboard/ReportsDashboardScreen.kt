@@ -188,7 +188,7 @@ internal fun ReportsDashboardScaffold(
         },
         title = {
           if (reorder.isEditing) {
-            Text(text = Strings.reportsDashboardReorder, color = colors.pageText)
+            Text(text = Strings.reportsDashboardReorder)
           } else {
             DashboardSelector(pages, selectedPage, onAction)
           }
@@ -368,7 +368,7 @@ private fun ContentEmpty(onAction: ActionListener, modifier: Modifier = Modifier
     horizontalAlignment = CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {
-    Text(text = Strings.reportsDashboardEmpty, color = colors.pageText, textAlign = Center)
+    Text(text = Strings.reportsDashboardEmpty, textAlign = Center)
 
     VerticalSpacer(20.dp)
 
@@ -397,7 +397,7 @@ private fun ContentList(
   val density = LocalDensity.current
   val isEditing = reorder.isEditing
   val byId = remember(items) { items.associateBy { it.id } }
-  val ordered = reorder.order.mapNotNull(byId::get)
+  val ordered = reorder.order.mapNotNull(byId::get).ifEmpty { items }
 
   SideEffect(isEditing) { openItemId = null }
 

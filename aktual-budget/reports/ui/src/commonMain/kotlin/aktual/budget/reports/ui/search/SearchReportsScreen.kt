@@ -188,7 +188,7 @@ private fun GroupHeader(page: DashboardPage, count: Int, modifier: Modifier = Mo
   ) {
     Text(text = page.displayName(), color = colors.pageTextSubdued, style = typography.labelLarge)
     Text(text = count.toString(), color = colors.pageTextSubdued, style = typography.labelSmall)
-    HorizontalDivider(modifier = Modifier.weight(1f), color = colors.tableBorder)
+    HorizontalDivider(modifier = Modifier.weight(1f))
   }
 
 @Composable

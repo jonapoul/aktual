@@ -117,7 +117,6 @@ private fun Header(
       Text(
         text = data.title ?: Strings.reportsChooseTypeNetWorth,
         overflow = Ellipsis,
-        color = colors.pageText,
         style = typography.bodyLarge,
       )
 
@@ -135,7 +134,6 @@ private fun Header(
         text = netWorthLatest.formattedText(includeSign = false),
         textAlign = End,
         style = typography.bodyLarge,
-        color = colors.pageText,
       )
 
       VerticalSpacer(4.dp)

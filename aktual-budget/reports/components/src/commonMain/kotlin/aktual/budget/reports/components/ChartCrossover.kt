@@ -83,7 +83,6 @@ private fun Header(
       modifier = Modifier.weight(1f),
       text = data.title ?: Strings.reportsChooseTypeCrossover,
       overflow = Ellipsis,
-      color = colors.pageText,
       style = typography.bodyLarge,
     )
 
@@ -98,7 +97,6 @@ private fun Header(
           },
         textAlign = End,
         style = typography.bodyLarge,
-        color = colors.pageText,
       )
 
       VerticalSpacer(4.dp)

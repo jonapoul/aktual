@@ -97,7 +97,7 @@ internal fun RunsTable(
         GroupHeading(Strings.monteCarloRunsEnding, Modifier.weight(1f), textAlign = End)
         GroupHeading(Strings.monteCarloRunsWithdrawn, Modifier.weight(1f), textAlign = End)
       }
-      HorizontalDivider(color = colors.tableBorder)
+      HorizontalDivider()
 
       for (offset in 0 until pageSize) {
         val rank = pageStart + offset
@@ -107,7 +107,7 @@ internal fun RunsTable(
           isHighlighted = rank == highlightedRank,
           onClick = onSelectRun,
         )
-        HorizontalDivider(color = colors.tableBorder)
+        HorizontalDivider()
       }
     }
 

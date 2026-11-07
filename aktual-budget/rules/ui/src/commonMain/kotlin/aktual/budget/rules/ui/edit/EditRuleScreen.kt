@@ -29,7 +29,6 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AktualTooltip
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -40,6 +39,7 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.WarningBanner
+import aktual.core.ui.card
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -47,7 +47,6 @@ import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -257,7 +256,6 @@ private fun EditRuleContent(
         modifier = modifier,
         title = Strings.editRuleFailedTitle,
         reason = state.reason,
-        background = colors.tableBackground,
         action = null,
       )
     }
@@ -342,8 +340,7 @@ private fun RuleStage(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier =
-      modifier.fillMaxWidth().background(colors.cardBackground, CardShape).padding(CARD_PADDING),
+    modifier = modifier.fillMaxWidth().card(colors).padding(CARD_PADDING),
     verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     Row {

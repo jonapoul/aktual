@@ -8,6 +8,7 @@ import aktual.budget.reports.components.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.components.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.components.ReportChart
 import aktual.budget.reports.components.ShimmerDashboardItem
+import aktual.budget.reports.components.dashboardItem
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.vm.ChartData
@@ -25,7 +26,6 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -34,7 +34,6 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.contrastingTextColor
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -257,16 +256,12 @@ private fun ReportCard(
   modifier: Modifier = Modifier,
 ) =
   Box(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .wrapContentHeight()
-        .background(colors.tableBackground, CardShape)
-        .clickable(onClick = onClick),
+    modifier = modifier.fillMaxWidth().wrapContentHeight().clickable(onClick = onClick),
   ) {
     if (chartData != null) {
       ReportChart(
-        modifier = Modifier.fillMaxWidth().padding(ChartPadding).height(ChartHeight),
+        modifier =
+          Modifier.fillMaxWidth().dashboardItem(colors).padding(ChartPadding).height(ChartHeight),
         data = chartData,
         compact = true,
         onAction = { onAction(Action.Chart(it)) },

@@ -13,10 +13,9 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.TonalButton
-import androidx.compose.foundation.background
+import aktual.core.ui.card
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -99,7 +98,7 @@ internal fun ConditionsList(
       Column {
         SectionLabel(Strings.reportsFormulaQueryConditions)
         if (conditions.isNotEmpty()) {
-          Column(modifier = Modifier.fillMaxWidth().background(colors.tableBackground, CardShape)) {
+          Column(modifier = Modifier.fillMaxWidth().card(colors)) {
             conditions.fastForEachIndexed { index, condition ->
               if (index > 0) Divider()
               ConditionRow(

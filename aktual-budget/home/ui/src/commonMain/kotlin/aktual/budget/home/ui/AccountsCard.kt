@@ -247,7 +247,6 @@ private fun AccountRow(
           modifier = Modifier.weight(1f, fill = false),
           text = account.name,
           style = typography.bodyLarge,
-          color = colors.pageText,
           maxLines = 1,
           overflow = Ellipsis,
         )

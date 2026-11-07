@@ -108,7 +108,7 @@ private fun ReportsContent(
     ReportsHeader(onManage = onManage)
 
     state.reports.fastForEachIndexed { index, report ->
-      if (index > 0) HorizontalDivider(color = colors.tableBorder)
+      if (index > 0) HorizontalDivider()
       PinnedReportChart(
         modifier =
           Modifier.fillMaxWidth()
@@ -217,7 +217,6 @@ private fun PinnedContent(
           modifier = Modifier.weight(1f),
           text = name,
           style = typography.bodyLarge,
-          color = colors.pageText,
           maxLines = 1,
           overflow = Ellipsis,
         )

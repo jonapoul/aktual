@@ -7,6 +7,7 @@ import aktual.budget.reports.components.ChartTags
 import aktual.budget.reports.components.ChartZoomState
 import aktual.budget.reports.components.PREVIEW_AGE_OF_MONEY_DATA
 import aktual.budget.reports.components.ReportChart
+import aktual.budget.reports.components.dashboardItem
 import aktual.budget.reports.components.info
 import aktual.budget.reports.components.rememberChartZoomState
 import aktual.budget.reports.components.string
@@ -40,7 +41,6 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -56,7 +56,6 @@ import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -378,7 +377,7 @@ private fun ReportContent(
 
       NotFound ->
         Box(modifier = contentModifier, contentAlignment = Center) {
-          Text(text = Strings.reportsNotFound, color = colors.pageText)
+          Text(text = Strings.reportsNotFound)
         }
 
       // Shown by their own screens instead
@@ -388,7 +387,7 @@ private fun ReportContent(
 
       is Loaded ->
         ReportChart(
-          modifier = contentModifier.background(colors.tableBackground, CardShape).padding(8.dp),
+          modifier = contentModifier.dashboardItem(colors).padding(8.dp),
           data = state.data,
           compact = false,
           onAction = { onAction(Action.Chart(it)) },

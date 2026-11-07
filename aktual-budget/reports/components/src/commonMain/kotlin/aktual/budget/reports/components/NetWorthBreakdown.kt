@@ -95,7 +95,6 @@ internal fun NetWorthBreakdownList(
     Text(
       modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
       text = periodLabel(data.interval, period, monthStrings),
-      color = colors.pageText,
       style = typography.bodyLarge,
       fontWeight = Bold,
     )
@@ -114,7 +113,6 @@ internal fun NetWorthBreakdownList(
     if (breakdown.rows.isNotEmpty()) {
       HorizontalDivider(
         modifier = Modifier.padding(vertical = 4.dp),
-        color = colors.tableBorder,
       )
     }
 

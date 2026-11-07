@@ -6,10 +6,13 @@ import aktual.core.icons.CheveronDown
 import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.Rectangle
+import aktual.core.ui.card
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +32,8 @@ internal fun LogFilterChips(
   modifier: Modifier = Modifier,
 ) {
   FlowRow(
-    modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp),
+    modifier =
+      modifier.fillMaxWidth().card(colors, Rectangle).padding(horizontal = 8.dp, vertical = 6.dp),
     horizontalArrangement = Arrangement.spacedBy(2.dp),
     verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {

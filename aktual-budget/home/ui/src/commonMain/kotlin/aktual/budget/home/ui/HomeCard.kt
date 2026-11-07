@@ -14,10 +14,10 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RounderCardShape
+import aktual.core.ui.card
 import aktual.core.ui.formattedString
 import aktual.core.ui.redacted
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -56,17 +56,12 @@ internal fun HomeCard(
   isBoxed: Boolean = true,
   content: @Composable ColumnScope.() -> Unit,
 ) {
-  val frame =
-    if (isBoxed) {
-      Modifier.clip(RounderCardShape)
-        .background(colors.tableBackground, RounderCardShape)
-        .border(Hairline, colors.tableBorder, RounderCardShape)
-    } else {
-      Modifier
-    }
-
   Column(
-    modifier = modifier.fillMaxWidth().then(frame).padding(vertical = CardPadding),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .then(if (isBoxed) Modifier.card(colors, RounderCardShape) else Modifier)
+        .padding(vertical = CardPadding),
     content = content,
   )
 }
@@ -186,7 +181,6 @@ internal fun CardError(
       modifier = Modifier.weight(1f),
       text = message,
       style = typography.bodyMedium,
-      color = colors.pageText,
     )
 
     BareTextButton(text = Strings.homeRetry, onClick = { onAction(Retry) })

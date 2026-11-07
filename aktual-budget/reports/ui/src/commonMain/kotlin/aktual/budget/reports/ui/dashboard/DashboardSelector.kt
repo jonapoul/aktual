@@ -47,7 +47,7 @@ internal fun DashboardSelector(
   modifier: Modifier = Modifier,
 ) {
   if (selected == null) {
-    Text(modifier = modifier, text = Strings.reportsDashboardTitle, color = colors.pageText)
+    Text(modifier = modifier, text = Strings.reportsDashboardTitle)
     return
   }
 
@@ -63,14 +63,12 @@ internal fun DashboardSelector(
     ) {
       Text(
         text = selected.displayName(),
-        color = colors.pageText,
         maxLines = 1,
         overflow = Ellipsis,
       )
       Icon(
         imageVector = AktualIcons.CheveronDown,
         contentDescription = Strings.reportsDashboardChoose,
-        tint = colors.pageText,
       )
     }
 

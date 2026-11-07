@@ -107,7 +107,7 @@ internal fun CustomTable(
           )
         }
       }
-      HorizontalDivider(color = colors.tableBorder)
+      HorizontalDivider()
 
       val listState = rememberLazyListState()
       LazyColumn(
@@ -123,7 +123,7 @@ internal fun CustomTable(
         }
       }
 
-      HorizontalDivider(color = colors.tableBorder)
+      HorizontalDivider()
       AmountsRow(
         row = totals,
         widths = widths,

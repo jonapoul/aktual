@@ -29,6 +29,7 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.TextFieldShape
+import aktual.core.ui.card
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -430,10 +431,7 @@ private fun SaveButton(
 @Composable
 private inline fun EditTagCard(content: @Composable ColumnScope.() -> Unit) {
   Column(
-    modifier =
-      Modifier.fillMaxWidth()
-        .background(colors.cardBackground, CardShape)
-        .padding(EditTagDS.cardPadding),
+    modifier = Modifier.fillMaxWidth().card(colors).padding(EditTagDS.cardPadding),
     verticalArrangement = Arrangement.spacedBy(EditTagDS.fieldSpacing),
     content = content,
   )
@@ -455,7 +453,7 @@ private inline fun Field(
       } else {
         AnnotatedString(label)
       }
-    Text(text = labelText, style = typography.labelLarge, color = colors.pageTextSubdued)
+    Text(text = labelText, style = typography.labelLarge)
     content()
   }
 }

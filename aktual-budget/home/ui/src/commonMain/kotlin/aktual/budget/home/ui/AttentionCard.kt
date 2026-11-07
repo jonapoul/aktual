@@ -191,7 +191,6 @@ private fun AttentionRow(
       modifier = Modifier.weight(1f),
       text = item.label(),
       style = typography.bodyLarge,
-      color = colors.pageText,
       maxLines = 2,
       overflow = Ellipsis,
     )
@@ -317,7 +316,6 @@ private fun OverspentContent(
           modifier = Modifier.weight(1f),
           text = category.name,
           style = typography.bodyLarge,
-          color = colors.pageText,
           maxLines = 1,
           overflow = Ellipsis,
         )

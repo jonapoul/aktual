@@ -181,7 +181,6 @@ private fun CompactHeader(
     Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start) {
       Text(
         text = data.title ?: Strings.reportsSpendingTitle,
-        color = colors.pageText,
         style = typography.bodyLarge,
       )
       DateRangeText(

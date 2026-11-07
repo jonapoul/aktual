@@ -16,6 +16,7 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.buttonTextStyle
 import aktual.core.ui.errorButton
 import alakazam.compose.HorizontalSpacer
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -99,6 +101,7 @@ private fun Content(
       LoadableBareTextButton(
         text = Strings.budgetDeleteDialogHostedButton,
         colors = { pressed -> colors.errorButton(pressed) },
+        border = colors.errorBorder,
         isEnabled = isNotDeleting && firstCheckbox && secondCheckbox,
         isLoading = deletingState is Active && deletingState.deletingRemote,
         onClick = {
@@ -136,6 +139,7 @@ private fun LoadableBareTextButton(
   isLoading: Boolean,
   colors: @Composable (Boolean) -> ButtonColors,
   modifier: Modifier = Modifier,
+  border: Color? = null,
 ) =
   Box(modifier = modifier, contentAlignment = Center) {
     BareTextButton(
@@ -143,6 +147,7 @@ private fun LoadableBareTextButton(
       colors = colors,
       isEnabled = isEnabled,
       onClick = onClick,
+      border = border?.let { BorderStroke(Hairline, it) },
       style = if (isLoading) TextStyle(color = Transparent) else typography.buttonTextStyle,
     )
 

@@ -78,7 +78,6 @@ internal fun ForecastContributorsList(
     Text(
       modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
       text = Strings.reportsBalanceForecastContributorsTitle,
-      color = colors.pageText,
       style = typography.bodyLarge,
       fontWeight = Bold,
     )
@@ -154,18 +153,17 @@ private fun ContributorsTable(
     Text(
       modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
       text = title,
-      color = colors.pageText,
       style = typography.bodyMedium,
       fontWeight = Bold,
     )
 
     visible.fastForEach { contributor ->
-      Divider()
+      HorizontalDivider()
       ContributorRow(contributor = contributor, onClick = { onEditSchedule(contributor.id) })
     }
 
     if (remaining.isNotEmpty()) {
-      Divider()
+      HorizontalDivider()
       val count = remaining.size
       val occurrences = remaining.sumOf { it.count }
       AmountRow(
@@ -185,7 +183,7 @@ private fun ContributorsTable(
       )
     }
 
-    Divider()
+    HorizontalDivider()
     AmountRow(
       name = Strings.reportsBalanceForecastTotal,
       amount = contributors.map { it.amount }.sum(),
@@ -284,8 +282,6 @@ private fun AmountRow(
       )
     }
   }
-
-@Composable private fun Divider() = HorizontalDivider(color = colors.tableBorder)
 
 private const val TOP_COUNT = 5
 private val CHEVRON_SIZE = 16.dp

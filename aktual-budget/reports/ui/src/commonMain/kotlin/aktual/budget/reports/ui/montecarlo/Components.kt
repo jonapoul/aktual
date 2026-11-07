@@ -11,8 +11,8 @@ import aktual.core.ui.AktualTheme.letterSpacings
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ProvideSurfaceColor
+import aktual.core.ui.card
 import aktual.core.ui.redacted
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,11 +45,10 @@ internal fun SectionCard(
   content: @Composable ColumnScope.() -> Unit,
 ) =
   Column(
-    modifier = modifier.fillMaxWidth().background(colors.tableBackground, CardShape).padding(16.dp),
+    modifier = modifier.fillMaxWidth().card(colors).padding(16.dp),
     verticalArrangement = Arrangement.spacedBy(10.dp),
-  ) {
-    ProvideSurfaceColor(colors.tableBackground) { content() }
-  }
+    content = { ProvideSurfaceColor(colors.tableBackground) { content() } },
+  )
 
 // A SectionCard that expands and collapses from its title
 @Composable
@@ -79,7 +78,6 @@ internal fun CollapsibleSectionCard(
       Icon(
         imageVector = if (isExpanded) AktualIcons.CheveronDown else AktualIcons.CheveronRight,
         contentDescription = null,
-        tint = colors.pageText,
       )
       SectionTitle(modifier = Modifier.weight(1f), text = title)
     }
@@ -93,7 +91,6 @@ internal fun SectionTitle(text: String, modifier: Modifier = Modifier) =
     text = text,
     style = typography.titleMedium,
     fontWeight = SemiBold,
-    color = colors.pageText,
   )
 
 // GROUP_HEADING_STYLE: the small uppercase heading on stat tiles, field groups and tables
@@ -110,7 +107,6 @@ internal fun GroupHeading(
     style = typography.labelSmall,
     fontWeight = SemiBold,
     letterSpacing = letterSpacings.wide,
-    color = colors.pageText,
   )
 
 @Composable
@@ -119,7 +115,6 @@ internal fun BodyText(text: String, modifier: Modifier = Modifier) =
     modifier = modifier,
     text = text.redacted(),
     style = typography.bodyMedium,
-    color = colors.pageText,
   )
 
 // MonteCarloHelpTooltip: a small info icon that shows its text when tapped

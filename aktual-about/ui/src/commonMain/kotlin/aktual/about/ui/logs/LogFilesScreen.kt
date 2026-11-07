@@ -14,6 +14,7 @@ import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.logging.LogFileFormat
 import aktual.core.model.bytes
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -26,21 +27,22 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.RowShape
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.card
 import aktual.core.ui.contrastingTextColor
+import aktual.core.ui.errorButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.normalButton
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -73,8 +75,6 @@ import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
@@ -191,7 +191,7 @@ private fun LogFilesList(
 @Composable
 private fun LogFilesSummary(state: LogFilesState.Loaded, modifier: Modifier = Modifier) =
   Column(
-    modifier = modifier.logFilesSummaryCard(colors.cardBackground, colors.cardShadow),
+    modifier = modifier.fillMaxWidth().card(colors).padding(Dimens.VeryLarge),
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
     Text(
@@ -204,7 +204,6 @@ private fun LogFilesSummary(state: LogFilesState.Loaded, modifier: Modifier = Mo
       Text(
         text = Plurals.logsSummaryFiles(count, count),
         style = typography.headlineMedium,
-        color = colors.pageText,
       )
       Text(
         text = state.totalSize.toString(),
@@ -257,7 +256,7 @@ private fun LogFileItem(
   modifier: Modifier = Modifier,
 ) =
   Row(
-    modifier = modifier.logFileRow(colors.tableBackground, onClick),
+    modifier = modifier.logFileRow(colors, onClick),
     verticalAlignment = CenterVertically,
     horizontalArrangement = spacedBy(Dimens.VeryLarge),
   ) {
@@ -325,7 +324,9 @@ private fun ShimmerLogFilesSummary(modifier: Modifier = Modifier) =
   Column(
     modifier =
       modifier
-        .logFilesSummaryCard(colors.cardBackground, colors.cardShadow)
+        .fillMaxWidth()
+        .card(colors)
+        .padding(Dimens.VeryLarge)
         .shimmer(rememberShimmer(Window)),
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
@@ -345,7 +346,7 @@ private fun ShimmerLogFilesSummary(modifier: Modifier = Modifier) =
 @Composable
 private fun ShimmerLogFileItem() =
   Row(
-    modifier = Modifier.logFileRow(colors.tableBackground).shimmer(rememberShimmer(Window)),
+    modifier = Modifier.logFileRow(colors).shimmer(rememberShimmer(Window)),
     verticalAlignment = CenterVertically,
     horizontalArrangement = spacedBy(Dimens.VeryLarge),
   ) {
@@ -368,17 +369,10 @@ private fun ShimmerLine(style: TextStyle, barHeight: Dp, modifier: Modifier = Mo
     Box(Modifier.fillMaxWidth().height(barHeight).background(colors.pageText, CardShape))
   }
 
-private fun Modifier.logFilesSummaryCard(background: Color, border: Color) =
-  fillMaxWidth()
-    .background(background, CardShape)
-    .border(Hairline, border, CardShape)
-    .padding(Dimens.VeryLarge)
-
-private fun Modifier.logFileRow(background: Color, onClick: (() -> Unit)? = null) =
+private fun Modifier.logFileRow(colors: Colors, onClick: (() -> Unit)? = null) =
   fillMaxWidth()
     .heightIn(min = 56.dp)
-    .clip(RowShape)
-    .background(background)
+    .normalButton(colors, RowShape)
     .then(if (onClick == null) Modifier else Modifier.clickable(onClick = onClick))
     .padding(
       start = Dimens.VeryLarge,
@@ -391,16 +385,17 @@ private fun Modifier.logFileRow(background: Color, onClick: (() -> Unit)? = null
 private fun LogFilesBottomBar(onDelete: () -> Unit, onExport: () -> Unit) =
   Column(modifier = Modifier.fillMaxWidth().background(colors.cardBackground)) {
     Row(
-      modifier =
-        Modifier.fillMaxWidth().padding(horizontal = Dimens.Large, vertical = Dimens.VeryLarge),
+      modifier = Modifier.fillMaxWidth().padding(Dimens.Large),
       horizontalArrangement = spacedBy(Dimens.Large),
     ) {
       NormalTextButton(
         modifier = Modifier.weight(1f),
         text = Strings.logsDeleteAll,
         onClick = onDelete,
+        colors = { pressed -> colors.errorButton(pressed) },
+        border = colors.errorBorder,
       )
-      PrimaryTextButton(
+      NormalTextButton(
         modifier = Modifier.weight(2f),
         text = Strings.logsExport,
         onClick = onExport,

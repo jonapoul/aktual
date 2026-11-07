@@ -69,7 +69,7 @@ internal fun ArtifactItem(
       modifier
         .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
         .background(colors.buttonNormalBackground, CardShape)
-        .border(Hairline, colors.pillBorderDark, CardShape)
+        .border(Hairline, colors.buttonNormalBorder, CardShape)
         .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
         .padding(Dimens.Large),
     verticalAlignment = CenterVertically,
@@ -242,7 +242,6 @@ private fun LibraryTableRow(
       modifier = Modifier.weight(1f),
       text = rememberHighlighted(value, query),
       textAlign = Start,
-      color = colors.pageText,
       lineHeight = LineHeight,
       fontSize = TextSize,
     )

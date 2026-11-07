@@ -276,7 +276,6 @@ private fun DepletionCard(
             ),
           style = typography.bodyMedium,
           fontWeight = Medium,
-          color = colors.pageText,
         )
       }
     }

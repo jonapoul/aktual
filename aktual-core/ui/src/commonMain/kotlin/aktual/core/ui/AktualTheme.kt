@@ -6,6 +6,10 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.LocalOverscrollFactory
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
@@ -49,11 +53,17 @@ fun AktualTheme(colors: Colors?, content: @Composable () -> Unit) {
       LocalIndication provides ripple(),
       LocalShimmerTheme provides aktualShimmerTheme(c),
       LocalOverscrollFactory provides releasingOverscrollFactory(),
+      LocalContentColor provides c.pageText,
+      LocalTextSelectionColors provides
+        TextSelectionColors(
+          handleColor = c.formInputBorderSelected,
+          backgroundColor = c.formInputBackgroundSelection,
+        ),
     ) {
       SetStatusBarColors(colors = c)
 
       MaterialTheme(
-        colorScheme = if (c.isLight) lightColorScheme() else darkColorScheme(),
+        colorScheme = aktualColorScheme(c),
         typography = aktualTypography(c),
         content = content,
       )
@@ -82,5 +92,36 @@ private fun aktualShimmerTheme(colors: Colors): ShimmerTheme =
         ),
       shaderColorStops = persistentListOf(0.0f, 0.5f, 1.0f),
       shimmerWidth = 400.dp,
+    )
+  }
+
+@Stable
+@Composable
+private fun aktualColorScheme(colors: Colors): ColorScheme =
+  remember(colors) {
+    val base = if (colors.isLight) lightColorScheme() else darkColorScheme()
+    base.copy(
+      primary = colors.buttonPrimaryBackground,
+      onPrimary = colors.buttonPrimaryText,
+      secondaryContainer = colors.tableBorder,
+      background = colors.pageBackground,
+      onBackground = colors.pageText,
+      surface = colors.pageBackground,
+      onSurface = colors.pageText,
+      surfaceVariant = colors.tableBackground,
+      onSurfaceVariant = colors.pageTextSubdued,
+      surfaceContainerLowest = colors.cardBackground,
+      surfaceContainerLow = colors.cardBackground,
+      surfaceContainer = colors.cardBackground,
+      surfaceContainerHigh = colors.modalBackground,
+      surfaceContainerHighest = colors.modalBackground,
+      inverseSurface = colors.tooltipBackground,
+      inverseOnSurface = colors.tooltipText,
+      error = colors.errorText,
+      errorContainer = colors.errorBackground,
+      onErrorContainer = colors.errorText,
+      outline = colors.formInputBorder,
+      outlineVariant = colors.tableBorder,
+      scrim = colors.overlayBackground,
     )
   }

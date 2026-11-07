@@ -97,11 +97,11 @@ internal fun LogsWideScaffold(
       onExport = { showExport = true },
       onAction = onAction,
     )
-    HorizontalDivider(color = colors.tableBorder)
+    HorizontalDivider()
 
     Row(modifier = Modifier.weight(1f)) {
       WideSidebar(files, loaded, filters, onAction)
-      VerticalDivider(color = colors.tableBorder)
+      VerticalDivider()
       Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
         when (files) {
           Loading -> Unit
@@ -146,7 +146,6 @@ private fun WideToolbar(
       modifier = Modifier.width(SidebarWidth - 64.dp),
       text = Strings.logsToolbar,
       style = typography.titleLarge,
-      color = colors.pageText,
     )
     LogSearchField(
       modifier = Modifier.weight(1f).widthIn(max = 520.dp),
@@ -323,7 +322,7 @@ private fun WideTable(state: LogEntriesState.Loaded, onAction: LogsActionHandler
       }
     }
 
-    HorizontalDivider(color = colors.tableBorder)
+    HorizontalDivider()
     DetailPane(selected)
   }
 }
@@ -449,7 +448,7 @@ private fun DetailPane(line: LogLine?) {
             )
           }
         }
-        HorizontalDivider(color = colors.tableBorder)
+        HorizontalDivider()
         Text(
           modifier =
             Modifier.fillMaxSize()

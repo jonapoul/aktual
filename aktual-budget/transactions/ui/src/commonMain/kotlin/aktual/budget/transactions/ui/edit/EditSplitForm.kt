@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -96,7 +97,7 @@ internal fun SplitFieldsCard(form: TransactionForm, onEdit: (EditField) -> Unit)
     labelWidth = CompactLabelWidth,
     onClick = { onEdit(Payee) },
   )
-  CardDivider()
+  HorizontalDivider()
   Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
     CompactField(
       modifier = Modifier.weight(1f),
@@ -104,7 +105,7 @@ internal fun SplitFieldsCard(form: TransactionForm, onEdit: (EditField) -> Unit)
       value = form.accountName,
       onClick = { onEdit(Account) },
     )
-    VerticalDivider(color = colors.tableBorder)
+    VerticalDivider()
     CompactField(
       modifier = Modifier.weight(1f),
       label = Strings.transactionDate,
@@ -168,7 +169,7 @@ internal fun SplitParts(
 
     DetailCard {
       form.parts.fastForEachIndexed { index, part ->
-        if (index > 0) CardDivider()
+        if (index > 0) HorizontalDivider()
         PartRow(
           part = part,
           isOffBudget = form.isOffBudget,

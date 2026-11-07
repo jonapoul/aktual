@@ -261,7 +261,6 @@ private fun Breakdown(lines: ImmutableList<Pair<String, Amount>>, modifier: Modi
           text = amount.formattedText(),
           fontSize = textSizes.smallPlus,
           style = TextStyle.Default.tabularFigures(),
-          color = colors.pageText,
           maxLines = 1,
         )
       }
@@ -477,7 +476,7 @@ internal fun GroupHeaderRow(
   val rotation by animateFloatAsState(if (group.isCollapsed) COLLAPSED_ROTATION else 0f)
 
   Column(modifier = modifier.fillMaxWidth().background(colors.tableRowHeaderBackground)) {
-    HorizontalDivider(color = colors.tableBorder)
+    HorizontalDivider()
     TableRow(
       modifier =
         Modifier.alpha(if (group.isHidden) HIDDEN_ALPHA else 1f).clickable(
@@ -588,7 +587,7 @@ internal fun CategoryRowLayout(
 ) {
   val openLabel = Strings.budgetingCategoryOpen(category.name)
   Column(modifier = modifier.fillMaxWidth().background(colors.tableBackground)) {
-    HorizontalDivider(color = colors.tableBorder)
+    HorizontalDivider()
     TableRow(
       modifier =
         Modifier.alpha(if (category.isHidden) HIDDEN_ALPHA else 1f).padding(start = CategoryInset),

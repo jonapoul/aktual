@@ -293,7 +293,6 @@ private fun ListPayeesContent(
       FailureScreen(
         title = Strings.payeesFailurePrefix,
         reason = state.cause ?: Strings.payeesFailureDefaultMessage,
-        background = colors.tableBackground,
         action =
           FailureAction(
             text = { Strings.syncRetry },
@@ -308,7 +307,6 @@ private fun ListPayeesContent(
         reason = null,
         action = null,
         icon = null,
-        background = colors.tableBackground,
       )
 
     is Success ->

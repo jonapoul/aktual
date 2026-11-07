@@ -102,7 +102,7 @@ private fun LockedContent(onUnlock: () -> Unit) {
       modifier =
         Modifier.size(88.dp)
           .background(colors.cardBackground, CircleShape)
-          .border(1.dp, colors.cardBorder, CircleShape),
+          .border(1.dp, colors.cardShadow, CircleShape),
       contentAlignment = Center,
     ) {
       Icon(
@@ -119,7 +119,6 @@ private fun LockedContent(onUnlock: () -> Unit) {
       text = Strings.appLockTitle,
       fontSize = textSizes.heading,
       fontWeight = W600,
-      color = colors.pageText,
     )
 
     VerticalSpacer(8.dp)
