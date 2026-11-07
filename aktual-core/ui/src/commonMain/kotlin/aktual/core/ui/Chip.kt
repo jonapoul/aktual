@@ -138,7 +138,7 @@ fun Chip(
             Modifier.border(1.dp, colors.border, size.shape)
           } else {
             Modifier
-          }
+          },
         )
         .then(if (onClick == null) Modifier else Modifier.clickable(role = role, onClick = onClick))
         .padding(size.contentPadding),
