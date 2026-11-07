@@ -62,26 +62,12 @@ jobs:
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
-      - name: Set up signing
-        env:
-          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: |
-          for name in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
-            if [ -z "${!name}" ]; then
-              echo "::error::Signing secret $name is missing"
-              exit 1
-            fi
-          done
-          echo "$KEYSTORE_BASE64" | base64 --decode > release.keystore
-          {
-            echo "aktual.keyFile=release.keystore"
-            echo "aktual.keyFilePassword=$KEYSTORE_PASSWORD"
-            echo "aktual.keyAlias=$KEY_ALIAS"
-            echo "aktual.keyPassword=$KEY_PASSWORD"
-          } > local.properties
+      - uses: ./.github/actions/setup-android-signing
+        with:
+          keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          keystore-password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          key-alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          key-password: ${{ secrets.ANDROID_KEY_PASSWORD }}
       - run: ./gradlew :aktual-app:android:assembleRelease
       - run: |
           mkdir out

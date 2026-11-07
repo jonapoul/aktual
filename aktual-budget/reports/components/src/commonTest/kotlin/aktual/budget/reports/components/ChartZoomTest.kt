@@ -79,10 +79,49 @@ class ChartZoomTest {
     assertThat(geometry().range(from = -10f, to = 200f)).isNull()
   }
 
+  @Test
+  fun `Pinching out keeps the value under the fingers in place`() {
+    // fingers at x = 5, spread to twice the distance
+    assertThat(geometry().pinched(FULL, from = 50f, to = 50f, zoom = 2f)).isEqualTo(3.0..8.0)
+  }
+
+  @Test
+  fun `Pinching follows the fingers as they move`() {
+    // the value at 5 is dragged to where 2 was, then zoomed in twice
+    assertThat(geometry().pinched(FULL, from = 50f, to = 20f, zoom = 2f)).isEqualTo(4.0..9.0)
+  }
+
+  @Test
+  fun `Pinching stays within the chart`() {
+    assertThat(geometry().pinched(FULL, from = 10f, to = 50f, zoom = 2f)).isEqualTo(0.0..5.0)
+    assertThat(geometry().pinched(FULL, from = 50f, to = 0f, zoom = 2f)).isEqualTo(5.0..10.0)
+  }
+
+  @Test
+  fun `Pinching in shows at least one x step`() {
+    assertThat(geometry().pinched(FULL, from = 50f, to = 50f, zoom = 100f)).isEqualTo(5.0..6.0)
+  }
+
+  @Test
+  fun `Pinching out past everything resets the zoom`() {
+    val zoomed = ZoomGeometry(start = 0f, spacing = 20f, minX = 2.0, maxX = 7.0, xStep = 1.0)
+    assertThat(zoomed.pinched(FULL, from = 50f, to = 50f, zoom = 0.4f)).isNull()
+  }
+
+  @Test
+  fun `Pinching out from a zoomed range widens it`() {
+    val zoomed = ZoomGeometry(start = 0f, spacing = 20f, minX = 2.0, maxX = 6.0, xStep = 1.0)
+    assertThat(zoomed.pinched(FULL, from = 40f, to = 40f, zoom = 0.5f)).isEqualTo(0.0..8.0)
+  }
+
   private fun points(vararg points: Pair<Int, Int>) = points.map { (x, y) ->
     ZoomPoint(x.toDouble(), y.toDouble())
   }
 
   private fun geometry() =
     ZoomGeometry(start = 0f, spacing = 10f, minX = 0.0, maxX = 10.0, xStep = 1.0)
+
+  private companion object {
+    val FULL = 0.0..10.0
+  }
 }

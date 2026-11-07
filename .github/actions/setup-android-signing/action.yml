@@ -1,0 +1,34 @@
+name: "Setup Android signing"
+description: "Decode the release keystore and write its details into local.properties"
+inputs:
+  keystore-base64:
+    required: true
+  keystore-password:
+    required: true
+  key-alias:
+    required: true
+  key-password:
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        KEYSTORE_BASE64: ${{ inputs.keystore-base64 }}
+        KEYSTORE_PASSWORD: ${{ inputs.keystore-password }}
+        KEY_ALIAS: ${{ inputs.key-alias }}
+        KEY_PASSWORD: ${{ inputs.key-password }}
+      run: |
+        for name in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+          if [ -z "${!name}" ]; then
+            echo "::error::Signing secret $name is missing"
+            exit 1
+          fi
+        done
+        echo "$KEYSTORE_BASE64" | base64 --decode > release.keystore
+        {
+          echo "aktual.keyFile=release.keystore"
+          echo "aktual.keyFilePassword=$KEYSTORE_PASSWORD"
+          echo "aktual.keyAlias=$KEY_ALIAS"
+          echo "aktual.keyPassword=$KEY_PASSWORD"
+        } > local.properties

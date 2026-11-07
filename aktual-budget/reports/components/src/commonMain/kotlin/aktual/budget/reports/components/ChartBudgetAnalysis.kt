@@ -52,11 +52,13 @@ import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
 import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import kotlin.math.roundToLong
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.YearMonth
 
 @Composable
 internal fun BudgetAnalysisChart(
@@ -71,7 +73,7 @@ internal fun BudgetAnalysisChart(
       if (compact) {
         CompactHeader(data)
       } else {
-        RegularHeader(data)
+        RegularHeader(data, zoom)
       }
     }
 
@@ -108,12 +110,15 @@ private fun CompactHeader(
 @Composable
 private fun RegularHeader(
   data: BudgetAnalysisData,
+  zoom: ChartZoomState,
   modifier: Modifier = Modifier,
 ) =
   Row(modifier = modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp).fillMaxWidth()) {
     DateRangeText(
       modifier = Modifier.weight(1f),
       text = dateRange(data.items.keys),
+      zoom = zoom,
+      toMonth = { x -> YearMonth.fromMonthNumber(x.roundToLong()) },
       color = colors.pageText,
     )
 
@@ -215,7 +220,7 @@ private fun Chart(
       modifier = chartModifier,
       modelProducer = modelProducer,
       scrollState = rememberVicoScrollState(scrollEnabled = false),
-      animationSpec = chartAnimationSpec(compact),
+      animationSpec = zoom.animationSpec(compact),
       chart = chart,
     )
   }
@@ -276,7 +281,7 @@ private fun rememberChart(layers: Layers, compact: Boolean, zoom: ChartZoomState
       label = label,
       tick = tick,
       valueFormatter = yearMonthXAxisFormatter(),
-      itemPlacer = hItemPlacer(compact),
+      itemPlacer = hItemPlacer(lines = false),
     )
   val marker = if (compact) null else rememberMarker()
   val markerListener = rememberMarkerHaptics(compact)

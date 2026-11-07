@@ -76,7 +76,7 @@ internal fun NetWorthChart(
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {
-      Header(modifier = Modifier.fillMaxWidth(), data = data)
+      Header(modifier = Modifier.fillMaxWidth(), data = data, zoom = zoom)
     }
 
     var selected by remember(data) { mutableStateOf<LocalDate?>(null) }
@@ -106,6 +106,7 @@ internal fun NetWorthChart(
 @Composable
 private fun Header(
   data: NetWorthData,
+  zoom: ChartZoomState,
   modifier: Modifier = Modifier,
 ) =
   Row(
@@ -120,7 +121,11 @@ private fun Header(
         style = typography.bodyLarge,
       )
 
-      DateRangeText(dateRange(data.items.keys.map { it.yearMonth }.toImmutableList()))
+      DateRangeText(
+        text = dateRange(data.items.keys.map { it.yearMonth }.toImmutableList()),
+        zoom = zoom,
+        toMonth = { x -> data.periodAt(x)?.yearMonth },
+      )
     }
 
     Column(horizontalAlignment = Alignment.End) {
@@ -191,13 +196,14 @@ private fun Chart(
       modifier = chartModifier,
       modelProducer = modelProducer,
       scrollState = rememberVicoScrollState(scrollEnabled = false),
-      animationSpec = chartAnimationSpec(compact),
+      animationSpec = zoom.animationSpec(compact),
       chart =
         rememberCartesianChart(
           rememberLineCartesianLayer(
             rangeProvider = remember { ZoomRangeProvider() },
             lineProvider = if (stacked) stackedLines else trendLines,
           ),
+          layerPadding = { EdgeLayerPadding },
           startAxis =
             VerticalAxis.rememberStart(
               line = line,
@@ -214,7 +220,7 @@ private fun Chart(
               label = label,
               tick = tick,
               valueFormatter = netWorthXAxisFormatter(data),
-              itemPlacer = hItemPlacer(compact),
+              itemPlacer = hItemPlacer(lines = true),
             ),
           marker =
             when {

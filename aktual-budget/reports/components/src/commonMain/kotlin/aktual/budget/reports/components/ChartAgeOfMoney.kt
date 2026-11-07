@@ -62,6 +62,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month.JANUARY
 import kotlinx.datetime.Month.JUNE
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.yearMonth
 
 private const val TARGET_AGE_DAYS = 30
 private const val OK_AGE_DAYS = 14
@@ -76,7 +77,7 @@ internal fun AgeOfMoneyChart(
 ) {
   Column(modifier = modifier) {
     if (includeHeader) {
-      Header(modifier = Modifier.fillMaxWidth(), data = data)
+      Header(modifier = Modifier.fillMaxWidth(), data = data, zoom = zoom)
     }
 
     Chart(
@@ -91,6 +92,7 @@ internal fun AgeOfMoneyChart(
 @Composable
 private fun Header(
   data: AgeOfMoneyData,
+  zoom: ChartZoomState,
   modifier: Modifier = Modifier,
 ) {
   Row(
@@ -105,7 +107,11 @@ private fun Header(
         style = typography.bodyLarge,
       )
 
-      DateRangeText(dateRange(data.start, data.end))
+      DateRangeText(
+        text = dateRange(data.start, data.end),
+        zoom = zoom,
+        toMonth = { x -> data.items.keys.elementAtOrNull(x.roundToInt())?.yearMonth },
+      )
     }
 
     Column(horizontalAlignment = Alignment.End) {
@@ -189,7 +195,7 @@ private fun Chart(
       modifier = chartModifier,
       modelProducer = modelProducer,
       scrollState = rememberVicoScrollState(scrollEnabled = false),
-      animationSpec = chartAnimationSpec(compact),
+      animationSpec = zoom.animationSpec(compact),
       chart =
         rememberCartesianChart(
           rememberLineCartesianLayer(
@@ -214,6 +220,7 @@ private fun Chart(
                 ),
               ),
           ),
+          layerPadding = { EdgeLayerPadding },
           startAxis =
             VerticalAxis.rememberStart(
               line = line,
@@ -229,7 +236,7 @@ private fun Chart(
               label = label,
               tick = tick,
               valueFormatter = periodXAxisFormatter(data),
-              itemPlacer = hItemPlacer(compact),
+              itemPlacer = hItemPlacer(lines = true),
             ),
           marker = if (compact) null else rememberMarker(),
           markerVisibilityListener = rememberMarkerHaptics(compact),
@@ -237,7 +244,10 @@ private fun Chart(
             if (compact) {
               emptyList()
             } else {
-              listOf(rememberTargetLine(), rememberChartZoomDecoration(zoom))
+              listOf(
+                rememberTargetLine(),
+                rememberChartZoomDecoration(zoom),
+              )
             },
         ),
     )

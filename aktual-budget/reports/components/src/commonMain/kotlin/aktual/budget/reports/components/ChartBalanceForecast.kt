@@ -78,7 +78,7 @@ internal fun BalanceForecastChart(
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {
-      Header(modifier = Modifier.fillMaxWidth(), data = data)
+      Header(modifier = Modifier.fillMaxWidth(), data = data, zoom = zoom)
     }
 
     val chartModifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f)
@@ -126,6 +126,7 @@ internal fun BalanceForecastChart(
 @Composable
 private fun Header(
   data: BalanceForecastData,
+  zoom: ChartZoomState,
   modifier: Modifier = Modifier,
 ) =
   Row(
@@ -140,7 +141,11 @@ private fun Header(
         style = typography.bodyLarge,
       )
 
-      DateRangeText(dateRange(data.start, data.end))
+      DateRangeText(
+        text = dateRange(data.start, data.end),
+        zoom = zoom,
+        toMonth = { x -> data.items.keys.elementAtOrNull(x.roundToInt())?.yearMonth },
+      )
     }
 
     val ending = data.items.values.lastOrNull() ?: return@Row
@@ -219,7 +224,7 @@ private fun Chart(
       modifier = chartModifier,
       modelProducer = modelProducer,
       scrollState = rememberVicoScrollState(scrollEnabled = false),
-      animationSpec = chartAnimationSpec(compact),
+      animationSpec = zoom.animationSpec(compact),
       chart =
         rememberCartesianChart(
           rememberLineCartesianLayer(
@@ -241,6 +246,7 @@ private fun Chart(
                 ),
               ),
           ),
+          layerPadding = { EdgeLayerPadding },
           startAxis =
             VerticalAxis.rememberStart(
               line = line,
@@ -282,7 +288,11 @@ private fun forecastItemPlacer(data: BalanceForecastData): HorizontalAxis.ItemPl
       Unknown -> 1
     }
   return remember(spacing) {
-    HorizontalAxis.ItemPlacer.aligned(offset = { 0 }, spacing = { spacing })
+    HorizontalAxis.ItemPlacer.aligned(
+      offset = { 0 },
+      spacing = { spacing },
+      shiftExtremeLabels = true,
+    )
   }
 }
 

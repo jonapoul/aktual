@@ -159,6 +159,7 @@ private fun Chart(
                 ),
               ),
           ),
+          layerPadding = { EdgeLayerPadding },
           startAxis =
             VerticalAxis.rememberStart(
               line = line,
@@ -174,7 +175,7 @@ private fun Chart(
               label = label,
               tick = tick,
               valueFormatter = yearMonthXAxisFormatter(),
-              itemPlacer = hItemPlacer(compact),
+              itemPlacer = hItemPlacer(lines = true),
             ),
           marker = if (compact) null else rememberMarker(),
           markerVisibilityListener = rememberMarkerHaptics(compact),

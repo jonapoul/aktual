@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performMouseInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
@@ -23,28 +24,49 @@ class ChartZoomGestureTest {
   private val zoom = ChartZoomState()
 
   @Test
-  fun `Long press then drag zooms`() = runComposeUiTest {
+  fun `Pinching out zooms around the fingers`() = runComposeUiTest {
     // given
     setChart()
 
-    // when long pressing then dragging across part of the chart
+    // when spreading two fingers apart around the middle of the chart
     onNodeWithTag(ChartTags.ZoomableChart).performTouchInput {
-      down(centerLeft.copy(x = width * 0.3f))
-      advanceEventTime(LONG_PRESS_MS)
-      moveTo(center.copy(x = width * 0.6f))
-      up()
+      down(0, center.copy(x = width * 0.4f))
+      down(1, center.copy(x = width * 0.6f))
+      moveTo(0, center.copy(x = width * 0.2f))
+      moveTo(1, center.copy(x = width * 0.8f))
+      up(0)
+      up(1)
     }
 
-    // then it's zoomed to the snapped x values under the pointer
+    // then it's zoomed to a third of the x values, still centred
     assertThat(zoom.range).isEqualTo(3.0..6.0)
   }
 
   @Test
-  fun `Dragging without a long press doesn't zoom`() = runComposeUiTest {
+  fun `Pinching back in zooms out to everything`() = runComposeUiTest {
+    setChart()
+
+    onNodeWithTag(ChartTags.ZoomableChart).performTouchInput {
+      down(0, center.copy(x = width * 0.4f))
+      down(1, center.copy(x = width * 0.6f))
+      moveTo(0, center.copy(x = width * 0.2f))
+      moveTo(1, center.copy(x = width * 0.8f))
+      moveTo(0, center.copy(x = width * 0.45f))
+      moveTo(1, center.copy(x = width * 0.55f))
+      up(0)
+      up(1)
+    }
+
+    assertThat(zoom.range).isNull()
+  }
+
+  @Test
+  fun `Dragging one finger doesn't zoom`() = runComposeUiTest {
     setChart()
 
     onNodeWithTag(ChartTags.ZoomableChart).performTouchInput {
       down(centerLeft.copy(x = width * 0.3f))
+      advanceEventTime(LONG_PRESS_MS)
       moveTo(center.copy(x = width * 0.6f))
       up()
     }
@@ -53,16 +75,17 @@ class ChartZoomGestureTest {
   }
 
   @Test
-  fun `Long press without dragging doesn't zoom`() = runComposeUiTest {
+  fun `Dragging a mouse zooms to the selection`() = runComposeUiTest {
     setChart()
 
-    onNodeWithTag(ChartTags.ZoomableChart).performTouchInput {
-      down(center)
-      advanceEventTime(LONG_PRESS_MS)
-      up()
+    onNodeWithTag(ChartTags.ZoomableChart).performMouseInput {
+      moveTo(centerLeft.copy(x = width * 0.3f))
+      press()
+      moveTo(center.copy(x = width * 0.6f))
+      release()
     }
 
-    assertThat(zoom.range).isNull()
+    assertThat(zoom.range).isEqualTo(3.0..6.0)
   }
 
   private fun ComposeUiTest.setChart() = setPreviewContent {
