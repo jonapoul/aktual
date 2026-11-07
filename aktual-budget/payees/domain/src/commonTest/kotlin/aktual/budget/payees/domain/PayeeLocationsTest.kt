@@ -10,6 +10,8 @@ import aktual.budget.model.PayeeLocationId
 import aktual.core.model.Coordinates
 import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
+import alakazam.test.TestCoroutineContexts
+import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
@@ -19,6 +21,7 @@ import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlin.time.Clock
 import kotlin.time.Instant
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 
 class PayeeLocationsTest {
   @Test
@@ -95,6 +98,33 @@ class PayeeLocationsTest {
   }
 
   @Test
+  fun `Restoring untombstones the location`() = runDatabaseTest {
+    val sync = TestSyncController()
+
+    locations(sync).restore(PayeeLocationId("loc"))
+
+    assertThat(sync.changes)
+      .containsExactly(LocalChange(PAYEE_LOCATIONS, "loc", "tombstone", MessageValue.Number(0)))
+  }
+
+  @Test
+  fun `Observing lists the payee's live locations, newest first`() = runDatabaseTest {
+    insertPayee(SHOP)
+    insertPayee(CAFE)
+    insertLocation("old", SHOP, HERE, createdAt = NOW_MILLIS - 1)
+    insertLocation("new", SHOP, HERE.north(meters = 10))
+    insertLocation("deleted", SHOP, HERE, tombstone = true)
+    insertLocation("cafe", CAFE, HERE)
+
+    locations().observe(PayeeId(SHOP)).test {
+      assertThat(awaitItem())
+        .extracting(PayeeLocation::id)
+        .containsExactly(PayeeLocationId("new"), PayeeLocationId("old"))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Has nearby checks only that payee`() = runDatabaseTest {
     insertPayee(SHOP)
     insertPayee(CAFE)
@@ -107,7 +137,7 @@ class PayeeLocationsTest {
 
   private fun BudgetDatabase.locations(sync: TestSyncController = TestSyncController()) =
     PayeeLocations(
-      dao = PayeeLocationDao(this),
+      dao = PayeeLocationDao(this, TestCoroutineContexts(UnconfinedTestDispatcher())),
       syncController = sync,
       uuidGenerator = { GENERATED_ID },
       clock =
@@ -124,13 +154,14 @@ class PayeeLocationsTest {
     payee: String,
     coordinates: Coordinates,
     tombstone: Boolean = false,
+    createdAt: Long = NOW_MILLIS,
   ) =
     payeeLocationsQueries.insert(
       id = PayeeLocationId(id),
       payee_id = PayeeId(payee),
       latitude = coordinates.latitude,
       longitude = coordinates.longitude,
-      created_at = Instant.fromEpochMilliseconds(NOW_MILLIS),
+      created_at = Instant.fromEpochMilliseconds(createdAt),
       tombstone = tombstone,
     )
 

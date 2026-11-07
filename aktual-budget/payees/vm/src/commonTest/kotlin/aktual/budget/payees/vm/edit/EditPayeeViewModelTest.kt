@@ -2,7 +2,9 @@ package aktual.budget.payees.vm.edit
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Payees
+import aktual.budget.db.dao.DatabaseTables.PAYEE_LOCATIONS
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.PayeeLocationDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.RuleContextDao
 import aktual.budget.db.dao.RulesDao
@@ -11,16 +13,21 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
+import aktual.budget.model.PayeeLocationId
+import aktual.budget.payees.domain.PayeeLocations
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.rules.domain.CategoryLearningPref
 import aktual.budget.rules.domain.PayeeRuleCounter
+import aktual.core.model.Coordinates
+import aktual.di.BudgetCoroutineScope
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
+import androidx.lifecycle.viewModelScope
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
@@ -28,7 +35,13 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.prop
+import kotlin.time.Clock
+import kotlin.time.Instant
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.TestScope
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import org.junit.Test
 
 class EditPayeeViewModelTest {
@@ -158,6 +171,66 @@ class EditPayeeViewModelTest {
       assertThat(sync.changes.map(LocalChange::row).distinct()).containsExactly(TESCO.id.value)
     }
 
+  @Test
+  fun `Lists the payee's saved locations`() = runDatabaseTest { scope ->
+    // given
+    PayeeDao(this).insert(TESCO.id, TESCO.name)
+    insertLocation("loc", TESCO.id)
+
+    // then
+    createViewModel(scope, TESCO.id).locations.test {
+      assertThat(awaitItem()).isEqualTo(persistentListOf())
+      assertThat(awaitItem())
+        .containsExactly(
+          SavedLocation(PayeeLocationId("loc"), HERE, LocalDate(2026, 11, 7)),
+        )
+    }
+  }
+
+  @Test
+  fun `Deleting a location tombstones it and offers an undo`() = runDatabaseTest { scope ->
+    // given
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, TESCO.id, sync)
+
+    viewModel.events.test {
+      // when
+      viewModel.deleteLocation(PayeeLocationId("loc"))
+
+      // then
+      assertThatNextEmissionIsEqualTo(EditPayeeEvent.LocationDeleted(PayeeLocationId("loc")))
+    }
+    assertThat(sync.changes)
+      .containsExactly(LocalChange(PAYEE_LOCATIONS, "loc", "tombstone", MessageValue.Number(1)))
+  }
+
+  @Test
+  fun `Restoring a location untombstones it, even after the screen's closed`() =
+    runDatabaseTest { scope ->
+      // given
+      val sync = TestSyncController()
+      val viewModel = createViewModel(scope, TESCO.id, sync)
+      viewModel.viewModelScope.cancel()
+
+      // when
+      viewModel.restoreLocation(PayeeLocationId("loc"))
+      scope.testScheduler.advanceUntilIdle()
+
+      // then
+      assertThat(sync.changes)
+        .containsExactly(LocalChange(PAYEE_LOCATIONS, "loc", "tombstone", MessageValue.Number(0)))
+    }
+
+  private suspend fun BudgetDatabase.insertLocation(id: String, payee: PayeeId) =
+    payeeLocationsQueries.insert(
+      id = PayeeLocationId(id),
+      payee_id = payee,
+      latitude = HERE.latitude,
+      longitude = HERE.longitude,
+      created_at = Instant.parse("2026-11-07T12:00:00Z"),
+      tombstone = false,
+    )
+
   private suspend fun EditPayeeViewModel.awaitLoaded(): EditPayeeViewModel = apply {
     state.test {
       do {
@@ -178,6 +251,15 @@ class EditPayeeViewModelTest {
       loader = PayeesLoader(payees, PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
       payeeDao = payees,
       syncController = sync,
+      payeeLocations =
+        PayeeLocations(
+          dao = PayeeLocationDao(this, TestCoroutineContexts(scope.standardDispatcher)),
+          syncController = sync,
+          uuidGenerator = { "location" },
+          clock = Clock.System,
+        ),
+      budgetScope = BudgetCoroutineScope(scope),
+      timeZones = { TimeZone.UTC },
       learning =
         CategoryLearningPref(
           PreferencesDao(this, TestCoroutineContexts(scope.standardDispatcher)),
@@ -202,6 +284,8 @@ class EditPayeeViewModelTest {
 
   private companion object {
     const val ACCOUNT = "account"
+
+    val HERE = Coordinates(51.5074, -0.1278)
 
     val TESCO =
       PayeeItem(

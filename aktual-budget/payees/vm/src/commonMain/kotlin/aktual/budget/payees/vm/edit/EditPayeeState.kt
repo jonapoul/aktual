@@ -1,7 +1,10 @@
 package aktual.budget.payees.vm.edit
 
+import aktual.budget.model.PayeeLocationId
 import aktual.budget.payees.vm.list.PayeeItem
+import aktual.core.model.Coordinates
 import androidx.compose.runtime.Immutable
+import kotlinx.datetime.LocalDate
 
 @Immutable sealed interface EditPayeeState
 
@@ -11,3 +14,10 @@ data object Loading : EditPayeeState
 @JvmInline value class Editing(val payee: PayeeItem) : EditPayeeState
 
 @JvmInline value class Failure(val cause: String?) : EditPayeeState
+
+@Immutable
+data class SavedLocation(
+  val id: PayeeLocationId,
+  val coordinates: Coordinates,
+  val date: LocalDate?,
+)
