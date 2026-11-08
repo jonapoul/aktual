@@ -330,7 +330,7 @@ private fun ReorderList(
             ReorderHeader(
               modifier = rowModifier,
               row = row,
-              handle = handle.takeIf { !row.group.isIncome },
+              handleModifier = handle,
               onToggle = { reorder.toggle(row.group.id) },
             )
 
@@ -346,9 +346,9 @@ private fun ReorderList(
 @Composable
 private fun ReorderHeader(
   row: HeaderRow,
-  handle: Modifier?,
   onToggle: () -> Unit,
   modifier: Modifier = Modifier,
+  handleModifier: Modifier = Modifier,
 ) {
   val group = row.group
   val label =
@@ -397,10 +397,10 @@ private fun ReorderHeader(
         if (group.isHidden) HiddenLabel()
       }
 
-      if (handle == null) {
+      if (group.isIncome) {
         Spacer(Modifier.width(HandleWidth))
       } else {
-        DragHandle(modifier = handle, name = group.name)
+        DragHandle(modifier = handleModifier, name = group.name)
       }
     }
   }
@@ -472,8 +472,7 @@ private fun ReorderBottomBar(
   Column(modifier = modifier.fillMaxWidth().background(colors.pageBackground)) {
     HorizontalDivider()
     Row(
-      modifier =
-        Modifier.fillMaxWidth().padding(horizontal = Dimens.ScreenPadding, vertical = 12.dp),
+      modifier = Modifier.fillMaxWidth().padding(Dimens.ScreenPadding),
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       verticalAlignment = CenterVertically,
     ) {
@@ -582,7 +581,7 @@ private class ReorderCategoriesStateProvider :
 private fun PreviewReorderCategories(
   @PreviewParameter(ReorderCategoriesStateProvider::class)
   params: ColorParams<ReorderCategoriesState>,
-) =
+) {
   PreviewWithColorParams(params) {
     ReorderCategoriesScaffold(
       state = this,
@@ -593,3 +592,4 @@ private fun PreviewReorderCategories(
       onSave = {},
     )
   }
+}
