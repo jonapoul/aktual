@@ -85,7 +85,7 @@ Run `./scripts/detekt.sh` before opening a PR and fix what it reports. `lint.sh`
 
 ## Architecture
 
-Feature-based modular layout. Module list: `settings.gradle.kts` / `ls modules/`. Features split into `domain` / `vm` / `ui` modules. Shared infra lives under `modules/{core,api,prefs,budget,test}`.
+Feature-based modular layout. Module list: `settings.gradle.kts`. Each top-level `aktual-*` directory is a module group. Features split into `domain` / `vm` / `ui` modules. Shared infra lives under `aktual-{core,api,di,prefs,test}`, and everything inside an open budget under `aktual-budget` (see [aktual-budget](aktual-budget/CLAUDE.md)).
 
 ### Layers
 - **Domain** - pure Kotlin, no UI. Depends on core models, API clients, prefs.
@@ -97,9 +97,9 @@ Feature-based modular layout. Module list: `settings.gradle.kts` / `ls modules/`
 
 ### Metro DI
 
-Scopes: `AppScope` (app singletons), `ServerChosenScope` (after server URL is set), `LoggedInScope` (after authentication), `BudgetScope` (per-budget). All defined in `aktual-di:scopes`.
+Scopes: `AppScope` (app singletons), `ServerChosenScope` (after server URL is set), `LoggedInScope` (after authentication), `BudgetScope` (per-budget). All defined in `aktual-di:core`.
 
-Graphs: All graphs implement `AktualGraph`. Hierarchy: `AppGraph` (root) → `ServerChosenGraph` → `LoggedInGraph`, plus `AppGraph` → `BudgetGraph`. `BudgetGraph` hangs off the app graph so budgets can open without a server (the demo budget), so it can't see server-chosen/logged-in bindings - server details come through the `BudgetServer` it's created with (`Remote(url, token)` or `None`). Open run levels are still ordered app → server-chosen → logged-in → budget, and the VM factory merges every open level's VMs. Graph types live in `aktual-di:runlevel`.
+Graphs: All graphs implement `AktualGraph`. Hierarchy: `AppGraph` (root) → `ServerChosenGraph` → `LoggedInGraph`, plus `AppGraph` → `BudgetGraph`. `BudgetGraph` hangs off the app graph so budgets can open without a server, so it can't see server-chosen/logged-in bindings (see [aktual-budget](aktual-budget/CLAUDE.md)). Open run levels are still ordered app → server-chosen → logged-in → budget, and the VM factory merges every open level's VMs. Graph types live in `aktual-di:runlevel`.
 
 Graph lifecycle hooks (`Closeable` / `Initializable` set contributions) must be qualified with the contributing scope, e.g. `binding<@ForScope(BudgetScope::class) Closeable>()`. Unqualified, child graphs inherit parent contributions, so closing a child would close its parents' resources too.
 
@@ -113,8 +113,8 @@ See [aktual-app:nav](aktual-app/nav/CLAUDE.md).
 
 ## Creating a new feature module
 
-1. Add `modules/<feature>/{domain,vm,ui}` and register in `settings.gradle.kts` with `module("<feature>:...")`.
-1. Apply the right module plugin per layer - `aktual.module.kotlin` (domain), `aktual.module.viewmodel` (vm), `aktual.module.compose` (ui). See [build-logic](gradle/build-logic/CLAUDE.md) for what each plugin sets up.
+1. Add `aktual-<feature>/{domain,vm,ui}` (or `aktual-budget/<feature>/...` for budget screens) and add each to the `include(...)` list in `settings.gradle.kts`.
+1. Apply the right module plugin per layer - `aktual.module.kotlin` (domain), `aktual.module.viewmodel` (vm), `aktual.module.compose` (ui). See [build-logic](build-logic/CLAUDE.md) for what each plugin sets up.
 1. Dependencies: UI → VM (api) → Domain (api) → core models. Any module can depend on core UI / L10n / logging.
 1. Create a navigator + `NavKey` in `aktual-core:nav` (see `aktual-app/nav/CLAUDE.md`).
 1. Implement `NavEntryContributor` in the `:ui` module with `@ContributesIntoSet(AppScope::class)` (or `BudgetNavEntryContributor` with `@ContributesIntoSet(BudgetScope::class)` for budget screens).
@@ -146,6 +146,7 @@ Default new code to `commonMain`. Code that only needs JDK APIs (`java.text`, `j
 ## Sub-CLAUDE.mds
 
 - [aktual-app/desktop](aktual-app/desktop/CLAUDE.md) - building desktop releases
+- [aktual-budget](aktual-budget/CLAUDE.md) - budget modules, `BudgetGraph`, `BudgetServer`, budget screens
 - [aktual-app/nav](aktual-app/nav/CLAUDE.md) - navigation architecture
 - [aktual-core/l10n](aktual-core/l10n/CLAUDE.md) - localization
 - [aktual-core/icons](aktual-core/icons/CLAUDE.md) - custom + Material icons, country flags
@@ -154,5 +155,5 @@ Default new code to `commonMain`. Code that only needs JDK APIs (`java.text`, `j
 - [aktual-test/api](aktual-test/api/CLAUDE.md) - test HTTP mocks + generated fixtures
 - [aktual-test/smoke](aktual-test/smoke/CLAUDE.md) - VM DI smoke tests
 - [aktual-budget/data/db](aktual-budget/data/db/CLAUDE.md) - database schema, migrations, adapters
-- [gradle/build-logic](build-logic/CLAUDE.md) - convention plugins
+- [build-logic](build-logic/CLAUDE.md) - convention plugins
 - [detekt-rules](detekt-rules/CLAUDE.md) - custom detekt rules
