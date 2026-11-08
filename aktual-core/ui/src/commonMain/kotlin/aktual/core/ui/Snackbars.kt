@@ -48,11 +48,11 @@ internal constructor(
 
 // Shown in error colours, as upstream's error notifications
 suspend fun SnackbarHostState.showErrorSnackbar(message: String): SnackbarResult =
-  showSnackbar(SeveritySnackbarVisuals(message, Severity.Danger))
+  showSnackbar(SeveritySnackbarVisuals(message, Danger))
 
 // Shown in warning colours, for things that partly worked or need the user's attention
 suspend fun SnackbarHostState.showWarningSnackbar(message: String): SnackbarResult =
-  showSnackbar(SeveritySnackbarVisuals(message, Severity.Warning))
+  showSnackbar(SeveritySnackbarVisuals(message, Warning))
 
 private enum class Severity {
   Danger,
