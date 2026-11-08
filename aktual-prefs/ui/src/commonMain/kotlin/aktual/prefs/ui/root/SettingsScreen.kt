@@ -3,13 +3,11 @@ package aktual.prefs.ui.root
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.System
 import aktual.core.icons.Tuning
-import aktual.core.icons.material.CurrencyPound
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Numbers
 import aktual.core.icons.material.Security
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
-import aktual.core.nav.CurrencySettingsNavigator
 import aktual.core.nav.FormatSettingsNavigator
 import aktual.core.nav.SecuritySettingsNavigator
 import aktual.core.nav.SystemUiSettingsNavigator
@@ -30,7 +28,6 @@ fun SettingsScreen(
   toSystemUiSettings: SystemUiSettingsNavigator,
   toSecuritySettings: SecuritySettingsNavigator,
   toFormatSettings: FormatSettingsNavigator,
-  toCurrencySettings: CurrencySettingsNavigator,
 ) {
   SettingsScaffold(
     onAction = { action ->
@@ -40,7 +37,6 @@ fun SettingsScreen(
         NavToSystemUiSettings -> toSystemUiSettings()
         NavToSecuritySettings -> toSecuritySettings()
         NavToFormatSettings -> toFormatSettings()
-        NavToCurrencySettings -> toCurrencySettings()
       }
     },
   )
@@ -81,13 +77,6 @@ private fun SettingsScaffold(onAction: SettingsActionHandler) {
         title = Strings.settingsFormatGroup,
         icon = MaterialIcons.Numbers,
         onClick = { onAction(NavToFormatSettings) },
-      )
-    }
-    item {
-      SubSettingsItem(
-        title = Strings.settingsCurrency,
-        icon = MaterialIcons.CurrencyPound,
-        onClick = { onAction(NavToCurrencySettings) },
       )
     }
   }

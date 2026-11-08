@@ -43,7 +43,6 @@ import aktual.crashes.vm.CrashPromptViewModel
 import aktual.crashes.vm.CrashReportViewModel
 import aktual.crashes.vm.CrashReportsViewModel
 import aktual.metrics.vm.MetricsViewModel
-import aktual.prefs.vm.currency.CurrencySettingsViewModel
 import aktual.prefs.vm.format.FormatSettingsViewModel
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.inspect.search.SearchThemeViewModel
@@ -151,8 +150,6 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun addAccount() = testVm<AddAccountViewModel>()
 
   @Test fun createAccount() = testVm<CreateAccountViewModel>()
-
-  @Test fun currencySettings() = testVm<CurrencySettingsViewModel>()
 
   @Test fun customThemeSettings() = testVm<CustomThemeSettingsViewModel>()
 

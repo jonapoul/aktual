@@ -2200,6 +2200,7 @@
 
   <string name="settings_theme_toolbar">Theme</string>
   <string name="settings_theme_use_system">Use System Default</string>
+  <string name="settings_theme_system_group">System theme</string>
   <string name="settings_theme_light">Light</string>
   <string name="settings_theme_dark">Dark</string>
   <string name="settings_theme_midnight">Midnight</string>
@@ -2256,6 +2257,9 @@
   <string name="settings_theme_local_empty">Duplicate any theme from its preview screen to make a copy you can edit</string>
 
   <string name="settings_format_group">Formatting</string>
+  <string name="settings_format_numbers_group">Numbers</string>
+  <string name="settings_format_dates_group">Dates</string>
+  <string name="settings_format_distance_group">Distance</string>
   <string name="settings_format_desc">Formatting does not affect how budget data is stored, and can be changed at any time.</string>
   <string name="settings_format_numbers">Number format</string>
   <string name="settings_format_decimal">Hide decimal places</string>
@@ -2283,7 +2287,6 @@
   <string name="settings_ui_group">System UI</string>
   <string name="settings_ui_show_status">Show bottom status bar</string>
   <string name="settings_ui_bars_title">App bars</string>
-  <string name="settings_ui_bars_desc">The top bar and the bottom status bar</string>
   <string name="settings_ui_bar_effect">Effect</string>
   <string name="settings_ui_bar_effect_none">Solid</string>
   <string name="settings_ui_bar_effect_blur">Blur</string>
@@ -2301,6 +2304,7 @@
   <string name="settings_ui_glass_style_clear">Clear</string>
   <string name="settings_ui_glass_corner_radius">Corner radius</string>
   <string name="settings_security">Security</string>
+  <string name="settings_security_lock_group">Lock and privacy</string>
   <string name="settings_security_app_lock">App lock</string>
   <string name="settings_security_app_lock_desc">Ask for your fingerprint, face or screen lock when opening the app. Also hides app contents in the recents screen.</string>
   <string name="settings_security_auto_save_locations">Save payee locations automatically</string>

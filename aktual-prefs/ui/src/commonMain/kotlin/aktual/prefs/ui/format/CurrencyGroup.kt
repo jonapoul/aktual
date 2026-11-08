@@ -1,4 +1,4 @@
-package aktual.prefs.ui.currency
+package aktual.prefs.ui.format
 
 import aktual.budget.model.Amount
 import aktual.budget.model.Currency
@@ -12,19 +12,11 @@ import aktual.core.icons.material.LineStartArrowNotch
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.SpaceBar
 import aktual.core.l10n.Strings
-import aktual.core.nav.BackNavigator
-import aktual.core.theme.Colors
-import aktual.core.ui.ColorParameters
 import aktual.core.ui.LocalCurrencyConfig
-import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColors
+import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.ListPreferenceItem
-import aktual.prefs.ui.SettingsListScaffold
-import aktual.prefs.vm.BooleanPreference
-import aktual.prefs.vm.ListPreference
-import aktual.prefs.vm.currency.CurrencySettingsState
-import aktual.prefs.vm.currency.CurrencySettingsViewModel
+import aktual.prefs.vm.format.FormatSettingsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,67 +24,43 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
-fun CurrencySettingsScreen(
-  back: BackNavigator,
-  viewModel: CurrencySettingsViewModel = metroViewModel<CurrencySettingsViewModel>(),
-) {
-  val state by viewModel.state.collectAsStateWithLifecycle()
-  CurrencySettingsScaffold(state = state, onBack = { back() })
-}
-
-@Composable
-private fun CurrencySettingsScaffold(state: CurrencySettingsState, onBack: () -> Unit) {
-  SettingsListScaffold(
-    title = Strings.settingsCurrency,
-    description = Strings.settingsCurrencyDesc,
-    onBack = onBack,
-  ) {
-    item {
-      ListPreferenceItem(
-        preference = state.currency,
-        optionString = { c -> c.string() },
-        optionSuffix = { c -> Text(c.symbol, textAlign = Center) },
-        icon = MaterialIcons.CurrencyPound,
-        title = Strings.settingsCurrencyDefault,
-        subtitle = null,
-        searchPlaceholder = Strings.settingsCurrencySearch,
-        searchTerms = { c -> listOf(c.code, c.symbol) },
-        optionPrefix = { c -> CurrencyFlag(c) },
-      )
-    }
-    item {
-      ListPreferenceItem(
-        preference = state.symbolPosition,
-        optionString = { c -> c.string() },
-        optionSuffix = null,
-        icon =
-          when (state.symbolPosition.value) {
-            BeforeAmount -> MaterialIcons.LineStartArrowNotch
-            AfterAmount -> MaterialIcons.LineEndArrowNotch
-          },
-        title = Strings.settingsCurrencySymbolPosition,
-        subtitle = null,
-      )
-    }
-    item {
-      BooleanPreferenceItem(
-        preference = state.spaceBetweenAmountAndSymbol,
-        icon = MaterialIcons.SpaceBar,
-        title = Strings.settingsCurrencyAddSpace,
-        subtitle = null,
-      )
-    }
+internal fun CurrencyGroup(state: FormatSettingsState) =
+  PreferenceGroup(title = Strings.settingsCurrency, subtitle = Strings.settingsCurrencyDesc) {
+    ListPreferenceItem(
+      preference = state.currency,
+      optionString = { c -> c.string() },
+      optionSuffix = { c -> Text(c.symbol, textAlign = Center) },
+      icon = MaterialIcons.CurrencyPound,
+      title = Strings.settingsCurrencyDefault,
+      subtitle = null,
+      searchPlaceholder = Strings.settingsCurrencySearch,
+      searchTerms = { c -> listOf(c.code, c.symbol) },
+      optionPrefix = { c -> CurrencyFlag(c) },
+    )
+    ListPreferenceItem(
+      preference = state.symbolPosition,
+      optionString = { c -> c.string() },
+      optionSuffix = null,
+      icon =
+        when (state.symbolPosition.value) {
+          BeforeAmount -> MaterialIcons.LineStartArrowNotch
+          AfterAmount -> MaterialIcons.LineEndArrowNotch
+        },
+      title = Strings.settingsCurrencySymbolPosition,
+      subtitle = null,
+    )
+    BooleanPreferenceItem(
+      preference = state.spaceBetweenAmountAndSymbol,
+      icon = MaterialIcons.SpaceBar,
+      title = Strings.settingsCurrencyAddSpace,
+      subtitle = null,
+    )
   }
-}
 
 @Composable
 private fun CurrencyFlag(currency: Currency) =
@@ -188,20 +156,3 @@ private fun symbolPositionString(config: CurrencyConfig, position: CurrencySymbo
     includeSign = false,
     isPrivacyEnabled = false,
   )
-
-@PortraitPreview
-@Composable
-private fun PreviewCurrencySettingsScaffold(
-  @PreviewParameter(ColorParameters::class) colors: Colors,
-) =
-  PreviewWithColors(colors) {
-    CurrencySettingsScaffold(
-      onBack = {},
-      state =
-        CurrencySettingsState(
-          currency = ListPreference(PoundSterling),
-          symbolPosition = ListPreference(BeforeAmount),
-          spaceBetweenAmountAndSymbol = BooleanPreference(true),
-        ),
-    )
-  }

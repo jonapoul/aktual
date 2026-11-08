@@ -18,6 +18,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.ListPreferenceItem
 import aktual.prefs.ui.SettingsListScaffold
@@ -49,57 +50,60 @@ private fun FormatSettingsScaffold(state: FormatSettingsState, onBack: () -> Uni
     onBack = onBack,
   ) {
     item {
-      ListPreferenceItem(
-        preference = state.numberFormat,
-        optionString = { f -> f.string() },
-        optionSuffix = null,
-        title = Strings.settingsFormatNumbers,
-        subtitle = null,
-        icon = MaterialIcons.Speed125,
-      )
+      PreferenceGroup(title = Strings.settingsFormatNumbersGroup) {
+        ListPreferenceItem(
+          preference = state.numberFormat,
+          optionString = { f -> f.string() },
+          optionSuffix = null,
+          title = Strings.settingsFormatNumbers,
+          subtitle = null,
+          icon = MaterialIcons.Speed125,
+        )
+        BooleanPreferenceItem(
+          preference = state.hideFraction,
+          title = Strings.settingsFormatDecimal,
+          subtitle = null,
+          icon =
+            if (state.hideFraction.value) {
+              MaterialIcons.DecimalDecrease
+            } else {
+              MaterialIcons.DecimalIncrease
+            },
+        )
+      }
+    }
+    item { CurrencyGroup(state) }
+    item {
+      PreferenceGroup(title = Strings.settingsFormatDatesGroup) {
+        ListPreferenceItem(
+          preference = state.dateFormat,
+          optionString = { f -> f.label() },
+          optionSuffix = null,
+          title = Strings.settingsFormatDates,
+          subtitle = null,
+          icon = MaterialIcons.CalendarViewWeek,
+        )
+        ListPreferenceItem(
+          preference = state.firstDayOfWeek,
+          optionString = { d -> d.string() },
+          optionSuffix = null,
+          title = Strings.settingsFormatFirstDay,
+          subtitle = null,
+          icon = AktualIcons.Calendar3,
+        )
+      }
     }
     item {
-      ListPreferenceItem(
-        preference = state.dateFormat,
-        optionString = { f -> f.label() },
-        optionSuffix = null,
-        title = Strings.settingsFormatDates,
-        subtitle = null,
-        icon = MaterialIcons.CalendarViewWeek,
-      )
-    }
-    item {
-      ListPreferenceItem(
-        preference = state.firstDayOfWeek,
-        optionString = { d -> d.string() },
-        optionSuffix = null,
-        title = Strings.settingsFormatFirstDay,
-        subtitle = null,
-        icon = AktualIcons.Calendar3,
-      )
-    }
-    item {
-      BooleanPreferenceItem(
-        preference = state.hideFraction,
-        title = Strings.settingsFormatDecimal,
-        subtitle = null,
-        icon =
-          if (state.hideFraction.value) {
-            MaterialIcons.DecimalDecrease
-          } else {
-            MaterialIcons.DecimalIncrease
-          },
-      )
-    }
-    item {
-      ListPreferenceItem(
-        preference = state.distanceUnit,
-        optionString = { u -> u.label() },
-        optionSuffix = null,
-        title = Strings.settingsFormatDistance,
-        subtitle = null,
-        icon = AktualIcons.Location,
-      )
+      PreferenceGroup(title = Strings.settingsFormatDistanceGroup) {
+        ListPreferenceItem(
+          preference = state.distanceUnit,
+          optionString = { u -> u.label() },
+          optionSuffix = null,
+          title = Strings.settingsFormatDistance,
+          subtitle = null,
+          icon = AktualIcons.Location,
+        )
+      }
     }
   }
 }
@@ -158,6 +162,9 @@ private fun PreviewFormatSettingsScaffold(
           dateFormat = ListPreference(dateFormat),
           firstDayOfWeek = ListPreference(firstDayOfWeek),
           hideFraction = BooleanPreference(hideFraction),
+          currency = ListPreference(PoundSterling),
+          symbolPosition = ListPreference(BeforeAmount),
+          spaceBetweenAmountAndSymbol = BooleanPreference(true),
           distanceUnit = ListPreference(Default),
         ),
     )

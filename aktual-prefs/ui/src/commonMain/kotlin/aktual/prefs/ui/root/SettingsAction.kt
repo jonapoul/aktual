@@ -14,8 +14,6 @@ internal data object NavToSecuritySettings : SettingsAction
 
 internal data object NavToFormatSettings : SettingsAction
 
-internal data object NavToCurrencySettings : SettingsAction
-
 @Immutable
 internal fun interface SettingsActionHandler {
   operator fun invoke(action: SettingsAction)

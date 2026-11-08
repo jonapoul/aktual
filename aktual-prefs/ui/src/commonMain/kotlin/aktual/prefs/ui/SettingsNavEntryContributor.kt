@@ -1,8 +1,6 @@
 package aktual.prefs.ui
 
 import aktual.core.nav.BackNavigator
-import aktual.core.nav.CurrencySettingsNavRoute
-import aktual.core.nav.CurrencySettingsNavigator
 import aktual.core.nav.CustomThemeSettingsNavRoute
 import aktual.core.nav.CustomThemesNavigator
 import aktual.core.nav.FormatSettingsNavRoute
@@ -21,7 +19,6 @@ import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavRoute
 import aktual.core.nav.ThemeSettingsNavigator
 import aktual.di.AppScope
-import aktual.prefs.ui.currency.CurrencySettingsScreen
 import aktual.prefs.ui.format.FormatSettingsScreen
 import aktual.prefs.ui.inspect.InspectThemeScreen
 import aktual.prefs.ui.inspect.search.SearchThemeScreen
@@ -44,7 +41,6 @@ class SettingsNavEntryContributor : NavEntryContributor {
         toSystemUiSettings = SystemUiSettingsNavigator(stack),
         toSecuritySettings = SecuritySettingsNavigator(stack),
         toFormatSettings = FormatSettingsNavigator(stack),
-        toCurrencySettings = CurrencySettingsNavigator(stack),
       )
     }
 
@@ -53,8 +49,6 @@ class SettingsNavEntryContributor : NavEntryContributor {
     entry<SecuritySettingsNavRoute> { SecuritySettingsScreen(BackNavigator(stack)) }
 
     entry<FormatSettingsNavRoute> { FormatSettingsScreen(BackNavigator(stack)) }
-
-    entry<CurrencySettingsNavRoute> { CurrencySettingsScreen(BackNavigator(stack)) }
 
     entry<ThemeSettingsNavRoute> {
       ThemeSettingsScreen(

@@ -43,8 +43,3 @@ class SecuritySettingsNavigator(private val stack: NavStack<NavKey>) {
 class FormatSettingsNavigator(private val stack: NavStack<NavKey>) {
   operator fun invoke() = stack.push(FormatSettingsNavRoute)
 }
-
-@Immutable
-class CurrencySettingsNavigator(private val stack: NavStack<NavKey>) {
-  operator fun invoke() = stack.push(CurrencySettingsNavRoute)
-}

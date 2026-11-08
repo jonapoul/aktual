@@ -1,5 +1,7 @@
 package aktual.prefs.vm.format
 
+import aktual.budget.model.Currency
+import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
@@ -14,5 +16,8 @@ data class FormatSettingsState(
   val dateFormat: ListPreference<DateFormat>,
   val firstDayOfWeek: ListPreference<FirstDayOfWeek>,
   val hideFraction: BooleanPreference,
+  val currency: ListPreference<Currency>,
+  val symbolPosition: ListPreference<CurrencySymbolPosition>,
+  val spaceBetweenAmountAndSymbol: BooleanPreference,
   val distanceUnit: ListPreference<DistanceUnit>,
 )
