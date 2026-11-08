@@ -12,6 +12,8 @@ import aktual.core.ui.ProvideSurfaceColor
 import aktual.core.ui.disabledIf
 import alakazam.kotlin.ifNotNull
 import alakazam.kotlin.ifTrue
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,13 +29,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,7 +64,18 @@ fun BasicPreferenceItem(
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
   val contentColor = colors.settingsCardText.disabledIf(!enabled)
-  val shouldIncludeBackground = includeBackground && !LocalInPreferenceGroup.current
+  val groupTitle = LocalPreferenceGroupTitle.current
+  val shouldIncludeBackground = includeBackground && groupTitle == null
+
+  val isHighlighted = isHighlightTarget(groupTitle, title)
+  val highlightAnimation = remember { Animatable(0f) }
+  LaunchedEffect(isHighlighted) {
+    val target = if (isHighlighted) HIGHLIGHT_FRACTION else 0f
+    highlightAnimation.animateTo(target, tween(HIGHLIGHT_FADE_MILLIS))
+  }
+  val highlightFraction = highlightAnimation.value
+  val requester = remember { BringIntoViewRequester() }
+  if (isHighlighted) RegisterHighlight(requester)
 
   Row(
     modifier =
@@ -64,6 +83,13 @@ fun BasicPreferenceItem(
         .clip(CardShape)
         .ifTrue(shouldIncludeBackground) { background(colors.settingsCardBackground, CardShape) }
         .ifTrue(shouldIncludeBackground) { border(1.dp, colors.settingsCardBorder, CardShape) }
+        .ifTrue(highlightFraction > 0f) {
+          background(
+            lerp(colors.settingsCardBackground, colors.settingsCardText, highlightFraction),
+            CardShape,
+          )
+        }
+        .bringIntoViewRequester(requester)
         .ifNotNull(onClick) {
           clickable(enabled, onClick = it, interactionSource = interactionSource)
         }
@@ -122,6 +148,25 @@ fun BasicPreferenceItem(
     if (rightContent != null) {
       rightContent()
     }
+  }
+}
+
+// How far a highlighted item's background moves from the card colour towards its text colour
+private const val HIGHLIGHT_FRACTION = 0.15f
+
+private const val HIGHLIGHT_FADE_MILLIS = 500
+
+@Composable
+@ReadOnlyComposable
+private fun isHighlightTarget(groupTitle: String?, title: String): Boolean =
+  LocalPreferenceHighlighter.current?.matches(groupTitle, title) == true
+
+@Composable
+private fun RegisterHighlight(requester: BringIntoViewRequester) {
+  val highlighter = LocalPreferenceHighlighter.current ?: return
+  DisposableEffect(highlighter, requester) {
+    highlighter.requester = requester
+    onDispose { if (highlighter.requester === requester) highlighter.requester = null }
   }
 }
 

@@ -10,6 +10,11 @@ class SettingsNavigator(private val stack: NavStack<NavKey>) {
 }
 
 @Immutable
+class SearchSettingsNavigator(private val stack: NavStack<NavKey>) {
+  operator fun invoke() = stack.push(SearchSettingsNavRoute)
+}
+
+@Immutable
 class InspectThemeNavigator(private val stack: NavStack<NavKey>) {
   operator fun invoke(id: ThemeId) = stack.push(InspectThemeNavRoute(id))
 }
@@ -21,7 +26,8 @@ class SearchThemeNavigator(private val stack: NavStack<NavKey>) {
 
 @Immutable
 class ThemeSettingsNavigator(private val stack: NavStack<NavKey>) {
-  operator fun invoke() = stack.push(ThemeSettingsNavRoute)
+  operator fun invoke(highlight: SettingsHighlight? = null) =
+    stack.push(ThemeSettingsNavRoute(highlight))
 }
 
 @Immutable
@@ -31,15 +37,18 @@ class CustomThemesNavigator(private val stack: NavStack<NavKey>) {
 
 @Immutable
 class SystemUiSettingsNavigator(private val stack: NavStack<NavKey>) {
-  operator fun invoke() = stack.push(SystemUiSettingsNavRoute)
+  operator fun invoke(highlight: SettingsHighlight? = null) =
+    stack.push(SystemUiSettingsNavRoute(highlight))
 }
 
 @Immutable
 class SecuritySettingsNavigator(private val stack: NavStack<NavKey>) {
-  operator fun invoke() = stack.push(SecuritySettingsNavRoute)
+  operator fun invoke(highlight: SettingsHighlight? = null) =
+    stack.push(SecuritySettingsNavRoute(highlight))
 }
 
 @Immutable
 class FormatSettingsNavigator(private val stack: NavStack<NavKey>) {
-  operator fun invoke() = stack.push(FormatSettingsNavRoute)
+  operator fun invoke(highlight: SettingsHighlight? = null) =
+    stack.push(FormatSettingsNavRoute(highlight))
 }

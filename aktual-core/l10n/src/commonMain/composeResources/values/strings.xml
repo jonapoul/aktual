@@ -2194,6 +2194,10 @@
 
   <!-- settings -->
   <string name="settings_toolbar">App Settings</string>
+  <string name="settings_search">Search settings</string>
+  <string name="settings_search_placeholder">Search settings</string>
+  <string name="settings_search_prompt">Enter some text to search settings and groups</string>
+  <string name="settings_search_no_results">No settings match “%1$s”</string>
 
   <string name="settings_theme">App theme</string>
   <string name="settings_dark_theme">Dark theme</string>

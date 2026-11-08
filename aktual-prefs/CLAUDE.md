@@ -23,6 +23,8 @@ Preferences and settings, split into `vm` (state) and `ui` (Compose). `component
 
 1. **Add the UI.** In the matching `*SettingsScreen.kt` under `aktual-prefs/ui/.../<screen>/`, add an `item { }` using `BooleanPreferenceItem` / `SliderPreferenceItem` / `ListPreferenceItem`.
 
+1. **Add it to search.** Add an entry to `SettingsIndex` in `aktual-prefs/vm/.../search/`, under the same page and group as on screen and with the same title string, so the settings search finds it. Tapping a result scrolls to and flashes the item by matching that title (and its `PreferenceGroup` title), so a mismatch only lands on the page.
+
 1. **Fix previews** that construct state objects directly.
 
 ## Changing a stored key or format

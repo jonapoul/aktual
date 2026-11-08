@@ -1,6 +1,7 @@
 package aktual.prefs.ui.root
 
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.SearchAlternate
 import aktual.core.icons.System
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.MaterialIcons
@@ -9,10 +10,12 @@ import aktual.core.icons.material.Security
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.FormatSettingsNavigator
+import aktual.core.nav.SearchSettingsNavigator
 import aktual.core.nav.SecuritySettingsNavigator
 import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavigator
 import aktual.core.theme.Colors
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
@@ -24,6 +27,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 @Composable
 fun SettingsScreen(
   back: BackNavigator,
+  toSearch: SearchSettingsNavigator,
   toThemeSettings: ThemeSettingsNavigator,
   toSystemUiSettings: SystemUiSettingsNavigator,
   toSecuritySettings: SecuritySettingsNavigator,
@@ -33,6 +37,7 @@ fun SettingsScreen(
     onAction = { action ->
       when (action) {
         NavBack -> back()
+        OpenSearch -> toSearch()
         NavToThemeSettings -> toThemeSettings()
         NavToSystemUiSettings -> toSystemUiSettings()
         NavToSecuritySettings -> toSecuritySettings()
@@ -48,6 +53,13 @@ private fun SettingsScaffold(onAction: SettingsActionHandler) {
     title = Strings.settingsToolbar,
     description = null,
     onBack = { onAction(NavBack) },
+    actions = {
+      BareIconButton(
+        imageVector = AktualIcons.SearchAlternate,
+        contentDescription = Strings.settingsSearch,
+        onClick = { onAction(OpenSearch) },
+      )
+    },
   ) {
     item {
       SubSettingsItem(

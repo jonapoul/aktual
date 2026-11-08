@@ -9,6 +9,7 @@ flowchart TD
   manageStorage["Manage Storage"]
   password["Change Password"]
   settings["Settings"]
+  searchSettings["Search Settings"]
   transactionSettings["Transaction Settings"]
   systemUiSettings["System UI Settings"]
   securitySettings["Security Settings"]
@@ -74,6 +75,11 @@ flowchart TD
   settings --tap system UI--> systemUiSettings
   settings --tap security--> securitySettings
   settings --tap formatting--> formatSettings
+  settings --tap search--> searchSettings
+  searchSettings --tap result--> themeSettings
+  searchSettings --tap result--> systemUiSettings
+  searchSettings --tap result--> securitySettings
+  searchSettings --tap result--> formatSettings
   themeSettings --tap custom themes--> customThemes
   themeSettings --tap inspect--> inspectTheme
   customThemes --tap inspect--> inspectTheme

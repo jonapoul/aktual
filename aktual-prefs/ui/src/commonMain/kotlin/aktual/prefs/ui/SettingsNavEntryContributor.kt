@@ -9,6 +9,8 @@ import aktual.core.nav.InspectThemeNavRoute
 import aktual.core.nav.InspectThemeNavigator
 import aktual.core.nav.NavEntryContributor
 import aktual.core.nav.NavStack
+import aktual.core.nav.SearchSettingsNavRoute
+import aktual.core.nav.SearchSettingsNavigator
 import aktual.core.nav.SearchThemeNavRoute
 import aktual.core.nav.SearchThemeNavigator
 import aktual.core.nav.SecuritySettingsNavRoute
@@ -23,6 +25,7 @@ import aktual.prefs.ui.format.FormatSettingsScreen
 import aktual.prefs.ui.inspect.InspectThemeScreen
 import aktual.prefs.ui.inspect.search.SearchThemeScreen
 import aktual.prefs.ui.root.SettingsScreen
+import aktual.prefs.ui.search.SearchSettingsScreen
 import aktual.prefs.ui.security.SecuritySettingsScreen
 import aktual.prefs.ui.systemui.SystemUiSettingsScreen
 import aktual.prefs.ui.theme.ThemeSettingsScreen
@@ -37,6 +40,7 @@ class SettingsNavEntryContributor : NavEntryContributor {
     entry<SettingsNavRoute> {
       SettingsScreen(
         back = BackNavigator(stack),
+        toSearch = SearchSettingsNavigator(stack),
         toThemeSettings = ThemeSettingsNavigator(stack),
         toSystemUiSettings = SystemUiSettingsNavigator(stack),
         toSecuritySettings = SecuritySettingsNavigator(stack),
@@ -44,17 +48,34 @@ class SettingsNavEntryContributor : NavEntryContributor {
       )
     }
 
-    entry<SystemUiSettingsNavRoute> { SystemUiSettingsScreen(BackNavigator(stack)) }
+    entry<SearchSettingsNavRoute> {
+      SearchSettingsScreen(
+        back = BackNavigator(stack),
+        toThemeSettings = ThemeSettingsNavigator(stack),
+        toSystemUiSettings = SystemUiSettingsNavigator(stack),
+        toSecuritySettings = SecuritySettingsNavigator(stack),
+        toFormatSettings = FormatSettingsNavigator(stack),
+      )
+    }
 
-    entry<SecuritySettingsNavRoute> { SecuritySettingsScreen(BackNavigator(stack)) }
+    entry<SystemUiSettingsNavRoute> { route ->
+      SystemUiSettingsScreen(BackNavigator(stack), route.highlight)
+    }
 
-    entry<FormatSettingsNavRoute> { FormatSettingsScreen(BackNavigator(stack)) }
+    entry<SecuritySettingsNavRoute> { route ->
+      SecuritySettingsScreen(BackNavigator(stack), route.highlight)
+    }
 
-    entry<ThemeSettingsNavRoute> {
+    entry<FormatSettingsNavRoute> { route ->
+      FormatSettingsScreen(BackNavigator(stack), route.highlight)
+    }
+
+    entry<ThemeSettingsNavRoute> { route ->
       ThemeSettingsScreen(
         back = BackNavigator(stack),
         toCustomThemes = CustomThemesNavigator(stack),
         toInspectTheme = InspectThemeNavigator(stack),
+        highlight = route.highlight,
       )
     }
 

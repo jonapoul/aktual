@@ -46,6 +46,7 @@ import aktual.metrics.vm.MetricsViewModel
 import aktual.prefs.vm.format.FormatSettingsViewModel
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.inspect.search.SearchThemeViewModel
+import aktual.prefs.vm.search.SearchSettingsViewModel
 import aktual.prefs.vm.security.SecuritySettingsViewModel
 import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
@@ -186,6 +187,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun searchReports() = testSavedStateVM<SearchReportsViewModel>()
 
   @Test fun searchSchedules() = testSavedStateVM<SearchSchedulesViewModel>()
+
+  @Test fun searchSettings() = testSavedStateVM<SearchSettingsViewModel>()
 
   @Test fun searchTags() = testSavedStateVM<SearchTagsViewModel>()
 

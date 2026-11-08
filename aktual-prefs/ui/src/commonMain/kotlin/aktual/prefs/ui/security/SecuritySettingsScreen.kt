@@ -10,6 +10,7 @@ import aktual.core.icons.material.Security
 import aktual.core.icons.material.Timer
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.SettingsHighlight
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PortraitPreview
@@ -36,6 +37,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 @Composable
 fun SecuritySettingsScreen(
   back: BackNavigator,
+  highlight: SettingsHighlight?,
   viewModel: SecuritySettingsViewModel = metroViewModel<SecuritySettingsViewModel>(),
 ) {
   LifecycleResumeEffect(viewModel) {
@@ -50,6 +52,7 @@ fun SecuritySettingsScreen(
     }
   SecuritySettingsScaffold(
     state = state,
+    highlight = highlight,
     onBack = { back() },
     onRequestLocation = requestLocation,
   )
@@ -60,8 +63,14 @@ private fun SecuritySettingsScaffold(
   state: SecuritySettingsState,
   onBack: () -> Unit,
   onRequestLocation: () -> Unit,
+  highlight: SettingsHighlight? = null,
 ) {
-  SettingsListScaffold(title = Strings.settingsSecurity, description = null, onBack = onBack) {
+  SettingsListScaffold(
+    title = Strings.settingsSecurity,
+    description = null,
+    highlight = highlight,
+    onBack = onBack,
+  ) {
     item {
       PreferenceGroup(title = Strings.settingsSecurityLockGroup) {
         BooleanPreferenceItem(

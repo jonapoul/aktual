@@ -14,6 +14,7 @@ import aktual.core.icons.material.Speed125
 import aktual.core.l10n.Strings
 import aktual.core.model.DistanceUnit
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.SettingsHighlight
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PortraitPreview
@@ -36,17 +37,23 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 @Composable
 fun FormatSettingsScreen(
   back: BackNavigator,
+  highlight: SettingsHighlight?,
   viewModel: FormatSettingsViewModel = metroViewModel<FormatSettingsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  FormatSettingsScaffold(state = state, onBack = { back() })
+  FormatSettingsScaffold(state = state, highlight = highlight, onBack = { back() })
 }
 
 @Composable
-private fun FormatSettingsScaffold(state: FormatSettingsState, onBack: () -> Unit) {
+private fun FormatSettingsScaffold(
+  state: FormatSettingsState,
+  onBack: () -> Unit,
+  highlight: SettingsHighlight? = null,
+) {
   SettingsListScaffold(
     title = Strings.settingsFormatGroup,
     description = Strings.settingsFormatDesc,
+    highlight = highlight,
     onBack = onBack,
   ) {
     item {

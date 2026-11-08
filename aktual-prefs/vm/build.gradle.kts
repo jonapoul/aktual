@@ -5,6 +5,7 @@ kotlin {
     api(project(":aktual-api"))
     api(project(":aktual-core:theme"))
     api(project(":aktual-prefs"))
+    implementation(project(":aktual-core:l10n"))
   }
 
   commonTestDependencies {

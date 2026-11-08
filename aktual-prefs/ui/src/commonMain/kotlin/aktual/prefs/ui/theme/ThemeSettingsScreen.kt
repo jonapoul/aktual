@@ -4,6 +4,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.CustomThemesNavigator
 import aktual.core.nav.InspectThemeNavigator
+import aktual.core.nav.SettingsHighlight
 import aktual.core.theme.Colors
 import aktual.core.theme.DarkColors
 import aktual.core.theme.LightColors
@@ -23,6 +24,7 @@ import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.prefs.components.PreferenceGroup
+import aktual.prefs.ui.ProvidePreferenceHighlight
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.theme.ThemeSettingsState
@@ -52,12 +54,14 @@ fun ThemeSettingsScreen(
   back: BackNavigator,
   toCustomThemes: CustomThemesNavigator,
   toInspectTheme: InspectThemeNavigator,
+  highlight: SettingsHighlight?,
   viewModel: ThemeSettingsViewModel = metroViewModel<ThemeSettingsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
 
   ThemeSettingsScaffold(
     state = state,
+    highlight = highlight,
     onAction = { action ->
       when (action) {
         NavBack -> back()
@@ -72,29 +76,35 @@ fun ThemeSettingsScreen(
 }
 
 @Composable
-private fun ThemeSettingsScaffold(state: ThemeSettingsState, onAction: ThemeSettingsActionHandler) {
+private fun ThemeSettingsScaffold(
+  state: ThemeSettingsState,
+  onAction: ThemeSettingsActionHandler,
+  highlight: SettingsHighlight? = null,
+) {
   val listState = rememberLazyListState()
   val hazeState = rememberHazedTopBarState()
 
-  Scaffold(
-    topBar = {
-      TopAppBar(
-        modifier = Modifier.hazedTopBar(hazeState, listState),
-        colors = colors.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton { onAction(NavBack) } },
-        title = { Text(Strings.settingsThemeToolbar) },
-      )
-    },
-  ) { innerPadding ->
-    Box {
-      PageBackground()
-      ThemeSettingsContent(
-        modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
-        contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
-        state = state,
-        listState = listState,
-        onAction = onAction,
-      )
+  ProvidePreferenceHighlight(highlight, listState) {
+    Scaffold(
+      topBar = {
+        TopAppBar(
+          modifier = Modifier.hazedTopBar(hazeState, listState),
+          colors = colors.transparentTopAppBarColors(),
+          navigationIcon = { NavBackIconButton { onAction(NavBack) } },
+          title = { Text(Strings.settingsThemeToolbar) },
+        )
+      },
+    ) { innerPadding ->
+      Box {
+        PageBackground()
+        ThemeSettingsContent(
+          modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
+          contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
+          state = state,
+          listState = listState,
+          onAction = onAction,
+        )
+      }
     }
   }
 }
