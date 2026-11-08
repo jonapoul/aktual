@@ -7,6 +7,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -40,8 +41,7 @@ fun YearMonthPicker(
   require(value in range) { "Given month $value is not in range $range" }
 
   var showDialog by remember { mutableStateOf(false) }
-  var selected by remember { mutableStateOf(value) }
-  val displayText = selected.stringLong()
+  val displayText = value.stringLong()
   val textState = rememberTextFieldState(initialText = displayText)
   SideEffect(displayText) {
     if (textState.text.toString() != displayText) {
@@ -49,21 +49,23 @@ fun YearMonthPicker(
     }
   }
 
-  AktualTextField(
-    state = textState,
-    modifier = modifier.wrapContentWidth().clickable { showDialog = true },
-    readOnly = true,
-    placeholderText = null,
-    colors = colors.exposedDropDownMenu(),
-  )
+  // The text field consumes taps, so a clickable on it never fires. Catch them on top instead
+  Box(modifier = modifier.wrapContentWidth()) {
+    AktualTextField(
+      state = textState,
+      readOnly = true,
+      placeholderText = null,
+      colors = colors.exposedDropDownMenu(),
+    )
+    Box(modifier = Modifier.matchParentSize().clickable { showDialog = true })
+  }
 
   if (showDialog) {
     PickDateDialog(
-      value = selected,
+      value = value,
       range = range,
       onDismiss = { showDialog = false },
       onValueChange = { newValue ->
-        selected = newValue
         onValueChange(newValue)
         showDialog = false
       },
