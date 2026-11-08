@@ -77,7 +77,6 @@ gradlePlugin {
         implementationClass = impl
       }
 
-    "aktual.convention.atlas"(impl = "aktual.gradle.ConventionAtlas")
     "aktual.convention.compose"(impl = "aktual.gradle.ConventionCompose")
     "aktual.convention.db-test"(impl = "aktual.gradle.ConventionDatabaseTest")
     "aktual.convention.idea"(impl = "aktual.gradle.ConventionIdea")
