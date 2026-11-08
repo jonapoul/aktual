@@ -9,13 +9,21 @@ import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
 
-// Child items drop their own card background so they share the group's
-internal val LocalInPreferenceGroup = compositionLocalOf { false }
+// Title of the group a child item is in. Child items drop their own card background so they share
+// the group's
+internal val LocalPreferenceGroupTitle = compositionLocalOf<String?> { null }
 
 @Composable
 fun PreferenceGroup(
@@ -36,7 +44,7 @@ fun PreferenceGroup(
     rightContent = null,
     headerStyle = typography.titleMedium,
     bottomContent = {
-      CompositionLocalProvider(LocalInPreferenceGroup provides true) { content() }
+      CompositionLocalProvider(LocalPreferenceGroupTitle provides title) { content() }
     },
   )
 }
@@ -45,11 +53,11 @@ fun PreferenceGroup(
 @Composable
 private fun PreviewPreferenceGroup(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
-    PreferenceGroup(title = "Doodad settings") {
+    PreferenceGroup(title = DOODAD_GROUP) {
       BooleanPreferenceItem(
         value = true,
         onValueChange = {},
-        title = "Enable the doodad",
+        title = DOODAD_TOGGLE,
         subtitle = "Turns the doodad on and off",
         icon = AktualIcons.InformationOutline,
       )
@@ -63,3 +71,48 @@ private fun PreviewPreferenceGroup(@PreviewParameter(ColorParameters::class) col
       )
     }
   }
+
+// Loops the highlight on and off. Run it in interactive mode to see the fade
+@Preview
+@Composable
+private fun PreviewHighlightAnimation(@PreviewParameter(ColorParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
+    var isHighlighted by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+      while (true) {
+        delay(1.seconds)
+        isHighlighted = !isHighlighted
+      }
+    }
+
+    val highlighter = remember {
+      PreferenceHighlighter(group = DOODAD_GROUP, title = DOODAD_TOGGLE, onFinish = {})
+    }
+    CompositionLocalProvider(
+      LocalPreferenceHighlighter provides highlighter.takeIf { isHighlighted },
+    ) {
+      DoodadGroup()
+    }
+  }
+
+@Composable
+private fun DoodadGroup() =
+  PreferenceGroup(title = DOODAD_GROUP) {
+    BooleanPreferenceItem(
+      value = true,
+      onValueChange = {},
+      title = DOODAD_TOGGLE,
+      subtitle = "Turns the doodad on and off",
+      icon = AktualIcons.InformationOutline,
+    )
+    BooleanPreferenceItem(
+      value = false,
+      onValueChange = {},
+      title = "Another doodad",
+      subtitle = null,
+      icon = null,
+    )
+  }
+
+private const val DOODAD_GROUP = "Doodad settings"
+private const val DOODAD_TOGGLE = "Enable the doodad"

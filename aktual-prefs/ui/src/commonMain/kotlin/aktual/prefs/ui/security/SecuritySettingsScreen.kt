@@ -10,6 +10,7 @@ import aktual.core.icons.material.Security
 import aktual.core.icons.material.Timer
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.SettingsHighlight
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PortraitPreview
@@ -36,6 +37,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 @Composable
 fun SecuritySettingsScreen(
   back: BackNavigator,
+  highlight: SettingsHighlight?,
   viewModel: SecuritySettingsViewModel = metroViewModel<SecuritySettingsViewModel>(),
 ) {
   LifecycleResumeEffect(viewModel) {
@@ -50,6 +52,7 @@ fun SecuritySettingsScreen(
     }
   SecuritySettingsScaffold(
     state = state,
+    highlight = highlight,
     onBack = { back() },
     onRequestLocation = requestLocation,
   )
@@ -60,46 +63,53 @@ private fun SecuritySettingsScaffold(
   state: SecuritySettingsState,
   onBack: () -> Unit,
   onRequestLocation: () -> Unit,
+  highlight: SettingsHighlight? = null,
 ) {
-  SettingsListScaffold(title = Strings.settingsSecurity, description = null, onBack = onBack) {
+  SettingsListScaffold(
+    title = Strings.settingsSecurity,
+    description = null,
+    highlight = highlight,
+    onBack = onBack,
+  ) {
     item {
-      BooleanPreferenceItem(
-        preference = state.appLockEnabled,
-        title = Strings.settingsSecurityAppLock,
-        subtitle =
-          if (state.isScreenLockAvailable) {
-            Strings.settingsSecurityAppLockDesc
-          } else {
-            Strings.settingsSecurityAppLockUnavailable
-          },
-        icon = MaterialIcons.Security,
-      )
-    }
-    item {
-      ListPreferenceItem(
-        preference = state.appLockTimeout,
-        optionString = { it.string() },
-        optionSuffix = null,
-        title = Strings.settingsSecurityTimeout,
-        subtitle = null,
-        icon = MaterialIcons.Timer,
-      )
-    }
-    item {
-      BooleanPreferenceItem(
-        preference = state.hidePreviewInAppSwitcher,
-        title = Strings.settingsSecurityHidePreview,
-        subtitle = Strings.settingsSecurityHidePreviewDesc,
-        icon = AktualIcons.ViewHide,
-      )
+      PreferenceGroup(title = Strings.settingsSecurityLockGroup) {
+        BooleanPreferenceItem(
+          preference = state.appLockEnabled,
+          title = Strings.settingsSecurityAppLock,
+          subtitle =
+            if (state.isScreenLockAvailable) {
+              Strings.settingsSecurityAppLockDesc
+            } else {
+              Strings.settingsSecurityAppLockUnavailable
+            },
+          icon = MaterialIcons.Security,
+        )
+        ListPreferenceItem(
+          preference = state.appLockTimeout,
+          optionString = { it.string() },
+          optionSuffix = null,
+          title = Strings.settingsSecurityTimeout,
+          subtitle = null,
+          icon = MaterialIcons.Timer,
+        )
+        BooleanPreferenceItem(
+          preference = state.hidePreviewInAppSwitcher,
+          title = Strings.settingsSecurityHidePreview,
+          subtitle = Strings.settingsSecurityHidePreviewDesc,
+          icon = AktualIcons.ViewHide,
+        )
+      }
     }
     if (state.isLocationSupported) {
       item {
-        PreferenceGroup(title = Strings.settingsSecurityLocations) {
+        PreferenceGroup(
+          title = Strings.settingsSecurityLocations,
+          subtitle = Strings.settingsSecurityAutoSaveLocationsDesc,
+        ) {
           BooleanPreferenceItem(
             preference = state.autoSavePayeeLocations,
             title = Strings.settingsSecurityAutoSaveLocations,
-            subtitle = Strings.settingsSecurityAutoSaveLocationsDesc,
+            subtitle = null,
             icon = AktualIcons.Location,
           )
           LocationPermissionItem(

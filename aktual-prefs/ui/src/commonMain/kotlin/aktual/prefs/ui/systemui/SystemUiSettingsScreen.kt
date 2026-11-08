@@ -14,6 +14,7 @@ import aktual.core.icons.material.RoundedCorner
 import aktual.core.icons.material.Texture
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.SettingsHighlight
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.ColorParameters
@@ -51,23 +52,35 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 @Composable
 fun SystemUiSettingsScreen(
   back: BackNavigator,
+  highlight: SettingsHighlight?,
   viewModel: SystemUiSettingsViewModel = metroViewModel<SystemUiSettingsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  SystemUiSettingsScaffold(state = state, onBack = { back() })
+  SystemUiSettingsScaffold(state = state, highlight = highlight, onBack = back::invoke)
 }
 
 @Composable
-private fun SystemUiSettingsScaffold(state: SystemUiSettingsState, onBack: () -> Unit) {
-  SettingsListScaffold(title = Strings.settingsUiGroup, description = null, onBack = onBack) {
+private fun SystemUiSettingsScaffold(
+  state: SystemUiSettingsState,
+  onBack: () -> Unit,
+  highlight: SettingsHighlight? = null,
+) {
+  SettingsListScaffold(
+    title = Strings.settingsUiGroup,
+    description = null,
+    highlight = highlight,
+    onBack = onBack,
+  ) {
     item {
-      PreferenceGroup(title = Strings.settingsUiBarsTitle, subtitle = Strings.settingsUiBarsDesc) {
-        BooleanPreferenceItem(
-          preference = state.showStatusBar,
-          title = Strings.settingsUiShowStatus,
-          subtitle = null,
-          icon = if (state.showStatusBar.value) AktualIcons.ViewShow else AktualIcons.ViewHide,
-        )
+      BooleanPreferenceItem(
+        preference = state.showStatusBar,
+        title = Strings.settingsUiShowStatus,
+        subtitle = null,
+        icon = if (state.showStatusBar.value) AktualIcons.ViewShow else AktualIcons.ViewHide,
+      )
+    }
+    item {
+      PreferenceGroup(title = Strings.settingsUiBarsTitle) {
         ListPreferenceItem(
           preference = state.barEffect,
           optionString = { it.string() },

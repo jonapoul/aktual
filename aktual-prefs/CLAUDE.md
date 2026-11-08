@@ -8,7 +8,7 @@ Preferences and settings, split into `vm` (state) and `ui` (Compose). `component
 
 1. **Feed a config (if needed).** If the pref contributes to a config object (e.g. `BlurConfig`, `FormatConfig`), update the corresponding use case in `aktual-app/nav/src/commonMain/.../UseCases.kt`.
 
-1. **Add to state.** Each settings screen has its own `*SettingsState` under `aktual-prefs/vm/.../<screen>/` (`systemui`, `security`, `format`, `currency`, `transactions`). Add a field using the appropriate wrapper:
+1. **Add to state.** Each settings screen has its own `*SettingsState` under `aktual-prefs/vm/.../<screen>/` (`systemui`, `security`, `format`, `transactions`). Add a field using the appropriate wrapper:
    - `BooleanPreference` - toggle
    - `SliderPreference` - float slider (wrap in a factory for range; see `HazeRadiusPreference`)
    - `ListPreference<T>` - enum dropdown
@@ -22,6 +22,8 @@ Preferences and settings, split into `vm` (state) and `ui` (Compose). `component
 1. **Add the string.** In `aktual-core/l10n/src/commonMain/composeResources/values/strings.xml` (the `settings` section), then `./gradlew :aktual-core:l10n:catalog`. Access via `Strings.settingsSectionMyPref` (snake_case → camelCase).
 
 1. **Add the UI.** In the matching `*SettingsScreen.kt` under `aktual-prefs/ui/.../<screen>/`, add an `item { }` using `BooleanPreferenceItem` / `SliderPreferenceItem` / `ListPreferenceItem`.
+
+1. **Add it to search.** Add an entry to `SettingsIndex` in `aktual-prefs/vm/.../search/`, under the same page and group as on screen and with the same title string, so the settings search finds it. Tapping a result scrolls to and flashes the item by matching that title (and its `PreferenceGroup` title), so a mismatch only lands on the page.
 
 1. **Fix previews** that construct state objects directly.
 

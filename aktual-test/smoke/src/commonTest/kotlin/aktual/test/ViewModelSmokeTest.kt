@@ -43,10 +43,10 @@ import aktual.crashes.vm.CrashPromptViewModel
 import aktual.crashes.vm.CrashReportViewModel
 import aktual.crashes.vm.CrashReportsViewModel
 import aktual.metrics.vm.MetricsViewModel
-import aktual.prefs.vm.currency.CurrencySettingsViewModel
 import aktual.prefs.vm.format.FormatSettingsViewModel
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.inspect.search.SearchThemeViewModel
+import aktual.prefs.vm.search.SearchSettingsViewModel
 import aktual.prefs.vm.security.SecuritySettingsViewModel
 import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
@@ -152,8 +152,6 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test fun createAccount() = testVm<CreateAccountViewModel>()
 
-  @Test fun currencySettings() = testVm<CurrencySettingsViewModel>()
-
   @Test fun customThemeSettings() = testVm<CustomThemeSettingsViewModel>()
 
   @Test fun formatSettings() = testVm<FormatSettingsViewModel>()
@@ -189,6 +187,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun searchReports() = testSavedStateVM<SearchReportsViewModel>()
 
   @Test fun searchSchedules() = testSavedStateVM<SearchSchedulesViewModel>()
+
+  @Test fun searchSettings() = testSavedStateVM<SearchSettingsViewModel>()
 
   @Test fun searchTags() = testSavedStateVM<SearchTagsViewModel>()
 
