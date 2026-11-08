@@ -2303,6 +2303,12 @@
   <string name="settings_security">Security</string>
   <string name="settings_security_app_lock">App lock</string>
   <string name="settings_security_app_lock_desc">Ask for your fingerprint, face or screen lock when opening the app. Also hides app contents in the recents screen.</string>
+  <string name="settings_security_auto_save_locations">Save payee locations automatically</string>
+  <string name="settings_security_auto_save_locations_desc">When you add a transaction, remember the payee's location so it can be suggested next time you're nearby.</string>
+  <string name="settings_security_locations">Payee locations</string>
+  <string name="settings_security_location_allowed">Location access granted</string>
+  <string name="settings_security_location_denied">Location access not granted</string>
+  <string name="settings_security_location_denied_desc">Tap to allow it. Nothing is saved without it.</string>
   <string name="settings_security_app_lock_unavailable">Set up a screen lock in your device settings to use this</string>
   <string name="settings_security_hide_preview">Hide preview in app switcher</string>
   <string name="settings_security_hide_preview_desc">Hide app contents in the recents screen. Also blocks screenshots and screen recording.</string>

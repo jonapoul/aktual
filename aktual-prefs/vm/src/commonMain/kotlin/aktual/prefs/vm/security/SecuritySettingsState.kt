@@ -10,5 +10,8 @@ data class SecuritySettingsState(
   val appLockEnabled: BooleanPreference,
   val appLockTimeout: ListPreference<AppLockTimeout>,
   val hidePreviewInAppSwitcher: BooleanPreference,
+  val autoSavePayeeLocations: BooleanPreference,
+  val isLocationSupported: Boolean,
+  val hasLocationPermission: Boolean,
   val isScreenLockAvailable: Boolean,
 )
