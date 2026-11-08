@@ -137,7 +137,7 @@ agp-app = { id = "com.android.application", version.ref = "agp" }
 agp-kmp = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 agp-lint = { id = "com.android.lint", version.ref = "agp" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version = "3.0.3" }
-atlas = { id = "dev.jonpoulton.atlas", version = "0.7.1" }
+atlas = { id = "dev.jonpoulton.atlas", version = "0.8.0" }
 blueprint = { id = "dev.jonpoulton.blueprint", version.ref = "blueprint" }
 blueprintTest = { id = "dev.jonpoulton.blueprint.test", version.ref = "blueprint" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.1.2" }
