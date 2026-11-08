@@ -52,9 +52,11 @@ import aktual.core.utils.Calendar
 import aktual.core.utils.LocationProvider
 import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
+import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.prefs.SecurityPreferences
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -72,6 +74,8 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -110,6 +114,8 @@ internal constructor(
   private val localPreferences: BudgetLocalPreferences,
   private val payeeLocations: PayeeLocations,
   private val locationProvider: LocationProvider,
+  private val securityPreferences: SecurityPreferences,
+  private val budgetScope: BudgetCoroutineScope,
   budgetCalculator: BudgetMonthCalculator,
   schedulesLoader: SchedulesLoader,
   tagsDao: TagsDao,
@@ -212,6 +218,17 @@ internal constructor(
 
   val needsLocationPermission: Boolean
     get() = !locationProvider.hasPermission()
+
+  // Fetched as soon as a new transaction opens, so it's usually ready by the time it's saved
+  private val autoLocation: Deferred<Coordinates?>? =
+    if (target is New && locationProvider.hasPermission()) {
+      budgetScope.async { fetchAutoLocation() }
+    } else {
+      null
+    }
+
+  // Set once the saved transaction's payee takes over the location, so closing doesn't cancel it
+  private var isAutoLocationClaimed = false
 
   // The reason the last save or delete failed, shown in a dialog
   val error: StateFlow<EditTransactionError?> = mutableError.asStateFlow()
@@ -804,6 +821,7 @@ internal constructor(
   private fun saveNew(draft: TransactionDraft) {
     val account = draft.fields.account ?: return
     launchSave {
+      var savedPayee: PayeeId? = null
       writer.write(runTransfers = true, learnCategories = true) {
         val toSave = withSavedPayees(draft)
         val fields = toSave.fields
@@ -821,10 +839,50 @@ internal constructor(
           )
         val id = insert(transaction)
         toSave.parts.forEach { insert(it.toNewTransaction(id, account, fields)) }
+        savedPayee = fields.payee
       }
+      autoSaveLocation(savedPayee)
       lastTransaction.set(draft.fields)
       mutableEvents.tryEmit(EditTransactionEvent.Saved)
     }
+  }
+
+  private suspend fun fetchAutoLocation(): Coordinates? =
+    runCatchingCancellable(
+      attempt = {
+        if (securityPreferences.autoSavePayeeLocations.get()) {
+          locationProvider.currentLocation()
+        } else {
+          null
+        }
+      },
+      onFailure = { e ->
+        logcat.w(e) { "Failed getting location to auto-save" }
+        null
+      },
+    )
+
+  // Runs in the budget's scope, since the editor closes straight after saving
+  private fun autoSaveLocation(payee: PayeeId?) {
+    val location = autoLocation ?: return
+    val transfers = mutableEntities.value?.transferAccounts.orEmpty()
+    if (payee == null || payee in transfers) return
+    isAutoLocationClaimed = true
+    budgetScope.launch {
+      runCatchingCancellable(
+        attempt = {
+          val coordinates = location.await()
+          if (coordinates != null && !payeeLocations.hasNearby(payee, coordinates)) {
+            payeeLocations.save(payee, coordinates)
+          }
+        },
+        onFailure = { e -> logcat.w(e) { "Failed auto-saving location of $payee" } },
+      )
+    }
+  }
+
+  override fun onCleared() {
+    if (!isAutoLocationClaimed) autoLocation?.cancel()
   }
 
   private fun launchSave(save: suspend () -> Unit) {

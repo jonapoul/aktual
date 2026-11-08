@@ -10,6 +10,7 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.BudgetDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.DatabaseTables.PAYEES
+import aktual.budget.db.dao.DatabaseTables.PAYEE_LOCATIONS
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.db.dao.DatabaseTables.TAGS
 import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
@@ -65,6 +66,10 @@ import aktual.budget.transactions.vm.insertTransaction
 import aktual.budget.transactions.vm.transaction
 import aktual.core.model.Coordinates
 import aktual.core.utils.LocationProvider
+import aktual.di.BudgetCoroutineScope
+import aktual.prefs.AppLockTimeout
+import aktual.prefs.Preference
+import aktual.prefs.SecurityPreferences
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -89,6 +94,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
@@ -97,9 +103,13 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonPrimitive
@@ -231,6 +241,115 @@ class EditTransactionViewModelTest {
       assertThat(awaitCreate().locationAction).isNull()
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  @Test
+  fun `A new transaction saves where the user is against its payee`() = runDatabaseTest { scope ->
+    insertEntities()
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, sync = sync, target = NEW_TARGET, location = PERMITTED)
+
+    viewModel.saveNew(payee = PayeeId("a"))
+    scope.runCurrent()
+
+    assertThat(sync.locationChanges())
+      .extracting(LocalChange::column)
+      .containsExactly("payee_id", "latitude", "longitude", "created_at")
+  }
+
+  @Test
+  fun `No location is saved without permission`() = runDatabaseTest { scope ->
+    insertEntities()
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, sync = sync, target = NEW_TARGET)
+
+    viewModel.saveNew(payee = PayeeId("a"))
+    scope.runCurrent()
+
+    assertThat(sync.locationChanges()).isEmpty()
+  }
+
+  @Test
+  fun `No location is saved when the setting's off`() = runDatabaseTest { scope ->
+    insertEntities()
+    val sync = FakeSyncController()
+    val security = FakeSecurityPreferences(autoSave = false)
+    val viewModel =
+      createViewModel(
+        scope,
+        sync = sync,
+        target = NEW_TARGET,
+        location = PERMITTED,
+        security = security,
+      )
+
+    viewModel.saveNew(payee = PayeeId("a"))
+    scope.runCurrent()
+
+    assertThat(sync.locationChanges()).isEmpty()
+  }
+
+  @Test
+  fun `No location is saved for edits`() = runDatabaseTest { scope ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, id = "t", sync = sync, location = PERMITTED)
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitEdit()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.setNotes("Changed")
+      viewModel.save()
+      assertThatNextEmissionIsEqualTo(Saved)
+    }
+    scope.runCurrent()
+
+    assertThat(sync.locationChanges()).isEmpty()
+  }
+
+  @Test
+  fun `No location is saved for a transfer`() = runDatabaseTest { scope ->
+    insertEntities()
+    PayeeDao(this).insert(PayeeId("transfer"), name = null, transferAccount = AccountId("b"))
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, sync = sync, target = NEW_TARGET, location = PERMITTED)
+
+    viewModel.saveNew(payee = PayeeId("transfer"))
+    scope.runCurrent()
+
+    assertThat(sync.locationChanges()).isEmpty()
+  }
+
+  @Test
+  fun `No location is saved near one the payee already has`() = runDatabaseTest { scope ->
+    insertEntities()
+    insertLocation("near", payee = "a", north = 20.0)
+    val sync = FakeSyncController()
+    val viewModel = createViewModel(scope, sync = sync, target = NEW_TARGET, location = PERMITTED)
+
+    viewModel.saveNew(payee = PayeeId("a"))
+    scope.runCurrent()
+
+    assertThat(sync.locationChanges()).isEmpty()
+  }
+
+  @Test
+  fun `A slow location doesn't hold up saving`() = runDatabaseTest { scope ->
+    insertEntities()
+    val sync = FakeSyncController()
+    val gate = CompletableDeferred<Unit>()
+    val location = FakeLocationProvider(hasPermission = true, gate = gate)
+    val viewModel = createViewModel(scope, sync = sync, target = NEW_TARGET, location = location)
+
+    viewModel.saveNew(payee = PayeeId("a"))
+    assertThat(sync.locationChanges()).isEmpty()
+
+    gate.complete(Unit)
+    scope.runCurrent()
+    assertThat(sync.locationChanges()).isNotEmpty()
   }
 
   @Test
@@ -1800,6 +1919,7 @@ class EditTransactionViewModelTest {
     prefs: TestBudgetLocalPreferences = TestBudgetLocalPreferences(),
     learner: CategoryLearner = CategoryLearner {},
     location: LocationProvider = FakeLocationProvider(),
+    security: SecurityPreferences = FakeSecurityPreferences(),
   ): EditTransactionViewModel {
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val tags = tagsDao(scope)
@@ -1845,6 +1965,8 @@ class EditTransactionViewModelTest {
           clock = Clock.System,
         ),
       locationProvider = location,
+      securityPreferences = security,
+      budgetScope = BudgetCoroutineScope(scope.backgroundScope),
       budgetCalculator =
         BudgetMonthCalculatorImpl(
           budgetDao = BudgetDao(this, contexts),
@@ -1868,11 +1990,47 @@ class EditTransactionViewModelTest {
   private class FakeLocationProvider(
     private val coordinates: Coordinates? = HERE,
     override val isSupported: Boolean = true,
+    private val hasPermission: Boolean = false,
+    private val gate: CompletableDeferred<Unit>? = null,
   ) : LocationProvider {
-    override fun hasPermission() = true
+    override fun hasPermission() = hasPermission
 
-    override suspend fun currentLocation() = coordinates
+    override suspend fun currentLocation(): Coordinates? {
+      gate?.await()
+      return coordinates
+    }
   }
+
+  private class FakePreference<T : Any>(override val default: T) : Preference<T> {
+    private val state = MutableStateFlow(default)
+
+    override suspend fun get(): T = state.value
+
+    override suspend fun set(value: T?) = state.update { value ?: default }
+
+    override fun asFlow(): Flow<T> = state
+  }
+
+  private class FakeSecurityPreferences(autoSave: Boolean = true) : SecurityPreferences {
+    override val appLockEnabled = FakePreference(default = false)
+    override val appLockTimeout = FakePreference(AppLockTimeout.Default)
+    override val hidePreviewInAppSwitcher = FakePreference(default = true)
+    override val autoSavePayeeLocations = FakePreference(autoSave)
+  }
+
+  private suspend fun EditTransactionViewModel.saveNew(payee: PayeeId) = events.test {
+    state.test {
+      awaitCreate()
+      cancelAndIgnoreRemainingEvents()
+    }
+    setPayee(payee)
+    setAmount(Amount(-5.0))
+    save()
+    assertThatNextEmissionIsEqualTo(Saved)
+  }
+
+  private fun FakeSyncController.locationChanges() =
+    calls.flatten().filter { it.dataset == PAYEE_LOCATIONS }
 
   private suspend fun BudgetDatabase.insertLocation(id: String, payee: String, north: Double) =
     payeeLocationsQueries.insert(
@@ -1907,6 +2065,8 @@ class EditTransactionViewModelTest {
 
   private companion object {
     val HERE = Coordinates(51.5074, -0.1278)
+    val NEW_TARGET = EditTransactionTarget.New(AccountId("a"))
+    val PERMITTED = FakeLocationProvider(hasPermission = true)
     const val METERS_PER_DEGREE = 111_195.0
 
     // What insertTransaction("t", account = "a", category = "a", payee = "a") stores

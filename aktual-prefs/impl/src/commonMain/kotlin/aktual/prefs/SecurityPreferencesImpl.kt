@@ -25,4 +25,9 @@ class SecurityPreferencesImpl(dataStore: DataStore<Preferences>) : SecurityPrefe
     dataStore
       .boolean(key = booleanPreferencesKey("hidePreviewInAppSwitcher"), default = true)
       .required()
+
+  override val autoSavePayeeLocations: Preference<Boolean> =
+    dataStore
+      .boolean(key = booleanPreferencesKey("autoSavePayeeLocations"), default = true)
+      .required()
 }

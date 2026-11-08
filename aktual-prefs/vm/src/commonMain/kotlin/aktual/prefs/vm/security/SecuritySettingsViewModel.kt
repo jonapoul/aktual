@@ -1,5 +1,6 @@
 package aktual.prefs.vm.security
 
+import aktual.core.utils.LocationProvider
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -29,16 +30,20 @@ class SecuritySettingsViewModel
 internal constructor(
   private val preferences: SecurityPreferences,
   private val authenticator: AppLockAuthenticator,
+  private val locationProvider: LocationProvider,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val isAvailable = MutableStateFlow(authenticator.isAvailable())
+  private val hasLocationPermission = MutableStateFlow(locationProvider.hasPermission())
 
   val state: StateFlow<SecuritySettingsState> =
     viewModelScope.launchMolecule(Immediate) {
       val appLockEnabled by collectAsState(preferences.appLockEnabled)
       val appLockTimeout by collectAsState(preferences.appLockTimeout)
       val hidePreview by collectAsState(preferences.hidePreviewInAppSwitcher)
+      val autoSaveLocations by collectAsState(preferences.autoSavePayeeLocations)
       val isAvailable by isAvailable.collectAsState()
+      val hasLocationPermission by hasLocationPermission.collectAsState()
       SecuritySettingsState(
         appLockEnabled =
           BooleanPreference(
@@ -60,13 +65,22 @@ internal constructor(
             enabled = !appLockEnabled,
             onChange = { launchAndSet(preferences.hidePreviewInAppSwitcher, it) },
           ),
+        autoSavePayeeLocations =
+          BooleanPreference(
+            value = autoSaveLocations,
+            enabled = hasLocationPermission,
+            onChange = { launchAndSet(preferences.autoSavePayeeLocations, it) },
+          ),
+        isLocationSupported = locationProvider.isSupported,
+        hasLocationPermission = hasLocationPermission,
         isScreenLockAvailable = isAvailable,
       )
     }
 
-  // The user might have changed their screen lock while we were in the background
+  // The user might have changed their screen lock or permissions while we were in the background
   fun refreshAvailability() {
     isAvailable.update { authenticator.isAvailable() }
+    hasLocationPermission.update { locationProvider.hasPermission() }
   }
 
   private fun setAppLockEnabled(enabled: Boolean) {

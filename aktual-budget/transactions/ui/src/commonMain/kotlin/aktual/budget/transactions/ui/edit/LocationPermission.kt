@@ -1,5 +1,6 @@
 package aktual.budget.transactions.ui.edit
 
+import aktual.core.ui.rememberLocationPermissionRequest
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +28,3 @@ internal fun rememberWithLocation(
     }
   }
 }
-
-// Asks for location permission, then reports whether it was given
-@Composable
-internal expect fun rememberLocationPermissionRequest(onResult: (Boolean) -> Unit): () -> Unit

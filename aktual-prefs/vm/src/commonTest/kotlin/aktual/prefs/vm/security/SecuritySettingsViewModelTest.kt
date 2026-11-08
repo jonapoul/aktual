@@ -1,5 +1,7 @@
 package aktual.prefs.vm.security
 
+import aktual.core.model.Coordinates
+import aktual.core.utils.LocationProvider
 import aktual.prefs.AppLockAuthenticator
 import aktual.prefs.SecurityPreferencesImpl
 import aktual.prefs.vm.BooleanPreference
@@ -19,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 
 class SecuritySettingsViewModelTest {
   private val authenticator = FakeAppLockAuthenticator()
+  private val location = FakeLocationProvider()
 
   @Test
   fun `Enabling after a successful unlock`() = runTest {
@@ -27,6 +30,7 @@ class SecuritySettingsViewModelTest {
       SecuritySettingsViewModel(
         preferences,
         authenticator,
+        location,
         viewModelContext = unconfinedViewModelContext,
       )
 
@@ -56,6 +60,7 @@ class SecuritySettingsViewModelTest {
       SecuritySettingsViewModel(
         preferences,
         authenticator,
+        location,
         viewModelContext = unconfinedViewModelContext,
       )
 
@@ -77,6 +82,7 @@ class SecuritySettingsViewModelTest {
       SecuritySettingsViewModel(
         preferences,
         authenticator,
+        location,
         viewModelContext = unconfinedViewModelContext,
       )
 
@@ -96,6 +102,7 @@ class SecuritySettingsViewModelTest {
       SecuritySettingsViewModel(
         preferences,
         authenticator,
+        location,
         viewModelContext = unconfinedViewModelContext,
       )
 
@@ -124,6 +131,7 @@ class SecuritySettingsViewModelTest {
       SecuritySettingsViewModel(
         preferences,
         authenticator,
+        location,
         viewModelContext = unconfinedViewModelContext,
       )
 
@@ -140,6 +148,7 @@ class SecuritySettingsViewModelTest {
       SecuritySettingsViewModel(
         preferences,
         authenticator,
+        location,
         viewModelContext = unconfinedViewModelContext,
       )
 
@@ -158,6 +167,7 @@ class SecuritySettingsViewModelTest {
       SecuritySettingsViewModel(
         preferences,
         authenticator,
+        location,
         viewModelContext = unconfinedViewModelContext,
       )
 
@@ -174,6 +184,48 @@ class SecuritySettingsViewModelTest {
       }
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  @Test
+  fun `Auto-saving locations is only enabled with permission, checked again on refresh`() =
+    runTest {
+      val preferences = SecurityPreferencesImpl(buildPreferences(unconfinedDispatcher))
+      val viewModel =
+        SecuritySettingsViewModel(
+          preferences,
+          authenticator,
+          location,
+          viewModelContext = unconfinedViewModelContext,
+        )
+
+      viewModel.state.test {
+        assertThat(awaitItem()).all {
+          prop(SecuritySettingsState::hasLocationPermission).isFalse()
+          prop(SecuritySettingsState::autoSavePayeeLocations)
+            .prop(BooleanPreference::enabled)
+            .isFalse()
+        }
+
+        location.hasPermission = true
+        viewModel.refreshAvailability()
+        assertThat(awaitItem()).all {
+          prop(SecuritySettingsState::hasLocationPermission).isTrue()
+          prop(SecuritySettingsState::autoSavePayeeLocations)
+            .prop(BooleanPreference::enabled)
+            .isTrue()
+        }
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  private class FakeLocationProvider : LocationProvider {
+    var hasPermission = false
+
+    override val isSupported = true
+
+    override fun hasPermission() = hasPermission
+
+    override suspend fun currentLocation(): Coordinates? = null
   }
 
   private class FakeAppLockAuthenticator : AppLockAuthenticator {
