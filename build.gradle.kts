@@ -27,7 +27,6 @@ plugins {
   alias(libs.plugins.testRetry) apply false
   alias(libs.plugins.wire) apply false
 
-  id("aktual.convention.atlas")
   id("aktual.convention.idea")
 }
 
