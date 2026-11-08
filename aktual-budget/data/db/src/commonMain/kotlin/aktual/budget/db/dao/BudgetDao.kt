@@ -2,6 +2,7 @@ package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetCategories
 import aktual.budget.db.BudgetCategoryGroups
+import aktual.budget.db.BudgetCategoryOrder
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.BudgetSpentByMonth
 import aktual.budget.db.Zero_budget_months
@@ -103,6 +104,14 @@ class BudgetDao(database: BudgetDatabase, private val contexts: CoroutineContext
 
   suspend fun categories(): List<BudgetCategories> = queries.withResult {
     budgetCategories().awaitAsList()
+  }
+
+  suspend fun categoryOrder(): List<BudgetCategoryOrder> = queries.withResult {
+    budgetCategoryOrder().awaitAsList()
+  }
+
+  suspend fun categoryGroups(): List<BudgetCategoryGroups> = queries.withResult {
+    budgetCategoryGroups().awaitAsList()
   }
 
   suspend fun spentByMonth(start: LocalDate, end: LocalDate): List<BudgetSpentByMonth> =

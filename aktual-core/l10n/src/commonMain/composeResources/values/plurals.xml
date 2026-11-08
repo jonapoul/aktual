@@ -40,6 +40,10 @@
   </plurals>
 
   <!-- budget-budgeting -->
+  <plurals name="budgeting_reorder_category_count">
+    <item quantity="one">%1$d category</item>
+    <item quantity="other">%1$d categories</item>
+  </plurals>
   <plurals name="budgeting_banner_overspent">
     <item quantity="one">%1$d overspent category (%2$s)</item>
     <item quantity="other">%1$d overspent categories (%2$s)</item>

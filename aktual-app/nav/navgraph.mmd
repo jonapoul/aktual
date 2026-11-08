@@ -23,6 +23,7 @@ flowchart TD
   subgraph budgetNavRail["Budget Nav Rail"]
     home["Home"]
     budget["Budget"]
+    reorderCategories["Reorder Categories"]
     transactions["Transactions"]
     accountTransactions["Account Transactions"]
     createAccount["Create Account"]
@@ -114,6 +115,7 @@ flowchart TD
   home --see all recent--> transactions
 
   budget --review uncategorised--> uncategorisedTransactions
+  budget --reorder categories--> reorderCategories
 
   transactions --tap transaction--> transaction
   accountTransactions --tap transaction--> transaction

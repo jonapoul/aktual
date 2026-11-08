@@ -8,6 +8,8 @@ import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.BudgetNavRoute
 import aktual.core.nav.NavStack
+import aktual.core.nav.ReorderCategoriesNavRoute
+import aktual.core.nav.ReorderCategoriesNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.di.BudgetScope
 import androidx.navigation3.runtime.NavKey
@@ -24,6 +26,7 @@ class BudgetingNavEntryContributor : BudgetNavEntryContributor {
         month = route.month,
         transactions = TransactionsNavigator(stack),
         categories = BudgetCategoryNavigator(stack),
+        reorder = ReorderCategoriesNavigator(stack),
       )
     }
 
@@ -35,5 +38,7 @@ class BudgetingNavEntryContributor : BudgetNavEntryContributor {
         transactions = TransactionsNavigator(stack),
       )
     }
+
+    budgetEntry<ReorderCategoriesNavRoute> { ReorderCategoriesScreen(back = BackNavigator(stack)) }
   }
 }
