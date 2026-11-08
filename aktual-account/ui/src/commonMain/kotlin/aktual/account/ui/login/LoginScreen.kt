@@ -9,6 +9,7 @@ import aktual.core.model.Password
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.ListBudgetsNavigator
 import aktual.core.nav.ServerUrlNavigator
+import aktual.core.ui.AktualSnackbar
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
@@ -20,6 +21,7 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.showWarningSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
@@ -76,7 +78,7 @@ fun LoginScreen(
   LaunchedEffect(viewModel.events) {
     viewModel.events.collect { event ->
       when (event) {
-        Timeout -> snackbarHostState.showSnackbar(timeoutMessage)
+        Timeout -> snackbarHostState.showWarningSnackbar(timeoutMessage)
         is Redirect -> uriHandler.openUri(event.url)
       }
     }
@@ -128,7 +130,7 @@ internal fun LoginScaffold(
         scrollBehavior = scrollBehavior,
       )
     },
-    snackbarHost = { SnackbarHost(snackbarHostState) },
+    snackbarHost = { SnackbarHost(snackbarHostState, snackbar = ::AktualSnackbar) },
   ) { innerPadding ->
     Box {
       WavyBackground()

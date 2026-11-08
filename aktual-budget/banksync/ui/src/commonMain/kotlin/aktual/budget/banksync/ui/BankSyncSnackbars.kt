@@ -11,11 +11,12 @@ import aktual.core.l10n.bank_sync_settings_unlink_failed
 import aktual.core.l10n.bank_sync_setup_failed
 import aktual.core.l10n.bank_sync_setup_logged_out
 import aktual.core.l10n.bank_sync_setup_not_admin
+import aktual.core.ui.showErrorSnackbar
 import androidx.compose.material3.SnackbarHostState
 import org.jetbrains.compose.resources.getString
 
 internal suspend fun SnackbarHostState.showSettingsSaveFailed(cause: String?) =
-  showSnackbar(
+  showErrorSnackbar(
     getString(
       Res.string.bank_sync_settings_save_failed,
       cause ?: getString(Res.string.bank_sync_failure_message),
@@ -23,7 +24,7 @@ internal suspend fun SnackbarHostState.showSettingsSaveFailed(cause: String?) =
   )
 
 internal suspend fun SnackbarHostState.showUnlinkFailed(cause: String?) =
-  showSnackbar(
+  showErrorSnackbar(
     getString(
       Res.string.bank_sync_settings_unlink_failed,
       cause ?: getString(Res.string.bank_sync_failure_message),
@@ -31,7 +32,7 @@ internal suspend fun SnackbarHostState.showUnlinkFailed(cause: String?) =
   )
 
 internal suspend fun SnackbarHostState.showLinkFailed(cause: String?) =
-  showSnackbar(
+  showErrorSnackbar(
     getString(
       Res.string.bank_sync_link_failed,
       cause ?: getString(Res.string.bank_sync_failure_message),
@@ -48,5 +49,5 @@ internal suspend fun SnackbarHostState.showProviderResetFailed(error: SetupError
       LoggedOut -> getString(Res.string.bank_sync_setup_logged_out)
       is Other -> error.cause ?: getString(Res.string.bank_sync_setup_failed)
     }
-  showSnackbar(getString(Res.string.bank_sync_providers_reset_failed, reason))
+  showErrorSnackbar(getString(Res.string.bank_sync_providers_reset_failed, reason))
 }

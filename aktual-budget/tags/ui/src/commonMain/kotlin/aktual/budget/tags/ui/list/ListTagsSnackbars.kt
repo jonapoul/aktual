@@ -8,6 +8,7 @@ import aktual.core.l10n.tags_delete_failed_unknown
 import aktual.core.l10n.tags_deleted
 import aktual.core.l10n.tags_deleted_undo
 import aktual.core.l10n.tags_restore_failed
+import aktual.core.ui.showErrorSnackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import org.jetbrains.compose.resources.getString
@@ -28,12 +29,12 @@ internal suspend fun SnackbarHostState.showDeleted(
 }
 
 internal suspend fun SnackbarHostState.showDeleteFailed(event: ListTagsEvent.DeleteFailed) {
-  showSnackbar(
+  showErrorSnackbar(
     event.tag?.let { getString(Res.string.tags_delete_failed, it) }
       ?: getString(Res.string.tags_delete_failed_unknown),
   )
 }
 
 internal suspend fun SnackbarHostState.showRestoreFailed(event: ListTagsEvent.RestoreFailed) {
-  showSnackbar(getString(Res.string.tags_restore_failed, event.tag))
+  showErrorSnackbar(getString(Res.string.tags_restore_failed, event.tag))
 }

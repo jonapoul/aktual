@@ -63,6 +63,7 @@ import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.showErrorSnackbar
+import aktual.core.ui.showWarningSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -140,7 +141,7 @@ internal fun EditTransactionScreen(
     rememberWithLocation(
       needsPermission = { viewModel.needsLocationPermission },
       onDeny = {
-        snackbars.show { showErrorSnackbar(getString(Res.string.transaction_location_denied)) }
+        snackbars.show { showWarningSnackbar(getString(Res.string.transaction_location_denied)) }
       },
     )
 
@@ -201,7 +202,8 @@ private fun EditTransactionViewModel.onSplitAction(action: SplitAction) =
 private suspend fun SnackbarHostState.showLocationEvent(event: EditTransactionEvent) {
   when (event) {
     NoNearbyPayees -> showSnackbar(getString(Res.string.transaction_location_none_nearby))
-    LocationUnavailable -> showErrorSnackbar(getString(Res.string.transaction_location_unavailable))
+    LocationUnavailable ->
+      showWarningSnackbar(getString(Res.string.transaction_location_unavailable))
     LocationSaveFailed -> showErrorSnackbar(getString(Res.string.transaction_location_save_failed))
     is LocationSaved -> showSnackbar(getString(Res.string.transaction_location_saved, event.payee))
     is LocationAlreadySaved ->
