@@ -34,7 +34,7 @@ Check the module's `build.gradle.kts` for which convention plugin it uses:
 
 | Plugin | Module Type | Available Test Tasks |
 |--------|------------|---------------------|
-| `aktual.module.kotlin` / `aktual.module.di` | KMP + Android | `allTests`, `testAndroidHostTest`, `desktopTest` |
+| `aktual.module.kotlin` | KMP + Android | `allTests`, `testAndroidHostTest`, `desktopTest` |
 | `aktual.module.compose` | KMP + Android + Compose | `allTests`, `testAndroidHostTest`, `desktopTest` |
 | `aktual.module.viewmodel` | KMP + Android + Compose + VM | `allTests`, `testAndroidHostTest`, `desktopTest` |
 | `aktual.module.jvm` | Plain JVM, not KMP | `test` |

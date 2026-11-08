@@ -113,7 +113,6 @@ atlas {
 
   projectTypes {
     hasPluginId("ViewModel", "aktual.module.viewmodel", "#914141") // pink
-    hasPluginId("DI", "aktual.module.di", "#a17103") // orange
     hasPluginId("UI", "aktual.module.compose", "#6b6b01") // yellow
     hasPluginId("Kotlin", "aktual.module.kotlin", "#160185") // indigo
     pathContains("App", ":aktual-app:", "#7a0101") // red

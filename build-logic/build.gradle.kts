@@ -86,7 +86,6 @@ gradlePlugin {
 
     "aktual.module.android"(impl = "aktual.gradle.ModuleAndroidLibrary")
     "aktual.module.compose"(impl = "aktual.gradle.ModuleCompose")
-    "aktual.module.di"(impl = "aktual.gradle.ModuleDi")
     "aktual.module.jvm"(impl = "aktual.gradle.ModuleJvm")
     "aktual.module.kotlin"(impl = "aktual.gradle.ModuleKotlin")
     "aktual.module.viewmodel"(impl = "aktual.gradle.ModuleViewModel")

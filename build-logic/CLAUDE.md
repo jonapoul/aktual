@@ -10,11 +10,10 @@ Gradle convention plugins that centralize build config. Included build - `settin
 
 | ID | What it sets up |
 |----|-----------------|
-| `aktual.module.kotlin` | KMP with the Android library and `desktop` JVM targets, default hierarchy plus a `jvmShared` group over both, lint, Robolectric setup, coroutines, test deps (android ones including `:aktual-test:android`) |
+| `aktual.module.kotlin` | KMP with the Android library and `desktop` JVM targets, default hierarchy plus a `jvmShared` group over both, lint, Metro DI, Robolectric setup, coroutines, test deps (android ones including `:aktual-test:android`) |
 | `aktual.module.android` | `ModuleAndroidLibrary`: plain (non-KMP) Android library with lint, Robolectric unit tests and test deps. For android-only code like platform bindings |
 | `aktual.module.compose` | `kotlin` + Compose compiler/resources + Material3 + compose test deps |
-| `aktual.module.viewmodel` | `kotlin` + Compose compiler + Molecule + lifecycle-viewmodel + Metro DI, plus `aktual-test` for tests |
-| `aktual.module.di` | `kotlin` + Metro DI (no Compose) |
+| `aktual.module.viewmodel` | `kotlin` + Compose compiler + Molecule + lifecycle-viewmodel, plus `aktual-test` for tests |
 | `aktual.module.jvm` | JVM-only (no KMP, no Android) + style + test deps |
 
 ### Convention plugins (composed by module plugins)
