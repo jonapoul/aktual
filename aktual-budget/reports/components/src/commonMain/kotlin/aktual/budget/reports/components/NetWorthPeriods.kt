@@ -33,7 +33,7 @@ internal fun netWorthXAxisFormatter(data: NetWorthData): CartesianValueFormatter
   val months = monthStringsMap()
   return remember(data, months) {
     CartesianValueFormatter { _, value, _ ->
-      val period = data.periodAt(value) ?: return@CartesianValueFormatter ""
+      val period = data.periodAt(value) ?: return@CartesianValueFormatter NO_AXIS_LABEL
       when (data.interval) {
         Daily,
         Weekly -> "${period.day} ${months[period.month]}"

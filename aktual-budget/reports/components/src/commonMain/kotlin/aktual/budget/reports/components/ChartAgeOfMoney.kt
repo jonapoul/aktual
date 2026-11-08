@@ -307,7 +307,8 @@ private fun periodXAxisFormatter(data: AgeOfMoneyData): CartesianValueFormatter 
   return remember(data, monthStrings) {
     val periods = data.items.keys.toList()
     CartesianValueFormatter { _, value, _ ->
-      val date = periods.getOrNull(value.roundToInt()) ?: return@CartesianValueFormatter ""
+      val date =
+        periods.getOrNull(value.roundToInt()) ?: return@CartesianValueFormatter NO_AXIS_LABEL
       val month = monthStrings[date.month] ?: "???"
       when (data.granularity) {
         Daily,

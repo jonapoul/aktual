@@ -111,6 +111,10 @@ fun chartAnimationSpec(compact: Boolean): AnimationSpec<Float>? =
 
 private val DiffAnimationSpec: AnimationSpec<Float> = tween(durationMillis = 500)
 
+// Vico throws on blank axis labels, whitespace included. Shown for x values with no point, e.g.
+// while the model still holds the previous data
+internal const val NO_AXIS_LABEL = "-"
+
 @Composable
 internal fun yearMonthXAxisFormatter(): CartesianValueFormatter {
   val monthStrings = monthStringsMap()

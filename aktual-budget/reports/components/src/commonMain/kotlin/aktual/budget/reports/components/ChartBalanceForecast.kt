@@ -302,7 +302,7 @@ private fun forecastXAxisFormatter(data: BalanceForecastData): CartesianValueFor
   return remember(data, monthStrings) {
     val dates = data.items.keys.toList()
     CartesianValueFormatter { _, value, _ ->
-      val date = dates.getOrNull(value.roundToInt()) ?: return@CartesianValueFormatter ""
+      val date = dates.getOrNull(value.roundToInt()) ?: return@CartesianValueFormatter NO_AXIS_LABEL
       val month = monthStrings[date.month] ?: "???"
       when (data.granularity) {
         Daily -> "${date.day} $month"
