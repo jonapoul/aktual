@@ -61,13 +61,15 @@ fun SystemUiSettingsScreen(
 private fun SystemUiSettingsScaffold(state: SystemUiSettingsState, onBack: () -> Unit) {
   SettingsListScaffold(title = Strings.settingsUiGroup, description = null, onBack = onBack) {
     item {
-      PreferenceGroup(title = Strings.settingsUiBarsTitle, subtitle = Strings.settingsUiBarsDesc) {
-        BooleanPreferenceItem(
-          preference = state.showStatusBar,
-          title = Strings.settingsUiShowStatus,
-          subtitle = null,
-          icon = if (state.showStatusBar.value) AktualIcons.ViewShow else AktualIcons.ViewHide,
-        )
+      BooleanPreferenceItem(
+        preference = state.showStatusBar,
+        title = Strings.settingsUiShowStatus,
+        subtitle = null,
+        icon = if (state.showStatusBar.value) AktualIcons.ViewShow else AktualIcons.ViewHide,
+      )
+    }
+    item {
+      PreferenceGroup(title = Strings.settingsUiBarsTitle) {
         ListPreferenceItem(
           preference = state.barEffect,
           optionString = { it.string() },

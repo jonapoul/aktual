@@ -63,43 +63,44 @@ private fun SecuritySettingsScaffold(
 ) {
   SettingsListScaffold(title = Strings.settingsSecurity, description = null, onBack = onBack) {
     item {
-      BooleanPreferenceItem(
-        preference = state.appLockEnabled,
-        title = Strings.settingsSecurityAppLock,
-        subtitle =
-          if (state.isScreenLockAvailable) {
-            Strings.settingsSecurityAppLockDesc
-          } else {
-            Strings.settingsSecurityAppLockUnavailable
-          },
-        icon = MaterialIcons.Security,
-      )
-    }
-    item {
-      ListPreferenceItem(
-        preference = state.appLockTimeout,
-        optionString = { it.string() },
-        optionSuffix = null,
-        title = Strings.settingsSecurityTimeout,
-        subtitle = null,
-        icon = MaterialIcons.Timer,
-      )
-    }
-    item {
-      BooleanPreferenceItem(
-        preference = state.hidePreviewInAppSwitcher,
-        title = Strings.settingsSecurityHidePreview,
-        subtitle = Strings.settingsSecurityHidePreviewDesc,
-        icon = AktualIcons.ViewHide,
-      )
+      PreferenceGroup(title = Strings.settingsSecurityLockGroup) {
+        BooleanPreferenceItem(
+          preference = state.appLockEnabled,
+          title = Strings.settingsSecurityAppLock,
+          subtitle =
+            if (state.isScreenLockAvailable) {
+              Strings.settingsSecurityAppLockDesc
+            } else {
+              Strings.settingsSecurityAppLockUnavailable
+            },
+          icon = MaterialIcons.Security,
+        )
+        ListPreferenceItem(
+          preference = state.appLockTimeout,
+          optionString = { it.string() },
+          optionSuffix = null,
+          title = Strings.settingsSecurityTimeout,
+          subtitle = null,
+          icon = MaterialIcons.Timer,
+        )
+        BooleanPreferenceItem(
+          preference = state.hidePreviewInAppSwitcher,
+          title = Strings.settingsSecurityHidePreview,
+          subtitle = Strings.settingsSecurityHidePreviewDesc,
+          icon = AktualIcons.ViewHide,
+        )
+      }
     }
     if (state.isLocationSupported) {
       item {
-        PreferenceGroup(title = Strings.settingsSecurityLocations) {
+        PreferenceGroup(
+          title = Strings.settingsSecurityLocations,
+          subtitle = Strings.settingsSecurityAutoSaveLocationsDesc,
+        ) {
           BooleanPreferenceItem(
             preference = state.autoSavePayeeLocations,
             title = Strings.settingsSecurityAutoSaveLocations,
-            subtitle = Strings.settingsSecurityAutoSaveLocationsDesc,
+            subtitle = null,
             icon = AktualIcons.Location,
           )
           LocationPermissionItem(

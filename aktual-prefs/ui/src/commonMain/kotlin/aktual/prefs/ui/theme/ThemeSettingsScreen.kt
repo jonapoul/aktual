@@ -22,6 +22,7 @@ import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.theme.ThemeSettingsState
@@ -112,9 +113,12 @@ private fun ThemeSettingsContent(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
-    item { UseSystemDefaultPreference(preference = state.useSystemDefault, onAction = onAction) }
-
-    item { DarkThemePreference(preference = state.darkTheme, onAction = onAction) }
+    item {
+      PreferenceGroup(title = Strings.settingsThemeSystemGroup) {
+        UseSystemDefaultPreference(preference = state.useSystemDefault, onAction = onAction)
+        DarkThemePreference(preference = state.darkTheme, onAction = onAction)
+      }
+    }
 
     item {
       BuiltInThemesPreference(
