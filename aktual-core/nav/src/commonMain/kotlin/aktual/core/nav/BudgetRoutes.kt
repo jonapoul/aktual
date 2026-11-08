@@ -28,6 +28,9 @@ import kotlinx.serialization.Serializable
 data class BudgetCategoryNavRoute(val category: CategoryId, val month: YearMonth) :
   BudgetNavKey.Budget
 
+// Dragging categories and groups into a new order on the budget page
+@Serializable data object ReorderCategoriesNavRoute : BudgetNavKey.Budget
+
 @Serializable data object TransactionsNavRoute : BudgetNavKey.Transactions
 
 @Serializable data class TransactionsWithTagNavRoute(val id: TagId) : BudgetNavKey.Transactions

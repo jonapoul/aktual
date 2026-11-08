@@ -37,6 +37,7 @@ private val materialIcons =
       DeleteForever,
       Description,
       Dialogs,
+      DragIndicator,
       Fingerprint,
       FormatAlignCenter,
       FormatAlignLeft,
@@ -73,6 +74,8 @@ private val materialIcons =
       Texture,
       Timer,
       Title,
+      UnfoldLess,
+      UnfoldMore,
       Undo,
       ZoomOut,
     )

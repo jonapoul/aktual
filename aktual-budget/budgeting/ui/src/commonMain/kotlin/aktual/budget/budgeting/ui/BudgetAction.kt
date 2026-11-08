@@ -29,6 +29,8 @@ internal data class ToggleGroup(val id: CategoryGroupId) : BudgetAction
 
 internal data object ReviewUncategorised : BudgetAction
 
+internal data object ReorderCategories : BudgetAction
+
 internal data class OpenCategory(val month: YearMonth, val category: CategoryId) : BudgetAction
 
 // Handled by the scaffold, which shows the sheet

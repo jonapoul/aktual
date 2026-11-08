@@ -18,6 +18,14 @@ JOIN category_groups g ON g.id = c.cat_group AND g.tombstone = 0
 WHERE c.tombstone = 0
 ORDER BY g.is_income, g.sort_order, g.id, c.sort_order, c.id;
 
+-- Live categories with their sort orders, in the same order as budgetCategories
+budgetCategoryOrder:
+SELECT c.id, c.name, c.hidden, c.sort_order, g.id AS group_id
+FROM categories c
+JOIN category_groups g ON g.id = c.cat_group AND g.tombstone = 0
+WHERE c.tombstone = 0
+ORDER BY g.is_income, g.sort_order, g.id, c.sort_order, c.id;
+
 -- packages/loot-core/src/server/budget/base.ts createBudget()
 budgetCategoryGroups:
 SELECT id, name, is_income, hidden, sort_order

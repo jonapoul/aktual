@@ -728,7 +728,7 @@ internal fun TextStyle.tabularFigures() = copy(fontFeatureSettings = "tnum")
 
 internal val TopShape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)
 private val CategoryInset = BudgetDS.categoryIndent - BudgetDS.rowPadding
-private const val HIDDEN_ALPHA = 0.5f
-private const val COLLAPSED_ROTATION = -90f
+internal const val HIDDEN_ALPHA = 0.5f
+internal const val COLLAPSED_ROTATION = -90f
 private const val SHIMMER_GROUPS = 3
 private const val SHIMMER_CATEGORIES = 3

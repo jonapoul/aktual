@@ -9,11 +9,14 @@ import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.Refresh
 import aktual.core.icons.ViewHide
 import aktual.core.icons.ViewShow
+import aktual.core.icons.material.DragIndicator
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
 import aktual.core.l10n.budgeting_undo
 import aktual.core.l10n.budgeting_updated
 import aktual.core.nav.BudgetCategoryNavigator
+import aktual.core.nav.ReorderCategoriesNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
@@ -97,6 +100,7 @@ internal fun BudgetScreen(
   month: YearMonth?,
   transactions: TransactionsNavigator,
   categories: BudgetCategoryNavigator,
+  reorder: ReorderCategoriesNavigator,
   modifier: Modifier = Modifier,
   viewModel: BudgetViewModel = budgetViewModel(month),
 ) {
@@ -129,6 +133,7 @@ internal fun BudgetScreen(
         ToggleHidden -> viewModel.toggleHidden()
         is ToggleGroup -> viewModel.toggleCollapsed(action.id)
         ReviewUncategorised -> transactions.uncategorised()
+        ReorderCategories -> reorder()
         is OpenCategory -> categories(action.category, action.month)
         // The scaffold opens the sheet
         is OpenSheet -> Unit
@@ -516,6 +521,15 @@ private fun BudgetMenu(
         onClick = {
           expanded = false
           onAction(ToggleHidden)
+        },
+      )
+
+      AktualDropdownMenuItem(
+        text = Strings.budgetingReorder,
+        leadingIcon = MaterialIcons.DragIndicator,
+        onClick = {
+          expanded = false
+          onAction(ReorderCategories)
         },
       )
 

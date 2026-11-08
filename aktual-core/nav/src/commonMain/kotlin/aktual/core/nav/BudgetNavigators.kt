@@ -35,6 +35,11 @@ class BudgetCategoryNavigator(private val stack: NavStack<BudgetNavKey>) {
 }
 
 @Immutable
+class ReorderCategoriesNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke() = stack.push(ReorderCategoriesNavRoute)
+}
+
+@Immutable
 class TransactionsNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke() = stack.push(TransactionsNavRoute)
 
