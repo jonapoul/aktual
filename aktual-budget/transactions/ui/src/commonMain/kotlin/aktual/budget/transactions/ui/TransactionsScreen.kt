@@ -35,6 +35,7 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
+import aktual.core.ui.showErrorSnackbar
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyListState
@@ -112,9 +113,9 @@ fun TransactionsScreen(
       when (event) {
         AccountDeleted -> snackbars.show(message = deleted).also { accountDeleted() }
         AccountDeletedBankLoginKept -> showLoginKept = true
-        DeleteAccountFailed -> snackbars.show(message = deleteFailed)
-        RenameAccountFailed -> snackbars.show(message = renameFailed)
-        ReconcileFailed -> snackbars.show(message = reconcileFailed)
+        DeleteAccountFailed -> snackbars.show { showErrorSnackbar(deleteFailed) }
+        RenameAccountFailed -> snackbars.show { showErrorSnackbar(renameFailed) }
+        ReconcileFailed -> snackbars.show { showErrorSnackbar(reconcileFailed) }
       }
     }
   }

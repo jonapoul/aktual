@@ -17,6 +17,7 @@ import aktual.core.model.immutableList
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.InspectThemeNavigator
 import aktual.core.theme.CustomThemeSummary
+import aktual.core.ui.AktualSnackbar
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedLoading
@@ -43,6 +44,7 @@ import aktual.core.ui.hazedTopBar
 import aktual.core.ui.radioButton
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
+import aktual.core.ui.showErrorSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.prefs.vm.theme.custom.CacheState
 import aktual.prefs.vm.theme.custom.CatalogItem
@@ -124,7 +126,7 @@ fun CustomThemeSettingsScreen(
         CacheRefreshed ->
           snackbar.showSnackbar(getString(Res.string.settings_theme_refresh_success))
         is FailedFetching ->
-          snackbar.showSnackbar(
+          snackbar.showErrorSnackbar(
             getString(Res.string.settings_theme_refresh_failure, event.name, event.reason),
           )
         is CustomThemeEvent.InspectTheme -> toInspectTheme(event.id)
@@ -184,6 +186,7 @@ private fun CustomThemeSettingsScaffold(
       SnackbarHost(
         hostState = snackbarHostState,
         modifier = Modifier.padding(bottom = LocalBottomSpacing.current + bottomNavBarPadding()),
+        snackbar = ::AktualSnackbar,
       )
     },
   ) { innerPadding ->

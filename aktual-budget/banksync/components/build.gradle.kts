@@ -5,5 +5,6 @@ kotlin {
     api(project(":aktual-budget:banksync:domain"))
     implementation(libs.compose.resources)
     implementation(project(":aktual-core:l10n"))
+    implementation(project(":aktual-core:ui"))
   }
 }

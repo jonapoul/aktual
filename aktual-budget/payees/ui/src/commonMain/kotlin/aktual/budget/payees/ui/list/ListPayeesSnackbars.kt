@@ -10,6 +10,7 @@ import aktual.core.l10n.payees_merge_failed
 import aktual.core.l10n.payees_merged
 import aktual.core.l10n.payees_restore_failed
 import aktual.core.l10n.payees_update_failed
+import aktual.core.ui.showErrorSnackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import org.jetbrains.compose.resources.getString
@@ -54,5 +55,5 @@ internal suspend fun SnackbarHostState.showFailure(event: ListPayeesEvent) {
       RestoreFailed -> Res.string.payees_restore_failed
       UpdateFailed -> Res.string.payees_update_failed
     }
-  showSnackbar(getString(message))
+  showErrorSnackbar(getString(message))
 }

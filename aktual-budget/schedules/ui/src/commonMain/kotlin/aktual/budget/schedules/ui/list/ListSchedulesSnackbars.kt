@@ -14,6 +14,7 @@ import aktual.core.l10n.list_schedules_restart_failed
 import aktual.core.l10n.list_schedules_restore_failed
 import aktual.core.l10n.list_schedules_unnamed_schedule
 import aktual.core.l10n.list_schedules_unpost_failed
+import aktual.core.ui.showErrorSnackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import org.jetbrains.compose.resources.getString
@@ -34,11 +35,11 @@ internal suspend fun SnackbarHostState.showDeleted(
 }
 
 internal suspend fun SnackbarHostState.showDeleteFailed(event: ListSchedulesEvent.DeleteFailed) {
-  showSnackbar(getString(Res.string.list_schedules_delete_failed, event.schedule.label()))
+  showErrorSnackbar(getString(Res.string.list_schedules_delete_failed, event.schedule.label()))
 }
 
 internal suspend fun SnackbarHostState.showRestoreFailed(event: ListSchedulesEvent.RestoreFailed) {
-  showSnackbar(getString(Res.string.list_schedules_restore_failed, event.schedule.label()))
+  showErrorSnackbar(getString(Res.string.list_schedules_restore_failed, event.schedule.label()))
 }
 
 internal suspend fun SnackbarHostState.showCompleted(
@@ -59,11 +60,11 @@ internal suspend fun SnackbarHostState.showCompleted(
 internal suspend fun SnackbarHostState.showCompleteFailed(
   event: ListSchedulesEvent.CompleteFailed,
 ) {
-  showSnackbar(getString(Res.string.list_schedules_complete_failed, event.schedule.label()))
+  showErrorSnackbar(getString(Res.string.list_schedules_complete_failed, event.schedule.label()))
 }
 
 internal suspend fun SnackbarHostState.showRestartFailed(event: ListSchedulesEvent.RestartFailed) {
-  showSnackbar(getString(Res.string.list_schedules_restart_failed, event.schedule.label()))
+  showErrorSnackbar(getString(Res.string.list_schedules_restart_failed, event.schedule.label()))
 }
 
 internal suspend fun SnackbarHostState.showPosted(
@@ -85,11 +86,11 @@ internal suspend fun SnackbarHostState.showPosted(
 }
 
 internal suspend fun SnackbarHostState.showPostFailed(event: ListSchedulesEvent.PostFailed) {
-  showSnackbar(getString(Res.string.list_schedules_post_failed, event.schedule.label()))
+  showErrorSnackbar(getString(Res.string.list_schedules_post_failed, event.schedule.label()))
 }
 
 internal suspend fun SnackbarHostState.showUnpostFailed(event: ListSchedulesEvent.UnpostFailed) {
-  showSnackbar(getString(Res.string.list_schedules_unpost_failed, event.schedule.label()))
+  showErrorSnackbar(getString(Res.string.list_schedules_unpost_failed, event.schedule.label()))
 }
 
 private suspend fun Schedule.label(): String =
