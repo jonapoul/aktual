@@ -382,11 +382,11 @@ internal fun labelAxis(labels: ImmutableList<String>, compact: Boolean, rotation
     label = axisLabelComponent(compact),
     labelRotationDegrees = rotationDegrees,
     tick = axisTickComponent(compact),
-    // Vico rejects empty labels, and a group can have an empty name
+    // A group can have an empty name
     valueFormatter =
       remember(labels) {
         CartesianValueFormatter { _, value, _ ->
-          labels.getOrNull(value.roundToInt())?.ifEmpty { null } ?: " "
+          labels.getOrNull(value.roundToInt())?.ifBlank { null } ?: NO_AXIS_LABEL
         }
       },
     itemPlacer =
