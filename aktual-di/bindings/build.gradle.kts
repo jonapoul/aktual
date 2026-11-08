@@ -1,4 +1,4 @@
-plugins { id("aktual.module.di") }
+plugins { id("aktual.module.kotlin") }
 
 kotlin {
   commonMainDependencies {

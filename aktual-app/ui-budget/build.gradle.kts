@@ -1,5 +1,4 @@
 plugins {
-  id("aktual.module.di")
   id("aktual.module.kotlin")
 }
 
