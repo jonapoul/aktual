@@ -20,6 +20,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarSpacing
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ShimmerLine
@@ -93,7 +94,7 @@ fun MetricsScreen(
 @Composable
 internal fun MetricsScaffold(
   state: MetricsState,
-  onAction: MetricsActionHandler,
+  onAction: OnAction<MetricsAction>,
 ) {
   val hazeState = rememberHazedTopBarState()
 
@@ -127,7 +128,7 @@ internal fun MetricsScaffold(
 @Composable
 private fun MetricsContent(
   state: MetricsState,
-  onAction: MetricsActionHandler,
+  onAction: OnAction<MetricsAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -179,7 +180,7 @@ private fun LoadingRow(modifier: Modifier = Modifier) {
 @Composable
 private fun FailureContent(
   message: String,
-  onAction: MetricsActionHandler,
+  onAction: OnAction<MetricsAction>,
   modifier: Modifier = Modifier,
 ) {
   FailureScreen(

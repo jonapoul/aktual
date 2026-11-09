@@ -20,6 +20,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
@@ -74,7 +75,7 @@ internal fun SearchSchedulesScreen(
 private fun SearchSchedulesScaffold(
   query: String,
   state: SearchSchedulesState,
-  onAction: SearchSchedulesActionHandler,
+  onAction: OnAction<SearchSchedulesAction>,
   modifier: Modifier = Modifier,
 ) {
   val listState = rememberLazyListState()
@@ -128,7 +129,7 @@ private fun SearchSchedulesScaffold(
 private fun ResultsList(
   results: Results,
   listState: LazyListState,
-  onAction: SearchSchedulesActionHandler,
+  onAction: OnAction<SearchSchedulesAction>,
   modifier: Modifier = Modifier,
 ) =
   LazyColumn(

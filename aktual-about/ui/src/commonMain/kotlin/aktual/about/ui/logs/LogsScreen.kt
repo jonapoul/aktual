@@ -9,6 +9,7 @@ import aktual.about.vm.logs.LogFilesViewModel
 import aktual.about.vm.logs.LogFilters
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.LogDayNavigator
+import aktual.core.ui.OnAction
 import aktual.core.ui.isCompactWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -31,21 +32,22 @@ fun LogsScreen(
   val handler = rememberLogExportHandler()
   CollectLogExports(filesViewModel.exports, handler)
 
-  val onFilesAction = LogsActionHandler { action ->
-    when (action) {
-      NavBack -> back()
-      is OpenDay -> toDay(action.date)
-      DeleteAll -> filesViewModel.deleteAll()
-      is DeleteDay -> filesViewModel.delete(action.date)
-      is Export -> filesViewModel.export(action.scope, action.target)
-      is SetQuery,
-      is TogglePriority,
-      is AddTag,
-      is RemoveTag,
-      Pause,
-      Resume -> Unit
+  val onFilesAction =
+    OnAction<LogsAction> { action ->
+      when (action) {
+        NavBack -> back()
+        is OpenDay -> toDay(action.date)
+        DeleteAll -> filesViewModel.deleteAll()
+        is DeleteDay -> filesViewModel.delete(action.date)
+        is Export -> filesViewModel.export(action.scope, action.target)
+        is SetQuery,
+        is TogglePriority,
+        is AddTag,
+        is RemoveTag,
+        Pause,
+        Resume -> Unit
+      }
     }
-  }
 
   if (isCompactWidth()) {
     LogFilesScaffold(state = files, canShare = handler.canShare, onAction = onFilesAction)

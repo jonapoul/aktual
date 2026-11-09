@@ -10,6 +10,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
@@ -73,7 +74,7 @@ private fun metroViewModel(themeId: ThemeId) =
 private fun SearchThemeScaffold(
   query: String,
   state: SearchThemeState,
-  onAction: SearchThemeActionHandler,
+  onAction: OnAction<SearchThemeAction>,
   modifier: Modifier = Modifier,
 ) {
   val listState = rememberLazyListState()

@@ -12,6 +12,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.formattedText
@@ -71,7 +72,7 @@ import kotlinx.datetime.onDay
 internal fun CalendarChart(
   data: CalendarData,
   compact: Boolean,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
 ) =
@@ -84,7 +85,7 @@ internal fun CalendarChart(
 @Composable
 private fun CompactCalendarChart(
   data: CalendarData,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
 ) =
@@ -115,7 +116,7 @@ private fun CompactCalendarChart(
 @Composable
 private fun RegularCalendarChart(
   data: CalendarData,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
 ) =

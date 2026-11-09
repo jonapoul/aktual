@@ -14,6 +14,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
@@ -78,7 +79,7 @@ fun ThemeSettingsScreen(
 @Composable
 private fun ThemeSettingsScaffold(
   state: ThemeSettingsState,
-  onAction: ThemeSettingsActionHandler,
+  onAction: OnAction<ThemeSettingsAction>,
   highlight: SettingsHighlight? = null,
 ) {
   val listState = rememberLazyListState()
@@ -114,7 +115,7 @@ private fun ThemeSettingsContent(
   state: ThemeSettingsState,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  onAction: ThemeSettingsActionHandler,
+  onAction: OnAction<ThemeSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(

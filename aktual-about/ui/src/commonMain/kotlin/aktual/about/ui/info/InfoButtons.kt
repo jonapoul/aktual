@@ -5,6 +5,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.padding
@@ -23,7 +24,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 @Suppress("MagicNumber")
-internal fun InfoButtons(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
+internal fun InfoButtons(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
   BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
     val density = LocalDensity.current
 
@@ -41,7 +42,7 @@ internal fun InfoButtons(onAction: InfoActionHandler, modifier: Modifier = Modif
   }
 
 @Composable
-private fun CheckUpdatesButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
+private fun CheckUpdatesButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
   NormalTextButton(
     modifier = modifier.testTag(Tags.CheckUpdatesButton),
     text = Strings.infoCheckUpdates,
@@ -49,7 +50,7 @@ private fun CheckUpdatesButton(onAction: InfoActionHandler, modifier: Modifier =
   )
 
 @Composable
-private fun ReportButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
+private fun ReportButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
   NormalTextButton(
     modifier = modifier.testTag(Tags.ReportButton),
     text = Strings.infoReportIssues,
@@ -57,7 +58,7 @@ private fun ReportButton(onAction: InfoActionHandler, modifier: Modifier = Modif
   )
 
 @Composable
-private fun LicensesButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
+private fun LicensesButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
   NormalTextButton(
     modifier = modifier.testTag(Tags.LicensesButton),
     text = Strings.infoLicenses,
@@ -65,7 +66,7 @@ private fun LicensesButton(onAction: InfoActionHandler, modifier: Modifier = Mod
   )
 
 @Composable
-private fun ManageStorageButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
+private fun ManageStorageButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
   NormalTextButton(
     modifier = modifier,
     text = Strings.storageToolbar,
@@ -73,7 +74,7 @@ private fun ManageStorageButton(onAction: InfoActionHandler, modifier: Modifier 
   )
 
 @Composable
-private fun LogsButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
+private fun LogsButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
   NormalTextButton(
     modifier = modifier,
     text = Strings.infoLogs,
@@ -81,7 +82,7 @@ private fun LogsButton(onAction: InfoActionHandler, modifier: Modifier = Modifie
   )
 
 @Composable
-private fun CrashReportsButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
+private fun CrashReportsButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
   NormalTextButton(
     modifier = modifier,
     text = Strings.infoCrashes,
@@ -91,7 +92,7 @@ private fun CrashReportsButton(onAction: InfoActionHandler, modifier: Modifier =
 private val ButtonCardPadding = 10.dp.padding
 
 @Composable
-private fun InfoButtonsColumn(onAction: InfoActionHandler) =
+private fun InfoButtonsColumn(onAction: OnAction<InfoAction>) =
   CardColumn(
     modifier = Modifier.fillMaxWidth(),
     shape = RounderCardShape,
@@ -108,7 +109,7 @@ private fun InfoButtonsColumn(onAction: InfoActionHandler) =
   }
 
 @Composable
-private fun InfoButtonsGrid(onAction: InfoActionHandler) =
+private fun InfoButtonsGrid(onAction: OnAction<InfoAction>) =
   CardColumn(
     modifier = Modifier.fillMaxWidth(),
     shape = RounderCardShape,
@@ -140,7 +141,7 @@ private fun InfoButtonsGrid(onAction: InfoActionHandler) =
   }
 
 @Composable
-private fun InfoButtonsRow(onAction: InfoActionHandler) =
+private fun InfoButtonsRow(onAction: OnAction<InfoAction>) =
   Row(
     modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),

@@ -1,9 +1,9 @@
 package aktual.budget.reports.ui.dashboard
 
+import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.Action.CreatePage
 import aktual.budget.reports.ui.Action.DeletePage
 import aktual.budget.reports.ui.Action.RenamePage
-import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
@@ -22,6 +22,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.background
@@ -53,7 +54,7 @@ private enum class PageDialog {
 internal fun DashboardMenu(
   page: DashboardPage?,
   canDelete: Boolean,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
   canReorder: Boolean = false,
   onReorder: () -> Unit = {},

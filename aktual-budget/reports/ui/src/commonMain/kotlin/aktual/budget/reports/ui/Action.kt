@@ -45,8 +45,3 @@ internal sealed interface Action {
 
   @JvmInline value class Reorder(val order: ImmutableList<WidgetId>) : Action
 }
-
-@Immutable
-internal fun interface ActionListener {
-  operator fun invoke(action: Action)
-}

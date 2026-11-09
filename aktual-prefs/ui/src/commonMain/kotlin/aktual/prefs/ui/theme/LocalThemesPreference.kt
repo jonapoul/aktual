@@ -4,6 +4,7 @@ import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
 import aktual.core.theme.Colors
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.prefs.components.BasicPreferenceItem
 import aktual.prefs.vm.theme.LocalTheme
@@ -24,7 +25,7 @@ internal fun LocalThemesPreference(
   themes: ImmutableList<LocalTheme>,
   selectedTheme: ThemeId?,
   enabled: Boolean,
-  onAction: ThemeSettingsActionHandler,
+  onAction: OnAction<ThemeSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   BasicPreferenceItem(

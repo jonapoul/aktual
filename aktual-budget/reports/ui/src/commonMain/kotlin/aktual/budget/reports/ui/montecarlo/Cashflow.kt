@@ -9,6 +9,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.OnAction
 import aktual.core.ui.redacted
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-internal fun CashflowView(state: MonteCarloState.Loaded, onAction: MonteCarloActionHandler) {
+internal fun CashflowView(state: MonteCarloState.Loaded, onAction: OnAction<MonteCarloAction>) {
   RunPercentilePicker(
     value = state.cashflowPercentile,
     onValueChange = { onAction(MonteCarloAction.SetCashflowPercentile(it)) },

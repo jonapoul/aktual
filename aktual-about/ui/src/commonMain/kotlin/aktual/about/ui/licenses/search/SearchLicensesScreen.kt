@@ -13,6 +13,7 @@ import aktual.core.nav.BackNavigator
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
@@ -66,7 +67,7 @@ internal fun SearchLicensesScreen(
 private fun SearchLicensesScaffold(
   query: String,
   state: SearchLicensesState,
-  onAction: SearchLicensesActionHandler,
+  onAction: OnAction<SearchLicensesAction>,
   modifier: Modifier = Modifier,
 ) {
   val listState = rememberLazyListState()
@@ -105,7 +106,7 @@ private fun SearchLicensesScaffold(
 private fun ResultsList(
   results: Results,
   listState: LazyListState,
-  onAction: SearchLicensesActionHandler,
+  onAction: OnAction<SearchLicensesAction>,
   modifier: Modifier = Modifier,
 ) =
   LazyColumn(

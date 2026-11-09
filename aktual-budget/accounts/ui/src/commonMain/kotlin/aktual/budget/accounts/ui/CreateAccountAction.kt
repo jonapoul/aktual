@@ -17,8 +17,3 @@ internal data object DismissSaveError : CreateAccountAction
 @JvmInline internal value class SetOffBudget(val offBudget: Boolean) : CreateAccountAction
 
 @JvmInline internal value class SetNegative(val negative: Boolean) : CreateAccountAction
-
-@Immutable
-internal fun interface CreateAccountActionHandler {
-  operator fun invoke(action: CreateAccountAction)
-}

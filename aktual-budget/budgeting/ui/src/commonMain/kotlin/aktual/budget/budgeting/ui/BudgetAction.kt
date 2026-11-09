@@ -96,8 +96,3 @@ internal enum class MonthAction {
   Average6,
   Average12,
 }
-
-@Immutable
-internal fun interface BudgetActionHandler {
-  operator fun invoke(action: BudgetAction)
-}

@@ -22,6 +22,7 @@ import aktual.core.ui.ButtonShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NewTransactionsBadge
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.ShimmerLine
@@ -83,7 +84,7 @@ private val AmountEndInset = RowEndPadding + 40.dp + NewTransactionButtonGap
 @Composable
 internal fun AccountsCard(
   state: AccountsCardState,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   modifier: Modifier = Modifier,
   isBoxed: Boolean = true,
   showAll: Boolean = false,
@@ -113,7 +114,7 @@ internal fun AccountsCard(
 private fun ColumnScope.AccountsContent(
   state: Loaded,
   showAll: Boolean,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
 ) {
   var isExpanded by rememberSaveable { mutableStateOf(false) }
   val recent = if (showAll) null else state.recent
@@ -156,7 +157,7 @@ private fun ColumnScope.AccountsSection(
   title: String,
   section: AccountSection,
   visibleIds: ImmutableSet<AccountId>,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
 ) {
   AnimatedVisibility(
     visible = section.accounts.fastAny { it.id in visibleIds },
@@ -311,7 +312,7 @@ private fun ShimmerAccounts(modifier: Modifier = Modifier) {
 private const val SHIMMER_ROWS = 3
 
 @Composable
-private fun AccountsEmpty(onAction: HomeActionHandler, modifier: Modifier = Modifier) {
+private fun AccountsEmpty(onAction: OnAction<HomeAction>, modifier: Modifier = Modifier) {
   Column(
     modifier = modifier.fillMaxWidth().padding(horizontal = CardPadding).padding(top = 12.dp),
     horizontalAlignment = CenterHorizontally,

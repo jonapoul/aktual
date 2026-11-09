@@ -24,6 +24,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
@@ -81,7 +82,7 @@ internal fun SearchPayeesScreen(
 private fun SearchPayeesScaffold(
   query: String,
   state: SearchPayeesState,
-  onAction: SearchPayeesActionHandler,
+  onAction: OnAction<SearchPayeesAction>,
   modifier: Modifier = Modifier,
 ) {
   val listState = rememberLazyListState()
@@ -135,7 +136,7 @@ private fun SearchPayeesScaffold(
 private fun ResultsList(
   results: Results,
   listState: LazyListState,
-  onAction: SearchPayeesActionHandler,
+  onAction: OnAction<SearchPayeesAction>,
   modifier: Modifier = Modifier,
 ) =
   LazyColumn(

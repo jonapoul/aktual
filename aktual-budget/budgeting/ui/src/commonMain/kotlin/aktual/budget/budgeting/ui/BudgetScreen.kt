@@ -30,6 +30,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -189,7 +190,7 @@ private fun budgetViewModel(month: YearMonth?) =
 @Composable
 private fun BudgetScaffold(
   state: BudgetState,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
   isCompact: Boolean = isCompactWidth(),
 ) {
@@ -202,7 +203,7 @@ private fun BudgetScaffold(
   var sheets by remember { mutableStateOf(persistentListOf<SheetRequest>()) }
   val latestOnAction by rememberUpdatedState(onAction)
   val handler = remember {
-    BudgetActionHandler { action ->
+    OnAction<BudgetAction> { action ->
       if (action is OpenSheet) sheets = persistentListOf(action.sheet) else latestOnAction(action)
     }
   }
@@ -295,7 +296,7 @@ private fun BudgetScaffold(
 internal fun BudgetSheetStack(
   sheets: PersistentList<SheetRequest>,
   state: BudgetState.Loaded,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   onOpen: (SheetRequest) -> Unit,
   onChange: (PersistentList<SheetRequest>) -> Unit,
 ) {
@@ -314,7 +315,7 @@ internal fun BudgetSheetStack(
   val latestOnOpen by rememberUpdatedState(onOpen)
   val sheetHandler =
     remember(onAction) {
-      BudgetActionHandler { action ->
+      OnAction<BudgetAction> { action ->
         if (action is OpenSheet) latestOnOpen(action.sheet) else onAction(action)
       }
     }
@@ -334,7 +335,7 @@ internal fun BudgetSheetStack(
 }
 
 // Ctrl and the left or right arrow, as upstream's desktop budget
-private fun KeyEvent.changeMonth(state: BudgetState, onAction: BudgetActionHandler): Boolean {
+private fun KeyEvent.changeMonth(state: BudgetState, onAction: OnAction<BudgetAction>): Boolean {
   val canHandle = state is Loaded && type == KeyDown && isCtrlPressed
   return canHandle &&
     when (key) {
@@ -359,7 +360,7 @@ private fun BudgetContent(
   contentPadding: PaddingValues,
   listState: LazyListState,
   pageListStates: PageListStates,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
 ) {
   val listModifier = modifier.fillMaxSize()
@@ -438,7 +439,7 @@ private fun BudgetPager(
   state: BudgetState.Loaded,
   topPadding: Dp,
   pageListStates: PageListStates,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
 ) {
   val page = state.earliest.monthsUntil(state.month)
@@ -490,7 +491,7 @@ private fun BudgetPager(
 private fun BudgetMenu(
   state: BudgetState.Loaded,
   withMonthActions: Boolean,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
 ) {
   var expanded by remember { mutableStateOf(false) }

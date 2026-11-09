@@ -12,6 +12,7 @@ import aktual.core.ui.ChipSize
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.LocalPrivacyEnabled
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.card
@@ -162,7 +163,7 @@ internal fun AmountText(
 @Composable
 internal fun CardError(
   message: String,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   modifier: Modifier = Modifier,
 ) {
   Row(

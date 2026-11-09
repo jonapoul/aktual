@@ -24,6 +24,7 @@ import aktual.core.ui.Dimens.ListItemSpacing
 import aktual.core.ui.Dimens.Medium
 import aktual.core.ui.Dimens.ScreenPadding
 import aktual.core.ui.Dimens.VeryLarge
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
@@ -103,7 +104,7 @@ internal fun SearchSettingsScreen(
 private fun SearchSettingsScaffold(
   query: String,
   state: SearchSettingsState,
-  onAction: SearchSettingsActionHandler,
+  onAction: OnAction<SearchSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   val listState = rememberLazyListState()
@@ -143,7 +144,7 @@ private fun SearchSettingsScaffold(
 private fun ResultsList(
   results: Results,
   listState: LazyListState,
-  onAction: SearchSettingsActionHandler,
+  onAction: OnAction<SearchSettingsAction>,
   modifier: Modifier = Modifier,
 ) =
   LazyColumn(

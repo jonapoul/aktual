@@ -21,6 +21,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PasswordTransformation
 import aktual.core.ui.PortraitPreview
@@ -105,7 +106,7 @@ private fun bankSyncProviderSetupViewModel(source: AccountSyncSource) =
 @Composable
 private fun BankSyncProviderSetupScaffold(
   state: BankSyncProviderSetupState,
-  onAction: BankSyncProviderSetupActionHandler,
+  onAction: OnAction<BankSyncProviderSetupAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -141,7 +142,7 @@ private fun BankSyncProviderSetupContent(
   state: BankSyncProviderSetupState,
   scrollState: ScrollState,
   contentPadding: PaddingValues,
-  onAction: BankSyncProviderSetupActionHandler,
+  onAction: OnAction<BankSyncProviderSetupAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(

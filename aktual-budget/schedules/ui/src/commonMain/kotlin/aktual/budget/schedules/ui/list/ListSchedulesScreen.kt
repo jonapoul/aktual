@@ -46,6 +46,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
@@ -153,7 +154,7 @@ private fun Snackbars.showEvent(event: ListSchedulesEvent, viewModel: ListSchedu
 private fun ListSchedulesScaffold(
   state: ListSchedulesState,
   showCompleted: Boolean,
-  onAction: ListSchedulesActionHandler,
+  onAction: OnAction<ListSchedulesAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -239,7 +240,7 @@ private fun ListSchedulesScaffold(
 private fun ListSchedulesContent(
   state: ListSchedulesState,
   contentPadding: PaddingValues,
-  onAction: ListSchedulesActionHandler,
+  onAction: OnAction<ListSchedulesAction>,
   listState: LazyListState,
   modifier: Modifier = Modifier,
 ) {
@@ -300,7 +301,7 @@ private fun ContentSuccess(
   schedules: ImmutableList<Schedule>,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  onAction: ListSchedulesActionHandler,
+  onAction: OnAction<ListSchedulesAction>,
   modifier: Modifier = Modifier,
 ) {
   // only one row may be swiped open at a time - opening another closes the previous one

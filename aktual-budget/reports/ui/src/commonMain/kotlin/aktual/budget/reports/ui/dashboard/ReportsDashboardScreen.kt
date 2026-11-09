@@ -5,8 +5,8 @@ import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.components.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.components.ShimmerDashboardItem
+import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.Action.Reorder
-import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.dashboard.DashboardPage
@@ -30,6 +30,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
@@ -150,7 +151,7 @@ internal fun ReportsDashboardScaffold(
   pinnedIds: ImmutableSet<WidgetId>,
   canPin: Boolean,
   observer: DashboardItemObserver,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   customReportNames: ImmutableMap<CustomReportId, String> = persistentMapOf(),
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -329,7 +330,7 @@ private fun ReportsDashboardContent(
   observer: DashboardItemObserver,
   listState: LazyListState,
   reorder: DashboardReorderState,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
@@ -362,7 +363,7 @@ private fun ContentLoading(contentPadding: PaddingValues, modifier: Modifier = M
   }
 
 @Composable
-private fun ContentEmpty(onAction: ActionListener, modifier: Modifier = Modifier) =
+private fun ContentEmpty(onAction: OnAction<Action>, modifier: Modifier = Modifier) =
   Column(
     modifier = modifier.fillMaxSize().padding(40.dp),
     horizontalAlignment = CenterHorizontally,
@@ -387,7 +388,7 @@ private fun ContentList(
   observer: DashboardItemObserver,
   listState: LazyListState,
   reorder: DashboardReorderState,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {

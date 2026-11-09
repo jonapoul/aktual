@@ -25,6 +25,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
@@ -88,7 +89,7 @@ import kotlinx.datetime.minus
 internal fun LogFilesScaffold(
   state: LogFilesState,
   canShare: Boolean,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
   modifier: Modifier = Modifier,
 ) {
   var showExport by remember { mutableStateOf(false) }
@@ -151,7 +152,7 @@ private fun LogFilesList(
   state: LogFilesState.Loaded,
   contentPadding: PaddingValues,
   listState: LazyListState,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
 ) {
   // Only one row may be swiped open at a time
   var openDate by remember { mutableStateOf<LocalDate?>(null) }
@@ -223,7 +224,7 @@ private fun SwipeableLogFileItem(
   today: LocalDate,
   isOpen: Boolean,
   onOpenChange: (Boolean) -> Unit,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
   modifier: Modifier = Modifier,
 ) {
   val deleteBackground = colors.errorText

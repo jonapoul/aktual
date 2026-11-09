@@ -40,6 +40,7 @@ import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.NewTransactionsBadge
 import aktual.core.ui.NormalIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.bareIconButton
@@ -121,7 +122,7 @@ internal fun ColumnScope.BudgetSidebarContent(
   onAddAccount: () -> Unit,
   onRename: () -> Unit,
   onSetPrivacyMode: (Boolean) -> Unit,
-  onAction: BudgetNavActionHandler,
+  onAction: OnAction<BudgetNavAction>,
 ) {
   Column(modifier = Modifier.weight(1f).verticalScrollWithBar().padding(12.dp)) {
     DrawerHeader(
@@ -363,7 +364,7 @@ private data class DrawerAction(
 private fun drawerActions(
   isDemo: Boolean,
   onSetPrivacyMode: (Boolean) -> Unit,
-  onAction: BudgetNavActionHandler,
+  onAction: OnAction<BudgetNavAction>,
 ): ImmutableList<DrawerAction> = buildList {
   if (LocalPrivacyEnabled.current) {
     +DrawerAction(

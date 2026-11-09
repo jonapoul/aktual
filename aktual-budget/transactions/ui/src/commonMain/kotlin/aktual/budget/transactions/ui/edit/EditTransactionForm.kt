@@ -22,6 +22,7 @@ import aktual.core.ui.AmountKeypad
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.OnAction
 import aktual.core.ui.RootOverlayContent
 import aktual.core.ui.WarningBanner
 import aktual.core.ui.formatted
@@ -103,7 +104,7 @@ internal fun EditTransactionForm(
   form: TransactionForm,
   fieldState: EditFieldState,
   onUnlock: () -> Unit,
-  onAction: EditTransactionActionHandler,
+  onAction: OnAction<EditTransactionAction>,
   scrollState: ScrollState,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
@@ -233,7 +234,7 @@ internal fun EditTransactionForm(
 private fun TypedAmountEffect(
   fieldState: EditFieldState,
   isIncome: Boolean,
-  onAction: EditTransactionActionHandler,
+  onAction: OnAction<EditTransactionAction>,
 ) {
   val latestIsIncome by rememberUpdatedState(isIncome)
   val latestOnAction by rememberUpdatedState(onAction)
@@ -347,7 +348,7 @@ private fun FieldsCard(
   form: TransactionForm,
   onEdit: (EditField) -> Unit,
   onUnlock: () -> Unit,
-  onAction: EditTransactionActionHandler,
+  onAction: OnAction<EditTransactionAction>,
 ) {
   val draft = form.draft
   DetailCard {
@@ -397,7 +398,7 @@ private fun FieldsCard(
 private fun LocationButton(
   action: LocationAction,
   isLocating: Boolean,
-  onAction: EditTransactionActionHandler,
+  onAction: OnAction<EditTransactionAction>,
 ) =
   Box(modifier = Modifier.size(LocationButtonSize), contentAlignment = Center) {
     if (isLocating) {
@@ -466,7 +467,7 @@ private fun NotesRow(notes: String?, tags: ImmutableList<TagLabel>, onClick: () 
 private fun StatusRow(
   draft: TransactionFields,
   onUnlock: () -> Unit,
-  onAction: EditTransactionActionHandler,
+  onAction: OnAction<EditTransactionAction>,
 ) =
   if (draft.reconciled) {
     // Stays on until the unlock is confirmed

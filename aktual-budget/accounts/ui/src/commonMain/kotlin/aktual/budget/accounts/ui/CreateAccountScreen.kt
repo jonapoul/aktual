@@ -15,6 +15,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -96,7 +97,7 @@ fun CreateAccountScreen(
 @Composable
 private fun CreateAccountScaffold(
   state: CreateAccountState,
-  onAction: CreateAccountActionHandler,
+  onAction: OnAction<CreateAccountAction>,
   modifier: Modifier = Modifier,
 ) {
   val nameState = rememberTextFieldState()
@@ -167,7 +168,7 @@ private fun ColumnScope.CreateAccountForm(
   state: CreateAccountState,
   nameState: TextFieldState,
   balanceState: TextFieldState,
-  onAction: CreateAccountActionHandler,
+  onAction: OnAction<CreateAccountAction>,
 ) {
   Column(verticalArrangement = Arrangement.spacedBy(CreateAccountDS.labelSpacing)) {
     Text(

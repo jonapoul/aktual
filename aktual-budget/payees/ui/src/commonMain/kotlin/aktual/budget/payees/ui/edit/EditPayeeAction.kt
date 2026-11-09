@@ -27,8 +27,3 @@ internal data object DismissSaveError : EditPayeeAction
 
 // title is the payee's name as shown, for the transactions screen's top bar
 @JvmInline internal value class OpenTransactions(val title: String) : EditPayeeAction
-
-@Immutable
-internal fun interface EditPayeeActionHandler {
-  operator fun invoke(action: EditPayeeAction)
-}

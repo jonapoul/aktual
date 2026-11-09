@@ -51,6 +51,7 @@ import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -208,7 +209,7 @@ private fun EditPayeeScaffold(
   isFavorite: Boolean,
   hasChanges: Boolean,
   canSave: Boolean,
-  onAction: EditPayeeActionHandler,
+  onAction: OnAction<EditPayeeAction>,
   modifier: Modifier = Modifier,
   learnsCategories: Boolean = false,
   isLearningEnabled: Boolean = false,
@@ -312,7 +313,7 @@ private fun EditPayeeTopBar(
   saveEnabled: Boolean,
   hazeState: HazedTopBarState,
   scrollState: ScrollState,
-  onAction: EditPayeeActionHandler,
+  onAction: OnAction<EditPayeeAction>,
   onRequestDiscard: () -> Unit,
 ) {
   TopAppBar(
@@ -384,7 +385,7 @@ private fun EditPayeeContent(
   locations: ImmutableList<SavedLocation>,
   scrollState: ScrollState,
   contentPadding: PaddingValues,
-  onAction: EditPayeeActionHandler,
+  onAction: OnAction<EditPayeeAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -463,7 +464,7 @@ private fun EditPayeeContent(
 @Composable
 private fun LocationsField(
   locations: ImmutableList<SavedLocation>,
-  onAction: EditPayeeActionHandler,
+  onAction: OnAction<EditPayeeAction>,
 ) =
   Column(verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing)) {
     Text(
@@ -480,7 +481,7 @@ private fun LocationsField(
   }
 
 @Composable
-private fun LocationRow(location: SavedLocation, onAction: EditPayeeActionHandler) {
+private fun LocationRow(location: SavedLocation, onAction: OnAction<EditPayeeAction>) {
   val coordinates = location.coordinates
   val coordinatesText =
     Strings.payeesEditLocationCoordinates(

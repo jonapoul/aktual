@@ -7,6 +7,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.prefs.vm.theme.custom.ThemeFilter
 import aktual.prefs.vm.theme.custom.ThemeSorting
@@ -27,7 +28,7 @@ import kotlinx.collections.immutable.toImmutableList
 internal fun SortFilterBottomSheet(
   sorting: ThemeSorting,
   filter: ThemeFilter,
-  onAction: CustomThemeSettingsActionHandler,
+  onAction: OnAction<CustomThemeSettingsAction>,
   sheetState: SheetState,
   modifier: Modifier = Modifier,
 ) {
@@ -44,7 +45,7 @@ internal fun SortFilterBottomSheet(
 private fun SortFilterContent(
   sorting: ThemeSorting,
   filter: ThemeFilter,
-  onAction: CustomThemeSettingsActionHandler,
+  onAction: OnAction<CustomThemeSettingsAction>,
   modifier: Modifier = Modifier,
 ) =
   Column(

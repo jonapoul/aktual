@@ -13,6 +13,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.TonalButton
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
@@ -148,7 +149,7 @@ internal fun SplitParts(
   form: TransactionForm,
   fieldState: EditFieldState,
   isIncome: Boolean,
-  onAction: EditTransactionActionHandler,
+  onAction: OnAction<EditTransactionAction>,
   modifier: Modifier = Modifier,
 ) =
   Column(modifier = modifier.fillMaxWidth()) {
@@ -218,7 +219,7 @@ private fun PartRow(
   isIncome: Boolean,
   tags: ImmutableList<TagLabel>,
   fieldState: EditFieldState,
-  onAction: EditTransactionActionHandler,
+  onAction: OnAction<EditTransactionAction>,
 ) {
   val id = part.part.id
   val amount = part.part.amount

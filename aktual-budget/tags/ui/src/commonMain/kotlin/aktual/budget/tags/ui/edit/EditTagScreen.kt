@@ -26,6 +26,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -137,7 +138,7 @@ private fun EditTagScaffold(
   state: EditTagState,
   hasChanges: Boolean,
   canSave: Boolean,
-  onAction: EditTagActionHandler,
+  onAction: OnAction<EditTagAction>,
   modifier: Modifier = Modifier,
   isDuplicateName: Boolean = false,
   saveError: String? = null,
@@ -240,7 +241,7 @@ private fun EditTagTopBar(
   saveEnabled: Boolean,
   hazeState: HazedTopBarState,
   scrollState: ScrollState,
-  onAction: EditTagActionHandler,
+  onAction: OnAction<EditTagAction>,
   onRequestDiscard: () -> Unit,
 ) {
   TopAppBar(
@@ -417,7 +418,7 @@ private fun ShimmerEditTag(modifier: Modifier = Modifier) {
 
 @Composable
 private fun SaveButton(
-  onAction: EditTagActionHandler,
+  onAction: OnAction<EditTagAction>,
   enabled: Boolean,
   modifier: Modifier = Modifier,
 ) {

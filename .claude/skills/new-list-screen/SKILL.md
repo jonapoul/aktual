@@ -183,11 +183,6 @@ import androidx.compose.runtime.Immutable
 internal data object Retry : List{Name}Action
 
 // TODO: add feature-specific actions (e.g. Open, CreateNew)
-
-@Immutable
-internal fun interface List{Name}ActionHandler {
-  operator fun invoke(action: List{Name}Action)
-}
 ```
 
 ### `{dir}/ui/src/commonMain/kotlin/{pkg}/ui/list/List{Name}DS.kt`
@@ -220,6 +215,7 @@ import {pkg}.vm.{Name}
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.CardShape
+import aktual.core.ui.OnAction
 import aktual.core.ui.RowShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -244,7 +240,7 @@ import com.valentinilk.shimmer.shimmer
 @Composable
 internal fun List{Name}Item(
   item: {Name},
-  onAction: List{Name}ActionHandler,
+  onAction: OnAction<List{Name}Action>,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -314,6 +310,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -365,7 +362,7 @@ internal fun List{Name}Screen(
 @Composable
 private fun List{Name}Scaffold(
   state: List{Name}State,
-  onAction: List{Name}ActionHandler,
+  onAction: OnAction<List{Name}Action>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -404,7 +401,7 @@ private fun List{Name}Scaffold(
 private fun List{Name}Content(
   state: List{Name}State,
   contentPadding: PaddingValues,
-  onAction: List{Name}ActionHandler,
+  onAction: OnAction<List{Name}Action>,
   listState: LazyListState,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -462,7 +459,7 @@ private fun ContentSuccess(
   items: ImmutableList<{Name}>,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  onAction: List{Name}ActionHandler,
+  onAction: OnAction<List{Name}Action>,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(

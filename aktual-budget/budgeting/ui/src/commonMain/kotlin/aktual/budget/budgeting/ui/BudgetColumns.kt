@@ -19,6 +19,7 @@ import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
+import aktual.core.ui.OnAction
 import aktual.core.ui.StuckHeaders
 import aktual.core.ui.formattedText
 import aktual.core.ui.scrollbar
@@ -87,7 +88,7 @@ internal fun fittingMonths(width: Dp): Int =
 internal fun BudgetColumns(
   state: BudgetState.Loaded,
   listState: LazyListState,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
   topPadding: Dp = 0.dp,
 ) {
@@ -145,7 +146,7 @@ private fun LazyListScope.budgetColumns(
   cursor: BudgetCursor,
   grid: BudgetGrid,
   stuck: StuckHeaders,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
 ) {
   item(key = "summaries") {
     Summaries(state = state, columns = columns, layout = layout, onAction = onAction)
@@ -225,7 +226,7 @@ private fun LazyListScope.incomeColumns(
   cursor: BudgetCursor,
   grid: BudgetGrid,
   stuck: StuckHeaders,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
 ) {
   val isTracking = state.type == Tracking
 
@@ -284,7 +285,7 @@ private fun Summaries(
   state: BudgetState.Loaded,
   columns: ImmutableList<MonthColumn>,
   layout: ColumnsLayout,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
 ) {
   val uncategorised = columns.firstNotNullOfOrNull { column ->
@@ -326,7 +327,7 @@ private fun SummaryCard(
   column: MonthColumn,
   isCurrent: Boolean,
   onClick: () -> Unit,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
 ) {
   val label = Strings.budgetingSummaryOpen(column.month.stringLong())
@@ -405,7 +406,7 @@ private fun SummaryCard(
 }
 
 @Composable
-private fun MonthMenu(month: YearMonth, onAction: BudgetActionHandler) {
+private fun MonthMenu(month: YearMonth, onAction: OnAction<BudgetAction>) {
   var expanded by remember { mutableStateOf(false) }
   val actions = monthActions(month, onAction)
   Box {
@@ -520,7 +521,7 @@ private fun RowScope.BalanceCell(
   month: YearMonth,
   category: CategoryRow,
   type: BudgetType,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
 ) {
   var expanded by remember { mutableStateOf(false) }
   val actions = balanceActions(month, category, type, onAction)

@@ -33,8 +33,3 @@ internal data object DismissError : EditScheduleAction
 @JvmInline internal value class SetDate(val date: ScheduleDate) : EditScheduleAction
 
 @JvmInline internal value class SetPostsTransaction(val posts: Boolean) : EditScheduleAction
-
-@Immutable
-internal fun interface EditScheduleActionHandler {
-  operator fun invoke(action: EditScheduleAction)
-}

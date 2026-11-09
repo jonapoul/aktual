@@ -18,8 +18,3 @@ internal data object DismissSaveError : EditTagAction
 @JvmInline internal value class SetColor(val color: Color) : EditTagAction
 
 @JvmInline internal value class SetColorError(val isError: Boolean) : EditTagAction
-
-@Immutable
-internal fun interface EditTagActionHandler {
-  operator fun invoke(action: EditTagAction)
-}

@@ -17,6 +17,7 @@ import aktual.budget.reports.vm.SpendingData
 import aktual.budget.reports.vm.SummaryData
 import aktual.budget.reports.vm.TextData
 import aktual.budget.reports.vm.UnsupportedData
+import aktual.core.ui.OnAction
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
@@ -25,7 +26,7 @@ import androidx.compose.ui.Modifier
 fun ReportChart(
   data: ChartData,
   compact: Boolean,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
   zoom: ChartZoomState = rememberChartZoomState(data),

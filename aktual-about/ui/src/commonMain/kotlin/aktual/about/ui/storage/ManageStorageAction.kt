@@ -26,8 +26,3 @@ internal data object ConfirmClearCache : ManageStorageAction
 internal data object ConfirmClearPreferences : ManageStorageAction
 
 internal data object DismissDialog : ManageStorageAction
-
-@Immutable
-internal fun interface ManageStorageActionHandler {
-  operator fun invoke(action: ManageStorageAction)
-}

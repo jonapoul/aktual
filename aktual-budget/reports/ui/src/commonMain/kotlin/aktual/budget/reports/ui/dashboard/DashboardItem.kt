@@ -10,7 +10,6 @@ import aktual.budget.reports.components.ReportChart
 import aktual.budget.reports.components.ShimmerDashboardItem
 import aktual.budget.reports.components.dashboardItem
 import aktual.budget.reports.ui.Action
-import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.CustomReportMeta
 import aktual.budget.reports.vm.UnsupportedData
@@ -29,6 +28,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SwipeAction
@@ -65,7 +65,7 @@ internal fun DashboardItem(
   observer: DashboardItemObserver,
   isOpen: Boolean,
   onOpenChange: (Boolean) -> Unit,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
   customReportNames: ImmutableMap<CustomReportId, String> = persistentMapOf(),
   isEditing: Boolean = false,
@@ -95,7 +95,7 @@ private fun DashboardItem(
   canPin: Boolean,
   isOpen: Boolean,
   onOpenChange: (Boolean) -> Unit,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
   customReportNames: ImmutableMap<CustomReportId, String> = persistentMapOf(),
   isEditing: Boolean = false,
@@ -176,7 +176,7 @@ private fun SwipeableReportCard(
   canPin: Boolean,
   isOpen: Boolean,
   onOpenChange: (Boolean) -> Unit,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   onRename: () -> Unit,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
@@ -240,7 +240,7 @@ private fun SwipeableReportCard(
 @Composable
 private fun EditingReportCard(
   chartData: ChartData?,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) =
   Box(modifier = modifier) {
@@ -253,7 +253,7 @@ private fun EditingReportCard(
 private fun ReportCard(
   chartData: ChartData?,
   onClick: () -> Unit,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) =
   Box(

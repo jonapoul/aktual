@@ -6,6 +6,7 @@ import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.Dimens
+import aktual.core.ui.OnAction
 import aktual.core.ui.RounderCardShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,7 +23,7 @@ import kotlinx.collections.immutable.ImmutableList
 internal fun LoginMethodPicker(
   methods: ImmutableList<LoginMethod>,
   selectedMethod: LoginMethod,
-  onAction: LoginActionHandler,
+  onAction: OnAction<LoginAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(

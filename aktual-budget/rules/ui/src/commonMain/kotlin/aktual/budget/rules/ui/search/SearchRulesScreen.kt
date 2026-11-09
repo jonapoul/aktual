@@ -26,6 +26,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
@@ -99,7 +100,7 @@ private fun SearchRulesScaffold(
   query: String,
   payeeName: String?,
   state: SearchRulesState,
-  onAction: SearchRulesActionHandler,
+  onAction: OnAction<SearchRulesAction>,
   modifier: Modifier = Modifier,
   focusOnOpen: Boolean = true,
 ) {
@@ -136,7 +137,7 @@ private fun SearchRulesContent(
   query: String,
   state: SearchRulesState,
   listState: LazyListState,
-  onAction: SearchRulesActionHandler,
+  onAction: OnAction<SearchRulesAction>,
 ) {
   AnimatedContent(
     targetState = state,
@@ -180,7 +181,7 @@ private fun SearchRulesContent(
 private fun ResultsList(
   results: Results,
   listState: LazyListState,
-  onAction: SearchRulesActionHandler,
+  onAction: OnAction<SearchRulesAction>,
   modifier: Modifier = Modifier,
 ) {
   val stuck = remember(listState) { StuckHeaders(listState, topBar = 0.dp) }

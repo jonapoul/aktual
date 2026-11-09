@@ -53,6 +53,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -226,7 +227,7 @@ private fun editTransactionViewModel(target: EditTransactionTarget) =
 private fun EditTransactionScaffold(
   state: EditTransactionState,
   error: EditTransactionError?,
-  onAction: EditTransactionActionHandler,
+  onAction: OnAction<EditTransactionAction>,
   modifier: Modifier = Modifier,
   fieldState: EditFieldState = remember { EditFieldState() },
 ) {
@@ -476,7 +477,7 @@ private fun ShimmerTransaction(modifier: Modifier = Modifier) {
 @Composable
 private fun LoadFailure(
   state: EditTransactionState.Failure,
-  onAction: EditTransactionActionHandler,
+  onAction: OnAction<EditTransactionAction>,
   modifier: Modifier = Modifier,
 ) =
   FailureScreen(
@@ -499,7 +500,7 @@ private fun LoadFailure(
 @Composable
 private fun NothingToCreateWith(
   state: EditTransactionState.Empty,
-  onAction: EditTransactionActionHandler,
+  onAction: OnAction<EditTransactionAction>,
   modifier: Modifier = Modifier,
 ) =
   when (state) {

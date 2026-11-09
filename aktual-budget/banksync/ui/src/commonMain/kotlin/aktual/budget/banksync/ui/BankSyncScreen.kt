@@ -29,6 +29,7 @@ import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.NoticeBanner
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
@@ -105,7 +106,7 @@ internal fun BankSyncScreen(
 @Composable
 private fun BankSyncScaffold(
   state: BankSyncState,
-  onAction: BankSyncActionHandler,
+  onAction: OnAction<BankSyncAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -168,7 +169,7 @@ private fun BankSyncScaffold(
 private fun BankSyncContent(
   state: BankSyncState,
   contentPadding: PaddingValues,
-  onAction: BankSyncActionHandler,
+  onAction: OnAction<BankSyncAction>,
   listState: LazyListState,
   modifier: Modifier = Modifier,
 ) {
@@ -230,7 +231,7 @@ private fun ContentSuccess(
   state: Success,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  onAction: BankSyncActionHandler,
+  onAction: OnAction<BankSyncAction>,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(

@@ -38,6 +38,7 @@ import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.TonalButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,7 +60,7 @@ import kotlinx.collections.immutable.toImmutableList
 internal fun PotsTab(
   config: McConfig,
   accounts: ImmutableList<MonteCarloAccount>,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
 ) {
   config.pots.fastForEachIndexed { index, pot ->
     key(pot.id) {
@@ -85,7 +86,7 @@ private fun SurplusPotCard(
   config: McConfig,
   pot: McPot,
   index: Int,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
 ) =
   ItemCard(
     title = potLabel(config.pots, index),
@@ -119,7 +120,7 @@ private fun PotCard(
   pot: McPot,
   index: Int,
   accounts: ImmutableList<MonteCarloAccount>,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
 ) {
   var isExpanded by rememberSaveable { mutableStateOf(false) }
   val label = potLabel(config.pots, index)
@@ -344,7 +345,7 @@ private fun <T : McInvestment<T>> FeeFields(investment: T, edit: ((T) -> T) -> U
 private fun InvestmentPhases(
   config: McConfig,
   pot: McPot,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
   edit: ((McPot) -> McPot) -> Unit,
 ) {
   GroupHeadingWithHelp(
@@ -479,7 +480,7 @@ private fun MovePotButtons(
   config: McConfig,
   pot: McPot,
   index: Int,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
 ) {
   BareIconButton(
     modifier = Modifier.rotate(HALF_TURN),

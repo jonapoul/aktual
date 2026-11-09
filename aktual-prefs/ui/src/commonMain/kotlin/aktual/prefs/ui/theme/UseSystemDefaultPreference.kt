@@ -5,6 +5,7 @@ import aktual.core.icons.System
 import aktual.core.l10n.Strings
 import aktual.core.ui.BooleanColorParameters
 import aktual.core.ui.ColorParams
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.prefs.components.BooleanPreferenceItem
 import aktual.prefs.vm.BooleanPreference
@@ -17,7 +18,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 @Composable
 internal fun UseSystemDefaultPreference(
   preference: BooleanPreference,
-  onAction: ThemeSettingsActionHandler,
+  onAction: OnAction<ThemeSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   BooleanPreferenceItem(

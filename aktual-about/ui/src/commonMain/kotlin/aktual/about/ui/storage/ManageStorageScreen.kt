@@ -25,6 +25,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.HazedTopBarSpacing
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
@@ -114,7 +115,7 @@ fun ManageStorageScreen(
 @Composable
 private fun ManageStorageScaffold(
   state: ManageStorageState,
-  onAction: ManageStorageActionHandler,
+  onAction: OnAction<ManageStorageAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -152,7 +153,7 @@ private fun ManageStorageScaffold(
 private fun ManageStorageContent(
   state: ManageStorageState,
   listState: LazyListState,
-  onAction: ManageStorageActionHandler,
+  onAction: OnAction<ManageStorageAction>,
   modifier: Modifier = Modifier,
 ) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = TopCenter) {
@@ -177,7 +178,7 @@ private fun ManageStorageContent(
 private fun ManageStorageLoadedContent(
   state: ManageStorageState.Loaded,
   listState: LazyListState,
-  onAction: ManageStorageActionHandler,
+  onAction: OnAction<ManageStorageAction>,
   modifier: Modifier = Modifier,
 ) {
   val sliceCount = state.budgets.size + 3 // +cache +logs +other
@@ -262,7 +263,7 @@ private fun PieChartItem(
   }
 
 @Composable
-private fun ActionButtons(onAction: ManageStorageActionHandler) {
+private fun ActionButtons(onAction: OnAction<ManageStorageAction>) {
   CardColumn(
     modifier = Modifier.fillMaxWidth(),
     shape = RounderCardShape,
@@ -324,7 +325,7 @@ private fun CacheSummary(
 private fun BudgetsSummary(
   state: ManageStorageState.Loaded,
   colors: ImmutableList<Color>,
-  onAction: ManageStorageActionHandler,
+  onAction: OnAction<ManageStorageAction>,
 ) {
   CardColumn(
     modifier = Modifier.fillMaxWidth(),
@@ -457,7 +458,7 @@ private fun LegendRow(label: String, size: String, color: Color) {
 }
 
 @Composable
-private fun StorageDialogs(dialog: StorageDialog, onAction: ManageStorageActionHandler) {
+private fun StorageDialogs(dialog: StorageDialog, onAction: OnAction<ManageStorageAction>) {
   when (dialog) {
     None -> {}
 

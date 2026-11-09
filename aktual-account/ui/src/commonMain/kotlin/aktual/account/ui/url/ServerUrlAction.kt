@@ -14,8 +14,3 @@ internal data object OpenAbout : ServerUrlAction
 internal data class EnterUrl(val url: String) : ServerUrlAction
 
 internal data class SelectProtocol(val protocol: Protocol) : ServerUrlAction
-
-@Immutable
-internal fun interface ServerUrlActionHandler {
-  operator fun invoke(action: ServerUrlAction)
-}

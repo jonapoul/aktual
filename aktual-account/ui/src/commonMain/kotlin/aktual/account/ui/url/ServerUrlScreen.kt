@@ -17,6 +17,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ErrorBanner
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButtonWithLoading
@@ -103,7 +104,7 @@ private fun ServerUrlScaffold(
   isEnabled: Boolean,
   isLoading: Boolean,
   errorMessage: String?,
-  onAction: ServerUrlActionHandler,
+  onAction: OnAction<ServerUrlAction>,
 ) {
   Scaffold(
     topBar = {
@@ -148,7 +149,7 @@ private fun ServerUrlContent(
   isEnabled: Boolean,
   isLoading: Boolean,
   errorMessage: String?,
-  onAction: ServerUrlActionHandler,
+  onAction: OnAction<ServerUrlAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(

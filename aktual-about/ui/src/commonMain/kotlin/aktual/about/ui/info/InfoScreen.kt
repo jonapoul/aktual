@@ -29,6 +29,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RounderCardShape
@@ -126,7 +127,7 @@ fun InfoScreen(
 @Composable
 internal fun InfoScaffold(
   buildState: BuildState,
-  onAction: InfoActionHandler,
+  onAction: OnAction<InfoAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -153,7 +154,7 @@ internal fun InfoScaffold(
 private fun InfoTopBar(
   hazeState: HazedTopBarState,
   scrollState: ScrollState,
-  onAction: InfoActionHandler,
+  onAction: OnAction<InfoAction>,
 ) {
   TopAppBar(
     modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
@@ -170,7 +171,7 @@ private fun InfoScreenContent(
   contentPadding: PaddingValues,
   scrollState: ScrollState,
   buildState: BuildState,
-  onAction: InfoActionHandler,
+  onAction: OnAction<InfoAction>,
   modifier: Modifier = Modifier,
 ) =
   BoxWithConstraints(modifier = modifier) {
@@ -232,7 +233,7 @@ private fun InfoHeader(year: Int, modifier: Modifier = Modifier) {
 @Composable
 private fun InfoBuildState(
   buildState: BuildState,
-  onAction: InfoActionHandler,
+  onAction: OnAction<InfoAction>,
   modifier: Modifier = Modifier,
 ) {
   CardColumn(

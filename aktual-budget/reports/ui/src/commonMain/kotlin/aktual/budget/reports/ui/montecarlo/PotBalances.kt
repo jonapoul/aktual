@@ -8,6 +8,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.OnAction
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun PotBalancesView(state: MonteCarloState.Loaded, onAction: MonteCarloActionHandler) {
+internal fun PotBalancesView(state: MonteCarloState.Loaded, onAction: OnAction<MonteCarloAction>) {
   RunPercentilePicker(
     value = state.cashflowPercentile,
     onValueChange = { onAction(MonteCarloAction.SetCashflowPercentile(it)) },

@@ -20,8 +20,3 @@ internal data class SetToggle(val toggle: BankSyncToggle, val value: Boolean) :
 internal value class SetDirection(val direction: TransactionDirection) : BankSyncSettingsAction
 
 internal data class SetMapping(val field: MappedField, val value: String) : BankSyncSettingsAction
-
-@Immutable
-internal fun interface BankSyncSettingsActionHandler {
-  operator fun invoke(action: BankSyncSettingsAction)
-}

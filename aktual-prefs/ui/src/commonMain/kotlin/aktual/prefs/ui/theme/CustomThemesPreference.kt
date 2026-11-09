@@ -3,6 +3,7 @@ package aktual.prefs.ui.theme
 import aktual.core.icons.material.Build
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
+import aktual.core.ui.OnAction
 import aktual.core.ui.PrimaryTextButton
 import aktual.prefs.components.BasicPreferenceItem
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +15,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 internal fun CustomThemesPreference(
   enabled: Boolean,
-  onAction: ThemeSettingsActionHandler,
+  onAction: OnAction<ThemeSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   BasicPreferenceItem(

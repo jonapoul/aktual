@@ -18,6 +18,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParams
 import aktual.core.ui.MY_PHONE_WIDTH_DP
+import aktual.core.ui.OnAction
 import aktual.core.ui.PasswordTransformation
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.checkbox
@@ -127,7 +128,7 @@ private fun SyncBudgetDialog(
   overallState: SyncOverallState,
   stepStates: ImmutableMap<SyncStep, SyncStepState>,
   passwordState: KeyPasswordState,
-  onAction: SyncBudgetActionHandler,
+  onAction: OnAction<SyncBudgetAction>,
   modifier: Modifier = Modifier,
 ) {
   AktualAlertDialog(
@@ -183,7 +184,7 @@ private fun syncBudgetViewModel(budgetId: BudgetId): SyncBudgetViewModel =
 private fun ColumnScope.SyncBudgetDialogContent(
   stepStates: ImmutableMap<SyncStep, SyncStepState>,
   passwordState: KeyPasswordState,
-  onAction: SyncBudgetActionHandler,
+  onAction: OnAction<SyncBudgetAction>,
   modifier: Modifier = Modifier,
 ) {
   val stateList = remember(stepStates) { stepStates.toList().toImmutableList() }
@@ -276,7 +277,7 @@ private fun SyncStep.label(): String =
 @Composable
 private fun PasswordEntryLayout(
   password: Password,
-  onAction: SyncBudgetActionHandler,
+  onAction: OnAction<SyncBudgetAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
@@ -335,19 +336,21 @@ private fun PasswordEntryLayout(
 
 @Stable
 @Composable
-private fun buildPasswordText(colors: Colors, onAction: SyncBudgetActionHandler): AnnotatedString =
-  buildAnnotatedString {
-    append(Strings.syncPasswordText)
-    append(" ")
+private fun buildPasswordText(
+  colors: Colors,
+  onAction: OnAction<SyncBudgetAction>,
+): AnnotatedString = buildAnnotatedString {
+  append(Strings.syncPasswordText)
+  append(" ")
 
-    val style = SpanStyle(color = colors.pageTextLink, textDecoration = Underline)
-    val link =
-      LinkAnnotation.Clickable(
-        tag = Tags.KeyPasswordDialogLearnMore,
-        linkInteractionListener = { onAction(LearnMore) },
-      )
-    withStyle(style) { withLink(link) { append(Strings.syncPasswordLearnMore) } }
-  }
+  val style = SpanStyle(color = colors.pageTextLink, textDecoration = Underline)
+  val link =
+    LinkAnnotation.Clickable(
+      tag = Tags.KeyPasswordDialogLearnMore,
+      linkInteractionListener = { onAction(LearnMore) },
+    )
+  withStyle(style) { withLink(link) { append(Strings.syncPasswordLearnMore) } }
+}
 
 @Preview(widthDp = MY_PHONE_WIDTH_DP, heightDp = 500)
 @Composable

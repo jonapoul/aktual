@@ -11,6 +11,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.SwipeAction
@@ -29,7 +30,7 @@ internal fun SwipeableListSchedulesItem(
   schedule: Schedule,
   isOpen: Boolean,
   onOpenChange: (Boolean) -> Unit,
-  onAction: ListSchedulesActionHandler,
+  onAction: OnAction<ListSchedulesAction>,
   modifier: Modifier = Modifier,
 ) {
   SwipeToReveal(
@@ -47,7 +48,7 @@ internal fun SwipeableListSchedulesItem(
 private fun swipeActions(
   schedule: Schedule,
   onOpenChange: (Boolean) -> Unit,
-  onAction: ListSchedulesActionHandler,
+  onAction: OnAction<ListSchedulesAction>,
 ): ImmutableList<SwipeAction> {
   fun action(action: ListSchedulesAction): () -> Unit = {
     onOpenChange(false)

@@ -13,8 +13,3 @@ internal data class SetCredential(val credential: ProviderCredential, val value:
   BankSyncProviderSetupAction
 
 @JvmInline internal value class OpenProviderSite(val url: String) : BankSyncProviderSetupAction
-
-@Immutable
-internal fun interface BankSyncProviderSetupActionHandler {
-  operator fun invoke(action: BankSyncProviderSetupAction)
-}

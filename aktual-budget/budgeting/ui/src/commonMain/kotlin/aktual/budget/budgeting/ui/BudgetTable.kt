@@ -19,6 +19,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipColors
+import aktual.core.ui.OnAction
 import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.ShimmerLine
 import aktual.core.ui.StuckHeaders
@@ -79,7 +80,7 @@ internal fun LazyListScope.budgetTable(
   type: BudgetType,
   showSpent: Boolean,
   stuck: StuckHeaders,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
 ) {
   item(key = "summary") {
     SummaryCard(
@@ -276,7 +277,7 @@ internal fun BannerRow(
   banner: Banner,
   month: YearMonth,
   type: BudgetType,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
 ) {
   val isWarning = banner is Uncategorised
@@ -343,7 +344,7 @@ internal fun BannerRow(
 @Composable
 private fun ColumnHeader(
   showSpent: Boolean,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
 ) {
   TableRow(
@@ -427,7 +428,7 @@ internal fun HeaderLabel(
 private fun GroupHeader(
   group: GroupRow,
   value: Amount,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
 ) {
   GroupHeaderRow(group = group, onAction = onAction, modifier = modifier) {
@@ -445,7 +446,7 @@ private fun GroupHeader(
 private fun IncomeGroupHeader(
   group: GroupRow,
   isTracking: Boolean,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
 ) {
   GroupHeaderRow(group = group, onAction = onAction, modifier = modifier) {
@@ -464,7 +465,7 @@ private fun IncomeGroupHeader(
 @Composable
 internal fun GroupHeaderRow(
   group: GroupRow,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
   nameWidth: Dp? = null,
   amounts: @Composable RowScope.() -> Unit,

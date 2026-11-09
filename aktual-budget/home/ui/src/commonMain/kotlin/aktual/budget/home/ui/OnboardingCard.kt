@@ -5,6 +5,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButton
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +24,7 @@ import androidx.compose.ui.unit.dp
 
 // Stands in for every card when the budget has nothing to show yet
 @Composable
-internal fun OnboardingCard(onAction: HomeActionHandler, modifier: Modifier = Modifier) {
+internal fun OnboardingCard(onAction: OnAction<HomeAction>, modifier: Modifier = Modifier) {
   HomeCard(modifier = modifier) {
     Column(
       modifier = Modifier.fillMaxWidth().padding(horizontal = CardPadding, vertical = 8.dp),

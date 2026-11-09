@@ -1,8 +1,8 @@
 package aktual.budget.reports.ui.dashboard
 
 import aktual.budget.model.DashboardPageId
+import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.Action.SelectPage
-import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
@@ -14,6 +14,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,7 +44,7 @@ import kotlinx.collections.immutable.persistentListOf
 internal fun DashboardSelector(
   pages: ImmutableList<DashboardPage>,
   selected: DashboardPage?,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) {
   if (selected == null) {
@@ -89,7 +90,7 @@ internal fun DashboardSelector(
 private fun DashboardSelectorItems(
   pages: ImmutableList<DashboardPage>,
   selected: DashboardPage,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
 ) = pages.fastForEach { page ->
   AktualDropdownMenuItem(
     text = page.displayName(),

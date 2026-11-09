@@ -22,8 +22,3 @@ internal data object OpenServerMetrics : ListBudgetsAction
 @JvmInline internal value class Open(val budget: Budget) : ListBudgetsAction
 
 @JvmInline internal value class Delete(val budget: Budget) : ListBudgetsAction
-
-@Immutable
-internal fun interface ListBudgetsActionHandler {
-  operator fun invoke(action: ListBudgetsAction)
-}

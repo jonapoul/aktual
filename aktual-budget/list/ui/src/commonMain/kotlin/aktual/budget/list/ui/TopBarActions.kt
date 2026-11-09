@@ -11,16 +11,17 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.BasicIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.normalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
-@Composable internal expect fun TopBarActions(onAction: ListBudgetsActionHandler)
+@Composable internal expect fun TopBarActions(onAction: OnAction<ListBudgetsAction>)
 
 @Composable
-internal fun SettingsButton(onAction: ListBudgetsActionHandler, modifier: Modifier = Modifier) =
+internal fun SettingsButton(onAction: OnAction<ListBudgetsAction>, modifier: Modifier = Modifier) =
   BasicIconButton(
     modifier = modifier,
     onClick = { onAction(OpenSettings) },
@@ -42,7 +43,7 @@ internal fun MoreButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
 @Composable
 internal fun MoreMenu(
   showMenu: Boolean,
-  onAction: ListBudgetsActionHandler,
+  onAction: OnAction<ListBudgetsAction>,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
 ) {

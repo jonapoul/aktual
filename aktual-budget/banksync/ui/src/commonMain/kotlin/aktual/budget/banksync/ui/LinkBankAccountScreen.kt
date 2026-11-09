@@ -33,6 +33,7 @@ import aktual.core.ui.FailureCard
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -143,7 +144,7 @@ private fun linkBankAccountViewModel(id: AccountId?) =
 @Composable
 private fun LinkBankAccountScaffold(
   state: LinkBankAccountState,
-  onAction: LinkBankAccountActionHandler,
+  onAction: OnAction<LinkBankAccountAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -244,7 +245,7 @@ private const val NEW_ACCOUNT_KEY = "new"
 // Whether the new account goes off budget
 private val BudgetOptions = persistentListOf(false, true)
 
-private fun backAction(onAction: LinkBankAccountActionHandler) =
+private fun backAction(onAction: OnAction<LinkBankAccountAction>) =
   FailureAction(
     text = { Strings.navBack },
     icon = AktualIcons.CheveronLeft,
@@ -256,7 +257,7 @@ private fun LazyListScope.choosing(
   state: LinkBankAccountState.Choosing,
   bankQuery: String,
   onBankQuery: (String) -> Unit,
-  onAction: LinkBankAccountActionHandler,
+  onAction: OnAction<LinkBankAccountAction>,
 ) {
   item(key = "header") {
     Column(
@@ -351,7 +352,7 @@ private fun LazyListScope.choosing(
 internal fun ListingFailure(
   title: String,
   cause: String?,
-  onAction: LinkBankAccountActionHandler,
+  onAction: OnAction<LinkBankAccountAction>,
   modifier: Modifier = Modifier,
 ) {
   Box(

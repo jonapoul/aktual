@@ -29,8 +29,3 @@ internal data object ShowSortFilterSheet : CustomThemeSettingsAction
 internal value class ShowDownloadFailure(val failure: DownloadFailure) : CustomThemeSettingsAction
 
 internal data object DismissDownloadFailure : CustomThemeSettingsAction
-
-@Immutable
-internal fun interface CustomThemeSettingsActionHandler {
-  operator fun invoke(action: CustomThemeSettingsAction)
-}

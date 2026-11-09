@@ -36,6 +36,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -130,7 +131,7 @@ private fun metroViewModel(id: RuleId?, payee: PayeeId?) =
 private fun EditRuleScaffold(
   state: EditRuleState,
   mode: Mode,
-  onAction: EditRuleActionHandler,
+  onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -178,7 +179,7 @@ private fun EditRuleTitle(mode: Mode, modifier: Modifier = Modifier) {
 private fun EditRuleActions(
   state: EditRuleState,
   mode: Mode,
-  onAction: EditRuleActionHandler,
+  onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
   Row(
@@ -217,7 +218,7 @@ private fun EditRuleActions(
 private fun MoreMenu(
   state: EditRuleState,
   showMenu: Boolean,
-  onAction: EditRuleActionHandler,
+  onAction: OnAction<EditRuleAction>,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -247,7 +248,7 @@ private fun EditRuleContent(
   state: EditRuleState,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  onAction: EditRuleActionHandler,
+  onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
   when (state) {
@@ -289,7 +290,7 @@ private val Failure.reason: String
 @Suppress("unused")
 @Composable
 private fun LoadingContent(
-  onAction: EditRuleActionHandler,
+  onAction: OnAction<EditRuleAction>,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
@@ -301,7 +302,7 @@ private fun LoadingContent(
 private fun LoadedContent(
   rule: Rule,
   isEnabled: Boolean,
-  onAction: EditRuleActionHandler,
+  onAction: OnAction<EditRuleAction>,
   contentPadding: PaddingValues,
   listState: LazyListState,
   modifier: Modifier = Modifier,
@@ -336,7 +337,7 @@ private fun LoadedContent(
 private fun RuleStage(
   rule: Rule,
   isEnabled: Boolean,
-  onAction: EditRuleActionHandler,
+  onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
   CardColumn(

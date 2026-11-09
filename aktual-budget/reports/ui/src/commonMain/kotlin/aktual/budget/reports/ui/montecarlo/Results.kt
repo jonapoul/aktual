@@ -15,6 +15,7 @@ import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.OnAction
 import aktual.core.ui.formattedString
 import aktual.core.ui.redacted
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +42,7 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 internal fun MonteCarloResults(
   state: MonteCarloState.Loaded,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
   modifier: Modifier = Modifier,
 ) =
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -69,7 +70,7 @@ internal fun MonteCarloResults(
 private fun HeadlineStats(
   state: MonteCarloState.Loaded,
   results: MonteCarloResults,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
   modifier: Modifier = Modifier,
 ) =
   CollapsibleSectionCard(
@@ -134,7 +135,7 @@ private fun Stat(
 private fun ResultsViews(
   state: MonteCarloState.Loaded,
   results: MonteCarloResults,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
   modifier: Modifier = Modifier,
 ) =
   CollapsibleSectionCard(
@@ -188,7 +189,7 @@ private fun ResultsViews(
 private fun PerformanceChart(
   view: MonteCarloGraphView,
   results: MonteCarloResults,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
 ) {
   AktualExposedDropDownMenu(
     value = view,
@@ -233,7 +234,7 @@ internal fun RunPercentilePicker(
 private fun DepletionCard(
   state: MonteCarloState.Loaded,
   results: MonteCarloResults,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
   modifier: Modifier = Modifier,
 ) =
   CollapsibleSectionCard(
@@ -292,7 +293,7 @@ private fun DepletionCard(
 @Composable
 private fun HowItWorks(
   state: MonteCarloState.Loaded,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
   modifier: Modifier = Modifier,
 ) =
   CollapsibleSectionCard(

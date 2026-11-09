@@ -28,8 +28,3 @@ internal data class SetConditionField(val value: Field, val index: Int) : EditRu
 internal data class SetConditionOperator(val value: Operator, val index: Int) : EditRuleAction
 
 internal data class SetConditionValue(val value: JsonElement, val index: Int) : EditRuleAction
-
-@Immutable
-internal fun interface EditRuleActionHandler {
-  operator fun invoke(action: EditRuleAction)
-}

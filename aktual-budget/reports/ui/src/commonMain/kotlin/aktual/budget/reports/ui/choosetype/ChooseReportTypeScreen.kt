@@ -36,6 +36,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.disabledIf
@@ -116,7 +117,7 @@ private fun chooseReportTypeViewModel(page: DashboardPageId) =
 @Composable
 internal fun ChooseReportTypeScaffold(
   dialog: ChooseReportTypeDialog?,
-  onAction: ChooseReportTypeActionHandler,
+  onAction: OnAction<ChooseReportTypeAction>,
   modifier: Modifier = Modifier,
 ) {
   val lazyListState = rememberLazyListState()
@@ -145,7 +146,7 @@ internal fun ChooseReportTypeScaffold(
 @Composable
 private fun ChooseReportTypeContent(
   dialog: ChooseReportTypeDialog?,
-  onAction: ChooseReportTypeActionHandler,
+  onAction: OnAction<ChooseReportTypeAction>,
   contentPadding: PaddingValues,
   lazyListState: LazyListState,
   modifier: Modifier = Modifier,
@@ -179,7 +180,7 @@ private fun ChooseReportTypeContent(
 @Composable
 private fun WidgetType(
   type: WidgetType,
-  onAction: ChooseReportTypeActionHandler,
+  onAction: OnAction<ChooseReportTypeAction>,
   modifier: Modifier = Modifier,
 ) {
   val enabled = type.isEnabled()

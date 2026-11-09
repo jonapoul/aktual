@@ -12,6 +12,7 @@ import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
+import aktual.core.ui.OnAction
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -183,7 +184,7 @@ internal fun RowScope.BudgetedCell(
   type: BudgetType,
   cursor: BudgetCursor,
   grid: BudgetGrid,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
 ) {
   val isSelected = cursor.selected == cell
   val isEditing = isSelected && cursor.isEditing

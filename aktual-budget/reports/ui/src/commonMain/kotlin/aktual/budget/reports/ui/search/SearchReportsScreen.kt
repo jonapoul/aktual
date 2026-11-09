@@ -23,6 +23,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens.Large
 import aktual.core.ui.Dimens.Medium
 import aktual.core.ui.Dimens.Small
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
@@ -85,7 +86,7 @@ fun SearchReportsScreen(
 private fun SearchReportsScaffold(
   query: String,
   state: SearchReportsState,
-  onAction: SearchReportsActionHandler,
+  onAction: OnAction<SearchReportsAction>,
   modifier: Modifier = Modifier,
 ) {
   val listState = rememberLazyListState()
@@ -121,7 +122,7 @@ private fun SearchReportsContent(
   state: SearchReportsState,
   innerPadding: PaddingValues,
   listState: LazyListState,
-  onAction: SearchReportsActionHandler,
+  onAction: OnAction<SearchReportsAction>,
 ) =
   when (state) {
     NoQuery ->
@@ -149,7 +150,7 @@ private fun SearchReportsContent(
 private fun ResultsList(
   results: Results,
   listState: LazyListState,
-  onAction: SearchReportsActionHandler,
+  onAction: OnAction<SearchReportsAction>,
   modifier: Modifier = Modifier,
 ) =
   LazyColumn(modifier = modifier.fillMaxSize().scrollbar(listState), state = listState) {

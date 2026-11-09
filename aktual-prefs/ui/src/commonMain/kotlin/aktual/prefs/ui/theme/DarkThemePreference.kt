@@ -10,6 +10,7 @@ import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DesktopPreview
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.isCompactWidth
@@ -27,7 +28,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun DarkThemePreference(
   preference: ListPreference<ThemeId>,
-  onAction: ThemeSettingsActionHandler,
+  onAction: OnAction<ThemeSettingsAction>,
   modifier: Modifier = Modifier,
   isCompact: Boolean = isCompactWidth(),
 ) {
@@ -64,7 +65,7 @@ private val ToggleWidth = 300.dp
 @Composable
 private fun DarkThemeContent(
   preference: ListPreference<ThemeId>,
-  onAction: ThemeSettingsActionHandler,
+  onAction: OnAction<ThemeSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   AktualSlidingToggleButton(

@@ -32,6 +32,7 @@ import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.BottomSheetMessage
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.layout.Arrangement.spacedBy
@@ -70,7 +71,7 @@ private val RowMinHeight = 48.dp
 internal fun ReportsCard(
   state: ReportsCardState,
   choices: ImmutableList<ReportPage>,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   modifier: Modifier = Modifier,
 ) {
   if (state == Empty) return
@@ -101,7 +102,7 @@ internal fun ReportsCard(
 @Composable
 private fun ReportsContent(
   state: Loaded,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   onManage: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -167,7 +168,7 @@ private sealed interface SheetPage {
 private fun ManageReportsSheet(
   state: Loaded,
   choices: ImmutableList<ReportPage>,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -200,7 +201,7 @@ private fun ManageReportsSheet(
 @Composable
 private fun PinnedContent(
   state: Loaded,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   onPick: (replacing: WidgetId?) -> Unit,
   modifier: Modifier = Modifier,
 ) {

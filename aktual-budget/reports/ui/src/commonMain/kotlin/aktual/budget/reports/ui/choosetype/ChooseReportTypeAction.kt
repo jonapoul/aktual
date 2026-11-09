@@ -12,8 +12,3 @@ internal data object Back : ChooseReportTypeAction
 internal data object ShowDisabledDialog : ChooseReportTypeAction
 
 internal data object DismissDialog : ChooseReportTypeAction
-
-@Immutable
-internal fun interface ChooseReportTypeActionHandler {
-  operator fun invoke(action: ChooseReportTypeAction)
-}

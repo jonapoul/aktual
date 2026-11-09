@@ -14,6 +14,7 @@ import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
@@ -49,7 +50,7 @@ internal fun TagItem(
   tag: TagItem,
   isOpen: Boolean,
   onOpenChange: (Boolean) -> Unit,
-  onAction: ListTagsActionHandler,
+  onAction: OnAction<ListTagsAction>,
   modifier: Modifier = Modifier,
 ) {
   val deleteBackground = colors.errorText
@@ -96,7 +97,7 @@ internal fun ShimmerTagItem(modifier: Modifier = Modifier) {
 @Composable
 private fun TagItemRow(
   tag: TagItem,
-  onAction: ListTagsActionHandler,
+  onAction: OnAction<ListTagsAction>,
   modifier: Modifier = Modifier,
 ) {
   Row(

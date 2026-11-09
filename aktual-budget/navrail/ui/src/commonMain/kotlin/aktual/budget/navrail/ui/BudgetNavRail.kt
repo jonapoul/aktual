@@ -50,6 +50,7 @@ import aktual.core.ui.ColorParameters
 import aktual.core.ui.LocalNavDrawerOpener
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.LocalSnackbars
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RootOverlayContent
 import aktual.core.ui.SideSpacing
@@ -123,7 +124,7 @@ import kotlinx.serialization.json.Json
 @Composable
 internal fun BudgetNavRail(
   appStack: NavStack<NavKey>,
-  onAction: BudgetNavActionHandler,
+  onAction: OnAction<BudgetNavAction>,
   modifier: Modifier = Modifier,
   viewModel: BudgetNavRailViewModel = metroViewModel(),
 ) {
@@ -405,7 +406,7 @@ private fun SideNavLayout(
   onSelectTab: (BudgetTab) -> Unit,
   onRename: () -> Unit,
   onSetPrivacyMode: (Boolean) -> Unit,
-  onAction: BudgetNavActionHandler,
+  onAction: OnAction<BudgetNavAction>,
   modifier: Modifier = Modifier,
 ) {
   var showMenu by remember { mutableStateOf(false) }
@@ -630,7 +631,7 @@ private fun BudgetMenu(
   onSelectTab: (BudgetTab) -> Unit,
   onRename: () -> Unit,
   onSetPrivacyMode: (Boolean) -> Unit,
-  onAction: BudgetNavActionHandler,
+  onAction: OnAction<BudgetNavAction>,
   modifier: Modifier = Modifier,
 ) {
   val isPrivacyEnabled = LocalPrivacyEnabled.current
