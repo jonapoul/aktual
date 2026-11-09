@@ -10,5 +10,9 @@ import io.ktor.client.engine.okhttp.OkHttp
 @BindingContainer
 @ContributesTo(AppScope::class)
 object HttpContainer {
-  @Provides @SingleIn(AppScope::class) fun engine(): HttpClientEngine = OkHttp.create()
+  @Provides
+  @SingleIn(AppScope::class)
+  fun engine(): HttpClientEngine = OkHttp.create {
+    config { eventListenerFactory(NetworkEventLogger.Factory()) }
+  }
 }
