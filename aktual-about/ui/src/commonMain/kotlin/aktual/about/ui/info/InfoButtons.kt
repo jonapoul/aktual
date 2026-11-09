@@ -2,18 +2,16 @@ package aktual.about.ui.info
 
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
-import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RounderCardShape
-import aktual.core.ui.card
+import aktual.core.ui.padding
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -90,12 +88,14 @@ private fun CrashReportsButton(onAction: InfoActionHandler, modifier: Modifier =
     onClick = { onAction(ViewCrashReports) },
   )
 
-private fun Modifier.buttonCardPadding() = padding(10.dp)
+private val ButtonCardPadding = 10.dp.padding
 
 @Composable
 private fun InfoButtonsColumn(onAction: InfoActionHandler) =
-  Column(
-    modifier = Modifier.fillMaxWidth().card(colors, RounderCardShape).buttonCardPadding(),
+  CardColumn(
+    modifier = Modifier.fillMaxWidth(),
+    shape = RounderCardShape,
+    contentPadding = ButtonCardPadding,
     horizontalAlignment = CenterHorizontally,
   ) {
     val buttonModifier = Modifier.fillMaxWidth()
@@ -109,8 +109,10 @@ private fun InfoButtonsColumn(onAction: InfoActionHandler) =
 
 @Composable
 private fun InfoButtonsGrid(onAction: InfoActionHandler) =
-  Column(
-    modifier = Modifier.fillMaxWidth().card(colors, RounderCardShape).buttonCardPadding(),
+  CardColumn(
+    modifier = Modifier.fillMaxWidth(),
+    shape = RounderCardShape,
+    contentPadding = ButtonCardPadding,
     horizontalAlignment = CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(0.dp),
   ) {

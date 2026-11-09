@@ -33,6 +33,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -44,7 +45,6 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.card
 import aktual.core.ui.formatted
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -100,7 +100,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -477,7 +476,7 @@ private fun ShimmerSchedule(modifier: Modifier = Modifier) {
           bar.width(EditScheduleDS.shimmerLabelWidth).height(EditScheduleDS.shimmerTextHeight),
       )
 
-      Column(modifier = Modifier.fillMaxWidth().card(colors)) {
+      CardColumn(modifier = Modifier.fillMaxWidth(), contentPadding = Zero) {
         repeat(EditScheduleDS.SHIMMER_UPCOMING_ROWS) { index ->
           if (index > 0) HorizontalDivider()
           Row(
@@ -644,9 +643,7 @@ private fun UpcomingDates(dates: ImmutableList<LocalDate>, modifier: Modifier = 
   ) {
     Text(text = Strings.editScheduleUpcoming, style = typography.labelLarge)
 
-    Column(
-      modifier = Modifier.fillMaxWidth().card(colors),
-    ) {
+    CardColumn(modifier = Modifier.fillMaxWidth(), contentPadding = Zero) {
       if (dates.isEmpty()) {
         Text(
           modifier = Modifier.padding(EditScheduleDS.rowPadding),

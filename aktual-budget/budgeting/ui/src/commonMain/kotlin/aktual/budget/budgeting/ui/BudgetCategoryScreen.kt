@@ -18,6 +18,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -27,9 +28,9 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
-import aktual.core.ui.card
 import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
+import aktual.core.ui.padding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.stringLong
 import aktual.core.ui.stringShort
@@ -237,8 +238,9 @@ private fun MonthCard(
   isIncome: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier = modifier.fillMaxWidth().card(colors).padding(CategoryDS.cardPadding),
+  CardColumn(
+    modifier = modifier.fillMaxWidth(),
+    contentPadding = CategoryDS.cardPadding,
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     Text(
@@ -285,8 +287,9 @@ private fun HistoryCard(
   onSelect: (YearMonth) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier = modifier.fillMaxWidth().card(colors).padding(CategoryDS.cardPadding),
+  CardColumn(
+    modifier = modifier.fillMaxWidth(),
+    contentPadding = CategoryDS.cardPadding,
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     Text(
@@ -430,7 +433,7 @@ private const val BAR_FRACTION = 0.3f
 private const val MONTH_LABEL_LENGTH = 3
 
 private object CategoryDS {
-  val cardPadding = 12.dp
+  val cardPadding = 12.dp.padding
   val chartHeight = 160.dp
 }
 

@@ -1,5 +1,8 @@
 package aktual.core.ui
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.runtime.Stable
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object Dimens {
@@ -12,3 +15,7 @@ object Dimens {
   val ScreenPadding = Large
   val ListItemSpacing = Large
 }
+
+@get:Stable
+val Dp.padding: PaddingValues
+  get() = PaddingValues(this)

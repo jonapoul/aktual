@@ -25,6 +25,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -36,7 +37,6 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.bottomNavBarPadding
-import aktual.core.ui.card
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -358,7 +358,7 @@ private fun LogLines(
 
 @Composable
 private fun LiveBar(live: LiveState, onAction: LogsActionHandler) =
-  Column(modifier = Modifier.fillMaxWidth().card(colors)) {
+  CardColumn(modifier = Modifier.fillMaxWidth(), contentPadding = Zero) {
     Row(
       modifier =
         Modifier.fillMaxWidth().height(56.dp).padding(start = Dimens.Huge, end = Dimens.Large),

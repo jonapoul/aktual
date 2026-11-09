@@ -11,12 +11,11 @@ import aktual.core.l10n.Strings
 import aktual.core.logging.CrashReport
 import aktual.core.model.CrashFile
 import aktual.core.nav.BackNavigator
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
+import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -27,7 +26,6 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.card
 import aktual.core.ui.horizontalScrollWithBar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
@@ -186,8 +184,8 @@ private fun CrashReportContent(report: CrashReport) =
     modifier = Modifier.fillMaxSize().verticalScrollWithBar().padding(Dimens.Large),
     verticalArrangement = spacedBy(Dimens.Large),
   ) {
-    Column(
-      modifier = Modifier.crashCard(colors),
+    CardColumn(
+      modifier = Modifier.fillMaxWidth(),
       verticalArrangement = spacedBy(Dimens.Medium),
     ) {
       Text(
@@ -208,15 +206,17 @@ private fun CrashReportContent(report: CrashReport) =
       color = colors.pageTextLight,
     )
 
-    SelectionContainer(modifier = Modifier.crashCard(colors)) {
-      Text(
-        modifier =
-          Modifier.horizontalScrollWithBar(rememberScrollState()).padding(bottom = Dimens.Large),
-        text = report.stackTrace.replace("\t", "    "),
-        style = typography.labelSmall,
-        fontFamily = Monospace,
-        softWrap = false,
-      )
+    CardColumn(modifier = Modifier.fillMaxWidth()) {
+      SelectionContainer {
+        Text(
+          modifier =
+            Modifier.horizontalScrollWithBar(rememberScrollState()).padding(bottom = Dimens.Large),
+          text = report.stackTrace.replace("\t", "    "),
+          style = typography.labelSmall,
+          fontFamily = Monospace,
+          softWrap = false,
+        )
+      }
     }
 
     BottomSpacing()
@@ -235,9 +235,6 @@ private fun CrashDetail(label: String, value: String) =
       Text(text = value, style = typography.labelMedium)
     }
   }
-
-private fun Modifier.crashCard(colors: Colors): Modifier =
-  fillMaxWidth().card(colors, CardShape).padding(Dimens.VeryLarge)
 
 @Composable
 private fun CrashReportBottomBar(onReport: () -> Unit, onExport: () -> Unit) =

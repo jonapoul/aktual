@@ -18,6 +18,7 @@ import aktual.core.ui.AktualTheme
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -30,7 +31,6 @@ import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.card
 import aktual.core.ui.errorButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -242,9 +242,9 @@ private fun PieChartItem(
   pieChartModifier: Modifier = Modifier,
   includeBottomSpacing: Boolean = false,
 ) =
-  Column(
-    modifier =
-      modifier.fillMaxWidth().card(AktualTheme.colors, RounderCardShape).padding(Dimens.VeryLarge),
+  CardColumn(
+    modifier = modifier.fillMaxWidth(),
+    shape = RounderCardShape,
     verticalArrangement = spacedBy(Dimens.Large),
     horizontalAlignment = CenterHorizontally,
   ) {
@@ -263,8 +263,9 @@ private fun PieChartItem(
 
 @Composable
 private fun ActionButtons(onAction: ManageStorageActionHandler) {
-  Column(
-    modifier = Modifier.fillMaxWidth().card(colors, RounderCardShape).padding(Dimens.VeryLarge),
+  CardColumn(
+    modifier = Modifier.fillMaxWidth(),
+    shape = RounderCardShape,
     horizontalAlignment = CenterHorizontally,
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
@@ -294,9 +295,9 @@ private fun CacheSummary(
   state: ManageStorageState.Loaded,
   colors: ImmutableList<Color>,
 ) {
-  Column(
-    modifier =
-      Modifier.fillMaxWidth().card(AktualTheme.colors, RounderCardShape).padding(Dimens.VeryLarge),
+  CardColumn(
+    modifier = Modifier.fillMaxWidth(),
+    shape = RounderCardShape,
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
     LegendRow(
@@ -325,9 +326,9 @@ private fun BudgetsSummary(
   colors: ImmutableList<Color>,
   onAction: ManageStorageActionHandler,
 ) {
-  Column(
-    modifier =
-      Modifier.fillMaxWidth().card(AktualTheme.colors, RounderCardShape).padding(Dimens.VeryLarge),
+  CardColumn(
+    modifier = Modifier.fillMaxWidth(),
+    shape = RounderCardShape,
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
     Text(

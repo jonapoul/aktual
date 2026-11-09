@@ -22,6 +22,8 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.CardColumn
+import aktual.core.ui.CardRow
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.HazedTopBarState
@@ -32,11 +34,11 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.card
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.isCompactWidth
+import aktual.core.ui.padding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
@@ -194,12 +196,10 @@ private fun InfoScreenContent(
 
 @Composable
 private fun InfoHeader(year: Int, modifier: Modifier = Modifier) {
-  Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .card(colors, RounderCardShape)
-        .padding(horizontal = 20.dp, vertical = 10.dp),
+  CardRow(
+    modifier = modifier.fillMaxWidth(),
+    shape = RounderCardShape,
+    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = CenterVertically,
   ) {
@@ -235,8 +235,10 @@ private fun InfoBuildState(
   onAction: InfoActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier = modifier.card(colors, RounderCardShape).padding(Dimens.Large),
+  CardColumn(
+    modifier = modifier,
+    shape = RounderCardShape,
+    contentPadding = Dimens.Large.padding,
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
     BuildStateItem(
