@@ -34,12 +34,4 @@ kotlin {
     implementation(project(":aktual-app:di"))
     implementation(project(":aktual-di:runlevel"))
   }
-
-  desktopTestDependencies {
-    implementation(project(":aktual-core:jvm"))
-  }
-
-  androidHostTestDependencies {
-    implementation(project(":aktual-core:android"))
-  }
 }
