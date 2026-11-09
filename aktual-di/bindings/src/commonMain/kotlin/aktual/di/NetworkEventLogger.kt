@@ -49,6 +49,7 @@ internal class NetworkEventLogger : EventListener() {
   }
 
   override fun callFailed(call: Call, ioe: IOException) {
+    if (call.isCanceled()) return
     logcat.w {
       "${call.tag()} callFailed after ${callStart?.elapsedNow()} dnsStarted=${dnsStart != null}: " +
         "${ioe::class.qualifiedName}: ${ioe.message}"
