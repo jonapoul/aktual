@@ -9,3 +9,11 @@ CREATE TABLE IF NOT EXISTS account_groups(
 );
 
 getById: SELECT * FROM account_groups WHERE id = ?;
+
+-- packages/loot-core/src/server/db/index.ts getAccountGroups()
+getAllActive:
+SELECT id, name, sort_order FROM account_groups WHERE tombstone = 0 ORDER BY sort_order, id;
+
+-- packages/loot-core/src/server/db/index.ts insertAccountGroup(), which appends after the last group
+getMaxSortOrder:
+SELECT MAX(sort_order) AS sort_order FROM account_groups WHERE tombstone = 0;

@@ -89,3 +89,30 @@ SELECT MAX(sort_order) AS sort_order FROM accounts WHERE offbudget = ? AND tombs
 insert:
 INSERT INTO accounts(id, account_id, name, official_name, bank, offbudget, account_sync_source)
   VALUES (?, ?, ?, ?, ?, ?, ?);
+
+-- Every non-deleted account for the manage accounts screen. account_group_id is null when its
+-- group is missing or deleted, as upstream treats a dangling group as ungrouped. Balance and
+-- transaction count follow upstream's getAccountProperties()
+-- packages/desktop-client/src/components/sidebar/redesign/useSidebarAccountTree.ts getEffectiveGroupId()
+-- packages/loot-core/src/server/accounts/app.ts getAccountProperties()
+getManageList:
+SELECT a.id, a.name, a.offbudget, a.closed, a.sort_order, g.id AS account_group_id,
+    a.account_id, a.account_sync_source,
+    CAST(IFNULL(t.balance, 0) AS INTEGER) AS balance,
+    CAST(IFNULL(t.count, 0) AS INTEGER) AS transaction_count,
+    n.note IS NOT NULL AND n.note != '' AS has_notes
+  FROM accounts a
+  LEFT JOIN account_groups g ON g.id = a.account_group_id AND g.tombstone = 0
+  LEFT JOIN (
+    SELECT acct, SUM(CASE WHEN isParent = 0 THEN amount ELSE 0 END) AS balance, COUNT(id) AS count
+      FROM transactions
+      WHERE tombstone = 0
+      GROUP BY acct
+  ) t ON t.acct = a.id
+  LEFT JOIN notes n ON n.id = 'account-' || a.id
+  WHERE a.tombstone = 0
+  ORDER BY a.sort_order, a.name;
+
+-- packages/loot-core/src/server/db/index.ts deleteAccountGroup()
+getIdsInGroup:
+SELECT id FROM accounts WHERE account_group_id = ? AND tombstone = 0;

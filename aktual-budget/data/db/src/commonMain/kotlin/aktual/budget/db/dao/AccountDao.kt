@@ -5,9 +5,11 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.GetAllWithBalances
 import aktual.budget.db.GetAllWithStatus
 import aktual.budget.db.GetBankSyncAccounts
+import aktual.budget.db.GetManageList
 import aktual.budget.db.accounts.GetAllActive
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
+import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import app.cash.sqldelight.async.coroutines.awaitAsList
@@ -72,6 +74,16 @@ class AccountDao(database: BudgetDatabase) {
   // Every non-tombstoned account with its current balance, re-emitted as transactions change
   fun observeAllWithBalances(): Flow<List<GetAllWithBalances>> =
     queries.getAllWithBalances().asFlow().map { it.awaitAsList() }.distinctUntilChanged()
+
+  // Every non-deleted account with its effective group, balance, transaction count and whether it
+  // has notes, re-emitted as accounts, groups, transactions or notes change
+  fun observeManageList(): Flow<List<GetManageList>> =
+    queries.getManageList().asFlow().map { it.awaitAsList() }.distinctUntilChanged()
+
+  // Non-deleted accounts pointing at the group, closed ones included
+  suspend fun idsInGroup(id: AccountGroupId): List<AccountId> = queries.withResult {
+    getIdsInGroup(id).awaitAsList()
+  }
 
   // The highest sort order among on or off budget accounts, null if there are none
   suspend fun maxSortOrder(offBudget: Boolean): Double? = queries.withResult {
