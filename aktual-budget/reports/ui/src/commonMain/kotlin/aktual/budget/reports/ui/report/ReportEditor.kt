@@ -1,6 +1,6 @@
 package aktual.budget.reports.ui.report
 
-import aktual.budget.reports.components.ChartActionListener
+import aktual.budget.reports.components.ChartAction
 import aktual.budget.reports.components.ChartTags
 import aktual.budget.reports.components.ChartZoomState
 import aktual.budget.reports.components.ReportChart
@@ -21,6 +21,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedVisibility
@@ -116,7 +117,7 @@ internal fun ReportEditorContent(
   preview: ChartData?,
   zoom: ChartZoomState,
   modifier: Modifier = Modifier,
-  onChartAction: ChartActionListener = ChartActionListener {},
+  onChartAction: OnAction<ChartAction> = OnAction<ChartAction> {},
   below: @Composable ColumnScope.() -> Unit = {},
 ) =
   Column(modifier = modifier.padding(Dimens.ScreenPadding)) {
@@ -134,7 +135,7 @@ internal fun ReportEditorContent(
 private fun ChartCard(
   preview: ChartData?,
   zoom: ChartZoomState,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
 ) =
   Box(modifier = modifier.background(colors.tableBackground, CardShape).padding(8.dp)) {

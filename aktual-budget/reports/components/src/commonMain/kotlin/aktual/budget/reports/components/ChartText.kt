@@ -12,6 +12,7 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.errorButton
@@ -62,7 +63,7 @@ import org.intellij.lang.annotations.Language
 internal fun TextChart(
   data: TextData,
   compact: Boolean,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {

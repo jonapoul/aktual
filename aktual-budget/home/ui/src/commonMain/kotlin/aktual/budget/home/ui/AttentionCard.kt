@@ -21,6 +21,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.ShimmerLine
@@ -67,7 +68,7 @@ private const val SHIMMER_ROWS = 2
 @Composable
 internal fun AttentionCard(
   state: AttentionCardState,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   modifier: Modifier = Modifier,
 ) {
   if (state == Empty) return
@@ -98,7 +99,7 @@ internal fun AttentionCard(
 @Composable
 private fun AttentionContent(
   state: Loaded,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   onShowOverspent: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -155,7 +156,7 @@ private fun AttentionItem.SyncFailed.fixAction(): HomeAction =
 @Composable
 private fun AttentionRow(
   item: AttentionItem,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   onShowOverspent: () -> Unit,
   modifier: Modifier = Modifier,
 ) {

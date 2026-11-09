@@ -32,6 +32,7 @@ import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -165,7 +166,7 @@ private fun CustomThemeSettingsScaffold(
   filter: ThemeFilter,
   showSortFilterSheet: Boolean,
   downloadFailure: DownloadFailure?,
-  onAction: CustomThemeSettingsActionHandler,
+  onAction: OnAction<CustomThemeSettingsAction>,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val listState = rememberLazyListState()
@@ -221,7 +222,7 @@ private fun CustomThemeSettingsScaffold(
 }
 
 @Composable
-private fun SortFilterButton(state: CatalogState, onAction: CustomThemeSettingsActionHandler) {
+private fun SortFilterButton(state: CatalogState, onAction: OnAction<CustomThemeSettingsAction>) {
   BareIconButton(
     imageVector = AktualIcons.Tuning,
     contentDescription = Strings.settingsThemeSortFilter,
@@ -235,7 +236,7 @@ private fun CustomThemeSettingsContent(
   state: CatalogState,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  onAction: CustomThemeSettingsActionHandler,
+  onAction: OnAction<CustomThemeSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   when (state) {
@@ -248,7 +249,7 @@ private fun CustomThemeSettingsContent(
 @Composable
 private fun FailedContent(
   state: CatalogState.Failed,
-  onAction: CustomThemeSettingsActionHandler,
+  onAction: OnAction<CustomThemeSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   val cause =
@@ -325,7 +326,7 @@ private fun SuccessContent(
   items: ImmutableList<CatalogItem>,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  onAction: CustomThemeSettingsActionHandler,
+  onAction: OnAction<CustomThemeSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
@@ -346,7 +347,7 @@ private fun SuccessContent(
 @Composable
 private fun CustomThemeItem(
   item: CatalogItem,
-  onAction: CustomThemeSettingsActionHandler,
+  onAction: OnAction<CustomThemeSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   val enabled = item.state !is Fetching
@@ -415,7 +416,7 @@ private fun CustomThemeItem(
 }
 
 @Composable
-private fun CacheStateIcon(item: CatalogItem, onAction: CustomThemeSettingsActionHandler) {
+private fun CacheStateIcon(item: CatalogItem, onAction: OnAction<CustomThemeSettingsAction>) {
   when (val state = item.state) {
     Fetching -> AnimatedLoading(STATE_ICON_MODIFIER)
     is Cached -> Icon(MaterialIcons.OfflinePin, null, STATE_ICON_MODIFIER, colors.pageText)
@@ -428,7 +429,7 @@ private fun CacheStateIcon(item: CatalogItem, onAction: CustomThemeSettingsActio
 private fun FailureButton(
   item: CatalogItem,
   state: CacheState.Failed,
-  onAction: CustomThemeSettingsActionHandler,
+  onAction: OnAction<CustomThemeSettingsAction>,
 ) {
   val failure = DownloadFailure(item.summary.name, state.reason)
   Icon(

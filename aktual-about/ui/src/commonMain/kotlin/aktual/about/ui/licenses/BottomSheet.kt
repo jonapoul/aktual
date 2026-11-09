@@ -9,6 +9,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.ListBottomSheet
+import aktual.core.ui.OnAction
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -19,7 +20,7 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 internal fun LicenseSortingBottomSheet(
   value: LicenseSorting,
-  onAction: LicensesActionHandler,
+  onAction: OnAction<LicensesAction>,
   sheetState: SheetState,
   modifier: Modifier = Modifier,
 ) {

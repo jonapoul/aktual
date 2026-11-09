@@ -42,6 +42,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -171,7 +172,7 @@ private enum class Dialog {
 private fun EditScheduleScaffold(
   state: EditScheduleState,
   error: EditScheduleError?,
-  onAction: EditScheduleActionHandler,
+  onAction: OnAction<EditScheduleAction>,
   modifier: Modifier = Modifier,
 ) {
   val loaded = state as? Loaded
@@ -290,7 +291,7 @@ private fun toolbarTitle(loaded: EditScheduleState.Loaded?): String =
 private fun EditScheduleDialog(
   dialog: Dialog?,
   isNew: Boolean,
-  onAction: EditScheduleActionHandler,
+  onAction: OnAction<EditScheduleAction>,
   onDismiss: () -> Unit,
 ) {
   when (dialog) {
@@ -329,7 +330,7 @@ private fun EditScheduleDialog(
 @Composable
 private fun TopBarActions(
   state: EditScheduleState.Loaded,
-  onAction: EditScheduleActionHandler,
+  onAction: OnAction<EditScheduleAction>,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -365,7 +366,7 @@ private fun EditScheduleContent(
   state: EditScheduleState.Loaded,
   scrollState: ScrollState,
   contentPadding: PaddingValues,
-  onAction: EditScheduleActionHandler,
+  onAction: OnAction<EditScheduleAction>,
   modifier: Modifier = Modifier,
 ) {
   var sheet by remember { mutableStateOf<SentencePart?>(null) }
@@ -502,7 +503,7 @@ private fun ShimmerSchedule(modifier: Modifier = Modifier) {
 private fun EditScheduleSheet(
   sheet: SentencePart?,
   state: EditScheduleState.Loaded,
-  onAction: EditScheduleActionHandler,
+  onAction: OnAction<EditScheduleAction>,
   onDismiss: () -> Unit,
 ) {
   when (sheet) {

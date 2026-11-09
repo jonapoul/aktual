@@ -9,6 +9,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.formattedString
@@ -39,7 +40,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 internal fun ReconcilingBanner(
   reconciling: Reconciling,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) =
   Column(modifier = modifier.fillMaxWidth().background(colors.tableBackground)) {

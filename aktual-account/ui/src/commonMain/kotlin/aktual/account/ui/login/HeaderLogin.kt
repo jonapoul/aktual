@@ -6,6 +6,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RounderCardShape
 import androidx.compose.foundation.background
@@ -28,7 +29,7 @@ import androidx.compose.ui.unit.dp
 internal fun HeaderLogin(
   isLoading: Boolean,
   hasFailure: Boolean,
-  onAction: LoginActionHandler,
+  onAction: OnAction<LoginAction>,
   modifier: Modifier = Modifier,
 ) {
   SideEffect(Unit) { onAction(SignIn) }

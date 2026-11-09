@@ -27,8 +27,3 @@ internal value class SelectAccountType(val type: LoginAccountType) : LinkBankAcc
 internal data object ReopenLogin : LinkBankAccountAction
 
 internal data object CancelLogin : LinkBankAccountAction
-
-@Immutable
-internal fun interface LinkBankAccountActionHandler {
-  operator fun invoke(action: LinkBankAccountAction)
-}

@@ -10,6 +10,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.EditorSheet
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.keyboardFocusRequester
@@ -35,7 +36,7 @@ internal fun BudgetSheet(
   month: YearMonth,
   category: CategoryRow,
   type: BudgetType,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {

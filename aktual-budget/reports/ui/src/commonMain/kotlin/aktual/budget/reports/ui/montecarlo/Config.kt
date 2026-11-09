@@ -23,6 +23,7 @@ import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
@@ -46,7 +47,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun MonteCarloConfiguration(
   state: MonteCarloState.Loaded,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
   modifier: Modifier = Modifier,
   initialTab: ConfigTab = Plan,
 ) =
@@ -98,7 +99,7 @@ internal fun MonteCarloConfiguration(
   }
 
 @Composable
-private fun PlanTab(config: McConfig, onAction: MonteCarloActionHandler) {
+private fun PlanTab(config: McConfig, onAction: OnAction<MonteCarloAction>) {
   GroupHeading(Strings.monteCarloGroupPlan)
   FieldRow {
     LabeledField(Strings.monteCarloFieldCurrentAge) {

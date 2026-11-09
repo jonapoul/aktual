@@ -29,6 +29,7 @@ import aktual.core.ui.DesktopPreview
 import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalSnackbars
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -224,7 +225,7 @@ internal fun TransactionsScaffold(
   density: TransactionsDensity,
   balance: Amount?,
   isRoot: Boolean,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   showBalance: Boolean = true,
   showRunningBalance: Boolean = true,
   clearedBalances: ClearedBalances? = null,

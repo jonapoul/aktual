@@ -8,6 +8,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.spacedBy
@@ -52,7 +53,7 @@ internal fun LogFilters.levelsSummary(): String =
 internal fun LogLevelSheet(
   filters: LogFilters,
   counts: ImmutableMap<LogPriority, Int>,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
   onDismiss: () -> Unit,
 ) {
   // Toggles go straight to the VM, so the list behind the sheet filters live
@@ -65,7 +66,7 @@ internal fun LogLevelSheet(
 private fun LogLevelSheetContent(
   filters: LogFilters,
   counts: ImmutableMap<LogPriority, Int>,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
   modifier: Modifier = Modifier,
 ) =
   Column(
@@ -90,7 +91,7 @@ internal fun LogLevelRow(
   priority: LogPriority,
   isChecked: Boolean,
   count: Int,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
   modifier: Modifier = Modifier,
 ) =
   Row(

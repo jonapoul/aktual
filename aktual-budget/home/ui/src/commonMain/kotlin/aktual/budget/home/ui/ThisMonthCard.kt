@@ -13,6 +13,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.ShimmerLine
@@ -53,7 +54,7 @@ private val ProgressBarHeight = 8.dp
 @Composable
 internal fun ThisMonthCard(
   state: ThisMonthCardState,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   modifier: Modifier = Modifier,
 ) {
   HomeCard(modifier = modifier) {

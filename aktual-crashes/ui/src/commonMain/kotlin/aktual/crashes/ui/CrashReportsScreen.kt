@@ -21,6 +21,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
@@ -106,7 +107,7 @@ fun CrashReportsScreen(
 @Composable
 internal fun CrashReportsScaffold(
   state: CrashReportsState,
-  onAction: CrashesActionHandler,
+  onAction: OnAction<CrashesAction>,
   modifier: Modifier = Modifier,
 ) {
   var showDeleteAll by remember { mutableStateOf(false) }
@@ -171,7 +172,7 @@ private fun CrashReportsList(
   state: CrashReportsState.Loaded,
   contentPadding: PaddingValues,
   listState: LazyListState,
-  onAction: CrashesActionHandler,
+  onAction: OnAction<CrashesAction>,
 ) {
   // Only one row may be swiped open at a time
   var openFile by remember { mutableStateOf<CrashFile?>(null) }

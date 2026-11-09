@@ -21,6 +21,7 @@ import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -99,7 +100,7 @@ internal fun BankSyncProvidersScreen(
 @Composable
 private fun BankSyncProvidersScaffold(
   state: BankSyncProvidersState,
-  onAction: BankSyncProvidersActionHandler,
+  onAction: OnAction<BankSyncProvidersAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -152,7 +153,7 @@ private fun BankSyncProvidersContent(
   state: BankSyncProvidersState.Loaded,
   scrollState: ScrollState,
   contentPadding: PaddingValues,
-  onAction: BankSyncProvidersActionHandler,
+  onAction: OnAction<BankSyncProvidersAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -188,7 +189,7 @@ private fun ProviderItem(
   item: BankSyncProviderItem,
   isResetting: Boolean,
   canReset: Boolean,
-  onAction: BankSyncProvidersActionHandler,
+  onAction: OnAction<BankSyncProvidersAction>,
   modifier: Modifier = Modifier,
 ) {
   var showConfirm by remember { mutableStateOf(false) }

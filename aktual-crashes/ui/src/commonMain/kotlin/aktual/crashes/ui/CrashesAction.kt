@@ -17,8 +17,3 @@ internal data object DeleteAll : CrashesAction
 internal data class Export(val includeLogs: Boolean, val target: LogExportTarget) : CrashesAction
 
 internal data object ReportIssue : CrashesAction
-
-@Immutable
-internal fun interface CrashesActionHandler {
-  operator fun invoke(action: CrashesAction)
-}

@@ -1,7 +1,5 @@
 package aktual.prefs.ui.root
 
-import androidx.compose.runtime.Immutable
-
 internal sealed interface SettingsAction
 
 internal data object NavBack : SettingsAction
@@ -15,8 +13,3 @@ internal data object NavToSystemUiSettings : SettingsAction
 internal data object NavToSecuritySettings : SettingsAction
 
 internal data object NavToFormatSettings : SettingsAction
-
-@Immutable
-internal fun interface SettingsActionHandler {
-  operator fun invoke(action: SettingsAction)
-}

@@ -10,6 +10,7 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
@@ -74,7 +75,7 @@ internal fun BalanceForecastChart(
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
   zoom: ChartZoomState = rememberChartZoomState(data),
-  onAction: ChartActionListener = ChartActionListener {},
+  onAction: OnAction<ChartAction> = OnAction<ChartAction> {},
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {

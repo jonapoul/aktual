@@ -32,6 +32,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavDrawerIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -144,7 +145,7 @@ internal fun HomeScreen(
 @Composable
 private fun HomeScaffold(
   state: HomeState,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   modifier: Modifier = Modifier,
   initialEditing: Boolean = false,
 ) {
@@ -209,7 +210,7 @@ private fun HomeCardFor(
   card: HomeCardType,
   state: HomeState,
   isEditing: Boolean,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
 ) =
   when (card) {
     ThisMonth -> ThisMonthCard(state = state.thisMonth, onAction = onAction)
@@ -307,7 +308,7 @@ private fun HomeContent(
 @Composable
 private fun AccountsPanel(
   state: AccountsCardState,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -329,7 +330,7 @@ private fun CardGrid(
   state: HomeState,
   isEditing: Boolean,
   scrollArea: AutoScrollArea,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   modifier: Modifier = Modifier,
 ) {
   val cards = remember(state.cards) { state.cards.filter { it != Accounts }.toImmutableList() }

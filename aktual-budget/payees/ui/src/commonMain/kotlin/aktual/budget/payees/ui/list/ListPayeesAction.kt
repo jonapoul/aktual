@@ -2,7 +2,6 @@ package aktual.budget.payees.ui.list
 
 import aktual.budget.model.PayeeId
 import aktual.budget.payees.vm.list.PayeeItem
-import androidx.compose.runtime.Immutable
 
 internal sealed interface ListPayeesAction
 
@@ -28,8 +27,3 @@ internal data object OpenCategoryLearning : ListPayeesAction
 internal data class Merge(val payee: PayeeItem, val into: PayeeItem) : ListPayeesAction
 
 @JvmInline internal value class ToggleFavorite(val payee: PayeeItem) : ListPayeesAction
-
-@Immutable
-internal fun interface ListPayeesActionHandler {
-  operator fun invoke(action: ListPayeesAction)
-}

@@ -35,6 +35,7 @@ import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -139,7 +140,7 @@ private fun bankSyncSettingsViewModel(id: AccountId) =
 @Composable
 private fun BankSyncSettingsScaffold(
   state: BankSyncSettingsState,
-  onAction: BankSyncSettingsActionHandler,
+  onAction: OnAction<BankSyncSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -217,7 +218,7 @@ private fun BankSyncSettingsContent(
   state: BankSyncSettingsState.Editing,
   scrollState: ScrollState,
   contentPadding: PaddingValues,
-  onAction: BankSyncSettingsActionHandler,
+  onAction: OnAction<BankSyncSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -363,7 +364,7 @@ private fun UnlinkButton(
 private fun FieldMappingGroup(
   direction: TransactionDirection,
   fields: ImmutableList<MappedFieldRow>?,
-  onAction: BankSyncSettingsActionHandler,
+  onAction: OnAction<BankSyncSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   PreferenceGroup(
@@ -415,7 +416,7 @@ private fun MappedFieldItem(
 @Composable
 private fun OptionsGroup(
   state: BankSyncSettingsState.Editing,
-  onAction: BankSyncSettingsActionHandler,
+  onAction: OnAction<BankSyncSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   PreferenceGroup(

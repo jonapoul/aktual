@@ -5,7 +5,7 @@ import aktual.budget.reports.vm.montecarlo.MonteCarloGraphView
 import aktual.budget.reports.vm.montecarlo.MonteCarloResultsView
 import aktual.budget.reports.vm.montecarlo.MonteCarloSection
 import aktual.budget.reports.vm.montecarlo.RunPercentile
-import androidx.compose.runtime.Immutable
+import aktual.core.ui.OnAction
 
 internal sealed interface MonteCarloAction {
   data object NavBack : MonteCarloAction
@@ -43,10 +43,5 @@ internal sealed interface MonteCarloAction {
   data class SelectRun(val index: Int?) : MonteCarloAction
 }
 
-@Immutable
-internal fun interface MonteCarloActionHandler {
-  operator fun invoke(action: MonteCarloAction)
-}
-
-internal fun MonteCarloActionHandler.edit(transform: (McConfig) -> McConfig) =
+internal fun OnAction<MonteCarloAction>.edit(transform: (McConfig) -> McConfig) =
   invoke(MonteCarloAction.Edit(transform))

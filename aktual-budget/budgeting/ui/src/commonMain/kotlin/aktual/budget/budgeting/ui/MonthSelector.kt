@@ -13,6 +13,7 @@ import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.stringShort
 import androidx.compose.foundation.background
@@ -53,7 +54,7 @@ import kotlinx.datetime.YearMonth
 @Composable
 internal fun MonthSelector(
   state: BudgetState.Loaded,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   onPickMonth: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -122,7 +123,7 @@ private fun BudgetState.Loaded.title(): String {
 internal fun MonthCountSelector(
   count: Int,
   max: Int,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
 ) {
   val label = Strings.budgetingMonthCount
@@ -138,7 +139,7 @@ internal fun MonthCountSelector(
 @Composable
 internal fun MonthPickerSheet(
   state: BudgetState.Loaded,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {

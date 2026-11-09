@@ -7,8 +7,3 @@ import androidx.compose.runtime.Immutable
 internal data object NavBack : MetricsAction
 
 internal data object Refresh : MetricsAction
-
-@Immutable
-internal fun interface MetricsActionHandler {
-  operator fun invoke(action: MetricsAction)
-}

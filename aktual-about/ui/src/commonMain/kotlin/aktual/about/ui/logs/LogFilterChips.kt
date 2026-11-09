@@ -10,6 +10,7 @@ import aktual.core.ui.CardColumn
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.Rectangle
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +27,7 @@ import kotlinx.collections.immutable.persistentSetOf
 @Composable
 internal fun LogFilterChips(
   filters: LogFilters,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
   onOpenLevels: () -> Unit,
   modifier: Modifier = Modifier,
 ) {

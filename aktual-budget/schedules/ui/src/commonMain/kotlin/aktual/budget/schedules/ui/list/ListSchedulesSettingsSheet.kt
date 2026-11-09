@@ -8,6 +8,7 @@ import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.prefs.components.BooleanPreferenceItem
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +25,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 internal fun ListSchedulesSettingsSheet(
   showCompleted: Boolean,
-  onAction: ListSchedulesActionHandler,
+  onAction: OnAction<ListSchedulesAction>,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -36,7 +37,7 @@ internal fun ListSchedulesSettingsSheet(
 @Composable
 private fun ListSchedulesSettingsContent(
   showCompleted: Boolean,
-  onAction: ListSchedulesActionHandler,
+  onAction: OnAction<ListSchedulesAction>,
   modifier: Modifier = Modifier,
 ) =
   Column(

@@ -14,6 +14,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.scrollbar
@@ -55,7 +56,7 @@ internal fun Transactions(
   contentPadding: PaddingValues,
   toggledSplits: ImmutableSet<TransactionId>,
   splitsPinnedOpen: Boolean,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
   expandSplits: Boolean = false,
   alternateRowColours: Boolean = false,
@@ -137,7 +138,7 @@ private fun TransactionsFilled(
   splits: SplitsState,
   alternateRowColours: Boolean,
   tags: ImmutableList<TagLabel>,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) {
   // Only themes with their own alternate row colour shade rows, see hasAlternateRowColour

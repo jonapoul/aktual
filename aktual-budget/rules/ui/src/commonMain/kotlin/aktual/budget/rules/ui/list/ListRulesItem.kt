@@ -17,6 +17,7 @@ import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
@@ -55,7 +56,7 @@ internal fun ListRulesItem(
   rule: Rule,
   isOpen: Boolean,
   onOpenChange: (Boolean) -> Unit,
-  onAction: ListRulesActionHandler,
+  onAction: OnAction<ListRulesAction>,
   modifier: Modifier = Modifier,
 ) {
   val deleteBackground = colors.errorText

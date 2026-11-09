@@ -12,6 +12,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
+import aktual.core.ui.OnAction
 import aktual.core.ui.ProvideSurfaceColor
 import aktual.core.ui.padding
 import aktual.core.ui.redacted
@@ -57,7 +58,7 @@ internal fun CollapsibleSectionCard(
   title: String,
   section: MonteCarloSection,
   collapsed: ImmutableSet<MonteCarloSection>,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
   modifier: Modifier = Modifier,
   content: @Composable ColumnScope.() -> Unit,
 ) =

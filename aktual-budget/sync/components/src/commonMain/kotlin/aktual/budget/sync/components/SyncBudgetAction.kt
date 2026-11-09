@@ -1,7 +1,6 @@
 package aktual.budget.sync.components
 
 import aktual.core.model.Password
-import androidx.compose.runtime.Immutable
 
 internal sealed interface SyncBudgetAction
 
@@ -14,8 +13,3 @@ internal data object ConfirmKeyPassword : SyncBudgetAction
 internal data object LearnMore : SyncBudgetAction
 
 internal data object Cancel : SyncBudgetAction
-
-@Immutable
-internal fun interface SyncBudgetActionHandler {
-  operator fun invoke(action: SyncBudgetAction)
-}

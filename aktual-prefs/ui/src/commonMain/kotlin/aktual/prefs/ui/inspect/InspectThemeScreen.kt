@@ -30,6 +30,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -160,7 +161,7 @@ private fun InspectThemeScaffold(
   sorting: PropertySorting,
   showSortSheet: Boolean,
   dialog: InspectDialog?,
-  onAction: InspectThemeActionHandler,
+  onAction: OnAction<InspectThemeAction>,
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -218,7 +219,7 @@ private val Loaded.displayName: String
 private fun InspectDialogs(
   state: Loaded,
   dialog: InspectDialog?,
-  onAction: InspectThemeActionHandler,
+  onAction: OnAction<InspectThemeAction>,
 ) {
   val onDismiss = { onAction(DismissDialog) }
   // Each dialog closes itself before passing on its result
@@ -254,7 +255,7 @@ private fun InspectDialogs(
 }
 
 @Composable
-private fun MoreMenu(source: ThemeSource, onAction: InspectThemeActionHandler) {
+private fun MoreMenu(source: ThemeSource, onAction: OnAction<InspectThemeAction>) {
   var showMenu by remember { mutableStateOf(false) }
 
   BareIconButton(
@@ -315,7 +316,7 @@ private fun InspectThemeContent(
   state: InspectThemeState,
   contentPadding: PaddingValues,
   listState: LazyListState,
-  onAction: InspectThemeActionHandler,
+  onAction: OnAction<InspectThemeAction>,
   modifier: Modifier = Modifier,
 ) {
   when (state) {

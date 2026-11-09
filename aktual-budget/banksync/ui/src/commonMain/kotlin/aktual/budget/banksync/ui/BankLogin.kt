@@ -12,6 +12,7 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.RowShape
 import aktual.core.ui.ShimmerLine
@@ -50,7 +51,7 @@ internal fun LazyListScope.bankLogin(
   login: BankLogin,
   query: String,
   onQuery: (String) -> Unit,
-  onAction: LinkBankAccountActionHandler,
+  onAction: OnAction<LinkBankAccountAction>,
 ) {
   val status = login.status
   item(key = "login-header") {
@@ -114,7 +115,7 @@ private fun LoginHeader(
   query: String,
   onQuery: (String) -> Unit,
   isEnabled: Boolean,
-  onAction: LinkBankAccountActionHandler,
+  onAction: OnAction<LinkBankAccountAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -193,7 +194,7 @@ private fun BankSearchField(
 @Composable
 private fun LoginWaiting(
   status: BankLoginStatus.Waiting,
-  onAction: LinkBankAccountActionHandler,
+  onAction: OnAction<LinkBankAccountAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(

@@ -19,6 +19,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.TonalButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -32,7 +33,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 // The Spending tab from MonteCarloConfiguration.tsx
 @Composable
-internal fun SpendingTab(config: McConfig, onAction: MonteCarloActionHandler) {
+internal fun SpendingTab(config: McConfig, onAction: OnAction<MonteCarloAction>) {
   GroupHeadingWithHelp(Strings.monteCarloGroupPhases, Strings.monteCarloHelpPhases)
   config.spendingPhases.fastForEachIndexed { index, phase ->
     key(phase.id) { PhaseCard(config, phase, index, onAction) }
@@ -64,7 +65,7 @@ private fun PhaseCard(
   config: McConfig,
   phase: McSpendingPhase,
   index: Int,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
 ) {
   val label = phase.name.ifEmpty { Strings.monteCarloPhaseNumbered(index + 1) }
   val edit: ((McSpendingPhase) -> McSpendingPhase) -> Unit = { transform ->
@@ -128,7 +129,7 @@ private fun PhaseCard(
 // MonteCarloWithdrawalRuleConfiguration.tsx. Upstream sets the inputs inside each rule's sentence,
 // which doesn't work on a narrow screen, so the sentence shows the values and the fields follow
 @Composable
-private fun WithdrawalRuleFields(config: McConfig, onAction: MonteCarloActionHandler) {
+private fun WithdrawalRuleFields(config: McConfig, onAction: OnAction<MonteCarloAction>) {
   val rule = config.withdrawalRule
   val edit: ((McWithdrawalRule) -> McWithdrawalRule) -> Unit = { transform ->
     onAction.edit { it.copy(withdrawalRule = transform(it.withdrawalRule)) }
@@ -326,7 +327,7 @@ private fun RulePercentField(
 
 // MonteCarloTaxConfiguration.tsx
 @Composable
-internal fun TaxTab(config: McConfig, onAction: MonteCarloActionHandler) {
+internal fun TaxTab(config: McConfig, onAction: OnAction<MonteCarloAction>) {
   LabeledField(label = Strings.monteCarloFieldTaxModel, help = Strings.monteCarloHelpTaxModel) {
     AktualExposedDropDownMenu(
       value = config.taxModel,
@@ -357,7 +358,7 @@ private fun TaxBandRow(
   config: McConfig,
   band: McTaxBand,
   index: Int,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
 ) =
   Row(verticalAlignment = Bottom, horizontalArrangement = Arrangement.spacedBy(BAND_SPACING)) {
     LabeledField(Strings.monteCarloFieldBandFrom) {

@@ -5,7 +5,6 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.WidgetId
-import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 
 internal sealed interface HomeAction
@@ -45,8 +44,3 @@ internal data class ReplaceReport(val old: WidgetId, val new: WidgetId) : HomeAc
 internal data class SwapCards(val card: HomeCardType, val other: HomeCardType) : HomeAction
 
 @JvmInline internal value class ReorderCards(val cards: ImmutableList<HomeCardType>) : HomeAction
-
-@Immutable
-internal fun interface HomeActionHandler {
-  operator fun invoke(action: HomeAction)
-}

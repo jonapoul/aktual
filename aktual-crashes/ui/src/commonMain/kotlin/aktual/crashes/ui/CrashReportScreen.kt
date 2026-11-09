@@ -21,6 +21,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
@@ -98,7 +99,7 @@ fun CrashReportScreen(
 internal fun CrashReportScaffold(
   state: CrashReportState,
   canShare: Boolean,
-  onAction: CrashesActionHandler,
+  onAction: OnAction<CrashesAction>,
   modifier: Modifier = Modifier,
 ) {
   var showExport by remember { mutableStateOf(false) }

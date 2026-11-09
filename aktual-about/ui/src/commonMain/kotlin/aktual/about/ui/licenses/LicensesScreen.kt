@@ -20,6 +20,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.WavyBackground
@@ -91,7 +92,7 @@ private fun LicensesScaffold(
   state: LicensesState,
   sorting: LicenseSorting,
   showSortSheet: Boolean,
-  onAction: LicensesActionHandler,
+  onAction: OnAction<LicensesAction>,
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -144,7 +145,7 @@ private fun LicensesContent(
   state: LicensesState,
   contentPadding: PaddingValues,
   listState: LazyListState,
-  onAction: LicensesActionHandler,
+  onAction: OnAction<LicensesAction>,
   modifier: Modifier = Modifier,
 ) =
   when (state) {
@@ -179,7 +180,7 @@ private fun ArtifactList(
   artifacts: ImmutableList<ArtifactDetail>,
   contentPadding: PaddingValues,
   listState: LazyListState,
-  onAction: LicensesActionHandler,
+  onAction: OnAction<LicensesAction>,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
@@ -203,7 +204,7 @@ private fun ArtifactList(
 @Composable
 private fun ErrorContent(
   errorMessage: String,
-  onAction: LicensesActionHandler,
+  onAction: OnAction<LicensesAction>,
   modifier: Modifier = Modifier,
 ) {
   FailureScreen(

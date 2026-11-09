@@ -82,8 +82,3 @@ internal data class CreatePartPayee(val id: TransactionId, val name: String) : S
 internal data class SetPartCategory(val id: TransactionId, val category: CategoryId?) : SplitAction
 
 internal data class SetPartNotes(val id: TransactionId, val notes: String) : SplitAction
-
-@Immutable
-internal fun interface EditTransactionActionHandler {
-  operator fun invoke(action: EditTransactionAction)
-}

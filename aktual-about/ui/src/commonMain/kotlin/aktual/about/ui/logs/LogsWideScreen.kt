@@ -26,6 +26,7 @@ import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.SearchMessage
@@ -84,7 +85,7 @@ internal fun LogsWideScaffold(
   entries: LogEntriesState,
   filters: LogFilters,
   canShare: Boolean,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
   modifier: Modifier = Modifier,
 ) {
   var showExport by remember { mutableStateOf(false) }
@@ -134,7 +135,7 @@ private fun WideToolbar(
   initialQuery: String,
   live: LiveState,
   onExport: () -> Unit,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
 ) =
   Row(
     modifier = Modifier.fillMaxWidth().height(64.dp).padding(start = 4.dp, end = 12.dp),
@@ -192,7 +193,7 @@ private fun WideSidebar(
   files: LogFilesState,
   entries: LogEntriesState.Loaded?,
   filters: LogFilters,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
 ) =
   Column(
     modifier =
@@ -268,7 +269,7 @@ private fun SidebarFile(
   file: LogFile,
   isSelected: Boolean,
   today: LocalDate,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
 ) =
   Row(
     modifier =
@@ -296,7 +297,7 @@ private fun SidebarFile(
   }
 
 @Composable
-private fun WideTable(state: LogEntriesState.Loaded, onAction: LogsActionHandler) {
+private fun WideTable(state: LogEntriesState.Loaded, onAction: OnAction<LogsAction>) {
   var selected by remember(state.date) { mutableStateOf<LogLine?>(null) }
 
   Column(modifier = Modifier.fillMaxSize()) {
@@ -342,7 +343,7 @@ private fun WideRows(
   state: LogEntriesState.Loaded,
   selected: LogLine?,
   onSelect: (LogLine) -> Unit,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
 ) {
   val listState = rememberLogListState(state)
 

@@ -12,7 +12,6 @@ import aktual.budget.reports.components.info
 import aktual.budget.reports.components.rememberChartZoomState
 import aktual.budget.reports.components.string
 import aktual.budget.reports.ui.Action
-import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.ui.montecarlo.MonteCarloReportScreen
 import aktual.budget.reports.vm.AgeOfMoneyReportMeta
@@ -45,6 +44,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -208,7 +208,7 @@ private fun reportViewModel(id: WidgetId) =
 @Composable
 internal fun ReportScaffold(
   state: ReportState,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
   editorData: QueryEditorData? = null,
 ) {
@@ -275,7 +275,7 @@ private fun ReportTopBar(
   onShowInfo: () -> Unit,
   onShowSettings: () -> Unit,
   onSave: () -> Unit,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) {
   val data = loaded?.data
@@ -364,7 +364,7 @@ private fun ReportContent(
   state: ReportState,
   contentPadding: PaddingValues,
   zoom: ChartZoomState,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier.padding(contentPadding).padding(Dimens.ScreenPadding)) {

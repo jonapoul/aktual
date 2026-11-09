@@ -1,5 +1,6 @@
 package aktual.budget.list.ui
 
+import aktual.core.ui.OnAction
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -11,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal actual fun TopBarActions(onAction: ListBudgetsActionHandler) = Row {
+internal actual fun TopBarActions(onAction: OnAction<ListBudgetsAction>) = Row {
   SettingsButton(modifier = Modifier.padding(horizontal = 5.dp), onAction = onAction)
 
   var showMenu by remember { mutableStateOf(false) }

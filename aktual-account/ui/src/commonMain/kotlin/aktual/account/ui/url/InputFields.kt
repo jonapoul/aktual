@@ -5,6 +5,7 @@ import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.keyboardFocusRequester
 import alakazam.kotlin.parse
@@ -30,7 +31,7 @@ import kotlinx.collections.immutable.toImmutableList
 internal fun InputFields(
   url: String,
   protocol: Protocol,
-  onAction: ServerUrlActionHandler,
+  onAction: OnAction<ServerUrlAction>,
   modifier: Modifier = Modifier,
 ) {
   Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {

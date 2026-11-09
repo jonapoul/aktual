@@ -4,6 +4,7 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.ui.BasicIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.normalIconButton
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -16,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal actual fun TopBarActions(onAction: ListBudgetsActionHandler) = Row {
+internal actual fun TopBarActions(onAction: OnAction<ListBudgetsAction>) = Row {
   BasicIconButton(
     modifier = Modifier.padding(horizontal = 5.dp),
     onClick = { onAction(Reload) },

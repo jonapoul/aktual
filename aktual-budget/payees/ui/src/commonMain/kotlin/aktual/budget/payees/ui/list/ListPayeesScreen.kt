@@ -33,6 +33,7 @@ import aktual.core.ui.FailureScreen
 import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -119,7 +120,7 @@ internal fun ListPayeesScreen(
 @Composable
 private fun ListPayeesScaffold(
   state: ListPayeesState,
-  onAction: ListPayeesActionHandler,
+  onAction: OnAction<ListPayeesAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -129,15 +130,16 @@ private fun ListPayeesScaffold(
   var showCategoryLearning by remember { mutableStateOf(false) }
 
   // Only worth confirming when transactions will lose their payee
-  val handleAction = ListPayeesActionHandler { action ->
-    @Suppress("ElseCaseInsteadOfExhaustiveWhen")
-    when (action) {
-      is Delete if action.payee.numTransactions > 0 -> confirmDelete = action.payee
-      is StartMerge -> mergeSource = action.payee
-      OpenCategoryLearning -> showCategoryLearning = true
-      else -> onAction(action)
+  val handleAction =
+    OnAction<ListPayeesAction> { action ->
+      @Suppress("ElseCaseInsteadOfExhaustiveWhen")
+      when (action) {
+        is Delete if action.payee.numTransactions > 0 -> confirmDelete = action.payee
+        is StartMerge -> mergeSource = action.payee
+        OpenCategoryLearning -> showCategoryLearning = true
+        else -> onAction(action)
+      }
     }
-  }
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
@@ -210,7 +212,7 @@ private fun ListPayeesScaffold(
 }
 
 @Composable
-private fun ListPayeesMenu(onAction: ListPayeesActionHandler, modifier: Modifier = Modifier) {
+private fun ListPayeesMenu(onAction: OnAction<ListPayeesAction>, modifier: Modifier = Modifier) {
   var expanded by remember { mutableStateOf(false) }
 
   Box(modifier = modifier) {
@@ -276,7 +278,7 @@ private fun MergePayeeSheet(
 @Composable
 private fun ListPayeesContent(
   state: ListPayeesState,
-  onAction: ListPayeesActionHandler,
+  onAction: OnAction<ListPayeesAction>,
   listState: LazyListState,
   padding: PaddingValues,
 ) {
@@ -330,7 +332,7 @@ private fun PayeesList(
   showLearningOff: Boolean,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  onAction: ListPayeesActionHandler,
+  onAction: OnAction<ListPayeesAction>,
   modifier: Modifier = Modifier,
 ) {
   // only one row may be swiped open at a time - opening another closes the previous one

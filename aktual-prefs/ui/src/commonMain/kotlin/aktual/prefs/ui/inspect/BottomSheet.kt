@@ -8,6 +8,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.ListBottomSheet
+import aktual.core.ui.OnAction
 import aktual.prefs.vm.inspect.PropertySorting
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
@@ -19,7 +20,7 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 internal fun PropertySortingBottomSheet(
   value: PropertySorting,
-  onAction: InspectThemeActionHandler,
+  onAction: OnAction<InspectThemeAction>,
   sheetState: SheetState,
   modifier: Modifier = Modifier,
 ) {

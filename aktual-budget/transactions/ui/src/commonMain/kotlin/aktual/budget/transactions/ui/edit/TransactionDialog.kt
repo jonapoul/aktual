@@ -4,6 +4,7 @@ import aktual.budget.transactions.vm.edit.EditTransactionError
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.OnAction
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,7 +27,7 @@ internal enum class TransactionDialog {
 @Composable
 internal fun EditTransactionDialogs(
   dialog: TransactionDialog?,
-  onAction: EditTransactionActionHandler,
+  onAction: OnAction<EditTransactionAction>,
   onShow: (TransactionDialog?) -> Unit,
   afterOverwrite: () -> TransactionDialog? = { null },
 ) {

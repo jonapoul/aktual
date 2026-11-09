@@ -19,3 +19,7 @@ Spacing uses `Dimens` (dp), not `AktualTheme`.
 ## Cards
 
 Use the `CardColumn` (column) or `CardRow` composable for card containers, passing `contentPadding` and `onClick` rather than chaining `padding`/`clickable` yourself. `Modifier.card` is for cases `CardColumn` can't cover, like applying the card style conditionally or adding `shimmer()` after the padding.
+
+## Action handlers
+
+Screens take a single `onAction: OnAction<FooAction>` for their sealed action type. Don't declare a per-screen `fun interface FooActionHandler`.

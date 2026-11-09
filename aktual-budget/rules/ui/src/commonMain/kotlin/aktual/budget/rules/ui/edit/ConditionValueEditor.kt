@@ -7,6 +7,7 @@ import aktual.budget.rules.ui.edit.pickers.EntityIdPicker
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.OnAction
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
@@ -26,7 +27,7 @@ internal fun ConditionValueEditor(
   value: JsonElement,
   index: Int,
   isEnabled: Boolean,
-  onAction: EditRuleActionHandler,
+  onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
   val emit: (JsonElement) -> Unit = { newValue -> onAction(SetConditionValue(newValue, index)) }

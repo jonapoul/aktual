@@ -20,6 +20,7 @@ import aktual.core.ui.AmountField
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.EditorSheet
 import aktual.core.ui.HostedSheet
+import aktual.core.ui.OnAction
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.keyboardFocusRequester
@@ -85,7 +86,7 @@ internal sealed interface SheetRequest {
 internal fun BudgetSheets(
   request: SheetRequest,
   state: BudgetState.Loaded,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   onDismiss: () -> Unit,
 ) {
   val budget = state[request.month] ?: return
@@ -137,7 +138,7 @@ internal fun BudgetSheets(
 @Composable
 internal fun monthActions(
   month: YearMonth,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
 ): ImmutableList<MenuItem> =
   MonthAction.entries
     .map { action ->
@@ -162,7 +163,7 @@ private fun MonthAction.label(): String =
 private fun ConfirmMonthDialog(
   month: YearMonth,
   action: MonthAction,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   onDismiss: () -> Unit,
 ) =
   AktualAlertDialog(
@@ -187,7 +188,7 @@ private fun TransferBalanceSheet(
   month: YearMonth,
   budget: MonthBudget,
   category: CategoryRow,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   onDismiss: () -> Unit,
 ) =
   MoneySheet(
@@ -205,7 +206,7 @@ private fun CoverBalanceSheet(
   month: YearMonth,
   budget: MonthBudget,
   category: CategoryRow,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   onDismiss: () -> Unit,
 ) =
   MoneySheet(
@@ -223,7 +224,7 @@ private fun CoverBalanceSheet(
 private fun HoldBudgetSheet(
   month: YearMonth,
   summary: BudgetSummary.Envelope,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   onDismiss: () -> Unit,
 ) =
   MoneySheet(
@@ -241,7 +242,7 @@ private fun TransferAvailableBudgetSheet(
   month: YearMonth,
   budget: MonthBudget,
   summary: BudgetSummary.Envelope,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   onDismiss: () -> Unit,
 ) =
   MoneySheet(
@@ -261,7 +262,7 @@ private fun CoverOverbudgetedBudgetSheet(
   month: YearMonth,
   budget: MonthBudget,
   summary: BudgetSummary.Envelope,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   onDismiss: () -> Unit,
 ) =
   MoneySheet(
@@ -280,7 +281,7 @@ private fun CoverOverbudgetedBudgetSheet(
 private fun OverspentMenuSheet(
   month: YearMonth,
   budget: MonthBudget,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   onDismiss: () -> Unit,
 ) =
   MenuSheet(
@@ -317,7 +318,7 @@ internal fun balanceActions(
   month: YearMonth,
   category: CategoryRow,
   type: BudgetType,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
 ): ImmutableList<MenuItem> = buildList {
   if (type == Envelope && category.balance > Zero) {
     +MenuItem(
@@ -455,7 +456,7 @@ private fun MoneySheet(
 private fun SummarySheet(
   month: YearMonth,
   summary: BudgetSummary,
-  onAction: BudgetActionHandler,
+  onAction: OnAction<BudgetAction>,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {

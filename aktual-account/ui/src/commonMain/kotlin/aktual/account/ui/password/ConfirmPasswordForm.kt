@@ -7,6 +7,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.checkbox
@@ -38,7 +39,7 @@ internal fun ConfirmPasswordForm(
   showPasswords: Boolean,
   state: ChangePasswordState?,
   passwordsMatch: Boolean,
-  onAction: PasswordActionHandler,
+  onAction: OnAction<PasswordAction>,
   modifier: Modifier = Modifier,
 ) {
   val keyboard = LocalSoftwareKeyboardController.current

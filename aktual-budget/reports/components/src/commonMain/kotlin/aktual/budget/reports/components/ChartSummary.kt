@@ -22,6 +22,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ProvideSurfaceColor
 import aktual.core.ui.ScaleToFitText
@@ -72,7 +73,7 @@ import kotlinx.datetime.yearMonth
 internal fun SummaryChart(
   data: SummaryData,
   compact: Boolean,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
 ) =
@@ -157,7 +158,7 @@ private fun summaryTextStyle(style: TextStyle = LocalTextStyle.current) =
 @Composable
 private fun RegularPerMonth(
   data: SummaryData.AveragePerMonth,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
 ) =
   Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
@@ -225,7 +226,7 @@ private fun RegularPerMonth(
 @Composable
 private fun RegularPerYear(
   data: SummaryData.AveragePerYear,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
 ) =
   Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
@@ -293,7 +294,7 @@ private fun RegularPerYear(
 @Composable
 private fun RegularPerTransaction(
   data: SummaryData.AveragePerTransaction,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
 ) =
   Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
@@ -361,7 +362,7 @@ private fun RegularPerTransaction(
 @Composable
 private fun RegularPercent(
   data: SummaryData.Percentage,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
 ) =
   Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
@@ -432,7 +433,7 @@ private fun RegularPercent(
 @Composable
 private fun RegularSum(
   data: SummaryData.Sum,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
 ) =
   Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
@@ -468,7 +469,7 @@ private fun Result(
 @Composable
 private fun ShowAs(
   data: SummaryData,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
 ) =
   Row(modifier = modifier.wrapContentSize(), verticalAlignment = CenterVertically) {
@@ -522,7 +523,7 @@ private fun SumColumn(range: DateRange) =
 @Composable
 private fun DivisorCheckbox(
   data: SummaryData.Percentage,
-  onAction: ChartActionListener,
+  onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
 ) {
   Row(modifier = modifier, verticalAlignment = CenterVertically) {

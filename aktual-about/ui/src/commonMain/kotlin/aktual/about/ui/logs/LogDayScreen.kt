@@ -32,6 +32,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -92,7 +93,7 @@ internal fun LogDayScaffold(
   state: LogEntriesState,
   filters: LogFilters,
   canShare: Boolean,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
   modifier: Modifier = Modifier,
 ) {
   var isSearching by rememberSaveable { mutableStateOf(filters.query.isNotEmpty()) }
@@ -224,7 +225,7 @@ private fun LogDayTopBar(
   onExport: () -> Unit,
   onScrollToTop: () -> Unit,
   onScrollToBottom: () -> Unit,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
 ) {
   TopAppBar(
     colors = colors.transparentTopAppBarColors(),
@@ -322,7 +323,7 @@ private fun LogLines(
   state: LogEntriesState.Loaded,
   listState: LazyListState,
   query: String,
-  onAction: LogsActionHandler,
+  onAction: OnAction<LogsAction>,
   onTagLongClick: (String) -> Unit,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
@@ -357,7 +358,7 @@ private fun LogLines(
 }
 
 @Composable
-private fun LiveBar(live: LiveState, onAction: LogsActionHandler) =
+private fun LiveBar(live: LiveState, onAction: OnAction<LogsAction>) =
   CardColumn(modifier = Modifier.fillMaxWidth(), contentPadding = Zero) {
     Row(
       modifier =
@@ -391,7 +392,7 @@ private fun LiveBar(live: LiveState, onAction: LogsActionHandler) =
   }
 
 @Composable
-internal fun LiveButton(isFollowing: Boolean, onAction: LogsActionHandler) =
+internal fun LiveButton(isFollowing: Boolean, onAction: OnAction<LogsAction>) =
   NormalTextButton(
     text = if (isFollowing) Strings.logsPause else Strings.logsResume,
     onClick = { onAction(if (isFollowing) Pause else Resume) },

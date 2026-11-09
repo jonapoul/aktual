@@ -13,6 +13,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.NormalIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.disabledIf
 import aktual.core.ui.radioButton
@@ -40,7 +41,7 @@ import androidx.compose.ui.unit.dp
 internal fun BuiltInThemesPreference(
   selectedTheme: ThemeId?,
   enabled: Boolean,
-  onAction: ThemeSettingsActionHandler,
+  onAction: OnAction<ThemeSettingsAction>,
   modifier: Modifier = Modifier,
 ) {
   BasicPreferenceItem(
@@ -87,7 +88,7 @@ internal fun ThemeItem(
   name: String,
   selectedId: ThemeId?,
   enabled: Boolean,
-  onAction: ThemeSettingsActionHandler,
+  onAction: OnAction<ThemeSettingsAction>,
 ) {
   Row(
     modifier = Modifier.height(Min),

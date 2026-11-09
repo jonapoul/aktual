@@ -14,6 +14,7 @@ import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.disabledIf
 import aktual.core.ui.padding
@@ -53,7 +54,7 @@ internal data class ViewOptions(
 @Composable
 internal fun ViewOptionsSheet(
   options: ViewOptions,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -68,7 +69,7 @@ internal fun ViewOptionsSheet(
 @Composable
 private fun ViewOptionsContent(
   options: ViewOptions,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) =
   Column(
@@ -150,7 +151,7 @@ private fun AccountSwitchRow(
   text: String,
   checked: Boolean,
   option: AccountOption,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
 ) =
   SwitchRow(
     text = text,

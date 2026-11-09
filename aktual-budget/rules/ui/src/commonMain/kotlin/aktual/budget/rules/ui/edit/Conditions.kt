@@ -20,6 +20,7 @@ import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.NormalIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryIconButton
 import aktual.core.ui.ProvideSurfaceColor
@@ -44,7 +45,7 @@ import kotlinx.collections.immutable.toImmutableList
 internal fun Conditions(
   rule: Rule,
   isEnabled: Boolean,
-  onAction: EditRuleActionHandler,
+  onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
   CardColumn(
@@ -105,7 +106,7 @@ private fun Condition(
   condition: Condition,
   index: Int,
   isEnabled: Boolean,
-  onAction: EditRuleActionHandler,
+  onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(

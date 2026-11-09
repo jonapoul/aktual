@@ -28,6 +28,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.NoticeBanner
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -108,7 +109,7 @@ fun ListRulesScreen(
 @Composable
 private fun ListRulesScaffold(
   state: ListRulesState,
-  onAction: ListRulesActionHandler,
+  onAction: OnAction<ListRulesAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -157,7 +158,7 @@ private fun ListRulesScaffold(
 private fun ListRulesContent(
   state: ListRulesState,
   contentPadding: PaddingValues,
-  onAction: ListRulesActionHandler,
+  onAction: OnAction<ListRulesAction>,
   listState: LazyListState,
   modifier: Modifier = Modifier,
 ) {
@@ -218,7 +219,7 @@ private fun ListRulesContent(
 private fun ContentSuccess(
   rules: ImmutableList<Rule>,
   contentPadding: PaddingValues,
-  onAction: ListRulesActionHandler,
+  onAction: OnAction<ListRulesAction>,
   modifier: Modifier = Modifier,
   listState: LazyListState = rememberLazyListState(),
 ) {

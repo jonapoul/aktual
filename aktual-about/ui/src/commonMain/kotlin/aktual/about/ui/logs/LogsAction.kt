@@ -29,8 +29,3 @@ internal data class RemoveTag(val tag: String) : LogsAction
 internal data object Pause : LogsAction
 
 internal data object Resume : LogsAction
-
-@Immutable
-internal fun interface LogsActionHandler {
-  operator fun invoke(action: LogsAction)
-}

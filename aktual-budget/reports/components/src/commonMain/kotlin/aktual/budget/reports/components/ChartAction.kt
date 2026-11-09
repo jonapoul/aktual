@@ -24,8 +24,3 @@ sealed interface ChartAction {
 
   @JvmInline value class SetUnsavedText(val hasUnsavedText: Boolean) : ChartAction
 }
-
-@Immutable
-fun interface ChartActionListener {
-  operator fun invoke(action: ChartAction)
-}

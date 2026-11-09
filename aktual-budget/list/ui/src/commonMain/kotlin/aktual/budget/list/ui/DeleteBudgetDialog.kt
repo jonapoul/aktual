@@ -12,6 +12,7 @@ import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.buttonTextStyle
 import aktual.core.ui.errorButton
@@ -50,7 +51,7 @@ import androidx.compose.ui.unit.dp
 internal fun DeleteBudgetDialog(
   budget: Budget,
   deletingState: DeletingState,
-  onAction: DeleteDialogActionHandler,
+  onAction: OnAction<DeleteDialogAction>,
   modifier: Modifier = Modifier,
 ) {
   AktualAlertDialog(

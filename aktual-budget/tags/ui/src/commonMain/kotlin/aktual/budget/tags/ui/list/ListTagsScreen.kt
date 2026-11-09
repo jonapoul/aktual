@@ -34,6 +34,7 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -116,7 +117,7 @@ internal fun ListTagsScreen(
 @Composable
 private fun ListTagsScaffold(
   state: ListTagsState,
-  onAction: ListTagsActionHandler,
+  onAction: OnAction<ListTagsAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -190,7 +191,7 @@ private fun ListTagsScaffold(
 @Composable
 private fun ListTagsContent(
   state: ListTagsState,
-  onAction: ListTagsActionHandler,
+  onAction: OnAction<ListTagsAction>,
   listState: LazyListState,
   padding: PaddingValues,
 ) {
@@ -243,7 +244,7 @@ private fun TagsList(
   tags: ImmutableList<TagItem>,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  onAction: ListTagsActionHandler,
+  onAction: OnAction<ListTagsAction>,
   modifier: Modifier = Modifier,
 ) {
   // only one row may be swiped open at a time - opening another closes the previous one

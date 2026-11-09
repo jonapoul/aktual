@@ -20,6 +20,7 @@ import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.LocalNavDrawerOpener
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NavDrawerIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
@@ -51,7 +52,7 @@ internal fun TransactionsTitleBar(
   listState: LazyListState,
   loadedAccount: LoadedAccount,
   isRoot: Boolean,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   onOpenViewOptions: () -> Unit,
   otherAccountNames: ImmutableSet<String> = persistentSetOf(),
   reconcileStart: ReconcileStart? = null,
@@ -115,7 +116,7 @@ private fun TransactionsMenu(
   accountName: String,
   otherAccountNames: ImmutableSet<String>,
   reconcileStart: ReconcileStart?,
-  onAction: ActionListener,
+  onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) {
   var expanded by remember { mutableStateOf(false) }

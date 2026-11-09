@@ -38,6 +38,7 @@ import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NormalIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
@@ -104,7 +105,7 @@ import kotlinx.datetime.toKotlinLocalDate
 internal fun EditTransactionSheet(
   active: ActiveField?,
   form: TransactionForm,
-  onAction: EditTransactionActionHandler,
+  onAction: OnAction<EditTransactionAction>,
   onDismiss: () -> Unit,
 ) {
   val partId = active?.part
@@ -179,7 +180,7 @@ private fun PartSheet(
   field: EditField,
   part: SplitPart,
   form: TransactionForm,
-  onAction: EditTransactionActionHandler,
+  onAction: OnAction<EditTransactionAction>,
   onDismiss: () -> Unit,
 ) =
   when (field) {

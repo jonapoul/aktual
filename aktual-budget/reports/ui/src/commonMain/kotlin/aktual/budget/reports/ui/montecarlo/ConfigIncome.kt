@@ -18,6 +18,7 @@ import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.TonalButton
 import aktual.core.ui.redacted
 import androidx.compose.material3.Text
@@ -30,7 +31,7 @@ import kotlinx.collections.immutable.toImmutableList
 
 // MonteCarloIncomeStreams.tsx
 @Composable
-internal fun IncomeTab(config: McConfig, onAction: MonteCarloActionHandler) {
+internal fun IncomeTab(config: McConfig, onAction: OnAction<MonteCarloAction>) {
   config.incomeStreams.fastForEachIndexed { index, stream ->
     key(stream.id) { IncomeCard(config, stream, index, onAction) }
   }
@@ -47,7 +48,7 @@ private fun IncomeCard(
   config: McConfig,
   stream: McIncomeStream,
   index: Int,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
 ) {
   val label = incomeLabel(config.incomeStreams, index)
   val edit: ((McIncomeStream) -> McIncomeStream) -> Unit = { transform ->
@@ -114,7 +115,7 @@ private fun IncomeCard(
 
 // MonteCarloContributions.tsx
 @Composable
-internal fun ContributionsTab(config: McConfig, onAction: MonteCarloActionHandler) {
+internal fun ContributionsTab(config: McConfig, onAction: OnAction<MonteCarloAction>) {
   config.contributions.fastForEachIndexed { index, contribution ->
     key(contribution.id) { ContributionCard(config, contribution, index, onAction) }
   }
@@ -131,7 +132,7 @@ private fun ContributionCard(
   config: McConfig,
   contribution: McContribution,
   index: Int,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
 ) {
   val label = contribution.name.ifEmpty { Strings.monteCarloContributionNumbered(index + 1) }
   val edit: ((McContribution) -> McContribution) -> Unit = { transform ->

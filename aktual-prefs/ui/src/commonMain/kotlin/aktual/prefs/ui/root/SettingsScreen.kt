@@ -17,6 +17,7 @@ import aktual.core.nav.ThemeSettingsNavigator
 import aktual.core.theme.Colors
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.prefs.ui.SettingsListScaffold
@@ -48,7 +49,7 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SettingsScaffold(onAction: SettingsActionHandler) {
+private fun SettingsScaffold(onAction: OnAction<SettingsAction>) {
   SettingsListScaffold(
     title = Strings.settingsToolbar,
     description = null,

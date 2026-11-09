@@ -17,6 +17,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.VersionsText
@@ -116,7 +117,7 @@ internal fun LoginScaffold(
   loginFailure: LoginResult.Failure?,
   loginMethods: ImmutableList<LoginMethod>,
   selectedLoginMethod: LoginMethod,
-  onAction: LoginActionHandler,
+  onAction: OnAction<LoginAction>,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -157,7 +158,7 @@ private fun Content(
   loginFailure: LoginResult.Failure?,
   loginMethods: ImmutableList<LoginMethod>,
   selectedLoginMethod: LoginMethod,
-  onAction: LoginActionHandler,
+  onAction: OnAction<LoginAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(

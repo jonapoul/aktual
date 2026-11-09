@@ -12,8 +12,3 @@ internal value class SetUpProvider(val source: AccountSyncSource) : BankSyncProv
 
 @JvmInline
 internal value class ResetProvider(val source: AccountSyncSource) : BankSyncProvidersAction
-
-@Immutable
-internal fun interface BankSyncProvidersActionHandler {
-  operator fun invoke(action: BankSyncProvidersAction)
-}

@@ -46,8 +46,3 @@ internal sealed interface Action {
 
 // Handled by the view model alone
 internal sealed interface ViewModelAction : Action
-
-@Immutable
-internal fun interface ActionListener {
-  operator fun invoke(action: Action)
-}

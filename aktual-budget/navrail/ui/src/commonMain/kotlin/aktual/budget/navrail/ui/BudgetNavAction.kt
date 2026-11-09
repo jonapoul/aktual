@@ -13,8 +13,3 @@ internal data object ExitDemo : BudgetNavAction
 internal data object Settings : BudgetNavAction
 
 internal data object About : BudgetNavAction
-
-@Immutable
-internal fun interface BudgetNavActionHandler {
-  operator fun invoke(action: BudgetNavAction)
-}

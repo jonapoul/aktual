@@ -5,6 +5,7 @@ import aktual.core.model.Password
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PasswordTransformation
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButtonWithLoading
@@ -31,7 +32,7 @@ import androidx.compose.ui.unit.dp
 internal fun PasswordLogin(
   isLoading: Boolean,
   enteredPassword: Password,
-  onAction: LoginActionHandler,
+  onAction: OnAction<LoginAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier) {

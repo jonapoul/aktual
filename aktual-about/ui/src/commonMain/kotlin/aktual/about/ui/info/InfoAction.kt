@@ -19,8 +19,3 @@ internal data object AppLogs : InfoAction
 internal data object ViewCrashReports : InfoAction
 
 internal data class OpenUrl(val url: String) : InfoAction
-
-@Immutable
-internal fun interface InfoActionHandler {
-  operator fun invoke(action: InfoAction)
-}

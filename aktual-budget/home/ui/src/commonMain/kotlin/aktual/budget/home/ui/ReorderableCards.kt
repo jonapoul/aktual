@@ -9,6 +9,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.OnAction
 import aktual.core.ui.wiggle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateBounds
@@ -75,7 +76,7 @@ internal fun ReorderableCards(
   columns: Int,
   isEditing: Boolean,
   scrollArea: AutoScrollArea,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   modifier: Modifier = Modifier,
   card: @Composable (HomeCardType) -> Unit,
 ) {
@@ -301,7 +302,7 @@ private fun ReorderBar(
   card: HomeCardType,
   previous: HomeCardType?,
   next: HomeCardType?,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   modifier: Modifier = Modifier,
 ) {
   val label = card.label()

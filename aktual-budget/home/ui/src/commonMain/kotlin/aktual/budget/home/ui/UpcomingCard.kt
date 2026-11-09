@@ -21,6 +21,7 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ChipSize
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.ShimmerLine
@@ -61,7 +62,7 @@ internal val DateBadgeWidth = 44.dp
 @Composable
 internal fun UpcomingCard(
   state: UpcomingCardState,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   modifier: Modifier = Modifier,
 ) {
   if (state == Empty) return
@@ -79,7 +80,7 @@ internal fun UpcomingCard(
 @Composable
 private fun UpcomingContent(
   state: Loaded,
-  onAction: HomeActionHandler,
+  onAction: OnAction<HomeAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier.fillMaxWidth()) {

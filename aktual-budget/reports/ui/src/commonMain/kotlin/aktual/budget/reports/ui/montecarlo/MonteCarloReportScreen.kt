@@ -21,6 +21,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -142,7 +143,7 @@ private fun monteCarloViewModel(id: WidgetId) =
 @Composable
 internal fun MonteCarloScaffold(
   state: MonteCarloState,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
   modifier: Modifier = Modifier,
 ) {
   val focusManager = LocalFocusManager.current
@@ -212,7 +213,7 @@ internal fun MonteCarloScaffold(
 private fun MonteCarloMenu(
   title: String,
   showTodaysMoney: Boolean,
-  onAction: MonteCarloActionHandler,
+  onAction: OnAction<MonteCarloAction>,
   modifier: Modifier = Modifier,
 ) {
   var expanded by remember { mutableStateOf(false) }

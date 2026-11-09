@@ -18,6 +18,7 @@ import aktual.core.ui.ErrorBanner
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NoticeBanner
+import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.VersionsText
@@ -91,7 +92,7 @@ internal fun ChangePasswordScaffold(
   passwordsMatch: Boolean,
   state: ChangePasswordState?,
   versions: AktualVersions,
-  onAction: PasswordActionHandler,
+  onAction: OnAction<PasswordAction>,
 ) {
   Scaffold(
     topBar = {
@@ -128,7 +129,7 @@ private fun ChangePasswordContent(
   passwordsMatch: Boolean,
   state: ChangePasswordState?,
   versions: AktualVersions,
-  onAction: PasswordActionHandler,
+  onAction: OnAction<PasswordAction>,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
