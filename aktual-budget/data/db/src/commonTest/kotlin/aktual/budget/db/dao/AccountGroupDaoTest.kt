@@ -35,16 +35,19 @@ internal class AccountGroupDaoTest {
     // given
     insertGroup("a", sortOrder = 1.0)
 
-    groups.observeAllActive().map { rows -> rows.map { it.id.value } }.test {
-      assertThatNextEmissionIsEqualTo(listOf("a"))
+    groups
+      .observeAllActive()
+      .map { rows -> rows.map { it.id.value } }
+      .test {
+        assertThatNextEmissionIsEqualTo(listOf("a"))
 
-      // when
-      insertGroup("b", sortOrder = 2.0)
-      driver.notifyListeners("account_groups")
+        // when
+        insertGroup("b", sortOrder = 2.0)
+        driver.notifyListeners("account_groups")
 
-      // then
-      assertThatNextEmissionIsEqualTo(listOf("a", "b"))
-    }
+        // then
+        assertThatNextEmissionIsEqualTo(listOf("a", "b"))
+      }
   }
 
   @Test
@@ -70,7 +73,7 @@ internal class AccountGroupDaoTest {
     val dead = if (tombstone) 1 else 0
     driver.run(
       "INSERT INTO account_groups (id, name, sort_order, tombstone) " +
-        "VALUES ('$id', '$id', $sortOrder, $dead)"
+        "VALUES ('$id', '$id', $sortOrder, $dead)",
     )
   }
 

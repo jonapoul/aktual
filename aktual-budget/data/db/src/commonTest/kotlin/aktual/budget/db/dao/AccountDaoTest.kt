@@ -174,7 +174,7 @@ internal class AccountDaoTest {
     )
     driver.run("INSERT INTO account_groups (id, name, sort_order) VALUES ('live', 'Live', 1)")
     driver.run(
-      "INSERT INTO account_groups (id, name, sort_order, tombstone) VALUES ('dead', 'Dead', 2, 1)"
+      "INSERT INTO account_groups (id, name, sort_order, tombstone) VALUES ('dead', 'Dead', 2, 1)",
     )
     driver.run("UPDATE accounts SET account_group_id = 'live' WHERE id = 'a'")
     driver.run("UPDATE accounts SET account_group_id = 'dead' WHERE id = 'b'")
