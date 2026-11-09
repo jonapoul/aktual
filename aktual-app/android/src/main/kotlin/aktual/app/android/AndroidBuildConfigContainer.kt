@@ -15,6 +15,6 @@ object AndroidBuildConfigContainer {
   @SingleIn(AppScope::class)
   fun buildConfig(): BuildConfig =
     aktual.app.di
-      .buildConfig(isDebug = AppBuildConfig.DEBUG)
+      .buildConfig(isDebug = AppBuildConfig.DEBUG, buildType = AppBuildConfig.BUILD_TYPE)
       .copy(versionCode = AppBuildConfig.VERSION_CODE)
 }

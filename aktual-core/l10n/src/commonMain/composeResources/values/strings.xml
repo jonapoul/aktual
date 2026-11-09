@@ -105,6 +105,7 @@
   <string name="info_server_version">Server Version</string>
   <string name="info_server_version_unknown">Unknown</string>
   <string name="info_date">Build Time</string>
+  <string name="info_build_type">Build Type</string>
   <string name="info_subtitle1">Jon Poulton, %1$d</string>
   <string name="info_subtitle2">Apache 2.0 License</string>
   <string name="info_check_updates">Check for updates</string>
