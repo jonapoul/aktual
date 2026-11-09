@@ -36,6 +36,16 @@ CATALOG_TRIGGER_PATTERN=""
 # Paths that never affect a module task (docs, generated module READMEs), dropped before matching.
 IGNORED_PATHS_PATTERN='\.md$'
 
+# Return 0 if settings.gradle.kts only changed module path lines since the given ref (e.g. an
+# added or removed include), which the module's own changed files already cover.
+# Args: $1 = base ref.
+settings_only_module_lines_changed() {
+  local lines
+  lines=$(git diff -U0 "$1" -- settings.gradle.kts | grep -E '^[+-]' | grep -vE '^(\+\+\+|---) ' || true)
+  [[ -n "$lines" ]] || return 1
+  ! grep -qvE '^[+-][[:space:]]*":[^"]+",?[[:space:]]*$' <<< "$lines"
+}
+
 # Return 0 if any of the newline-separated paths on stdin match a pattern in
 # .global-triggers. Matching is delegated to `git check-ignore` against a throwaway
 # repo whose only ignore source is that file, so the repo's own .gitignore can't interfere.
@@ -180,6 +190,10 @@ run_changed_module_task() {
       fi
     fi
     other_files=$(grep -vxF "$catalog" <<< "$changed_files" || true)
+    if grep -qxF settings.gradle.kts <<< "$other_files" \
+      && settings_only_module_lines_changed "$merge_base"; then
+      other_files=$(grep -vxF settings.gradle.kts <<< "$other_files" || true)
+    fi
 
     local catalog_modules=""
     if [[ "$catalog_changed" == true ]]; then

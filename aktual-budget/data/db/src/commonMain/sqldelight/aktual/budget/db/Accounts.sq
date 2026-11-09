@@ -116,3 +116,10 @@ SELECT a.id, a.name, a.offbudget, a.closed, a.sort_order, g.id AS account_group_
 -- packages/loot-core/src/server/db/index.ts deleteAccountGroup()
 getIdsInGroup:
 SELECT id FROM accounts WHERE account_group_id = ? AND tombstone = 0;
+
+-- packages/loot-core/src/server/accounts/app.ts getAccountProperties()
+getProperties:
+SELECT CAST(IFNULL(SUM(CASE WHEN isParent = 0 THEN amount ELSE 0 END), 0) AS INTEGER) AS balance,
+    COUNT(id) AS count
+  FROM transactions
+  WHERE acct = ? AND tombstone = 0;

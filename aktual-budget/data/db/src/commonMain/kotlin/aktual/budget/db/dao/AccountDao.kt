@@ -12,7 +12,9 @@ import aktual.budget.db.withoutResult
 import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
+import aktual.budget.model.Amount
 import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.async.coroutines.awaitAsOne
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.coroutines.asFlow
 import dev.zacsweers.metro.Inject
@@ -85,6 +87,12 @@ class AccountDao(database: BudgetDatabase) {
     getIdsInGroup(id).awaitAsList()
   }
 
+  // The balance and number of live transactions, split parents counted but left out of the balance
+  suspend fun properties(id: AccountId): AccountProperties = queries.withResult {
+    val row = getProperties(id).awaitAsOne()
+    AccountProperties(balance = Amount(row.balance ?: 0L), transactionCount = row.count)
+  }
+
   // The highest sort order among on or off budget accounts, null if there are none
   suspend fun maxSortOrder(offBudget: Boolean): Double? = queries.withResult {
     getMaxSortOrder(offBudget).awaitAsOneOrNull()?.sort_order
@@ -96,3 +104,5 @@ class AccountDao(database: BudgetDatabase) {
     getAllNames().awaitAsList().associate { it.id to it.name }
   }
 }
+
+data class AccountProperties(val balance: Amount, val transactionCount: Long)

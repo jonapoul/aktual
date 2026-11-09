@@ -170,6 +170,7 @@ include(
   ":aktual-app:ui-budget",
   ":aktual-budget",
   ":aktual-budget:accounts:components",
+  ":aktual-budget:accounts:domain",
   ":aktual-budget:accounts:ui",
   ":aktual-budget:accounts:vm",
   ":aktual-budget:banksync:components",
