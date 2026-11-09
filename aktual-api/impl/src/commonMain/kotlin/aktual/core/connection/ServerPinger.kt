@@ -80,26 +80,27 @@ class ServerPinger(
     }
   }
 
-  private suspend fun attemptPing(healthApi: HealthApi): PingState = runCatchingCancellable(
-    attempt = {
-      val response = healthApi.getHealth()
-      logcat.v { "Succeeded pinging server: $response" }
-      if (consecutiveFailures > 0) {
-        logcat.d { "Ping recovered after $consecutiveFailures failures" }
-      }
-      consecutiveFailures = 0
-      lastSuccess = TimeSource.Monotonic.markNow()
-      if (response.status == "UP") Success else Unknown
-    },
-    onFailure = { e ->
-      consecutiveFailures++
-      logcat.w(e) {
-        "Failed pinging $serverUrl (failure #$consecutiveFailures, last success " +
-          "${lastSuccess?.elapsedNow()?.let { "$it ago" } ?: "never"}): ${e.causeChain()}"
-      }
-      Failure
-    },
-  )
+  private suspend fun attemptPing(healthApi: HealthApi): PingState =
+    runCatchingCancellable(
+      attempt = {
+        val response = healthApi.getHealth()
+        logcat.v { "Succeeded pinging server: $response" }
+        if (consecutiveFailures > 0) {
+          logcat.d { "Ping recovered after $consecutiveFailures failures" }
+        }
+        consecutiveFailures = 0
+        lastSuccess = TimeSource.Monotonic.markNow()
+        if (response.status == "UP") Success else Unknown
+      },
+      onFailure = { e ->
+        consecutiveFailures++
+        logcat.w(e) {
+          "Failed pinging $serverUrl (failure #$consecutiveFailures, last success " +
+            "${lastSuccess?.elapsedNow()?.let { "$it ago" } ?: "never"}): ${e.causeChain()}"
+        }
+        Failure
+      },
+    )
 
   private fun Throwable.causeChain(): String =
     generateSequence(this) { it.cause }
