@@ -6,6 +6,7 @@ import aktual.app.nav.AppLockManager
 import aktual.app.nav.AppLockPrompt
 import aktual.app.nav.rememberAppLockPrompt
 import aktual.app.nav.rememberBackStack
+import aktual.core.model.ForegroundStateHolder
 import aktual.core.ui.LoadingScreenIfNull
 import aktual.di.AppScope
 import android.annotation.SuppressLint
@@ -33,6 +34,7 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @ActivityKey
@@ -41,6 +43,7 @@ class AktualActivity(
   override val defaultViewModelProviderFactory: MetroViewModelFactory,
   private val appLockManager: AppLockManager,
   private val appLockAuthenticator: AndroidAppLockAuthenticator,
+  private val foregroundState: ForegroundStateHolder,
 ) : ComponentActivity() {
   private val viewModel by viewModels<AktualActivityViewModel>()
 
@@ -49,11 +52,15 @@ class AktualActivity(
   override fun onStart() {
     super.onStart()
     appLockManager.onForeground()
+    foregroundState.update { true }
   }
 
   override fun onStop() {
     super.onStop()
-    if (!isChangingConfigurations) appLockManager.onBackground()
+    if (!isChangingConfigurations) {
+      appLockManager.onBackground()
+      foregroundState.update { false }
+    }
   }
 
   override fun onDestroy() {
