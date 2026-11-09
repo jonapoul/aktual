@@ -129,6 +129,7 @@ internal constructor(
     return BuildState(
       versions = versions,
       buildDate = DateTimeFormatter.RFC_1123_DATE_TIME.format(zonedDateTime),
+      buildType = buildConfig.buildType.takeUnless { buildConfig.isRelease },
       year = zonedDateTime.year,
       appSourceUrl = buildConfig.repoUrl,
       serverSourceUrl = "https://github.com/actualbudget/actual",

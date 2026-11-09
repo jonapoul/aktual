@@ -13,6 +13,7 @@ val TestBuildConfig =
   BuildConfig(
     buildTime = TestInstant,
     isDebug = false,
+    buildType = "release",
     gitHash = "abcd1234",
     versionCode = 123,
     versionName = "1.2.3",

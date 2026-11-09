@@ -6,6 +6,7 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
 import aktual.core.icons.Cloud
 import aktual.core.icons.material.Apps
+import aktual.core.icons.material.Build
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OpenInNew
 import aktual.core.l10n.Drawables
@@ -258,6 +259,14 @@ private fun InfoBuildState(
       title = Strings.infoDate,
       subtitle = buildState.buildDate,
     )
+
+    buildState.buildType?.let { buildType ->
+      BuildStateItem(
+        icon = MaterialIcons.Build,
+        title = Strings.infoBuildType,
+        subtitle = buildType,
+      )
+    }
   }
 }
 
@@ -331,6 +340,7 @@ private val PreviewBuildState =
   BuildState(
     versions = AktualVersions(app = "1.2.3", server = "2.3.4"),
     buildDate = "12:34 GMT, 1st Feb 2026",
+    buildType = "debug",
     year = 2026,
     appSourceUrl = "https://github.com/jonapoul/aktual/tree/v1.2.3",
     serverSourceUrl = "https://github.com/actualbudget/actual/tree/v2.3.4",

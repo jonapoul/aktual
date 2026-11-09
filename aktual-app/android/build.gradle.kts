@@ -94,7 +94,7 @@ android {
   buildTypes {
     debug {
       applicationIdSuffix = ".dev"
-      versionNameSuffix = "-dev"
+      versionNameSuffix = "-debug"
       signingConfig = signingConfigs.findByName("debug")
       isMinifyEnabled = false
     }

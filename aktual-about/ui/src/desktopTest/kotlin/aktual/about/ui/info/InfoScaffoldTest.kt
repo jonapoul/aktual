@@ -52,14 +52,33 @@ class InfoScaffoldTest {
     onNodeWithText("Source Code").assertDoesNotExist()
   }
 
+  @Test
+  fun `Build type is hidden for release builds`() = runComposeUiTest {
+    // when
+    setScaffold()
+
+    // then
+    onNodeWithText("Build Type").assertDoesNotExist()
+  }
+
+  @Test
+  fun `Build type is shown for non-release builds`() = runComposeUiTest {
+    // when
+    setScaffold(BUILD_STATE.copy(buildType = "debug"))
+
+    // then
+    onNodeWithText("Build Type").assertExists()
+    onNodeWithText("debug").assertExists()
+  }
+
   private fun ComposeUiTest.versionButton(version: String) =
     onNode(
       SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button) and hasText(version),
       useUnmergedTree = false,
     )
 
-  private fun ComposeUiTest.setScaffold() = setPreviewContent {
-    InfoScaffold(buildState = BUILD_STATE, onAction = { actions += it })
+  private fun ComposeUiTest.setScaffold(buildState: BuildState = BUILD_STATE) = setPreviewContent {
+    InfoScaffold(buildState = buildState, onAction = { actions += it })
   }
 
   private companion object {
@@ -70,6 +89,7 @@ class InfoScaffoldTest {
       BuildState(
         versions = AktualVersions(app = "1.2.3", server = "2.3.4"),
         buildDate = "12:34 GMT, 1st Feb 2026",
+        buildType = null,
         year = 2026,
         appSourceUrl = APP_URL,
         serverSourceUrl = SERVER_URL,

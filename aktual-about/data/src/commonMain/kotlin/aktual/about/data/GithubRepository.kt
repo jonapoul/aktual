@@ -41,7 +41,7 @@ internal constructor(
     return when {
       latest == null || publishedAt == null -> NoReleases
 
-      buildConfig.versionName == latest.clippedVersion() -> NoNewUpdate
+      buildConfig.baseVersionName == latest.clippedVersion() -> NoNewUpdate
 
       else ->
         if (publishedAt > buildConfig.buildTime) {
