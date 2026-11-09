@@ -13,7 +13,6 @@ import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
-import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.normalButton
@@ -32,6 +31,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -41,7 +41,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.text.ParagraphIntrinsics
@@ -71,7 +70,7 @@ internal fun ArtifactItem(
         .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
         .background(colors.buttonNormalBackground, CardShape)
         .border(Hairline, colors.buttonNormalBorder, CardShape)
-        .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
+        .clickableIfNeeded(artifact, onLaunchUrl, interactionSource, Strings.licensesItemLaunch)
         .padding(Dimens.Large),
     verticalAlignment = CenterVertically,
   ) {
@@ -118,11 +117,11 @@ internal fun ArtifactItem(
 
     val url = artifact.scm?.url
     if (url != null) {
-      NormalIconButton(
-        modifier = Modifier.clip(CardShape),
+      Icon(
+        modifier = Modifier.padding(start = Dimens.Large).size(ChevronSize),
         imageVector = AktualIcons.CheveronRight,
-        onClick = { onLaunchUrl(url) },
-        contentDescription = Strings.licensesItemLaunch,
+        contentDescription = null,
+        tint = colors.pageTextSubdued,
       )
     }
   }
@@ -156,7 +155,7 @@ internal fun ShimmerArtifactItem(modifier: Modifier = Modifier) {
       }
     }
 
-    Box(bar.size(ShimmerButtonSize))
+    Box(bar.size(ChevronSize))
   }
 }
 
@@ -194,12 +193,13 @@ private fun Modifier.clickableIfNeeded(
   artifact: ArtifactDetail,
   onLaunchUrl: (String) -> Unit,
   interactionSource: MutableInteractionSource,
+  onClickLabel: String,
 ): Modifier {
   val url = artifact.scm?.url ?: return this
   return clickable(
     interactionSource = interactionSource,
     indication = ripple(),
-    enabled = true,
+    onClickLabel = onClickLabel,
     onClick = { onLaunchUrl(url) },
   )
 }
@@ -255,7 +255,7 @@ private val ShimmerTitleHeight = 18.dp
 private val ShimmerTextHeight = 12.dp
 private val ShimmerRowSpacing = 3.dp
 private val ShimmerHeaderWidth = 50.dp
-private val ShimmerButtonSize = 40.dp
+private val ChevronSize = 16.dp
 
 @Preview
 @Composable
