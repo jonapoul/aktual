@@ -15,11 +15,10 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.normalButton
+import aktual.core.ui.card
 import aktual.core.ui.rememberHighlighted
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -68,8 +67,7 @@ internal fun ArtifactItem(
     modifier =
       modifier
         .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
-        .background(colors.buttonNormalBackground, CardShape)
-        .border(Hairline, colors.buttonNormalBorder, CardShape)
+        .card(colors)
         .clickableIfNeeded(artifact, onLaunchUrl, interactionSource, Strings.licensesItemLaunch)
         .padding(Dimens.Large),
     verticalAlignment = CenterVertically,
@@ -136,7 +134,7 @@ internal fun ShimmerArtifactItem(modifier: Modifier = Modifier) {
     modifier =
       modifier
         .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
-        .normalButton(colors)
+        .card(colors)
         .padding(Dimens.Large)
         .shimmer(rememberShimmer(Window)),
     verticalAlignment = CenterVertically,
