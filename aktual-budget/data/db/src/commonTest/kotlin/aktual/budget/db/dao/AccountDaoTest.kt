@@ -6,6 +6,7 @@ import aktual.budget.db.test.insertAccounts
 import aktual.budget.db.test.run
 import aktual.budget.db.test.runDriverTest
 import aktual.budget.db.withoutResult
+import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
 import aktual.budget.model.TransactionId
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -13,6 +14,7 @@ import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.containsExactlyInAnyOrder
 import kotlin.test.Test
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
@@ -140,6 +142,121 @@ internal class AccountDaoTest {
         assertThat(rows.map { it.last_activity }).containsExactly(DATE)
         assertThat(rows.map { it.balance }).containsExactly(1_000L)
       }
+    }
+
+  @Test
+  fun `Manage list counts every live transaction and skips split parents in the balance`() =
+    runDaoTest { accounts, transactions ->
+      // given
+      insertAccounts(buildAccount(id = AccountId("a")), buildAccount(id = AccountId("b")))
+      transactions.insert("t1", "a", "cat", "payee", DATE, amount = 10.0)
+      transactions.insert("p", "a", "cat", "payee", DATE, amount = 100.0, isParent = true)
+      transactions.insert("c1", "a", "cat", "payee", DATE, amount = 60.0, parent = "p")
+      transactions.insert("c2", "a", "cat", "payee", DATE, amount = 40.0, parent = "p")
+      insertDeleted(transactions, id = "t2", copyOf = "t1")
+
+      // then
+      accounts.observeManageList().test {
+        val rows = awaitItem()
+        assertThat(rows.map { Triple(it.id.value, it.balance, it.transaction_count) })
+          .containsExactly(Triple("a", 11_000L, 4L), Triple("b", 0L, 0L))
+      }
+    }
+
+  @Test
+  fun `Manage list treats a missing or deleted group as ungrouped`() = runDaoTest { accounts, _ ->
+    // given
+    insertAccounts(
+      buildAccount(id = AccountId("a"), name = "A"),
+      buildAccount(id = AccountId("b"), name = "B"),
+      buildAccount(id = AccountId("c"), name = "C"),
+      buildAccount(id = AccountId("d"), name = "D"),
+    )
+    driver.run("INSERT INTO account_groups (id, name, sort_order) VALUES ('live', 'Live', 1)")
+    driver.run(
+      "INSERT INTO account_groups (id, name, sort_order, tombstone) VALUES ('dead', 'Dead', 2, 1)",
+    )
+    driver.run("UPDATE accounts SET account_group_id = 'live' WHERE id = 'a'")
+    driver.run("UPDATE accounts SET account_group_id = 'dead' WHERE id = 'b'")
+    driver.run("UPDATE accounts SET account_group_id = 'missing' WHERE id = 'c'")
+
+    // then
+    accounts.observeManageList().test {
+      assertThat(awaitItem().map { it.id.value to it.account_group_id })
+        .containsExactly("a" to AccountGroupId("live"), "b" to null, "c" to null, "d" to null)
+    }
+  }
+
+  @Test
+  fun `Manage list flags accounts with non-empty notes`() = runDaoTest { accounts, _ ->
+    // given
+    insertAccounts(
+      buildAccount(id = AccountId("a"), name = "A"),
+      buildAccount(id = AccountId("b"), name = "B"),
+      buildAccount(id = AccountId("c"), name = "C"),
+    )
+    driver.run("INSERT INTO notes (id, note) VALUES ('account-a', 'Main bank')")
+    driver.run("INSERT INTO notes (id, note) VALUES ('account-b', '')")
+
+    // then
+    accounts.observeManageList().test {
+      assertThat(awaitItem().map { it.id.value to it.has_notes })
+        .containsExactly("a" to true, "b" to false, "c" to false)
+    }
+  }
+
+  @Test
+  fun `Manage list skips deleted accounts and keeps closed ones`() = runDaoTest { accounts, _ ->
+    // given
+    insertAccounts(
+      buildAccount(id = AccountId("a"), name = "A"),
+      buildAccount(id = AccountId("b"), name = "B"),
+      buildAccount(id = AccountId("c"), name = "C"),
+    )
+    accountsQueries.withoutResult { closeAccount(AccountId("b")) }
+    driver.run("UPDATE accounts SET tombstone = 1 WHERE id = 'c'")
+
+    // then
+    accounts.observeManageList().test {
+      assertThat(awaitItem().map { it.id.value to it.closed })
+        .containsExactly("a" to false, "b" to true)
+    }
+  }
+
+  @Test
+  fun `Manage list re-emits when a note changes`() = runDaoTest { accounts, _ ->
+    // given
+    insertAccounts(buildAccount(id = AccountId("a")))
+
+    accounts.observeManageList().test {
+      assertThat(awaitItem().map { it.has_notes }).containsExactly(false)
+
+      // when
+      driver.run("INSERT INTO notes (id, note) VALUES ('account-a', 'Main bank')")
+      driver.notifyListeners("notes")
+
+      // then
+      assertThat(awaitItem().map { it.has_notes }).containsExactly(true)
+    }
+  }
+
+  @Test
+  fun `Accounts in a group include closed ones and skip deleted ones`() =
+    runDaoTest { accounts, _ ->
+      // given
+      insertAccounts(
+        buildAccount(id = AccountId("a"), name = "A"),
+        buildAccount(id = AccountId("b"), name = "B"),
+        buildAccount(id = AccountId("c"), name = "C"),
+        buildAccount(id = AccountId("d"), name = "D"),
+      )
+      driver.run("UPDATE accounts SET account_group_id = 'g' WHERE id IN ('a', 'b', 'c')")
+      accountsQueries.withoutResult { closeAccount(AccountId("b")) }
+      driver.run("UPDATE accounts SET tombstone = 1 WHERE id = 'c'")
+
+      // then
+      assertThat(accounts.idsInGroup(AccountGroupId("g")))
+        .containsExactlyInAnyOrder(AccountId("a"), AccountId("b"))
     }
 
   private fun AccountDao.observeBalances() =
