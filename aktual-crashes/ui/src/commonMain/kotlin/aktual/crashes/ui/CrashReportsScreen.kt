@@ -15,6 +15,7 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -27,7 +28,6 @@ import aktual.core.ui.SearchMessage
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.card
 import aktual.core.ui.contrastingTextColor
 import aktual.core.ui.errorButton
 import aktual.core.ui.hazedTopBar
@@ -40,7 +40,6 @@ import aktual.core.ui.transparentTopAppBarColors
 import aktual.crashes.vm.CrashReportsState
 import aktual.crashes.vm.CrashReportsViewModel
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -218,8 +217,8 @@ private fun CrashReportsList(
 
 @Composable
 private fun CrashReportsSummary(count: Int, modifier: Modifier = Modifier) =
-  Column(
-    modifier = modifier.fillMaxWidth().card(colors).padding(Dimens.VeryLarge),
+  CardColumn(
+    modifier = modifier.fillMaxWidth(),
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
     Text(

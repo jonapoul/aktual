@@ -8,6 +8,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.textSizes
+import aktual.core.ui.CardRow
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
@@ -16,11 +17,10 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.card
+import aktual.core.ui.padding
 import aktual.core.ui.rememberHighlighted
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -62,14 +61,12 @@ internal fun ArtifactItem(
   modifier: Modifier = Modifier,
   query: String = "",
 ) {
-  val interactionSource = remember { MutableInteractionSource() }
-  Row(
-    modifier =
-      modifier
-        .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
-        .card(colors)
-        .clickableIfNeeded(artifact, onLaunchUrl, interactionSource, Strings.licensesItemLaunch)
-        .padding(Dimens.Large),
+  val url = artifact.scm?.url
+  CardRow(
+    modifier = modifier.padding(horizontal = Dimens.Large, vertical = Dimens.Small),
+    contentPadding = Dimens.Large.padding,
+    onClick = url?.let { { onLaunchUrl(it) } },
+    onClickLabel = Strings.licensesItemLaunch,
     verticalAlignment = CenterVertically,
   ) {
     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Top) {
@@ -113,7 +110,6 @@ internal fun ArtifactItem(
       )
     }
 
-    val url = artifact.scm?.url
     if (url != null) {
       Icon(
         modifier = Modifier.padding(start = Dimens.Large).size(ChevronSize),
@@ -186,21 +182,6 @@ private fun estimateTextWidth(
 @get:Stable
 private val ArtifactDetail.fullArtifact
   get() = "$groupId:$artifactId"
-
-private fun Modifier.clickableIfNeeded(
-  artifact: ArtifactDetail,
-  onLaunchUrl: (String) -> Unit,
-  interactionSource: MutableInteractionSource,
-  onClickLabel: String,
-): Modifier {
-  val url = artifact.scm?.url ?: return this
-  return clickable(
-    interactionSource = interactionSource,
-    indication = ripple(),
-    onClickLabel = onClickLabel,
-    onClick = { onLaunchUrl(url) },
-  )
-}
 
 @Stable
 private fun ArtifactDetail.license(): String {

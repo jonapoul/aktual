@@ -46,6 +46,7 @@ import aktual.core.ui.AktualTheme.letterSpacings
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.CardRow
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.FailureAction
@@ -56,7 +57,6 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PrimaryTextButton
-import aktual.core.ui.card
 import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -541,8 +541,9 @@ internal inline fun DetailCard(content: @Composable ColumnScope.() -> Unit) =
 
 @Composable
 internal fun BalanceAfter(balance: Amount, modifier: Modifier = Modifier) =
-  Row(
-    modifier = modifier.fillMaxWidth().card(colors).padding(BalancePadding),
+  CardRow(
+    modifier = modifier.fillMaxWidth(),
+    contentPadding = BalancePadding,
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.SpaceBetween,
   ) {

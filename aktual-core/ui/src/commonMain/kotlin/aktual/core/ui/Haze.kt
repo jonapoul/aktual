@@ -167,7 +167,7 @@ fun hazedTopBarContentPadding(state: HazedTopBarState, innerPadding: PaddingValu
   if (state.enabled) {
     PaddingValues(top = innerPadding.calculateTopPadding())
   } else {
-    PaddingValues()
+    Zero
   }
 
 /**

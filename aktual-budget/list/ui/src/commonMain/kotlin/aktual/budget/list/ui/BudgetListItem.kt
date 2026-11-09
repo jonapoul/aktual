@@ -9,19 +9,18 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.CardRow
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
-import aktual.core.ui.card
 import aktual.core.ui.contrastingTextColor
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -84,13 +83,10 @@ private fun BudgetListItemRow(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .card(colors)
-        .clickable(onClick = onClick)
-        .padding(horizontal = 15.dp, vertical = 12.dp),
+  CardRow(
+    modifier = modifier.fillMaxWidth(),
+    contentPadding = PaddingValues(horizontal = 15.dp, vertical = 12.dp),
+    onClick = onClick,
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = CenterVertically,
   ) {

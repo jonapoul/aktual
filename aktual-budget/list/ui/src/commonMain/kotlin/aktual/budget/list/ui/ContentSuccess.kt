@@ -33,7 +33,7 @@ internal fun ContentSuccess(
   onClickOpen: (Budget) -> Unit,
   onClickDelete: (Budget) -> Unit,
   modifier: Modifier = Modifier,
-  contentPadding: PaddingValues = PaddingValues(),
+  contentPadding: PaddingValues = Zero,
   listState: LazyListState = rememberLazyListState(),
 ) {
   // Only one row can be swiped open at a time

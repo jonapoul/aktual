@@ -10,12 +10,13 @@ import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.card
 import aktual.core.ui.disabledIf
+import aktual.core.ui.padding
 import aktual.core.ui.switch
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -113,9 +114,7 @@ private fun ViewOptionsContent(
 
     val account = options.account
     if (account != null) {
-      Column(
-        modifier = Modifier.card(colors).padding(Dimens.Large),
-      ) {
+      CardColumn(contentPadding = Dimens.Large.padding) {
         Text(
           text = Strings.transactionsViewThisAccount,
           fontSize = textSizes.smallPlus,

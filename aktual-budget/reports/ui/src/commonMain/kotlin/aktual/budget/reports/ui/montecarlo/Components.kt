@@ -9,17 +9,17 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.letterSpacings
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
+import aktual.core.ui.Dimens
 import aktual.core.ui.ProvideSurfaceColor
-import aktual.core.ui.card
+import aktual.core.ui.padding
 import aktual.core.ui.redacted
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.PlainTooltip
@@ -44,8 +44,9 @@ internal fun SectionCard(
   modifier: Modifier = Modifier,
   content: @Composable ColumnScope.() -> Unit,
 ) =
-  Column(
-    modifier = modifier.fillMaxWidth().card(colors).padding(16.dp),
+  CardColumn(
+    modifier = modifier.fillMaxWidth(),
+    contentPadding = Dimens.Huge.padding,
     verticalArrangement = Arrangement.spacedBy(10.dp),
     content = { ProvideSurfaceColor(colors.tableBackground) { content() } },
   )

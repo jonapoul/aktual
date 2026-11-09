@@ -15,3 +15,7 @@ Shared Compose components and theming.
 Never write a raw `N.sp` for a font size, line height or letter spacing. Import the scale statically and use the nearest entry, e.g. `import aktual.core.ui.AktualTheme.textSizes`, then `textSizes.small`. If no entry fits, add one to the scale's file rather than hardcoding. Only sizes computed at runtime (like in `ScaleToFitText`) use `.sp` directly.
 
 Spacing uses `Dimens` (dp), not `AktualTheme`.
+
+## Cards
+
+Use the `CardColumn` (column) or `CardRow` composable for card containers, passing `contentPadding` and `onClick` rather than chaining `padding`/`clickable` yourself. `Modifier.card` is for cases `CardColumn` can't cover, like applying the card style conditionally or adding `shimmer()` after the padding.

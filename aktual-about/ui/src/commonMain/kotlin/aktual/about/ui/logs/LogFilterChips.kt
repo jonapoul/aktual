@@ -6,17 +6,16 @@ import aktual.core.icons.CheveronDown
 import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
-import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.CardColumn
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.Rectangle
-import aktual.core.ui.card
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,28 +30,33 @@ internal fun LogFilterChips(
   onOpenLevels: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  FlowRow(
-    modifier =
-      modifier.fillMaxWidth().card(colors, Rectangle).padding(horizontal = 8.dp, vertical = 6.dp),
-    horizontalArrangement = Arrangement.spacedBy(2.dp),
-    verticalArrangement = Arrangement.spacedBy(2.dp),
+  CardColumn(
+    modifier = modifier.fillMaxWidth(),
+    shape = Rectangle,
+    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
   ) {
-    Chip(
-      text = filters.levelsSummary(),
-      colors = ChipDefaults.selectableColors(isSelected = true),
-      trailingIcon = AktualIcons.CheveronDown,
-      onClick = onOpenLevels,
-      role = Button,
-    )
-
-    for (tag in filters.tags) {
+    FlowRow(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(2.dp),
+      verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
       Chip(
-        text = tag,
+        text = filters.levelsSummary(),
         colors = ChipDefaults.selectableColors(isSelected = true),
-        trailingIcon = AktualIcons.Delete,
-        trailingIconDescription = Strings.logsTagRemove(tag),
-        onClick = { onAction(RemoveTag(tag)) },
+        trailingIcon = AktualIcons.CheveronDown,
+        onClick = onOpenLevels,
+        role = Button,
       )
+
+      for (tag in filters.tags) {
+        Chip(
+          text = tag,
+          colors = ChipDefaults.selectableColors(isSelected = true),
+          trailingIcon = AktualIcons.Delete,
+          trailingIconDescription = Strings.logsTagRemove(tag),
+          onClick = { onAction(RemoveTag(tag)) },
+        )
+      }
     }
   }
 }

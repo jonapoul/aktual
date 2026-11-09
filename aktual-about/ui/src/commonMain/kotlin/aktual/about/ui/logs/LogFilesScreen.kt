@@ -19,6 +19,7 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -188,8 +189,8 @@ private fun LogFilesList(
 /** Keep in sync with [ShimmerLogFilesSummary] */
 @Composable
 private fun LogFilesSummary(state: LogFilesState.Loaded, modifier: Modifier = Modifier) =
-  Column(
-    modifier = modifier.fillMaxWidth().card(colors).padding(Dimens.VeryLarge),
+  CardColumn(
+    modifier = modifier.fillMaxWidth(),
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
     Text(

@@ -16,13 +16,13 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryIconButton
 import aktual.core.ui.ProvideSurfaceColor
-import aktual.core.ui.card
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -47,8 +47,9 @@ internal fun Conditions(
   onAction: EditRuleActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier = modifier.fillMaxWidth().card(colors).padding(CARD_PADDING),
+  CardColumn(
+    modifier = modifier.fillMaxWidth(),
+    contentPadding = CARD_PADDING,
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     ProvideSurfaceColor(colors.cardBackground) {

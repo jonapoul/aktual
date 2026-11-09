@@ -1,11 +1,12 @@
 package aktual.budget.tags.ui.edit
 
+import aktual.core.ui.padding
 import androidx.compose.ui.unit.dp
 
 internal object EditTagDS {
   val fieldSpacing = 16.dp
   val labelSpacing = 4.dp
-  val cardPadding = 12.dp
+  val cardPadding = 12.dp.padding
 
   val colorPickerSectionSpacing = 12.dp
   val colorWheelSize = 220.dp

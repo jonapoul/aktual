@@ -1,5 +1,6 @@
 package aktual.budget.banksync.ui
 
+import aktual.core.ui.padding
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
 
@@ -8,7 +9,7 @@ internal object BankSyncDS {
   val headerSpacing = 8.dp
 
   val itemHorizontalSpacing = 8.dp
-  val itemCardPadding = 12.dp
+  val itemCardPadding = 12.dp.padding
   val itemContentSpacing = 2.dp
 
   val progressSize = 20.dp

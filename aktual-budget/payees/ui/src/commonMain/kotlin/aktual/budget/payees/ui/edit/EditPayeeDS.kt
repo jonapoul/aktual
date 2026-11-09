@@ -1,12 +1,13 @@
 package aktual.budget.payees.ui.edit
 
+import aktual.core.ui.padding
 import androidx.compose.ui.unit.dp
 
 internal object EditPayeeDS {
   val fieldSpacing = 16.dp
   val labelSpacing = 4.dp
   val switchSpacing = 12.dp
-  val cardPadding = 12.dp
+  val cardPadding = 12.dp.padding
   val locationSpacing = 8.dp
 
   val shimmerLabelWidth = 80.dp
