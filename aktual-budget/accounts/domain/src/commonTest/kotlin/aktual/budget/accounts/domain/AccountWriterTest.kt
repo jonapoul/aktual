@@ -5,6 +5,7 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.AccountGroupDao
+import aktual.budget.db.dao.AccountProperties
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.db.dao.NotesDao
@@ -40,7 +41,7 @@ internal class AccountWriterTest {
   fun `Closing an account with no transactions deletes it`() = runWriterTest {
     val id = createAccount("Empty")
 
-    assertThat(writer.close(id)).isEqualTo(Deleted)
+    assertThat(writer.close(id).result).isEqualTo(Deleted)
 
     assertThat(accountDao[id]?.tombstone).isEqualTo(true)
   }
@@ -51,7 +52,7 @@ internal class AccountWriterTest {
     addTransaction(id, Amount(500))
     addTransaction(id, Amount(-500))
 
-    assertThat(writer.close(id)).isEqualTo(Closed)
+    assertThat(writer.close(id).result).isEqualTo(Closed)
 
     assertThat(accountDao[id]?.closed).isEqualTo(true)
     assertThat(accountDao.properties(id).transactionCount).isEqualTo(2L)
@@ -63,7 +64,7 @@ internal class AccountWriterTest {
     val target = createAccount("Target")
     addTransaction(closing, Amount(1_234))
 
-    assertThat(writer.close(closing, transferTo = target)).isEqualTo(Closed)
+    assertThat(writer.close(closing, transferTo = target).result).isEqualTo(Closed)
 
     assertThat(accountDao[closing]?.closed).isEqualTo(true)
     assertThat(accountDao.properties(closing).balance).isEqualTo(Zero)
@@ -94,8 +95,32 @@ internal class AccountWriterTest {
     writer.close(id)
     val calls = syncCalls.size
 
-    assertThat(writer.close(id)).isEqualTo(Unchanged)
+    assertThat(writer.close(id).result).isEqualTo(Unchanged)
     assertThat(syncCalls.size).isEqualTo(calls)
+  }
+
+  @Test
+  fun `Undoing a close reopens the account and removes both sides of the transfer`() =
+    runWriterTest {
+      val closing = createAccount("Closing")
+      val target = createAccount("Target")
+      addTransaction(closing, Amount(1_234))
+
+      val outcome = writer.close(closing, transferTo = target)
+      writer.undo(outcome.undo)
+
+      assertThat(accountDao[closing]?.closed).isEqualTo(false)
+      assertThat(accountDao.properties(closing)).isEqualTo(AccountProperties(Amount(1_234), 1L))
+      assertThat(accountDao.properties(target)).isEqualTo(AccountProperties(Zero, 0L))
+    }
+
+  @Test
+  fun `Undoing a close that deleted an empty account restores it`() = runWriterTest {
+    val id = createAccount("Empty")
+
+    writer.undo(writer.close(id).undo)
+
+    assertThat(accountDao[id]?.tombstone).isEqualTo(false)
   }
 
   @Test
@@ -125,6 +150,37 @@ internal class AccountWriterTest {
     writer.setNotes(id, "Main bank")
 
     assertThat(NotesDao(database).getNote("account-${id.value}")).isEqualTo("Main bank")
+  }
+
+  @Test
+  fun `Editing changes only what's given, and undoing puts it back`() = runWriterTest {
+    val id = createAccount("Current")
+    val group = writer.createGroup("Everyday")
+    writer.setNotes(id, "Main bank")
+    val calls = syncCalls.size
+
+    val undo = writer.edit(id, name = To("Joint"), notes = To("Shared"), group = To(group))
+
+    assertThat(syncCalls.size).isEqualTo(calls + 1)
+    assertThat(accountDao[id]?.name).isEqualTo("Joint")
+    assertThat(accountDao[id]?.account_group_id).isEqualTo(group)
+    assertThat(writer.notes(id)).isEqualTo("Shared")
+
+    writer.undo(undo)
+
+    assertThat(accountDao[id]?.name).isEqualTo("Current")
+    assertThat(accountDao[id]?.account_group_id).isNull()
+    assertThat(writer.notes(id)).isEqualTo("Main bank")
+  }
+
+  @Test
+  fun `Editing nothing sends nothing`() = runWriterTest {
+    val id = createAccount("Current")
+    val calls = syncCalls.size
+
+    writer.undo(writer.edit(id))
+
+    assertThat(syncCalls.size).isEqualTo(calls)
   }
 
   @Test
@@ -297,6 +353,7 @@ internal class AccountWriterTest {
         accountDao = accountDao,
         groupDao = groupDao,
         payeeDao = PayeeDao(database),
+        notesDao = NotesDao(database),
         uuidGenerator = ::uuid,
         calendar = { TODAY },
       )

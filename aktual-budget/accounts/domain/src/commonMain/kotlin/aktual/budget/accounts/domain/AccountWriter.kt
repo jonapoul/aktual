@@ -6,6 +6,7 @@ import aktual.budget.db.dao.AccountGroupDao
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.db.dao.DatabaseTables.ACCOUNT_GROUPS
 import aktual.budget.db.dao.DatabaseTables.NOTES
+import aktual.budget.db.dao.NotesDao
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
@@ -13,9 +14,11 @@ import aktual.budget.model.Amount.Companion.Zero
 import aktual.budget.model.CategoryId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.SORT_INCREMENT
+import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.model.shoveSortOrders
 import aktual.budget.model.tombstone
+import aktual.budget.model.untombstone
 import aktual.budget.transactions.domain.NewTransaction
 import aktual.budget.transactions.domain.Patch
 import aktual.budget.transactions.domain.Patch.Keep
@@ -37,61 +40,101 @@ class AccountWriter(
   private val accountDao: AccountDao,
   private val groupDao: AccountGroupDao,
   private val payeeDao: PayeeDao,
+  private val notesDao: NotesDao,
   private val uuidGenerator: UuidGenerator,
   private val calendar: Calendar,
 ) {
   suspend fun rename(id: AccountId, name: String) = writer.write { renameAccount(id, name) }
 
   // Account notes live in the notes table under "account-<id>"
-  suspend fun setNotes(id: AccountId, notes: String) =
-    sync(localChange(NOTES, "account-${id.value}", "note", notes))
+  suspend fun setNotes(id: AccountId, notes: String) = sync(notesChange(id, notes))
+
+  suspend fun notes(id: AccountId): String = notesDao.getNote(notesId(id)).orEmpty()
+
+  /**
+   * The edit sheet's save: updateAccount() with a new name, plus its notes and group, in one batch.
+   * Returns what puts them back.
+   */
+  suspend fun edit(
+    id: AccountId,
+    name: Patch<String> = Keep,
+    notes: Patch<String> = Keep,
+    group: Patch<AccountGroupId?> = Keep,
+  ): AccountUndo {
+    val account = checkNotNull(accountDao[id]) { "Account $id not found" }
+    val oldNotes = if (notes is To) notes(id) else null
+    val changes = mutableListOf<LocalChange>()
+    val undo = mutableListOf<LocalChange>()
+    if (name is To) {
+      changes += localChange(ACCOUNTS, id.value, "name", name.value)
+      undo += localChange(ACCOUNTS, id.value, "name", account.name)
+    }
+    if (notes is To) {
+      changes += notesChange(id, notes.value)
+      undo += notesChange(id, oldNotes.orEmpty())
+    }
+    if (group is To) {
+      changes += localChange(ACCOUNTS, id.value, GROUP_ID, group.value?.value)
+      undo += localChange(ACCOUNTS, id.value, GROUP_ID, account.account_group_id?.value)
+    }
+    if (changes.isNotEmpty()) sync(changes)
+    return AccountUndo(undo)
+  }
 
   suspend fun setGroup(id: AccountId, group: AccountGroupId?) =
     sync(localChange(ACCOUNTS, id.value, GROUP_ID, group?.value))
 
-  suspend fun reopen(id: AccountId) = sync(localChange(ACCOUNTS, id.value, "closed", false))
+  suspend fun reopen(id: AccountId) = sync(localChange(ACCOUNTS, id.value, CLOSED, false))
 
   /**
    * closeAccount() without forcing it. An account with no transactions is deleted instead. Any
    * balance goes to [transferTo] in a closing transfer dated today, categorised as [category] when
-   * that's needed. Does nothing to an account that's missing, deleted or already closed.
+   * that's needed. Does nothing to an account that's missing, deleted or already closed. Returns
+   * what puts it back, the closing transfer removed.
    */
   suspend fun close(
     id: AccountId,
     transferTo: AccountId? = null,
     category: CategoryId? = null,
-  ): CloseResult {
+  ): CloseOutcome {
     val account = accountDao[id]
-    if (account == null || account.tombstone == true || account.closed == true) return Unchanged
+    if (account == null || account.tombstone == true || account.closed == true) {
+      return CloseOutcome(Unchanged, AccountUndo(emptyList()))
+    }
 
     val properties = accountDao.properties(id)
     if (properties.transactionCount == 0L) {
       sync(tombstone(ACCOUNTS, id.value))
-      return Deleted
+      return CloseOutcome(Deleted, AccountUndo(listOf(untombstone(ACCOUNTS, id.value))))
     }
 
     val balance = properties.balance
     require(balance == Zero || transferTo != null) { "A non-zero balance needs a transfer account" }
     require(transferTo != id) { "Can't transfer the balance to the account being closed" }
 
-    writer.write(runTransfers = true) {
-      add(listOf(localChange(ACCOUNTS, id.value, "closed", true)))
-      if (balance != Zero && transferTo != null) {
-        val payee =
-          checkNotNull(payeeDao.transferPayee(transferTo)) { "No transfer payee for $transferTo" }
-        val transaction =
-          NewTransaction(
-            account = id,
-            date = calendar.today(),
-            amount = -balance,
-            payee = payee,
-            category = category,
-            notes = CLOSING_NOTE,
-          )
-        insert(transaction)
+    val closing =
+      writer.write(runTransfers = true) {
+        add(listOf(localChange(ACCOUNTS, id.value, CLOSED, true)))
+        if (balance != Zero && transferTo != null) {
+          val payee =
+            checkNotNull(payeeDao.transferPayee(transferTo)) { "No transfer payee for $transferTo" }
+          val transaction =
+            NewTransaction(
+              account = id,
+              date = calendar.today(),
+              amount = -balance,
+              payee = payee,
+              category = category,
+              notes = CLOSING_NOTE,
+            )
+          insert(transaction)
+        } else {
+          null
+        }
       }
-    }
-    return Closed
+    val undo =
+      AccountUndo(listOf(localChange(ACCOUNTS, id.value, CLOSED, false)), setOfNotNull(closing))
+    return CloseOutcome(Closed, undo)
   }
 
   /**
@@ -188,8 +231,17 @@ class AccountWriter(
     return AccountUndo(undo)
   }
 
-  // Writes back the values the undone change replaced, in one batch
-  suspend fun undo(undo: AccountUndo) = sync(undo.changes)
+  // Writes back the values the undone change replaced, in one batch, and deletes what it added
+  suspend fun undo(undo: AccountUndo) {
+    if (undo.deleteTransactions.isEmpty()) {
+      if (undo.changes.isNotEmpty()) sync(undo.changes)
+      return
+    }
+    writer.write(runTransfers = true) {
+      add(undo.changes)
+      delete(undo.deleteTransactions)
+    }
+  }
 
   private suspend fun checkGroupName(name: String, except: AccountGroupId?) {
     val existing =
@@ -203,17 +255,28 @@ class AccountWriter(
 
   private suspend fun sync(changes: List<LocalChange>) = syncController.syncChanges(changes)
 
+  private fun notesId(id: AccountId) = "account-${id.value}"
+
+  private fun notesChange(id: AccountId, notes: String) =
+    localChange(NOTES, notesId(id), "note", notes)
+
   private fun sortOrder(dataset: String, row: String, order: Double) =
     localChange(dataset, row, "sort_order", order)
 
   private companion object {
     const val GROUP_ID = "account_group_id"
+    const val CLOSED = "closed"
     const val CLOSING_NOTE = "Closing account"
   }
 }
 
-// The values a change replaced, for [AccountWriter.undo]
-data class AccountUndo(val changes: List<LocalChange>)
+// The values a change replaced and the transactions it added, for [AccountWriter.undo]
+data class AccountUndo(
+  val changes: List<LocalChange>,
+  val deleteTransactions: Set<TransactionId> = emptySet(),
+)
+
+data class CloseOutcome(val result: CloseResult, val undo: AccountUndo)
 
 enum class CloseResult {
   Closed,
