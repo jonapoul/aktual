@@ -8,6 +8,7 @@ import aktual.core.l10n.bank_sync_result_several_failed
 import aktual.core.l10n.bank_sync_result_synced
 import aktual.core.l10n.bank_sync_unnamed_account
 import aktual.core.ui.showErrorSnackbar
+import aktual.core.ui.showSuccessSnackbar
 import aktual.core.ui.showWarningSnackbar
 import androidx.compose.material3.SnackbarHostState
 import org.jetbrains.compose.resources.getString
@@ -46,7 +47,7 @@ suspend fun SnackbarHostState.showBankSyncSummary(summary: BankSyncSummary) {
   when {
     summary is Failed -> showErrorSnackbar(message)
     summary is Several && summary.failed > 0 -> showWarningSnackbar(message)
-    else -> showSnackbar(message)
+    else -> showSuccessSnackbar(message)
   }
 }
 

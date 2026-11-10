@@ -46,6 +46,10 @@ internal constructor(
   fun show(key: Any? = null, message: String) = show(key) { showSnackbar(message) }
 }
 
+// Shown in success colours, for things that finished as asked
+suspend fun SnackbarHostState.showSuccessSnackbar(message: String): SnackbarResult =
+  showSnackbar(SeveritySnackbarVisuals(message, Success))
+
 // Shown in error colours, as upstream's error notifications
 suspend fun SnackbarHostState.showErrorSnackbar(message: String): SnackbarResult =
   showSnackbar(SeveritySnackbarVisuals(message, Danger))
@@ -55,6 +59,7 @@ suspend fun SnackbarHostState.showWarningSnackbar(message: String): SnackbarResu
   showSnackbar(SeveritySnackbarVisuals(message, Warning))
 
 private enum class Severity {
+  Success,
   Danger,
   Warning,
 }
@@ -84,7 +89,8 @@ fun SnackbarsHost(snackbars: Snackbars, modifier: Modifier = Modifier) =
     snackbar = ::AktualSnackbar,
   )
 
-// Renders snackbars from showErrorSnackbar and showWarningSnackbar in their colours
+// Renders snackbars from showSuccessSnackbar, showErrorSnackbar and showWarningSnackbar in their
+// colours
 @Composable
 fun AktualSnackbar(data: SnackbarData, modifier: Modifier = Modifier) {
   val visuals = data.visuals
@@ -96,6 +102,8 @@ fun AktualSnackbar(data: SnackbarData, modifier: Modifier = Modifier) {
   val (border, background, content) =
     with(colors) {
       when (visuals.severity) {
+        Success ->
+          Triple(noticeBorder, noticeBackground, legibleOn(noticeBackground, noticeTextDark))
         Danger -> Triple(errorBorder, errorBackground, errorTextDark)
         Warning -> Triple(warningBorder, warningBackground, warningTextDark)
       }

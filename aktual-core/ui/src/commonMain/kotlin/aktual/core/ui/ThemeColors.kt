@@ -122,6 +122,16 @@ fun Colors.fieldBackground(): Color = fieldBackground(LocalSurfaceColor.current 
 fun Colors.highlighted(color: Color): Color =
   lerp(color, if (isLight) Black else White, HIGHLIGHT_SHIFT)
 
+// [preferred] if it's legible on [background], otherwise whichever of black or white contrasts
+// more. Some themes (e.g. Midnight) pair status backgrounds and texts below WCAG AA
+@Stable
+internal fun legibleOn(background: Color, preferred: Color): Color =
+  when {
+    contrast(background, preferred) >= TEXT_MIN_CONTRAST -> preferred
+    contrast(background, Black) >= contrast(background, White) -> Black
+    else -> White
+  }
+
 private fun contrast(a: Color, b: Color): Float {
   val lumA = a.luminance() + CONTRAST_OFFSET
   val lumB = b.luminance() + CONTRAST_OFFSET
@@ -132,6 +142,7 @@ private const val FIELD_SHIFT = 0.2f
 private const val FIELD_FALLBACK_SHIFT = 0.08f
 private const val FIELD_MIN_CONTRAST = 1.1f
 private const val CONTRAST_OFFSET = 0.05f
+private const val TEXT_MIN_CONTRAST = 4.5f
 private const val HIGHLIGHT_SHIFT = 0.1f
 
 @Composable
