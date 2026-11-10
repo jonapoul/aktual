@@ -34,7 +34,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -72,15 +74,22 @@ internal constructor(
     emit(transfers.values.count { linked -> linked != null && linked !in transfers })
   }
 
+  // Closing an empty account or deleting one drops it from the list. Keeps the last state until
+  // the sheet closes, rather than failing
   private val source =
     combine(accountDao.observeManageList(), transferCount) { rows, transfers ->
-      val account = rows.firstOrNull { it.id == accountId } ?: error("No account $accountId")
-      val targets =
         rows
-          .filter { it.id != accountId && it.closed != true }
-          .map { TransferTarget(it.id, it.name.orEmpty(), it.offbudget == true) }
-      Source(account, transfers, targets.toImmutableList())
-    }
+          .firstOrNull { it.id == accountId }
+          ?.let { account ->
+            val targets =
+              rows
+                .filter { it.id != accountId && it.closed != true }
+                .map { TransferTarget(it.id, it.name.orEmpty(), it.offbudget == true) }
+            Source(account, transfers, targets.toImmutableList())
+          }
+      }
+      .scan<Source?, Source?>(null) { last, next -> next ?: last ?: error("No account $accountId") }
+      .filterNotNull()
 
   private val choices =
     combine(transferTo, category, isWorking, workError) { transferTo, category, working, error ->

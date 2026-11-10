@@ -13,6 +13,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
@@ -154,6 +155,32 @@ class CloseAccountViewModelTest {
 
     assertThat(accountDao[id]?.tombstone).isEqualTo(true)
     assertThat(accountDao.properties(other).transactionCount).isEqualTo(2L)
+  }
+
+  @Test
+  fun `Stays ready once the account is gone`() = runAccountsTest {
+    val id = createAccount("Deleting")
+    val viewModel = viewModel(id)
+    viewModel.ready()
+
+    viewModel.events.test {
+      viewModel.delete()
+      awaitItem()
+    }
+    scope.advanceUntilIdle()
+
+    assertThat(viewModel.state.value).isInstanceOf<Ready>().all {
+      prop(Ready::name).isEqualTo("Deleting")
+      prop(Ready::isWorking).isTrue()
+    }
+  }
+
+  @Test
+  fun `A missing account fails to load`() = runAccountsTest {
+    val viewModel = viewModel(AccountId("missing"))
+    scope.advanceUntilIdle()
+
+    assertThat(viewModel.state.value).isInstanceOf<Failure>()
   }
 
   private fun AccountsTestScope.viewModel(id: AccountId) =
