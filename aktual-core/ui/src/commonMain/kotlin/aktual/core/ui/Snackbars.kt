@@ -1,18 +1,25 @@
 package aktual.core.ui
 
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Delete
+import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarDuration.Indefinite
 import androidx.compose.material3.SnackbarDuration.Short
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -48,16 +55,37 @@ internal constructor(
 }
 
 // Shown in success colours, for things that finished as asked
-suspend fun SnackbarHostState.showSuccessSnackbar(message: String): SnackbarResult =
-  showSnackbar(SeveritySnackbarVisuals(message, Success))
+suspend fun SnackbarHostState.showSuccessSnackbar(
+  message: String,
+  actionLabel: String? = null,
+  withDismissAction: Boolean = false,
+  duration: SnackbarDuration = if (actionLabel == null) Short else Indefinite,
+): SnackbarResult =
+  showSnackbar(
+    SeveritySnackbarVisuals(message, Success, actionLabel, withDismissAction, duration),
+  )
 
 // Shown in error colours, as upstream's error notifications
-suspend fun SnackbarHostState.showErrorSnackbar(message: String): SnackbarResult =
-  showSnackbar(SeveritySnackbarVisuals(message, Danger))
+suspend fun SnackbarHostState.showErrorSnackbar(
+  message: String,
+  actionLabel: String? = null,
+  withDismissAction: Boolean = false,
+  duration: SnackbarDuration = if (actionLabel == null) Short else Indefinite,
+): SnackbarResult =
+  showSnackbar(
+    SeveritySnackbarVisuals(message, Danger, actionLabel, withDismissAction, duration),
+  )
 
 // Shown in warning colours, for things that partly worked or need the user's attention
-suspend fun SnackbarHostState.showWarningSnackbar(message: String): SnackbarResult =
-  showSnackbar(SeveritySnackbarVisuals(message, Warning))
+suspend fun SnackbarHostState.showWarningSnackbar(
+  message: String,
+  actionLabel: String? = null,
+  withDismissAction: Boolean = false,
+  duration: SnackbarDuration = if (actionLabel == null) Short else Indefinite,
+): SnackbarResult =
+  showSnackbar(
+    SeveritySnackbarVisuals(message, Warning, actionLabel, withDismissAction, duration),
+  )
 
 private enum class Severity {
   Success,
@@ -68,11 +96,10 @@ private enum class Severity {
 private class SeveritySnackbarVisuals(
   override val message: String,
   val severity: Severity,
-) : SnackbarVisuals {
-  override val actionLabel: String? = null
-  override val withDismissAction: Boolean = false
-  override val duration: SnackbarDuration = Short
-}
+  override val actionLabel: String?,
+  override val withDismissAction: Boolean,
+  override val duration: SnackbarDuration,
+) : SnackbarVisuals
 
 val LocalSnackbars = staticCompositionLocalOf<Snackbars> { error("No Snackbars provided") }
 
@@ -115,6 +142,20 @@ fun AktualSnackbar(data: SnackbarData, modifier: Modifier = Modifier) {
     modifier = modifier.padding(Dimens.VeryLarge).border(Hairline, border, SnackbarDefaults.shape),
     containerColor = background,
     contentColor = content,
+    action =
+      visuals.actionLabel?.let { label ->
+        { TextButton(onClick = data::performAction) { Text(label, color = content) } }
+      },
+    dismissAction =
+      if (visuals.withDismissAction) {
+        {
+          IconButton(onClick = data::dismiss) {
+            Icon(AktualIcons.Delete, contentDescription = Strings.inputClose, tint = content)
+          }
+        }
+      } else {
+        null
+      },
   ) {
     Text(visuals.message)
   }
