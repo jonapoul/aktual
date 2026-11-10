@@ -12,6 +12,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SnackbarVisuals
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -108,10 +109,13 @@ fun AktualSnackbar(data: SnackbarData, modifier: Modifier = Modifier) {
         Warning -> Triple(warningBorder, warningBackground, warningTextDark)
       }
     }
+  // Material's Snackbar(snackbarData) pads outside the given modifier, which would leave the border
+  // floating 12dp clear of the surface, so pad first and draw the border on the surface itself
   Snackbar(
-    snackbarData = data,
-    modifier = modifier.border(Hairline, border, SnackbarDefaults.shape),
+    modifier = modifier.padding(Dimens.VeryLarge).border(Hairline, border, SnackbarDefaults.shape),
     containerColor = background,
     contentColor = content,
-  )
+  ) {
+    Text(visuals.message)
+  }
 }
