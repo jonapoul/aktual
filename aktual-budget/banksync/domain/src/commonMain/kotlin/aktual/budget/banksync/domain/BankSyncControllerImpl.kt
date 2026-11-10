@@ -20,6 +20,7 @@ import aktual.core.utils.Calendar
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
+import aktual.log
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -38,7 +39,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
-import logcat.logcat
 
 @Inject
 @SingleIn(BudgetScope::class)
@@ -73,7 +73,7 @@ internal constructor(
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {
-        logcat.e(e) { "Failed bank sync" }
+        log.e(e) { "Failed bank sync" }
       } finally {
         mutex.unlock()
       }
@@ -137,7 +137,7 @@ internal constructor(
     runCatchingCancellable(
       attempt = { block() },
       onFailure = { e ->
-        logcat.w(e) { "Failed syncing ${account.id}" }
+        log.w(e) { "Failed syncing ${account.id}" }
         fail(account, BankSyncError.Internal(e.message))
       },
     )
@@ -157,7 +157,7 @@ internal constructor(
           oldest to api.simpleFinBatch(request)
         },
         onFailure = { e ->
-          logcat.w(e) { "Failed downloading SimpleFIN accounts" }
+          log.w(e) { "Failed downloading SimpleFIN accounts" }
           for (account in accounts) report(fail(account, BankSyncError.Internal(e.message)))
           return
         },
@@ -208,10 +208,10 @@ internal constructor(
   }
 
   private suspend fun fail(account: BankSyncAccount, error: BankSyncError): BankSyncResult {
-    logcat.w { "Bank sync failed for ${account.id}: $error" }
+    log.w { "Bank sync failed for ${account.id}: $error" }
     runCatchingCancellable(
       attempt = { updateAccount(account.id, error.status, synced = false) },
-      onFailure = { e -> logcat.w(e) { "Failed recording the status of ${account.id}" } },
+      onFailure = { e -> log.w(e) { "Failed recording the status of ${account.id}" } },
     )
     return BankSyncResult.Failed(account.id, account.name, error)
   }

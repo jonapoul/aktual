@@ -5,6 +5,7 @@ import aktual.budget.db.GetAllGrouped
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.transactions.domain.TransactionDraft
+import aktual.log
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.yearMonth
-import logcat.logcat
 
 // How the category picker shows the categories
 internal data class CategoryView(val showHidden: Boolean, val balances: Map<CategoryId, Amount>)
@@ -70,7 +70,7 @@ internal fun BudgetMonthCalculator.observeBalances(
     .map { budget -> budget.categories.filter { !it.isIncome }.associate { it.id to it.balance } }
     .distinctUntilChanged()
     .catch { e ->
-      logcat.w("BudgetMonthCalculator", e) { "Failed loading category balances for $month" }
+      log.w("BudgetMonthCalculator", e) { "Failed loading category balances for $month" }
       emit(emptyMap())
     }
 }

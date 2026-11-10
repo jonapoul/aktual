@@ -29,6 +29,7 @@ import aktual.budget.reports.vm.pinned.PinnedReports.Companion.MAX_PINNED_REPORT
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -52,7 +53,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -115,22 +115,22 @@ internal constructor(
   }
 
   fun createPage(name: String) {
-    logcat.d { "Creating dashboard page $name" }
+    log.d { "Creating dashboard page $name" }
     viewModelScope.launch { pages.create(name) }
   }
 
   fun renamePage(id: DashboardPageId, name: String) {
-    logcat.d { "Renaming dashboard page $id to $name" }
+    log.d { "Renaming dashboard page $id to $name" }
     viewModelScope.launch { pages.rename(id, name) }
   }
 
   fun deletePage(id: DashboardPageId) {
-    logcat.d { "Deleting dashboard page $id" }
+    log.d { "Deleting dashboard page $id" }
     viewModelScope.launch { pages.delete(id) }
   }
 
   fun renameReport(item: DashboardItem, name: String) {
-    logcat.d { "Renaming report ${item.id} to $name" }
+    log.d { "Renaming report ${item.id} to $name" }
     viewModelScope.launch {
       when (val meta = item.meta) {
         is AgeOfMoneyReportMeta,
@@ -148,7 +148,7 @@ internal constructor(
 
         // Not nameable
         is MarkdownReportMeta,
-        is UnsupportedReportMeta -> logcat.w { "Can't rename ${item.id}: $meta" }
+        is UnsupportedReportMeta -> log.w { "Can't rename ${item.id}: $meta" }
 
         // Named, but it's stored in a separate table
         is CustomReportMeta -> renameCustomReport(meta.id, name)
@@ -161,35 +161,35 @@ internal constructor(
     if (error == null) {
       sync.renameCustomReport(id, name)
     } else {
-      logcat.w { "Can't rename $id to '$name': $error" }
+      log.w { "Can't rename $id to '$name': $error" }
     }
   }
 
   fun pinReport(id: WidgetId) {
-    logcat.d { "Pinning report $id to home" }
+    log.d { "Pinning report $id to home" }
     viewModelScope.launch { pinned.pin(id) }
   }
 
   fun unpinReport(id: WidgetId) {
-    logcat.d { "Unpinning report $id from home" }
+    log.d { "Unpinning report $id from home" }
     viewModelScope.launch { pinned.unpin(id) }
   }
 
   fun reorderReports(order: List<WidgetId>) {
     val page = content.value.page ?: return
-    logcat.d { "Reordering reports on ${page.id}" }
+    log.d { "Reordering reports on ${page.id}" }
     viewModelScope.launch { sync.reorderWidgets(page.id, order) }
   }
 
   fun deleteReport(id: WidgetId) {
-    logcat.d { "Deleting report $id" }
+    log.d { "Deleting report $id" }
     viewModelScope.launch { sync.deleteWidget(id) }
   }
 
   // Deletes the saved custom report, and takes this widget off the dashboard with it
   fun deleteSavedReport(item: DashboardItem) {
     val meta = item.meta as? CustomReportMeta ?: return
-    logcat.d { "Deleting custom report ${meta.id} shown by ${item.id}" }
+    log.d { "Deleting custom report ${meta.id} shown by ${item.id}" }
     viewModelScope.launch {
       sync.deleteCustomReport(meta.id)
       sync.deleteWidget(item.id)

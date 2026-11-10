@@ -15,6 +15,7 @@ import aktual.di.LoggedInScope
 import aktual.di.RunLevelController
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.prefs.KeyPreferences
 import alakazam.kotlin.launchInfiniteLoop
 import androidx.compose.runtime.Stable
@@ -42,7 +43,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 import okio.Path
 
 @Stable
@@ -86,7 +86,7 @@ internal constructor(
   private var logStatesJob: Job? = null
 
   init {
-    logcat.d { "init" }
+    log.d { "init" }
     start()
   }
 
@@ -101,7 +101,7 @@ internal constructor(
   }
 
   fun clearBudget() {
-    logcat.v { "clearBudget" }
+    log.v { "clearBudget" }
     runLevelController.onBudgetClosed()
   }
 
@@ -112,7 +112,7 @@ internal constructor(
   fun dismissKeyPasswordDialog() = mutablePasswordState.update { Inactive }
 
   fun confirmKeyPassword() {
-    logcat.v { "confirmKeyPassword" }
+    log.v { "confirmKeyPassword" }
     val state = mutablePasswordState.value
     dismissKeyPasswordDialog()
     val cachedData = cachedData
@@ -128,7 +128,7 @@ internal constructor(
     viewModelScope.launch {
       when (val fetched = keyFetcher(budgetId, keyPassword = state.input)) {
         is FetchKeyResult.Failure -> {
-          logcat.w { "Failed fetching keys: $fetched" }
+          log.w { "Failed fetching keys: $fetched" }
           handleDecryptFailure(
             result = FailedFetchingKey,
             encryptedPath = cachedData.encryptedPath,
@@ -148,7 +148,7 @@ internal constructor(
   }
 
   fun start() {
-    logcat.d { "start" }
+    log.d { "start" }
     syncJob?.cancel()
     logStatesJob?.cancel()
     mutableSteps.update { defaultStates() }
@@ -169,13 +169,13 @@ internal constructor(
       logStates()
 
       if (userFile == null || downloadedPath == null) {
-        logcat.w { "Failed syncing?" }
+        log.w { "Failed syncing?" }
         return@launch
       }
 
       setStepState(ValidatingDatabase, IndefiniteProgress)
 
-      logcat.i { "Succeeded syncing: $userFile and $downloadedPath" }
+      log.i { "Succeeded syncing: $userFile and $downloadedPath" }
       val meta = userFile.encryptMeta
       val decryptResult =
         if (meta != null) {
@@ -191,7 +191,7 @@ internal constructor(
 
   private fun logStates() {
     val stateMap = mutableSteps.value
-    logcat.v { "stepState=$stateMap" }
+    log.v { "stepState=$stateMap" }
   }
 
   private suspend fun fetchUserFileInfo(): UserFile? {
@@ -243,7 +243,7 @@ internal constructor(
     meta: EncryptMeta?,
     userFile: UserFile,
   ) {
-    logcat.i { "decryptResult=$result" }
+    log.i { "decryptResult=$result" }
     when (result) {
       is Failure -> handleDecryptFailure(result, encryptedPath, userFile, meta)
       is DecryptedFile -> importDatabase(result.path, userFile)
@@ -282,14 +282,14 @@ internal constructor(
 
   private suspend fun importDatabase(path: Path, userFile: UserFile) {
     val result = importer(userFile, path)
-    logcat.i { "importResult=$result" }
+    log.i { "importResult=$result" }
 
     when (result) {
       is Failure -> setStepState(ValidatingDatabase, SyncStepState.Failed(result.toString()))
 
       is Success -> {
         runLevelController.onBudget(budgetId, result.meta)
-        logcat.i { "Built new budget component from $budgetId" }
+        log.i { "Built new budget component from $budgetId" }
         setStepState(ValidatingDatabase, Succeeded)
       }
     }

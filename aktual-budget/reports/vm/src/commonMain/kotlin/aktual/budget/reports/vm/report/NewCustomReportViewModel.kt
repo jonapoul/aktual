@@ -18,6 +18,7 @@ import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -45,7 +46,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.jsonObject
-import logcat.logcat
 
 // Edits a custom report that isn't saved yet, starting from upstream's defaults. Saving it names
 // the report, and puts a widget for it on the page, like upstream's SaveReport.tsx
@@ -124,13 +124,13 @@ internal constructor(
     job = viewModelScope.launch {
       val error = reports.validateName(name)
       if (error != null) {
-        logcat.w { "Can't save custom report as '$name': $error" }
+        log.w { "Can't save custom report as '$name': $error" }
         return@launch
       }
 
       val reportId = uuidGenerator(::CustomReportId)
       val widgetId = uuidGenerator(::WidgetId)
-      logcat.d { "Creating custom report $reportId with widget $widgetId on page $page" }
+      log.d { "Creating custom report $reportId with widget $widgetId on page $page" }
       reports.insert(reportId, name, config)
       val meta =
         DbJson.encodeToJsonElement(CustomReportMeta.serializer(), CustomReportMeta(reportId))

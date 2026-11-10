@@ -14,6 +14,7 @@ import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.prefs.TagPreferences
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
@@ -34,7 +35,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -75,7 +75,7 @@ internal constructor(
           }
           .onStart<ListTagsState> { emit(Loading) }
           .catch { e ->
-            logcat.e(e) { "Failed loading tags" }
+            log.e(e) { "Failed loading tags" }
             emit(Failure(e.requireMessage()))
           }
       }
@@ -115,10 +115,10 @@ internal constructor(
           if (item != null) {
             mutableEvents.tryEmit(ListTagsEvent.Deleted(item))
           }
-          logcat.d { "Tombstoned tag $id" }
+          log.d { "Tombstoned tag $id" }
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed deleting tag $id" }
+          log.e(e) { "Failed deleting tag $id" }
           mutableEvents.tryEmit(ListTagsEvent.DeleteFailed(item?.tag))
         },
       )
@@ -133,10 +133,10 @@ internal constructor(
           // reverse the tombstone in the local db and queue the reversal for sync. The row's other
           // columns were never touched by the delete, so clearing the tombstone fully restores it
           syncController.syncChanges(untombstone(dataset = TAGS, row = item.id.toString()))
-          logcat.d { "Restored tag ${item.id}" }
+          log.d { "Restored tag ${item.id}" }
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed restoring tag ${item.id}" }
+          log.e(e) { "Failed restoring tag ${item.id}" }
           mutableEvents.tryEmit(ListTagsEvent.RestoreFailed(item.tag))
         },
       )

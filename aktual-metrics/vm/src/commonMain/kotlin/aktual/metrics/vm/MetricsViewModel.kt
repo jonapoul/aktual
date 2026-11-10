@@ -5,6 +5,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.LoggedInScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.metrics.vm.MetricsState.Failure
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
@@ -23,7 +24,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -49,27 +49,27 @@ internal constructor(
   }
 
   private suspend fun fetchMetrics(counter: Int) {
-    logcat.d { "fetchMetrics counter=$counter" }
+    log.d { "fetchMetrics counter=$counter" }
     mutableState.update { Loading }
     runCatchingCancellable(
       attempt = {
         val response = withContext(contexts.io) { metricsApi.getMetrics() }
-        logcat.v { "fetchMetrics success: $response" }
+        log.v { "fetchMetrics success: $response" }
         val state = MetricsState.Success(response.memory, response.uptime, lastUpdate = clock.now())
         mutableState.update { state }
       },
       onFailure = { e ->
         when (e) {
           is IOException -> {
-            logcat.e(e) { "Failed I/O when fetching metrics" }
+            log.e(e) { "Failed I/O when fetching metrics" }
             mutableState.update { Disconnected }
           }
           is SerializationException -> {
-            logcat.e(e) { "Failed deserializing metrics response" }
+            log.e(e) { "Failed deserializing metrics response" }
             mutableState.update { Failure(e.requireMessage()) }
           }
           else -> {
-            logcat.e(e) { "Failed fetching metrics" }
+            log.e(e) { "Failed fetching metrics" }
             mutableState.update { Failure(e.requireMessage()) }
           }
         }

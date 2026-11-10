@@ -9,6 +9,7 @@ import aktual.di.AppScope
 import aktual.di.BudgetGraph
 import aktual.di.Initializable
 import aktual.di.RunLevelController
+import aktual.log
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.ForScope
@@ -16,7 +17,6 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import kotlinx.coroutines.withContext
-import logcat.logcat
 
 @Inject
 @SingleIn(AppScope::class)
@@ -45,12 +45,12 @@ internal constructor(
         driver.shiftDemoDates(from = driver.demoGeneratedOn(), to = calendar.today())
       }
     }
-    logcat.i { "Opening demo budget" }
+    log.i { "Opening demo budget" }
     return runLevelController.onOfflineBudget(ID, metadata)
   }
 
   suspend fun close() {
-    logcat.i { "Closing demo budget" }
+    log.i { "Closing demo budget" }
     runLevelController.onBudgetClosed()
     withContext(contexts.io) { delete() }
   }

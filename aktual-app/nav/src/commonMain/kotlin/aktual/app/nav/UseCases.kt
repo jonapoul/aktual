@@ -23,6 +23,7 @@ import aktual.di.BudgetGraph
 import aktual.di.LoggedInGraph
 import aktual.di.RunLevelState
 import aktual.di.ServerChosenGraph
+import aktual.log
 import aktual.prefs.AppPreferences
 import aktual.prefs.CurrencyPreferences
 import aktual.prefs.FormatPreferences
@@ -47,7 +48,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Inject
 class HazeConfigUseCase(private val preferences: SystemUiPreferences) {
@@ -170,10 +170,10 @@ class AppLifecycleManager(
   val tokenExpired: Flow<Unit> = tokenExpiredEvent.event
 
   fun start(scope: CoroutineScope) {
-    logcat.v { "start" }
+    log.v { "start" }
     scope.launch {
       tokenExpired.collect {
-        logcat.w { "Token expired, clearing stored token" }
+        log.w { "Token expired, clearing stored token" }
         preferences.token.delete()
         preferences.lastOpenedBudgetId.delete()
       }
@@ -181,7 +181,7 @@ class AppLifecycleManager(
   }
 
   fun destroy() {
-    logcat.v { "destroy" }
+    log.v { "destroy" }
     files.close()
   }
 }

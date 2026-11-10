@@ -7,6 +7,7 @@ import aktual.budget.model.ConditionOp
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.Interval
 import aktual.budget.model.WidgetType
+import aktual.log
 import androidx.compose.runtime.Immutable
 import fallback.serializer.Fallback
 import kotlinx.datetime.LocalDate
@@ -24,7 +25,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.intOrNull
-import logcat.logcat
 
 // From packages/loot-core/src/types/models/dashboard.ts
 @Immutable
@@ -243,7 +243,7 @@ internal fun String.toYearMonthOrNull(): YearMonth? =
     try {
       LocalDate.parse(this).yearMonth
     } catch (e: IllegalArgumentException) {
-      logcat.e(e) { "Failed decoding $this as YearMonth or LocalDate" }
+      log.e(e) { "Failed decoding $this as YearMonth or LocalDate" }
       null
     }
   }

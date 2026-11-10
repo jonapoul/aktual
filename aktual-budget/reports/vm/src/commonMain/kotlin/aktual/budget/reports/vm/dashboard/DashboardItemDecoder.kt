@@ -4,11 +4,11 @@ import aktual.budget.db.Dashboard
 import aktual.budget.model.WidgetType
 import aktual.budget.reports.vm.ReportMeta
 import aktual.budget.reports.vm.UnsupportedReportMeta
+import aktual.log
 import dev.zacsweers.metro.Inject
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import logcat.logcat
 
 @Inject
 internal class DashboardItemDecoder {
@@ -31,7 +31,7 @@ internal class DashboardItemDecoder {
     return try {
       Json.decodeFromJsonElement(ReportMeta.serializer(type), meta)
     } catch (e: SerializationException) {
-      logcat.e(e) { "Failed to deserialize $type report meta: $meta" }
+      log.e(e) { "Failed to deserialize $type report meta: $meta" }
       UnsupportedReportMeta(type, meta, stackTrace = e.stackTraceToString())
     }
   }

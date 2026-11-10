@@ -11,6 +11,7 @@ import aktual.budget.model.DbMetadataKey.Companion.LastUploaded
 import aktual.core.model.AktualJson
 import aktual.core.utils.Calendar
 import aktual.core.utils.runCatchingCancellable
+import aktual.log
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
@@ -18,7 +19,6 @@ import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
-import logcat.logcat
 import okio.FileSystem
 import okio.Path
 import okio.buffer
@@ -39,7 +39,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { invokeImpl(userFile, zipPath) },
         onFailure = { e ->
-          logcat.e(e) { "Unexpected failure importing $userFile from $zipPath" }
+          log.e(e) { "Unexpected failure importing $userFile from $zipPath" }
           ImportResult.OtherFailure(e.requireMessage())
         },
       )
@@ -69,7 +69,7 @@ internal constructor(
         }
       }
     } catch (e: ZipException) {
-      logcat.e(e) { "Failed getting zip entries: dbPath='$nullableDbPath', meta='$nullableMeta'" }
+      log.e(e) { "Failed getting zip entries: dbPath='$nullableDbPath', meta='$nullableMeta'" }
       return NotZipFile
     }
 
@@ -82,7 +82,7 @@ internal constructor(
       try {
         AktualJson.decodeFromString(DbMetadata.serializer(), metaJson)
       } catch (e: SerializationException) {
-        logcat.e(e) { "Failed deserializing DbMetadata: '$metaJson'" }
+        log.e(e) { "Failed deserializing DbMetadata: '$metaJson'" }
         return InvalidMetaFile
       }
 

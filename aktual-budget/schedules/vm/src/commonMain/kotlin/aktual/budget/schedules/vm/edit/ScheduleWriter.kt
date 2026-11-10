@@ -22,13 +22,13 @@ import aktual.budget.model.tombstone
 import aktual.core.model.unaryPlus
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator
+import aktual.log
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JsonPrimitive
-import logcat.logcat
 
 internal class DuplicateScheduleNameException(name: String) :
   IllegalArgumentException("There is already a schedule named \"$name\"")
@@ -87,7 +87,7 @@ internal class ScheduleWriter(
     allowPostingAgainToday(form)
     syncController.syncChanges(changes)
     scheduleDao.setJsonPaths(scheduleId, conditions.jsonPaths())
-    logcat.i { "Created schedule $scheduleId" }
+    log.i { "Created schedule $scheduleId" }
     return scheduleId
   }
 
@@ -126,7 +126,7 @@ internal class ScheduleWriter(
     allowPostingAgainToday(form)
     syncController.syncChanges(changes)
     scheduleDao.setJsonPaths(id, conditions.jsonPaths())
-    logcat.i { "Updated schedule $id" }
+    log.i { "Updated schedule $id" }
   }
 
   // deleteSchedule()
@@ -137,19 +137,19 @@ internal class ScheduleWriter(
         tombstone(dataset = SCHEDULES, row = id.toString()),
       )
     syncController.syncChanges(changes)
-    logcat.i { "Deleted schedule $id" }
+    log.i { "Deleted schedule $id" }
   }
 
   // The "complete" action in packages/desktop-client/src/components/schedules/index.tsx
   suspend fun complete(id: ScheduleId) {
     setCompleted(id, completed = true)
-    logcat.i { "Completed schedule $id" }
+    log.i { "Completed schedule $id" }
   }
 
   // Undoes complete() without touching the next date, unlike restart()
   suspend fun uncomplete(id: ScheduleId) {
     setCompleted(id, completed = false)
-    logcat.i { "Uncompleted schedule $id" }
+    log.i { "Uncompleted schedule $id" }
   }
 
   private suspend fun setCompleted(id: ScheduleId, completed: Boolean) =
@@ -167,7 +167,7 @@ internal class ScheduleWriter(
       +localChange(SCHEDULES, id.toString(), COMPLETED, false)
     }
     syncController.syncChanges(changes)
-    logcat.i { "Restarted schedule $id" }
+    log.i { "Restarted schedule $id" }
   }
 
   // setNextDate() with reset = true

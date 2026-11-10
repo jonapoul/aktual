@@ -10,13 +10,13 @@ import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.domain.TransactionDraft
 import aktual.budget.transactions.domain.TransactionField
 import aktual.budget.transactions.domain.TransactionFields
+import aktual.log
 import androidx.lifecycle.SavedStateHandle
 import androidx.savedstate.SavedState
 import androidx.savedstate.serialization.decodeFromSavedState
 import androidx.savedstate.serialization.encodeToSavedState
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
-import logcat.logcat
 
 // The editor's draft as it's kept in the saved state, so it outlives the process
 @Serializable
@@ -120,7 +120,7 @@ internal fun SavedStateHandle.restoreEditorSnapshot(): EditorSnapshot? =
     get<SavedState>(KEY_SNAPSHOT)?.let { decodeFromSavedState<EditorSnapshot>(it) }
   } catch (e: IllegalArgumentException) {
     // Including a SerializationException
-    logcat.w(e) { "Failed restoring a transaction draft" }
+    log.w(e) { "Failed restoring a transaction draft" }
     null
   }
 

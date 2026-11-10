@@ -11,11 +11,11 @@ import aktual.budget.model.MerkleOperations
 import aktual.budget.model.Timestamp
 import aktual.budget.proto.SyncRequestEncoder
 import aktual.core.utils.runCatchingCancellable
+import aktual.log
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.flow.update
-import logcat.logcat
 import okio.IOException
 
 @Inject
@@ -34,12 +34,12 @@ internal class IncrementalSyncer(
           is IOException -> SyncResult.NetworkError(e)
 
           is SyncRejectedException if e.isClockDrift -> {
-            logcat.w { "Server rejected sync, device clock is too far ahead" }
+            log.w { "Server rejected sync, device clock is too far ahead" }
             ClockDriftError
           }
 
           else -> {
-            logcat.e(e) { "Failed syncing" }
+            log.e(e) { "Failed syncing" }
             SyncResult.OtherError(e)
           }
         }
@@ -54,7 +54,7 @@ internal class IncrementalSyncer(
     val groupId = budgetMetadata[GroupId]
     val budgetId = budgetMetadata[CloudFileId]
     if (groupId == null || budgetId == null) {
-      logcat.w { "Null required prefs! groupId=$groupId, budgetId=$budgetId" }
+      log.w { "Null required prefs! groupId=$groupId, budgetId=$budgetId" }
       return SyncResult.MissingPrefError(
         missingGroupId = groupId == null,
         missingBudgetId = budgetId == null,
@@ -74,14 +74,14 @@ internal class IncrementalSyncer(
 
     if (diffTime != null) {
       if (count < MAX_RECURSIONS && (count < MAX_SAME_DIFF || diffTime != prevDiffTime)) {
-        logcat.d { "Merkle diff at $diffTime, recursing (attempt ${count + 1})" }
+        log.d { "Merkle diff at $diffTime, recursing (attempt ${count + 1})" }
         return fullSync(
           sinceTimestamp = Timestamp.fromMilliseconds(diffTime),
           count = count + 1,
           prevDiffTime = diffTime,
         )
       }
-      logcat.w { "Out of sync after $count attempts, diffTime=$diffTime" }
+      log.w { "Out of sync after $count attempts, diffTime=$diffTime" }
       return OutOfSyncError
     }
 

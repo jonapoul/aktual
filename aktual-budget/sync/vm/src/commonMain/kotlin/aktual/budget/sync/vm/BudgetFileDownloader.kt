@@ -9,6 +9,7 @@ import aktual.budget.sync.vm.DownloadState.Failure
 import aktual.budget.sync.vm.DownloadState.InProgress
 import aktual.core.model.Token
 import aktual.core.model.bytes
+import aktual.log
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import logcat.logcat
 
 @Inject
 class BudgetFileDownloader
@@ -44,12 +44,12 @@ internal constructor(
         }
       }
     } catch (e: ResponseException) {
-      logcat.e(e) { "HTTP failure downloading $id with $token" }
+      log.e(e) { "HTTP failure downloading $id with $token" }
       deleteDir(id)
       with(e.response.status) { emit(Failure.Http(value, description, Zero)) }
       return
     } catch (e: IOException) {
-      logcat.e(e) { "Failed fetching initial download request for $id with $token" }
+      log.e(e) { "Failed fetching initial download request for $id with $token" }
       deleteDir(id)
       emit(Failure.IO(e.requireMessage(), Zero))
       return

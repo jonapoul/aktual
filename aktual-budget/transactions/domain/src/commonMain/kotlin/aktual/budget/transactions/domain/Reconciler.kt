@@ -9,9 +9,9 @@ import aktual.budget.rules.domain.RuleTransaction
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator
+import aktual.log
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
-import logcat.logcat
 
 /**
  * The writes of upstream's reconciliation flow, in desktop-client/src/accounts/reconciliation.ts
@@ -39,7 +39,7 @@ internal constructor(
       ids.forEach { update(TransactionUpdate(id = it, reconciled = true)) }
       updateAccount(AccountUpdate(id = account, lastReconciled = Patch.To(clock.now())))
     }
-    logcat.i { "Finished reconciling $account, locked ${ids.size}" }
+    log.i { "Finished reconciling $account, locked ${ids.size}" }
     return lock
   }
 
@@ -79,7 +79,7 @@ internal constructor(
       }
       rows.forEach { insert(it) }
     }
-    logcat.i { "Added reconciliation adjustment to $account" }
+    log.i { "Added reconciliation adjustment to $account" }
   }
 
   private suspend fun withParts(id: TransactionId): List<TransactionId> =

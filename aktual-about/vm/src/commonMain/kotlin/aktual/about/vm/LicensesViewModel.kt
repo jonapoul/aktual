@@ -5,6 +5,7 @@ import aktual.about.data.LicensesRepository
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,7 +20,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -50,7 +50,7 @@ internal constructor(
   }
 
   fun load() {
-    logcat.d { "load" }
+    log.d { "load" }
     mutableState.update { Loading }
     viewModelScope.launch {
       val licensesState =
@@ -71,7 +71,7 @@ internal constructor(
     }
 
   fun setSorting(sorting: LicenseSorting) {
-    logcat.d { "setSorting $sorting" }
+    log.d { "setSorting $sorting" }
     mutableSorting.update { sorting }
   }
 }

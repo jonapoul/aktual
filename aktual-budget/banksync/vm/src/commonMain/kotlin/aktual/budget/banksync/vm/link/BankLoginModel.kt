@@ -4,6 +4,7 @@ import aktual.api.model.banksync.BankSyncTransactionsResponse.Failure
 import aktual.api.model.banksync.BankSyncTransactionsResponse.ProviderError
 import aktual.api.model.banksync.ExternalBankAccount
 import aktual.core.utils.runCatchingCancellable
+import aktual.log
 import alakazam.kotlin.requireMessage
 import java.util.Locale
 import kotlinx.collections.immutable.toImmutableList
@@ -14,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 /**
  * Linking through a provider that lists accounts only after the user logs in to their bank: picking
@@ -72,7 +72,7 @@ internal class BankLoginModel(
       runCatchingCancellable(
         attempt = { setStatus(logIn(bank)) },
         onFailure = { e ->
-          logcat.e(e) { "Failed logging in to ${bank.id} through ${provider.name}" }
+          log.e(e) { "Failed logging in to ${bank.id} through ${provider.name}" }
           setStatus(BankLoginStatus.Failed(e.requireMessage()))
         },
       )
@@ -117,13 +117,13 @@ internal class BankLoginModel(
             when (val response = provider.banks(country)) {
               is Success -> LoginBanks.Loaded(response.value.toImmutableList())
               is Failed -> {
-                logcat.w { "Listing ${provider.name} banks in $country failed: ${response.error}" }
+                log.w { "Listing ${provider.name} banks in $country failed: ${response.error}" }
                 LoginBanks.Failure(response.error.cause())
               }
             }
           },
           onFailure = { e ->
-            logcat.e(e) { "Failed listing ${provider.name} banks in $country" }
+            log.e(e) { "Failed listing ${provider.name} banks in $country" }
             LoginBanks.Failure(e.requireMessage())
           },
         )
@@ -134,7 +134,7 @@ internal class BankLoginModel(
   private fun setStatus(status: BankLoginStatus) = mutableState.update { it.copy(status = status) }
 
   private fun failed(error: Failure): BankLoginStatus {
-    logcat.w { "${provider.name} login failed: $error" }
+    log.w { "${provider.name} login failed: $error" }
     val isTimeout = error is ProviderError && error.errorCode == ProviderError.TIMED_OUT
     return BankLoginStatus.Failed(error.cause().takeUnless { isTimeout }, isTimeout)
   }

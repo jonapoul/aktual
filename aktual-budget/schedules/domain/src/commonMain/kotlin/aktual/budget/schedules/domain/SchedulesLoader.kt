@@ -17,6 +17,7 @@ import aktual.budget.model.SyncedPrefKey.Global.UpcomingScheduledTransactionLeng
 import aktual.budget.model.UpcomingLength
 import aktual.budget.model.upcomingDays
 import aktual.core.utils.Calendar
+import aktual.log
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -33,7 +34,6 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import logcat.logcat
 
 @Inject
 class SchedulesLoader(
@@ -143,7 +143,7 @@ class SchedulesLoader(
     return when (val element = Json.parseToJsonElement(raw)) {
       is JsonNull,
       is JsonArray -> {
-        logcat.e { "Got unexpected JSON data format in $element" }
+        log.e { "Got unexpected JSON data format in $element" }
         fallback
       }
 

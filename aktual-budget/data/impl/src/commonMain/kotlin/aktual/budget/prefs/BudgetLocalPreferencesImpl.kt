@@ -6,6 +6,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.di.AppCoroutineScope
 import aktual.di.BudgetScope
+import aktual.log
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import logcat.logcat
 import okio.IOException
 
 @OptIn(ExperimentalForInheritanceCoroutinesApi::class)
@@ -50,7 +50,7 @@ private constructor(
             files.writeMetadata(id, update)
           } catch (e: IOException) {
             // The budget's directory can be deleted while this is pending, e.g. closing the demo
-            logcat.e(e) { "Failed writing metadata for $id" }
+            log.e(e) { "Failed writing metadata for $id" }
           }
         }
       }

@@ -19,6 +19,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -44,7 +45,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import logcat.logcat
 
 @Stable
 @AssistedInject
@@ -141,7 +141,7 @@ internal constructor(
         }
       },
       onFailure = { e ->
-        logcat.e(e) { "Failed loading schedule $scheduleId" }
+        log.e(e) { "Failed loading schedule $scheduleId" }
         mutableFailure.update { EditScheduleState.OtherFailure(e.requireMessage()) }
       },
     )
@@ -258,10 +258,10 @@ internal constructor(
         },
         onFailure = { e ->
           if (e is DuplicateScheduleNameException) {
-            logcat.w(e) { "Duplicate name saving $scheduleId" }
+            log.w(e) { "Duplicate name saving $scheduleId" }
             mutableError.update { EditScheduleError.DuplicateName(loaded.form.name.trim()) }
           } else {
-            logcat.e(e) { "Failed saving $scheduleId" }
+            log.e(e) { "Failed saving $scheduleId" }
             mutableError.update { EditScheduleError.Saving(e.requireMessage()) }
           }
         },
@@ -282,7 +282,7 @@ internal constructor(
           mutableEvents.tryEmit(Deleted)
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed deleting $id" }
+          log.e(e) { "Failed deleting $id" }
           mutableError.update { EditScheduleError.Deleting(e.requireMessage()) }
         },
         finally = { mutableIsWorking.update { false } },

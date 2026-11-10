@@ -7,7 +7,7 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
-import logcat.logcat
+import aktual.log
 
 /**
  * Runs a budget's rules against transactions, the way upstream's `runRules`
@@ -34,7 +34,7 @@ class RulesEngine(
       try {
         CompiledRule.compile(rule, idMappings)
       } catch (e: RuleValidationException) {
-        logcat.w(e) { "Skipping invalid rule ${rule.id}" }
+        log.w(e) { "Skipping invalid rule ${rule.id}" }
         invalid += rule.id
         null
       }
@@ -99,7 +99,7 @@ internal class CompiledRule(
 ) {
   init {
     actions.filterIsInstance<CompiledAction.Unsupported>().forEach { action ->
-      logcat.w { "Rule $id has an unsupported action, which will be skipped: ${action.reason}" }
+      log.w { "Rule $id has an unsupported action, which will be skipped: ${action.reason}" }
     }
   }
 
@@ -126,7 +126,7 @@ internal class CompiledRule(
       // existing splits alone instead
       result.transaction.isParent ->
         result.also {
-          logcat.w { "Rule $id would split ${it.transaction.id}, which is already split" }
+          log.w { "Rule $id would split ${it.transaction.id}, which is already split" }
         }
       else -> execSplitActions(childActions, result, context)
     }

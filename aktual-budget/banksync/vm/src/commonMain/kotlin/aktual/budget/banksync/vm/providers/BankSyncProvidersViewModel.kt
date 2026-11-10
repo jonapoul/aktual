@@ -9,6 +9,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -27,7 +28,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 /**
  * Whether each bank sync provider has credentials on the server, to set them up or clear them.
@@ -99,13 +99,13 @@ internal constructor(
                 BankSyncProvidersEvent.Reset
               }
               is Failed -> {
-                logcat.w { "Resetting $source refused: $response" }
+                log.w { "Resetting $source refused: $response" }
                 BankSyncProvidersEvent.ResetFailed(response.toSetupError())
               }
             }
           },
           onFailure = { e ->
-            logcat.e(e) { "Failed resetting $source" }
+            log.e(e) { "Failed resetting $source" }
             BankSyncProvidersEvent.ResetFailed(SetupError.Other(e.requireMessage()))
           },
           finally = { mutableResetting.update { null } },
@@ -120,13 +120,13 @@ internal constructor(
         when (val response = api.status(source)) {
           is Success -> if (response.configured) Configured else NotConfigured
           is Rejected -> {
-            logcat.w { "Bank sync status for $source rejected: $response" }
+            log.w { "Bank sync status for $source rejected: $response" }
             Failed
           }
         }
       },
       onFailure = { e ->
-        logcat.w(e) { "Failed checking bank sync status for $source" }
+        log.w(e) { "Failed checking bank sync status for $source" }
         Failed
       },
     )

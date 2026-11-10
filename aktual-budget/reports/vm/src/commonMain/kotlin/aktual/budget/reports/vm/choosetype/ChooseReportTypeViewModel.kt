@@ -12,6 +12,7 @@ import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,7 +34,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import logcat.logcat
 
 @Stable
 @AssistedInject
@@ -66,14 +66,14 @@ internal constructor(
 
   fun createReport(type: WidgetType) {
     if (type == Custom) {
-      logcat.w { "Custom reports are created by NewCustomReportViewModel" }
+      log.w { "Custom reports are created by NewCustomReportViewModel" }
       return
     }
 
     job?.cancel()
     job = viewModelScope.launch {
       val widgetId = uuidGenerator(::WidgetId)
-      logcat.d { "Creating $type report $widgetId on page $page" }
+      log.d { "Creating $type report $widgetId on page $page" }
       sync.addWidget(widgetId, page, type, initialMeta(type))
       shouldNavigateChannel.send(ShouldNavigateEvent(widgetId))
     }

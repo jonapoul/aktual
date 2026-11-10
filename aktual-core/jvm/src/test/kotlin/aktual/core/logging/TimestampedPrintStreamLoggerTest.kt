@@ -1,5 +1,6 @@
 package aktual.core.logging
 
+import aktual.log
 import alakazam.test.TestClock
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -10,7 +11,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.time.Instant
 import logcat.LogcatLogger
-import logcat.logcat
 
 class TimestampedPrintStreamLoggerTest {
   @BeforeTest
@@ -33,8 +33,8 @@ class TimestampedPrintStreamLoggerTest {
     LogcatLogger.loggers += TimestampedPrintStreamLogger(stream, clock, minPriority = DEBUG)
 
     // when
-    logcat.i { "Hello world" }
-    logcat.d("TAGGED") { "This one has a tag" }
+    log.i { "Hello world" }
+    log.d("TAGGED") { "This one has a tag" }
 
     // then
     val contents = byteArrayOutputStream.toString().trim().lines()

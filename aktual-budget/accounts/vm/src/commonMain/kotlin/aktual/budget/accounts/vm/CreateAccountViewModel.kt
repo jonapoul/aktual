@@ -8,6 +8,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -27,7 +28,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 /**
  * Creates a local account, as upstream's CreateLocalAccountModal. The name must be unique among
@@ -83,7 +83,7 @@ internal constructor(
         runCatchingCancellable(
           attempt = { accountDao.getAllWithStatus().mapNotNull { it.name }.toPersistentSet() },
           onFailure = { e ->
-            logcat.e(e) { "Failed loading account names" }
+            log.e(e) { "Failed loading account names" }
             persistentSetOf()
           },
         )
@@ -125,7 +125,7 @@ internal constructor(
           eventChannel.send(CreateAccountEvent.Created(id))
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed creating account $name" }
+          log.e(e) { "Failed creating account $name" }
           mutableSaveError.update { e.requireMessage() }
           mutableIsSaving.update { false }
         },

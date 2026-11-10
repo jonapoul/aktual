@@ -22,6 +22,7 @@ import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -46,7 +47,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.yearMonth
-import logcat.logcat
 
 // Shows a report, with its settings edited as a draft that the chart previews until it's saved or
 // discarded. The draft is the saved report with the user's edits applied on top, so it picks up
@@ -134,7 +134,7 @@ internal constructor(
     val saved = saved.value as? Found ?: return
     val draft = edits.value.applyTo(saved.base)
     if (draft.isSameAs(saved.base)) return
-    logcat.d { "Saving report $id" }
+    log.d { "Saving report $id" }
     budgetScope.launch { sync.setMeta(id, saved.type, saved.item.meta, draft) }
   }
 
@@ -145,12 +145,12 @@ internal constructor(
   }
 
   fun rename(name: String) {
-    logcat.d { "Renaming report $id to $name" }
+    log.d { "Renaming report $id to $name" }
     viewModelScope.launch { sync.renameWidget(id, name) }
   }
 
   fun saveText(content: String, align: TextAlign) {
-    logcat.d { "Saving text for $id" }
+    log.d { "Saving text for $id" }
     viewModelScope.launch { sync.setWidgetText(id, content, align) }
   }
 

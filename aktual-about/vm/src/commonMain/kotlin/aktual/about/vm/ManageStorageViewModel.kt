@@ -18,6 +18,7 @@ import aktual.di.RunLevelController
 import aktual.di.RunLevelState
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.CoroutineContexts
 import androidx.compose.runtime.Stable
 import androidx.datastore.core.DataStore
@@ -39,7 +40,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import logcat.logcat
 import okio.Path
 
 @Stable
@@ -96,7 +96,7 @@ internal constructor(
         val root = appDirectory.get()
         with(files.fileSystem) { list(root).forEach { deleteRecursively(it) } }
       }
-      logcat.d { "Cleared all files" }
+      log.d { "Cleared all files" }
       navEventChannel.send(AllFilesCleared)
       loadStorageInfo()
     }
@@ -115,7 +115,7 @@ internal constructor(
           files.fileSystem.deleteRecursively(budgetDir)
         }
       }
-      logcat.d { "Cleared budget $id" }
+      log.d { "Cleared budget $id" }
       if (wasActiveBudget) {
         navEventChannel.send(ActiveBudgetCleared(id))
       }
@@ -134,7 +134,7 @@ internal constructor(
         }
       }
       customThemeCache.clear()
-      logcat.d { "Cleared cache" }
+      log.d { "Cleared cache" }
       loadStorageInfo()
     }
   }
@@ -143,7 +143,7 @@ internal constructor(
     viewModelScope.launch {
       dismissDialog()
       dataStore.edit { it.clear() }
-      logcat.d { "Cleared preferences" }
+      log.d { "Cleared preferences" }
       navEventChannel.send(PreferencesCleared)
       loadStorageInfo()
     }

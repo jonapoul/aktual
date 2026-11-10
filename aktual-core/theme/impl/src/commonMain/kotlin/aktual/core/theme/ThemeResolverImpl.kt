@@ -4,12 +4,12 @@ import aktual.api.client.ThemeApi
 import aktual.core.model.ThemeId
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.AppScope
+import aktual.log
 import aktual.prefs.ThemePreferences
 import dev.zacsweers.metro.ContributesBinding
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import logcat.logcat
 
 @ContributesBinding(AppScope::class)
 class ThemeResolverImpl
@@ -49,11 +49,11 @@ internal constructor(
     }
     val repo = id.toRepo()
     if (repo == null) {
-      logcat.e { "Failed to convert '$id' to a custom theme repository" }
+      log.e { "Failed to convert '$id' to a custom theme repository" }
       return LightColors
     }
     if (repo.isLocal) {
-      logcat.w { "Local theme $repo not found" }
+      log.w { "Local theme $repo not found" }
       return fallback(isSystemInDarkTheme)
     }
     return fetchAndCache(repo, isSystemInDarkTheme)
@@ -71,7 +71,7 @@ internal constructor(
       },
       onFailure = { e ->
         val default = fallback(isSystemInDarkTheme)
-        logcat.w(e) { "Failed fetching theme from $repo, returning $default" }
+        log.w(e) { "Failed fetching theme from $repo, returning $default" }
         default
       },
     )

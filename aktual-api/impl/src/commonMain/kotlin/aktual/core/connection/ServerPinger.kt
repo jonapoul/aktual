@@ -10,6 +10,7 @@ import aktual.di.Closeable
 import aktual.di.Initializable
 import aktual.di.ServerChosenCoroutineScope
 import aktual.di.ServerChosenScope
+import aktual.log
 import alakazam.kotlin.LoopController
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.ForScope
@@ -23,7 +24,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @SingleIn(ServerChosenScope::class)
 @ContributesIntoSet(
@@ -47,23 +47,23 @@ class ServerPinger(
   private var lastSuccess: TimeMark? = null
 
   override fun initialize() {
-    logcat.d { "initialize: pinging $serverUrl" }
+    log.d { "initialize: pinging $serverUrl" }
     job?.cancel()
     job = scope.launch {
       // Android blocks network access for backgrounded apps, so pings would just fail
       foregroundState.collectLatest { isForeground ->
         if (isForeground) {
-          logcat.v { "In foreground, continuing pings" }
+          log.v { "In foreground, continuing pings" }
           pingLoop()
         } else {
-          logcat.v { "In background, pausing pings" }
+          log.v { "In background, pausing pings" }
         }
       }
     }
   }
 
   override fun close() {
-    logcat.d { "close: stopped pinging $serverUrl" }
+    log.d { "close: stopped pinging $serverUrl" }
     job?.cancel()
     job = null
     pingStateHolder.update { Unknown }
@@ -74,7 +74,7 @@ class ServerPinger(
       delay(BEFORE_DELAY)
       val state = attemptPing(healthApi)
       val previous = pingStateHolder.value
-      if (state != previous) logcat.d { "Ping state $previous -> $state" }
+      if (state != previous) log.d { "Ping state $previous -> $state" }
       pingStateHolder.update { state }
       delay(AFTER_DELAY)
     }
@@ -84,9 +84,9 @@ class ServerPinger(
     runCatchingCancellable(
       attempt = {
         val response = healthApi.getHealth()
-        logcat.v { "Succeeded pinging server: $response" }
+        log.v { "Succeeded pinging server: $response" }
         if (consecutiveFailures > 0) {
-          logcat.d { "Ping recovered after $consecutiveFailures failures" }
+          log.d { "Ping recovered after $consecutiveFailures failures" }
         }
         consecutiveFailures = 0
         lastSuccess = TimeSource.Monotonic.markNow()
@@ -94,7 +94,7 @@ class ServerPinger(
       },
       onFailure = { e ->
         consecutiveFailures++
-        logcat.w(e) {
+        log.w(e) {
           "Failed pinging $serverUrl (failure #$consecutiveFailures, last success " +
             "${lastSuccess?.elapsedNow()?.let { "$it ago" } ?: "never"}): ${e.causeChain()}"
         }

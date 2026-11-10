@@ -1,5 +1,6 @@
 package aktual.app.android
 
+import aktual.log
 import android.content.Context
 import android.os.Build
 import androidx.activity.ComponentActivity
@@ -13,7 +14,6 @@ import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.registerForAuthenticationResult
-import logcat.logcat
 
 internal enum class AuthAvailability {
   Available,
@@ -37,7 +37,7 @@ internal class BiometricAuthenticator(
   onResult: (AuthResult) -> Unit,
 ) {
   private val launcher = activity.registerForAuthenticationResult { result ->
-    logcat.d { "BiometricAuthenticator result = $result" }
+    log.d { "BiometricAuthenticator result = $result" }
     onResult(result.toAuthResult())
   }
 

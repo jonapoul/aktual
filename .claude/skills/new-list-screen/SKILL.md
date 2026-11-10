@@ -113,7 +113,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import logcat.logcat
+import aktual.log
 
 @Stable
 @ViewModelKey
@@ -131,7 +131,7 @@ class List{Name}ViewModel(viewModelContext: ViewModelContext) :
           .map { items -> if (items.isEmpty()) Empty else Success(items.toImmutableList()) }
           .onStart<List{Name}State> { emit(Loading) }
           .catch { e ->
-            logcat.e(e) { "Failed loading {name}s" }
+            log.e(e) { "Failed loading {name}s" }
             emit(Failure(e.requireMessage()))
           }
       }

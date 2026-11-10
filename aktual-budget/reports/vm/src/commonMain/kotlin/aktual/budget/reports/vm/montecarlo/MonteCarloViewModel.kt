@@ -25,6 +25,7 @@ import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.CoroutineContexts
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -59,7 +60,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import logcat.logcat
 
 // packages/desktop-client/src/components/reports/reports/monte-carlo/MonteCarlo.tsx
 @Stable
@@ -219,7 +219,7 @@ internal constructor(
   fun setKeepSurplus(keep: Boolean) = edit { it.withSurplusKept(keep) { uuidGenerator() } }
 
   fun rename(name: String) {
-    logcat.d { "Renaming Monte Carlo widget $id to $name" }
+    log.d { "Renaming Monte Carlo widget $id to $name" }
     viewModelScope.launch { sync.renameWidget(id, name) }
   }
 
@@ -245,7 +245,7 @@ internal constructor(
   fun save() {
     val meta = (saved.value as? Found)?.meta ?: return
     val edited = mutableConfig.value ?: return
-    logcat.d { "Saving Monte Carlo config for $id" }
+    log.d { "Saving Monte Carlo config for $id" }
     viewModelScope.launch {
       // Saving the resolved plan keeps linked pots' stored balances fresh as a fallback. It's
       // resolved here because resolvedConfig can lag behind an edit made just before saving

@@ -16,9 +16,9 @@ import aktual.budget.transactions.domain.TransactionWriter
 import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
+import aktual.log
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 /**
  * Links budget accounts to accounts at a bank, or unlinks them. See linkSimpleFinAccount() and
@@ -91,11 +91,11 @@ class BankAccountLinker(
     return runCatchingCancellable(
       attempt = {
         api.removeGoCardlessRequisition(requisition.value).also { removed ->
-          if (!removed) logcat.w { "GoCardless refused to delete requisition $requisition" }
+          if (!removed) log.w { "GoCardless refused to delete requisition $requisition" }
         }
       },
       onFailure = { e ->
-        logcat.w(e) { "Failed deleting GoCardless requisition $requisition" }
+        log.w(e) { "Failed deleting GoCardless requisition $requisition" }
         false
       },
     )

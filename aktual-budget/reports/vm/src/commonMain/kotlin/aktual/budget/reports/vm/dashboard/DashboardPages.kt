@@ -6,6 +6,7 @@ import aktual.budget.model.DashboardPageId
 import aktual.budget.model.DbMetadataKey
 import aktual.budget.reports.vm.DashboardSync
 import aktual.core.utils.UuidGenerator
+import aktual.log
 import androidx.compose.runtime.Immutable
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +15,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import logcat.logcat
 
 @Immutable data class DashboardPage(val id: DashboardPageId, val name: String)
 
@@ -36,13 +36,13 @@ internal class DashboardPages(
       .distinctUntilChanged()
 
   fun select(id: DashboardPageId) {
-    logcat.d { "Selecting dashboard page $id" }
+    log.d { "Selecting dashboard page $id" }
     prefs.update { meta -> meta.set(SelectedPageKey, id.value) }
   }
 
   suspend fun create(name: String): DashboardPageId {
     val id = uuidGenerator(::DashboardPageId)
-    logcat.d { "Creating dashboard page $id" }
+    log.d { "Creating dashboard page $id" }
     sync.insertPage(id, name)
     select(id)
     return id
@@ -52,13 +52,13 @@ internal class DashboardPages(
   suspend fun selectedOrCreate(): DashboardPageId = selected.first()?.id ?: create(DEFAULT_NAME)
 
   suspend fun rename(id: DashboardPageId, name: String) {
-    logcat.d { "Renaming dashboard page $id" }
+    log.d { "Renaming dashboard page $id" }
     sync.renamePage(id, name)
   }
 
   suspend fun delete(id: DashboardPageId) {
     if (!sync.deletePage(id)) {
-      logcat.w { "Can't delete the last dashboard page $id" }
+      log.w { "Can't delete the last dashboard page $id" }
     }
   }
 

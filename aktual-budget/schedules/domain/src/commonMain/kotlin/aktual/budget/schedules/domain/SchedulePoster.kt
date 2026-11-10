@@ -11,9 +11,9 @@ import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.budget.transactions.domain.toNewTransactions
 import aktual.core.utils.UuidGenerator
+import aktual.log
 import dev.zacsweers.metro.Inject
 import kotlinx.datetime.LocalDate
-import logcat.logcat
 
 // Adds schedule transactions through the rules, as addTransactions() in
 // packages/loot-core/src/server/accounts/sync.ts does
@@ -51,7 +51,7 @@ internal class SchedulePoster(
         }
         rows.forEach { insert(it) }
       }
-      logcat.i { "Posted schedules: ${transactions.mapNotNull { it.schedule }.distinct()}" }
+      log.i { "Posted schedules: ${transactions.mapNotNull { it.schedule }.distinct()}" }
       return rows.filter { it.parentId == null }.mapNotNull { it.id }
     }
   }

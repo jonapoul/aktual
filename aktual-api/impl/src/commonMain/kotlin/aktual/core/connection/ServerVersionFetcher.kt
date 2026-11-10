@@ -8,6 +8,7 @@ import aktual.di.Closeable
 import aktual.di.Initializable
 import aktual.di.ServerChosenCoroutineScope
 import aktual.di.ServerChosenScope
+import aktual.log
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.LoopController
 import dev.zacsweers.metro.ContributesIntoSet
@@ -21,7 +22,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import logcat.logcat
 
 @SingleIn(ServerChosenScope::class)
 @ContributesIntoSet(
@@ -43,10 +43,10 @@ class ServerVersionFetcher(
   private var job: Job? = null
 
   override fun initialize() {
-    logcat.v { "initialize" }
+    log.v { "initialize" }
     job = scope.launch {
       pingStateHolder.collectLatest { state ->
-        logcat.v { "ServerVersionFetcher collected $state" }
+        log.v { "ServerVersionFetcher collected $state" }
         if (state == Success) {
           fetchVersionUntilSuccess()
         } else {
@@ -57,26 +57,26 @@ class ServerVersionFetcher(
   }
 
   override fun close() {
-    logcat.v { "close" }
+    log.v { "close" }
     job?.cancel()
     job = null
   }
 
   private suspend fun fetchVersionUntilSuccess() {
     while (loopController.shouldLoop()) {
-      logcat.v { "fetchVersion" }
+      log.v { "fetchVersion" }
       runCatchingCancellable(
         attempt = {
           val response = withContext(contexts.io) { baseApi.fetchInfo() }
-          logcat.v { "Fetched %s".format(response) }
+          log.v { "Fetched %s".format(response) }
           versionsStateHolder.set(response.build.version)
           break
         },
         onFailure = { e ->
           if (e is ResponseException) {
-            logcat.w(e) { "HTTP failure fetching server info" }
+            log.w(e) { "HTTP failure fetching server info" }
           } else {
-            logcat.w(e) { "Failed fetching server info" }
+            log.w(e) { "Failed fetching server info" }
           }
           delay(RETRY_DELAY)
         },

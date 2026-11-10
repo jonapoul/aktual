@@ -15,6 +15,7 @@ import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.TimeZoneProvider
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
@@ -42,7 +43,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.toLocalDateTime
-import logcat.logcat
 
 @Stable
 @AssistedInject
@@ -84,7 +84,7 @@ internal constructor(
       .observe()
       .map(::toState)
       .catch { e ->
-        logcat.e(e) { "Failed loading payee $payeeId" }
+        log.e(e) { "Failed loading payee $payeeId" }
         emit(Failure(e.requireMessage()))
       }
       .stateIn(viewModelScope, Eagerly, initialValue = Loading)
@@ -105,7 +105,7 @@ internal constructor(
           .toImmutableList()
       }
       .catch { e ->
-        logcat.e(e) { "Failed loading locations of $payeeId" }
+        log.e(e) { "Failed loading locations of $payeeId" }
         emit(persistentListOf())
       }
       .stateIn(viewModelScope, Eagerly, initialValue = persistentListOf())
@@ -162,7 +162,7 @@ internal constructor(
           mutableEvents.tryEmit(EditPayeeEvent.LocationDeleted(id))
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed deleting location $id" }
+          log.e(e) { "Failed deleting location $id" }
           mutableEvents.tryEmit(LocationDeleteFailed)
         },
       )
@@ -175,7 +175,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { payeeLocations.restore(id) },
         onFailure = { e ->
-          logcat.e(e) { "Failed restoring location $id" }
+          log.e(e) { "Failed restoring location $id" }
           mutableEvents.tryEmit(LocationRestoreFailed)
         },
       )
@@ -200,7 +200,7 @@ internal constructor(
           mutableEvents.tryEmit(FinishedSaving)
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed saving payee $payeeId" }
+          log.e(e) { "Failed saving payee $payeeId" }
           mutableSaveError.update { e.requireMessage() }
         },
       )

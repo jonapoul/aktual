@@ -13,6 +13,7 @@ import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -32,7 +33,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -70,7 +70,7 @@ internal constructor(
           }
           .onStart<ListPayeesState> { emit(Loading) }
           .catch { e ->
-            logcat.e(e) { "Failed loading payees" }
+            log.e(e) { "Failed loading payees" }
             emit(Failure(e.requireMessage()))
           }
       }
@@ -89,7 +89,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { learning.set(enabled) },
         onFailure = { e ->
-          logcat.e(e) { "Failed setting category learning to $enabled" }
+          log.e(e) { "Failed setting category learning to $enabled" }
           mutableEvents.tryEmit(UpdateFailed)
         },
       )
@@ -106,7 +106,7 @@ internal constructor(
           mutableEvents.tryEmit(ListPayeesEvent.Deleted(payee))
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed deleting payee ${payee.id}" }
+          log.e(e) { "Failed deleting payee ${payee.id}" }
           mutableEvents.tryEmit(DeleteFailed)
         },
       )
@@ -119,7 +119,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { syncController.syncChanges(untombstone(PAYEES, payee.id.value)) },
         onFailure = { e ->
-          logcat.e(e) { "Failed restoring payee ${payee.id}" }
+          log.e(e) { "Failed restoring payee ${payee.id}" }
           mutableEvents.tryEmit(RestoreFailed)
         },
       )
@@ -132,14 +132,14 @@ internal constructor(
         attempt = {
           val merge = merger.merge(into.id, listOf(payee.id))
           if (merge == null) {
-            logcat.w { "Nothing to merge from ${payee.id} into ${into.id}" }
+            log.w { "Nothing to merge from ${payee.id} into ${into.id}" }
             mutableEvents.tryEmit(MergeFailed)
           } else {
             mutableEvents.tryEmit(ListPayeesEvent.Merged(payee, into, merge))
           }
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed merging ${payee.id} into ${into.id}" }
+          log.e(e) { "Failed merging ${payee.id} into ${into.id}" }
           mutableEvents.tryEmit(MergeFailed)
         },
       )
@@ -151,7 +151,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { merger.undo(event.merge) },
         onFailure = { e ->
-          logcat.e(e) { "Failed undoing merge of ${event.payee.id}" }
+          log.e(e) { "Failed undoing merge of ${event.payee.id}" }
           mutableEvents.tryEmit(RestoreFailed)
         },
       )
@@ -167,7 +167,7 @@ internal constructor(
           syncController.syncChanges(localChange(PAYEES, payee.id.value, "favorite", favorite))
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed setting favorite=$favorite on ${payee.id}" }
+          log.e(e) { "Failed setting favorite=$favorite on ${payee.id}" }
           mutableEvents.tryEmit(UpdateFailed)
         },
       )

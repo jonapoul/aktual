@@ -16,6 +16,7 @@ import aktual.budget.reports.vm.dashboard.DashboardPages
 import aktual.budget.reports.vm.dashboard.displayName
 import aktual.budget.reports.vm.pinned.PinnedReports.Companion.MAX_PINNED_REPORTS
 import aktual.di.BudgetScope
+import aktual.log
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
@@ -31,7 +32,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 // Reports shown on the home page, saved locally like the home card order. Pins whose report has
 // since been deleted or can't be shown are skipped, and dropped on the next change
@@ -92,7 +92,7 @@ internal constructor(
             this@channelFlow.launch {
               chartDataLoader
                 .load(meta)
-                .catch { e -> logcat.e(e) { "Failed loading pinned chart $meta" } }
+                .catch { e -> log.e(e) { "Failed loading pinned chart $meta" } }
                 .collect { data -> charts.update { loaded -> loaded + (meta to data) } }
             }
           }
@@ -120,7 +120,7 @@ internal constructor(
 
   override suspend fun pin(id: WidgetId) = edit { ids ->
     if (id in ids || ids.size >= MAX_PINNED_REPORTS) {
-      logcat.w { "Can't pin $id to home with $ids" }
+      log.w { "Can't pin $id to home with $ids" }
       ids
     } else {
       ids + id

@@ -13,6 +13,7 @@ import aktual.di.AppScope
 import aktual.di.RunLevelController
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.prefs.AppPreferences
 import aktual.prefs.delete
 import alakazam.kotlin.CoroutineContexts
@@ -39,7 +40,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -109,13 +109,13 @@ internal constructor(
   }
 
   fun onEnterUrl(url: String) {
-    logcat.v { "onUrlEntered $url" }
+    log.v { "onUrlEntered $url" }
     mutableBaseUrl.update { url }
     mutableConfirmResult.update { null }
   }
 
   fun onClickTryDemo() {
-    logcat.v { "onClickTryDemo" }
+    log.v { "onClickTryDemo" }
     mutableConfirmResult.reset()
     mutableIsLoading.update { true }
     viewModelScope.launch {
@@ -125,7 +125,7 @@ internal constructor(
           mutableNavDestination.send(ToDemo)
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed opening demo budget" }
+          log.e(e) { "Failed opening demo budget" }
           mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
         },
         finally = { mutableIsLoading.update { false } },
@@ -134,12 +134,12 @@ internal constructor(
   }
 
   fun onSelectProtocol(protocol: Protocol) {
-    logcat.v { "onProtocolSelected $protocol" }
+    log.v { "onProtocolSelected $protocol" }
     mutableProtocol.update { protocol }
   }
 
   fun onClickConfirm() {
-    logcat.v { "onClickConfirm" }
+    log.v { "onClickConfirm" }
     mutableConfirmResult.reset()
     mutableIsLoading.update { true }
     viewModelScope.launch {
@@ -165,17 +165,17 @@ internal constructor(
   private suspend fun checkIfNeedsBootstrap(url: ServerUrl, accountApi: AccountApi) {
     runCatchingCancellable(
       attempt = {
-        logcat.v { "checkIfNeedsBootstrap $url" }
+        log.v { "checkIfNeedsBootstrap $url" }
 
         val response =
           try {
             withContext(contexts.io) { accountApi.needsBootstrap() }
           } catch (e: ResponseException) {
-            logcat.e(e) { "HTTP failure checking bootstrap for $url" }
+            log.e(e) { "HTTP failure checking bootstrap for $url" }
             e.response.body<NeedsBootstrapResponse.Failure>()
           }
 
-        logcat.v { "response = $response" }
+        log.v { "response = $response" }
         val confirmResult =
           when (response) {
             is Success -> ConfirmResult.Succeeded(isBootstrapped = response.data.bootstrapped)
@@ -184,7 +184,7 @@ internal constructor(
         mutableConfirmResult.update { confirmResult }
       },
       onFailure = { e ->
-        logcat.w(e) { "Failed checking bootstrap for $url" }
+        log.w(e) { "Failed checking bootstrap for $url" }
 
         preferences.serverUrl.delete()
 

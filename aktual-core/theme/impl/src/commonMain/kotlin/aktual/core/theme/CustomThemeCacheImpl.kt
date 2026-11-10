@@ -2,6 +2,7 @@ package aktual.core.theme
 
 import aktual.core.utils.AppDirectory
 import aktual.di.AppScope
+import aktual.log
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.SingleIn
@@ -14,7 +15,6 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.builtins.ListSerializer
-import logcat.logcat
 import okio.FileSystem
 import okio.IOException
 import okio.Path
@@ -74,10 +74,10 @@ internal constructor(
       val json = read(summariesFile)
       decode(json, SUMMARIES_SERIALIZER)
     } catch (e: IOException) {
-      logcat.e(e) { "Failed reading summaries from $summariesFile" }
+      log.e(e) { "Failed reading summaries from $summariesFile" }
       emptyList()
     } catch (e: SerializationException) {
-      logcat.e(e) { "Failed decoding summaries from $summariesFile" }
+      log.e(e) { "Failed decoding summaries from $summariesFile" }
       emptyList()
     }
   }
@@ -93,10 +93,10 @@ internal constructor(
       val json = read(themeFile)
       decode(json, THEME_SERIALIZER)
     } catch (e: IOException) {
-      logcat.e(e) { "Failed reading theme from $themeFile" }
+      log.e(e) { "Failed reading theme from $themeFile" }
       null
     } catch (e: SerializationException) {
-      logcat.e(e) { "Failed decoding theme from $themeFile" }
+      log.e(e) { "Failed decoding theme from $themeFile" }
       null
     }
   }
@@ -117,9 +117,9 @@ internal constructor(
       val encoded = encode(summaries, SUMMARIES_SERIALIZER)
       write(encoded, summariesFile)
     } catch (e: IOException) {
-      logcat.e(e) { "Failed writing summaries to $summariesFile" }
+      log.e(e) { "Failed writing summaries to $summariesFile" }
     } catch (e: SerializationException) {
-      logcat.e(e) { "Failed encoding summaries to $summariesFile" }
+      log.e(e) { "Failed encoding summaries to $summariesFile" }
     }
   }
 
@@ -132,9 +132,9 @@ internal constructor(
       write(encoded, themeFile)
       if (theme.repo.isLocal) localThemesVersion.update { it + 1 }
     } catch (e: IOException) {
-      logcat.e(e) { "Failed writing theme to $themeFile" }
+      log.e(e) { "Failed writing theme to $themeFile" }
     } catch (e: SerializationException) {
-      logcat.e(e) { "Failed encoding theme to $themeFile" }
+      log.e(e) { "Failed encoding theme to $themeFile" }
     }
   }
 
@@ -144,7 +144,7 @@ internal constructor(
       withContext(contexts.io) { fileSystem.delete(themeFile) }
       if (repo.isLocal) localThemesVersion.update { it + 1 }
     } catch (e: IOException) {
-      logcat.e(e) { "Failed deleting theme $themeFile" }
+      log.e(e) { "Failed deleting theme $themeFile" }
     }
   }
 

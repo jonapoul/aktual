@@ -37,6 +37,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.prefs.TransactionPreferences
 import aktual.prefs.asStateFlow
 import androidx.compose.runtime.Stable
@@ -75,7 +76,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @AssistedInject
@@ -140,7 +140,7 @@ internal constructor(
       .observeTags()
       .map { rows -> rows.toTagLabels() }
       .catch { e ->
-        logcat.w(e) { "Failed loading tags" }
+        log.w(e) { "Failed loading tags" }
         emit(persistentListOf())
       }
       .stateIn(viewModelScope, Eagerly, persistentListOf())
@@ -178,7 +178,7 @@ internal constructor(
     } else {
       transactionDao
         .observeClearedBalances(accountId)
-        .catch { e -> logcat.w(e) { "Failed loading cleared balances of $accountId" } }
+        .catch { e -> log.w(e) { "Failed loading cleared balances of $accountId" } }
         .stateIn(viewModelScope, Eagerly, initialValue = null)
     }
 
@@ -299,7 +299,7 @@ internal constructor(
     // Ignore the first item from the flow, that'll be the initial table state.
     viewModelScope.launch {
       transactionDao.observeChanges().drop(count = 1).collect {
-        logcat.d { "Transactions table updated, invalidating paging source..." }
+        log.d { "Transactions table updated, invalidating paging source..." }
         currentPagingSource?.invalidate()
       }
     }
@@ -312,7 +312,7 @@ internal constructor(
           .collect {
             runCatchingCancellable(
               attempt = { newTransactions.markSeen(accountId) },
-              onFailure = { e -> logcat.w(e) { "Failed marking $accountId seen" } },
+              onFailure = { e -> log.w(e) { "Failed marking $accountId seen" } },
             )
           }
       }
@@ -349,7 +349,7 @@ internal constructor(
     viewModelScope.launch {
       runCatchingCancellable(
         attempt = { viewPrefs.set(key, enabled) },
-        onFailure = { e -> logcat.w(e) { "Failed setting $key" } },
+        onFailure = { e -> log.w(e) { "Failed setting $key" } },
       )
     }
   }
@@ -360,7 +360,7 @@ internal constructor(
 
   fun bankSync() {
     val account = accountId ?: return
-    if (!bankSyncController.start(setOf(account))) logcat.d { "Bank sync already running" }
+    if (!bankSyncController.start(setOf(account))) log.d { "Bank sync already running" }
   }
 
   fun deleteAccount() {
@@ -370,11 +370,11 @@ internal constructor(
       runCatchingCancellable(
         attempt = {
           val loginRemoved = deleter.delete(account)
-          logcat.i { "Deleted account $account" }
+          log.i { "Deleted account $account" }
           mutableEvents.trySend(if (loginRemoved) AccountDeleted else AccountDeletedBankLoginKept)
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed deleting account $account" }
+          log.e(e) { "Failed deleting account $account" }
           mutableEvents.trySend(DeleteAccountFailed)
         },
       )
@@ -427,7 +427,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { block() },
         onFailure = { e ->
-          logcat.e(e) { failure }
+          log.e(e) { failure }
           mutableEvents.trySend(ReconcileFailed)
         },
         finally = { mutableReconcileBusy.update { false } },

@@ -1,5 +1,6 @@
 package aktual.core.logging
 
+import aktual.log
 import android.util.Log
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -8,7 +9,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import logcat.LogcatLogger
 import logcat.LogcatLogger.Companion.loggers
-import logcat.logcat
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowLog
@@ -32,7 +32,7 @@ class AktualAndroidLogcatLoggerTest {
     loggers += AktualAndroidLogcatLogger(VERBOSE)
 
     // when
-    logcat.i { "Hello world" }
+    log.i { "Hello world" }
 
     // then
     val expected =

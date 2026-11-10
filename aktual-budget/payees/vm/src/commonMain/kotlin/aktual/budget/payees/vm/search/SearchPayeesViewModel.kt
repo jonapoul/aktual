@@ -8,6 +8,7 @@ import aktual.budget.rules.domain.normalise
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
@@ -31,7 +32,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import logcat.logcat
 
 @Stable
 @AssistedInject
@@ -60,7 +60,7 @@ internal constructor(
       .onStart { emit(Unit) }
       .flatMapLatest {
         combine(query, searchablePayees(), ::search).catch { e ->
-          logcat.e(e) { "Failed loading payees" }
+          log.e(e) { "Failed loading payees" }
           emit(Failure(e.requireMessage()))
         }
       }

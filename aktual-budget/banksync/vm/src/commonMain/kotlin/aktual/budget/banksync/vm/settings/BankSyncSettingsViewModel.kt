@@ -15,6 +15,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -37,7 +38,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 /**
  * An account's bank sync settings, saved to synced preferences.
@@ -102,7 +102,7 @@ internal constructor(
           mutableLoaded.update { Loaded(row.name, settings, fields) }
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed loading bank sync settings for $account" }
+          log.e(e) { "Failed loading bank sync settings for $account" }
           mutableFailure.update { BankSyncSettingsState.Failure(e.requireMessage()) }
         },
       )
@@ -135,7 +135,7 @@ internal constructor(
           mutableEvents.emit(Saved)
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed saving bank sync settings for $account" }
+          log.e(e) { "Failed saving bank sync settings for $account" }
           mutableEvents.emit(BankSyncSettingsEvent.SaveFailed(e.requireMessage()))
         },
       )
@@ -150,7 +150,7 @@ internal constructor(
           mutableEvents.emit(Unlinked)
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed unlinking $account" }
+          log.e(e) { "Failed unlinking $account" }
           mutableEvents.emit(BankSyncSettingsEvent.UnlinkFailed(e.requireMessage()))
         },
       )

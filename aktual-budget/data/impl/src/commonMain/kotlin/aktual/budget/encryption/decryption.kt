@@ -4,6 +4,7 @@ import aktual.budget.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.core.utils.EncryptionKeys
 import aktual.di.AppScope
+import aktual.log
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.ContributesBinding
@@ -12,7 +13,6 @@ import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
-import logcat.logcat
 import okio.Buffer
 import okio.CipherSource
 import okio.Path
@@ -30,7 +30,7 @@ internal constructor(
 ) : FileDecrypter {
   override suspend fun invoke(id: BudgetId, meta: Meta, filePath: Path): DecryptResult {
     val decryptedPath = files.decryptedZip(id, mkdirs = true)
-    logcat.d { "Decrypting $id from $filePath into $decryptedPath with $meta" }
+    log.d { "Decrypting $id from $filePath into $decryptedPath with $meta" }
     return decrypt(
       contexts = contexts,
       keys = keys,
@@ -48,7 +48,7 @@ class BufferDecrypterImpl(
   private val keys: EncryptionKeys,
 ) : BufferDecrypter {
   override suspend operator fun invoke(meta: Meta, buffer: Buffer): DecryptResult {
-    logcat.d { "Decrypting ${buffer.size} bytes with $meta" }
+    log.d { "Decrypting ${buffer.size} bytes with $meta" }
     val output = Buffer()
     return decrypt(
       contexts = contexts,

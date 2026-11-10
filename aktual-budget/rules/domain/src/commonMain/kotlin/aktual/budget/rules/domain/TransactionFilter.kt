@@ -9,12 +9,12 @@ import aktual.budget.model.ConditionOp
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.occurrences
+import aktual.log
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.yearMonth
-import logcat.logcat
 
 /** A transaction as a report filter sees it, with the names that id conditions can match */
 data class FilterRow(
@@ -69,7 +69,7 @@ private constructor(private val conditions: List<FilterCondition>, private val o
             try {
               FilterCondition(CompiledCondition.compile(condition, idMappings = emptyMap()))
             } catch (e: RuleValidationException) {
-              logcat.w(e) { "Skipping invalid filter condition $condition" }
+              log.w(e) { "Skipping invalid filter condition $condition" }
               null
             }
           }

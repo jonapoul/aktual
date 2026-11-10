@@ -2,8 +2,8 @@
 
 package aktual.core.theme
 
+import aktual.log
 import androidx.compose.ui.graphics.Color
-import logcat.logcat
 
 fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
   val properties: Map<String, String> =
@@ -20,7 +20,7 @@ fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
     val name = property.removePrefix(COLOR_PREFIX)
     val color = properties.resolveColor(value)
     if (color == null) {
-      logcat.w(TAG) { "Can't resolve '$value' for '$name' in custom theme ${summary.repo}" }
+      log.w(TAG) { "Can't resolve '$value' for '$name' in custom theme ${summary.repo}" }
     } else {
       attributes[name] = color
     }
@@ -39,14 +39,14 @@ fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
       fallback = if (pageBackground.isLight()) LightColors else DarkColors,
       attributes = attributes,
       onMissing = { name ->
-        logcat.w(TAG) { "Failed finding theme attribute '$name' in custom theme ${summary.repo}" }
+        log.w(TAG) { "Failed finding theme attribute '$name' in custom theme ${summary.repo}" }
       },
     )
 
   if (attributes.isNotEmpty()) {
-    logcat.w(TAG) { "Parsed ${summary.repo}, leftover attributes = $attributes" }
+    log.w(TAG) { "Parsed ${summary.repo}, leftover attributes = $attributes" }
   } else {
-    logcat.d(TAG) { "Parsed ${summary.repo}, no leftover attributes" }
+    log.d(TAG) { "Parsed ${summary.repo}, no leftover attributes" }
   }
 
   return theme

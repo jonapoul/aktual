@@ -5,6 +5,7 @@ import aktual.crashes.data.CrashesRepository
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.prefs.AppPreferences
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 // Offers to show the newest crash report on launch, if the user hasn't seen it yet
 @Stable
@@ -36,7 +36,7 @@ internal constructor(
       val newest = repository.reports().firstOrNull() ?: return@launch
       val lastSeen = preferences.lastSeenCrash.get()
       if (lastSeen == null || newest.file.name > lastSeen.name) {
-        logcat.i { "Unseen crash report ${newest.file}" }
+        log.i { "Unseen crash report ${newest.file}" }
         mutableUnseen.update { newest }
       }
     }

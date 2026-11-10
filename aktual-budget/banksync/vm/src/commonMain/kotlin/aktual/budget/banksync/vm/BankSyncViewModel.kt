@@ -13,6 +13,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -38,7 +39,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 /**
  * Each open account's bank sync link, grouped by provider, and syncing them. Syncs run in
@@ -98,11 +98,11 @@ internal constructor(
 
   /** Syncs every linked account, unless a sync is already running. */
   fun syncAll() {
-    if (!controller.start()) logcat.d { "Bank sync already running" }
+    if (!controller.start()) log.d { "Bank sync already running" }
   }
 
   fun sync(account: AccountId) {
-    if (!controller.start(setOf(account))) logcat.d { "Bank sync already running" }
+    if (!controller.start(setOf(account))) log.d { "Bank sync already running" }
   }
 
   fun reload(showLoading: Boolean = true) {
@@ -118,7 +118,7 @@ internal constructor(
             accounts.linked.keys
           },
           onFailure = { e ->
-            logcat.e(e) { "Failed loading bank sync accounts" }
+            log.e(e) { "Failed loading bank sync accounts" }
             mutableFailure.update { e.requireMessage() }
             emptySet()
           },
@@ -173,13 +173,13 @@ internal constructor(
           is BankSyncStatusResponse.Success ->
             if (response.configured) Configured else NotConfigured
           is Rejected -> {
-            logcat.w { "Bank sync status for $source rejected: $response" }
+            log.w { "Bank sync status for $source rejected: $response" }
             Failed
           }
         }
       },
       onFailure = { e ->
-        logcat.w(e) { "Failed checking bank sync status for $source" }
+        log.w(e) { "Failed checking bank sync status for $source" }
         Failed
       },
     )

@@ -25,6 +25,7 @@ import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.normalIconButton
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,7 +48,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import logcat.logcat
 
 @Composable
 fun ServerUrlScreen(
@@ -69,7 +69,7 @@ fun ServerUrlScreen(
     // Don't consumeEach here, it'll cancel the channel when we nav forward
     for (destination in viewModel.navDestination) {
       when (destination) {
-        ToBootstrap -> logcat.w { "Not implemented bootstrap yet!" }
+        ToBootstrap -> log.w { "Not implemented bootstrap yet!" }
         ToLogin -> toLogin()
         ToAbout -> toInfo()
         ToDemo -> toBudget()

@@ -17,6 +17,7 @@ import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -40,7 +41,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 /**
  * The edit sheet: an account's name, notes and group. Names stay unique among accounts that aren't
@@ -81,7 +81,7 @@ internal constructor(
       }
       .onEach(::seed)
       .catch { e ->
-        logcat.e(e) { "Failed loading account $accountId" }
+        log.e(e) { "Failed loading account $accountId" }
         loadError.update { e.requireMessage() }
       }
       .stateIn(viewModelScope, Eagerly, initialValue = null)
@@ -135,7 +135,7 @@ internal constructor(
           mutableEvents.tryEmit(EditAccountEvent.Saved(name, renamedFrom, undo))
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed saving account $accountId" }
+          log.e(e) { "Failed saving account $accountId" }
           saveError.update { e.requireMessage() }
           isSaving.update { false }
         },
@@ -148,7 +148,7 @@ internal constructor(
     budgetScope.launch {
       runCatchingCancellable(
         attempt = { writer.undo(undo) },
-        onFailure = { e -> logcat.e(e) { "Failed undoing edit of $accountId" } },
+        onFailure = { e -> log.e(e) { "Failed undoing edit of $accountId" } },
       )
     }
   }

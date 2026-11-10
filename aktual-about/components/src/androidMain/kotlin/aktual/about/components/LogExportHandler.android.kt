@@ -1,6 +1,7 @@
 package aktual.about.components
 
 import aktual.about.data.LogExport
+import aktual.log
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -17,7 +18,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import logcat.logcat
 
 @Composable
 actual fun rememberLogExportHandler(): LogExportHandler {
@@ -70,7 +70,7 @@ private class AndroidLogExportHandler(
     if (uri == null) return
     scope.launch(Dispatchers.IO) {
       context.contentResolver.openOutputStream(uri)?.use { it.write(text.toByteArray()) }
-      logcat.i { "Saved logs to $uri" }
+      log.i { "Saved logs to $uri" }
     }
   }
 }

@@ -1,8 +1,12 @@
 @file:Suppress("ClassName", "MatchingDeclarationName", "DEPRECATION")
 
-package logcat
+package aktual
 
-object logcat {
+import logcat.LogPriority
+import logcat.asLog
+import logcat.logcat
+
+object log {
   context(subject: Any)
   inline fun v(tag: String? = null, t: Throwable? = null, message: () -> String) =
     combined1(VERBOSE, tag, t, message)

@@ -9,6 +9,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 // The order is only written when saved. Income groups stay below the expense ones, and a category
 // can't move between expense and income groups, as upstream's mobile budget page allows
@@ -55,7 +55,7 @@ internal constructor(
           }
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed loading category order" }
+          log.e(e) { "Failed loading category order" }
           mutableState.update { Failed }
         },
       )
@@ -109,7 +109,7 @@ internal constructor(
           mutableEvents.emit(Saved)
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed saving category order" }
+          log.e(e) { "Failed saving category order" }
           mutableState.update { state ->
             if (state is Loaded) state.copy(isSaving = false) else state
           }

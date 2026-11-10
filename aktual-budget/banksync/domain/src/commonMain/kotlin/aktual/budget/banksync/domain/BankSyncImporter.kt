@@ -22,6 +22,7 @@ import aktual.budget.transactions.domain.TransactionWriter
 import aktual.budget.transactions.domain.toNewTransactions
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator
+import aktual.log
 import dev.zacsweers.metro.Inject
 import kotlin.math.abs
 import kotlin.math.floor
@@ -40,7 +41,6 @@ import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonObject
-import logcat.logcat
 
 data class BankSyncDownload(
   val transactions: List<BankSyncTransaction>,
@@ -106,7 +106,7 @@ internal constructor(
         reconciled
       }
     }
-    logcat.i { "Bank sync added ${result.added.size}, updated ${result.updated.size} in $account" }
+    log.i { "Bank sync added ${result.added.size}, updated ${result.updated.size} in $account" }
     return result
   }
 

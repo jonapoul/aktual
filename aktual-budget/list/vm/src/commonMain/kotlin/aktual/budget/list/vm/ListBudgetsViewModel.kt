@@ -17,6 +17,7 @@ import aktual.di.LoggedInScope
 import aktual.di.RunLevelController
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.prefs.AppPreferences
 import aktual.prefs.asStateFlow
 import aktual.prefs.delete
@@ -39,7 +40,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -76,7 +76,7 @@ internal constructor(
   private var lastUserFiles: List<UserFile>? = null
 
   init {
-    logcat.d { "init" }
+    log.d { "init" }
     fetchState()
 
     // Periodically re-reconcile so newly downloaded / deleted local files update the list
@@ -89,12 +89,12 @@ internal constructor(
   }
 
   fun retry() {
-    logcat.d { "retry" }
+    log.d { "retry" }
     fetchState()
   }
 
   fun openBudget(budget: Budget) {
-    logcat.d { "openBudget $budget" }
+    log.d { "openBudget $budget" }
     val id = budget.directoryId
     viewModelScope.launch {
       val metadata =
@@ -135,7 +135,7 @@ internal constructor(
   fun clearDeletingState() = mutableDeletingState.update { Inactive }
 
   fun deleteRemote(id: BudgetId) {
-    logcat.d { "deleteRemote $id" }
+    log.d { "deleteRemote $id" }
     mutableDeletingState.update { DeletingState.Active(deletingRemote = true) }
 
     viewModelScope.launch {
@@ -150,10 +150,10 @@ internal constructor(
           val request = DeleteUserFileRequest(id, token)
           syncApi.delete(request)
         },
-        onFailure = { e -> logcat.e(e) { "Failed deleting $id" } },
+        onFailure = { e -> log.e(e) { "Failed deleting $id" } },
       )
 
-      logcat.d { "Successfully deleted $id" }
+      log.d { "Successfully deleted $id" }
       clearDeletingState()
       mutableCloseDialog.emit(true)
 
@@ -162,7 +162,7 @@ internal constructor(
   }
 
   fun deleteLocal(id: BudgetId) {
-    logcat.d { "deleteLocal $id" }
+    log.d { "deleteLocal $id" }
     mutableDeletingState.update { DeletingState.Active(deletingLocal = true) }
     viewModelScope.launch {
       with(files) {
@@ -171,7 +171,7 @@ internal constructor(
           withContext(contexts.io) { fileSystem.deleteRecursively(budgetDir) }
         }
 
-        logcat.d { "Successfully deleted $budgetDir" }
+        log.d { "Successfully deleted $budgetDir" }
         clearLastOpenedIfMatches(id)
         clearDeletingState()
         mutableCloseDialog.emit(true)
@@ -194,7 +194,7 @@ internal constructor(
       mutableState.update { Loading(mostRecentNumBudgets) }
 
       val result = budgetListFetcher.fetchBudgets(token)
-      logcat.d { "Fetch budgets result = $result" }
+      log.d { "Fetch budgets result = $result" }
       val newState =
         when (result) {
           is FetchBudgetsResult.Failure -> {

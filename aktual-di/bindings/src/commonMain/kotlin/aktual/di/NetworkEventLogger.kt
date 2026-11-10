@@ -1,5 +1,6 @@
 package aktual.di
 
+import aktual.log
 import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -7,7 +8,6 @@ import java.net.Proxy
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
-import logcat.logcat
 import okhttp3.Call
 import okhttp3.EventListener
 import okhttp3.HttpUrl
@@ -23,7 +23,7 @@ internal class NetworkEventLogger : EventListener() {
 
   override fun proxySelectEnd(call: Call, url: HttpUrl, proxies: List<Proxy>) {
     if (proxies.any { it.type() != DIRECT }) {
-      logcat.d { "${call.tag()} proxies=$proxies" }
+      log.d { "${call.tag()} proxies=$proxies" }
     }
   }
 
@@ -34,7 +34,7 @@ internal class NetworkEventLogger : EventListener() {
   override fun dnsEnd(call: Call, domainName: String, inetAddressList: List<InetAddress>) {
     val elapsed = dnsStart?.elapsedNow() ?: return
     if (elapsed > SLOW_DNS) {
-      logcat.w { "${call.tag()} slow DNS for $domainName: $elapsed -> $inetAddressList" }
+      log.w { "${call.tag()} slow DNS for $domainName: $elapsed -> $inetAddressList" }
     }
   }
 
@@ -45,12 +45,12 @@ internal class NetworkEventLogger : EventListener() {
     protocol: Protocol?,
     ioe: IOException,
   ) {
-    logcat.w { "${call.tag()} connectFailed $inetSocketAddress proxy=$proxy: $ioe" }
+    log.w { "${call.tag()} connectFailed $inetSocketAddress proxy=$proxy: $ioe" }
   }
 
   override fun callFailed(call: Call, ioe: IOException) {
     if (call.isCanceled()) return
-    logcat.w {
+    log.w {
       "${call.tag()} callFailed after ${callStart?.elapsedNow()} dnsStarted=${dnsStart != null}: " +
         "${ioe::class.qualifiedName}: ${ioe.message}"
     }
