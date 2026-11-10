@@ -24,6 +24,7 @@ private val materialIcons =
   with(MaterialIcons) {
     listOf(
       Apps,
+      Archive,
       ArrowDownward,
       ArrowUpward,
       Badge,

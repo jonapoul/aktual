@@ -1,5 +1,6 @@
 package aktual.budget.transactions.ui
 
+import aktual.budget.model.AccountId
 import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.ReconcileStart
 import aktual.core.icons.Add
@@ -42,8 +43,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.datetime.YearMonth
 
 @Composable
@@ -54,7 +53,6 @@ internal fun TransactionsTitleBar(
   isRoot: Boolean,
   onAction: OnAction<Action>,
   onOpenViewOptions: () -> Unit,
-  otherAccountNames: ImmutableSet<String> = persistentSetOf(),
   reconcileStart: ReconcileStart? = null,
 ) {
   val title =
@@ -101,8 +99,7 @@ internal fun TransactionsTitleBar(
 
       if (loadedAccount is SpecificAccount) {
         TransactionsMenu(
-          accountName = loadedAccount.account.name.orEmpty(),
-          otherAccountNames = otherAccountNames,
+          accountId = loadedAccount.account.id,
           reconcileStart = reconcileStart,
           onAction = onAction,
         )
@@ -113,15 +110,13 @@ internal fun TransactionsTitleBar(
 
 @Composable
 private fun TransactionsMenu(
-  accountName: String,
-  otherAccountNames: ImmutableSet<String>,
+  accountId: AccountId,
   reconcileStart: ReconcileStart?,
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) {
   var expanded by remember { mutableStateOf(false) }
   var showReconcile by remember { mutableStateOf(false) }
-  var showRename by remember { mutableStateOf(false) }
   var confirmDelete by remember { mutableStateOf(false) }
 
   Box(modifier = modifier) {
@@ -142,11 +137,11 @@ private fun TransactionsMenu(
         )
       }
       AktualDropdownMenuItem(
-        text = Strings.transactionsRenameAccount,
+        text = Strings.transactionsEditAccount,
         leadingIcon = AktualIcons.Pencil1,
         onClick = {
           expanded = false
-          showRename = true
+          onAction(Action.EditAccount(accountId))
         },
       )
       AktualDropdownMenuItem(
@@ -168,18 +163,6 @@ private fun TransactionsMenu(
         onAction(Action.StartReconciling(target))
       },
       onDismiss = { showReconcile = false },
-    )
-  }
-
-  if (showRename) {
-    RenameAccountDialog(
-      currentName = accountName,
-      otherNames = otherAccountNames,
-      onConfirm = { name ->
-        showRename = false
-        onAction(Action.RenameAccount(name))
-      },
-      onDismiss = { showRename = false },
     )
   }
 

@@ -194,4 +194,21 @@
     <item quantity="one">%1$d of %2$d part</item>
     <item quantity="other">%1$d of %2$d parts</item>
   </plurals>
+  <!-- budget-accounts -->
+  <plurals name="accounts_manage_transaction_count">
+    <item quantity="one">%1$d transaction</item>
+    <item quantity="other">%1$d transactions</item>
+  </plurals>
+  <plurals name="accounts_manage_group_delete_message">
+    <item quantity="one">Its account moves to Ungrouped. No accounts or transactions are deleted.</item>
+    <item quantity="other">Its %1$d accounts move to Ungrouped. No accounts or transactions are deleted.</item>
+  </plurals>
+  <plurals name="accounts_delete_message">
+    <item quantity="one">This deletes the account and its transaction.</item>
+    <item quantity="other">This deletes the account and its %1$d transactions.</item>
+  </plurals>
+  <plurals name="accounts_delete_transfers">
+    <item quantity="one">%1$d transfer to another account becomes a normal transaction</item>
+    <item quantity="other">%1$d transfers to other accounts become normal transactions</item>
+  </plurals>
 </resources>

@@ -1,5 +1,6 @@
 package aktual.budget.accounts.vm.edit
 
+import aktual.budget.accounts.domain.AccountUndo
 import aktual.budget.accounts.domain.AccountWriter
 import aktual.budget.accounts.vm.manage.AccountGroupItem
 import aktual.budget.db.GetManageList
@@ -12,6 +13,7 @@ import aktual.budget.transactions.domain.Patch
 import aktual.budget.transactions.domain.Patch.Keep
 import aktual.budget.transactions.domain.Patch.To
 import aktual.core.utils.runCatchingCancellable
+import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -52,6 +54,7 @@ internal constructor(
   private val writer: AccountWriter,
   accountDao: AccountDao,
   groupDao: AccountGroupDao,
+  private val budgetScope: BudgetCoroutineScope,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val original = MutableStateFlow<Original?>(null)
@@ -136,6 +139,16 @@ internal constructor(
           saveError.update { e.requireMessage() }
           isSaving.update { false }
         },
+      )
+    }
+  }
+
+  // The undo snackbar outlives the sheet, so the undo can't be tied to viewModelScope
+  fun undo(undo: AccountUndo) {
+    budgetScope.launch {
+      runCatchingCancellable(
+        attempt = { writer.undo(undo) },
+        onFailure = { e -> logcat.e(e) { "Failed undoing edit of $accountId" } },
       )
     }
   }

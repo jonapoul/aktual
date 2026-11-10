@@ -54,13 +54,13 @@ internal constructor(
   private val writer: AccountWriter,
   private val linker: BankAccountLinker,
   private val deleter: AccountDeleter,
-  private val categoryDao: CategoryDao,
+  categoryDao: CategoryDao,
   accountDao: AccountDao,
   transactionDao: TransactionDao,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val transferTo = MutableStateFlow<AccountId?>(null)
-  private val category = MutableStateFlow<Pair<CategoryId, String?>?>(null)
+  private val category = MutableStateFlow<CategoryId?>(null)
   private val isWorking = MutableStateFlow(false)
   private val workError = MutableStateFlow<String?>(null)
 
@@ -68,16 +68,17 @@ internal constructor(
     MutableSharedFlow<CloseAccountEvent>(extraBufferCapacity = 1, onBufferOverflow = DROP_OLDEST)
   val events: SharedFlow<CloseAccountEvent> = mutableEvents.asSharedFlow()
 
-  // Counted once: a transfer added while the sheet's open isn't worth a reload
-  private val transferCount = flow {
+  // Loaded once: a transfer or category added while the sheet's open isn't worth a reload
+  private val extras = flow {
     val transfers = transactionDao.accountTransfers(accountId)
-    emit(transfers.values.count { linked -> linked != null && linked !in transfers })
+    val count = transfers.values.count { linked -> linked != null && linked !in transfers }
+    emit(Extras(count, categoryDao.getAllGrouped().toCategoryGroups()))
   }
 
   // Closing an empty account or deleting one drops it from the list. Keeps the last state until
   // the sheet closes, rather than failing
   private val source =
-    combine(accountDao.observeManageList(), transferCount) { rows, transfers ->
+    combine(accountDao.observeManageList(), extras) { rows, extras ->
         rows
           .firstOrNull { it.id == accountId }
           ?.let { account ->
@@ -85,7 +86,7 @@ internal constructor(
               rows
                 .filter { it.id != accountId && it.closed != true }
                 .map { TransferTarget(it.id, it.name.orEmpty(), it.offbudget == true) }
-            Source(account, transfers, targets.toImmutableList())
+            Source(account, extras, targets.toImmutableList())
           }
       }
       .scan<Source?, Source?>(null) { last, next -> next ?: last ?: error("No account $accountId") }
@@ -106,24 +107,7 @@ internal constructor(
 
   fun setTransferTo(id: AccountId?) = transferTo.update { id }
 
-  fun setCategory(id: CategoryId?) {
-    if (id == null) {
-      category.update { null }
-      return
-    }
-    category.update { id to null }
-    viewModelScope.launch {
-      val name =
-        runCatchingCancellable(
-          attempt = { categoryDao.name(id) },
-          onFailure = { e ->
-            logcat.w(e) { "Failed loading category $id" }
-            null
-          },
-        )
-      category.update { current -> if (current?.first == id) id to name else current }
-    }
-  }
+  fun setCategory(id: CategoryId?) = category.update { id }
 
   fun dismissError() = workError.update { null }
 
@@ -192,19 +176,24 @@ internal constructor(
     val target = source.targets.firstOrNull { it.id == choices.transferTo }
     val needsCategory = case == HasBalance && account.offbudget != true && target?.offBudget == true
     val hasTarget = case != HasBalance || target != null
+    val categories = source.extras.categories
+    val category = categories.firstNotNullOfOrNull { group ->
+      group.categories.firstOrNull { it.id == choices.category }
+    }
     return Ready(
       name = account.name.orEmpty(),
       balance = balance,
       transactionCount = account.transaction_count,
-      transferCount = source.transferCount,
+      transferCount = source.extras.transferCount,
       isLinked = account.account_sync_source != null,
       case = case,
       targets = source.targets,
       transferTo = target?.id,
       needsCategory = needsCategory,
-      category = choices.category?.first,
-      categoryName = choices.category?.second,
-      canClose = !choices.isWorking && hasTarget && (!needsCategory || choices.category != null),
+      categories = categories,
+      category = category?.id,
+      categoryName = category?.name,
+      canClose = !choices.isWorking && hasTarget && (!needsCategory || category != null),
       isWorking = choices.isWorking,
       error = choices.error,
     )
@@ -212,15 +201,20 @@ internal constructor(
 
   private data class Source(
     val account: GetManageList,
-    val transferCount: Int,
+    val extras: Extras,
     val targets: ImmutableList<TransferTarget>,
   )
 
   private data class Choices(
     val transferTo: AccountId?,
-    val category: Pair<CategoryId, String?>?,
+    val category: CategoryId?,
     val isWorking: Boolean,
     val error: String?,
+  )
+
+  private data class Extras(
+    val transferCount: Int,
+    val categories: ImmutableList<CategoryChoiceGroup>,
   )
 
   @AssistedFactory

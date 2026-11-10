@@ -26,6 +26,8 @@ data class Ready(
   val transferTo: AccountId?,
   // Moving the balance from on budget to off budget needs a category, as upstream's needsCategory()
   val needsCategory: Boolean,
+  // Visible categories under their groups, for the category picker
+  val categories: ImmutableList<CategoryChoiceGroup>,
   val category: CategoryId?,
   val categoryName: String?,
   val canClose: Boolean,
@@ -42,3 +44,11 @@ enum class CloseCase {
 }
 
 @Immutable data class TransferTarget(val id: AccountId, val name: String, val offBudget: Boolean)
+
+@Immutable
+data class CategoryChoiceGroup(
+  val name: String,
+  val categories: ImmutableList<CategoryChoice>,
+)
+
+@Immutable data class CategoryChoice(val id: CategoryId, val name: String)

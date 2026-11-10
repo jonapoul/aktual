@@ -1,5 +1,6 @@
 package aktual.budget.transactions.ui
 
+import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
@@ -11,11 +12,11 @@ import androidx.compose.runtime.Immutable
 internal sealed interface Action {
   data object NavBack : Action
 
+  @JvmInline value class EditAccount(val id: AccountId) : Action
+
   data object BankSync : ViewModelAction
 
   data object DeleteAccount : ViewModelAction
-
-  @JvmInline value class RenameAccount(val name: String) : ViewModelAction
 
   data class SetDensity(val density: TransactionsDensity) : ViewModelAction
 
