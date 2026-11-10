@@ -89,8 +89,6 @@ formInputTextHighlight
 formInputTextPlaceholder
 formInputTextPlaceholderSelected
 formInputTextReadOnlySelection
-formInputTextSelected
-formInputTextSelection
 formLabelBackground
 formLabelText
 markdownDark
@@ -105,15 +103,12 @@ menuAutoCompleteTextHeader
 menuAutoCompleteTextHover
 menuBackground
 menuBorder
-menuBorderHover
-menuItemBackground
 menuItemBackgroundHover
 menuItemText
 menuItemTextHeader
 menuItemTextHover
 menuItemTextSelected
 menuKeybindingText
-mobileAccountShadow
 mobileAccountText
 mobileConfigServerViewTheme
 mobileHeaderBackground
@@ -130,17 +125,14 @@ modalBackground
 modalBorder
 noteTagBackground
 noteTagBackgroundHover
-noteTagDefault
 noteTagText
 noticeBackground
-noticeBackgroundDark
 noticeBackgroundLight
 noticeBorder
 noticeText
 noticeTextDark
 noticeTextLight
 noticeTextMenu
-noticeTextMenuHover
 numberNegative
 numberNeutral
 numberPositive
@@ -150,7 +142,6 @@ pageBackgroundBottomRight
 pageBackgroundLineBottom
 pageBackgroundLineMid
 pageBackgroundLineTop
-pageBackgroundModalActive
 pageBackgroundTopLeft
 pageText
 pageTextDark
@@ -168,7 +159,6 @@ pillBorderSelected
 pillText
 pillTextHighlighted
 pillTextSelected
-pillTextSubdued
 reportsBlue
 reportsChartFill
 reportsGray
@@ -233,7 +223,6 @@ tableRowBackgroundHover
 tableRowHeaderBackground
 tableRowHeaderText
 tableText
-tableTextHover
 tableTextInactive
 tableTextItemAdded
 tableTextLight
@@ -248,10 +237,8 @@ tooltipBackground
 tooltipBorder
 tooltipText
 upcomingBackground
-upcomingBorder
 upcomingText
 warningBackground
 warningBorder
 warningText
 warningTextDark
-warningTextLight

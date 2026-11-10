@@ -8,7 +8,6 @@ data object LightColors : DefaultColors {
   override val isLight = true
 
   override val pageBackground = ColorPalette.navy100
-  override val pageBackgroundModalActive = ColorPalette.navy200
   override val pageBackgroundTopLeft = ColorPalette.navy100
   override val pageBackgroundBottomRight = ColorPalette.blue150
   override val pageBackgroundLineTop = ColorPalette.white
@@ -34,7 +33,6 @@ data object LightColors : DefaultColors {
   override val tableTextLight = ColorPalette.navy400
   override val tableTextSubdued = ColorPalette.navy100
   override val tableTextSelected = ColorPalette.navy700
-  override val tableTextHover = ColorPalette.navy900
   override val tableTextInactive = ColorPalette.navy500
   override val tableHeaderText = ColorPalette.navy600
   override val tableHeaderBackground = ColorPalette.white
@@ -104,14 +102,12 @@ data object LightColors : DefaultColors {
   override val sidebarRedesignRightBorder = ColorPalette.border
 
   override val menuBackground = ColorPalette.white
-  override val menuItemBackground = ColorPalette.navy50
   override val menuItemBackgroundHover = ColorPalette.navy100
   override val menuItemText = ColorPalette.navy900
   override val menuItemTextHover = menuItemText
   override val menuItemTextSelected = ColorPalette.purple300
   override val menuItemTextHeader = ColorPalette.navy400
   override val menuBorder = ColorPalette.navy100
-  override val menuBorderHover = ColorPalette.purple100
   override val menuKeybindingText = ColorPalette.navy400
   override val menuAutoCompleteBackground = ColorPalette.navy900
   override val menuAutoCompleteBackgroundHover = ColorPalette.navy600
@@ -131,7 +127,6 @@ data object LightColors : DefaultColors {
   override val mobileNavBackground = ColorPalette.white
   override val mobileNavItem = ColorPalette.gray300
   override val mobileNavItemSelected = ColorPalette.purple500
-  override val mobileAccountShadow = ColorPalette.navy300
   override val mobileAccountText = ColorPalette.blue800
   override val mobileTransactionSelected = ColorPalette.purple500
 
@@ -195,16 +190,13 @@ data object LightColors : DefaultColors {
 
   override val noticeBackground = ColorPalette.green150
   override val noticeBackgroundLight = ColorPalette.green100
-  override val noticeBackgroundDark = ColorPalette.green500
   override val noticeText = ColorPalette.green700
   override val noticeTextLight = ColorPalette.green500
   override val noticeTextDark = ColorPalette.green900
   override val noticeTextMenu = ColorPalette.green200
-  override val noticeTextMenuHover = noticeTextMenu
   override val noticeBorder = ColorPalette.green500
   override val warningBackground = ColorPalette.orange200
   override val warningText = ColorPalette.orange700
-  override val warningTextLight = ColorPalette.orange500
   override val warningTextDark = ColorPalette.orange900
   override val warningBorder = ColorPalette.orange500
   override val errorBackground = ColorPalette.red100
@@ -215,7 +207,6 @@ data object LightColors : DefaultColors {
   override val errorBorder = ColorPalette.red500
   override val upcomingBackground = ColorPalette.purple100
   override val upcomingText = ColorPalette.purple700
-  override val upcomingBorder = ColorPalette.purple500
 
   override val formLabelText = ColorPalette.blue600
   override val formLabelBackground = ColorPalette.blue200
@@ -225,11 +216,9 @@ data object LightColors : DefaultColors {
   override val formInputBorder = ColorPalette.navy150
   override val formInputBorderSelected = ColorPalette.purple500
   override val formInputText = ColorPalette.navy900
-  override val formInputTextSelected = ColorPalette.navy50
   override val formInputTextPlaceholder = ColorPalette.navy300
   override val formInputTextPlaceholderSelected = ColorPalette.navy200
   override val formInputTextReadOnlySelection = ColorPalette.navy50
-  override val formInputTextSelection = ColorPalette.navy100
   override val formInputShadowSelected = ColorPalette.purple300
   override val formInputTextHighlight = ColorPalette.purple200
   override val checkboxText = tableBackground
@@ -249,7 +238,6 @@ data object LightColors : DefaultColors {
   override val pillBackgroundSelected = ColorPalette.blue150
   override val pillTextSelected = ColorPalette.blue900
   override val pillBorderSelected = ColorPalette.purple500
-  override val pillTextSubdued = ColorPalette.navy200
 
   override val reportsRed = ColorPalette.red300
   override val reportsBlue = ColorPalette.blue400
@@ -264,7 +252,6 @@ data object LightColors : DefaultColors {
 
   override val noteTagBackground = ColorPalette.purple125
   override val noteTagBackgroundHover = ColorPalette.purple150
-  override val noteTagDefault = ColorPalette.purple125
   override val noteTagText = ColorPalette.black
 
   override val budgetCurrentMonth = tableBackground

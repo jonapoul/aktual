@@ -34,9 +34,6 @@ data class JsonCustomColors(
   override val pageBackground: Color
     get() = page.pageBackground
 
-  override val pageBackgroundModalActive: Color
-    get() = page.pageBackgroundModalActive
-
   override val pageBackgroundTopLeft: Color
     get() = page.pageBackgroundTopLeft
 
@@ -115,9 +112,6 @@ data class JsonCustomColors(
 
   override val tableTextSelected: Color
     get() = table.tableTextSelected
-
-  override val tableTextHover: Color
-    get() = table.tableTextHover
 
   override val tableTextInactive: Color
     get() = table.tableTextInactive
@@ -249,9 +243,6 @@ data class JsonCustomColors(
   override val menuBackground: Color
     get() = navigation.menuBackground
 
-  override val menuItemBackground: Color
-    get() = navigation.menuItemBackground
-
   override val menuItemBackgroundHover: Color
     get() = navigation.menuItemBackgroundHover
 
@@ -269,9 +260,6 @@ data class JsonCustomColors(
 
   override val menuBorder: Color
     get() = navigation.menuBorder
-
-  override val menuBorderHover: Color
-    get() = navigation.menuBorderHover
 
   override val menuKeybindingText: Color
     get() = navigation.menuKeybindingText
@@ -327,9 +315,6 @@ data class JsonCustomColors(
 
   override val mobileNavItemSelected: Color
     get() = modalMobile.mobileNavItemSelected
-
-  override val mobileAccountShadow: Color
-    get() = modalMobile.mobileAccountShadow
 
   override val mobileAccountText: Color
     get() = modalMobile.mobileAccountText
@@ -492,9 +477,6 @@ data class JsonCustomColors(
   override val noticeBackgroundLight: Color
     get() = status.noticeBackgroundLight
 
-  override val noticeBackgroundDark: Color
-    get() = status.noticeBackgroundDark
-
   override val noticeText: Color
     get() = status.noticeText
 
@@ -507,9 +489,6 @@ data class JsonCustomColors(
   override val noticeTextMenu: Color
     get() = status.noticeTextMenu
 
-  override val noticeTextMenuHover: Color
-    get() = status.noticeTextMenuHover
-
   override val noticeBorder: Color
     get() = status.noticeBorder
 
@@ -518,9 +497,6 @@ data class JsonCustomColors(
 
   override val warningText: Color
     get() = status.warningText
-
-  override val warningTextLight: Color
-    get() = status.warningTextLight
 
   override val warningTextDark: Color
     get() = status.warningTextDark
@@ -552,9 +528,6 @@ data class JsonCustomColors(
   override val upcomingText: Color
     get() = status.upcomingText
 
-  override val upcomingBorder: Color
-    get() = status.upcomingBorder
-
   // Form + Checkbox
   override val formLabelText: Color
     get() = form.formLabelText
@@ -583,17 +556,11 @@ data class JsonCustomColors(
   override val formInputText: Color
     get() = form.formInputText
 
-  override val formInputTextSelected: Color
-    get() = form.formInputTextSelected
-
   override val formInputTextPlaceholder: Color
     get() = form.formInputTextPlaceholder
 
   override val formInputTextPlaceholderSelected: Color
     get() = form.formInputTextPlaceholderSelected
-
-  override val formInputTextSelection: Color
-    get() = form.formInputTextSelection
 
   override val formInputShadowSelected: Color
     get() = form.formInputShadowSelected
@@ -680,17 +647,11 @@ data class JsonCustomColors(
   override val reportsChartFill: Color
     get() = misc.reportsChartFill
 
-  override val pillTextSubdued: Color
-    get() = misc.pillTextSubdued
-
   override val noteTagBackground: Color
     get() = misc.noteTagBackground
 
   override val noteTagBackgroundHover: Color
     get() = misc.noteTagBackgroundHover
-
-  override val noteTagDefault: Color
-    get() = misc.noteTagDefault
 
   override val noteTagText: Color
     get() = misc.noteTagText
@@ -813,7 +774,6 @@ data class JsonCustomColors(
 @Serializable
 data class PageColors(
   @SerialName("pageBackground") val pageBackground: Color,
-  @SerialName("pageBackgroundModalActive") val pageBackgroundModalActive: Color,
   @SerialName("pageBackgroundTopLeft") val pageBackgroundTopLeft: Color,
   @SerialName("pageBackgroundBottomRight") val pageBackgroundBottomRight: Color,
   @SerialName("pageBackgroundLineTop") val pageBackgroundLineTop: Color,
@@ -844,7 +804,6 @@ data class TableColors(
   @SerialName("tableTextLight") val tableTextLight: Color,
   @SerialName("tableTextSubdued") val tableTextSubdued: Color,
   @SerialName("tableTextSelected") val tableTextSelected: Color,
-  @SerialName("tableTextHover") val tableTextHover: Color,
   @SerialName("tableTextInactive") val tableTextInactive: Color,
   @SerialName("tableHeaderText") val tableHeaderText: Color,
   @SerialName("tableHeaderBackground") val tableHeaderBackground: Color,
@@ -893,14 +852,12 @@ data class NavigationColors(
   @SerialName("sidebarRedesignTextMuted") val sidebarRedesignTextMuted: Color,
   @SerialName("sidebarRedesignRightBorder") val sidebarRedesignRightBorder: Color,
   @SerialName("menuBackground") val menuBackground: Color,
-  @SerialName("menuItemBackground") val menuItemBackground: Color,
   @SerialName("menuItemBackgroundHover") val menuItemBackgroundHover: Color,
   @SerialName("menuItemText") val menuItemText: Color,
   @SerialName("menuItemTextHover") val menuItemTextHover: Color,
   @SerialName("menuItemTextSelected") val menuItemTextSelected: Color,
   @SerialName("menuItemTextHeader") val menuItemTextHeader: Color,
   @SerialName("menuBorder") val menuBorder: Color,
-  @SerialName("menuBorderHover") val menuBorderHover: Color,
   @SerialName("menuKeybindingText") val menuKeybindingText: Color,
   @SerialName("menuAutoCompleteBackground") val menuAutoCompleteBackground: Color,
   @SerialName("menuAutoCompleteBackgroundHover") val menuAutoCompleteBackgroundHover: Color,
@@ -923,7 +880,6 @@ data class ModalMobileColors(
   @SerialName("mobileNavBackground") val mobileNavBackground: Color,
   @SerialName("mobileNavItem") val mobileNavItem: Color,
   @SerialName("mobileNavItemSelected") val mobileNavItemSelected: Color,
-  @SerialName("mobileAccountShadow") val mobileAccountShadow: Color,
   @SerialName("mobileAccountText") val mobileAccountText: Color,
   @SerialName("mobileTransactionSelected") val mobileTransactionSelected: Color,
   @SerialName("mobileViewTheme") val mobileViewTheme: Color,
@@ -985,16 +941,13 @@ data class ButtonColors(
 data class StatusColors(
   @SerialName("noticeBackground") val noticeBackground: Color,
   @SerialName("noticeBackgroundLight") val noticeBackgroundLight: Color,
-  @SerialName("noticeBackgroundDark") val noticeBackgroundDark: Color,
   @SerialName("noticeText") val noticeText: Color,
   @SerialName("noticeTextLight") val noticeTextLight: Color,
   @SerialName("noticeTextDark") val noticeTextDark: Color,
   @SerialName("noticeTextMenu") val noticeTextMenu: Color,
-  @SerialName("noticeTextMenuHover") val noticeTextMenuHover: Color,
   @SerialName("noticeBorder") val noticeBorder: Color,
   @SerialName("warningBackground") val warningBackground: Color,
   @SerialName("warningText") val warningText: Color,
-  @SerialName("warningTextLight") val warningTextLight: Color,
   @SerialName("warningTextDark") val warningTextDark: Color,
   @SerialName("warningBorder") val warningBorder: Color,
   @SerialName("errorBackground") val errorBackground: Color,
@@ -1005,7 +958,6 @@ data class StatusColors(
   @SerialName("errorBorder") val errorBorder: Color,
   @SerialName("upcomingBackground") val upcomingBackground: Color,
   @SerialName("upcomingText") val upcomingText: Color,
-  @SerialName("upcomingBorder") val upcomingBorder: Color,
 )
 
 @Serializable
@@ -1019,10 +971,8 @@ data class FormColors(
   @SerialName("formInputTextReadOnlySelection") val formInputTextReadOnlySelection: Color,
   @SerialName("formInputBorderSelected") val formInputBorderSelected: Color,
   @SerialName("formInputText") val formInputText: Color,
-  @SerialName("formInputTextSelected") val formInputTextSelected: Color,
   @SerialName("formInputTextPlaceholder") val formInputTextPlaceholder: Color,
   @SerialName("formInputTextPlaceholderSelected") val formInputTextPlaceholderSelected: Color,
-  @SerialName("formInputTextSelection") val formInputTextSelection: Color,
   @SerialName("formInputShadowSelected") val formInputShadowSelected: Color,
   @SerialName("formInputTextHighlight") val formInputTextHighlight: Color,
   @SerialName("checkboxText") val checkboxText: Color,
@@ -1045,7 +995,6 @@ data class MiscColors(
   @SerialName("pillBackgroundSelected") val pillBackgroundSelected: Color,
   @SerialName("pillTextSelected") val pillTextSelected: Color,
   @SerialName("pillBorderSelected") val pillBorderSelected: Color,
-  @SerialName("pillTextSubdued") val pillTextSubdued: Color,
   @SerialName("reportsRed") val reportsRed: Color,
   @SerialName("reportsBlue") val reportsBlue: Color,
   @SerialName("reportsGreen") val reportsGreen: Color,
@@ -1058,7 +1007,6 @@ data class MiscColors(
   @SerialName("reportsChartFill") val reportsChartFill: Color,
   @SerialName("noteTagBackground") val noteTagBackground: Color,
   @SerialName("noteTagBackgroundHover") val noteTagBackgroundHover: Color,
-  @SerialName("noteTagDefault") val noteTagDefault: Color,
   @SerialName("noteTagText") val noteTagText: Color,
   @SerialName("budgetCurrentMonth") val budgetCurrentMonth: Color,
   @SerialName("budgetOtherMonth") val budgetOtherMonth: Color,
