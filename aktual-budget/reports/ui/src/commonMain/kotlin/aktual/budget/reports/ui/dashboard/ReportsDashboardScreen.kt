@@ -39,6 +39,7 @@ import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
+import aktual.core.ui.showSuccessSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.wiggle
 import alakazam.compose.VerticalSpacer
@@ -107,7 +108,7 @@ fun ReportsDashboardScreen(
 
   fun pin(id: WidgetId) {
     viewModel.pinReport(id)
-    snackbars.show(key = PINNED_SNACKBAR, message = pinnedMessage)
+    snackbars.show(key = PINNED_SNACKBAR) { showSuccessSnackbar(pinnedMessage) }
   }
 
   ReportsDashboardScaffold(

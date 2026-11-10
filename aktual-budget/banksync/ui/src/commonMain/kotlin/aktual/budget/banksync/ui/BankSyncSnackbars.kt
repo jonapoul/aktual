@@ -12,6 +12,7 @@ import aktual.core.l10n.bank_sync_setup_failed
 import aktual.core.l10n.bank_sync_setup_logged_out
 import aktual.core.l10n.bank_sync_setup_not_admin
 import aktual.core.ui.showErrorSnackbar
+import aktual.core.ui.showSuccessSnackbar
 import androidx.compose.material3.SnackbarHostState
 import org.jetbrains.compose.resources.getString
 
@@ -40,7 +41,7 @@ internal suspend fun SnackbarHostState.showLinkFailed(cause: String?) =
   )
 
 internal suspend fun SnackbarHostState.showProviderReset() =
-  showSnackbar(getString(Res.string.bank_sync_providers_reset_done))
+  showSuccessSnackbar(getString(Res.string.bank_sync_providers_reset_done))
 
 internal suspend fun SnackbarHostState.showProviderResetFailed(error: SetupError) {
   val reason =
