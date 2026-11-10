@@ -110,7 +110,7 @@ private fun ReportsContent(
     ReportsHeader(onManage = onManage)
 
     state.reports.fastForEachIndexed { index, report ->
-      if (index > 0) HorizontalDivider()
+      if (index > 0) HorizontalDivider(thickness = Hairline, color = colors.cardShadow)
       PinnedReportChart(
         modifier =
           Modifier.fillMaxWidth()
