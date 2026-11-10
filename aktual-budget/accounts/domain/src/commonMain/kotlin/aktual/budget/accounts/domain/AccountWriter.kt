@@ -31,8 +31,7 @@ import kotlinx.coroutines.flow.first
  * and account-groups/app.ts. Bank sync unlinking is left to the caller, see AccountDeleter.
  */
 @Inject
-class AccountWriter
-internal constructor(
+class AccountWriter(
   private val writer: TransactionWriter,
   private val syncController: BudgetSyncController,
   private val accountDao: AccountDao,
@@ -98,9 +97,13 @@ internal constructor(
   /**
    * moveAccount(): puts [id] just before [target], or at the end without one, among the open
    * accounts on the same side of the budget, or among closed accounts if it's closed. [group] moves
-   * it into another group too, null being ungrouped.
+   * it into another group too, null being ungrouped. Returns what puts it back.
    */
-  suspend fun move(id: AccountId, target: AccountId?, group: Patch<AccountGroupId?> = Keep) {
+  suspend fun move(
+    id: AccountId,
+    target: AccountId?,
+    group: Patch<AccountGroupId?> = Keep,
+  ): AccountUndo {
     val rows = accountDao.observeManageList().first()
     val account = checkNotNull(rows.firstOrNull { it.id == id }) { "Account $id not found" }
     val siblings = rows.filter { row ->
@@ -110,13 +113,25 @@ internal constructor(
         row.offbudget == account.offbudget
       }
     }
-    val shoved = shoveSortOrders(siblings.map { it.id to (it.sort_order ?: 0.0) }, target)
+    val orders = siblings.map { it.id to (it.sort_order ?: 0.0) }
+    val shoved = shoveSortOrders(orders, target)
     val changes = buildList {
       shoved.updates.forEach { (other, order) -> add(sortOrder(ACCOUNTS, other.value, order)) }
       add(sortOrder(ACCOUNTS, id.value, shoved.sortOrder))
       if (group is To) add(localChange(ACCOUNTS, id.value, GROUP_ID, group.value?.value))
     }
+    val previous = orders.toMap()
+    val undo = buildList {
+      shoved.updates.keys.forEach { other ->
+        add(sortOrder(ACCOUNTS, other.value, previous.getValue(other)))
+      }
+      add(sortOrder(ACCOUNTS, id.value, account.sort_order ?: 0.0))
+      if (group is To) {
+        add(localChange(ACCOUNTS, id.value, GROUP_ID, account.account_group_id?.value))
+      }
+    }
     sync(changes)
+    return AccountUndo(undo)
   }
 
   /** insertAccountGroup(): a group after the last one. Names are unique, ignoring case. */
@@ -150,9 +165,14 @@ internal constructor(
     sync(changes)
   }
 
-  /** moveAccountGroup(): puts [id] just before [target], or at the end without one. */
-  suspend fun moveGroup(id: AccountGroupId, target: AccountGroupId?) {
+  /**
+   * moveAccountGroup(): puts [id] just before [target], or at the end without one. Returns what
+   * puts it back.
+   */
+  suspend fun moveGroup(id: AccountGroupId, target: AccountGroupId?): AccountUndo {
     val groups = groupDao.getAllActive().map { it.id to (it.sort_order ?: 0.0) }
+    val previous = groups.toMap()
+    checkNotNull(previous[id]) { "Account group $id not found" }
     val shoved = shoveSortOrders(groups, target)
     val changes = buildList {
       shoved.updates.forEach { (other, order) ->
@@ -160,8 +180,16 @@ internal constructor(
       }
       add(sortOrder(ACCOUNT_GROUPS, id.value, shoved.sortOrder))
     }
+    val undo =
+      (shoved.updates.keys + id).map { group ->
+        sortOrder(ACCOUNT_GROUPS, group.value, previous.getValue(group))
+      }
     sync(changes)
+    return AccountUndo(undo)
   }
+
+  // Writes back the values the undone change replaced, in one batch
+  suspend fun undo(undo: AccountUndo) = sync(undo.changes)
 
   private suspend fun checkGroupName(name: String, except: AccountGroupId?) {
     val existing =
@@ -184,11 +212,14 @@ internal constructor(
   }
 }
 
+// The values a change replaced, for [AccountWriter.undo]
+data class AccountUndo(val changes: List<LocalChange>)
+
 enum class CloseResult {
   Closed,
   Deleted,
   Unchanged,
 }
 
-class GroupNameTakenException(existing: String) :
+class GroupNameTakenException(val existing: String) :
   IllegalArgumentException("An '$existing' account group already exists")

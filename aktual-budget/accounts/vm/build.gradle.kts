@@ -5,7 +5,7 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-budget:transactions:domain"))
+    api(project(":aktual-budget:accounts:domain"))
     implementation(libs.metrox.viewmodel)
   }
 }

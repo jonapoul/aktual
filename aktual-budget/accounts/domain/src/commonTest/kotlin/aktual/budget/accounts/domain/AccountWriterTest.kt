@@ -6,6 +6,7 @@ import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.AccountGroupDao
 import aktual.budget.db.dao.CategoryDao
+import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.db.dao.NotesDao
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.SyncDao
@@ -16,6 +17,7 @@ import aktual.budget.model.Amount.Companion.Zero
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.SORT_INCREMENT
+import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.NewTransaction
 import aktual.budget.transactions.domain.Patch.To
 import aktual.budget.transactions.domain.TransactionWriter
@@ -163,6 +165,36 @@ internal class AccountWriterTest {
   }
 
   @Test
+  fun `Undoing a move puts the account back in its place and group`() = runWriterTest {
+    val a = createAccount("A")
+    val b = createAccount("B")
+    val group = writer.createGroup("Everyday")
+    writer.setGroup(b, group)
+
+    val undo = writer.move(b, target = a, group = To(null))
+    writer.undo(undo)
+
+    assertThat(manageOrder(offBudget = false)).containsExactly(a, b)
+    assertThat(accountDao[b]?.account_group_id).isEqualTo(group)
+  }
+
+  @Test
+  fun `Undoing a move restores the orders it shoved`() = runWriterTest {
+    val a = createAccount("A")
+    val b = createAccount("B")
+    val c = createAccount("C")
+    setSortOrder(a, 1.0)
+    setSortOrder(b, 2.0)
+    setSortOrder(c, 3.0)
+
+    val undo = writer.move(c, target = b)
+    assertThat(manageOrder(offBudget = false)).containsExactly(a, c, b)
+    writer.undo(undo)
+
+    assertThat(sortOrders()).isEqualTo(mapOf(a to 1.0, b to 2.0, c to 3.0))
+  }
+
+  @Test
   fun `New groups go after the last one`() = runWriterTest {
     val first = writer.createGroup("First")
     val second = writer.createGroup("Second")
@@ -215,6 +247,17 @@ internal class AccountWriterTest {
     writer.moveGroup(c, target = a)
 
     assertThat(groupDao.getAllActive().map { it.id }).containsExactly(c, a, b)
+  }
+
+  @Test
+  fun `Undoing a group move puts it back`() = runWriterTest {
+    val a = writer.createGroup("A")
+    val b = writer.createGroup("B")
+    val c = writer.createGroup("C")
+
+    writer.undo(writer.moveGroup(c, target = a))
+
+    assertThat(groupDao.getAllActive().map { it.id }).containsExactly(a, b, c)
   }
 
   @Test
@@ -273,6 +316,12 @@ internal class AccountWriterTest {
 
     suspend fun manageOrder(offBudget: Boolean): List<AccountId> =
       accountDao.observeManageList().first().filter { it.offbudget == offBudget }.map { it.id }
+
+    suspend fun setSortOrder(id: AccountId, order: Double) =
+      syncChanges(listOf(localChange(ACCOUNTS, id.value, "sort_order", order)))
+
+    suspend fun sortOrders(): Map<AccountId, Double?> =
+      accountDao.observeManageList().first().associate { it.id to it.sort_order }
 
     override suspend fun syncChanges(changes: List<LocalChange>) {
       syncCalls.add(changes)
