@@ -46,6 +46,7 @@ import aktual.core.ui.radioButton
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.showErrorSnackbar
+import aktual.core.ui.showSuccessSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.prefs.vm.theme.custom.CacheState
 import aktual.prefs.vm.theme.custom.CatalogItem
@@ -125,7 +126,7 @@ fun CustomThemeSettingsScreen(
     viewModel.events.collect { event ->
       when (event) {
         CacheRefreshed ->
-          snackbar.showSnackbar(getString(Res.string.settings_theme_refresh_success))
+          snackbar.showSuccessSnackbar(getString(Res.string.settings_theme_refresh_success))
         is FailedFetching ->
           snackbar.showErrorSnackbar(
             getString(Res.string.settings_theme_refresh_failure, event.name, event.reason),

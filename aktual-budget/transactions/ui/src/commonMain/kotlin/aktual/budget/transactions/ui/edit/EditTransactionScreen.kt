@@ -64,6 +64,7 @@ import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.showErrorSnackbar
+import aktual.core.ui.showSuccessSnackbar
 import aktual.core.ui.showWarningSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedVisibility
@@ -206,7 +207,8 @@ private suspend fun SnackbarHostState.showLocationEvent(event: EditTransactionEv
     LocationUnavailable ->
       showWarningSnackbar(getString(Res.string.transaction_location_unavailable))
     LocationSaveFailed -> showErrorSnackbar(getString(Res.string.transaction_location_save_failed))
-    is LocationSaved -> showSnackbar(getString(Res.string.transaction_location_saved, event.payee))
+    is LocationSaved ->
+      showSuccessSnackbar(getString(Res.string.transaction_location_saved, event.payee))
     is LocationAlreadySaved ->
       showSnackbar(getString(Res.string.transaction_location_already_saved, event.payee))
     Deleted,
