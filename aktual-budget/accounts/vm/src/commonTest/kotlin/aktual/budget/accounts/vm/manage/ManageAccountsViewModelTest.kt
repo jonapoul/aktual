@@ -1,28 +1,12 @@
 package aktual.budget.accounts.vm.manage
 
-import aktual.budget.BudgetSyncController
-import aktual.budget.accounts.domain.AccountWriter
-import aktual.budget.db.BudgetDatabase
-import aktual.budget.db.buildDatabase
-import aktual.budget.db.dao.AccountDao
-import aktual.budget.db.dao.AccountGroupDao
-import aktual.budget.db.dao.CategoryDao
-import aktual.budget.db.dao.PayeeDao
-import aktual.budget.db.dao.SyncDao
-import aktual.budget.db.dao.TransactionDao
+import aktual.budget.accounts.vm.AccountsTestScope
+import aktual.budget.accounts.vm.runAccountsTest
 import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
-import aktual.budget.model.Amount.Companion.Zero
-import aktual.budget.model.BudgetId
-import aktual.budget.model.LocalChange
-import aktual.budget.transactions.domain.NewTransaction
-import aktual.budget.transactions.domain.TransactionWriter
 import aktual.di.BudgetCoroutineScope
-import aktual.test.TestCalendar
-import aktual.test.inMemoryDriverFactory
 import aktual.test.viewModelContext
-import androidx.lifecycle.viewModelScope
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.all
@@ -34,16 +18,11 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
-import kotlin.time.Clock
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.LocalDate
 
 class ManageAccountsViewModelTest {
   @Test
-  fun `Accounts are split by side then group, with Ungrouped first`() = runManageTest {
+  fun `Accounts are split by side then group, with Ungrouped first`() = runAccountsTest {
     val cash = createAccount("Cash", balance = Amount(4_000))
     val current = createAccount("Current", balance = Amount(120_433))
     val pension = createAccount("Pension", offBudget = true, balance = Amount(50_000))
@@ -76,7 +55,7 @@ class ManageAccountsViewModelTest {
   }
 
   @Test
-  fun `Closed accounts are listed apart and can be expanded`() = runManageTest {
+  fun `Closed accounts are listed apart and can be expanded`() = runAccountsTest {
     val open = createAccount("Open")
     val closed = createAccount("Closed")
     writer.close(closed)
@@ -94,7 +73,7 @@ class ManageAccountsViewModelTest {
   }
 
   @Test
-  fun `Dropping an account into a group moves it and can be undone`() = runManageTest {
+  fun `Dropping an account into a group moves it and can be undone`() = runAccountsTest {
     val a = createAccount("A")
     val b = createAccount("B")
     val group = writer.createGroup("Everyday")
@@ -125,7 +104,7 @@ class ManageAccountsViewModelTest {
   }
 
   @Test
-  fun `Dropping a group before another reorders the groups`() = runManageTest {
+  fun `Dropping a group before another reorders the groups`() = runAccountsTest {
     val first = writer.createGroup("First")
     val second = writer.createGroup("Second")
     val viewModel = viewModel()
@@ -141,7 +120,7 @@ class ManageAccountsViewModelTest {
   }
 
   @Test
-  fun `A taken group name sends an event and adds nothing`() = runManageTest {
+  fun `A taken group name sends an event and adds nothing`() = runAccountsTest {
     writer.createGroup("Savings")
     val viewModel = viewModel()
     scope.advanceUntilIdle()
@@ -156,7 +135,7 @@ class ManageAccountsViewModelTest {
   }
 
   @Test
-  fun `Groups can be created, renamed and deleted`() = runManageTest {
+  fun `Groups can be created, renamed and deleted`() = runAccountsTest {
     val viewModel = viewModel()
     scope.advanceUntilIdle()
 
@@ -175,7 +154,7 @@ class ManageAccountsViewModelTest {
   }
 
   @Test
-  fun `Reopening moves an account back to the open list`() = runManageTest {
+  fun `Reopening moves an account back to the open list`() = runAccountsTest {
     val id = createAccount("Old card")
     writer.close(id)
     val viewModel = viewModel()
@@ -191,95 +170,26 @@ class ManageAccountsViewModelTest {
     assertThat(viewModel.groupedIds()).containsExactly(null to listOf(id))
   }
 
-  private class ManageTestScope(
-    val scope: TestScope,
-    database: BudgetDatabase,
-    private val syncDao: SyncDao,
-  ) : BudgetSyncController {
-    private val accountDao = AccountDao(database)
-    private val groupDao = AccountGroupDao(database)
-    private val payeeDao = PayeeDao(database)
-    private var nextId = 1
-    private val viewModels = mutableListOf<ManageAccountsViewModel>()
-
-    val transactions =
-      TransactionWriter(
-        syncController = this,
-        accountDao = accountDao,
-        categoryDao = CategoryDao(database),
-        payeeDao = payeeDao,
-        transactionDao = TransactionDao(database),
-        categoryLearner = {},
-        uuidGenerator = { "id-${nextId++}" },
-        clock = Clock.System,
-      )
-
-    val writer =
-      AccountWriter(
-        writer = transactions,
-        syncController = this,
+  private fun AccountsTestScope.viewModel() =
+    track(
+      ManageAccountsViewModel(
+        writer = writer,
         accountDao = accountDao,
         groupDao = groupDao,
-        payeeDao = payeeDao,
-        uuidGenerator = { "id-${nextId++}" },
-        calendar = TestCalendar(TODAY),
-      )
+        budgetScope = BudgetCoroutineScope(scope),
+        viewModelContext = scope.viewModelContext,
+      ),
+    )
 
-    fun viewModel() =
-      ManageAccountsViewModel(
-          writer = writer,
-          accountDao = accountDao,
-          groupDao = groupDao,
-          budgetScope = BudgetCoroutineScope(scope),
-          viewModelContext = scope.viewModelContext,
-        )
-        .also(viewModels::add)
+  private fun ManageAccountsViewModel.successState(): Success = state.value as Success
 
-    suspend fun createAccount(
-      name: String,
-      offBudget: Boolean = false,
-      balance: Amount = Zero,
-    ): AccountId {
-      val id = transactions.write { createAccount(name, offBudget, Zero, TODAY) }
-      transactions.write { insert(NewTransaction(account = id, date = TODAY, amount = balance)) }
-      return id
-    }
-
-    fun ManageAccountsViewModel.successState(): Success = state.value as Success
-
-    fun ManageAccountsViewModel.groupedIds(): List<Pair<AccountGroupId?, List<AccountId>>> =
-      successState().onBudget.groups.map { group -> group.id to group.accounts.map { it.id } }
-
-    fun close() = viewModels.forEach { it.viewModelScope.cancel() }
-
-    override suspend fun syncChanges(changes: List<LocalChange>) {
-      syncDao.sendMessages(changes)
-    }
-
-    override fun schedule() = Unit
-  }
-
-  private fun runManageTest(action: suspend ManageTestScope.() -> Unit) = runTest {
-    val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
-    driver.use {
-      val database = buildDatabase(driver)
-      val testScope = ManageTestScope(this, database, SyncDao(database, driver, Clock.System))
-      try {
-        testScope.action()
-      } finally {
-        testScope.close()
-      }
-    }
-  }
+  private fun ManageAccountsViewModel.groupedIds(): List<Pair<AccountGroupId?, List<AccountId>>> =
+    successState().onBudget.groups.map { group -> group.id to group.accounts.map { it.id } }
 
   private suspend fun ReceiveTurbine<ManageAccountsState>.awaitSuccess(): Success {
     while (true) {
       val item = awaitItem()
       if (item is Success) return item
     }
-  }
-
-  private companion object {
-    val TODAY = LocalDate(2026, 11, 10)
   }
 }
