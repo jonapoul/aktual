@@ -11,6 +11,7 @@ import aktual.core.utils.UuidGenerator
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.prefs.ThemePreferences
 import aktual.prefs.vm.inspect.InspectThemeEvent.Deleted
 import aktual.prefs.vm.inspect.InspectThemeEvent.Duplicated
@@ -39,7 +40,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import logcat.logcat
 
 @Stable
 @AssistedInject
@@ -129,7 +129,7 @@ internal constructor(
   private suspend fun loadTheme() {
     val colors = themeResolver.resolve(themeId)
     if (colors == null) {
-      logcat.w { "Theme not found for id=$themeId" }
+      log.w { "Theme not found for id=$themeId" }
       mutableState.update { InspectThemeState.NotFound(themeId) }
       return
     }

@@ -1,4 +1,4 @@
-package logcat
+package aktual
 
 import aktual.test.contains
 import assertk.assertThat
@@ -6,8 +6,10 @@ import assertk.assertions.isEqualTo
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import logcat.LogcatLogger
+import logcat.asLog
 
-class LogcatTest {
+class LogTest {
   private lateinit var logger: TestLogcatLogger
 
   @BeforeTest
@@ -27,39 +29,39 @@ class LogcatTest {
   @Test
   fun logException() {
     val e = IllegalStateException("SOMETHING BROKE")
-    logcat.e { e.asLog() }
-    val log = logger.latestLog
-    assertThat(log?.priority).isEqualTo(ERROR)
-    assertThat(log?.tag).isEqualTo("LogcatTest")
-    val msg = log?.message.orEmpty()
+    log.e { e.asLog() }
+    val latest = logger.latestLog
+    assertThat(latest?.priority).isEqualTo(ERROR)
+    assertThat(latest?.tag).isEqualTo("LogTest")
+    val msg = latest?.message.orEmpty()
     assertThat(msg)
       .contains("java.lang.IllegalStateException: SOMETHING BROKE")
-      .contains("at logcat.LogcatTest.logException(LogcatTest.kt:29)")
+      .contains("at aktual.LogTest.logException(LogTest.kt:31)")
   }
 
   @Test
-  fun `Logcat shortcuts`() {
-    logcat.v { "verbose" }
-    logger.assertLatest(priority = VERBOSE, tag = "LogcatTest", message = "verbose")
+  fun `Log shortcuts`() {
+    log.v { "verbose" }
+    logger.assertLatest(priority = VERBOSE, tag = "LogTest", message = "verbose")
 
-    logcat.d("DebugTag") { "debug" }
+    log.d("DebugTag") { "debug" }
     logger.assertLatest(priority = DEBUG, tag = "DebugTag", message = "debug")
 
-    logcat.i { "info" }
-    logger.assertLatest(priority = INFO, tag = "LogcatTest", message = "info")
+    log.i { "info" }
+    logger.assertLatest(priority = INFO, tag = "LogTest", message = "info")
 
-    logcat.w(tag = null) { "warning" }
-    logger.assertLatest(priority = WARN, tag = "LogcatTest", message = "warning")
+    log.w(tag = null) { "warning" }
+    logger.assertLatest(priority = WARN, tag = "LogTest", message = "warning")
 
-    logcat.wtf { "PANIC" }
-    logger.assertLatest(priority = ASSERT, tag = "LogcatTest", message = "PANIC")
+    log.wtf { "PANIC" }
+    logger.assertLatest(priority = ASSERT, tag = "LogTest", message = "PANIC")
   }
 
   @Test
   fun `Grab tag from the wrapper class inside apply block`() {
     val myString = "abc-123"
 
-    myString.apply { logcat.i { "my log message" } }
+    myString.apply { log.i { "my log message" } }
 
     logger.assertLatest(priority = INFO, tag = "String", message = "my log message")
   }

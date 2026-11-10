@@ -6,6 +6,7 @@ import aktual.crashes.vm.CrashReportsState.Loaded
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,7 +18,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -45,7 +45,7 @@ internal constructor(
 
   fun delete(file: CrashFile) {
     viewModelScope.launch {
-      logcat.i { "Deleting crash report $file" }
+      log.i { "Deleting crash report $file" }
       repository.delete(file)
       load()
     }
@@ -53,7 +53,7 @@ internal constructor(
 
   fun deleteAll() {
     viewModelScope.launch {
-      logcat.i { "Deleting all crash reports" }
+      log.i { "Deleting all crash reports" }
       repository.deleteAll()
       load()
     }

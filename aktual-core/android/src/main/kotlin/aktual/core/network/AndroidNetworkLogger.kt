@@ -2,6 +2,7 @@ package aktual.core.network
 
 import aktual.di.AppScope
 import aktual.di.Initializable
+import aktual.log
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
@@ -12,7 +13,6 @@ import dev.zacsweers.metro.ForScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
-import logcat.logcat
 
 @Inject
 @SingleIn(AppScope::class)
@@ -21,31 +21,31 @@ class AndroidNetworkLogger internal constructor(private val context: Context) : 
   override fun initialize() {
     val manager = context.getSystemService(ConnectivityManager::class.java)
     if (manager == null) {
-      logcat.w { "No ConnectivityManager" }
+      log.w { "No ConnectivityManager" }
       return
     }
 
-    logcat.d { "Initial default network: ${manager.activeNetwork}" }
+    log.d { "Initial default network: ${manager.activeNetwork}" }
     manager.registerDefaultNetworkCallback(
       object : NetworkCallback() {
         override fun onAvailable(network: Network) {
-          logcat.d { "onAvailable $network" }
+          log.d { "onAvailable $network" }
         }
 
         override fun onLost(network: Network) {
-          logcat.d { "onLost $network" }
+          log.d { "onLost $network" }
         }
 
         override fun onUnavailable() {
-          logcat.d { "onUnavailable" }
+          log.d { "onUnavailable" }
         }
 
         override fun onBlockedStatusChanged(network: Network, blocked: Boolean) {
-          logcat.d { "onBlockedStatusChanged $network blocked=$blocked" }
+          log.d { "onBlockedStatusChanged $network blocked=$blocked" }
         }
 
         override fun onLinkPropertiesChanged(network: Network, props: LinkProperties) {
-          logcat.d {
+          log.d {
             "onLinkPropertiesChanged $network dns=${props.dnsServers} " +
               "privateDns=${props.isPrivateDnsActive}/${props.privateDnsServerName} " +
               "domains=${props.domains}"

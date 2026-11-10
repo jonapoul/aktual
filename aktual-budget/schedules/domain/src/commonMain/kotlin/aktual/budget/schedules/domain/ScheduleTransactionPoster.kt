@@ -6,9 +6,9 @@ import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.core.utils.UuidGenerator
+import aktual.log
 import dev.zacsweers.metro.Inject
 import kotlinx.datetime.LocalDate
-import logcat.logcat
 
 // Posts one schedule's transaction on demand, as postTransactionForSchedule() in
 // packages/loot-core/src/server/schedules/app.ts does
@@ -34,6 +34,6 @@ class ScheduleTransactionPoster(
   suspend fun unpost(ids: List<TransactionId>) {
     if (ids.isEmpty()) return
     transactionWriter.write(runTransfers = true) { delete(ids) }
-    logcat.i { "Unposted transactions $ids" }
+    log.i { "Unposted transactions $ids" }
   }
 }

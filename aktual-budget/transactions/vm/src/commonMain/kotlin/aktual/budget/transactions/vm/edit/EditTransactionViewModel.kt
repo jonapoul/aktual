@@ -56,6 +56,7 @@ import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.prefs.SecurityPreferences
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
@@ -92,7 +93,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import logcat.logcat
 
 @Suppress("TooManyFunctions", "LongParameterList") // One per editor action, and its sources
 @Stable
@@ -181,7 +181,7 @@ internal constructor(
       .observeTags()
       .map { rows -> rows.toTagLabels() }
       .catch { e ->
-        logcat.w(e) { "Failed loading tags" }
+        log.w(e) { "Failed loading tags" }
         emit(persistentListOf())
       }
       .stateIn(viewModelScope, Eagerly, persistentListOf())
@@ -191,7 +191,7 @@ internal constructor(
     schedulesLoader
       .observe()
       .catch { e ->
-        logcat.w(e) { "Failed loading schedules" }
+        log.w(e) { "Failed loading schedules" }
         emit(persistentListOf())
       }
       .stateIn(viewModelScope, Eagerly, persistentListOf())
@@ -467,7 +467,7 @@ internal constructor(
         }
       },
       onFailure = { e ->
-        logcat.e(e) { "Failed loading $target" }
+        log.e(e) { "Failed loading $target" }
         mutableFailure.update { EditTransactionState.OtherFailure(e.requireMessage()) }
       },
     )
@@ -554,7 +554,7 @@ internal constructor(
   private suspend fun loadPayeeLookup() {
     runCatchingCancellable(
       attempt = { rules = rulesLoader.load() },
-      onFailure = { e -> logcat.w(e) { "Failed loading rules for $target" } },
+      onFailure = { e -> log.w(e) { "Failed loading rules for $target" } },
     )
   }
 
@@ -612,7 +612,7 @@ internal constructor(
           }
         },
         onFailure = { e ->
-          logcat.w(e) { "Failed saving location of $payee" }
+          log.w(e) { "Failed saving location of $payee" }
           mutableEvents.tryEmit(LocationSaveFailed)
         },
       )
@@ -633,7 +633,7 @@ internal constructor(
           }
         },
         onFailure = { e ->
-          logcat.w(e) { "Failed using location" }
+          log.w(e) { "Failed using location" }
           mutableEvents.tryEmit(LocationUnavailable)
         },
         finally = { mutableLocation.update { it.copy(isWorking = false) } },
@@ -712,7 +712,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { tagCreator.create(tag) },
         onFailure = { e ->
-          logcat.e(e) { "Failed creating tag $tag" }
+          log.e(e) { "Failed creating tag $tag" }
           mutableError.update { EditTransactionError.CreatingTag(e.requireMessage()) }
         },
       )
@@ -857,7 +857,7 @@ internal constructor(
         }
       },
       onFailure = { e ->
-        logcat.w(e) { "Failed getting location to auto-save" }
+        log.w(e) { "Failed getting location to auto-save" }
         null
       },
     )
@@ -876,7 +876,7 @@ internal constructor(
             payeeLocations.save(payee, coordinates)
           }
         },
-        onFailure = { e -> logcat.w(e) { "Failed auto-saving location of $payee" } },
+        onFailure = { e -> log.w(e) { "Failed auto-saving location of $payee" } },
       )
     }
   }
@@ -891,7 +891,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { save() },
         onFailure = { e ->
-          logcat.e(e) { "Failed saving $target" }
+          log.e(e) { "Failed saving $target" }
           mutableError.update { EditTransactionError.Saving(e.requireMessage()) }
         },
         finally = { mutableIsWorking.update { false } },
@@ -925,7 +925,7 @@ internal constructor(
         },
         onFailure = { e ->
           isDeleted = false
-          logcat.e(e) { "Failed deleting $target" }
+          log.e(e) { "Failed deleting $target" }
           mutableError.update { EditTransactionError.Deleting(e.requireMessage()) }
         },
         finally = { mutableIsWorking.update { false } },

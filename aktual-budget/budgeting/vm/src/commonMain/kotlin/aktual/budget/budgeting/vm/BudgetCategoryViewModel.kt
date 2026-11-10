@@ -9,6 +9,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,7 +33,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
 import kotlinx.datetime.yearMonth
-import logcat.logcat
 
 /**
  * One category over the twelve months up to the one it opened on, to compare months on a phone.
@@ -72,7 +72,7 @@ internal constructor(
         months.toState(selected, current)
       }
       .catch { e ->
-        logcat.e(e) { "Failed loading $category history" }
+        log.e(e) { "Failed loading $category history" }
         emit(Failed)
       }
       .stateIn(viewModelScope, Eagerly, Loading)
@@ -88,7 +88,7 @@ internal constructor(
     viewModelScope.launch {
       runCatchingCancellable(
         attempt = { writer.setCategoryHidden(category, hidden) },
-        onFailure = { e -> logcat.e(e) { "Failed to set $category hidden = $hidden" } },
+        onFailure = { e -> log.e(e) { "Failed to set $category hidden = $hidden" } },
       )
     }
   }

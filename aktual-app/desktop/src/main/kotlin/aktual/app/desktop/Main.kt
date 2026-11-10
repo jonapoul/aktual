@@ -8,6 +8,7 @@ import aktual.core.logging.CrashReporter
 import aktual.core.logging.KermitFileLogger
 import aktual.core.logging.TimestampedPrintStreamLogger
 import aktual.core.ui.LoadingScreenIfNull
+import aktual.log
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,7 +28,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import logcat.LogPriority
 import logcat.LogcatLogger
-import logcat.logcat
 
 private const val TAG = "Main"
 
@@ -54,8 +54,8 @@ fun main() {
     )
     .install()
 
-  logcat.i(TAG) { "App started" }
-  logcat.d(TAG) { "buildConfig = $buildConfig" }
+  log.i(TAG) { "App started" }
+  log.d(TAG) { "buildConfig = $buildConfig" }
 
   val viewModelStoreOwner = JvmViewModelStoreOwner()
   composeApp(graph, viewModelStoreOwner)
@@ -110,7 +110,7 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
         onKeyEvent = keyHandler::onKeyEvent,
         onPreviewKeyEvent = keyHandler::onPreviewKeyEvent,
         onCloseRequest = {
-          logcat.i { "onCloseRequest" }
+          log.i { "onCloseRequest" }
           viewModel.onDestroy()
           exitApplication()
         },

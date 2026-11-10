@@ -3,6 +3,7 @@ package aktual.app.di
 import aktual.core.utils.AppDirectory
 import aktual.di.AppCoroutineScope
 import aktual.di.AppScope
+import aktual.log
 import aktual.prefs.migration.preferenceMigrations
 import alakazam.kotlin.CoroutineContexts
 import androidx.datastore.core.DataStore
@@ -15,7 +16,6 @@ import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.plus
-import logcat.logcat
 
 @BindingContainer
 @ContributesTo(AppScope::class)
@@ -32,7 +32,7 @@ object DataStoreContainer {
     return PreferenceDataStoreFactory.create(
       corruptionHandler =
         ReplaceFileCorruptionHandler { e ->
-          logcat.e(e) { "Settings file is corrupted, resetting to defaults" }
+          log.e(e) { "Settings file is corrupted, resetting to defaults" }
           emptyPreferences()
         },
       produceFile = { dir.resolve("settings.preferences_pb") },

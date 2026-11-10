@@ -15,6 +15,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.prefs.TagPreferences
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
@@ -41,7 +42,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @AssistedInject
@@ -140,7 +140,7 @@ internal constructor(
         runCatchingCancellable(
           attempt = { tagsDao.getTag(tagId)?.toTagItem() },
           onFailure = { e ->
-            logcat.e(e) { "Failed loading tag $tagId" }
+            log.e(e) { "Failed loading tag $tagId" }
             mutableFailure.update { EditTagState.Failure(cause = e.requireMessage()) }
             return@launch
           },
@@ -175,7 +175,7 @@ internal constructor(
           .toPersistentSet()
       },
       onFailure = { e ->
-        logcat.e(e) { "Failed loading existing tag names" }
+        log.e(e) { "Failed loading existing tag names" }
         persistentSetOf()
       },
     )
@@ -243,7 +243,7 @@ internal constructor(
           mutableEvents.tryEmit(FinishedSaving)
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed saving tag $tagId" }
+          log.e(e) { "Failed saving tag $tagId" }
           mutableSaveError.update { e.requireMessage() }
         },
       )

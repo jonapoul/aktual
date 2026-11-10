@@ -1,7 +1,9 @@
-package logcat
+package aktual
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import logcat.LogPriority
+import logcat.LogcatLogger
 
 internal class TestLogcatLogger : LogcatLogger {
   var latestLog: Log? = null

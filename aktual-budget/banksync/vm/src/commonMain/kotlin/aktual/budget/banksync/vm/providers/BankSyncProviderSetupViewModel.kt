@@ -8,6 +8,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -27,7 +28,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 /**
  * Saves the credentials the server uses to reach [source]. They apply to every budget on the
@@ -89,13 +89,13 @@ internal constructor(
             when (val response = setup.save(source, values)) {
               Success -> null
               is Failed -> {
-                logcat.w { "Saving $source credentials refused: $response" }
+                log.w { "Saving $source credentials refused: $response" }
                 response.toSetupError()
               }
             }
           },
           onFailure = { e ->
-            logcat.e(e) { "Failed saving $source credentials" }
+            log.e(e) { "Failed saving $source credentials" }
             SetupError.Other(e.requireMessage())
           },
         )

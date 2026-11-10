@@ -16,6 +16,7 @@ import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -37,7 +38,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 // Shows a formula card, and edits its settings as a draft which only reaches the card when saved
 @Stable
@@ -123,7 +123,7 @@ internal constructor(
   // draft keeps the saved values until the card's update comes back
   fun save() {
     val edits = draft.value ?: return
-    logcat.d { "Saving formula for $id" }
+    log.d { "Saving formula for $id" }
     isEditing.update { false }
     budgetScope.launch { sync.setFormula(id, edits) }
   }

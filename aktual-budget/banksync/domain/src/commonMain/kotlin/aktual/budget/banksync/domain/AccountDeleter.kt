@@ -3,8 +3,8 @@ package aktual.budget.banksync.domain
 import aktual.budget.model.AccountId
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.core.utils.runCatchingCancellable
+import aktual.log
 import dev.zacsweers.metro.Inject
-import logcat.logcat
 
 /**
  * The forced branch of closeAccount() in packages/loot-core/src/server/accounts/app.ts: deletes the
@@ -20,7 +20,7 @@ class AccountDeleter(private val linker: BankAccountLinker, private val writer: 
     return runCatchingCancellable(
       attempt = { linker.unlink(account) },
       onFailure = { e ->
-        logcat.w(e) { "Deleted $account but failed unlinking it" }
+        log.w(e) { "Deleted $account but failed unlinking it" }
         false
       },
     )

@@ -9,6 +9,7 @@ import aktual.budget.model.BudgetId
 import aktual.core.model.Password
 import aktual.core.model.Token
 import aktual.core.utils.runCatchingCancellable
+import aktual.log
 import aktual.prefs.KeyPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
@@ -18,7 +19,6 @@ import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
-import logcat.logcat
 import okio.Buffer
 
 @Inject
@@ -31,7 +31,7 @@ internal constructor(
   private val decrypter: BufferDecrypter,
 ) {
   suspend operator fun invoke(budgetId: BudgetId, keyPassword: Password): FetchKeyResult {
-    logcat.d { "KeyFetcher $budgetId $token $keyPassword" }
+    log.d { "KeyFetcher $budgetId $token $keyPassword" }
     val response =
       runCatchingCancellable(
         attempt = {
@@ -41,10 +41,10 @@ internal constructor(
         onFailure = { e ->
           if (e is ResponseException) {
             val failure = e.response.body<GetUserKeyResponse.Failure>()
-            logcat.e(e) { "Failure = $failure" }
+            log.e(e) { "Failure = $failure" }
             return FetchKeyResult.ResponseFailure(failure.reason)
           }
-          logcat.e(e) { "Failed fetching key for $budgetId and $keyPassword" }
+          log.e(e) { "Failed fetching key for $budgetId and $keyPassword" }
           return FetchKeyResult.IOFailure(e.requireMessage())
         },
       )
@@ -61,13 +61,13 @@ internal constructor(
         error("Invalid password ${keyPassword.value}: $decrypted")
       }
 
-      logcat.i { "Decrypted data successfully with test!" }
-      logcat.v { "testBuffer = $buffer" }
-      logcat.v { "decrypted = $decrypted" }
+      log.i { "Decrypted data successfully with test!" }
+      log.v { "testBuffer = $buffer" }
+      log.v { "decrypted = $decrypted" }
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
-      logcat.e(e) { "Failed decrypting buffer from $response with key $key" }
+      log.e(e) { "Failed decrypting buffer from $response with key $key" }
       return TestFailure
     } finally {
       // This is only inserted for the sake of the decryption test

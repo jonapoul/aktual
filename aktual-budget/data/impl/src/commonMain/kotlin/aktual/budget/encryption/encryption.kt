@@ -5,6 +5,7 @@ import aktual.budget.model.BudgetId
 import aktual.core.model.KeyId
 import aktual.core.utils.EncryptionKeys
 import aktual.di.AppScope
+import aktual.log
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.ContributesBinding
@@ -14,7 +15,6 @@ import javax.crypto.spec.SecretKeySpec
 import kotlin.random.Random
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
-import logcat.logcat
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
@@ -34,7 +34,7 @@ internal constructor(
   private val random: Random,
 ) : BufferEncrypter {
   override suspend operator fun invoke(keyId: KeyId, buffer: Buffer): EncryptResult {
-    logcat.d { "Encrypting ${buffer.size} bytes with keyId=$keyId" }
+    log.d { "Encrypting ${buffer.size} bytes with keyId=$keyId" }
     val output = Buffer()
     return encrypt(
       contexts = contexts,
@@ -58,7 +58,7 @@ internal constructor(
 ) : FileEncrypter {
   override suspend fun invoke(id: BudgetId, keyId: KeyId, filePath: Path): EncryptResult {
     val encryptedPath = files.encryptedZip(id, mkdirs = true)
-    logcat.d { "Encrypting $id from $filePath into $encryptedPath with keyId=$keyId" }
+    log.d { "Encrypting $id from $filePath into $encryptedPath with keyId=$keyId" }
     return encrypt(
       contexts = contexts,
       keys = keys,

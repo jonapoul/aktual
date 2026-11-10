@@ -12,6 +12,7 @@ import aktual.core.model.unaryPlus
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,7 +34,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -160,13 +160,13 @@ internal constructor(
 
   // A failing source only takes down its own card
   private fun <S> Flow<S>.orFailed(card: String, failed: S): Flow<S> = catch { e ->
-    logcat.e(e) { "Failed loading $card card" }
+    log.e(e) { "Failed loading $card card" }
     emit(failed)
   }
 
   // Picking is a nicety, so a failure just leaves nothing to pick
   private fun Flow<ImmutableList<ReportPage>>.orNoChoices() = catch { e ->
-    logcat.e(e) { "Failed loading report choices" }
+    log.e(e) { "Failed loading report choices" }
     emit(persistentListOf())
   }
 

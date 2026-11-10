@@ -26,6 +26,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -63,7 +64,6 @@ import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.yearMonth
-import logcat.logcat
 
 // packages/desktop-client/src/components/mobile/budget/BudgetPage.tsx, and
 // packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx for several months
@@ -180,7 +180,7 @@ internal constructor(
     viewModelScope.launch {
       runCatchingCancellable(
         attempt = { writer.undo(token) },
-        onFailure = { e -> logcat.e(e) { "Failed to undo" } },
+        onFailure = { e -> log.e(e) { "Failed to undo" } },
       )
     }
   }
@@ -235,7 +235,7 @@ internal constructor(
           lastUndo = token
           mutableEvents.tryEmit(BudgetEvent.Updated(token))
         },
-        onFailure = { e -> logcat.e(e) { "Failed to $description" } },
+        onFailure = { e -> log.e(e) { "Failed to $description" } },
       )
     }
   }
@@ -266,7 +266,7 @@ internal constructor(
         }
       }
       .catch { e ->
-        logcat.e(e) { "Failed loading budget for $month" }
+        log.e(e) { "Failed loading budget for $month" }
         emit(Failed)
       }
 

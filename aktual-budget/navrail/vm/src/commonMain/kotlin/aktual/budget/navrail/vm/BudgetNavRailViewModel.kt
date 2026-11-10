@@ -15,6 +15,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.prefs.AppPreferences
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -33,7 +34,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -66,7 +66,7 @@ internal constructor(
     combine(accountDao.observeAllWithBalances(), newTransactions.counts) { rows, counts ->
         rows.toDrawerAccounts(counts)
       }
-      .catch { e -> logcat.e(e) { "Failed loading accounts" } }
+      .catch { e -> log.e(e) { "Failed loading accounts" } }
       .stateIn(viewModelScope, Eagerly, initialValue = DrawerAccounts())
 
   val hasUnpostedSchedules: StateFlow<Boolean> = unpostedSchedules.hasUnposted
@@ -92,7 +92,7 @@ internal constructor(
           localPreferences.update { metadata -> metadata.set(BudgetName, name) }
           sync.syncChanges(budgetNameChange(name))
         },
-        onFailure = { e -> logcat.e(e) { "Failed renaming budget" } },
+        onFailure = { e -> log.e(e) { "Failed renaming budget" } },
       )
     }
   }

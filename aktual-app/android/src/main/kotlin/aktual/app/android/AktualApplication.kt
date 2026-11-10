@@ -3,6 +3,7 @@ package aktual.app.android
 import aktual.core.logging.AktualAndroidLogcatLogger
 import aktual.core.logging.CrashReporter
 import aktual.core.logging.KermitFileLogger
+import aktual.log
 import android.app.Application
 import android.os.Build.MANUFACTURER
 import android.os.Build.MODEL
@@ -17,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import logcat.LogPriority
 import logcat.LogcatLogger
-import logcat.logcat
 
 class AktualApplication : Application(), MetroApplication {
   private val graph by lazy { createGraphFactory<AndroidAppGraph.Factory>().create(context = this) }
@@ -51,7 +51,7 @@ class AktualApplication : Application(), MetroApplication {
       )
       .install()
 
-    logcat.i { "onCreate" }
-    logcat.d { "buildConfig = $buildConfig" }
+    log.i { "onCreate" }
+    log.d { "buildConfig = $buildConfig" }
   }
 }

@@ -16,6 +16,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.prefs.SchedulePreferences
 import aktual.prefs.asStateFlow
 import alakazam.kotlin.requireMessage
@@ -37,7 +38,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -87,7 +87,7 @@ internal constructor(
           }
           .onStart<ListSchedulesState> { emit(Loading) }
           .catch { e ->
-            logcat.e(e) { "Failed loading schedules" }
+            log.e(e) { "Failed loading schedules" }
             emit(Failure(e.requireMessage()))
           }
       }
@@ -111,10 +111,10 @@ internal constructor(
         attempt = {
           syncController.syncChanges(schedule.tombstones(::tombstone))
           mutableEvents.tryEmit(ListSchedulesEvent.Deleted(schedule))
-          logcat.i { "Deleted schedule ${schedule.id}" }
+          log.i { "Deleted schedule ${schedule.id}" }
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed deleting schedule ${schedule.id}" }
+          log.e(e) { "Failed deleting schedule ${schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.DeleteFailed(schedule))
         },
       )
@@ -126,10 +126,10 @@ internal constructor(
       runCatchingCancellable(
         attempt = {
           syncController.syncChanges(schedule.tombstones(::untombstone))
-          logcat.i { "Restored schedule ${schedule.id}" }
+          log.i { "Restored schedule ${schedule.id}" }
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed restoring schedule ${schedule.id}" }
+          log.e(e) { "Failed restoring schedule ${schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.RestoreFailed(schedule))
         },
       )
@@ -144,7 +144,7 @@ internal constructor(
           mutableEvents.tryEmit(ListSchedulesEvent.Completed(schedule))
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed completing schedule ${schedule.id}" }
+          log.e(e) { "Failed completing schedule ${schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.CompleteFailed(schedule))
         },
       )
@@ -156,7 +156,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { writer.uncomplete(schedule.id) },
         onFailure = { e ->
-          logcat.e(e) { "Failed undoing completion of schedule ${schedule.id}" }
+          log.e(e) { "Failed undoing completion of schedule ${schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.RestoreFailed(schedule))
         },
       )
@@ -168,7 +168,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { writer.restart(schedule.id) },
         onFailure = { e ->
-          logcat.e(e) { "Failed restarting schedule ${schedule.id}" }
+          log.e(e) { "Failed restarting schedule ${schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.RestartFailed(schedule))
         },
       )
@@ -183,7 +183,7 @@ internal constructor(
           mutableEvents.tryEmit(ListSchedulesEvent.Posted(schedule, transactions.toImmutableList()))
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed posting schedule ${schedule.id}" }
+          log.e(e) { "Failed posting schedule ${schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.PostFailed(schedule))
         },
       )
@@ -195,7 +195,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { poster.unpost(event.transactions) },
         onFailure = { e ->
-          logcat.e(e) { "Failed undoing post of schedule ${event.schedule.id}" }
+          log.e(e) { "Failed undoing post of schedule ${event.schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.UnpostFailed(event.schedule))
         },
       )

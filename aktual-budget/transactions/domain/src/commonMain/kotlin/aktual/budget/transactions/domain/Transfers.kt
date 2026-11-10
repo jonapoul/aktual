@@ -7,7 +7,7 @@ import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
-import logcat.logcat
+import aktual.log
 
 /**
  * packages/loot-core/src/server/transactions/transfer.ts: keeps the other side of each transfer in
@@ -60,7 +60,7 @@ internal class Transfers(
     val date = t.date
     val payee = from?.let { payeeDao.transferPayee(it) }
     if (from == null || date == null || payee == null) {
-      logcat.w { "Can't transfer ${t.id} from $from on $date" }
+      log.w { "Can't transfer ${t.id} from $from on $date" }
       return
     }
 
@@ -97,7 +97,7 @@ internal class Transfers(
   private suspend fun updateTransfer(t: Transactions, linked: TransactionId, to: AccountId) {
     val payee = t.acct?.let { payeeDao.transferPayee(it) }
     if (payee == null) {
-      logcat.w { "No transfer payee for ${t.acct}, the account of ${t.id}" }
+      log.w { "No transfer payee for ${t.acct}, the account of ${t.id}" }
       return
     }
 

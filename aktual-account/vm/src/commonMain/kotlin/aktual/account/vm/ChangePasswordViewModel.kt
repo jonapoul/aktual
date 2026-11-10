@@ -7,6 +7,7 @@ import aktual.core.model.Token
 import aktual.di.LoggedInScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,7 +26,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -65,7 +65,7 @@ internal constructor(
   fun submit() {
     val password = mutablePassword1.value
     val password2 = mutablePassword2.value
-    logcat.d { "submit $password $password2" }
+    log.d { "submit $password $password2" }
     if (password2 != password) {
       mutableState.update { PasswordsDontMatch }
       return
@@ -74,7 +74,7 @@ internal constructor(
     mutableState.update { Loading }
     viewModelScope.launch {
       val changePasswordResult = passwordChanger.submit(password)
-      logcat.d { "result = $changePasswordResult" }
+      log.d { "result = $changePasswordResult" }
       val newState: ChangePasswordState =
         when (changePasswordResult) {
           Success -> Success
@@ -86,7 +86,7 @@ internal constructor(
       mutableState.update { newState }
 
       if (changePasswordResult is Success) {
-        logcat.d { "Logging in..." }
+        log.d { "Logging in..." }
         val loginResult = loginRequester.logIn(password)
         handleLoginResult(loginResult)
       }
@@ -94,7 +94,7 @@ internal constructor(
   }
 
   private suspend fun handleLoginResult(loginResult: LoginResult) {
-    logcat.d { "loginResult = $loginResult" }
+    log.d { "loginResult = $loginResult" }
     if (loginResult is Success) {
       // Give the user time to see the success message
       delay(SUCCESS_DELAY)

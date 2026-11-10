@@ -27,6 +27,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -53,7 +54,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
-import logcat.logcat
 
 @Stable
 @AssistedInject
@@ -121,7 +121,7 @@ internal constructor(
           mutableRule.update { model }
         }
       } catch (e: Exception) {
-        logcat.e(e) { "Failed loading $ruleId" }
+        log.e(e) { "Failed loading $ruleId" }
         mutableFailure.update { EditRuleState.OtherFailure(e.requireMessage()) }
       } finally {
         mutableIsLoading.update { false }
@@ -141,7 +141,7 @@ internal constructor(
           val change = tombstone(dataset = RULES, row = id.toString())
           syncController.syncChanges(change)
         },
-        onFailure = { e -> logcat.e(e) { "Failed tombstoning $id" } },
+        onFailure = { e -> log.e(e) { "Failed tombstoning $id" } },
         finally = { mutableIsWorking.update { false } },
       )
     }
@@ -155,9 +155,9 @@ internal constructor(
         attempt = {
           val model = mutableRule.value
           if (model == null) {
-            logcat.w { "Tried to save without a rule?" }
+            log.w { "Tried to save without a rule?" }
           } else if (model.hasUnknownValues) {
-            logcat.w { "Not saving $model, it has unknown values" }
+            log.w { "Not saving $model, it has unknown values" }
           } else {
             val rule =
               with(model) {
@@ -171,12 +171,12 @@ internal constructor(
                 )
               }
             rulesDao.insert(rule)
-            logcat.i { "Saved $rule" }
+            log.i { "Saved $rule" }
             syncController.syncChanges(insertChanges(rule))
           }
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed saving $ruleId" }
+          log.e(e) { "Failed saving $ruleId" }
           mutableFailure.update { EditRuleState.SaveFailed(e.requireMessage()) }
         },
         finally = { mutableIsWorking.update { false } },

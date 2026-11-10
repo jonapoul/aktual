@@ -19,6 +19,7 @@ import aktual.budget.model.localChange
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
+import aktual.log
 import dev.zacsweers.metro.ContributesBinding
 import kotlinx.datetime.DateTimeUnit.Companion.DAY
 import kotlinx.datetime.minus
@@ -27,7 +28,6 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
-import logcat.logcat
 
 /**
  * updateCategoryRules() in packages/loot-core/src/server/transactions/transaction-rules.ts. When
@@ -80,7 +80,7 @@ internal constructor(
     val changes = learned.flatMap { (payee, category) -> ruleChanges(rules, payee, category) }
     if (changes.isEmpty()) return
     syncController.syncChanges(changes)
-    logcat.i { "Learned categories for ${learned.size} payees" }
+    log.i { "Learned categories for ${learned.size} payees" }
   }
 
   private fun ruleChanges(

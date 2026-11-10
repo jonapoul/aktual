@@ -15,6 +15,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -40,7 +41,6 @@ import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 /**
  * The close sheet and delete dialog, as upstream's CloseAccountModal. Closing follows
@@ -100,7 +100,7 @@ internal constructor(
   val state: StateFlow<CloseAccountState> =
     combine<Source, Choices, CloseAccountState>(source, choices, ::ready)
       .catch { e ->
-        logcat.e(e) { "Failed loading account $accountId" }
+        log.e(e) { "Failed loading account $accountId" }
         emit(Failure(e.requireMessage()))
       }
       .stateIn(viewModelScope, Eagerly, initialValue = Loading)
@@ -147,7 +147,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { work() },
         onFailure = { e ->
-          logcat.e(e) { "Failed $description account $accountId" }
+          log.e(e) { "Failed $description account $accountId" }
           workError.update { e.requireMessage() }
           isWorking.update { false }
         },
@@ -159,7 +159,7 @@ internal constructor(
     runCatchingCancellable(
       attempt = { linker.unlink(accountId) },
       onFailure = { e ->
-        logcat.w(e) { "Closed $accountId but failed unlinking it" }
+        log.w(e) { "Closed $accountId but failed unlinking it" }
         false
       },
     )

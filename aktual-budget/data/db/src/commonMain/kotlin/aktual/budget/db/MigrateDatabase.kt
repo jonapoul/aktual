@@ -1,11 +1,11 @@
 package aktual.budget.db
 
 import aktual.budget.model.SORT_INCREMENT
+import aktual.log
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlCursor
 import app.cash.sqldelight.db.SqlDriver
-import logcat.logcat
 
 // Intentionally not calling BudgetDatabase.Schema.migrate because upstream Actual's database
 // doesn't use the user_version SQLite property, so it won't work in sync with SQLDelight.
@@ -14,7 +14,7 @@ suspend fun migrateDatabase(driver: SqlDriver, db: BudgetDatabase) {
 
   for ((version, statements) in DatabaseMigrations) {
     if (version !in previousMigrations) {
-      logcat.i(TAG) { "Migrating DB to version $version" }
+      log.i(TAG) { "Migrating DB to version $version" }
       db.transaction {
         for (statement in statements) {
           execute(driver, statement)
@@ -135,7 +135,7 @@ private suspend fun execute(driver: SqlDriver, statement: String) {
   ADD_COLUMN_REGEX.find(statement)?.let { match ->
     val (table, column) = match.destructured
     if (columnExists(driver, table, column)) {
-      logcat.w(TAG) { "$table.$column already present, skipping ADD COLUMN" }
+      log.w(TAG) { "$table.$column already present, skipping ADD COLUMN" }
       return
     }
   }

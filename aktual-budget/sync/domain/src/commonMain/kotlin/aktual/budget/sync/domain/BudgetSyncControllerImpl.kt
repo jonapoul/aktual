@@ -14,6 +14,7 @@ import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.Closeable
 import aktual.di.Initializable
+import aktual.log
 import aktual.prefs.AppPreferences
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.ContributesIntoSet
@@ -27,7 +28,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @SingleIn(BudgetScope::class)
 @ContributesBinding(BudgetScope::class, binding<BudgetSyncController>())
@@ -58,7 +58,7 @@ internal constructor(
       onFailure = { e ->
         // The database closes with the budget, which can happen while this is still running
         currentCoroutineContext().ensureActive()
-        logcat.e(e) { "Failed rebuilding schedule JSON paths" }
+        log.e(e) { "Failed rebuilding schedule JSON paths" }
       },
     )
 
@@ -87,7 +87,7 @@ internal constructor(
 
   private suspend fun scheduleSync() {
     if (budgetMetadata[CloudFileId] == null) {
-      logcat.d { "Local-only budget, skipping sync" }
+      log.d { "Local-only budget, skipping sync" }
       syncEvents.complete(Succeeded)
       return
     }
@@ -100,7 +100,7 @@ internal constructor(
       return
     }
 
-    logcat.i { "Sync started" }
+    log.i { "Sync started" }
     update(Syncing)
     when (val result = syncer.sync()) {
       is Success -> {
@@ -124,7 +124,7 @@ internal constructor(
   }
 
   private fun update(state: SyncState) {
-    logcat.d { "Updating state to $state" }
+    log.d { "Updating state to $state" }
     syncStateHolder.update { state }
   }
 

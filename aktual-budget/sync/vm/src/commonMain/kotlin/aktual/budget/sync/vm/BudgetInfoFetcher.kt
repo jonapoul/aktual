@@ -6,6 +6,7 @@ import aktual.api.model.sync.GetUserFileInfoResponse
 import aktual.api.model.sync.UserFile
 import aktual.budget.model.BudgetId
 import aktual.core.model.Token
+import aktual.log
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
@@ -14,7 +15,6 @@ import io.ktor.client.plugins.ResponseException
 import io.ktor.serialization.JsonConvertException
 import java.io.IOException
 import kotlinx.coroutines.withContext
-import logcat.logcat
 
 @Inject
 class BudgetInfoFetcher
@@ -39,20 +39,20 @@ internal constructor(
   }
 
   suspend fun fetch(budgetId: BudgetId): Result {
-    logcat.d { "Fetching UserFile for budgetId=$budgetId" }
+    log.d { "Fetching UserFile for budgetId=$budgetId" }
 
     val response =
       try {
         withContext(contexts.io) { syncApi.fetchUserFileInfo(token, budgetId) }
       } catch (e: ResponseException) {
-        logcat.e { "Failed fetching UserFile for $budgetId with $token! Response = ${e.response}" }
+        log.e { "Failed fetching UserFile for $budgetId with $token! Response = ${e.response}" }
         return e.parseFailure()
       } catch (e: IOException) {
-        logcat.e(e) { "Failed fetching UserFile of $budgetId with $token" }
+        log.e(e) { "Failed fetching UserFile of $budgetId with $token" }
         return Result.IOFailure(e.requireMessage())
       }
 
-    logcat.v { "Fetched UserFile for $budgetId: ${response.data}" }
+    log.v { "Fetched UserFile for $budgetId: ${response.data}" }
     return Result.Success(response.data)
   }
 

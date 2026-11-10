@@ -8,6 +8,7 @@ import aktual.core.model.bytes
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -62,7 +62,7 @@ internal constructor(
 
   fun deleteAll() {
     viewModelScope.launch {
-      logcat.i { "Deleting all log files" }
+      log.i { "Deleting all log files" }
       repository.deleteAll()
       load()
     }
@@ -70,7 +70,7 @@ internal constructor(
 
   fun delete(date: LocalDate) {
     viewModelScope.launch {
-      logcat.i { "Deleting log file for $date" }
+      log.i { "Deleting log file for $date" }
       repository.delete(date)
       load()
     }

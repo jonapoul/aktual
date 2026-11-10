@@ -13,6 +13,7 @@ import aktual.budget.rules.vm.list.ListRulesState.Success
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -27,7 +28,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -50,7 +50,7 @@ internal constructor(
           .map { rules -> if (rules.isEmpty()) Empty else Success(rules) }
           .onStart<ListRulesState> { emit(Loading) }
           .catch { e ->
-            logcat.e(e) { "Failed loading all rules" }
+            log.e(e) { "Failed loading all rules" }
             emit(Failure(e.requireMessage()))
           }
       }
@@ -63,7 +63,7 @@ internal constructor(
   fun delete(id: RuleId) {
     viewModelScope.launch {
       syncController.syncChanges(listOf(tombstone(dataset = RULES, row = id.toString())))
-      logcat.d { "Tombstoned rule $id" }
+      log.d { "Tombstoned rule $id" }
     }
   }
 }

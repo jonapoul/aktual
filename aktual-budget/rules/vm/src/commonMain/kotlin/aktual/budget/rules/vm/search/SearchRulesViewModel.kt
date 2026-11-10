@@ -13,6 +13,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
@@ -34,7 +35,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @AssistedInject
@@ -101,7 +101,7 @@ internal constructor(
           rules.update { loaded }
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed loading rules" }
+          log.e(e) { "Failed loading rules" }
           failure.update { e.requireMessage() }
         },
       )

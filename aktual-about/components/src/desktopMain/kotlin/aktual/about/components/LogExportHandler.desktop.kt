@@ -2,6 +2,7 @@ package aktual.about.components
 
 import aktual.about.data.LogExport
 import aktual.core.l10n.Strings
+import aktual.log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -11,7 +12,6 @@ import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Composable
 actual fun rememberLogExportHandler(): LogExportHandler {
@@ -38,7 +38,7 @@ private class DesktopLogExportHandler(
     val file = File(dialog.directory, name)
     scope.launch(Dispatchers.IO) {
       file.writeText(export.text)
-      logcat.i { "Saved logs to $file" }
+      log.i { "Saved logs to $file" }
     }
   }
 }

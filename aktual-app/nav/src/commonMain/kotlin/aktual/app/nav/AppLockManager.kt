@@ -2,6 +2,7 @@ package aktual.app.nav
 
 import aktual.di.AppCoroutineScope
 import aktual.di.AppScope
+import aktual.log
 import aktual.prefs.SecurityPreferences
 import aktual.prefs.asStateFlow
 import androidx.compose.runtime.Stable
@@ -14,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 enum class AppLockState {
   Unknown,
@@ -57,7 +57,7 @@ class AppLockManager(
             else -> state
           }.also { newValue ->
             if (newValue != state) {
-              logcat.d { "AppLockManager state $state -> $newValue" }
+              log.d { "AppLockManager state $state -> $newValue" }
             }
           }
         }
@@ -66,49 +66,49 @@ class AppLockManager(
   }
 
   fun onBackground() {
-    logcat.d { "onBackground" }
+    log.d { "onBackground" }
     if (isAuthenticating) return
     backgroundedAt = clock.now()
   }
 
   fun onForeground() {
-    logcat.d { "onForeground" }
+    log.d { "onForeground" }
     if (isAuthenticating) return
     val since = backgroundedAt ?: return
     backgroundedAt = null
     val elapsed = clock.now() - since
     // Negative if the system clock was moved back, so don't trust it
     if (isEnabled.value && (elapsed.isNegative() || elapsed >= timeout.value.duration)) {
-      logcat.d { "Locking after $elapsed in background" }
+      log.d { "Locking after $elapsed in background" }
       mutableState.update { Locked }
     }
   }
 
   fun onAuthenticationStarted() {
-    logcat.d { "onAuthenticationStarted" }
+    log.d { "onAuthenticationStarted" }
     isAuthenticating = true
   }
 
   fun onAuthenticated() {
-    logcat.d { "onAuthenticated" }
+    log.d { "onAuthenticated" }
     isAuthenticating = false
     mutableState.update { Unlocked }
   }
 
   fun onAuthenticationFailed() {
-    logcat.d { "onAuthenticationFailed" }
+    log.d { "onAuthenticationFailed" }
     isAuthenticating = false
   }
 
   fun onUnavailable() {
-    logcat.w { "onUnavailable" }
+    log.w { "onUnavailable" }
     isAuthenticating = false
     mutableIsUnavailable.update { true }
   }
 
   // Called once the user has seen why the lock is turning off
   fun disable() {
-    logcat.w { "Disabling app lock" }
+    log.w { "Disabling app lock" }
     isAuthenticating = false
     mutableIsUnavailable.update { false }
     scope.launch { preferences.appLockEnabled.set(false) }

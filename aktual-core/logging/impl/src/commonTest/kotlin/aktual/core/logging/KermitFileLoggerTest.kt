@@ -1,5 +1,6 @@
 package aktual.core.logging
 
+import aktual.log
 import aktual.test.TemporaryFolder
 import aktual.test.atIndex
 import aktual.test.hasSize
@@ -13,7 +14,6 @@ import kotlin.test.Test
 import kotlin.time.Clock
 import kotlin.time.Instant
 import logcat.LogcatLogger
-import logcat.logcat
 import okio.FileSystem
 import okio.Path
 import okio.buffer
@@ -48,10 +48,10 @@ class KermitFileLoggerTest {
       KermitFileLogger(storage = logStorage, minPriority = DEBUG, clock = clock)
 
     // when
-    logcat.i { "Hello world" }
-    logcat.v { "This is ignored because it's verbose" }
-    logcat.d { "This is just on the edge" }
-    logcat.e { "Here's an error" }
+    log.i { "Hello world" }
+    log.v { "This is ignored because it's verbose" }
+    log.d { "This is just on the edge" }
+    log.e { "Here's an error" }
 
     // then
     val logFile = fileSystem.list(logStorage.directory()).first()
@@ -77,7 +77,7 @@ class KermitFileLoggerTest {
     LogcatLogger.loggers += KermitFileLogger(storage = storage, minPriority = DEBUG, clock = clock)
 
     // when
-    logcat.i { "Hello world" }
+    log.i { "Hello world" }
 
     // then
     val logFile = fileSystem.list(storage.directory()).first()

@@ -9,6 +9,7 @@ import aktual.crashes.data.CrashesRepository
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,7 +28,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @AssistedInject
@@ -77,7 +77,7 @@ internal constructor(
 
   fun delete() {
     viewModelScope.launch {
-      logcat.i { "Deleting crash report $file" }
+      log.i { "Deleting crash report $file" }
       repository.delete(file)
       deletedChannel.send(Unit)
     }

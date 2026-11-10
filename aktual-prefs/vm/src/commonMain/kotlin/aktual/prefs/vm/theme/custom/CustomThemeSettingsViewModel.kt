@@ -10,6 +10,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.prefs.ThemePreferences
 import aktual.prefs.vm.asLoadedStateFlow
 import aktual.prefs.vm.theme.custom.CustomThemeEvent.FailedFetching
@@ -37,7 +38,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -120,7 +120,7 @@ internal constructor(
         onSuccess = { colors ->
           viewModelScope.launch { preferences.constantTheme.set(colors.id) }
         },
-        onFailure = { reason -> logcat.e { "Failed selecting theme: $reason" } },
+        onFailure = { reason -> log.e { "Failed selecting theme: $reason" } },
       )
     }
   }
@@ -164,7 +164,7 @@ internal constructor(
         }
       },
       onFailure = { e ->
-        logcat.e(e) { "Failed fetching theme ${summary.repo}" }
+        log.e(e) { "Failed fetching theme ${summary.repo}" }
         val reason = e.requireMessage()
         updateFetchState(themeId, CacheState.Failed(reason))
         onFailure(reason)
@@ -227,7 +227,7 @@ internal constructor(
         }
       },
       onFailure = { e ->
-        logcat.e(e) { "Failed fetching theme catalog" }
+        log.e(e) { "Failed fetching theme catalog" }
         mutableFailure.update { FetchFailed }
       },
       finally = { mutableIsFetchingCatalog.update { false } },

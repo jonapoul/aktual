@@ -1,6 +1,7 @@
 package aktual.app.desktop
 
 import aktual.core.nav.NavStack
+import aktual.log
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.isAltPressed
 import androidx.compose.ui.input.key.isCtrlPressed
@@ -9,14 +10,13 @@ import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
 import androidx.navigation3.runtime.NavKey
-import logcat.logcat
 
 /** Return false => pass event up to the parent. In this case that means it gets ignored entirely */
 internal class KeyboardEventHandler(private val backStack: NavStack<NavKey>) {
   // Intercept keys before any composable handles them
   fun onKeyEvent(event: KeyEvent): Boolean =
     with(event) {
-      logcat.v { "onKeyEvent = ${event.string()}" }
+      log.v { "onKeyEvent = ${event.string()}" }
       when {
         else -> false
       }
@@ -25,9 +25,9 @@ internal class KeyboardEventHandler(private val backStack: NavStack<NavKey>) {
   // Handle keys after composables have their chance, so text input isn't affected
   fun onPreviewKeyEvent(event: KeyEvent): Boolean =
     with(event) {
-      logcat.v { "onPreviewKeyEvent = ${event.string()}" }
+      log.v { "onPreviewKeyEvent = ${event.string()}" }
       if (isAltPressed && key == DirectionLeft) {
-        logcat.d { "Navigating back" }
+        log.d { "Navigating back" }
         if (backStack.size > 1) {
           backStack.removeLast()
           true

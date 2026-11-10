@@ -1,5 +1,6 @@
 package aktual.core.logging
 
+import aktual.log
 import alakazam.kotlin.TimeZoneProvider
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.thread
@@ -7,7 +8,6 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import logcat.logcat
 import okio.FileSystem
 import okio.Path
 
@@ -35,7 +35,7 @@ class CrashReporter(
     // Some handlers further down the chain pass the same crash back to the default handler
     if (lastReported.getAndSet(throwable) !== throwable) {
       try {
-        logcat.wtf(TAG, throwable) { "Uncaught exception on ${thread.name}" }
+        log.wtf(TAG, throwable) { "Uncaught exception on ${thread.name}" }
         write(thread.name, throwable)
       } catch (_: Exception) {
         // Nothing more we can do
@@ -79,7 +79,7 @@ class CrashReporter(
           .forEach { (path, _) -> fileSystem.delete(path) }
       }
     } catch (e: Exception) {
-      logcat.w(TAG, e) { "Failed pruning crash reports" }
+      log.w(TAG, e) { "Failed pruning crash reports" }
     }
   }
 

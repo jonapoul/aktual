@@ -18,6 +18,7 @@ import aktual.budget.reports.vm.toConfig
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -43,7 +44,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 // Shows a custom report, and edits its config as a draft that the chart previews until it's saved
 // or reverted
@@ -135,7 +135,7 @@ internal constructor(
     if (draft == config) return
     isEditing.update { false }
     viewModelScope.launch {
-      logcat.d { "Saving custom report ${saved.meta.id}" }
+      log.d { "Saving custom report ${saved.meta.id}" }
       sync.update(saved.meta.id, config, draft)
     }
   }
@@ -145,10 +145,10 @@ internal constructor(
     viewModelScope.launch {
       val error = sync.validateName(name, id)
       if (error == null) {
-        logcat.d { "Renaming custom report $id to $name" }
+        log.d { "Renaming custom report $id to $name" }
         dashboardSync.renameCustomReport(id, name)
       } else {
-        logcat.w { "Can't rename $id to '$name': $error" }
+        log.w { "Can't rename $id to '$name': $error" }
       }
     }
   }

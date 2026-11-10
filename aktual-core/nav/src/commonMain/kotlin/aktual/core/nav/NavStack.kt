@@ -1,11 +1,11 @@
 package aktual.core.nav
 
 import aktual.core.utils.AppCloser
+import aktual.log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.StateObject
 import androidx.navigation3.runtime.NavKey
-import logcat.logcat
 
 @Stable
 interface NavStack<T : NavKey> : MutableList<T>, StateObject {
@@ -28,26 +28,26 @@ class NavStackImpl<K : NavKey>(
 
   override fun push(route: K) {
     add(route)
-    logcat.v(TAG) { "Push $route - backStack=[$backStackString]" }
+    log.v(TAG) { "Push $route - backStack=[$backStackString]" }
   }
 
   override fun pop(): Boolean =
     when (size) {
       0 -> {
-        logcat.v(TAG) { "Pop - empty stack? Closing anyway" }
+        log.v(TAG) { "Pop - empty stack? Closing anyway" }
         appCloser?.invoke()
         false
       }
 
       1 -> {
-        logcat.v(TAG) { "Pop - closing app" }
+        log.v(TAG) { "Pop - closing app" }
         appCloser?.invoke()
         true
       }
 
       else -> {
         removeAt(lastIndex)
-        logcat.v(TAG) { "Pop - backStack=[$backStackString]" }
+        log.v(TAG) { "Pop - backStack=[$backStackString]" }
         true
       }
     }
@@ -55,11 +55,11 @@ class NavStackImpl<K : NavKey>(
   override fun replaceAll(route: K) {
     clear()
     add(route)
-    logcat.v(TAG) { "ReplaceAll $route - backStack=[$backStackString]" }
+    log.v(TAG) { "ReplaceAll $route - backStack=[$backStackString]" }
   }
 
   override fun log() {
-    logcat.v(TAG) { "Log backStack=[$backStackString]" }
+    log.v(TAG) { "Log backStack=[$backStackString]" }
   }
 
   private companion object {

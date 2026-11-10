@@ -9,6 +9,7 @@ import aktual.core.model.Token
 import aktual.di.ServerChosenScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import aktual.prefs.AppPreferences
 import alakazam.kotlin.ResettableStateFlow
 import androidx.compose.runtime.Stable
@@ -34,7 +35,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -103,7 +103,7 @@ class LoginViewModel(
   }
 
   fun onClickSignIn(loginMethod: LoginMethod = mutableSelectedLoginMethod.value) {
-    logcat.v { "onClickSignIn with method=$loginMethod" }
+    log.v { "onClickSignIn with method=$loginMethod" }
     val password = mutableEnteredPassword.value
     if (loginMethod == LoginMethod.Password && password == Empty) return
     mutableIsLoading.update { true }
@@ -116,7 +116,7 @@ class LoginViewModel(
       timeoutJob?.cancel()
       timeoutJob = null
 
-      logcat.d { "Login result = $result" }
+      log.d { "Login result = $result" }
       mutableIsLoading.update { false }
 
       when (result) {
@@ -127,7 +127,7 @@ class LoginViewModel(
     }
     timeoutJob = viewModelScope.launch {
       delay(5.seconds)
-      logcat.w { "Login timed out" }
+      log.w { "Login timed out" }
       mutableIsLoading.update { false }
       mutableEvents.tryEmit(Timeout)
       cancelJobs()

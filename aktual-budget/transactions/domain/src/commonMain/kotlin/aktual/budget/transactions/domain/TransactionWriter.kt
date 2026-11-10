@@ -8,12 +8,12 @@ import aktual.budget.db.dao.TransactionDao
 import aktual.budget.rules.domain.CategoryLearner
 import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
+import aktual.log
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import logcat.logcat
 
 /**
  * Writes transactions, payees and accounts, like the db.insertTransaction() / updateTransaction() /
@@ -81,6 +81,6 @@ class TransactionWriter(
     val changes = batch.changes()
     if (changes.isEmpty()) return
     syncController.syncChanges(changes)
-    logcat.i { "Wrote ${changes.size} transaction changes" }
+    log.i { "Wrote ${changes.size} transaction changes" }
   }
 }

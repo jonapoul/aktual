@@ -18,6 +18,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -44,7 +45,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 /**
  * Links an unlinked account, or a new one if there's no [account], to one that a configured
@@ -201,7 +201,7 @@ internal constructor(
           mutableEvents.emit(Linked)
         },
         onFailure = { e ->
-          logcat.e(e) { "Failed linking ${account ?: "a new account"} to $accountId" }
+          log.e(e) { "Failed linking ${account ?: "a new account"} to $accountId" }
           mutableEvents.emit(LinkBankAccountEvent.LinkFailed(e.requireMessage()))
         },
         finally = { mutableIsLinking.update { false } },
@@ -227,7 +227,7 @@ internal constructor(
         row != null
       },
       onFailure = { e ->
-        logcat.e(e) { "Failed loading $id" }
+        log.e(e) { "Failed loading $id" }
         mutableFailure.update { LinkBankAccountState.Failure(e.requireMessage()) }
         false
       },
@@ -258,13 +258,13 @@ internal constructor(
                 Listed(ExternalAccounts.Loaded(items), response.accounts)
               }
               is Failed -> {
-                logcat.w { "Listing $source accounts failed: ${response.error}" }
+                log.w { "Listing $source accounts failed: ${response.error}" }
                 Listed(ExternalAccounts.Failure(response.error.cause()))
               }
             }
           },
           onFailure = { e ->
-            logcat.e(e) { "Failed listing $source accounts" }
+            log.e(e) { "Failed listing $source accounts" }
             Listed(ExternalAccounts.Failure(e.requireMessage()))
           },
         )
@@ -311,7 +311,7 @@ internal constructor(
         }
       },
       onFailure = { e ->
-        logcat.w(e) { "Failed checking bank sync status for $source" }
+        log.w(e) { "Failed checking bank sync status for $source" }
         false
       },
     )

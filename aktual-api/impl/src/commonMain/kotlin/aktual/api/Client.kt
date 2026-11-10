@@ -1,5 +1,6 @@
 package aktual.api
 
+import aktual.log
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
@@ -9,7 +10,6 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import logcat.logcat
 
 fun buildKtorClient(
   json: Json,
@@ -39,5 +39,5 @@ fun buildKtorClient(
   }
 
 private class AktualKtorLogger(private val tag: String?) : Logger {
-  override fun log(message: String) = logcat.v(tag) { message }
+  override fun log(message: String) = log.v(tag) { message }
 }

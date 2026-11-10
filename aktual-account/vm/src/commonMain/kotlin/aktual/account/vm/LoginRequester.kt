@@ -9,13 +9,13 @@ import aktual.core.model.LoginMethod
 import aktual.core.model.Password
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.RunLevelController
+import aktual.log
 import aktual.prefs.AppPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
 import java.io.IOException
 import kotlinx.coroutines.withContext
-import logcat.logcat
 
 @Inject
 class LoginRequester
@@ -29,7 +29,7 @@ internal constructor(
     runCatchingCancellable(
       attempt = { withContext(contexts.io) { accountApi.loginMethods().methods } },
       onFailure = { e ->
-        logcat.w(e) { "Failed to fetch login methods" }
+        log.w(e) { "Failed to fetch login methods" }
         emptyList()
       },
     )

@@ -18,6 +18,7 @@ import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.log
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -37,7 +38,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
 /**
  * Accounts and account groups, laid out as upstream's redesigned sidebar (useSidebarAccountTree.ts)
@@ -73,7 +73,7 @@ internal constructor(
           }
           .onStart<ManageAccountsState> { emit(Loading) }
           .catch { e ->
-            logcat.e(e) { "Failed loading accounts" }
+            log.e(e) { "Failed loading accounts" }
             emit(Failure(e.requireMessage()))
           }
       }
@@ -143,7 +143,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { writer.undo(undo) },
         onFailure = { e ->
-          logcat.e(e) { "Failed undoing account change" }
+          log.e(e) { "Failed undoing account change" }
           mutableEvents.tryEmit(ManageAccountsEvent.ActionFailed(e.requireMessage()))
         },
       )
@@ -155,7 +155,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = { action() },
         onFailure = { e ->
-          logcat.e(e) { "Failed $description" }
+          log.e(e) { "Failed $description" }
           val event =
             if (e is GroupNameTakenException) {
               ManageAccountsEvent.GroupNameTaken(e.existing)

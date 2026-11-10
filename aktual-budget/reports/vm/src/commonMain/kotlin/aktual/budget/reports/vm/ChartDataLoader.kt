@@ -42,6 +42,7 @@ import aktual.budget.model.parseScheduleAmount
 import aktual.budget.rules.domain.TransactionFilter
 import aktual.core.model.Percent
 import aktual.core.utils.Calendar
+import aktual.log
 import aktual.prefs.CurrencyPreferences
 import aktual.prefs.FormatPreferences
 import alakazam.kotlin.CoroutineContexts
@@ -71,7 +72,6 @@ import kotlinx.datetime.plusMonth
 import kotlinx.datetime.yearMonth
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
-import logcat.logcat
 
 @Inject
 @Suppress("LargeClass")
@@ -261,7 +261,7 @@ internal class ChartDataLoader(
     } catch (e: CancellationException) {
       throw e
     } catch (e: Throwable) {
-      logcat.e { "Failed evaluating formula ${meta.formula}: ${e.stackTraceToString()}" }
+      log.e { "Failed evaluating formula ${meta.formula}: ${e.stackTraceToString()}" }
       val cause = generateSequence(e) { it.cause }.last()
       val subject = "${cause::class.simpleName}: ${cause.message}"
       FormulaData(

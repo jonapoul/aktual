@@ -4,6 +4,7 @@ import aktual.api.client.SyncApi
 import aktual.api.model.sync.ListUserFilesResponse
 import aktual.core.model.Token
 import aktual.core.utils.runCatchingCancellable
+import aktual.log
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
@@ -13,7 +14,6 @@ import io.ktor.serialization.JsonConvertException
 import java.io.IOException
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.withContext
-import logcat.logcat
 
 @Inject
 class BudgetListFetcher
@@ -23,25 +23,25 @@ internal constructor(private val syncApi: SyncApi, private val contexts: Corouti
       attempt = {
         val response = withContext(contexts.io) { syncApi.fetchUserFiles(token) }
         val result = FetchBudgetsResult.Success(response.data.toImmutableList())
-        logcat.d { "Fetched budgets: $result" }
+        log.d { "Fetched budgets: $result" }
         result
       },
       onFailure = { e ->
         when (e) {
           is ResponseException -> {
-            logcat.e(e) { "HTTP failure fetching budgets" }
+            log.e(e) { "HTTP failure fetching budgets" }
             parseResponseException(e)
           }
           is JsonConvertException -> {
-            logcat.e(e) { "JSON failure fetching budgets" }
+            log.e(e) { "JSON failure fetching budgets" }
             FetchBudgetsResult.InvalidResponse(e.requireMessage())
           }
           is IOException -> {
-            logcat.e(e) { "Network failure fetching budgets" }
+            log.e(e) { "Network failure fetching budgets" }
             FetchBudgetsResult.NetworkFailure(e.requireMessage())
           }
           else -> {
-            logcat.e(e) { "Failed fetching budgets" }
+            log.e(e) { "Failed fetching budgets" }
             FetchBudgetsResult.OtherFailure(e.requireMessage())
           }
         }

@@ -27,6 +27,7 @@ import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.Initializable
+import aktual.log
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.ForScope
@@ -47,7 +48,6 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import logcat.logcat
 
 /**
  * Moves schedules along after a budget sync, at most once a day: posts the transactions of due and
@@ -105,7 +105,7 @@ internal constructor(
       onFailure = { e ->
         // The database closes with the budget, which can happen while this is still running
         currentCoroutineContext().ensureActive()
-        logcat.e(e) { "Failed advancing schedules" }
+        log.e(e) { "Failed advancing schedules" }
         null
       },
     )
@@ -129,7 +129,7 @@ internal constructor(
     run.posting.post()
     if (changes.isNotEmpty()) {
       syncController.syncChanges(changes)
-      logcat.i { "Advanced schedules: ${changes.map { it.row }.distinct()}" }
+      log.i { "Advanced schedules: ${changes.map { it.row }.distinct()}" }
     }
     return run
   }
@@ -181,7 +181,7 @@ internal constructor(
       if (date == run.today) return null
     } else {
       if (!run.canPost) {
-        logcat.w { "Not posting schedule ${row.id}, sync failed" }
+        log.w { "Not posting schedule ${row.id}, sync failed" }
         run.unposted = true
         return null
       }
@@ -236,7 +236,7 @@ internal constructor(
         is JsonPrimitive -> ScheduleDate.Once(LocalDate.parse(element.content))
       }
     }
-      .onFailure { logcat.w(it) { "Couldn't parse date of schedule $id: $raw" } }
+      .onFailure { log.w(it) { "Couldn't parse date of schedule $id: $raw" } }
       .getOrNull()
   }
 
