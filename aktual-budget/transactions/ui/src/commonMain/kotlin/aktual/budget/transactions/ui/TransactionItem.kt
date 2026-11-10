@@ -458,7 +458,7 @@ internal fun SplitChildren(
           modifier
             .fillMaxWidth()
             .padding(start = dimens.railWidth, bottom = dimens.rowVertical)
-            .background(colors.pageBackgroundModalActive)
+            .background(colors.tableRowHeaderBackground)
             .padding(vertical = SplitInsetVertical),
       ) {
         parent.children.fastForEach { child ->
@@ -468,7 +468,7 @@ internal fun SplitChildren(
     }
 
     Dense -> {
-      Column(modifier = modifier.fillMaxWidth().background(colors.pageBackgroundModalActive)) {
+      Column(modifier = modifier.fillMaxWidth().background(colors.tableRowHeaderBackground)) {
         parent.children.fastForEach { child ->
           SplitChildTableRow(child, parent, dimens, onOpen = { onOpen(child.id) })
         }

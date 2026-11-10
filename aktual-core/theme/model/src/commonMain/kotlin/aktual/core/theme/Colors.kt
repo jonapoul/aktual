@@ -11,7 +11,6 @@ sealed interface Colors {
   val isLight: Boolean
 
   val pageBackground: Color
-  val pageBackgroundModalActive: Color
   val pageBackgroundTopLeft: Color
   val pageBackgroundBottomRight: Color
   val pageBackgroundLineTop: Color
@@ -37,7 +36,6 @@ sealed interface Colors {
   val tableTextLight: Color
   val tableTextSubdued: Color
   val tableTextSelected: Color
-  val tableTextHover: Color
   val tableTextInactive: Color
   val tableHeaderText: Color
   val tableHeaderBackground: Color
@@ -107,14 +105,12 @@ sealed interface Colors {
   val sidebarRedesignRightBorder: Color
 
   val menuBackground: Color
-  val menuItemBackground: Color
   val menuItemBackgroundHover: Color
   val menuItemText: Color
   val menuItemTextHover: Color
   val menuItemTextSelected: Color
   val menuItemTextHeader: Color
   val menuBorder: Color
-  val menuBorderHover: Color
   val menuKeybindingText: Color
   val menuAutoCompleteBackground: Color
   val menuAutoCompleteBackgroundHover: Color
@@ -134,7 +130,6 @@ sealed interface Colors {
   val mobileNavBackground: Color
   val mobileNavItem: Color
   val mobileNavItemSelected: Color
-  val mobileAccountShadow: Color
   val mobileAccountText: Color
   val mobileTransactionSelected: Color
 
@@ -198,16 +193,13 @@ sealed interface Colors {
 
   val noticeBackground: Color
   val noticeBackgroundLight: Color
-  val noticeBackgroundDark: Color
   val noticeText: Color
   val noticeTextLight: Color
   val noticeTextDark: Color
   val noticeTextMenu: Color
-  val noticeTextMenuHover: Color
   val noticeBorder: Color
   val warningBackground: Color
   val warningText: Color
-  val warningTextLight: Color
   val warningTextDark: Color
   val warningBorder: Color
   val errorBackground: Color
@@ -218,7 +210,6 @@ sealed interface Colors {
   val errorBorder: Color
   val upcomingBackground: Color
   val upcomingText: Color
-  val upcomingBorder: Color
 
   val formLabelText: Color
   val formLabelBackground: Color
@@ -228,11 +219,9 @@ sealed interface Colors {
   val formInputBorder: Color
   val formInputBorderSelected: Color
   val formInputText: Color
-  val formInputTextSelected: Color
   val formInputTextPlaceholder: Color
   val formInputTextPlaceholderSelected: Color
   val formInputTextReadOnlySelection: Color
-  val formInputTextSelection: Color
   val formInputShadowSelected: Color
   val formInputTextHighlight: Color
   val checkboxText: Color
@@ -252,7 +241,6 @@ sealed interface Colors {
   val pillBackgroundSelected: Color
   val pillTextSelected: Color
   val pillBorderSelected: Color
-  val pillTextSubdued: Color
 
   val reportsRed: Color
   val reportsBlue: Color
@@ -267,7 +255,6 @@ sealed interface Colors {
 
   val noteTagBackground: Color
   val noteTagBackgroundHover: Color
-  val noteTagDefault: Color
   val noteTagText: Color
 
   val budgetCurrentMonth: Color

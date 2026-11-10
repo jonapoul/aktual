@@ -312,7 +312,7 @@ private fun BuildStateItem(
         modifier = Modifier.testTag(Tags.BuildStateItemValue),
         text = subtitle,
         style = typography.labelMedium,
-        color = colors.pillTextSubdued,
+        color = colors.pageTextSubdued,
       )
     }
 

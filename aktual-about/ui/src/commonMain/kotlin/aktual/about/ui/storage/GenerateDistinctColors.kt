@@ -94,7 +94,7 @@ private fun PreviewDistinctColors(
         ) {
           Text(
             text = "#%06X".format(color.toArgb() and 0xFFFFFF),
-            color = params.colors.formInputTextSelected,
+            color = params.colors.buttonPrimaryText,
             fontSize = textSizes.micro,
             textAlign = Center,
           )
