@@ -1,7 +1,10 @@
 package aktual.budget.transactions.ui
 
+import aktual.budget.accounts.components.EditAccountSheet
 import aktual.budget.banksync.components.showBankSyncSummary
+import aktual.budget.banksync.domain.BankSyncSummary
 import aktual.budget.db.dao.ClearedBalances
+import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
 import aktual.budget.model.TagSpec
@@ -33,6 +36,7 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.Snackbars
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
@@ -91,31 +95,25 @@ fun TransactionsScreen(
   val showRunningBalance by viewModel.showRunningBalance.collectAsStateWithLifecycle()
   val clearedBalances by viewModel.clearedBalances.collectAsStateWithLifecycle()
   val tags by viewModel.tags.collectAsStateWithLifecycle()
-  val otherAccountNames by viewModel.otherAccountNames.collectAsStateWithLifecycle()
   val reconciling by viewModel.reconciling.collectAsStateWithLifecycle()
   val reconcileStart by viewModel.reconcileStart.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
 
-  LaunchedEffect(viewModel) {
-    viewModel.bankSyncFinished.collect { summary ->
-      snackbars.show { showBankSyncSummary(summary) }
-    }
-  }
+  BankSyncSnackbars(viewModel.bankSyncFinished, snackbars)
 
   val deleted = Strings.transactionsDeleteAccountDone
   val deleteFailed = Strings.transactionsDeleteAccountFailed
-  val renameFailed = Strings.transactionsRenameAccountFailed
   val reconcileFailed = Strings.transactionsReconcileFailed
   val adjustmentNotes = Strings.transactionsReconcileAdjustmentNotes
   var showLoginKept by rememberSaveable { mutableStateOf(false) }
   var confirmUnlock by remember { mutableStateOf<TransactionId?>(null) }
+  var editAccount by remember { mutableStateOf<AccountId?>(null) }
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
         AccountDeleted -> snackbars.show(message = deleted).also { accountDeleted() }
         AccountDeletedBankLoginKept -> showLoginKept = true
         DeleteAccountFailed -> snackbars.show { showErrorSnackbar(deleteFailed) }
-        RenameAccountFailed -> snackbars.show { showErrorSnackbar(renameFailed) }
         ReconcileFailed -> snackbars.show { showErrorSnackbar(reconcileFailed) }
       }
     }
@@ -138,12 +136,12 @@ fun TransactionsScreen(
     alternateRowColours = alternateRowColours,
     accountOptions = accountOptions,
     tags = tags,
-    otherAccountNames = otherAccountNames,
     reconciling = reconciling,
     reconcileStart = reconcileStart,
     onAction = { action ->
       when (action) {
         NavBack -> back()
+        is EditAccount -> editAccount = action.id
         is OpenTransaction -> openTransaction(action.id)
         is OpenTag -> if (spec.tagSpec != TagSpec.SpecificTag(action.id)) openTag(action.id)
         CreateTransaction ->
@@ -162,6 +160,8 @@ fun TransactionsScreen(
       }
     },
   )
+
+  editAccount?.let { id -> EditAccountSheet(id = id, onDismiss = { editAccount = null }) }
 
   confirmUnlock?.let { id ->
     ReconciledDialog(
@@ -188,7 +188,6 @@ private fun TransactionsViewModel.handle(action: ViewModelAction) {
   when (action) {
     Action.BankSync -> bankSync()
     Action.DeleteAccount -> deleteAccount()
-    is Action.RenameAccount -> renameAccount(action.name)
     is Action.SetDensity -> setDensity(action.density)
     is Action.SetAlternateRowColours -> setAlternateRowColours(action.enabled)
     is Action.SetExpandSplits -> setExpandSplits(action.enabled)
@@ -196,6 +195,15 @@ private fun TransactionsViewModel.handle(action: ViewModelAction) {
     is Action.ToggleSplit -> toggleSplit(action.id)
     is Action.StartReconciling -> startReconciling(action.target)
     Action.FinishReconciling -> finishReconciling()
+  }
+}
+
+@Composable
+private fun BankSyncSnackbars(finished: Flow<BankSyncSummary>, snackbars: Snackbars) {
+  LaunchedEffect(finished) {
+    finished.collect { summary ->
+      snackbars.show { showBankSyncSummary(summary) }
+    }
   }
 }
 
@@ -237,7 +245,6 @@ internal fun TransactionsScaffold(
   alternateRowColours: Boolean = false,
   accountOptions: AccountViewOptions? = null,
   tags: ImmutableList<TagLabel> = persistentListOf(),
-  otherAccountNames: ImmutableSet<String> = persistentSetOf(),
   reconciling: Reconciling? = null,
   reconcileStart: ReconcileStart? = null,
 ) {
@@ -262,7 +269,6 @@ internal fun TransactionsScaffold(
             listState = listState,
             loadedAccount = loadedAccount,
             isRoot = isRoot,
-            otherAccountNames = otherAccountNames,
             reconcileStart = reconcileStart,
             onAction = onAction,
             onOpenViewOptions = { showViewOptions = true },

@@ -51,6 +51,9 @@ class AccountDao(database: BudgetDatabase) {
     getById(id).awaitAsOneOrNull()
   }
 
+  fun observe(id: AccountId): Flow<Accounts?> =
+    queries.getById(id).asFlow().map { it.awaitAsOneOrNull() }.distinctUntilChanged()
+
   suspend fun name(id: AccountId): String = queries.withResult {
     getName(id).awaitAsOneOrNull()?.name ?: error("Required name for $id")
   }

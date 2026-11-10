@@ -28,6 +28,7 @@ import aktual.core.nav.AccountGroupTransactionsNavRoute
 import aktual.core.nav.AccountTransactionsNavRoute
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.BudgetTab
+import aktual.core.nav.ManageAccountsNavRoute
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.theme.Colors
 import aktual.core.ui.AccountSyncDot
@@ -152,7 +153,8 @@ internal fun ColumnScope.BudgetSidebarContent(
       selected =
         transactionsRoot != null &&
           transactionsRoot !is AccountTransactionsNavRoute &&
-          transactionsRoot !is AccountGroupTransactionsNavRoute,
+          transactionsRoot !is AccountGroupTransactionsNavRoute &&
+          transactionsRoot !is ManageAccountsNavRoute,
       onClick = { onOpenTransactions(TransactionsNavRoute) },
     )
 
@@ -166,6 +168,12 @@ internal fun ColumnScope.BudgetSidebarContent(
     }
 
     DrawerItem(icon = AktualIcons.Add, label = Strings.accountsAddTitle, onClick = onAddAccount)
+    DrawerItem(
+      icon = AktualIcons.Pencil1,
+      label = Strings.accountsManageTitle,
+      selected = transactionsRoot is ManageAccountsNavRoute,
+      onClick = { onOpenTransactions(ManageAccountsNavRoute) },
+    )
   }
 
   HorizontalDivider(

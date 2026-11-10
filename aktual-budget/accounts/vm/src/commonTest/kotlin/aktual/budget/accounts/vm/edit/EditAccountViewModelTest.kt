@@ -5,6 +5,7 @@ import aktual.budget.accounts.vm.runAccountsTest
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.transactions.domain.Patch.To
+import aktual.di.BudgetCoroutineScope
 import aktual.test.viewModelContext
 import app.cash.turbine.test
 import assertk.all
@@ -83,7 +84,8 @@ class EditAccountViewModelTest {
     assertThat(accountDao[id]?.account_group_id).isEqualTo(group)
     assertThat(writer.notes(id)).isEqualTo("Shared")
 
-    writer.undo(event.undo)
+    viewModel.undo(event.undo)
+    scope.advanceUntilIdle()
     assertThat(accountDao[id]?.name).isEqualTo("Current")
     assertThat(accountDao[id]?.account_group_id).isNull()
     assertThat(writer.notes(id)).isEqualTo("")
@@ -136,6 +138,7 @@ class EditAccountViewModelTest {
         writer = writer,
         accountDao = accountDao,
         groupDao = groupDao,
+        budgetScope = BudgetCoroutineScope(scope),
         viewModelContext = scope.viewModelContext,
       ),
     )

@@ -11,7 +11,5 @@ sealed interface TransactionsEvent {
 
   data object DeleteAccountFailed : TransactionsEvent
 
-  data object RenameAccountFailed : TransactionsEvent
-
   data object ReconcileFailed : TransactionsEvent
 }

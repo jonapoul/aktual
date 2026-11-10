@@ -26,7 +26,6 @@ import aktual.budget.tags.domain.TagLabel
 import aktual.budget.tags.domain.toTagLabels
 import aktual.budget.transactions.domain.AccountViewPrefs
 import aktual.budget.transactions.domain.Reconciler
-import aktual.budget.transactions.domain.TransactionWriter
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
@@ -60,7 +59,6 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -92,7 +90,6 @@ internal constructor(
   private val categoryDao: CategoryDao,
   private val bankSyncController: BankSyncController,
   private val deleter: AccountDeleter,
-  private val writer: TransactionWriter,
   private val reconciler: Reconciler,
   private val viewPrefs: AccountViewPrefs,
   private val transactionPreferences: TransactionPreferences,
@@ -117,7 +114,6 @@ internal constructor(
   // Buffered, so an event sent while the screen is being recreated waits for it
   private val mutableEvents = Channel<TransactionsEvent>(Channel.BUFFERED)
   private var deleteJob: Job? = null
-  private val mutableOtherAccountNames = MutableStateFlow<ImmutableSet<String>>(persistentSetOf())
   // The bank balance being reconciled against, while reconciling
   private val mutableReconcileTarget = MutableStateFlow<Amount?>(null)
   private val mutableReconcileBusy = MutableStateFlow(false)
@@ -126,7 +122,6 @@ internal constructor(
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
 
   // Names a rename can't take, closed accounts included. See upstream's validateAccountName()
-  val otherAccountNames: StateFlow<ImmutableSet<String>> = mutableOtherAccountNames.asStateFlow()
 
   val events: Flow<TransactionsEvent> = mutableEvents.receiveAsFlow()
 
@@ -278,11 +273,11 @@ internal constructor(
 
       accountSpec is AccountSpec.SpecificAccount ->
         viewModelScope.launch {
-          val account = accountDao[accountSpec.id] ?: error("No account matching $accountSpec")
-          mutableLoadedAccount.update { SpecificAccount(account) }
-          val names =
-            accountDao.getAllWithStatus().filter { it.id != accountSpec.id }.mapNotNull { it.name }
-          mutableOtherAccountNames.update { names.toImmutableSet() }
+          // Watched, so a rename from the edit sheet shows in the title
+          accountDao.observe(accountSpec.id).collect { account ->
+            account ?: error("No account matching $accountSpec")
+            mutableLoadedAccount.update { SpecificAccount(account) }
+          }
         }
 
       accountSpec is Group -> mutableLoadedAccount.update { LoadedAccount.Group(accountSpec.group) }
@@ -381,29 +376,6 @@ internal constructor(
         onFailure = { e ->
           logcat.e(e) { "Failed deleting account $account" }
           mutableEvents.trySend(DeleteAccountFailed)
-        },
-      )
-    }
-  }
-
-  fun renameAccount(name: String) {
-    val account = accountId ?: return
-    viewModelScope.launch {
-      runCatchingCancellable(
-        attempt = {
-          writer.write { renameAccount(account, name) }
-          logcat.i { "Renamed account $account" }
-          mutableLoadedAccount.update { loaded ->
-            if (loaded is SpecificAccount) {
-              SpecificAccount(loaded.account.copy(name = name))
-            } else {
-              loaded
-            }
-          }
-        },
-        onFailure = { e ->
-          logcat.e(e) { "Failed renaming account $account" }
-          mutableEvents.trySend(RenameAccountFailed)
         },
       )
     }
