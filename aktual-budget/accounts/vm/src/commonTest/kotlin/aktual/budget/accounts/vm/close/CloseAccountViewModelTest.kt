@@ -3,9 +3,12 @@ package aktual.budget.accounts.vm.close
 import aktual.budget.accounts.vm.AccountsTestScope
 import aktual.budget.accounts.vm.runAccountsTest
 import aktual.budget.db.Accounts
+import aktual.budget.db.dao.DatabaseTables.CATEGORIES
+import aktual.budget.db.dao.DatabaseTables.CATEGORY_GROUPS
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
+import aktual.budget.model.localChange
 import aktual.test.viewModelContext
 import app.cash.turbine.test
 import assertk.all
@@ -19,6 +22,7 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -74,6 +78,23 @@ class CloseAccountViewModelTest {
       prop(Ready::categoryName).isEqualTo("Food")
       prop(Ready::canClose).isTrue()
     }
+  }
+
+  @Test
+  fun `The category picker leaves out hidden categories and groups`() = runAccountsTest {
+    val closing = createAccount("Closing", balance = Amount(100))
+    group("bills", "Bills", hidden = false)
+    category("rent", "Rent", group = "bills", hidden = false)
+    category("old", "Old", group = "bills", hidden = true)
+    group("secret", "Secret", hidden = true)
+    category("gym", "Gym", group = "secret", hidden = false)
+    group("spare", "Spare", hidden = false)
+    category("unused", "Unused", group = "spare", hidden = true)
+
+    assertThat(viewModel(closing).ready().categories)
+      .containsExactly(
+        CategoryChoiceGroup("Bills", persistentListOf(CategoryChoice(CategoryId("rent"), "Rent"))),
+      )
   }
 
   @Test
@@ -194,6 +215,32 @@ class CloseAccountViewModelTest {
         accountDao = accountDao,
         transactionDao = transactionDao,
         viewModelContext = scope.viewModelContext,
+      ),
+    )
+
+  private suspend fun AccountsTestScope.group(id: String, name: String, hidden: Boolean) =
+    syncChanges(
+      listOf(
+        localChange(CATEGORY_GROUPS, id, "name", name),
+        localChange(CATEGORY_GROUPS, id, "is_income", false),
+        localChange(CATEGORY_GROUPS, id, "hidden", hidden),
+        localChange(CATEGORY_GROUPS, id, "tombstone", false),
+      ),
+    )
+
+  private suspend fun AccountsTestScope.category(
+    id: String,
+    name: String,
+    group: String,
+    hidden: Boolean,
+  ) =
+    syncChanges(
+      listOf(
+        localChange(CATEGORIES, id, "name", name),
+        localChange(CATEGORIES, id, "cat_group", group),
+        localChange(CATEGORIES, id, "is_income", false),
+        localChange(CATEGORIES, id, "hidden", hidden),
+        localChange(CATEGORIES, id, "tombstone", false),
       ),
     )
 
