@@ -134,6 +134,19 @@ private fun BankSyncProvidersScaffold(
               ),
           )
         }
+        ApiKeySession -> {
+          FailureScreen(
+            modifier = Modifier.padding(innerPadding),
+            title = Strings.bankSyncProvidersTitle,
+            reason = Strings.bankSyncProvidersApiKey,
+            action =
+              FailureAction(
+                text = { Strings.navBack },
+                icon = AktualIcons.CheveronLeft,
+                onClick = { onAction(CloseProviders) },
+              ),
+          )
+        }
         is Loaded -> {
           BankSyncProvidersContent(
             modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
@@ -229,7 +242,8 @@ private fun ProviderItem(
         )
       }
       Checking,
-      NoServer -> {
+      NoServer,
+      NeedsPassword -> {
         // nothing to do until it's known whether it's set up
       }
     }
@@ -287,4 +301,5 @@ private class BankSyncProvidersStateProvider :
     PreviewLoaded,
     PreviewLoaded.copy(resetting = GoCardless),
     BankSyncProvidersState.NoServer,
+    BankSyncProvidersState.ApiKeySession,
   )

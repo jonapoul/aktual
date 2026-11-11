@@ -49,6 +49,13 @@ class BankSyncProvidersViewModelTest {
   }
 
   @Test
+  fun `Nothing to set up with an API key`() = runTest {
+    createViewModel(SERVER.copy(token = Token("actual_abc123"))).state.test {
+      assertThat(awaitItem()).isEqualTo(ApiKeySession)
+    }
+  }
+
+  @Test
   fun `Nothing to set up without a server`() = runTest {
     createViewModel(None).state.test {
       assertThat(awaitItem()).isEqualTo(NoServer)

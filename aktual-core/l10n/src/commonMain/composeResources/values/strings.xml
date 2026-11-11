@@ -450,6 +450,7 @@
   <string name="bank_sync_provider_not_configured">Not configured</string>
   <string name="bank_sync_provider_failed">Status unavailable</string>
   <string name="bank_sync_provider_no_server">No server</string>
+  <string name="bank_sync_provider_needs_password">Needs password login</string>
 
   <string name="bank_sync_status_ok">OK</string>
   <string name="bank_sync_status_pending">Pending</string>
@@ -530,6 +531,7 @@
   <string name="bank_sync_providers_open">Bank sync providers</string>
   <string name="bank_sync_providers_message">Credentials for each provider are kept on your server and shared by every budget on it. Only admins can change them.</string>
   <string name="bank_sync_providers_no_server">This budget isn’t on a server, so it can’t sync with banks.</string>
+  <string name="bank_sync_providers_api_key">Log in with a password to set up bank sync providers. API keys can only sync SimpleFIN and Pluggy.ai accounts.</string>
   <string name="bank_sync_providers_set_up">Set up</string>
   <string name="bank_sync_providers_reset">Reset</string>
   <string name="bank_sync_providers_reset_title">Reset %1$s?</string>

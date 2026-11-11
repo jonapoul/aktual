@@ -33,6 +33,9 @@ enum class BankSyncProviderStatus {
   NotConfigured,
   Failed,
   NoServer,
+
+  // Logged in with an API key, which the server only accepts for some providers
+  NeedsPassword,
 }
 
 @Immutable

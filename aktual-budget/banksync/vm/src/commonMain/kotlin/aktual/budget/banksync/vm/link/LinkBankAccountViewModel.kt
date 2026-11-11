@@ -9,11 +9,13 @@ import aktual.api.model.banksync.BankSyncTransactionsResponse.Rejected
 import aktual.api.model.banksync.ExternalBankAccount
 import aktual.budget.banksync.domain.BankAccountLinker
 import aktual.budget.banksync.domain.GoCardlessLoginWaiter
+import aktual.budget.banksync.domain.supportsApiKeys
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
 import aktual.core.model.BuildConfig
+import aktual.core.model.isApiKeySession
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
@@ -297,7 +299,9 @@ internal constructor(
   private suspend fun configuredProviders(): ImmutableList<AccountSyncSource> {
     if (server !is Remote) return persistentListOf()
     val configured = coroutineScope {
-      PROVIDERS.map { source -> async { source.takeIf { isConfigured(it) } } }.awaitAll()
+      PROVIDERS.filter { !server.isApiKeySession || it.supportsApiKeys }
+        .map { source -> async { source.takeIf { isConfigured(it) } } }
+        .awaitAll()
     }
     return configured.filterNotNull().toImmutableList()
   }

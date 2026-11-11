@@ -12,6 +12,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
 import aktual.budget.model.BankSyncStatus
+import aktual.core.model.Token
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
@@ -55,6 +56,18 @@ internal class BankSyncControllerImplTest {
     api.responses["provider-b"] = success()
 
     val results = controller(api).sync(setOf(B))
+
+    assertThat(results.map { it.account }).containsExactly(B)
+  }
+
+  @Test
+  fun `API keys only sync SimpleFIN and Pluggy accounts`() = runBankSyncTest {
+    insertLinkedAccount(A, source = GoCardless)
+    insertLinkedAccount(B, source = PluggyAi)
+    insertLinkedAccount(C, source = Akahu)
+    api.responses["provider-b"] = success()
+
+    val results = controller(api, SERVER.copy(token = Token("actual_abc123"))).sync()
 
     assertThat(results.map { it.account }).containsExactly(B)
   }

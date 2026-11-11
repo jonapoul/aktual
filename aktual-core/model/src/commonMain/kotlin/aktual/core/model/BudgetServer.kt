@@ -8,3 +8,6 @@ sealed interface BudgetServer {
 
   data object None : BudgetServer
 }
+
+val BudgetServer.isApiKeySession: Boolean
+  get() = this is Remote && token.isApiKey

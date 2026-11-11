@@ -16,6 +16,8 @@ import aktual.budget.model.BankSyncStatus
 import aktual.budget.transactions.domain.AccountUpdate
 import aktual.budget.transactions.domain.Patch
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.core.model.BudgetServer
+import aktual.core.model.isApiKeySession
 import aktual.core.utils.Calendar
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
@@ -53,6 +55,7 @@ internal constructor(
   private val calendar: Calendar,
   private val clock: Clock,
   private val scope: BudgetCoroutineScope,
+  private val server: BudgetServer,
 ) : BankSyncController {
   private val mutableProgress = MutableStateFlow(BankSyncProgress())
   override val progress: StateFlow<BankSyncProgress> = mutableProgress.asStateFlow()
@@ -86,7 +89,8 @@ internal constructor(
   }
 
   private suspend fun run(ids: Set<AccountId>): List<BankSyncResult> {
-    val accounts = dao.accounts().filter { ids.isEmpty() || it.id in ids }
+    val accounts =
+      dao.accounts().filter { (ids.isEmpty() || it.id in ids) && canSyncWithServer(it) }
     val pending = accounts.map(BankSyncAccount::id)
     mutableProgress.update { BankSyncProgress(isRunning = true, pending = pending) }
     try {
@@ -103,6 +107,10 @@ internal constructor(
     mutableFinished.emit(results)
     return results
   }
+
+  // The server refuses API keys for the other providers
+  private fun canSyncWithServer(account: BankSyncAccount): Boolean =
+    !server.isApiKeySession || account.source?.supportsApiKeys == true
 
   private fun report(result: BankSyncResult) {
     mutableProgress.update {

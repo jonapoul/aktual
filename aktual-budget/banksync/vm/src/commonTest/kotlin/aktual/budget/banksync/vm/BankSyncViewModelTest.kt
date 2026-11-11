@@ -127,6 +127,21 @@ class BankSyncViewModelTest {
   }
 
   @Test
+  fun `API keys don't ask about providers they can't use`() = runBankSyncTest {
+    insertAccount("a", "A", GoCardless)
+    insertAccount("b", "B", SimpleFin)
+    val api = FakeBankSyncApi(SimpleFin to configured())
+
+    val viewModel = createViewModel(api, server = REMOTE.copy(token = Token("actual_abc123")))
+
+    viewModel.state.test {
+      assertThat(awaitSettledSuccess().providers.associate { it.source to it.status })
+        .isEqualTo(mapOf(GoCardless to NeedsPassword, SimpleFin to Configured))
+    }
+    assertThat(api.requested).containsExactly(SimpleFin)
+  }
+
+  @Test
   fun `Local-only budget doesn't ask the server`() = runBankSyncTest {
     insertAccount("a", "A", GoCardless)
     val api = FakeBankSyncApi()
