@@ -64,9 +64,7 @@ internal constructor(
         serverHost = remote?.url?.baseUrl,
         // Keys can't manage other keys, and the budget needs to be on the server
         canManageApiKeys =
-          remote != null &&
-            !remote.token.value.startsWith(API_KEY_PREFIX) &&
-            localPreferences[CloudFileId] != null,
+          remote != null && !remote.token.isApiKey && localPreferences[CloudFileId] != null,
       )
     }
 
@@ -113,8 +111,4 @@ internal constructor(
       column = "value",
       value = name,
     )
-
-  private companion object {
-    const val API_KEY_PREFIX = "actual_"
-  }
 }
