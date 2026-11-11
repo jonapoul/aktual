@@ -79,6 +79,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -412,6 +413,7 @@ private fun EditPayeeContent(
           singleLine = true,
           readOnly = payee.isTransfer,
           placeholderText = Strings.payeesEditNamePlaceholder,
+          keyboardOptions = KeyboardOptions(capitalization = Sentences),
           supportingText =
             supporting?.let { (text, color) -> { Text(text = text, color = color) } },
         )

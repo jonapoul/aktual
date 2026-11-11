@@ -45,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
@@ -176,6 +177,7 @@ internal fun CommitTextField(
   placeholder: String? = null,
   isEnabled: Boolean = true,
   keyboardType: KeyboardType = KeyboardType.Text,
+  capitalization: KeyboardCapitalization = None,
 ) {
   val state = rememberTextFieldState(text)
   var isFocused by remember { mutableStateOf(false) }
@@ -195,7 +197,12 @@ internal fun CommitTextField(
     placeholderText = placeholder,
     isEnabled = isEnabled,
     singleLine = true,
-    keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = Done),
+    keyboardOptions =
+      KeyboardOptions(
+        capitalization = capitalization,
+        keyboardType = keyboardType,
+        imeAction = Done,
+      ),
     onKeyboardAction = { focusManager.clearFocus() },
   )
 }
@@ -211,6 +218,7 @@ internal fun NameField(
     modifier = modifier.fillMaxWidth(),
     text = name,
     placeholder = placeholder,
+    capitalization = Sentences,
     onCommit = { if (it != name) onCommit(it) },
   )
 
