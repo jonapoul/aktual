@@ -314,7 +314,7 @@
   <string name="accounts_manage_off_budget">Off budget</string>
   <string name="accounts_manage_ungrouped">Ungrouped</string>
   <string name="accounts_manage_group_options">%1$s options</string>
-  <string name="accounts_manage_group_empty">No accounts</string>
+  <string name="accounts_manage_group_empty">No accounts. Drag one here</string>
   <string name="accounts_manage_has_notes">Has notes</string>
   <string name="accounts_manage_closed">Closed accounts</string>
   <string name="accounts_manage_closed_expand">Show closed accounts</string>
@@ -342,6 +342,9 @@
   <string name="accounts_manage_group_delete_title">Delete %1$s?</string>
   <string name="accounts_manage_group_delete_confirm">Delete</string>
   <string name="accounts_manage_group_delete_none">No accounts or transactions are deleted.</string>
+  <string name="accounts_manage_drag">Drag %1$s</string>
+  <string name="accounts_manage_move_up">Move up</string>
+  <string name="accounts_manage_move_down">Move down</string>
   <string name="accounts_edit_title">Edit account</string>
   <string name="accounts_edit_name">Name</string>
   <string name="accounts_edit_name_duplicate">An account with this name already exists</string>

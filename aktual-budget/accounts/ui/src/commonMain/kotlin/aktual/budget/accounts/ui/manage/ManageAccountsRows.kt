@@ -9,6 +9,7 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.material.Description
+import aktual.core.icons.material.DragIndicator
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
@@ -29,6 +30,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -43,6 +45,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -85,6 +88,7 @@ internal fun GroupHeader(
   group: ManagedGroup,
   onAction: OnAction<ManageAccountsAction>,
   modifier: Modifier = Modifier,
+  handleModifier: Modifier = Modifier,
 ) {
   val id = group.id
   val name = group.displayName()
@@ -123,6 +127,7 @@ internal fun GroupHeader(
             onAction(Show(DeleteGroupDialog(item, group.accounts.size)))
           },
         )
+        DragHandle(modifier = handleModifier, name = name)
       }
     }
   }
@@ -174,50 +179,72 @@ internal fun AccountRow(
   account: ManagedAccount,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  handleModifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier.fillMaxWidth().background(colors.tableBackground)) {
     HorizontalDivider(color = colors.tableBorder)
     Row(
-      modifier =
-        Modifier.fillMaxWidth()
-          .clickable(role = Button, onClick = onClick)
-          .height(ManageAccountsDS.rowHeight)
-          .padding(horizontal = ManageAccountsDS.rowPadding),
+      modifier = Modifier.fillMaxWidth().height(ManageAccountsDS.rowHeight),
       verticalAlignment = CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-      Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Row(
-          verticalAlignment = CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-          Text(
-            modifier = Modifier.weight(1f, fill = false),
-            text = account.name,
-            fontSize = textSizes.medium,
-            fontWeight = Medium,
-            color = colors.tableText,
-            maxLines = 1,
-            overflow = Ellipsis,
-          )
-          if (account.hasNotes) {
-            Icon(
-              modifier = Modifier.size(14.dp),
-              imageVector = MaterialIcons.Description,
-              contentDescription = Strings.accountsManageHasNotes,
-              tint = colors.tableTextSubdued,
+      Row(
+        modifier =
+          Modifier.weight(1f)
+            .fillMaxHeight()
+            .clickable(role = Button, onClick = onClick)
+            .padding(start = ManageAccountsDS.rowPadding),
+        verticalAlignment = CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+          Row(
+            verticalAlignment = CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+          ) {
+            Text(
+              modifier = Modifier.weight(1f, fill = false),
+              text = account.name,
+              fontSize = textSizes.medium,
+              fontWeight = Medium,
+              color = colors.tableText,
+              maxLines = 1,
+              overflow = Ellipsis,
             )
+            if (account.hasNotes) {
+              Icon(
+                modifier = Modifier.size(14.dp),
+                imageVector = MaterialIcons.Description,
+                contentDescription = Strings.accountsManageHasNotes,
+                tint = colors.tableTextSubdued,
+              )
+            }
           }
+          TransactionCount(account.transactionCount)
         }
-        TransactionCount(account.transactionCount)
+        Text(
+          text = account.balance.formattedText(),
+          fontSize = textSizes.medium,
+          fontWeight = Medium,
+          color = account.balance.color(colors.tableText),
+        )
       }
-      Text(
-        text = account.balance.formattedText(),
-        fontSize = textSizes.medium,
-        fontWeight = Medium,
-        color = account.balance.color(colors.tableText),
-      )
+      DragHandle(modifier = handleModifier, name = account.name)
     }
+  }
+}
+
+@Composable
+private fun DragHandle(name: String, modifier: Modifier = Modifier) {
+  Box(
+    modifier = modifier.width(ManageAccountsDS.handleWidth).fillMaxHeight(),
+    contentAlignment = Center,
+  ) {
+    Icon(
+      modifier = Modifier.size(20.dp),
+      imageVector = MaterialIcons.DragIndicator,
+      contentDescription = Strings.accountsManageDrag(name),
+      tint = colors.tableTextSubdued,
+    )
   }
 }
 

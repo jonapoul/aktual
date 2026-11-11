@@ -3,36 +3,26 @@ package aktual.budget.budgeting.ui
 import aktual.budget.budgeting.vm.ReorderGroup
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.scrollBy
-import androidx.compose.foundation.lazy.LazyListItemInfo
-import androidx.compose.foundation.lazy.LazyListLayoutInfo
+import aktual.core.ui.ListDragState
+import aktual.core.ui.dragHandle
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedback
-import androidx.compose.ui.input.pointer.pointerInput
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
-// Holds the order while a row is dragged, and hands it to commit when it's dropped. The dragged row
-// follows the finger, and passes another once its middle is over that one. Every group collapses
-// while a group is dragged, so groups only pass other headers
+// Holds the order while a row is dragged, and hands it to commit when it's dropped. Every group
+// collapses while a group is dragged, so groups only pass other headers
 @Stable
 internal class ReorderListState(
   private val listState: LazyListState,
-  private val scope: CoroutineScope,
+  scope: CoroutineScope,
   private val commit: (row: ReorderRow, groups: List<ReorderGroup>) -> Unit,
 ) {
   var collapsed by mutableStateOf<PersistentSet<CategoryGroupId>>(persistentSetOf())
@@ -44,25 +34,29 @@ internal class ReorderListState(
   private var draft by mutableStateOf<List<ReorderGroup>?>(null)
   private var draggedRow by mutableStateOf<ReorderRow?>(null)
 
-  // The dragged row while it's under a finger, before it settles into its place
-  var held by mutableStateOf<String?>(null)
-    private set
-
-  private var draggedDelta by mutableFloatStateOf(0f)
-  private var initialOffset = 0
-  private var grabY = 0f
-
-  // The layout when the last move was made, so the next one waits until the list shows it
-  private var movedLayout: LazyListLayoutInfo? = null
-
-  val dragged: String?
-    get() = draggedRow?.key
-
   val isDraggingGroup: Boolean
     get() = draggedRow is HeaderRow
 
   private val draggedCategory: CategoryId?
     get() = (draggedRow as? ItemRow)?.category?.id
+
+  private val drag =
+    ListDragState(
+      listState = listState,
+      scope = scope,
+      moveOver = { key, target -> moveOver(key as String, target) },
+      settle = {
+        draggedRow = null
+        draft = null
+      },
+    )
+
+  // The dragged row while it's under a finger, before it settles into its place
+  val held: String?
+    get() = drag.held as? String
+
+  val dragged: String?
+    get() = draggedRow?.key
 
   fun rows(groups: List<ReorderGroup>): List<ReorderRow> =
     reorderRows(draft ?: groups, shownCollapsed(groups), draggedCategory)
@@ -91,138 +85,57 @@ internal class ReorderListState(
     return movedGroups(groups, collapsed, null, row.key, from + delta) != null
   }
 
-  // How far the dragged row is drawn from its place in the list
-  fun offsetOf(key: String): Float {
-    if (dragged != key) return 0f
-    val info = itemInfo(key) ?: return 0f
-    return initialOffset + draggedDelta - info.offset
-  }
+  fun offsetOf(key: String): Float = drag.offsetOf(key)
 
   fun pickUp(row: ReorderRow, grabY: Float): Boolean {
-    val info = itemInfo(row.key)
-    if (draggedRow != null || info == null) return false
-    initialOffset = info.offset
-    draggedDelta = 0f
-    this.grabY = grabY
-    movedLayout = null
+    val info = drag.pickUp(row.key, grabY) ?: return false
     draft = groups
     draggedRow = row
-    held = row.key
 
     // Collapsing the groups moves the header, so keep it near the finger
     if (row is HeaderRow) {
       val index = groups.indexOfFirst { it.id == row.group.id }
-      val above = if (info.size > 0) initialOffset / info.size else 0
+      val above = if (info.size > 0) info.offset / info.size else 0
       listState.requestScrollToItem((index - above).coerceAtLeast(0))
     }
     return true
   }
 
-  fun dragBy(key: String, delta: Float) {
-    if (held != key) return
-    draggedDelta += delta
-    val layout = listState.layoutInfo
-    if (layout !== movedLayout) moveOver(key, layout)
-  }
+  fun dragBy(key: String, delta: Float) = drag.dragBy(key, delta)
 
-  private fun moveOver(key: String, layout: LazyListLayoutInfo) {
-    val groups = draft ?: return
-    val info = itemInfo(key) ?: return
-    val middle = (initialOffset + draggedDelta + info.size / 2f).toInt()
-    val target =
-      layout.visibleItemsInfo.find { other ->
-        other.key != key && middle in other.offset until other.offset + other.size
-      } ?: return
+  private fun moveOver(key: String, target: Any): Boolean {
+    val groups = draft ?: return false
     val collapsed = shownCollapsed(groups)
-    val to = reorderRows(groups, collapsed, draggedCategory).indexOfFirst { it.key == target.key }
-    val moved = movedGroups(groups, collapsed, draggedCategory, key, to) ?: return
-
-    // Otherwise the list keeps the moved row in view, scrolling along with it
-    val first = listState.firstVisibleItemIndex
-    if (info.index == first || target.index == first) {
-      listState.requestScrollToItem(first, listState.firstVisibleItemScrollOffset)
-    }
-    movedLayout = layout
+    val to = reorderRows(groups, collapsed, draggedCategory).indexOfFirst { it.key == target }
+    val moved = movedGroups(groups, collapsed, draggedCategory, key, to) ?: return false
     draft = moved
+    return true
   }
 
-  // Scrolls faster the further past the edge the finger is
-  suspend fun autoScroll(key: String, edge: Float, speed: Float) {
-    var lastFrame = withFrameNanos { it }
-    while (held == key) {
-      val frame = withFrameNanos { it }
-      val seconds = (frame - lastFrame) / NANOS_PER_SECOND
-      lastFrame = frame
-      val factor = edgeFactor(edge)
-      if (factor != 0f) {
-        listState.scrollBy(factor * speed * seconds)
-        dragBy(key, 0f)
-      }
-    }
-  }
+  suspend fun autoScroll(key: String, edge: Float, speed: Float) = drag.autoScroll(key, edge, speed)
 
-  fun drop(key: String) {
-    if (held != key) return
-    held = null
-    val row = draggedRow
-    val moved = draft
-    if (row != null && moved != null && moved != groups) commit(row, moved)
-    scope.launch {
-      val info = itemInfo(key)
-      if (info != null) {
-        animate(
-          initialValue = draggedDelta,
-          targetValue = (info.offset - initialOffset).toFloat(),
-          animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-        ) { value, _ ->
-          draggedDelta = value
-        }
-      }
-      draggedRow = null
-      draft = null
+  fun drop(key: String) =
+    drag.drop(key) {
+      val row = draggedRow
+      val moved = draft
+      if (row != null && moved != null && moved != groups) commit(row, moved)
     }
-  }
-
-  private fun edgeFactor(edge: Float): Float {
-    val info = listState.layoutInfo
-    val y = initialOffset + draggedDelta + grabY
-    val bottom = info.viewportEndOffset - info.afterContentPadding
-    return when {
-      y < edge -> -((edge - y) / edge).coerceAtMost(1f)
-      y > bottom - edge -> ((y - bottom + edge) / edge).coerceAtMost(1f)
-      else -> 0f
-    }
-  }
 
   private fun shownCollapsed(groups: List<ReorderGroup>): Set<CategoryGroupId> =
     if (isDraggingGroup) allIds(groups) else collapsed
 
   private fun allIds(groups: List<ReorderGroup>) = groups.mapTo(mutableSetOf()) { it.id }
-
-  private fun itemInfo(key: String): LazyListItemInfo? =
-    listState.layoutInfo.visibleItemsInfo.find { it.key == key }
-
-  private companion object {
-    const val NANOS_PER_SECOND = 1_000_000_000f
-  }
 }
 
-// Dragging the handle moves its row straight away, with no long press
 internal fun Modifier.reorderHandle(
   state: ReorderListState,
   row: ReorderRow,
   haptics: HapticFeedback,
 ): Modifier =
-  pointerInput(state, row.key) {
-    detectDragGestures(
-      onDragStart = { offset ->
-        if (state.pickUp(row, offset.y)) haptics.performHapticFeedback(LongPress)
-      },
-      onDragEnd = { state.drop(row.key) },
-      onDragCancel = { state.drop(row.key) },
-      onDrag = { change, delta ->
-        change.consume()
-        state.dragBy(row.key, delta.y)
-      },
-    )
-  }
+  this.dragHandle(
+    key = row.key,
+    haptics = haptics,
+    pickUp = { grabY -> state.pickUp(row, grabY) },
+    dragBy = { delta -> state.dragBy(row.key, delta) },
+    drop = { state.drop(row.key) },
+  )
