@@ -34,7 +34,7 @@ buildConfig {
 }
 
 fun BuildConfigSourceSet.addResponsesClass(directory: File) {
-  forClass(directory.name.capitalized() + "Responses") {
+  forClass(directory.name.split("-").joinToString("") { it.capitalized() } + "Responses") {
     useKotlinOutput { internalVisibility = false }
 
     directory.listFiles().orEmpty().filter(::shouldInclude).forEach { file ->

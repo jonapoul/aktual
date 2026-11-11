@@ -13,6 +13,7 @@ The build scans per subdirectory and produces one `*Responses` object per:
 - `/api/actual/sync/*.json` → `SyncResponses`
 - `/api/actual/{gocardless,simplefin,pluggyai,enablebanking}/*.json` → `GocardlessResponses` etc. (bank sync, one dir per server route prefix)
 - `/api/actual/secret/*.json` → `SecretResponses` (bank sync provider credentials)
+- `/api/actual/api-keys/*.json` → `ApiKeysResponses` (dashed directory names become PascalCase)
 - `/api/github/*.json` → `GithubResponses`
 - `/api/theme/*.{css,json}` → `ThemeResponses`
 

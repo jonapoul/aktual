@@ -1,0 +1,26 @@
+###
+# @name api-keys/list
+GET {{ACTUAL_BASE_URL}}/api-keys
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+
+<> list-success.200.json
+
+###
+# @name api-keys/create
+POST {{ACTUAL_BASE_URL}}/api-keys
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{
+    "name": "Home Assistant",
+    "fileIds": ["{{ACTUAL_MAIN_FILE_ID}}"]
+}
+
+<> create-success.201.json
+
+###
+# @name api-keys/revoke
+DELETE {{ACTUAL_BASE_URL}}/api-keys/{{ACTUAL_API_KEY_ID}}
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+
+<> revoke-success.200.json
