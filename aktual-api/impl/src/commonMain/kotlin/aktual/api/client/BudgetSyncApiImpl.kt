@@ -17,7 +17,6 @@ import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.http.path
 import io.ktor.utils.io.jvm.javaio.toInputStream
 import okio.ByteString
 import okio.buffer
@@ -36,11 +35,7 @@ internal constructor(
     val response =
       try {
         client.post {
-          url {
-            protocol = remote.url.protocol()
-            host = remote.url.baseUrl
-            path("/sync/sync")
-          }
+          url(remote.url, "/sync/sync")
           header(AktualHeaders.TOKEN, remote.token)
           setBody(requestBody.toByteArray())
 
@@ -64,11 +59,7 @@ internal constructor(
   override suspend fun renameBudget(id: BudgetId, name: String) {
     val remote = remote()
     client.post {
-      url {
-        protocol = remote.url.protocol()
-        host = remote.url.baseUrl
-        path("/sync/update-user-filename")
-      }
+      url(remote.url, "/sync/update-user-filename")
       contentType(ContentType.Application.Json)
       setBody(UpdateUserFileNameRequest(id, name, remote.token))
     }

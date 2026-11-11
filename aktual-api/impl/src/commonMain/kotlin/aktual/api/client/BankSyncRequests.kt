@@ -12,7 +12,6 @@ import io.ktor.client.request.header
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.http.path
 import kotlin.time.Duration
 
 /** POSTs [body] as JSON to [source]'s [endpoint] on [remote], timing out after [timeout] if set. */
@@ -23,11 +22,7 @@ internal inline fun <reified T : Any> HttpRequestBuilder.bankSyncRequest(
   body: T,
   timeout: Duration? = null,
 ) {
-  url {
-    protocol = remote.url.protocol()
-    host = remote.url.baseUrl
-    path(source.serverPath(), endpoint)
-  }
+  url(remote.url, source.serverPath(), endpoint)
   header(AktualHeaders.TOKEN, remote.token)
 
   if (timeout != null) {

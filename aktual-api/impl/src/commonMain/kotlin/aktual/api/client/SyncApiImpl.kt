@@ -21,7 +21,6 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentLength
 import io.ktor.http.contentType
-import io.ktor.http.path
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.exhausted
 import io.ktor.utils.io.readBuffer
@@ -39,19 +38,13 @@ class SyncApiImpl(
   private val fileSystem: FileSystem,
   private val serverUrl: ServerUrl,
 ) : SyncApi {
-  private val urlProtocol = serverUrl.protocol()
-
   override fun downloadUserFile(
     token: Token,
     budgetId: BudgetId,
     path: Path,
   ): Flow<SyncDownloadState> = channelFlow {
     val statement = client.prepareGet {
-      url {
-        protocol = urlProtocol
-        host = serverUrl.baseUrl
-        path("/sync/download-user-file")
-      }
+      url(serverUrl, "/sync/download-user-file")
       header(AktualHeaders.TOKEN, token)
       header(AktualHeaders.FILE_ID, budgetId)
     }
@@ -77,11 +70,7 @@ class SyncApiImpl(
   override suspend fun fetchUserFiles(token: Token): ListUserFilesResponse.Success =
     client
       .get {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/sync/list-user-files")
-        }
+        url(serverUrl, "/sync/list-user-files")
         header(AktualHeaders.TOKEN, token)
       }
       .body<ListUserFilesResponse.Success>()
@@ -92,11 +81,7 @@ class SyncApiImpl(
   ): GetUserFileInfoResponse.Success =
     client
       .get {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/sync/get-user-file-info")
-        }
+        url(serverUrl, "/sync/get-user-file-info")
         header(AktualHeaders.TOKEN, token)
         header(AktualHeaders.FILE_ID, budgetId)
       }
@@ -105,11 +90,7 @@ class SyncApiImpl(
   override suspend fun fetchUserKey(body: GetUserKeyRequest): GetUserKeyResponse.Success =
     client
       .post {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/sync/user-get-key")
-        }
+        url(serverUrl, "/sync/user-get-key")
         contentType(ContentType.Application.Json)
         setBody(body)
       }
@@ -118,11 +99,7 @@ class SyncApiImpl(
   override suspend fun delete(body: DeleteUserFileRequest): DeleteUserFileResponse.Success =
     client
       .post {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/sync/delete-user-file")
-        }
+        url(serverUrl, "/sync/delete-user-file")
         contentType(ContentType.Application.Json)
         setBody(body)
       }
