@@ -33,6 +33,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Rule
@@ -62,7 +63,10 @@ class LoginScreenTest {
 
     toBudgetListCalled = false
     toServerUrlCalled = false
-    loginRequester = mockk { coEvery { fetchLoginMethods() } returns emptyList() }
+    loginRequester = mockk {
+      coEvery { fetchLoginMethods() } returns emptyList()
+      every { openIdTokens } returns emptyFlow()
+    }
     setLoginResult { LoginResult.Success(TOKEN) }
 
     serverUrlNavigator =

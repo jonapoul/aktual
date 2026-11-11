@@ -62,7 +62,7 @@ compose.desktop {
       licenseFile = rootProject.isolated.projectDirectory.file("LICENSE.txt")
 
       // JDK modules
-      modules("java.sql")
+      modules("java.sql", "jdk.httpserver")
 
       val icon =
         rootProject.isolated.projectDirectory.file(

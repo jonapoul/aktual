@@ -268,7 +268,9 @@
   <string name="login_header_checking">Checking Header Token Login…</string>
   <string name="login_header_fallback">Log in with password</string>
   <string name="login_method_select">Login method:</string>
-  <string name="login_openid_unsupported">OpenID login is not yet supported</string>
+  <string name="login_openid_message">Sign in with your OpenID provider in the browser, then come back here.</string>
+  <string name="login_openid_first_owner">The first user to sign in with OpenID becomes the server owner. This can\'t be changed in the app.</string>
+  <string name="login_openid_done">Signed in to Aktual. You can close this tab.</string>
   <string name="login_method_password">Password</string>
   <string name="login_method_header">Header</string>
   <string name="login_method_openid">OpenID</string>

@@ -20,11 +20,13 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 
@@ -37,11 +39,11 @@ internal class LoginViewModelTest {
   // mock
   private lateinit var loginRequester: LoginRequester
 
-  private fun TestScope.before() {
+  private fun TestScope.before(configure: LoginRequester.() -> Unit = {}) {
     val prefs = buildPreferences(unconfinedDispatcher)
     preferences = AppPreferencesImpl(prefs)
     versionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
-    loginRequester = mockk(relaxed = true)
+    loginRequester = mockk<LoginRequester>(relaxed = true).apply(configure)
     viewModel =
       LoginViewModel(
         versionsStateHolder = versionsStateHolder,
@@ -67,6 +69,21 @@ internal class LoginViewModelTest {
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  @Test
+  fun `Shows a failure when the OpenID token is rejected`() = runTest {
+    val token = Token("openid-session")
+    before {
+      every { openIdTokens } returns flowOf(token)
+      coEvery { logIn(token) } returns TokenExpired
+    }
+
+    viewModel.loginFailure.test {
+      assertThat(awaitItem()).isNull()
+      assertThat(awaitItem()).isEqualTo(TokenExpired)
+    }
+    coVerify { loginRequester.logIn(token) }
   }
 
   @Test

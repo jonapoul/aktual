@@ -56,6 +56,17 @@ class AccountApiImpl(
       }
       .body<LoginMethodsResponse.Success>()
 
+  override suspend fun ownerCreated(): Boolean =
+    client
+      .get {
+        url {
+          protocol = urlProtocol
+          host = serverUrl.baseUrl
+          path("/admin/owner-created/")
+        }
+      }
+      .body<Boolean>()
+
   override suspend fun bootstrap(body: BootstrapRequest): BootstrapResponse.Success =
     client
       .post {

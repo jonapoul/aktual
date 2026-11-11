@@ -7,10 +7,12 @@ import aktual.app.nav.AppLockPrompt
 import aktual.app.nav.rememberAppLockPrompt
 import aktual.app.nav.rememberBackStack
 import aktual.core.model.ForegroundStateHolder
+import aktual.core.openid.AndroidOpenIdRedirects
 import aktual.core.ui.LoadingScreenIfNull
 import aktual.di.AppScope
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager.LayoutParams.FLAG_SECURE
 import androidx.activity.ComponentActivity
@@ -44,6 +46,7 @@ class AktualActivity(
   private val appLockManager: AppLockManager,
   private val appLockAuthenticator: AndroidAppLockAuthenticator,
   private val foregroundState: ForegroundStateHolder,
+  private val openIdRedirects: AndroidOpenIdRedirects,
 ) : ComponentActivity() {
   private val viewModel by viewModels<AktualActivityViewModel>()
 
@@ -68,8 +71,14 @@ class AktualActivity(
     viewModel.onDestroy()
   }
 
+  override fun onNewIntent(intent: Intent) {
+    super.onNewIntent(intent)
+    openIdRedirects.onIntent(intent)
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    if (savedInstanceState == null) openIdRedirects.onIntent(intent)
     installSplashScreen().setKeepOnScreenCondition { appLockManager.state.value == Unknown }
 
     val transparent = Color.Transparent.value.toInt()

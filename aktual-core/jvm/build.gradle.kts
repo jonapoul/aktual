@@ -10,6 +10,7 @@ dependencies {
   api(libs.compose.ui)
   api(libs.compose.uiUnit)
   api(libs.okio)
+  implementation(project(":aktual-core:l10n"))
   implementation(project(":aktual-di:core"))
   implementation(project(":aktual-prefs:impl"))
   implementation(libs.androidx.datastore.core)
