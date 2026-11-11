@@ -254,11 +254,12 @@
   <string name="crashes_prompt_view">View report</string>
 
   <!-- account -->
-=  <string name="login_title">Sign in to this Aktual instance</string>
+  <string name="login_title">Sign in to this Aktual instance</string>
   <string name="login_message">If you lost your password, you likely still have access to your server to manually reset it.</string>
   <string name="login_password_hint">Password</string>
   <string name="login_sign_in">Sign In</string>
   <string name="login_failure_password">Invalid password</string>
+  <string name="login_failure_api_key">Invalid API key</string>
   <string name="login_failure_http">Server error %1$d: %2$s</string>
   <string name="login_failure_network">Network error - %1$s</string>
   <string name="login_failure_token_expired">Login expired, please log in again.</string>
@@ -271,6 +272,9 @@
   <string name="login_method_password">Password</string>
   <string name="login_method_header">Header</string>
   <string name="login_method_openid">OpenID</string>
+  <string name="login_method_api_key">API key</string>
+  <string name="login_api_key_hint">API key</string>
+  <string name="login_api_key_message">An API key can only download and sync the budgets it was made for.</string>
   <string name="login_method_unknown">Unknown</string>
 
   <string name="password_title">Change Password</string>

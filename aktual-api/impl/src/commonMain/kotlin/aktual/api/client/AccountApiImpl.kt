@@ -138,15 +138,19 @@ class AccountApiImpl(
       }
       .body<ChangePasswordResponse.Success>()
 
-  override suspend fun validate(token: Token): ValidateResponse.Success =
-    client
-      .post {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/account/validate")
+  override suspend fun validate(token: Token): ValidateResponse =
+    try {
+      client
+        .get {
+          url {
+            protocol = urlProtocol
+            host = serverUrl.baseUrl
+            path("/account/validate")
+          }
+          header(AktualHeaders.TOKEN, token)
         }
-        header(AktualHeaders.TOKEN, token)
-      }
-      .body<ValidateResponse.Success>()
+        .body<ValidateResponse.Success>()
+    } catch (e: ResponseException) {
+      e.response.body<ValidateResponse.Failure>()
+    }
 }

@@ -19,6 +19,7 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
@@ -147,7 +148,7 @@ internal class LoginViewModelTest {
 
     viewModel.loginMethods.test {
       assertThat(awaitItem()).isEmpty()
-      assertThat(awaitItem()).isEqualTo(persistentListOf(Header))
+      assertThat(awaitItem()).isEqualTo(persistentListOf(Header, ApiKey))
       cancelAndIgnoreRemainingEvents()
     }
 
@@ -155,6 +156,44 @@ internal class LoginViewModelTest {
       assertThat(awaitItem()).isEqualTo(Header)
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  @Test
+  fun `API key is offered alongside password when the server lists no methods`() = runTest {
+    before()
+    coEvery { loginRequester.fetchLoginMethods() } returns emptyList()
+
+    viewModel.loginMethods.test {
+      assertThat(awaitItem()).isEmpty()
+      assertThat(awaitItem()).isEqualTo(persistentListOf(Password, ApiKey))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Signing in with an API key`() = runTest {
+    before()
+    coEvery { loginRequester.logIn(any<Token>()) } returns InvalidApiKey
+
+    viewModel.loginFailure.test {
+      assertThat(awaitItem()).isNull()
+
+      viewModel.onSelectLoginMethod(ApiKey)
+      viewModel.onEnterApiKey("  actual_abc123 ")
+      viewModel.onClickSignIn()
+
+      assertThat(awaitItem()).isEqualTo(InvalidApiKey)
+      coVerify { loginRequester.logIn(Token("actual_abc123")) }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Signing in with an empty API key does nothing`() = runTest {
+    before()
+    viewModel.onSelectLoginMethod(ApiKey)
+    viewModel.onClickSignIn()
+    coVerify(exactly = 0) { loginRequester.logIn(any<Token>()) }
   }
 
   @Test

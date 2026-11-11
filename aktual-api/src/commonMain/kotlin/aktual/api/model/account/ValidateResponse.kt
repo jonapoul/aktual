@@ -13,10 +13,10 @@ sealed interface ValidateResponse {
 
   @Serializable
   data class Data(
-    @SerialName("userName") val userName: String,
-    @SerialName("permission") val permission: PossibleRole,
-    @SerialName("userId") val userId: String,
-    @SerialName("displayName") val displayName: String,
     @SerialName("loginMethod") val loginMethod: LoginMethod,
+    @SerialName("userName") val userName: String? = null,
+    @SerialName("permission") val permission: PossibleRole? = null,
+    @SerialName("userId") val userId: String? = null,
+    @SerialName("displayName") val displayName: String? = null,
   )
 }

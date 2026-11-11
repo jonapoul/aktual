@@ -11,6 +11,7 @@ class LoginMethodTest {
     assertThat(decode("password")).isEqualTo(LoginMethod.Password)
     assertThat(decode("header")).isEqualTo(Header)
     assertThat(decode("openid")).isEqualTo(OpenId)
+    assertThat(decode("api-key")).isEqualTo(ApiKey)
   }
 
   @Test

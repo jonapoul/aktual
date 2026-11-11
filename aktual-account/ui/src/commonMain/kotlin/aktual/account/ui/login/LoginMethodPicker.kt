@@ -5,12 +5,10 @@ import aktual.core.model.LoginMethod
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.CardColumn
 import aktual.core.ui.Dimens
 import aktual.core.ui.OnAction
-import aktual.core.ui.RounderCardShape
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
+import aktual.core.ui.padding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -26,14 +24,10 @@ internal fun LoginMethodPicker(
   onAction: OnAction<LoginAction>,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .border(Hairline, colors.pillBorderDark, RounderCardShape)
-        .background(colors.pillBackgroundLight, RounderCardShape)
-        .padding(Dimens.Large),
+  CardColumn(
+    modifier = modifier,
     horizontalAlignment = CenterHorizontally,
+    contentPadding = Dimens.Large.padding,
   ) {
     Text(
       modifier = Modifier.fillMaxWidth().padding(Dimens.VeryLarge),
@@ -60,5 +54,6 @@ private fun LoginMethod.string(): String =
     Password -> Strings.loginMethodPassword
     Header -> Strings.loginMethodHeader
     OpenId -> Strings.loginMethodOpenid
+    ApiKey -> Strings.loginMethodApiKey
     Unknown -> Strings.loginMethodUnknown
   }

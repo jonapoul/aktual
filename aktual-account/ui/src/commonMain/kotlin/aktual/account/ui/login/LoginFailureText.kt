@@ -22,6 +22,7 @@ internal fun LoginFailureText(
   val errorMessage =
     when (result) {
       is InvalidPassword -> Strings.loginFailurePassword
+      is InvalidApiKey -> Strings.loginFailureApiKey
       is TokenExpired -> Strings.loginFailureTokenExpired
       is HttpFailure -> Strings.loginFailureHttp(result.code, result.message)
       is NetworkFailure -> Strings.loginFailureNetwork(result.reason)
@@ -40,6 +41,7 @@ private fun PreviewLoginFailureText(
 private class LoginFailureProvider :
   ColorParamsProvider<LoginResult.Failure>(
     LoginResult.InvalidPassword,
+    LoginResult.InvalidApiKey,
     LoginResult.TokenExpired,
     LoginResult.HttpFailure(code = 404, message = "Resource not found"),
     LoginResult.NetworkFailure(reason = "Network problem"),

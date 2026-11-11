@@ -13,6 +13,8 @@ sealed interface LoginResult {
 
   data object InvalidPassword : Failure
 
+  data object InvalidApiKey : Failure
+
   data object TokenExpired : Failure
 
   data class HttpFailure(val code: Int, val message: String) : Failure
