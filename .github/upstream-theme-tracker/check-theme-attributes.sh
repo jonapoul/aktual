@@ -7,6 +7,7 @@
 # Monitored files:
 #   - packages/component-library/src/themes/source/colors.ts   (top-level keys of `colors`)
 #   - packages/component-library/src/themes/*.css               (extra --color-* declarations)
+#   - packages/component-library/src/themes/source/palette.ts  (raw color values)
 #
 # Usage:
 #   # Dry run - prints what would happen without touching GitHub
@@ -24,6 +25,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TRACKER_FILE="$SCRIPT_DIR/last-known-theme-attributes.txt"
+PALETTE_TRACKER_FILE="$SCRIPT_DIR/last-known-palette.txt"
 UPSTREAM_REPO="https://github.com/actualbudget/actual.git"
 THEME_DIR="packages/component-library/src/themes"
 PR_LABEL="upstream-changes"
@@ -36,9 +38,11 @@ echo "Loading known theme attributes from tracker..."
 known_attrs="$(sort < "$TRACKER_FILE")"
 known_count="$(echo "$known_attrs" | wc -l)"
 echo "Known attributes: $known_count"
+known_palette_file="$(mktemp)"
+cp "$PALETTE_TRACKER_FILE" "$known_palette_file"
 
 tmp_dir="$(mktemp -d)"
-trap 'rm -rf "$tmp_dir"' EXIT
+trap 'rm -rf "$tmp_dir" "$known_palette_file"' EXIT
 
 echo "Cloning upstream theme files (sparse checkout)..."
 git clone --depth 1 --filter=blob:none --sparse --quiet "$UPSTREAM_REPO" "$tmp_dir"
@@ -63,14 +67,43 @@ if [[ ! -s "$tmp_dir/all_attrs.txt" ]]; then
   exit 1
 fi
 
+# Palette entries as "name value" lines, e.g. "gray500 #4d5768"
+grep -oP "^  \K\w+: '[^']+'" "$tmp_dir/$THEME_DIR/source/palette.ts" \
+  | sed -E "s/: '(.*)'$/ \1/" | sort > "$tmp_dir/palette.txt" || true
+
+if [[ ! -s "$tmp_dir/palette.txt" ]]; then
+  echo "ERROR: No palette colors found upstream. Has the palette layout changed?" >&2
+  exit 1
+fi
+
+# One row per palette color that was added, removed or changed, with "-" for a missing side
+build_palette_rows() {
+  awk '
+    NR == FNR { old[$1] = $2; next }
+    { new[$1] = $2 }
+    END {
+      for (k in old) if (!(k in new) || old[k] != new[k]) changed[k] = 1
+      for (k in new) if (!(k in old)) changed[k] = 1
+      for (k in changed) {
+        o = (k in old) ? "`" old[k] "`" : "-"
+        n = (k in new) ? "`" new[k] "`" : "-"
+        printf "| `%s` | %s | %s |\n", k, o, n
+      }
+    }
+  ' "$1" "$tmp_dir/palette.txt" | sort
+}
+
+# Always compared against main's tracker, so the old value is the one Aktual uses
+palette_rows="$(build_palette_rows "$known_palette_file")"
+
 # Find new attributes (in upstream but not in our tracker)
 new_attrs="$(comm -23 "$tmp_dir/all_attrs.txt" <(echo "$known_attrs"))"
 
 # Also find removed attributes (in our tracker but not upstream)
 removed_attrs="$(comm -13 "$tmp_dir/all_attrs.txt" <(echo "$known_attrs"))"
 
-if [[ -z "$new_attrs" && -z "$removed_attrs" ]]; then
-  echo "No theme attribute changes found."
+if [[ -z "$new_attrs" && -z "$removed_attrs" && -z "$palette_rows" ]]; then
+  echo "No theme attribute or palette changes found."
   exit 0
 fi
 
@@ -86,6 +119,11 @@ if [[ -n "$removed_attrs" ]]; then
   s=s; ((removed_count == 1)) && s=
   echo "Found $removed_count removed attribute$s:"
   echo "  ${removed_attrs//$'\n'/$'\n'  }"
+fi
+
+if [[ -n "$palette_rows" ]]; then
+  echo "Found palette changes (color | old | new):"
+  echo "$palette_rows"
 fi
 
 # Build table rows for new attributes, noting which file(s) they appear in
@@ -130,6 +168,10 @@ if [[ -n "$DRY_RUN" ]]; then
     echo "Removed attribute rows:"
     echo "$removed_rows"
   fi
+  if [[ -n "$palette_rows" ]]; then
+    echo "Palette rows:"
+    echo "$palette_rows"
+  fi
   exit 0
 fi
 
@@ -173,10 +215,24 @@ ${removed_rows}
 REMOVEDTABLE
   fi
 
+  if [[ -n "$palette_rows" ]]; then
+    cat <<PALETTETABLE
+### Palette
+
+These colors changed in \`palette.ts\` and may need updating in Aktual's \`ColorPalette.kt\`.
+
+| Color | Old | New |
+|-------|-----|-----|
+${palette_rows}
+
+PALETTETABLE
+  fi
+
   cat <<'FOOTER'
 ### Upstream Files
 
 - [`themes/source/colors.ts`](https://github.com/actualbudget/actual/blob/master/packages/component-library/src/themes/source/colors.ts)
+- [`themes/source/palette.ts`](https://github.com/actualbudget/actual/blob/master/packages/component-library/src/themes/source/palette.ts)
 - [`themes/`](https://github.com/actualbudget/actual/tree/master/packages/component-library/src/themes)
 FOOTER
 }
@@ -208,8 +264,8 @@ if [[ -n "$existing_pr" ]]; then
   new_attrs="$(comm -23 "$tmp_dir/all_attrs.txt" <(echo "$branch_attrs"))"
   removed_attrs="$(comm -13 "$tmp_dir/all_attrs.txt" <(echo "$branch_attrs"))"
 
-  if [[ -z "$new_attrs" && -z "$removed_attrs" ]]; then
-    echo "PR #$pr_number already covers every upstream theme attribute. Nothing to do."
+  if [[ -z "$new_attrs" && -z "$removed_attrs" ]] && cmp -s "$PALETTE_TRACKER_FILE" "$tmp_dir/palette.txt"; then
+    echo "PR #$pr_number already covers every upstream theme change. Nothing to do."
     exit 0
   fi
 
@@ -232,7 +288,8 @@ if [[ -n "$existing_pr" ]]; then
   fi
 
   cp "$tmp_dir/all_attrs.txt" "$TRACKER_FILE"
-  git add "$TRACKER_FILE"
+  cp "$tmp_dir/palette.txt" "$PALETTE_TRACKER_FILE"
+  git add "$TRACKER_FILE" "$PALETTE_TRACKER_FILE"
   git commit -m "Update known upstream theme attributes"
   git push origin "$PR_BRANCH"
 
@@ -275,7 +332,8 @@ else
   # Create branch, commit, and push
   git checkout -B "$PR_BRANCH"
   cp "$tmp_dir/all_attrs.txt" "$TRACKER_FILE"
-  git add "$TRACKER_FILE"
+  cp "$tmp_dir/palette.txt" "$PALETTE_TRACKER_FILE"
+  git add "$TRACKER_FILE" "$PALETTE_TRACKER_FILE"
   git commit -m "Update known upstream theme attributes"
   git push -u origin "$PR_BRANCH"
 
