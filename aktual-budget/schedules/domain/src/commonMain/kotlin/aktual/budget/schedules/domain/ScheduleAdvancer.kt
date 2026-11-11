@@ -114,7 +114,7 @@ internal constructor(
     val openAccounts = accountDao.getAllActive().mapTo(mutableSetOf()) { it.id }
     val rows =
       scheduleDao.getAll().filter { row ->
-        row.completed != true && row._account?.let(::AccountId) in openAccounts
+        row.completed != true && row._account.let { it == null || AccountId(it) in openAccounts }
       }
     val run =
       Run(
@@ -140,7 +140,8 @@ internal constructor(
     val date = row.parseDate()
     val recurring = (date as? Recurring)?.config
 
-    val posts = row.posts_transaction == true && (status != Paid || recurring != null)
+    val posts =
+      row.posts_transaction == true && row._account != null && (status != Paid || recurring != null)
     if (posts && status in Postable) return postDue(row, nextDate, status, recurring, run)
     if (status != Paid) return emptyList()
 

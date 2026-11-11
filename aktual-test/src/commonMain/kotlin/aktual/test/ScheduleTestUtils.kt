@@ -27,6 +27,7 @@ suspend fun BudgetDatabase.insertSchedule(
   completed: Boolean = false,
   date: String = "\"$nextDate\"",
   postsTransaction: Boolean = false,
+  withAccount: Boolean = true,
 ) {
   val payeeId = PayeeId("$id-payee")
   val accountId = AccountId("$id-account")
@@ -75,7 +76,7 @@ suspend fun BudgetDatabase.insertSchedule(
   schedulesJsonPathsQueries.insert(
     schedule_id = scheduleId,
     payee = ScheduleJsonPathIndex(0),
-    account = ScheduleJsonPathIndex(1),
+    account = if (withAccount) ScheduleJsonPathIndex(1) else null,
     amount = ScheduleJsonPathIndex(3),
     date = ScheduleJsonPathIndex(dateConditionIndex),
   )

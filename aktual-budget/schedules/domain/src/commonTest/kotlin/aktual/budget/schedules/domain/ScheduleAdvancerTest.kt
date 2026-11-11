@@ -124,6 +124,37 @@ class ScheduleAdvancerTest {
   }
 
   @Test
+  fun `Paid recurring schedule without an account moves to its next date`() =
+    runDatabaseTest { scope ->
+      insertSchedule(
+        id = "a",
+        nextDate = MARCH_15,
+        date = MONTHLY_FROM_MARCH_15,
+        withAccount = false,
+      )
+      insertTransaction(schedule = "a", date = MARCH_15)
+
+      advancer(scope).onSyncCompleted(Succeeded)
+
+      assertThat(nextDateChanges()).containsExactly(MessageValue.Number(20260415))
+    }
+
+  @Test
+  fun `Missed schedule without an account that posts is left alone`() = runDatabaseTest { scope ->
+    insertSchedule(
+      id = "a",
+      nextDate = FEB_15,
+      date = MONTHLY_FROM_FEB_15,
+      postsTransaction = true,
+      withAccount = false,
+    )
+
+    advancer(scope).onSyncCompleted(Succeeded)
+
+    assertThat(syncController.changes).isEmpty()
+  }
+
+  @Test
   fun `Runs once a day after a successful sync`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", nextDate = MARCH_15)
     insertTransaction(schedule = "a", date = MARCH_15)
@@ -445,6 +476,7 @@ class ScheduleAdvancerTest {
     nextDate: LocalDate,
     date: String = "\"$nextDate\"",
     postsTransaction: Boolean = false,
+    withAccount: Boolean = true,
   ) =
     insertSchedule(
       id = id,
@@ -454,6 +486,7 @@ class ScheduleAdvancerTest {
       nextDate = nextDate,
       date = date,
       postsTransaction = postsTransaction,
+      withAccount = withAccount,
     )
 
   private suspend fun BudgetDatabase.insertRule(payee: String, actions: String) =
