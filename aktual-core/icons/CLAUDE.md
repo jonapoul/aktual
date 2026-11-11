@@ -2,7 +2,7 @@
 
 Icon definitions as `ImageVector` properties, split into two families:
 
-- **`AktualIcons`** (package `aktual.core.icons`) - custom SVG icons. Built with `aktualIcon()` + `aktualPath {}`. For square icons `size` is the SVG viewBox size, and the icon always renders at 24dp to match Material. Non-square icons pass `width`/`height`, which are used as both viewport and dp size.
+- **`AktualIcons`** (package `aktual.core.icons`) - custom SVG icons. Built with `aktualIcon()` + `aktualPath {}`. For square icons `size` is the SVG viewBox size, and the icon always renders at 24dp to match Material. Non-square icons pass `width`/`height`, which are used as both viewport and dp size. Square icons whose paths fill the whole viewBox pass `padded = true`, which adds Material's 2dp keyline so they don't look bigger than Material icons.
 - **`MaterialIcons`** (package `aktual.core.icons.material`) - Material Design icons. Built with `materialIcon()` + `materialPath {}`; 24dp, or 960-unit viewport for Material Symbols.
 
 ## Check upstream first
@@ -44,7 +44,7 @@ val AktualIcons.FooBar: ImageVector by lazy {
 
 ## Wiring up a new icon
 
-Create the file in the family's package, then append to the alphabetically-sorted list in the matching preview file (`IconPreviews.kt` → `aktualIcons`, or `material/MaterialIconPreviews.kt` → `materialIcons`). The `@PreviewParameter` renders the whole list in Android Studio.
+Create the file in the family's package, then append to the alphabetically-sorted list in the matching preview file (`AktualIconPreviews.kt` → `aktualIcons`, or `material/MaterialIconPreviews.kt` → `materialIcons`). The `@PreviewParameter` renders the whole list in Android Studio.
 
 ## Flags
 

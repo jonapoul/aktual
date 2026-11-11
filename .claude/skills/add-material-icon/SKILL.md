@@ -138,9 +138,9 @@ If the vector drawable has multiple `<path>` elements, use multiple `materialPat
 
 If any path has `android:fillType="evenOdd"`, pass `pathFillType = PathFillType.EvenOdd` to `materialPath` and add the import `import androidx.compose.ui.graphics.PathFillType`.
 
-### 5. Update IconPreviews.kt
+### 5. Update AktualIconPreviews.kt
 
-Read `aktual-core/icons/src/commonMain/kotlin/aktual/core/icons/IconPreviews.kt`.
+Read `aktual-core/icons/src/commonMain/kotlin/aktual/core/icons/AktualIconPreviews.kt`.
 
 Add the new icon name to the `materialIcons` list in **alphabetical order**.
 

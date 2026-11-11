@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.Tag: ImageVector by lazy {
-  aktualIcon(name = "Tag", size = 20f) {
+  aktualIcon(name = "Tag", size = 20f, padded = true) {
     aktualPath {
       moveTo(0f, 10f)
       verticalLineTo(2f)

@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.Calendar3: ImageVector by lazy {
-  aktualIcon(name = "Calendar3", size = 24f) {
+  aktualIcon(name = "Calendar3", size = 24f, padded = true) {
     aktualPath {
       moveTo(7.5f, 10.5f)
       horizontalLineToRelative(-1f)

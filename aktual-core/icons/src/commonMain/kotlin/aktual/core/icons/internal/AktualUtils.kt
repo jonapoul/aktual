@@ -7,11 +7,21 @@ import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+// padded adds a margin of a tenth of size on each side, matching Material's 2dp keyline at 24dp
 internal inline fun aktualIcon(
   name: String,
   size: Float,
+  padded: Boolean = false,
   block: ImageVector.Builder.() -> ImageVector.Builder,
-): ImageVector = ImageVector.Builder("Aktual.$name", 24.dp, 24.dp, size, size).block().build()
+): ImageVector {
+  val padding = if (padded) size / 10f else 0f
+  val viewport = size + 2 * padding
+  return ImageVector.Builder("Aktual.$name", 24.dp, 24.dp, viewport, viewport)
+    .addGroup(translationX = padding, translationY = padding)
+    .block()
+    .clearGroup()
+    .build()
+}
 
 internal inline fun aktualIcon(
   name: String,

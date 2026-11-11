@@ -93,6 +93,8 @@ val AktualIcons.{IconName}: ImageVector by lazy {
 }
 ```
 
+If the paths reach the edges of the viewBox (most upstream icons do), pass `padded = true` so the icon gets Material's 2dp keyline and doesn't look bigger than Material icons next to it.
+
 **With `--material` flag: MaterialIcons**
 
 Create the file at:
@@ -129,7 +131,7 @@ For MaterialIcons, the default viewport is 24f. If the SVG viewBox is not 24x24,
 ### 5. Update preview file
 
 **AktualIcons (default):**
-Read `aktual-core/icons/src/commonMain/kotlin/aktual/core/icons/IconPreviews.kt`.
+Read `aktual-core/icons/src/commonMain/kotlin/aktual/core/icons/AktualIconPreviews.kt`.
 Add the new icon name to the `aktualIcons` list in **alphabetical order**.
 
 **MaterialIcons (`--material`):**

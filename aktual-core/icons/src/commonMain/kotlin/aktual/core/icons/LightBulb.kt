@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.LightBulb: ImageVector by lazy {
-  aktualIcon(name = "LightBulb", size = 20f) {
+  aktualIcon(name = "LightBulb", size = 20f, padded = true) {
     aktualPath {
       moveTo(7f, 13.33f)
       arcToRelative(7f, 7f, 0f, true, true, 6f, 0f)

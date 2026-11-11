@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.Location: ImageVector by lazy {
-  aktualIcon(name = "Location", size = 20f) {
+  aktualIcon(name = "Location", size = 20f, padded = true) {
     aktualPath {
       moveTo(10f, 20f)
       reflectiveCurveTo(3f, 10.87f, 3f, 7f)

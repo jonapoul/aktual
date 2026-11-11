@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.InformationOutline: ImageVector by lazy {
-  aktualIcon(name = "InformationOutline", size = 20f) {
+  aktualIcon(name = "InformationOutline", size = 20f, padded = true) {
     aktualPath {
       moveTo(2.93f, 17.07f)
       arcTo(10f, 10f, 0f, true, true, 17.07f, 2.93f)

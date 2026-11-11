@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.CheckCircle1: ImageVector by lazy {
-  aktualIcon(name = "CheckCircle1", size = 24f) {
+  aktualIcon(name = "CheckCircle1", size = 24f, padded = true) {
     aktualPath {
       moveTo(12f, 0f)
       arcToRelative(12f, 12f, 0f, true, false, 12f, 12f)

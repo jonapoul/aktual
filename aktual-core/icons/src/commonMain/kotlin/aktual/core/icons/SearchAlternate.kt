@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.SearchAlternate: ImageVector by lazy {
-  aktualIcon(name = "SearchAlternate", size = 24f) {
+  aktualIcon(name = "SearchAlternate", size = 24f, padded = true) {
     aktualPath {
       moveTo(23.384f, 21.619f)
       lineTo(16.855f, 15.09f)

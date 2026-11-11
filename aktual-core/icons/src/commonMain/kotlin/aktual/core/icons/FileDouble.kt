@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.FileDouble: ImageVector by lazy {
-  aktualIcon(name = "FileDouble", size = 24f) {
+  aktualIcon(name = "FileDouble", size = 24f, padded = true) {
     aktualPath {
       moveTo(21.941f, 3.607f)
       lineTo(18.87f, 0.554f)

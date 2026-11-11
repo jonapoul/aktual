@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.LockClosed: ImageVector by lazy {
-  aktualIcon(name = "LockClosed", size = 20f) {
+  aktualIcon(name = "LockClosed", size = 20f, padded = true) {
     aktualPath {
       moveTo(4f, 8f)
       verticalLineTo(6f)

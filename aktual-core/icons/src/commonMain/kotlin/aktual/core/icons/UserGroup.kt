@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.UserGroup: ImageVector by lazy {
-  aktualIcon(name = "UserGroup", size = 20f) {
+  aktualIcon(name = "UserGroup", size = 20f, padded = true) {
     aktualPath {
       moveTo(7f, 8f)
       arcToRelative(4f, 4f, 0f, true, true, 0f, -8f)

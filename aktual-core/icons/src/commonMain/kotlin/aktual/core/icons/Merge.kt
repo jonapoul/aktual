@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.graphics.vector.path
 
 val AktualIcons.Merge: ImageVector by lazy {
-  aktualIcon(name = "Merge", size = 32f) {
+  aktualIcon(name = "Merge", size = 32f, padded = true) {
     strokePath {
       moveTo(24f, 29f)
       horizontalLineTo(29.3333f)

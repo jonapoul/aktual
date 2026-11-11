@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.Sum: ImageVector by lazy {
-  aktualIcon(name = "Sum", size = 28.3f) {
+  aktualIcon(name = "Sum", size = 28.3f, padded = true) {
     aktualPath {
       moveTo(23.2f, 10.1f)
       curveToRelative(1.1f, 0f, 2f, -0.9f, 2f, -2f)

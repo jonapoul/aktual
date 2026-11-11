@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.graphics.vector.path
 
 val AktualIcons.Split: ImageVector by lazy {
-  aktualIcon(name = "Split", size = 32f) {
+  aktualIcon(name = "Split", size = 32f, padded = true) {
     splitStroke {
       moveTo(30f, 9f)
       lineTo(26f, 5f)
