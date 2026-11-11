@@ -6,6 +6,7 @@ import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.LoginMethod
 import aktual.core.model.Password
+import aktual.core.model.Token
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.ListBudgetsNavigator
 import aktual.core.nav.ServerUrlNavigator
@@ -66,6 +67,7 @@ fun LoginScreen(
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val enteredPassword by viewModel.enteredPassword.collectAsStateWithLifecycle()
+  val enteredApiKey by viewModel.enteredApiKey.collectAsStateWithLifecycle()
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
   val loginMethods by viewModel.loginMethods.collectAsStateWithLifecycle()
@@ -92,6 +94,7 @@ fun LoginScreen(
   LoginScaffold(
     versions = versions,
     enteredPassword = enteredPassword,
+    enteredApiKey = enteredApiKey,
     isLoading = isLoading,
     loginFailure = loginFailure,
     loginMethods = loginMethods,
@@ -103,6 +106,7 @@ fun LoginScreen(
         NavBack -> back()
         SignIn -> viewModel.onClickSignIn()
         is EnterPassword -> viewModel.onEnterPassword(action.password)
+        is EnterApiKey -> viewModel.onEnterApiKey(action.apiKey)
         is SelectLoginMethod -> viewModel.onSelectLoginMethod(action.method)
       }
     },
@@ -113,6 +117,7 @@ fun LoginScreen(
 internal fun LoginScaffold(
   versions: AktualVersions,
   enteredPassword: Password,
+  enteredApiKey: Token,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
   loginMethods: ImmutableList<LoginMethod>,
@@ -140,6 +145,7 @@ internal fun LoginScaffold(
         modifier = Modifier.padding(innerPadding),
         versions = versions,
         enteredPassword = enteredPassword,
+        enteredApiKey = enteredApiKey,
         isLoading = isLoading,
         loginFailure = loginFailure,
         loginMethods = loginMethods,
@@ -154,6 +160,7 @@ internal fun LoginScaffold(
 private fun Content(
   versions: AktualVersions,
   enteredPassword: Password,
+  enteredApiKey: Token,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
   loginMethods: ImmutableList<LoginMethod>,
@@ -212,6 +219,15 @@ private fun Content(
           }
         }
 
+        ApiKey -> {
+          ApiKeyLogin(
+            modifier = Modifier.fillMaxWidth(),
+            isLoading = isLoading,
+            enteredApiKey = enteredApiKey,
+            onAction = onAction,
+          )
+        }
+
         Unknown -> {}
       }
 
@@ -238,6 +254,7 @@ private fun PreviewLoginScaffold(
     LoginScaffold(
       versions = versions,
       enteredPassword = password,
+      enteredApiKey = apiKey,
       isLoading = isLoading,
       loginFailure = loginFailure,
       loginMethods = loginMethods,
@@ -249,6 +266,7 @@ private fun PreviewLoginScaffold(
 private data class LoginScaffoldParams(
   val versions: AktualVersions = Dummy,
   val password: Password = Dummy,
+  val apiKey: Token = Token(""),
   val isLoading: Boolean = false,
   val loginFailure: LoginResult.Failure? = null,
   val loginMethods: ImmutableList<LoginMethod> = persistentListOf(),
@@ -272,4 +290,5 @@ private class LoginScaffoldProvider :
       isLoading = true,
     ),
     LoginScaffoldParams(loginMethods = ALL_METHODS, selectedLoginMethod = OpenId),
+    LoginScaffoldParams(loginMethods = ALL_METHODS, selectedLoginMethod = ApiKey),
   )

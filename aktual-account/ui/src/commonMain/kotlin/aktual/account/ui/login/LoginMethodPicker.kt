@@ -60,5 +60,6 @@ private fun LoginMethod.string(): String =
     Password -> Strings.loginMethodPassword
     Header -> Strings.loginMethodHeader
     OpenId -> Strings.loginMethodOpenid
+    ApiKey -> Strings.loginMethodApiKey
     Unknown -> Strings.loginMethodUnknown
   }

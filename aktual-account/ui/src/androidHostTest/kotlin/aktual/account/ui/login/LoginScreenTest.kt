@@ -116,7 +116,7 @@ class LoginScreenTest {
 
     // and the login button is disabled
     onNodeWithTag(Tags.PasswordLoginButton, useUnmergedTree = true).performClick()
-    runOnIdle { coVerify(exactly = 0) { loginRequester.logIn(any()) } }
+    runOnIdle { coVerify(exactly = 0) { loginRequester.logIn(any<Password>(), any()) } }
 
     // when we enter a password
     onNodeWithTag(Tags.PasswordLoginTextField).performTextInput(PASSWORD.value)

@@ -47,6 +47,7 @@ class LoginViewModel(
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val mutableEnteredPassword = ResettableStateFlow(buildConfig.defaultPassword)
+  private val mutableEnteredApiKey = ResettableStateFlow(Token(""))
   private val mutableIsLoading = ResettableStateFlow(false)
   private val mutableLoginFailure = ResettableStateFlow<LoginResult.Failure?>(null)
   private val mutableLoginMethods = MutableStateFlow<ImmutableList<LoginMethod>>(persistentListOf())
@@ -64,6 +65,7 @@ class LoginViewModel(
 
   val events: SharedFlow<LoginEvent> = mutableEvents.asSharedFlow()
   val enteredPassword: StateFlow<Password> = mutableEnteredPassword.asStateFlow()
+  val enteredApiKey: StateFlow<Token> = mutableEnteredApiKey.asStateFlow()
   val versions: StateFlow<AktualVersions> = versionsStateHolder.asStateFlow()
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
   val loginMethods: StateFlow<ImmutableList<LoginMethod>> = mutableLoginMethods.asStateFlow()
@@ -78,7 +80,10 @@ class LoginViewModel(
   init {
     viewModelScope.launch {
       val availableLoginMethods = loginRequester.fetchLoginMethods().filter { it.method != Unknown }
-      val loginMethods = availableLoginMethods.map { it.method }.toImmutableList()
+      // Servers don't list API keys as a login method, so always offer it
+      val serverMethods =
+        availableLoginMethods.map { it.method }.ifEmpty { listOf(LoginMethod.Password) }
+      val loginMethods = (serverMethods + LoginMethod.ApiKey).distinct().toImmutableList()
       mutableLoginMethods.update { loginMethods }
       val firstActive = availableLoginMethods.firstOrNull { it.isActive }
       if (firstActive != null) {
@@ -89,12 +94,17 @@ class LoginViewModel(
 
   fun clearState() {
     mutableEnteredPassword.reset()
+    mutableEnteredApiKey.reset()
     mutableIsLoading.reset()
     mutableLoginFailure.reset()
   }
 
   fun onEnterPassword(password: String) {
     mutableEnteredPassword.update { Password(password) }
+  }
+
+  fun onEnterApiKey(apiKey: String) {
+    mutableEnteredApiKey.update { Token(apiKey.trim()) }
   }
 
   fun onSelectLoginMethod(method: LoginMethod) {
@@ -105,13 +115,20 @@ class LoginViewModel(
   fun onClickSignIn(loginMethod: LoginMethod = mutableSelectedLoginMethod.value) {
     log.v { "onClickSignIn with method=$loginMethod" }
     val password = mutableEnteredPassword.value
+    val apiKey = mutableEnteredApiKey.value
     if (loginMethod == LoginMethod.Password && password == Empty) return
+    if (loginMethod == ApiKey && apiKey.value.isEmpty()) return
     mutableIsLoading.update { true }
     mutableLoginFailure.reset()
 
     cancelJobs()
     loginJob = viewModelScope.launch {
-      val result = loginRequester.logIn(password, loginMethod)
+      val result =
+        if (loginMethod == ApiKey) {
+          loginRequester.logIn(apiKey)
+        } else {
+          loginRequester.logIn(password, loginMethod)
+        }
 
       timeoutJob?.cancel()
       timeoutJob = null

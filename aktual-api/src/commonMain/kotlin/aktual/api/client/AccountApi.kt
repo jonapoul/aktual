@@ -30,5 +30,5 @@ interface AccountApi {
     token: Token,
   ): ChangePasswordResponse.Success
 
-  suspend fun validate(token: Token): ValidateResponse.Success
+  suspend fun validate(token: Token): ValidateResponse
 }

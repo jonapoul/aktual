@@ -170,7 +170,59 @@ internal class LoginRequesterTest {
     assertThat(result).isEqualTo(LoginResult.OtherFailure("some-error"))
   }
 
+  @Test
+  fun `Valid API key`() = runTest {
+    before()
+    preferences.serverUrl.set(EXAMPLE_URL)
+
+    preferences.token.asFlow().test {
+      assertThatNextEmission().isNull()
+
+      // When the server validates the key
+      val body = """{ "status": "ok", "data": { "validated": true, "loginMethod": "api-key" } }"""
+      mockEngine += { request ->
+        assertThat(request.method).isEqualTo(Get)
+        assertThat(request.headers["X-ACTUAL-TOKEN"]).isEqualTo(EXAMPLE_API_KEY.value)
+        respondJson(body)
+      }
+      val result = loginRequester.logIn(EXAMPLE_API_KEY)
+
+      // Then the key is stored as the token
+      assertThat(result).isEqualTo(LoginResult.Success(EXAMPLE_API_KEY))
+      assertThatNextEmission().isEqualTo(EXAMPLE_API_KEY)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Invalid API key`() = runTest {
+    before()
+    preferences.serverUrl.set(EXAMPLE_URL)
+
+    // When the server rejects the key
+    val body = """{ "status": "error", "reason": "unauthorized" }"""
+    mockEngine += { respondJson(body, Unauthorized) }
+    val result = loginRequester.logIn(EXAMPLE_API_KEY)
+
+    // Then we get an invalid key result, and nothing is stored
+    assertThat(result).isEqualTo(InvalidApiKey)
+    assertThat(preferences.token.get()).isNull()
+  }
+
+  @Test
+  fun `API key network error`() = runTest {
+    val errorMessage = "something broke"
+    val accountApi = mockk<AccountApi>()
+    coEvery { accountApi.validate(any()) } throws IOException(errorMessage)
+    before(accountApi)
+
+    val result = loginRequester.logIn(EXAMPLE_API_KEY)
+
+    assertThat(result).isEqualTo(LoginResult.NetworkFailure(errorMessage))
+  }
+
   private companion object {
+    val EXAMPLE_API_KEY = Token(value = "actual_abc123")
     val EXAMPLE_PASSWORD = Password(value = "P@ssw0rd")
     val EXAMPLE_TOKEN = Token(value = "abc123")
     val EXAMPLE_URL = ServerUrl(Https, "website.com")

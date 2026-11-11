@@ -12,4 +12,6 @@ internal data object SignIn : LoginAction
 
 @JvmInline internal value class EnterPassword(val password: String) : LoginAction
 
+@JvmInline internal value class EnterApiKey(val apiKey: String) : LoginAction
+
 @JvmInline internal value class SelectLoginMethod(val method: LoginMethod) : LoginAction

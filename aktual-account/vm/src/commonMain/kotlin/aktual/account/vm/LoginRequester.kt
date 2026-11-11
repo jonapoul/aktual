@@ -7,6 +7,7 @@ import aktual.api.model.account.LoginResponse
 import aktual.core.model.AvailableLoginMethod
 import aktual.core.model.LoginMethod
 import aktual.core.model.Password
+import aktual.core.model.Token
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.RunLevelController
 import aktual.log
@@ -46,16 +47,13 @@ internal constructor(
               LoginMethod.Password -> accountApi.login(LoginRequest.Password(password))
               Header -> accountApi.login(LoginRequest.Header(), password)
               OpenId -> accountApi.login(LoginRequest.OpenId(password, returnUrl = ""))
-              Unknown -> error("Unsupported login method")
+              ApiKey,
+              Unknown -> error("Unsupported login method $loginMethod")
             }
           }
         },
         onFailure = { e ->
-          return if (e is IOException) {
-            LoginResult.NetworkFailure(e.requireMessage())
-          } else {
-            LoginResult.OtherFailure(e.requireMessage())
-          }
+          return e.toLoginResult()
         },
       )
 
@@ -63,6 +61,40 @@ internal constructor(
       is Failure -> response.reason.toLoginResult()
       is Success -> response.data.toLoginResult()
     }
+  }
+
+  suspend fun logIn(apiKey: Token): LoginResult {
+    val response =
+      runCatchingCancellable(
+        attempt = { withContext(contexts.io) { accountApi.validate(apiKey) } },
+        onFailure = { e ->
+          return e.toLoginResult()
+        },
+      )
+
+    return when (response) {
+      is Failure ->
+        if (response.reason == Unauthorized) {
+          InvalidApiKey
+        } else {
+          response.reason.toLoginResult()
+        }
+
+      is Success -> onValidToken(apiKey)
+    }
+  }
+
+  private fun Throwable.toLoginResult(): LoginResult.Failure =
+    if (this is IOException) {
+      LoginResult.NetworkFailure(requireMessage())
+    } else {
+      LoginResult.OtherFailure(requireMessage())
+    }
+
+  private suspend fun onValidToken(token: Token): LoginResult {
+    runLevelController.onLoggedIn(token)
+    preferences.token.set(token)
+    return LoginResult.Success(token)
   }
 
   private fun FailureReason.toLoginResult(): LoginResult.Failure =
@@ -78,10 +110,6 @@ internal constructor(
 
       is Redirect -> LoginResult.Redirect(returnUrl)
 
-      is Valid -> {
-        runLevelController.onLoggedIn(token)
-        preferences.token.set(token)
-        LoginResult.Success(token)
-      }
+      is Valid -> onValidToken(token)
     }
 }
