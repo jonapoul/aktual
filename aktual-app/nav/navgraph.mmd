@@ -57,6 +57,7 @@ flowchart TD
     linkBankAccount["Link Bank Account"]
     bankSyncProviders["Bank Sync Providers"]
     bankSyncProviderSetup["Bank Sync Provider Setup"]
+    apiKeys["API Keys"]
   end
 
   app --valid token--> budgetList
@@ -106,6 +107,7 @@ flowchart TD
   budgetNavRail --add local account in drawer--> createAccount
   budgetNavRail --add bank sync account in drawer--> bankSync
   budgetNavRail --tap account group in drawer--> accountGroupTransactions
+  budgetNavRail --tap API keys in budget menu--> apiKeys
 
   home --tap account--> accountTransactions
   home --add local account--> createAccount
