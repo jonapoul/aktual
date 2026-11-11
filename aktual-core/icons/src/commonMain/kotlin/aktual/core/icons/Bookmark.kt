@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.Bookmark: ImageVector by lazy {
-  aktualIcon(name = "Bookmark", size = 20f) {
+  aktualIcon(name = "Bookmark", size = 20f, padded = true) {
     aktualPath {
       moveTo(2f, 2f)
       curveToRelative(0f, -1.1f, 0.9f, -2f, 2f, -2f)

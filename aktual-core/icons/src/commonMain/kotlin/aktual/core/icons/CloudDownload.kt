@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.CloudDownload: ImageVector by lazy {
-  aktualIcon(name = "CloudDownload", size = 24f) {
+  aktualIcon(name = "CloudDownload", size = 24f, padded = true) {
     aktualPath(strokeLineMiter = 4.0f) {
       moveTo(24.0f, 10.663f)
       arcTo(5.817f, 5.817f, 0.0f, false, false, 22.228f, 6.5f)

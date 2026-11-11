@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.ArrowsSynchronize: ImageVector by lazy {
-  aktualIcon(name = "ArrowsSynchronize", size = 24f) {
+  aktualIcon(name = "ArrowsSynchronize", size = 24f, padded = true) {
     aktualPath {
       moveTo(23.962f, 17.457f)
       lineToRelative(-0.82f, -3.297f)

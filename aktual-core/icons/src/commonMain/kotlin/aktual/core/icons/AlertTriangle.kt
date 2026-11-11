@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.AlertTriangle: ImageVector by lazy {
-  aktualIcon(name = "AlertTriangle", size = 24f) {
+  aktualIcon(name = "AlertTriangle", size = 24f, padded = true) {
     aktualPath {
       moveTo(23.119f, 20f)
       lineTo(13.772f, 2.15f)

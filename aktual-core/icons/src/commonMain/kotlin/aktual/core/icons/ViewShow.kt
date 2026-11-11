@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.ViewShow: ImageVector by lazy {
-  aktualIcon(name = "ViewShow", size = 20f) {
+  aktualIcon(name = "ViewShow", size = 20f, padded = true) {
     aktualPath {
       moveTo(0.2f, 10f)
       arcToRelative(11f, 11f, 0f, false, true, 19.6f, 0f)

@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.ViewHide: ImageVector by lazy {
-  aktualIcon(name = "ViewHide", size = 20f) {
+  aktualIcon(name = "ViewHide", size = 20f, padded = true) {
     aktualPath {
       moveTo(12.81f, 4.36f)
       lineToRelative(-1.77f, 1.78f)

@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.Cog: ImageVector by lazy {
-  aktualIcon(name = "Cog", size = 20f) {
+  aktualIcon(name = "Cog", size = 20f, padded = true) {
     aktualPath {
       moveTo(3.94f, 6.5f)
       lineTo(2.22f, 3.64f)

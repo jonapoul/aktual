@@ -7,7 +7,7 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.Copy: ImageVector by lazy {
-  aktualIcon(name = "Copy", size = 20f) {
+  aktualIcon(name = "Copy", size = 20f, padded = true) {
     aktualPath {
       moveTo(6f, 6f)
       verticalLineTo(2f)
