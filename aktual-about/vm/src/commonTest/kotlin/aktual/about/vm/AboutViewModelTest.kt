@@ -25,7 +25,7 @@ class AboutViewModelTest {
   // mock
   private lateinit var repository: GithubRepository
 
-  private fun TestScope.before() {
+  private fun runAboutTest(action: suspend TestScope.() -> Unit) = runTest {
     repository = mockk()
     aktualVersionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
 
@@ -37,11 +37,11 @@ class AboutViewModelTest {
         aktualVersionsStateHolder = aktualVersionsStateHolder,
         viewModelContext = viewModelContext,
       )
+    action()
   }
 
   @Test
-  fun `Successfully fetch new release`() = runTest {
-    before()
+  fun `Successfully fetch new release`() = runAboutTest {
     // Given the repo returns a new update
     val url = "www.website.com/whatever"
     val version = "2.3.4"

@@ -36,11 +36,13 @@ class BudgetListFetcherTest {
     mockEngine = emptyMockEngine()
   }
 
-  private fun TestScope.before(
+  private fun runFetcherTest(
     syncApi: SyncApi = SyncApiImpl(testHttpClient(mockEngine), SYSTEM, SERVER_URL),
-  ) {
+    action: suspend TestScope.() -> Unit,
+  ) = runTest {
     budgetListFetcher =
       BudgetListFetcher(syncApi = syncApi, contexts = TestCoroutineContexts(standardDispatcher))
+    action()
   }
 
   @AfterTest
@@ -49,10 +51,9 @@ class BudgetListFetcherTest {
   }
 
   @Test
-  fun `Handle success response`() = runTest {
+  fun `Handle success response`() = runFetcherTest {
     // given
     mockEngine += { respondJson(VALID_RESPONSE) }
-    before()
 
     // when
     val result = budgetListFetcher.fetchBudgets(TOKEN)
@@ -77,7 +78,7 @@ class BudgetListFetcherTest {
   }
 
   @Test
-  fun `Handle invalid JSON format`() = runTest {
+  fun `Handle invalid JSON format`() = runFetcherTest {
     // given
     val body =
       """
@@ -88,7 +89,6 @@ class BudgetListFetcherTest {
       """
         .trimIndent()
     mockEngine += { respondJson(body) }
-    before()
 
     // when
     val result = budgetListFetcher.fetchBudgets(TOKEN)
@@ -98,21 +98,20 @@ class BudgetListFetcherTest {
   }
 
   @Test
-  fun `Handle network failure`() = runTest {
-    // given
-    val syncApi =
-      mockk<SyncApi> { coEvery { fetchUserFiles(TOKEN) } throws NoRouteToHostException() }
-    before(syncApi)
+  fun `Handle network failure`() =
+    runFetcherTest(
+      // given
+      syncApi = mockk { coEvery { fetchUserFiles(TOKEN) } throws NoRouteToHostException() },
+    ) {
+      // when
+      val result = budgetListFetcher.fetchBudgets(TOKEN)
 
-    // when
-    val result = budgetListFetcher.fetchBudgets(TOKEN)
-
-    // then
-    assertThat(result).isInstanceOf<FetchBudgetsResult.NetworkFailure>()
-  }
+      // then
+      assertThat(result).isInstanceOf<FetchBudgetsResult.NetworkFailure>()
+    }
 
   @Test
-  fun `Handle failure response`() = runTest {
+  fun `Handle failure response`() = runFetcherTest {
     // given
     val responseJson =
       """
@@ -123,7 +122,6 @@ class BudgetListFetcherTest {
       """
         .trimIndent()
     mockEngine += { respondJson(responseJson, Forbidden) }
-    before()
 
     // when
     val result = budgetListFetcher.fetchBudgets(TOKEN)

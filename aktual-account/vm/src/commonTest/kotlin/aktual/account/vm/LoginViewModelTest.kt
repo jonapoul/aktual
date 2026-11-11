@@ -39,7 +39,10 @@ internal class LoginViewModelTest {
   // mock
   private lateinit var loginRequester: LoginRequester
 
-  private fun TestScope.before(configure: LoginRequester.() -> Unit = {}) {
+  private fun runLoginTest(
+    configure: LoginRequester.() -> Unit = {},
+    action: suspend TestScope.() -> Unit,
+  ) = runTest {
     val prefs = buildPreferences(unconfinedDispatcher)
     preferences = AppPreferencesImpl(prefs)
     versionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
@@ -52,11 +55,11 @@ internal class LoginViewModelTest {
         buildConfig = TestBuildConfig.copy(defaultPassword = Empty),
         viewModelContext = viewModelContext,
       )
+    action()
   }
 
   @Test
-  fun `Enter password`() = runTest {
-    before()
+  fun `Enter password`() = runLoginTest {
     viewModel.enteredPassword.test {
       assertThatNextEmission().transform { it.value }.isEqualTo("")
 
@@ -72,23 +75,22 @@ internal class LoginViewModelTest {
   }
 
   @Test
-  fun `Shows a failure when the OpenID token is rejected`() = runTest {
-    val token = Token("openid-session")
-    before {
-      every { openIdTokens } returns flowOf(token)
-      coEvery { logIn(token) } returns TokenExpired
+  fun `Shows a failure when the OpenID token is rejected`() =
+    runLoginTest(
+      configure = {
+        every { openIdTokens } returns flowOf(OPENID_TOKEN)
+        coEvery { logIn(OPENID_TOKEN) } returns TokenExpired
+      },
+    ) {
+      viewModel.loginFailure.test {
+        assertThat(awaitItem()).isNull()
+        assertThat(awaitItem()).isEqualTo(TokenExpired)
+      }
+      coVerify { loginRequester.logIn(OPENID_TOKEN) }
     }
-
-    viewModel.loginFailure.test {
-      assertThat(awaitItem()).isNull()
-      assertThat(awaitItem()).isEqualTo(TokenExpired)
-    }
-    coVerify { loginRequester.logIn(token) }
-  }
 
   @Test
-  fun `Signing in with invalid password`() = runTest {
-    before()
+  fun `Signing in with invalid password`() = runLoginTest {
     combine(viewModel.loginFailure, viewModel.isLoading, ::Pair).distinctUntilChanged().test {
       // Initially not loading or failed
       val (failure1, loading1) = awaitItem()
@@ -121,8 +123,7 @@ internal class LoginViewModelTest {
   }
 
   @Test
-  fun `Signing in with token expired`() = runTest {
-    before()
+  fun `Signing in with token expired`() = runLoginTest {
     combine(viewModel.loginFailure, viewModel.isLoading, ::Pair).distinctUntilChanged().test {
       // Initially not loading or failed
       val (failure1, loading1) = awaitItem()
@@ -155,8 +156,7 @@ internal class LoginViewModelTest {
   }
 
   @Test
-  fun `Unknown login methods are filtered out`() = runTest {
-    before()
+  fun `Unknown login methods are filtered out`() = runLoginTest {
     coEvery { loginRequester.fetchLoginMethods() } returns
       listOf(
         AvailableLoginMethod(method = Unknown, displayName = "SAML", isActive = true),
@@ -176,8 +176,7 @@ internal class LoginViewModelTest {
   }
 
   @Test
-  fun `API key is offered alongside password when the server lists no methods`() = runTest {
-    before()
+  fun `API key is offered alongside password when the server lists no methods`() = runLoginTest {
     coEvery { loginRequester.fetchLoginMethods() } returns emptyList()
 
     viewModel.loginMethods.test {
@@ -188,8 +187,7 @@ internal class LoginViewModelTest {
   }
 
   @Test
-  fun `Signing in with an API key`() = runTest {
-    before()
+  fun `Signing in with an API key`() = runLoginTest {
     coEvery { loginRequester.logIn(any<Token>()) } returns InvalidApiKey
 
     viewModel.loginFailure.test {
@@ -206,16 +204,14 @@ internal class LoginViewModelTest {
   }
 
   @Test
-  fun `Signing in with an empty API key does nothing`() = runTest {
-    before()
+  fun `Signing in with an empty API key does nothing`() = runLoginTest {
     viewModel.onSelectLoginMethod(ApiKey)
     viewModel.onClickSignIn()
     coVerify(exactly = 0) { loginRequester.logIn(any<Token>()) }
   }
 
   @Test
-  fun `Login token`() = runTest {
-    before()
+  fun `Login token`() = runLoginTest {
     viewModel.token.test {
       expectNoEvents()
 
@@ -225,5 +221,9 @@ internal class LoginViewModelTest {
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  private companion object {
+    val OPENID_TOKEN = Token("openid-session")
   }
 }

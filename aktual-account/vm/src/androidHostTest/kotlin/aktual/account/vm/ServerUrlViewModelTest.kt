@@ -56,7 +56,7 @@ class ServerUrlViewModelTest {
     appGraph.close()
   }
 
-  private suspend fun TestScope.before() {
+  private fun runServerUrlTest(action: suspend TestScope.() -> Unit) = runTest {
     mockEngine = emptyMockEngine()
 
     val contexts = TestCoroutineContexts(standardDispatcher)
@@ -73,12 +73,12 @@ class ServerUrlViewModelTest {
 
     viewModel =
       appGraph.metroViewModelFactory.create(ServerUrlViewModel::class, CreationExtras.Empty)
+    action()
   }
 
   @Test
   @Flaky(reason = "Sometimes fails randomly")
-  fun `Nav to login when typing and clicking confirm if already bootstrapped`() = runTest {
-    before()
+  fun `Nav to login when typing and clicking confirm if already bootstrapped`() = runServerUrlTest {
     viewModel.navDestination.receiveAsFlow().test {
       // Given we're currently not navigating, and the API returns that we're bootstrapped
       advanceUntilIdle()
@@ -100,8 +100,7 @@ class ServerUrlViewModelTest {
 
   @Test
   @Flaky(reason = "Sometimes fails randomly")
-  fun `Nav to bootstrap when typing and clicking confirm if not bootstrapped`() = runTest {
-    before()
+  fun `Nav to bootstrap when typing and clicking confirm if not bootstrapped`() = runServerUrlTest {
     viewModel.navDestination.receiveAsFlow().test {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
       advanceUntilIdle()
@@ -123,10 +122,7 @@ class ServerUrlViewModelTest {
 
   @Test
   @Flaky(reason = "Sometimes fails randomly")
-  fun `Set initial parameters based on preferences`() = runTest {
-    // Given
-    before()
-
+  fun `Set initial parameters based on preferences`() = runServerUrlTest {
     // When
     advanceUntilIdle()
 
@@ -142,9 +138,7 @@ class ServerUrlViewModelTest {
 
   @Test
   @Flaky(reason = "Sometimes fails randomly")
-  fun `Show error message if bootstrap request gives failure response`() = runTest {
-    before()
-
+  fun `Show error message if bootstrap request gives failure response`() = runServerUrlTest {
     viewModel.errorMessage.test {
       // Given we're currently not navigating
       assertThatNextEmission().isNull()
@@ -175,8 +169,7 @@ class ServerUrlViewModelTest {
 
   @Test
   @Flaky(reason = "Sometimes fails randomly")
-  fun `Show error message if bootstrap request fails`() = runTest {
-    before()
+  fun `Show error message if bootstrap request fails`() = runServerUrlTest {
     viewModel.errorMessage.test {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
       assertThatNextEmission().isNull()
@@ -199,33 +192,33 @@ class ServerUrlViewModelTest {
 
   @Test
   @Flaky(reason = "Sometimes fails randomly")
-  fun `Clear saved token if the confirmed URL is different from previously-saved`() = runTest {
-    before()
-    appGraph.preferences.token.asFlow().test {
-      // Given no token initially saved
-      assertThatNextEmission().isNull()
+  fun `Clear saved token if the confirmed URL is different from previously-saved`() =
+    runServerUrlTest {
+      appGraph.preferences.token.asFlow().test {
+        // Given no token initially saved
+        assertThatNextEmission().isNull()
 
-      // when we save a token and a URL
-      val initialUrl = ServerUrl(Https, "website.com")
-      appGraph.preferences.serverUrl.set(initialUrl)
-      val token = Token("abc-123")
-      appGraph.preferences.token.set(token)
+        // when we save a token and a URL
+        val initialUrl = ServerUrl(Https, "website.com")
+        appGraph.preferences.serverUrl.set(initialUrl)
+        val token = Token("abc-123")
+        appGraph.preferences.token.set(token)
 
-      // then the token has been saved
-      assertThatNextEmissionIsEqualTo(token)
+        // then the token has been saved
+        assertThatNextEmissionIsEqualTo(token)
 
-      // when we enter a different url and click confirm
-      val secondUrl = ServerUrl(Http, "some.other.website.com")
-      assertThat(initialUrl).isNotEqualTo(secondUrl)
-      viewModel.onSelectProtocol(secondUrl.protocol)
-      viewModel.onEnterUrl(secondUrl.baseUrl)
-      viewModel.onClickConfirm()
+        // when we enter a different url and click confirm
+        val secondUrl = ServerUrl(Http, "some.other.website.com")
+        assertThat(initialUrl).isNotEqualTo(secondUrl)
+        viewModel.onSelectProtocol(secondUrl.protocol)
+        viewModel.onEnterUrl(secondUrl.baseUrl)
+        viewModel.onClickConfirm()
 
-      // then the saved token is cleared
-      assertThatNextEmission().isNull()
-      cancelAndIgnoreRemainingEvents()
+        // then the saved token is cleared
+        assertThatNextEmission().isNull()
+        cancelAndIgnoreRemainingEvents()
+      }
     }
-  }
 
   private fun setBootstrapResponse(bootstrapped: Boolean) {
     val json =

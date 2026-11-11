@@ -12,14 +12,14 @@ import kotlinx.coroutines.test.runTest
 class AppPreferencesTest {
   private lateinit var preferences: AppPreferences
 
-  private fun TestScope.before() {
+  private fun runPrefsTest(action: suspend TestScope.() -> Unit) = runTest {
     val prefs = buildPreferences(unconfinedDispatcher)
     preferences = AppPreferencesImpl(prefs)
+    action()
   }
 
   @Test
-  fun `Server URL`() = runTest {
-    before()
+  fun `Server URL`() = runPrefsTest {
     with(preferences.serverUrl) {
       asFlow().test {
         // Given

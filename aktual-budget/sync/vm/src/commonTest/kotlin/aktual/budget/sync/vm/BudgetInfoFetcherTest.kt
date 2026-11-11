@@ -35,7 +35,7 @@ class BudgetInfoFetcherTest {
     mockEngine.close()
   }
 
-  private fun TestScope.before() {
+  private fun runFetcherTest(action: suspend TestScope.() -> Unit) = runTest {
     mockEngine = emptyMockEngine()
     val syncApi =
       SyncApiImpl(
@@ -50,12 +50,12 @@ class BudgetInfoFetcherTest {
         syncApi = syncApi,
         contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
       )
+    action()
   }
 
   @Test
-  fun `Handle success`() = runTest {
+  fun `Handle success`() = runFetcherTest {
     // given
-    before()
     val response =
       """
       {
@@ -100,9 +100,8 @@ class BudgetInfoFetcherTest {
   }
 
   @Test
-  fun `Handle HTTP failure`() = runTest {
+  fun `Handle HTTP failure`() = runFetcherTest {
     // given
-    before()
     mockEngine += {
       respondJson(
         status = Unauthorized,
@@ -116,9 +115,8 @@ class BudgetInfoFetcherTest {
   }
 
   @Test
-  fun `Handle unexpected HTTP failure body`() = runTest {
+  fun `Handle unexpected HTTP failure body`() = runFetcherTest {
     // given
-    before()
     mockEngine += {
       respondJson(status = Unauthorized, content = """{ "unexpected-key": 123 }""")
     }
@@ -130,9 +128,8 @@ class BudgetInfoFetcherTest {
   }
 
   @Test
-  fun `Handle network error`() = runTest {
+  fun `Handle network error`() = runFetcherTest {
     // given
-    before()
     mockEngine += { throw NoRouteToHostException() }
 
     // then
