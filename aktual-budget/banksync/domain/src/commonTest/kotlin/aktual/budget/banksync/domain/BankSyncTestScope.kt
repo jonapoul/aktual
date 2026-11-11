@@ -29,6 +29,9 @@ import aktual.budget.model.Timestamp
 import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.core.model.BudgetServer
+import aktual.core.model.ServerUrl
+import aktual.core.model.Token
 import aktual.di.BudgetCoroutineScope
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestCoroutineContexts
@@ -116,7 +119,7 @@ internal class BankSyncTestScope(
 
   private fun uuid() = "id-${nextId++}"
 
-  fun controller(api: FakeBankSyncApi) =
+  fun controller(api: FakeBankSyncApi, server: BudgetServer = SERVER) =
     BankSyncControllerImpl(
       api = api,
       importer = importer,
@@ -126,6 +129,7 @@ internal class BankSyncTestScope(
       calendar = { TODAY },
       clock = clock,
       scope = BudgetCoroutineScope(backgroundScope),
+      server = server,
     )
 
   // Bank ids are read back as UUIDs, so they can't be [uuid]s
@@ -309,3 +313,6 @@ internal fun bankTx(
 }
 
 internal fun string(value: String) = MessageValue.String(value)
+
+internal val SERVER =
+  BudgetServer.Remote(ServerUrl(Https, "test.server.com"), Token("session-token"))
