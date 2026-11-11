@@ -5,6 +5,7 @@ import aktual.api.model.base.Build
 import aktual.api.model.base.InfoResponse
 import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
+import aktual.core.model.ForegroundStateHolder
 import aktual.core.model.PingStateHolder
 import aktual.di.ServerChosenCoroutineScope
 import aktual.test.TestBuildConfig
@@ -18,6 +19,7 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import java.io.IOException
 import kotlin.test.AfterTest
@@ -34,6 +36,7 @@ class ServerVersionFetcherTest {
   private lateinit var fetcher: ServerVersionFetcher
   private lateinit var versionsStateHolder: AktualVersionsStateHolder
   private lateinit var pingStateHolder: PingStateHolder
+  private lateinit var foregroundState: ForegroundStateHolder
 
   // mock
   private lateinit var baseApi: BaseApi
@@ -43,6 +46,7 @@ class ServerVersionFetcherTest {
     baseApi = mockk()
     versionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
     pingStateHolder = PingStateHolder()
+    foregroundState = ForegroundStateHolder()
   }
 
   @AfterTest
@@ -57,6 +61,7 @@ class ServerVersionFetcherTest {
         baseApi = baseApi,
         versionsStateHolder = versionsStateHolder,
         pingStateHolder = pingStateHolder,
+        foregroundState = foregroundState,
         loopController = loopController,
         scope = ServerChosenCoroutineScope(this),
       )
@@ -97,6 +102,28 @@ class ServerVersionFetcherTest {
       assertThat(awaitItem().server).isEqualTo("1.2.3")
       cancelAndIgnoreRemainingEvents()
     }
+    fetcher.close()
+  }
+
+  @Test
+  fun `Fetched again when the app comes back to the foreground`() = runTest {
+    // Given
+    build(FiniteLoopController(maxLoops = 2))
+    coEvery { baseApi.fetchInfo() } returns
+      InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
+    fetcher.initialize()
+    pingStateHolder.update { Success }
+    advanceUntilIdle()
+
+    // When
+    foregroundState.update { false }
+    advanceUntilIdle()
+    foregroundState.update { true }
+    advanceUntilIdle()
+
+    // Then
+    coVerify(exactly = 2) { baseApi.fetchInfo() }
+    assertThat(versionsStateHolder.value.server).isEqualTo("1.2.3")
     fetcher.close()
   }
 

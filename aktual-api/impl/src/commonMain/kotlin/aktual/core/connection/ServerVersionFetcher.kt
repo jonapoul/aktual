@@ -2,6 +2,7 @@ package aktual.core.connection
 
 import aktual.api.client.BaseApi
 import aktual.core.model.AktualVersionsStateHolder
+import aktual.core.model.ForegroundStateHolder
 import aktual.core.model.PingStateHolder
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.Closeable
@@ -20,6 +21,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -39,18 +41,20 @@ class ServerVersionFetcher(
   private val versionsStateHolder: AktualVersionsStateHolder,
   private val loopController: LoopController,
   private val pingStateHolder: PingStateHolder,
+  private val foregroundState: ForegroundStateHolder,
 ) : Initializable, Closeable {
   private var job: Job? = null
 
   override fun initialize() {
     log.v { "initialize" }
     job = scope.launch {
-      pingStateHolder.collectLatest { state ->
-        log.v { "ServerVersionFetcher collected $state" }
-        if (state == Success) {
-          fetchVersionUntilSuccess()
-        } else {
-          versionsStateHolder.set(null)
+      // Fetched again on resume, in case the server was updated while the app was in the
+      // background
+      combine(pingStateHolder, foregroundState, ::Pair).collectLatest { (state, isForeground) ->
+        log.v { "ServerVersionFetcher collected $state, foreground=$isForeground" }
+        when {
+          state != Success -> versionsStateHolder.set(null)
+          isForeground -> fetchVersionUntilSuccess()
         }
       }
     }
