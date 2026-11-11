@@ -1,6 +1,7 @@
 package aktual.budget.reports.vm
 
 import aktual.budget.budgeting.domain.BudgetMonth
+import aktual.budget.budgeting.domain.CategoryGroupMonth
 import aktual.budget.budgeting.domain.CategoryMonth
 import aktual.budget.model.Amount
 import aktual.budget.model.Amount.Companion.Zero
@@ -11,6 +12,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Month.FEBRUARY
 import kotlinx.datetime.Month.JANUARY
@@ -55,6 +57,19 @@ class BudgetAnalysisTest {
   }
 
   @Test
+  fun `Overspending in the month before shows as the first month's adjustment`() {
+    val data =
+      calculate(
+        month(DEC, food(budgeted = 100, spent = -130, balance = -30)),
+        month(JAN, food(budgeted = 100, spent = -100, balance = 0)),
+      )
+
+    assertThat(data.items[JAN]?.overspendingAdjustment).isEqualTo(Amount(30))
+    assertThat(data.items[JAN]?.balance).isEqualTo(Zero)
+    assertThat(data.totalOverspendingAdjustment).isEqualTo(Amount(30))
+  }
+
+  @Test
   fun `Overspending with rollover carries into next month`() {
     val data =
       calculate(
@@ -92,6 +107,24 @@ class BudgetAnalysisTest {
           food(budgeted = 100, spent = -50, balance = 50),
           category(INCOME, budgeted = 0, spent = 1000, balance = 0, isIncome = true),
           category(HIDDEN, budgeted = 20, spent = 0, balance = 20, isHidden = true),
+        ),
+      )
+
+    assertThat(calculate(*months).totalBudgeted).isEqualTo(Amount(100))
+    assertThat(calculate(*months, params = PARAMS.copy(showHiddenCategories = true)).totalBudgeted)
+      .isEqualTo(Amount(120))
+  }
+
+  @Test
+  fun `Categories in hidden groups are left out unless hidden ones are shown`() {
+    val months =
+      arrayOf(
+        month(DEC)
+          .copy(groups = persistentListOf(group(GROUP), group(HIDDEN_GROUP, isHidden = true))),
+        month(
+          JAN,
+          food(budgeted = 100, spent = -50, balance = 50),
+          category(RENT, budgeted = 20, spent = 0, balance = 20, group = HIDDEN_GROUP),
         ),
       )
 
@@ -212,17 +245,31 @@ class BudgetAnalysisTest {
     carryover: Boolean = false,
     isIncome: Boolean = false,
     isHidden: Boolean = false,
+    group: CategoryGroupId = GROUP,
   ) =
     CategoryMonth(
       id = id,
       name = id.value,
-      group = GROUP,
+      group = group,
       isIncome = isIncome,
       isHidden = isHidden,
       budgeted = Amount(budgeted),
       spent = Amount(spent),
       balance = Amount(balance),
       carryover = carryover,
+    )
+
+  private fun group(id: CategoryGroupId, isHidden: Boolean = false) =
+    CategoryGroupMonth(
+      id = id,
+      name = id.value,
+      isIncome = false,
+      isHidden = isHidden,
+      sortOrder = null,
+      budgeted = Zero,
+      spent = Zero,
+      balance = Zero,
+      categories = persistentListOf(),
     )
 
   private companion object {
@@ -236,6 +283,7 @@ class BudgetAnalysisTest {
     val INCOME = CategoryId("income")
     val HIDDEN = CategoryId("hidden")
     val GROUP = CategoryGroupId("group")
+    val HIDDEN_GROUP = CategoryGroupId("hidden-group")
 
     val PARAMS =
       BudgetAnalysisParams(
