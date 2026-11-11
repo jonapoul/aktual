@@ -135,6 +135,17 @@ internal class AccountWriterTest {
   }
 
   @Test
+  fun `Undoing a reopen closes it again`() = runWriterTest {
+    val id = createAccount("Closed")
+    addTransaction(id, Zero)
+    writer.close(id)
+
+    writer.undo(writer.reopen(id))
+
+    assertThat(accountDao[id]?.closed).isEqualTo(true)
+  }
+
+  @Test
   fun `Renaming changes the name`() = runWriterTest {
     val id = createAccount("Old")
 
@@ -280,6 +291,15 @@ internal class AccountWriterTest {
   }
 
   @Test
+  fun `Undoing a group rename puts the old name back`() = runWriterTest {
+    val savings = writer.createGroup("Savings")
+
+    writer.undo(writer.renameGroup(savings, "Rainy day"))
+
+    assertThat(groupDao.getAllActive().single().name).isEqualTo("Savings")
+  }
+
+  @Test
   fun `Deleting a group ungroups its accounts`() = runWriterTest {
     val a = createAccount("A")
     val b = createAccount("B")
@@ -291,6 +311,20 @@ internal class AccountWriterTest {
 
     assertThat(groupDao.getAllActive()).isEqualTo(emptyList())
     assertThat(accountDao[a]?.account_group_id).isNull()
+    assertThat(accountDao[b]?.account_group_id).isNull()
+  }
+
+  @Test
+  fun `Undoing a group delete restores it with its accounts`() = runWriterTest {
+    val a = createAccount("A")
+    val b = createAccount("B")
+    val group = writer.createGroup("Everyday")
+    writer.setGroup(a, group)
+
+    writer.undo(writer.deleteGroup(group))
+
+    assertThat(groupDao.getAllActive().map { it.id }).containsExactly(group)
+    assertThat(accountDao[a]?.account_group_id).isEqualTo(group)
     assertThat(accountDao[b]?.account_group_id).isNull()
   }
 

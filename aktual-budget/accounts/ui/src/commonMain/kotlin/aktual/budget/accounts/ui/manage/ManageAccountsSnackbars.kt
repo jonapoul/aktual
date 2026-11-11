@@ -10,8 +10,10 @@ import aktual.core.l10n.accounts_close_deleted
 import aktual.core.l10n.accounts_close_unlink_failed
 import aktual.core.l10n.accounts_delete_unlink_failed
 import aktual.core.l10n.accounts_manage_action_failed
+import aktual.core.l10n.accounts_manage_group_deleted
 import aktual.core.l10n.accounts_manage_group_moved
 import aktual.core.l10n.accounts_manage_group_name_taken
+import aktual.core.l10n.accounts_manage_group_renamed
 import aktual.core.l10n.accounts_manage_moved
 import aktual.core.l10n.accounts_manage_reopened
 import aktual.core.l10n.accounts_manage_undo
@@ -24,7 +26,21 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult.ActionPerformed
 import org.jetbrains.compose.resources.getString
 
-internal suspend fun SnackbarHostState.showAccountMoved(
+internal suspend fun SnackbarHostState.showEvent(
+  event: ManageAccountsEvent,
+  undo: (AccountUndo) -> Unit,
+) =
+  when (event) {
+    is AccountMoved -> showAccountMoved(event, undo)
+    is GroupMoved -> showGroupMoved(event, undo)
+    is Reopened -> showReopened(event, undo)
+    is GroupRenamed -> showGroupRenamed(event, undo)
+    is GroupDeleted -> showGroupDeleted(event, undo)
+    is GroupNameTaken -> showGroupNameTaken(event)
+    is ActionFailed -> showActionFailed()
+  }
+
+private suspend fun SnackbarHostState.showAccountMoved(
   event: ManageAccountsEvent.AccountMoved,
   undo: (AccountUndo) -> Unit,
 ) {
@@ -33,7 +49,7 @@ internal suspend fun SnackbarHostState.showAccountMoved(
   if (showUndoable(message) == ActionPerformed) undo(event.undo)
 }
 
-internal suspend fun SnackbarHostState.showGroupMoved(
+private suspend fun SnackbarHostState.showGroupMoved(
   event: ManageAccountsEvent.GroupMoved,
   undo: (AccountUndo) -> Unit,
 ) {
@@ -41,17 +57,37 @@ internal suspend fun SnackbarHostState.showGroupMoved(
   if (showUndoable(message) == ActionPerformed) undo(event.undo)
 }
 
-internal suspend fun SnackbarHostState.showReopened(event: ManageAccountsEvent.Reopened) {
-  showSuccessSnackbar(getString(Res.string.accounts_manage_reopened, event.name))
+private suspend fun SnackbarHostState.showReopened(
+  event: ManageAccountsEvent.Reopened,
+  undo: (AccountUndo) -> Unit,
+) {
+  val message = getString(Res.string.accounts_manage_reopened, event.name)
+  if (showUndoable(message) == ActionPerformed) undo(event.undo)
 }
 
-internal suspend fun SnackbarHostState.showGroupNameTaken(
+private suspend fun SnackbarHostState.showGroupRenamed(
+  event: ManageAccountsEvent.GroupRenamed,
+  undo: (AccountUndo) -> Unit,
+) {
+  val message = getString(Res.string.accounts_manage_group_renamed, event.from, event.to)
+  if (showUndoable(message) == ActionPerformed) undo(event.undo)
+}
+
+private suspend fun SnackbarHostState.showGroupDeleted(
+  event: ManageAccountsEvent.GroupDeleted,
+  undo: (AccountUndo) -> Unit,
+) {
+  val message = getString(Res.string.accounts_manage_group_deleted, event.name)
+  if (showUndoable(message) == ActionPerformed) undo(event.undo)
+}
+
+private suspend fun SnackbarHostState.showGroupNameTaken(
   event: ManageAccountsEvent.GroupNameTaken,
 ) {
   showErrorSnackbar(getString(Res.string.accounts_manage_group_name_taken, event.name))
 }
 
-internal suspend fun SnackbarHostState.showActionFailed() {
+private suspend fun SnackbarHostState.showActionFailed() {
   showErrorSnackbar(getString(Res.string.accounts_manage_action_failed))
 }
 

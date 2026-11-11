@@ -122,18 +122,30 @@ internal constructor(
   fun renameGroup(id: AccountGroupId, name: String) {
     val trimmed = name.trim()
     if (trimmed.isEmpty()) return
-    launchAction("renaming group $id") { writer.renameGroup(id, trimmed) }
+    val success = state.value as? Success ?: return
+    val group = success.groups.firstOrNull { it.id == id } ?: return
+    if (group.name == trimmed) return
+    launchAction("renaming group $id") {
+      val undo = writer.renameGroup(id, trimmed)
+      mutableEvents.tryEmit(ManageAccountsEvent.GroupRenamed(group.name, trimmed, undo))
+    }
   }
 
-  fun deleteGroup(id: AccountGroupId) =
-    launchAction("deleting group $id") { writer.deleteGroup(id) }
+  fun deleteGroup(id: AccountGroupId) {
+    val success = state.value as? Success ?: return
+    val group = success.groups.firstOrNull { it.id == id } ?: return
+    launchAction("deleting group $id") {
+      val undo = writer.deleteGroup(id)
+      mutableEvents.tryEmit(ManageAccountsEvent.GroupDeleted(group.name, undo))
+    }
+  }
 
   fun reopen(id: AccountId) {
     val success = state.value as? Success ?: return
     val account = success.closed.firstOrNull { it.id == id } ?: return
     launchAction("reopening account $id") {
-      writer.reopen(id)
-      mutableEvents.tryEmit(ManageAccountsEvent.Reopened(account.name))
+      val undo = writer.reopen(id)
+      mutableEvents.tryEmit(ManageAccountsEvent.Reopened(account.name, undo))
     }
   }
 

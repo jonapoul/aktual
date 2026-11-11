@@ -304,6 +304,7 @@
   <string name="accounts_create_name_duplicate">Name %1$s already exists.</string>
   <string name="accounts_create_off_budget">Off budget</string>
   <string name="accounts_create_off_budget_hint">Off-budget accounts (like investments, loans, or your house) are tracked but not part of your spending budget. This cannot be changed later.</string>
+  <string name="accounts_create_group">Group</string>
   <string name="accounts_create_balance">Starting balance</string>
   <string name="accounts_create_balance_invalid">Balance must be a number</string>
   <string name="accounts_create_submit">Create</string>
@@ -332,6 +333,8 @@
   <string name="accounts_manage_reopened">%1$s reopened</string>
   <string name="accounts_manage_moved">%1$s moved to %2$s</string>
   <string name="accounts_manage_group_moved">%1$s moved</string>
+  <string name="accounts_manage_group_renamed">%1$s renamed to %2$s</string>
+  <string name="accounts_manage_group_deleted">%1$s deleted</string>
   <string name="accounts_manage_group_name_taken">A group named %1$s already exists</string>
   <string name="accounts_manage_action_failed">Couldn't save the change</string>
   <string name="accounts_manage_undo">Undo</string>

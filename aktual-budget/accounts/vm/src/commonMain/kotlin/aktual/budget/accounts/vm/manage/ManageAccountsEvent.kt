@@ -10,7 +10,12 @@ sealed interface ManageAccountsEvent {
 
   data class GroupMoved(val name: String, val undo: AccountUndo) : ManageAccountsEvent
 
-  @JvmInline value class Reopened(val name: String) : ManageAccountsEvent
+  data class Reopened(val name: String, val undo: AccountUndo) : ManageAccountsEvent
+
+  data class GroupRenamed(val from: String, val to: String, val undo: AccountUndo) :
+    ManageAccountsEvent
+
+  data class GroupDeleted(val name: String, val undo: AccountUndo) : ManageAccountsEvent
 
   @JvmInline value class GroupNameTaken(val name: String) : ManageAccountsEvent
 
