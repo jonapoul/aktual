@@ -11,6 +11,7 @@ kotlin {
     implementation(project(":aktual-app:di"))
     implementation(project(":aktual-app:nav"))
     implementation(project(":aktual-budget:accounts:vm"))
+    implementation(project(":aktual-budget:apikeys:vm"))
     implementation(project(":aktual-budget:banksync:vm"))
     implementation(project(":aktual-budget:budgeting:vm"))
     implementation(project(":aktual-budget:home:vm"))
