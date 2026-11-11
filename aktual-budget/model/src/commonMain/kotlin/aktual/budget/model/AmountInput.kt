@@ -45,6 +45,16 @@ fun evaluateAmountInput(text: String): Amount? {
   return ArithmeticParser(tokens).parse()?.let { Amount(round(it * CENTS_PER_UNIT).toLong()) }
 }
 
+/**
+ * Reads text pasted over an amount, like "1,200.50", "-12" or "$45.00". It's read as arithmetic
+ * where it can be, and otherwise by [parseAmountInput], which skips anything but digits and
+ * separators. Blank text is null, so pasting nothing leaves the amount alone.
+ */
+fun parsePastedAmount(text: String): Amount? {
+  if (text.isBlank()) return null
+  return evaluateAmountInput(text) ?: parseAmountInput(text)
+}
+
 /** Like [toInputText], with a leading minus when negative */
 fun Amount.toSignedInputText(): String = if (this < Zero) "-${toInputText()}" else toInputText()
 
