@@ -254,7 +254,7 @@ private fun ContentSuccess(
           isLinked = true,
           onClick = { onAction(OpenSettings(account.id)) },
           sync =
-            if (state.canSync) {
+            if (state.canSync && status != NeedsPassword) {
               AccountSync(
                 enabled = !state.isSyncing,
                 onClick = { onAction(SyncAccount(account.id)) },

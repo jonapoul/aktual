@@ -5,6 +5,7 @@ import aktual.budget.banksync.domain.BankSyncProviderSetup
 import aktual.budget.banksync.vm.BankSyncProviderStatus
 import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
+import aktual.core.model.isApiKeySession
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
@@ -60,7 +61,9 @@ internal constructor(
     viewModelScope.launchMolecule(Immediate) {
       val statuses by mutableStatuses.collectAsState()
       val resetting by mutableResetting.collectAsState()
-      if (server is Remote) {
+      if (server.isApiKeySession) {
+        BankSyncProvidersState.ApiKeySession
+      } else if (server is Remote) {
         BankSyncProvidersState.Loaded(
           providers =
             PROVIDERS.map { BankSyncProviderItem(it, statuses.getValue(it)) }.toImmutableList(),
@@ -76,7 +79,7 @@ internal constructor(
   }
 
   fun refresh() {
-    if (server !is Remote || refreshJob?.isActive == true) return
+    if (server !is Remote || server.isApiKeySession || refreshJob?.isActive == true) return
     refreshJob = viewModelScope.launch {
       for (source in PROVIDERS) {
         launch {

@@ -206,7 +206,8 @@ internal fun ProviderStatusChip(
       NotConfigured -> colors.warningBackground to colors.warningTextDark
       Failed -> colors.errorBackground to colors.errorTextDarker
       Checking,
-      NoServer -> colors.tableRowHeaderBackground to colors.tableRowHeaderText
+      NoServer,
+      NeedsPassword -> colors.tableRowHeaderBackground to colors.tableRowHeaderText
     }
   val label =
     when (status) {
@@ -215,6 +216,7 @@ internal fun ProviderStatusChip(
       NotConfigured -> Strings.bankSyncProviderNotConfigured
       Failed -> Strings.bankSyncProviderFailed
       NoServer -> Strings.bankSyncProviderNoServer
+      NeedsPassword -> Strings.bankSyncProviderNeedsPassword
     }
   StatusChip(label, background, text, modifier)
 }

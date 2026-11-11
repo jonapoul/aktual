@@ -10,4 +10,4 @@ sealed interface BudgetServer {
 }
 
 val BudgetServer.isApiKeySession: Boolean
-  get() = this is BudgetServer.Remote && token.isApiKey
+  get() = this is Remote && token.isApiKey

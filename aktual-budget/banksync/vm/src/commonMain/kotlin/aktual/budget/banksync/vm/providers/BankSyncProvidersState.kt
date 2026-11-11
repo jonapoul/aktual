@@ -9,6 +9,9 @@ import kotlinx.collections.immutable.ImmutableList
 sealed interface BankSyncProvidersState {
   data object NoServer : BankSyncProvidersState
 
+  // Setting up providers needs a password session, which an API key isn't
+  data object ApiKeySession : BankSyncProvidersState
+
   @Immutable
   data class Loaded(
     val providers: ImmutableList<BankSyncProviderItem>,

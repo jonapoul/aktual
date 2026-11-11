@@ -50,6 +50,7 @@ import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
@@ -88,6 +89,14 @@ class LinkBankAccountViewModelTest {
         )
     }
     assertThat(api.listed).containsExactly(PluggyAi)
+  }
+
+  @Test
+  fun `API keys only offer providers they can use`() = runLinkTest {
+    createViewModel(server = REMOTE.copy(token = Token("actual_abc123"))).state.test {
+      assertThat(awaitChoosing().providers).containsExactly(PluggyAi)
+    }
+    assertThat(api.requested).containsExactlyInAnyOrder(AccountSyncSource.SimpleFin, PluggyAi)
   }
 
   @Test
