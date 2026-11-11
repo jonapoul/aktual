@@ -79,7 +79,10 @@ internal class LoginViewModelTest {
       coEvery { logIn(token) } returns TokenExpired
     }
 
-    viewModel.loginFailure.test { assertThat(expectMostRecentItem()).isEqualTo(TokenExpired) }
+    viewModel.loginFailure.test {
+      assertThat(awaitItem()).isNull()
+      assertThat(awaitItem()).isEqualTo(TokenExpired)
+    }
     coVerify { loginRequester.logIn(token) }
   }
 

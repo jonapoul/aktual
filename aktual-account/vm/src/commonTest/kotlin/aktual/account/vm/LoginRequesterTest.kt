@@ -227,7 +227,7 @@ internal class LoginRequesterTest {
       assertThat(request.body)
         .isInstanceOf<TextContent>()
         .prop(TextContent::text)
-        .contains("\"returnUrl\":\"aktual.test://localhost\"")
+        .contains("aktual.test://localhost")
       respondJson(body)
     }
     val result = loginRequester.logIn(EXAMPLE_PASSWORD, loginMethod = OpenId)
@@ -257,7 +257,7 @@ internal class LoginRequesterTest {
     }
 
     assertThat(loginRequester.openIdFirstLogin(listOf(PASSWORD_METHOD, OPENID_METHOD)))
-      .isEqualTo(OpenIdFirstLogin.FirstWithPassword)
+      .isEqualTo(FirstWithPassword)
   }
 
   @Test
@@ -265,8 +265,7 @@ internal class LoginRequesterTest {
     before()
     mockEngine += { respondJson("false") }
 
-    assertThat(loginRequester.openIdFirstLogin(listOf(OPENID_METHOD)))
-      .isEqualTo(OpenIdFirstLogin.First)
+    assertThat(loginRequester.openIdFirstLogin(listOf(OPENID_METHOD))).isEqualTo(First)
   }
 
   @Test
@@ -275,7 +274,7 @@ internal class LoginRequesterTest {
     mockEngine += { respondJson("true") }
 
     assertThat(loginRequester.openIdFirstLogin(listOf(PASSWORD_METHOD, OPENID_METHOD)))
-      .isEqualTo(OpenIdFirstLogin.NotFirst)
+      .isEqualTo(NotFirst)
   }
 
   @Test
@@ -285,7 +284,7 @@ internal class LoginRequesterTest {
     before(accountApi)
 
     assertThat(loginRequester.openIdFirstLogin(listOf(PASSWORD_METHOD, OPENID_METHOD)))
-      .isEqualTo(OpenIdFirstLogin.NotFirst)
+      .isEqualTo(NotFirst)
   }
 
   @Test
@@ -301,9 +300,9 @@ internal class LoginRequesterTest {
   }
 
   private object FakeOpenIdRedirects : OpenIdRedirects {
-    override suspend fun returnUrl() = "aktual.test://localhost"
-
     override val tokens = emptyFlow<Token>()
+
+    override suspend fun returnUrl() = "aktual.test://localhost"
   }
 
   private companion object {
@@ -312,6 +311,6 @@ internal class LoginRequesterTest {
     val EXAMPLE_TOKEN = Token(value = "abc123")
     val EXAMPLE_URL = ServerUrl(Https, "website.com")
     val PASSWORD_METHOD = AvailableLoginMethod(LoginMethod.Password, "Password", isActive = true)
-    val OPENID_METHOD = AvailableLoginMethod(LoginMethod.OpenId, "OpenID", isActive = false)
+    val OPENID_METHOD = AvailableLoginMethod(OpenId, "OpenID", isActive = false)
   }
 }

@@ -64,7 +64,7 @@ internal fun OpenIdLogin(
       modifier = Modifier.testTag(Tags.OpenIdLoginButton).padding(5.dp).fillMaxWidth(),
       text = Strings.loginSignIn,
       isLoading = isLoading,
-      isEnabled = firstLogin != FirstWithPassword || enteredPassword != Password.Empty,
+      isEnabled = firstLogin != FirstWithPassword || enteredPassword != Empty,
       onClick = { onAction(SignIn) },
     )
   }
@@ -79,7 +79,7 @@ private fun PreviewOpenIdLogin(
     OpenIdLogin(
       isLoading = isLoading,
       firstLogin = firstLogin,
-      enteredPassword = Password.Empty,
+      enteredPassword = Empty,
       onAction = {},
     )
   }
