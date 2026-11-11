@@ -9,6 +9,7 @@ import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.SyncState
 import aktual.budget.model.SyncState.SyncFailed
+import aktual.core.model.ForegroundStateHolder
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
@@ -26,6 +27,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -42,6 +45,7 @@ internal constructor(
   private val syncDao: SyncDao,
   private val budgetMetadata: BudgetLocalPreferences,
   private val syncEvents: SyncEvents,
+  private val foregroundState: ForegroundStateHolder,
 ) : BudgetSyncController, Initializable, Closeable {
   private var syncJob: Job? = null
   private var inactiveJob: Job? = null
@@ -50,6 +54,8 @@ internal constructor(
   override fun initialize() {
     scope.launch { rebuildScheduleJsonPaths() }
     schedule()
+    // Fetch what changed on other devices while the app was in the background
+    scope.launch { foregroundState.drop(1).filter { it }.collect { schedule() } }
   }
 
   private suspend fun rebuildScheduleJsonPaths() =
