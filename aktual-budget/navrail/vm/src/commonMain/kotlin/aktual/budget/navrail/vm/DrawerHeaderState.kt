@@ -6,6 +6,7 @@ import androidx.compose.runtime.Immutable
 data class DrawerHeaderState(
   val budgetName: String?,
   val serverHost: String?,
+  val canManageApiKeys: Boolean = false,
 ) {
   val isDemo: Boolean
     get() = serverHost == null

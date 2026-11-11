@@ -33,6 +33,8 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
@@ -80,6 +82,28 @@ class BudgetNavRailViewModelTest {
       assertThat(api.renames).isEmpty()
       assertThat(sync.changes).containsExactly(NAME_CHANGE)
       cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `API keys can be managed from a password session`() = runDatabaseTest { scope ->
+    viewModel(REMOTE, scope).headerState.test {
+      assertThat(awaitItem().canManageApiKeys).isTrue()
+    }
+  }
+
+  @Test
+  fun `API keys can't be managed from an API key session`() = runDatabaseTest { scope ->
+    val server = REMOTE.copy(token = Token("actual_abc123"))
+    viewModel(server, scope).headerState.test {
+      assertThat(awaitItem().canManageApiKeys).isFalse()
+    }
+  }
+
+  @Test
+  fun `API keys can't be managed without a server`() = runDatabaseTest { scope ->
+    viewModel(None, scope).headerState.test {
+      assertThat(awaitItem().canManageApiKeys).isFalse()
     }
   }
 

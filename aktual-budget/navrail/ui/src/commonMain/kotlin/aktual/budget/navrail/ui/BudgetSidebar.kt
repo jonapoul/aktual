@@ -14,7 +14,9 @@ import aktual.budget.navrail.vm.DrawerHeaderState
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
+import aktual.core.icons.Code
 import aktual.core.icons.Cog
+import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.InformationOutline
 import aktual.core.icons.Pencil1
 import aktual.core.icons.ViewHide
@@ -32,6 +34,8 @@ import aktual.core.nav.ManageAccountsNavRoute
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.theme.Colors
 import aktual.core.ui.AccountSyncDot
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
@@ -80,6 +84,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -121,14 +126,13 @@ internal fun ColumnScope.BudgetSidebarContent(
   onSelectTab: (BudgetTab) -> Unit,
   onOpenTransactions: (BudgetNavKey.Transactions) -> Unit,
   onAddAccount: () -> Unit,
-  onRename: () -> Unit,
   onSetPrivacyMode: (Boolean) -> Unit,
-  onAction: OnAction<BudgetNavAction>,
+  onAction: OnAction<BudgetMenuAction>,
 ) {
   Column(modifier = Modifier.weight(1f).verticalScrollWithBar().padding(12.dp)) {
     DrawerHeader(
       state = headerState,
-      onRename = onRename,
+      onAction = onAction,
       modifier = Modifier.padding(bottom = 12.dp),
     )
 
@@ -372,7 +376,7 @@ private data class DrawerAction(
 private fun drawerActions(
   isDemo: Boolean,
   onSetPrivacyMode: (Boolean) -> Unit,
-  onAction: OnAction<BudgetNavAction>,
+  onAction: OnAction<BudgetMenuAction>,
 ): ImmutableList<DrawerAction> = buildList {
   if (LocalPrivacyEnabled.current) {
     +DrawerAction(
@@ -450,9 +454,10 @@ private val DrawerButtonColors = IconButtonColorProvider { theme, isPressed ->
 @Composable
 private fun DrawerHeader(
   state: DrawerHeaderState,
-  onRename: () -> Unit,
+  onAction: OnAction<BudgetMenuAction>,
   modifier: Modifier = Modifier,
 ) {
+  var showMenu by remember { mutableStateOf(false) }
   Row(
     modifier =
       modifier
@@ -480,16 +485,39 @@ private fun DrawerHeader(
       )
     }
 
-    BareIconButton(
-      imageVector = AktualIcons.Pencil1,
-      contentDescription = Strings.budgetNavMenuRenameBudget,
-      colors = RenameButtonColors,
-      onClick = onRename,
-    )
+    Box {
+      BareIconButton(
+        imageVector = AktualIcons.DotsHorizontalTriple,
+        contentDescription = Strings.budgetNavMenuMore,
+        colors = HeaderButtonColors,
+        onClick = { showMenu = true },
+      )
+
+      AktualDropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+        AktualDropdownMenuItem(
+          text = Strings.budgetNavMenuRenameBudget,
+          leadingIcon = AktualIcons.Pencil1,
+          onClick = {
+            showMenu = false
+            onAction(RenameBudget)
+          },
+        )
+        if (state.canManageApiKeys) {
+          AktualDropdownMenuItem(
+            text = Strings.budgetNavMenuApiKeys,
+            leadingIcon = AktualIcons.Code,
+            onClick = {
+              showMenu = false
+              onAction(OpenApiKeys)
+            },
+          )
+        }
+      }
+    }
   }
 }
 
-private val RenameButtonColors = IconButtonColorProvider { theme, isPressed ->
+private val HeaderButtonColors = IconButtonColorProvider { theme, isPressed ->
   theme
     .bareIconButton(isPressed)
     .copy(
@@ -554,6 +582,7 @@ private fun PreviewBudgetDrawerSheet(@PreviewParameter(ColorParameters::class) c
           DrawerHeaderState(
             budgetName = "My Budget",
             serverHost = "actual.example.com",
+            canManageApiKeys = true,
           ),
         accounts = PREVIEW_ACCOUNTS,
         selectedTab = Transactions,
@@ -561,7 +590,6 @@ private fun PreviewBudgetDrawerSheet(@PreviewParameter(ColorParameters::class) c
         onSelectTab = {},
         onOpenTransactions = {},
         onAddAccount = {},
-        onRename = {},
         onSetPrivacyMode = {},
         onAction = {},
       )

@@ -58,8 +58,16 @@ internal constructor(
     viewModelScope.launchMolecule(Immediate) {
       val budgetNameFlow = remember { localPreferences.observe(BudgetName) }
       val budgetName by budgetNameFlow.collectAsState(initial = localPreferences[BudgetName])
-      val serverHost = (server as? Remote)?.url?.baseUrl
-      DrawerHeaderState(budgetName = budgetName, serverHost = serverHost)
+      val remote = server as? Remote
+      DrawerHeaderState(
+        budgetName = budgetName,
+        serverHost = remote?.url?.baseUrl,
+        // Keys can't manage other keys, and the budget needs to be on the server
+        canManageApiKeys =
+          remote != null &&
+            !remote.token.value.startsWith(API_KEY_PREFIX) &&
+            localPreferences[CloudFileId] != null,
+      )
     }
 
   val accounts: StateFlow<DrawerAccounts> =
@@ -105,4 +113,8 @@ internal constructor(
       column = "value",
       value = name,
     )
+
+  private companion object {
+    const val API_KEY_PREFIX = "actual_"
+  }
 }

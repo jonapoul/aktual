@@ -5,6 +5,7 @@ import aktual.budget.accounts.components.addAccount
 import aktual.budget.navrail.vm.BudgetNavRailViewModel
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
+import aktual.core.icons.Code
 import aktual.core.icons.Cog
 import aktual.core.icons.InformationOutline
 import aktual.core.icons.Library
@@ -23,6 +24,7 @@ import aktual.core.icons.material.Menu
 import aktual.core.icons.material.ReceiptLong
 import aktual.core.icons.material.SwapHoriz
 import aktual.core.l10n.Strings
+import aktual.core.nav.ApiKeysNavRoute
 import aktual.core.nav.BankSyncNavRoute
 import aktual.core.nav.BudgetEntryScope
 import aktual.core.nav.BudgetNavEntryContributor
@@ -158,6 +160,14 @@ internal fun BudgetNavRail(
 
   val createAccount = { onOpenTransactions(CreateAccountNavRoute) }
 
+  val onMenuAction: OnAction<BudgetMenuAction> = { action ->
+    when (action) {
+      RenameBudget -> dialog = Rename
+      OpenApiKeys -> activeStack.push(ApiKeysNavRoute)
+      is BudgetNavAction -> onAction(action)
+    }
+  }
+
   val sidebar: @Composable ColumnScope.(close: () -> Unit) -> Unit = { close ->
     BudgetSidebarContent(
       headerState = headerState,
@@ -176,15 +186,11 @@ internal fun BudgetNavRail(
         close()
         addAccount(!headerState.isDemo, { dialog = AddAccount }, createAccount)
       },
-      onRename = {
-        close()
-        dialog = Rename
-      },
       // Stays open, so the balances can be seen changing
       onSetPrivacyMode = viewModel::setPrivacyMode,
       onAction = { action ->
         close()
-        onAction(action)
+        onMenuAction(action)
       },
     )
   }
@@ -214,13 +220,13 @@ internal fun BudgetNavRail(
     SideNavLayout(
       contributors = contributors,
       isDemo = headerState.isDemo,
+      canManageApiKeys = headerState.canManageApiKeys,
       appStack = appStack,
       activeStack = activeStack,
       selectedTab = selectedTab,
       onSelectTab = onSelectTab,
-      onRename = { dialog = Rename },
       onSetPrivacyMode = viewModel::setPrivacyMode,
-      onAction = onAction,
+      onAction = onMenuAction,
       modifier = modifier,
     )
   }
@@ -400,13 +406,13 @@ private class PassTouchesThroughNode(var enabled: Boolean) :
 private fun SideNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   isDemo: Boolean,
+  canManageApiKeys: Boolean,
   appStack: NavStack<NavKey>,
   activeStack: NavStack<BudgetNavKey>,
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
-  onRename: () -> Unit,
   onSetPrivacyMode: (Boolean) -> Unit,
-  onAction: OnAction<BudgetNavAction>,
+  onAction: OnAction<BudgetMenuAction>,
   modifier: Modifier = Modifier,
 ) {
   var showMenu by remember { mutableStateOf(false) }
@@ -416,8 +422,8 @@ private fun SideNavLayout(
       BudgetMenu(
         expanded = showMenu,
         isDemo = isDemo,
+        canManageApiKeys = canManageApiKeys,
         onSelectTab = onSelectTab,
-        onRename = onRename,
         onSetPrivacyMode = onSetPrivacyMode,
         onAction = onAction,
         onDismissRequest = { showMenu = false },
@@ -627,11 +633,11 @@ internal fun budgetNavKeyStackSaver() =
 private fun BudgetMenu(
   expanded: Boolean,
   isDemo: Boolean,
+  canManageApiKeys: Boolean,
   onDismissRequest: () -> Unit,
   onSelectTab: (BudgetTab) -> Unit,
-  onRename: () -> Unit,
   onSetPrivacyMode: (Boolean) -> Unit,
-  onAction: OnAction<BudgetNavAction>,
+  onAction: OnAction<BudgetMenuAction>,
   modifier: Modifier = Modifier,
 ) {
   val isPrivacyEnabled = LocalPrivacyEnabled.current
@@ -652,9 +658,19 @@ private fun BudgetMenu(
         leadingIcon = AktualIcons.Pencil1,
         onClick = {
           onDismissRequest()
-          onRename()
+          onAction(RenameBudget)
         },
       )
+      if (canManageApiKeys) {
+        AktualDropdownMenuItem(
+          text = Strings.budgetNavMenuApiKeys,
+          leadingIcon = AktualIcons.Code,
+          onClick = {
+            onDismissRequest()
+            onAction(OpenApiKeys)
+          },
+        )
+      }
       AktualDropdownMenuItem(
         text =
           if (isPrivacyEnabled) {
