@@ -285,14 +285,15 @@ private fun PreviewApiKeysScaffold(
   @PreviewParameter(ApiKeysStateProvider::class) params: ColorParams<ApiKeysState>,
 ) = PreviewWithColorParams(params) { ApiKeysScaffold(state = this, onAction = {}) }
 
+private val PREVIEW_IMPORTER =
+  ApiKeyItem(ApiKeyId("1"), "Transaction importer", LocalDate(2026, 11, 2))
+
+private val PREVIEW_HOME_ASSISTANT =
+  ApiKeyItem(ApiKeyId("2"), "Home Assistant", LocalDate(2026, 10, 14))
+
 private class ApiKeysStateProvider :
   ColorParamsProvider<ApiKeysState>(
-    Loaded(
-      persistentListOf(
-        ApiKeyItem(ApiKeyId("1"), "Transaction importer", LocalDate(2026, 11, 2)),
-        ApiKeyItem(ApiKeyId("2"), "Home Assistant", LocalDate(2026, 10, 14)),
-      ),
-    ),
+    Loaded(persistentListOf(PREVIEW_IMPORTER, PREVIEW_HOME_ASSISTANT)),
     Loading,
     Empty,
     Unsupported,
