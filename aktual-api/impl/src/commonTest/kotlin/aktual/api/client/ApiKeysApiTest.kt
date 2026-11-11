@@ -19,7 +19,10 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
 import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpHeaders
 import io.ktor.http.content.TextContent
+import io.ktor.http.headersOf
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -123,6 +126,30 @@ class ApiKeysApiTest {
     val response = api.revoke(KEY_ID)
 
     assertThat(response).isEqualTo(ApiKeysResponse.Failed(ApiKeysResponse.API_KEY_NOT_FOUND))
+  }
+
+  @Test
+  fun `HTML response is unsupported`() = runTest {
+    mockEngine += {
+      respond(
+        content = "<!doctype html><html></html>",
+        headers = headersOf(HttpHeaders.ContentType, "text/html; charset=utf-8"),
+      )
+    }
+
+    assertThat(api.list()).isEqualTo(ApiKeysResponse.Failed(ApiKeysResponse.UNSUPPORTED))
+  }
+
+  @Test
+  fun `HTML response to revoke is unsupported`() = runTest {
+    mockEngine += {
+      respond(
+        content = "<!doctype html><html></html>",
+        headers = headersOf(HttpHeaders.ContentType, "text/html; charset=utf-8"),
+      )
+    }
+
+    assertThat(api.revoke(KEY_ID)).isEqualTo(ApiKeysResponse.Failed(ApiKeysResponse.UNSUPPORTED))
   }
 
   private companion object {

@@ -19,10 +19,10 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType.Application.Json
 import io.ktor.http.contentType
 import io.ktor.http.path
-import kotlinx.serialization.json.JsonElement
 
 @ContributesBinding(BudgetScope::class)
 class ApiKeysApiImpl
@@ -31,7 +31,7 @@ internal constructor(
   private val server: BudgetServer,
 ) : ApiKeysApi {
   override suspend fun list(): ApiKeysResponse<List<ApiKey>> =
-    parse(client.get { request() }.body<BankSyncEnvelope<List<ApiKey>>>())
+    parse<List<ApiKey>>(client.get { request() })
 
   override suspend fun create(
     name: String,
@@ -42,20 +42,23 @@ internal constructor(
       contentType(Json)
       setBody(CreateApiKeyRequest(name, budgets))
     }
-    return parse(response.body<BankSyncEnvelope<CreatedApiKey>>())
+    return parse<CreatedApiKey>(response)
   }
 
-  override suspend fun revoke(id: ApiKeyId): ApiKeysResponse<Unit> {
-    val envelope = client.delete { request(id.value) }.body<BankSyncEnvelope<JsonElement>>()
-    return if (envelope.isOk) {
-      ApiKeysResponse.Success(Unit)
-    } else {
-      ApiKeysResponse.Failed(envelope.reason)
+  // A successful revoke has no data
+  override suspend fun revoke(id: ApiKeyId): ApiKeysResponse<Unit> =
+    parse<Unit>(client.delete { request(id.value) }, emptyData = Unit)
+
+  private suspend inline fun <reified T> parse(
+    response: HttpResponse,
+    emptyData: T? = null,
+  ): ApiKeysResponse<T> {
+    // Servers without these endpoints serve the web app's HTML instead
+    if (response.contentType()?.match(Json) != true) {
+      return ApiKeysResponse.Failed(ApiKeysResponse.UNSUPPORTED)
     }
-  }
-
-  private fun <T> parse(envelope: BankSyncEnvelope<T>): ApiKeysResponse<T> {
-    val data = envelope.data
+    val envelope = response.body<BankSyncEnvelope<T>>()
+    val data = envelope.data ?: emptyData
     return if (envelope.isOk && data != null) {
       ApiKeysResponse.Success(data)
     } else {
