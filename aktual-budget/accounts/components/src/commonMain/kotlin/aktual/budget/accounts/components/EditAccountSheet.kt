@@ -10,7 +10,6 @@ import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount.Companion.Zero
 import aktual.core.l10n.Strings
-import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParams
@@ -37,9 +36,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 
 // Shows its own snackbar once saved, with an undo
 @Composable
@@ -140,7 +137,7 @@ private fun EditAccountFields(
 
     Column {
       FieldLabel(Strings.accountsEditGroup)
-      GroupPicker(value = state.group, groups = state.groups, onValueChange = onGroup)
+      AccountGroupPicker(value = state.group, groups = state.groups, onValueChange = onGroup)
     }
 
     Column {
@@ -155,23 +152,6 @@ private fun EditAccountFields(
 
     state.saveError?.let { error -> ErrorText("${Strings.accountsEditSaveFailed}: $error") }
   }
-}
-
-@Composable
-private fun GroupPicker(
-  value: AccountGroupId?,
-  groups: ImmutableList<AccountGroupItem>,
-  onValueChange: (AccountGroupId?) -> Unit,
-) {
-  val options = (listOf<AccountGroupId?>(null) + groups.map { it.id }).toImmutableList()
-  val ungrouped = Strings.accountsManageUngrouped
-  AktualExposedDropDownMenu(
-    modifier = Modifier.fillMaxWidth(),
-    value = value,
-    onValueChange = onValueChange,
-    options = options,
-    string = { id -> groups.firstOrNull { it.id == id }?.name ?: ungrouped },
-  )
 }
 
 @PortraitPreview

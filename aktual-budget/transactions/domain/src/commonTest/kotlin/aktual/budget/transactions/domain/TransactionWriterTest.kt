@@ -7,6 +7,7 @@ import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
+import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
@@ -562,6 +563,21 @@ internal class TransactionWriterTest {
 
     val transaction = TransactionId(lastSync().first { it.dataset == TRANSACTIONS }.row)
     assertThat(transactionDao.row(transaction)?.category).isNull()
+  }
+
+  @Test
+  fun `Create an account in a group`() = runWriterTest {
+    val id = writer.write {
+      createAccount(
+        "Cash",
+        offBudget = false,
+        balance = Zero,
+        date = DATE,
+        group = AccountGroupId("everyday"),
+      )
+    }
+
+    assertThat(accountDao[id]?.account_group_id).isEqualTo(AccountGroupId("everyday"))
   }
 
   @Test

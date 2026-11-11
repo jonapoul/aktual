@@ -1,7 +1,10 @@
 package aktual.budget.accounts.ui
 
+import aktual.budget.accounts.components.AccountGroupPicker
 import aktual.budget.accounts.vm.CreateAccountState
 import aktual.budget.accounts.vm.CreateAccountViewModel
+import aktual.budget.accounts.vm.manage.AccountGroupItem
+import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -88,6 +91,7 @@ fun CreateAccountScreen(
         is SetName -> viewModel.setName(action.name)
         is SetBalance -> viewModel.setBalance(action.balance)
         is SetOffBudget -> viewModel.setOffBudget(action.offBudget)
+        is SetGroup -> viewModel.setGroup(action.group)
         is SetNegative -> viewModel.setNegative(action.negative)
       }
     },
@@ -211,6 +215,21 @@ private fun ColumnScope.CreateAccountForm(
     )
   }
 
+  // Nothing to pick until a group exists
+  if (state.groups.isNotEmpty()) {
+    Column(verticalArrangement = Arrangement.spacedBy(CreateAccountDS.labelSpacing)) {
+      Text(
+        text = Strings.accountsCreateGroup,
+        style = typography.bodyLarge,
+      )
+      AccountGroupPicker(
+        value = state.group,
+        groups = state.groups,
+        onValueChange = { onAction(SetGroup(it)) },
+      )
+    }
+  }
+
   Column(verticalArrangement = Arrangement.spacedBy(CreateAccountDS.labelSpacing)) {
     Text(
       text = Strings.accountsCreateBalance,
@@ -266,7 +285,17 @@ private fun PreviewCreateAccountScreen(
 private class CreateAccountStateProvider :
   ColorParamsProvider<CreateAccountState>(
     CreateAccountState(),
-    CreateAccountState(offBudget = true, isNegative = true, canCreate = true),
+    CreateAccountState(
+      offBudget = true,
+      isNegative = true,
+      canCreate = true,
+      group = AccountGroupId("savings"),
+      groups =
+        persistentListOf(
+          AccountGroupItem(AccountGroupId("everyday"), "Everyday"),
+          AccountGroupItem(AccountGroupId("savings"), "Savings"),
+        ),
+    ),
     CreateAccountState(duplicateName = "Savings", isBalanceValid = false),
     CreateAccountState(canCreate = true, isSaving = true),
   )

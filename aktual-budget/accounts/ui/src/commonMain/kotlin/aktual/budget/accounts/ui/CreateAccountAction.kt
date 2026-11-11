@@ -1,5 +1,6 @@
 package aktual.budget.accounts.ui
 
+import aktual.budget.model.AccountGroupId
 import androidx.compose.runtime.Immutable
 
 @Immutable internal sealed interface CreateAccountAction
@@ -15,5 +16,7 @@ internal data object DismissSaveError : CreateAccountAction
 @JvmInline internal value class SetBalance(val balance: String) : CreateAccountAction
 
 @JvmInline internal value class SetOffBudget(val offBudget: Boolean) : CreateAccountAction
+
+@JvmInline internal value class SetGroup(val group: AccountGroupId?) : CreateAccountAction
 
 @JvmInline internal value class SetNegative(val negative: Boolean) : CreateAccountAction

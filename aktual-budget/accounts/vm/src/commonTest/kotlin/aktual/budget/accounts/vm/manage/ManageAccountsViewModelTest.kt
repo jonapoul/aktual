@@ -144,13 +144,27 @@ class ManageAccountsViewModelTest {
     val id = viewModel.successState().groups.single().id
     assertThat(viewModel.successState().groups.single().name).isEqualTo("Cards")
 
-    viewModel.renameGroup(id, "Credit cards")
-    scope.advanceUntilIdle()
-    assertThat(viewModel.successState().groups.single().name).isEqualTo("Credit cards")
+    viewModel.events.test {
+      viewModel.renameGroup(id, "Credit cards")
+      val renamed = awaitItem() as GroupRenamed
+      assertThat(renamed.from to renamed.to).isEqualTo("Cards" to "Credit cards")
+      scope.advanceUntilIdle()
+      assertThat(viewModel.successState().groups.single().name).isEqualTo("Credit cards")
 
-    viewModel.deleteGroup(id)
-    scope.advanceUntilIdle()
-    assertThat(viewModel.successState().groups).isEqualTo(emptyList<AccountGroupItem>())
+      viewModel.deleteGroup(id)
+      val deleted = awaitItem() as GroupDeleted
+      assertThat(deleted.name).isEqualTo("Credit cards")
+      scope.advanceUntilIdle()
+      assertThat(viewModel.successState().groups).isEqualTo(emptyList<AccountGroupItem>())
+
+      viewModel.undo(deleted.undo)
+      scope.advanceUntilIdle()
+      assertThat(viewModel.successState().groups.single().name).isEqualTo("Credit cards")
+
+      viewModel.undo(renamed.undo)
+      scope.advanceUntilIdle()
+      assertThat(viewModel.successState().groups.single().name).isEqualTo("Cards")
+    }
   }
 
   @Test
@@ -162,12 +176,16 @@ class ManageAccountsViewModelTest {
 
     viewModel.events.test {
       viewModel.reopen(id)
-      assertThat(awaitItem()).isEqualTo(ManageAccountsEvent.Reopened("Old card"))
-    }
+      val event = awaitItem() as Reopened
+      assertThat(event.name).isEqualTo("Old card")
+      scope.advanceUntilIdle()
+      assertThat(viewModel.successState().closed).isEqualTo(emptyList<ManagedAccount>())
+      assertThat(viewModel.groupedIds()).containsExactly(null to listOf(id))
 
-    scope.advanceUntilIdle()
-    assertThat(viewModel.successState().closed).isEqualTo(emptyList<ManagedAccount>())
-    assertThat(viewModel.groupedIds()).containsExactly(null to listOf(id))
+      viewModel.undo(event.undo)
+      scope.advanceUntilIdle()
+      assertThat(viewModel.successState().closed.map { it.id }).containsExactly(id)
+    }
   }
 
   private fun AccountsTestScope.viewModel() =

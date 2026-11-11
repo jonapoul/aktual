@@ -9,6 +9,7 @@ import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.TransactionDao
+import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.LocalChange
@@ -271,16 +272,18 @@ internal constructor(
   }
 
   /**
-   * accounts/app.ts createAccount(): the account, its transfer payee and, unless [balance] is zero,
-   * a starting balance on [date].
+   * accounts/app.ts createAccount(): the account in [group], its transfer payee and, unless
+   * [balance] is zero, a starting balance on [date].
    */
   suspend fun createAccount(
     name: String,
     offBudget: Boolean,
     balance: Amount,
     date: LocalDate,
+    group: AccountGroupId? = null,
   ): AccountId {
     val id = insertAccount(name, offBudget)
+    if (group != null) changes += localChange(ACCOUNTS, id.value, "account_group_id", group.value)
     insertPayee(name = "", transferAccount = id)
     if (balance != Zero) insertStartingBalance(id, balance, date)
     return id

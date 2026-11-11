@@ -94,15 +94,7 @@ internal fun ManageAccountsScreen(
   var overlay by remember { mutableStateOf<ManageOverlay?>(null) }
 
   LaunchedEffect(viewModel) {
-    viewModel.events.collect { event ->
-      when (event) {
-        is AccountMoved -> snackbars.show { showAccountMoved(event, viewModel::undo) }
-        is GroupMoved -> snackbars.show { showGroupMoved(event, viewModel::undo) }
-        is Reopened -> snackbars.show { showReopened(event) }
-        is GroupNameTaken -> snackbars.show { showGroupNameTaken(event) }
-        is ActionFailed -> snackbars.show { showActionFailed() }
-      }
-    }
+    viewModel.events.collect { event -> snackbars.show { showEvent(event, viewModel::undo) } }
   }
 
   val onAction: OnAction<ManageAccountsAction> = { action ->

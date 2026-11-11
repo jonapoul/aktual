@@ -1,8 +1,10 @@
 package aktual.budget.accounts.vm
 
 import aktual.budget.BudgetSyncController
+import aktual.budget.accounts.vm.manage.AccountGroupItem
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.AccountGroupDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
@@ -26,7 +28,10 @@ import assertk.assertions.contains
 import assertk.assertions.containsExactly
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import kotlin.time.Clock
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.datetime.LocalDate
@@ -141,6 +146,47 @@ class CreateAccountViewModelTest {
   }
 
   @Test
+  fun `Creating in a group puts the account in it`() = runAccountsTest {
+    val everyday = writer.createGroup("Everyday")
+    val viewModel = createViewModel()
+
+    viewModel.state.test {
+      assertThat(awaitItem().groups).isEqualTo(persistentListOf())
+      assertThat(awaitItem().groups)
+        .isEqualTo(persistentListOf(AccountGroupItem(everyday, "Everyday")))
+
+      viewModel.setName("Cash")
+      viewModel.setGroup(everyday)
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    viewModel.events.test {
+      viewModel.create()
+      val id = (awaitItem() as Created).id
+      assertThat(accountDao[id]?.account_group_id).isEqualTo(everyday)
+    }
+  }
+
+  @Test
+  fun `A group deleted after picking it creates the account ungrouped`() = runAccountsTest {
+    val everyday = writer.createGroup("Everyday")
+    val viewModel = createViewModel()
+    viewModel.setName("Cash")
+    viewModel.setGroup(everyday)
+    scope.advanceUntilIdle()
+
+    writer.deleteGroup(everyday)
+    scope.advanceUntilIdle()
+    assertThat(viewModel.state.value.group).isNull()
+
+    viewModel.events.test {
+      viewModel.create()
+      val id = (awaitItem() as Created).id
+      assertThat(accountDao[id]?.account_group_id).isNull()
+    }
+  }
+
+  @Test
   fun `A failed create shows its error until dismissed`() = runDatabaseTest { scope ->
     val viewModel = createViewModel(scope, FailingSyncController)
 
@@ -176,10 +222,22 @@ class CreateAccountViewModelTest {
           clock = Clock.System,
         ),
       accountDao = accountDao,
+      groupDao = AccountGroupDao(this),
       calendar = TestCalendar(LocalDate(2026, 10, 24)),
       viewModelContext = scope.viewModelContext,
     )
   }
+
+  private fun AccountsTestScope.createViewModel() =
+    track(
+      CreateAccountViewModel(
+        writer = transactions,
+        accountDao = accountDao,
+        groupDao = groupDao,
+        calendar = TestCalendar(LocalDate(2026, 10, 24)),
+        viewModelContext = scope.viewModelContext,
+      ),
+    )
 
   private suspend fun BudgetDatabase.insertAccount(id: String, name: String) =
     accountsQueries.withoutResult {

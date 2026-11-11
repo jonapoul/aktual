@@ -84,7 +84,11 @@ class AccountWriter(
   suspend fun setGroup(id: AccountId, group: AccountGroupId?) =
     sync(localChange(ACCOUNTS, id.value, GROUP_ID, group?.value))
 
-  suspend fun reopen(id: AccountId) = sync(localChange(ACCOUNTS, id.value, CLOSED, false))
+  // Returns what closes it again
+  suspend fun reopen(id: AccountId): AccountUndo {
+    sync(localChange(ACCOUNTS, id.value, CLOSED, false))
+    return AccountUndo(listOf(localChange(ACCOUNTS, id.value, CLOSED, true)))
+  }
 
   /**
    * closeAccount() without forcing it. An account with no transactions is deleted instead. Any
@@ -191,21 +195,32 @@ class AccountWriter(
     return id
   }
 
-  suspend fun renameGroup(id: AccountGroupId, name: String) {
+  // Returns what puts the old name back
+  suspend fun renameGroup(id: AccountGroupId, name: String): AccountUndo {
+    val group = groupDao.getAllActive().firstOrNull { it.id == id }
+    checkNotNull(group) { "Account group $id not found" }
     checkGroupName(name, except = id)
     sync(localChange(ACCOUNT_GROUPS, id.value, "name", name))
+    return AccountUndo(listOf(localChange(ACCOUNT_GROUPS, id.value, "name", group.name)))
   }
 
-  /** deleteAccountGroup(): its accounts become ungrouped. */
-  suspend fun deleteGroup(id: AccountGroupId) {
+  /**
+   * deleteAccountGroup(): its accounts become ungrouped. Returns what restores the group with its
+   * accounts back in it.
+   */
+  suspend fun deleteGroup(id: AccountGroupId): AccountUndo {
+    val accounts = accountDao.idsInGroup(id)
     val changes = buildList {
       val nullValue: String? = null
-      accountDao.idsInGroup(id).forEach {
-        add(localChange(ACCOUNTS, it.value, GROUP_ID, nullValue))
-      }
+      accounts.forEach { add(localChange(ACCOUNTS, it.value, GROUP_ID, nullValue)) }
       add(tombstone(ACCOUNT_GROUPS, id.value))
     }
     sync(changes)
+    val undo = buildList {
+      add(untombstone(ACCOUNT_GROUPS, id.value))
+      accounts.forEach { add(localChange(ACCOUNTS, it.value, GROUP_ID, id.value)) }
+    }
+    return AccountUndo(undo)
   }
 
   /**
