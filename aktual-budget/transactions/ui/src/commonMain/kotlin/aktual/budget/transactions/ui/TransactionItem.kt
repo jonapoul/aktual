@@ -24,6 +24,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ShimmerBlock
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.redacted
@@ -41,10 +42,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -72,7 +75,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
-// Comfortable and Compact. Keep in sync with [LedgerShimmerRow]
+/** Comfortable and Compact. Keep in sync with [LedgerShimmerRow] */
 @Composable
 internal fun LedgerRow(
   transaction: Transaction,
@@ -386,7 +389,7 @@ private fun rowClick(
   }
 }
 
-// Dense. Keep in sync with [LedgerShimmerRow]
+/** Dense. Keep in sync with [LedgerShimmerRow] */
 @Composable
 internal fun LedgerTableRow(
   transaction: Transaction,
@@ -616,27 +619,160 @@ private fun LocalDate.dayAndMonth(): String {
   return "$day/$month"
 }
 
-/** Keep in sync with [LedgerRow] and [LedgerTableRow] */
+/** Keep in sync with [LedgerRow] and [LedgerTableRow]. [index] varies the bar widths */
 @Composable
-internal fun LedgerShimmerRow(modifier: Modifier = Modifier) {
+@Suppress("LongMethod")
+internal fun LedgerShimmerRow(
+  index: Int,
+  density: TransactionsDensity,
+  modifier: Modifier = Modifier,
+) {
   val dimens = LocalLedgerDimens.current
-  val bar = Modifier.height(dimens.rowHeight / SHIMMER_BAR_FRACTION)
+  val widths = ShimmerWidths[index % ShimmerWidths.size]
+  when (density) {
+    Comfortable,
+    Compact -> {
+      Row(
+        modifier =
+          modifier.fillMaxWidth().heightIn(min = dimens.rowHeight).shimmer(rememberShimmer(Window)),
+        verticalAlignment = CenterVertically,
+      ) {
+        Box(
+          modifier =
+            Modifier.align(Alignment.Top).width(dimens.railWidth).padding(top = dimens.railTop),
+          contentAlignment = TopCenter,
+        ) {
+          if (shimmerShowsDate(index)) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+              ShimmerLine(
+                modifier = Modifier.width(ShimmerDayWidth),
+                style =
+                  textStyle(dimens.dayNumberSize, Bold)
+                    .copy(lineHeight = dimens.dayNumberSize * DAY_NUMBER_LINE_HEIGHT),
+              )
+              ShimmerLine(
+                modifier = Modifier.width(ShimmerMonthWidth),
+                style = textStyle(dimens.weekdaySize, SemiBold),
+              )
+            }
+          }
+        }
 
-  Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .height(dimens.rowHeight)
-        .padding(horizontal = dimens.rowEnd)
-        .shimmer(rememberShimmer(Window)),
-    verticalAlignment = CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(dimens.contentGap),
-  ) {
-    ShimmerBlock(bar.width(dimens.railWidth - dimens.rowEnd))
-    ShimmerBlock(bar.weight(1f))
-    ShimmerBlock(bar.width(DenseColumns.amount))
+        Column(modifier = Modifier.weight(1f).padding(vertical = dimens.rowVertical)) {
+          ShimmerLine(
+            modifier = Modifier.fillMaxWidth(widths.payee),
+            style = textStyle(dimens.payeeSize, dimens.payeeWeight),
+          )
+          ShimmerLine(
+            modifier = Modifier.fillMaxWidth(widths.category),
+            style = textStyle(dimens.secondLineSize),
+          )
+        }
+
+        Column(
+          modifier =
+            Modifier.padding(
+              start = dimens.contentGap,
+              end = if (dimens.isReconciling) 0.dp else dimens.rowEnd,
+            ),
+          horizontalAlignment = Alignment.End,
+        ) {
+          ShimmerLine(
+            modifier = Modifier.width(ShimmerAmountWidth * widths.amount),
+            style = tabularFigures(textStyle(dimens.amountSize, dimens.amountWeight)),
+          )
+          if (dimens.showBalance) {
+            ShimmerLine(
+              modifier = Modifier.width(ShimmerBalanceWidth),
+              style = tabularFigures(textStyle(dimens.balanceSize)),
+            )
+          }
+        }
+
+        if (dimens.isReconciling) {
+          ShimmerClearedToggle(Modifier.width(DenseColumns.cleared + dimens.rowEnd))
+        }
+      }
+    }
+
+    Dense -> {
+      Row(
+        modifier =
+          modifier
+            .fillMaxWidth()
+            .height(dimens.rowHeight)
+            .padding(horizontal = dimens.rowEnd)
+            .shimmer(rememberShimmer(Window)),
+        verticalAlignment = CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(dimens.contentGap),
+      ) {
+        val small = textStyle(dimens.secondLineSize)
+        Box(modifier = Modifier.width(DenseColumns.date)) {
+          ShimmerLine(modifier = Modifier.width(ShimmerDenseDateWidth), style = small)
+        }
+
+        Box(modifier = Modifier.weight(DenseColumns.PAYEE_WEIGHT)) {
+          ShimmerLine(
+            modifier = Modifier.fillMaxWidth(widths.payee),
+            style = textStyle(dimens.payeeSize, dimens.payeeWeight),
+          )
+        }
+
+        Box(modifier = Modifier.weight(DenseColumns.CATEGORY_WEIGHT)) {
+          ShimmerLine(modifier = Modifier.fillMaxWidth(widths.category), style = small)
+        }
+
+        Box(modifier = Modifier.width(DenseColumns.amount), contentAlignment = CenterEnd) {
+          ShimmerLine(
+            modifier = Modifier.width(ShimmerAmountWidth * widths.amount),
+            style = textStyle(dimens.amountSize, dimens.amountWeight),
+          )
+        }
+
+        if (dimens.showBalance) {
+          Box(modifier = Modifier.width(DenseColumns.balance), contentAlignment = CenterEnd) {
+            ShimmerLine(modifier = Modifier.width(ShimmerBalanceWidth), style = small)
+          }
+        }
+
+        if (dimens.isReconciling) ShimmerClearedToggle(Modifier.width(DenseColumns.cleared))
+      }
+    }
   }
 }
+
+// Whether the placeholder at index starts a new day, so it has a date and a divider above it
+internal fun shimmerShowsDate(index: Int): Boolean = index % SHIMMER_DAY_PATTERN != 1
+
+@Composable
+private fun ShimmerClearedToggle(modifier: Modifier = Modifier) =
+  Box(modifier = modifier, contentAlignment = Center) {
+    ShimmerBlock(Modifier.size(16.dp), shape = CircleShape)
+  }
+
+@Composable
+@ReadOnlyComposable
+private fun textStyle(fontSize: TextUnit, fontWeight: FontWeight? = null): TextStyle =
+  LocalTextStyle.current.merge(fontSize = fontSize, fontWeight = fontWeight)
+
+@Immutable
+private data class ShimmerRowWidths(val payee: Float, val category: Float, val amount: Float)
+
+private val ShimmerWidths =
+  listOf(
+    ShimmerRowWidths(payee = 0.45f, category = 0.3f, amount = 0.8f),
+    ShimmerRowWidths(payee = 0.7f, category = 0.25f, amount = 1f),
+    ShimmerRowWidths(payee = 0.35f, category = 0.4f, amount = 0.7f),
+    ShimmerRowWidths(payee = 0.55f, category = 0.2f, amount = 0.9f),
+    ShimmerRowWidths(payee = 0.6f, category = 0.35f, amount = 0.75f),
+  )
+
+private val ShimmerDayWidth = 20.dp
+private val ShimmerMonthWidth = 24.dp
+private val ShimmerAmountWidth = 64.dp
+private val ShimmerBalanceWidth = 48.dp
+private val ShimmerDenseDateWidth = 32.dp
+private const val SHIMMER_DAY_PATTERN = 3
 
 private val SplitIconSize = 12.dp
 private val SplitIconGap = 5.dp
@@ -648,7 +784,6 @@ private val SplitInsetVertical = 2.dp
 private const val HALF_TURN = 180f
 private const val DAY_NUMBER_LINE_HEIGHT = 1.1f
 private const val LABEL_LENGTH = 3
-private const val SHIMMER_BAR_FRACTION = 1.5f
 
 @Preview
 @Composable
@@ -672,7 +807,10 @@ private fun PreviewLedgerRow(
 @Composable
 private fun PreviewLedgerShimmerRow(
   @PreviewParameter(DensityProvider::class) params: ColorParams<TransactionsDensity>,
-) = PreviewWithColorParams(params) { WithLedgerDimens(this) { LedgerShimmerRow() } }
+) =
+  PreviewWithColorParams(params) {
+    WithLedgerDimens(this) { LedgerShimmerRow(index = 0, density = this) }
+  }
 
 private data class LedgerRowParams(
   val density: TransactionsDensity,

@@ -93,22 +93,37 @@ internal fun Transactions(
       )
     }
 
-    refresh is Loading -> TransactionsLoading(innerPadding, modifier.padding(contentPadding))
+    refresh is Loading ->
+      TransactionsLoading(density, innerPadding, modifier.padding(contentPadding))
 
     else -> TransactionsEmpty(innerPadding, modifier.padding(contentPadding))
   }
 }
 
 @Composable
-private fun TransactionsLoading(innerPadding: PaddingValues, modifier: Modifier = Modifier) {
+private fun TransactionsLoading(
+  density: TransactionsDensity,
+  innerPadding: PaddingValues,
+  modifier: Modifier = Modifier,
+) {
   Column(modifier = modifier.fillMaxSize()) {
     VerticalSpacer(innerPadding.calculateTopPadding())
 
-    repeat(times = NUM_SHIMMER_ROWS) { LedgerShimmerRow() }
+    // Stands in for the year pinned under the top bar once rows load
+    YearDividerShimmer()
+
+    Column(modifier = Modifier.fillMaxWidth().background(colors.tableBackground)) {
+      repeat(times = NUM_SHIMMER_ROWS) { index ->
+        if (index > 0 && (shimmerShowsDate(index) || density == Dense)) HorizontalDivider()
+        LedgerShimmerRow(index, density)
+      }
+    }
 
     BottomSpacing()
   }
 }
+
+private const val NUM_SHIMMER_ROWS = 30
 
 @Composable
 private fun TransactionsEmpty(innerPadding: PaddingValues, modifier: Modifier = Modifier) {
@@ -222,8 +237,6 @@ private fun TransactionsFilled(
     item { BottomSpacing() }
   }
 }
-
-private const val NUM_SHIMMER_ROWS = 12
 
 // toggled holds the splits flipped away from expandByDefault
 @Immutable
