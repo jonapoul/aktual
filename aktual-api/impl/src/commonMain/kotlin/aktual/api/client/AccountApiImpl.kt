@@ -40,11 +40,7 @@ class AccountApiImpl(
   override suspend fun ownerCreated(): Boolean =
     client
       .get {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/admin/owner-created/")
-        }
+        url(serverUrl, "/admin/owner-created/")
       }
       .body<Boolean>()
 
