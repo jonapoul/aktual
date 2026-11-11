@@ -5,7 +5,8 @@
 # and lists the new attributes in the PR body.
 #
 # Monitored files:
-#   - packages/component-library/src/themes/*.css   (dark, light, midnight CSS custom properties)
+#   - packages/component-library/src/themes/source/colors.ts   (top-level keys of `colors`)
+#   - packages/component-library/src/themes/*.css               (extra --color-* declarations)
 #
 # Usage:
 #   # Dry run - prints what would happen without touching GitHub
@@ -43,12 +44,24 @@ echo "Cloning upstream theme files (sparse checkout)..."
 git clone --depth 1 --filter=blob:none --sparse --quiet "$UPSTREAM_REPO" "$tmp_dir"
 git -C "$tmp_dir" sparse-checkout set "$THEME_DIR"
 
-# Extract --color-* attribute names from each theme CSS file
-# palette.css holds raw color values (e.g. --color-gray-100), not semantic attributes
-for theme_file in "$tmp_dir/$THEME_DIR"/*.css; do
-  [[ "$(basename "$theme_file")" == "palette.css" ]] && continue
-  grep -oP '^\s+--color-\K[\w-]+(?=\s*:)' "$theme_file" || true
+theme_files=("$tmp_dir/$THEME_DIR/source/colors.ts" "$tmp_dir/$THEME_DIR"/*.css)
+
+# Tokens are the top-level keys of `colors` in colors.ts, plus any --color-* declared in CSS
+extract_attrs() {
+  case "$1" in
+    *.ts) grep -oP '^  \K\w+(?=\s*:)' "$1" || true ;;
+    *.css) grep -oP '^\s+--color-\K[\w-]+(?=\s*:)' "$1" || true ;;
+  esac
+}
+
+for theme_file in "${theme_files[@]}"; do
+  [[ -f "$theme_file" ]] && extract_attrs "$theme_file"
 done | sort -u > "$tmp_dir/all_attrs.txt"
+
+if [[ ! -s "$tmp_dir/all_attrs.txt" ]]; then
+  echo "ERROR: No theme attributes found upstream. Has the theme layout changed again?" >&2
+  exit 1
+fi
 
 # Find new attributes (in upstream but not in our tracker)
 new_attrs="$(comm -23 "$tmp_dir/all_attrs.txt" <(echo "$known_attrs"))"
@@ -79,11 +92,10 @@ fi
 build_new_rows() {
   while IFS= read -r attr; do
     sources=()
-    for theme_file in "$tmp_dir/$THEME_DIR"/*.css; do
-      basename="$(basename "$theme_file")"
-      [[ "$basename" == "palette.css" ]] && continue
-      if grep -qP "^\s+--color-${attr}\s*:" "$theme_file"; then
-        sources+=("$basename")
+    for theme_file in "${theme_files[@]}"; do
+      [[ -f "$theme_file" ]] || continue
+      if extract_attrs "$theme_file" | grep -qx "$attr"; then
+        sources+=("$(basename "$theme_file")")
       fi
     done
     source_str="$(printf '%s\n' "${sources[@]}" | paste -sd',' | sed 's/,/, /g')"
@@ -164,7 +176,8 @@ REMOVEDTABLE
   cat <<'FOOTER'
 ### Upstream Files
 
-- [`themes/`](https://github.com/actualbudget/actual/tree/master/packages/component-library/src/themes) (dark, light, midnight)
+- [`themes/source/colors.ts`](https://github.com/actualbudget/actual/blob/master/packages/component-library/src/themes/source/colors.ts)
+- [`themes/`](https://github.com/actualbudget/actual/tree/master/packages/component-library/src/themes)
 FOOTER
 }
 
