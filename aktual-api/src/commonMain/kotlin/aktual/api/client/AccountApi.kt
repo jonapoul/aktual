@@ -17,6 +17,9 @@ interface AccountApi {
 
   suspend fun loginMethods(): LoginMethodsResponse.Success
 
+  // Whether anyone has signed in with OpenID yet. The first to do so becomes the owner
+  suspend fun ownerCreated(): Boolean
+
   suspend fun bootstrap(body: BootstrapRequest): BootstrapResponse.Success
 
   suspend fun login(body: LoginRequest.Password): LoginResponse

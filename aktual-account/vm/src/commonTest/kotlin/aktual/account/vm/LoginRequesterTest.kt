@@ -3,9 +3,12 @@ package aktual.account.vm
 import aktual.api.client.AccountApi
 import aktual.api.client.AccountApiImpl
 import aktual.api.model.account.LoginRequest
+import aktual.core.model.AvailableLoginMethod
+import aktual.core.model.LoginMethod
 import aktual.core.model.Password
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
+import aktual.core.utils.OpenIdRedirects
 import aktual.prefs.AppPreferences
 import aktual.prefs.AppPreferencesImpl
 import aktual.test.assertThatNextEmission
@@ -17,16 +20,20 @@ import alakazam.test.TestCoroutineContexts
 import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
+import assertk.assertions.prop
 import io.ktor.client.engine.mock.MockEngine
+import io.ktor.http.content.TextContent
 import io.mockk.coEvery
 import io.mockk.mockk
 import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
@@ -61,6 +68,7 @@ internal class LoginRequesterTest {
         contexts = TestCoroutineContexts(dispatcher),
         preferences = preferences,
         runLevelController = mockk(relaxed = true),
+        openIdRedirects = FakeOpenIdRedirects,
       )
   }
 
@@ -210,6 +218,77 @@ internal class LoginRequesterTest {
   }
 
   @Test
+  fun `OpenID login sends the app's return URL`() = runTest {
+    before()
+    preferences.serverUrl.set(EXAMPLE_URL)
+
+    val body = """{ "status": "ok", "data": { "returnUrl": "https://sso.example.com/auth" } }"""
+    mockEngine += { request ->
+      assertThat(request.body)
+        .isInstanceOf<TextContent>()
+        .prop(TextContent::text)
+        .contains("\"returnUrl\":\"aktual.test://localhost\"")
+      respondJson(body)
+    }
+    val result = loginRequester.logIn(EXAMPLE_PASSWORD, loginMethod = OpenId)
+
+    assertThat(result).isEqualTo(LoginResult.Redirect("https://sso.example.com/auth"))
+  }
+
+  @Test
+  fun `Rejected OpenID token has expired`() = runTest {
+    before()
+    preferences.serverUrl.set(EXAMPLE_URL)
+
+    val body = """{ "status": "error", "reason": "unauthorized" }"""
+    mockEngine += { respondJson(body, Unauthorized) }
+    val result = loginRequester.logIn(EXAMPLE_TOKEN)
+
+    assertThat(result).isEqualTo(TokenExpired)
+    assertThat(preferences.token.get()).isNull()
+  }
+
+  @Test
+  fun `First OpenID login asks for the server password`() = runTest {
+    before()
+    mockEngine += { request ->
+      assertThat(request.url.encodedPath).isEqualTo("/admin/owner-created/")
+      respondJson("false")
+    }
+
+    assertThat(loginRequester.openIdFirstLogin(listOf(PASSWORD_METHOD, OPENID_METHOD)))
+      .isEqualTo(OpenIdFirstLogin.FirstWithPassword)
+  }
+
+  @Test
+  fun `First OpenID login without password login`() = runTest {
+    before()
+    mockEngine += { respondJson("false") }
+
+    assertThat(loginRequester.openIdFirstLogin(listOf(OPENID_METHOD)))
+      .isEqualTo(OpenIdFirstLogin.First)
+  }
+
+  @Test
+  fun `OpenID login once there's an owner`() = runTest {
+    before()
+    mockEngine += { respondJson("true") }
+
+    assertThat(loginRequester.openIdFirstLogin(listOf(PASSWORD_METHOD, OPENID_METHOD)))
+      .isEqualTo(OpenIdFirstLogin.NotFirst)
+  }
+
+  @Test
+  fun `Owner check failing assumes there's an owner`() = runTest {
+    val accountApi = mockk<AccountApi>()
+    coEvery { accountApi.ownerCreated() } throws IOException("something broke")
+    before(accountApi)
+
+    assertThat(loginRequester.openIdFirstLogin(listOf(PASSWORD_METHOD, OPENID_METHOD)))
+      .isEqualTo(OpenIdFirstLogin.NotFirst)
+  }
+
+  @Test
   fun `API key network error`() = runTest {
     val errorMessage = "something broke"
     val accountApi = mockk<AccountApi>()
@@ -221,10 +300,18 @@ internal class LoginRequesterTest {
     assertThat(result).isEqualTo(LoginResult.NetworkFailure(errorMessage))
   }
 
+  private object FakeOpenIdRedirects : OpenIdRedirects {
+    override suspend fun returnUrl() = "aktual.test://localhost"
+
+    override val tokens = emptyFlow<Token>()
+  }
+
   private companion object {
     val EXAMPLE_API_KEY = Token(value = "actual_abc123")
     val EXAMPLE_PASSWORD = Password(value = "P@ssw0rd")
     val EXAMPLE_TOKEN = Token(value = "abc123")
     val EXAMPLE_URL = ServerUrl(Https, "website.com")
+    val PASSWORD_METHOD = AvailableLoginMethod(LoginMethod.Password, "Password", isActive = true)
+    val OPENID_METHOD = AvailableLoginMethod(LoginMethod.OpenId, "OpenID", isActive = false)
   }
 }

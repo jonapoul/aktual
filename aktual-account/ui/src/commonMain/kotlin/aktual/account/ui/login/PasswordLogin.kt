@@ -36,34 +36,11 @@ internal fun PasswordLogin(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier) {
-    val keyboard = LocalSoftwareKeyboardController.current
-    val passwordTextState = rememberTextFieldState(initialText = enteredPassword.value)
-
-    LaunchedEffect(passwordTextState) {
-      snapshotFlow { passwordTextState.text.toString() }
-        .collect { password -> onAction(EnterPassword(password)) }
-    }
-
-    AktualTextField(
-      modifier =
-        Modifier.testTag(Tags.PasswordLoginTextField)
-          .fillMaxWidth(1f)
-          .focusRequester(keyboardFocusRequester(keyboard)),
-      state = passwordTextState,
-      isEnabled = !isLoading,
-      placeholderText = Strings.loginPasswordHint,
-      outputTransformation = PasswordTransformation,
-      keyboardOptions =
-        KeyboardOptions(
-          autoCorrectEnabled = false,
-          capitalization = None,
-          keyboardType = KeyboardType.Password,
-          imeAction = Go,
-        ),
-      onKeyboardAction = { _ ->
-        keyboard?.hide()
-        onAction(SignIn)
-      },
+    PasswordField(
+      modifier = Modifier.testTag(Tags.PasswordLoginTextField).fillMaxWidth(1f),
+      isLoading = isLoading,
+      enteredPassword = enteredPassword,
+      onAction = onAction,
     )
 
     VerticalSpacer(20.dp)
@@ -76,6 +53,41 @@ internal fun PasswordLogin(
       onClick = { onAction(SignIn) },
     )
   }
+}
+
+@Composable
+internal fun PasswordField(
+  isLoading: Boolean,
+  enteredPassword: Password,
+  onAction: OnAction<LoginAction>,
+  modifier: Modifier = Modifier,
+) {
+  val keyboard = LocalSoftwareKeyboardController.current
+  val passwordTextState = rememberTextFieldState(initialText = enteredPassword.value)
+
+  LaunchedEffect(passwordTextState) {
+    snapshotFlow { passwordTextState.text.toString() }
+      .collect { password -> onAction(EnterPassword(password)) }
+  }
+
+  AktualTextField(
+    modifier = modifier.focusRequester(keyboardFocusRequester(keyboard)),
+    state = passwordTextState,
+    isEnabled = !isLoading,
+    placeholderText = Strings.loginPasswordHint,
+    outputTransformation = PasswordTransformation,
+    keyboardOptions =
+      KeyboardOptions(
+        autoCorrectEnabled = false,
+        capitalization = None,
+        keyboardType = KeyboardType.Password,
+        imeAction = Go,
+      ),
+    onKeyboardAction = { _ ->
+      keyboard?.hide()
+      onAction(SignIn)
+    },
+  )
 }
 
 @Preview

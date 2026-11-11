@@ -52,6 +52,7 @@ class LoginViewModel(
   private val mutableLoginFailure = ResettableStateFlow<LoginResult.Failure?>(null)
   private val mutableLoginMethods = MutableStateFlow<ImmutableList<LoginMethod>>(persistentListOf())
   private val mutableSelectedLoginMethod = MutableStateFlow(LoginMethod.Password)
+  private val mutableOpenIdFirstLogin = MutableStateFlow(OpenIdFirstLogin.NotFirst)
 
   private val mutableEvents =
     MutableSharedFlow<LoginEvent>(
@@ -70,6 +71,7 @@ class LoginViewModel(
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
   val loginMethods: StateFlow<ImmutableList<LoginMethod>> = mutableLoginMethods.asStateFlow()
   val selectedLoginMethod: StateFlow<LoginMethod> = mutableSelectedLoginMethod.asStateFlow()
+  val openIdFirstLogin: StateFlow<OpenIdFirstLogin> = mutableOpenIdFirstLogin.asStateFlow()
 
   val loginFailure: StateFlow<LoginResult.Failure?> =
     combine(mutableLoginFailure, isLoading) { failure, loading -> if (loading) null else failure }
@@ -88,6 +90,19 @@ class LoginViewModel(
       val firstActive = availableLoginMethods.firstOrNull { it.isActive }
       if (firstActive != null) {
         mutableSelectedLoginMethod.update { firstActive.method }
+      }
+      if (OpenId in loginMethods) {
+        val firstLogin = loginRequester.openIdFirstLogin(availableLoginMethods)
+        mutableOpenIdFirstLogin.update { firstLogin }
+      }
+    }
+
+    viewModelScope.launch {
+      loginRequester.openIdTokens.collect { token ->
+        mutableIsLoading.update { true }
+        val result = loginRequester.logIn(token)
+        mutableIsLoading.update { false }
+        if (result is Failure) mutableLoginFailure.update { result }
       }
     }
   }
@@ -118,6 +133,13 @@ class LoginViewModel(
     val apiKey = mutableEnteredApiKey.value
     if (loginMethod == LoginMethod.Password && password == Empty) return
     if (loginMethod == ApiKey && apiKey.value.isEmpty()) return
+    if (
+      loginMethod == OpenId &&
+        mutableOpenIdFirstLogin.value == FirstWithPassword &&
+        password == Empty
+    ) {
+      return
+    }
     mutableIsLoading.update { true }
     mutableLoginFailure.reset()
 

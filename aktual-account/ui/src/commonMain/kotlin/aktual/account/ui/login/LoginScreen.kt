@@ -2,6 +2,7 @@ package aktual.account.ui.login
 
 import aktual.account.vm.LoginResult
 import aktual.account.vm.LoginViewModel
+import aktual.account.vm.OpenIdFirstLogin
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.LoginMethod
@@ -72,6 +73,7 @@ fun LoginScreen(
   val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
   val loginMethods by viewModel.loginMethods.collectAsStateWithLifecycle()
   val selectedLoginMethod by viewModel.selectedLoginMethod.collectAsStateWithLifecycle()
+  val openIdFirstLogin by viewModel.openIdFirstLogin.collectAsStateWithLifecycle()
 
   LaunchedEffect(viewModel.token) { viewModel.token.collect { toListBudgets() } }
 
@@ -99,6 +101,7 @@ fun LoginScreen(
     loginFailure = loginFailure,
     loginMethods = loginMethods,
     selectedLoginMethod = selectedLoginMethod,
+    openIdFirstLogin = openIdFirstLogin,
     snackbarHostState = snackbarHostState,
     onAction = { action ->
       when (action) {
@@ -123,6 +126,7 @@ internal fun LoginScaffold(
   loginMethods: ImmutableList<LoginMethod>,
   selectedLoginMethod: LoginMethod,
   onAction: OnAction<LoginAction>,
+  openIdFirstLogin: OpenIdFirstLogin = NotFirst,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -150,6 +154,7 @@ internal fun LoginScaffold(
         loginFailure = loginFailure,
         loginMethods = loginMethods,
         selectedLoginMethod = selectedLoginMethod,
+        openIdFirstLogin = openIdFirstLogin,
         onAction = onAction,
       )
     }
@@ -165,6 +170,7 @@ private fun Content(
   loginFailure: LoginResult.Failure?,
   loginMethods: ImmutableList<LoginMethod>,
   selectedLoginMethod: LoginMethod,
+  openIdFirstLogin: OpenIdFirstLogin,
   onAction: OnAction<LoginAction>,
   modifier: Modifier = Modifier,
 ) {
@@ -214,9 +220,13 @@ private fun Content(
         }
 
         OpenId -> {
-          Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Center) {
-            OpenIdLogin()
-          }
+          OpenIdLogin(
+            modifier = Modifier.fillMaxWidth(),
+            isLoading = isLoading,
+            firstLogin = openIdFirstLogin,
+            enteredPassword = enteredPassword,
+            onAction = onAction,
+          )
         }
 
         ApiKey -> {
