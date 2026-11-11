@@ -132,7 +132,7 @@ internal fun Modifier.reorderHandle(
   row: ReorderRow,
   haptics: HapticFeedback,
 ): Modifier =
-  dragHandle(
+  this.dragHandle(
     key = row.key,
     haptics = haptics,
     pickUp = { grabY -> state.pickUp(row, grabY) },
