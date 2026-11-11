@@ -31,12 +31,14 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.dragHandle
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -44,6 +46,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -54,15 +57,26 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
@@ -103,6 +117,8 @@ internal fun ManageAccountsScreen(
       is RenameGroup -> viewModel.renameGroup(action.id, action.name)
       is ViewTransactions -> toTransactions(action.id)
       is DeleteGroup -> viewModel.deleteGroup(action.id)
+      is MoveAccount -> viewModel.moveAccount(action.id, action.group, action.before)
+      is MoveGroup -> viewModel.moveGroup(action.id, action.before)
     }
   }
 
@@ -222,13 +238,50 @@ private fun AccountsList(
   onAction: OnAction<ManageAccountsAction>,
   modifier: Modifier = Modifier,
 ) {
+  val scope = rememberCoroutineScope()
+  val latestOnAction by rememberUpdatedState(onAction)
+  val drag =
+    remember(listState, scope) {
+      ManageDragState(
+        listState = listState,
+        scope = scope,
+        moveAccount = { id, group, before -> latestOnAction(MoveAccount(id, group, before)) },
+        moveGroup = { id, before -> latestOnAction(MoveGroup(id, before)) },
+      )
+    }
+  val sections =
+    remember(state.onBudget, state.offBudget) {
+      ManageSections(state.onBudget.groups, state.offBudget.groups)
+    }
+  SideEffect { drag.sections = sections }
+
+  val density = LocalDensity.current
+  val edge = with(density) { ManageAccountsDS.autoScrollEdge.toPx() }
+  val speed = with(density) { ManageAccountsDS.autoScrollSpeed.toPx() }
+  val held = drag.held
+  LaunchedEffect(held) { if (held != null) drag.autoScroll(held, edge, speed) }
+
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
     contentPadding = contentPadding,
   ) {
-    section(key = "on", title = { Strings.accountsManageOnBudget }, state.onBudget, onAction)
-    section(key = "off", title = { Strings.accountsManageOffBudget }, state.offBudget, onAction)
+    section(
+      side = OnBudget,
+      title = { Strings.accountsManageOnBudget },
+      section = state.onBudget,
+      lines = drag.lines(OnBudget, sections),
+      drag = drag,
+      onAction = onAction,
+    )
+    section(
+      side = OffBudget,
+      title = { Strings.accountsManageOffBudget },
+      section = state.offBudget,
+      lines = drag.lines(OffBudget, sections),
+      drag = drag,
+      onAction = onAction,
+    )
 
     if (state.closed.isNotEmpty()) {
       item(key = "closed") {
@@ -258,29 +311,81 @@ private fun AccountsList(
 }
 
 private fun LazyListScope.section(
-  key: String,
+  side: Side,
   title: @Composable () -> String,
   section: AccountSection,
+  lines: List<ManageLine>,
+  drag: ManageDragState,
   onAction: OnAction<ManageAccountsAction>,
 ) {
-  item(key = "$key-header") {
+  item(key = "${side.key}-header") {
     SectionHeader(modifier = Modifier.animateItem(), title = title(), total = section.total)
   }
-  section.groups.fastForEach { group ->
-    val groupKey = "$key-group-${group.id?.value}"
-    item(key = groupKey) {
-      GroupHeader(modifier = Modifier.animateItem(), group = group, onAction = onAction)
+  lines.fastForEach { line ->
+    item(key = line.key, contentType = line::class) {
+      DraggableLine(line = line, drag = drag, onAction = onAction)
     }
-    if (group.accounts.isEmpty()) {
-      item(key = "$groupKey-empty") { EmptyGroupRow(modifier = Modifier.animateItem()) }
-    }
-    items(group.accounts, key = { "$key-account-${it.id.value}" }) { account ->
-      AccountRow(
-        modifier = Modifier.animateItem(),
-        account = account,
-        onClick = { onAction(Show(AccountMenu(account))) },
+  }
+}
+
+@Composable
+private fun LazyItemScope.DraggableLine(
+  line: ManageLine,
+  drag: ManageDragState,
+  onAction: OnAction<ManageAccountsAction>,
+) {
+  if (line is EmptyLine) {
+    EmptyGroupRow(modifier = Modifier.animateItem())
+    return
+  }
+
+  val haptics = LocalHapticFeedback.current
+  val moveUp = Strings.accountsManageMoveUp
+  val moveDown = Strings.accountsManageMoveDown
+  val isDragged = drag.dragged == line.key
+  val elevation by animateDpAsState(if (drag.held == line.key) 8.dp else 0.dp)
+  val modifier =
+    Modifier.zIndex(if (isDragged) 1f else 0f)
+      .then(if (isDragged) Modifier else Modifier.animateItem())
+      .graphicsLayer { translationY = drag.offsetOf(line.key) }
+      .shadow(elevation)
+      .semantics {
+        customActions = buildList {
+          if (drag.canMoveBy(line, -1)) {
+            add(CustomAccessibilityAction(moveUp) { true.also { drag.moveBy(line, -1) } })
+          }
+          if (drag.canMoveBy(line, 1)) {
+            add(CustomAccessibilityAction(moveDown) { true.also { drag.moveBy(line, 1) } })
+          }
+        }
+      }
+  val handle =
+    Modifier.dragHandle(
+      key = line.key,
+      haptics = haptics,
+      pickUp = { grabY -> drag.pickUp(line, grabY) },
+      dragBy = { delta -> drag.dragBy(line.key, delta) },
+      drop = { drag.drop(line.key) },
+    )
+
+  when (line) {
+    is GroupLine ->
+      GroupHeader(
+        modifier = modifier,
+        group = line.group,
+        handleModifier = handle,
+        onAction = onAction,
       )
-    }
+
+    is AccountLine ->
+      AccountRow(
+        modifier = modifier,
+        account = line.account,
+        handleModifier = handle,
+        onClick = { onAction(Show(AccountMenu(line.account))) },
+      )
+
+    is EmptyLine -> Unit
   }
 }
 
@@ -289,6 +394,9 @@ internal object ManageAccountsDS {
   val rowHeight = 60.dp
   val headerHeight = 44.dp
   val rowPadding = 12.dp
+  val handleWidth = 44.dp
+  val autoScrollEdge = 64.dp
+  val autoScrollSpeed = 800.dp
 }
 
 @PortraitPreview

@@ -29,6 +29,15 @@ internal data class RenameGroup(val id: AccountGroupId, val name: String) : Mana
 
 @JvmInline internal value class DeleteGroup(val id: AccountGroupId) : ManageAccountsAction
 
+internal data class MoveAccount(
+  val id: AccountId,
+  val group: AccountGroupId?,
+  val before: AccountId?,
+) : ManageAccountsAction
+
+internal data class MoveGroup(val id: AccountGroupId, val before: AccountGroupId?) :
+  ManageAccountsAction
+
 // The sheet or dialog shown over the list
 @Immutable internal sealed interface ManageOverlay
 
