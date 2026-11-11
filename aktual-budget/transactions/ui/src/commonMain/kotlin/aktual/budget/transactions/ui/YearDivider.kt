@@ -5,19 +5,25 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.ShimmerLine
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 
 private val DividerHeight = 24.dp
+private val YearShimmerWidth = 28.dp
 
 @Composable
 internal fun YearDivider(year: Int, modifier: Modifier = Modifier) =
@@ -40,7 +46,29 @@ internal fun YearDivider(year: Int, modifier: Modifier = Modifier) =
     )
   }
 
+@Composable
+internal fun YearDividerShimmer(modifier: Modifier = Modifier) =
+  Box(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .height(DividerHeight)
+        .background(colors.tableHeaderBackground)
+        .padding(horizontal = LocalLedgerDimens.current.rowEnd),
+    contentAlignment = CenterStart,
+  ) {
+    ShimmerLine(
+      modifier = Modifier.width(YearShimmerWidth).shimmer(rememberShimmer(Window)),
+      style = LocalTextStyle.current.merge(fontSize = textSizes.extraSmall, fontWeight = SemiBold),
+    )
+  }
+
 @Preview
 @Composable
 private fun PreviewYearDivider(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { YearDivider(year = 2026) }
+
+@Preview
+@Composable
+private fun PreviewYearDividerShimmer(@PreviewParameter(ColorParameters::class) colors: Colors) =
+  PreviewWithColors(colors) { YearDividerShimmer() }
