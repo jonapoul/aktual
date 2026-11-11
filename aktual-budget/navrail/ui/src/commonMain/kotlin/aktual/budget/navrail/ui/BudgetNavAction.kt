@@ -2,7 +2,14 @@ package aktual.budget.navrail.ui
 
 import androidx.compose.runtime.Immutable
 
-@Immutable internal sealed interface BudgetNavAction
+// Everything the budget menus can do. BudgetNavAction is the part handled outside the budget
+@Immutable internal sealed interface BudgetMenuAction
+
+internal data object RenameBudget : BudgetMenuAction
+
+internal data object OpenApiKeys : BudgetMenuAction
+
+@Immutable internal sealed interface BudgetNavAction : BudgetMenuAction
 
 internal data object SwitchFile : BudgetNavAction
 

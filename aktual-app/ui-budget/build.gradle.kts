@@ -6,6 +6,7 @@ kotlin {
   commonMainDependencies {
     // UI modules - needed so Metro discovers @ContributesIntoSet nav entry contributors
     api(project(":aktual-budget:accounts:ui"))
+    api(project(":aktual-budget:apikeys:ui"))
     api(project(":aktual-budget:banksync:ui"))
     api(project(":aktual-budget:budgeting:ui"))
     api(project(":aktual-budget:home:ui"))

@@ -173,6 +173,8 @@ include(
   ":aktual-budget:accounts:domain",
   ":aktual-budget:accounts:ui",
   ":aktual-budget:accounts:vm",
+  ":aktual-budget:apikeys:ui",
+  ":aktual-budget:apikeys:vm",
   ":aktual-budget:banksync:components",
   ":aktual-budget:banksync:domain",
   ":aktual-budget:banksync:ui",

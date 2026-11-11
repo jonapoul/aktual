@@ -8,6 +8,7 @@ import aktual.account.vm.LoginViewModel
 import aktual.account.vm.ServerUrlViewModel
 import aktual.budget.accounts.vm.AddAccountViewModel
 import aktual.budget.accounts.vm.CreateAccountViewModel
+import aktual.budget.apikeys.vm.ApiKeysViewModel
 import aktual.budget.banksync.vm.BankSyncViewModel
 import aktual.budget.banksync.vm.link.LinkBankAccountViewModel
 import aktual.budget.banksync.vm.settings.BankSyncSettingsViewModel
@@ -137,6 +138,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
     testAssistedVM<CrashReportViewModel, CrashReportViewModel.Factory> {
       create(CrashFile("crash-20261018-120000-000.txt"))
     }
+
+  @Test fun apiKeys() = testVm<ApiKeysViewModel>()
 
   @Test fun bankSync() = testVm<BankSyncViewModel>()
 

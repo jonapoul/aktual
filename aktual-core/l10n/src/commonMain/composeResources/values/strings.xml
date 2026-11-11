@@ -385,6 +385,32 @@
   <string name="accounts_delete_confirm">Delete</string>
   <string name="accounts_delete_unlink_failed">%1$s deleted, but bank sync couldn't be unlinked</string>
 
+  <!-- API keys - packages/desktop-client/src/components/settings/ApiKeys.tsx -->
+  <string name="api_keys_title">API keys</string>
+  <string name="api_keys_message">API keys let other tools read and sync this budget without your password.</string>
+  <string name="api_keys_add">Add key</string>
+  <string name="api_keys_empty">No API keys found for this budget.</string>
+  <string name="api_keys_failure">Failed to load API keys</string>
+  <string name="api_keys_failure_default">Please try again.</string>
+  <string name="api_keys_unsupported">API keys aren’t available</string>
+  <string name="api_keys_unsupported_message">This server doesn’t support API keys yet.</string>
+  <string name="api_keys_created">Created %1$s</string>
+  <string name="api_keys_revoke">Revoke</string>
+  <string name="api_keys_cancel">Cancel</string>
+  <string name="api_keys_create_title">New API key</string>
+  <string name="api_keys_create">Create</string>
+  <string name="api_keys_name_placeholder">e.g. Transaction importer</string>
+  <string name="api_keys_create_failed">Could not create the API key</string>
+  <string name="api_keys_created_title">API key created</string>
+  <string name="api_keys_created_message">Make sure to copy this token now. You won’t be able to see it again.</string>
+  <string name="api_keys_copy">Copy</string>
+  <string name="api_keys_done">Done</string>
+  <string name="api_keys_revoke_title">Revoke API key</string>
+  <string name="api_keys_revoke_message">Are you sure you want to revoke “%1$s”? Any integrations using it will stop working, but previously downloaded data will not be deleted.</string>
+  <string name="api_keys_revoke_failed">Could not revoke the API key</string>
+  <string name="budget_nav_menu_api_keys">API keys</string>
+  <string name="budget_nav_menu_more">More options</string>
+
   <!-- budget-bank-sync -->
   <string name="bank_sync_title">Bank sync</string>
   <string name="bank_sync_notice">Syncing downloads new transactions from your bank through your server.</string>

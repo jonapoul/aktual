@@ -20,6 +20,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object HomeNavRoute : BudgetNavKey.Home
 
+// Opened from the budget menu, so it goes on whichever tab is showing
+@Serializable data object ApiKeysNavRoute : BudgetNavKey.Home
+
 // A null month shows the current one
 @Serializable data class BudgetNavRoute(val month: YearMonth? = null) : BudgetNavKey.Budget
 
