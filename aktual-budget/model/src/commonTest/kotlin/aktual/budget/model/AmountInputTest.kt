@@ -24,6 +24,20 @@ class AmountInputTest {
   }
 
   @Test
+  fun `Pasted text is read as arithmetic or as a loose amount`() {
+    assertThat(parsePastedAmount("1,200.50")).isEqualTo(Amount(120_050L))
+    assertThat(parsePastedAmount("-12")).isEqualTo(Amount(-1_200L))
+    assertThat(parsePastedAmount("10 + 5")).isEqualTo(Amount(1_500L))
+    assertThat(parsePastedAmount("$45.00")).isEqualTo(Amount(4_500L))
+  }
+
+  @Test
+  fun `Pasted text without an amount is null`() {
+    assertThat(parsePastedAmount("")).isNull()
+    assertThat(parsePastedAmount("abc")).isNull()
+  }
+
+  @Test
   fun `Input text round-trips`() {
     assertThat(Amount(120_050L).toInputText()).isEqualTo("1200.50")
     assertThat(Amount(0L).toInputText()).isEqualTo("")

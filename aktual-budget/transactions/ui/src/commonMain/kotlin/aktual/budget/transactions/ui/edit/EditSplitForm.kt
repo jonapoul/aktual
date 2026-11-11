@@ -36,10 +36,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterStart
@@ -58,9 +60,11 @@ internal fun SplitTotal(
   amount: Amount,
   typed: String,
   isTyping: Boolean,
+  isSelected: Boolean,
   isIncome: Boolean,
   isValid: Boolean,
   onClick: () -> Unit,
+  onPaste: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) =
   Column(
@@ -72,9 +76,11 @@ internal fun SplitTotal(
       amount = amount,
       typed = typed,
       isTyping = isTyping,
+      isSelected = isSelected,
       isIncome = isIncome,
       isValid = isValid,
       onClick = onClick,
+      onPaste = onPaste,
       fontSize = TotalSize,
       cursorHeight = TotalCursorHeight,
     )
@@ -262,13 +268,16 @@ private fun PartRow(
       }
     }
 
+    val isTyping = fieldState.active == ActiveField(EditField.Amount, id)
     PartAmount(
       amount = amount,
       shown = amount.negatedIf(!isIncome),
       typed = fieldState.amountText.text.toString(),
-      isTyping = fieldState.active == ActiveField(EditField.Amount, id),
+      isTyping = isTyping,
+      isSelected = isTyping && fieldState.isAmountSelected,
       isValid = fieldState.amountText.isValidAmount(),
-      onClick = { fieldState.typeAmount(amount.negatedIf(!isIncome).toSignedInputText(), id) },
+      onClick = { fieldState.selectAmount(amount.negatedIf(!isIncome).toSignedInputText(), id) },
+      onPaste = { fieldState.pasteAmount(it, id) },
     )
 
     BareIconButton(
@@ -326,8 +335,10 @@ private fun PartAmount(
   shown: Amount,
   typed: String,
   isTyping: Boolean,
+  isSelected: Boolean,
   isValid: Boolean,
   onClick: () -> Unit,
+  onPaste: (String) -> Unit,
 ) {
   val textColor =
     when {
@@ -343,18 +354,21 @@ private fun PartAmount(
     } else {
       Modifier
     }
+  val menu = remember { AmountMenuState() }
+  val selectionColor = LocalTextSelectionColors.current.backgroundColor
   Row(
     modifier =
       Modifier.widthIn(min = PartAmountWidth)
         .height(PartAmountHeight)
         .clip(PartAmountShape)
         .then(highlight)
-        .clickable(onClickLabel = Strings.transactionAmount, onClick = onClick)
+        .amountClickable(menu, label = Strings.transactionAmount, onClick = onClick)
         .padding(PartAmountPadding),
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(CursorGap, Alignment.End),
   ) {
     Text(
+      modifier = Modifier.selectionHighlight(isSelected, selectionColor),
       text =
         if (isTyping) AnnotatedString(typed.ifEmpty { EMPTY_AMOUNT }) else shown.formattedText(),
       fontSize = ValueSize,
@@ -362,12 +376,17 @@ private fun PartAmount(
       style = tabularFigures(),
       maxLines = 1,
     )
-    if (isTyping) {
+    if (isTyping && !isSelected) {
       Box(
         modifier =
           Modifier.size(CursorWidth, PartCursorHeight).background(colors.buttonPrimaryBackground),
       )
     }
+    AmountMenu(
+      menu = menu,
+      copyText = if (isTyping) typed else shown.toSignedInputText(),
+      onPaste = onPaste,
+    )
   }
 }
 

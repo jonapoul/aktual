@@ -51,6 +51,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -130,14 +131,10 @@ internal fun EditTransactionForm(
 
   val density = LocalDensity.current
   var keypadHeight by remember { mutableStateOf(0.dp) }
-  val keypad: @Composable (Modifier) -> Unit = { keypadModifier ->
-    DockedKeypad(
-      modifier = keypadModifier,
-      amountText = amountText,
-      onDone = { fieldState.close() },
-    )
+  val keypad: @Composable (Modifier) -> Unit = {
+    DockedKeypad(fieldState = fieldState, modifier = it)
   }
-  val typeTotal = { fieldState.typeAmount(draft.amount.toInputText()) }
+  val typeTotal = { fieldState.selectAmount(draft.amount.toInputText()) }
 
   Column(modifier = modifier.fillMaxSize()) {
     Column(
@@ -155,9 +152,11 @@ internal fun EditTransactionForm(
           amount = draft.amount,
           typed = amountText.text.toString(),
           isTyping = isTypingTotal,
+          isSelected = fieldState.isAmountSelected,
           isIncome = isIncome,
           isValid = amountText.isValidAmount(),
           onClick = typeTotal,
+          onPaste = fieldState::pasteAmount,
         )
 
         SplitFieldsCard(form = form, onEdit = { fieldState.edit(it) })
@@ -180,9 +179,11 @@ internal fun EditTransactionForm(
           amount = draft.amount,
           typed = amountText.text.toString(),
           isTyping = isTypingTotal,
+          isSelected = fieldState.isAmountSelected,
           isIncome = isIncome,
           isValid = amountText.isValidAmount(),
           onClick = typeTotal,
+          onPaste = fieldState::pasteAmount,
           onSign = { income ->
             zeroIsIncome = income
             onAction(SetAmount(draft.amount.signed(income)))
@@ -289,9 +290,11 @@ private fun SignedAmount(
   amount: Amount,
   typed: String,
   isTyping: Boolean,
+  isSelected: Boolean,
   isIncome: Boolean,
   isValid: Boolean,
   onClick: () -> Unit,
+  onPaste: (String) -> Unit,
   onSign: (Boolean) -> Unit,
 ) =
   Column(
@@ -313,19 +316,17 @@ private fun SignedAmount(
       amount = amount,
       typed = typed,
       isTyping = isTyping,
+      isSelected = isSelected,
       isIncome = isIncome,
       isValid = isValid,
       onClick = onClick,
+      onPaste = onPaste,
     )
   }
 
 // Covers the bottom status bar, and keeps clear of the system navigation bar
 @Composable
-private fun DockedKeypad(
-  amountText: TextFieldState,
-  onDone: () -> Unit,
-  modifier: Modifier = Modifier,
-) =
+private fun DockedKeypad(fieldState: EditFieldState, modifier: Modifier = Modifier) =
   Column(
     modifier =
       modifier
@@ -336,9 +337,10 @@ private fun DockedKeypad(
   ) {
     AmountKeypad(
       modifier = Modifier.fillMaxWidth().padding(KeypadPadding),
-      state = amountText,
-      canFinish = amountText.isValidAmount(),
-      onDone = onDone,
+      state = fieldState.amountText,
+      canFinish = fieldState.amountText.isValidAmount(),
+      onDone = { fieldState.close() },
+      onPaste = { fieldState.pasteAmount(it, fieldState.active?.part) },
     )
     BottomSpacing(height = 0.dp)
   }
@@ -490,9 +492,11 @@ internal fun HeroAmount(
   amount: Amount,
   typed: String,
   isTyping: Boolean,
+  isSelected: Boolean,
   isIncome: Boolean,
   isValid: Boolean,
   onClick: () -> Unit,
+  onPaste: (String) -> Unit,
   modifier: Modifier = Modifier,
   fontSize: TextUnit = HeroAmountSize,
   cursorHeight: Dp = CursorHeight,
@@ -504,16 +508,20 @@ internal fun HeroAmount(
       isIncome -> colors.numberPositive
       else -> colors.numberNegative
     }
+  val menu = remember { AmountMenuState() }
+  val showSelection = isTyping && isSelected
+  val selectionColor = LocalTextSelectionColors.current.backgroundColor
   Row(
     modifier =
       modifier
-        .clickable(onClickLabel = Strings.transactionAmount, onClick = onClick)
+        .amountClickable(menu, label = Strings.transactionAmount, onClick = onClick)
         .drawBehind { underline(lineColor, UnderlineWidth.toPx()) }
         .padding(UnderlinePadding),
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(CursorGap),
   ) {
     Text(
+      modifier = Modifier.selectionHighlight(showSelection, selectionColor),
       text =
         if (isTyping) {
           AnnotatedString(typed.ifEmpty { EMPTY_AMOUNT })
@@ -527,12 +535,17 @@ internal fun HeroAmount(
       style = tabularFigures(),
       maxLines = 1,
     )
-    if (isTyping) {
+    if (isTyping && !showSelection) {
       Box(
         modifier =
           Modifier.size(CursorWidth, cursorHeight).background(colors.buttonPrimaryBackground),
       )
     }
+    AmountMenu(
+      menu = menu,
+      copyText = if (isTyping) typed else amount.toInputText(),
+      onPaste = onPaste,
+    )
   }
 }
 

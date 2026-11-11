@@ -11,6 +11,8 @@
   <string name="input_divide">Divide</string>
   <string name="input_backspace">Backspace</string>
   <string name="input_done">Done</string>
+  <string name="input_copy">Copy</string>
+  <string name="input_paste">Paste</string>
 
   <string name="search_payees">Search payees</string>
   <string name="search_accounts">Search accounts</string>

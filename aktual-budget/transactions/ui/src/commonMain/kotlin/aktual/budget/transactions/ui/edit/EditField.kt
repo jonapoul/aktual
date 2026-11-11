@@ -1,8 +1,12 @@
 package aktual.budget.transactions.ui.edit
 
 import aktual.budget.model.TransactionId
+import aktual.budget.model.parsePastedAmount
+import aktual.budget.model.toInputText
+import aktual.budget.model.toSignedInputText
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.foundation.text.input.setTextAndSelectAll
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +38,10 @@ internal class EditFieldState {
   val isTypingAmount: Boolean
     get() = active?.field == Amount
 
+  // So the next digit typed replaces it
+  val isAmountSelected: Boolean
+    get() = amountText.text.isNotEmpty() && amountText.selection.length == amountText.text.length
+
   fun edit(field: EditField, part: TransactionId? = null) {
     active = ActiveField(field, part)
   }
@@ -41,6 +49,18 @@ internal class EditFieldState {
   fun typeAmount(text: String, part: TransactionId? = null) {
     amountText.setTextAndPlaceCursorAtEnd(text)
     active = ActiveField(Amount, part)
+  }
+
+  // A tap on an amount selects it, as upstream's mobile amount input does
+  fun selectAmount(text: String, part: TransactionId? = null) {
+    amountText.setTextAndSelectAll(text)
+    active = ActiveField(Amount, part)
+  }
+
+  // Pasted text replaces the amount. The total is unsigned, a part signed from its split's side
+  fun pasteAmount(text: String, part: TransactionId? = null) {
+    val amount = parsePastedAmount(text) ?: return
+    typeAmount(if (part == null) amount.toInputText() else amount.toSignedInputText(), part)
   }
 
   fun close() {

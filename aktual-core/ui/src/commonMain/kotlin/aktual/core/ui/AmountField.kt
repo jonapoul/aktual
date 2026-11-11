@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -33,14 +34,17 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
+import kotlinx.coroutines.launch
 
 /**
  * A large text field for typing an amount. With [arithmetic], a row of + − × ÷ keys sits beneath
@@ -113,7 +117,9 @@ private fun operatorKeys(): List<Pair<String, String>> =
 /**
  * A calculator keypad typing an amount into [state], for a screen that shows the amount itself in
  * place of a text field. Each row of keys ends in one of [AmountField]'s operator keys. It takes
- * focus while shown, so a hardware keyboard types into it too.
+ * focus while shown, so a hardware keyboard types into it too, with its copy, paste and select all
+ * shortcuts. While the whole amount is selected, a digit or point replaces it. [onPaste] gets the
+ * clipboard's text.
  */
 @Composable
 fun AmountKeypad(
@@ -121,9 +127,12 @@ fun AmountKeypad(
   onDone: () -> Unit,
   modifier: Modifier = Modifier,
   canFinish: Boolean = true,
+  onPaste: ((String) -> Unit)? = null,
 ) {
   val operators = operatorKeys()
   val haptics = LocalHapticFeedback.current
+  val clipboard = LocalClipboard.current
+  val scope = rememberCoroutineScope()
   val focusRequester = remember { FocusRequester() }
   LaunchedEffect(focusRequester) { focusRequester.requestFocus() }
 
@@ -134,9 +143,20 @@ fun AmountKeypad(
         .onPreviewKeyEvent { event ->
           when (val input = event.toKeypadInput()) {
             null -> return@onPreviewKeyEvent false
-            is Append -> state.edit { append(input.text) }
-            Backspace -> state.edit { if (length > 0) replace(length - 1, length, "") }
+            is Append -> state.typeKey(input.text)
+            Backspace -> state.backspace()
             Done -> if (canFinish) onDone()
+            SelectAll -> state.edit { selection = TextRange(0, length) }
+            Copy -> {
+              val text = state.text.toString()
+              if (text.isNotEmpty()) {
+                scope.launch { clipboard.setClipEntry(plainTextClipEntry(text)) }
+              }
+            }
+            Paste -> {
+              if (onPaste == null) return@onPreviewKeyEvent false
+              scope.launch { clipboard.getClipEntry()?.plainText()?.let(onPaste) }
+            }
           }
           true
         }
@@ -146,18 +166,18 @@ fun AmountKeypad(
   ) {
     DIGIT_ROWS.fastForEachIndexed { index, digits ->
       KeypadRow {
-        digits.fastForEach { digit -> KeypadKey(digit, onClick = { state.edit { append(digit) } }) }
+        digits.fastForEach { digit -> KeypadKey(digit, onClick = { state.typeKey(digit) }) }
         OperatorKey(operators[index], state)
       }
     }
 
     KeypadRow {
-      KeypadKey(DECIMAL_POINT, onClick = { state.edit { append(DECIMAL_POINT) } })
-      KeypadKey(ZERO, onClick = { state.edit { append(ZERO) } })
+      KeypadKey(DECIMAL_POINT, onClick = { state.typeKey(DECIMAL_POINT) })
+      KeypadKey(ZERO, onClick = { state.typeKey(ZERO) })
       KeypadKey(
         text = BACKSPACE,
         description = Strings.inputBackspace,
-        onClick = { state.edit { if (length > 0) replace(length - 1, length, "") } },
+        onClick = { state.backspace() },
       )
       OperatorKey(operators[DIGIT_ROWS.size], state)
     }
@@ -180,12 +200,41 @@ internal sealed interface KeypadInput {
   data object Backspace : KeypadInput
 
   data object Done : KeypadInput
+
+  data object SelectAll : KeypadInput
+
+  data object Copy : KeypadInput
+
+  data object Paste : KeypadInput
 }
 
 private fun KeyEvent.toKeypadInput(): KeypadInput? {
-  val isShortcut = isCtrlPressed || isMetaPressed || isAltPressed
-  if (type != KeyDown || isShortcut) return null
+  if (type != KeyDown || isAltPressed) return null
+  if (isCtrlPressed || isMetaPressed) return shortcutInput(key)
   return keypadInput(key, utf16CodePoint.toChar())
+}
+
+// Ctrl or Cmd with a key
+internal fun shortcutInput(key: Key): KeypadInput? =
+  when (key) {
+    A -> SelectAll
+    C -> Copy
+    V -> Paste
+    else -> null
+  }
+
+// A digit or point replaces the amount while it's all selected. Anything else carries on from the
+// end of it
+internal fun TextFieldState.typeKey(key: String) = edit {
+  val isAllSelected = length > 0 && selection.length == length
+  val isNumber = key.all { it.isDigit() || it == DECIMAL_POINT.single() }
+  if (isAllSelected && isNumber) replace(0, length, key) else append(key)
+  selection = TextRange(length)
+}
+
+internal fun TextFieldState.backspace() = edit {
+  if (length > 0) replace(length - 1, length, "")
+  selection = TextRange(length)
 }
 
 // A hardware key as the keypad key it stands for, with operators typed as the keypad's symbols and
@@ -202,7 +251,7 @@ internal fun keypadInput(key: Key, char: Char): KeypadInput? =
 @Composable
 private fun RowScope.OperatorKey(operator: Pair<String, String>, state: TextFieldState) {
   val (symbol, description) = operator
-  KeypadKey(symbol, description = description, onClick = { state.edit { append(symbol) } })
+  KeypadKey(symbol, description = description, onClick = { state.typeKey(symbol) })
 }
 
 @Composable
