@@ -20,10 +20,12 @@ import aktual.log
 class RulesEngine(
   rules: List<TransactionRule>,
   scheduleRules: Map<ScheduleId, RuleId> = emptyMap(),
+  completedScheduleRules: Set<RuleId> = emptySet(),
   idMappings: Map<String, String> = emptyMap(),
 ) {
   private val compiled: List<CompiledRule>
   private val scheduleRules = scheduleRules.toMap()
+  private val completedScheduleRules = completedScheduleRules.toSet()
 
   /** Rules that upstream would refuse to load, and so never run. */
   val invalidRules: List<RuleId>
@@ -66,13 +68,18 @@ class RulesEngine(
 
     // A transaction from a schedule always runs that schedule's rule, and never other schedules'
     val scheduleRule = transaction.schedule?.let(scheduleRules::get)
-    val otherScheduleRules = scheduleRules.values.toSet() - setOfNotNull(scheduleRule)
+    // Completed schedules are kept for reference, so they don't link new transactions
+    val skippedRules =
+      if (scheduleRule != null) {
+        scheduleRules.values.toSet() - scheduleRule
+      } else {
+        completedScheduleRules
+      }
 
     for (rule in rules) {
       when {
-        scheduleRule != null && rule.id == scheduleRule ->
-          subject = rule.execActions(subject, context)
-        scheduleRule != null && rule.id in otherScheduleRules -> continue
+        rule.id in skippedRules -> continue
+        rule.id == scheduleRule -> subject = rule.execActions(subject, context)
         rule.evalConditions(subject) -> subject = rule.execActions(subject, context)
       }
 

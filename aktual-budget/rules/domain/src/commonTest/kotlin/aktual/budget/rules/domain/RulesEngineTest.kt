@@ -253,6 +253,31 @@ class RulesEngineTest {
   }
 
   @Test
+  fun `Completed schedules' rules only run on transactions already linked to them`() {
+    val engine =
+      RulesEngine(
+        listOf(
+          rule(
+            "completed-rule",
+            listOf(cond(Amount, Is, 100)),
+            listOf(action(LinkSchedule, value = "schedule-1"), set(Notes, "completed")),
+          ),
+          rule("plain", listOf(cond(Amount, Is, 100)), listOf(set(Cleared, false))),
+        ),
+        scheduleRules = mapOf(ScheduleId("schedule-1") to RuleId("completed-rule")),
+        completedScheduleRules = setOf(RuleId("completed-rule")),
+      )
+
+    val plain = engine.run(tx(amount = 100), context())
+    assertThat(plain.schedule).isNull()
+    assertThat(plain.notes).isNull()
+    assertThat(plain.cleared).isEqualTo(false)
+
+    val linked = engine.run(tx(amount = 100).copy(schedule = ScheduleId("schedule-1")), context())
+    assertThat(linked.notes).isEqualTo("completed")
+  }
+
+  @Test
   fun `Rules indexed away from the transaction don't run`() {
     // Upstream's indexes only return this rule for transactions whose payee is "a" or whose
     // imported payee starts with "x", so the isNot conditions alone aren't enough

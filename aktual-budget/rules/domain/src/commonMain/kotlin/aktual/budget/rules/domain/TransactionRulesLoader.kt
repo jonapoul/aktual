@@ -21,6 +21,7 @@ class TransactionRulesLoader(
       RulesEngine(
         rules = rulesDao.getAll().map { it.toTransactionRule() },
         scheduleRules = contextDao.scheduleRules(),
+        completedScheduleRules = contextDao.completedScheduleRules(),
         idMappings = contextDao.idMappings(),
       )
     val context =
