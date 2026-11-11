@@ -22,7 +22,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType.Application.Json
 import io.ktor.http.contentType
-import io.ktor.http.path
 
 @ContributesBinding(BudgetScope::class)
 class ApiKeysApiImpl
@@ -68,11 +67,7 @@ internal constructor(
 
   private fun HttpRequestBuilder.request(vararg segments: String) {
     val remote = server.remote()
-    url {
-      protocol = remote.url.protocol()
-      host = remote.url.baseUrl
-      path(API_KEYS, *segments)
-    }
+    url(remote.url, API_KEYS, *segments)
     header(AktualHeaders.TOKEN, remote.token)
     // Refusals like an invalid name come back as 4xx with the usual JSON envelope
     expectSuccess = false

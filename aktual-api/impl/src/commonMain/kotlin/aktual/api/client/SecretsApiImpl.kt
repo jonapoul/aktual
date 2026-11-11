@@ -17,7 +17,6 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType.Application.Json
 import io.ktor.http.contentType
-import io.ktor.http.path
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -54,11 +53,7 @@ internal constructor(
 
   private fun HttpRequestBuilder.request(vararg segments: String) {
     val remote = server.remote()
-    url {
-      protocol = remote.url.protocol()
-      host = remote.url.baseUrl
-      path(*segments)
-    }
+    url(remote.url, *segments)
     header(AktualHeaders.TOKEN, remote.token)
     // Refusals like a user who isn't an admin come back as 4xx with the usual JSON envelope
     expectSuccess = false

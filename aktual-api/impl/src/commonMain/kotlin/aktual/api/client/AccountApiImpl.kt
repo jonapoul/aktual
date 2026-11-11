@@ -25,56 +25,29 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.http.path
 
 @ContributesBinding(ServerChosenScope::class)
 class AccountApiImpl(
   @param:AktualClient private val client: HttpClient,
   private val serverUrl: ServerUrl,
 ) : AccountApi {
-  private val urlProtocol = serverUrl.protocol()
-
   override suspend fun needsBootstrap(): NeedsBootstrapResponse.Success =
-    client
-      .get {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/account/needs-bootstrap")
-        }
-      }
-      .body<NeedsBootstrapResponse.Success>()
+    client.get { url(serverUrl, "/account/needs-bootstrap") }.body<NeedsBootstrapResponse.Success>()
 
   override suspend fun loginMethods(): LoginMethodsResponse.Success =
-    client
-      .get {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/account/login-methods")
-        }
-      }
-      .body<LoginMethodsResponse.Success>()
+    client.get { url(serverUrl, "/account/login-methods") }.body<LoginMethodsResponse.Success>()
 
   override suspend fun ownerCreated(): Boolean =
     client
       .get {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/admin/owner-created/")
-        }
+        url(serverUrl, "/admin/owner-created/")
       }
       .body<Boolean>()
 
   override suspend fun bootstrap(body: BootstrapRequest): BootstrapResponse.Success =
     client
       .post {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/account/bootstrap")
-        }
+        url(serverUrl, "/account/bootstrap")
         contentType(ContentType.Application.Json)
         setBody(body)
       }
@@ -84,11 +57,7 @@ class AccountApiImpl(
     try {
       client
         .post {
-          url {
-            protocol = urlProtocol
-            host = serverUrl.baseUrl
-            path("/account/login")
-          }
+          url(serverUrl, "/account/login")
           contentType(ContentType.Application.Json)
           setBody(body)
         }
@@ -101,11 +70,7 @@ class AccountApiImpl(
     try {
       client
         .post {
-          url {
-            protocol = urlProtocol
-            host = serverUrl.baseUrl
-            path("/account/login")
-          }
+          url(serverUrl, "/account/login")
           contentType(ContentType.Application.Json)
           setBody(body)
         }
@@ -118,11 +83,7 @@ class AccountApiImpl(
     try {
       client
         .post {
-          url {
-            protocol = urlProtocol
-            host = serverUrl.baseUrl
-            path("/account/login")
-          }
+          url(serverUrl, "/account/login")
           header(AktualHeaders.PASSWORD, password)
           contentType(ContentType.Application.Json)
           setBody(body)
@@ -138,11 +99,7 @@ class AccountApiImpl(
   ): ChangePasswordResponse.Success =
     client
       .post {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/account/change-password")
-        }
+        url(serverUrl, "/account/change-password")
         header(AktualHeaders.TOKEN, token)
         contentType(ContentType.Application.Json)
         setBody(body)
@@ -153,11 +110,7 @@ class AccountApiImpl(
     try {
       client
         .get {
-          url {
-            protocol = urlProtocol
-            host = serverUrl.baseUrl
-            path("/account/validate")
-          }
+          url(serverUrl, "/account/validate")
           header(AktualHeaders.TOKEN, token)
         }
         .body<ValidateResponse.Success>()
