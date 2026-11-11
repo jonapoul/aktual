@@ -11,16 +11,19 @@ import kotlinx.datetime.YearMonth
 
 // packages/desktop-client/src/components/reports/spreadsheets/budget-analysis-spreadsheet.ts
 // createBudgetAnalysisSpreadsheet(). [months] starts with the month before the report, which only
-// seeds the running balance
+// seeds the running balance and the first month's overspending adjustment
 internal fun calculateBudgetAnalysis(
   months: List<BudgetMonth>,
   params: BudgetAnalysisParams,
 ): BudgetAnalysisData {
   val filter = BudgetCategoryFilter(params.conditions, params.conditionsOp)
-  val groupNames = months.firstOrNull()?.groups?.associate { it.id to it.name }.orEmpty()
+  val groups = months.firstOrNull()?.groups.orEmpty()
+  val groupNames = groups.associate { it.id to it.name }
+  // Hiding a group doesn't hide its categories
+  val hiddenGroups = groups.filter { it.isHidden }.mapTo(mutableSetOf()) { it.id }
   val include = { category: CategoryMonth ->
     !category.isIncome &&
-      (params.showHiddenCategories || !category.isHidden) &&
+      (params.showHiddenCategories || !(category.isHidden || category.group in hiddenGroups)) &&
       filter.matches(
         category = category.id,
         categoryName = category.name,
@@ -29,9 +32,9 @@ internal fun calculateBudgetAnalysis(
       )
   }
 
-  val previous = months.firstOrNull()
-  var runningBalance = previous?.totals(include)?.carryover ?: Zero
-  var overspendingFromPrevious = Zero
+  val previousTotals = months.firstOrNull()?.totals(include)
+  var runningBalance = previousTotals?.carryover ?: Zero
+  var overspendingFromPrevious = previousTotals?.overspending ?: Zero
   val items = LinkedHashMap<YearMonth, BudgetAnalysisDatum>()
 
   for (month in months.drop(1)) {
