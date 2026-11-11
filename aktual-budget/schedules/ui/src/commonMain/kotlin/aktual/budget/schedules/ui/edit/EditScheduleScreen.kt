@@ -78,6 +78,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
@@ -609,6 +610,7 @@ private fun NameField(name: String, onNameChange: (String) -> Unit, modifier: Mo
       state = textState,
       placeholderText = Strings.editScheduleNamePlaceholder,
       singleLine = true,
+      keyboardOptions = KeyboardOptions(capitalization = Sentences),
     )
   }
 }
