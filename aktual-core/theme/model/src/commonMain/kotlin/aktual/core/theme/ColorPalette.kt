@@ -2,7 +2,7 @@ package aktual.core.theme
 
 import androidx.compose.ui.graphics.Color
 
-/** actual/packages/component-library/src/themes/palette.css */
+/** actual/packages/component-library/src/themes/source/palette.ts */
 @Suppress("unused")
 internal object ColorPalette {
   val gray50 = Color(color = 0xFFF6F8FA)
