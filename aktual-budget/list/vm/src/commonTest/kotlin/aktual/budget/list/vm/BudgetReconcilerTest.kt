@@ -7,7 +7,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.core.model.KeyId
 import aktual.prefs.KeyPreferences
-import aktual.test.CoTemporaryFolder
+import aktual.test.TemporaryFolder
 import aktual.test.testBudgetFiles
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
@@ -22,26 +22,27 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 
 class BudgetReconcilerTest {
-  @InterceptTest val temporaryFolder = CoTemporaryFolder()
+  @InterceptTest val temporaryFolder = TemporaryFolder()
 
   private lateinit var reconciler: BudgetReconciler
   private lateinit var files: BudgetFiles
   private lateinit var keyPreferences: KeyPreferences
 
-  private fun TestScope.before(hasKeys: Boolean = false) {
-    files = testBudgetFiles(temporaryFolder)
-    keyPreferences = mockk { coEvery { contains(any()) } returns hasKeys }
-    reconciler =
-      BudgetReconciler(
-        files = files,
-        keyPreferences = keyPreferences,
-        contexts = TestCoroutineContexts(standardDispatcher),
-      )
-  }
+  private fun runReconcilerTest(hasKeys: Boolean = false, action: suspend TestScope.() -> Unit) =
+    runTest {
+      files = testBudgetFiles(temporaryFolder)
+      keyPreferences = mockk { coEvery { contains(any()) } returns hasKeys }
+      reconciler =
+        BudgetReconciler(
+          files = files,
+          keyPreferences = keyPreferences,
+          contexts = TestCoroutineContexts(standardDispatcher),
+        )
+      action()
+    }
 
   @Test
-  fun `Server file with matching local groupId is Synced`() = runTest {
-    before()
+  fun `Server file with matching local groupId is Synced`() = runReconcilerTest {
     seedLocal(BudgetId("a"), groupId = "g1", name = "Main")
 
     val result =
@@ -61,8 +62,7 @@ class BudgetReconcilerTest {
   }
 
   @Test
-  fun `Server file with mismatched local groupId is Detached`() = runTest {
-    before()
+  fun `Server file with mismatched local groupId is Detached`() = runReconcilerTest {
     seedLocal(BudgetId("a"), groupId = "g1", name = "Main")
 
     val result =
@@ -82,9 +82,7 @@ class BudgetReconcilerTest {
   }
 
   @Test
-  fun `Server file with no local copy is Remote`() = runTest {
-    before()
-
+  fun `Server file with no local copy is Remote`() = runReconcilerTest {
     val result =
       reconciler.reconcile(remote = listOf(userFile(id = "a", groupId = "g1", name = "Main")))
 
@@ -102,8 +100,7 @@ class BudgetReconcilerTest {
   }
 
   @Test
-  fun `Local with cloud metadata but missing from server is Broken`() = runTest {
-    before()
+  fun `Local with cloud metadata but missing from server is Broken`() = runReconcilerTest {
     seedLocal(BudgetId("a"), groupId = "g1", name = "Orphan")
 
     val result = reconciler.reconcile(remote = emptyList())
@@ -121,8 +118,7 @@ class BudgetReconcilerTest {
   }
 
   @Test
-  fun `Local without cloud metadata is Local`() = runTest {
-    before()
+  fun `Local without cloud metadata is Local`() = runReconcilerTest {
     files.directory(BudgetId("a"), mkdirs = true)
 
     val result = reconciler.reconcile(remote = emptyList())
@@ -134,8 +130,7 @@ class BudgetReconcilerTest {
   }
 
   @Test
-  fun `Offline surfaces local cloud-tagged budgets as Unknown`() = runTest {
-    before()
+  fun `Offline surfaces local cloud-tagged budgets as Unknown`() = runReconcilerTest {
     seedLocal(BudgetId("a"), groupId = "g1", name = "Main")
 
     val result = reconciler.reconcile(remote = null)
@@ -153,8 +148,7 @@ class BudgetReconcilerTest {
   }
 
   @Test
-  fun `Local dir matching server file id without metadata is not duplicated`() = runTest {
-    before()
+  fun `Local dir matching server file id without metadata is not duplicated`() = runReconcilerTest {
 
     // Mimic a freshly downloaded budget: directory named after the cloud file id, but metadata.json
     // not written yet. This must collapse to a single entry rather than emitting both a Remote and
@@ -177,9 +171,7 @@ class BudgetReconcilerTest {
   }
 
   @Test
-  fun `Server file marked deleted is filtered out`() = runTest {
-    before()
-
+  fun `Server file marked deleted is filtered out`() = runReconcilerTest {
     val result =
       reconciler.reconcile(
         remote = listOf(userFile(id = "a", groupId = "g1", name = "Gone").copy(deleted = 1)),
@@ -189,27 +181,28 @@ class BudgetReconcilerTest {
   }
 
   @Test
-  fun `Encrypted file with stored key has hasKey=true`() = runTest {
-    before(hasKeys = true)
+  fun `Encrypted file with stored key has hasKey=true`() =
+    runReconcilerTest(hasKeys = true) {
+      val result =
+        reconciler.reconcile(
+          remote =
+            listOf(
+              userFile(id = "a", groupId = "g1", name = "Main", encryptKeyId = KeyId("key-1")),
+            ),
+        )
 
-    val result =
-      reconciler.reconcile(
-        remote =
-          listOf(userFile(id = "a", groupId = "g1", name = "Main", encryptKeyId = KeyId("key-1"))),
-      )
-
-    assertThat(result)
-      .containsExactly(
-        Budget.Remote(
-          name = "Main",
-          hasKey = true,
-          encryptKeyId = "key-1",
-          cloudFileId = BudgetId("a"),
-          groupId = "g1",
-          owner = null,
-        ),
-      )
-  }
+      assertThat(result)
+        .containsExactly(
+          Budget.Remote(
+            name = "Main",
+            hasKey = true,
+            encryptKeyId = "key-1",
+            cloudFileId = BudgetId("a"),
+            groupId = "g1",
+            owner = null,
+          ),
+        )
+    }
 
   private fun seedLocal(id: BudgetId, groupId: String, name: String) {
     files.writeMetadata(id, DbMetadata(cloudFileId = id, groupId = groupId, budgetName = name))

@@ -9,7 +9,7 @@ import aktual.budget.sync.vm.DownloadState.InProgress
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.bytes
-import aktual.test.CoTemporaryFolder
+import aktual.test.TemporaryFolder
 import aktual.test.emptyMockEngine
 import aktual.test.enqueueResponse
 import aktual.test.existsOn
@@ -34,7 +34,7 @@ import okio.FileSystem
 import okio.Path
 
 class BudgetFileDownloaderTest {
-  @InterceptTest val temporaryFolder = CoTemporaryFolder()
+  @InterceptTest val temporaryFolder = TemporaryFolder()
 
   private lateinit var budgetFileDownloader: BudgetFileDownloader
   private lateinit var budgetFiles: BudgetFiles
@@ -45,14 +45,15 @@ class BudgetFileDownloaderTest {
     mockEngine = emptyMockEngine()
   }
 
-  fun TestScope.before(
+  private fun runDownloaderTest(
     syncApi: SyncApiImpl =
       SyncApiImpl(
         serverUrl = SERVER_URL,
         client = testHttpClient(mockEngine),
         fileSystem = SYSTEM,
       ),
-  ) {
+    action: suspend TestScope.() -> Unit,
+  ) = runTest {
     budgetFiles = testBudgetFiles(temporaryFolder)
     budgetFileDownloader =
       BudgetFileDownloader(
@@ -61,6 +62,7 @@ class BudgetFileDownloaderTest {
         syncApi = syncApi,
         token = TOKEN,
       )
+    action()
   }
 
   @AfterTest
@@ -69,9 +71,8 @@ class BudgetFileDownloaderTest {
   }
 
   @Test
-  fun `Succeed downloading`() = runTest {
+  fun `Succeed downloading`() = runDownloaderTest {
     // given
-    before()
     val dataSize = 1024.bytes
     val data = ByteArray(dataSize.numBytes.toInt()) { (it % Byte.MAX_VALUE).toByte() }
     mockEngine.enqueueResponse(data)
@@ -101,9 +102,8 @@ class BudgetFileDownloaderTest {
   }
 
   @Test
-  fun `Handle network failure`() = runTest {
+  fun `Handle network failure`() = runDownloaderTest {
     // given the API call throws network exception
-    before()
     mockEngine += { throw NoRouteToHostException() }
 
     // when
@@ -126,9 +126,8 @@ class BudgetFileDownloaderTest {
   }
 
   @Test
-  fun `Handle HTTP failure`() = runTest {
+  fun `Handle HTTP failure`() = runDownloaderTest {
     // given the API call returns error code
-    before()
     mockEngine += { respondError(NotFound) }
 
     // when

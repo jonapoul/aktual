@@ -16,14 +16,14 @@ class TagPreferencesTest {
   private lateinit var dataStore: DataStore<Preferences>
   private lateinit var preferences: TagPreferences
 
-  private fun TestScope.before() {
+  private fun runPrefsTest(action: suspend TestScope.() -> Unit) = runTest {
     dataStore = buildPreferences(unconfinedDispatcher)
     preferences = TagPreferencesImpl(dataStore)
+    action()
   }
 
   @Test
-  fun `Last used tag colour`() = runTest {
-    before()
+  fun `Last used tag colour`() = runPrefsTest {
     with(preferences.lastUsedTagColor) {
       asFlow().test {
         // Given nothing has been stored yet
@@ -46,8 +46,7 @@ class TagPreferencesTest {
   }
 
   @Test
-  fun `Tag sort field`() = runTest {
-    before()
+  fun `Tag sort field`() = runPrefsTest {
     with(preferences.sortField) {
       asFlow().test {
         // Given the default sort field
@@ -64,8 +63,7 @@ class TagPreferencesTest {
   }
 
   @Test
-  fun `Tag sort direction`() = runTest {
-    before()
+  fun `Tag sort direction`() = runPrefsTest {
     with(preferences.sortDirection) {
       asFlow().test {
         // Given the default sort direction
@@ -82,8 +80,7 @@ class TagPreferencesTest {
   }
 
   @Test
-  fun `Unknown stored sort field falls back to default`() = runTest {
-    before()
+  fun `Unknown stored sort field falls back to default`() = runPrefsTest {
     with(preferences.sortField) {
       asFlow().test {
         assertThatNextEmissionIsEqualTo(Default)

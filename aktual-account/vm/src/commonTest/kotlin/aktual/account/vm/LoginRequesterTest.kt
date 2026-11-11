@@ -57,7 +57,10 @@ internal class LoginRequesterTest {
     mockEngine.close()
   }
 
-  private fun TestScope.before(accountApi: AccountApi = this@LoginRequesterTest.accountApi) {
+  private fun runRequesterTest(
+    accountApi: AccountApi = this@LoginRequesterTest.accountApi,
+    action: suspend TestScope.() -> Unit,
+  ) = runTest {
     val dispatcher = unconfinedDispatcher
     val dataStore = buildPreferences(dispatcher)
     preferences = AppPreferencesImpl(dataStore)
@@ -70,11 +73,11 @@ internal class LoginRequesterTest {
         runLevelController = mockk(relaxed = true),
         openIdRedirects = FakeOpenIdRedirects,
       )
+    action()
   }
 
   @Test
-  fun `Successful call`() = runTest {
-    before()
+  fun `Successful call`() = runRequesterTest {
 
     // Given a URL is set
     preferences.serverUrl.set(EXAMPLE_URL)
@@ -95,23 +98,21 @@ internal class LoginRequesterTest {
   }
 
   @Test
-  fun `Network error`() = runTest {
-    // Given a mock API throws a network error when called
-    val errorMessage = "something broke"
-    val accountApi = mockk<AccountApi>()
-    coEvery { accountApi.login(any<LoginRequest.Password>()) } throws IOException(errorMessage)
-    before(accountApi)
+  fun `Network error`() =
+    runRequesterTest(
+      // Given a mock API throws a network error when called
+      accountApi =
+        mockk { coEvery { login(any<LoginRequest.Password>()) } throws IOException(ERROR_MESSAGE) },
+    ) {
+      // When we log in
+      val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
-    // When we log in
-    val result = loginRequester.logIn(EXAMPLE_PASSWORD)
-
-    // Then we get a failure result
-    assertThat(result).isEqualTo(LoginResult.NetworkFailure(errorMessage))
-  }
+      // Then we get a failure result
+      assertThat(result).isEqualTo(LoginResult.NetworkFailure(ERROR_MESSAGE))
+    }
 
   @Test
-  fun `Invalid password`() = runTest {
-    before()
+  fun `Invalid password`() = runRequesterTest {
 
     // Given a URL is set
     preferences.serverUrl.set(EXAMPLE_URL)
@@ -133,8 +134,7 @@ internal class LoginRequesterTest {
   }
 
   @Test
-  fun `HTTP failure with token expired`() = runTest {
-    before()
+  fun `HTTP failure with token expired`() = runRequesterTest {
 
     // Given a URL is set
     preferences.serverUrl.set(EXAMPLE_URL)
@@ -156,8 +156,7 @@ internal class LoginRequesterTest {
   }
 
   @Test
-  fun `HTTP failure with other reason`() = runTest {
-    before()
+  fun `HTTP failure with other reason`() = runRequesterTest {
 
     // Given a URL is set
     preferences.serverUrl.set(EXAMPLE_URL)
@@ -179,8 +178,7 @@ internal class LoginRequesterTest {
   }
 
   @Test
-  fun `Valid API key`() = runTest {
-    before()
+  fun `Valid API key`() = runRequesterTest {
     preferences.serverUrl.set(EXAMPLE_URL)
 
     preferences.token.asFlow().test {
@@ -203,8 +201,7 @@ internal class LoginRequesterTest {
   }
 
   @Test
-  fun `Invalid API key`() = runTest {
-    before()
+  fun `Invalid API key`() = runRequesterTest {
     preferences.serverUrl.set(EXAMPLE_URL)
 
     // When the server rejects the key
@@ -218,8 +215,7 @@ internal class LoginRequesterTest {
   }
 
   @Test
-  fun `OpenID login sends the app's return URL`() = runTest {
-    before()
+  fun `OpenID login sends the app's return URL`() = runRequesterTest {
     preferences.serverUrl.set(EXAMPLE_URL)
 
     val body = """{ "status": "ok", "data": { "returnUrl": "https://sso.example.com/auth" } }"""
@@ -236,8 +232,7 @@ internal class LoginRequesterTest {
   }
 
   @Test
-  fun `Rejected OpenID token has expired`() = runTest {
-    before()
+  fun `Rejected OpenID token has expired`() = runRequesterTest {
     preferences.serverUrl.set(EXAMPLE_URL)
 
     val body = """{ "status": "error", "reason": "unauthorized" }"""
@@ -249,8 +244,7 @@ internal class LoginRequesterTest {
   }
 
   @Test
-  fun `First OpenID login asks for the server password`() = runTest {
-    before()
+  fun `First OpenID login asks for the server password`() = runRequesterTest {
     mockEngine += { request ->
       assertThat(request.url.encodedPath).isEqualTo("/admin/owner-created/")
       respondJson("false")
@@ -261,16 +255,14 @@ internal class LoginRequesterTest {
   }
 
   @Test
-  fun `First OpenID login without password login`() = runTest {
-    before()
+  fun `First OpenID login without password login`() = runRequesterTest {
     mockEngine += { respondJson("false") }
 
     assertThat(loginRequester.openIdFirstLogin(listOf(OPENID_METHOD))).isEqualTo(First)
   }
 
   @Test
-  fun `OpenID login once there's an owner`() = runTest {
-    before()
+  fun `OpenID login once there's an owner`() = runRequesterTest {
     mockEngine += { respondJson("true") }
 
     assertThat(loginRequester.openIdFirstLogin(listOf(PASSWORD_METHOD, OPENID_METHOD)))
@@ -278,26 +270,23 @@ internal class LoginRequesterTest {
   }
 
   @Test
-  fun `Owner check failing assumes there's an owner`() = runTest {
-    val accountApi = mockk<AccountApi>()
-    coEvery { accountApi.ownerCreated() } throws IOException("something broke")
-    before(accountApi)
-
-    assertThat(loginRequester.openIdFirstLogin(listOf(PASSWORD_METHOD, OPENID_METHOD)))
-      .isEqualTo(NotFirst)
-  }
+  fun `Owner check failing assumes there's an owner`() =
+    runRequesterTest(
+      accountApi = mockk { coEvery { ownerCreated() } throws IOException(ERROR_MESSAGE) },
+    ) {
+      assertThat(loginRequester.openIdFirstLogin(listOf(PASSWORD_METHOD, OPENID_METHOD)))
+        .isEqualTo(NotFirst)
+    }
 
   @Test
-  fun `API key network error`() = runTest {
-    val errorMessage = "something broke"
-    val accountApi = mockk<AccountApi>()
-    coEvery { accountApi.validate(any()) } throws IOException(errorMessage)
-    before(accountApi)
+  fun `API key network error`() =
+    runRequesterTest(
+      accountApi = mockk { coEvery { validate(any()) } throws IOException(ERROR_MESSAGE) },
+    ) {
+      val result = loginRequester.logIn(EXAMPLE_API_KEY)
 
-    val result = loginRequester.logIn(EXAMPLE_API_KEY)
-
-    assertThat(result).isEqualTo(LoginResult.NetworkFailure(errorMessage))
-  }
+      assertThat(result).isEqualTo(LoginResult.NetworkFailure(ERROR_MESSAGE))
+    }
 
   private object FakeOpenIdRedirects : OpenIdRedirects {
     override val tokens = emptyFlow<Token>()
@@ -306,6 +295,7 @@ internal class LoginRequesterTest {
   }
 
   private companion object {
+    const val ERROR_MESSAGE = "something broke"
     val EXAMPLE_API_KEY = Token(value = "actual_abc123")
     val EXAMPLE_PASSWORD = Password(value = "P@ssw0rd")
     val EXAMPLE_TOKEN = Token(value = "abc123")
