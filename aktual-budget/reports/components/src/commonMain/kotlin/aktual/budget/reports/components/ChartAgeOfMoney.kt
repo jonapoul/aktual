@@ -237,7 +237,12 @@ private fun Chart(
               valueFormatter = periodXAxisFormatter(data),
               itemPlacer = hItemPlacer(lines = true),
             ),
-          marker = if (compact) null else rememberMarker(),
+          marker =
+            if (compact) {
+              null
+            } else {
+              rememberMarker(rememberMarkerFormatter(periodXAxisFormatter(data), dayFormatter))
+            },
           markerVisibilityListener = rememberMarkerHaptics(compact),
           decorations =
             if (compact) {

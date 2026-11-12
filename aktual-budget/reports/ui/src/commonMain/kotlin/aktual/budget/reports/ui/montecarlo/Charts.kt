@@ -13,6 +13,7 @@ import aktual.budget.reports.components.axisLabelComponent
 import aktual.budget.reports.components.axisLineComponent
 import aktual.budget.reports.components.axisTickComponent
 import aktual.budget.reports.components.chartAnimationSpec
+import aktual.budget.reports.components.rememberAgeMarkerFormatter
 import aktual.budget.reports.components.rememberMarker
 import aktual.budget.reports.components.rememberMarkerHaptics
 import aktual.budget.reports.vm.montecarlo.CashflowChart
@@ -58,6 +59,7 @@ import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
 import com.patrykandpatrick.vico.compose.common.data.ExtraStore
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.runBlocking
 
 // MonteCarloGraph: the fan of percentile bands, or one line for a focused view
@@ -136,7 +138,7 @@ internal fun FanChart(
         rememberLineCartesianLayer(lineProvider = LineCartesianLayer.LineProvider.series(lines)),
         startAxis = amountAxis(),
         bottomAxis = ageAxis(bands.size),
-        marker = rememberMarker(),
+        marker = rememberMarker(rememberAgeMarkerFormatter(bands.map { it.age }.toImmutableList())),
         markerVisibilityListener = rememberMarkerHaptics(compact = false),
         decorations = decorations,
       ),
@@ -419,10 +421,14 @@ private fun ageAxis(ageCount: Int) =
     guideline = null,
     label = axisLabelComponent(compact = false),
     tick = axisTickComponent(compact = false),
-    valueFormatter =
-      remember { CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}" } },
+    valueFormatter = ageFormatter(),
     itemPlacer = ageItemPlacer(ageCount),
   )
+
+@Composable
+private fun ageFormatter() = remember {
+  CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}" }
+}
 
 // Marks the selected age with a guideline, leaving the details to the panel under the chart
 @Composable

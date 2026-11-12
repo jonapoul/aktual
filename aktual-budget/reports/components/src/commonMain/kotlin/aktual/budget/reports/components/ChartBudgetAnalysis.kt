@@ -282,7 +282,8 @@ private fun rememberChart(layers: Layers, compact: Boolean, zoom: ChartZoomState
       valueFormatter = yearMonthXAxisFormatter(),
       itemPlacer = hItemPlacer(lines = false),
     )
-  val marker = if (compact) null else rememberMarker()
+  val marker =
+    if (compact) null else rememberMarker(rememberMarkerFormatter(yearMonthXAxisFormatter()))
   val markerListener = rememberMarkerHaptics(compact)
   val decorations = listOf(rememberChartZoomDecoration(zoom))
 

@@ -50,11 +50,13 @@ import com.patrykandpatrick.vico.compose.cartesian.decoration.Decoration
 import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.marker.DefaultCartesianMarker
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.Fill
 import kotlin.math.exp
 import kotlin.math.roundToInt
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.runBlocking
 
@@ -171,6 +173,7 @@ private fun Chart(
   val line = axisLineComponent(compact)
   val fill = colors.reportsChartFill
   val edge = Fill(fill.copy(alpha = EDGE_ALPHA))
+  val ageFormatter = remember { CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}" } }
 
   ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
     CartesianChartHost(
@@ -214,11 +217,17 @@ private fun Chart(
               guideline = guideline,
               label = label,
               tick = tick,
-              valueFormatter =
-                remember { CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}" } },
+              valueFormatter = ageFormatter,
               itemPlacer = ageItemPlacer(data.bands.size),
             ),
-          marker = if (compact) null else rememberMarker(),
+          marker =
+            if (compact) {
+              null
+            } else {
+              rememberMarker(
+                rememberAgeMarkerFormatter(data.bands.map { it.age }.toImmutableList()),
+              )
+            },
           markerVisibilityListener = rememberMarkerHaptics(compact),
           decorations =
             remember(data, fill) {
@@ -242,6 +251,17 @@ private fun Chart(
         ),
     )
   }
+}
+
+// Names the age, since a bare number next to amounts doesn't read as one
+@Composable
+fun rememberAgeMarkerFormatter(ages: ImmutableList<Int>): DefaultCartesianMarker.ValueFormatter {
+  val labels = ages.associateWith { age -> Strings.monteCarloAge(age) }
+  val xFormatter =
+    remember(labels) {
+      CartesianValueFormatter { _, value, _ -> labels[value.roundToInt()] ?: NO_AXIS_LABEL }
+    }
+  return rememberMarkerFormatter(xFormatter)
 }
 
 @Composable

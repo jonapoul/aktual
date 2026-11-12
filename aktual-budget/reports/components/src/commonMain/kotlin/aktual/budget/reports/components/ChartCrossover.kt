@@ -175,7 +175,12 @@ private fun Chart(
               valueFormatter = yearMonthXAxisFormatter(),
               itemPlacer = hItemPlacer(lines = true),
             ),
-          marker = if (compact) null else rememberMarker(),
+          marker =
+            if (compact) {
+              null
+            } else {
+              rememberMarker(rememberMarkerFormatter(yearMonthXAxisFormatter()))
+            },
           markerVisibilityListener = rememberMarkerHaptics(compact),
           decorations = listOfNotNull(crossoverLine, rememberChartZoomDecoration(zoom)),
         ),

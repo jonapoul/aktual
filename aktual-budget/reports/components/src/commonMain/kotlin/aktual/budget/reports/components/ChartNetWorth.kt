@@ -230,7 +230,7 @@ private fun Chart(
                   // A label this tall would squash the chart if Vico made room for it on top
                   labelPosition = AroundPoint,
                 )
-              else -> rememberMarker()
+              else -> rememberMarker(rememberMarkerFormatter(netWorthXAxisFormatter(data)))
             },
           markerVisibilityListener = rememberPeriodSelection(data, compact, onSelectPeriod),
           decorations = listOf(rememberChartZoomDecoration(zoom)),
