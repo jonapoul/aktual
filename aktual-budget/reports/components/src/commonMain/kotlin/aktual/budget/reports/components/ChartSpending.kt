@@ -164,7 +164,7 @@ private fun Chart(
               valueFormatter = xAxisFormatter(),
               itemPlacer = remember { HorizontalAxis.ItemPlacer.segmented() },
             ),
-          marker = if (compact) null else rememberMarker(),
+          marker = if (compact) null else rememberMarker(rememberMarkerFormatter(xAxisFormatter())),
           markerVisibilityListener = rememberMarkerHaptics(compact),
           decorations = listOf(rememberChartZoomDecoration(zoom)),
         ),

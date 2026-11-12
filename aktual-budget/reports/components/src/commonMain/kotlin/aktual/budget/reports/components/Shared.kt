@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package aktual.budget.reports.components
 
 import aktual.budget.model.Amount
@@ -29,7 +31,10 @@ import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.compose.cartesian.CartesianDrawingContext
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
@@ -42,7 +47,9 @@ import com.patrykandpatrick.vico.compose.cartesian.decoration.Decoration
 import com.patrykandpatrick.vico.compose.cartesian.layer.CartesianLayerPadding
 import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarker
 import com.patrykandpatrick.vico.compose.cartesian.marker.CartesianMarkerVisibilityListener
+import com.patrykandpatrick.vico.compose.cartesian.marker.ColumnCartesianLayerMarkerTarget
 import com.patrykandpatrick.vico.compose.cartesian.marker.DefaultCartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.marker.LineCartesianLayerMarkerTarget
 import com.patrykandpatrick.vico.compose.cartesian.marker.rememberDefaultCartesianMarker
 import com.patrykandpatrick.vico.compose.common.Fill
 import com.patrykandpatrick.vico.compose.common.Insets
@@ -133,14 +140,21 @@ fun amountYAxisFormatter(
   numberFormatConfig: NumberFormatConfig = LocalNumberFormatConfig.current,
   currencyConfig: CurrencyConfig = LocalCurrencyConfig.current,
   isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
+  hideFraction: Boolean = true,
 ): CartesianValueFormatter {
   val redactedFont = redactedFontFamily()
-  return remember(numberFormatConfig, currencyConfig, isPrivacyEnabled, redactedFont) {
+  return remember(
+    numberFormatConfig,
+    currencyConfig,
+    isPrivacyEnabled,
+    hideFraction,
+    redactedFont,
+  ) {
     CartesianValueFormatter { _, value, _ ->
       val text =
         Amount(value)
           .toString(
-            numberFormatConfig = numberFormatConfig.copy(hideFraction = true),
+            numberFormatConfig = numberFormatConfig.copy(hideFraction = hideFraction),
             currencyConfig = currencyConfig,
             includeSign = false,
             isPrivacyEnabled = isPrivacyEnabled,
@@ -160,10 +174,9 @@ internal fun monthStringsMap(): ImmutableMap<Month, String> =
  */
 @Composable
 fun rememberMarker(
+  valueFormatter: DefaultCartesianMarker.ValueFormatter,
   markerShape: Shape = RoundedCornerShape(CornerSize(percent = 50)),
-  valueFormatter: DefaultCartesianMarker.ValueFormatter =
-    DefaultCartesianMarker.ValueFormatter.default(),
-  lineCount: Int = 1,
+  lineCount: Int = 2,
   labelPosition: DefaultCartesianMarker.LabelPosition = Top,
 ): CartesianMarker {
   // Labels inside the chart need a background to stay readable over the lines and fills
@@ -209,6 +222,34 @@ fun rememberMarker(
 }
 
 private const val MARKER_BACKGROUND_ALPHA = 0.9f
+
+// The x value's label in bold, usually from the bottom axis's formatter, then each series' value
+@Composable
+fun rememberMarkerFormatter(
+  xFormatter: CartesianValueFormatter,
+  yFormatter: CartesianValueFormatter = amountYAxisFormatter(hideFraction = false),
+): DefaultCartesianMarker.ValueFormatter =
+  remember(xFormatter, yFormatter) {
+    DefaultCartesianMarker.ValueFormatter { context, targets ->
+      val x = targets.firstOrNull()?.x ?: return@ValueFormatter " "
+      val values = targets.flatMap { it.coloredValues() }
+      buildAnnotatedString {
+        withStyle(SpanStyle(fontWeight = Bold)) { append(xFormatter.format(context, x, null)) }
+        append('\n')
+        values.forEachIndexed { index, (y, color) ->
+          if (index > 0) append(", ")
+          withStyle(SpanStyle(color = color)) { append(yFormatter.format(context, y, null)) }
+        }
+      }
+    }
+  }
+
+private fun CartesianMarker.Target.coloredValues(): List<Pair<Double, Color>> =
+  when (this) {
+    is LineCartesianLayerMarkerTarget -> points.map { it.entry.y to it.color }
+    is ColumnCartesianLayerMarkerTarget -> columns.map { it.entry.y to it.color }
+    else -> emptyList()
+  }
 
 @Composable
 fun rememberMarkerHaptics(compact: Boolean): CartesianMarkerVisibilityListener? {

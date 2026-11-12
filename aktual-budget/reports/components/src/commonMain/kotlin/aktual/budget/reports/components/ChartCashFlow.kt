@@ -123,7 +123,12 @@ internal fun CashFlowChart(
                 valueFormatter = yearMonthXAxisFormatter(),
                 itemPlacer = hItemPlacer(lines = false),
               ),
-            marker = if (compact) null else rememberMarker(),
+            marker =
+              if (compact) {
+                null
+              } else {
+                rememberMarker(rememberMarkerFormatter(yearMonthXAxisFormatter()))
+              },
             markerVisibilityListener = rememberMarkerHaptics(compact),
             decorations = persistentListOf(rememberChartZoomDecoration(zoom)),
           ),

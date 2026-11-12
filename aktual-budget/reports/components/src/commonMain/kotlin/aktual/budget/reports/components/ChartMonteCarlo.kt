@@ -171,6 +171,7 @@ private fun Chart(
   val line = axisLineComponent(compact)
   val fill = colors.reportsChartFill
   val edge = Fill(fill.copy(alpha = EDGE_ALPHA))
+  val ageFormatter = remember { CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}" } }
 
   ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
     CartesianChartHost(
@@ -214,11 +215,10 @@ private fun Chart(
               guideline = guideline,
               label = label,
               tick = tick,
-              valueFormatter =
-                remember { CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}" } },
+              valueFormatter = ageFormatter,
               itemPlacer = ageItemPlacer(data.bands.size),
             ),
-          marker = if (compact) null else rememberMarker(),
+          marker = if (compact) null else rememberMarker(rememberMarkerFormatter(ageFormatter)),
           markerVisibilityListener = rememberMarkerHaptics(compact),
           decorations =
             remember(data, fill) {

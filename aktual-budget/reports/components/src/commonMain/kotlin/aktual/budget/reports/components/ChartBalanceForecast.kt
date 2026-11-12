@@ -279,7 +279,12 @@ private fun Chart(
               valueFormatter = forecastXAxisFormatter(data),
               itemPlacer = forecastItemPlacer(data),
             ),
-          marker = if (compact) null else rememberMarker(),
+          marker =
+            if (compact) {
+              null
+            } else {
+              rememberMarker(rememberMarkerFormatter(forecastXAxisFormatter(data)))
+            },
           markerVisibilityListener = rememberMarkerHaptics(compact),
           decorations =
             listOfNotNull(

@@ -14,6 +14,7 @@ import aktual.budget.reports.components.axisLineComponent
 import aktual.budget.reports.components.axisTickComponent
 import aktual.budget.reports.components.chartAnimationSpec
 import aktual.budget.reports.components.rememberMarker
+import aktual.budget.reports.components.rememberMarkerFormatter
 import aktual.budget.reports.components.rememberMarkerHaptics
 import aktual.budget.reports.vm.montecarlo.CashflowChart
 import aktual.budget.reports.vm.montecarlo.MonteCarloDepletion
@@ -136,7 +137,7 @@ internal fun FanChart(
         rememberLineCartesianLayer(lineProvider = LineCartesianLayer.LineProvider.series(lines)),
         startAxis = amountAxis(),
         bottomAxis = ageAxis(bands.size),
-        marker = rememberMarker(),
+        marker = rememberMarker(rememberMarkerFormatter(ageFormatter())),
         markerVisibilityListener = rememberMarkerHaptics(compact = false),
         decorations = decorations,
       ),
@@ -419,10 +420,14 @@ private fun ageAxis(ageCount: Int) =
     guideline = null,
     label = axisLabelComponent(compact = false),
     tick = axisTickComponent(compact = false),
-    valueFormatter =
-      remember { CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}" } },
+    valueFormatter = ageFormatter(),
     itemPlacer = ageItemPlacer(ageCount),
   )
+
+@Composable
+private fun ageFormatter() = remember {
+  CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}" }
+}
 
 // Marks the selected age with a guideline, leaving the details to the panel under the chart
 @Composable
