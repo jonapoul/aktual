@@ -13,6 +13,7 @@ import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.ui.edit.ReconciledDialog
+import aktual.budget.transactions.vm.AccountChoice
 import aktual.budget.transactions.vm.AccountViewOptions
 import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
@@ -24,6 +25,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.DeletedAccountNavigator
 import aktual.core.nav.EditTransactionNavigator
+import aktual.core.nav.SwitchAccountNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
@@ -79,6 +81,7 @@ fun TransactionsScreen(
   accountDeleted: DeletedAccountNavigator,
   openTransaction: EditTransactionNavigator,
   openTag: TransactionsNavigator,
+  switchAccount: SwitchAccountNavigator,
   spec: TransactionsSpec,
   isRoot: Boolean = false,
   viewModel: TransactionsViewModel = metroViewModel(spec),
@@ -92,6 +95,7 @@ fun TransactionsScreen(
   val expandSplits by viewModel.expandSplits.collectAsStateWithLifecycle()
   val alternateRowColours by viewModel.alternateRowColours.collectAsStateWithLifecycle()
   val accountOptions by viewModel.accountOptions.collectAsStateWithLifecycle()
+  val accountChoices by viewModel.accountChoices.collectAsStateWithLifecycle()
   val showRunningBalance by viewModel.showRunningBalance.collectAsStateWithLifecycle()
   val clearedBalances by viewModel.clearedBalances.collectAsStateWithLifecycle()
   val tags by viewModel.tags.collectAsStateWithLifecycle()
@@ -135,6 +139,7 @@ fun TransactionsScreen(
     splitsPinnedOpen = viewModel.splitsPinnedOpen,
     alternateRowColours = alternateRowColours,
     accountOptions = accountOptions,
+    accountChoices = accountChoices,
     tags = tags,
     reconciling = reconciling,
     reconcileStart = reconcileStart,
@@ -142,6 +147,7 @@ fun TransactionsScreen(
       when (action) {
         NavBack -> back()
         is EditAccount -> editAccount = action.id
+        is SwitchAccount -> switchAccount(action.id)
         is OpenTransaction -> openTransaction(action.id)
         is OpenTag -> if (spec.tagSpec != TagSpec.SpecificTag(action.id)) openTag(action.id)
         CreateTransaction ->
@@ -244,6 +250,7 @@ internal fun TransactionsScaffold(
   splitsPinnedOpen: Boolean = false,
   alternateRowColours: Boolean = false,
   accountOptions: AccountViewOptions? = null,
+  accountChoices: ImmutableList<AccountChoice> = persistentListOf(),
   tags: ImmutableList<TagLabel> = persistentListOf(),
   reconciling: Reconciling? = null,
   reconcileStart: ReconcileStart? = null,
@@ -270,6 +277,7 @@ internal fun TransactionsScaffold(
             loadedAccount = loadedAccount,
             isRoot = isRoot,
             reconcileStart = reconcileStart,
+            accountChoices = accountChoices,
             onAction = onAction,
             onOpenViewOptions = { showViewOptions = true },
           )

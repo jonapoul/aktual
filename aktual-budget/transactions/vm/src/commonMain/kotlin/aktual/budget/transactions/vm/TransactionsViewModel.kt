@@ -60,6 +60,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -163,6 +164,21 @@ internal constructor(
           ::AccountViewOptions,
         )
         .stateIn(viewModelScope, Eagerly, initialValue = null)
+    }
+
+  // Open accounts to switch to. Empty unless the list is a single account's
+  val accountChoices: StateFlow<ImmutableList<AccountChoice>> =
+    if (accountId == null) {
+      MutableStateFlow(persistentListOf())
+    } else {
+      accountDao
+        .observeAllActive()
+        .map { rows -> rows.map { AccountChoice(it.id, it.name) }.toImmutableList() }
+        .catch { e ->
+          log.w(e) { "Failed loading accounts" }
+          emit(persistentListOf())
+        }
+        .stateIn(viewModelScope, Eagerly, initialValue = persistentListOf())
     }
 
   // An account's list shows a running balance if its option says so. Other lists that have a

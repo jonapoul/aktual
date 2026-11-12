@@ -66,6 +66,9 @@ class AccountDao(database: BudgetDatabase) {
     getAllActive().awaitAsList()
   }
 
+  fun observeAllActive(): Flow<List<GetAllActive>> =
+    queries.getAllActive().asFlow().map { it.awaitAsList() }.distinctUntilChanged()
+
   // All non-tombstoned accounts, including closed ones
   suspend fun getAllWithStatus(): List<GetAllWithStatus> = queries.withResult {
     getAllWithStatus().awaitAsList()
