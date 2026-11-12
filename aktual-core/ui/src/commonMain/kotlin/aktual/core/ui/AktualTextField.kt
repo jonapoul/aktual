@@ -6,24 +6,22 @@ import aktual.core.l10n.Strings
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -34,7 +32,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.error
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -108,50 +110,67 @@ fun AktualTextField(
       null
     }
 
-  // Supporting text sits outside the bordered field. Intrinsic width keeps the field's natural
-  // size when the caller doesn't set one
-  Column(modifier.width(IntrinsicSize.Max)) {
-    TextField(
-      modifier =
-        Modifier.fillMaxWidth()
-          .then(borderModifier)
-          .then(shadowModifier)
-          .focusRequester(focusRequester),
-      state = state,
-      placeholder =
-        placeholderText?.let {
-          { Text(text = it, textAlign = textStyle.textAlign, modifier = Modifier.fillMaxWidth()) }
-        },
-      shape = shape,
-      colors = colors,
-      readOnly = readOnly,
-      enabled = isEnabled,
-      lineLimits = if (singleLine) SingleLine else Default,
-      leadingIcon = leadingIcon,
-      trailingIcon = trailingIcon ?: clearButton,
-      interactionSource = interactionSource,
-      outputTransformation = outputTransformation,
-      keyboardOptions = keyboardOptions,
-      onKeyboardAction = onKeyboardAction,
-      textStyle = textStyle,
-      isError = isError,
-    )
-
-    if (supportingText != null) {
-      val supportingColor =
-        when {
-          !isEnabled -> colors.disabledSupportingTextColor
-          isError -> colors.errorSupportingTextColor
-          isFocused -> colors.focusedSupportingTextColor
-          else -> colors.unfocusedSupportingTextColor
-        }
-      CompositionLocalProvider(
-        LocalContentColor provides supportingColor,
-        LocalTextStyle provides AktualTheme.typography.bodySmall,
-      ) {
-        Box(Modifier.padding(start = 16.dp, top = 4.dp, end = 16.dp)) { supportingText() }
+  val textColor =
+    textStyle.color.takeOrElse {
+      when {
+        !isEnabled -> colors.disabledTextColor
+        isError -> colors.errorTextColor
+        isFocused -> colors.focusedTextColor
+        else -> colors.unfocusedTextColor
       }
     }
+  val lineLimits: TextFieldLineLimits = if (singleLine) SingleLine else Default
+  val errorDescription = Strings.inputInvalid
+
+  // Built on BasicTextField rather than TextField so the border only wraps the container, leaving
+  // the supporting text below it
+  CompositionLocalProvider(LocalTextSelectionColors provides colors.textSelectionColors) {
+    BasicTextField(
+      modifier =
+        modifier
+          .semantics { if (isError) error(errorDescription) }
+          .defaultMinSize(TextFieldDefaults.MinWidth, TextFieldDefaults.MinHeight)
+          .focusRequester(focusRequester),
+      state = state,
+      enabled = isEnabled,
+      readOnly = readOnly,
+      textStyle = textStyle.merge(color = textColor),
+      cursorBrush = SolidColor(if (isError) colors.errorCursorColor else colors.cursorColor),
+      keyboardOptions = keyboardOptions,
+      onKeyboardAction = onKeyboardAction,
+      lineLimits = lineLimits,
+      interactionSource = interactionSource,
+      outputTransformation = outputTransformation,
+      decorator =
+        TextFieldDefaults.decorator(
+          state = state,
+          enabled = isEnabled,
+          lineLimits = lineLimits,
+          outputTransformation = outputTransformation,
+          interactionSource = interactionSource,
+          placeholder =
+            placeholderText?.let {
+              {
+                Text(text = it, textAlign = textStyle.textAlign, modifier = Modifier.fillMaxWidth())
+              }
+            },
+          leadingIcon = leadingIcon,
+          trailingIcon = trailingIcon ?: clearButton,
+          supportingText = supportingText,
+          isError = isError,
+          colors = colors,
+          container = {
+            TextFieldDefaults.Container(
+              modifier = borderModifier.then(shadowModifier),
+              enabled = isEnabled,
+              isError = isError,
+              interactionSource = interactionSource,
+              colors = colors,
+              shape = shape,
+            )
+          },
+        ),
+    )
   }
 }
 
