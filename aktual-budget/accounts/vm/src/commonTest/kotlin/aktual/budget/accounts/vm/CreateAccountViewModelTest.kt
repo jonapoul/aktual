@@ -1,6 +1,5 @@
 package aktual.budget.accounts.vm
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.accounts.vm.manage.AccountGroupItem
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.AccountDao
@@ -16,6 +15,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.utils.BudgetSyncController
 import aktual.test.TestCalendar
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo

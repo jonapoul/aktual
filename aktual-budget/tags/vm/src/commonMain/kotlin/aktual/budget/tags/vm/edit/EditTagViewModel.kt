@@ -1,6 +1,5 @@
 package aktual.budget.tags.vm.edit
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.TAGS
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.LocalChange
@@ -10,6 +9,7 @@ import aktual.budget.model.tombstone
 import aktual.budget.tags.domain.toColorOrNull
 import aktual.budget.tags.domain.toHex
 import aktual.budget.tags.vm.list.toTagItem
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope

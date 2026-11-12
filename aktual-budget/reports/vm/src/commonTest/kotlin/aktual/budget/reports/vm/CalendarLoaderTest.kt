@@ -1,6 +1,5 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.db.dao.DatabaseTables.CATEGORIES
@@ -9,6 +8,7 @@ import aktual.budget.db.dao.DatabaseTables.CATEGORY_MAPPING
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.FirstDayOfWeek
+import aktual.budget.utils.BudgetSyncController
 import aktual.prefs.FormatPreferences
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test

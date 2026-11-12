@@ -3,8 +3,8 @@ package aktual.budget.apikeys.vm
 import aktual.api.client.ApiKeysApi
 import aktual.api.model.apikeys.ApiKey
 import aktual.api.model.apikeys.ApiKeysResponse
-import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
+import aktual.budget.utils.BudgetLocalPreferences
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext

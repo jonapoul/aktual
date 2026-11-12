@@ -1,6 +1,5 @@
 package aktual.budget.reports.vm.report
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.CustomReports
 import aktual.budget.db.Dashboard_pages
 import aktual.budget.db.dao.BudgetDao
@@ -26,6 +25,7 @@ import aktual.budget.reports.vm.emptyCustomReport
 import aktual.budget.reports.vm.report.CustomReportState.Loaded
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.budget.reports.vm.withMode
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.Calendar
 import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts

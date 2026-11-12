@@ -1,6 +1,5 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
@@ -8,6 +7,7 @@ import aktual.budget.db.dao.SyncDao
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
+import aktual.budget.utils.BudgetSyncController
 import aktual.test.inMemoryDriverFactory
 import kotlin.time.Clock
 import kotlinx.coroutines.test.TestScope

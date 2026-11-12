@@ -1,7 +1,7 @@
 package aktual.budget.encryption
 
-import aktual.budget.BudgetFiles
 import aktual.budget.model.BudgetId
+import aktual.budget.utils.BudgetFiles
 import aktual.core.model.KeyId
 import aktual.core.utils.EncryptionKeys
 import aktual.di.AppScope

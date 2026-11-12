@@ -2,11 +2,11 @@ package aktual.budget.sync.vm
 
 import aktual.api.model.sync.UserFile
 import aktual.api.model.sync.UserWithAccess
-import aktual.budget.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.DbMetadataKey.Companion.LastUploaded
 import aktual.budget.model.Timestamp
+import aktual.budget.utils.BudgetFiles
 import aktual.test.CoTemporaryFolder
 import aktual.test.RESOURCES_DIR
 import aktual.test.copyTo

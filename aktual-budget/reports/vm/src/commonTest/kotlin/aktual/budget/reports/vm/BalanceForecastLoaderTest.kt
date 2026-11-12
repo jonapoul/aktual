@@ -1,12 +1,12 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
+import aktual.budget.utils.BudgetSyncController
 import aktual.test.insertSchedule
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test

@@ -1,7 +1,6 @@
 package aktual.budget.banksync.domain
 
 import aktual.api.model.banksync.BankSyncTransaction
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Categories
 import aktual.budget.db.Rules
@@ -29,6 +28,7 @@ import aktual.budget.model.Timestamp
 import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token

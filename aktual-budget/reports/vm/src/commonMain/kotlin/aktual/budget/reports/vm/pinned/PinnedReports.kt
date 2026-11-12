@@ -1,6 +1,5 @@
 package aktual.budget.reports.vm.pinned
 
-import aktual.budget.BudgetLocalPreferences
 import aktual.budget.db.Dashboard
 import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
@@ -15,6 +14,7 @@ import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.dashboard.DashboardPages
 import aktual.budget.reports.vm.dashboard.displayName
 import aktual.budget.reports.vm.pinned.PinnedReports.Companion.MAX_PINNED_REPORTS
+import aktual.budget.utils.BudgetLocalPreferences
 import aktual.di.BudgetScope
 import aktual.log
 import dev.zacsweers.metro.ContributesBinding

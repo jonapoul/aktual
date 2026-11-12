@@ -1,6 +1,5 @@
 package aktual.budget.rules.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.DbJson
 import aktual.budget.db.dao.CategoryLearningDao
 import aktual.budget.db.dao.DatabaseTables.RULES
@@ -16,6 +15,7 @@ import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.RuleId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope

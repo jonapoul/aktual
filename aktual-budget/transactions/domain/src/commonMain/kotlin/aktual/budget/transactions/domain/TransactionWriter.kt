@@ -1,11 +1,11 @@
 package aktual.budget.transactions.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.rules.domain.CategoryLearner
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
 import aktual.log

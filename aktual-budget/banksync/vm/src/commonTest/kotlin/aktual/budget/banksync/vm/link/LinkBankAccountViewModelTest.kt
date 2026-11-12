@@ -14,7 +14,6 @@ import aktual.api.model.banksync.GoCardlessAccountsResponse
 import aktual.api.model.banksync.GoCardlessBank
 import aktual.api.model.banksync.GoCardlessBanksResponse
 import aktual.api.model.banksync.GoCardlessLoginResponse
-import aktual.budget.BudgetSyncController
 import aktual.budget.banksync.domain.BankAccountLinker
 import aktual.budget.banksync.domain.GoCardlessLoginWaiter
 import aktual.budget.banksync.vm.FakeBankSyncApi
@@ -36,6 +35,7 @@ import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token

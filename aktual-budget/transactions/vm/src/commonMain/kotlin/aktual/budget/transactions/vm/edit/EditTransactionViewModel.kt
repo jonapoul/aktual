@@ -1,6 +1,5 @@
 package aktual.budget.transactions.vm.edit
 
-import aktual.budget.BudgetLocalPreferences
 import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
@@ -47,6 +46,7 @@ import aktual.budget.transactions.domain.withPart
 import aktual.budget.transactions.domain.withoutPart
 import aktual.budget.transactions.vm.edit.EditTransactionState.Failure
 import aktual.budget.transactions.vm.toTransaction
+import aktual.budget.utils.BudgetLocalPreferences
 import aktual.core.model.Coordinates
 import aktual.core.utils.Calendar
 import aktual.core.utils.LocationProvider

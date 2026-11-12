@@ -1,6 +1,5 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.DbJson
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.db.dao.DatabaseTables.CUSTOM_REPORTS
@@ -13,6 +12,7 @@ import aktual.budget.model.WidgetType
 import aktual.budget.model.localChange
 import aktual.budget.model.sortOrderAfter
 import aktual.budget.model.tombstone
+import aktual.budget.utils.BudgetSyncController
 import dev.zacsweers.metro.Inject
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer

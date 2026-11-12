@@ -1,6 +1,5 @@
 package aktual.budget.payees.vm.list
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
@@ -8,6 +7,7 @@ import aktual.budget.model.untombstone
 import aktual.budget.payees.domain.PayeeMerger
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.rules.domain.CategoryLearningPref
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope

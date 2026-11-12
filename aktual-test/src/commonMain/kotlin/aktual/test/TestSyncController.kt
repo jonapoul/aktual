@@ -1,7 +1,7 @@
 package aktual.test
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.model.LocalChange
+import aktual.budget.utils.BudgetSyncController
 
 class TestSyncController : BudgetSyncController {
   val changes = mutableListOf<LocalChange>()

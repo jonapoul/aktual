@@ -1,6 +1,5 @@
 package aktual.budget.transactions.vm
 
-import aktual.budget.BudgetLocalPreferences
 import aktual.budget.banksync.domain.AccountDeleter
 import aktual.budget.banksync.domain.BankSyncController
 import aktual.budget.banksync.domain.BankSyncSummary
@@ -32,6 +31,7 @@ import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
 import aktual.budget.transactions.vm.LoadedAccount.SpecificCategory
 import aktual.budget.transactions.vm.LoadedAccount.SpecificTag
 import aktual.budget.transactions.vm.LoadedAccount.Uncategorised
+import aktual.budget.utils.BudgetLocalPreferences
 import aktual.core.model.BudgetServer
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope

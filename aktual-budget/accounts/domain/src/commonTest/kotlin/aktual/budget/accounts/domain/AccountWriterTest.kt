@@ -1,6 +1,5 @@
 package aktual.budget.accounts.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
@@ -22,6 +21,7 @@ import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.NewTransaction
 import aktual.budget.transactions.domain.Patch.To
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.utils.BudgetSyncController
 import aktual.test.inMemoryDriverFactory
 import assertk.assertFailure
 import assertk.assertThat

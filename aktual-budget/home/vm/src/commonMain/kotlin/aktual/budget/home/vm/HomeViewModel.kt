@@ -1,6 +1,5 @@
 package aktual.budget.home.vm
 
-import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.DbMetadataKey.Companion.BudgetName
 import aktual.budget.model.DbMetadataKey.Companion.HomeCardOrder
 import aktual.budget.model.WidgetId
@@ -8,6 +7,7 @@ import aktual.budget.reports.vm.pinned.PinnedReport
 import aktual.budget.reports.vm.pinned.PinnedReports
 import aktual.budget.reports.vm.pinned.PinnedReports.Companion.MAX_PINNED_REPORTS
 import aktual.budget.reports.vm.pinned.ReportPage
+import aktual.budget.utils.BudgetLocalPreferences
 import aktual.core.model.unaryPlus
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext

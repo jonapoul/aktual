@@ -1,6 +1,5 @@
 package aktual.budget.budgeting.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.BudgetDao
@@ -24,6 +23,7 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.localChange
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.model.DistanceUnit
 import aktual.core.utils.Calendar
 import aktual.prefs.CurrencyPreferences

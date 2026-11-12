@@ -1,7 +1,5 @@
 package aktual.budget.schedules.vm.edit
 
-import aktual.budget.BudgetLocalPreferences
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.DbJson
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.DatabaseTables.SCHEDULES
@@ -19,6 +17,8 @@ import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
 import aktual.budget.model.nextDate
 import aktual.budget.model.tombstone
+import aktual.budget.utils.BudgetLocalPreferences
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.model.unaryPlus
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator

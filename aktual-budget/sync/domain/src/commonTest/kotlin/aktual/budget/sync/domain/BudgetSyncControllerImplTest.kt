@@ -1,9 +1,9 @@
 package aktual.budget.sync.domain
 
-import aktual.budget.BudgetLocalPreferences
-import aktual.budget.SyncEvents
-import aktual.budget.SyncStateHolder
 import aktual.budget.model.DbMetadata
+import aktual.budget.utils.BudgetLocalPreferences
+import aktual.budget.utils.SyncEvents
+import aktual.budget.utils.SyncStateHolder
 import aktual.core.model.ForegroundStateHolder
 import aktual.di.BudgetCoroutineScope
 import app.cash.turbine.test

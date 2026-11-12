@@ -2,11 +2,11 @@ package aktual.budget.sync.vm
 
 import aktual.api.client.SyncApi
 import aktual.api.client.SyncDownloadState
-import aktual.budget.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.sync.vm.DownloadState.Done
 import aktual.budget.sync.vm.DownloadState.Failure
 import aktual.budget.sync.vm.DownloadState.InProgress
+import aktual.budget.utils.BudgetFiles
 import aktual.core.model.Token
 import aktual.core.model.bytes
 import aktual.log

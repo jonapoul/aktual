@@ -1,6 +1,5 @@
 package aktual.budget.budgeting.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.BudgetDao
 import aktual.budget.db.dao.BudgetRow
 import aktual.budget.db.dao.DatabaseTables.CATEGORIES
@@ -20,6 +19,7 @@ import aktual.budget.model.NumberFormatConfig
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.Calendar
 import aktual.di.BudgetScope
 import aktual.prefs.CurrencyPreferences

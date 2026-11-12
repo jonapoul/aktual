@@ -1,6 +1,5 @@
 package aktual.budget.accounts.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.AccountGroupDao
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
@@ -24,6 +23,7 @@ import aktual.budget.transactions.domain.Patch
 import aktual.budget.transactions.domain.Patch.Keep
 import aktual.budget.transactions.domain.Patch.To
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.Inject

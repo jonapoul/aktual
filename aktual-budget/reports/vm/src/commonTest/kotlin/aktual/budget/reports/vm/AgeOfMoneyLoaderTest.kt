@@ -1,10 +1,10 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
+import aktual.budget.utils.BudgetSyncController
 import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.containsExactly

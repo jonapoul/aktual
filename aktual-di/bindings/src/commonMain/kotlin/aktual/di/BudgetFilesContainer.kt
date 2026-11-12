@@ -1,6 +1,6 @@
 package aktual.di
 
-import aktual.budget.BudgetFiles
+import aktual.budget.utils.BudgetFiles
 import aktual.core.utils.AppDirectory
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo

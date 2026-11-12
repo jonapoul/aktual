@@ -1,6 +1,5 @@
 package aktual.budget.payees.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
@@ -11,6 +10,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.PayeeId
+import aktual.budget.utils.BudgetSyncController
 import aktual.test.inMemoryDriverFactory
 import assertk.assertThat
 import assertk.assertions.containsExactly

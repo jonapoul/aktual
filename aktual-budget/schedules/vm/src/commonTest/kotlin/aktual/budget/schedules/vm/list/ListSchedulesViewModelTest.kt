@@ -1,6 +1,5 @@
 package aktual.budget.schedules.vm.list
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
@@ -27,6 +26,7 @@ import aktual.budget.schedules.domain.ScheduleTransactionPoster
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.edit.ScheduleWriter
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator
 import aktual.prefs.SchedulePreferences

@@ -1,10 +1,10 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
+import aktual.budget.utils.BudgetSyncController
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
 import assertk.all

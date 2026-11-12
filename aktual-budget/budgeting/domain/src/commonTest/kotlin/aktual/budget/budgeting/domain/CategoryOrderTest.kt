@@ -1,6 +1,5 @@
 package aktual.budget.budgeting.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.BudgetDao
@@ -12,6 +11,7 @@ import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
+import aktual.budget.utils.BudgetSyncController
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.db.SqlDriver

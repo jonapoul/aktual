@@ -1,6 +1,5 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.DbJson
 import aktual.budget.db.dao.CustomReportsDao
@@ -12,6 +11,7 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.Calendar
 import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
