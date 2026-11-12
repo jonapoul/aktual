@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ButtonColors
@@ -43,6 +41,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import androidx.compose.foundation.layout.padding
 
 enum class ButtonKind {
   Primary,
@@ -77,7 +76,7 @@ fun AktualButton(
     text = text,
     colors = colors,
     onClick = onClick,
-    modifier = if (kind == Tonal) modifier.heightIn(min = TonalButtonHeight) else modifier,
+    modifier = modifier,
     isEnabled = enabled,
     contentPadding = contentPadding,
     shape = shape,
@@ -129,7 +128,6 @@ private fun Colors.buttonBorder(kind: ButtonKind, isEnabled: Boolean): BorderStr
   return BorderStroke(width, color.disabledIf(!isEnabled))
 }
 
-private val TonalButtonHeight = 48.dp
 private val TonalButtonBorder = 1.dp
 private val LoadingIndicatorSize = 20.dp
 private val LoadingIndicatorStroke = 2.dp
@@ -196,18 +194,19 @@ private fun PreviewButtons(
 ) =
   PreviewWithColorParams(params) {
     val isEnabled = this
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier = Modifier.padding(4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       ButtonKind.entries.fastForEach { kind ->
-        AktualButton(text = kind.name, kind = kind, isEnabled = isEnabled, onClick = {})
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+          AktualButton(text = kind.name, kind = kind, isEnabled = isEnabled, onClick = {})
+          AktualButton(
+            text = kind.name,
+            kind = kind,
+            icon = AktualIcons.Add,
+            isEnabled = isEnabled,
+            onClick = {},
+          )
+        }
       }
-      AktualButton(
-        modifier = Modifier.fillMaxWidth(),
-        text = "Add item",
-        kind = Tonal,
-        icon = AktualIcons.Add,
-        isEnabled = isEnabled,
-        onClick = {},
-      )
     }
   }
 
@@ -218,7 +217,7 @@ private fun PreviewLoading(
 ) =
   PreviewWithColorParams(params) {
     val isLoading = this
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier = Modifier.padding(4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       ButtonKind.entries.fastForEach { kind ->
         AktualButton(text = kind.name, kind = kind, isLoading = isLoading, onClick = {})
       }
