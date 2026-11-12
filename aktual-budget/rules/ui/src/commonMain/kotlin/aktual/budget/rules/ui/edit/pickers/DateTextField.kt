@@ -6,6 +6,7 @@ import aktual.core.icons.Calendar3
 import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.theme.DarkColors
+import aktual.core.ui.AktualDatePickerDialog
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
@@ -18,7 +19,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.getSelectedDate
 import androidx.compose.material3.rememberDatePickerState
@@ -98,7 +98,7 @@ internal fun DateTextField(
   if (showDialog) {
     val state = rememberDatePickerState(localDate?.toJavaLocalDate())
 
-    DatePickerDialog(
+    AktualDatePickerDialog(
       onDismissRequest = { showDialog = false },
       confirmButton = {
         DialogTextButton(

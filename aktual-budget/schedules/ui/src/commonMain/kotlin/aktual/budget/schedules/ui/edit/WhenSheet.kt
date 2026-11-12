@@ -14,6 +14,7 @@ import aktual.core.icons.Subtract
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualDatePickerDialog
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
@@ -26,7 +27,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.getSelectedDate
@@ -288,7 +288,7 @@ private fun DateField(
 
   if (showDialog) {
     val state = rememberDatePickerState(date.toJavaLocalDate())
-    DatePickerDialog(
+    AktualDatePickerDialog(
       onDismissRequest = { showDialog = false },
       confirmButton = {
         DialogTextButton(

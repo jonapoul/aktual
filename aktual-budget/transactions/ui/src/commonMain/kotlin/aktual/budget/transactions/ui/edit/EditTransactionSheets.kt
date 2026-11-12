@@ -26,6 +26,7 @@ import aktual.core.icons.Check
 import aktual.core.icons.ViewHide
 import aktual.core.icons.ViewShow
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualDatePickerDialog
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTextField
@@ -62,7 +63,6 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalTextStyle
@@ -815,7 +815,7 @@ private fun DateDialog(date: LocalDate, onDismiss: () -> Unit, onSelect: (LocalD
       yearRange = first..last,
       selectableDates = TransactionDates,
     )
-  DatePickerDialog(
+  AktualDatePickerDialog(
     onDismissRequest = onDismiss,
     confirmButton = {
       DialogTextButton(
