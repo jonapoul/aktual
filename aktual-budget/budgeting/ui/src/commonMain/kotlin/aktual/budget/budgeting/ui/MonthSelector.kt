@@ -4,6 +4,7 @@ import aktual.budget.budgeting.vm.BudgetState
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
 import aktual.core.l10n.Strings
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
@@ -11,10 +12,13 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.stringShort
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,10 +27,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,11 +52,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
 
-// packages/desktop-client/src/components/mobile/budget/BudgetPage.tsx MonthSelector
+/**
+ * packages/desktop-client/src/components/mobile/budget/BudgetPage.tsx MonthSelector
+ *
+ * Keep in sync with [ShimmerMonthSelector]
+ */
 @Composable
 internal fun MonthSelector(
   state: BudgetState.Loaded,
@@ -100,6 +112,39 @@ internal fun MonthSelector(
       contentDescription = Strings.budgetingNextMonth,
       isEnabled = state.canGoForward,
       onClick = { onAction(NextMonth) },
+    )
+  }
+}
+
+/** Keep in sync with [MonthSelector] */
+@Composable
+internal fun ShimmerMonthSelector(modifier: Modifier = Modifier) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
+    AktualIconButton(
+      modifier = Modifier.rotate(PREVIOUS_ROTATION),
+      imageVector = AktualIcons.CheveronDown,
+      contentDescription = Strings.budgetingPreviousMonth,
+      isEnabled = false,
+      onClick = {},
+    )
+
+    Column(
+      modifier = Modifier.weight(1f).padding(horizontal = 8.dp, vertical = 4.dp),
+      horizontalAlignment = CenterHorizontally,
+    ) {
+      ShimmerLine(
+        style = LocalTextStyle.current,
+        modifier = Modifier.width(88.dp).shimmer(rememberShimmer(Window)),
+      )
+      Spacer(modifier = Modifier.height(4.dp))
+    }
+
+    AktualIconButton(
+      modifier = Modifier.rotate(NEXT_ROTATION),
+      imageVector = AktualIcons.CheveronDown,
+      contentDescription = Strings.budgetingNextMonth,
+      isEnabled = false,
+      onClick = {},
     )
   }
 }
@@ -254,6 +299,11 @@ private class MonthPickerProvider :
 private fun PreviewMonthPicker(
   @PreviewParameter(MonthPickerProvider::class) params: ColorParams<BudgetState.Loaded>,
 ) = PreviewWithColorParams(params) { MonthPickerContent(state = this, onSelect = {}) }
+
+@Preview(widthDp = 320)
+@Composable
+private fun PreviewShimmerMonthSelector(@PreviewParameter(ColorParameters::class) colors: Colors) =
+  PreviewWithColors(colors) { ShimmerMonthSelector(modifier = Modifier.fillMaxWidth()) }
 
 private val MonthRows = Month.entries.chunked(size = 3)
 private val MonthCountWidth = 40.dp

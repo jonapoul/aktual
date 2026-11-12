@@ -22,6 +22,7 @@ import aktual.core.ui.Chip
 import aktual.core.ui.ChipColors
 import aktual.core.ui.OnAction
 import aktual.core.ui.ShimmerBlock
+import aktual.core.ui.ShimmerChip
 import aktual.core.ui.ShimmerLine
 import aktual.core.ui.StuckHeaders
 import aktual.core.ui.formattedString
@@ -69,6 +70,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import com.valentinilk.shimmer.Shimmer
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.ImmutableList
@@ -692,43 +694,129 @@ internal fun balanceColors(balance: Amount): ChipColors =
 /** Keep in sync with [budgetTable] */
 @Composable
 internal fun ShimmerBudgetTable(modifier: Modifier = Modifier) {
+  val shimmer = rememberShimmer(Window)
   val header = TextStyle(fontSize = textSizes.smallPlus)
   val row = TextStyle(fontSize = textSizes.medium)
-  Column(modifier = modifier.fillMaxWidth().shimmer(rememberShimmer(Window))) {
-    ShimmerBlock(Modifier.fillMaxWidth().padding(bottom = 8.dp).height(72.dp))
-    ShimmerTableRow(BudgetDS.headerHeight, header, nameFraction = 0.3f)
-    repeat(times = SHIMMER_GROUPS) {
-      ShimmerTableRow(BudgetDS.headerHeight, row, nameFraction = 0.5f)
-      repeat(times = SHIMMER_CATEGORIES) {
-        ShimmerTableRow(
-          height = BudgetDS.rowHeight,
-          style = row,
-          nameFraction = 0.6f,
-          modifier = Modifier.padding(start = CategoryInset),
-        )
+  val pill = TextStyle.Default.tabularFigures().copy(fontSize = textSizes.smallPlus)
+
+  Column(modifier = modifier.fillMaxWidth()) {
+    ShimmerSummaryCard(shimmer, modifier = Modifier.padding(bottom = 8.dp))
+
+    TableRow(
+      modifier = Modifier.background(colors.tableHeaderBackground, TopShape).shimmer(shimmer),
+      height = BudgetDS.headerHeight,
+    ) {
+      ShimmerCells(header, nameWidth = 56.dp, valueWidth = 48.dp, balanceWidth = 48.dp)
+    }
+
+    ShimmerGroupWidths.fastForEach { widths ->
+      ShimmerGroupRow(shimmer, row, widths.name)
+      widths.categories.fastForEach { nameWidth ->
+        ShimmerCategoryRow(shimmer) {
+          ShimmerCells(row, nameWidth = nameWidth, valueWidth = 56.dp, balanceWidth = null)
+          Box(modifier = Modifier.width(BudgetDS.balanceWidth), contentAlignment = CenterEnd) {
+            ShimmerChip(pill, Modifier.width(48.dp), size = Small)
+          }
+        }
+      }
+    }
+
+    TableRow(
+      modifier =
+        Modifier.padding(top = 16.dp)
+          .background(colors.tableHeaderBackground, TopShape)
+          .shimmer(shimmer),
+      height = BudgetDS.headerHeight,
+    ) {
+      Spacer(modifier = Modifier.weight(1f))
+      ShimmerCells(header, nameWidth = null, valueWidth = 56.dp, balanceWidth = 56.dp)
+    }
+    ShimmerGroupRow(shimmer, row, nameWidth = 64.dp)
+    ShimmerIncomeWidths.fastForEach { nameWidth ->
+      ShimmerCategoryRow(shimmer) {
+        ShimmerCells(row, nameWidth = nameWidth, valueWidth = 56.dp, balanceWidth = 64.dp)
       }
     }
   }
 }
 
 @Composable
-private fun ShimmerTableRow(
-  height: Dp,
-  style: TextStyle,
-  nameFraction: Float,
-  modifier: Modifier = Modifier,
-) =
-  TableRow(modifier = modifier, height = height) {
-    Box(modifier = Modifier.weight(1f)) {
-      ShimmerLine(style, Modifier.fillMaxWidth(nameFraction))
+private fun ShimmerSummaryCard(shimmer: Shimmer, modifier: Modifier = Modifier) {
+  val small = TextStyle(fontSize = textSizes.smallPlus)
+  Row(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .background(colors.tableBackground, CardShape)
+        .border(1.dp, colors.tableBorder, CardShape)
+        .padding(12.dp)
+        .shimmer(shimmer),
+    horizontalArrangement = Arrangement.SpaceBetween,
+    verticalAlignment = CenterVertically,
+  ) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+      ShimmerLine(small, Modifier.width(96.dp))
+      ShimmerLine(typography.headlineSmall, Modifier.width(88.dp))
     }
-    Box(modifier = Modifier.width(BudgetDS.valueWidth), contentAlignment = CenterEnd) {
-      ShimmerLine(style, Modifier.width(64.dp))
-    }
-    Box(modifier = Modifier.width(BudgetDS.balanceWidth), contentAlignment = CenterEnd) {
-      ShimmerLine(style, Modifier.width(56.dp))
+    Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+      repeat(times = 2) { ShimmerLine(small, Modifier.width(112.dp)) }
     }
   }
+}
+
+@Composable
+private fun ShimmerGroupRow(shimmer: Shimmer, style: TextStyle, nameWidth: Dp) =
+  Column(modifier = Modifier.fillMaxWidth().background(colors.tableRowHeaderBackground)) {
+    HorizontalDivider()
+    TableRow(modifier = Modifier.shimmer(shimmer), height = BudgetDS.headerHeight) {
+      ShimmerBlock(Modifier.size(16.dp))
+      Spacer(modifier = Modifier.width(4.dp))
+      ShimmerCells(style, nameWidth = nameWidth, valueWidth = 64.dp, balanceWidth = 48.dp)
+    }
+  }
+
+@Composable
+private fun ShimmerCategoryRow(shimmer: Shimmer, content: @Composable RowScope.() -> Unit) =
+  Column(modifier = Modifier.fillMaxWidth().background(colors.tableBackground)) {
+    HorizontalDivider()
+    TableRow(
+      modifier = Modifier.padding(start = CategoryInset).shimmer(shimmer),
+      height = BudgetDS.rowHeight,
+      content = content,
+    )
+  }
+
+// Null widths leave that cell out
+@Composable
+private fun RowScope.ShimmerCells(
+  style: TextStyle,
+  nameWidth: Dp?,
+  valueWidth: Dp,
+  balanceWidth: Dp?,
+) {
+  if (nameWidth != null) {
+    Box(modifier = Modifier.weight(1f)) { ShimmerLine(style, Modifier.width(nameWidth)) }
+  }
+  Box(modifier = Modifier.width(BudgetDS.valueWidth), contentAlignment = CenterEnd) {
+    ShimmerLine(style, Modifier.width(valueWidth))
+  }
+  if (balanceWidth != null) {
+    Box(modifier = Modifier.width(BudgetDS.balanceWidth), contentAlignment = CenterEnd) {
+      ShimmerLine(style, Modifier.width(balanceWidth))
+    }
+  }
+}
+
+private data class ShimmerGroup(val name: Dp, val categories: ImmutableList<Dp>)
+
+private val ShimmerGroupWidths =
+  persistentListOf(
+    ShimmerGroup(name = 48.dp, categories = persistentListOf(40.dp, 56.dp, 48.dp)),
+    ShimmerGroup(name = 40.dp, categories = persistentListOf(64.dp, 72.dp, 60.dp)),
+    ShimmerGroup(name = 72.dp, categories = persistentListOf(32.dp, 52.dp)),
+  )
+
+private val ShimmerIncomeWidths = persistentListOf(48.dp, 72.dp)
 
 internal fun TextStyle.tabularFigures() = copy(fontFeatureSettings = "tnum")
 
@@ -736,5 +824,3 @@ internal val TopShape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)
 private val CategoryInset = BudgetDS.categoryIndent - BudgetDS.rowPadding
 internal const val HIDDEN_ALPHA = 0.5f
 internal const val COLLAPSED_ROTATION = -90f
-private const val SHIMMER_GROUPS = 3
-private const val SHIMMER_CATEGORIES = 3
