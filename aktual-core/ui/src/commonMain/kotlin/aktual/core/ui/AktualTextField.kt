@@ -6,7 +6,12 @@ import aktual.core.l10n.Strings
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.OutputTransformation
@@ -14,11 +19,13 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -53,10 +60,13 @@ fun AktualTextField(
   textStyle: TextStyle = LocalTextStyle.current,
   showBorder: Boolean = true,
   supportingText: (@Composable () -> Unit)? = null,
+  isError: Boolean = false,
 ) {
   val isFocused by interactionSource.collectIsFocusedAsState()
   val borderColor =
-    if (isFocused) {
+    if (isError) {
+      AktualTheme.colors.errorBorder
+    } else if (isFocused) {
       AktualTheme.colors.formInputBorderSelected
     } else {
       AktualTheme.colors.formInputBackgroundSelected
@@ -71,7 +81,9 @@ fun AktualTextField(
 
   val shadowModifier =
     if (isFocused && showBorder) {
-      Modifier.shadow(4.dp, shape, ambientColor = AktualTheme.colors.formInputShadowSelected)
+      val shadowColor =
+        if (isError) AktualTheme.colors.errorBorder else AktualTheme.colors.formInputShadowSelected
+      Modifier.shadow(4.dp, shape, ambientColor = shadowColor)
     } else {
       Modifier
     }
@@ -96,27 +108,51 @@ fun AktualTextField(
       null
     }
 
-  TextField(
-    modifier = modifier.then(borderModifier).then(shadowModifier).focusRequester(focusRequester),
-    state = state,
-    placeholder =
-      placeholderText?.let {
-        { Text(text = it, textAlign = textStyle.textAlign, modifier = Modifier.fillMaxWidth()) }
-      },
-    shape = shape,
-    colors = colors,
-    readOnly = readOnly,
-    enabled = isEnabled,
-    lineLimits = if (singleLine) SingleLine else Default,
-    leadingIcon = leadingIcon,
-    trailingIcon = trailingIcon ?: clearButton,
-    interactionSource = interactionSource,
-    outputTransformation = outputTransformation,
-    keyboardOptions = keyboardOptions,
-    onKeyboardAction = onKeyboardAction,
-    textStyle = textStyle,
-    supportingText = supportingText,
-  )
+  // Supporting text sits outside the bordered field. Intrinsic width keeps the field's natural
+  // size when the caller doesn't set one
+  Column(modifier.width(IntrinsicSize.Max)) {
+    TextField(
+      modifier =
+        Modifier.fillMaxWidth()
+          .then(borderModifier)
+          .then(shadowModifier)
+          .focusRequester(focusRequester),
+      state = state,
+      placeholder =
+        placeholderText?.let {
+          { Text(text = it, textAlign = textStyle.textAlign, modifier = Modifier.fillMaxWidth()) }
+        },
+      shape = shape,
+      colors = colors,
+      readOnly = readOnly,
+      enabled = isEnabled,
+      lineLimits = if (singleLine) SingleLine else Default,
+      leadingIcon = leadingIcon,
+      trailingIcon = trailingIcon ?: clearButton,
+      interactionSource = interactionSource,
+      outputTransformation = outputTransformation,
+      keyboardOptions = keyboardOptions,
+      onKeyboardAction = onKeyboardAction,
+      textStyle = textStyle,
+      isError = isError,
+    )
+
+    if (supportingText != null) {
+      val supportingColor =
+        when {
+          !isEnabled -> colors.disabledSupportingTextColor
+          isError -> colors.errorSupportingTextColor
+          isFocused -> colors.focusedSupportingTextColor
+          else -> colors.unfocusedSupportingTextColor
+        }
+      CompositionLocalProvider(
+        LocalContentColor provides supportingColor,
+        LocalTextStyle provides AktualTheme.typography.bodySmall,
+      ) {
+        Box(Modifier.padding(start = 16.dp, top = 4.dp, end = 16.dp)) { supportingText() }
+      }
+    }
+  }
 }
 
 @Composable
@@ -126,13 +162,18 @@ private fun ClearButton(tint: Color, onClick: () -> Unit, modifier: Modifier = M
   }
 }
 
-private data class TextInputPreviewParams(val initialText: String, val clearable: Boolean = false)
+private data class TextInputPreviewParams(
+  val initialText: String,
+  val clearable: Boolean = false,
+  val isError: Boolean = false,
+)
 
 private class TextInputPreviewProvider :
   ColorParamsProvider<TextInputPreviewParams>(
     TextInputPreviewParams(initialText = ""),
     TextInputPreviewParams(initialText = "I'm full"),
     TextInputPreviewParams(initialText = "I'm full", clearable = true),
+    TextInputPreviewParams(initialText = "I'm wrong", isError = true),
   )
 
 @Preview
@@ -145,5 +186,12 @@ private fun PreviewAktualTextField(
       state = rememberTextFieldState(initialText = initialText),
       placeholderText = "Placeholder",
       clearable = clearable,
+      isError = isError,
+      supportingText =
+        if (isError) {
+          { Text("Something went wrong") }
+        } else {
+          null
+        },
     )
   }

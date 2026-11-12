@@ -11,7 +11,6 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount.Companion.Zero
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTextField
-import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.HostedSheet
@@ -128,10 +127,8 @@ private fun EditAccountFields(
         singleLine = true,
         keyboardOptions = KeyboardOptions(capitalization = Sentences),
         placeholderText = null,
-        supportingText =
-          state.duplicateName?.let {
-            { Text(text = Strings.accountsEditNameDuplicate, color = colors.errorText) }
-          },
+        isError = state.duplicateName != null,
+        supportingText = state.duplicateName?.let { { Text(Strings.accountsEditNameDuplicate) } },
       )
     }
 

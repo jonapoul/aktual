@@ -94,6 +94,15 @@ fun Colors.textField(
     focusedTrailingIconColor = icon,
     unfocusedTrailingIconColor = icon,
     disabledTrailingIconColor = icon.disabled,
+    errorTextColor = text,
+    errorPlaceholderColor = textPlaceholder,
+    errorLabelColor = errorText,
+    errorIndicatorColor = errorBorder,
+    errorContainerColor = focusedContainer,
+    errorCursorColor = text,
+    errorLeadingIconColor = icon,
+    errorTrailingIconColor = icon,
+    errorSupportingTextColor = errorText,
   )
 
 @Composable

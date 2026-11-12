@@ -5,15 +5,12 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.disabled
 import aktual.core.ui.keyboardFocusRequester
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -26,7 +23,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 
 @Composable
@@ -95,24 +91,16 @@ private fun NameDialogContent(
       }
     },
     content = {
-      Column {
-        AktualTextField(
-          modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester()),
-          state = state,
-          placeholderText = placeholder,
-          singleLine = true,
-          keyboardOptions = KeyboardOptions(capitalization = capitalization, imeAction = Done),
-          onKeyboardAction = { if (enabled) onConfirm(name) },
-        )
-        if (errorText != null) {
-          Text(
-            modifier = Modifier.padding(top = 8.dp),
-            text = errorText,
-            style = typography.bodySmall,
-            color = colors.errorText,
-          )
-        }
-      }
+      AktualTextField(
+        modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester()),
+        state = state,
+        placeholderText = placeholder,
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(capitalization = capitalization, imeAction = Done),
+        onKeyboardAction = { if (enabled) onConfirm(name) },
+        isError = errorText != null,
+        supportingText = errorText?.let { { Text(it) } },
+      )
     },
   )
 }

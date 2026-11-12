@@ -414,6 +414,7 @@ private fun EditPayeeContent(
           readOnly = payee.isTransfer,
           placeholderText = Strings.payeesEditNamePlaceholder,
           keyboardOptions = KeyboardOptions(capitalization = Sentences),
+          isError = !payee.isTransfer && nameState.text.isBlank(),
           supportingText =
             supporting?.let { (text, color) -> { Text(text = text, color = color) } },
         )
