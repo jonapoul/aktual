@@ -43,8 +43,6 @@ import aktual.di.BudgetCoroutineScope
 import aktual.test.TestBuildConfig
 import aktual.test.inMemoryDriverFactory
 import aktual.test.viewModelContext
-import alakazam.test.Flaky
-import alakazam.test.FlakyTestRule
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
@@ -60,11 +58,9 @@ import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
 import org.junit.Test
 
 class LinkBankAccountViewModelTest {
-  @get:Rule val rule = FlakyTestRule()
 
   @Test
   fun `Lists the first configured provider's accounts`() = runLinkTest {
@@ -197,7 +193,6 @@ class LinkBankAccountViewModelTest {
   }
 
   @Test
-  @Flaky(reason = "Sometimes fails randomly")
   fun `Without an account, linking adds a new one`() = runLinkTest {
     api.accounts[PluggyAi] = BankSyncAccountsResponse.Success(listOf(CHECKING))
     val viewModel = createViewModel(account = null)
