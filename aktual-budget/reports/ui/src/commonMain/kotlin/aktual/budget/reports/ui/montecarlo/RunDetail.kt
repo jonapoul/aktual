@@ -208,8 +208,11 @@ private fun totalsText(rows: ImmutableList<McRunDetailRow>): String {
       else -> Strings.monteCarloDetailTotals(withdrawn.money())
     }
   val withLumpSums =
-    if (lumpSums > 0) "$totals ${Strings.monteCarloDetailTotalsLumpSums(lumpSums.money())}"
-    else totals
+    if (lumpSums > 0) {
+      "$totals ${Strings.monteCarloDetailTotalsLumpSums(lumpSums.money())}"
+    } else {
+      totals
+    }
   if (income <= 0) return withLumpSums
   val incomeTotals =
     if (incomeTax > 0) {
@@ -355,7 +358,7 @@ private fun YearBreakdown(
         rule = config.withdrawalRule,
         surplusPotName = surplusPotName,
         hasSurplusPot = config.pots.any { it.isSurplus },
-        lumpSumNames = config.lumpSums.map { it.name },
+        lumpSumNames = config.lumpSums.map { it.name }.toImmutableList(),
       )
     DetailText(story.joinToString(separator = " "), Modifier.widthIn(max = TEXT_MAX_WIDTH))
 

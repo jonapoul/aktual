@@ -693,19 +693,7 @@ fun McConfig.toMeta(base: MonteCarloReportMeta): MonteCarloReportMeta =
           taxableFraction = stream.taxableFraction,
         )
       },
-    lumpSums =
-      lumpSums.map { lumpSum ->
-        LumpSum(
-          id = lumpSum.id,
-          name = lumpSum.name,
-          age = lumpSum.age,
-          amount = lumpSum.amount.toMinor(),
-          adjustsWithInflation = lumpSum.adjustsWithInflation,
-          sourcePotId = lumpSum.sourcePotId,
-          taxRate = lumpSum.taxRate,
-          taxableFraction = lumpSum.taxableFraction,
-        )
-      },
+    lumpSums = lumpSums.map { it.toMeta() },
     inflationMean = inflationMean,
     inflationStdDev = inflationStdDev,
     taxModel = taxModel,
@@ -714,6 +702,18 @@ fun McConfig.toMeta(base: MonteCarloReportMeta): MonteCarloReportMeta =
     targetAge = targetAge,
     simulationCount = simulationCount,
     historicalBlockLength = historicalBlockLength,
+  )
+
+private fun McLumpSum.toMeta() =
+  LumpSum(
+    id = id,
+    name = name,
+    age = age,
+    amount = amount.toMinor(),
+    adjustsWithInflation = adjustsWithInflation,
+    sourcePotId = sourcePotId,
+    taxRate = taxRate,
+    taxableFraction = taxableFraction,
   )
 
 private fun McInvestmentPhase.toMeta() =

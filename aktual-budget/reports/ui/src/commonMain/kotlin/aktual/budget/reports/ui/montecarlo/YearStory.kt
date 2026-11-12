@@ -7,6 +7,7 @@ import aktual.budget.reports.vm.WithdrawalRuleType
 import aktual.core.l10n.Strings
 import aktual.core.model.unaryPlus
 import androidx.compose.runtime.Composable
+import kotlinx.collections.immutable.ImmutableList
 
 // packages/desktop-client/src/components/reports/reports/monte-carlo/monteCarloYearStory.ts. The
 // plain-language summary of one simulated year, following cause to effect
@@ -16,7 +17,7 @@ internal fun yearStory(
   rule: McWithdrawalRule,
   surplusPotName: String,
   hasSurplusPot: Boolean,
-  lumpSumNames: List<String>,
+  lumpSumNames: ImmutableList<String>,
 ): List<String> = buildList {
   val ruleSentence = row.ruleExplanation?.let { ruleDecisionSentence(it, rule) }
   ruleSentence?.let { +it }
@@ -43,7 +44,7 @@ internal fun yearStory(
 // The one-off withdrawals the year called for, and whether the pots could pay them. Names are user
 // text, so they're quoted rather than woven in
 @Composable
-private fun lumpSumSentence(row: McRunDetailRow, names: List<String>): String? {
+private fun lumpSumSentence(row: McRunDetailRow, names: ImmutableList<String>): String? {
   val requested = row.lumpSumAmounts.withIndex().filter { it.value > 0 }
   if (requested.isEmpty()) return null
   val quotedNames =
