@@ -3,9 +3,8 @@ package aktual.budget.list.ui
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
-import aktual.core.ui.BasicIconButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.OnAction
-import aktual.core.ui.normalIconButton
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -18,12 +17,12 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal actual fun TopBarActions(onAction: OnAction<ListBudgetsAction>) = Row {
-  BasicIconButton(
+  AktualIconButton(
+    kind = Normal,
     modifier = Modifier.padding(horizontal = 5.dp),
     onClick = { onAction(Reload) },
     imageVector = AktualIcons.Refresh,
     contentDescription = Strings.listBudgetsRefresh,
-    colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
   )
 
   SettingsButton(modifier = Modifier.padding(horizontal = 5.dp), onAction = onAction)

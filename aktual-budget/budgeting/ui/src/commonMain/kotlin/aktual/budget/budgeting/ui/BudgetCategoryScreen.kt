@@ -15,9 +15,9 @@ import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
@@ -214,7 +214,7 @@ internal fun BudgetCategoryScaffold(
 private fun CategoryMenu(isHidden: Boolean, onHide: (hide: Boolean) -> Unit) {
   var expanded by remember { mutableStateOf(false) }
   Box {
-    BareIconButton(
+    AktualIconButton(
       modifier = Modifier.testTag(BudgetTags.CategoryMenu),
       imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.budgetingCategoryMenu,

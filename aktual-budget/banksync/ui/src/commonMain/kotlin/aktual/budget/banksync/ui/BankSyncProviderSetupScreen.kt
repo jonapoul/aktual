@@ -12,10 +12,10 @@ import aktual.core.icons.ViewShow
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -247,7 +247,7 @@ private fun CredentialField(
       trailingIcon =
         if (isSecret) {
           {
-            BareIconButton(
+            AktualIconButton(
               imageVector = if (isVisible) AktualIcons.ViewHide else AktualIcons.ViewShow,
               contentDescription = label,
               onClick = { isVisible = !isVisible },

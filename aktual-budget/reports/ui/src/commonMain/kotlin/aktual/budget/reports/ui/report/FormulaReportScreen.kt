@@ -27,6 +27,7 @@ import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
@@ -40,7 +41,6 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryIconButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -411,7 +411,8 @@ private fun FormulaReportTopBar(
             onClick = { onAction(Save) },
           )
         } else if (loaded != null) {
-          PrimaryIconButton(
+          AktualIconButton(
+            kind = Primary,
             modifier = Modifier.padding(horizontal = 8.dp).testTag(Tags.EditReport),
             imageVector = AktualIcons.Pencil1,
             contentDescription = Strings.reportsFormulaViewerEdit,

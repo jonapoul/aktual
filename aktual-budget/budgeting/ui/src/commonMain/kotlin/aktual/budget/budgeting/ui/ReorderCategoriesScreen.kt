@@ -17,11 +17,11 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BasicTextButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
@@ -172,7 +172,7 @@ internal fun ReorderCategoriesScaffold(
         actions = {
           if (loaded != null) {
             val allCollapsed = loaded.groups.all { it.id in reorder.collapsed }
-            BareIconButton(
+            AktualIconButton(
               imageVector =
                 if (allCollapsed) MaterialIcons.UnfoldMore else MaterialIcons.UnfoldLess,
               contentDescription =

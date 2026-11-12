@@ -3,7 +3,6 @@ package aktual.budget.list.ui
 import aktual.budget.list.vm.DeletingState
 import aktual.budget.model.Budget
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.textSizes
@@ -15,7 +14,6 @@ import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -126,14 +124,6 @@ fun annotatedString() = buildAnnotatedString {
   append(" ")
   append(Strings.budgetDeleteDialogHostedTxt3)
 }
-
-@Stable
-@Composable
-private fun Colors.errorBare(isPressed: Boolean) =
-  ButtonDefaults.outlinedButtonColors(
-    containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
-    contentColor = if (isPressed) buttonBareText else errorText,
-  )
 
 @Preview
 @Composable

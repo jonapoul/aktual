@@ -13,9 +13,9 @@ import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -234,7 +234,7 @@ private fun MonteCarloMenu(
   }
 
   Box(modifier = modifier) {
-    BareIconButton(
+    AktualIconButton(
       imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.monteCarloMenu,
       onClick = { expanded = true },

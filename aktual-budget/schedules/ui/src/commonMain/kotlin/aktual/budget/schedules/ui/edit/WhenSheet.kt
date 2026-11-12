@@ -13,10 +13,10 @@ import aktual.core.icons.Subtract
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.formatted
 import aktual.core.ui.frequencyDescription
 import aktual.core.ui.switch
@@ -250,13 +250,13 @@ private fun Stepper(
     horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.labelSpacing),
   ) {
     Text(modifier = Modifier.weight(1f), text = text, style = typography.bodyLarge)
-    BareIconButton(
+    AktualIconButton(
       imageVector = AktualIcons.Subtract,
       contentDescription = Strings.editScheduleIntervalDecrease,
-      enabled = canDecrease,
+      isEnabled = canDecrease,
       onClick = onDecrease,
     )
-    BareIconButton(
+    AktualIconButton(
       imageVector = AktualIcons.Add,
       contentDescription = Strings.editScheduleIntervalIncrease,
       onClick = onIncrease,

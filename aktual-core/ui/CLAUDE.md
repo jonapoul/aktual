@@ -20,6 +20,10 @@ Spacing uses `Dimens` (dp), not `AktualTheme`.
 
 Use the `CardColumn` (column) or `CardRow` composable for card containers, passing `contentPadding` and `onClick` rather than chaining `padding`/`clickable` yourself. `Modifier.card` is for cases `CardColumn` can't cover, like applying the card style conditionally or adding `shimmer()` after the padding.
 
+## Buttons
+
+Use `AktualButton` and `AktualIconButton` (`AktualButtons.kt`), picking a `ButtonKind` (`Primary`, `Normal`, `Bare`, `Tonal`, `Destructive`) and passing `isLoading` rather than building a spinner yourself. Only drop to `BasicTextButton` / `BasicIconButton` for colours no kind covers.
+
 ## Action handlers
 
 Screens take a single `onAction: OnAction<FooAction>` for their sealed action type. Don't declare a per-screen `fun interface FooActionHandler`.

@@ -22,10 +22,10 @@ import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
@@ -168,10 +168,10 @@ private fun BankSyncSettingsScaffold(
         },
         actions = {
           if (state is Editing) {
-            BareIconButton(
+            AktualIconButton(
               imageVector = MaterialIcons.Save,
               contentDescription = Strings.bankSyncSettingsSave,
-              enabled = state.hasChanges,
+              isEnabled = state.hasChanges,
               onClick = { onAction(SaveSettings) },
             )
           }

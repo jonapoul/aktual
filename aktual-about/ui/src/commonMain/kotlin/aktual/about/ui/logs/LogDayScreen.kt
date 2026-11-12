@@ -21,10 +21,10 @@ import aktual.core.logging.LogLine
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
@@ -240,19 +240,19 @@ private fun LogDayTopBar(
     },
     actions = {
       if (isSearching) {
-        BareIconButton(
+        AktualIconButton(
           imageVector = AktualIcons.Delete,
           contentDescription = Strings.logsSearchClose,
           onClick = onCloseSearch,
         )
       } else {
-        BareIconButton(
+        AktualIconButton(
           imageVector = AktualIcons.SearchAlternate,
           contentDescription = Strings.logsSearch,
           onClick = onSearch,
         )
       }
-      BareIconButton(
+      AktualIconButton(
         imageVector = MaterialIcons.Share,
         contentDescription = Strings.logsExport,
         onClick = onExport,
@@ -266,7 +266,7 @@ private fun LogDayTopBar(
 private fun LogDayMenu(onScrollToTop: () -> Unit, onScrollToBottom: () -> Unit) {
   var expanded by remember { mutableStateOf(false) }
   Box {
-    BareIconButton(
+    AktualIconButton(
       imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.logsMenu,
       onClick = { expanded = true },

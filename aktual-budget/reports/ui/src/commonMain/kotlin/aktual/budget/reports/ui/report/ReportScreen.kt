@@ -36,10 +36,10 @@ import aktual.core.nav.EditScheduleNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -328,7 +328,7 @@ private fun ReportTopBar(
         )
       }
       if (zoom.range != null) {
-        BareIconButton(
+        AktualIconButton(
           modifier = Modifier.testTag(ChartTags.ResetZoom),
           imageVector = MaterialIcons.ZoomOut,
           contentDescription = Strings.reportsResetZoom,
@@ -336,7 +336,7 @@ private fun ReportTopBar(
         )
       }
       if (loaded?.draft?.hasSettings() == true) {
-        BareIconButton(
+        AktualIconButton(
           modifier = Modifier.testTag(ChartTags.ChartSettings),
           imageVector = AktualIcons.Tuning,
           contentDescription = Strings.reportsChartSettings,

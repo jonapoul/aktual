@@ -24,8 +24,8 @@ import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.nav.ListSchedulesNavigator
 import aktual.core.nav.ReportNavigator
 import aktual.core.nav.TransactionsNavigator
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -269,7 +269,7 @@ private fun HomeContent(
         actions = {
           if (!state.isEmpty) {
             Crossfade(targetState = isEditing) { editing ->
-              BareIconButton(
+              AktualIconButton(
                 imageVector = if (editing) AktualIcons.Check else AktualIcons.Pencil1,
                 contentDescription = if (editing) Strings.homeReorderDone else Strings.homeReorder,
                 onClick = onToggleEditing,

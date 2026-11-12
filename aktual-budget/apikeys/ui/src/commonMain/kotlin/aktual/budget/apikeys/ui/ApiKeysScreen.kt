@@ -15,9 +15,9 @@ import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardRow
 import aktual.core.ui.CardShape
@@ -118,7 +118,7 @@ private fun ApiKeysScaffold(
         title = { Text(text = Strings.apiKeysTitle) },
         actions = {
           if (state is Loaded || state is Empty) {
-            BareIconButton(
+            AktualIconButton(
               imageVector = AktualIcons.Add,
               contentDescription = Strings.apiKeysAdd,
               onClick = { onAction(NewKey) },

@@ -12,10 +12,11 @@ import aktual.core.icons.Delete
 import aktual.core.icons.Subtract
 import aktual.core.l10n.Strings
 import aktual.core.theme.DarkColors
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
+import aktual.core.ui.BasicIconButton
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalNumberFormatConfig
@@ -164,8 +165,8 @@ private fun LeadingContent(
   config: CurrencyConfig = LocalCurrencyConfig.current,
 ) {
   Row(modifier = modifier, verticalAlignment = CenterVertically) {
-    BareIconButton(
-      enabled = isEnabled,
+    BasicIconButton(
+      isEnabled = isEnabled,
       imageVector = if (isPositive) AktualIcons.Add else AktualIcons.Subtract,
       contentDescription =
         if (isPositive) Strings.editRuleAmountSignPositive else Strings.editRuleAmountSignNegative,
@@ -215,8 +216,8 @@ private fun TrailingContent(
     }
 
     if (canClear) {
-      BareIconButton(
-        enabled = isEnabled,
+      AktualIconButton(
+        isEnabled = isEnabled,
         imageVector = AktualIcons.Delete,
         contentDescription = Strings.editRuleAmountClear,
         onClick = onClear,

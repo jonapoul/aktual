@@ -10,7 +10,7 @@ import aktual.core.icons.Pencil1
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
-import aktual.core.ui.BareIconButton
+import aktual.core.ui.AktualIconButton
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +34,7 @@ internal fun ReportMenu(
   var showRenameDialog by remember { mutableStateOf(false) }
 
   Box(modifier = modifier) {
-    BareIconButton(
+    AktualIconButton(
       modifier = Modifier.testTag(Tags.ReportMenu),
       imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.reportsReportMenu,

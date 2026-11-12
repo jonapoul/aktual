@@ -42,11 +42,11 @@ import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.letterSpacings
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BackHandler
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardRow
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -411,10 +411,10 @@ private fun TopBarActions(
     if (mode is Edit && !isGone) {
       Box {
         var expanded by remember { mutableStateOf(false) }
-        BareIconButton(
+        AktualIconButton(
           imageVector = AktualIcons.DotsHorizontalTriple,
           contentDescription = Strings.transactionMore,
-          enabled = !state.isWorking,
+          isEnabled = !state.isWorking,
           onClick = { expanded = true },
         )
         AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {

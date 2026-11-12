@@ -10,9 +10,9 @@ import aktual.core.nav.BudgetNavRailNavigator
 import aktual.core.nav.InfoNavigator
 import aktual.core.nav.LoginNavigator
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -22,7 +22,6 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.normalIconButton
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.log
 import androidx.compose.foundation.layout.Arrangement
@@ -111,12 +110,12 @@ private fun ServerUrlScaffold(
         colors = colors.transparentTopAppBarColors(),
         title = {},
         actions = {
-          BasicIconButton(
+          AktualIconButton(
+            kind = Normal,
             modifier = Modifier.padding(horizontal = 5.dp),
             onClick = { onAction(OpenAbout) },
             imageVector = AktualIcons.InformationOutline,
             contentDescription = Strings.serverUrlMenuAbout,
-            colors = { c, isPressed -> c.normalIconButton(isPressed) },
           )
         },
       )

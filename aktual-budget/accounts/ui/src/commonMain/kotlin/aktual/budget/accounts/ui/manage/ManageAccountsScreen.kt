@@ -15,8 +15,8 @@ import aktual.core.nav.CreateAccountNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -198,7 +198,7 @@ private fun ManageAccountsScaffold(
 private fun AddMenu(onAction: OnAction<ManageAccountsAction>, modifier: Modifier = Modifier) {
   var expanded by remember { mutableStateOf(false) }
   Box(modifier = modifier) {
-    BareIconButton(
+    AktualIconButton(
       imageVector = AktualIcons.Add,
       contentDescription = Strings.accountsManageAdd,
       onClick = { expanded = true },

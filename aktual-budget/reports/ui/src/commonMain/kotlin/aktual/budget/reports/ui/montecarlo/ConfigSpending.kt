@@ -18,8 +18,8 @@ import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.OnAction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -77,7 +77,7 @@ private fun PhaseCard(
     title = label,
     actions = {
       if (config.spendingPhases.size > 1) {
-        BareIconButton(
+        AktualIconButton(
           imageVector = AktualIcons.Trash,
           contentDescription = Strings.monteCarloPhaseRemove,
           onClick = { onAction.edit { it.removeSpendingPhase(phase.id) } },
@@ -386,7 +386,7 @@ private fun TaxBandRow(
       )
     }
     if (config.taxBands.size > 1) {
-      BareIconButton(
+      AktualIconButton(
         imageVector = AktualIcons.Trash,
         contentDescription = Strings.monteCarloBandRemove,
         onClick = { onAction.edit { it.removeTaxBand(band.id) } },

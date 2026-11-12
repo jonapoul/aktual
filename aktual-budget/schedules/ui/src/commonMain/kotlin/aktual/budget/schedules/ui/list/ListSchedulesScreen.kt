@@ -35,8 +35,8 @@ import aktual.core.nav.SearchSchedulesNavigator
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
@@ -196,13 +196,13 @@ private fun ListSchedulesScaffold(
         title = { Text(text = Strings.listSchedulesTitle) },
         actions = {
           if (successState != null) {
-            BareIconButton(
+            AktualIconButton(
               imageVector = AktualIcons.SearchAlternate,
               contentDescription = Strings.listSchedulesSearch,
               onClick = { onAction(OpenSearch) },
             )
           }
-          BareIconButton(
+          AktualIconButton(
             imageVector = AktualIcons.Add,
             contentDescription = Strings.listSchedulesCreate,
             onClick = { onAction(CreateNew) },
@@ -343,7 +343,7 @@ private fun ListSchedulesMenu(
   var expanded by remember { mutableStateOf(false) }
 
   Box(modifier = modifier) {
-    BareIconButton(
+    AktualIconButton(
       imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.listSchedulesMenu,
       onClick = { expanded = true },

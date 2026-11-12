@@ -16,9 +16,9 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.OnAction
 import aktual.core.ui.formattedText
@@ -137,7 +137,7 @@ internal fun GroupHeader(
 private fun GroupMenu(name: String, onRename: () -> Unit, onDelete: () -> Unit) {
   var expanded by remember { mutableStateOf(false) }
   Box {
-    BareIconButton(
+    AktualIconButton(
       imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.accountsManageGroupOptions(name),
       onClick = { expanded = true },

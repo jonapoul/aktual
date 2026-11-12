@@ -11,11 +11,10 @@ import aktual.core.icons.material.Link
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Title
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualSlidingToggleButton
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -82,7 +81,7 @@ private fun FormatButtons(onFormat: (MarkdownFormat) -> Unit) {
 @Composable
 @NonRestartableComposable
 private fun FormatButton(icon: ImageVector, description: String, onClick: () -> Unit) =
-  BareIconButton(imageVector = icon, contentDescription = description, onClick = onClick)
+  AktualIconButton(imageVector = icon, contentDescription = description, onClick = onClick)
 
 @Composable
 private fun EditorMode.string() =
@@ -118,11 +117,10 @@ private fun AlignButton(
   selected: TextAlign,
   onAlign: (TextAlign) -> Unit,
 ) =
-  BareIconButton(
+  AktualIconButton(
+    kind = if (option == selected) Primary else Bare,
     imageVector = icon,
     contentDescription = description,
-    colors =
-      if (option == selected) IconButtonColorProvider.Primary else IconButtonColorProvider.Bare,
     onClick = { onAlign(option) },
   )
 

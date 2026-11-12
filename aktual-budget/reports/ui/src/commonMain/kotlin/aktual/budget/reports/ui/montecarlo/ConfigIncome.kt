@@ -16,9 +16,9 @@ import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.redacted
 import androidx.compose.material3.Text
@@ -59,7 +59,7 @@ private fun IncomeCard(
   ItemCard(
     title = label,
     actions = {
-      BareIconButton(
+      AktualIconButton(
         imageVector = AktualIcons.Trash,
         contentDescription = Strings.monteCarloIncomeRemove,
         onClick = { onAction.edit { it.removeIncomeStream(stream.id) } },
@@ -144,7 +144,7 @@ private fun ContributionCard(
   ItemCard(
     title = label,
     actions = {
-      BareIconButton(
+      AktualIconButton(
         imageVector = AktualIcons.Trash,
         contentDescription = Strings.monteCarloContributionRemove,
         onClick = { onAction.edit { it.removeContribution(contribution.id) } },

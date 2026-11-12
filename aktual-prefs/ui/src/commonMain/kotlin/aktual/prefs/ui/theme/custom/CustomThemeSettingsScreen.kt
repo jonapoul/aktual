@@ -17,11 +17,11 @@ import aktual.core.model.immutableList
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.InspectThemeNavigator
 import aktual.core.theme.CustomThemeSummary
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualSnackbar
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedLoading
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.CardShape
@@ -224,10 +224,10 @@ private fun CustomThemeSettingsScaffold(
 
 @Composable
 private fun SortFilterButton(state: CatalogState, onAction: OnAction<CustomThemeSettingsAction>) {
-  BareIconButton(
+  AktualIconButton(
     imageVector = AktualIcons.Tuning,
     contentDescription = Strings.settingsThemeSortFilter,
-    enabled = state !is Loading,
+    isEnabled = state !is Loading,
     onClick = { onAction(ShowSortFilterSheet) },
   )
 }
@@ -407,9 +407,9 @@ private fun CustomThemeItem(
       }
     }
 
-    BareIconButton(
+    AktualIconButton(
       imageVector = AktualIcons.CheveronRight,
-      enabled = enabled,
+      isEnabled = enabled,
       onClick = { onAction(InspectTheme(item.summary)) },
       contentDescription = Strings.settingsThemePreview(item.summary.name),
     )

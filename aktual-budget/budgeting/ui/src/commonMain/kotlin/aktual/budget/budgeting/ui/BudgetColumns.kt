@@ -14,9 +14,9 @@ import aktual.core.l10n.Strings
 import aktual.core.model.unaryPlus
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.OnAction
@@ -410,7 +410,7 @@ private fun MonthMenu(month: YearMonth, onAction: OnAction<BudgetAction>) {
   var expanded by remember { mutableStateOf(false) }
   val actions = monthActions(month, onAction)
   Box {
-    BareIconButton(
+    AktualIconButton(
       imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.budgetingMonthMenu(month.stringLong()),
       onClick = { expanded = true },

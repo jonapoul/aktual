@@ -7,14 +7,13 @@ import aktual.core.icons.Tuning
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Shuffle
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BooleanColorParameters
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
-import aktual.core.ui.IconButtonColorProvider
-import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.contrastingTextColor
 import aktual.core.ui.textField
@@ -153,7 +152,8 @@ internal fun TagColorPicker(
         isError = hexError,
       )
 
-      NormalIconButton(
+      AktualIconButton(
+        kind = Normal,
         imageVector = MaterialIcons.Shuffle,
         contentDescription = Strings.tagsCreateColorRandom,
         // grid: pick from the presets; advanced: any colour is fair game
@@ -162,12 +162,11 @@ internal fun TagColorPicker(
         },
       )
 
-      NormalIconButton(
+      AktualIconButton(
+        kind = if (advancedVisible) Primary else Normal,
         imageVector = AktualIcons.Tuning,
         contentDescription = Strings.tagsCreateColorAdvanced,
         onClick = { advancedVisible = !advancedVisible },
-        colors =
-          if (advancedVisible) IconButtonColorProvider.Primary else IconButtonColorProvider.Normal,
       )
     }
 
