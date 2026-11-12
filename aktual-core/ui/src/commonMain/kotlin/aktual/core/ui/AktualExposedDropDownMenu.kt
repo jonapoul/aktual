@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
@@ -157,12 +156,10 @@ fun <T> AktualExposedDropDownMenu(
         onDispose { dialogBlurState.activeDialogCount-- }
       }
 
-      val itemColors = colors.dropDownMenuItem()
       options.fastForEach { o ->
-        DropdownMenuItem(
+        AktualDropdownMenuItem(
           text = { Text(string(o)) },
           contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-          colors = itemColors,
           onClick = {
             selectedOption = o
             onValueChange(o)
