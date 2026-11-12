@@ -807,7 +807,7 @@ private fun RowScope.ShimmerCells(
   }
 }
 
-private class ShimmerGroup(val name: Dp, val categories: ImmutableList<Dp>)
+private data class ShimmerGroup(val name: Dp, val categories: ImmutableList<Dp>)
 
 private val ShimmerGroupWidths =
   persistentListOf(
