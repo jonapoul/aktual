@@ -19,7 +19,7 @@
                     android:fillColor="#FF2E42A5"
                     android:strokeColor="#FF2E42A5"
                     android:strokeWidth="2"
-                    android:pathData="M10.82 1H9.82V2 10.32H0-1V11.32 13.32 14.32H0 9.82V24 25H10.82 12.82 13.82V24 14.32H32 33V13.32 11.32 10.32H32 13.82V2 1H12.82 10.82Z"/>
+                    android:pathData="M10.8 1H9.8V2 10.3H0-1V11.3 13.3 14.3H0 9.8V24 25H10.8 12.8 13.8V24 14.3H32 33V13.3 11.3 10.3H32 13.8V2 1H12.8 10.8Z"/>
             </group>
         </group>
     </group>

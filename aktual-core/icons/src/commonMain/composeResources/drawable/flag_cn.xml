@@ -17,23 +17,23 @@
             <path
                 android:fillColor="#FFFECA00"
                 android:fillType="evenOdd"
-                android:pathData="M15.02 4.55L14.01 5.16 14.24 3.97 13.39 3.08 14.53 3.03 15.02 1.92 15.5 3.03H16.63L15.8 3.97 16.05 5.16 15.02 4.55Z"/>
+                android:pathData="M15 4.5L14 5.2 14.2 4 13.4 3.1 14.5 3 15 1.9 15.5 3H16.6L15.8 4 16.1 5.2 15 4.5Z"/>
             <path
                 android:fillColor="#FFFECA00"
                 android:fillType="evenOdd"
-                android:pathData="M7.02 9.61L4.14 11.16 4.79 8.13 2.39 5.87 5.64 5.74 7.02 2.92 8.39 5.74H11.63L9.24 8.13 9.96 11.16 7.02 9.61Z"/>
+                android:pathData="M7 9.6L4.1 11.2 4.8 8.1 2.4 5.9 5.6 5.7 7 2.9 8.4 5.7H11.6L9.2 8.1 10 11.2 7 9.6Z"/>
             <path
                 android:fillColor="#FFFECA00"
                 android:fillType="evenOdd"
-                android:pathData="M17.02 8.55L16.01 9.16 16.24 7.97 15.39 7.08 16.53 7.03 17.02 5.92 17.5 7.03H18.63L17.8 7.97 18.05 9.16 17.02 8.55Z"/>
+                android:pathData="M17 8.6L16 9.2 16.2 8 15.4 7.1 16.5 7 17 5.9 17.5 7H18.6L17.8 8 18.1 9.2 17 8.6Z"/>
             <path
                 android:fillColor="#FFFECA00"
                 android:fillType="evenOdd"
-                android:pathData="M16.02 12.55L15.01 13.16 15.24 11.97 14.39 11.08 15.53 11.03 16.02 9.92 16.5 11.03H17.63L16.8 11.97 17.05 13.16 16.02 12.55Z"/>
+                android:pathData="M16 12.6L15 13.2 15.2 12 14.4 11.1 15.5 11 16 9.9 16.5 11H17.6L16.8 12 17.1 13.2 16 12.6Z"/>
             <path
                 android:fillColor="#FFFECA00"
                 android:fillType="evenOdd"
-                android:pathData="M13.02 15.55L12.01 16.16 12.24 14.97 11.39 14.08 12.53 14.03 13.02 12.92 13.5 14.03H14.63L13.8 14.97 14.05 16.16 13.02 15.55Z"/>
+                android:pathData="M13 15.6L12 16.2 12.2 15 11.4 14.1 12.5 14 13 12.9 13.5 14H14.6L13.8 15 14.1 16.2 13 15.6Z"/>
         </group>
     </group>
 </vector>

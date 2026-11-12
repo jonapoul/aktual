@@ -25,7 +25,7 @@
                     <path
                         android:fillColor="#FFFFD221"
                         android:fillType="evenOdd"
-                        android:pathData="M16.06 15.98L10.91 19.25 12.64 13.52 8.96 9.78 14.03 9.67 16.27 4.01 18.31 9.74 23.37 9.83 19.57 13.64 21.34 19.1 16.06 15.98Z"/>
+                        android:pathData="M16.1 16L10.9 19.2 12.6 13.5 9 9.8 14 9.7 16.3 4 18.3 9.7 23.4 9.8 19.6 13.6 21.3 19.1 16.1 16Z"/>
                 </group>
             </group>
         </group>

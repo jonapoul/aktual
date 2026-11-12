@@ -11,22 +11,22 @@
             android:pathData="M0 0L32 0L32 24L0 24Z"/>
         <path
             android:fillColor="#FFF7FCFF"
-            android:pathData="M-4.64 -0.48L33.76 28.32L36.64 24.48L-1.76 -4.32Z"/>
+            android:pathData="M-4.6-0.5L33.8 28.3L36.6 24.5L-1.8-4.3Z"/>
         <path
             android:fillColor="#FFF7FCFF"
-            android:pathData="M-1.76 28.32L36.64 -0.48L33.76 -4.32L-4.64 24.48Z"/>
+            android:pathData="M-1.8 28.3L36.6-0.5L33.8-4.3L-4.6 24.5Z"/>
         <path
             android:fillColor="#FFF50100"
-            android:pathData="M16 12L-3.2 -2.4L-4.16 -1.12L15.04 13.28Z"/>
+            android:pathData="M16 12L-3.2-2.4L-4.2-1.1L15 13.3Z"/>
         <path
             android:fillColor="#FFF50100"
-            android:pathData="M16 12L35.2 -2.4L34.24 -3.68L15.04 10.72Z"/>
+            android:pathData="M16 12L35.2-2.4L34.2-3.7L15 10.7Z"/>
         <path
             android:fillColor="#FFF50100"
-            android:pathData="M16 12L35.2 26.4L36.16 25.12L16.96 10.72Z"/>
+            android:pathData="M16 12L35.2 26.4L36.2 25.1L17 10.7Z"/>
         <path
             android:fillColor="#FFF50100"
-            android:pathData="M16 12L-3.2 26.4L-2.24 27.68L16.96 13.28Z"/>
+            android:pathData="M16 12L-3.2 26.4L-2.2 27.7L17 13.3Z"/>
         <path
             android:fillColor="#FFF7FCFF"
             android:pathData="M12 0L20 0L20 24L12 24ZM0 8L32 8L32 16L0 16Z"/>

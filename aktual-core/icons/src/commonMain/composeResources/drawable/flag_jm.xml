@@ -18,12 +18,12 @@
                 android:fillColor="#FF272727"
                 android:strokeColor="#FFFECA00"
                 android:strokeWidth="2.7"
-                android:pathData="M-0.14-1.04L-2.35-2.86V0 24 26.86L-0.14 25.04 14.4 13.04 15.66 12 14.4 10.96-0.14-1.04Z"/>
+                android:pathData="M-0.1-1L-2.4-2.9V0 24 26.9L-0.1 25 14.4 13 15.7 12 14.4 11-0.1-1Z"/>
             <path
                 android:fillColor="#FF272727"
                 android:strokeColor="#FFFECA00"
                 android:strokeWidth="2.7"
-                android:pathData="M32.16-1.06L34.35-2.78V0 24 26.78L32.16 25.06 16.95 13.06 15.6 12 16.95 10.94 32.16-1.06Z"/>
+                android:pathData="M32.2-1.1L34.4-2.8V0 24 26.8L32.2 25.1 16.9 13.1 15.6 12 16.9 10.9 32.2-1.1Z"/>
         </group>
     </group>
 </vector>
