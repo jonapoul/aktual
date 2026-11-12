@@ -238,6 +238,8 @@ private fun BudgetScaffold(
               onAction = handler,
               onPickMonth = { showMonthPicker = true },
             )
+          } else if (state == Loading) {
+            ShimmerMonthSelector(modifier = Modifier.fillMaxWidth())
           } else {
             Text(text = Strings.budgetingTitle, maxLines = 1, overflow = Ellipsis)
           }
@@ -252,6 +254,13 @@ private fun BudgetScaffold(
               )
             }
             BudgetMenu(state = state, withMonthActions = isCompact, onAction = handler)
+          } else if (state == Loading) {
+            AktualIconButton(
+              imageVector = AktualIcons.DotsHorizontalTriple,
+              contentDescription = Strings.budgetingMenu,
+              isEnabled = false,
+              onClick = {},
+            )
           }
         },
       )
