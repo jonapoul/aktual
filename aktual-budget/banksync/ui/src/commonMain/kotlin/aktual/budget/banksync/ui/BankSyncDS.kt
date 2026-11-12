@@ -9,6 +9,7 @@ internal object BankSyncDS {
   val headerSpacing = 8.dp
 
   val itemHorizontalSpacing = 8.dp
+  val flagPadding = 12.dp
   val itemCardPadding = 12.dp.padding
   val itemContentSpacing = 2.dp
 

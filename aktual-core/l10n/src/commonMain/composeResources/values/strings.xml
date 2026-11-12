@@ -521,6 +521,7 @@
   <string name="bank_sync_link_gocardless_intro">Choose your bank. GoCardless opens its page in your browser, where you log in and choose which accounts to share. GoCardless can’t withdraw money from your accounts.</string>
   <string name="bank_sync_link_enable_banking_intro">Choose your bank. Enable Banking opens its page in your browser, where you log in and choose which accounts to share. Enable Banking can’t withdraw money from your accounts.</string>
   <string name="bank_sync_link_login_country">Country</string>
+  <string name="bank_sync_link_login_country_search">Search countries</string>
   <string name="bank_sync_link_login_account_type">Account type</string>
   <string name="bank_sync_link_login_personal">Personal</string>
   <string name="bank_sync_link_login_business">Business</string>

@@ -48,10 +48,10 @@ Create the file in the family's package, then append to the alphabetically-sorte
 
 ## Flags
 
-Country flags are vector drawables in `src/commonMain/composeResources/drawable/flag_<region>.xml`. Look one up with `flagPainter(regionCode)` in `aktual.core.icons.flags`, and add a branch to `flagResource` when adding a flag. Only the flags the app uses are bundled.
+Country flags are vector drawables in `src/commonMain/composeResources/drawable/flag_<region>.xml`. Show one with `Flag(regionCode)` (or get the painter with `flagPainter(regionCode)`) in `aktual.core.icons.flags`, and add a branch to `flagResource` when adding a flag. Only the flags the app uses are bundled.
 
 They come from the large (32x24) set of [Flagpack](https://github.com/Yummygum/flagpack-core) (`svg/l/`), with some exceptions:
-- `sa` and `ar` use the small set (`svg/s/`), since the large ones are over 100KB each.
+- `sa`, `ar`, `es`, `pt` and `hr` use the small set (`svg/s/`), since their large ones are much bigger.
 - `gb`, the Union Jack in `au`, and the taegeuk in `kr` are generated from the official geometry, since Flagpack's are inaccurate. They keep Flagpack's colours, and `au` and `kr` keep its stars and trigrams.
 - `hu` uses the official red `#CE2939`, since Flagpack's looks orange.
 - `eu` is drawn by hand, since Flagpack has none.
@@ -60,6 +60,6 @@ Convert with `npx svg2vectordrawable`, but prepare the SVG first, since the conv
 - It turns named colours (`white`, `black`, `red`) black and ignores `style="fill:..."`. Use hex attributes.
 - It ignores `clip-path`, and only turns a `<mask>` into a clip when the mask is top-level (not in `<defs>`), defined before its use, and made of `<path>`s rather than `<rect>`s. Rewrite each `<clipPath>` as a `<mask>` that meets those rules.
 - It ignores `transform` on rects. Bake translations into `x`/`y`.
-- Flagpack's "outside" stroke masks only show the outer half of a stroke. Drop the mask and draw the stroke before the fill it outlines (e.g. South Africa).
+- Flagpack's "outside" stroke masks only show the outer half of a stroke. Drop the mask and draw the stroke before the fill it outlines (e.g. South Africa, Liechtenstein).
 
-Render the result and compare it with the source before committing.
+Then round the `pathData` numbers to 1 decimal place to save space (2 for `li`, whose crown outline breaks at 1). Render the result and compare it with the source before committing.

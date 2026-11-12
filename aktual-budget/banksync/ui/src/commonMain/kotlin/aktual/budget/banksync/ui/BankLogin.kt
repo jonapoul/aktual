@@ -5,13 +5,14 @@ import aktual.budget.banksync.vm.link.BankLoginStatus
 import aktual.budget.banksync.vm.link.LoginAccountType
 import aktual.budget.banksync.vm.link.LoginBankItem
 import aktual.budget.model.AccountSyncSource
+import aktual.core.icons.flags.Flag
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
-import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.OnAction
 import aktual.core.ui.RowShape
 import aktual.core.ui.ShimmerLine
@@ -27,11 +28,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -39,6 +47,7 @@ import androidx.compose.ui.draw.clip
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import java.util.Locale
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
 /**
@@ -138,13 +147,11 @@ private fun LoginHeader(
         style = typography.titleSmall,
         color = colors.pageTextLight,
       )
-      AktualExposedDropDownMenu(
-        modifier = Modifier.fillMaxWidth(),
-        value = login.country,
-        onValueChange = { onAction(SelectCountry(it)) },
-        options = login.countries,
-        string = { countryName(it) },
+      CountryPicker(
+        country = login.country,
+        countries = login.countries,
         isEnabled = isEnabled,
+        onSelect = { onAction(SelectCountry(it)) },
       )
     }
 
@@ -167,6 +174,46 @@ private fun LoginHeader(
     }
 
     BankSearchField(query = query, onQuery = onQuery, isEnabled = isEnabled)
+  }
+}
+
+@Composable
+private fun CountryPicker(
+  country: String,
+  countries: ImmutableList<String>,
+  isEnabled: Boolean,
+  onSelect: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  var showSheet by remember { mutableStateOf(false) }
+  val name = countryName(country)
+  val textState = remember(name) { TextFieldState(name) }
+
+  Box(modifier = modifier.fillMaxWidth()) {
+    AktualTextField(
+      modifier = Modifier.fillMaxWidth(),
+      state = textState,
+      placeholderText = null,
+      readOnly = true,
+      isEnabled = isEnabled,
+      leadingIcon = { Flag(country, Modifier.padding(start = BankSyncDS.flagPadding)) },
+      trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showSheet) },
+    )
+    Box(modifier = Modifier.matchParentSize().clickable(isEnabled) { showSheet = true })
+  }
+
+  if (showSheet) {
+    ListBottomSheet(
+      value = country,
+      options = countries,
+      onDismiss = { showSheet = false },
+      onSelect = onSelect,
+      sheetState = rememberBottomSheetState(initialValue = Hidden),
+      string = { countryName(it) },
+      leadingContent = { Flag(it) },
+      searchPlaceholder = Strings.bankSyncLinkLoginCountrySearch,
+      searchTerms = { listOf(it) },
+    )
   }
 }
 
