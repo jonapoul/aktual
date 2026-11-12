@@ -83,6 +83,7 @@ internal fun BalanceForecastSettings(
 }
 
 // The forecast's own settings, between the time frame and the filters
+@Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.BalanceForecastDisplay(
   meta: BalanceForecastReportMeta,
