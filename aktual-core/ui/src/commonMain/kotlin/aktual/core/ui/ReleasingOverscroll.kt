@@ -51,14 +51,18 @@ private class ReleasingOverscrollEffect(private val delegate: OverscrollEffect) 
     releaseJob?.cancel()
     delegate.applyToFling(velocity, performFling)
     val node = delegate.node.node
-    if (!delegate.isInProgress || !node.isAttached) return
+    if (!node.isAttached) return
 
     // Launched in the effect's node scope so the fling isn't held open while the stretch relaxes,
-    // and the loop stops when the node detaches
+    // and the loop stops when the node detaches. A fling that hits the edge only queues the
+    // stretch, which has no distance until it's next drawn, so keep going for a few frames even
+    // when nothing looks in progress yet.
     releaseJob =
       node.coroutineScope.launch {
         var frames = 0
-        while (delegate.isInProgress && frames++ < MAX_RELEASE_FRAMES) {
+        while (
+          frames++ < MAX_RELEASE_FRAMES && (delegate.isInProgress || frames <= START_GRACE_FRAMES)
+        ) {
           withFrameNanos {}
           // A zero fling invalidates the effect while it's still animating
           delegate.applyToFling(Zero) { Zero }
@@ -68,5 +72,6 @@ private class ReleasingOverscrollEffect(private val delegate: OverscrollEffect) 
 
   private companion object {
     const val MAX_RELEASE_FRAMES = 120
+    const val START_GRACE_FRAMES = 5
   }
 }
