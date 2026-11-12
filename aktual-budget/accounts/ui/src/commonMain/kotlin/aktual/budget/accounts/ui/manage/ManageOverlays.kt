@@ -17,11 +17,11 @@ import aktual.core.icons.material.ReceiptLong
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
-import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSheetListItem
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.HostedSheet
 import aktual.core.ui.OnAction
 import aktual.core.ui.formattedText
@@ -201,8 +201,8 @@ private fun GroupNameDialog(
     title = title,
     onDismissRequest = onDismiss,
     buttons = {
-      AktualButton(text = Strings.accountsManageCancel, onClick = onDismiss)
-      AktualButton(
+      DialogTextButton(text = Strings.accountsManageCancel, onClick = onDismiss)
+      DialogTextButton(
         kind = Primary,
         text = confirmText,
         isEnabled = canConfirm,
@@ -243,8 +243,8 @@ private fun DeleteGroupConfirmDialog(
     highlight = colors.errorText,
     onDismissRequest = onDismiss,
     buttons = {
-      AktualButton(text = Strings.accountsManageCancel, onClick = onDismiss)
-      AktualButton(
+      DialogTextButton(text = Strings.accountsManageCancel, onClick = onDismiss)
+      DialogTextButton(
         kind = Primary,
         text = Strings.accountsManageGroupDeleteConfirm,
         onClick = {

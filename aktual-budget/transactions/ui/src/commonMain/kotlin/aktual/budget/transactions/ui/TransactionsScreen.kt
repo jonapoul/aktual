@@ -31,6 +31,7 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParams
 import aktual.core.ui.DesktopPreview
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalSnackbars
@@ -49,7 +50,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -220,7 +220,10 @@ private fun BankLoginKeptDialog(onDismiss: () -> Unit) =
     highlight = colors.warningText,
     onDismissRequest = onDismiss,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.transactionsDeleteAccountLoginKeptDismiss) }
+      DialogTextButton(
+        text = Strings.transactionsDeleteAccountLoginKeptDismiss,
+        onClick = onDismiss,
+      )
     },
     content = { Text(Strings.transactionsDeleteAccountLoginKeptMessage) },
   )

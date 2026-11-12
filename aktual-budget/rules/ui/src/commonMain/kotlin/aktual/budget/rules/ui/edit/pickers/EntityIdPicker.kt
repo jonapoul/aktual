@@ -8,6 +8,7 @@ import aktual.budget.rules.vm.EntitySummary
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ListBottomSheet
@@ -17,8 +18,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberBottomSheetState
@@ -82,9 +81,11 @@ internal fun EntityIdPicker(
       textStyle = typography.bodySmall,
       trailingIcon = {
         if (selectedId != null && isEnabled) {
-          IconButton(onClick = { onValueChange(JsonNull) }) {
-            Icon(AktualIcons.Delete, contentDescription = Strings.editRuleConditionDelete)
-          }
+          AktualIconButton(
+            imageVector = AktualIcons.Delete,
+            contentDescription = Strings.editRuleConditionDelete,
+            onClick = { onValueChange(JsonNull) },
+          )
         } else {
           ExposedDropdownMenuDefaults.TrailingIcon(expanded = showSheet)
         }

@@ -18,6 +18,7 @@ import aktual.core.ui.AmountField
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
@@ -47,7 +48,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -155,9 +155,10 @@ private fun CreateAccountScaffold(
           highlight = colors.errorText,
           onDismissRequest = { onAction(DismissSaveError) },
           buttons = {
-            TextButton(onClick = { onAction(DismissSaveError) }) {
-              Text(Strings.accountsCreateFailureDismiss)
-            }
+            DialogTextButton(
+              text = Strings.accountsCreateFailureDismiss,
+              onClick = { onAction(DismissSaveError) },
+            )
           },
           content = { Text(message) },
         )

@@ -16,6 +16,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.BasicTextButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipColors
@@ -46,10 +47,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
@@ -334,9 +336,12 @@ internal fun BannerRow(
           Strings.budgetingBannerCover to OpenSheet(SheetRequest.CoverOverbudgetedSheet(month))
       }
     if (action != null) {
-      TextButton(onClick = { onAction(action.second) }) {
-        Text(text = action.first, color = text, fontWeight = SemiBold)
-      }
+      BasicTextButton(
+        text = action.first,
+        style = LocalTextStyle.current.copy(fontWeight = SemiBold),
+        colors = { ButtonDefaults.textButtonColors(contentColor = text) },
+        onClick = { onAction(action.second) },
+      )
     }
   }
 }

@@ -16,6 +16,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardRow
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -42,7 +43,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -267,10 +267,12 @@ private fun ResetDialog(name: String, onDismiss: () -> Unit, onConfirm: () -> Un
     title = Strings.bankSyncProvidersResetTitle(name),
     onDismissRequest = onDismiss,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.bankSyncProvidersResetCancel) }
-      TextButton(onClick = onConfirm) {
-        Text(Strings.bankSyncProvidersResetConfirm, color = colors.errorText)
-      }
+      DialogTextButton(text = Strings.bankSyncProvidersResetCancel, onClick = onDismiss)
+      DialogTextButton(
+        kind = Destructive,
+        text = Strings.bankSyncProvidersResetConfirm,
+        onClick = onConfirm,
+      )
     },
   ) {
     Text(Strings.bankSyncProvidersResetMessage)

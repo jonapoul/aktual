@@ -4,6 +4,7 @@ import aktual.budget.model.CategoryId
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.CategoryGroupChoice
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.checkbox
@@ -18,7 +19,6 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.selection.triStateToggleable
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -44,12 +44,16 @@ internal fun CategorySheet(
   QuerySheet(title = Strings.reportsCustomEditorCategories, onDismiss = onDismiss) {
     val all = groups.flatMap { group -> group.categories.map { it.id } }
     Row(horizontalArrangement = spacedBy(8.dp)) {
-      TextButton(onClick = { onChange(all.toSet()) }) {
-        Text(Strings.reportsCustomEditorSelectAll)
-      }
-      TextButton(onClick = { onChange(emptySet()) }) {
-        Text(Strings.reportsCustomEditorSelectNone)
-      }
+      AktualButton(
+        kind = Bare,
+        text = Strings.reportsCustomEditorSelectAll,
+        onClick = { onChange(all.toSet()) },
+      )
+      AktualButton(
+        kind = Bare,
+        text = Strings.reportsCustomEditorSelectNone,
+        onClick = { onChange(emptySet()) },
+      )
     }
 
     Column {

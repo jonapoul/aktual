@@ -23,11 +23,13 @@ import aktual.core.nav.ReportNavigator
 import aktual.core.nav.SearchReportsNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
@@ -52,11 +54,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -178,12 +177,11 @@ internal fun ReportsDashboardScaffold(
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = {
           if (reorder.isEditing) {
-            IconButton(onClick = ::stopEditing) {
-              Icon(
-                imageVector = AktualIcons.Delete,
-                contentDescription = Strings.reportsDashboardReorderCancel,
-              )
-            }
+            AktualIconButton(
+              imageVector = AktualIcons.Delete,
+              contentDescription = Strings.reportsDashboardReorderCancel,
+              onClick = ::stopEditing,
+            )
           } else {
             NavDrawerIconButton()
           }
@@ -197,28 +195,25 @@ internal fun ReportsDashboardScaffold(
         },
         actions = {
           if (reorder.isEditing) {
-            IconButton(onClick = ::save) {
-              Icon(
-                imageVector = AktualIcons.Check,
-                contentDescription = Strings.reportsDashboardReorderDone,
-              )
-            }
+            AktualIconButton(
+              imageVector = AktualIcons.Check,
+              contentDescription = Strings.reportsDashboardReorderDone,
+              onClick = ::save,
+            )
             return@TopAppBar
           }
 
-          IconButton(onClick = { onAction(OpenSearch) }) {
-            Icon(
-              imageVector = AktualIcons.SearchAlternate,
-              contentDescription = Strings.reportsDashboardSearch,
-            )
-          }
+          AktualIconButton(
+            imageVector = AktualIcons.SearchAlternate,
+            contentDescription = Strings.reportsDashboardSearch,
+            onClick = { onAction(OpenSearch) },
+          )
           if (!items.isNullOrEmpty()) {
-            IconButton(onClick = { onAction(CreateNewReport) }) {
-              Icon(
-                imageVector = AktualIcons.Add,
-                contentDescription = Strings.reportsDashboardCreate,
-              )
-            }
+            AktualIconButton(
+              imageVector = AktualIcons.Add,
+              contentDescription = Strings.reportsDashboardCreate,
+              onClick = { onAction(CreateNewReport) },
+            )
           }
           DashboardMenu(
             page = selectedPage,
@@ -269,12 +264,12 @@ private fun SaveOrderDialog(onSave: () -> Unit, onDiscard: () -> Unit, onCancel:
     title = Strings.reportsDashboardReorderSaveTitle,
     onDismissRequest = onCancel,
     buttons = {
-      TextButton(onClick = onDiscard) {
-        Text(Strings.reportsDashboardReorderDiscard, color = colors.warningText)
-      }
-      TextButton(onClick = onSave) {
-        Text(Strings.reportsDashboardReorderSave, color = colors.noticeText)
-      }
+      DialogTextButton(
+        kind = Destructive,
+        text = Strings.reportsDashboardReorderDiscard,
+        onClick = onDiscard,
+      )
+      DialogTextButton(kind = Primary, text = Strings.reportsDashboardReorderSave, onClick = onSave)
     },
     content = { Text(Strings.reportsDashboardReorderSaveMessage) },
   )

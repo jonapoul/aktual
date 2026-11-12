@@ -9,6 +9,7 @@ import aktual.core.theme.DarkColors
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.formatted
 import androidx.compose.foundation.border
@@ -19,8 +20,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.getSelectedDate
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -102,8 +101,10 @@ internal fun DateTextField(
     DatePickerDialog(
       onDismissRequest = { showDialog = false },
       confirmButton = {
-        TextButton(
-          enabled = state.selectedDateMillis != null,
+        DialogTextButton(
+          kind = Primary,
+          text = Strings.editRuleDatePickerOk,
+          isEnabled = state.selectedDateMillis != null,
           onClick = {
             val date = state.getSelectedDate()?.toKotlinLocalDate()
             if (date != null) {
@@ -113,14 +114,10 @@ internal fun DateTextField(
             }
             showDialog = false
           },
-          content = { Text(Strings.editRuleDatePickerOk) },
         )
       },
       dismissButton = {
-        TextButton(
-          onClick = { showDialog = false },
-          content = { Text(Strings.editRuleDatePickerCancel) },
-        )
+        DialogTextButton(text = Strings.editRuleDatePickerCancel, onClick = { showDialog = false })
       },
       content = { DatePicker(state = state) },
     )

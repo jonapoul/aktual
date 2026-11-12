@@ -35,7 +35,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -72,9 +71,12 @@ internal fun ReportEditorTopBar(
     },
     actions = {
       if (hasChanges) {
-        TextButton(modifier = Modifier.testTag(Tags.RevertReport), onClick = { onAction(Revert) }) {
-          Text(Strings.reportsCustomEditorRevert)
-        }
+        AktualButton(
+          modifier = Modifier.testTag(Tags.RevertReport),
+          kind = Bare,
+          text = Strings.reportsCustomEditorRevert,
+          onClick = { onAction(Revert) },
+        )
       }
       if (canSave) {
         AktualButton(

@@ -9,6 +9,7 @@ import aktual.budget.reports.vm.ProjectionType
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.QueryEntity
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.checkbox
 import androidx.compose.foundation.layout.Arrangement.spacedBy
@@ -16,8 +17,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -215,12 +214,16 @@ internal fun AccountSheet(
 ) =
   QuerySheet(title = title, onDismiss = onDismiss) {
     Row(horizontalArrangement = spacedBy(8.dp)) {
-      TextButton(onClick = { onChange(accounts.map { AccountId(it.id) }.toSet()) }) {
-        Text(Strings.reportsCustomEditorSelectAll)
-      }
-      TextButton(onClick = { onChange(emptySet()) }) {
-        Text(Strings.reportsCustomEditorSelectNone)
-      }
+      AktualButton(
+        kind = Bare,
+        text = Strings.reportsCustomEditorSelectAll,
+        onClick = { onChange(accounts.map { AccountId(it.id) }.toSet()) },
+      )
+      AktualButton(
+        kind = Bare,
+        text = Strings.reportsCustomEditorSelectNone,
+        onClick = { onChange(emptySet()) },
+      )
     }
 
     Column {

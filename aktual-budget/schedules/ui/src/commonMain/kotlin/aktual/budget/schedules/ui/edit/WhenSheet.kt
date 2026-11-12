@@ -18,6 +18,7 @@ import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.formatted
 import aktual.core.ui.switch
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +29,6 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.getSelectedDate
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -291,19 +291,20 @@ private fun DateField(
     DatePickerDialog(
       onDismissRequest = { showDialog = false },
       confirmButton = {
-        TextButton(
-          enabled = state.selectedDateMillis != null,
+        DialogTextButton(
+          kind = Primary,
+          text = Strings.editScheduleDatePickerOk,
+          isEnabled = state.selectedDateMillis != null,
           onClick = {
             state.getSelectedDate()?.toKotlinLocalDate()?.let(onDateChange)
             showDialog = false
           },
-          content = { Text(Strings.editScheduleDatePickerOk) },
         )
       },
       dismissButton = {
-        TextButton(
+        DialogTextButton(
+          text = Strings.editScheduleDatePickerCancel,
           onClick = { showDialog = false },
-          content = { Text(Strings.editScheduleDatePickerCancel) },
         )
       },
       content = { DatePicker(state = state) },

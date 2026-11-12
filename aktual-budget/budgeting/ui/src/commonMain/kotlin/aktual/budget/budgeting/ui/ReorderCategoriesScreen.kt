@@ -26,6 +26,7 @@ import aktual.core.ui.BasicTextButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
@@ -67,7 +68,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -520,10 +520,12 @@ private fun DiscardDialog(onCancel: () -> Unit, onDiscard: () -> Unit) {
     highlight = colors.warningText,
     onDismissRequest = onCancel,
     buttons = {
-      TextButton(onClick = onCancel) { Text(Strings.budgetingReorderKeepEditing) }
-      TextButton(onClick = onDiscard) {
-        Text(Strings.budgetingReorderDiscard, color = colors.warningText)
-      }
+      DialogTextButton(text = Strings.budgetingReorderKeepEditing, onClick = onCancel)
+      DialogTextButton(
+        kind = Destructive,
+        text = Strings.budgetingReorderDiscard,
+        onClick = onDiscard,
+      )
     },
     content = { Text(Strings.budgetingReorderDiscardMessage) },
   )

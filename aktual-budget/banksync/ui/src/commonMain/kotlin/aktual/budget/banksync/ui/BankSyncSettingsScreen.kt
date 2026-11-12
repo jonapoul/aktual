@@ -30,6 +30,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -69,7 +70,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -337,17 +337,18 @@ private fun UnlinkButton(
       title = Strings.bankSyncSettingsUnlinkTitle,
       onDismissRequest = { showConfirm = false },
       buttons = {
-        TextButton(onClick = { showConfirm = false }) {
-          Text(Strings.bankSyncSettingsUnlinkCancel)
-        }
-        TextButton(
+        DialogTextButton(
+          text = Strings.bankSyncSettingsUnlinkCancel,
+          onClick = { showConfirm = false },
+        )
+        DialogTextButton(
+          kind = Destructive,
+          text = Strings.bankSyncSettingsUnlinkConfirm,
           onClick = {
             showConfirm = false
             onConfirm()
           },
-        ) {
-          Text(Strings.bankSyncSettingsUnlinkConfirm, color = colors.errorText)
-        }
+        )
       },
     ) {
       Column(verticalArrangement = Arrangement.spacedBy(BankSyncDS.headerSpacing)) {

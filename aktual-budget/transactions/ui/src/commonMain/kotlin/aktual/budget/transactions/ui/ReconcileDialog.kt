@@ -13,8 +13,8 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AmountField
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.disabled
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import aktual.core.ui.keyboardFocusRequester
@@ -25,7 +25,6 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
@@ -70,14 +69,13 @@ private fun ReconcileDialogContent(
   AktualAlertDialogContent(
     title = Strings.transactionsReconcile,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.transactionsReconcileCancel) }
-      TextButton(enabled = isValid, onClick = confirm) {
-        Text(
-          text = Strings.transactionsReconcileConfirm,
-          fontWeight = if (isValid) Bold else null,
-          color = if (isValid) colors.numberPositive else colors.buttonNormalDisabledText.disabled,
-        )
-      }
+      DialogTextButton(text = Strings.transactionsReconcileCancel, onClick = onDismiss)
+      DialogTextButton(
+        kind = Primary,
+        text = Strings.transactionsReconcileConfirm,
+        isEnabled = isValid,
+        onClick = confirm,
+      )
     },
     content = {
       Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {

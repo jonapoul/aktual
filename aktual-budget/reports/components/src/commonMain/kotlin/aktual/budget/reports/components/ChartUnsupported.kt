@@ -3,10 +3,12 @@ package aktual.budget.reports.components
 import aktual.budget.reports.vm.UnsupportedData
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.plainTextClipEntry
 import aktual.core.ui.verticalScrollWithBar
@@ -17,7 +19,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,9 +62,11 @@ internal fun UnsupportedChart(data: UnsupportedData, modifier: Modifier = Modifi
     val stackTrace = data.stackTrace
     if (stackTrace != null) {
       var showError by remember { mutableStateOf(false) }
-      TextButton(modifier = Modifier.align(CenterHorizontally), onClick = { showError = true }) {
-        Text(Strings.reportsUnsupportedShowError)
-      }
+      AktualButton(
+        modifier = Modifier.align(CenterHorizontally),
+        text = Strings.reportsUnsupportedShowError,
+        onClick = { showError = true },
+      )
 
       if (showError) {
         StackTraceDialog(stackTrace = stackTrace, onDismiss = { showError = false })
@@ -79,12 +82,15 @@ private fun StackTraceDialog(stackTrace: String, onDismiss: () -> Unit) {
     title = Strings.reportsUnsupportedErrorTitle,
     onDismissRequest = onDismiss,
     buttons = {
-      TextButton(
+      DialogTextButton(
+        text = Strings.reportsUnsupportedErrorCopy,
         onClick = { scope.launch { clipboard.setClipEntry(plainTextClipEntry(stackTrace)) } },
-      ) {
-        Text(Strings.reportsUnsupportedErrorCopy)
-      }
-      TextButton(onClick = onDismiss) { Text(Strings.reportsUnsupportedErrorClose) }
+      )
+      DialogTextButton(
+        kind = Primary,
+        text = Strings.reportsUnsupportedErrorClose,
+        onClick = onDismiss,
+      )
     },
   ) {
     SelectionContainer(modifier = Modifier.heightIn(max = 400.dp).verticalScrollWithBar()) {

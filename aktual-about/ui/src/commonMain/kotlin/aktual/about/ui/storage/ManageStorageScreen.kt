@@ -18,12 +18,15 @@ import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.HazedTopBarSpacing
+import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
@@ -31,6 +34,7 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.bareIconButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.isCompactWidth
@@ -53,11 +57,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -425,14 +426,14 @@ private fun BudgetRow(budget: BudgetStorageItem, color: Color, onDelete: () -> U
       style = typography.labelMedium,
       color = colors.pageTextSubdued,
     )
-    IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-      Icon(
-        imageVector = AktualIcons.Trash,
-        contentDescription = null,
-        tint = colors.errorText,
-        modifier = Modifier.size(18.dp),
-      )
-    }
+    BasicIconButton(
+      modifier = Modifier.size(32.dp),
+      imageVector = AktualIcons.Trash,
+      contentDescription = null,
+      size = 18.dp,
+      colors = DeleteColors,
+      onClick = onDelete,
+    )
   }
 }
 
@@ -465,10 +466,12 @@ private fun StorageDialogs(dialog: StorageDialog, onAction: OnAction<ManageStora
         title = Strings.storageClearAllFilesTitle,
         onDismissRequest = { onAction(DismissDialog) },
         buttons = {
-          TextButton(onClick = { onAction(DismissDialog) }) { Text(Strings.storageCancel) }
-          TextButton(onClick = { onAction(ConfirmClearAllFiles) }) {
-            Text(Strings.storageConfirmDelete, color = colors.errorText)
-          }
+          DialogTextButton(text = Strings.storageCancel, onClick = { onAction(DismissDialog) })
+          DialogTextButton(
+            kind = Destructive,
+            text = Strings.storageConfirmDelete,
+            onClick = { onAction(ConfirmClearAllFiles) },
+          )
         },
       ) {
         Text(Strings.storageClearAllFilesMessage)
@@ -480,10 +483,12 @@ private fun StorageDialogs(dialog: StorageDialog, onAction: OnAction<ManageStora
         title = Strings.storageClearBudgetTitle(dialog.name),
         onDismissRequest = { onAction(DismissDialog) },
         buttons = {
-          TextButton(onClick = { onAction(DismissDialog) }) { Text(Strings.storageCancel) }
-          TextButton(onClick = { onAction(ConfirmClearBudget(dialog.id)) }) {
-            Text(Strings.storageConfirmDelete, color = colors.errorText)
-          }
+          DialogTextButton(text = Strings.storageCancel, onClick = { onAction(DismissDialog) })
+          DialogTextButton(
+            kind = Destructive,
+            text = Strings.storageConfirmDelete,
+            onClick = { onAction(ConfirmClearBudget(dialog.id)) },
+          )
         },
       ) {
         Text(Strings.storageClearBudgetMessage)
@@ -495,10 +500,12 @@ private fun StorageDialogs(dialog: StorageDialog, onAction: OnAction<ManageStora
         title = Strings.storageClearCacheTitle,
         onDismissRequest = { onAction(DismissDialog) },
         buttons = {
-          TextButton(onClick = { onAction(DismissDialog) }) { Text(Strings.storageCancel) }
-          TextButton(onClick = { onAction(ConfirmClearCache) }) {
-            Text(Strings.storageConfirmClear, color = colors.errorText)
-          }
+          DialogTextButton(text = Strings.storageCancel, onClick = { onAction(DismissDialog) })
+          DialogTextButton(
+            kind = Destructive,
+            text = Strings.storageConfirmClear,
+            onClick = { onAction(ConfirmClearCache) },
+          )
         },
       ) {
         Text(Strings.storageClearCacheMessage)
@@ -510,10 +517,12 @@ private fun StorageDialogs(dialog: StorageDialog, onAction: OnAction<ManageStora
         title = Strings.storageClearPrefsTitle,
         onDismissRequest = { onAction(DismissDialog) },
         buttons = {
-          TextButton(onClick = { onAction(DismissDialog) }) { Text(Strings.storageCancel) }
-          TextButton(onClick = { onAction(ConfirmClearPreferences) }) {
-            Text(Strings.storageConfirmClear, color = colors.errorText)
-          }
+          DialogTextButton(text = Strings.storageCancel, onClick = { onAction(DismissDialog) })
+          DialogTextButton(
+            kind = Destructive,
+            text = Strings.storageConfirmClear,
+            onClick = { onAction(ConfirmClearPreferences) },
+          )
         },
       ) {
         Text(Strings.storageClearPrefsMessage)
@@ -564,4 +573,8 @@ private fun PreviewManageStorage(
   PreviewWithColorParams(params) {
     ManageStorageScaffold(state = this, onAction = {}, modifier = Modifier.fillMaxSize())
   }
+}
+
+private val DeleteColors = IconButtonColorProvider { colors, isPressed ->
+  colors.bareIconButton(isPressed).copy(contentColor = colors.errorText)
 }

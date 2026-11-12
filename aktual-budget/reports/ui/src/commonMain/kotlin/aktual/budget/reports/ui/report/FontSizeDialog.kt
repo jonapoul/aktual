@@ -15,6 +15,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.slider
 import androidx.compose.foundation.background
@@ -31,7 +32,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -100,14 +100,13 @@ private fun FontSizeDialogContent(
   AktualAlertDialogContent(
     title = Strings.reportsFormulaEditorFontSize,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.reportsFormulaEditorCancel) }
-      TextButton(modifier = Modifier.testTag(Tags.ApplyFontSize), onClick = onApply) {
-        Text(
-          text = Strings.reportsFormulaEditorApply,
-          fontWeight = Bold,
-          color = colors.numberPositive,
-        )
-      }
+      DialogTextButton(text = Strings.reportsFormulaEditorCancel, onClick = onDismiss)
+      DialogTextButton(
+        modifier = Modifier.testTag(Tags.ApplyFontSize),
+        kind = Primary,
+        text = Strings.reportsFormulaEditorApply,
+        onClick = onApply,
+      )
     },
   ) {
     AktualSlidingToggleButton(

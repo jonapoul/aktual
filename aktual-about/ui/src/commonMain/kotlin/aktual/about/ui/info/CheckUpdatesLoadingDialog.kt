@@ -7,13 +7,13 @@ import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -57,9 +57,7 @@ internal fun CheckUpdatesLoadingDialogContent(
       }
     },
     buttons = {
-      TextButton(onClick = onCancel) {
-        Text(text = Strings.infoCheckingUpdatesCancel, color = colors.pageTextPositive)
-      }
+      DialogTextButton(text = Strings.infoCheckingUpdatesCancel, onClick = onCancel)
     },
   )
 }

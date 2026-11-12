@@ -8,6 +8,7 @@ import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import alakazam.compose.HorizontalSpacer
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -44,7 +44,7 @@ internal fun DeleteBudgetDialog(
     title = Strings.budgetDeleteDialogTitle(budget.name),
     onDismissRequest = { onAction(Dismiss) },
     buttons = {
-      TextButton(onClick = { onAction(Dismiss) }) { Text(text = Strings.budgetDeleteDialogDismiss) }
+      DialogTextButton(text = Strings.budgetDeleteDialogDismiss, onClick = { onAction(Dismiss) })
     },
     content = {
       Content(
