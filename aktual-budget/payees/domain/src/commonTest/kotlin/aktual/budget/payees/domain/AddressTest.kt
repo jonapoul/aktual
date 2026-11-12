@@ -6,7 +6,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentMapOf
-import nominatim.api.model.Address
+import nominatim.api.model.Address as PlaceAddress
 import nominatim.api.model.Place
 
 class AddressTest {
@@ -16,7 +16,7 @@ class AddressTest {
       Place(
         name = "Tesco Express",
         address =
-          Address(
+          PlaceAddress(
             houseNumber = "22",
             road = "Strand",
             suburb = "St. James's",
@@ -33,7 +33,7 @@ class AddressTest {
       Place(
         name = "",
         address =
-          Address(
+          PlaceAddress(
             houseNumber = "10",
             road = "Oldham Street",
             suburb = "Northern Quarter",
@@ -46,13 +46,13 @@ class AddressTest {
 
   @Test
   fun `Road without a number`() {
-    val place = Place(address = Address(road = "A1", village = "Stilton"))
+    val place = Place(address = PlaceAddress(road = "A1", village = "Stilton"))
     assertThat(place.toAddress()).isEqualTo(Address("A1", "Stilton"))
   }
 
   @Test
   fun `Locality only`() {
-    val place = Place(address = Address(village = "Stilton"))
+    val place = Place(address = PlaceAddress(village = "Stilton"))
     assertThat(place.toAddress()).isEqualTo(Address("Stilton", null))
   }
 
