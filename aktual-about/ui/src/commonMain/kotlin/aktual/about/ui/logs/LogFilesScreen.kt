@@ -16,6 +16,7 @@ import aktual.core.logging.LogFileFormat
 import aktual.core.model.bytes
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
@@ -24,7 +25,6 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -37,7 +37,6 @@ import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.card
 import aktual.core.ui.contrastingTextColor
-import aktual.core.ui.errorButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -376,14 +375,13 @@ private fun LogFilesBottomBar(onDelete: () -> Unit, onExport: () -> Unit) =
       modifier = Modifier.fillMaxWidth().padding(Dimens.Large),
       horizontalArrangement = spacedBy(Dimens.Large),
     ) {
-      NormalTextButton(
+      AktualButton(
         modifier = Modifier.weight(1f),
         text = Strings.logsDeleteAll,
+        kind = Destructive,
         onClick = onDelete,
-        colors = { pressed -> colors.errorButton(pressed) },
-        border = colors.errorBorder,
       )
-      NormalTextButton(
+      AktualButton(
         modifier = Modifier.weight(2f),
         text = Strings.logsExport,
         onClick = onExport,

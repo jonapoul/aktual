@@ -20,9 +20,9 @@ import aktual.core.theme.MidnightColors
 import aktual.core.theme.isLight
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -183,7 +183,7 @@ private fun InspectThemeScaffold(
         title = { Text(title) },
         actions = {
           if (state is Loaded) {
-            BareIconButton(
+            AktualIconButton(
               imageVector = AktualIcons.SearchAlternate,
               contentDescription = Strings.settingsThemeInspectSearch,
               onClick = { onAction(OpenSearch) },
@@ -258,7 +258,7 @@ private fun InspectDialogs(
 private fun MoreMenu(source: ThemeSource, onAction: OnAction<InspectThemeAction>) {
   var showMenu by remember { mutableStateOf(false) }
 
-  BareIconButton(
+  AktualIconButton(
     imageVector = AktualIcons.DotsHorizontalTriple,
     contentDescription = Strings.settingsThemeInspectMenu,
     onClick = { showMenu = true },

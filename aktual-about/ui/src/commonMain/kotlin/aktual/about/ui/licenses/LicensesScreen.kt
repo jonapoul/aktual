@@ -12,8 +12,8 @@ import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SearchLicensesNavigator
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -108,12 +108,12 @@ private fun LicensesScaffold(
         title = { Text(text = Strings.licensesToolbarTitle, maxLines = 1, overflow = Ellipsis) },
         actions = {
           if (state is Loaded) {
-            BareIconButton(
+            AktualIconButton(
               imageVector = AktualIcons.SearchAlternate,
               contentDescription = Strings.licensesToolbarSearch,
               onClick = { onAction(OpenSearch) },
             )
-            BareIconButton(
+            AktualIconButton(
               imageVector = MaterialIcons.Sort,
               contentDescription = Strings.licensesToolbarSort,
               onClick = { onAction(ShowSortSheet) },

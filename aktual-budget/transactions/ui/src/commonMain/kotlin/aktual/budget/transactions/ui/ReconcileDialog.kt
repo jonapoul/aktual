@@ -7,12 +7,12 @@ import aktual.budget.transactions.vm.ReconcileStart
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AmountField
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.disabled
 import aktual.core.ui.formatted
@@ -97,7 +97,7 @@ private fun ReconcileDialogContent(
             style = typography.bodySmall,
             color = colors.pageTextLight,
           )
-          NormalTextButton(
+          AktualButton(
             modifier = Modifier.fillMaxWidth(),
             text = Strings.transactionsReconcileUseLastSynced,
             onClick = { state.setTextAndPlaceCursorAtEnd(lastSynced.toSignedInputText()) },

@@ -14,10 +14,10 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Numbers
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParams
@@ -144,7 +144,7 @@ private fun NotesSheetContent(
 
 @Composable
 private fun InsertHashButton(text: TextFieldState, focusRequester: FocusRequester) =
-  BareIconButton(
+  AktualIconButton(
     imageVector = MaterialIcons.Numbers,
     contentDescription = Strings.transactionNotesAddTag,
     onClick = {

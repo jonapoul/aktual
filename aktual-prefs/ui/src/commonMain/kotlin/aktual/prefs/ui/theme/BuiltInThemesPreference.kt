@@ -8,11 +8,11 @@ import aktual.core.theme.Colors
 import aktual.core.theme.DarkColors
 import aktual.core.theme.LightColors
 import aktual.core.theme.MidnightColors
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
-import aktual.core.ui.NormalIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.disabledIf
@@ -122,7 +122,8 @@ internal fun ThemeItem(
       )
     }
 
-    NormalIconButton(
+    AktualIconButton(
+      kind = Normal,
       modifier = Modifier.clip(CardShape),
       imageVector = AktualIcons.CheveronRight,
       isEnabled = enabled,

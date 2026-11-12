@@ -3,13 +3,13 @@ package aktual.account.ui.login
 import aktual.account.vm.OpenIdFirstLogin
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButtonWithLoading
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -60,7 +60,8 @@ internal fun OpenIdLogin(
 
     VerticalSpacer(20.dp)
 
-    PrimaryTextButtonWithLoading(
+    AktualButton(
+      kind = Primary,
       modifier = Modifier.testTag(Tags.OpenIdLoginButton).padding(5.dp).fillMaxWidth(),
       text = Strings.loginSignIn,
       isLoading = isLoading,

@@ -10,9 +10,8 @@ import aktual.core.icons.Reports
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
-import aktual.core.ui.BasicIconButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.OnAction
-import aktual.core.ui.normalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,22 +21,22 @@ import androidx.compose.ui.Modifier
 
 @Composable
 internal fun SettingsButton(onAction: OnAction<ListBudgetsAction>, modifier: Modifier = Modifier) =
-  BasicIconButton(
+  AktualIconButton(
+    kind = Normal,
     modifier = modifier,
     onClick = { onAction(OpenSettings) },
     imageVector = AktualIcons.Cog,
     contentDescription = Strings.listBudgetsSettings,
-    colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
   )
 
 @Composable
 internal fun MoreButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-  BasicIconButton(
+  AktualIconButton(
+    kind = Normal,
     modifier = modifier,
     onClick = onClick,
     imageVector = AktualIcons.DotsHorizontalTriple,
     contentDescription = Strings.listBudgetsMenu,
-    colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
   )
 
 @Composable

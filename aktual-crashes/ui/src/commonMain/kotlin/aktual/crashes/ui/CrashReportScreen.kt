@@ -12,6 +12,7 @@ import aktual.core.logging.CrashReport
 import aktual.core.model.CrashFile
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
@@ -20,11 +21,9 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.horizontalScrollWithBar
@@ -245,12 +244,13 @@ private fun CrashReportBottomBar(onReport: () -> Unit, onExport: () -> Unit) =
         Modifier.fillMaxWidth().padding(horizontal = Dimens.Large, vertical = Dimens.VeryLarge),
       horizontalArrangement = spacedBy(Dimens.Large),
     ) {
-      NormalTextButton(
+      AktualButton(
         modifier = Modifier.weight(1f),
         text = Strings.crashesReport,
         onClick = onReport,
       )
-      PrimaryTextButton(
+      AktualButton(
+        kind = Primary,
         modifier = Modifier.weight(1f),
         text = Strings.crashesExport,
         onClick = onExport,

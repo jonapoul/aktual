@@ -6,9 +6,9 @@ import aktual.core.icons.Calendar3
 import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.theme.DarkColors
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.formatted
 import androidx.compose.foundation.border
@@ -81,8 +81,8 @@ internal fun DateTextField(
       trailingIcon =
         if (value != JsonNull) {
           {
-            BareIconButton(
-              enabled = isEnabled,
+            AktualIconButton(
+              isEnabled = isEnabled,
               imageVector = AktualIcons.Delete,
               contentDescription = Strings.editRuleDateClear,
               onClick = { onValueChange(JsonNull) },

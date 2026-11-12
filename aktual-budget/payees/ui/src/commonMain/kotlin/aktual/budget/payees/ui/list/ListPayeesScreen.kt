@@ -22,8 +22,8 @@ import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -151,7 +151,7 @@ private fun ListPayeesScaffold(
         title = { Text(text = Strings.payeesTitle) },
         actions = {
           if (state is Success) {
-            BareIconButton(
+            AktualIconButton(
               imageVector = AktualIcons.SearchAlternate,
               contentDescription = Strings.payeesSearch,
               onClick = { onAction(OpenSearch) },
@@ -216,7 +216,7 @@ private fun ListPayeesMenu(onAction: OnAction<ListPayeesAction>, modifier: Modif
   var expanded by remember { mutableStateOf(false) }
 
   Box(modifier = modifier) {
-    BareIconButton(
+    AktualIconButton(
       imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.payeesMenu,
       onClick = { expanded = true },

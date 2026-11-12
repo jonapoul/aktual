@@ -2,13 +2,13 @@ package aktual.account.ui.login
 
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.OnAction
 import aktual.core.ui.PasswordTransformation
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.keyboardFocusRequester
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Column
@@ -45,7 +45,8 @@ internal fun PasswordLogin(
 
     VerticalSpacer(20.dp)
 
-    PrimaryTextButtonWithLoading(
+    AktualButton(
+      kind = Primary,
       modifier = Modifier.testTag(Tags.PasswordLoginButton).padding(5.dp).fillMaxWidth(),
       text = Strings.loginSignIn,
       isLoading = isLoading,

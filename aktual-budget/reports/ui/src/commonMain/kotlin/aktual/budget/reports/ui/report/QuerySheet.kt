@@ -2,11 +2,11 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.reports.ui.Tags
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BasicTextButton
 import aktual.core.ui.HostedSheet
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.buttonTextStyle
 import aktual.core.ui.errorButton
 import androidx.compose.foundation.BorderStroke
@@ -78,7 +78,8 @@ internal fun QuerySheetPage(
           onClick = { close(onDelete) },
         )
       }
-      PrimaryTextButton(
+      AktualButton(
+        kind = Primary,
         modifier = Modifier.weight(1f).testTag(Tags.QuerySheetDone),
         text = Strings.reportsFormulaEditorDone,
         onClick = { close {} },

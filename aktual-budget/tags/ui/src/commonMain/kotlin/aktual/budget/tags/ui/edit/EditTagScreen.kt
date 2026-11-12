@@ -11,11 +11,11 @@ import aktual.core.icons.material.Save
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
@@ -423,11 +423,11 @@ private fun SaveButton(
   enabled: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  BareIconButton(
+  AktualIconButton(
     modifier = modifier,
     imageVector = MaterialIcons.Save,
     contentDescription = Strings.tagsCreateSave,
-    enabled = enabled,
+    isEnabled = enabled,
     onClick = { onAction(SaveTag) },
   )
 }

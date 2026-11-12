@@ -38,13 +38,12 @@ import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
+import aktual.core.ui.BasicIconButton
 import aktual.core.ui.ChipSize
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.NewTransactionsBadge
-import aktual.core.ui.NormalIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
@@ -428,7 +427,7 @@ private fun drawerActions(
 private fun DrawerActions(actions: ImmutableList<DrawerAction>, modifier: Modifier = Modifier) {
   Row(modifier = modifier, horizontalArrangement = spacedBy(8.dp)) {
     actions.fastForEach { action ->
-      NormalIconButton(
+      BasicIconButton(
         modifier = Modifier.weight(1f),
         imageVector = action.icon,
         contentDescription = action.label,
@@ -486,7 +485,7 @@ private fun DrawerHeader(
     }
 
     Box {
-      BareIconButton(
+      BasicIconButton(
         imageVector = AktualIcons.DotsHorizontalTriple,
         contentDescription = Strings.budgetNavMenuMore,
         colors = HeaderButtonColors,

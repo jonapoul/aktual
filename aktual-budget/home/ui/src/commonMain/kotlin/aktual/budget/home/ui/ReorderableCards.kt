@@ -5,9 +5,9 @@ import aktual.core.icons.material.ArrowDownward
 import aktual.core.icons.material.ArrowUpward
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.OnAction
 import aktual.core.ui.wiggle
@@ -319,17 +319,17 @@ private fun ReorderBar(
       overflow = Ellipsis,
     )
 
-    BareIconButton(
+    AktualIconButton(
       imageVector = MaterialIcons.ArrowUpward,
       contentDescription = Strings.homeReorderUp(label),
-      enabled = previous != null,
+      isEnabled = previous != null,
       onClick = { if (previous != null) onAction(SwapCards(card, previous)) },
     )
 
-    BareIconButton(
+    AktualIconButton(
       imageVector = MaterialIcons.ArrowDownward,
       contentDescription = Strings.homeReorderDown(label),
-      enabled = next != null,
+      isEnabled = next != null,
       onClick = { if (next != null) onAction(SwapCards(card, next)) },
     )
   }

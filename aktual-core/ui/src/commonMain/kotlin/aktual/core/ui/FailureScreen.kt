@@ -78,7 +78,8 @@ fun FailureCard(
     if (action != null) {
       VerticalSpacer(30.dp)
 
-      PrimaryTextButton(
+      AktualButton(
+        kind = Primary,
         icon = action.icon,
         text = action.text(),
         isEnabled = action.enabled,

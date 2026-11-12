@@ -92,7 +92,7 @@ private fun OperatorKeys(onKey: (String) -> Unit, modifier: Modifier = Modifier)
     horizontalArrangement = Arrangement.spacedBy(AmountFieldDS.keySpacing),
   ) {
     operatorKeys().fastForEach { (symbol, description) ->
-      NormalTextButton(
+      AktualButton(
         modifier = Modifier.weight(1f).semantics { contentDescription = description },
         text = symbol,
         fontSize = AmountFieldDS.keyFontSize,
@@ -182,7 +182,8 @@ fun AmountKeypad(
       OperatorKey(operators[DIGIT_ROWS.size], state)
     }
 
-    PrimaryTextButton(
+    AktualButton(
+      kind = Primary,
       modifier = Modifier.fillMaxWidth().height(AmountFieldDS.keyHeight),
       text = Strings.inputDone,
       isEnabled = canFinish,
@@ -265,7 +266,7 @@ private inline fun KeypadRow(content: @Composable RowScope.() -> Unit) =
 @Composable
 private fun RowScope.KeypadKey(text: String, onClick: () -> Unit, description: String? = null) {
   val haptics = LocalHapticFeedback.current
-  NormalTextButton(
+  AktualButton(
     modifier =
       Modifier.weight(1f).height(AmountFieldDS.keyHeight).semantics {
         if (description != null) contentDescription = description

@@ -24,6 +24,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -35,7 +36,6 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.NormalIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -188,7 +188,8 @@ private fun EditRuleActions(
   ) {
     var showMenu by remember { mutableStateOf(false) }
 
-    NormalIconButton(
+    AktualIconButton(
+      kind = Normal,
       onClick = { onAction(Save) },
       isEnabled = state is Success && state.canSave,
       imageVector =
@@ -203,7 +204,8 @@ private fun EditRuleActions(
         },
     )
 
-    NormalIconButton(
+    AktualIconButton(
+      kind = Normal,
       onClick = { showMenu = !showMenu },
       isEnabled = state is Success,
       imageVector = AktualIcons.DotsHorizontalTriple,

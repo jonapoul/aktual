@@ -12,17 +12,19 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.BasicTextButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.buttonTextStyle
 import aktual.core.ui.formattedText
 import aktual.core.ui.normalButton
 import aktual.core.ui.verticalScrollWithBar
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -191,7 +193,9 @@ private fun ContributorsTable(
     )
 
     if (contributors.size > TOP_COUNT) {
-      NormalTextButton(
+      BasicTextButton(
+        border = BorderStroke(Hairline, colors.buttonNormalBorder),
+        style = typography.buttonTextStyle,
         modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
         text =
           if (showAll) {

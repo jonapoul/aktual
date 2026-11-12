@@ -10,9 +10,9 @@ import aktual.core.icons.ArrowsSynchronize
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
@@ -121,11 +121,11 @@ internal fun BankSyncAccountItem(
     when {
       account.isSyncing -> SyncingIndicator()
       sync != null -> {
-        BareIconButton(
+        AktualIconButton(
           imageVector = AktualIcons.ArrowsSynchronize,
           contentDescription =
             Strings.bankSyncSyncAccount(account.name ?: Strings.bankSyncUnnamedAccount),
-          enabled = sync.enabled,
+          isEnabled = sync.enabled,
           onClick = sync.onClick,
         )
       }
@@ -137,11 +137,11 @@ internal fun BankSyncAccountItem(
 internal fun SyncingIndicator(modifier: Modifier = Modifier) {
   val transition = rememberInfiniteTransition(label = "sync")
   val rotation by transition.animateFloat(0f, -360f, SyncingAnimationSpec, "sync-rotation")
-  BareIconButton(
+  AktualIconButton(
     modifier = modifier.rotate(rotation),
     imageVector = AktualIcons.ArrowsSynchronize,
     contentDescription = Strings.bankSyncSyncing,
-    enabled = false,
+    isEnabled = false,
     onClick = {},
   )
 }

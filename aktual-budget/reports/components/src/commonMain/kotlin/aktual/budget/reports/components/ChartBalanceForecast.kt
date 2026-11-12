@@ -6,18 +6,20 @@ import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.BasicTextButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.buttonTextStyle
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.isInPreview
 import aktual.core.ui.normalButton
 import aktual.core.ui.redacted
 import alakazam.compose.VerticalSpacer
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -102,7 +104,9 @@ internal fun BalanceForecastChart(
     val contributors = data.contributors
     if (!compact && contributors != null) {
       var showContributors by rememberSaveable { mutableStateOf(false) }
-      NormalTextButton(
+      BasicTextButton(
+        border = BorderStroke(Hairline, colors.buttonNormalBorder),
+        style = typography.buttonTextStyle,
         modifier = Modifier.fillMaxWidth(),
         text = Strings.reportsBalanceForecastShowContributors,
         onClick = { showContributors = true },

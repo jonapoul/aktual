@@ -11,10 +11,11 @@ import aktual.core.icons.Pencil1
 import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
-import aktual.core.ui.BareIconButton
+import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
@@ -151,13 +152,13 @@ internal fun QueryScaffold(
         navigationIcon = { NavBackIconButton(onClick = onBack) },
         title = { Text(text = name, fontFamily = Monospace) },
         actions = {
-          BareIconButton(
+          AktualIconButton(
             modifier = Modifier.testTag(Tags.RenameQuery),
             imageVector = AktualIcons.Pencil1,
             contentDescription = Strings.reportsFormulaQueryRename,
             onClick = onRename,
           )
-          BareIconButton(
+          BasicIconButton(
             modifier = Modifier.padding(end = 4.dp).testTag(Tags.DeleteQuery),
             imageVector = AktualIcons.Trash,
             contentDescription = Strings.reportsFormulaQueryDelete,

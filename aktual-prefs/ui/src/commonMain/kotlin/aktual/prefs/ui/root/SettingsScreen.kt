@@ -15,7 +15,7 @@ import aktual.core.nav.SecuritySettingsNavigator
 import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavigator
 import aktual.core.theme.Colors
-import aktual.core.ui.BareIconButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
@@ -55,7 +55,7 @@ private fun SettingsScaffold(onAction: OnAction<SettingsAction>) {
     description = null,
     onBack = { onAction(NavBack) },
     actions = {
-      BareIconButton(
+      AktualIconButton(
         imageVector = AktualIcons.SearchAlternate,
         contentDescription = Strings.settingsSearch,
         onClick = { onAction(OpenSearch) },

@@ -12,11 +12,12 @@ import aktual.core.icons.ViewShow
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.TransactionsNavigator
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
@@ -27,7 +28,6 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.padding
@@ -196,7 +196,8 @@ internal fun BudgetCategoryScaffold(
 
             HistoryCard(state = state, onSelect = onSelect)
 
-            PrimaryTextButton(
+            AktualButton(
+              kind = Primary,
               modifier = Modifier.fillMaxWidth(),
               text = Strings.budgetingCategoryTransactions,
               onClick = { onViewTransactions(state.selected) },
@@ -213,7 +214,7 @@ internal fun BudgetCategoryScaffold(
 private fun CategoryMenu(isHidden: Boolean, onHide: (hide: Boolean) -> Unit) {
   var expanded by remember { mutableStateOf(false) }
   Box {
-    BareIconButton(
+    AktualIconButton(
       modifier = Modifier.testTag(BudgetTags.CategoryMenu),
       imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.budgetingCategoryMenu,

@@ -4,12 +4,12 @@ import aktual.budget.budgeting.vm.BudgetState
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -59,11 +59,11 @@ internal fun MonthSelector(
   modifier: Modifier = Modifier,
 ) {
   Row(modifier = modifier, verticalAlignment = CenterVertically) {
-    BareIconButton(
+    AktualIconButton(
       modifier = Modifier.rotate(PREVIOUS_ROTATION),
       imageVector = AktualIcons.CheveronDown,
       contentDescription = Strings.budgetingPreviousMonth,
-      enabled = state.canGoBack,
+      isEnabled = state.canGoBack,
       onClick = { onAction(PreviousMonth) },
     )
 
@@ -94,11 +94,11 @@ internal fun MonthSelector(
       )
     }
 
-    BareIconButton(
+    AktualIconButton(
       modifier = Modifier.rotate(NEXT_ROTATION),
       imageVector = AktualIcons.CheveronDown,
       contentDescription = Strings.budgetingNextMonth,
-      enabled = state.canGoForward,
+      isEnabled = state.canGoForward,
       onClick = { onAction(NextMonth) },
     )
   }
@@ -167,11 +167,11 @@ private fun MonthPickerContent(
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = CenterVertically) {
-      BareIconButton(
+      AktualIconButton(
         modifier = Modifier.rotate(PREVIOUS_ROTATION),
         imageVector = AktualIcons.CheveronDown,
         contentDescription = Strings.budgetingPreviousYear,
-        enabled = year > state.earliest.year,
+        isEnabled = year > state.earliest.year,
         onClick = { year-- },
       )
       Text(
@@ -180,11 +180,11 @@ private fun MonthPickerContent(
         style = typography.headlineSmall,
         textAlign = Center,
       )
-      BareIconButton(
+      AktualIconButton(
         modifier = Modifier.rotate(NEXT_ROTATION),
         imageVector = AktualIcons.CheveronDown,
         contentDescription = Strings.budgetingNextYear,
-        enabled = year < state.latest.year,
+        isEnabled = year < state.latest.year,
         onClick = { year++ },
       )
     }

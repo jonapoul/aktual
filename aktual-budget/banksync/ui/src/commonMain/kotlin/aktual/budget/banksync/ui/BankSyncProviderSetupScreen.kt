@@ -11,22 +11,21 @@ import aktual.core.icons.ViewHide
 import aktual.core.icons.ViewShow
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PasswordTransformation
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -159,7 +158,7 @@ private fun BankSyncProviderSetupContent(
     }
 
     providerSite(state.source)?.let { site ->
-      NormalTextButton(
+      AktualButton(
         modifier = Modifier.fillMaxWidth(),
         text = Strings.bankSyncSetupOpenSite(providerName(state.source)),
         onClick = { onAction(OpenProviderSite(site)) },
@@ -180,7 +179,8 @@ private fun BankSyncProviderSetupContent(
       Text(text = errorMessage(error), style = typography.bodyMedium, color = colors.errorText)
     }
 
-    PrimaryTextButtonWithLoading(
+    AktualButton(
+      kind = Primary,
       modifier = Modifier.fillMaxWidth(),
       text = Strings.bankSyncSetupSave,
       isLoading = state.isSaving,
@@ -247,7 +247,7 @@ private fun CredentialField(
       trailingIcon =
         if (isSecret) {
           {
-            BareIconButton(
+            AktualIconButton(
               imageVector = if (isVisible) AktualIcons.ViewHide else AktualIcons.ViewShow,
               contentDescription = label,
               onClick = { isVisible = !isVisible },

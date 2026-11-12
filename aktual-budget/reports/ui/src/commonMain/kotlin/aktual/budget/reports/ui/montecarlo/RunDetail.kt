@@ -10,11 +10,10 @@ import aktual.core.icons.CheveronDown
 import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
 import aktual.core.model.unaryPlus
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareTextButton
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.redacted
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -77,7 +76,7 @@ internal fun RunDetailView(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       itemVerticalAlignment = CenterVertically,
     ) {
-      NormalTextButton(text = Strings.monteCarloDetailBack, onClick = onBack)
+      AktualButton(text = Strings.monteCarloDetailBack, onClick = onBack)
       Text(
         text =
           if (hasSurvived) {
@@ -97,7 +96,8 @@ internal fun RunDetailView(
         style = typography.bodyMedium,
         fontWeight = SemiBold,
       )
-      BareTextButton(
+      AktualButton(
+        kind = Bare,
         text =
           if (allExpanded) {
             Strings.monteCarloDetailCollapseAll

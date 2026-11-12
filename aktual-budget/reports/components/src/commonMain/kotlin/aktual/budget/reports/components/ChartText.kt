@@ -6,16 +6,14 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
 import aktual.core.icons.Pencil1
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButton
-import aktual.core.ui.errorButton
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -207,22 +205,22 @@ private fun TextChartButtons(
   ) {
     if (isEditing) {
       if (hasChanges) {
-        PrimaryTextButton(
+        AktualButton(
           modifier = Modifier.weight(1f),
           text = Strings.reportsTextDiscard,
-          colors = { pressed -> colors.errorButton(pressed) },
-          border = colors.errorBorder,
+          kind = Destructive,
           onClick = onCancel,
         )
       } else {
-        NormalTextButton(
+        AktualButton(
           modifier = Modifier.weight(1f),
           text = Strings.reportsTextCancel,
           onClick = onCancel,
         )
       }
 
-      PrimaryTextButton(
+      AktualButton(
+        kind = Primary,
         modifier = Modifier.weight(1f),
         text = Strings.reportsTextSave,
         isEnabled = hasChanges,
@@ -230,7 +228,8 @@ private fun TextChartButtons(
         onClick = onSave,
       )
     } else {
-      PrimaryTextButton(
+      AktualButton(
+        kind = Primary,
         modifier = Modifier.fillMaxWidth(),
         text = Strings.reportsTextEdit,
         icon = AktualIcons.Pencil1,

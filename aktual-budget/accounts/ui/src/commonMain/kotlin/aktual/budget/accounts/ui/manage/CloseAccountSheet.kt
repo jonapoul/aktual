@@ -20,16 +20,14 @@ import aktual.core.icons.AlertTriangle
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareTextButton
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.HostedSheet
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.formattedString
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -95,12 +93,13 @@ private fun CloseAccountContent(
   SheetPage(
     title = Strings.accountsCloseTitle(ready?.name.orEmpty()),
     buttons = {
-      NormalTextButton(
+      AktualButton(
         modifier = Modifier.weight(1f),
         text = Strings.accountsManageCancel,
         onClick = onCancel,
       )
-      PrimaryTextButtonWithLoading(
+      AktualButton(
+        kind = Primary,
         modifier = Modifier.weight(1f),
         text =
           if (ready?.case == NoTransactions) {
@@ -158,7 +157,8 @@ private fun CloseAccountFields(
     state.error?.let { error -> ErrorText("${Strings.accountsCloseWorkFailed}: $error") }
 
     if (state.case != NoTransactions) {
-      BareTextButton(
+      AktualButton(
+        kind = Bare,
         modifier = Modifier.fillMaxWidth(),
         text = Strings.accountsCloseDeleteInstead,
         isEnabled = !state.isWorking,
@@ -252,11 +252,12 @@ internal fun DeleteAccountDialog(
     highlight = colors.errorText,
     onDismissRequest = onDismiss,
     buttons = {
-      NormalTextButton(text = Strings.accountsManageCancel, onClick = onDismiss)
-      PrimaryTextButtonWithLoading(
+      AktualButton(text = Strings.accountsManageCancel, onClick = onDismiss)
+      AktualButton(
+        kind = Primary,
         text = Strings.accountsDeleteConfirm,
         isLoading = ready?.isWorking == true,
-        isEnabled = ready != null && !ready.isWorking,
+        isEnabled = ready != null,
         onClick = viewModel::delete,
       )
     },

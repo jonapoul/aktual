@@ -5,13 +5,12 @@ import aktual.budget.transactions.vm.Reconciling
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheckCircle1
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.formattedString
 import aktual.core.ui.redacted
 import androidx.compose.foundation.background
@@ -63,7 +62,8 @@ internal fun ReconcilingBanner(
           Text(text = Strings.transactionsReconcileBalanced, color = colors.noticeTextLight)
         }
 
-        PrimaryTextButton(
+        AktualButton(
+          kind = Primary,
           modifier = Modifier.fillMaxWidth(),
           text = Strings.transactionsReconcileLock,
           isEnabled = !reconciling.isBusy,
@@ -81,13 +81,14 @@ internal fun ReconcilingBanner(
           horizontalArrangement = Arrangement.spacedBy(10.dp),
           verticalAlignment = CenterVertically,
         ) {
-          NormalTextButton(
+          AktualButton(
             modifier = Modifier.weight(1f),
             text = Strings.transactionsReconcileCreateAdjustment,
             isEnabled = !reconciling.isBusy,
             onClick = { onAction(CreateReconcileAdjustment) },
           )
-          PrimaryTextButton(
+          AktualButton(
+            kind = Primary,
             modifier = Modifier.weight(1f),
             text = Strings.transactionsReconcileExit,
             isEnabled = !reconciling.isBusy,

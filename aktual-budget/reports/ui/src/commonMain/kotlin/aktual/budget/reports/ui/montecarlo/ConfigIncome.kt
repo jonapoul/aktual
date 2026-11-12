@@ -14,12 +14,12 @@ import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.OnAction
-import aktual.core.ui.TonalButton
 import aktual.core.ui.redacted
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +36,8 @@ internal fun IncomeTab(config: McConfig, onAction: OnAction<MonteCarloAction>) {
     key(stream.id) { IncomeCard(config, stream, index, onAction) }
   }
 
-  TonalButton(
+  AktualButton(
+    kind = Tonal,
     icon = AktualIcons.Add,
     text = Strings.monteCarloIncomeAdd,
     onClick = { onAction(AddIncomeStream) },
@@ -58,7 +59,7 @@ private fun IncomeCard(
   ItemCard(
     title = label,
     actions = {
-      BareIconButton(
+      AktualIconButton(
         imageVector = AktualIcons.Trash,
         contentDescription = Strings.monteCarloIncomeRemove,
         onClick = { onAction.edit { it.removeIncomeStream(stream.id) } },
@@ -120,7 +121,8 @@ internal fun ContributionsTab(config: McConfig, onAction: OnAction<MonteCarloAct
     key(contribution.id) { ContributionCard(config, contribution, index, onAction) }
   }
 
-  TonalButton(
+  AktualButton(
+    kind = Tonal,
     icon = AktualIcons.Add,
     text = Strings.monteCarloContributionAdd,
     onClick = { onAction(AddContribution) },
@@ -142,7 +144,7 @@ private fun ContributionCard(
   ItemCard(
     title = label,
     actions = {
-      BareIconButton(
+      AktualIconButton(
         imageVector = AktualIcons.Trash,
         contentDescription = Strings.monteCarloContributionRemove,
         onClick = { onAction.edit { it.removeContribution(contribution.id) } },

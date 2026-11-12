@@ -26,6 +26,8 @@ import aktual.core.icons.Pencil1
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
@@ -39,9 +41,6 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryIconButton
-import aktual.core.ui.PrimaryTextButton
-import aktual.core.ui.TonalButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -403,7 +402,8 @@ private fun FormulaReportTopBar(
     actions = {
       AnimatedContent(targetState = isEditing, transitionSpec = { swap() }) { editing ->
         if (editing) {
-          PrimaryTextButton(
+          AktualButton(
+            kind = Primary,
             modifier = Modifier.padding(end = 8.dp).testTag(Tags.SaveReport),
             text = Strings.reportsFormulaEditorSave,
             shape = CircleShape,
@@ -411,7 +411,8 @@ private fun FormulaReportTopBar(
             onClick = { onAction(Save) },
           )
         } else if (loaded != null) {
-          PrimaryIconButton(
+          AktualIconButton(
+            kind = Primary,
             modifier = Modifier.padding(horizontal = 8.dp).testTag(Tags.EditReport),
             imageVector = AktualIcons.Pencil1,
             contentDescription = Strings.reportsFormulaViewerEdit,
@@ -565,7 +566,8 @@ private fun Settings(
       enter = fadeIn() + expandVertically(),
       exit = fadeOut() + shrinkVertically(),
     ) {
-      TonalButton(
+      AktualButton(
+        kind = Tonal,
         modifier = Modifier.fillMaxWidth().testTag(Tags.AddQuery),
         icon = AktualIcons.Add,
         text = Strings.reportsFormulaQueryAdd,

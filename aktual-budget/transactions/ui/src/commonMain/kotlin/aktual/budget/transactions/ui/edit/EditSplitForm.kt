@@ -10,11 +10,11 @@ import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.OnAction
-import aktual.core.ui.TonalButton
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
@@ -210,7 +210,8 @@ private fun fillTarget(form: TransactionForm, active: ActiveField?) =
 
 @Composable
 private fun AddSplitButton(onClick: () -> Unit) =
-  TonalButton(
+  AktualButton(
+    kind = Tonal,
     modifier = Modifier.height(AddSplitHeight),
     icon = AktualIcons.Add,
     text = Strings.transactionSplitAdd,
@@ -280,7 +281,7 @@ private fun PartRow(
       onPaste = { fieldState.pasteAmount(it, id) },
     )
 
-    BareIconButton(
+    AktualIconButton(
       imageVector = AktualIcons.Delete,
       contentDescription = Strings.transactionSplitRemove,
       size = RemoveIconSize,

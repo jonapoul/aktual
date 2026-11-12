@@ -18,8 +18,8 @@ import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchRulesNavigator
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -125,7 +125,7 @@ private fun ListRulesScaffold(
         title = { Text(Strings.rulesToolbar) },
         actions = {
           if (state is Success) {
-            BareIconButton(
+            AktualIconButton(
               imageVector = AktualIcons.SearchAlternate,
               contentDescription = Strings.rulesToolbarSearch,
               onClick = { onAction(OpenSearch) },

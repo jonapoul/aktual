@@ -14,15 +14,14 @@ import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
-import aktual.core.ui.NormalIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.PrimaryIconButton
 import aktual.core.ui.ProvideSurfaceColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -86,8 +85,9 @@ internal fun Conditions(
             )
           }
         }
-        PrimaryIconButton(
-          enabled = isEnabled,
+        AktualIconButton(
+          kind = Primary,
+          isEnabled = isEnabled,
           imageVector = AktualIcons.Add,
           contentDescription = Strings.editRuleCreate,
           onClick = { onAction(AppendCondition) },
@@ -126,11 +126,11 @@ private fun Condition(
           contentPadding = BUTTON_PADDING,
         )
 
-        NormalIconButton(
+        AktualIconButton(
+          kind = Destructive,
           imageVector = AktualIcons.Trash,
           contentDescription = Strings.rulesItemDelete,
           onClick = { onAction(DeleteCondition(index)) },
-          colors = NormalRed,
           isEnabled = isEnabled,
         )
       }

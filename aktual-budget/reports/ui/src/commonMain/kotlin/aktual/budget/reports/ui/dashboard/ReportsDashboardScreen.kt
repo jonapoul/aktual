@@ -22,6 +22,7 @@ import aktual.core.nav.CreateReportNavigator
 import aktual.core.nav.ReportNavigator
 import aktual.core.nav.SearchReportsNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomSpacing
@@ -33,7 +34,6 @@ import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -374,7 +374,8 @@ private fun ContentEmpty(onAction: OnAction<Action>, modifier: Modifier = Modifi
 
     VerticalSpacer(20.dp)
 
-    PrimaryTextButton(
+    AktualButton(
+      kind = Primary,
       text = Strings.reportsDashboardCreate,
       onClick = { onAction(CreateNewReport) },
     )

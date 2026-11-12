@@ -167,9 +167,9 @@ private fun PreviewExampleContentWithButtons(
         Text(
           "This is some text with even more text here to show how it behaves when splitting over lines",
         )
-        PrimaryTextButton(text = "Click me", onClick = {})
+        AktualButton(kind = Primary, text = "Click me", onClick = {})
         Text("This is some text")
-        NormalTextButton(text = "Click me", onClick = {})
+        AktualButton(text = "Click me", onClick = {})
       },
     )
   }
@@ -188,9 +188,9 @@ private fun PreviewExampleContentWithoutButtons(
       content = {
         Column(horizontalAlignment = CenterHorizontally) {
           Text("This is some text")
-          PrimaryTextButton(text = "Click me", onClick = {})
+          AktualButton(kind = Primary, text = "Click me", onClick = {})
           Text("This is some text")
-          NormalTextButton(text = "Click me", onClick = {})
+          AktualButton(text = "Click me", onClick = {})
         }
       },
     )

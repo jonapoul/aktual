@@ -14,15 +14,15 @@ import aktual.core.icons.Tuning
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ZoomOut
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -77,7 +77,8 @@ internal fun ReportEditorTopBar(
         }
       }
       if (canSave) {
-        PrimaryTextButton(
+        AktualButton(
+          kind = Primary,
           modifier = Modifier.padding(end = 8.dp).testTag(Tags.SaveReport),
           text = Strings.reportsFormulaEditorSave,
           shape = CircleShape,
@@ -85,7 +86,7 @@ internal fun ReportEditorTopBar(
         )
       }
       if (zoom.range != null) {
-        BareIconButton(
+        AktualIconButton(
           modifier = Modifier.testTag(ChartTags.ResetZoom),
           imageVector = MaterialIcons.ZoomOut,
           contentDescription = Strings.reportsResetZoom,
@@ -93,7 +94,7 @@ internal fun ReportEditorTopBar(
         )
       }
       if (preview?.info()?.isNotEmpty() == true) {
-        BareIconButton(
+        AktualIconButton(
           modifier = Modifier.testTag(ChartTags.ChartInfo),
           imageVector = AktualIcons.InformationOutline,
           contentDescription = Strings.reportsChartInfo,
@@ -101,7 +102,7 @@ internal fun ReportEditorTopBar(
         )
       }
       if (canEdit) {
-        BareIconButton(
+        AktualIconButton(
           modifier = Modifier.testTag(ChartTags.ChartSettings),
           imageVector = AktualIcons.Tuning,
           contentDescription = Strings.reportsChartSettings,

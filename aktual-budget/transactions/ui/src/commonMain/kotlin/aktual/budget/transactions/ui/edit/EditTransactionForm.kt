@@ -15,12 +15,12 @@ import aktual.core.icons.CheveronDown
 import aktual.core.icons.Location
 import aktual.core.icons.Split
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AmountKeypad
-import aktual.core.ui.BareIconButton
-import aktual.core.ui.BareTextButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.OnAction
 import aktual.core.ui.RootOverlayContent
@@ -101,6 +101,7 @@ private fun ChangedElsewhereBanner(change: ChangedElsewhere) =
 // saved transaction opens straight into this, so anything on it can be changed in place. A split
 // lists its parts under them, with amounts of their own
 @Composable
+@Suppress("LongMethod")
 internal fun EditTransactionForm(
   form: TransactionForm,
   fieldState: EditFieldState,
@@ -199,7 +200,8 @@ internal fun EditTransactionForm(
 
         // As upstream's mobile editor, which only splits a transaction that has an amount
         if (draft.amount != Zero) {
-          BareTextButton(
+          AktualButton(
+            kind = Bare,
             modifier = Modifier.align(CenterHorizontally),
             text = Strings.transactionsSplit,
             icon = AktualIcons.Split,
@@ -222,9 +224,10 @@ internal fun EditTransactionForm(
           visible = isTyping,
           enter = slideInVertically { it },
           exit = slideOutVertically { it },
-        ) {
-          keypad(Modifier.onSizeChanged { keypadHeight = with(density) { it.height.toDp() } })
-        }
+          content = {
+            keypad(Modifier.onSizeChanged { keypadHeight = with(density) { it.height.toDp() } })
+          },
+        )
       }
     }
   }
@@ -410,7 +413,7 @@ private fun LocationButton(
         strokeWidth = 2.dp,
       )
     } else {
-      BareIconButton(
+      AktualIconButton(
         imageVector = AktualIcons.Location,
         contentDescription =
           when (action) {

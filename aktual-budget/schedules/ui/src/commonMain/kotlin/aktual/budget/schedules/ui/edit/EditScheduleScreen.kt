@@ -27,11 +27,11 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
@@ -337,24 +337,24 @@ private fun TopBarActions(
 ) {
   Row(modifier = modifier) {
     if (state.isEditing) {
-      BareIconButton(
+      AktualIconButton(
         imageVector = if (state.isNew) MaterialIcons.SaveAs else MaterialIcons.Save,
         contentDescription =
           if (state.isNew) Strings.editScheduleCreate else Strings.editScheduleSave,
-        enabled = state.canSave,
+        isEnabled = state.canSave,
         onClick = { onAction(SaveSchedule) },
       )
     } else {
-      BareIconButton(
+      AktualIconButton(
         imageVector = AktualIcons.Pencil1,
         contentDescription = Strings.editScheduleEdit,
-        enabled = !state.isWorking,
+        isEnabled = !state.isWorking,
         onClick = { onAction(StartEditing) },
       )
-      BareIconButton(
+      AktualIconButton(
         imageVector = AktualIcons.Trash,
         contentDescription = Strings.editScheduleDelete,
-        enabled = !state.isWorking,
+        isEnabled = !state.isWorking,
         onClick = onDelete,
       )
     }

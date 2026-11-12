@@ -5,9 +5,9 @@ import aktual.budget.reports.vm.ChartDateConfig
 import aktual.budget.reports.vm.DateRangeMode
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.ColorParameters
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.YearMonthPicker
 import alakazam.compose.HorizontalSpacer
@@ -106,7 +106,7 @@ private fun DateRangeTypeButton(
   type: DateRangeType,
   onClick: (DateRangeType) -> Unit,
   modifier: Modifier = Modifier,
-) = NormalTextButton(modifier = modifier, text = type.string(), onClick = { onClick(type) })
+) = AktualButton(modifier = modifier, text = type.string(), onClick = { onClick(type) })
 
 private const val MONTH_PICKER_WEIGHT = 1.5f
 private val SPACING = 8.dp

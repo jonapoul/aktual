@@ -16,6 +16,7 @@ import aktual.core.logging.LogFileFormat
 import aktual.core.logging.LogLine
 import aktual.core.model.bytes
 import aktual.core.theme.Colors
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.textSizes
@@ -25,10 +26,8 @@ import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.plainTextClipEntry
 import aktual.core.ui.scrollbar
@@ -174,7 +173,8 @@ private fun WideToolbar(
       LiveButton(isFollowing, onAction)
     }
 
-    PrimaryTextButton(
+    AktualButton(
+      kind = Primary,
       text = Strings.logsExport,
       onClick = onExport,
       icon = MaterialIcons.Share,
@@ -432,7 +432,7 @@ private fun DetailPane(line: LogLine?) {
             color = colors.pageTextLight,
           )
           DisableSelection {
-            NormalTextButton(
+            AktualButton(
               text = Strings.logsCopy,
               onClick = {
                 scope.launch {

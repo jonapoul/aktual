@@ -16,11 +16,11 @@ import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.OnAction
-import aktual.core.ui.TonalButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
@@ -38,7 +38,8 @@ internal fun SpendingTab(config: McConfig, onAction: OnAction<MonteCarloAction>)
   config.spendingPhases.fastForEachIndexed { index, phase ->
     key(phase.id) { PhaseCard(config, phase, index, onAction) }
   }
-  TonalButton(
+  AktualButton(
+    kind = Tonal,
     icon = AktualIcons.Add,
     text = Strings.monteCarloPhaseAdd,
     onClick = { onAction(AddSpendingPhase) },
@@ -76,7 +77,7 @@ private fun PhaseCard(
     title = label,
     actions = {
       if (config.spendingPhases.size > 1) {
-        BareIconButton(
+        AktualIconButton(
           imageVector = AktualIcons.Trash,
           contentDescription = Strings.monteCarloPhaseRemove,
           onClick = { onAction.edit { it.removeSpendingPhase(phase.id) } },
@@ -346,7 +347,8 @@ internal fun TaxTab(config: McConfig, onAction: OnAction<MonteCarloAction>) {
   config.taxBands.fastForEachIndexed { index, band ->
     key(band.id) { TaxBandRow(config, band, index, onAction) }
   }
-  TonalButton(
+  AktualButton(
+    kind = Tonal,
     icon = AktualIcons.Add,
     text = Strings.monteCarloBandAdd,
     onClick = { onAction(AddTaxBand) },
@@ -384,7 +386,7 @@ private fun TaxBandRow(
       )
     }
     if (config.taxBands.size > 1) {
-      BareIconButton(
+      AktualIconButton(
         imageVector = AktualIcons.Trash,
         contentDescription = Strings.monteCarloBandRemove,
         onClick = { onAction.edit { it.removeTaxBand(band.id) } },

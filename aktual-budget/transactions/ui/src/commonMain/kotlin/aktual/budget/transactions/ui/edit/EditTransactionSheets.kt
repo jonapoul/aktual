@@ -26,6 +26,7 @@ import aktual.core.icons.Check
 import aktual.core.icons.ViewHide
 import aktual.core.icons.ViewShow
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
@@ -37,7 +38,6 @@ import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.NormalIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formatted
@@ -493,7 +493,8 @@ private fun SearchRow(
     )
 
     if (toggle != null) {
-      NormalIconButton(
+      AktualIconButton(
+        kind = Normal,
         imageVector = if (toggle.isShown) AktualIcons.ViewHide else AktualIcons.ViewShow,
         contentDescription = if (toggle.isShown) toggle.hideText else toggle.showText,
         onClick = toggle.onClick,

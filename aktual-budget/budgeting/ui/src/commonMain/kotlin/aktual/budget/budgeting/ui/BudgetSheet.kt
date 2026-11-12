@@ -5,11 +5,11 @@ import aktual.budget.model.BudgetType
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toSignedInputText
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AmountField
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.EditorSheet
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedString
@@ -89,7 +89,7 @@ private fun QuickActionButtons(
     maxItemsInEachRow = 2,
   ) {
     for (action in QuickAction.available(type)) {
-      NormalTextButton(
+      AktualButton(
         modifier = Modifier.weight(1f),
         text = action.string(),
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),

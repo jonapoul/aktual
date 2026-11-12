@@ -23,8 +23,8 @@ import aktual.core.nav.TransactionsNavigator
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
@@ -150,13 +150,13 @@ private fun ListTagsScaffold(
         title = { Text(text = Strings.tagsTitle) },
         actions = {
           if (successState != null) {
-            BareIconButton(
+            AktualIconButton(
               imageVector = AktualIcons.SearchAlternate,
               contentDescription = Strings.tagsSearch,
               onClick = { onAction(OpenSearch) },
             )
           }
-          BareIconButton(
+          AktualIconButton(
             imageVector = AktualIcons.Add,
             contentDescription = Strings.tagsCreate,
             onClick = { onAction(CreateTag) },
@@ -282,7 +282,7 @@ private fun ListTagsMenu(onSort: () -> Unit, modifier: Modifier = Modifier) {
   var expanded by remember { mutableStateOf(false) }
 
   Box(modifier = modifier) {
-    BareIconButton(
+    AktualIconButton(
       imageVector = AktualIcons.DotsHorizontalTriple,
       contentDescription = Strings.tagsMenu,
       onClick = { expanded = true },

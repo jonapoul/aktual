@@ -15,17 +15,18 @@ import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.AccountSyncDot
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
+import aktual.core.ui.BasicIconButton
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.NewTransactionsBadge
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.ShimmerLine
+import aktual.core.ui.bareIconButton
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
@@ -265,10 +266,11 @@ private fun AccountRow(
     }
 
     val newTransaction = Strings.homeAccountsNewTransaction(account.name)
-    BareIconButton(
+    BasicIconButton(
       imageVector = AktualIcons.Add,
       contentDescription = newTransaction,
       onClick = onNewTransaction,
+      colors = { theme, isPressed -> theme.bareIconButton(isPressed) },
     ) {
       Box(
         modifier = Modifier.size(28.dp).background(colors.buttonPrimaryBackground, ButtonShape),
@@ -324,7 +326,11 @@ private fun AccountsEmpty(onAction: OnAction<HomeAction>, modifier: Modifier = M
       color = colors.pageTextSubdued,
     )
 
-    PrimaryTextButton(text = Strings.homeAccountsEmptyAction, onClick = { onAction(AddAccount) })
+    AktualButton(
+      kind = Primary,
+      text = Strings.homeAccountsEmptyAction,
+      onClick = { onAction(AddAccount) },
+    )
   }
 }
 

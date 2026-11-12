@@ -34,11 +34,11 @@ import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchRulesNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
@@ -336,10 +336,10 @@ private fun EditPayeeTopBar(
     title = { if (editing != null) Text(text = Strings.payeesEditTitle) },
     actions = {
       if (editing != null && !editing.payee.isTransfer) {
-        BareIconButton(
+        AktualIconButton(
           imageVector = MaterialIcons.Save,
           contentDescription = Strings.payeesEditSave,
-          enabled = saveEnabled,
+          isEnabled = saveEnabled,
           onClick = { onAction(SavePayee) },
         )
       }
@@ -511,7 +511,7 @@ private fun LocationRow(location: SavedLocation, onAction: OnAction<EditPayeeAct
       }
       Text(text = coordinatesText, style = typography.bodySmall, color = colors.pageTextSubdued)
     }
-    BareIconButton(
+    AktualIconButton(
       imageVector = AktualIcons.Delete,
       contentDescription = Strings.payeesEditLocationDelete,
       onClick = { onAction(DeleteLocation(location.id)) },

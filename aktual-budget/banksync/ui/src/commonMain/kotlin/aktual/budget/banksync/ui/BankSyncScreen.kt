@@ -17,8 +17,8 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BankSyncProvidersNavigator
 import aktual.core.nav.BankSyncSettingsNavigator
 import aktual.core.nav.LinkBankAccountNavigator
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -123,14 +123,14 @@ private fun BankSyncScaffold(
         actions = {
           val canSync = state is Success && state.canSync || state is Empty && state.canSync
           if (canSync) {
-            BareIconButton(
+            AktualIconButton(
               imageVector = AktualIcons.Key,
               contentDescription = Strings.bankSyncProvidersOpen,
               onClick = { onAction(OpenProviders) },
             )
           }
           if (state is Success && state.canSync) {
-            BareIconButton(
+            AktualIconButton(
               imageVector = AktualIcons.Add,
               contentDescription = Strings.bankSyncAddAccount,
               onClick = { onAction(AddAccount) },
@@ -286,7 +286,7 @@ private fun SyncAllButton(isSyncing: Boolean, onClick: () -> Unit, modifier: Mod
   if (isSyncing) {
     SyncingIndicator(modifier)
   } else {
-    BareIconButton(
+    AktualIconButton(
       modifier = modifier,
       imageVector = AktualIcons.ArrowsSynchronize,
       contentDescription = Strings.bankSyncSyncAll,

@@ -1,7 +1,6 @@
 package aktual.account.ui.login
 
 import aktual.core.model.Password
-import aktual.core.ui.Tags as CoreUiTags
 import aktual.test.assertEditableTextEquals
 import aktual.test.runTest
 import aktual.test.setAndroidThemedContent
@@ -33,7 +32,7 @@ class PasswordLoginTest {
     }
 
     // then the sign in button is disabled
-    onNodeWithTag(CoreUiTags.PrimaryTextButtonWithLoading).assertIsNotEnabled()
+    onNodeWithTag(Tags.PasswordLoginButton).assertIsNotEnabled()
 
     // and the text input is disabled
     onNodeWithTag(Tags.PasswordLoginTextField).assertIsNotEnabled()

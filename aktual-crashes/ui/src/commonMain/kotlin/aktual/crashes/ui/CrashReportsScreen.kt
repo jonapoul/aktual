@@ -12,6 +12,7 @@ import aktual.core.model.CrashFile
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.CrashReportNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
@@ -20,7 +21,6 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -30,7 +30,6 @@ import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.contrastingTextColor
-import aktual.core.ui.errorButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -127,13 +126,12 @@ internal fun CrashReportsScaffold(
     bottomBar = {
       if (state is Loaded) {
         Column(modifier = Modifier.fillMaxWidth().background(colors.cardBackground)) {
-          NormalTextButton(
+          AktualButton(
             modifier =
               Modifier.fillMaxWidth()
                 .padding(horizontal = Dimens.Large, vertical = Dimens.VeryLarge),
             text = Strings.crashesDeleteAll,
-            colors = { pressed -> colors.errorButton(pressed) },
-            border = colors.errorBorder,
+            kind = Destructive,
             onClick = { showDeleteAll = true },
           )
           BottomSpacing()

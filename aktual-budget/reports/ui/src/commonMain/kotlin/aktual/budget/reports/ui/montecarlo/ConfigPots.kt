@@ -34,12 +34,12 @@ import aktual.core.icons.CheveronDown
 import aktual.core.icons.CheveronRight
 import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.OnAction
-import aktual.core.ui.TonalButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -72,7 +72,8 @@ internal fun PotsTab(
     }
   }
 
-  TonalButton(
+  AktualButton(
+    kind = Tonal,
     icon = AktualIcons.Add,
     text = Strings.monteCarloPotAdd,
     onClick = { onAction(AddPot) },
@@ -131,7 +132,7 @@ private fun PotCard(
   ItemCard(
     title = label,
     leading = {
-      BareIconButton(
+      AktualIconButton(
         imageVector = if (isExpanded) AktualIcons.CheveronDown else AktualIcons.CheveronRight,
         contentDescription =
           if (isExpanded) Strings.monteCarloPotHideMore else Strings.monteCarloPotShowMore,
@@ -141,7 +142,7 @@ private fun PotCard(
     actions = {
       MovePotButtons(config, pot, index, onAction)
       if (config.canRemove(pot)) {
-        BareIconButton(
+        AktualIconButton(
           imageVector = AktualIcons.Trash,
           contentDescription = Strings.monteCarloPotRemove,
           onClick = { onAction.edit { it.removePot(pot.id) } },
@@ -363,7 +364,8 @@ private fun InvestmentPhases(
       )
     }
   }
-  TonalButton(
+  AktualButton(
+    kind = Tonal,
     icon = AktualIcons.Add,
     text = Strings.monteCarloInvestmentPhaseAdd,
     isEnabled = pot.canAddInvestmentPhase(config),
@@ -382,7 +384,7 @@ private fun InvestmentPhaseCard(
   ItemCard(
     title = Strings.monteCarloInvestmentPhaseTitle(phase.fromAge),
     actions = {
-      BareIconButton(
+      AktualIconButton(
         imageVector = AktualIcons.Trash,
         contentDescription = Strings.monteCarloInvestmentPhaseRemove,
         onClick = onRemove,
@@ -482,17 +484,17 @@ private fun MovePotButtons(
   index: Int,
   onAction: OnAction<MonteCarloAction>,
 ) {
-  BareIconButton(
+  AktualIconButton(
     modifier = Modifier.rotate(HALF_TURN),
     imageVector = AktualIcons.CheveronDown,
     contentDescription = Strings.monteCarloPotMoveUp,
-    enabled = index > 0,
+    isEnabled = index > 0,
     onClick = { onAction.edit { it.movePot(pot.id, offset = -1) } },
   )
-  BareIconButton(
+  AktualIconButton(
     imageVector = AktualIcons.CheveronDown,
     contentDescription = Strings.monteCarloPotMoveDown,
-    enabled = index < config.pots.lastIndex,
+    isEnabled = index < config.pots.lastIndex,
     onClick = { onAction.edit { it.movePot(pot.id, offset = 1) } },
   )
 }

@@ -3,29 +3,17 @@ package aktual.budget.list.ui
 import aktual.budget.list.vm.DeletingState
 import aktual.budget.model.Budget
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
-import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.textSizes
-import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.AnimatedLoading
-import aktual.core.ui.BareTextButton
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.buttonTextStyle
-import aktual.core.ui.errorButton
 import alakazam.compose.HorizontalSpacer
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,10 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -99,10 +84,9 @@ private fun Content(
         Switch(checked = secondCheckbox, onCheckedChange = { secondCheckbox = !secondCheckbox })
       }
 
-      LoadableBareTextButton(
+      AktualButton(
         text = Strings.budgetDeleteDialogHostedButton,
-        colors = { pressed -> colors.errorButton(pressed) },
-        border = colors.errorBorder,
+        kind = Destructive,
         isEnabled = isNotDeleting && firstCheckbox && secondCheckbox,
         isLoading = deletingState is Active && deletingState.deletingRemote,
         onClick = {
@@ -115,9 +99,9 @@ private fun Content(
     if (localFileExists) {
       Text(text = Strings.budgetDeleteDialogLocalTxt, fontSize = textSizes.medium)
 
-      LoadableBareTextButton(
+      AktualButton(
         text = Strings.budgetDeleteDialogLocalButton,
-        colors = { pressed -> colors.errorBare(pressed) },
+        kind = Destructive,
         isEnabled = isNotDeleting,
         isLoading = deletingState is Active && deletingState.deletingLocal,
         onClick = {
@@ -128,34 +112,6 @@ private fun Content(
     }
   }
 }
-
-private val IconPadding = 10.dp
-private val IconSize = 32.dp
-
-@Composable
-private fun LoadableBareTextButton(
-  text: String,
-  onClick: () -> Unit,
-  isEnabled: Boolean,
-  isLoading: Boolean,
-  colors: @Composable (Boolean) -> ButtonColors,
-  modifier: Modifier = Modifier,
-  border: Color? = null,
-) =
-  Box(modifier = modifier, contentAlignment = Center) {
-    BareTextButton(
-      text = text,
-      colors = colors,
-      isEnabled = isEnabled,
-      onClick = onClick,
-      border = border?.let { BorderStroke(Hairline, it) },
-      style = if (isLoading) TextStyle(color = Transparent) else typography.buttonTextStyle,
-    )
-
-    Box(modifier = modifier.padding(IconPadding), contentAlignment = Center) {
-      AnimatedLoading(modifier = Modifier.size(IconSize).alpha(if (isLoading) 1f else 0f))
-    }
-  }
 
 @Stable
 @Composable
@@ -168,14 +124,6 @@ fun annotatedString() = buildAnnotatedString {
   append(" ")
   append(Strings.budgetDeleteDialogHostedTxt3)
 }
-
-@Stable
-@Composable
-private fun Colors.errorBare(isPressed: Boolean) =
-  ButtonDefaults.outlinedButtonColors(
-    containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
-    contentColor = if (isPressed) buttonBareText else errorText,
-  )
 
 @Preview
 @Composable

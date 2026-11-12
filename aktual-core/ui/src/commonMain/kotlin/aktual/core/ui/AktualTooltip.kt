@@ -50,7 +50,8 @@ fun AktualTooltip(
       )
     },
     content = {
-      NormalIconButton(
+      AktualIconButton(
+        kind = Normal,
         imageVector = imageVector,
         contentDescription = contentDescription,
         onClick = { if (state.isVisible) state.dismiss() else scope.launch { state.show() } },

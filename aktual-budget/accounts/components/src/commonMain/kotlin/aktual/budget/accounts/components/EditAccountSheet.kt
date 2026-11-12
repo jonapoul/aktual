@@ -10,15 +10,14 @@ import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount.Companion.Zero
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.HostedSheet
 import aktual.core.ui.LocalSnackbars
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButtonWithLoading
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -83,12 +82,13 @@ private fun EditAccountContent(
   SheetPage(
     title = Strings.accountsEditTitle,
     buttons = {
-      NormalTextButton(
+      AktualButton(
         modifier = Modifier.weight(1f),
         text = Strings.accountsManageCancel,
         onClick = onCancel,
       )
-      PrimaryTextButtonWithLoading(
+      AktualButton(
+        kind = Primary,
         modifier = Modifier.weight(1f),
         text = Strings.accountsEditSave,
         isLoading = editing?.isSaving == true,

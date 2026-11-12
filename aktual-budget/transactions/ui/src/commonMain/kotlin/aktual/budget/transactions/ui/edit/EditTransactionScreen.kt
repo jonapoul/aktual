@@ -39,13 +39,14 @@ import aktual.core.l10n.transaction_location_save_failed
 import aktual.core.l10n.transaction_location_saved
 import aktual.core.l10n.transaction_location_unavailable
 import aktual.core.nav.BackNavigator
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.letterSpacings
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BackHandler
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardRow
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -57,7 +58,6 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -398,7 +398,8 @@ private fun TopBarActions(
       enter = fadeIn(),
       exit = fadeOut(),
     ) {
-      PrimaryTextButton(
+      AktualButton(
+        kind = Primary,
         modifier = Modifier.padding(end = SaveInset),
         text = Strings.transactionSave,
         isEnabled = canSave,
@@ -410,10 +411,10 @@ private fun TopBarActions(
     if (mode is Edit && !isGone) {
       Box {
         var expanded by remember { mutableStateOf(false) }
-        BareIconButton(
+        AktualIconButton(
           imageVector = AktualIcons.DotsHorizontalTriple,
           contentDescription = Strings.transactionMore,
-          enabled = !state.isWorking,
+          isEnabled = !state.isWorking,
           onClick = { expanded = true },
         )
         AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
