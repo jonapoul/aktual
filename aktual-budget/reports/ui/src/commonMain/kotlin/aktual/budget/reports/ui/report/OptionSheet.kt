@@ -1,6 +1,7 @@
 package aktual.budget.reports.ui.report
 
 import aktual.budget.reports.ui.Tags
+import aktual.budget.rules.components.QuerySheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.radioButton

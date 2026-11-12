@@ -5,6 +5,7 @@ import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
+import aktual.budget.rules.components.ConditionTags
 import aktual.test.setPreviewContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,7 +48,7 @@ class QueryScreenTest {
     setScreen()
 
     // when
-    onNodeWithTag(Tags.AddCondition).performClick()
+    onNodeWithTag(ConditionTags.AddCondition).performClick()
 
     // then
     waitForIdle()
@@ -60,10 +61,10 @@ class QueryScreenTest {
   fun `Done closes the sheet and keeps the condition`() = runComposeUiTest {
     // given
     setScreen()
-    onNodeWithTag(Tags.ConditionRow).performClick()
+    onNodeWithTag(ConditionTags.ConditionRow).performClick()
 
     // when
-    onNodeWithTag(Tags.QuerySheetDone).performClick()
+    onNodeWithTag(ConditionTags.QuerySheetDone).performClick()
 
     // then
     waitForIdle()
@@ -75,15 +76,15 @@ class QueryScreenTest {
   fun `Delete removes the condition`() = runComposeUiTest {
     // given
     setScreen()
-    onNodeWithTag(Tags.ConditionRow).performClick()
+    onNodeWithTag(ConditionTags.ConditionRow).performClick()
 
     // when
-    onNodeWithTag(Tags.QuerySheetDelete).performClick()
+    onNodeWithTag(ConditionTags.QuerySheetDelete).performClick()
 
     // then
     waitForIdle()
     assertThat(query.conditions).hasSize(0)
-    onAllNodesWithTag(Tags.ConditionRow).assertCountEquals(0)
+    onAllNodesWithTag(ConditionTags.ConditionRow).assertCountEquals(0)
   }
 
   @Test
@@ -93,7 +94,7 @@ class QueryScreenTest {
     setScreen()
 
     // when
-    onNodeWithTag(Tags.ConditionRow).performClick()
+    onNodeWithTag(ConditionTags.ConditionRow).performClick()
 
     // then
     onNodeWithText("can't be edited", substring = true).assertExists()
@@ -160,7 +161,7 @@ class QueryScreenTest {
     setScreen(data = null)
 
     // then
-    onNodeWithTag(Tags.AddCondition).assertDoesNotExist()
+    onNodeWithTag(ConditionTags.AddCondition).assertDoesNotExist()
     assertThat(query).all {
       prop(FormulaQuery::conditions).containsExactly(PAYEE_CONDITION)
       prop(FormulaQuery::timeFrame).isEqualTo(QUERY.timeFrame)

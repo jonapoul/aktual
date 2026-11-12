@@ -1,6 +1,6 @@
-package aktual.budget.reports.vm
+package aktual.budget.rules.domain
 
-// How the query editor edits a condition's value
+// How the condition editor edits a condition's value
 enum class ConditionValueKind {
   Entity,
   EntityList,

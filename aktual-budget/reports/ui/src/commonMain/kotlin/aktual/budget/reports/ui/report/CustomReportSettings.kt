@@ -38,6 +38,13 @@ import aktual.budget.reports.vm.withSelectedCategories
 import aktual.budget.reports.vm.withStaticDates
 import aktual.budget.reports.vm.withStaticMonths
 import aktual.budget.reports.vm.withTagScope
+import aktual.budget.rules.components.ConditionSheetAt
+import aktual.budget.rules.components.ConditionsList
+import aktual.budget.rules.components.Divider
+import aktual.budget.rules.components.QuerySheet
+import aktual.budget.rules.components.SectionLabel
+import aktual.budget.rules.components.SettingRow
+import aktual.budget.rules.components.label
 import aktual.budget.tags.domain.TagLabel
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton

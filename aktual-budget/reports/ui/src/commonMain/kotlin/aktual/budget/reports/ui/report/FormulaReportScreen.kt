@@ -19,6 +19,9 @@ import aktual.budget.reports.vm.withNewQuery
 import aktual.budget.reports.vm.withQuery
 import aktual.budget.reports.vm.withQueryRenamed
 import aktual.budget.reports.vm.withoutQuery
+import aktual.budget.rules.components.Divider
+import aktual.budget.rules.components.SettingRow
+import aktual.budget.rules.components.label
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Delete

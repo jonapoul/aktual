@@ -7,8 +7,9 @@ import aktual.budget.db.dao.CategoryGroupDao
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.model.BudgetType
-import aktual.budget.model.Field
 import aktual.budget.model.SyncedPrefKey
+import aktual.budget.rules.domain.ConditionEntities
+import aktual.budget.rules.domain.ConditionEntity
 import aktual.core.utils.Calendar
 import androidx.compose.runtime.Immutable
 import app.cash.sqldelight.async.coroutines.awaitAsList
@@ -26,48 +27,22 @@ import kotlinx.datetime.YearMonthRange
 import kotlinx.datetime.minus
 import kotlinx.datetime.yearMonth
 
-@Immutable data class QueryEntity(val id: String, val name: String)
-
 // What the query editor picks from
 @Immutable
 data class QueryEditorData(
-  val accounts: ImmutableList<QueryEntity>,
-  val categories: ImmutableList<QueryEntity>,
-  val categoryGroups: ImmutableList<QueryEntity>,
-  val payees: ImmutableList<QueryEntity>,
+  override val accounts: ImmutableList<ConditionEntity>,
+  override val categories: ImmutableList<ConditionEntity>,
+  override val categoryGroups: ImmutableList<ConditionEntity>,
+  override val payees: ImmutableList<ConditionEntity>,
   val currentMonth: YearMonth,
   val months: YearMonthRange,
-  // Every entity's name by id, including hidden categories and closed accounts that saved
-  // conditions can still point to
-  val names: ImmutableMap<String, String>,
+  override val names: ImmutableMap<String, String>,
   // Every category by group, hidden and income ones included
   val categoryChoices: ImmutableList<CategoryGroupChoice> = persistentListOf(),
   // Closed accounts included
-  val allAccounts: ImmutableList<QueryEntity> = persistentListOf(),
+  val allAccounts: ImmutableList<ConditionEntity> = persistentListOf(),
   val isTrackingBudget: Boolean = false,
-)
-
-fun QueryEditorData.entities(field: Field): ImmutableList<QueryEntity> =
-  when (field) {
-    Account,
-    Acct -> accounts
-    Category -> categories
-    CategoryGroup -> categoryGroups
-    Payee,
-    Description -> payees
-    Amount,
-    Date,
-    Notes,
-    PayeeName,
-    ImportedDescription,
-    ImportedPayee,
-    Saved,
-    Transfer,
-    Parent,
-    Cleared,
-    Reconciled,
-    Unknown -> persistentListOf()
-  }
+) : ConditionEntities
 
 @Inject
 internal class QueryEditorDataLoader(
@@ -120,8 +95,8 @@ internal class QueryEditorDataLoader(
   private inline fun <T> List<T>.entities(
     id: (T) -> String,
     name: (T) -> String?,
-  ): ImmutableList<QueryEntity> = mapNotNull { row ->
-    name(row)?.let { QueryEntity(id(row), it) }
+  ): ImmutableList<ConditionEntity> = mapNotNull { row ->
+    name(row)?.let { ConditionEntity(id(row), it) }
   }
     .toImmutableList()
 

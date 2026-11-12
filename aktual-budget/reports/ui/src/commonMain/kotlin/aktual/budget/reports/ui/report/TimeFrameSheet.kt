@@ -4,6 +4,8 @@ import aktual.budget.reports.components.YearMonthPicker
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.TimeFrameMode
+import aktual.budget.rules.components.QuerySheet
+import aktual.budget.rules.components.SectionLabel
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography

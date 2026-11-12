@@ -3,6 +3,7 @@ package aktual.budget.reports.ui.report
 import aktual.budget.model.CategoryId
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.CategoryGroupChoice
+import aktual.budget.rules.components.QuerySheet
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors

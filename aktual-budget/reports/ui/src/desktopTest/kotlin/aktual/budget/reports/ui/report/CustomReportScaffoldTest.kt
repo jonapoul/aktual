@@ -4,6 +4,7 @@ import aktual.budget.reports.components.ChartTags
 import aktual.budget.reports.components.PREVIEW_CUSTOM_DATA
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.report.CustomReportState
+import aktual.budget.rules.components.ConditionTags
 import aktual.test.setPreviewContent
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -67,7 +68,7 @@ class CustomReportScaffoldTest {
     }
 
     // when
-    onNodeWithTag(Tags.QuerySheetDone).performScrollTo().performClick()
+    onNodeWithTag(ConditionTags.QuerySheetDone).performScrollTo().performClick()
     waitForIdle()
 
     // then

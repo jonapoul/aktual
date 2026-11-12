@@ -7,7 +7,11 @@ import aktual.budget.reports.ui.montecarlo.PERCENT_SCALE
 import aktual.budget.reports.vm.CrossoverReportMeta
 import aktual.budget.reports.vm.ProjectionType
 import aktual.budget.reports.vm.QueryEditorData
-import aktual.budget.reports.vm.QueryEntity
+import aktual.budget.rules.components.Divider
+import aktual.budget.rules.components.QuerySheet
+import aktual.budget.rules.components.SectionLabel
+import aktual.budget.rules.components.label
+import aktual.budget.rules.domain.ConditionEntity
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
@@ -207,7 +211,7 @@ private fun NumberRow(label: String, field: @Composable () -> Unit) =
 @Composable
 internal fun AccountSheet(
   title: String,
-  accounts: ImmutableList<QueryEntity>,
+  accounts: ImmutableList<ConditionEntity>,
   selected: ImmutableSet<AccountId>,
   onChange: (Set<AccountId>) -> Unit,
   onDismiss: () -> Unit,

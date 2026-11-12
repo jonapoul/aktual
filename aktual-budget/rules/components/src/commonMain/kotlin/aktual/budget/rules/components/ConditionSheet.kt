@@ -1,14 +1,14 @@
-package aktual.budget.reports.ui.report
+package aktual.budget.rules.components
 
 import aktual.budget.model.Condition
 import aktual.budget.model.Field
-import aktual.budget.reports.vm.QUERY_FIELDS
-import aktual.budget.reports.vm.QueryEditorData
-import aktual.budget.reports.vm.editableKind
-import aktual.budget.reports.vm.entities
-import aktual.budget.reports.vm.newQueryCondition
-import aktual.budget.reports.vm.queryOperators
-import aktual.budget.reports.vm.withOperator
+import aktual.budget.rules.domain.ConditionEntities
+import aktual.budget.rules.domain.FILTER_FIELDS
+import aktual.budget.rules.domain.editableKind
+import aktual.budget.rules.domain.entities
+import aktual.budget.rules.domain.filterOperators
+import aktual.budget.rules.domain.newFilterCondition
+import aktual.budget.rules.domain.withOperator
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
@@ -30,13 +30,13 @@ import kotlinx.collections.immutable.ImmutableList
 
 // Edits one condition of a query in place. Conditions the editor can't show can only be deleted
 @Composable
-internal fun ConditionSheet(
+fun ConditionSheet(
   condition: Condition,
-  data: QueryEditorData,
+  data: ConditionEntities,
   onChange: (Condition) -> Unit,
   onDelete: () -> Unit,
   onDismiss: () -> Unit,
-  fields: ImmutableList<Field> = QUERY_FIELDS,
+  fields: ImmutableList<Field> = FILTER_FIELDS,
 ) =
   HostedSheet(onDismiss = onDismiss) {
     var pickingEntity by rememberSaveable { mutableStateOf(false) }
@@ -70,7 +70,7 @@ internal fun ConditionSheet(
 private fun ConditionContent(
   condition: Condition,
   fields: ImmutableList<Field>,
-  data: QueryEditorData,
+  data: ConditionEntities,
   onChange: (Condition) -> Unit,
   onPickEntity: () -> Unit,
 ) {
@@ -89,7 +89,7 @@ private fun ConditionContent(
         AktualExposedDropDownMenu(
           modifier = Modifier.fillMaxWidth(),
           value = condition.field,
-          onValueChange = { field -> onChange(newQueryCondition(field)) },
+          onValueChange = { field -> onChange(newFilterCondition(field)) },
           options = fields,
           string = { field -> field.label() },
           textStyle = typography.bodyMedium,
@@ -101,7 +101,7 @@ private fun ConditionContent(
           modifier = Modifier.fillMaxWidth(),
           value = condition.operator,
           onValueChange = { op -> onChange(condition.withOperator(op)) },
-          options = queryOperators(condition.field),
+          options = filterOperators(condition.field),
           string = { op -> op.label() },
           textStyle = typography.bodyMedium,
         )

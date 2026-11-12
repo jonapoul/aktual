@@ -5,6 +5,9 @@ import aktual.budget.reports.ui.dashboard.NameDialog
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
+import aktual.budget.rules.components.ConditionsEditor
+import aktual.budget.rules.components.SectionLabel
+import aktual.budget.rules.components.SettingRow
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
 import aktual.core.icons.Pencil1
